@@ -32,3 +32,4 @@
 5. Run `git pull`
 6. Checkout to the branch you want to upload
 7. run `git rebase -p master` (not `git merge`!) and solve merge conflicts if needed
+8. run `git push`
