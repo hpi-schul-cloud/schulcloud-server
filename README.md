@@ -15,4 +15,5 @@
 # Run
 
 1. Go into project folder
-2. `npm start`
+2. run `mongod`
+2. run `npm start`
