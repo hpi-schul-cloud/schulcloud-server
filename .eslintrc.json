@@ -1,0 +1,39 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "globals": {
+    "_": true,
+    "$": true,
+    "after": true,
+    "before": true,
+    "describe": true,
+    "it": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "jsx": true
+    },
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    "linebreak-style": [
+      2,
+      "unix"
+    ],
+    "semi": [
+      2,
+      "always"
+    ],
+    "no-unused-vars": [
+      0
+    ]
+  }
+}
