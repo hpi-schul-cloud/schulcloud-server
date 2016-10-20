@@ -5,16 +5,15 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
 
 exports.before = {
-  all: [],
   find: [
     auth.verifyToken(),
     auth.populateUser(),
     auth.restrictToAuthenticated()
   ],
   get: [
-    /*auth.verifyToken(),
+    auth.verifyToken(),
     auth.populateUser(),
-    auth.restrictToAuthenticated()*/
+    auth.restrictToAuthenticated()
   ],
   create: [
     auth.hashPassword()
@@ -40,7 +39,7 @@ exports.before = {
 };
 
 exports.after = {
-  all: [hooks.remove('password')],
+  all: [],
   find: [],
   get: [],
   create: [],

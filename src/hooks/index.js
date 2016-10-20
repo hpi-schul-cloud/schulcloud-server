@@ -6,8 +6,6 @@
 // see http://docs.feathersjs.com/hooks/readme.html for more details
 // on hooks.
 
-const winston = require('winston');
-
 exports.myHook = function(options) {
   return function(hook) {
     //console.log('My custom global hook ran. Feathers is awesome!');

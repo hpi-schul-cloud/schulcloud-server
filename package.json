@@ -19,6 +19,7 @@
     "lint": "eslint ./src ./test --ext .js",
     "test": "npm run lint && npm run mocha",
     "start": "node src/",
+    "startd": "nodemon src/",
     "mocha": "mocha test/ --recursive"
   },
   "dependencies": {
