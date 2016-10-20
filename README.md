@@ -18,6 +18,11 @@
 2. run `mongod`
 2. run `npm start`
 
+## How to name your branch
+
+1. Take the last part of the url of your Trello ticket (e.g. "8-setup-feather-js")
+2. Name the branch "yourname/trelloid" (e.g. "nico/8-setup-feather-js")
+
 ## Testing
 
 1. Go into project folder
