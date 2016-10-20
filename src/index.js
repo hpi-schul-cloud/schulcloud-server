@@ -3,7 +3,8 @@
 const app = require('./app');
 const port = app.get('port');
 const server = app.listen(port);
+const logger = app.logger;
 
 server.on('listening', () => {
-  //console.log(`Feathers application started on ${app.get('host')}:${port}`)
+  logger.log('info', `SchulCloud application started on ${app.get('host')}:${port}`);
 });
