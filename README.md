@@ -25,8 +25,18 @@
 
 ## Testing
 
+### Run tests
+
 1. Go into project folder
 2. run `npm run test`
+
+### Create tests
+
+1. Create a folder for the "service" you're working on in "/test/services"
+2. Create a file "user.test.js" for frontend tests (e.g. clicking a link or check if url is available)
+3. Create a file "unit.test.js" for backend tests (e.g. calculating a number)
+
+*Try to cover as many methods as possible unit test wise - goal is 100% of course, so one test per method.*
 
 ## Commiting
 
