@@ -7,6 +7,6 @@
     "token": {
       "secret": "FQ5lS1j41dcZdaPFPP3VRPH6W2bt8Z19bmvcVz+8SH8PtfVpVTl/p+9D0jIdRhwC1UrWg69lTU9koFgugf9oZg=="
     },
-    "local": {}
+    "local": false
   }
 }
