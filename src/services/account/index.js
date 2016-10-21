@@ -1,29 +1,49 @@
 'use strict';
 
-const service = require('feathers-mongoose');
+const Service = require('feathers-mongoose').Service;
 const account = require('./model');
 const hooks = require('./hooks');
 
-module.exports = function() {
-  const app = this;
+module.exports = function () {
+    const app = this;
+    const userService = app.service('/users');
 
-  const options = {
-    Model: account,
-    paginate: {
-      default: 5,
-      max: 25
+    class AccountService extends Service {
+        create(data, params, done) {
+            return new Promise((resolve, reject) => {
+                let account = null;
+                super.create(data, params).then((newAccount) => {
+                    account = newAccount;
+                    return userService.get(newAccount.userId);
+                }).then((user) => {
+                    user.accounts.push(account._id);
+                    return userService.update(user._id, user);
+                }).then(() => {
+                    return resolve(account);
+                }).catch((error) => {
+                    reject(new Error(error));
+                });
+            });
+        }
     }
-  };
 
-  // Initialize our service with any options it requires
-  app.use('/accounts', service(options));
+    const options = {
+        Model: account,
+        paginate: {
+            default: 5,
+            max: 25
+        }
+    };
 
-  // Get our initialize service to that we can bind hooks
-  const accountService = app.service('/accounts');
+    // Initialize our service with any options it requires
+    app.use('/accounts', new AccountService(options));
 
-  // Set up our before hooks
-  accountService.before(hooks.before);
+    // Get our initialize service to that we can bind hooks
+    const accountService = app.service('/accounts');
 
-  // Set up our after hooks
-  accountService.after(hooks.after);
+    // Set up our before hooks
+    accountService.before(hooks.before);
+
+    // Set up our after hooks
+    accountService.after(hooks.after);
 };
