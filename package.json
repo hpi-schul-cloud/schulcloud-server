@@ -37,7 +37,8 @@
     "mongoose": "^4.6.4",
     "passport": "^0.3.2",
     "serve-favicon": "^2.3.0",
-    "winston": "^2.2.0"
+    "winston": "^2.2.0",
+    "bcryptjs": "latest"
   },
   "devDependencies": {
     "eslint": "^3.8.1",
