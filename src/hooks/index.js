@@ -7,7 +7,7 @@
 // on hooks.
 
 exports.myHook = function (options) {
-    return function (hook) {
-        //console.log('My custom global hook ran. Feathers is awesome!');
-    };
+	return function (hook) {
+		//console.log('My custom global hook ran. Feathers is awesome!');
+	};
 };
