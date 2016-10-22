@@ -6,9 +6,10 @@ const crypto = require('bcryptjs');
 module.exports = function() {
     const app = this;
 
-    let config = app.get('auth');
+    let config = app.get('/auth/account');
 
-    const authenticationService = {
+    class AuthenticationService {
+
         // POST /auth/account
         create({email, password}, params) {
 
@@ -61,8 +62,8 @@ module.exports = function() {
              })*/;
 
         }
-    };
+    }
 
-    app.use('/auth/account', authenticationService);
+    app.use('/auth/account', new AuthenticationService());
     app.configure(authentication(config));
 };
