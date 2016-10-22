@@ -25,6 +25,10 @@ module.exports = function () {
 				});
 			});
 		}
+
+		basicCreate(data, params) {
+			return super.create(data, params);
+		}
 	}
 
 	const options = {

@@ -1,11 +1,12 @@
 'use strict';
 
 const authentication = require('feathers-authentication');
-const crypto = require('bcryptjs');
+
+
 
 module.exports = function() {
     const app = this;
-
+	const MoodleLoginService = require('./moodle.js')(app);
     let config = app.get('/auth/account');
 
     class AuthenticationService {
@@ -65,5 +66,6 @@ module.exports = function() {
     }
 
     app.use('/auth/account', new AuthenticationService());
+	app.use('/auth/moodle', new MoodleLoginService());
     app.configure(authentication(config));
 };

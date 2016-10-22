@@ -23,9 +23,14 @@
     "mocha": "mocha test/ --recursive"
   },
   "dependencies": {
+    "bcryptjs": "latest",
     "body-parser": "^1.15.2",
+    "chai": "^3.5.0",
+    "chai-http": "^3.0.0",
     "compression": "^1.6.2",
     "cors": "^2.8.1",
+    "es6-promisify": "^5.0.0",
+    "express": "^4.14.0",
     "feathers": "^2.0.2",
     "feathers-authentication": "^0.7.11",
     "feathers-configuration": "^0.3.3",
@@ -34,11 +39,11 @@
     "feathers-mongoose": "^3.5.3",
     "feathers-rest": "^1.5.0",
     "feathers-socketio": "^1.4.1",
+    "freeport": "^1.0.5",
     "mongoose": "^4.6.4",
     "passport": "^0.3.2",
     "serve-favicon": "^2.3.0",
-    "winston": "^2.2.0",
-    "bcryptjs": "latest"
+    "winston": "^2.2.0"
   },
   "devDependencies": {
     "eslint": "^3.8.1",
