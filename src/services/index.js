@@ -4,6 +4,7 @@ const role = require('./role');
 const authentication = require('./authentication');
 const user = require('./user');
 const mongoose = require('mongoose');
+
 module.exports = function () {
 	const app = this;
 
@@ -13,7 +14,7 @@ module.exports = function () {
 	app.configure(authentication);
 	app.configure(user);
 	app.configure(role);
-	app.configure(role);
-	app.configure(role);
+	//app.configure(role);
+	//app.configure(role);
 	app.configure(account);
 };
