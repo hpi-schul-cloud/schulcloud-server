@@ -62,7 +62,7 @@ module.exports = function(app) {
 				.then((account) => {
 					//accountService.get(account._id).then(fetched => {console.log('fetched ' + fetched.id + fetched.email);});
 					// return the account id in a JWT
-					return promisify(jwt.sign)({id: account._id}, 'shhhhh', {});	// TODO: use a different secret, not the one from the docs
+					return jwt.sign({id: account._id}, 'shhhhh', {});	// TODO: use a different secret, not the one from the docs
 				});
 		}
 	}
