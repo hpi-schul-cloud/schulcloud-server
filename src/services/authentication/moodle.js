@@ -8,6 +8,7 @@ const crypto = require('bcryptjs');
 const logger = require('winston');
 const jwt = require('jsonwebtoken');
 const promisify = require('es6-promisify');
+const errors = require('feathers-errors');
 
 const account = require('../account/model');
 
@@ -20,11 +21,14 @@ module.exports = function(app) {
 				username: data.username,
 				password: data.password,
 				wwwroot: data.wwwroot,
-				token: data.token,
+				//token: data.token,	// TODO: allow to use tokens, check with the API
 				logger: logger/*,
 				 service: 'schul-cloud'*/
 			};
 			const accountService = app.service('/accounts');
+			if(!moodleOptions.username) return Promise.reject('no username set');
+			if(!moodleOptions.password && !moodleOptions.token) return Promise.reject(new errors.NotAuthenticated('No password set'));	// TODO: 'or token'
+			if(!moodleOptions.wwwroot) return Promise.reject('no wwwroot provided');
 
 			// system requests token from indicated moodle
 
@@ -33,15 +37,21 @@ module.exports = function(app) {
 				// 3. on success, the system finds the corresponding account or creates a new one
 				// 4. the account _id is sent to the user as a JSON web token
 				.then((client) => {
+					if(!client.token) throw new Error('failed to obtain token');
 					authenticatedClient = client;
-					return accountService.find({email: client.username, system: client.wwwroot});
+					const query = {email: moodleOptions.username, system: moodleOptions.wwwroot};
+					return accountService.find({query: query});
 				})
 				.then((queryResults) => {
 					const existingAccount = queryResults[0] || queryResults.data && queryResults.data[0];
-					if(existingAccount) return Promise.resolve(existingAccount);
+					if(existingAccount) {
+						existingAccount.token = authenticatedClient.token;
+						return accountService.update(existingAccount._id, existingAccount)
+							.then(() => Promise.resolve(existingAccount));
+					}
 					else return accountService.basicCreate({
-						email: data.username,
-						password: crypto.hashSync(data.password),
+						email: moodleOptions.username,
+						password: crypto.hashSync(moodleOptions.password),
 						//userId: null,
 						token: authenticatedClient.token,
 						//reference: {type: String /*, required: true*/},
@@ -50,8 +60,9 @@ module.exports = function(app) {
 					});
 				})
 				.then((account) => {
+					//accountService.get(account._id).then(fetched => {console.log('fetched ' + fetched.id + fetched.email);});
 					// return the account id in a JWT
-					return promisify(jwt.sign)({id: account.id}, 'shhhhh', {});	// TODO: use a different secret, not the one from the docs
+					return promisify(jwt.sign)({id: account._id}, 'shhhhh', {});	// TODO: use a different secret, not the one from the docs
 				});
 		}
 	}
