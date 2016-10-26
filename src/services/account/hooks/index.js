@@ -3,6 +3,7 @@
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
+const { ifNotLocal } = require('./allowLocalUnauthenticated');
 
 exports.before = {
 	find: [
@@ -16,7 +17,7 @@ exports.before = {
 		auth.restrictToAuthenticated()
 	],
 	create: [
-		auth.hashPassword()
+		ifNotLocal(auth.hashPassword())
 	],
 	update: [
 		auth.verifyToken(),

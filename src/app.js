@@ -31,4 +31,8 @@ app.use(compress())
 	.configure(services)
 	.configure(middleware);
 
+const logger = app.logger;
+logger.cli();	// optimize for cli, like using colors
+logger.level = 'debug';
+
 module.exports = app;
