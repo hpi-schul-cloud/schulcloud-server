@@ -14,7 +14,5 @@ module.exports = function () {
 	app.configure(authentication);
 	app.configure(user);
 	app.configure(role);
-	//app.configure(role);
-	//app.configure(role);
 	app.configure(account);
 };
