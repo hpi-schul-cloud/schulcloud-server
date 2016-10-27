@@ -6,7 +6,7 @@ const crypto = require('bcryptjs');
 module.exports = function() {
     const app = this;
 
-    let config = app.get('/auth/account');
+    let config = app.get('auth');
 
     class AuthenticationService {
 
@@ -56,10 +56,7 @@ module.exports = function() {
                 }).then((user) => {
                     // 4. if user found: generate jwt
                     return jwtService.create(user);
-                })/*.then((jwt) => {
-             // 5. return generated JWT
-             resolve(jwt);
-             })*/;
+                });
 
         }
     }
