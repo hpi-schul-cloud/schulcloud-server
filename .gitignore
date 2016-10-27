@@ -30,3 +30,5 @@ node_modules
 lib/
 data/
 .idea/
+
+client/public/
