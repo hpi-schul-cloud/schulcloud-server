@@ -8,7 +8,8 @@ module.exports = function() {
 
     let config = app.get('auth');
 
-    const authenticationService = {
+    class AuthenticationService {
+
         // POST /auth/account
         create({email, password}, params) {
 
@@ -55,14 +56,11 @@ module.exports = function() {
                 }).then((user) => {
                     // 4. if user found: generate jwt
                     return jwtService.create(user);
-                })/*.then((jwt) => {
-             // 5. return generated JWT
-             resolve(jwt);
-             })*/;
+                });
 
         }
-    };
+    }
 
-    app.use('/auth/account', authenticationService);
+    app.use('/auth/account', new AuthenticationService());
     app.configure(authentication(config));
 };
