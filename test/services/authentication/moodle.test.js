@@ -236,23 +236,26 @@ describe('Moodle single-sign-on', function () {
 				.set('content-type', 'application/x-www-form-urlencoded')
 				//send credentials
 				.send({
-					username: nonUniqueTestAccountA.email,
+					username: nonUniqueTestAccountA.username,
 					password: nonUniqueTestAccountA.password
 				})
 				.end((err, res) => {
 					const httpBadRequest = 400;
 					res.res.statusCode.should.equal(httpBadRequest);
-					expect(res.body.message).to.contain('username');
+					expect(res.body.message).to.contain('systemId');
 					resolve();
 				});
 		});
 	});
 
 	after(function (done) {
-		const deletions = createdAccountIds.map(id => {
+		const accountDeletions = createdAccountIds.map(id => {
 			return accountService.remove(id);
 		});
-		Promise.all(deletions)
+		const userDeletions = createdUserIds.map(id => {
+			return userService.remove(id);
+		});
+		Promise.all(accountDeletions + userDeletions)
 			.then(() => {
 				done();
 			})
