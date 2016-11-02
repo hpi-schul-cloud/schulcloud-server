@@ -3,19 +3,22 @@
  */
 'use strict';
 
-const app = require('../../app');
+
 const moodleClient = require('moodle-client');
 const logger = require('winston');
 const promisify = require('es6-promisify');
 const errors = require('feathers-errors');
 
-const AbstractLoginStrategy = require('interface');
+const AbstractLoginStrategy = require('./interface');
 
 //const userService = app.service('/users');
-const accountService = app.service('/accounts');
 
 
 class MoodleLoginStrategy extends AbstractLoginStrategy {
+	constructor(app) {
+		super();
+		this.app = app;
+	}
 
 	/*
 	 returns a promise with an authenticated client object, or the sign-in error
@@ -42,8 +45,9 @@ class MoodleLoginStrategy extends AbstractLoginStrategy {
 	}
 
 	updateAccount(accountId, moodleClient) {
+		const accountService = this.app.service('/accounts');
 		return accountService.patch(accountId, {token: moodleClient.token});
 	}
 }
 
-exports.default = MoodleLoginStrategy;
+module.exports = MoodleLoginStrategy;

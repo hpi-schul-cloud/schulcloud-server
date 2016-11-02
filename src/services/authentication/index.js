@@ -6,14 +6,10 @@ const authentication = require('feathers-authentication');
 
 module.exports = function() {
     const app = this;
-	const MoodleLoginService = require('./moodle')(app);
-	const AccountLoginService = require('./account')(app);
+	const AuthenticationService = require('./service')(app);
 
 	let config = app.get('auth');
 
-
-
-    app.use('/auth/account', new AccountLoginService());
-	app.use('/auth/moodle', new MoodleLoginService());
+    app.use('/auth', new AuthenticationService());
     app.configure(authentication(config));
 };

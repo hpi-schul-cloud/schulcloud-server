@@ -1,19 +1,14 @@
 const errors = require('feathers-errors');
-const moodleService = require('./moodle');
-const app = require('../../app');
 const logger = require('winston');
-const jwt = require('jsonwebtoken');
 const promisify = require('es6-promisify');
-const errors = require('feathers-errors');
+const crypto = require('bcryptjs');
 
-const MoodleLoginStrategy = require('./strategies/moodle');
-const strategies = { moodle: new MoodleLoginStrategy()} ;
 
 module.exports = function(app) {
 
 	const logger = app.logger;
-	const systemService = app.service('/systems');
-	const accountService = app.service('/accounts');
+	const MoodleLoginStrategy = require('./strategies/moodle');
+	const strategies = { moodle: new MoodleLoginStrategy(app)};
 
 	class AuthenticationService {
 
@@ -28,27 +23,30 @@ module.exports = function(app) {
 			const credentials = {username: username, password: password};
 
 			return accountService.find({query: {username: username, system: systemId}})
-				.then(result => findSingleAccount(result))
+				.then(result => findSingleAccount(result, systemId))
 				.then(account => {
-
 					if(!account) {
 						return createUserAndAccount(credentials, systemId);
 					} else {
 						return verifyAccount(credentials, systemId);
 					}
 				})
-				.then(verifiedAccount => userService.get(verifiedAccount.userId))
-				.then(user => jwtService.create(user));
+				.then(verifiedAccount => {
+					return userService.get(verifiedAccount.userId);
+				})
+				.then(user => {
+					return jwtService.create(user);
+				});
 		}
 	}
 
 	/*
 	 assert that there is only one account
 	 */
-	function findSingleAccount(result) {
+	function findSingleAccount(result, systemId) {
 		const accounts = result.data;
 		if(accounts.length > 1) {
-			if(!system) {
+			if(!systemId) {
 				throw new errors.BadRequest('Multiple accounts found for this email. Please specify the systemId parameter!');
 			} else {
 				logger.error(`Found multiple accounts for ${result.query}: ${accounts}`);
@@ -61,15 +59,19 @@ module.exports = function(app) {
 	}
 
 	function verifyLogin(credentials, systemId) {
-		systemService.get(systemId)
+		const systemService = app.service('/systems');
+		return systemService.get(systemId)
 			.then(system => {
 				return strategies[system.type].login(credentials, system);
-			})
+			});
 	}
 
 	function verifyAccount(credentials, systemId) {
+		const accountService = app.service('/accounts');
+		let client = null;
 		return verifyLogin(credentials, systemId)
-			.then( => {
+			.then(_client => {
+				client = _client;
 				return accountService.find({query: {email: credentials.username, system: systemId}});
 			})
 			.then(result => {
@@ -79,34 +81,43 @@ module.exports = function(app) {
 				} else {
 					return Promise.resolve(accounts[0]);
 				}
-			}); // TODO: save token
-	}
-
-	function createUserAndAccount(username, password, systemId) {
-		let client = null;
-		return verifyLogin(username, password, systemId)
-			.then(_client => {
-				client = _client;
-				return createUser()
 			})
-			.then(user => {
-				return createAccount(systemId, user.id, username, password, client.token);
+			.then(account => {
+				if(client.token) {	// save the token
+					return accountService.patch(account._id, {token: client.token});
+				} else {	// do nothing
+					return account;
+				}
 			});
 	}
 
-	function createAccount(systemId, userId, username, password, token) {
+	function createUserAndAccount(credentials, systemId) {
+		let client = null;
+		return verifyLogin(credentials, systemId)
+			.then(_client => {
+				client = _client;
+				return createUser();
+			})
+			.then(user => {
+				return createAccount(systemId, user._id.toString(), credentials, client.token);
+			});
+	}
+
+	function createAccount(systemId, userId, {username, password}, token) {
+		const accountService = app.service('/accounts');
 		let data = {
-			email: username,
-			password: hash(password),
+			username: username,
+			password: crypto.hashSync(password),
 			userId: userId,
 			token: token,
 			school: null,	// TODO
-			system: systemId
+			systemId: systemId
 		};
-		accountService.create(data);
+		return accountService.create(data);
 	}
 
 	function createUser() {
+		const userService = app.service('/users');
 		return userService.create({});
 	}
 
