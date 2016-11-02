@@ -43,6 +43,7 @@
     "mongoose": "^4.6.4",
     "moodle-client": "^0.4.0",
     "passport": "^0.3.2",
+    "request-promise": "^4.1.1",
     "serve-favicon": "^2.3.0",
     "winston": "^2.2.0"
   },
