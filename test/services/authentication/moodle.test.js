@@ -10,6 +10,7 @@ const freeport = promisify(require('freeport'));
 const moodleMockServer = require('./moodleMockServer');
 const crypto = require('bcryptjs');
 
+const testObjects = require('./testObjects')(app);
 
 const accountService = app.service('accounts');
 const systemService = app.service('systems');
@@ -19,116 +20,41 @@ const jwt = require('jsonwebtoken');
 const logger = app.logger;
 
 chai.use(chaiHttp);
-var should = chai.should();
-const expect = chai.expect;
+const should = chai.should();
 
 describe('Moodle single-sign-on', function () {
 
-	let createdAccountIds = [];
-	let createdUserIds = [];
 	let mockMoodle = null;
+	let testSystem = null;
 
 	const newTestAccount = {username: "testMoodleLoginUser", password: "testPassword"};
-	const existingTestAccount = {username: "testMoodleLoginExisting", password: "testPasswordExisting"};
-	const nonUniqueAccountA = {username: "poweruser@mail.schul.tech", password: "passwordA"};
-	const nonUniqueAccountB = {username: nonUniqueAccountA.username, password: "passwordB"};
 
+	const existingTestAccount = {username: "testMoodleLoginExisting", password: "testPasswordExisting"};
 	const existingTestAccountParameters = {
 		username: existingTestAccount.username,
 		password: crypto.hashSync(existingTestAccount.password),
-		//userId: null,
-		token: "oldToken",
-		//reference: {type: String /*, required: true*/},
-		//schoolId: {type: Schema.Types.ObjectId /*, required: true*/},
+		token: "oldToken"
 	};
-
-	const nonUniqueTestAccountA = {
-		username: nonUniqueAccountA.username,
-		password: crypto.hashSync(nonUniqueAccountA.password),
-		//userId: null,
-		token: "abcdef012345"
-		//reference: {type: String /*, required: true*/},
-		//schoolId: {type: Schema.Types.ObjectId /*, required: true*/},
-	};
-
-	const nonUniqueTestAccountB = {
-		username: nonUniqueAccountB.username,
-		password: crypto.hashSync(nonUniqueAccountB.password),
-		//userId: null,
-		token: "abcdef012345",
-		//reference: {type: String /*, required: true*/},
-		//schoolId: {type: Schema.Types.ObjectId /*, required: true*/},
-		system: `http://moodle.company.xyz`
-	};
-
-	function createApp() {
-		return freeport()
-			.then(port => {
-				return new Promise((accept) => {
-					const server = app.listen(port);
-					server.once('listening', accept);
-				});
-			});
-	}
 
 	function createMoodleTestServer() {
 		return moodleMockServer({
-			acceptUsers: [newTestAccount, existingTestAccount, nonUniqueAccountA]
+			acceptUsers: [newTestAccount, existingTestAccount]
 		});
 	}
 
-	let testSystem = null;
-	function createTestSystem(moodle) {
-		const localMoodleWebroot = `http://localhost:${moodle.port}`;
-		return systemService.create({url: localMoodleWebroot, type: 'moodle'})
-			.then(system => {
-				testSystem = system;
-				return Promise.resolve(system);
-			});
-	}
+	before(function () {
 
-	function createOtherTestSystem() {
-		return systemService.create({url: `http://moodle.company.xyz`, type: 'moodle'});
-	}
-
-	function createTestUser() {
-		return userService.create({});
-	}
-
-	function createTestAccount(accountParameters, system, user) {
-		accountParameters.systemId = system.id;
-		accountParameters.userId = user._id;
-		return accountService.create(accountParameters)
-			.then(account => {
-				createdAccountIds.push(account._id);
-				return Promise.resolve(account);
-			});
-	}
-
-	before(done => {
-
-		let systems = null;
-		createMoodleTestServer()
+		return createMoodleTestServer()
 			.then(moodle => {
 				mockMoodle = moodle;
 				return Promise.all([
-					createTestSystem(moodle),
-					createOtherTestSystem(),
-					createTestUser(),
-					createTestUser()]);
+					testObjects.createTestSystem(moodle.url),
+					testObjects.createTestUser()]);
 			})
-			.then(([system, otherSystem, testUser, testPowerUser]) => {
-				return Promise.all([
-					createTestAccount(existingTestAccountParameters, system, testUser),
-					createTestAccount(nonUniqueTestAccountA, system, testPowerUser),
-					createTestAccount(nonUniqueTestAccountB, otherSystem, testPowerUser)]);
-			})
-			.then((result, error) => {
-				done(error);
-		});
-
-
-
+			.then(([system, testUser]) => {
+				testSystem = system;
+				return testObjects.createTestAccount(existingTestAccountParameters, system, testUser);
+			});
 	});
 
 	it('should create a user and an account for a new user who logs in with moodle', function () {
@@ -152,7 +78,7 @@ describe('Moodle single-sign-on', function () {
 					const decodedToken = jwt.decode(res.body.token);
 					// get the account id from JWT
 					decodedToken.should.have.property('_id');
-					createdUserIds.push(decodedToken._id);
+					testObjects.createdUserIds.push(decodedToken._id);
 
 					userService.get(decodedToken._id)
 						.then(createdUser => {
@@ -209,53 +135,9 @@ describe('Moodle single-sign-on', function () {
 		});
 	});
 
-	it('should return an error if no password is set', () => {
-		return new Promise((resolve, reject) => {
-			chai.request(app)
-				.post('/auth')
-				.set('Accept', 'application/json')
-				.set('content-type', 'application/x-www-form-urlencoded')
-				//send credentials
-				.send({
-					username: existingTestAccount.username,
-					systemId: testSystem.id
-				})
-				.end((err, res) => {
-					res.res.statusCode.should.equal(401);
-					expect(res.body.message).to.contain('password');
-					resolve();
-				});
-		});
-	});
-
-	it('should throw an error if there are two accounts per email, but no systemId is specified', () => {
-		return new Promise((resolve) => {
-			chai.request(app)
-				.post('/auth')
-				.set('Accept', 'application/json')
-				.set('content-type', 'application/x-www-form-urlencoded')
-				//send credentials
-				.send({
-					username: nonUniqueTestAccountA.username,
-					password: nonUniqueTestAccountA.password
-				})
-				.end((err, res) => {
-					const httpBadRequest = 400;
-					res.res.statusCode.should.equal(httpBadRequest);
-					expect(res.body.message).to.contain('systemId');
-					resolve();
-				});
-		});
-	});
 
 	after(function (done) {
-		const accountDeletions = createdAccountIds.map(id => {
-			return accountService.remove(id);
-		});
-		const userDeletions = createdUserIds.map(id => {
-			return userService.remove(id);
-		});
-		Promise.all(accountDeletions + userDeletions)
+		testObjects.cleanup()
 			.then(() => {
 				done();
 			})

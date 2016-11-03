@@ -1,7 +1,3 @@
-/**
- * Created by carl on 02/11/16.
- */
-
 class AbstractLoginStrategy {
 	constructor() {
 		if (new.target === AbstractLoginStrategy) {

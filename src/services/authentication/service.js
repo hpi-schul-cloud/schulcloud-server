@@ -1,5 +1,4 @@
 const errors = require('feathers-errors');
-const logger = require('winston');
 const promisify = require('es6-promisify');
 const crypto = require('bcryptjs');
 
@@ -99,7 +98,7 @@ module.exports = function(app) {
 				return createUser();
 			})
 			.then(user => {
-				return createAccount(systemId, user._id.toString(), credentials, client.token);
+				return createAccount(systemId, user._id, credentials, client.token);
 			});
 	}
 

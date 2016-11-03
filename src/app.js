@@ -36,3 +36,7 @@ logger.cli();	// optimize for cli, like using colors
 logger.level = 'debug';
 
 module.exports = app;
+
+process.on('unhandledRejection', (reason, p) => {
+	logger.error("Unhandled Rejection at: Promise ", p, " reason: ", reason);
+});

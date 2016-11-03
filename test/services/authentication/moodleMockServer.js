@@ -1,6 +1,3 @@
-/**
- * Created by carl on 22/10/2016.
- */
 const express = require('express');
 const promisify = require("es6-promisify");
 const bodyParser = require('body-parser');
@@ -22,6 +19,7 @@ module.exports = function({
 			mockMoodle.use(bodyParser.urlencoded({extended: true})); // support encoded bodies
 			mockMoodle.responseToken = responseToken;
 			mockMoodle.port = port;
+			mockMoodle.url = `http://localhost:${port}`;
 			mockMoodle.post('/login/token.php', (req, res) => {
 
 				if(!acceptServices.includes(req.body.service)) {
