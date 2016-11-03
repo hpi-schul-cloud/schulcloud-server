@@ -10,20 +10,19 @@ module.exports = function () {
 
 	class AccountService extends Service {
 		create(data, params, done) {
-			return new Promise((resolve, reject) => {
-				let account = null;
-				super.create(data, params).then((newAccount) => {
+			let account = null;
+			return super.create(data, params)
+				.then(newAccount => {
 					account = newAccount;
 					return userService.get(newAccount.userId);
-				}).then((user) => {
+				})
+				.then(user => {
 					user.accounts.push(account._id);
 					return userService.update(user._id, user);
-				}).then(() => {
-					return resolve(account);
-				}).catch((error) => {
-					reject(new Error(error));
+			})
+				.then(user => {
+					return account;
 				});
-			});
 		}
 	}
 

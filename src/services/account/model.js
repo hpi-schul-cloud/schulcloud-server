@@ -4,16 +4,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const accountSchema = new Schema({
-	email: {type: String, required: true},
-	password: {type: String, required: true},
-
+	username: {type: String, required: true},
 	userId: {type: Schema.Types.ObjectId, required: true},
+	token: {type: String, required: false},
+	credentialHash: {type: String},
 
-	token: {type: String, required: true},
-	reference: {type: String /*, required: true*/},
-
-	school: {type: Schema.Types.ObjectId /*, required: true*/},
-	system: {type: Schema.Types.ObjectId /*, required: true*/},
+	schoolId: {type: Schema.Types.ObjectId /*, required: true*/},
+	systemId: {type: Schema.Types.ObjectId, required: true},
 
 	expiresAt: {type: Date}
 });

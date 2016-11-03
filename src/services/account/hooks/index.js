@@ -1,6 +1,6 @@
 'use strict';
 
-const globalHooks = require('../../../hooks');
+const { ifNotLocal } = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
 
@@ -16,7 +16,7 @@ exports.before = {
 		auth.restrictToAuthenticated()
 	],
 	create: [
-		auth.hashPassword()
+		ifNotLocal(auth.hashPassword())
 	],
 	update: [
 		auth.verifyToken(),
