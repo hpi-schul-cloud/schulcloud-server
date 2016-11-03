@@ -8,7 +8,7 @@ const childProcess = require('child_process');
 const phantomjs = require('phantomjs');
 const binPath = phantomjs.path;
 
-var itsLearningResponse = {};
+
 
 var itsLearning;
 
@@ -35,16 +35,23 @@ class ITSLearningLoginStrategy extends AbstractLoginStrategy {
 			path.join(__dirname, '/utils/itslearning_phantom.js'), itsLearningOptions.username, itsLearningOptions.password, itsLearningOptions.wwwroot
 		];
 
-		return this.promiseFromChildProcess(childProcess.execFile(binPath, childArgs, (err, stdout, stderr) => {
-			var url = stdout;
+		return new Promise((resolve, reject) => {
+			childProcess.execFile(binPath, childArgs, (err, stdout, stderr) => {
+					if(err) {
+						reject(err);
+					} else {
+						resolve(stdout);
+					}
+			});
+		}).then(url => {
+			let itsLearningResponse = {};
 			itsLearningResponse.username = this.getParameterByName('Username', url);
 			itsLearningResponse.eLogin = this.getParameterByName('fromElogin', url);
 			itsLearningResponse.customerId = this.getParameterByName('CustomerId', url);
 			itsLearningResponse.hash = this.getParameterByName('Hash', url);
 			itsLearningResponse.timeStamp = this.getParameterByName('TimeStamp', url);
 			itsLearningResponse.success = !itsLearningResponse.username ? false : true;
-		})).then(() => {
-			return Promise.resolve(itsLearningResponse);
+			return itsLearningResponse;
 		});
 	}
 
