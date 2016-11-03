@@ -5,6 +5,7 @@ const promisify = require('es6-promisify');
 const errors = require('feathers-errors');
 const path = require('path');
 const childProcess = require('child_process');
+const execFile = promisify(childProcess.execFile);
 const phantomjs = require('phantomjs');
 const binPath = phantomjs.path;
 
@@ -35,15 +36,8 @@ class ITSLearningLoginStrategy extends AbstractLoginStrategy {
 			path.join(__dirname, '/utils/itslearning_phantom.js'), itsLearningOptions.username, itsLearningOptions.password, itsLearningOptions.wwwroot
 		];
 
-		return new Promise((resolve, reject) => {
-			childProcess.execFile(binPath, childArgs, (err, stdout, stderr) => {
-					if(err) {
-						reject(err);
-					} else {
-						resolve(stdout);
-					}
-			});
-		}).then(url => {
+		return execFile(binPath, childArgs)
+		.then(url => {
 			let itsLearningResponse = {};
 			itsLearningResponse.username = this.getParameterByName('Username', url);
 			itsLearningResponse.eLogin = this.getParameterByName('fromElogin', url);
