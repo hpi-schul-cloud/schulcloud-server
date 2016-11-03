@@ -55,13 +55,6 @@ class ITSLearningLoginStrategy extends AbstractLoginStrategy {
 		});
 	}
 
-	promiseFromChildProcess(child) {
-		return new Promise(function(resolve, reject) {
-			child.addListener("error", reject);
-			child.addListener("exit", resolve);
-		});
-	}
-
 	//Regex for the query string
 	getParameterByName(name, url) {
 		if (!url) {

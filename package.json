@@ -44,7 +44,7 @@
     "moodle-client": "^0.4.0",
     "passport": "^0.3.2",
     "phantomjs": "^2.1.7",
-    "request-promise": "^4.1.1",
+    "request-promise-native": "^1.0.3",
     "serve-favicon": "^2.3.0",
     "winston": "^2.2.0"
   },
