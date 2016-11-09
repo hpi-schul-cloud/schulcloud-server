@@ -20,7 +20,7 @@
     "test": "npm run lint && npm run mocha",
     "start": "node src/",
     "startd": "nodemon src/",
-    "mocha": "mocha test/ --recursive"
+    "mocha": "NODE_ENV=test mocha test/ --recursive"
   },
   "dependencies": {
     "bcryptjs": "latest",
