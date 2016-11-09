@@ -1,11 +1,10 @@
 const errors = require('feathers-errors');
 const promisify = require('es6-promisify');
 const crypto = require('bcryptjs');
-
+const logger = require('winston');
 
 module.exports = function(app) {
 
-	const logger = app.logger;
 	const MoodleLoginStrategy = require('./strategies/moodle');
 	const strategies = { moodle: new MoodleLoginStrategy(app)};
 
