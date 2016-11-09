@@ -13,6 +13,7 @@ const bodyParser = require('body-parser');
 const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
 const services = require('./services');
+const setupEnvironment = require('./setupEnvironment');
 const winston = require('winston');
 
 const app = feathers();
@@ -35,5 +36,6 @@ app.use(compress())
 winston.cli();	// optimize for cli, like using colors
 winston.level = 'debug';
 winston.info('test');
+setupEnvironment(app);
 
 module.exports = app;
