@@ -1,7 +1,7 @@
 'use strict';
+const school = require('./school');
 const system = require('./system');
 const account = require('./account');
-const role = require('./role');
 const authentication = require('./authentication');
 const user = require('./user');
 const mongoose = require('mongoose');
@@ -14,7 +14,7 @@ module.exports = function () {
 
     app.configure(authentication);
     app.configure(user);
-    app.configure(role);
     app.configure(account);
     app.configure(system);
+    app.configure(school);
 };

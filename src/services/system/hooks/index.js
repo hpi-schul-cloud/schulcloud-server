@@ -1,6 +1,6 @@
 'use strict';
 
-const globalHooks = require('../../../hooks');
+const {isAdmin, ifNotLocal} = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
 
@@ -12,10 +12,10 @@ exports.before = {
   ],
   find: [],
   get: [],
-  create: [],
-  update: [],
-  patch: [],
-  remove: []
+  create: [ifNotLocal(isAdmin())],
+  update: [ifNotLocal(isAdmin())],
+  patch: [ifNotLocal(isAdmin())],
+  remove: [ifNotLocal(isAdmin())]
 };
 
 exports.after = {

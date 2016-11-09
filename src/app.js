@@ -13,6 +13,8 @@ const bodyParser = require('body-parser');
 const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
 const services = require('./services');
+const setupEnvironment = require('./setupEnvironment');
+const winston = require('winston');
 
 const app = feathers();
 
@@ -31,12 +33,9 @@ app.use(compress())
 	.configure(services)
 	.configure(middleware);
 
-const logger = app.logger;
-logger.cli();	// optimize for cli, like using colors
-logger.level = 'debug';
+winston.cli();	// optimize for cli, like using colors
+winston.level = 'debug';
+winston.info('test');
+setupEnvironment(app);
 
 module.exports = app;
-
-process.on('unhandledRejection', (reason, p) => {
-	logger.error("Unhandled Rejection at: Promise ", p, " reason: ", reason);
-});

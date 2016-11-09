@@ -27,9 +27,6 @@ const responseStatusCallbacks = {
 	}
 };
 
-//const userService = app.service('/users');
-const accountService = app.service('/accounts');
-
 class LernsaxLoginStrategy extends AbstractLoginStrategy {
 
 	// TODO: system isn't actually required, wait for a real test user from partnerschule
