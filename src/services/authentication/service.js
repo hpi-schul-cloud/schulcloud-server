@@ -6,7 +6,12 @@ const logger = require('winston');
 module.exports = function(app) {
 
 	const MoodleLoginStrategy = require('./strategies/moodle');
-	const strategies = { moodle: new MoodleLoginStrategy(app)};
+	const ITSLearningLoginStrategy = require('./strategies/itslearning');
+	const LernsaxLoginStrategy = require('./strategies/lernsax');
+	const strategies = {
+		moodle: new MoodleLoginStrategy(app),
+		itslearning: new ITSLearningLoginStrategy(),
+		lernsax: new LernsaxLoginStrategy()};
 
 	class AuthenticationService {
 
@@ -17,13 +22,14 @@ module.exports = function(app) {
 			const userService = app.service('/users');
 			const jwtService = app.service('/auth/token');
 
-			if(!username) return Promise.reject(new errors.BadRequest('no username specified'));
+			if(!username) throw new errors.BadRequest('no username specified');
 			const credentials = {username: username, password: password};
 
-			return accountService.find({query: {username: username, system: systemId}})
+			return accountService.find({query: {username: username, systemId: systemId}})
 				.then(result => findSingleAccount(result, systemId))
 				.then(account => {
 					if(!account) {
+						logger.info(`Creating new account for user ${username} in system ${systemId}`);
 						return createUserAndAccount(credentials, systemId);
 					} else {
 						return verifyAccount(credentials, systemId);
@@ -45,14 +51,18 @@ module.exports = function(app) {
 		const accounts = result.data;
 		if(accounts.length > 1) {
 			if(!systemId) {
-				throw new errors.BadRequest('Multiple accounts found for this email. Please specify the systemId parameter!');
+				throw new errors.BadRequest('Multiple accounts found for this username. Please specify the systemId parameter!');
 			} else {
-				logger.error(`Found multiple accounts for ${result.query}: ${accounts}`);
-				throw new Error();
+				logger.error(`Inconsistency: found multiple accounts for authentication request: ${accounts}`);
+				return Promise.reject(new errors.GeneralError());
 			}
 		} else {
 			const account = accounts[0];
-			return Promise.resolve(account);
+			if(!account && !systemId) {
+				throw new errors.BadRequest('No existing account found in system. Please specify the systemId parameter!');
+			} else {
+				return account;
+			}
 		}
 	}
 
@@ -70,11 +80,11 @@ module.exports = function(app) {
 		return verifyLogin(credentials, systemId)
 			.then(_client => {
 				client = _client;
-				return accountService.find({query: {email: credentials.username, system: systemId}});
+				return accountService.find({query: {username: credentials.username, systemId: systemId}});
 			})
 			.then(result => {
 				const accounts = result.data;
-				if(accounts.length != 1) {
+				if(accounts.length == 0) {
 					return Promise.reject(new errors.BadRequest('There is no account associated with this login data'));
 				} else {
 					return Promise.resolve(accounts[0]);
