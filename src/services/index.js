@@ -1,4 +1,5 @@
 'use strict';
+const school = require('./school');
 const system = require('./system');
 const account = require('./account');
 const authentication = require('./authentication');
@@ -15,4 +16,5 @@ module.exports = function () {
     app.configure(user);
     app.configure(account);
     app.configure(system);
+    app.configure(school);
 };
