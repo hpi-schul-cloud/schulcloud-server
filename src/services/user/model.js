@@ -7,9 +7,12 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const role = require('./roles');
+
+
 
 const userSchema = new Schema({
-	roles: [{type: Schema.Types.ObjectId}],
+	roles: [{type: String, enum: Object.keys(role.roles)}],
 	accounts: [{type: Schema.Types.ObjectId}],
 
 	firstName: {type: String},
