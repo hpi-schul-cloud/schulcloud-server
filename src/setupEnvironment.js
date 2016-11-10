@@ -8,7 +8,7 @@ module.exports = function(app) {
 	"use strict";
 
 	const testSchools = [{ name: 'Schiller-Oberschule'}, { name: 'Gymnasium Friedensburg'}];
-	const testSystems = [{ type: 'moodle', url: 'http://moodle.schul.tech/'}, { type: 'itslearning'}];
+	const testSystems = [{ type: 'moodle', url: 'http://moodle.schul.tech/'}, { type: 'itslearning'}, { type: 'local'}];
 
 	const systemService = app.service('/systems');
 	const schoolService = app.service('/schools');

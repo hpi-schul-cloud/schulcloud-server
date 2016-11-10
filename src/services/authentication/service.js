@@ -8,10 +8,14 @@ module.exports = function(app) {
 	const MoodleLoginStrategy = require('./strategies/moodle');
 	const ITSLearningLoginStrategy = require('./strategies/itslearning');
 	const LernsaxLoginStrategy = require('./strategies/lernsax');
+	const LocalLoginStrategy = require('./strategies/local');
+
 	const strategies = {
 		moodle: new MoodleLoginStrategy(app),
 		itslearning: new ITSLearningLoginStrategy(),
-		lernsax: new LernsaxLoginStrategy()};
+		lernsax: new LernsaxLoginStrategy(),
+		local: new LocalLoginStrategy()
+	};
 
 	class AuthenticationService {
 
@@ -29,7 +33,6 @@ module.exports = function(app) {
 				.then(result => findSingleAccount(result, systemId))
 				.then(account => {
 					if(!account) {
-						logger.info(`Creating new account for user ${username} in system ${systemId}`);
 						return createUserAndAccount(credentials, systemId);
 					} else {
 						return verifyAccount(credentials, systemId);
@@ -105,6 +108,7 @@ module.exports = function(app) {
 		return verifyLogin(credentials, systemId)
 			.then(_client => {
 				client = _client;
+				logger.info(`Creating new account for user ${credentials.username} in system ${systemId}`);
 				return createUser();
 			})
 			.then(user => {
