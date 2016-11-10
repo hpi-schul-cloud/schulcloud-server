@@ -11,6 +11,7 @@ const Schema = mongoose.Schema;
 const schoolSchema = new Schema({
   name: { type: String, required: true },
 	address: { type: Object },
+	systems: [{ type: Schema.Types.ObjectId }],
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }
 });
