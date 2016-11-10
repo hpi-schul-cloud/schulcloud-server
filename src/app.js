@@ -6,6 +6,7 @@ const favicon = require('serve-favicon');
 const compress = require('compression');
 const cors = require('cors');
 const feathers = require('feathers');
+const feathersSwagger = require('feathers-swagger');
 const configuration = require('feathers-configuration');
 const hooks = require('feathers-hooks');
 const rest = require('feathers-rest');
@@ -20,6 +21,21 @@ const defaultHeaders = require('./middleware/defaultHeaders');
 const app = feathers();
 
 app.configure(configuration(path.join(__dirname, '..')));
+
+app.configure(feathersSwagger({
+	/* example configuration */
+	docsPath:'/docs',
+	version: '0.0.1',
+	basePath: '/api',
+	info: {
+			'title': 'API',
+			'description': 'This is the Schul-Cloud API.',
+			'termsOfServiceUrl': 'https://github.com/schulcloud/schulcloud-server/blob/master/LICENSE',
+			'contact': 'team@schul.tech',
+			'license': 'GPL-3.0',
+			'licenseUrl': 'https://github.com/schulcloud/schulcloud-server/blob/master/LICENSE'
+	}
+}));
 
 app.use(compress())
 	.options('*', cors())
@@ -39,5 +55,6 @@ winston.cli();	// optimize for cli, like using colors
 winston.level = 'debug';
 winston.info('test');
 setupEnvironment(app);
+
 
 module.exports = app;
