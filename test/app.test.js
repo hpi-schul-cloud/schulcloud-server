@@ -5,10 +5,12 @@ const app = require('../src/app');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
+const logger = require('winston');
 
 describe('Feathers application tests', function () {
 	before(function (done) {
 		this.server = app.listen(3031);
+		logger.level = 'error';
 		this.server.once('listening', () => done());
 	});
 
