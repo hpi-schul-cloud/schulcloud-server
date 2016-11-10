@@ -57,11 +57,12 @@ module.exports = function(app) {
 				return Promise.reject(new errors.GeneralError());
 			}
 		} else {
+			// try to create an account
 			const account = accounts[0];
-			if(!account && !systemId) {
-				throw new errors.BadRequest('No existing account found in system. Please specify the systemId parameter!');
+			if(!account && !systemId) {	// a missing systemId means that no account can be created
+				throw new errors.BadRequest('No existing account found in system. Please specify the systemId parameter to create a new account!');
 			} else {
-				return account;
+				return account;	// may be undefined
 			}
 		}
 	}
