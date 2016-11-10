@@ -7,46 +7,54 @@ const logger = require('winston');
 module.exports = function(app) {
 	"use strict";
 
-	const moodleUrl = 'http://moodle.schul.tech/';
-	const testSchool = { name: 'Schiller-Oberschule'};
+	const testSchools = [{ name: 'Schiller-Oberschule'}, { name: 'Gymnasium Friedensburg'}];
+	const testSystems = [{ type: 'moodle', url: 'http://moodle.schul.tech/'}, { type: 'itslearning'}];
 
 	const systemService = app.service('/systems');
 	const schoolService = app.service('/schools');
 
-	return checkTestSystem()
-		.then(system => checkTestSchool(system));
+	return Promise.all(testSystems.map(s => checkTestSystem(s)))
+		.then(systems => checkTestSchools(systems))
+		.catch(error => logger.error(error));
 
-
-	function checkTestSystem() {
-		return systemService.find({query: {url: moodleUrl}})
+	function checkTestSystem(definition) {
+		return systemService.find({query: definition})
 			.then(result => {
 				if(result.data.length == 0) {
-					return createTestSystem();
+					return createTestSystem(definition);
 				} else {
 					return Promise.resolve(result.data[0]);
 				}
 			})
 			.then(result => {
-				logger.info(`Found test system with id ${result.id} for ${moodleUrl}`);
+				logger.info(`Found test system with id ${result.id} for ${definition.type}`);
 				return result;
 			});
 	}
 
-	function createTestSystem() {
-		logger.info(`Creating test system for ${moodleUrl}`);
-		return systemService.create({ type: 'moodle', url: moodleUrl})
+
+	function createTestSystem(definition) {
+		logger.info(`Creating test system with parameters ${definition}`);
+		return systemService.create(definition)
 			.catch(error => {
 				logger.error(error);
 				throw error;
 			});
 	}
 
-	function checkTestSchool(system) {
-		return schoolService.find({query: testSchool})
+	function checkTestSchools(systems) {
+		return Promise.all([
+			checkTestSchool(testSchools[0], [systems[0]]),
+			checkTestSchool(testSchools[1], systems)
+		]);
+	}
+
+	function checkTestSchool(definition, systems) {
+		return schoolService.find({query: definition})
 			.then(result => {
 				const school = result.data[0];
 				if(!school) {
-					return createTestSchool(system);
+					return createTestSchool(definition, systems);
 				} else {
 					return Promise.resolve(school);
 				}
@@ -56,10 +64,10 @@ module.exports = function(app) {
 			});
 	}
 
-	function createTestSchool(system) {
+	function createTestSchool(definition, systems) {
 		logger.info('Creating test school');
-		let newSchool = testSchool;
-		newSchool.systems = [system];
+		let newSchool = definition;
+		newSchool.systems = systems;
 		return schoolService.create(newSchool);
 	}
 };
