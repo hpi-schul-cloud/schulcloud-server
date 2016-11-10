@@ -15,6 +15,7 @@ const middleware = require('./middleware');
 const services = require('./services');
 const setupEnvironment = require('./setupEnvironment');
 const winston = require('winston');
+const defaultHeaders = require('./middleware/defaultHeaders');
 
 const app = feathers();
 
@@ -27,6 +28,9 @@ app.use(compress())
 	.use('/', serveStatic(app.get('public')))
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({extended: true}))
+	.use((req, res, next) => {
+		defaultHeaders(req, res, next);
+	})
 	.configure(hooks())
 	.configure(rest())
 	.configure(socketio())

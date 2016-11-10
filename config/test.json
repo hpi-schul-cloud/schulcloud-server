@@ -1,6 +1,6 @@
 {
   "host": "localhost",
-  "port": 3030,
+  "port": 3031,
   "mongodb": "mongodb://localhost:27017/schulcloud-test",
   "public": "../public/",
   "auth": {

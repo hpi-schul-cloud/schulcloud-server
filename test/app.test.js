@@ -1,12 +1,14 @@
 'use strict';
 
 const assert = require('assert');
-const request = require('request');
 const app = require('../src/app');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+chai.use(chaiHttp);
 
 describe('Feathers application tests', function () {
 	before(function (done) {
-		this.server = app.listen(3030);
+		this.server = app.listen(3031);
 		this.server.once('listening', () => done());
 	});
 
@@ -14,37 +16,42 @@ describe('Feathers application tests', function () {
 		this.server.close(done);
 	});
 
-	it('starts and shows the index page', function (done) {
-		request('http://localhost:3030', function (err, res, body) {
-			assert.ok(body.indexOf('<html>') !== -1);
-			done(err);
+	it('starts and shows the index page', function () {
+		return new Promise((resolve, reject) => {
+			chai.request(app)
+				.get('/')
+				.end((err, res) => {
+					assert.equal(res.statusCode, 200);
+					resolve();
+				});
 		});
 	});
 
 	describe('404', function () {
-		it('shows a 404 HTML page', function (done) {
-			request({
-				url: 'http://localhost:3030/path/to/nowhere',
-				headers: {
-					'Accept': 'text/html'
-				}
-			}, function (err, res, body) {
-				assert.equal(res.statusCode, 404);
-				assert.ok(body.indexOf('<html>') !== -1);
-				done(err);
+		it('shows a 404 page', function () {
+			return new Promise((resolve, reject) => {
+				chai.request(app)
+					.get('/path/to/nowhere')
+					.set('content-type', 'text/html')
+					.end((err, res) => {
+						assert.equal(res.statusCode, 404);
+						resolve();
+					});
 			});
 		});
 
-		it('shows a 404 JSON error without stack trace', function (done) {
-			request({
-				url: 'http://localhost:3030/path/to/nowhere',
-				json: true
-			}, function (err, res, body) {
-				assert.equal(res.statusCode, 404);
-				assert.equal(body.code, 404);
-				assert.equal(body.message, 'Page not found');
-				assert.equal(body.name, 'NotFound');
-				done(err);
+		it('shows a 404 JSON error without stack trace', function () {
+			return new Promise((resolve, reject) => {
+				chai.request(app)
+					.get('/path/to/nowhere')
+					.set('content-type', 'application/json')
+					.end((err, res) => {
+						assert.equal(res.statusCode, 404);
+						assert.equal(res.body.code, 404);
+						assert.equal(res.body.message, 'Page not found');
+						assert.equal(res.body.name, 'NotFound');
+						resolve();
+					});
 			});
 		});
 	});
