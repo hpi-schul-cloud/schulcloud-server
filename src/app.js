@@ -28,9 +28,7 @@ app.use(compress())
 	.use('/', serveStatic(app.get('public')))
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({extended: true}))
-	.use((req, res, next) => {
-		defaultHeaders(req, res, next);
-	})
+	.use(defaultHeaders)
 	.configure(hooks())
 	.configure(rest())
 	.configure(socketio())
