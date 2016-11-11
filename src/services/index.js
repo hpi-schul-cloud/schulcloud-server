@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 module.exports = function () {
     const app = this;
 
-    mongoose.connect(app.get('mongodb'));
+    mongoose.connect(app.get('mongodb'), {user:process.env.DB_USERNAME, pass:process.env.DB_PASSWORD});
     mongoose.Promise = global.Promise;
 
     app.configure(authentication);
