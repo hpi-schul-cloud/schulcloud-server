@@ -1,5 +1,4 @@
 'use strict';
-const app = require('../../../app');
 const logger = require('winston');
 const promisify = require('es6-promisify');
 const errors = require('feathers-errors');
@@ -9,18 +8,10 @@ const execFile = promisify(childProcess.execFile);
 const phantomjs = require('phantomjs');
 const binPath = phantomjs.path;
 
-
-
-var itsLearning;
-
 const AbstractLoginStrategy = require('./interface.js');
 
 class ITSLearningLoginStrategy extends AbstractLoginStrategy {
-
-	login({
-		username,
-		password
-	}, system) {
+	login({username, password}, system) {
 
 		const itsLearningOptions = {
 			username: username,
@@ -45,6 +36,9 @@ class ITSLearningLoginStrategy extends AbstractLoginStrategy {
 			itsLearningResponse.hash = this.getParameterByName('Hash', url);
 			itsLearningResponse.timeStamp = this.getParameterByName('TimeStamp', url);
 			itsLearningResponse.success = !itsLearningResponse.username ? false : true;
+			if(!itsLearningResponse.success) {
+				return Promise.reject(new errors.NotAuthenticated('Wrong username or password'));
+			}
 			return itsLearningResponse;
 		});
 	}
@@ -62,4 +56,5 @@ class ITSLearningLoginStrategy extends AbstractLoginStrategy {
 		return decodeURIComponent(results[2].replace(/\+/g, " "));
 	}
 }
+
 module.exports = ITSLearningLoginStrategy;

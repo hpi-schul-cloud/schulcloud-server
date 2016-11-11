@@ -30,14 +30,11 @@ const responseStatusCallbacks = {
 class LernsaxLoginStrategy extends AbstractLoginStrategy {
 
 	// TODO: system isn't actually required, wait for a real test user from partnerschule
-	login({
-		username,
-		password
-	}, system) {
+	login({ username, password}, system) {
 		const lernsaxOptions = {
 			username: username,
 			password: password,
-			davUrl: 'https://$1:$2@lernsax.de/webdav.php'.replace('$1', username).replace('$2', password)
+			davUrl: `https://${username}:${password}@lernsax.de/webdav.php`
 		};
 
 		if (!lernsaxOptions.username) return Promise.reject('no username set');

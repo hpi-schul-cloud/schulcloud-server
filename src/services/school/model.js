@@ -9,10 +9,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const schoolSchema = new Schema({
-  name: { type: String, required: true },
-	address: { type: Object },
-  createdAt: { type: Date, 'default': Date.now },
-  updatedAt: { type: Date, 'default': Date.now }
+	name: {type: String, required: true},
+	address: {type: Object},
+	systems: [{type: Schema.Types.ObjectId}],
+	createdAt: {type: Date, 'default': Date.now},
+	updatedAt: {type: Date, 'default': Date.now}
 });
 
 const schoolModel = mongoose.model('school', schoolSchema);
