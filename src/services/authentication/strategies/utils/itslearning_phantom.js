@@ -5,7 +5,7 @@ var steps = [];
 var testindex = 0;
 var loadInProgress = false; //This is set to true when a page is still loading
 var requests = [];
-var url;
+var queryParams;
 var username = args[1];
 var password = args[2];
 var initialUrl = args[3];
@@ -38,18 +38,18 @@ steps = [
 			document.getElementById("ctl00_ContentPlaceHolder1_nativeLoginButton").click();
 		}, username, password);
 		page.onResourceRequested = function(request) {
-			//console.log('Request ' + JSON.stringify(request, undefined, 4));
+			console.log('Request ' + JSON.stringify(request, undefined, 4));
 			requests.push(request);
 			requests.forEach(function(request) {
 				if (request.id == 18) {
-					url = request.url;
+					queryParams = request.postData;
 				}
 			});
 		};
 	},
 	//Step 3 - clearCookies of ITSLearning
 	function() {
-		//console.log(url);
+		//console.log(queryParams);
 		page.clearCookies();
 	}
 ];
@@ -65,7 +65,6 @@ function executeRequestsStepByStep() {
 		testindex++;
 	}
 	if (typeof steps[testindex] != "function") {
-		console.log(url);
 		phantom.exit();
 	}
 }

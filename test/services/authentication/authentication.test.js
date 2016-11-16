@@ -3,7 +3,7 @@ const chaiHttp = require('chai-http');
 const assert = require('assert');
 const app = require('../../../src/app');
 const express = require('express');
-const moodleMockServer = require('./moodleMockServer');
+const moodleMockServer = require('./moodle/moodleMockServer');
 const crypto = require('bcryptjs');
 const testObjects = require('./testObjects')(app);
 

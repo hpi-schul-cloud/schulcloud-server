@@ -28,13 +28,13 @@ class ITSLearningLoginStrategy extends AbstractLoginStrategy {
 		];
 
 		return execFile(binPath, childArgs)
-		.then(url => {
+		.then(queryParams => {
 			let itsLearningResponse = {};
-			itsLearningResponse.username = this.getParameterByName('Username', url);
-			itsLearningResponse.eLogin = this.getParameterByName('fromElogin', url);
-			itsLearningResponse.customerId = this.getParameterByName('CustomerId', url);
-			itsLearningResponse.hash = this.getParameterByName('Hash', url);
-			itsLearningResponse.timeStamp = this.getParameterByName('TimeStamp', url);
+			itsLearningResponse.username = this.getParameterByName('Username', queryParams);
+			itsLearningResponse.eLogin = this.getParameterByName('fromElogin', queryParams);
+			itsLearningResponse.customerId = this.getParameterByName('CustomerId', queryParams);
+			itsLearningResponse.hash = this.getParameterByName('Hash', queryParams);
+			itsLearningResponse.timeStamp = this.getParameterByName('TimeStamp', queryParams);
 			itsLearningResponse.success = !itsLearningResponse.username ? false : true;
 			if(!itsLearningResponse.success) {
 				return Promise.reject(new errors.NotAuthenticated('Wrong username or password'));
