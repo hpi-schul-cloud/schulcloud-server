@@ -1,9 +1,8 @@
 'use strict';
 
 const assert = require('assert');
-const express = require('express');
 const promisify = require("es6-promisify");
-const itsLearningService = require('../../../src/services/authentication/strategies/itslearning.js');
+const itsLearningService = require('../../../../src/services/authentication/strategies/itslearning.js');
 const expect = require('chai').expect;
 var itsLearningLoginService = new itsLearningService();
 

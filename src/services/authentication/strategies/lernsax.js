@@ -2,7 +2,6 @@
  * Created by niklas on 02/11/2016.
  */
 'use strict';
-const app = require('../../../app');
 const logger = require('winston');
 const promisify = require('es6-promisify');
 const errors = require('feathers-errors');
@@ -34,7 +33,7 @@ class LernsaxLoginStrategy extends AbstractLoginStrategy {
 		const lernsaxOptions = {
 			username: username,
 			password: password,
-			davUrl: `https://${username}:${password}@lernsax.de/webdav.php`
+			davUrl: system ? `http://${username}:${password}@${system}` : `https://${username}:${password}@lernsax.de/webdav.php`
 		};
 
 		if (!lernsaxOptions.username) return Promise.reject('no username set');
@@ -44,8 +43,10 @@ class LernsaxLoginStrategy extends AbstractLoginStrategy {
 			url: lernsaxOptions.davUrl,
 			method: 'Get'
 		}).then(function(response) {
+			response = typeof(response) == 'string' ? JSON.parse(response) : response;
 			return responseStatusCallbacks[response.statusCode.toString()].callback(username);
 		}).catch(function(err) {
+			err = typeof(err) == 'string' ? JSON.parse(err) : err;
 			if (err.statusCode == 404) { // 404 means that the user has access to his file directory which is empty
 				return responseStatusCallbacks['200'].callback(username);
 			}
