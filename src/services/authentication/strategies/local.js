@@ -19,7 +19,7 @@ class LocalLoginStrategy extends AbstractLoginStrategy {
 				return credentials.username == username
 					&& credentials.password == password;
 			});
-		if(found) {
+		if(found > -1) {
 			return Promise.resolve(acceptedCredentials[found]);
 		} else {
 			return Promise.reject(new errors.NotAuthenticated('Wrong credentials'));
