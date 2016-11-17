@@ -12,7 +12,7 @@ const role = require('./roles');
 
 
 const userSchema = new Schema({
-	roles: [{type: String, enum: Object.keys(role.roles)}],
+	roles: [{key: String, permission: Number}],
 	accounts: [{type: Schema.Types.ObjectId}],
 
 	firstName: {type: String},
