@@ -1,7 +1,8 @@
 # SchulCloud
 
-![Travis Status](https://travis-ci.org/schulcloud/schulcloud-server.svg?branch=master)
+![Travis Status](https://travis-ci.org/schulcloud/schulcloud-server.svg?branch=develop)
 
+When running the server locally, a Swagger UI API documentation is served at [http://localhost:3030/swagger-ui/](http://localhost:3030/swagger-ui/).
 # Requirements
 
 * node.js
