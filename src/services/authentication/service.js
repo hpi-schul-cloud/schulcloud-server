@@ -38,7 +38,7 @@ module.exports = function(app) {
 					description: 'ID of the system that acts as a login provider. Required for new accounts or accounts with non-unique usernames.',
 					//in: 'path',
 					required: false,
-					name: 'username',
+					name: 'systemId',
 					type: 'string'
 				}],
 			summary: 'Log in with or create a new account',
