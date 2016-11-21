@@ -6,7 +6,6 @@ const favicon = require('serve-favicon');
 const compress = require('compression');
 const cors = require('cors');
 const feathers = require('feathers');
-const feathersSwagger = require('feathers-swagger');
 const configuration = require('feathers-configuration');
 const hooks = require('feathers-hooks');
 const rest = require('feathers-rest');
@@ -17,25 +16,12 @@ const services = require('./services');
 const setupEnvironment = require('./setupEnvironment');
 const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
+const setupSwagger = require('./swagger');
 
 const app = feathers();
 
 app.configure(configuration(path.join(__dirname, '..')));
-
-app.configure(feathersSwagger({
-	/* example configuration */
-	docsPath:'/docs',
-	version: '0.0.1',
-	basePath: '/api',
-	info: {
-			'title': 'API',
-			'description': 'This is the Schul-Cloud API.',
-			'termsOfServiceUrl': 'https://github.com/schulcloud/schulcloud-server/blob/master/LICENSE',
-			'contact': 'team@schul.tech',
-			'license': 'GPL-3.0',
-			'licenseUrl': 'https://github.com/schulcloud/schulcloud-server/blob/master/LICENSE'
-	}
-}));
+setupSwagger(app);
 
 app.use(compress())
 	.options('*', cors())
@@ -45,9 +31,8 @@ app.use(compress())
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({extended: true}))
 	.use(defaultHeaders)
-	.get('/ping', (req, res) => { res.send({ "message":"pong","timestamp":new Date().getTime() });})
 	.get('/system_info/haproxy', (req, res) => { res.send({ "timestamp":new Date().getTime() });})
-	.use('/swagger-ui', serveStatic(__dirname + '/node_modules/swagger-ui/dist'))
+	.get('/ping', (req, res) => { res.send({ "message":"pong","timestamp":new Date().getTime() });})
 	.configure(hooks())
 	.configure(rest())
 	.configure(socketio())

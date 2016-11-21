@@ -61,7 +61,7 @@ describe('Feathers application tests', function () {
 		it('serves swagger api docs', function () {
 			return new Promise((resolve, reject) => {
 				chai.request(app)
-					.get('/api/docs')
+					.get('/docs')
 					.end((err, res) => {
 						assert.equal(res.statusCode, 200);
 						expect(res.body.info.description).to.contain('Schul-Cloud');
