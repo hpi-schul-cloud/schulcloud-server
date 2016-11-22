@@ -39,17 +39,34 @@ exports.before = {
 	]
 };
 
+// combine permissions from all groups to an array
+const resolvePermissions = (user, app) => {
+	const roleService = app.service('/roles');
+
+	return Promise.all((user.roles || []).map((roleId) => {
+		return roleService.get(roleId).then((role) => {
+			return role.permissions;
+		});
+	})).then((rolePermissions) => {
+		let permissions = [];
+		rolePermissions.forEach((rolePermission) => {
+			permissions = permissions.concat(rolePermission || []);
+		});
+		return permissions;
+	}).catch((err) => {
+		throw new Error(err);
+	});
+}
+
+
 exports.after = {
 	all: [hooks.remove('password')],
 	find: [],
 	get: [
 		(hook) => {
-			// resolve permissions
-			hook.result.permissions = [
-				'BACKEND_VIEW',
-				'DASHBOARD_VIEW'
-			];
-
+			return resolvePermissions(hook.result, hook.app).then((permissions) => {
+				hook.result.permissions = permissions;
+			});
 		}
 	],
 	create: [],
