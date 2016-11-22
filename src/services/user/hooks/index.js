@@ -42,10 +42,27 @@ exports.before = {
 // combine permissions from all groups to an array
 const resolvePermissions = (user, app) => {
 	const roleService = app.service('/roles');
+	return _resolvePermissions(user, {roleService});
+};
 
-	return Promise.all((user.roles || []).map((roleId) => {
+const _resolvePermissions = (owner, {roleService, processedRoles = []}) => {
+	return Promise.all((owner.roles || []).map((roleId) => {
 		return roleService.get(roleId).then((role) => {
-			return role.permissions;
+
+			// recursion
+			if((role.roles || []).length && !processedRoles.includes(roleId)) {
+				// prevent circles by remembering processed roles
+				processedRoles.push(roleId);
+
+				return _resolvePermissions(role, {roleService, processedRoles}).then((permissions) => {
+					return permissions.concat(role.permissions);
+				}).catch((err) => {
+					throw new Error(err);
+				});
+			} else {
+				return role.permissions;
+			}
+
 		});
 	})).then((rolePermissions) => {
 		let permissions = [];

@@ -5,7 +5,10 @@ const Schema = mongoose.Schema;
 
 const roleSchema = new Schema({
 	name: {type: String, required: true},
-	permissions: [{type: String}]
+	permissions: [{type: String}],
+
+	// inheritance
+	roles: [{type: Schema.Types.ObjectId}],
 });
 
 const roleModel = mongoose.model('role', roleSchema);
