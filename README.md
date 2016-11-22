@@ -1,7 +1,8 @@
 # SchulCloud
 
-![Travis Status](https://travis-ci.org/schulcloud/schulcloud-server.svg?branch=master)
+![Travis Status](https://travis-ci.org/schulcloud/schulcloud-server.svg?branch=develop)
 
+When running the server locally, a Swagger UI API documentation is served at [http://localhost:3030/swagger-ui/](http://localhost:3030/swagger-ui/).
 # Requirements
 
 * node.js
@@ -40,11 +41,13 @@
 
 ## Commiting
 
+Default branch: develop
+
 1. Go into project folder
 2. Run the tests (see above)
 3. Commit with a meanigful commit message(!) even at 4 a.m. and not stuff like "dfsdfsf"
 4. Checkout to master branch
 5. Run `git pull`
 6. Checkout to the branch you want to upload
-7. run `git rebase -p master` (not `git merge`!) and solve merge conflicts if needed
+7. run `git rebase -p develop` (not `git merge`!) and solve merge conflicts if needed
 8. run `git push`

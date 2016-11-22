@@ -1,10 +1,9 @@
 'use strict';
 
 const assert = require('assert');
-const express = require('express');
 const promisify = require("es6-promisify");
-const itsLearningService = require('../../../src/services/authentication/strategies/itslearning.js');
-const chai = require('chai');
+const itsLearningService = require('../../../../src/services/authentication/strategies/itslearning.js');
+const expect = require('chai').expect;
 var itsLearningLoginService = new itsLearningService();
 
 describe('ITSLearning System', () => {
@@ -21,18 +20,20 @@ describe('ITSLearning System', () => {
 	it('should be able to retrieve username/hash/etc.', function() {
 		this.timeout(12000);
 		return itsLearningLoginService.login(newTestAccount, 'https://developer.itslbeta.com').then((response) => {
-			chai.expect(response).to.not.be.nil;
-			chai.expect(response.username).to.equal(newTestAccount.username);
-			chai.expect(response.success).to.be.true;
+			expect(response).to.not.be.nil;
+			expect(response.username).to.equal(newTestAccount.username);
+			expect(response.success).to.be.true;
 		});
 	});
 
 	it('should not be able to retrieve anything useful', function() {
 		this.timeout(12000);
-		return itsLearningLoginService.login(faultyTestAccount, 'https://developer.itslbeta.com').then((response) => {
-			chai.expect(response).to.not.be.nil;
-			chai.expect(response.username).to.be.null;
-			chai.expect(response.success).to.be.false;
+		return itsLearningLoginService.login(faultyTestAccount, 'https://developer.itslbeta.com')
+			.then(result => {
+				expect(result).to.be.nil;
+			})
+			.catch((error) => {
+				expect(error).to.not.be.nil;
 		});
 	});
 });

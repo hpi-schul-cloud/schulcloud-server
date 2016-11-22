@@ -8,13 +8,49 @@ module.exports = function(app) {
 	const MoodleLoginStrategy = require('./strategies/moodle');
 	const ITSLearningLoginStrategy = require('./strategies/itslearning');
 	const LernsaxLoginStrategy = require('./strategies/lernsax');
+	const LocalLoginStrategy = require('./strategies/local');
+
 	const strategies = {
 		moodle: new MoodleLoginStrategy(app),
 		itslearning: new ITSLearningLoginStrategy(),
-		lernsax: new LernsaxLoginStrategy()};
+		lernsax: new LernsaxLoginStrategy(),
+		local: new LocalLoginStrategy()
+	};
+
+	const docs = {
+		create: {
+			//type: 'Example',
+			parameters: [{
+				description: 'username or email',
+				//in: 'path',
+				required: true,
+				name: 'username',
+				type: 'string'
+			},
+				{
+					description: 'password',
+					//in: 'path',
+					required: false,
+					name: 'password',
+					type: 'string'
+				},
+				{
+					description: 'ID of the system that acts as a login provider. Required for new accounts or accounts with non-unique usernames.',
+					//in: 'path',
+					required: false,
+					name: 'systemId',
+					type: 'string'
+				}],
+			summary: 'Log in with or create a new account',
+			notes: 'Returns a JSON Web Token for the associated user in case of success.'
+			//errorResponses: []
+		}
+	};
 
 	class AuthenticationService {
-
+		constructor() {
+			this.docs = docs;
+		}
 		// POST /auth
 		create({username, password, systemId}, params) {
 
@@ -29,7 +65,6 @@ module.exports = function(app) {
 				.then(result => findSingleAccount(result, systemId))
 				.then(account => {
 					if(!account) {
-						logger.info(`Creating new account for user ${username} in system ${systemId}`);
 						return createUserAndAccount(credentials, systemId);
 					} else {
 						return verifyAccount(credentials, systemId);
@@ -57,11 +92,12 @@ module.exports = function(app) {
 				return Promise.reject(new errors.GeneralError());
 			}
 		} else {
+			// try to create an account
 			const account = accounts[0];
-			if(!account && !systemId) {
-				throw new errors.BadRequest('No existing account found in system. Please specify the systemId parameter!');
+			if(!account && !systemId) {	// a missing systemId means that no account can be created
+				throw new errors.BadRequest('No existing account found in system. Please specify the systemId parameter to create a new account!');
 			} else {
-				return account;
+				return account;	// may be undefined
 			}
 		}
 	}
@@ -104,6 +140,7 @@ module.exports = function(app) {
 		return verifyLogin(credentials, systemId)
 			.then(_client => {
 				client = _client;
+				logger.info(`Creating new account for user ${credentials.username} in system ${systemId}`);
 				return createUser();
 			})
 			.then(user => {

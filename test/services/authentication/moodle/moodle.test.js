@@ -3,14 +3,14 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const assert = require('assert');
-const app = require('../../../src/app');
+const app = require('../../../../src/app');
 const express = require('express');
 const promisify = require("es6-promisify");
 const freeport = promisify(require('freeport'));
 const moodleMockServer = require('./moodleMockServer');
 const crypto = require('bcryptjs');
 
-const testObjects = require('./testObjects')(app);
+const testObjects = require('../testObjects')(app);
 
 const accountService = app.service('accounts');
 const systemService = app.service('systems');
