@@ -22,6 +22,11 @@ const userSchema = new Schema({
 	birthday: {type: Date}
 });
 
-const userModel = mongoose.model('user', userSchema);
 
+userSchema.methods.hasPermission = (cb) => {
+	console.log(this, 'avb');
+};
+
+
+const userModel = mongoose.model('user', userSchema);
 module.exports = userModel;

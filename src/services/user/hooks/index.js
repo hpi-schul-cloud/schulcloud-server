@@ -42,7 +42,16 @@ exports.before = {
 exports.after = {
 	all: [hooks.remove('password')],
 	find: [],
-	get: [],
+	get: [
+		(hook) => {
+			// resolve permissions
+			hook.result.permissions = [
+				'BACKEND_VIEW',
+				'DASHBOARD_VIEW'
+			];
+
+		}
+	],
 	create: [],
 	update: [],
 	patch: [],
