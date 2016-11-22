@@ -56,7 +56,7 @@ const resolvePermissions = (user, app) => {
 	}).catch((err) => {
 		throw new Error(err);
 	});
-}
+};
 
 
 exports.after = {
