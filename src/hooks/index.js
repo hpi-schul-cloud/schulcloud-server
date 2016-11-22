@@ -17,10 +17,10 @@ exports.ifNotLocal = function (hookForRemoteRequests) {
 	};
 };
 
-const role = require('../services/user/roles');
+
 exports.isAdmin = function (options) {
 	return hook => {
-		if(!hook.params.user.roles.includes(role.roles.administrator)) {
+		if(!(hook.params.user.permissions || []).includes('ADMIN')) {
 			throw new errors.Forbidden('you are not an administrator');
 		}
 		//console.log('My custom global hook ran. Feathers is awesome!');

@@ -4,6 +4,7 @@ const system = require('./system');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
+const role = require('./role');
 const mongoose = require('mongoose');
 
 module.exports = function () {
@@ -13,7 +14,8 @@ module.exports = function () {
     mongoose.Promise = global.Promise;
 
     app.configure(authentication);
-    app.configure(user);
+	app.configure(user);
+	app.configure(role);
     app.configure(account);
     app.configure(system);
     app.configure(school);

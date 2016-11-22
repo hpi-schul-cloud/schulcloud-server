@@ -2,7 +2,6 @@ const logger = require('winston');
 const promisify = require('es6-promisify');
 const errors = require('feathers-errors');
 const request = require('request-promise-native');
-const roles = require('../../user/roles');
 
 const AbstractLoginStrategy = require('./interface.js');
 
