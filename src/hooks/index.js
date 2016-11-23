@@ -6,9 +6,6 @@ const errors = require('feathers-errors');
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function (hookForRemoteRequests) {
-	//const hashPassword = hooks.hashPassword(options);
-	//const secondHook = options.function;
-
 	return function (hook) {
 		if (typeof(hook.params.provider) != 'undefined') {	// meaning it's not a local call
 			// Call the specified hook
@@ -17,13 +14,41 @@ exports.ifNotLocal = function (hookForRemoteRequests) {
 	};
 };
 
-const role = require('../services/user/roles');
+
 exports.isAdmin = function (options) {
 	return hook => {
-		if(!hook.params.user.roles.includes(role.roles.administrator)) {
+		if(!(hook.params.user.permissions || []).includes('ADMIN')) {
 			throw new errors.Forbidden('you are not an administrator');
 		}
-		//console.log('My custom global hook ran. Feathers is awesome!');
+
 		return Promise.resolve(hook);
 	};
 };
+
+exports.resolveRoleIds = function(app) {
+	return (hook) => {
+		const roles = hook.data.roles || [];
+		let resolved = roles.map(role => {
+			if(role.toString().length != 24) {	// TODO: better test for ObjectID
+				return _resolveRoleId(app, role);
+			} else {
+				return Promise.resolve(role);
+			}
+		});
+
+		return Promise.all(resolved)
+			.then(roles => {
+				hook.data.roles = roles;
+			});
+	};
+};
+
+function _resolveRoleId(app, name) {
+	const roleService = app.service('/roles');
+	return roleService.find({query: {name: name}})
+		.then(result => {
+			const role = result.data[0];
+			if(!role) throw new TypeError(`Role ${name} is not a valid role`);
+			return role._id;
+		});
+}

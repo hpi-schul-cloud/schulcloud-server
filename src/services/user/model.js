@@ -1,18 +1,10 @@
 'use strict';
 
-// model.js - A mongoose model
-//
-// See http://mongoosejs.com/docs/models.html
-// for more of what you can do here.
-
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const role = require('./roles');
-
-
 
 const userSchema = new Schema({
-	roles: [{type: String, enum: Object.keys(role.roles)}],
+	roles: [{type: Schema.Types.ObjectId}],
 	accounts: [{type: Schema.Types.ObjectId}],
 
 	firstName: {type: String},
@@ -23,5 +15,4 @@ const userSchema = new Schema({
 });
 
 const userModel = mongoose.model('user', userSchema);
-
 module.exports = userModel;

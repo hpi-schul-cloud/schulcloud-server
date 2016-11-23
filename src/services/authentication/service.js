@@ -141,7 +141,8 @@ module.exports = function(app) {
 			.then(_client => {
 				client = _client;
 				logger.info(`Creating new account for user ${credentials.username} in system ${systemId}`);
-				return createUser();
+				const roles = _client.roles || ['user'];
+				return createUser(roles);
 			})
 			.then(user => {
 				return createAccount(systemId, user._id, credentials, client.token);
@@ -161,9 +162,9 @@ module.exports = function(app) {
 		return accountService.create(data);
 	}
 
-	function createUser() {
+	function createUser(roles) {
 		const userService = app.service('/users');
-		return userService.create({});
+		return userService.create({roles: roles ? roles : []});
 	}
 
 
