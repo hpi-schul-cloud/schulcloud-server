@@ -39,7 +39,7 @@
     "feathers-mongoose": "^3.5.3",
     "feathers-rest": "^1.5.0",
     "feathers-socketio": "^1.4.1",
-    "feathers-swagger": "git+https://github.com/feathersjs/feathers-swagger.git",
+    "feathers-swagger": "^0.3.1",
     "freeport": "^1.0.5",
     "mongoose": "^4.6.4",
     "moodle-client": "^0.4.0",
