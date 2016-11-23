@@ -3,3 +3,7 @@ node_js:
   - "6"
 services:
   - mongodb
+script:  
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+after_success:
+  - bash <(curl -X POST --data "apiKey=$apiKey&branch=$BRANCH" http://$url/update)
