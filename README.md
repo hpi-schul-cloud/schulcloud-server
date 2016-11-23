@@ -2,7 +2,8 @@
 
 ![Travis Status](https://travis-ci.org/schulcloud/schulcloud-server.svg?branch=develop)
 
-When running the server locally, a Swagger UI API documentation is served at [http://localhost:3030/swagger-ui/](http://localhost:3030/swagger-ui/).
+Swagger UI documentation is available [here](https://schul-cloud.org:8080/docs/).
+When running the server locally, it is served at [http://localhost:3030/docs/](http://localhost:3030/docs/).
 # Requirements
 
 * node.js
