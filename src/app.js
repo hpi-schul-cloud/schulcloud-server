@@ -16,12 +16,12 @@ const services = require('./services');
 const setupEnvironment = require('./setupEnvironment');
 const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
-//const setupSwagger = require('./swagger');
+const setupSwagger = require('./swagger');
 
 const app = feathers();
 
 app.configure(configuration(path.join(__dirname, '..')));
-//setupSwagger(app);
+setupSwagger(app);
 
 app.use(compress())
 	.options('*', cors())
