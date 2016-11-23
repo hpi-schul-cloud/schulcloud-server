@@ -81,8 +81,11 @@ exports.after = {
 	find: [],
 	get: [
 		(hook) => {
+			hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
+			
 			return resolvePermissions(hook.result, hook.app).then((permissions) => {
 				hook.result.permissions = permissions;
+				return hook;
 			});
 		}
 	],
