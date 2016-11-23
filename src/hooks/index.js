@@ -24,3 +24,31 @@ exports.isAdmin = function (options) {
 		return Promise.resolve(hook);
 	};
 };
+
+exports.resolveRoleIds = function(app) {
+	return (hook) => {
+		const roles = hook.data.roles || [];
+		let resolved = roles.map(role => {
+			if(role.toString().length != 24) {	// TODO: better test for ObjectID
+				return _resolveRoleId(app, role);
+			} else {
+				return Promise.resolve(role);
+			}
+		});
+
+		return Promise.all(resolved)
+			.then(roles => {
+				hook.data.roles = roles;
+			});
+	};
+};
+
+function _resolveRoleId(app, name) {
+	const roleService = app.service('/roles');
+	return roleService.find({query: {name: name}})
+		.then(result => {
+			const role = result.data[0];
+			if(!role) throw new TypeError(`Role ${name} is not a valid role`);
+			return role._id;
+		});
+}

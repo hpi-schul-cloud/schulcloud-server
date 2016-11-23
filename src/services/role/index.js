@@ -22,7 +22,7 @@ module.exports = function () {
 	const roleService = app.service('/roles');
 
 	// Set up our before hooks
-	roleService.before(hooks.before);
+	roleService.before(hooks.before(app));
 
 	// Set up our after hooks
 	roleService.after(hooks.after);
