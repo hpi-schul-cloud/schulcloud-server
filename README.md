@@ -1,6 +1,6 @@
 # SchulCloud
 
-![Travis Status](https://travis-ci.org/schulcloud/schulcloud-server.svg?branch=develop)
+![Travis Status](https://travis-ci.org/schulcloud/schulcloud-server.svg?branch=master)
 
 Swagger UI documentation is available [here](https://schul-cloud.org:8080/docs/).
 When running the server locally, it is served at [http://localhost:3030/docs/](http://localhost:3030/docs/).
