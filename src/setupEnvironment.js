@@ -9,12 +9,21 @@ module.exports = function(app) {
 
 	const testSchools = [{ name: 'Schiller-Oberschule'}, { name: 'Gymnasium Friedensburg'}];
 	const testSystems = [{ type: 'moodle', url: 'http://moodle.schul.tech/'}, { type: 'itslearning'}, { type: 'local'}];
+	const testRoles = [
+		{ name: 'user', permissions: ['BACKEND_VIEW'], roles: [] },	// TODO: rename BACKEND_VIEW
+		{ name: 'student', permissions: ['DASHBOARD_VIEW'], roles: ['user'] },
+		{ name: 'teacher', permissions: ['DASHBOARD_VIEW', 'LESSONS_VIEW'], roles: ['user'] },
+		{ name: 'administrator', permissions: [], roles: ['user'] },
+		{ name: 'superhero', permissions: [], roles: ['user'] }
+	];
 
 	const systemService = app.service('/systems');
 	const schoolService = app.service('/schools');
+	const roleService = app.service('/roles');
 
 	return Promise.all(testSystems.map(s => checkTestSystem(s)))
 		.then(systems => checkTestSchools(systems))
+		.then(() => Promise.all(testRoles.map(r => checkTestRole(r))))
 		.catch(error => logger.error(error));
 
 	function checkTestSystem(definition) {
@@ -60,7 +69,7 @@ module.exports = function(app) {
 				}
 			})
 			.then(school => {
-				logger.info(`Found test school with id ${school.id} named ${school.name}`);
+				logger.info(`Found test school with id ${school._id} named ${school.name}`);
 			});
 	}
 
@@ -69,6 +78,42 @@ module.exports = function(app) {
 		let newSchool = definition;
 		newSchool.systems = systems;
 		return schoolService.create(newSchool);
+	}
+
+	function checkTestRole(definition) {
+		let query = {name: definition.name, permissions: definition.permissions};
+		return roleService.find({query})
+			.then(result => {
+				const role = result.data[0];
+				if(!role) {
+					return createTestRole(definition);
+				} else {
+					return Promise.resolve(role);
+				}
+			})
+			.then(role => {
+				logger.info(`Found test role with id ${role._id} named ${role.name}`);
+			})
+			.catch(error => logger.error(error));
+	}
+
+	function createTestRole(definition) {
+		logger.info(`Creating test role ${definition.name}`);
+		let rolePromises = definition.roles.map(r => _resolveRoleId(r));
+		return Promise.all(rolePromises)
+			.then(roles => {
+				definition.roles = roles;
+				return roleService.create(definition);
+			});
+	}
+
+	function _resolveRoleId(name) {
+		return roleService.find({query: {name: name}})
+			.then(result => {
+				const role = result.data[0];
+				if(!role) throw new TypeError(`Role ${name} is not a valid role`);
+				return role._id;
+			});
 	}
 };
 
