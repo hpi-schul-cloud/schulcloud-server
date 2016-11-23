@@ -141,7 +141,8 @@ module.exports = function(app) {
 			.then(_client => {
 				client = _client;
 				logger.info(`Creating new account for user ${credentials.username} in system ${systemId}`);
-				return createUser(_client.roles);
+				const roles = _client.roles || ['user'];
+				return createUser(roles);
 			})
 			.then(user => {
 				return createAccount(systemId, user._id, credentials, client.token);
