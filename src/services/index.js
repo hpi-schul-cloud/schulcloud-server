@@ -1,4 +1,5 @@
 'use strict';
+const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
 const account = require('./account');
@@ -14,9 +15,10 @@ module.exports = function () {
     mongoose.Promise = global.Promise;
 
     app.configure(authentication);
-	app.configure(user);
-	app.configure(role);
+    app.configure(user);
+    app.configure(role);
     app.configure(account);
     app.configure(system);
     app.configure(school);
+    app.configure(ltiTool);
 };
