@@ -42,7 +42,6 @@ app.use(compress())
 winston.cli();	// optimize for cli, like using colors
 winston.level = 'debug';
 winston.info('test');
-setupEnvironment(app);
-
+setupEnvironment(app).setup();
 
 module.exports = app;
