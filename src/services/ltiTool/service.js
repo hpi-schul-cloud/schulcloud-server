@@ -32,6 +32,7 @@ module.exports = function(app) {
                 resource_link_id: ltiTool.resource_link_id,
                 user_id: '29123',
                 roles: 'Learner',
+				launch_presentation_document_target: 'window',
                 lis_person_name_full: 'John Logie Baird',
             };
 
@@ -41,7 +42,15 @@ module.exports = function(app) {
 
             return session.basicLaunch(payload).
                 then((response) => {
-                    return Promise.resolve(response.getOrElse(''));
+					var keep = response.getOrElse('');
+					if (!keep.includes('<head>')) {
+						let expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+						let regex = new RegExp(expression);
+						keep = { data: keep.match(regex).toString(), type: 'url' };
+					} else {
+						keep = { data: keep, type: 'html'};
+					}
+                    return Promise.resolve(keep);
                 }).catch((e) => {
                     return Promise.reject(e);
             });
