@@ -22,35 +22,10 @@ module.exports = function(app) {
 
 	function setup() {
 		tools(app);
-		return Promise.all(testSystems.map(s => checkTestSystem(s)))
+		return Promise.all(testSystems.map(s => findOrAdd(s, systemService)))
 			.then(systems => checkTestSchools(systems))
-			.then(() => Promise.all(testRoles.map(r => checkTestRole(r))))
+			.then(() => Promise.all(testRoles.map(r => findOrAdd({name: r.name, permissions: r.permissions}, roleService))))
 			.catch(error => logger.error(error));
-	}
-
-	function checkTestSystem(definition) {
-		return systemService.find({query: definition})
-			.then(result => {
-				if(result.data.length == 0) {
-					return createTestSystem(definition);
-				} else {
-					return Promise.resolve(result.data[0]);
-				}
-			})
-			.then(result => {
-				logger.info(`Found test system with id ${result.id} for ${definition.type}`);
-				return result;
-			});
-	}
-
-
-	function createTestSystem(definition) {
-		logger.info(`Creating test system with parameters ${definition}`);
-		return systemService.create(definition)
-			.catch(error => {
-				logger.error(error);
-				throw error;
-			});
 	}
 
 	function checkTestSchools(systems) {
@@ -82,40 +57,28 @@ module.exports = function(app) {
 		return schoolService.create(newSchool);
 	}
 
-	function checkTestRole(definition) {
-		let query = {name: definition.name, permissions: definition.permissions};
-		return roleService.find({query})
+
+	function findOrAdd(data, service) {
+		service.find({query: data})
 			.then(result => {
-				const role = result.data[0];
-				if(!role) {
-					return createTestRole(definition);
+				const match = result.data[0];
+				if(!match) {
+					logger.info(`Creating seed ${service.Model.modelName}${match.name ? " named " + match.name : ""}`);
+					return service.create(data);
 				} else {
-					return Promise.resolve(role);
+					return Promise.resolve(match);
 				}
 			})
-			.then(role => {
-				logger.info(`Found test role with id ${role._id} named ${role.name}`);
+			.then(resolved => {
+				logger.info(`Found seed ${service.Model.modelName} with id ${resolved._id}${resolved.name ? " named " + resolved.name : ""}`);
 			})
 			.catch(error => logger.error(error));
 	}
 
-	function createTestRole(definition) {
-		logger.info(`Creating test role ${definition.name}`);
-		return roleService.create(definition);
-	}
-
-	function _resolveRoleId(name) {
-		return roleService.find({query: {name: name}})
-			.then(result => {
-				const role = result.data[0];
-				if(!role) throw new TypeError(`Role ${name} is not a valid role`);
-				return role._id;
-			});
-	}
-
 	return {
 		setup: setup,
-		checkTestRole: checkTestRole
+		findOrAdd: findOrAdd,
+		userRole: testRoles[0]
 	};
 };
 

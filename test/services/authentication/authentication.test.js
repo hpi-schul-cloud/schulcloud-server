@@ -22,6 +22,9 @@ describe('General login service', function () {
 	const nonUniqueAccountA = {username: "poweruser@mail.schul.tech", password: "passwordA"};
 	const nonUniqueAccountB = {username: nonUniqueAccountA.username, password: "passwordB"};
 
+	const seeds = setupEnvironment(app);
+	const roleService = app.service('/roles');
+
 	const nonUniqueTestAccountA = {
 		username: nonUniqueAccountA.username,
 		password: crypto.hashSync(nonUniqueAccountA.password),
@@ -48,7 +51,7 @@ describe('General login service', function () {
 				testObjects.createTestSystem('http://moodle.company.xyz'),
 				testObjects.createTestSystem('http://moodle.school.abc'),
 				testObjects.createTestUser(),
-				setupEnvironment(app).checkTestRole('user')
+				seeds.findOrAdd(seeds.userRole, roleService)
 		])
 			.then(([system, otherSystem, testPowerUser]) => {
 				testSystem = system;
