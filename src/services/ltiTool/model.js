@@ -18,7 +18,7 @@ const ltiToolSchema = new Schema({
   lti_version: { type: String, required: true },
   resource_link_id: { type: String, required: true },
   roles: { type: [{ type: String, enum: ['Learner', 'Instructor', 'ContentDeveloper', 'Administrator', 'Mentor', 'TeachingAssistant'] }]},
-  privacy_permission: { type: String, enum: ['anonymous', 'e-mail', 'name', 'public'] },
+  privacy_permission: { type: String, enum: ['anonymous', 'e-mail', 'name', 'public'], default: 'anonymous' },
   customs: {type: [{key: {type: String}, value: {type: String}}] },
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }
