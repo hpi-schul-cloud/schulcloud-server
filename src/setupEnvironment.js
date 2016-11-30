@@ -5,7 +5,6 @@
 const logger = require('winston');
 
 module.exports = function(app) {
-	"use strict";
 
 	const testSchools = [{ name: 'Schiller-Oberschule'}, { name: 'Gymnasium Friedensburg'}];
 	const testSystems = [{ type: 'moodle', url: 'http://moodle.schul.tech/'}, { type: 'itslearning'}, { type: 'local'}];
@@ -21,10 +20,12 @@ module.exports = function(app) {
 	const schoolService = app.service('/schools');
 	const roleService = app.service('/roles');
 
-	return Promise.all(testSystems.map(s => checkTestSystem(s)))
-		.then(systems => checkTestSchools(systems))
-		.then(() => Promise.all(testRoles.map(r => checkTestRole(r))))
-		.catch(error => logger.error(error));
+	function setup() {
+		return Promise.all(testSystems.map(s => checkTestSystem(s)))
+			.then(systems => checkTestSchools(systems))
+			.then(() => Promise.all(testRoles.map(r => checkTestRole(r))))
+			.catch(error => logger.error(error));
+	}
 
 	function checkTestSystem(definition) {
 		return systemService.find({query: definition})
@@ -110,5 +111,10 @@ module.exports = function(app) {
 				return role._id;
 			});
 	}
+
+	return {
+		setup: setup,
+		checkTestRole: checkTestRole
+	};
 };
 
