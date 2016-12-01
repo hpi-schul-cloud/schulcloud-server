@@ -5,9 +5,21 @@ const lti = require('lti');
 const LtiTool = require('./model');
 
 module.exports = function(app) {
-    const docs = {
-        // TODO: Create Swagger Doc
-    };
+	const docs = {
+		create: {
+			//type: 'Example',
+			parameters: [{
+					description: 'the database id of the ltiTool',
+					//in: 'path',
+					required: true,
+					name: 'toolId',
+					type: 'string'
+				}],
+			summary: 'Connects to the given ltiTool-provider via LTI ',
+			notes: 'Returns a redirecting html or url'
+			//errorResponses: []
+		}
+	};
 
     class LtiToolsService {
         constructor() {

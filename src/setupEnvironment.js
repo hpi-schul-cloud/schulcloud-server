@@ -9,7 +9,7 @@ module.exports = function(app) {
 	const testSchools = [{ name: 'Schiller-Oberschule'}, { name: 'Gymnasium Friedensburg'}];
 	const testSystems = [{ type: 'moodle', url: 'http://moodle.schul.tech/'}, { type: 'itslearning'}, { type: 'local'}];
 	const testRoles = [
-		{ name: 'user', permissions: ['BACKEND_VIEW', 'DASHBOARD_VIEW'], roles: [] },	// TODO: rename BACKEND_VIEW
+		{ name: 'user', permissions: ['BACKEND_VIEW', 'DASHBOARD_VIEW', 'TOOL_VIEW'], roles: [] },	// TODO: rename BACKEND_VIEW
 		{ name: 'student', permissions: [], roles: ['user'] },
 		{ name: 'teacher', permissions: ['LESSONS_VIEW'], roles: ['user'] },
 		{ name: 'administrator', permissions: [], roles: ['user'] },
