@@ -10,9 +10,9 @@ const Schema = mongoose.Schema;
 
 const ltiToolSchema = new Schema({
   name: { type: String },
-  url: { type: String },
-  key: { type: String },
-  secret: { type: String },
+  url: { type: String, required: true },
+  key: { type: String, required: true },
+  secret: { type: String, required: true },
   logo_url: { type: String },
   lti_message_type: { type: String, required: true },
   lti_version: { type: String, required: true },
