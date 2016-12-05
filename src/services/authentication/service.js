@@ -59,9 +59,9 @@ module.exports = function(app) {
 			const jwtService = app.service('/auth/token');
 
 			if(!username) throw new errors.BadRequest('no username specified');
-			const credentials = {username: username, password: password};
+			const credentials = {username: username.trim(), password: password};
 
-			return accountService.find({query: {username: username, systemId: systemId}})
+			return accountService.find({query: {username: credentials.username, systemId: systemId}})
 				.then(result => findSingleAccount(result, systemId))
 				.then(account => {
 					if(!account) {
