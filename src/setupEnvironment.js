@@ -1,7 +1,7 @@
 /**
  * Created by carl on 03/11/16.
  */
-
+const tools = require('./seeds/tools');
 const logger = require('winston');
 
 module.exports = function(app) {
@@ -9,7 +9,7 @@ module.exports = function(app) {
 	const testSchools = [{ name: 'Schiller-Oberschule'}, { name: 'Gymnasium Friedensburg'}];
 	const testSystems = [{ type: 'moodle', url: 'http://moodle.schul.tech/'}, { type: 'itslearning'}, { type: 'local'}];
 	const testRoles = [
-		{ name: 'user', permissions: ['BACKEND_VIEW', 'DASHBOARD_VIEW'], roles: [] },	// TODO: rename BACKEND_VIEW
+		{ name: 'user', permissions: ['BACKEND_VIEW', 'DASHBOARD_VIEW', 'TOOL_VIEW'], roles: [] },	// TODO: rename BACKEND_VIEW
 		{ name: 'student', permissions: [], roles: ['user'] },
 		{ name: 'teacher', permissions: ['LESSONS_VIEW'], roles: ['user'] },
 		{ name: 'administrator', permissions: [], roles: ['user'] },
@@ -21,6 +21,7 @@ module.exports = function(app) {
 	const roleService = app.service('/roles');
 
 	function setup() {
+		tools(app);
 		return Promise.all(testSystems.map(s => checkTestSystem(s)))
 			.then(systems => checkTestSchools(systems))
 			.then(() => Promise.all(testRoles.map(r => checkTestRole(r))))
