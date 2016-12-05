@@ -63,14 +63,14 @@ module.exports = function(app) {
 			.then(result => {
 				const match = result.data[0];
 				if(!match) {
-					logger.info(`Creating seed ${service.Model.modelName}${match.name ? " named " + match.name : ""}`);
+					logger.info(`Creating seed ${service.Model.modelName}${data.name ? ` named ${data.name}` : ""}${data.type ? ` of type ${data.type}` : ""}`);
 					return service.create(data);
 				} else {
 					return Promise.resolve(match);
 				}
 			})
 			.then(resolved => {
-				logger.info(`Found seed ${service.Model.modelName} with id ${resolved._id}${resolved.name ? " named " + resolved.name : ""}`);
+				logger.info(`Found seed ${service.Model.modelName} with id ${resolved._id}${resolved.name ? " named " + resolved.name : ""}${data.type ? ` of type ${data.type}` : ""}`);
 			})
 			.catch(error => logger.error(error));
 	}
