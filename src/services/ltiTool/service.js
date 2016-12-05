@@ -7,17 +7,14 @@ const LtiTool = require('./model');
 module.exports = function(app) {
 	const docs = {
 		create: {
-			//type: 'Example',
 			parameters: [{
 					description: 'the database id of the ltiTool',
-					//in: 'path',
 					required: true,
 					name: 'toolId',
 					type: 'string'
 				}],
 			summary: 'Connects to the given ltiTool-provider via LTI ',
 			notes: 'Returns a redirecting html or url'
-			//errorResponses: []
 		}
 	};
 
@@ -56,6 +53,7 @@ module.exports = function(app) {
                 then((response) => {
 					var keep = response.getOrElse('');
 					if (!keep.includes('<head>')) {
+						// Fetches the url from given html response by regex
 						let expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
 						let regex = new RegExp(expression);
 						keep = { data: keep.match(regex).toString(), type: 'url' };
