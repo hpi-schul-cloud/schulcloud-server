@@ -24,7 +24,8 @@ module.exports = function(app) {
 		tools(app);
 		return Promise.all(testSystems.map(s => checkTestSystem(s)))
 			.then(systems => checkTestSchools(systems))
-			.then(() => Promise.all(testRoles.map(r => checkTestRole(r))))
+			.then(() => checkTestRole(testRoles[0]))
+			.then(() => Promise.all(testRoles.slice(1).map(r => checkTestRole(r))))
 			.catch(error => logger.error(error));
 	}
 
