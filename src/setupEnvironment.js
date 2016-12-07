@@ -104,15 +104,6 @@ module.exports = function(app) {
 		return roleService.create(definition);
 	}
 
-	function _resolveRoleId(name) {
-		return roleService.find({query: {name: name}})
-			.then(result => {
-				const role = result.data[0];
-				if(!role) throw new TypeError(`Role ${name} is not a valid role`);
-				return role._id;
-			});
-	}
-
 	return {
 		setup: setup,
 		checkTestRole: checkTestRole
