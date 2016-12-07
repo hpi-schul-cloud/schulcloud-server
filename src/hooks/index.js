@@ -1,6 +1,6 @@
 'use strict';
 const errors = require('feathers-errors');
-
+const logger = require('winston');
 // Add any common hooks you want to share across services in here.
 
 
@@ -52,3 +52,16 @@ function _resolveRoleId(app, name) {
 			return role._id;
 		});
 }
+
+exports.computeProperty = function (Model, functionName, variableName) {
+	return (hook) => {
+		return Model.findById(hook.result._id)	// get the model instance to call functions etc  TODO make query results not lean
+			.then(modelInstance => modelInstance[functionName]())	// compute that property
+			.then(result => {
+				hook.result[variableName] = result;		// save it in the resulting object
+				return Promise.resolve(hook);
+			})
+			.catch(e => logger.error(e));
+
+	};
+};
