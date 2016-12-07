@@ -44,10 +44,9 @@ exports.resolveRoleIds = function(app) {
 };
 
 function _resolveRoleId(app, name) {
-	const roleService = app.service('/roles');
-	return roleService.find({query: {name: name}})
-		.then(result => {
-			const role = result.data[0];
+	const roleModel = app.service('/roles').Model;
+	return roleModel.findOne({name: name})
+		.then(role => {
 			if(!role) throw new TypeError(`Role ${name} is not a valid role`);
 			return role._id;
 		});

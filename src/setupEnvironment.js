@@ -84,9 +84,8 @@ module.exports = function(app) {
 
 	function checkTestRole(definition) {
 		let query = {name: definition.name, permissions: definition.permissions};
-		return roleService.find({query})
-			.then(result => {
-				const role = result.data[0];
+		return roleService.Model.findOne(query)
+			.then(role => {
 				if(!role) {
 					return createTestRole(definition);
 				} else {
