@@ -1,6 +1,7 @@
 'use strict';
 const errors = require('feathers-errors');
 const logger = require('winston');
+const mongoose = require('mongoose');
 // Add any common hooks you want to share across services in here.
 
 
@@ -29,7 +30,7 @@ exports.resolveRoleIds = function(app) {
 	return (hook) => {
 		const roles = hook.data.roles || [];
 		let resolved = roles.map(role => {
-			if(role.toString().length != 24) {	// TODO: better test for ObjectID
+			if(!mongoose.Types.ObjectId.isValid(role)) {
 				return _resolveRoleId(app, role);
 			} else {
 				return Promise.resolve(role);
