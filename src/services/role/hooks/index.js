@@ -42,12 +42,12 @@ exports.before = function(app) {
 	};
 };
 
-
+const Role = require('../model');
 
 exports.after = {
 	all: [hooks.remove('password')],
 	find: [],
-	get: [],
+	get: [globalHooks.computeProperty(Role, 'getPermissions', 'permissions')],
 	create: [],
 	update: [],
 	patch: [],
