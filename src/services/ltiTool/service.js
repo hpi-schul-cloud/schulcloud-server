@@ -78,34 +78,6 @@ module.exports = function(app) {
 			}
 			return Promise.resolve(keep);
 		});
-
-
-		/**
-        return consumer.withSession(function(session) {
-
-
-            ltiTool.customs.forEach((custom) => {
-               payload[LtiTool.customFieldToString(custom)] = custom.value;
-            });
-
-			console.log(payload);
-
-            return session.basicLaunch(payload).
-                then((response) => {
-					var keep = response.getOrElse('');
-					if (!keep.includes('<head>')) {
-						// Fetches the url from given html response by regex
-						let expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
-						let regex = new RegExp(expression);
-						keep = { data: keep.match(regex).toString(), type: 'url' };
-					} else {
-						keep = { data: keep, type: 'html'};
-					}
-                    return Promise.resolve(keep);
-                }).catch((e) => {
-                    return Promise.reject(e);
-            });
-        });**/
     }
 
     return LtiToolsService;
