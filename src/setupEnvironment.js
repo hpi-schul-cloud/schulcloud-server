@@ -11,7 +11,7 @@ module.exports = function(app) {
 	const testRoles = [
 		{ name: 'user', permissions: ['BACKEND_VIEW', 'DASHBOARD_VIEW', 'TOOL_VIEW'], roles: [] },	// TODO: rename BACKEND_VIEW
 		{ name: 'student', permissions: [], roles: ['user'] },
-		{ name: 'teacher', permissions: ['LESSONS_VIEW'], roles: ['user'] },
+		{ name: 'teacher', permissions: ['LESSONS_VIEW', 'TOOL_NEW_VIEW'], roles: ['user'] },
 		{ name: 'administrator', permissions: [], roles: ['user'] },
 		{ name: 'superhero', permissions: [], roles: ['user'] }
 	];
