@@ -30,3 +30,6 @@ node_modules
 lib/
 data/
 .idea/
+
+# Database Templates with secrets and keys
+*.templates.js

@@ -27,27 +27,32 @@ module.exports = function(app) {
             return LtiTool.findOne({'_id':toolId}).then((ltiTool) => {
                 if(!ltiTool) throw new errors.NotFound(`no tool found for given toolId ${toolId}`);
 
-                return makeLtiRequest(ltiTool);
+                return makeLtiRequest(ltiTool, user_id);
             });
         }
     }
 
-    function makeLtiRequest(ltiTool) {
+    function makeLtiRequest(ltiTool, user_id) {
         var consumer = new lti.ToolConsumer(ltiTool.url, ltiTool.key, ltiTool.secret);
+		// todo: get user data for userId
         return consumer.withSession(function(session) {
             var payload = {
                 lti_version: ltiTool.lti_version,
                 lti_message_type: ltiTool.lti_message_type,
                 resource_link_id: ltiTool.resource_link_id,
-                user_id: '29123',
+                user_id: user_id || '1232342454523432443523425445',
                 roles: 'Learner',
 				launch_presentation_document_target: 'window',
                 lis_person_name_full: 'John Logie Baird',
+				lis_person_contact_email_primary: 'jbaird@uni.ac.uk',
+				launch_presentation_locale: 'en'
             };
 
             ltiTool.customs.forEach((custom) => {
                payload[LtiTool.customFieldToString(custom)] = custom.value;
             });
+
+			console.log(payload);
 
             return session.basicLaunch(payload).
                 then((response) => {

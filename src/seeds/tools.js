@@ -16,12 +16,19 @@ module.exports = function(app) {
             resource_link_id: '0'
         }];
 
+	try {
+		const templateTools = require('./tool.templates.js')();
+		templateTools.forEach((t) => testTools.push(t));
+	} catch (err) {
+		logger.info("No tool-templates are found");
+	}
+
     const ltiToolService = app.service('/ltiTools');
 
-    return Promise.all(testTools.map(t => checkTestTools(t)))
+    return Promise.all(testTools.map(t => checkTestTool(t)))
     .catch(error => logger.error(error));
 
-    function checkTestTools(definition) {
+    function checkTestTool(definition) {
         return ltiToolService.find({'_id': definition._id})
                 .then(result => {
                 if(result.data.length == 0) {
@@ -31,13 +38,13 @@ module.exports = function(app) {
         }
     })
     .then(result => {
-            logger.info(`Found test ltiTool with id ${result.id} for ${definition.name}`);
+		logger.info(`Found test ltiTool ${definition.name}`);
         return result;
     });
     }
 
     function createTestTool(definition) {
-        logger.info(`Creating test ltiTool with parameters ${definition}`);
+        logger.info(`Creating test ltiTool with name ${definition.name}`);
         return ltiToolService.create(definition)
                 .catch(error => {
                 logger.error(error);
