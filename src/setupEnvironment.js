@@ -15,6 +15,7 @@ module.exports = function(app) {
 		{ name: 'administrator', permissions: [], roles: ['user'] },
 		{ name: 'superhero', permissions: [], roles: ['user'] }
 	];
+	const userTestRole = testRoles[0];
 
 	const systemService = app.service('/systems');
 	const schoolService = app.service('/schools');
@@ -88,7 +89,7 @@ module.exports = function(app) {
 		return roleService.Model.findOne(query)
 			.then(role => {
 				if(!role) {
-					return createTestRole(definition);
+					createTestRole(definition);
 				} else {
 					return Promise.resolve(role);
 				}
@@ -106,7 +107,8 @@ module.exports = function(app) {
 
 	return {
 		setup: setup,
-		checkTestRole: checkTestRole
+		checkTestRole: checkTestRole,
+		userTestRole: userTestRole
 	};
 };
 
