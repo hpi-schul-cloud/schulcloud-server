@@ -1,7 +1,7 @@
 const errors = require('feathers-errors');
 const promisify = require('es6-promisify');
 const logger = require('winston');
-const lti = require('lti');
+const lti = require('lti-consumer');
 const LtiTool = require('./model');
 
 module.exports = function(app) {
@@ -33,20 +33,56 @@ module.exports = function(app) {
     }
 
     function makeLtiRequest(ltiTool, user_id) {
-        var consumer = new lti.ToolConsumer(ltiTool.url, ltiTool.key, ltiTool.secret);
+        var consumer = lti.createConsumer(ltiTool.key, ltiTool.secret);
 		// todo: get user data for userId
+
+		var payload = {
+			lti_version: ltiTool.lti_version,
+			lti_message_type: ltiTool.lti_message_type,
+			resource_link_id: ltiTool.resource_link_id,
+			user_id: user_id || '1232342454523432443523425445',
+			roles: 'Learner',
+			launch_presentation_document_target: 'window',
+			lis_person_name_full: 'John Logie Baird',
+			lis_person_contact_email_primary: 'jbaird@uni.ac.uk',
+			launch_presentation_locale: 'en'
+		};
+
+		var request_data = {
+			url: ltiTool.url,
+			method: 'POST',
+			data: payload
+		};
+
+		return lti.sendRequest(request_data, consumer)
+			.then((response) => {
+			var keep = response;
+			if (!keep.includes('<head>')) {
+				// Fetches the url from given html response by regex
+				let expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+				let regex = new RegExp(expression);
+				keep = { data: keep.match(regex).toString(), type: 'url' };
+			} else {
+				keep = { data: keep, type: 'html'};
+			}
+			return Promise.resolve(keep);})
+			.catch((error) => {
+			var keep = error.message;
+			if (!keep.includes('<head>')) {
+				// Fetches the url from given html response by regex
+				let expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+				let regex = new RegExp(expression);
+				keep = { data: keep.match(regex).toString(), type: 'url' };
+			} else {
+				keep = { data: keep, type: 'html'};
+			}
+			return Promise.resolve(keep);
+		});
+
+
+		/**
         return consumer.withSession(function(session) {
-            var payload = {
-                lti_version: ltiTool.lti_version,
-                lti_message_type: ltiTool.lti_message_type,
-                resource_link_id: ltiTool.resource_link_id,
-                user_id: user_id || '1232342454523432443523425445',
-                roles: 'Learner',
-				launch_presentation_document_target: 'window',
-                lis_person_name_full: 'John Logie Baird',
-				lis_person_contact_email_primary: 'jbaird@uni.ac.uk',
-				launch_presentation_locale: 'en'
-            };
+
 
             ltiTool.customs.forEach((custom) => {
                payload[LtiTool.customFieldToString(custom)] = custom.value;
@@ -69,7 +105,7 @@ module.exports = function(app) {
                 }).catch((e) => {
                     return Promise.reject(e);
             });
-        });
+        });**/
     }
 
     return LtiToolsService;
