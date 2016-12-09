@@ -24,8 +24,7 @@ module.exports = function(app) {
 		tools(app);
 		return Promise.all(testSystems.map(s => checkTestSystem(s)))
 			.then(systems => checkTestSchools(systems))
-			.then(() => checkTestRole(testRoles[0]))
-			.then(() => Promise.all(testRoles.slice(1).map(r => checkTestRole(r))))
+			.then(() => Promise.all(testRoles.map(r => checkTestRole(r))))
 			.catch(error => logger.error(error));
 	}
 
@@ -85,8 +84,9 @@ module.exports = function(app) {
 
 	function checkTestRole(definition) {
 		let query = {name: definition.name, permissions: definition.permissions};
-		return roleService.Model.findOne(query)
-			.then(role => {
+		return roleService.find({query})
+			.then(result => {
+				const role = result.data[0];
 				if(!role) {
 					return createTestRole(definition);
 				} else {
@@ -102,6 +102,15 @@ module.exports = function(app) {
 	function createTestRole(definition) {
 		logger.info(`Creating test role ${definition.name}`);
 		return roleService.create(definition);
+	}
+
+	function _resolveRoleId(name) {
+		return roleService.find({query: {name: name}})
+			.then(result => {
+				const role = result.data[0];
+				if(!role) throw new TypeError(`Role ${name} is not a valid role`);
+				return role._id;
+			});
 	}
 
 	return {

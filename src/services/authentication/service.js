@@ -61,7 +61,7 @@ module.exports = function(app) {
 			if(!username) throw new errors.BadRequest('no username specified');
 			const credentials = {username: username.trim(), password: password};
 
-			return accountService.Model.find({username: credentials.username, systemId: systemId})
+			return accountService.find({query: {username: credentials.username, systemId: systemId}})
 				.then(result => findSingleAccount(result, systemId))
 				.then(account => {
 					if(!account) {
@@ -82,7 +82,8 @@ module.exports = function(app) {
 	/*
 	 assert that there is only one account
 	 */
-	function findSingleAccount(accounts, systemId) {
+	function findSingleAccount(result, systemId) {
+		const accounts = result.data;
 		if(accounts.length > 1) {
 			if(!systemId) {
 				throw new errors.BadRequest('Multiple accounts found for this username. Please specify the systemId parameter!');
@@ -102,26 +103,23 @@ module.exports = function(app) {
 	}
 
 	function verifyLogin(credentials, systemId) {
-		const System = app.service('/systems').Model;
-		return System.findById(systemId)
-			.then(system => {
-				if(!system) throw new errors.BadRequest(`No system found with id ${systemId}`);
-				return Promise.resolve(system);
-			})
+		const systemService = app.service('/systems');
+		return systemService.get(systemId)
 			.then(system => {
 				return strategies[system.type].login(credentials, system);
 			});
 	}
 
 	function verifyAccount(credentials, systemId) {
-		const Account = app.service('/accounts').Model;
+		const accountService = app.service('/accounts');
 		let client = null;
 		return verifyLogin(credentials, systemId)
 			.then(_client => {
 				client = _client;
-				return Account.find({username: credentials.username, systemId: systemId});
+				return accountService.find({query: {username: credentials.username, systemId: systemId}});
 			})
-			.then(accounts => {
+			.then(result => {
+				const accounts = result.data;
 				if(accounts.length == 0) {
 					return Promise.reject(new errors.BadRequest('There is no account associated with this login data'));
 				} else {
@@ -130,8 +128,7 @@ module.exports = function(app) {
 			})
 			.then(account => {
 				if(client.token) {	// save the token
-					account.token = client.token;
-					return account.save().then(() => account);
+					return accountService.patch(account._id, {token: client.token});
 				} else {	// do nothing
 					return account;
 				}
