@@ -3,7 +3,7 @@
 usage()
 {
     cat << EOF
-   	./backup.sh [opts] <export|import>
+   	./backup.sh <export|import> [opts]
 
     OPTIONS:
         -h      Show this help.
@@ -48,7 +48,7 @@ done
 shift $((OPTIND-1))
 
 if [ -z "$1" ]; then
-    echo "Usage: ./backup.sh [opts] <export|import>"
+    echo "Usage: ./backup.sh <export|import> [opts]"
     exit 1
 fi
 
@@ -104,6 +104,6 @@ elif [ "$ACTION" = "import" ]; then
 
 else
 
-	echo "Usage: ./backup.sh [opts] <export|import>"
+	echo "Usage: ./backup.sh <export|import> [opts]"
 
 fi
