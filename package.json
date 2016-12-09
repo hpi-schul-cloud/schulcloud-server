@@ -43,7 +43,6 @@
     "feathers-swagger": "^0.3.1",
     "freeport": "^1.0.5",
     "istanbul": "^0.4.5",
-    "lti-consumer": "^0.2.0",
     "mongoose": "^4.6.4",
     "moodle-client": "^0.4.0",
     "passport": "^0.3.2",
