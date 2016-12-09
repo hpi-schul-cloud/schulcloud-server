@@ -6,11 +6,8 @@ const hooks = require('./hooks');
 
 module.exports = function() {
   const app = this;
-
-  const LtiToolsService = require('./service')(app);
-
-
-    const options = {
+	
+	const options = {
     Model: ltiTool,
     paginate: {
       default: 100,
@@ -20,7 +17,6 @@ module.exports = function() {
 
   // Initialize our service with any options it requires
   app.use('/ltiTools', service(options));
-  app.use('/ltiTools/connect', new LtiToolsService());
 
   // Get our initialize service to that we can bind hooks
   const ltiToolService = app.service('/ltiTools');

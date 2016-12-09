@@ -25,10 +25,6 @@ const ltiToolSchema = new Schema({
   updatedAt: { type: Date, 'default': Date.now }
 });
 
-ltiToolSchema.statics.customFieldToString = (custom) => {
-  return `custom_${custom.key}`;
-};
-
 const ltiToolModel = mongoose.model('ltiTool', ltiToolSchema);
 
 module.exports = ltiToolModel;
