@@ -56,7 +56,7 @@ const _resolveToId = (service, key, value) => {
 		if(!result) throw new TypeError(`No records found where ${key} is ${value}.`);
 		return result._id;
 	});
-}
+};
 
 
 const deepValue = (obj, path, newValue) => {

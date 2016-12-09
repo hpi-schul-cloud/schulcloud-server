@@ -14,7 +14,7 @@ const getUserGroupSchema = (additional = {}) => {
 	return new Schema(Object.assign(schema, additional),{
 		timestamps: true
 	});
-}
+};
 
 const courseModel = mongoose.model('course', getUserGroupSchema({
 	classId: {type: Schema.Types.ObjectId, required: true}
@@ -26,4 +26,4 @@ module.exports = {
 	courseModel,
 	classModel,
 	gradeModel
-}
+};
