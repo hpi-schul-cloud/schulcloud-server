@@ -3,19 +3,21 @@
 usage()
 {
     cat << EOF
-   	./backup.sh <export|import> [opts]
+   	./backup.sh [opts] <export|import>
 
     OPTIONS:
         -h      Show this help.
         -p      Set path
         -c      Collection
-        -d      Database
+        -U      Mongo Username
+        -P      Mongo Password
+        -D      Mongo Database
         -H      Mongo host string (ex. localhost:27017)
 EOF
 }
 
 
-while getopts "hp:c:H:d:" opt; do
+while getopts "hp:c:U:P:H:D:" opt; do
     case $opt in
      	h)
             usage
@@ -30,11 +32,19 @@ while getopts "hp:c:H:d:" opt; do
             COLLECTION="$OPTARG"
             ;;
 
+        U)
+            USERNAME="$OPTARG"
+            ;;
+
+        P)
+            PASSWORD="$OPTARG"
+            ;;
+
 		H)
             HOST="$OPTARG"
             ;;
 
-        d)
+        D)
             DB="$OPTARG"
             ;;
 
@@ -48,7 +58,7 @@ done
 shift $((OPTIND-1))
 
 if [ -z "$1" ]; then
-    echo "Usage: ./backup.sh <export|import> [opts]"
+    echo "Usage: ./backup.sh [opts] <export|import>"
     exit 1
 fi
 
@@ -68,8 +78,20 @@ if [ -z "$HOST" ]; then
     HOST="localhost:27017"
 fi
 
+echo $BACKUP_PATH
+
 if [ -z "$BACKUP_PATH" ]; then
     BACKUP_PATH="backup"
+fi
+
+
+ARGS=""
+if [ -n "$USERNAME" ]; then
+    ARGS="-u $USERNAME"
+fi
+
+if [ -n "$PASSWORD" ]; then
+    ARGS="$ARGS -p $PASSWORD"
 fi
 
 
@@ -82,14 +104,14 @@ if [ "$ACTION" = "export" ]; then
 	if [  ! -z "$COLLECTION" ]; then
 		DATABASE_COLLECTIONS=$COLLECTION
 	else
-		DATABASE_COLLECTIONS=$(mongo $CONN --quiet --eval 'db.getCollectionNames().join(" ")')
+		DATABASE_COLLECTIONS=$(mongo $CONN $ARGS --quiet --eval 'db.getCollectionNames().join(" ")')
 	fi
 
 	mkdir -p $BACKUP_PATH
 	pushd $BACKUP_PATH 2>/dev/null
 
 	for collection in $DATABASE_COLLECTIONS; do
-		mongoexport --host $HOST --db $DB --collection $collection --out $collection.json >/dev/null
+		mongoexport --host $HOST $ARGS --db $DB --collection $collection --pretty --out $collection.json >/dev/null
 	done
 
 elif [ "$ACTION" = "import" ]; then
@@ -99,11 +121,11 @@ elif [ "$ACTION" = "import" ]; then
 	for path in *.json; do
 	 	collection=${path%.json}
 		echo "Importing $DB/$collection from $path"
-		mongoimport --host $HOST --db $DB --collection $collection $path --drop
+		mongoimport --host $HOST $ARGS --db $DB --collection $collection $path --drop
 	done
 
 else
 
-	echo "Usage: ./backup.sh <export|import> [opts]"
+	echo "Usage: ./backup.sh [opts] <export|import>"
 
 fi
