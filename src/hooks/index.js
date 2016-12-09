@@ -1,7 +1,6 @@
 'use strict';
 const errors = require('feathers-errors');
-
-// Add any common hooks you want to share across services in here.
+const mongoose = require('mongoose');
 
 
 // don't require authentication for internal requests
@@ -14,7 +13,6 @@ exports.ifNotLocal = function (hookForRemoteRequests) {
 	};
 };
 
-
 exports.isAdmin = function (options) {
 	return hook => {
 		if(!(hook.params.user.permissions || []).includes('ADMIN')) {
@@ -25,30 +23,51 @@ exports.isAdmin = function (options) {
 	};
 };
 
-exports.resolveRoleIds = function(app) {
-	return (hook) => {
-		const roles = hook.data.roles || [];
-		let resolved = roles.map(role => {
-			if(role.toString().length != 24) {	// TODO: better test for ObjectID
-				return _resolveRoleId(app, role);
-			} else {
-				return Promise.resolve(role);
-			}
-		});
+exports.resolveToIds = (serviceName, path, key, hook) => {
+	// get ids from a probably really deep nested path
+	const service = hook.app.service(serviceName);
 
-		return Promise.all(resolved)
-			.then(roles => {
-				hook.data.roles = roles;
-			});
-	};
+	let values = deepValue(hook, path) || [];
+	if(typeof values == 'string') values = [values];
+
+	if(!values.length) return;
+
+	let resolved = values.map(value => {
+		if(!mongoose.Types.ObjectId.isValid(value)) {
+			return _resolveToId(service, key, value);
+		} else {
+			return Promise.resolve(value);
+		}
+	});
+
+	return Promise.all(resolved)
+	.then(values => {
+		deepValue(hook, path, values);
+	});
 };
 
-function _resolveRoleId(app, name) {
-	const roleService = app.service('/roles');
-	return roleService.find({query: {name: name}})
-		.then(result => {
-			const role = result.data[0];
-			if(!role) throw new TypeError(`Role ${name} is not a valid role`);
-			return role._id;
-		});
+
+const _resolveToId = (service, key, value) => {
+	let query = {};
+	query[key] = value;
+	return service.find({query})
+	.then(results => {
+		const result = results.data[0];
+		if(!result) throw new TypeError(`No records found where ${key} is ${value}.`);
+		return result._id;
+	});
 }
+
+
+const deepValue = (obj, path, newValue) => {
+	path = path.split('.');
+	const len = path.length - 1;
+
+	let i;
+	for(i  = 0; i < len; i++) {
+		obj = obj[path[i]];
+	}
+
+	if(newValue) obj[path[i]] = newValue;
+	return obj[path[i]];
+};

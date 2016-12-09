@@ -13,6 +13,8 @@ const accountSchema = new Schema({
 	systemId: {type: Schema.Types.ObjectId, required: true},
 
 	expiresAt: {type: Date}
+},{
+	timestamps: true
 });
 
 const accountModel = mongoose.model('account', accountSchema);
