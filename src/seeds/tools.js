@@ -10,7 +10,6 @@ module.exports = function(app) {
             url: 'http://lti.tools/test/tp.php',
             key: 'jisc.ac.uk',
             secret: 'secret',
-            logo_url: 'http://fa-se.de/wp-content/uploads/2016/02/bettermarks-logo-neu.jpg',
             lti_message_type: 'basic-lti-launch-request',
             lti_version: 'LTI-1p0',
             resource_link_id: '0'
