@@ -15,6 +15,12 @@ const responseStatusCallbacks = {
 			return Promise.reject('NotAuthenticated: wrong password');
 		}
 	},
+	'403': {
+		'message': 'Permission denied',
+		'callback': () => {
+			return Promise.reject('NotAuthenticated: permission denied');
+		}
+	},
 	'200': {
 		'message': 'Login success',
 		'callback': (username) => {
@@ -33,7 +39,7 @@ class LernsaxLoginStrategy extends AbstractLoginStrategy {
 		const lernsaxOptions = {
 			username: username,
 			password: password,
-			davUrl: system ? `http://${username}:${password}@${system}` : `https://${username}:${password}@lernsax.de/webdav.php`
+			davUrl: system.url ? `http://${username}:${password}@${system.url}` : `https://${username}:${password}@lernsax.de/webdav.php`
 		};
 
 		if (!lernsaxOptions.username) return Promise.reject('no username set');
