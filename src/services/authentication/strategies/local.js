@@ -6,7 +6,7 @@ const request = require('request-promise-native');
 const AbstractLoginStrategy = require('./interface.js');
 
 const acceptedCredentials = [
-	{username: 'a', password: 'a', roles: ['student']},
+	{username: 'a', password: 'a', roles: ['administrator'], schoolId: '58515cbd593d430be5b89b9e'},
 	{username: 'lehrer@schul-cloud.org', password: 'schulcloud', roles: ['teacher']},
 	{username: 'schueler@schul-cloud.org', password: 'schulcloud', roles: ['student']}
 ];

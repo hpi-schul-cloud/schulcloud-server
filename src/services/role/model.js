@@ -9,6 +9,8 @@ const roleSchema = new Schema({
 
 	// inheritance
 	roles: [{type: Schema.Types.ObjectId}],
+},{
+	timestamps: true
 });
 
 const roleModel = mongoose.model('role', roleSchema);

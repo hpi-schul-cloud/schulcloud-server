@@ -10,7 +10,8 @@ exports.before = function(app) {
 		find: [
 			auth.verifyToken(),
 			auth.populateUser(),
-			auth.restrictToAuthenticated()
+			auth.restrictToAuthenticated(),
+			globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name')
 		],
 		get: [
 			/*auth.verifyToken(),
@@ -19,7 +20,7 @@ exports.before = function(app) {
 		],
 		create: [
 			auth.hashPassword(),
-			globalHooks.resolveRoleIds(app)
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [
 			auth.verifyToken(),
@@ -82,7 +83,14 @@ const _resolvePermissions = (owner, {roleService, processedRoles = []}) => {
 
 exports.after = {
 	all: [hooks.remove('password')],
-	find: [],
+	find: [(hook) => {
+		hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
+
+		return resolvePermissions(hook.result, hook.app).then((permissions) => {
+			hook.result.permissions = permissions;
+			return hook;
+		});
+	}],
 	get: [
 		(hook) => {
 			hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;

@@ -19,7 +19,7 @@ exports.before = function(app) {
 		],
 		create: [
 			auth.hashPassword(),
-			globalHooks.resolveRoleIds(app)
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [
 			auth.verifyToken(),

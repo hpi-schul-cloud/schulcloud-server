@@ -14,6 +14,8 @@ const schoolSchema = new Schema({
 	systems: [{type: Schema.Types.ObjectId}],
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now}
+},{
+	timestamps: true
 });
 
 const schoolModel = mongoose.model('school', schoolSchema);
