@@ -3,10 +3,7 @@
 const assert = require('assert');
 const app = require('../../../src/app');
 const ltiToolService = app.service('ltiTools');
-const ltiToolConnectService = app.service('ltiTools/connect');
-const logger = require('winston');
 const chai = require('chai');
-const expect = chai.expect;
 
 describe('ltiTool service', function() {
 
@@ -41,12 +38,6 @@ describe('ltiTool service', function() {
 
   it('registered the ltiTools service', () => {
     assert.ok(ltiToolService);
-  });
-
-  it('connect to test tool lti provider', () => {
-      return ltiToolConnectService.create({toolId: testTool._id}).then((response) => {
-        expect(response).to.be.not.undefined;
-      });
   });
 });
 

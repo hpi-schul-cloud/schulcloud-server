@@ -20,13 +20,10 @@ const ltiToolSchema = new Schema({
   roles: { type: [{ type: String, enum: ['Learner', 'Instructor', 'ContentDeveloper', 'Administrator', 'Mentor', 'TeachingAssistant'] }]},
   privacy_permission: { type: String, enum: ['anonymous', 'e-mail', 'name', 'public'], default: 'anonymous' },
   customs: {type: [{key: {type: String}, value: {type: String}}] },
+  isTemplate: {type: Boolean},
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }
 });
-
-ltiToolSchema.statics.customFieldToString = (custom) => {
-  return `custom_${custom.key}`;
-};
 
 const ltiToolModel = mongoose.model('ltiTool', ltiToolSchema);
 
