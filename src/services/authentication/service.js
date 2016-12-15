@@ -142,7 +142,7 @@ module.exports = function(app) {
 				client = _client;
 				logger.info(`Creating new account for user ${credentials.username} in system ${systemId}`);
 				const roles = _client.roles || ['user'];
-				return createUser(roles);
+				return createUser(roles, _client.schoolId);
 			})
 			.then(user => {
 				return createAccount(systemId, user._id, credentials, client.token);
@@ -162,9 +162,9 @@ module.exports = function(app) {
 		return accountService.create(data);
 	}
 
-	function createUser(roles) {
+	function createUser(roles, schoolId) {
 		const userService = app.service('/users');
-		return userService.create({roles: roles ? roles : []});
+		return userService.create({roles: roles ? roles : [], schoolId: schoolId});
 	}
 
 

@@ -12,9 +12,9 @@ const types = ['moodle', 'itslearning', 'lernsax', 'local'];
 
 const systemSchema = new Schema({
 	type: { type: String, required: true, enum: types },
-	url: {type: String, required: false},
-	createdAt: { type: Date, 'default': Date.now },
-	updatedAt: { type: Date, 'default': Date.now }
+	url: {type: String, required: false}
+},{
+	timestamps: true
 });
 
 const systemModel = mongoose.model('system', systemSchema);
