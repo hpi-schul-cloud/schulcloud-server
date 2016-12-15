@@ -10,6 +10,7 @@ module.exports = function(app) {
             url: 'http://lti.tools/test/tp.php',
             key: 'jisc.ac.uk',
             secret: 'secret',
+			isTemplate: true,
             lti_message_type: 'basic-lti-launch-request',
             lti_version: 'LTI-1p0',
             resource_link_id: '0'
