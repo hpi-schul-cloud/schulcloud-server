@@ -33,3 +33,6 @@ data/
 
 # Database Templates with secrets and keys
 *.templates.js
+
+# Backup
+backup/*
