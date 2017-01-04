@@ -1,4 +1,5 @@
 'use strict';
+const content = require('./content');
 const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
@@ -23,6 +24,7 @@ module.exports = function () {
     app.configure(account);
     app.configure(system);
     app.configure(school);
-	app.configure(userGroup);
+    app.configure(userGroup);
     app.configure(ltiTool);
+    app.configure(content);
 };
