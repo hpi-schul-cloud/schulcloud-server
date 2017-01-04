@@ -21,7 +21,9 @@
 			"$oid": "584ad186816abba584714c95"
 		}
 	],
-	"permissions": [],
+	"permissions": [
+		"ADMIN_VIEW"
+	],
 	"__v": 0
 },
 {
@@ -48,7 +50,8 @@
 		}
 	],
 	"permissions": [
-		"LESSONS_VIEW"
+		"LESSONS_VIEW",
+		"TOOL_NEW_VIEW"
 	],
 	"__v": 0
 },

@@ -6,8 +6,6 @@ const express = require('express');
 const moodleMockServer = require('./moodle/moodleMockServer');
 const crypto = require('bcryptjs');
 const testObjects = require('./testObjects')(app);
-const setupEnvironment = require('../../../src/setupEnvironment');
-
 
 const jwt = require('jsonwebtoken');
 const logger = app.logger;
@@ -47,8 +45,7 @@ describe('General login service', function () {
 		return Promise.all([
 				testObjects.createTestSystem('http://moodle.company.xyz'),
 				testObjects.createTestSystem('http://moodle.school.abc'),
-				testObjects.createTestUser(),
-				setupEnvironment(app).checkTestRole('user')
+				testObjects.createTestUser()
 		])
 			.then(([system, otherSystem, testPowerUser]) => {
 				testSystem = system;
