@@ -25,7 +25,7 @@ while getopts "hp:c:U:P:H:D:" opt; do
             ;;
 
         p)
-            BACKUP_PATH="$OPTARG"
+            BACKUP_PATH_PREFIX="$OPTARG"
             ;;
 
         c)
@@ -78,11 +78,10 @@ if [ -z "$HOST" ]; then
     HOST="localhost:27017"
 fi
 
-echo $BACKUP_PATH
-
-if [ -z "$BACKUP_PATH" ]; then
-    BACKUP_PATH="backup"
+if [ -z "$BACKUP_PATH_PREFIX" ]; then
+	BACKUP_PATH_PREFIX=$(date +%Y_%m_%d_%H_%M_%S)
 fi
+BACKUP_PATH="backup/""$BACKUP_PATH_PREFIX"
 
 
 ARGS=""
@@ -111,7 +110,7 @@ if [ "$ACTION" = "export" ]; then
 	pushd $BACKUP_PATH 2>/dev/null
 
 	for collection in $DATABASE_COLLECTIONS; do
-		mongoexport --host $HOST $ARGS --db $DB --collection $collection --pretty --out $collection.json >/dev/null
+		mongoexport --host $HOST $ARGS --db $DB --collection $collection --pretty --jsonArray --out $collection.json >/dev/null
 	done
 
 elif [ "$ACTION" = "import" ]; then
@@ -121,7 +120,7 @@ elif [ "$ACTION" = "import" ]; then
 	for path in *.json; do
 	 	collection=${path%.json}
 		echo "Importing $DB/$collection from $path"
-		mongoimport --host $HOST $ARGS --db $DB --collection $collection $path --drop
+		mongoimport --host $HOST $ARGS --db $DB --collection $collection $path --jsonArray --drop
 	done
 
 else
