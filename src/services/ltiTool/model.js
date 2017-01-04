@@ -21,6 +21,7 @@ const ltiToolSchema = new Schema({
   privacy_permission: { type: String, enum: ['anonymous', 'e-mail', 'name', 'public'], default: 'anonymous' },
   customs: {type: [{key: {type: String}, value: {type: String}}] },
   isTemplate: {type: Boolean},
+  courseId: {type: Schema.Types.ObjectId},
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now }
 });
