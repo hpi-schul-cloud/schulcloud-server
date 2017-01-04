@@ -1,6 +1,6 @@
 [{
 	"_id": {
-		"$oid": "584ad186816abba584714c90"
+		"$oid": "0000d186816abba584714c90"
 	},
 	"type": "moodle",
 	"url": "http://moodle.schul.tech/",
@@ -14,7 +14,7 @@
 },
 {
 	"_id": {
-		"$oid": "584ad186816abba584714c91"
+		"$oid": "0000d186816abba584714c91"
 	},
 	"type": "itslearning",
 	"updatedAt": {
@@ -27,7 +27,7 @@
 },
 {
 	"_id": {
-		"$oid": "584ad186816abba584714c92"
+		"$oid": "0000d186816abba584714c92"
 	},
 	"type": "local",
 	"updatedAt": {
