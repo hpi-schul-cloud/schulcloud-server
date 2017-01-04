@@ -31,9 +31,8 @@ lib/
 data/
 .idea/
 
-# Database Templates with secrets and keys
-*.templates.js
-
 # Backup
 backup/*
 !backup/setup/
+# Database Templates with secrets and keys
+backup/setup/*.secrets.json
