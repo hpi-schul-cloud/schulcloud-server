@@ -6,9 +6,9 @@ const request = require('request-promise-native');
 const AbstractLoginStrategy = require('./interface.js');
 
 const acceptedCredentials = [
-	{username: 'a', password: 'a', roles: ['administrator'], schoolId: '584ad186816abba584714c94'},
-	{username: 'lehrer@schul-cloud.org', password: 'schulcloud', roles: ['teacher']},
-	{username: 'schueler@schul-cloud.org', password: 'schulcloud', roles: ['student']}
+	{username: 'a', password: 'a'},	// administrator
+	{username: 'lehrer@schul-cloud.org', password: 'schulcloud'},	// teacher
+	{username: 'schueler@schul-cloud.org', password: 'schulcloud'}	// student
 ];
 
 class LocalLoginStrategy extends AbstractLoginStrategy {
