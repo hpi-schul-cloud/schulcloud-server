@@ -1,0 +1,43 @@
+[{
+	"_id": {
+		"$oid": "584ad186816abba584714c93"
+	},
+	"name": "Schiller-Oberschule",
+	"updatedAt": {
+		"$date": "2016-12-09T15:45:10.659Z"
+	},
+	"createdAt": {
+		"$date": "2016-12-09T15:45:10.659Z"
+	},
+	"systems": [
+		{
+			"$oid": "584ad186816abba584714c90"
+		}
+	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "584ad186816abba584714c94"
+	},
+	"name": "Gymnasium Friedensburg",
+	"updatedAt": {
+		"$date": "2016-12-09T15:45:10.665Z"
+	},
+	"createdAt": {
+		"$date": "2016-12-09T15:45:10.665Z"
+	},
+	"systems": [
+		{
+			"$oid": "584ad186816abba584714c90"
+		},
+		{
+			"$oid": "584ad186816abba584714c91"
+		},
+		{
+			"$oid": "584ad186816abba584714c92"
+		}
+	],
+	"__v": 0
+}]
+

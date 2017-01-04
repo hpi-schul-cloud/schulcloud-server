@@ -17,7 +17,9 @@
   },
   "scripts": {
     "lint": "eslint ./src ./test --ext .js",
-    "test": "npm run lint && npm run coverage",
+    "test": "./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run coverage",
+	"backup": "./backup.sh -a -b export",
+	"setup": "./backup.sh -p setup/ -a import",
     "start": "node src/",
     "startd": "nodemon src/",
     "coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- -- -u exports -R spec test/**/*.test.js",

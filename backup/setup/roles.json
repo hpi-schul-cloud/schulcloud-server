@@ -1,0 +1,71 @@
+[{
+	"_id": {
+		"$oid": "584ad186816abba584714c95"
+	},
+	"name": "user",
+	"roles": [],
+	"permissions": [
+		"BASE_VIEW",
+		"DASHBOARD_VIEW",
+		"TOOL_VIEW"
+	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "584ad186816abba584714c96"
+	},
+	"name": "administrator",
+	"roles": [
+		{
+			"$oid": "584ad186816abba584714c95"
+		}
+	],
+	"permissions": [
+		"ADMIN_VIEW"
+	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "584ad186816abba584714c97"
+	},
+	"name": "superhero",
+	"roles": [
+		{
+			"$oid": "584ad186816abba584714c95"
+		}
+	],
+	"permissions": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "584ad186816abba584714c98"
+	},
+	"name": "teacher",
+	"roles": [
+		{
+			"$oid": "584ad186816abba584714c95"
+		}
+	],
+	"permissions": [
+		"LESSONS_VIEW",
+		"TOOL_NEW_VIEW"
+	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "584ad186816abba584714c99"
+	},
+	"name": "student",
+	"roles": [
+		{
+			"$oid": "584ad186816abba584714c95"
+		}
+	],
+	"permissions": [],
+	"__v": 0
+}]
+
