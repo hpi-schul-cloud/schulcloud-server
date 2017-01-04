@@ -23,6 +23,16 @@ exports.isAdmin = function (options) {
 	};
 };
 
+exports.hasPermission = function (permissionName) {
+	return hook => {
+		if(!(hook.params.user.permissions || []).includes(permissionName)) {
+			throw new errors.Forbidden(`You don't have the permission ${permissionName}. Your permissions are ${hook.params.user.permissions}`);
+		}
+
+		return Promise.resolve(hook);
+	};
+};
+
 exports.resolveToIds = (serviceName, path, key, hook) => {
 	// get ids from a probably really deep nested path
 	const service = hook.app.service(serviceName);
