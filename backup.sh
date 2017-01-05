@@ -146,7 +146,12 @@ elif [ "$ACTION" = "import" ]; then
 	pushd $BACKUP_PATH >/dev/null
 
 	for path in *.json; do
-	 	collection=${path%.json}
+		if [[ $path == *".secrets."* ]]
+		then
+			collection=${path%.secrets.json}
+		else
+	 		collection=${path%.json}
+	 	fi
 		echo "Importing $DB/$collection from $path"
 		mongoimport --host $HOST $CREDENTIALS --db $DB --collection $collection $path $STYLE --drop
 	done
