@@ -21,50 +21,15 @@ exports.before = function(app) {
 	};
 };
 
-// combine permissions from all groups to an array
-const resolvePermissions = (user, app) => {
-	const roleService = app.service('/roles');
-	return _resolvePermissions(user, {roleService});
-};
-const _resolvePermissions = (owner, {roleService, processedRoles = []}) => {
-	return Promise.all((owner.roles || []).map((roleId) => {
-		return roleService.get(roleId).then((role) => {
-
-			// recursion
-			if((role.roles || []).length && !processedRoles.includes(roleId)) {
-				// prevent circles by remembering processed roles
-				processedRoles.push(roleId);
-
-				return _resolvePermissions(role, {roleService, processedRoles}).then((permissions) => {
-					return permissions.concat(role.permissions);
-				}).catch((err) => {
-					throw new Error(err);
-				});
-			} else {
-				return role.permissions;
-			}
-
-		});
-	})).then((rolePermissions) => {
-		let permissions = [];
-		rolePermissions.forEach((rolePermission) => {
-			permissions = permissions.concat(rolePermission || []);
-		});
-		return permissions;
-	}).catch((err) => {
-		throw new Error(err);
-	});
-};
-
 const getDisplayName = (user, app) => {
 	// load protected roles
 	return app.service('/roles').find({query:{
 		name: ['teacher', 'admin']
 	}}).then((protectedRoles) => {
 		const protectedRoleIds = (protectedRoles.data || []).map(role => role._id);
+		});
 		let isProtectedUser = protectedRoleIds.find(role => {
 			return (user.roles || []).includes(role);
-		});
 
 		if(isProtectedUser) {
 			return user.lastName ? user.lastName : user._id;
@@ -94,6 +59,8 @@ exports.after = {
 	all: [],
 	find: [decorateUser],
 	get: [decorateUser],
+const User = require('../model');
+	get: [globalHooks.computeProperty(User, 'getPermissions', 'permissions')],
 	create: [],
 	update: [],
 	patch: [],
