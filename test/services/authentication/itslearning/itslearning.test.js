@@ -16,9 +16,8 @@ describe('ITSLearning System', () => {
 		password: "zJ9L5pVgL"
 	};
 
-
 	it('should be able to retrieve username/hash/etc.', function() {
-		this.timeout(12000);
+		this.timeout(20000);
 		return itsLearningLoginService.login(newTestAccount, 'https://developer.itslbeta.com').then((response) => {
 			expect(response).to.not.be.nil;
 			expect(response.username).to.equal(newTestAccount.username);
@@ -27,7 +26,7 @@ describe('ITSLearning System', () => {
 	});
 
 	it('should not be able to retrieve anything useful', function() {
-		this.timeout(12000);
+		this.timeout(20000);
 		return itsLearningLoginService.login(faultyTestAccount, 'https://developer.itslbeta.com')
 			.then(result => {
 				expect(result).to.be.nil;
