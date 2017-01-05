@@ -1,19 +1,20 @@
 [{
 	"_id" : {
-		"$oid": "586cecfbfb5c7a3f00bf21ab"
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
 	},
 	"name" : "Mathe",
 	"schoolId" : {
-		"$oid": "584ad186816abba584714c94"
-	},
-	"classId" : {
-		"$oid": "58407f3f8fd94f15f984ab03"
+		"$oid": "0000d186816abba584714c5f"
 	},
 	"teacherIds" : [
 		{
-			"$oid": "584ad231816abba584714c9e"
+			"$oid": "0000d231816abba584714c9e"
 		}
 	],
-	"userIds" : [],
+	"userIds" : [
+		{
+			"$oid": "0000d213816abba584714c0a"
+		}
+	],
 	"__v" : 0
 }]
