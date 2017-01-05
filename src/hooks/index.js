@@ -48,6 +48,7 @@ exports.resolveRoleIds = function(app) {
 	};
 };
 
+// resolves IDs of objects from serviceName specified by *key* instead of their *_id*
 exports.resolveToIds = (serviceName, path, key, hook) => {
 	// get ids from a probably really deep nested path
 	const service = hook.app.service(serviceName);
