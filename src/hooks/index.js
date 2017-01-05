@@ -33,21 +33,6 @@ exports.hasPermission = function (permissionName) {
 	};
 };
 
-exports.resolveRoleIds = function(app) {
-	return (hook) => {
-		const roles = hook.data.roles || [];
-		let resolved = roles.map(role => {
-			if(!mongoose.Types.ObjectId.isValid(role)) {
-				return _resolveRoleId(app, role);
-			} else {
-				return Promise.resolve(role);
-			}
-		});
-
-		return Promise.resolve(hook);
-	};
-};
-
 // resolves IDs of objects from serviceName specified by *key* instead of their *_id*
 exports.resolveToIds = (serviceName, path, key, hook) => {
 	// get ids from a probably really deep nested path
