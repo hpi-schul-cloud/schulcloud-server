@@ -103,9 +103,9 @@ exports.computeProperty = function (Model, functionName, variableName) {
 			.then(modelInstance => modelInstance[functionName]())	// compute that property
 			.then(result => {
 				hook.result[variableName] = result;		// save it in the resulting object
-				return Promise.resolve(hook);
 			})
-			.catch(e => logger.error(e));
+			.catch(e => logger.error(e))
+			.then(_ => Promise.resolve(hook));
 
 	};
 };
