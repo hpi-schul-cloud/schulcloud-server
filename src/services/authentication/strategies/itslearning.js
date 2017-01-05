@@ -31,7 +31,6 @@ class ITSLearningLoginStrategy extends AbstractLoginStrategy {
 		.then(queryParams => {
 			let itsLearningResponse = {};
 			itsLearningResponse.username = this.getParameterByName('Username', queryParams);
-			itsLearningResponse.eLogin = this.getParameterByName('fromElogin', queryParams);
 			itsLearningResponse.customerId = this.getParameterByName('CustomerId', queryParams);
 			itsLearningResponse.hash = this.getParameterByName('Hash', queryParams);
 			itsLearningResponse.timeStamp = this.getParameterByName('TimeStamp', queryParams);

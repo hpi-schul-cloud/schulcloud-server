@@ -5,7 +5,6 @@ var steps = [];
 var testindex = 0;
 var loadInProgress = false; //This is set to true when a page is still loading
 var requests = [];
-var queryParams;
 var username = args[1];
 var password = args[2];
 var initialUrl = args[3];
@@ -40,11 +39,6 @@ steps = [
 		page.onResourceRequested = function(request) {
 			console.log('Request ' + JSON.stringify(request, undefined, 4));
 			requests.push(request);
-			requests.forEach(function(request) {
-				if (request.id == 18) {
-					queryParams = request.postData;
-				}
-			});
 		};
 	},
 	//Step 3 - clearCookies of ITSLearning
@@ -56,7 +50,7 @@ steps = [
 /**********END STEPS THAT FANTOM SHOULD DO***********************/
 
 //Execute steps one by one
-interval = setInterval(executeRequestsStepByStep, 25);
+interval = setInterval(executeRequestsStepByStep, 20);
 
 function executeRequestsStepByStep() {
 	if (loadInProgress == false && typeof steps[testindex] == "function") {
