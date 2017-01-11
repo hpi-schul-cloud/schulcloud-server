@@ -7,7 +7,7 @@ const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: {type: String, required: true},
 		schoolId: {type: Schema.Types.ObjectId, required: true},
-		userIds: [{type: Schema.Types.ObjectId}],
+		userIds: [{type: Schema.Types.ObjectId, ref: 'user'}],
 		createdAt: {type: Date, 'default': Date.now},
 		updatedAt: {type: Date, 'default': Date.now}
 	};
