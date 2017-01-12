@@ -84,7 +84,7 @@ const _resolvePermissions = (owner, {roleService, processedRoles = []}) => {
 const getDisplayName = (user = {}) => {
 	// TODO: implement fallback to username and protect teacher
 	return user.lastName ? user.lastName : user._id;
-}
+};
 
 
 exports.after = {

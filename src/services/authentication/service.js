@@ -1,4 +1,5 @@
 const errors = require('feathers-errors');
+const promisify = require('es6-promisify');
 const crypto = require('bcryptjs');
 const logger = require('winston');
 
