@@ -7,7 +7,7 @@ const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: {type: String, required: true},
 		schoolId: {type: Schema.Types.ObjectId, required: true},
-		userIds: [{type: Schema.Types.ObjectId}],
+		userIds: [{type: Schema.Types.ObjectId, ref: 'user'}],
 		createdAt: {type: Date, 'default': Date.now},
 		updatedAt: {type: Date, 'default': Date.now}
 	};
@@ -18,8 +18,8 @@ const getUserGroupSchema = (additional = {}) => {
 };
 
 const courseModel = mongoose.model('course', getUserGroupSchema({
-	classId: {type: Schema.Types.ObjectId, required: true},
-	teacherIds: [{type: Schema.Types.ObjectId, required: true}],
+	classId: {type: Schema.Types.ObjectId, required: true, ref: 'class'},
+	teacherIds: [{type: Schema.Types.ObjectId, required: true, ref: 'user'}],
 	ltiToolIds: [{type: Schema.Types.ObjectId, required: true, ref: 'ltiTool'}]
 }));
 const classModel =  mongoose.model('class', getUserGroupSchema({
