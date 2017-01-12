@@ -18,7 +18,7 @@ const getUserGroupSchema = (additional = {}) => {
 };
 
 const courseModel = mongoose.model('course', getUserGroupSchema({
-	classId: {type: Schema.Types.ObjectId, required: true},
+	classId: {type: Schema.Types.ObjectId, required: true, ref: 'class'},
 	teacherIds: [{type: Schema.Types.ObjectId, required: true, ref: 'user'}],
 	ltiToolIds: [{type: Schema.Types.ObjectId, required: true, ref: 'ltiTool'}]
 }));
