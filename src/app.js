@@ -22,11 +22,25 @@ const app = feathers();
 app.configure(configuration(path.join(__dirname, '..')));
 setupSwagger(app);
 
+// only allow a couple of endpoints to be available via REST
+// so calender and notification services can access it
+// to e.g. resolve tokens
+const whitelistRoutes = (req, res, next) => {
+	// strip leading and trialing /
+	const requestPath = req.url.replace(/^\/|\/$/g, "");
+	if((app.get('rest').whitelistRoutes || []).includes(requestPath)) {
+		next();
+	} else {
+		res.status(401).send('not authorized');
+	}
+}
+
 app.use(compress())
-	.options('*', cors())
-	.use(cors())
+	.options('*', cors(app.get('cors')))
+	.use(cors(app.get('cors')))
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 	.use('/', serveStatic(app.get('public')))
+	.use(whitelistRoutes)
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({extended: true}))
 	.use(defaultHeaders)
@@ -34,7 +48,11 @@ app.use(compress())
 	.get('/ping', (req, res) => { res.send({ "message":"pong","timestamp":new Date().getTime() });})
 	.configure(hooks())
 	.configure(rest())
-	.configure(socketio())
+	.configure(socketio((io) => {
+		// allow all ports for whitelisted client hosts
+		const socketCorsOrigins = (app.get('cors').origin || []).map(url => `${url}:*`);
+		io.set('origins', socketCorsOrigins);
+	}))
 	.configure(services)
 	.configure(middleware);
 
