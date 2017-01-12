@@ -81,10 +81,18 @@ const _resolvePermissions = (owner, {roleService, processedRoles = []}) => {
 };
 
 
+const getDisplayName = (user = {}) => {
+	// TODO: implement fallback to username and protect teacher
+	return user.lastName ? user.lastName : user._id;
+}
+
+
 exports.after = {
 	all: [hooks.remove('password')],
 	find: [(hook) => {
 		hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
+
+		hook.result.displayName = getDisplayName(hook.result);
 
 		return resolvePermissions(hook.result, hook.app).then((permissions) => {
 			hook.result.permissions = permissions;
@@ -94,6 +102,8 @@ exports.after = {
 	get: [
 		(hook) => {
 			hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
+
+			hook.result.displayName = getDisplayName(hook.result);
 
 			return resolvePermissions(hook.result, hook.app).then((permissions) => {
 				hook.result.permissions = permissions;
