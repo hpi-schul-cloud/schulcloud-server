@@ -3,6 +3,9 @@
 		"$oid": "0000d213816abba584714c0a"
 	},
 	"__v": 0,
+	"firstName": "Thorsten",
+	"lastName": "Test",
+	"email": "localhost",
 	"accounts": [
 		{
 			"$oid": "0000d213816abba584714caa"

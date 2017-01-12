@@ -8,6 +8,7 @@ const accountSchema = new Schema({
 	userId: {type: Schema.Types.ObjectId, required: true},
 	token: {type: String, required: false},
 	credentialHash: {type: String},
+	password: {type: String},
 
 	schoolId: {type: Schema.Types.ObjectId /*, required: true*/},
 	systemId: {type: Schema.Types.ObjectId, required: true},
