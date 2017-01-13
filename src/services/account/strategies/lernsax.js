@@ -1,7 +1,3 @@
-/**
- * Created by niklas on 02/11/2016.
- */
-'use strict';
 const logger = require('winston');
 const promisify = require('es6-promisify');
 const errors = require('feathers-errors');

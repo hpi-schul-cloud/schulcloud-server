@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
 	roles: [{type: Schema.Types.ObjectId, ref: 'role'}],
-	accounts: [{type: Schema.Types.ObjectId, ref: 'account'}],
 	email: {type: String, required: true},
 
 	schoolId: {type: Schema.Types.ObjectId, ref: 'school', required: true},

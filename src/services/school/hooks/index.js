@@ -9,21 +9,21 @@ exports.before = {
 	find: [],
 	get: [],
 	create: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated()],
+
+
+		],
 	update: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated()],
+
+
+		],
 	patch: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated()],
+
+
+		],
 	remove: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated()]
+
+
+		]
 };
 
 exports.after = {

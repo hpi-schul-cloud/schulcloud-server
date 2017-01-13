@@ -9,25 +9,25 @@ exports.before = {
 	find: [],
 	get: [],
 	create: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated(),
-		ifNotLocal(isAdmin())],
+
+
+
+		],
 	update: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated(),
-		ifNotLocal(isAdmin())],
+
+
+
+		],
 	patch: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated(),
-		ifNotLocal(isAdmin())],
+
+
+
+		],
 	remove: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated(),
-		ifNotLocal(isAdmin())]
+
+
+
+		]
 };
 
 exports.after = {

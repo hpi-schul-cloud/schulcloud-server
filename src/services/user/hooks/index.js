@@ -2,43 +2,44 @@
 
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication').hooks;
+const auth = require('feathers-authentication');
+const local = require('feathers-authentication-local');
 
 exports.before = function(app) {
 	return {
 		all: [],
 		find: [
-			auth.verifyToken(),
-			auth.populateUser(),
-			auth.restrictToAuthenticated(),
-			globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name')
+
+
+
+			//globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name')
 		],
 		get: [
-			/*auth.verifyToken(),
-			 auth.populateUser(),
-			 auth.restrictToAuthenticated()*/
+			/*
+
+			 */
 		],
 		create: [
-			auth.hashPassword(),
-			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+			local.hooks.hashPassword({ passwordField: 'password' })
+			//globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [
-			auth.verifyToken(),
-			auth.populateUser(),
-			auth.restrictToAuthenticated(),
-			auth.restrictToOwner({ownerField: '_id'})
+
+
+
+
 		],
 		patch: [
-			auth.verifyToken(),
-			auth.populateUser(),
-			auth.restrictToAuthenticated(),
-			auth.restrictToOwner({ownerField: '_id'})
+
+
+
+
 		],
 		remove: [
-			auth.verifyToken(),
-			auth.populateUser(),
-			auth.restrictToAuthenticated(),
-			auth.restrictToOwner({ownerField: '_id'})
+
+
+
+
 		]
 	};
 };
