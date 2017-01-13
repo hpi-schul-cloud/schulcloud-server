@@ -2,41 +2,19 @@
 
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication').hooks;
+const auth = require('feathers-authentication');
 
 exports.before = function(app) {
 	return {
-		all: [],
-		find: [
-
-
-
-		],
-		get: [
-
-		],
+		all: [auth.hooks.authenticate('jwt')],
+		find: [],
+		get: [],
 		create: [
-
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
-		update: [
-
-
-
-
-		],
-		patch: [
-
-
-
-
-		],
-		remove: [
-
-
-
-
-		]
+		update: [],
+		patch: [],
+		remove: []
 	};
 };
 

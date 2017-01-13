@@ -7,7 +7,7 @@ const local = require('feathers-authentication-local');
 
 exports.before = function(app) {
 	return {
-		all: [],
+		all: [auth.hooks.authenticate('jwt')],
 		find: [
 			globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name')
 		],

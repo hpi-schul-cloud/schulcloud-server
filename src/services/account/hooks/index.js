@@ -18,6 +18,8 @@ const strategies = {
 };
 
 exports.before = {
+	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
+	// otherwise we cannot get the accounts required for login
 	find: [],
 	get: [],
 	create: [
@@ -48,9 +50,9 @@ exports.before = {
 		},
 		local.hooks.hashPassword({ passwordField: 'password' })
 	],
-	update: [],
-	patch: [],
-	remove: []
+	update: [auth.hooks.authenticate('jwt')],
+	patch: [auth.hooks.authenticate('jwt')],
+	remove: [auth.hooks.authenticate('jwt')]
 };
 
 exports.after = {
