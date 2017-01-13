@@ -9,38 +9,15 @@ exports.before = function(app) {
 	return {
 		all: [],
 		find: [
-
-
-
-			//globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name')
+			globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name')
 		],
-		get: [
-			/*
-
-			 */
-		],
+		get: [],
 		create: [
-			local.hooks.hashPassword({ passwordField: 'password' })
-			//globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
-		update: [
-
-
-
-
-		],
-		patch: [
-
-
-
-
-		],
-		remove: [
-
-
-
-
-		]
+		update: [],
+		patch: [],
+		remove: []
 	};
 };
 
@@ -82,33 +59,52 @@ const _resolvePermissions = (owner, {roleService, processedRoles = []}) => {
 };
 
 
-const getDisplayName = (user = {}) => {
-	// TODO: implement fallback to username and protect teacher
-	return user.lastName ? user.lastName : user._id;
+const getDisplayName = (user, app) => {
+	// load protected roles
+	return app.service('/roles').find({query:{
+		name: ['teacher', 'admin']
+	}}).then((roles) => {
+		roles = (roles.data || []).map(role => role._id);
+		let isProtectedUser = roles.find((role) => (user.roles || []).includes(role));
+
+		if(isProtectedUser) {
+			return user.lastName ? user.lastName : user._id;
+		} else {
+			return user.lastName ? `${user.firstName} ${user.lastName}` : user._id;
+		}
+	});
 };
 
 
 exports.after = {
-	all: [hooks.remove('password')],
+	all: [],
 	find: [(hook) => {
-		hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
+		return new Promise(resolve => {
+			Promise.all([
+				getDisplayName(hook.result, hook.app),
+				resolvePermissions(hook.result, hook.app)
+			]).then(([displayName, permissions]) => {
+				hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
 
-		hook.result.displayName = getDisplayName(hook.result);
-
-		return resolvePermissions(hook.result, hook.app).then((permissions) => {
-			hook.result.permissions = permissions;
-			return hook;
+				hook.result.displayName = displayName;
+				hook.result.permissions = permissions;
+				resolve(hook);
+			});
 		});
 	}],
 	get: [
 		(hook) => {
-			hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
+			return new Promise(resolve => {
+				Promise.all([
+					getDisplayName(hook.result, hook.app),
+					resolvePermissions(hook.result, hook.app)
+				]).then(([displayName, permissions]) => {
+					hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
 
-			hook.result.displayName = getDisplayName(hook.result);
-
-			return resolvePermissions(hook.result, hook.app).then((permissions) => {
-				hook.result.permissions = permissions;
-				return hook;
+					hook.result.displayName = displayName;
+					hook.result.permissions = permissions;
+					resolve(hook);
+				});
 			});
 		}
 	],

@@ -9,7 +9,19 @@ const hooks = require('./hooks');
 module.exports = function() {
     const app = this;
 
-	const authConfig = app.get('auth');
+	const authConfig = Object.assign({}, app.get('auth'), {
+		header: 'Authorization',
+		entity: 'account',
+		service: 'accounts',
+		jwt: {
+			header: { typ: 'access' },
+			audience: 'https://yourdomain.com',
+			subject: 'anonymous',
+			issuer: 'feathers',
+			algorithm: 'HS256',
+			expiresIn: '1d'
+		}
+	});
 
 
 	const localConfig = {
@@ -23,9 +35,16 @@ module.exports = function() {
 		passwordField: 'password'
 	};
 
+	const jwtConfig = {
+		name: 'jwt',
+		entity: 'account',
+		service: 'accounts',
+		header: 'Authorization'
+	};
+
 	// Configure feathers-authentication
 	app.configure(auth(authConfig));
-	app.configure(jwt());
+	app.configure(jwt(jwtConfig));
 	app.configure(local(localConfig));
 
 	const authenticationService = app.service('authentication');
