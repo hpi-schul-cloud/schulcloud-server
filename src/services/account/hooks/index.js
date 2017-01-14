@@ -1,5 +1,6 @@
 'use strict';
 
+const auth = require('feathers-authentication');
 const hooks = require('feathers-hooks');
 const local = require('feathers-authentication-local');
 const errors = require('feathers-errors');
