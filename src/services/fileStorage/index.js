@@ -2,6 +2,7 @@
 const uploadService = require('./service');
 const aws = require('aws-sdk');
 const hooks = require('./hooks');
+const SchoolModel = require('../school/model');
 
 class Service {
 	constructor(options) {
@@ -18,7 +19,16 @@ class Service {
 		});
 	}
 
+	/**
+	 * todo: swagger
+	 * @param data, contains bucketName, schoolId
+	 * @param params
+	 * @returns {Promise}
+     */
 	create(data, params) {
+		if (!params.bucketName || !params.schoolId) return Promise.reject("Bad request");
+
+		// todo: config to secret file
 		var config = new aws.Config({
 			accessKeyId: "1234",
 			secretAccessKey: "1234",
@@ -29,20 +39,19 @@ class Service {
 		var s3 = new aws.S3(config);
 
 		var params = {
-			Bucket: 'Bucket',
-			Key: params.filename,
-			Expires: 60,
-			ContentType: params.filetype
+			Bucket: params.bucketName
 		};
 
 		return new Promise((resolve,reject)=>{
-			s3.createBucket({ Bucket: "Absbucket" }, function(err, data) {
+			s3.createBucket({ Bucket: params.Bucket }, function(err, data) {
 				if (err) {
 					console.log("Error", err);
 					reject(err);
 				} else {
 					console.log("Success", data.Location);
-					resolve(data);
+					SchoolModel.patch(params.schoolId, {s3Bucket: params.bucketName}).then(res => {
+						resolve(res);
+					});
 				}
 			});
 		})
@@ -66,11 +75,12 @@ module.exports = function(){
   const app = this;
 
   // Initialize our service with any options it requires
-  app.use('/files', new Service());
-  app.use('/files/upload', new uploadService());
+  app.use('/fileStorage', new Service());
+	// todo: upload to client!
+  //app.use('/files/upload', new uploadService());
 
   // Get our initialize service to that we can bind hooks
-  const filesService = app.service('/files');
+  const filesService = app.service('/fileStorage');
 
   // Set up our before hooks
   filesService.before(hooks.before);
