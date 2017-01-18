@@ -4,26 +4,39 @@ const service = require('feathers-mongoose');
 const link = require('./link-model');
 const hooks = require('./hooks');
 
-module.exports = function() {
-  const app = this;
+module.exports = function () {
+	const app = this;
 
-  const options = {
-    Model: link,
-    paginate: {
-      default: 5,
-      max: 25
-    }
-  };
+	const options = {
+		Model: link,
+		paginate: {
+			default: 5,
+			max: 25
+		}
+	};
 
-  // Initialize our service with any options it requires
-  app.use('/links', service(options));
+	let linkService = service(options);
 
-  // Get our initialize service to that we can bind hooks
-  const linkService = app.service('/links');
+	function redirectToTarget(req, res, next) {
+		if(req.method == 'GET') {
+			const linkId = req.params.__feathersId;
+			linkService.get(linkId)
+				.then(data => res.redirect(data.target))
+				.catch(error => res.status(500).send(error));
+		} else {
+			next();
+		}
+	}
 
-  // Set up our before hooks
-  linkService.before(hooks.before(linkService));
+	// Initialize our service with any options it requires
+	app.use('/link', redirectToTarget, linkService);
 
-  // Set up our after hooks
-  linkService.after(hooks.after);
+	// Get our initialize service to that we can bind hooks
+	linkService = app.service('/link');
+
+	// Set up our before hooks
+	linkService.before(hooks.before(linkService));
+
+	// Set up our after hooks
+	linkService.after(hooks.after);
 };
