@@ -11,7 +11,7 @@ module.exports = function(app) {
 
 		// POST
 		create({email, subject, content}, params) {
-			var transporter = nodemailer.createTransport('');
+			var transporter = nodemailer.createTransport(app.get("secrets").smtp);
 			var sendMail = promisify(transporter.sendMail, transporter);
 			return sendMail({
 					from: 'noreply@schul-cloud.org',

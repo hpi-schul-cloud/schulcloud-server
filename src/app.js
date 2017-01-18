@@ -16,16 +16,19 @@ const services = require('./services');
 const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const setupSwagger = require('./swagger');
+let secrets;
 try {
-	const secrets = require('../config/secrets.json');
+	secrets = require('../config/secrets.json');
 } catch(error) {
-	const secrets = {};
+	secrets = {};
 }
 
 const app = feathers();
 
 app.configure(configuration(path.join(__dirname, '..')));
 setupSwagger(app);
+
+app.set("secrets", secrets);
 
 app.use(compress())
 	.options('*', cors())
