@@ -1,6 +1,5 @@
-const errors = require('feathers-errors');
-const logger = require('winston');
 const randexp = require('randexp');
+const promisify = require("es6-promisify");
 const nodemailer = require('nodemailer');
 
 module.exports = function(app) {
@@ -13,17 +12,14 @@ module.exports = function(app) {
 		// POST
 		create({email, subject, content}, params) {
 			var transporter = nodemailer.createTransport('');
-			transporter.sendMail({
-				from: 'noreply@schul-cloud.org',
-				to: email,
-				subject: subject,
-				html: content.html,
-				text: content.text
-			}, function (err) {
-				if (err) {
-					logger.error(err);
-				}
-			});
+			var sendMail = promisify(transporter.sendMail, transporter);
+			return sendMail({
+					from: 'noreply@schul-cloud.org',
+					to: email,
+					subject: subject,
+					html: content.html,
+					text: content.text
+				});
 		}
 	}
 

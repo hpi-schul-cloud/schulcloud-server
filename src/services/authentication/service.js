@@ -83,7 +83,7 @@ module.exports = function(app) {
 	 assert that there is only one account
 	 */
 	function findSingleAccount(result, systemId) {
-		const accounts = result.data;
+		const accounts = result;
 		if(accounts.length > 1) {
 			if(!systemId) {
 				throw new errors.BadRequest('Multiple accounts found for this username. Please specify the systemId parameter!');
@@ -119,7 +119,7 @@ module.exports = function(app) {
 				return accountService.find({query: {username: credentials.username, systemId: systemId}});
 			})
 			.then(result => {
-				const accounts = result.data;
+				const accounts = result;
 				if(accounts.length == 0) {
 					return Promise.reject(new errors.BadRequest('There is no account associated with this login data'));
 				} else {

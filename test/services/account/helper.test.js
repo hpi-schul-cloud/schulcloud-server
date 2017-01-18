@@ -1,11 +1,17 @@
 'use strict';
 
 const expect = require('chai').expect;
-const app = require('../../../src/app');
 const AccountHelper = require('../../../src/services/account/helper.js');
-
+const app = require('../../../src/app');
 
 describe('Username/Password Generator', () => {
+
+	var createdUser;
+
+	after(function () {
+		var accountService = app.service('/accounts');
+		return accountService.remove(createdUser._id);
+	});
 
 	it('should be able to generate a regex conform password', function() {
 		var accountHelper = new AccountHelper(app).externals;
@@ -21,8 +27,9 @@ describe('Username/Password Generator', () => {
 	it('should be able to generate a valid username', function() {
 		var accountHelper = new AccountHelper(app).externals;
 		var accountService = app.service('/accounts');
-		return accountService.create({username: 'test.test', firstName: 'test', lastName: 'test', email: 'localhost', systemId: '0000d186816abba584714c92', userId: '0000d213816abba584714c0a'})
-			.then(() => {
+		return accountService.create({username: 'test.test', firstName: 'test', lastName: 'test', email: 'test@test.test', systemId: '0000d186816abba584714c92', userId: '0000d213816abba584714c0a'})
+			.then((response) => {
+				createdUser = response;
 				accountHelper.findUsername('test','test')
 					.then((username) => {
 						expect(username).to.be.not.undefined;

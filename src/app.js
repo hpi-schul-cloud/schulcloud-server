@@ -16,6 +16,11 @@ const services = require('./services');
 const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const setupSwagger = require('./swagger');
+try {
+	const secrets = require('../config/secrets.json');
+} catch(error) {
+	const secrets = {};
+}
 
 const app = feathers();
 
