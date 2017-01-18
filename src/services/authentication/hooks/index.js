@@ -12,7 +12,7 @@ const injectUserId = (hook) => {
 		}
 		return hook;
 	});
-}
+};
 
 exports.before = {
 	create: [

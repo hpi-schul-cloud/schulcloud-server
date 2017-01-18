@@ -21,13 +21,11 @@ exports.before = function(app) {
 	};
 };
 
-
 // combine permissions from all groups to an array
 const resolvePermissions = (user, app) => {
 	const roleService = app.service('/roles');
 	return _resolvePermissions(user, {roleService});
 };
-
 const _resolvePermissions = (owner, {roleService, processedRoles = []}) => {
 	return Promise.all((owner.roles || []).map((roleId) => {
 		return roleService.get(roleId).then((role) => {
@@ -58,7 +56,6 @@ const _resolvePermissions = (owner, {roleService, processedRoles = []}) => {
 	});
 };
 
-
 const getDisplayName = (user, app) => {
 	// load protected roles
 	return app.service('/roles').find({query:{
@@ -77,9 +74,6 @@ const getDisplayName = (user, app) => {
 	});
 };
 
-
-
-
 const decorateUser = (hook) => {
 	return new Promise(resolve => {
 		// TODO: somehow Promise.all().then() is not working as hook result
@@ -94,9 +88,7 @@ const decorateUser = (hook) => {
 			resolve(hook);
 		});
 	});
-}
-
-
+};
 
 exports.after = {
 	all: [],
