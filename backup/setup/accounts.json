@@ -3,6 +3,7 @@
 		"$oid": "0000d213816abba584714caa"
 	},
 	"username": "a",
+	"password": "$2a$10$yeTE8F.ku5tcWzFXxplQHutKWSHVVRP2Rskpx.82rAkZsmCEUzKfi",
 	"userId": {
 		"$oid": "0000d213816abba584714c0a"
 	},
@@ -16,6 +17,7 @@
 		"$oid": "0000d225816abba584714c9d"
 	},
 	"username": "schueler@schul-cloud.org",
+	"password": "$2a$10$EWASBNNdhOFse3zLkYhZ8uaRe5/mAqXyRRYRbMfDFYO/WQzYkJAsa",
 	"userId": {
 		"$oid": "0000d224816abba584714c9c"
 	},
@@ -29,6 +31,7 @@
 		"$oid": "0000d231816abba584714c9f"
 	},
 	"username": "lehrer@schul-cloud.org",
+	"password": "$2a$10$CHN6Qs2Igbn.s4BengUOfu9.0qVuy0uyTrzDDJszw9e1lBZwUFqeq",
 	"userId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
