@@ -11,7 +11,7 @@ exports.before = service => {
 		all: [],
 		find: [hooks.disable()],
 		get: [hooks.disable('external')],	// handled by redirection middleware
-		create: [],
+		create: [auth.hooks.authenticate('jwt')],
 		update: [hooks.disable()],
 		patch: [hooks.disable()],
 		remove: [hooks.disable()]
