@@ -1,9 +1,3 @@
-/**
- * Created by carl on 21/10/2016.
- */
-'use strict';
-
-
 const moodleClient = require('moodle-client');
 const logger = require('winston');
 const promisify = require('es6-promisify');
@@ -11,18 +5,12 @@ const errors = require('feathers-errors');
 
 const AbstractLoginStrategy = require('./interface');
 
-//const userService = app.service('/users');
-
-
 class MoodleLoginStrategy extends AbstractLoginStrategy {
 	constructor(app) {
 		super();
 		this.app = app;
 	}
 
-	/*
-	 returns a promise with an authenticated client object, or the sign-in error
-	 */
 	login({username, password}, system) {
 
 		const moodleOptions = {

@@ -5,12 +5,13 @@ const Schema = mongoose.Schema;
 
 const accountSchema = new Schema({
 	username: {type: String, required: true},
-	userId: {type: Schema.Types.ObjectId, required: true},
-	token: {type: String, required: false},
+	password: {type: String},
+
+	token: {type: String},
 	credentialHash: {type: String},
 	password: {type: String},
 
-	schoolId: {type: Schema.Types.ObjectId /*, required: true*/},
+	userId: {type: Schema.Types.ObjectId},
 	systemId: {type: Schema.Types.ObjectId, required: true},
 
 	expiresAt: {type: Date}

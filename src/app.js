@@ -37,12 +37,17 @@ app.use(compress())
 	.use('/', serveStatic(app.get('public')))
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({extended: true}))
+
 	.use(defaultHeaders)
 	.get('/system_info/haproxy', (req, res) => { res.send({ "timestamp":new Date().getTime() });})
 	.get('/ping', (req, res) => { res.send({ "message":"pong","timestamp":new Date().getTime() });})
+
 	.configure(hooks())
 	.configure(rest())
 	.configure(socketio())
+
+	// auth is setup in /authentication/
+
 	.configure(services)
 	.configure(middleware);
 

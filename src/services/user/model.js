@@ -5,16 +5,14 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
 	roles: [{type: Schema.Types.ObjectId, ref: 'role'}],
-	accounts: [{type: Schema.Types.ObjectId, ref: 'account'}],
+	email: {type: String, required: true},
 
-	schoolId: {type: Schema.Types.ObjectId, ref: 'school'},
+	schoolId: {type: Schema.Types.ObjectId, ref: 'school', required: true},
 
-	firstName: {type: String},
-	lastName: {type: String},
-	userName: {type: String},
-	email: {type: String},
+	firstName: {type: String, required: true},
+	lastName: {type: String, required: true},
 
-	birthday: {type: Date}
+	preferences: {type: Object} // blackbox for frontend stuff like "cookies accepted"
 },{
 	timestamps: true
 });
