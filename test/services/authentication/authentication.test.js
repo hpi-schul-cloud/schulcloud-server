@@ -3,9 +3,11 @@ const chaiHttp = require('chai-http');
 const assert = require('assert');
 const app = require('../../../src/app');
 const express = require('express');
-const moodleMockServer = require('./moodle/moodleMockServer');
-const crypto = require('bcryptjs');
-const testObjects = require('./testObjects')(app);
+const testObjects = require('./../account/testObjects')(app);
+const moodleMockServer = require('../account/moodle/moodleMockServer');
+
+const accountService = app.service('accounts');
+const userService = app.service('users');
 
 const jwt = require('jsonwebtoken');
 const logger = app.logger;
@@ -16,79 +18,76 @@ const expect = chai.expect;
 
 describe('General login service', function () {
 
-	const existingTestAccount = {username: "testMoodleLoginExisting", password: "testPasswordExisting"};
-	const nonUniqueAccountA = {username: "poweruser@mail.schul.tech", password: "passwordA"};
-	const nonUniqueAccountB = {username: nonUniqueAccountA.username, password: "passwordB"};
-
-	const nonUniqueTestAccountA = {
-		username: nonUniqueAccountA.username,
-		password: crypto.hashSync(nonUniqueAccountA.password),
-		//userId: null,
+	const testAccount = {
+		username: "poweruser@mail.schul.tech",
+		password: "passwordA",
 		token: "abcdef012345"
-		//reference: {type: String /*, required: true*/},
-		//schoolId: {type: Schema.Types.ObjectId /*, required: true*/},
-	};
-
-	const nonUniqueTestAccountB = {
-		username: nonUniqueAccountB.username,
-		password: crypto.hashSync(nonUniqueAccountB.password),
-		//userId: null,
-		token: "abcdef012345",
-		//reference: {type: String /*, required: true*/},
-		//schoolId: {type: Schema.Types.ObjectId /*, required: true*/},
-		system: `http://moodle.company.xyz`
 	};
 
 	let testSystem = null;
+	let mockMoodle = null;
 
-	before(function() {
-		return Promise.all([
-				testObjects.createTestSystem('http://moodle.company.xyz'),
-				testObjects.createTestSystem('http://moodle.school.abc'),
-				testObjects.createTestUser()
-		])
-			.then(([system, otherSystem, testPowerUser]) => {
-				testSystem = system;
+	function createMoodleTestServer() {
+		return moodleMockServer({
+			acceptUsers: [testAccount]
+		});
+	}
+
+	before(function () {
+
+		return createMoodleTestServer()
+			.then(moodle => {
+				mockMoodle = moodle;
 				return Promise.all([
-					testObjects.createTestAccount(nonUniqueTestAccountA, system, testPowerUser),
-					testObjects.createTestAccount(nonUniqueTestAccountB, otherSystem, testPowerUser)]);
+					testObjects.createTestSystem(moodle.url),
+					testObjects.createTestUser()]);
+			})
+			.then(([system, testUser]) => {
+				testSystem = system;
+				return testObjects.createTestAccount(Object.assign({}, testAccount), system, testUser);
 			});
 	});
 
-	it('should return an error if no password is set', () => {
+	it('should get a JWT which includes accountId and userId', () => {
 		return new Promise((resolve, reject) => {
 			chai.request(app)
-				.post('/auth')
+				.post('/authentication')
 				.set('Accept', 'application/json')
 				.set('content-type', 'application/x-www-form-urlencoded')
 				//send credentials
 				.send({
-					username: existingTestAccount.username,
-					systemId: testSystem.id
+					username: testAccount.username,
+					password: testAccount.password
 				})
 				.end((err, res) => {
-					res.res.statusCode.should.equal(401);
-					expect(res.body.message).to.contain('password');
-					resolve();
-				});
-		});
-	});
+					if (err) {
+						reject(err);
+						return;
+					}
 
-	it('should throw an error if there are two accounts per email, but no systemId is specified', () => {
-		return new Promise((resolve) => {
-			chai.request(app)
-				.post('/auth')
-				.set('Accept', 'application/json')
-				.set('content-type', 'application/x-www-form-urlencoded')
-				//send credentials
-				.send({
-					username: nonUniqueTestAccountA.username,
-					password: nonUniqueTestAccountA.password
-				})
-				.end((err, res) => {
-					const httpBadRequest = 400;
-					res.res.statusCode.should.equal(httpBadRequest);
-					expect(res.body.message).to.contain('systemId');
+					const decodedToken = jwt.decode(res.body.accessToken);
+
+					// get the account id from JWT
+					decodedToken.should.have.property('accountId');
+					testObjects.createdUserIds.push(decodedToken.accountId);
+
+					Promise.all([
+						accountService.get(decodedToken.accountId),
+						userService.get(decodedToken.userId)
+					])
+						.then(([account, user]) => {
+							account.username.should.equal(testAccount.username);
+							account.should.have.property('token');
+							account.token.should.equal(mockMoodle.responseToken);
+							resolve();
+						})
+						.catch(error => {
+							logger.error('failed to get the account from the service: ' + error);
+							//throw error;
+							reject(error);
+							//done();
+						});
+
 					resolve();
 				});
 		});

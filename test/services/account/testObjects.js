@@ -29,7 +29,13 @@ module.exports = function (app) {
 	}
 
 	function createTestUser() {
-		return userService.create({})
+		return userService.create({
+			// required fields for user
+			firstName: 'Max',
+			lastName: 'Mustermann',
+			email: 'max@mustermann.de',
+			schoolId: '584ad186816abba584714c94'
+		})
 			.then(user => {
 				createdUserIds.push(user.id);
 				return user;

@@ -1,41 +1,63 @@
 'use strict';
 
-const { ifNotLocal } = require('../../../hooks');
+const auth = require('feathers-authentication');
 const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication').hooks;
+const local = require('feathers-authentication-local');
+const errors = require('feathers-errors');
+
+const MoodleLoginStrategy = require('../strategies/moodle');
+const ITSLearningLoginStrategy = require('../strategies/itslearning');
+const LernsaxLoginStrategy = require('../strategies/lernsax');
+const LocalLoginStrategy = require('../strategies/local');
+
+// don't initialize strategies here - otherwise massive overhead
+// TODO: initialize all strategies here once
+const strategies = {
+	moodle: MoodleLoginStrategy,
+	itslearning: ITSLearningLoginStrategy,
+	lernsax: LernsaxLoginStrategy,
+	local: LocalLoginStrategy
+};
+
+
+const validateCredentials = (hook) => {
+	const {username, password, systemId, noVerification} = hook.data;
+
+	if(!username) throw new errors.BadRequest('no username specified');
+	if(!password) throw new errors.BadRequest('no password specified');
+
+	const app = hook.app;
+	const systemService = app.service('/systems');
+	return systemService.get(systemId)
+		.then(system => {
+			const strategy = strategies[system.type];
+			return {
+				strategy: new strategy(app),
+				system
+			};
+		})
+		.then(({strategy, system}) => {
+			return strategy.login({username, password}, system);
+		})
+		.then((client) => {
+			if (client.token) {
+				hook.data.token = client.token;
+			}
+		});
+};
 
 exports.before = {
-	find: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated()
-	],
-	get: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated()
-	],
+	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
+	// otherwise we cannot get the accounts required for login
+	find: [],
+	get: [],
 	create: [
-		ifNotLocal(auth.hashPassword())
+		validateCredentials,
+		local.hooks.hashPassword({ passwordField: 'password' })
 	],
-	update: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated(),
-		auth.restrictToOwner({ownerField: '_id'})
-	],
-	patch: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated(),
-		auth.restrictToOwner({ownerField: '_id'})
-	],
-	remove: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated(),
-		auth.restrictToOwner({ownerField: '_id'})
-	]
+	update: [auth.hooks.authenticate('jwt')],
+	patch: [auth.hooks.authenticate('jwt')],
+	remove: [auth.hooks.authenticate('jwt')]
 };
 
 exports.after = {
