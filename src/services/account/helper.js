@@ -6,7 +6,7 @@ const templateDir   = path.join(__dirname, 'templates', 'signup');
 const EmailTemplate = require('email-templates').EmailTemplate;
 
 module.exports = function(app) {
-
+	// creates a regex for strings with 17 chars, at least one number, one special character, one uppercase/lowercase char
 	const regex = '^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[$@$!%?&\,\#\>\<\.\=\§\"\/\(\)\~\+\:\;\.\]\[\_\-\^\{\}\`\'\|\])[A-Za-z\d$@$!%?&>\<\.\§\"\/\(\)\~\#\+\:\;\.\]\[\_\=\,\-\^\{\}\`\'\|]{16,16}';
 	let externals = {};
 	class AccountHelper {
