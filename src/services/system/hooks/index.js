@@ -2,32 +2,16 @@
 
 const {isAdmin, ifNotLocal} = require('../../../hooks');
 const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication').hooks;
+const auth = require('feathers-authentication');
 
 exports.before = {
 	all: [],
 	find: [],
 	get: [],
-	create: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated(),
-		ifNotLocal(isAdmin())],
-	update: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated(),
-		ifNotLocal(isAdmin())],
-	patch: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated(),
-		ifNotLocal(isAdmin())],
-	remove: [
-		auth.verifyToken(),
-		auth.populateUser(),
-		auth.restrictToAuthenticated(),
-		ifNotLocal(isAdmin())]
+	create: [auth.hooks.authenticate('jwt')],
+	update: [auth.hooks.authenticate('jwt')],
+	patch: [auth.hooks.authenticate('jwt')],
+	remove: [auth.hooks.authenticate('jwt')]
 };
 
 exports.after = {

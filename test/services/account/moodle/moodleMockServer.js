@@ -21,7 +21,6 @@ module.exports = function({
 			mockMoodle.port = port;
 			mockMoodle.url = `http://localhost:${port}`;
 			mockMoodle.post('/login/token.php', (req, res) => {
-
 				if(!acceptServices.includes(req.body.service)) {
 					res.send(`{"error": "Web service ${res.body.service} is not available (it doesn't exist or might be disabled)"}`);
 					return;
