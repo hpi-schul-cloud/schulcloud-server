@@ -18,7 +18,7 @@ module.exports = function () {
 	let linkService = service(options);
 
 	function redirectToTarget(req, res, next) {
-		if(req.method == 'GET') {
+		if(req.method == 'GET') {	// capture these requests and issue a redirect
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then(data => res.redirect(data.target))

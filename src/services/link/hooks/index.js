@@ -6,25 +6,15 @@ const auth = require('feathers-authentication').hooks;
 const model = require('../link-model');
 const service = require('../index');
 
-const findByShortId = service => {
-	return hook => {
-		// use hook.params here
-		if(hook.params.id.length == service.Model.linkLength) {
-
-		}
-		return Promise.resolve(hook);
-	};
-};
-
 exports.before = service => {
 	return {
 		all: [],
-		find: [],
-		get: [/*globalHooks.resolveToIds.bind(this, '/links', 'data.id', 'id')*/],
+		find: [hooks.disable()],
+		get: [hooks.disable('external')],	// handled by redirection middleware
 		create: [],
-		update: [],
-		patch: [],
-		remove: []
+		update: [hooks.disable()],
+		patch: [hooks.disable()],
+		remove: [hooks.disable()]
 	};
 };
 
