@@ -63,9 +63,11 @@ const getDisplayName = (user, app) => {
 	// load protected roles
 	return app.service('/roles').find({query:{
 		name: ['teacher', 'admin']
-	}}).then((roles) => {
-		roles = (roles.data || []).map(role => role._id);
-		let isProtectedUser = roles.find((role) => (user.roles || []).includes(role));
+	}}).then((protectedRoles) => {
+		const protectedRoleIds = (protectedRoles.data || []).map(role => role._id);
+		let isProtectedUser = protectedRoleIds.find(role => {
+			return (user.roles || []).includes(role);
+		});
 
 		if(isProtectedUser) {
 			return user.lastName ? user.lastName : user._id;
@@ -76,38 +78,30 @@ const getDisplayName = (user, app) => {
 };
 
 
+
+
+const decorateUser = (hook) => {
+	return new Promise(resolve => {
+		// TODO: somehow Promise.all().then() is not working as hook result
+		Promise.all([
+			getDisplayName(hook.result, hook.app),
+			resolvePermissions(hook.result, hook.app)
+		]).then(([displayName, permissions]) => {
+			hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
+
+			hook.result.displayName = displayName;
+			hook.result.permissions = permissions;
+			resolve(hook);
+		});
+	});
+}
+
+
+
 exports.after = {
 	all: [],
-	find: [(hook) => {
-		return new Promise(resolve => {
-			Promise.all([
-				getDisplayName(hook.result, hook.app),
-				resolvePermissions(hook.result, hook.app)
-			]).then(([displayName, permissions]) => {
-				hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
-
-				hook.result.displayName = displayName;
-				hook.result.permissions = permissions;
-				resolve(hook);
-			});
-		});
-	}],
-	get: [
-		(hook) => {
-			return new Promise(resolve => {
-				Promise.all([
-					getDisplayName(hook.result, hook.app),
-					resolvePermissions(hook.result, hook.app)
-				]).then(([displayName, permissions]) => {
-					hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
-
-					hook.result.displayName = displayName;
-					hook.result.permissions = permissions;
-					resolve(hook);
-				});
-			});
-		}
-	],
+	find: [decorateUser],
+	get: [decorateUser],
 	create: [],
 	update: [],
 	patch: [],

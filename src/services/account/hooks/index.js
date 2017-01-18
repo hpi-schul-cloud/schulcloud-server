@@ -11,11 +11,39 @@ const LernsaxLoginStrategy = require('../strategies/lernsax');
 const LocalLoginStrategy = require('../strategies/local');
 
 // don't initialize strategies here - otherwise massive overhead
+// TODO: initialize all strategies here once
 const strategies = {
 	moodle: MoodleLoginStrategy,
 	itslearning: ITSLearningLoginStrategy,
 	lernsax: LernsaxLoginStrategy,
 	local: LocalLoginStrategy
+};
+
+
+const validateCredentials = (hook) => {
+	const {username, password, systemId, noVerification} = hook.data;
+
+	if(!username) throw new errors.BadRequest('no username specified');
+	if(!password) throw new errors.BadRequest('no password specified');
+
+	const app = hook.app;
+	const systemService = app.service('/systems');
+	return systemService.get(systemId)
+		.then(system => {
+			const strategy = strategies[system.type];
+			return {
+				strategy: new strategy(app),
+				system
+			};
+		})
+		.then(({strategy, system}) => {
+			return strategy.login({username, password}, system);
+		})
+		.then((client) => {
+			if (client.token) {
+				hook.data.token = client.token;
+			}
+		});
 };
 
 exports.before = {
@@ -24,31 +52,7 @@ exports.before = {
 	find: [],
 	get: [],
 	create: [
-		(hook) => {
-			const {username, password, systemId, noVerification} = hook.data;
-
-			if(!username) throw new errors.BadRequest('no username specified');
-			if(!password) throw new errors.BadRequest('no password specified');
-
-			const app = hook.app;
-			const systemService = app.service('/systems');
-			return systemService.get(systemId)
-				.then(system => {
-					const strategy = strategies[system.type];
-					return {
-						strategy: new strategy(app),
-						system
-					};
-				})
-				.then(({strategy, system}) => {
-					return strategy.login({username, password}, system);
-				})
-				.then((client) => {
-					if (client.token) {
-						hook.data.token = client.token;
-					}
-				});
-		},
+		validateCredentials,
 		local.hooks.hashPassword({ passwordField: 'password' })
 	],
 	update: [auth.hooks.authenticate('jwt')],

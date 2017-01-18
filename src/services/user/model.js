@@ -12,7 +12,7 @@ const userSchema = new Schema({
 	firstName: {type: String, required: true},
 	lastName: {type: String, required: true},
 
-	system: {type: Object} // blackbox for frontend stuff like "cookies accepted"
+	preferences: {type: Object} // blackbox for frontend stuff like "cookies accepted"
 },{
 	timestamps: true
 });
