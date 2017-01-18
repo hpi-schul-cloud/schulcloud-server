@@ -6,14 +6,22 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const ShortId = require('mongoose-shortid-nodeps');
+
 const Schema = mongoose.Schema;
+const linkLength = 4;
 
 const linkSchema = new Schema({
-	id: {type: String, required: true, unique: true},
+	_id: {
+		type: ShortId,
+		len: linkLength,
+		base: 62,   // a-Z, 0-9
+		retries: 20  // number of retries on collision
+	},
 	target: {type: String, required: true},
 	createdAt: {type: Date, 'default': Date.now}
 });
 
 const linkModel = mongoose.model('link', linkSchema);
-linkModel.linkLength = 5;
+linkModel.linkLength = linkLength;
 module.exports = linkModel;
