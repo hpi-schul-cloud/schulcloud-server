@@ -66,7 +66,7 @@ module.exports = function(app) {
 
 			const mailService = app.service('/mails');
 
-			mailService.create({ email:email, subject:'Schul-Cloud Credentials', content:results });
+			mailService.create({ email:email, subject:'Anmeldedaten Schul-Cloud', content:results });
 
 		});
 	};
