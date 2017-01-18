@@ -2,23 +2,12 @@
 const uploadService = require('./service');
 const aws = require('aws-sdk');
 const hooks = require('./hooks');
-const SchoolModel = require('../school/model');
-
+var schoolService;
 class Service {
-	constructor(options) {
-		this.options = options || {};
+	constructor(app) {
+		schoolService = app.service("schools");
 	}
-
-	find(params) {
-		return Promise.resolve(data);
-	}
-
-	get(id, params) {
-		return Promise.resolve({
-			id, text: `A new message with ID: ${id}!`
-		});
-	}
-
+	
 	/**
 	 * todo: swagger
 	 * @param data, contains bucketName, schoolId
@@ -26,7 +15,7 @@ class Service {
 	 * @returns {Promise}
      */
 	create(data, params) {
-		if (!params.bucketName || !params.schoolId) return Promise.reject("Bad request");
+		if (!data.bucketName || !data.schoolId) return Promise.reject("Bad request");
 
 		// todo: config to secret file
 		var config = new aws.Config({
@@ -38,36 +27,20 @@ class Service {
 
 		var s3 = new aws.S3(config);
 
-		var params = {
-			Bucket: params.bucketName
-		};
-
-		return new Promise((resolve,reject)=>{
-			s3.createBucket({ Bucket: params.Bucket }, function(err, data) {
+		return new Promise((resolve,reject) => {
+			s3.createBucket({ Bucket: data.bucketName }, function(err, res) {
 				if (err) {
-					console.log("Error", err);
 					reject(err);
 				} else {
-					console.log("Success", data.Location);
-					SchoolModel.patch(params.schoolId, {s3Bucket: params.bucketName}).then(res => {
+					schoolService.patch(data.schoolId, {s3Bucket: data.bucketName})
+						.then(res => {
 						resolve(res);
+					}).catch(err => {
+						reject(err);
 					});
 				}
 			});
-		})
-
-	}
-
-	update(id, data, params) {
-		return Promise.resolve(data);
-	}
-
-	patch(id, data, params) {
-		return Promise.resolve(data);
-	}
-
-	remove(id, params) {
-		return Promise.resolve({ id });
+		});
 	}
 }
 
@@ -75,7 +48,7 @@ module.exports = function(){
   const app = this;
 
   // Initialize our service with any options it requires
-  app.use('/fileStorage', new Service());
+  app.use('/fileStorage', new Service(app));
 	// todo: upload to client!
   //app.use('/files/upload', new uploadService());
 

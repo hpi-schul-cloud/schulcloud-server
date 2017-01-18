@@ -3,8 +3,8 @@
 const assert = require('assert');
 const app = require('../../../src/app');
 
-describe('files service', function() {
-  it('registered the files service', () => {
-    assert.ok(app.service('files'));
+describe('fileStorage service', function() {
+  it('registered the fileStorage service', () => {
+    assert.ok(app.service('fileStorage'));
   });
 });

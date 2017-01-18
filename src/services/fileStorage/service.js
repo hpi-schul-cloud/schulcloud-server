@@ -1,4 +1,4 @@
-const aws = require('aws-sdk');
+/**const aws = require('aws-sdk');
 const fs = require('fs');
 
 class Service {
@@ -39,4 +39,4 @@ class Service {
 	}
 }
 
-module.exports = Service;
+module.exports = Service;**/
