@@ -20,9 +20,7 @@ let secrets;
 try {
 	secrets = require('../config/secrets.json');
 } catch(error) {
-	secrets = {
-		"smtp": ""
-	};
+	secrets = {};
 }
 
 const app = feathers();

@@ -31,6 +31,13 @@ describe('Mail Service', () => {
 		// load new app to make mockery work
 		const feathers = require('feathers');
 		const app = feathers();
+		let secrets;
+		try {
+			secrets = require('../config/secrets.json');
+		} catch(error) {
+			secrets = {};
+		}
+		app.set("secrets", secrets);
 		const MailService = require('../../../src/services/helpers/service')(app);
 		app.use('/mails', new MailService());
 		mailService = app.service('/mails');
