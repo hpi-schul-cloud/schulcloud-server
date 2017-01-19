@@ -53,6 +53,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 			// todo: config to secret file
 			var config = new aws.Config({
+				signatureVersion: "v4",
 				s3ForcePathStyle: true,
 				accessKeyId: "schulcloud",
 				secretAccessKey: "schulcloud",
@@ -85,6 +86,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 				// todo: config to secret file
 				var config = new aws.Config({
+					signatureVersion: "v4",
 					s3ForcePathStyle: true,
 					accessKeyId: "schulcloud",
 					secretAccessKey: "schulcloud",
@@ -119,6 +121,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 				// todo: config to secret file
 				var config = new aws.Config({
+					signatureVersion: "v4",
 					s3ForcePathStyle: true,
 					accessKeyId: "schulcloud",
 					secretAccessKey: "schulcloud",
