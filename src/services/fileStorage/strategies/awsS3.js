@@ -16,7 +16,7 @@ const verifyStorageContext = (userId, storageContext) => {
 	switch(context) {
 		case 'users':
 			return UserModel.findById(values[1]).exec().then(res => {
-				if (!res || res._id != userId) {
+				if (!res || res._id != userId.toString()) {
 					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 				}
 				return res;
