@@ -65,7 +65,6 @@ const generateLocalSignInUsername = (hook) => {
 
 
 	// TODO: Only generate username
-    const AccountHelper = require('./../helper')(hook.app).AccountHelper;
 
 	const userId = hook.data.userId;
 	const userService = hook.app.service('/users');
