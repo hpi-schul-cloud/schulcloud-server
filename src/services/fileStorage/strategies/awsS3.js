@@ -130,8 +130,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				});
 
 				var params = {
-					Bucket: 'bucket-test2',
-					Key: fileName,
+					Bucket: bucketName,
+					Key: storageContext + '/' + fileName,
 					Expires: 60,
 					ContentType: fileType
 				};
