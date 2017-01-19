@@ -18,9 +18,7 @@ exports.before = {
 		auth.hooks.authenticate('jwt'),
 		resolveUserId
 	],
-	find: [
-		resolveUserId
-	],
+	find: [],
 	get: [],
 	create: [],
 	update: [],

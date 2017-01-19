@@ -109,6 +109,47 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			return err;
 		});
 	}
+
+	generateSignedUrl(userId, storageContext, fileName, fileType) {
+		if (!userId || !storageContext || !fileName || !fileType) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		return verifyStorageContext(userId, storageContext).then(res => {
+			return UserModel.findById(userId).exec().then(result => {
+				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+				let bucketName = `bucket-${result.schoolId}`;
+
+				// todo: config to secret file
+				var config = new aws.Config({
+					s3ForcePathStyle: true,
+					accessKeyId: "schulcloud",
+					secretAccessKey: "schulcloud",
+					region: "eu-west-1",
+					endpoint: new aws.Endpoint("http://service.langl.eu:3000")
+				});
+
+				var params = {
+					Bucket: 'bucket-test2',
+					Key: fileName,
+					Expires: 60,
+					ContentType: fileType
+				};
+
+				var s3 = new aws.S3(config);
+				return new Promise((resolve, reject) => {
+					s3.getSignedUrl('putObject', params, function (err, res) {
+						if (err) {
+							reject(err);
+						} else {
+							resolve(res);
+						}
+					});
+				});
+			}).catch(err => {
+				return err;
+			});
+		}).catch(err => {
+			return err;
+		});
+	}
 }
 
 module.exports = AWSS3Strategy;

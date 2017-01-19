@@ -1,7 +1,8 @@
 'use strict';
 const hooks = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
-class Service {
+
+class FileStorageService {
 	constructor() {
 	}
 
@@ -9,7 +10,7 @@ class Service {
 	 * todo: swagger
 	 * @param data, contains schoolId
 	 * @returns {Promise}
-     */
+	 */
 	create(data) {
 		return new AWSStrategy().create(data.schoolId); // todo: get strategy from school!
 	}
@@ -24,22 +25,36 @@ class Service {
 	}
 }
 
-module.exports = function(){
-  const app = this;
+class SignedUrlService {
+	constructor() {
+	}
 
-  // Initialize our service with any options it requires
-  app.use('/fileStorage', new Service());
-	// todo: upload to client!
-  //app.use('/files/upload', new uploadService());
+	/**
+	 * todo: swagger
+	 * @param data, contains storageContext, fileName, fileType
+	 * @returns {Promise}
+	 */
+	create(data, params) {
+		return new AWSStrategy().generateSignedUrl(params.payload.userId, data.storageContext, data.fileName, data.fileType);
+	}
+}
 
-  // Get our initialize service to that we can bind hooks
-  const filesService = app.service('/fileStorage');
+module.exports = function () {
+	const app = this;
 
-  // Set up our before hooks
-  filesService.before(hooks.before);
+	// Initialize our service with any options it requires
+	app.use('/fileStorage', new FileStorageService());
+	app.use('/fileStorage/signedUrl', new SignedUrlService());
 
-  // Set up our after hooks
-  filesService.after(hooks.after);
+	// Get our initialize service to that we can bind hooks
+	const fileStorageService = app.service('/fileStorage');
+	const signedUrlService = app.service('/fileStorage/signedUrl');
+
+	// Set up our before hooks
+	fileStorageService.before(hooks.before);
+	signedUrlService.before(hooks.before);
+
+	// Set up our after hooks
+	fileStorageService.after(hooks.after);
+	signedUrlService.after(hooks.after);
 };
-
-module.exports.Service = Service;
