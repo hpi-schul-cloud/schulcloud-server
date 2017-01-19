@@ -12,14 +12,13 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 		// check if school already has a bucket
 		return SchoolModel.findById(schoolId).then((result, err) => {
-			console.log(err);
 			if (!result) return Promise.reject(new errors.NotFound('school not found'));
 			if (result.s3Bucket) return Promise.resolve({message: "School already has a s3-bucket.", data: result});
 
 			let bucketName = `bucket-${schoolId}`;
 
-			 // todo: config to secret file
-		 	var config = new aws.Config({
+			// todo: config to secret file
+			var config = new aws.Config({
 				s3ForcePathStyle: true,
 				accessKeyId: "schulcloud",
 				secretAccessKey: "schulcloud",
@@ -27,10 +26,10 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				endpoint: new aws.Endpoint("http://service.langl.eu:3000")
 			});
 
-			 var s3 = new aws.S3(config);
+			var s3 = new aws.S3(config);
 
-			 return new Promise((resolve,reject) => {
-				s3.createBucket({ Bucket: bucketName }, function(err, res) {
+			return new Promise((resolve, reject) => {
+				s3.createBucket({Bucket: bucketName}, function (err, res) {
 					if (err) {
 						reject(err);
 					} else {

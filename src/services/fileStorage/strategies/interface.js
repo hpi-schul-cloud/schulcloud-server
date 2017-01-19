@@ -10,7 +10,7 @@ class AbstractFileStorageStrategy {
 	}
 
 	getFiles() {
-		throw new TypeError("getFiles method has to be implemented.")
+		throw new TypeError("getFiles method has to be implemented.");
 	}
 }
 
