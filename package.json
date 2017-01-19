@@ -32,6 +32,8 @@
     "chai-http": "^3.0.0",
     "compression": "^1.6.2",
     "cors": "^2.8.1",
+    "ejs": "^2.5.5",
+    "email-templates": "^2.5.4",
     "es6-promisify": "^5.0.0",
     "express": "^4.14.0",
     "feathers": "^2.0.3",
@@ -49,8 +51,11 @@
     "istanbul": "^0.4.5",
     "mongoose": "^4.7.6",
     "moodle-client": "^0.4.0",
+    "node-sass": "^4.2.0",
+    "nodemailer": "^2.7.0",
     "passport": "^0.3.2",
     "phantomjs": "^2.1.7",
+    "randexp": "^0.4.4",
     "request-promise-native": "^1.0.3",
     "serve-favicon": "^2.3.2",
     "winston": "^2.3.0"
@@ -59,6 +64,8 @@
     "eslint": "^3.13.1",
     "eslint-plugin-react": "^6.9.0",
     "mocha": "^3.2.0",
-    "request": "^2.79.0"
+    "request": "^2.79.0",
+    "mockery": "^2.0.0",
+    "nodemailer-mock": "^1.1.10"
   }
 }

@@ -11,7 +11,7 @@ const accountSchema = new Schema({
 	credentialHash: {type: String},
 
 	userId: {type: Schema.Types.ObjectId},
-	systemId: {type: Schema.Types.ObjectId, required: true},
+	systemId: {type: Schema.Types.ObjectId}, // if systemId => SSO
 
 	expiresAt: {type: Date}
 },{
