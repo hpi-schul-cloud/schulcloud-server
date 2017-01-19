@@ -1,5 +1,4 @@
 'use strict';
-const uploadService = require('./service');
 const hooks = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
 class Service {
@@ -9,11 +8,19 @@ class Service {
 	/**
 	 * todo: swagger
 	 * @param data, contains schoolId
-	 * @param params
 	 * @returns {Promise}
      */
-	create(data, params) {
-		return new AWSStrategy().create(data.schoolId);
+	create(data) {
+		return new AWSStrategy().create(data.schoolId); // todo: get strategy from school!
+	}
+
+	/**
+	 * todo: swagger
+	 * @param data, contains storageContext
+	 * @returns {Promise}
+	 */
+	find(data) {
+		return new AWSStrategy().getFiles(data.payload.userId, data.query.storageContext);
 	}
 }
 
@@ -21,7 +28,7 @@ module.exports = function(){
   const app = this;
 
   // Initialize our service with any options it requires
-  app.use('/fileStorage', new Service);
+  app.use('/fileStorage', new Service());
 	// todo: upload to client!
   //app.use('/files/upload', new uploadService());
 
