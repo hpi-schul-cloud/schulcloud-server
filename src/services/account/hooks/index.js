@@ -20,8 +20,21 @@ const strategies = {
 };
 
 
+// This function decides whether this is a SSO account or not
+// and adds required data to hook.data
+const provideCredentials = (hook) => {
+	const systemId = hook.data.systemId;
+	if(systemId) {
+		return validateCredentials(hook);
+	} else {
+		return generateLocalSignInUsername(hook);
+	}
+};
+
+
+// This is only for SSO
 const validateCredentials = (hook) => {
-	const {username, password, systemId, noVerification} = hook.data;
+	const {username, password, systemId} = hook.data;
 
 	if(!username) throw new errors.BadRequest('no username specified');
 	if(!password) throw new errors.BadRequest('no password specified');
@@ -46,29 +59,29 @@ const validateCredentials = (hook) => {
 		});
 };
 
-const createLocalAccount = (hook) => {
-    var systemId = hook.data.systemId;
-    const systemService = hook.app.service('/systems');
+// This is for non-SSO users
+const generateLocalSignInUsername = (hook) => {
+	// TODO: will be refactored by @carl
 
+
+	// TODO: Only generate username
     const AccountHelper = require('./../helper')(hook.app).AccountHelper;
 
-    return systemService.find({query: {_id: systemId}})
-        .then(result => {
-            if (result.data[0].type != 'local') return;
+	const userId = hook.data.userId;
+	const userService = hook.app.service('/users');
+	return userService.get(userId)
+		.then(user => {
 
-            var userId = hook.data.userId;
-            const userService = hook.app.service('/users');
-            return userService.find({query: {_id: userId}})
-                .then(result => {
-                    var user = { firstName: result.data[0].firstName, lastName: result.data[0].lastName, email: result.data[0].email };
-                    var helper = new AccountHelper();
-                    return helper.create(user).then((credentials) => {
-                        hook.data = Object.assign(hook.data, credentials);
-                        return hook;
-                    });
-                });
-        });
+			// TODO: will be refactored by @carl
+			var helper = new AccountHelper();
+			return helper.create(user).then((credentials) => {
+				hook.data.username = credentials.username;
+				return hook;
+			});
+
+		});
 };
+
 
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
@@ -76,7 +89,7 @@ exports.before = {
 	find: [],
 	get: [],
 	create: [
-		validateCredentials,
+		provideCredentials,
 		local.hooks.hashPassword({ passwordField: 'password' })
 	],
 	update: [auth.hooks.authenticate('jwt')],
