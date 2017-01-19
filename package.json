@@ -40,7 +40,7 @@
     "feathers-authentication": "^1.0.2",
     "feathers-authentication-jwt": "^0.3.1",
     "feathers-authentication-local": "^0.3.2",
-    "feathers-configuration": "^0.4.1",
+    "feathers-configuration": "^0.3.3",
     "feathers-errors": "^2.5.0",
     "feathers-hooks": "^1.7.1",
     "feathers-mongoose": "^3.6.1",
