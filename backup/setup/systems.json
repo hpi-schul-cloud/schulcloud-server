@@ -4,12 +4,6 @@
 	},
 	"type": "moodle",
 	"url": "http://moodle.schul.tech/",
-	"updatedAt": {
-		"$date": "2016-12-09T15:45:10.543Z"
-	},
-	"createdAt": {
-		"$date": "2016-12-09T15:45:10.543Z"
-	},
 	"__v": 0
 },
 {
@@ -17,12 +11,6 @@
 		"$oid": "0000d186816abba584714c91"
 	},
 	"type": "itslearning",
-	"updatedAt": {
-		"$date": "2016-12-09T15:45:10.579Z"
-	},
-	"createdAt": {
-		"$date": "2016-12-09T15:45:10.579Z"
-	},
 	"__v": 0
 },
 {
@@ -30,12 +18,6 @@
 		"$oid": "0000d186816abba584714c92"
 	},
 	"type": "local",
-	"updatedAt": {
-		"$date": "2016-12-09T15:45:10.580Z"
-	},
-	"createdAt": {
-		"$date": "2016-12-09T15:45:10.580Z"
-	},
 	"__v": 0
 }]
 

@@ -19,12 +19,14 @@ const strategies = {
 	local: LocalLoginStrategy
 };
 
-
+// This is only for SSO
 const validateCredentials = (hook) => {
-	const {username, password, systemId, noVerification} = hook.data;
+	const {username, password, systemId} = hook.data;
 
 	if(!username) throw new errors.BadRequest('no username specified');
 	if(!password) throw new errors.BadRequest('no password specified');
+
+	if(!systemId) return;
 
 	const app = hook.app;
 	const systemService = app.service('/systems');

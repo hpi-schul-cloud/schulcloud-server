@@ -8,6 +8,7 @@ const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
 const role = require('./role');
+const helpers = require('./helpers');
 
 const userGroup = require('./user-group');
 
@@ -29,4 +30,5 @@ module.exports = function () {
     app.configure(ltiTool);
     app.configure(content);
     app.configure(fileStorage);
+    app.configure(helpers);
 };

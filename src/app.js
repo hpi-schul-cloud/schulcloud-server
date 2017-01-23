@@ -16,11 +16,19 @@ const services = require('./services');
 const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const setupSwagger = require('./swagger');
+let secrets;
+try {
+	secrets = require('../config/secrets.json');
+} catch(error) {
+	secrets = {};
+}
 
 const app = feathers();
 
 app.configure(configuration(path.join(__dirname, '..')));
 setupSwagger(app);
+
+app.set("secrets", secrets);
 
 app.use(compress())
 	.options('*', cors())
@@ -45,6 +53,5 @@ app.use(compress())
 
 winston.cli();	// optimize for cli, like using colors
 winston.level = 'debug';
-winston.info('test');
 
 module.exports = app;
