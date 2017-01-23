@@ -11,7 +11,7 @@ chai.use(chaiHttp);
 describe('AWS file storage strategy', function() {
 	let aws;
 	let options = {
-		schoolId: '0000d186816abba584714c5f',
+		schoolId: '0000d186816abba584714c5f'
 	};
 
 	before(function(done) {
@@ -31,15 +31,13 @@ describe('AWS file storage strategy', function() {
 	});
 
 	after(function () {
-
-		// Remove our mocked nodemailer and disable mockery
 		mockery.deregisterAll();
 		mockery.disable();
-
 	});
 
-	it('creates a bucket for the given school', function() {
-		/**return aws.create(options.schoolId).then(res => {
+	describe("POST /fileStorage", function () {
+		it('creates a bucket for the given school', function() {
+			/**return aws.create(options.schoolId).then(res => {
 			console.log(res);
 			expect(res).to.not.be.undefined;
 			return;
@@ -48,12 +46,41 @@ describe('AWS file storage strategy', function() {
 			expect(err).to.not.be.undefined;
 			return;
 		})**/
+		});
+
+		it('rejects if no school id is given', function() {
+			return aws.create().catch(err => {
+				expect(err).to.not.be.undefined;
+				return;
+			});
+		});
 	});
 
-	it('rejects if no school id is given', function() {
-		return aws.create().catch(err => {
-			expect(err).to.not.be.undefined;
-			return;
+	describe("GET /fileStorage", function () {
+		it("rejects with missing parameters", function () {
+			return aws.getFiles().catch(err => {
+				expect(err).to.not.be.undefined;
+				return;
+			});
+		});
+	});
+
+	describe("POST /fileStorage/signedUrl", function () {
+		/**it("creates valid signed url", function () {
+			return aws.generateSignedUrl("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "example.jpg", "mime/image").then(res => {
+				console.log(res);
+				return;
+			}).catch(err => {
+				console.log(err);
+				return;
+			});
+		});**/
+
+		it("rejects with missing parameters", function () {
+			return aws.generateSignedUrl().catch(err => {
+				expect(err).to.not.be.undefined;
+				return;
+			});
 		});
 	});
 });

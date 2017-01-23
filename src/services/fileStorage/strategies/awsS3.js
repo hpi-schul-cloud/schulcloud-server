@@ -122,7 +122,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					ContentType: fileType
 				};
 				var s3 = new aws.S3(config);
-				
+
 				return new Promise((resolve, reject) => {
 					s3.getSignedUrl('putObject', params, function (err, res) {
 						if (err) {
