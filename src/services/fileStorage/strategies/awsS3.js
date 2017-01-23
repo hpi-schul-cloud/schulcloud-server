@@ -5,6 +5,12 @@ const UserModel = require('../../user/model');
 const CourseModel = require('../../user-group/model').courseModel;
 const ClassModel = require('../../user-group/model').classModel;
 const aws = require('aws-sdk');
+let awsConfig;
+try {
+	awsConfig = require("../../../../config/secrets.json").aws;
+} catch (e) {
+	awsConfig = {};
+}
 
 const AbstractFileStorageStrategy = require('./interface.js');
 
@@ -39,6 +45,12 @@ const verifyStorageContext = (userId, storageContext) => {
 	}
 };
 
+const createAWSConfig = () => {
+	var config = new aws.Config(awsConfig);
+	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
+	return config;
+};
+
 class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	create(schoolId) {
@@ -49,18 +61,9 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 		return promise.then((result) => {
 			if (!result) return Promise.reject(new errors.NotFound('school not found'));
+
 			let bucketName = `bucket-${schoolId}`;
-
-			// todo: config to secret file
-			var config = new aws.Config({
-				signatureVersion: "v4",
-				s3ForcePathStyle: true,
-				accessKeyId: "schulcloud",
-				secretAccessKey: "schulcloud",
-				region: "eu-west-1",
-				endpoint: new aws.Endpoint("http://service.langl.eu:3000")
-			});
-
+			var config = createAWSConfig();
 			var s3 = new aws.S3(config);
 
 			return new Promise((resolve, reject) => {
@@ -82,19 +85,11 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		return verifyStorageContext(userId, storageContext).then(res => {
 			return UserModel.findById(userId).exec().then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+
 				let bucketName = `bucket-${result.schoolId}`;
-
-				// todo: config to secret file
-				var config = new aws.Config({
-					signatureVersion: "v4",
-					s3ForcePathStyle: true,
-					accessKeyId: "schulcloud",
-					secretAccessKey: "schulcloud",
-					region: "eu-west-1",
-					endpoint: new aws.Endpoint("http://service.langl.eu:3000")
-				});
-
+				var config = createAWSConfig();
 				var s3 = new aws.S3(config);
+
 				return new Promise((resolve, reject) => {
 					s3.listObjectsV2({Bucket: bucketName, Prefix: storageContext}, function (err, res) {
 						if (err) {
@@ -117,26 +112,17 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		return verifyStorageContext(userId, storageContext).then(res => {
 			return UserModel.findById(userId).exec().then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+
 				let bucketName = `bucket-${result.schoolId}`;
-
-				// todo: config to secret file
-				var config = new aws.Config({
-					signatureVersion: "v4",
-					s3ForcePathStyle: true,
-					accessKeyId: "schulcloud",
-					secretAccessKey: "schulcloud",
-					region: "eu-west-1",
-					endpoint: new aws.Endpoint("http://service.langl.eu:3000")
-				});
-
+				var config = createAWSConfig();
 				var params = {
 					Bucket: bucketName,
 					Key: storageContext + '/' + fileName,
 					Expires: 60,
 					ContentType: fileType
 				};
-
 				var s3 = new aws.S3(config);
+				
 				return new Promise((resolve, reject) => {
 					s3.getSignedUrl('putObject', params, function (err, res) {
 						if (err) {
