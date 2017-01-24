@@ -4,10 +4,35 @@ const AWSStrategy = require('./strategies/awsS3');
 
 class FileStorageService {
 	constructor() {
+		this.docs = {
+			description: 'A service to handle external file storages',
+			create: {
+				parameters: [
+					{
+						description: 'the id of the school the storage will be create',
+						required: true,
+						name: 'schoolId',
+						type: 'string'
+					}
+				],
+				summary: 'Creates a new storage for a given school',
+				notes: 'Returns meta data of the created storage'
+			},
+			find: {
+				parameters: [
+					{
+						description: 'the context of the file-storage',
+						required: true,
+						name: 'storageContext',
+						type: 'string'
+					}
+				],
+				summary: 'Gets all files for the given context'
+			}
+		};
 	}
 
 	/**
-	 * todo: swagger
 	 * @param data, contains schoolId
 	 * @returns {Promise}
 	 */
@@ -16,7 +41,6 @@ class FileStorageService {
 	}
 
 	/**
-	 * todo: swagger
 	 * @param data, contains storageContext
 	 * @returns {Promise}
 	 */
@@ -27,10 +51,36 @@ class FileStorageService {
 
 class SignedUrlService {
 	constructor() {
+		this.docs = {
+			description: 'A service for generating signed urls, e.g. for uploading and downloading files',
+			create: {
+				parameters: [
+					{
+						description: 'the context of the file-storage',
+						required: true,
+						name: 'storageContext',
+						type: 'string'
+					},
+					{
+						description: 'the name of the file that will be uploaded',
+						required: true,
+						name: 'fileName',
+						type: 'string'
+					},
+					{
+						description: 'the mime type of the file that will be uploaded',
+						required: true,
+						name: 'fileType',
+						type: 'string'
+					}
+				],
+				summary: 'Creates a new signed url for the given file information and storage context',
+				notes: 'Returns a url as string'
+			}
+		};
 	}
 
 	/**
-	 * todo: swagger
 	 * @param data, contains storageContext, fileName, fileType
 	 * @returns {Promise}
 	 */

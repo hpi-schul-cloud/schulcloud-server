@@ -14,7 +14,12 @@ try {
 
 const AbstractFileStorageStrategy = require('./interface.js');
 
-// verifies whether the given userId has permission for the given context (course, user, class)
+/**
+ * verifies whether the given userId has permission for the given context (course, user, class)
+ * @param userId [String]
+ * @param storageContext [String], e.g. users/{userId}
+ * @returns {*}
+ */
 const verifyStorageContext = (userId, storageContext) => {
 	var values = storageContext.split("/");
 	if (values.length != 2) return Promise.reject(new errors.BadRequest("StorageContext is invalid"));
