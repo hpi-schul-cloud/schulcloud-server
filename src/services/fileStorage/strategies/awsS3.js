@@ -24,7 +24,7 @@ const verifyStorageContext = (userId, storageContext) => {
 	var values = storageContext.split("/");
 	if (values.length != 2) return Promise.reject(new errors.BadRequest("StorageContext is invalid"));
 	var context = values[0];
-	switch(context) {
+	switch (context) {
 		case 'users':
 			return UserModel.findById(values[1]).exec().then(res => {
 				if (!res || res._id != userId.toString()) {
@@ -46,7 +46,8 @@ const verifyStorageContext = (userId, storageContext) => {
 				}
 				return res;
 			});
-		default: return Promise.reject("StorageContext is invalid");
+		default:
+			return Promise.reject("StorageContext is invalid");
 	}
 };
 
@@ -54,6 +55,31 @@ const createAWSConfig = () => {
 	var config = new aws.Config(awsConfig);
 	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
 	return config;
+};
+
+const getFileMetadata = (awsObjects, bucketName, s3) => {
+	return Promise.all(awsObjects.map((object) => {
+		return new Promise((resolve, reject) => {
+			s3.headObject({Bucket: bucketName, Key: object.Key}, function (err, res) {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(res);
+				}
+			});
+		});
+	}))
+		.then((array) => {
+			return array.map(object => {
+				return {
+					name: object.Metadata.name,
+					lastModified: object.LastModified,
+					size: object.ContentLength,
+					type: object.ContentType,
+					thumbnail: object.Metadata.thumbnail
+				};
+			});
+		});
 };
 
 class AWSS3Strategy extends AbstractFileStorageStrategy {
@@ -100,7 +126,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						if (err) {
 							reject(err);
 						} else {
-							resolve(res);
+							resolve(getFileMetadata(res.Contents, bucketName, s3));
 						}
 					});
 				});
@@ -133,7 +159,14 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						if (err) {
 							reject(err);
 						} else {
-							resolve(res);
+							resolve({
+								url:res,
+								header: {
+									"Content-Type": fileType,
+									"x-amz-meta-name": fileName,
+									"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
+								}
+							});
 						}
 					});
 				});
