@@ -26,6 +26,7 @@
     "mocha": "NODE_ENV=test mocha test/ --recursive"
   },
   "dependencies": {
+    "aws-sdk": "^2.7.24",
     "bcryptjs": "latest",
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
@@ -50,6 +51,7 @@
     "freeport": "^1.0.5",
     "istanbul": "^0.4.5",
     "mongoose": "^4.7.6",
+    "mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
     "moodle-client": "^0.4.0",
     "node-sass": "^4.2.0",
     "nodemailer": "^2.7.0",
@@ -64,7 +66,6 @@
     "eslint": "^3.13.1",
     "eslint-plugin-react": "^6.9.0",
     "mocha": "^3.2.0",
-    "request": "^2.79.0",
     "mockery": "^2.0.0",
     "nodemailer-mock": "^1.1.10"
   }
