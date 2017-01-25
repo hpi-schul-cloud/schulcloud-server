@@ -1,1 +1,2 @@
 config/secrets.json filter=git-crypt diff=git-crypt
+backup/setup/*.secrets.json filter=git-crypt diff=git-crypt
