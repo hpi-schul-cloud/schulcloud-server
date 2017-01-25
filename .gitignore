@@ -34,5 +34,4 @@ data/
 # Backup
 backup/*
 !backup/setup/
-# Database Templates with secrets and keys
-backup/setup/*.secrets.json
+
