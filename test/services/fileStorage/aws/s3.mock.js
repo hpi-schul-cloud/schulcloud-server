@@ -9,6 +9,9 @@ var mockAws = {
 			},
 			getSignedUrl: function (params, callback) {
 				callback(null, "test");
+			},
+			headObject: function (params, callback) {
+				callback(null, "test");
 			}
 		};
 	},
