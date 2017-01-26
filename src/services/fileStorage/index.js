@@ -52,7 +52,7 @@ class FileStorageService {
 class SignedUrlService {
 	constructor() {
 		this.docs = {
-			description: 'A service for generating signed urls, e.g. for uploading and downloading files',
+			description: 'A service for generating signed urls, e.g. for uploading (action = putObject) and downloading files (action = getObject)',
 			create: {
 				parameters: [
 					{
@@ -81,11 +81,11 @@ class SignedUrlService {
 	}
 
 	/**
-	 * @param data, contains storageContext, fileName, fileType
+	 * @param data, contains storageContext, fileName, fileType, action
 	 * @returns {Promise}
 	 */
 	create(data, params) {
-		return new AWSStrategy().generateSignedUrl(params.payload.userId, data.storageContext, data.fileName, data.fileType);
+		return new AWSStrategy().generateSignedUrl(params.payload.userId, data.storageContext, data.fileName, data.fileType, data.action);
 	}
 }
 

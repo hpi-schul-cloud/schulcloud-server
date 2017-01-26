@@ -121,7 +121,7 @@ describe('AWS file storage strategy', function() {
 	describe("POST /fileStorage/signedUrl", function () {
 		it("creates valid signed url", function () {
 			return new Promise((resolve, reject) => {
-				aws.generateSignedUrl("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "example.jpg", "mime/image").then(res => {
+				aws.generateSignedUrl("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "example.jpg", "mime/image", "putObject").then(res => {
 					expect(res).to.not.be.undefined;
 					resolve();
 				});

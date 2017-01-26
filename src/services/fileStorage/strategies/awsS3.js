@@ -51,10 +51,12 @@ const verifyStorageContext = (userId, storageContext) => {
 	}
 };
 
-const createAWSConfig = () => {
+const createAWSObject = (schoolId) => {
 	var config = new aws.Config(awsConfig);
 	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
-	return config;
+	let bucketName = `bucket-${schoolId}`;
+	var s3 = new aws.S3(config);
+	return {s3: s3, bucket: bucketName};
 };
 
 const getFileMetadata = (awsObjects, bucketName, s3) => {
@@ -93,12 +95,10 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		return promise.then((result) => {
 			if (!result) return Promise.reject(new errors.NotFound('school not found'));
 
-			let bucketName = `bucket-${schoolId}`;
-			var config = createAWSConfig();
-			var s3 = new aws.S3(config);
+			var awsObject = createAWSObject(result._id);
 
 			return new Promise((resolve, reject) => {
-				s3.createBucket({Bucket: bucketName}, function (err, res) {
+				awsObject.s3.createBucket({Bucket: awsObject.bucket}, function (err, res) {
 					if (err) {
 						reject(err);
 					} else {
@@ -117,16 +117,14 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			return UserModel.findById(userId).exec().then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
-				let bucketName = `bucket-${result.schoolId}`;
-				var config = createAWSConfig();
-				var s3 = new aws.S3(config);
+				var awsObject = createAWSObject(result.schoolId);
 
 				return new Promise((resolve, reject) => {
-					s3.listObjectsV2({Bucket: bucketName, Prefix: storageContext}, function (err, res) {
+					awsObject.s3.listObjectsV2({Bucket: awsObject.bucket, Prefix: storageContext}, function (err, res) {
 						if (err) {
 							reject(err);
 						} else {
-							resolve(getFileMetadata(res.Contents, bucketName, s3));
+							resolve(getFileMetadata(res.Contents, awsObject.bucket, awsObject.s3));
 						}
 					});
 				});
@@ -138,29 +136,28 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		});
 	}
 
-	generateSignedUrl(userId, storageContext, fileName, fileType) {
-		if (!userId || !storageContext || !fileName || !fileType) return Promise.reject(new errors.BadRequest('Missing parameters'));
+	generateSignedUrl(userId, storageContext, fileName, fileType, action) {
+		if (!userId || !storageContext || !fileName || !action || (action == 'putObject' && !fileType)) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return verifyStorageContext(userId, storageContext).then(res => {
 			return UserModel.findById(userId).exec().then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
-				let bucketName = `bucket-${result.schoolId}`;
-				var config = createAWSConfig();
+				var awsObject = createAWSObject(result.schoolId);
 				var params = {
-					Bucket: bucketName,
+					Bucket: awsObject.bucket,
 					Key: storageContext + '/' + fileName,
-					Expires: 60,
-					ContentType: fileType
+					Expires: 60
 				};
-				var s3 = new aws.S3(config);
+
+				if(action == 'putObject') params.ContentType = fileType;
 
 				return new Promise((resolve, reject) => {
-					s3.getSignedUrl('putObject', params, function (err, res) {
+					awsObject.s3.getSignedUrl(action, params, function (err, res) {
 						if (err) {
 							reject(err);
 						} else {
 							resolve({
-								url:res,
+								url: res,
 								header: {
 									"Content-Type": fileType,
 									"x-amz-meta-name": fileName,
