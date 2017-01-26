@@ -39,4 +39,16 @@
 		"$oid": "0000d186816abba584714c92"
 	},
 	"__v": 0
-}]
+},
+{
+	"_id": {
+		"$oid": "0000d231816abba584714c9b"
+	},
+	"username": "jan.renz@schul-cloud.org",
+	"password": "$2a$10$CHN6Qs2Igbn.s4BengUOfu9.0qVuy0uyTrzDDJszw9e1lBZwUFqeq",
+	"userId": {
+		"$oid": "0000d213816abba584714c0b"
+	},
+	"__v": 0
+}
+]

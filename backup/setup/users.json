@@ -17,6 +17,23 @@
 },
 {
 	"_id": {
+		"$oid": "0000d213816abba584714c0b"
+	},
+	"__v": 0,
+	"firstName": "Jan",
+	"lastName": "Renz",
+	"email": "localhost",
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c96"
+		}
+	]
+},
+{
+	"_id": {
 		"$oid": "0000d224816abba584714c9c"
 	},
 	"__v": 0,
