@@ -147,7 +147,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					Delete: {
 						Objects: [
 							{
-								Key: storageContext + '/' + fileName
+								Key: `${storageContext}/${fileName}`
 							}
 						],
 						Quiet: true
@@ -180,7 +180,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				var awsObject = createAWSObject(result.schoolId);
 				var params = {
 					Bucket: awsObject.bucket,
-					Key: storageContext + '/' + fileName,
+					Key: `${storageContext}/${fileName}`,
 					Expires: 60
 				};
 
