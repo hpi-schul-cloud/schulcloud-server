@@ -12,6 +12,9 @@ var mockAws = {
 			},
 			headObject: function (params, callback) {
 				callback(null, "test");
+			},
+			deleteFile: function (params, callback) {
+				callback(null, "test");
 			}
 		};
 	},

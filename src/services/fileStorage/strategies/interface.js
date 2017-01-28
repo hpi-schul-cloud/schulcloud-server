@@ -12,6 +12,10 @@ class AbstractFileStorageStrategy {
 	getFiles() {
 		throw new TypeError("getFiles method has to be implemented.");
 	}
+	
+	deleteFile() {
+		throw new TypeError("deleteFile method has to be implemented.");
+	}
 }
 
 module.exports = AbstractFileStorageStrategy;

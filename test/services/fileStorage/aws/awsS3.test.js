@@ -118,6 +118,25 @@ describe('AWS file storage strategy', function() {
 		});
 	});
 
+	describe("DELETE /fileStorage/", function () {
+		it("deletes a file correctly", function () {
+			return new Promise((resolve, reject) => {
+				aws.deleteFile("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "example.jpg").then(res => {
+					expect(res).to.not.be.undefined;
+					resolve();
+				});
+			});
+		});
+
+		it("rejects with missing parameters", function () {
+			return aws.deleteFile().catch(err => {
+				expect(err).to.not.be.undefined;
+				expect(err.code).to.equal(400);
+				return;
+			});
+		});
+	});
+
 	describe("POST /fileStorage/signedUrl", function () {
 		it("creates valid signed url", function () {
 			return new Promise((resolve, reject) => {

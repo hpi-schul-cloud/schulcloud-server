@@ -47,6 +47,13 @@ class FileStorageService {
 	find(data) {
 		return new AWSStrategy().getFiles(data.payload.userId, data.query.storageContext);
 	}
+
+	/**
+	 * @param params, contains storageContext and fileName in query
+     */
+	remove(id, params) {
+		return new AWSStrategy().deleteFile(params.payload.userId, params.query.storageContext, params.query.fileName);
+	}
 }
 
 class SignedUrlService {

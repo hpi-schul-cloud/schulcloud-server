@@ -136,6 +136,41 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		});
 	}
 
+	deleteFile(userId, storageContext, fileName) {
+		if (!userId || !storageContext || !fileName) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		return verifyStorageContext(userId, storageContext).then(res => {
+			return UserModel.findById(userId).exec().then(result => {
+				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+				var awsObject = createAWSObject(result.schoolId);
+				var params = {
+					Bucket: awsObject.bucket,
+					Delete: {
+						Objects: [
+							{
+								Key: storageContext + '/' + fileName
+							}
+						],
+						Quiet: true
+					}
+				};
+
+				return new Promise((resolve, reject) => {
+					awsObject.s3.deleteObjects(params, function (err, res) {
+						if (err) {
+							reject(err);
+						} else {
+							resolve(res);
+						}
+					});
+				});
+			}).catch(err => {
+				return err;
+			});
+		}).catch(err => {
+			return err;
+		});
+	}
+
 	generateSignedUrl(userId, storageContext, fileName, fileType, action) {
 		if (!userId || !storageContext || !fileName || !action || (action == 'putObject' && !fileType)) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return verifyStorageContext(userId, storageContext).then(res => {
