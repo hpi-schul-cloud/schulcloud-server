@@ -28,6 +28,23 @@ class FileStorageService {
 					}
 				],
 				summary: 'Gets all files for the given context'
+			},
+			remove: {
+				parameters: [
+					{
+						description: 'the storageContext in which the file is stored',
+						required: true,
+						name: 'storageContext',
+						type: 'string'
+					},
+					{
+						description: 'the name of the file which has to be deleted',
+						required: true,
+						name: 'fileName',
+						type: 'string'
+					}
+				],
+				summary: 'remove a file from a given storageContext'
 			}
 		};
 	}
