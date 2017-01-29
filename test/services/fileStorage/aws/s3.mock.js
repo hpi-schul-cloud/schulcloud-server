@@ -1,3 +1,16 @@
+const testListObjectsReturn = {
+	Contents: [
+		{key: "testFile"}
+	]
+};
+
+const testHeadObjectReturn = {
+	Metadata: { name: "testName", thumbnail: "testThumbnail" },
+	LastModified: "test",
+	ContentLength: 5,
+	ContentType: "mime/image"
+};
+
 var mockAws = {
 	S3: function(){
 		return {
@@ -5,13 +18,13 @@ var mockAws = {
 				callback(null, "test");
 			},
 			listObjectsV2: function (params, callback) {
-				callback(null, "test");
+				callback(null, testListObjectsReturn);
 			},
 			getSignedUrl: function (params, callback) {
 				callback(null, "test");
 			},
 			headObject: function (params, callback) {
-				callback(null, "test");
+				callback(null, testHeadObjectReturn);
 			},
 			deleteFile: function (params, callback) {
 				callback(null, "test");
