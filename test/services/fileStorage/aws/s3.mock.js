@@ -15,19 +15,19 @@ var mockAws = {
 	S3: function(){
 		return {
 			createBucket: function(params, callback){
-				callback(null, "test");
+				callback(null, "successfully created bucket");
 			},
 			listObjectsV2: function (params, callback) {
 				callback(null, testListObjectsReturn);
 			},
-			getSignedUrl: function (params, callback) {
-				callback(null, "test");
+			getSignedUrl: function (action, params, callback) {
+				callback(null, "successfully created signed url");
 			},
 			headObject: function (params, callback) {
 				callback(null, testHeadObjectReturn);
 			},
-			deleteFile: function (params, callback) {
-				callback(null, "test");
+			deleteObjects: function(params, callback) {
+				callback(null, "successfully deleted object");
 			}
 		};
 	},

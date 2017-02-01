@@ -38,11 +38,10 @@ describe('AWS file storage strategy', function() {
 
 	describe("POST /fileStorage", function () {
 		it('creates a bucket for the given school', function() {
-			return new Promise((resolve, reject) => {
-				aws.create(options.schoolId).then(res => {
-					expect(res).to.not.be.undefined;
-					resolve();
-				});
+			return aws.create(options.schoolId).then(res => {
+				expect(res).to.not.be.undefined;
+				expect(res.message).to.be.equal("Successfully created s3-bucket!");
+				return;
 			});
 		});
 
@@ -65,20 +64,18 @@ describe('AWS file storage strategy', function() {
 
 	describe("GET /fileStorage", function () {
 		it("gets all stored files for one user", function () {
-			return new Promise((resolve, reject) => {
-				aws.getFiles("0000d213816abba584714c0a", "users/0000d213816abba584714c0a").then(res => {
-					expect(res).to.not.be.undefined;
-					resolve();
-				});
+			return aws.getFiles("0000d213816abba584714c0a", "users/0000d213816abba584714c0a").then(res => {
+				expect(res).to.not.be.undefined;
+				expect(res.length).to.be.equal(1);
+				return;
 			});
 		});
 
 		it("gets all stored files for one course", function () {
-			return new Promise((resolve, reject) => {
-				aws.getFiles("0000d213816abba584714c0a", "courses/0000dcfbfb5c7a3f00bf21ab").then(res => {
-					expect(res).to.not.be.undefined;
-					resolve();
-				});
+			return aws.getFiles("0000d213816abba584714c0a", "courses/0000dcfbfb5c7a3f00bf21ab").then(res => {
+				expect(res).to.not.be.undefined;
+				expect(res.length).to.be.equal(1);
+				return;
 			});
 		});
 
@@ -120,11 +117,10 @@ describe('AWS file storage strategy', function() {
 
 	describe("DELETE /fileStorage/", function () {
 		it("deletes a file correctly", function () {
-			return new Promise((resolve, reject) => {
-				aws.deleteFile("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "example.jpg").then(res => {
-					expect(res).to.not.be.undefined;
-					resolve();
-				});
+			return aws.deleteFile("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "example.jpg").then(res => {
+				expect(res).to.not.be.undefined;
+				expect(res).to.be.equal("successfully deleted object");
+				return;
 			});
 		});
 
@@ -139,11 +135,10 @@ describe('AWS file storage strategy', function() {
 
 	describe("POST /fileStorage/signedUrl", function () {
 		it("creates valid signed url", function () {
-			return new Promise((resolve, reject) => {
-				aws.generateSignedUrl("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "example.jpg", "mime/image", "putObject").then(res => {
-					expect(res).to.not.be.undefined;
-					resolve();
-				});
+			return aws.generateSignedUrl("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "example.jpg", "mime/image", "putObject").then(res => {
+				expect(res).to.not.be.undefined;
+				expect(res.url).to.be.equal("successfully created signed url");
+				return;
 			});
 		});
 

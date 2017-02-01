@@ -128,8 +128,6 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						}
 					});
 				});
-			}).catch(err => {
-				return err;
 			});
 		}).catch(err => {
 			return err;
@@ -141,8 +139,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		return verifyStorageContext(userId, storageContext).then(res => {
 			return UserModel.findById(userId).exec().then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
-				var awsObject = createAWSObject(result.schoolId);
-				var params = {
+				let awsObject = createAWSObject(result.schoolId);
+				let params = {
 					Bucket: awsObject.bucket,
 					Delete: {
 						Objects: [
@@ -163,8 +161,6 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						}
 					});
 				});
-			}).catch(err => {
-				return err;
 			});
 		}).catch(err => {
 			return err;
@@ -202,8 +198,6 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						}
 					});
 				});
-			}).catch(err => {
-				return err;
 			});
 		}).catch(err => {
 			return err;
