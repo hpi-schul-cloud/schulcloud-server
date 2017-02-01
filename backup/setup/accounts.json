@@ -2,13 +2,10 @@
 	"_id": {
 		"$oid": "0000d213816abba584714caa"
 	},
-	"username": "a",
-	"password": "$2a$10$yeTE8F.ku5tcWzFXxplQHutKWSHVVRP2Rskpx.82rAkZsmCEUzKfi",
+	"username": "admin@schul-cloud.org",
+	"password": "$2a$10$xfKMgsqL1U0KTFYdJyJODeRQQDCn8/QSnC7nKIi1NDJh9Z3I5a7ZO",
 	"userId": {
 		"$oid": "0000d213816abba584714c0a"
-	},
-	"systemId": {
-		"$oid": "0000d186816abba584714c92"
 	},
 	"__v": 0
 },
@@ -34,9 +31,6 @@
 	"password": "$2a$10$CHN6Qs2Igbn.s4BengUOfu9.0qVuy0uyTrzDDJszw9e1lBZwUFqeq",
 	"userId": {
 		"$oid": "0000d231816abba584714c9e"
-	},
-	"systemId": {
-		"$oid": "0000d186816abba584714c92"
 	},
 	"__v": 0
 },
