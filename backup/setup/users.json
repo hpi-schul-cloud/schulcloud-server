@@ -37,6 +37,8 @@
 		"$oid": "0000d224816abba584714c9c"
 	},
 	"__v": 0,
+	"firstName": "Ida",
+	"lastName": "Renz",
 	"schoolId": {
 		"$oid": "0000d186816abba584714c5f"
 	},
@@ -51,6 +53,8 @@
 		"$oid": "0000d231816abba584714c9e"
 	},
 	"__v": 0,
+	"firstName": "Cord",
+	"lastName": "Carl",
 	"schoolId": {
 		"$oid": "0000d186816abba584714c5f"
 	},
