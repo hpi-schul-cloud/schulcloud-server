@@ -61,7 +61,7 @@ const createAWSObject = (schoolId) => {
 };
 
 const getFileMetadata = (awsObjects, bucketName, s3) => {
-	const headObject = promisify(s3.headObject);
+	const headObject = promisify(s3.headObject, s3);
 	return Promise.all(awsObjects.map((object) => headObject({Bucket: bucketName, Key: object.Key})))
 		.then((array) => {
 			return array.map(object => {
@@ -84,7 +84,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			.then((result) => {
 				if (!result) return Promise.reject(new errors.NotFound('school not found'));
 				const awsObject = createAWSObject(result._id);
-				const createBucket = promisify(awsObject.s3.createBucket);
+				const createBucket = promisify(awsObject.s3.createBucket, awsObject.s3);
 				return createBucket({Bucket: awsObject.bucket})
 					.then(res => Promise.resolve({message: "Successfully created s3-bucket!", data: res}));
 			});
@@ -98,7 +98,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
 				var awsObject = createAWSObject(result.schoolId);
-				return promisify(awsObject.s3.listObjectsV2)({Bucket: awsObject.bucket, Prefix: storageContext})
+				return promisify(awsObject.s3.listObjectsV2, awsObject.s3)({Bucket: awsObject.bucket, Prefix: storageContext})
 					.then(res => Promise.resolve(getFileMetadata(res.Contents, awsObject.bucket, awsObject.s3)));
 			});
 	}
@@ -121,7 +121,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						Quiet: true
 					}
 				};
-				return promisify(awsObject.s3.deleteObjects)(params);
+				return promisify(awsObject.s3.deleteObjects, awsObject.s3)(params);
 			});
 	}
 
@@ -141,7 +141,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 				if(action == 'putObject') params.ContentType = fileType;
 
-				return promisify(awsObject.s3.getSignedUrl)(action, params)
+				return promisify(awsObject.s3.getSignedUrl, awsObject.s3)(action, params)
 					.then(res => Promise.resolve({
 						url: res,
 						header: {
