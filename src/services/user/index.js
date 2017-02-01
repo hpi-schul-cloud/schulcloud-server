@@ -11,7 +11,7 @@ module.exports = function () {
 		Model: user,
 		paginate: {
 			default: 25,
-			max: 25
+			max: 1000
 		}
 	};
 

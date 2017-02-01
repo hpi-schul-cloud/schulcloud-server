@@ -13,7 +13,7 @@ module.exports = function() {
 		Model: courseModel,
 		paginate: {
 			default: 25,
-			max: 25
+			max: 100
 		}
 	}));
 	const courseService = app.service('/courses');
@@ -26,7 +26,7 @@ module.exports = function() {
 		Model: classModel,
 		paginate: {
 			default: 25,
-			max: 25
+			max: 100
 		}
 	}));
 	const classService = app.service('/classes');
@@ -39,7 +39,7 @@ module.exports = function() {
 		Model: gradeModel,
 		paginate: {
 			default: 25,
-			max: 25
+			max: 100
 		}
 	}));
 	const gradeService = app.service('/grades');
