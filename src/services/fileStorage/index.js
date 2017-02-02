@@ -28,6 +28,23 @@ class FileStorageService {
 					}
 				],
 				summary: 'Gets all files for the given context'
+			},
+			remove: {
+				parameters: [
+					{
+						description: 'the storageContext in which the file is stored',
+						required: true,
+						name: 'storageContext',
+						type: 'string'
+					},
+					{
+						description: 'the name of the file which has to be deleted',
+						required: true,
+						name: 'fileName',
+						type: 'string'
+					}
+				],
+				summary: 'remove a file from a given storageContext'
 			}
 		};
 	}
@@ -47,12 +64,19 @@ class FileStorageService {
 	find(data) {
 		return new AWSStrategy().getFiles(data.payload.userId, data.query.storageContext);
 	}
+
+	/**
+	 * @param params, contains storageContext and fileName in query
+     */
+	remove(id, params) {
+		return new AWSStrategy().deleteFile(params.payload.userId, params.query.storageContext, params.query.fileName);
+	}
 }
 
 class SignedUrlService {
 	constructor() {
 		this.docs = {
-			description: 'A service for generating signed urls, e.g. for uploading and downloading files',
+			description: 'A service for generating signed urls, e.g. for uploading (action = putObject) and downloading files (action = getObject)',
 			create: {
 				parameters: [
 					{
@@ -81,11 +105,11 @@ class SignedUrlService {
 	}
 
 	/**
-	 * @param data, contains storageContext, fileName, fileType
+	 * @param data, contains storageContext, fileName, fileType, action
 	 * @returns {Promise}
 	 */
 	create(data, params) {
-		return new AWSStrategy().generateSignedUrl(params.payload.userId, data.storageContext, data.fileName, data.fileType);
+		return new AWSStrategy().generateSignedUrl(params.payload.userId, data.storageContext, data.fileName, data.fileType, data.action);
 	}
 }
 
