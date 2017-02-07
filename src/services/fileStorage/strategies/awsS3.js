@@ -67,7 +67,8 @@ const getFileMetadata = (awsObjects, bucketName, s3) => {
 			return "/";
 		}
 
-		return path.split("/").filter((v, index) => index > 1).join("/");
+		// remove first and second directory from storageContext because it's just meta
+		return `/${path.split("/").filter((v, index) => index > 1).join("/")}`;
 	};
 
 	return Promise.all(awsObjects.map((object) => headObject({Bucket: bucketName, Key: object.Key})))
