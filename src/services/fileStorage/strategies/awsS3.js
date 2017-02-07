@@ -62,11 +62,20 @@ const createAWSObject = (schoolId) => {
 
 const getFileMetadata = (awsObjects, bucketName, s3) => {
 	const headObject = promisify(s3.headObject, s3);
+	const _getPath = (path) => {
+		if (!path) {
+			return "/";
+		}
+
+		return path.split("/").filter((v, index) => index > 1).join("/");
+	};
+
 	return Promise.all(awsObjects.map((object) => headObject({Bucket: bucketName, Key: object.Key})))
 		.then((array) => {
 			return array.map(object => {
 				return {
 					name: object.Metadata.name,
+					path: _getPath(object.Metadata.path),
 					lastModified: object.LastModified,
 					size: object.ContentLength,
 					type: object.ContentType,
@@ -146,6 +155,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						url: res,
 						header: {
 							"Content-Type": fileType,
+							"x-amz-meta-path": storageContext,
 							"x-amz-meta-name": fileName,
 							"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 						}
