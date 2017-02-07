@@ -22,7 +22,7 @@ const AbstractFileStorageStrategy = require('./interface.js');
  */
 const verifyStorageContext = (userId, storageContext) => {
 	var values = storageContext.split("/");
-	if (values.length != 2) return Promise.reject(new errors.BadRequest("StorageContext is invalid"));
+	if (values.length < 2) return Promise.reject(new errors.BadRequest("StorageContext is invalid"));
 	var context = values[0];
 	switch (context) {
 		case 'users':
