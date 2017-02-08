@@ -22,7 +22,7 @@
     "setup": "./backup.sh -p setup/ -a import",
     "start": "node src/",
     "startd": "nodemon src/",
-    "coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- -- -u exports -R spec test/**/*.test.js",
+    "coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- -- test/**/*.test.js",
     "mocha": "NODE_ENV=test mocha test/ --recursive"
   },
   "dependencies": {
