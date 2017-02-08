@@ -1,6 +1,7 @@
 'use strict';
 
 const request = require('request-promise-native');
+const querystring = require('querystring');
 const hooks = require('./hooks');
 
 class Service {
@@ -9,7 +10,12 @@ class Service {
 	}
 
 	find(params) {
-		const contentServerUrl = "https://schul-cloud.org:8090/contents";
+		const options = {};
+		if(params.query.$limit) options["page[limit]"] = params.query.$limit;
+		if(params.query.$skip) options["page[offset]"] = params.query.$skip;
+		if(params.query.query) options.query = params.query.query;
+
+		const contentServerUrl = `https://schul-cloud.org:8090/contents?${querystring.encode(options)}`;
 		return request(contentServerUrl).then(string => {
 			return JSON.parse(string);
 		});
