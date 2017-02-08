@@ -5,6 +5,8 @@ const UserModel = require('../../user/model');
 const CourseModel = require('../../user-group/model').courseModel;
 const ClassModel = require('../../user-group/model').classModel;
 const aws = require('aws-sdk');
+const fs = require('fs');
+const path = require('path');
 let awsConfig;
 try {
 	awsConfig = require("../../../../config/secrets.json").aws;
@@ -163,6 +165,26 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					}));
 			});
 		});
+	}
+
+	createDirectory(userId, storageContext, dirName) {
+		if (!userId || !storageContext || !dirName) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		return verifyStorageContext(userId, storageContext)
+			.then(res => {
+				return UserModel.findById(userId).exec().then(result => {
+					if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+
+					const awsObject = createAWSObject(result.schoolId);
+					var wstream = fs.createReadStream(path.join(__dirname, '..', 'resources', '.scfake'));
+					let params = {
+						Bucket: awsObject.bucket,
+						Key: `${storageContext}/${dirName}/.scfake`,
+						Body: wstream
+					};
+
+					return promisify(awsObject.s3.putObject, awsObject.s3)(params);
+				});
+			});
 	}
 }
 
