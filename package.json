@@ -54,7 +54,7 @@
     "mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
     "moodle-client": "^0.4.0",
     "node-sass": "^4.2.0",
-    "nodemailer": "^2.7.0",
+    "nodemailer": "^3.0.2",
     "passport": "^0.3.2",
     "phantomjs-prebuilt": "^2.1.14",
     "randexp": "^0.4.4",
