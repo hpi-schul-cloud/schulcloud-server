@@ -27,7 +27,7 @@ class FileStorageService {
 						type: 'string'
 					}
 				],
-				summary: 'Gets all files for the given context'
+				summary: 'Gets all files and directories for the given context'
 			},
 			remove: {
 				parameters: [
