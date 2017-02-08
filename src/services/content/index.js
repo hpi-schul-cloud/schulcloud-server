@@ -17,7 +17,11 @@ class Service {
 
 		const contentServerUrl = `https://schul-cloud.org:8090/contents?${querystring.encode(options)}`;
 		return request(contentServerUrl).then(string => {
-			return JSON.parse(string);
+			let result = JSON.parse(string);
+			result.total = result.meta.page.total;
+			result.limit = result.meta.page.limit;
+			result.skip = result.meta.page.offset;
+			return result;
 		});
 	}
 
