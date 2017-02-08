@@ -28,6 +28,9 @@ var mockAws = {
 			},
 			deleteObjects: function(params, callback) {
 				callback(null, "successfully deleted object");
+			},
+			putObject: function (params, callback) {
+				callback(null, "successfully put object");
 			}
 		};
 	},
