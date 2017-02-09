@@ -17,5 +17,10 @@ const userSchema = new Schema({
 	timestamps: true
 });
 
+userSchema.methods.getPermissions = function() {
+	const roleModel = require('../role/model');
+	return roleModel.resolvePermissions(this.roles);
+};
+
 const userModel = mongoose.model('user', userSchema);
 module.exports = userModel;
