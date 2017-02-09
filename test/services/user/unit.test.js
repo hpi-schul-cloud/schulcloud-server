@@ -41,6 +41,9 @@ describe('user service', function () {
 				"id": "0000d231816abba584714d01",
 				"accounts": [],
 				"schoolId": "0000d186816abba584714c5f",
+				"email": "user@testusers.net",
+				"firstName": "Max",
+				"lastName": "Tester",
 				"roles": [
 					test_subrole._id
 				]
