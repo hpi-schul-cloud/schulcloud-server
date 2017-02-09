@@ -23,13 +23,13 @@ exports.before = function(app) {
 
 const getDisplayName = (user, app) => {
 	// load protected roles
-	return app.service('/roles').find({query:{
+	return app.service('/roles').find({query:{	// TODO: cache these
 		name: ['teacher', 'admin']
 	}}).then((protectedRoles) => {
 		const protectedRoleIds = (protectedRoles.data || []).map(role => role._id);
-		});
 		let isProtectedUser = protectedRoleIds.find(role => {
 			return (user.roles || []).includes(role);
+		});
 
 		if(isProtectedUser) {
 			return user.lastName ? user.lastName : user._id;
@@ -40,27 +40,23 @@ const getDisplayName = (user, app) => {
 };
 
 const decorateUser = (hook) => {
-	return new Promise(resolve => {
-		// TODO: somehow Promise.all().then() is not working as hook result
-		Promise.all([
-			getDisplayName(hook.result, hook.app),
-			resolvePermissions(hook.result, hook.app)
-		]).then(([displayName, permissions]) => {
-			hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
-
+	return getDisplayName(hook.result, hook.app)
+		.then(displayName => {
+			hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 			hook.result.displayName = displayName;
-			hook.result.permissions = permissions;
-			resolve(hook);
-		});
-	});
+		})
+		.then(() => Promise.resolve(hook));
 };
+
+const User = require('../model');
 
 exports.after = {
 	all: [],
 	find: [decorateUser],
-	get: [decorateUser],
-const User = require('../model');
-	get: [globalHooks.computeProperty(User, 'getPermissions', 'permissions')],
+	get: [
+		decorateUser,
+		globalHooks.computeProperty(User, 'getPermissions', 'permissions')
+	],
 	create: [],
 	update: [],
 	patch: [],
