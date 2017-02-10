@@ -68,7 +68,8 @@ describe('AWS file storage strategy', function () {
 		it("gets all stored files for one user", function () {
 			return aws.getFiles("0000d213816abba584714c0a", "users/0000d213816abba584714c0a").then(res => {
 				expect(res).to.not.be.undefined;
-				expect(res.length).to.be.equal(1);
+				expect(res.files.length).to.be.equal(1);
+				expect(res.directories.length).to.be.equal(0);
 				return;
 			});
 		});
@@ -76,7 +77,8 @@ describe('AWS file storage strategy', function () {
 		it("gets all stored files for one course", function () {
 			return aws.getFiles("0000d213816abba584714c0a", "courses/0000dcfbfb5c7a3f00bf21ab").then(res => {
 				expect(res).to.not.be.undefined;
-				expect(res.length).to.be.equal(1);
+				expect(res.files.length).to.be.equal(1);
+				expect(res.directories.length).to.be.equal(0);
 				return;
 			});
 		});
@@ -151,6 +153,24 @@ describe('AWS file storage strategy', function () {
 
 		it("rejects with missing parameters", function () {
 			return aws.generateSignedUrl().catch(err => {
+				expect(err).to.not.be.undefined;
+				expect(err.code).to.equal(400);
+				return;
+			});
+		});
+	});
+
+	describe("POST /fileStorage/directories", function () {
+		it("creates valid signed url", function () {
+			return aws.createDirectory("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "test").then(res => {
+				expect(res).to.not.be.undefined;
+				expect(res).to.be.equal("successfully put object");
+				return;
+			});
+		});
+
+		it("rejects with missing parameters", function () {
+			return aws.createDirectory().catch(err => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
 				return;
