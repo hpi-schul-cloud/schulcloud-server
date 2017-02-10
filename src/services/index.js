@@ -2,6 +2,7 @@
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const content = require('./content');
+const calendar = require('./calendar');
 const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
@@ -30,6 +31,7 @@ module.exports = function () {
     app.configure(userGroup);
     app.configure(ltiTool);
     app.configure(content);
+    app.configure(calendar);
     app.configure(fileStorage);
     app.configure(link);
     app.configure(helpers);
