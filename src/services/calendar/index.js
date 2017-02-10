@@ -3,6 +3,8 @@
 const request = require('request-promise-native');
 const hooks = require('./hooks');
 
+const REQUEST_TIMEOUT = 4000; // in ms
+
 class Service {
 	constructor(options) {
 		this.options = options || {};
@@ -15,10 +17,16 @@ class Service {
 			headers: {
 				'Authorization': userId
 			},
-			json: true
+			json: true,
+			timeout: REQUEST_TIMEOUT
 		};
-		return request(options).then(json => {
-			return json;
+
+		return new Promise((resolve, reject) => {
+			request(options).then(json => {
+				return resolve(json);
+			}).catch(err => {
+				return reject(err);
+			});
 		});
 	}
 }
