@@ -10,6 +10,7 @@ const authentication = require('./authentication');
 const user = require('./user');
 const role = require('./role');
 const helpers = require('./helpers');
+const resolve = require('./resolve');
 
 const userGroup = require('./user-group');
 
@@ -27,6 +28,7 @@ module.exports = function () {
     app.configure(account);
     app.configure(system);
     app.configure(school);
+    app.configure(resolve);
     app.configure(userGroup);
     app.configure(ltiTool);
     app.configure(content);
