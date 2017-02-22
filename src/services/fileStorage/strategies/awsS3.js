@@ -36,14 +36,20 @@ const verifyStorageContext = (userId, storageContext) => {
 					return Promise.resolve(res);
 				});
 		case 'courses':
-			return CourseModel.find({$and: [{userIds: userId}, {_id: values[1]}]}).exec().then(res => {
+			return CourseModel.find({$and: [
+				{$or:[{userIds: userId}, {teacherIds: userId}]},
+				{_id: values[1]}
+			]}).exec().then(res => {
 				if (!res || res.length <= 0) {
 					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 				}
 				return Promise.resolve(res);
 			});
 		case 'classes':
-			return ClassModel.find({$and: [{userIds: userId}, {_id: values[1]}]}).exec().then(res => {
+			return ClassModel.find({$and: [
+				{$or:[{userIds: userId}, {teacherIds: userId}]},
+				{_id: values[1]}
+			]}).exec().then(res => {
 				if (!res || res.length <= 0) {
 					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 				}
