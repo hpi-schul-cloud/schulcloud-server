@@ -36,6 +36,7 @@ const verifyStorageContext = (userId, storageContext) => {
 					return Promise.resolve(res);
 				});
 		case 'courses':
+			// checks, a) whether the user is student or teacher of the course, b) the course exists
 			return CourseModel.find({$and: [
 				{$or:[{userIds: userId}, {teacherIds: userId}]},
 				{_id: values[1]}
@@ -46,6 +47,7 @@ const verifyStorageContext = (userId, storageContext) => {
 				return Promise.resolve(res);
 			});
 		case 'classes':
+			// checks, a) whether the user is student or teacher of the class, b) the class exists
 			return ClassModel.find({$and: [
 				{$or:[{userIds: userId}, {teacherIds: userId}]},
 				{_id: values[1]}
