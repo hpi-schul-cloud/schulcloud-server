@@ -83,6 +83,15 @@ describe('AWS file storage strategy', function () {
 			});
 		});
 
+		it("gets all stored files for the teacher of a course", function () {
+			return aws.getFiles("0000d231816abba584714c9e", "courses/0000dcfbfb5c7a3f00bf21ab").then(res => {
+				expect(res).to.not.be.undefined;
+				expect(res.files.length).to.be.equal(1);
+				expect(res.directories.length).to.be.equal(0);
+				return;
+			});
+		});
+
 		it("rejects with missing parameters", function () {
 			return aws.getFiles().catch(err => {
 				expect(err).to.not.be.undefined;
@@ -161,7 +170,7 @@ describe('AWS file storage strategy', function () {
 	});
 
 	describe("POST /fileStorage/directories", function () {
-		it("creates valid signed url", function () {
+		it("creates a new directory", function () {
 			return aws.createDirectory("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "test").then(res => {
 				expect(res).to.not.be.undefined;
 				expect(res).to.be.equal("successfully put object");
