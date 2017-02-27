@@ -118,18 +118,30 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 		return `/${path.split("/").filter((v, index) => index > 1).join("/")}`;
 	};
 
-	return Promise.all(awsObjects.map((object) => headObject({Bucket: bucketName, Key: object.Key})))
-		.then((array) => {
-			let data = array.map(object => {
+	const _getFileName = (path) => {
+		if (!path) {
+			return "";
+		}
+
+		// a file's name is in the last part of the path
+		let values = path.split("/");
+		return values[values.length - 1];
+	};
+
+	return Promise.all(awsObjects.map((object) => {
+		return headObject({Bucket: bucketName, Key: object.Key})
+			.then(res => {
 				return {
-					name: object.Metadata.name,
-					path: _getPath(object.Metadata.path),
-					lastModified: object.LastModified,
-					size: object.ContentLength,
-					type: object.ContentType,
-					thumbnail: object.Metadata.thumbnail
+					name: _getFileName(object.Key),
+					path: _getPath(res.Metadata.path),
+					lastModified: res.LastModified,
+					size: res.ContentLength,
+					type: res.ContentType,
+					thumbnail: res.Metadata.thumbnail
 				};
-			});
+		});
+	}))
+		.then(data => {
 			return splitFilesAndDirectories(storageContext, data);
 		});
 };
