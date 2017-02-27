@@ -44,5 +44,16 @@
 		"$oid": "0000d213816abba584714c0b"
 	},
 	"__v": 0
+},
+{
+	"_id" : {
+		"$oid": "58b40279dac20e0645353e3b"
+	},
+	"userId" : {
+		"$oid": "58b40278dac20e0645353e3a"
+	},
+	"password" : "$2a$10$pF0q3WVaTn573pi8l.QrmuOjfQTZ7fQXBmPmMFLbILPLqN2mckUre",
+	"username" : "maxim.asjoma@hpi.de",
+	"__v" : 0
 }
 ]
