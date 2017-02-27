@@ -36,14 +36,22 @@ const verifyStorageContext = (userId, storageContext) => {
 					return Promise.resolve(res);
 				});
 		case 'courses':
-			return CourseModel.find({$and: [{userIds: userId}, {_id: values[1]}]}).exec().then(res => {
+			// checks, a) whether the user is student or teacher of the course, b) the course exists
+			return CourseModel.find({$and: [
+				{$or:[{userIds: userId}, {teacherIds: userId}]},
+				{_id: values[1]}
+			]}).exec().then(res => {
 				if (!res || res.length <= 0) {
 					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 				}
 				return Promise.resolve(res);
 			});
 		case 'classes':
-			return ClassModel.find({$and: [{userIds: userId}, {_id: values[1]}]}).exec().then(res => {
+			// checks, a) whether the user is student or teacher of the class, b) the class exists
+			return ClassModel.find({$and: [
+				{$or:[{userIds: userId}, {teacherIds: userId}]},
+				{_id: values[1]}
+			]}).exec().then(res => {
 				if (!res || res.length <= 0) {
 					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 				}
@@ -110,18 +118,30 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 		return `/${path.split("/").filter((v, index) => index > 1).join("/")}`;
 	};
 
-	return Promise.all(awsObjects.map((object) => headObject({Bucket: bucketName, Key: object.Key})))
-		.then((array) => {
-			let data = array.map(object => {
+	const _getFileName = (path) => {
+		if (!path) {
+			return "";
+		}
+
+		// a file's name is in the last part of the path
+		let values = path.split("/");
+		return values[values.length - 1];
+	};
+
+	return Promise.all(awsObjects.map((object) => {
+		return headObject({Bucket: bucketName, Key: object.Key})
+			.then(res => {
 				return {
-					name: object.Metadata.name,
-					path: _getPath(object.Metadata.path),
-					lastModified: object.LastModified,
-					size: object.ContentLength,
-					type: object.ContentType,
-					thumbnail: object.Metadata.thumbnail
+					name: _getFileName(object.Key),
+					path: _getPath(res.Metadata.path),
+					lastModified: res.LastModified,
+					size: res.ContentLength,
+					type: res.ContentType,
+					thumbnail: res.Metadata.thumbnail
 				};
-			});
+		});
+	}))
+		.then(data => {
 			return splitFilesAndDirectories(storageContext, data);
 		});
 };
