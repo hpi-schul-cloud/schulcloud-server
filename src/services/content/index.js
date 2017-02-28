@@ -10,12 +10,11 @@ class Service {
 	}
 
 	find(params) {
-		const options = {};
-		if(params.query.$limit) options["page[limit]"] = params.query.$limit;
-		if(params.query.$skip) options["page[offset]"] = params.query.$skip;
-		if(params.query.query) options.query = params.query.query;
-
-		const contentServerUrl = `https://schul-cloud.org:8090/contents?${querystring.encode(options)}`;
+		if(params.query.$limit) params.query["page[limit]"] = params.query.$limit;
+		if(params.query.$skip) params.query["page[offset]"] = params.query.$skip;
+		delete params.query.$limit;	// remove unexpected fields
+		delete params.query.$skip;
+		const contentServerUrl = `https://schul-cloud.org:8090/contents?${querystring.encode(params.query)}`;
 		return request(contentServerUrl).then(string => {
 			let result = JSON.parse(string);
 			if((result.meta || {}).page) {
