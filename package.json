@@ -57,6 +57,7 @@
     "nodemailer": "^3.0.2",
     "passport": "^0.3.2",
     "phantomjs-prebuilt": "^2.1.14",
+    "querystring": "^0.2.0",
     "randexp": "^0.4.4",
     "request-promise-native": "^1.0.3",
     "serve-favicon": "^2.3.2",
