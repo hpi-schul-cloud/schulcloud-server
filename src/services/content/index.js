@@ -3,6 +3,7 @@
 const request = require('request-promise-native');
 const querystring = require('querystring');
 const hooks = require('./hooks');
+const _ = require('lodash');
 
 class Service {
 	constructor(options) {
@@ -14,6 +15,16 @@ class Service {
 		if(params.query.$skip) params.query["page[offset]"] = params.query.$skip;
 		delete params.query.$limit;	// remove unexpected fields
 		delete params.query.$skip;
+
+		let relevantFilters = _.pickBy(params.query.filter, array => (array.length > 0));	// remove empty arrays
+		let filters = _.mapKeys(relevantFilters, (value, key) => `filter[${key}]`);	// undo feathers' square bracket rewriting of the JSON:API filter format
+		filters = _.mapValues(filters, (array) => {
+			const quoted = array.map(v => `"${v}"`);	// JSON:API expects comma-separated values in square brackets and string quotation marks
+			return `[${quoted.join(',')}]`;
+		});
+		Object.assign(params.query, filters);
+		delete params.query.filter;
+
 		const contentServerUrl = `https://schul-cloud.org:8090/contents?${querystring.encode(params.query)}`;
 		return request(contentServerUrl).then(string => {
 			let result = JSON.parse(string);
