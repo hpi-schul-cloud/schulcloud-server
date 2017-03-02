@@ -5,7 +5,7 @@ const errors = require('feathers-errors');
 const path = require('path');
 const childProcess = require('child_process');
 const execFile = promisify(childProcess.execFile);
-const phantomjs = require('phantomjs');
+const phantomjs = require('phantomjs-prebuilt');
 const binPath = phantomjs.path;
 
 const AbstractLoginStrategy = require('./interface.js');

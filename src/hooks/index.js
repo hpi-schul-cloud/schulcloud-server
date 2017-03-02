@@ -1,7 +1,8 @@
 'use strict';
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
-
+const logger = require('winston');
+// Add any common hooks you want to share across services in here.
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function (hookForRemoteRequests) {
@@ -28,11 +29,11 @@ exports.hasPermission = function (permissionName) {
 		if(!(hook.params.user.permissions || []).includes(permissionName)) {
 			throw new errors.Forbidden(`You don't have the permission ${permissionName}. Your permissions are ${hook.params.user.permissions}`);
 		}
-
 		return Promise.resolve(hook);
 	};
 };
 
+// resolves IDs of objects from serviceName specified by *key* instead of their *_id*
 exports.resolveToIds = (serviceName, path, key, hook) => {
 	// get ids from a probably really deep nested path
 	const service = hook.app.service(serviceName);
@@ -80,4 +81,17 @@ const deepValue = (obj, path, newValue) => {
 
 	if(newValue) obj[path[i]] = newValue;
 	return obj[path[i]];
+};
+
+exports.computeProperty = function (Model, functionName, variableName) {
+	return (hook) => {
+		return Model.findById(hook.result._id)	// get the model instance to call functions etc  TODO make query results not lean
+			.then(modelInstance => modelInstance[functionName]())	// compute that property
+			.then(result => {
+				hook.result[variableName] = result;		// save it in the resulting object
+			})
+			.catch(e => logger.error(e))
+			.then(_ => Promise.resolve(hook));
+
+	};
 };
