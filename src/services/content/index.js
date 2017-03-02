@@ -19,8 +19,9 @@ class Service {
 		let relevantFilters = _.pickBy(params.query.filter, array => (array.length > 0));	// remove empty arrays
 		let filters = _.mapKeys(relevantFilters, (value, key) => `filter[${key}]`);	// undo feathers' square bracket rewriting of the JSON:API filter format
 		filters = _.mapValues(filters, (array) => {
-			const quoted = array.map(v => `"${v}"`);	// JSON:API expects comma-separated values in square brackets and string quotation marks
-			return `[${quoted.join(',')}]`;
+			if(array.constructor !== Array) return array;
+			const quoted = array.map(v => `["${v}"]`);	// the content service JSON:API implementation expects comma-separated values in square brackets and string quotation marks
+			return quoted.join(',');
 		});
 		Object.assign(params.query, filters);
 		delete params.query.filter;
