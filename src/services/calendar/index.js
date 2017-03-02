@@ -22,11 +22,7 @@ class Service {
 		};
 
 		return new Promise((resolve, reject) => {
-			request(options).then(json => {
-				return resolve(json);
-			}).catch(err => {
-				return reject(err);
-			});
+			return request(options);
 		});
 	}
 }
