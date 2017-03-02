@@ -1,18 +1,19 @@
 'use strict';
 
-const getDataEntry = ({type, id, name, authorities = ["can-read"]}) => {
+// get an json api conform entry
+const getDataEntry = ({type, id, name, authorities = ["can-read"], attributes = {}}) => {
 	return {
 		type,
 		id,
-		attributes: {
+		attributes: Object.assign({}, {
 			name,
 			authorities
-		}
+		}, attributes)
 	};
 };
 
 // get scopes from user object Id
-class ResolveScopes {
+class ScopeResolver {
 	get(id, params) {
 		const userService = this.app.service('/users');
 		const courseService = this.app.service('/courses');
@@ -47,6 +48,20 @@ class ResolveScopes {
 					courseService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}}),
 					classService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}})
 				]).then(([courses, classes]) => {
+					courses.data = courses.data.map(c => {
+						c.attributes = {
+							scopeType: 'course'
+						};
+						return c;
+					});
+
+					classes.data = classes.data.map(c => {
+						c.attributes = {
+							scopeType: 'course'
+						};
+						return c;
+					});
+
 					const scopes = [].concat(courses.data, classes.data);
 					scopes.forEach(scope => {
 						const authorities = ["can-read"];
@@ -59,7 +74,8 @@ class ResolveScopes {
 							type: 'scope',
 							id: scope._id,
 							name: scope.name,
-							authorities
+							authorities,
+							attributes: scope.attributes
 						}));
 					});
 
@@ -74,7 +90,7 @@ class ResolveScopes {
 }
 
 // get users from UUID (e.g. course id)
-class ResolveUsers {
+class UserResolver {
 	get(id, params) {
 		// token should NOT be userId but for testing purpose it's easier right now
 		const userService = this.app.service('/users');
@@ -132,14 +148,14 @@ class ResolveUsers {
 			.then(data => {
 				const users = data.data;
 
-				users.forEach(user => {
-					response.data.push(getDataEntry({
+				response.data = users.map(user =>
+					getDataEntry({
 						type: 'user',
 						id: user._id,
 						name: user.fullName,
 						authorities: ["can-read"]
-					}));
-				});
+					})
+				);
 				return Promise.resolve(response);
 		});
 	}
@@ -153,6 +169,6 @@ module.exports = function () {
 	const app = this;
 
 	// Initialize our service with any options it requires
-	app.use('/resolve/scopes', new ResolveScopes());
-	app.use('/resolve/users', new ResolveUsers());
+	app.use('/resolve/scopes', new ScopeResolver());
+	app.use('/resolve/users', new UserResolver());
 };
