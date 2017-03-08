@@ -9,3 +9,9 @@ script:
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - bash <(curl -X POST --data "apiKey=$apiKey&branch=$BRANCH" http://$url/update)
+notifications:
+  slack:
+    on_success: change
+    on_failure: always
+    rooms:
+          - schul-cloud:6Kefiuws4KEH3JOWnpfU1NhY#ci
