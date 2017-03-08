@@ -11,7 +11,6 @@ after_success:
   - bash <(curl -X POST --data "apiKey=$apiKey&branch=$BRANCH" http://$url/update)
 notifications:
   slack:
+    secure: h37z88gdx3aJQBbV2oi6WuUMOm/N48tJutCDoa2fhCT4mT0xLL2Qxck9V2M+yZE7V4OyI7c+2lPbKjfkmhoVGH/igXlh8JPxTbT7yK6VhvagoFvI4kJh32HSVV3fN48BqHcC9+sWmgf989C5fqq4li/l3BKxllASTek+aiZa712c49RGBwHaYYZg7DWxelc+rzS9JXyboz5BxBW8aj/jGS3ORdviZDnsNc7k7ULChDeT7sqE0JXJA96TGa3I2qna4k12hWkhUcvoh6ldFmRqup1f6JlGaXm7nJNGYF7NFtI1b95CzzHLvZpFmDIhL5HwqHzxV1luEEcoH05y5rxH7tc+3MG53XHKkU76wtfR/VYOYNwRCY7IaHF0rrFeAoz3UIGFAEQ4sugUHBOVma8gfiCTGVpCLrarDER2Nj3rcGShO3VY+CczYdNqxwbBq+wrSBk1lD7zpxDjW0BogEwsGO7C+qnoHc86fTv6XFkrsoInbrr8EgEFjPq+LmbrZYk6PbEl/Kl32OHqWIaN483YYuMBP4bLY91T1kO/7WU5riO7HMiwOG9eT1BXN1uRpEJUs5wWQnR4re76Dr1J87hVnXoaYcXUZSiiUvlqd+79rHisj2Afle9pWNK+pKmhCtrMOD3ZUUPbxmHilpZZxrPGfyBF9n7B+suTb68ii/mPZLU=
     on_success: change
     on_failure: always
-    rooms:
-          - schul-cloud:6Kefiuws4KEH3JOWnpfU1NhY#ci
