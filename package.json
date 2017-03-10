@@ -50,6 +50,7 @@
     "feathers-swagger": "^0.3.2",
     "freeport": "^1.0.5",
     "istanbul": "^0.4.5",
+    "lodash": "^4.17.4",
     "mongoose": "^4.7.6",
     "mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
     "moodle-client": "^0.4.0",
