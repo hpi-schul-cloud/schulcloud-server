@@ -5,12 +5,13 @@ const mockery = require('mockery');
 const promisify = require("es6-promisify");
 const fs = require("fs");
 const readFile = promisify(fs.readFile);
+const writeFile = promisify(fs.writeFile);
 const path = require("path");
 
 
 describe('content service', function () {
 	const requestMock = (options) => {
-			return readFile(requestToFilename(options));
+		return readFile(requestToFilename(options));
 	};
 
 	let app = null;
@@ -59,16 +60,11 @@ describe('content service', function () {
 });
 
 function writeResponseToDisk(requestOptions, response) {
-	const fs = require('fs');
-	fs.writeFile(requestToFilename(requestOptions, response), string, function(err) {
-		if(err) {
-			return console.error(err);
-		}
-		console.log("The file was saved!");
-	});
+	return writeFile(requestToFilename(requestOptions), response);
 }
 
 function requestToFilename(requestOptions) {
-	const filename = `response${JSON.stringify(requestOptions.qs).replace(/[^\x00-\x7F]/g, "")}.txt`;
+	const key = JSON.stringify(requestOptions.qs).replace(/([^ -~]|\.)+/g, "");	// just ASCII characters, no dots
+	const filename = `response${key}.txt`;
 	return path.resolve(__dirname, 'mock', filename);
 }
