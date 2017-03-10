@@ -26,8 +26,11 @@ class Service {
 		Object.assign(params.query, filters);
 		delete params.query.filter;
 
-		const contentServerUrl = `https://schul-cloud.org:8090/contents?${querystring.encode(params.query)}`;
-		return request(contentServerUrl).then(string => {
+		const requestOptions = {
+			uri: "https://schul-cloud.org:8090/contents",
+			qs: params.query
+		};
+		return request(requestOptions).then(string => {
 			let result = JSON.parse(string);
 			if((result.meta || {}).page) {
 				result.total = result.meta.page.total;
