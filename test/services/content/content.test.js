@@ -1,12 +1,30 @@
 const assert = require('assert');
-const app = require('../../../src/app');
-const contentService = app.service('contents');
+
 const chai = require('chai');
+const mockery = require('mockery');
+const promisify = require("es6-promisify");
+const fs = require("fs");
+const readFile = promisify(fs.readFile);
+const path = require("path");
 
 
 describe('content service', function () {
-	before(function () {
+	const requestMock = (options) => {
+			return readFile(requestToFilename(options));
+	};
 
+	let app = null;
+	let contentService = null;
+
+	before(function () {
+		mockery.enable({
+			warnOnReplace: false,
+			warnOnUnregistered: false,
+			useCleanCache: true
+		});
+		mockery.registerMock('request-promise-native', requestMock);
+		app = require('../../../src/app');
+		contentService = app.service('contents');
 	});
 
 	it('registered the users service', () => {
@@ -39,3 +57,18 @@ describe('content service', function () {
 			});
 	});
 });
+
+function writeResponseToDisk(requestOptions, response) {
+	const fs = require('fs');
+	fs.writeFile(requestToFilename(requestOptions, response), string, function(err) {
+		if(err) {
+			return console.error(err);
+		}
+		console.log("The file was saved!");
+	});
+}
+
+function requestToFilename(requestOptions) {
+	const filename = `response${JSON.stringify(requestOptions.qs).replace(/[^\x00-\x7F]/g, "")}.txt`;
+	return path.resolve(__dirname, 'mock', filename);
+}
