@@ -23,7 +23,7 @@ const courseModel = mongoose.model('course', getUserGroupSchema({
 	ltiToolIds: [{type: Schema.Types.ObjectId, required: true, ref: 'ltiTool'}]
 }));
 const classModel =  mongoose.model('class', getUserGroupSchema({
-	teacherIds: [{type: Schema.Types.ObjectId, required: true}]
+	teacherIds: [{type: Schema.Types.ObjectId, ref: 'user', required: true}]
 }));
 const gradeModel =  mongoose.model('grade', getUserGroupSchema());
 
