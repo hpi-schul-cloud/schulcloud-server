@@ -10,6 +10,7 @@ const path = require("path");
 
 
 describe('content service', function () {
+	this.timeout(10000);	// for slow require(app) call
 	const requestMock = (options) => {
 		return readFile(requestToFilename(options));
 	};
