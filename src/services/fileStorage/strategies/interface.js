@@ -12,9 +12,17 @@ class AbstractFileStorageStrategy {
 	getFiles() {
 		throw new TypeError("getFiles method has to be implemented.");
 	}
-	
+
 	deleteFile() {
 		throw new TypeError("deleteFile method has to be implemented.");
+	}
+
+	generateSignedUrl() {
+		throw new TypeError("generateSignedUrl method has to be implemented.");
+	}
+
+	createDirectory() {
+		throw new TypeError("createDirectory method has to be implemented.");
 	}
 }
 
