@@ -17,7 +17,7 @@ describe('content service', function () {
 	let app = null;
 	let contentService = null;
 
-	before(function () {
+	before(done => {
 		mockery.enable({
 			warnOnReplace: false,
 			warnOnUnregistered: false,
@@ -26,6 +26,13 @@ describe('content service', function () {
 		mockery.registerMock('request-promise-native', requestMock);
 		app = require('../../../src/app');
 		contentService = app.service('contents');
+		done();
+	});
+
+	after(done => {
+		mockery.deregisterAll();
+		mockery.disable();
+		done();
 	});
 
 	it('registered the users service', () => {
