@@ -9,10 +9,15 @@ class Service {
 	}
 
 	find(params) {
-		const contentServerUrl = "https://schul-cloud.org:8090/contents";
+		const serviceUrls = this.app.get('services') || {};
+		const contentServerUrl = serviceUrls.content + "/contents";
 		return request(contentServerUrl).then(string => {
 			return JSON.parse(string);
 		});
+	}
+
+	setup(app, path) {
+		this.app = app;
 	}
 
 	/*get(id, params) {

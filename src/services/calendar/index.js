@@ -11,9 +11,12 @@ class Service {
 	}
 
 	find(params) {
-		const userId = params.payload.userId;
+
+		const serviceUrls = this.app.get('services') || {};
+
+		const userId = (params.account ||{}).userId || params.payload.userId;
 		const options = {
-			uri: 'https://schul-cloud.org:3000/events/',
+			uri: serviceUrls.calendar + '/events/',
 			headers: {
 				'Authorization': userId
 			},
@@ -21,9 +24,22 @@ class Service {
 			timeout: REQUEST_TIMEOUT
 		};
 
-		return new Promise((resolve, reject) => {
-			return request(options);
+		return request(options).then(events => {
+			events = events.map(event => {
+				return Object.assign(event, {
+					title: event.summary,
+					allDay: false, // TODO: find correct value
+					start: Date.parse(event.dtstart),
+					end: Date.parse(event.dtend),
+					url: '' // TODO: add x-sc-field
+				});
+			});
+			return events;
 		});
+	}
+
+	setup(app, path) {
+		this.app = app;
 	}
 }
 
