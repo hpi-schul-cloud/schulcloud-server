@@ -11,7 +11,7 @@ class Service {
 	}
 
 	find(params) {		
-if(params.query.$limit) params.query["page[limit]"] = params.query.$limit;
+		if(params.query.$limit) params.query["page[limit]"] = params.query.$limit;
 		if(params.query.$skip) params.query["page[offset]"] = params.query.$skip;
 		delete params.query.$limit;	// remove unexpected fields
 		delete params.query.$skip;
