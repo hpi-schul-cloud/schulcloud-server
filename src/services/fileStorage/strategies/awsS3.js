@@ -7,10 +7,12 @@ const ClassModel = require('../../user-group/model').classModel;
 const aws = require('aws-sdk');
 const fs = require('fs');
 const path = require('path');
+const logger = require('winston');
 let awsConfig;
 try {
 	awsConfig = require("../../../../config/secrets.json").aws;
 } catch (e) {
+	logger.log('warn', 'The AWS config couldn\'t be read');
 	awsConfig = {};
 }
 
@@ -63,6 +65,7 @@ const verifyStorageContext = (userId, storageContext) => {
 };
 
 const createAWSObject = (schoolId) => {
+	if(!awsConfig.endpointUrl) throw new Error('AWS integration is not configured on the server');
 	var config = new aws.Config(awsConfig);
 	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
 	let bucketName = `bucket-${schoolId}`;
