@@ -1,6 +1,7 @@
 const testListObjectsReturn = {
 	Contents: [
-		{key: "testFile"}
+		{Key: "testFile"},
+		{Key: ".scfake"}
 	]
 };
 
@@ -8,7 +9,8 @@ const testHeadObjectReturn = {
 	Metadata: { name: "testName", thumbnail: "testThumbnail" },
 	LastModified: "test",
 	ContentLength: 5,
-	ContentType: "mime/image"
+	ContentType: "mime/image",
+	Key: "testKey"
 };
 
 var mockAws = {
@@ -27,7 +29,7 @@ var mockAws = {
 				callback(null, testHeadObjectReturn);
 			},
 			deleteObjects: function(params, callback) {
-				callback(null, "successfully deleted object");
+				callback(null, {Deleted: params.Delete.Objects});
 			},
 			putObject: function (params, callback) {
 				callback(null, "successfully put object");

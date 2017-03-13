@@ -268,8 +268,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	deleteDirectory(userId, storageContext, directoryPrefix) {
-		if (!userId || !storageContext || !directoryPrefix) return Promise.reject(new errors.BadRequest('Missing parameters'));
+	deleteDirectory(userId, storageContext) {
+		if (!userId || !storageContext) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return verifyStorageContext(userId, storageContext)
 			.then(res => UserModel.findById(userId).exec())
 			.then(result => {
@@ -278,25 +278,25 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				const s3 = awsObject.s3;
 				const params = {
 					Bucket: awsObject.bucket,
-					Prefix: directoryPrefix
+					Prefix: storageContext
 				};
-				return this._deleteAllInDirectory(s3, params);
+				return this._deleteAllInDirectory(awsObject, params);
 			});
 	}
 
-	_deleteAllInDirectory(s3, params) {
-		return promisify(s3.listObjects, s3)(params)
+	_deleteAllInDirectory(awsObject, params) {
+		return promisify(awsObject.s3.listObjectsV2, awsObject.s3)(params)
 			.then(data => {
 				if (data.Contents.length == 0) return Promise.resolve();
 
 				const deleteParams = {Bucket: params.Bucket, Delete: {}};
 				deleteParams.Delete.Objects = data.Contents;
 
-				return promisify(s3.deleteObjects, s3)(deleteParams);
+				return promisify(awsObject.s3.deleteObjects, awsObject.s3)(deleteParams);
 			})
 			.then(deletionData => {
-				if (deletionData.Deleted.length == 1000) return this._deleteAllInDirectory(s3, params);	// AWS S3 returns only 1000 items at once
-				else return Promise.resolve();
+				if (deletionData.Deleted.length == 1000) return this._deleteAllInDirectory(awsObject, params);	// AWS S3 returns only 1000 items at once
+				else return Promise.resolve(deletionData);
 			});
 	}
 }

@@ -14,6 +14,7 @@ chai.use(chaiHttp);
 
 describe('AWS file storage strategy', function () {
 	let aws;
+
 	let options = {
 		schoolId: '0000d186816abba584714c5f'
 	};
@@ -48,7 +49,9 @@ describe('AWS file storage strategy', function () {
 		});
 
 		it('rejects if no school id is given', function () {
-			return aws.create().catch(err => {
+			return aws.create()
+				.then(res => chai.fail('it succeeded', 'should have returned an error'))
+				.catch(err => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
 				return;
@@ -56,7 +59,9 @@ describe('AWS file storage strategy', function () {
 		});
 
 		it('rejects if school was not found', function () {
-			return aws.create("0000d186816abba584714bbb").catch(err => {
+			return aws.create("0000d186816abba584714bbb")
+				.then(res => chai.fail('it succeeded', 'should have returned an error'))
+				.catch(err => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(404);
 				return;
@@ -93,7 +98,9 @@ describe('AWS file storage strategy', function () {
 		});
 
 		it("rejects with missing parameters", function () {
-			return aws.getFiles().catch(err => {
+			return aws.getFiles()
+				.then(res => chai.fail('it succeeded', 'should have returned an error'))
+				.catch(err => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
 				return;
@@ -117,7 +124,6 @@ describe('AWS file storage strategy', function () {
 					expect(err).to.not.be.undefined;
 					expect(err.message).to.contain("You don't have permissions");
 					expect(err.code).to.equal(403);
-					return;
 				});
 		});
 
@@ -128,7 +134,6 @@ describe('AWS file storage strategy', function () {
 					expect(err).to.not.be.undefined;
 					expect(err.message).to.contain("You don't have permissions");
 					expect(err.code).to.equal(403);
-					return;
 				});
 		});
 	});
@@ -137,13 +142,26 @@ describe('AWS file storage strategy', function () {
 		it("deletes a file correctly", function () {
 			return aws.deleteFile("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "example.jpg").then(res => {
 				expect(res).to.not.be.undefined;
-				expect(res).to.be.equal("successfully deleted object");
+				expect(res.Deleted).to.have.lengthOf(1);
+				expect(res.Deleted[0].Key).to.equal("users/0000d213816abba584714c0a/example.jpg");
 				return;
 			});
 		});
 
+		it("deletes a folder correctly", function () {
+			return aws.deleteDirectory("0000d213816abba584714c0a", "users/0000d213816abba584714c0a/folderToBeDeleted")
+				.then(res => {
+				expect(res).to.not.be.undefined;
+				expect(res.Deleted).to.have.lengthOf(2);
+				expect(res.Deleted[0].Key).to.equal("testFile");
+				expect(res.Deleted[1].Key).to.equal(".scfake");
+			});
+		});
+
 		it("rejects with missing parameters", function () {
-			return aws.deleteFile().catch(err => {
+			return aws.deleteFile()
+				.then(res => chai.fail('it succeeded', 'should have returned an error'))
+				.catch(err => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
 				return;
@@ -161,7 +179,9 @@ describe('AWS file storage strategy', function () {
 		});
 
 		it("rejects with missing parameters", function () {
-			return aws.generateSignedUrl().catch(err => {
+			return aws.generateSignedUrl()
+				.then(res => chai.fail('it succeeded', 'should have returned an error'))
+				.catch(err => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
 				return;
@@ -179,7 +199,9 @@ describe('AWS file storage strategy', function () {
 		});
 
 		it("rejects with missing parameters", function () {
-			return aws.createDirectory().catch(err => {
+			return aws.createDirectory()
+				.then(res => chai.fail('it succeeded', 'should have returned an error'))
+				.catch(err => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
 				return;
