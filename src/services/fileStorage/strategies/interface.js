@@ -24,6 +24,10 @@ class AbstractFileStorageStrategy {
 	createDirectory() {
 		throw new TypeError("createDirectory method has to be implemented.");
 	}
+
+	deleteDirectory() {
+		throw new TypeError("deleteDirectory method has to be implemented.");
+	}
 }
 
 module.exports = AbstractFileStorageStrategy;
