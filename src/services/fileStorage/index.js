@@ -1,6 +1,7 @@
 'use strict';
 const hooks = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
+const errors = require('feathers-errors');
 
 const strategies = {
 	awsS3: AWSStrategy
@@ -8,7 +9,7 @@ const strategies = {
 
 const createCorrectStrategy = (fileStorageType) => {
 	const strategy = strategies[fileStorageType];
-	if (!strategy) return Promise.reject("No file storage provided for this school");
+	if (!strategy) throw new errors.BadRequest("No file storage provided for this school");
 	return new strategy();
 };
 
