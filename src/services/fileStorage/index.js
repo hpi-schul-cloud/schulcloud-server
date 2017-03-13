@@ -78,7 +78,8 @@ class FileStorageService {
 
 	/**
 	 * @param params, contains storageContext and fileName in query
-     */
+	 * @returns {Promise}
+	 */
 	remove(id, params) {
 		return createCorrectStrategy(params.payload.fileStorageType).deleteFile(params.payload.userId, params.query.storageContext, params.query.fileName);
 	}
@@ -144,6 +145,23 @@ class DirectoryService {
 					}
 				],
 				summary: 'Creates a folder for a given storageContext'
+			},
+			remove: {
+				parameters: [
+					{
+						description: 'the context of the file-storage',
+						required: true,
+						name: 'storageContext',
+						type: 'string'
+					},
+					{
+						description: 'the name of the directory to be removed',
+						required: true,
+						name: 'dirName',
+						type: 'string'
+					}
+				],
+				summary: 'Removes a folder for a given storageContext'
 			}
 		};
 	}
@@ -154,6 +172,18 @@ class DirectoryService {
 	 */
 	create(data, params) {
 		return createCorrectStrategy(params.payload.fileStorageType).createDirectory(params.payload.userId, data.storageContext, data.dirName);
+	}
+
+	/**
+	 * @param params, {
+			storageContext,
+			dirName
+		}
+	 * @returns {Promise}
+	 */
+	remove(id, params) {
+		return createCorrectStrategy(params.payload.fileStorageType)
+			.deleteDirectory(params.payload.userId, params.query.storageContext, params.query.dirName);
 	}
 }
 
