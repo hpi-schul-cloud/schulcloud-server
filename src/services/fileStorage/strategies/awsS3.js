@@ -271,8 +271,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	deleteDirectory(userId, storageContext) {
-		if (!userId || !storageContext) return Promise.reject(new errors.BadRequest('Missing parameters'));
+	deleteDirectory(userId, storageContext, dirName) {
+		if (!userId || !storageContext || !dirName) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return verifyStorageContext(userId, storageContext)
 			.then(res => UserModel.findById(userId).exec())
 			.then(result => {
@@ -281,7 +281,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				const s3 = awsObject.s3;
 				const params = {
 					Bucket: awsObject.bucket,
-					Prefix: storageContext
+					Prefix: `${storageContext}/${dirName}`
 				};
 				return this._deleteAllInDirectory(awsObject, params);
 			});
@@ -293,7 +293,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				if (data.Contents.length == 0) return Promise.resolve();
 
 				const deleteParams = {Bucket: params.Bucket, Delete: {}};
-				deleteParams.Delete.Objects = data.Contents;
+				deleteParams.Delete.Objects = data.Contents.map(c => ({Key: c.Key}));
 
 				return promisify(awsObject.s3.deleteObjects, awsObject.s3)(deleteParams);
 			})
