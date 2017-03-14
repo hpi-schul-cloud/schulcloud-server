@@ -17,6 +17,15 @@ const getUserGroupSchema = (additional = {}) => {
 	});
 };
 
+
+const homeworkModel = mongoose.model('homework', getUserGroupSchema({
+	description: {type: String, required: true},
+	dueDate: {type: Date, required: true},
+	editableDate: {type: Date, required: true},
+	submitted: [{type: Schema.Types.ObjectId, required: true, ref: 'user', graded: {type: Number}}],
+	classIds: [{type: Schema.Types.ObjectId, required: true, ref: 'class'}],
+
+}));
 const courseModel = mongoose.model('course', getUserGroupSchema({
 	classIds: [{type: Schema.Types.ObjectId, required: true, ref: 'class'}],
 	teacherIds: [{type: Schema.Types.ObjectId, required: true, ref: 'user'}],
@@ -30,5 +39,6 @@ const gradeModel =  mongoose.model('grade', getUserGroupSchema());
 module.exports = {
 	courseModel,
 	classModel,
+	homeworkModel,
 	gradeModel
 };
