@@ -10,7 +10,7 @@ class Service {
 		this.options = options || {};
 	}
 
-	find(params) {
+	find(params) {		
 		if(params.query.$limit) params.query["page[limit]"] = params.query.$limit;
 		if(params.query.$skip) params.query["page[offset]"] = params.query.$skip;
 		delete params.query.$limit;	// remove unexpected fields
@@ -25,9 +25,10 @@ class Service {
 		});
 		Object.assign(params.query, filters);
 		delete params.query.filter;
-
+    
+    const serviceUrls = this.app.get('services') || {};
 		const requestOptions = {
-			uri: "https://schul-cloud.org:8090/contents",
+			uri: serviceUrls.content + "/contents",
 			qs: params.query
 		};
 		return request(requestOptions).then(string => {
@@ -39,6 +40,10 @@ class Service {
 			}
 			return result;
 		});
+	}
+
+	setup(app, path) {
+		this.app = app;
 	}
 
 	/*get(id, params) {

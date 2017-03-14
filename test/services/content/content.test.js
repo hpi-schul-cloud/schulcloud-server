@@ -26,6 +26,7 @@ describe('content service', function () {
 		});
 		mockery.registerMock('request-promise-native', requestMock);
 		app = require('../../../src/app');
+		app.setup();
 		contentService = app.service('contents');
 		done();
 	});
@@ -36,7 +37,7 @@ describe('content service', function () {
 		done();
 	});
 
-	it('registered the users service', () => {
+	it('registered the contents service', () => {
 		assert.ok(contentService);
 	});
 
