@@ -8,10 +8,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const fileStorageTypes = ['awsS3'];
+
 const schoolSchema = new Schema({
 	name: {type: String, required: true},
 	address: {type: Object},
-	systems: [{type: Schema.Types.ObjectId}],
+	fileStorageType: {type: String, required: true, enum: fileStorageTypes},
+	systems: [{type: Schema.Types.ObjectId, ref: 'system'}],
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now}
 },{

@@ -6,13 +6,14 @@ const hooks = require('./hooks');
 
 module.exports = function() {
   const app = this;
-	
+
 	const options = {
     Model: ltiTool,
     paginate: {
       default: 100,
       max: 100
-    }
+    },
+		lean: true
   };
 
   // Initialize our service with any options it requires
