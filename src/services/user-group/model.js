@@ -23,7 +23,7 @@ const homeworkModel = mongoose.model('homework', getUserGroupSchema({
 	dueDate: {type: Date, required: true},
 	editableDate: {type: Date, required: true},
 	submitted: [{type: Schema.Types.ObjectId, required: true, ref: 'user', graded: {type: Number}}],
-	classIds: [{type: Schema.Types.ObjectId, required: true, ref: 'class'}],
+	courseIds: [{type: Schema.Types.ObjectId, required: true, ref: 'course'}],
 
 }));
 const courseModel = mongoose.model('course', getUserGroupSchema({

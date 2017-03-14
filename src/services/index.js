@@ -11,7 +11,6 @@ const user = require('./user');
 const role = require('./role');
 const helpers = require('./helpers');
 const resolve = require('./resolve');
-
 const userGroup = require('./user-group');
 
 const mongoose = require('mongoose');
