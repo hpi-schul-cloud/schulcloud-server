@@ -7,6 +7,7 @@ const calendar = require('./calendar');
 const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
+const lesson = require('./lesson');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
@@ -35,6 +36,7 @@ module.exports = function () {
     app.configure(ltiTool);
     app.configure(content);
     app.configure(calendar);
+	  app.configure(lesson);
     app.configure(fileStorage);
     app.configure(link);
     app.configure(news);

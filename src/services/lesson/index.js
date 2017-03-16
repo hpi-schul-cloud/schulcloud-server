@@ -1,14 +1,14 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const role = require('./model');
+const lesson = require('./model');
 const hooks = require('./hooks');
 
 module.exports = function () {
 	const app = this;
 
 	const options = {
-		Model: role,
+		Model: lesson,
 		paginate: {
 			default: 5,
 			max: 25
@@ -17,14 +17,14 @@ module.exports = function () {
 	};
 
 	// Initialize our service with any options it requires
-	app.use('/roles', service(options));
+	app.use('/lessons', service(options));
 
 	// Get our initialize service to that we can bind hooks
-	const roleService = app.service('/roles');
+	const systemService = app.service('/lessons');
 
 	// Set up our before hooks
-	roleService.before(hooks.before(app));
+	systemService.before(hooks.before);
 
 	// Set up our after hooks
-	roleService.after(hooks.after);
+	systemService.after(hooks.after);
 };
