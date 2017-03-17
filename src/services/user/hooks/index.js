@@ -48,26 +48,11 @@ const decorateUser = (hook) => {
 		.then(() => Promise.resolve(hook));
 };
 
-const decorateUsers = (hook) => {
-	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-	const userPromises = (hook.result.data || []).map(user => {
-		return getDisplayName(user, hook.app).then(displayName => {
-			user.displayName = displayName;
-			return user;
-		});
-	});
-
-	return Promise.all(userPromises).then(users => {
-		hook.result.data = users;
-		return Promise.resolve(hook);
-	});
-};
-
 const User = require('../model');
 
 exports.after = {
 	all: [],
-	find: [decorateUsers],
+	find: [decorateUser],
 	get: [
 		decorateUser,
 		globalHooks.computeProperty(User, 'getPermissions', 'permissions')

@@ -57,7 +57,7 @@ class ScopeResolver {
 
 					classes.data = classes.data.map(c => {
 						c.attributes = {
-							scopeType: 'class'
+							scopeType: 'course'
 						};
 						return c;
 					});

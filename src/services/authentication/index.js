@@ -3,7 +3,6 @@
 const auth = require('feathers-authentication');
 const jwt = require('feathers-authentication-jwt');
 const local = require('feathers-authentication-local');
-const system = require('./strategies/system');
 
 const hooks = require('./hooks');
 
@@ -43,27 +42,10 @@ module.exports = function() {
 		header: 'Authorization'
 	};
 
-
 	// Configure feathers-authentication
 	app.configure(auth(authConfig));
 	app.configure(jwt(jwtConfig));
 	app.configure(local(localConfig));
-
-	app.configure(system({
-		name: 'moodle',
-		loginStrategy: require('../account/strategies/moodle')
-	}));
-
-	app.configure(system({
-		name: 'lernsax',
-		loginStrategy: require('../account/strategies/lernsax')
-	}));
-
-	app.configure(system({
-		name: 'itslearning',
-		loginStrategy: require('../account/strategies/itslearning')
-	}));
-
 
 	const authenticationService = app.service('authentication');
 

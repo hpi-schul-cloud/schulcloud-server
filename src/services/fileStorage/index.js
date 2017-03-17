@@ -1,17 +1,6 @@
 'use strict';
 const hooks = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
-const errors = require('feathers-errors');
-
-const strategies = {
-	awsS3: AWSStrategy
-};
-
-const createCorrectStrategy = (fileStorageType) => {
-	const strategy = strategies[fileStorageType];
-	if (!strategy) throw new errors.BadRequest("No file storage provided for this school");
-	return new strategy();
-};
 
 class FileStorageService {
 	constructor() {
@@ -64,8 +53,8 @@ class FileStorageService {
 	 * @param data, contains schoolId
 	 * @returns {Promise}
 	 */
-	create(data, params) {
-		return createCorrectStrategy(params.payload.fileStorageType).create(data.schoolId);
+	create(data) {
+		return new AWSStrategy().create(data.schoolId); // todo: get strategy from school!
 	}
 
 	/**
@@ -73,14 +62,14 @@ class FileStorageService {
 	 * @returns {Promise}
 	 */
 	find(data) {
-		return createCorrectStrategy(data.payload.fileStorageType).getFiles(data.payload.userId, data.query.storageContext);
+		return new AWSStrategy().getFiles(data.payload.userId, data.query.storageContext);
 	}
 
 	/**
 	 * @param params, contains storageContext and fileName in query
      */
 	remove(id, params) {
-		return createCorrectStrategy(params.payload.fileStorageType).deleteFile(params.payload.userId, params.query.storageContext, params.query.fileName);
+		return new AWSStrategy().deleteFile(params.payload.userId, params.query.storageContext, params.query.fileName);
 	}
 }
 
@@ -120,7 +109,7 @@ class SignedUrlService {
 	 * @returns {Promise}
 	 */
 	create(data, params) {
-		return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(params.payload.userId, data.storageContext, data.fileName, data.fileType, data.action);
+		return new AWSStrategy().generateSignedUrl(params.payload.userId, data.storageContext, data.fileName, data.fileType, data.action);
 	}
 }
 
@@ -153,7 +142,7 @@ class DirectoryService {
 	 * @returns {Promise}
 	 */
 	create(data, params) {
-		return createCorrectStrategy(params.payload.fileStorageType).createDirectory(params.payload.userId, data.storageContext, data.dirName);
+		return new AWSStrategy().createDirectory(params.payload.userId, data.storageContext, data.dirName);
 	}
 }
 

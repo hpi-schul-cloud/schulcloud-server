@@ -12,8 +12,7 @@ module.exports = function () {
 		paginate: {
 			default: 5,
 			max: 25
-		},
-		lean: true
+		}
 	};
 
 	let linkService = service(options);

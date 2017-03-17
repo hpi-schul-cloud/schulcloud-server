@@ -79,24 +79,14 @@ const splitFilesAndDirectories = (storageContext, data) => {
 	let directories = [];
 
 	// gets name of current directory
-	let values = storageContext.split("/").filter((v, index) => {
-		return v && index > 1;
-	});
-	let currentDir = values.join("/");
-	let currentDirRegEx = new RegExp("^(\/|)" + currentDir + '(\/|)', "i");
-
+	let values = storageContext.split("/").filter((v, index) => index > 1);
+	let currentDir = values[values.length - 1];
 	data.forEach(entry => {
-		if(!entry.path.match(currentDirRegEx)) return;
-		const relativePath = entry.path.replace(currentDirRegEx, '');
-
-		if(relativePath === '') {
-			files.push(entry);
-		} else {
-			directories.push(relativePath.split("/")[0]);
-		}
+		// the sub-directory is in the second value after the split function
+		entry.path.split("/")[1] == "" || (currentDir && entry.path.split("/")[1] == currentDir)
+			? files.push(entry)
+			: directories.push(entry.path.split("/")[1]);
 	});
-
-
 
 	// delete duplicates in directories
 	let withoutDuplicates = [];
@@ -139,11 +129,9 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 	};
 
 	return Promise.all(awsObjects.map((object) => {
-
 		return headObject({Bucket: bucketName, Key: object.Key})
 			.then(res => {
 				return {
-					key: object.Key,
 					name: _getFileName(object.Key),
 					path: _getPath(res.Metadata.path),
 					lastModified: res.LastModified,

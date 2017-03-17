@@ -5,9 +5,5 @@
 	"public": "../public/",
 	"auth": {
 		"secret": "FQ5lS1j41dcZdaPFPP3VRPH6W2bt8Z19bmvcVz+8SH8PtfVpVTl/p+9D0jIdRhwC1UrWg69lTU9koFgugf9oZg=="
-	},
-	"services": {
-		"calendar": "https://schul-cloud.org:3000",
-		"content": "https://schul-cloud.org:8090"
 	}
 }

@@ -9,22 +9,10 @@ const resolveUserId = (hook) => {
 	return hook;
 };
 
-const resolveStorageType = (hook) => {
-	let userService = hook.app.service("users");
-	return userService.find({query: {
-		_id: hook.params.payload.userId,
-		$populate: ['schoolId']
-	}}).then(res => {
-		hook.params.payload.fileStorageType = res.data[0].schoolId.fileStorageType;
-		return hook;
-	});
-};
-
 exports.before = {
 	all: [
 		auth.hooks.authenticate('jwt'),
-		resolveUserId,
-		resolveStorageType
+		resolveUserId
 	],
 	find: [],
 	get: [],
