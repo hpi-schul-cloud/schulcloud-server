@@ -15,8 +15,12 @@ exports.before = function(app) {
 		create: [
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
-		update: [],
-		patch: [],
+		update: [
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+		],
+		patch: [
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+		],
 		remove: [auth.hooks.authenticate('jwt')]
 	};
 };
