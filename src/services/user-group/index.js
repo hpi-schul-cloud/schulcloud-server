@@ -1,7 +1,7 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const {courseModel, classModel, homeworkModel, gradeModel} = require('./model');
+const {courseModel, classModel, homeworkModel, submissionModel, gradeModel} = require('./model');
 const hooks = require('./hooks');
 
 module.exports = function() {
@@ -19,6 +19,18 @@ module.exports = function() {
 	const hwService = app.service('/homework');
 	hwService.before(hooks.before);
 	hwService.after(hooks.after);
+
+	/* Submission model */
+	app.use('/submissions', service({
+		Model: submissionModel,
+		paginate: {
+			default: 25,
+			max: 100
+		}
+	}));
+	const submissionService = app.service('/submissions');
+	submissionService.before(hooks.before);
+	submissionService.after(hooks.after);
 
 	/* Course model */
 	app.use('/courses', service({
