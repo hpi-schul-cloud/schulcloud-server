@@ -19,10 +19,12 @@ A content block should be defined like the following:
  */
 
 const lessonSchema = new Schema({
-	title: { type: String },
+	name: { type: String },
 	description: { type: String },
 	date: { type: Date, required: true },
-	contents: [{}]
+	time: { type: Date, required: true },
+	contents: [{}],
+	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
 },{
 	timestamps: true
 });
