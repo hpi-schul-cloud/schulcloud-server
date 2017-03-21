@@ -16,6 +16,8 @@ const services = require('./services');
 const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const setupSwagger = require('./swagger');
+const prettyError = require('pretty-error').start();
+
 let secrets;
 try {
 	secrets = require('../config/secrets.json');
