@@ -14,8 +14,15 @@ const injectUserId = (hook) => {
 	});
 };
 
+const lowerCaseUsername = (hook) => {
+	if (hook.data.username)
+		hook.data.username = hook.data.username.toLowerCase();
+	return hook;
+};
+
 exports.before = {
 	create: [
+		lowerCaseUsername,
 		auth.hooks.authenticate(['local', 'jwt']),
 		injectUserId
 	],
