@@ -149,7 +149,7 @@ describe('AWS file storage strategy', function () {
 		});
 
 		it("deletes a folder correctly", function () {
-			return aws.deleteDirectory("0000d213816abba584714c0a", "users/0000d213816abba584714c0a/folderToBeDeleted")
+			return aws.deleteDirectory("0000d213816abba584714c0a", "users/0000d213816abba584714c0a/", "folderToBeDeleted")
 				.then(res => {
 				expect(res).to.not.be.undefined;
 				expect(res.Deleted).to.have.lengthOf(2);
