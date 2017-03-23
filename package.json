@@ -59,6 +59,7 @@
     "passport": "^0.3.2",
     "passport-strategy": "^1.0.0",
     "phantomjs-prebuilt": "^2.1.14",
+    "pretty-error": "^2.0.3",
     "querystring": "^0.2.0",
     "randexp": "^0.4.4",
     "request-promise-native": "^1.0.3",
