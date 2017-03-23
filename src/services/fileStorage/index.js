@@ -191,9 +191,9 @@ module.exports = function () {
 	const app = this;
 
 	// Initialize our service with any options it requires
-	app.use('/fileStorage', new FileStorageService());
-	app.use('/fileStorage/signedUrl', new SignedUrlService());
 	app.use('/fileStorage/directories', new DirectoryService());
+	app.use('/fileStorage/signedUrl', new SignedUrlService());
+	app.use('/fileStorage', new FileStorageService());
 
 	// Get our initialize service to that we can bind hooks
 	const fileStorageService = app.service('/fileStorage');
