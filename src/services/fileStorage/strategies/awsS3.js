@@ -271,8 +271,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	deleteDirectory(userId, storageContext, dirName) {
-		if (!userId || !storageContext || !dirName) return Promise.reject(new errors.BadRequest('Missing parameters'));
+	deleteDirectory(userId, storageContext) {
+		if (!userId || !storageContext) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return verifyStorageContext(userId, storageContext)
 			.then(res => UserModel.findById(userId).exec())
 			.then(result => {
@@ -281,7 +281,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				const s3 = awsObject.s3;
 				const params = {
 					Bucket: awsObject.bucket,
-					Prefix: `${storageContext}/${dirName}`
+					Prefix: storageContext
 				};
 				return this._deleteAllInDirectory(awsObject, params);
 			});
@@ -290,7 +290,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 	_deleteAllInDirectory(awsObject, params) {
 		return promisify(awsObject.s3.listObjectsV2, awsObject.s3)(params)
 			.then(data => {
-				if (data.Contents.length == 0) return Promise.resolve();
+				if (data.Contents.length == 0) throw new Error(`Invalid Prefix ${params.Prefix}`); // there should always be at least the .scfake file
 
 				const deleteParams = {Bucket: params.Bucket, Delete: {}};
 				deleteParams.Delete.Objects = data.Contents.map(c => ({Key: c.Key}));

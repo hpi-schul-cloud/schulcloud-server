@@ -183,7 +183,7 @@ class DirectoryService {
 	 */
 	remove(id, params) {
 		return createCorrectStrategy(params.payload.fileStorageType)
-			.deleteDirectory(params.payload.userId, params.query.storageContext, params.query.dirName);
+			.deleteDirectory(params.payload.userId, params.query.storageContext);
 	}
 }
 
