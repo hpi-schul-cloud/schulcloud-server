@@ -26,7 +26,7 @@ const homeworkModel = mongoose.model('homework', getUserGroupSchema({
 	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
 }));
 const submissionModel = mongoose.model('submission', getUserGroupSchema({
-	comment: {type: String, required: true},
+	comment: {type: String, required: false},
 	grade: {type: Number, required: false},
 	gradeComment: {type: String, required: false},
 	homeworkId: {type: Schema.Types.ObjectId, required: true, ref: 'homework'},
