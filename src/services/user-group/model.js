@@ -23,7 +23,9 @@ const homeworkModel = mongoose.model('homework', getUserGroupSchema({
 	dueDate: {type: Date, required: true},
 	availableDate: {type: Date, required: true},
 	teacherId: {type: Schema.Types.ObjectId, required: true, ref: 'user'},
-	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
+	courseId: {type: Schema.Types.ObjectId, required: false, ref: 'course'},
+	private: {type: Boolean},
+	publicSubmissions: {type: Boolean}
 }));
 const submissionModel = mongoose.model('submission', getUserGroupSchema({
 	comment: {type: String, required: false},
