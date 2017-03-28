@@ -13,6 +13,7 @@ const user = require('./user');
 const role = require('./role');
 const helpers = require('./helpers');
 const resolve = require('./resolve');
+const federalState = require('./federalState');
 
 const userGroup = require('./user-group');
 
@@ -39,4 +40,5 @@ module.exports = function () {
     app.configure(fileStorage);
     app.configure(link);
     app.configure(helpers);
+	app.configure(federalState);
 };
