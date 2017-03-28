@@ -73,7 +73,7 @@ function writeResponseToDisk(requestOptions, response) {
 }
 
 function requestToFilename(requestOptions) {
-	const key = JSON.stringify(requestOptions.qs).replace(/([^ -~]|\.)+/g, "");	// just ASCII characters, no dots
+	const key = JSON.stringify(requestOptions.qs).replace(/([^ -~]|[\."<>\|\\\/\:\*\?])+/g, "");	// just ASCII characters, NTFS-safe
 	const filename = `response${key}.txt`;
 	return path.resolve(__dirname, 'mock', filename);
 }
