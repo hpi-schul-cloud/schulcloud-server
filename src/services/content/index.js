@@ -15,11 +15,12 @@ class Service {
 		if(params.query.$skip) params.query["page[offset]"] = params.query.$skip;
 		delete params.query.$limit;	// remove unexpected fields
 		delete params.query.$skip;
+		if (!params.query.query) delete params.query.query;
 
 		let relevantFilters = _.pickBy(params.query.filter, array => (array.length > 0));	// remove empty arrays
 		let filters = _.mapKeys(relevantFilters, (value, key) => `filter[${key}]`);	// undo feathers' square bracket rewriting of the JSON:API filter format
 		filters = _.mapValues(filters, (array) => {
-			if(array.constructor !== Array) return array;
+			if (array.constructor !== Array) return `["${array}"]`;
 			const quoted = array.map(v => `["${v}"]`);	// the content service JSON:API implementation expects comma-separated values in square brackets and string quotation marks
 			return quoted.join(',');
 		});
