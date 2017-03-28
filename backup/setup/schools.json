@@ -17,6 +17,9 @@
 	},
 	"name": "Gymnasium Friedensburg",
 	"fileStorageType": "awsS3",
+	"federalState": {
+		"$oid": "0000b186816abba584714c52"
+	},
 	"systems": [
 		{
 			"$oid": "0000d186816abba584714c90"
