@@ -13,6 +13,22 @@ class Service {
 		this.options = options || {};
 	}
 
+	get(id, params) {
+		const serviceUrls = this.app.get('services') || {};
+		const requestOptions = {
+			uri: serviceUrls.content + "/contents/" + id
+		};
+		return request(requestOptions).then(string => {
+			let result = JSON.parse(string);
+			if((result.meta || {}).page) {
+				result.total = result.meta.page.total;
+				result.limit = result.meta.page.limit;
+				result.skip = result.meta.page.offset;
+			}
+			return result;
+		});
+	}
+
 	find(params) {
 		if(params.query.$limit) params.query["page[limit]"] = params.query.$limit;
 		if(params.query.$skip) params.query["page[offset]"] = params.query.$skip;
