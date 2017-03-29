@@ -7,10 +7,12 @@ const ClassModel = require('../../user-group/model').classModel;
 const aws = require('aws-sdk');
 const fs = require('fs');
 const path = require('path');
+const logger = require('winston');
 let awsConfig;
 try {
 	awsConfig = require("../../../../config/secrets.json").aws;
 } catch (e) {
+	logger.log('warn', 'The AWS config couldn\'t be read');
 	awsConfig = {};
 }
 
@@ -63,6 +65,7 @@ const verifyStorageContext = (userId, storageContext) => {
 };
 
 const createAWSObject = (schoolId) => {
+	if(!awsConfig.endpointUrl) throw new Error('AWS integration is not configured on the server');
 	var config = new aws.Config(awsConfig);
 	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
 	let bucketName = `bucket-${schoolId}`;
@@ -79,14 +82,24 @@ const splitFilesAndDirectories = (storageContext, data) => {
 	let directories = [];
 
 	// gets name of current directory
-	let values = storageContext.split("/").filter((v, index) => index > 1);
-	let currentDir = values[values.length - 1];
-	data.forEach(entry => {
-		// the sub-directory is in the second value after the split function
-		entry.path.split("/")[1] == "" || (currentDir && entry.path.split("/")[1] == currentDir)
-			? files.push(entry)
-			: directories.push(entry.path.split("/")[1]);
+	let values = storageContext.split("/").filter((v, index) => {
+		return v && index > 1;
 	});
+	let currentDir = values.join("/");
+	let currentDirRegEx = new RegExp("^(\/|)" + currentDir + '(\/|)', "i");
+
+	data.forEach(entry => {
+		if(!entry.path.match(currentDirRegEx)) return;
+		const relativePath = entry.path.replace(currentDirRegEx, '');
+
+		if(relativePath === '') {
+			files.push(entry);
+		} else {
+			directories.push(relativePath.split("/")[0]);
+		}
+	});
+
+
 
 	// delete duplicates in directories
 	let withoutDuplicates = [];
@@ -129,9 +142,11 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 	};
 
 	return Promise.all(awsObjects.map((object) => {
+
 		return headObject({Bucket: bucketName, Key: object.Key})
 			.then(res => {
 				return {
+					key: object.Key,
 					name: _getFileName(object.Key),
 					path: _getPath(res.Metadata.path),
 					lastModified: res.LastModified,
@@ -253,6 +268,38 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 					return promisify(awsObject.s3.putObject, awsObject.s3)(params);
 				});
+			});
+	}
+
+	deleteDirectory(userId, storageContext) {
+		if (!userId || !storageContext) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		return verifyStorageContext(userId, storageContext)
+			.then(res => UserModel.findById(userId).exec())
+			.then(result => {
+				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+				const awsObject = createAWSObject(result.schoolId);
+				const s3 = awsObject.s3;
+				const params = {
+					Bucket: awsObject.bucket,
+					Prefix: storageContext
+				};
+				return this._deleteAllInDirectory(awsObject, params);
+			});
+	}
+
+	_deleteAllInDirectory(awsObject, params) {
+		return promisify(awsObject.s3.listObjectsV2, awsObject.s3)(params)
+			.then(data => {
+				if (data.Contents.length == 0) throw new Error(`Invalid Prefix ${params.Prefix}`); // there should always be at least the .scfake file
+
+				const deleteParams = {Bucket: params.Bucket, Delete: {}};
+				deleteParams.Delete.Objects = data.Contents.map(c => ({Key: c.Key}));
+
+				return promisify(awsObject.s3.deleteObjects, awsObject.s3)(deleteParams);
+			})
+			.then(deletionData => {
+				if (deletionData.Deleted.length == 1000) return this._deleteAllInDirectory(awsObject, params);	// AWS S3 returns only 1000 items at once
+				else return Promise.resolve(deletionData);
 			});
 	}
 }

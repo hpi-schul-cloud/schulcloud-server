@@ -1,6 +1,17 @@
 'use strict';
 const hooks = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
+const errors = require('feathers-errors');
+
+const strategies = {
+	awsS3: AWSStrategy
+};
+
+const createCorrectStrategy = (fileStorageType) => {
+	const strategy = strategies[fileStorageType];
+	if (!strategy) throw new errors.BadRequest("No file storage provided for this school");
+	return new strategy();
+};
 
 class FileStorageService {
 	constructor() {
@@ -53,8 +64,8 @@ class FileStorageService {
 	 * @param data, contains schoolId
 	 * @returns {Promise}
 	 */
-	create(data) {
-		return new AWSStrategy().create(data.schoolId); // todo: get strategy from school!
+	create(data, params) {
+		return createCorrectStrategy(params.payload.fileStorageType).create(data.schoolId);
 	}
 
 	/**
@@ -62,14 +73,15 @@ class FileStorageService {
 	 * @returns {Promise}
 	 */
 	find(data) {
-		return new AWSStrategy().getFiles(data.payload.userId, data.query.storageContext);
+		return createCorrectStrategy(data.payload.fileStorageType).getFiles(data.payload.userId, data.query.storageContext);
 	}
 
 	/**
 	 * @param params, contains storageContext and fileName in query
-     */
+	 * @returns {Promise}
+	 */
 	remove(id, params) {
-		return new AWSStrategy().deleteFile(params.payload.userId, params.query.storageContext, params.query.fileName);
+		return createCorrectStrategy(params.payload.fileStorageType).deleteFile(params.payload.userId, params.query.storageContext, params.query.fileName);
 	}
 }
 
@@ -109,7 +121,7 @@ class SignedUrlService {
 	 * @returns {Promise}
 	 */
 	create(data, params) {
-		return new AWSStrategy().generateSignedUrl(params.payload.userId, data.storageContext, data.fileName, data.fileType, data.action);
+		return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(params.payload.userId, data.storageContext, data.fileName, data.fileType, data.action);
 	}
 }
 
@@ -133,6 +145,23 @@ class DirectoryService {
 					}
 				],
 				summary: 'Creates a folder for a given storageContext'
+			},
+			remove: {
+				parameters: [
+					{
+						description: 'the context of the file-storage',
+						required: true,
+						name: 'storageContext',
+						type: 'string'
+					},
+					{
+						description: 'the name of the directory to be removed',
+						required: true,
+						name: 'dirName',
+						type: 'string'
+					}
+				],
+				summary: 'Removes a folder for a given storageContext'
 			}
 		};
 	}
@@ -142,7 +171,19 @@ class DirectoryService {
 	 * @returns {Promise}
 	 */
 	create(data, params) {
-		return new AWSStrategy().createDirectory(params.payload.userId, data.storageContext, data.dirName);
+		return createCorrectStrategy(params.payload.fileStorageType).createDirectory(params.payload.userId, data.storageContext, data.dirName);
+	}
+
+	/**
+	 * @param params, {
+			storageContext,
+			dirName
+		}
+	 * @returns {Promise}
+	 */
+	remove(id, params) {
+		return createCorrectStrategy(params.payload.fileStorageType)
+			.deleteDirectory(params.payload.userId, params.query.storageContext);
 	}
 }
 
@@ -150,9 +191,9 @@ module.exports = function () {
 	const app = this;
 
 	// Initialize our service with any options it requires
-	app.use('/fileStorage', new FileStorageService());
-	app.use('/fileStorage/signedUrl', new SignedUrlService());
 	app.use('/fileStorage/directories', new DirectoryService());
+	app.use('/fileStorage/signedUrl', new SignedUrlService());
+	app.use('/fileStorage', new FileStorageService());
 
 	// Get our initialize service to that we can bind hooks
 	const fileStorageService = app.service('/fileStorage');

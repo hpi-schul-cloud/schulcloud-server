@@ -1,30 +1,30 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const role = require('./model');
+const federalState = require('./model');
 const hooks = require('./hooks');
 
 module.exports = function () {
 	const app = this;
 
 	const options = {
-		Model: role,
+		Model: federalState,
 		paginate: {
-			default: 5,
+			default: 16,
 			max: 25
 		},
 		lean: true
 	};
 
 	// Initialize our service with any options it requires
-	app.use('/roles', service(options));
+	app.use('/federalStates', service(options));
 
 	// Get our initialize service to that we can bind hooks
-	const roleService = app.service('/roles');
+	const federalStateService = app.service('/federalStates');
 
 	// Set up our before hooks
-	roleService.before(hooks.before(app));
+	federalStateService.before(hooks.before);
 
 	// Set up our after hooks
-	roleService.after(hooks.after);
+	federalStateService.after(hooks.after);
 };
