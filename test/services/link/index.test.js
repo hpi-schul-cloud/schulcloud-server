@@ -14,7 +14,7 @@ describe('link service', function () {
 	});
 
 	it(`generates a link of length ${service.Model.linkLength} that has the correct target set`, function () {
-		const url = "https://schul-cloud.org/register/abcdef?param=1";
+		const url = "https://schul-cloud.org:8080/ping/";
 		return service.create({target: url})
 			.then(data => {
 				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);

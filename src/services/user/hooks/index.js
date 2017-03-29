@@ -15,8 +15,12 @@ exports.before = function(app) {
 		create: [
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
-		update: [],
-		patch: [],
+		update: [
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+		],
+		patch: [
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+		],
 		remove: [auth.hooks.authenticate('jwt')]
 	};
 };
@@ -48,11 +52,26 @@ const decorateUser = (hook) => {
 		.then(() => Promise.resolve(hook));
 };
 
+const decorateUsers = (hook) => {
+	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
+	const userPromises = (hook.result.data || []).map(user => {
+		return getDisplayName(user, hook.app).then(displayName => {
+			user.displayName = displayName;
+			return user;
+		});
+	});
+
+	return Promise.all(userPromises).then(users => {
+		hook.result.data = users;
+		return Promise.resolve(hook);
+	});
+};
+
 const User = require('../model');
 
 exports.after = {
 	all: [],
-	find: [decorateUser],
+	find: [decorateUsers],
 	get: [
 		decorateUser,
 		globalHooks.computeProperty(User, 'getPermissions', 'permissions')

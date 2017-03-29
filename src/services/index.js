@@ -2,15 +2,19 @@
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const content = require('./content');
+const calendar = require('./calendar');
 const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
+const lesson = require('./lesson');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
 const role = require('./role');
 const helpers = require('./helpers');
 const resolve = require('./resolve');
+
+const federalState = require('./federalState');
 const userGroup = require('./user-group');
 const homework = require('./homework');
 
@@ -32,8 +36,11 @@ module.exports = function () {
     app.configure(userGroup);
     app.configure(ltiTool);
     app.configure(content);
+    app.configure(calendar);
+	app.configure(lesson);
     app.configure(fileStorage);
     app.configure(link);
 	app.configure(helpers);
 	app.configure(homework);
+	app.configure(federalState);
 };
