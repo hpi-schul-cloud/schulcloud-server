@@ -11,7 +11,7 @@ const Schema = mongoose.Schema;
 const homeworkModel = mongoose.model('homework', new Schema({
 	schoolId: {type: Schema.Types.ObjectId, required: true},
 	createdAt: {type: Date, 'default': Date.now},
-	updatedAt: {type: Date, 'default': Date.now}
+	updatedAt: {type: Date, 'default': Date.now},
 	name: {type: String, required: true},
 	description: {type: String, required: true},
 	dueDate: {type: Date, required: true},
@@ -26,7 +26,7 @@ const homeworkModel = mongoose.model('homework', new Schema({
 const submissionModel = mongoose.model('submission', new Schema({
 	schoolId: {type: Schema.Types.ObjectId, required: true},
 	createdAt: {type: Date, 'default': Date.now},
-	updatedAt: {type: Date, 'default': Date.now}
+	updatedAt: {type: Date, 'default': Date.now},
 	comment: {type: String},
 	grade: {type: Number},
 	gradeComment: {type: String},
