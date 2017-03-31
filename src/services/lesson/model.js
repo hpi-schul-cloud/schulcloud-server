@@ -24,6 +24,7 @@ const lessonSchema = new Schema({
 	date: { type: Date, required: true },
 	time: { type: Date, required: true },
 	contents: [{}],
+	materialIds: [{type: Schema.Types.ObjectId, ref: 'material'}],
 	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
 },{
 	timestamps: true
