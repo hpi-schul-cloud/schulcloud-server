@@ -13,9 +13,10 @@ const user = require('./user');
 const role = require('./role');
 const helpers = require('./helpers');
 const resolve = require('./resolve');
-const federalState = require('./federalState');
 
+const federalState = require('./federalState');
 const userGroup = require('./user-group');
+const homework = require('./homework');
 
 const mongoose = require('mongoose');
 
@@ -39,6 +40,7 @@ module.exports = function () {
 	app.configure(lesson);
     app.configure(fileStorage);
     app.configure(link);
-    app.configure(helpers);
+	app.configure(helpers);
+	app.configure(homework);
 	app.configure(federalState);
 };
