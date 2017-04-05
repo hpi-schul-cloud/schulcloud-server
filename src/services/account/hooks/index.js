@@ -4,6 +4,7 @@ const auth = require('feathers-authentication');
 const hooks = require('feathers-hooks');
 const local = require('feathers-authentication-local');
 const errors = require('feathers-errors');
+const bcrypt = require('bcryptjs');
 
 const MoodleLoginStrategy = require('../strategies/moodle');
 const ITSLearningLoginStrategy = require('../strategies/itslearning');
@@ -48,6 +49,20 @@ const validateCredentials = (hook) => {
 		});
 };
 
+const validatePassword = (hook) => {
+	let password_verification = hook.data.password_verification;
+
+	return new Promise((resolve, reject) => {
+		bcrypt.compare(password_verification, hook.params.account.password, (err, res) => {
+			if (err)
+				reject(new errors.BadRequest('Ups, bcrypt ran into an error.'));
+			if (!res)
+				reject(new errors.BadRequest('Password does not match!'));
+			resolve();
+		});
+	});
+};
+
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
 	// otherwise we cannot get the accounts required for login
@@ -58,7 +73,9 @@ exports.before = {
 		local.hooks.hashPassword({ passwordField: 'password' })
 	],
 	update: [auth.hooks.authenticate('jwt')],
-	patch: [auth.hooks.authenticate('jwt')],
+	patch: [auth.hooks.authenticate('jwt'),
+			validatePassword,
+			local.hooks.hashPassword({ passwordField: 'password' })],
 	remove: [auth.hooks.authenticate('jwt')]
 };
 
