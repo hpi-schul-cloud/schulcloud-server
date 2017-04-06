@@ -1,12 +1,11 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const {courseModel, classModel, gradeModel} = require('./model');
+const {courseModel, classModel,gradeModel} = require('./model');
 const hooks = require('./hooks');
 
 module.exports = function() {
 	const app = this;
-
 
 	/* Course model */
 	app.use('/courses', service({
