@@ -37,10 +37,10 @@ module.exports = function () {
     app.configure(ltiTool);
     app.configure(content);
     app.configure(calendar);
-	  app.configure(lesson);
+    app.configure(lesson);
     app.configure(fileStorage);
     app.configure(link);
     app.configure(news);
     app.configure(helpers);
-	app.configure(federalState);
+    app.configure(federalState);
 };
