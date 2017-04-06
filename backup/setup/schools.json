@@ -15,8 +15,11 @@
 	"_id": {
 		"$oid": "0000d186816abba584714c5f"
 	},
-	"name": "Gymnasium Friedensburg",
+	"name": "Paul-Gerhardt-Gymnasium",
 	"fileStorageType": "awsS3",
+	"federalState": {
+		"$oid": "0000b186816abba584714c53"
+	},
 	"systems": [
 		{
 			"$oid": "0000d186816abba584714c90"
