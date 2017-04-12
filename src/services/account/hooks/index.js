@@ -52,15 +52,17 @@ const validateCredentials = (hook) => {
 const validatePassword = (hook) => {
 	let password_verification = hook.data.password_verification;
 
-	return new Promise((resolve, reject) => {
-		bcrypt.compare(password_verification, hook.params.account.password, (err, res) => {
-			if (err)
-				reject(new errors.BadRequest('Ups, bcrypt ran into an error.'));
-			if (!res)
-				reject(new errors.BadRequest('Password does not match!'));
-			resolve();
+	if (password_verification) {
+		return new Promise((resolve, reject) => {
+			bcrypt.compare(password_verification, hook.params.account.password, (err, res) => {
+				if (err)
+					reject(new errors.BadRequest('Ups, bcrypt ran into an error.'));
+				if (!res)
+					reject(new errors.BadRequest('Password does not match!'));
+				resolve();
+			});
 		});
-	});
+	}
 };
 
 exports.before = {
