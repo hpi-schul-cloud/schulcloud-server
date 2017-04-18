@@ -9,6 +9,7 @@ exports.before = function(app) {
 	return {
 		all: [],
 		find: [
+			globalHooks.mapPaginationQuery.bind(this),
 			globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name')	// resolve ids for role strings (e.g. 'TEACHER')
 		],
 		get: [],
