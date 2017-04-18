@@ -12,7 +12,8 @@ const types = ['moodle', 'itslearning', 'lernsax', 'local'];
 
 const systemSchema = new Schema({
 	type: { type: String, required: true, enum: types },
-	url: {type: String, required: false}
+	url: {type: String, required: false},
+	alias: {type: String}
 },{
 	timestamps: true
 });
