@@ -16,6 +16,7 @@ services:
       - schulcloud-server-mongodb:mongodb
     external_links:
       - schulcloud-content:content
+
     networks:
        - default
        - schulcloud-server-network
