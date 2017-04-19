@@ -30,6 +30,9 @@ services:
       # - 5858:5858
     links:
       - schulcloud-server-mongodb:mongodb
+    networks:
+       - default
+       - schulcloud-server-network
     volumes:
       - .:/app
     command: npm run startd
@@ -75,6 +78,10 @@ networks:
     ports:
       - 27017
 >>>>>>> rebased
+
+networks:
+  schulcloud-server-network:
+    driver: bridge
 
 volumes:
   data-schulcloud-server:
