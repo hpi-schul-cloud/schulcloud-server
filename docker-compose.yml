@@ -41,5 +41,9 @@ networks:
   schulcloud-server-network:
     driver: bridge
 
+networks:
+  schulcloud-server-network:
+    driver: bridge
+
 volumes:
   data-schulcloud-server:
