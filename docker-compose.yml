@@ -13,6 +13,9 @@ services:
       - 3030:3030
     links:
       - schulcloud-server-mongodb:mongodb
+    networks:
+       - default
+       - schulcloud-server-network
     volumes:
       - .:/app
     command: npm run startd
@@ -33,6 +36,10 @@ services:
         - schulcloud-server-mongodb:mongodb
       working_dir: /app
       command: ./backup.sh -D schulcloud -H mongodb:27017 -p setup/ -a import
+
+networks:
+  schulcloud-server-network:
+    driver: bridge
 
 networks:
   schulcloud-server-network:
