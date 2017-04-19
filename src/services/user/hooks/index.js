@@ -3,14 +3,14 @@
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
-const local = require('feathers-authentication-local');
 
 exports.before = function(app) {
 	return {
 		all: [],
 		find: [
 			globalHooks.mapPaginationQuery.bind(this),
-			globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name')	// resolve ids for role strings (e.g. 'TEACHER')
+			globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),	// resolve ids for role strings (e.g. 'TEACHER')
+			globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool)
 		],
 		get: [],
 		create: [
@@ -75,7 +75,8 @@ exports.after = {
 	find: [decorateUsers],
 	get: [
 		decorateUser,
-		globalHooks.computeProperty(User, 'getPermissions', 'permissions')
+		globalHooks.computeProperty(User, 'getPermissions', 'permissions'),
+		globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'})
 	],
 	create: [],
 	update: [],
