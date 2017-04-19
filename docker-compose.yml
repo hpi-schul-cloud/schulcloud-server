@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+
+  schulcloud-server:
+    image: schulcloud-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+    ports:
+      - 3030:3030
+      # - 5858:5858
+    links:
+      - schulcloud-server-mongodb:mongodb
+    volumes:
+      - .:/app
+    command: npm run startd
+
+  schulcloud-server-mongodb:
+    image: mongo:3.4.3
+    volumes:
+      - data-schulcloud-server:/data/db
+    ports:
+      - 27017
+
+volumes:
+  data-schulcloud-server:
