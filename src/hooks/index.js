@@ -95,3 +95,11 @@ exports.computeProperty = function (Model, functionName, variableName) {
 
 	};
 };
+
+exports.mapPaginationQuery = (hook) => {
+	if(hook.params.query.$limit === '-1') {
+		hook.params.paginate = false;
+		delete hook.params.query.$limit;
+		return Promise.resolve(hook);
+	}
+};
