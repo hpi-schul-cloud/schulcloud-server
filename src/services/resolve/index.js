@@ -66,7 +66,10 @@ class ScopeResolver {
 					scopes.forEach(scope => {
 						const authorities = ["can-read"];
 
-						if(scope.teacherIds.includes(user._id)) {
+						let isTeacher = scope.teacherIds.filter((teacherId) => {
+							return JSON.stringify(teacherId) === JSON.stringify(user._id);
+						});
+						if(isTeacher.length > 0) {
 							authorities.push("can-write", "can-send-notifications");
 						}
 
