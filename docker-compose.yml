@@ -11,16 +11,11 @@ services:
       NODE_ENV: development
     ports:
       - 3030:3030
-      - 5959:5959
     links:
       - schulcloud-server-mongodb:mongodb
-    external_links:
-      - schulcloud-content:content
-    networks:
-       - default
-       - schulcloud-server-network
     volumes:
       - .:/app
+    command: npm run startd
 
   schulcloud-server-mongodb:
     image: mongo:3.4.3
