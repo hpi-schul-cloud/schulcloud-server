@@ -1,5 +1,7 @@
 'use strict';
 
+const errors = require('feathers-errors');
+
 // get an json api conform entry
 const getDataEntry = ({type, id, name, authorities = ["can-read"], attributes = {}}) => {
 	return {
@@ -130,6 +132,8 @@ class UserResolver {
 
 		return getScope.then(scope => {
 				// find users that are related to scope (either teacher or student)
+			if(!scope) throw new errors.NotFound('No scope found for given id.');
+
 					return userService.find({
 						query: {
 							$or: [
@@ -168,7 +172,7 @@ class UserResolver {
 						id: user._id,
 						name: user.fullName,
 						authorities: authorities
-					})
+					});
 				});
 				return Promise.resolve(response);
 		});
