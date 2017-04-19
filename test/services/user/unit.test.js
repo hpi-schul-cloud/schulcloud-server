@@ -5,6 +5,10 @@ const mongoose = require('mongoose');
 const app = require('../../../src/app');
 const userService = app.service('users');
 const chai = require('chai');
+const loginHelper = require('../helpers/login');
+const testObjects = require('../helpers/testObjects')(app);
+const promisify = require('es6-promisify');
+const expect = chai.expect;
 
 describe('user service', function () {
 	it('registered the users service', () => {
@@ -55,4 +59,40 @@ describe('user service', function () {
 				chai.expect(array).to.include("TEST_BASE", "TEST_BASE_2", "TEST_SUB");
 			});
 	});
+
+	it('shows only users who belong to the same school as the requester', () => {
+		const testCredentials = {
+			username: "testuser@school-of-tests.schul-cloud.org",
+			password: "passwordA",
+		};
+
+		const otherSchool = {
+			id: '000000000000000000000002'
+		};
+		return Promise.all([
+			testObjects.createTestSystem(''),
+			testObjects.createTestUser({schoolId: '000000000000000000538001'}),
+			testObjects.createTestUser({schoolId: otherSchool.id})
+		]).then(([system, requester, otherUser]) => {
+			return testObjects.createTestAccount(JSON.parse(JSON.stringify(testCredentials)), system, requester)
+				.then(requesterAccount => [requester, otherUser, requesterAccount]);
+		}).then(([requester, otherUser, requesterAccount]) => {
+			const request = chai.request(app)
+					.get('/users')
+					.set('Accept', 'application/json')
+					.set('content-type', 'application/x-www-form-urlencoded');
+			return loginHelper.authenticate(request)(testCredentials)
+				.then(response => {
+					const data = response.body.data;
+					expect(data).to.have.lengthOf(1);
+
+					const schoolIds = data.map(d => d.schoolId);
+					expect(schoolIds).to.not.contain(otherSchool.id);
+				});
+		});
+
+	});
+
+	after(testObjects.cleanup);
 });
+
