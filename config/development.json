@@ -7,8 +7,13 @@
 		"secret": "FQ5lS1j41dcZdaPFPP3VRPH6W2bt8Z19bmvcVz+8SH8PtfVpVTl/p+9D0jIdRhwC1UrWg69lTU9koFgugf9oZg=="
 	},
 	"services": {
+<<<<<<< 028e738c92e33ea60b00f47eb51ca3b58a5fc052
 		"calendar": "https://schul-cloud.org:3000",
 		"content": "http://content:4040",
 		"notification": "https://schul-cloud.org:3030"
+=======
+		"calendar": "http://localhost:3000",
+		"content": "https://schul-cloud.org:8090"
+>>>>>>> rebased
 	}
 }
