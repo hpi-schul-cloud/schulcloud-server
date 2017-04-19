@@ -6,18 +6,18 @@ const auth = require('feathers-authentication');
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [],
+	find: [globalHooks.restrictToCurrentSchool],
 	get: [],
 	create: [],
-	update: [],
-	patch: [],
-	remove: []
+	update: [globalHooks.restrictToCurrentSchool],
+	patch: [globalHooks.restrictToCurrentSchool],
+	remove: [globalHooks.restrictToCurrentSchool]
 };
 
 exports.after = {
 	all: [],
 	find: [],
-	get: [],
+	get: [globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'})],
 	create: [],
 	update: [],
 	patch: [],
