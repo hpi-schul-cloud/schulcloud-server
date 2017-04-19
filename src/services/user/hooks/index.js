@@ -112,7 +112,7 @@ exports.after = {
 	get: [
 		decorateUser,
 		globalHooks.computeProperty(User, 'getPermissions', 'permissions'),
-		globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'})
+		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'}))
 	],
 	create: [],
 	update: [],

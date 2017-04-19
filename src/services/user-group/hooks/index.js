@@ -17,7 +17,7 @@ exports.before = {
 exports.after = {
 	all: [],
 	find: [],
-	get: [globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'})],
+	get: [globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'}))],
 	create: [],
 	update: [],
 	patch: [],
