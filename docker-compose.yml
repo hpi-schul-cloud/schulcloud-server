@@ -11,6 +11,7 @@ services:
       NODE_ENV: development
     ports:
       - 3030:3030
+<<<<<<< 5662de6543c8fb19b2444092adeca8031a892cae
       - 5959:5959
     links:
       - schulcloud-server-mongodb:mongodb
@@ -22,11 +23,20 @@ services:
     volumes:
       - .:/app
 
+=======
+      # - 5858:5858
+    links:
+      - schulcloud-server-mongodb:mongodb
+    volumes:
+      - .:/app
+    command: npm run startd
+>>>>>>> rebased
 
   schulcloud-server-mongodb:
     image: mongo:3.4.3
     volumes:
       - data-schulcloud-server:/data/db
+<<<<<<< 5662de6543c8fb19b2444092adeca8031a892cae
       - .:/app
     ports:
       - 27017:27017
@@ -48,6 +58,10 @@ services:
 networks:
   schulcloud-server-network:
     driver: bridge
+=======
+    ports:
+      - 27017
+>>>>>>> rebased
 
 volumes:
   data-schulcloud-server:
