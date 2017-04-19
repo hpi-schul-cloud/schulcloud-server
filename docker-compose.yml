@@ -13,21 +13,20 @@ services:
       - 3030:3030
     links:
       - schulcloud-server-mongodb:mongodb
-    external_links:
-      - schulcloud-content:content
     networks:
        - default
        - schulcloud-server-network
     volumes:
       - .:/app
+    command: npm run startd
+
 
   schulcloud-server-mongodb:
     image: mongo:3.4.3
     volumes:
       - data-schulcloud-server:/data/db
-      - .:/app
     ports:
-      - 27017:27017
+	  - 27017
 
   schulcloud-server-mongodb-feed:
       image: mongo:3.4.3
