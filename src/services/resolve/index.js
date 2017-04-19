@@ -112,53 +112,64 @@ class UserResolver {
 		};
 
 		// only if both services fail the error will be thrown
-		const getScope = new Promise((resolve, reject) => {
-			let error;
-
+		const getScope = Promise.all([
+			userService.get(id).then(data => {
+				data.type = 'user';
+				return data;
+			}).catch(_ => undefined),
 			courseService.get(id).then(data => {
-				return resolve(data);
-			}).catch(err => {
-				if(error) {
-					reject(error);
-				}
-				error = err;
-			});
-
+				return data;
+			}).catch(_ => undefined),
 			classService.get(id).then(data => {
-				return resolve(data);
-			}).catch(err => {
-				if(error) {
-					reject(error);
-				}
-				error = err;
-			});
+				return data;
+			}).catch(_ => undefined)
+		]).then(([userData, courseData, classData]) => {
+			return userData || courseData || classData;
 		});
 
 
 		return getScope.then(scope => {
 				// find users that are related to scope (either teacher or student)
-				return userService.find({query: {
-					$or: [
-						{_id: {
-							$in: scope.userIds
-						}},
-						{_id: {
-							$in: scope.teacherIds
-						}}
-					]
-				}});
+					return userService.find({
+						query: {
+							$or: [
+								{
+									_id: {
+										$in: scope.userIds
+									}
+								},
+								{
+									_id: {
+										$in: scope.teacherIds
+									}
+								},
+								{
+									_id: scope._id
+								}
+							],
+							$populate: ["roles"]
+						}
+					});
 			})
 			.then(data => {
 				const users = data.data;
 
-				response.data = users.map(user =>
-					getDataEntry({
+				response.data = users.map(user => {
+					let authorities = ["can-read"];
+					let isTeacher = user.roles.filter((role) => {
+						return role.name === 'teacher';
+					});
+					if(isTeacher.length > 0) {
+						authorities.push("can-write", "can-send-notifications");
+					}
+
+					return getDataEntry({
 						type: 'user',
 						id: user._id,
 						name: user.fullName,
-						authorities: ["can-read"]
+						authorities: authorities
 					})
-				);
+				});
 				return Promise.resolve(response);
 		});
 	}
