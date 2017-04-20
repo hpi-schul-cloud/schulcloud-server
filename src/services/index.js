@@ -17,6 +17,7 @@ const resolve = require('./resolve');
 const federalState = require('./federalState');
 const userGroup = require('./user-group');
 const homework = require('./homework');
+const passwordRecovery = require('./passwordRecovery');
 
 const mongoose = require('mongoose');
 
@@ -43,4 +44,5 @@ module.exports = function () {
 	app.configure(helpers);
 	app.configure(homework);
 	app.configure(federalState);
+	app.configure(passwordRecovery);
 };
