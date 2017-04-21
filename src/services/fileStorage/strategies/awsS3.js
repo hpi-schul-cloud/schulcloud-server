@@ -7,10 +7,12 @@ const ClassModel = require('../../user-group/model').classModel;
 const aws = require('aws-sdk');
 const fs = require('fs');
 const path = require('path');
+const logger = require('winston');
 let awsConfig;
 try {
 	awsConfig = require("../../../../config/secrets.json").aws;
 } catch (e) {
+	logger.log('warn', 'The AWS config couldn\'t be read');
 	awsConfig = {};
 }
 
@@ -63,6 +65,7 @@ const verifyStorageContext = (userId, storageContext) => {
 };
 
 const createAWSObject = (schoolId) => {
+	if(!awsConfig.endpointUrl) throw new Error('AWS integration is not configured on the server');
 	var config = new aws.Config(awsConfig);
 	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
 	let bucketName = `bucket-${schoolId}`;
@@ -265,6 +268,38 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 					return promisify(awsObject.s3.putObject, awsObject.s3)(params);
 				});
+			});
+	}
+
+	deleteDirectory(userId, storageContext) {
+		if (!userId || !storageContext) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		return verifyStorageContext(userId, storageContext)
+			.then(res => UserModel.findById(userId).exec())
+			.then(result => {
+				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+				const awsObject = createAWSObject(result.schoolId);
+				const s3 = awsObject.s3;
+				const params = {
+					Bucket: awsObject.bucket,
+					Prefix: storageContext
+				};
+				return this._deleteAllInDirectory(awsObject, params);
+			});
+	}
+
+	_deleteAllInDirectory(awsObject, params) {
+		return promisify(awsObject.s3.listObjectsV2, awsObject.s3)(params)
+			.then(data => {
+				if (data.Contents.length == 0) throw new Error(`Invalid Prefix ${params.Prefix}`); // there should always be at least the .scfake file
+
+				const deleteParams = {Bucket: params.Bucket, Delete: {}};
+				deleteParams.Delete.Objects = data.Contents.map(c => ({Key: c.Key}));
+
+				return promisify(awsObject.s3.deleteObjects, awsObject.s3)(deleteParams);
+			})
+			.then(deletionData => {
+				if (deletionData.Deleted.length == 1000) return this._deleteAllInDirectory(awsObject, params);	// AWS S3 returns only 1000 items at once
+				else return Promise.resolve(deletionData);
 			});
 	}
 }

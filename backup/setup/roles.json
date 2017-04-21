@@ -51,7 +51,8 @@
 	],
 	"permissions": [
 		"LESSONS_VIEW",
-		"TOOL_NEW_VIEW"
+		"TOOL_NEW_VIEW",
+		"COURSE_EDIT"
 	],
 	"__v": 0
 },
