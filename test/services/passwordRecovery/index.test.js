@@ -48,5 +48,16 @@ describe('passwordRecovery service', function() {
 				done();
 			});
 	});
+
+	it('successfully changed password for user', (done) => {
+		passwordRecoveryService.find()
+			.then(result => {
+				app.service('passwordRecovery/reset').create({ "accountId": result.data[0].account, "password": "schulcloud", "resetId": result.data[0]._id })
+					.then(success => {
+						assert.ok(success);
+						done();
+					});
+			});
+	});
 });
 
