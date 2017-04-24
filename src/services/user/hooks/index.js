@@ -10,16 +10,19 @@ exports.before = function(app) {
 		find: [
 			globalHooks.mapPaginationQuery.bind(this),
 			globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),	// resolve ids for role strings (e.g. 'TEACHER')
+			auth.hooks.authenticate('jwt'),
 			globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool)
 		],
-		get: [],
+		get: [auth.hooks.authenticate('jwt')],
 		create: [
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [
+			auth.hooks.authenticate('jwt'),
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		patch: [
+			auth.hooks.authenticate('jwt'),
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		remove: [auth.hooks.authenticate('jwt')]
