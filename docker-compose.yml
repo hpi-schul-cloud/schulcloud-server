@@ -25,8 +25,15 @@ services:
     image: mongo:3.4.3
     volumes:
       - data-schulcloud-server:/data/db
+      - .:/app
     ports:
       - 27017
+    # https://github.com/docker-library/healthcheck/blob/master/mongo/docker-healthcheck
+    healthcheck:
+      test: ["CMD", "/app/docker-healthcheck"]
+      interval: 5s
+      timeout: 1s
+      retries: 3
 
   schulcloud-server-mongodb-feed:
       image: mongo:3.4.3
