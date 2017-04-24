@@ -41,6 +41,15 @@ networks:
   schulcloud-server-network:
     driver: bridge
 
+  schulcloud-server-mongodb-feed:
+      image: mongo:3.4.3
+      volumes:
+        - .:/app
+      links:
+        - schulcloud-server-mongodb:mongodb
+      working_dir: /app
+      command: ./backup.sh -D schulcloud -H mongodb:27017 -p setup/ -a import
+
 networks:
   schulcloud-server-network:
     driver: bridge
