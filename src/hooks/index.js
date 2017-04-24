@@ -103,3 +103,29 @@ exports.mapPaginationQuery = (hook) => {
 		return Promise.resolve(hook);
 	}
 };
+
+exports.restrictToCurrentSchool = hook => {
+	let userService = hook.app.service("users");
+	return userService.find({query: {
+		_id: hook.params.account.userId
+	}}).then(res => {
+		hook.params.query.schoolId = res.data[0].schoolId;
+		return hook;
+	});
+};
+
+// meant to be used as an after hook
+exports.denyIfNotCurrentSchool = ({errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!'}) =>
+	hook => {
+	let userService = hook.app.service("users");
+	return userService.find({query: {
+		_id: hook.params.account.userId
+	}}).then(res => {
+		let requesterSchoolId = res.data[0].schoolId;
+		let requestedUserSchoolId = (hook.result || {}).schoolId;
+		if(!requesterSchoolId.equals(requestedUserSchoolId)) {
+			return Promise.reject(new errors.Forbidden(errorMessage));
+		}
+		return hook;
+	});
+};
