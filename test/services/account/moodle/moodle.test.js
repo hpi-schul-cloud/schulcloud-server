@@ -9,7 +9,7 @@ const promisify = require("es6-promisify");
 const freeport = promisify(require('freeport'));
 const moodleMockServer = require('./moodleMockServer');
 
-const testObjects = require('../testObjects')(app);
+const testObjects = require('../../helpers/testObjects')(app);
 
 const logger = app.logger;
 
