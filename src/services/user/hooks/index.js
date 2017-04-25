@@ -5,12 +5,24 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const local = require('feathers-authentication-local');
 
+const mapRoleFilterQuery = (hook) => {
+	if (hook.params.query.roles) {
+		let rolesFilter = hook.params.query.roles;
+		hook.params.query.roles = {};
+		hook.params.query.roles.$in = rolesFilter;
+	}
+
+	return Promise.resolve(hook);
+};
+
+
 exports.before = function(app) {
 	return {
 		all: [],
 		find: [
 			globalHooks.mapPaginationQuery.bind(this),
-			globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name')	// resolve ids for role strings (e.g. 'TEACHER')
+			globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),	// resolve ids for role strings (e.g. 'TEACHER')
+			mapRoleFilterQuery
 		],
 		get: [],
 		create: [
