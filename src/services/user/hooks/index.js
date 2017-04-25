@@ -5,6 +5,11 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const local = require('feathers-authentication-local');
 
+/**
+ *
+ * @param {object} hook - The hook of the server-request, containing req.params.query.roles as role-filter
+ * @returns {Promise }
+ */
 const mapRoleFilterQuery = (hook) => {
 	if (hook.params.query.roles) {
 		let rolesFilter = hook.params.query.roles;
@@ -38,6 +43,12 @@ exports.before = function(app) {
 	};
 };
 
+/**
+ *
+ * @param user {object} - the user the display name has to be generated
+ * @param app {object} - the global feathers-app
+ * @returns {string} - a display name of the given user
+ */
 const getDisplayName = (user, app) => {
 	// load protected roles
 	return app.service('/roles').find({query:{	// TODO: cache these
@@ -56,6 +67,11 @@ const getDisplayName = (user, app) => {
 	});
 };
 
+/**
+ *
+ * @param hook {object} - the hook of the server-request
+ * @returns {object} - the hook with the decorated user
+ */
 const decorateUser = (hook) => {
 	return getDisplayName(hook.result, hook.app)
 		.then(displayName => {
@@ -65,6 +81,11 @@ const decorateUser = (hook) => {
 		.then(() => Promise.resolve(hook));
 };
 
+/**
+ *
+ * @param hook {object} - the hook of the server-request
+ * @returns {object} - the hook with the decorated users
+ */
 const decorateUsers = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 	const userPromises = (hook.result.data || []).map(user => {
