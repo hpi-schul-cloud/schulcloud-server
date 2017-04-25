@@ -8,22 +8,17 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-/*
-A content block should be defined like the following:
-{
-	type: 'text', 	// required so we can choose appropriate rendering
-	title: '', 		// because type text
-	content: '',	// because type text
-	...
-}
- */
-
 const lessonSchema = new Schema({
 	name: { type: String },
 	description: { type: String },
-	date: { type: Date, required: true },
-	time: { type: Date, required: true },
-	contents: [{}],
+	date: { type: Date },
+	time: { type: Date },
+	contents: [{
+		component: { type: String },
+		title: { type: String },
+		content: {},
+		hidden: { type: Boolean }
+	}],
 	materialIds: [{type: Schema.Types.ObjectId, ref: 'material'}],
 	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
 },{
