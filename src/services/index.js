@@ -17,13 +17,14 @@ const resolve = require('./resolve');
 const federalState = require('./federalState');
 const userGroup = require('./user-group');
 const homework = require('./homework');
+const passwordRecovery = require('./passwordRecovery');
 
 const mongoose = require('mongoose');
 
 module.exports = function () {
     const app = this;
 
-    mongoose.connect(app.get('mongodb'), {user:process.env.DB_USERNAME, pass:process.env.DB_PASSWORD});
+    mongoose.connect(process.env.DB_URL || app.get('mongodb'), {user:process.env.DB_USERNAME, pass:process.env.DB_PASSWORD});
     mongoose.Promise = global.Promise;
 
     app.configure(authentication);
@@ -43,4 +44,5 @@ module.exports = function () {
 	app.configure(helpers);
 	app.configure(homework);
 	app.configure(federalState);
+	app.configure(passwordRecovery);
 };
