@@ -5,9 +5,42 @@ const hooks = require('./hooks');
 
 const REQUEST_TIMEOUT = 4000; // in ms
 
+const convertEventToJsonApi = (body) => {
+	return {
+		data: [
+			{
+				type: "event",
+				attributes: {
+					summary: body.summary,
+					location: body.location,
+					description: body.description,
+					dtstart: body.startDate,
+					dtend: body.endDate || body.startDate + body.duration,
+					transp: "OPAQUE",
+					sequence: 0,
+					repeat_freq: body.frequency,
+					repeat_wkst: body.weekday,
+					repeat_until: body.repeat_until
+				},
+				relationships: {
+					"scope-ids": [
+						body.scopeId
+					],
+					"separate-users": true
+				}
+			}
+		]
+	}
+};
+
 class Service {
 	constructor(options) {
 		this.options = options || {};
+	}
+
+	create(data, params) {
+		console.log(data);
+		return 200;
 	}
 
 	find(params) {

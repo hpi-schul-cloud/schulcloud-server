@@ -18,10 +18,16 @@ const getUserGroupSchema = (additional = {}) => {
 };
 
 /**
- * weekday: 1 = monday, 2 = thursday, 3 = wednesday ...
+ * startDate {Date} - the date the course is first take place
+ * untilDate {Date} -  the date the course is last take place
+ * duration {Number} - the duration of a course lesson
+ * weekday {Number} - from 1 to 7, the weekday the course take place
  */
 const timeSchema = new Schema({
-	eventId: {type: String, required: true},
+	startDate: {type: Date, required: true},
+	untilDate: {type: Date, required: true},
+	weekday: {type: Number, min: 1, max: 7, required: true},
+	duration: {type: Number}
 });
 
 const courseModel = mongoose.model('course', getUserGroupSchema({
@@ -33,6 +39,7 @@ const courseModel = mongoose.model('course', getUserGroupSchema({
 	gradeSystem: {type: Boolean},
 	times: [timeSchema]
 }));
+
 const classModel =  mongoose.model('class', getUserGroupSchema({
 	teacherIds: [{type: Schema.Types.ObjectId, ref: 'user', required: true}]
 }));
