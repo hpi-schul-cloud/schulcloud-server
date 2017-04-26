@@ -21,12 +21,12 @@ const getUserGroupSchema = (additional = {}) => {
  * startDate {Date} - the date the course is first take place
  * untilDate {Date} -  the date the course is last take place
  * duration {Number} - the duration of a course lesson
- * weekday {Number} - from 1 to 7, the weekday the course take place
+ * weekday {Number} - from 0 to 6, the weekday the course take place (e.g. 0 = monday, 1 = tuesday ... )
  */
 const timeSchema = new Schema({
 	startDate: {type: Date, required: true},
 	untilDate: {type: Date, required: true},
-	weekday: {type: Number, min: 1, max: 7, required: true},
+	weekday: {type: Number, min: 0, max: 6, required: true},
 	duration: {type: Number}
 });
 

@@ -5,6 +5,11 @@ const hooks = require('./hooks');
 
 const REQUEST_TIMEOUT = 4000; // in ms
 
+/**
+ * Converts the Server-Request-Body to JsonApi-Body
+ * @param body
+ * @returns {object} - valid json-api body for calendar-service
+ */
 const convertEventToJsonApi = (body) => {
 	return {
 		data: [
@@ -16,6 +21,7 @@ const convertEventToJsonApi = (body) => {
 					description: body.description,
 					dtstart: body.startDate,
 					dtend: body.endDate || body.startDate + body.duration,
+					dtstamp: Date.now(),
 					transp: "OPAQUE",
 					sequence: 0,
 					repeat_freq: body.frequency,
@@ -39,8 +45,34 @@ class Service {
 	}
 
 	create(data, params) {
-		console.log(data);
-		return 200;
+
+		const serviceUrls = this.app.get('services') || {};
+
+		const userId = (params.account ||{}).userId || params.payload.userId;
+		console.log(data.scopeId);
+		const options = {
+			uri: serviceUrls.calendar + '/events/',
+			method: 'POST',
+			headers: {
+				'Authorization': userId
+			},
+			body: convertEventToJsonApi(data),
+			json: true,
+			timeout: REQUEST_TIMEOUT
+		};
+
+		return request(options).then(events => {
+			events = events.map(event => {
+				return Object.assign(event, {
+					title: event.summary,
+					allDay: false, // TODO: find correct value
+					start: Date.parse(event.dtstart),
+					end: Date.parse(event.dtend),
+					url: '' // TODO: add x-sc-field
+				});
+			});
+			return events;
+		});
 	}
 
 	find(params) {

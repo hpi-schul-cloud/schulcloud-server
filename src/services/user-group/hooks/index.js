@@ -34,8 +34,9 @@ const createEventsForCourse = (hook) => {
 			duration: time.duration,
 			repeat_until: time.untilDate,
 			frequency: "WEEKLY",
-			weekday: getWeekdayForNumber(time.weekday)
-		})
+			weekday: getWeekdayForNumber(time.weekday),
+			scopeId: course._id
+		}, hook.params)
 	}))
 };
 
