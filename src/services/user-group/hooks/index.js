@@ -4,14 +4,16 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
+const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
+
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [globalHooks.restrictToCurrentSchool],
+	find: [restrictToCurrentSchool],
 	get: [],
 	create: [],
-	update: [globalHooks.restrictToCurrentSchool],
-	patch: [globalHooks.restrictToCurrentSchool],
-	remove: [globalHooks.restrictToCurrentSchool]
+	update: [restrictToCurrentSchool],
+	patch: [restrictToCurrentSchool],
+	remove: [restrictToCurrentSchool]
 };
 
 exports.after = {
