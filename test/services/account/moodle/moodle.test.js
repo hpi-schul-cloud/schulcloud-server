@@ -9,7 +9,7 @@ const promisify = require("es6-promisify");
 const freeport = promisify(require('freeport'));
 const moodleMockServer = require('./moodleMockServer');
 
-const testObjects = require('../testObjects')(app);
+const testObjects = require('../../helpers/testObjects')(app);
 
 const logger = app.logger;
 
@@ -42,7 +42,7 @@ describe('Moodle single-sign-on', function () {
 			.then(moodle => {
 				mockMoodle = moodle;
 				return Promise.all([
-					testObjects.createTestSystem(moodle.url),
+					testObjects.createTestSystem({url: moodle.url}),
 					testObjects.createTestUser()]);
 			})
 			.then(([system, testUser]) => {
