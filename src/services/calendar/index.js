@@ -20,8 +20,8 @@ const convertEventToJsonApi = (body) => {
 					location: body.location,
 					description: body.description,
 					dtstart: body.startDate,
-					dtend: body.endDate || body.startDate + body.duration,
-					dtstamp: Date.now(),
+					dtend: body.endDate || new Date(body.startDate.getTime() + body.duration).toISOString(),
+					dtstamp: new Date,
 					transp: "OPAQUE",
 					sequence: 0,
 					repeat_freq: body.frequency,
@@ -61,7 +61,7 @@ class Service {
 		};
 
 		return request(options).then(events => {
-			events = events.map(event => {
+			events = events.data.map(event => {
 				return Object.assign(event, {
 					title: event.summary,
 					allDay: false, // TODO: find correct value
@@ -89,7 +89,7 @@ class Service {
 		};
 
 		return request(options).then(events => {
-			events = events.map(event => {
+			events = events.data.map(event => {
 				return Object.assign(event, {
 					title: event.summary,
 					allDay: false, // TODO: find correct value

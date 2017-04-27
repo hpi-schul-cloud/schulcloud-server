@@ -40,7 +40,10 @@ const createEventsForCourse = (hook) => {
 				weekday: getWeekdayForNumber(time.weekday),
 				scopeId: course._id
 			}, hook.params);
-		}));
+		}))
+			.then(events => {
+				return hook;
+			});
 	} else {
 		return Promise.resolve(hook);
 	}
