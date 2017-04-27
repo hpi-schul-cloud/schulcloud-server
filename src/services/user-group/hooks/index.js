@@ -23,21 +23,27 @@ const getWeekdayForNumber = (weekdayNum) => {
  * @param hook
  */
 const createEventsForCourse = (hook) => {
-	let course = hook.result;
-	let calendarService = hook.app.service("calendar");
-	return Promise.all(course.times.map(time => {
-		return calendarService.create({
-			summary: course.name,
-			location: "HPI", // todo: school name?
-			description: course.description,
-			startDate: time.startDate,
-			duration: time.duration,
-			repeat_until: time.untilDate,
-			frequency: "WEEKLY",
-			weekday: getWeekdayForNumber(time.weekday),
-			scopeId: course._id
-		}, hook.params)
-	}))
+
+	// can just run if a calendar service is running on the environment
+	if (process.env.CALENDAR_SERVICE_ENABLED) {
+		let course = hook.result;
+		let calendarService = hook.app.service("calendar");
+		return Promise.all(course.times.map(time => {
+			return calendarService.create({
+				summary: course.name,
+				location: "HPI", // todo: school name?
+				description: course.description,
+				startDate: time.startDate,
+				duration: time.duration,
+				repeat_until: time.untilDate,
+				frequency: "WEEKLY",
+				weekday: getWeekdayForNumber(time.weekday),
+				scopeId: course._id
+			}, hook.params);
+		}));
+	} else {
+		return Promise.resolve(hook);
+	}
 };
 
 exports.before = {

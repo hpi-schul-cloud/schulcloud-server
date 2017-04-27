@@ -36,7 +36,7 @@ const convertEventToJsonApi = (body) => {
 				}
 			}
 		]
-	}
+	};
 };
 
 class Service {
@@ -49,7 +49,6 @@ class Service {
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
-		console.log(data.scopeId);
 		const options = {
 			uri: serviceUrls.calendar + '/events/',
 			method: 'POST',
