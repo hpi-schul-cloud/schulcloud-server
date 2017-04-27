@@ -2,11 +2,11 @@
 
 const assert = require('assert');
 const mongoose = require('mongoose');
-const app = require('../../src/app');
+const app = require('../../../src/app');
 const userService = app.service('users');
 const chai = require('chai');
-const loginHelper = require('./helpers/login');
-const testObjects = require('./helpers/testObjects')(app);
+const loginHelper = require('./../helpers/login');
+const testObjects = require('./../helpers/testObjects')(app);
 const promisify = require('es6-promisify');
 const _ = require('lodash');
 const expect = chai.expect;
@@ -42,9 +42,8 @@ const testAccess = (endpoint) => () => {
 };
 
 describe('access control', function () {
-	this.timeout(20000);
-
 	let requestingAccount;
+	/*
 	before(() => {
 		return Promise.all([
 			//testObjects.createTestSystem({type: null}),
@@ -65,6 +64,7 @@ describe('access control', function () {
 				authenticator = _authenticator;
 			});
 	});
+	*/
 
 	it.skip('shows only users who belong to the same school as the requester', testAccess('/users'));
 	it.skip('shows only courses who belong to the same school as the requester', testAccess('/courses'));
