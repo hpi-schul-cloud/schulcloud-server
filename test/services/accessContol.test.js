@@ -47,15 +47,15 @@ describe('access control', function () {
 	let requestingAccount;
 	before(() => {
 		return Promise.all([
-			testObjects.createTestSystem(''),
+			//testObjects.createTestSystem({type: null}),
 			testObjects.createTestUser({schoolId: ownSchool.id}),
 			testObjects.createTestUser({schoolId: otherSchool.id}),
 			testObjects.createTestClass({schoolId: ownSchool.id}),
 			testObjects.createTestClass({schoolId: otherSchool.id}),
 			testObjects.createTestCourse({schoolId: ownSchool.id}),
 			testObjects.createTestCourse({schoolId: otherSchool.id}),
-		]).then(([system, requester, otherUser]) => {
-			return testObjects.createTestAccount(_.cloneDeep(testCredentials), system, requester);
+		]).then(([requester, otherUser]) => {
+			return testObjects.createTestAccount(_.cloneDeep(testCredentials), null, requester);
 		})
 			.then(reqAccount => {
 				requestingAccount = reqAccount;

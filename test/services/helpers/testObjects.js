@@ -14,8 +14,8 @@ module.exports = function (app) {
 	let createdClasses = [];
 	let createdCourses = [];
 
-	function createTestSystem(url) {
-		return systemService.create({url: url, type: 'moodle'})
+	function createTestSystem({url, type='moodle'}) {
+		return systemService.create({url, type})
 			.then(system => {
 				createdSystemIds.push(system.id);
 				return system;
@@ -23,7 +23,7 @@ module.exports = function (app) {
 	}
 
 	function createTestAccount(accountParameters, system, user) {
-		accountParameters.systemId = system.id;
+		if (system) accountParameters.systemId = system.id;
 		accountParameters.userId = user._id;
 		return accountService.create(accountParameters)
 			.then(account => {

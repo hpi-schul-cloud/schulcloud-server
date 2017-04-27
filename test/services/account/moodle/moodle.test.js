@@ -42,7 +42,7 @@ describe('Moodle single-sign-on', function () {
 			.then(moodle => {
 				mockMoodle = moodle;
 				return Promise.all([
-					testObjects.createTestSystem(moodle.url),
+					testObjects.createTestSystem({url: moodle.url}),
 					testObjects.createTestUser()]);
 			})
 			.then(([system, testUser]) => {
