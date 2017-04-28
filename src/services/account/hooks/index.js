@@ -52,15 +52,28 @@ const validateCredentials = (hook) => {
 const validatePassword = (hook) => {
 	let password_verification = hook.data.password_verification;
 
-	return new Promise((resolve, reject) => {
-		bcrypt.compare(password_verification, hook.params.account.password, (err, res) => {
-			if (err)
-				reject(new errors.BadRequest('Ups, bcrypt ran into an error.'));
-			if (!res)
-				reject(new errors.BadRequest('Password does not match!'));
-			resolve();
+	if (password_verification) {
+		return new Promise((resolve, reject) => {
+			bcrypt.compare(password_verification, hook.params.account.password, (err, res) => {
+				if (err)
+					reject(new errors.BadRequest('Ups, bcrypt ran into an error.'));
+				if (!res)
+					reject(new errors.BadRequest('Password does not match!'));
+				resolve();
+			});
 		});
-	});
+	}
+};
+
+const checkUnique = (hook) => {
+	let accountService = hook.service;
+	const {username, systemId} = hook.data;
+	return accountService.find({ query: {username, systemId}})
+		.then(result => {
+			const filtered = result.filter(a => a.systemId == systemId);	// systemId might be null. In that case, accounts with any systemId will be returned
+			if(filtered.length > 0) return Promise.reject(new errors.BadRequest('Der Benutzername ist bereits vergeben!'));
+			return Promise.resolve(hook);
+		});
 };
 
 exports.before = {
@@ -70,7 +83,8 @@ exports.before = {
 	get: [],
 	create: [
 		validateCredentials,
-		local.hooks.hashPassword({ passwordField: 'password' })
+		local.hooks.hashPassword({ passwordField: 'password' }),
+		checkUnique
 	],
 	update: [auth.hooks.authenticate('jwt')],
 	patch: [auth.hooks.authenticate('jwt'),

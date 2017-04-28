@@ -2,6 +2,7 @@
 
 const assert = require('assert');
 const app = require('../../../src/app');
+const _ = require('lodash');
 
 describe('resolve/users service', function() {
 	const service = app.service('resolve/users');
@@ -10,21 +11,11 @@ describe('resolve/users service', function() {
 		assert.ok(service);
 	});
 
-	it('get error if id is no object id', function () {
+	it('get error if no scope is found', function () {
 		return service.get('123').then(_ => {
 			throw new Error('was not supposed to succeed');
 		}).catch(err => {
-			assert(err.message.includes('Cast to ObjectId failed'));
-			assert(err.name == 'BadRequest');
-			assert(err.code == 400);
-		});
-	});
-
-	it('get 404 if no scope (= class/course) is found', function () {
-		return service.get('10006e13b101c8742dc2d123').then(_ => {
-			throw new Error('was not supposed to succeed');
-		}).catch(err => {
-			assert(err.message.includes('No record found for id'));
+			assert(err.message.includes('No scope found for given id.'));
 			assert(err.name == 'NotFound');
 			assert(err.code == 404);
 		});
@@ -33,6 +24,10 @@ describe('resolve/users service', function() {
 	it('return users if scope is found', function () {
 		return service.get('0000dcfbfb5c7a3f00bf21ab').then(data => {
 			assert(data.data.length > 0);
+			assert(data.data[0].type === 'user');
+			assert(_.find(data.data, (user) => {
+				return user.id === '0000d213816abba584714c0a' || '0000d231816abba584714c9e';
+			}));
 		});
 	});
 });

@@ -1,8 +1,7 @@
-const randexp = require('randexp');
 const promisify = require("es6-promisify");
 const nodemailer = require('nodemailer');
 
-module.exports = function(app) {
+module.exports = function (app) {
 
 	class MailService {
 		constructor() {
@@ -10,16 +9,23 @@ module.exports = function(app) {
 		}
 
 		// POST
-		create({email, subject, content}, params) {
-			var transporter = nodemailer.createTransport(app.get("secrets").smtp || {});
-			var sendMail = promisify(transporter.sendMail, transporter);
+		create({headers, email, subject, content}, params) {
+			let transporter;
+			if (process.env.NODE_ENV === 'production') {
+				transporter = nodemailer.createTransport(app.get("secrets").sendmail || {});
+			} else {
+				transporter = nodemailer.createTransport(app.get("secrets").smtp || {});
+			}
+
+			let sendMail = promisify(transporter.sendMail, transporter);
 			return sendMail({
-					from: 'noreply@schul-cloud.org',
-					to: email,
-					subject: subject,
-					html: content.html,
-					text: content.text
-				});
+				from: 'noreply@schul-cloud.org',
+				headers: headers,
+				to: email,
+				subject: subject,
+				html: content.html,
+				text: content.text
+			});
 		}
 	}
 

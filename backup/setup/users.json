@@ -39,6 +39,7 @@
 	"__v": 0,
 	"firstName": "Ida",
 	"lastName": "Renz",
+	"email" : "ida.renz@schul-cloud.org",
 	"schoolId": {
 		"$oid": "0000d186816abba584714c5f"
 	},
