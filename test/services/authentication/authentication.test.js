@@ -3,7 +3,7 @@ const chaiHttp = require('chai-http');
 const assert = require('assert');
 const app = require('../../../src/app');
 const express = require('express');
-const testObjects = require('./../account/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(app);
 const moodleMockServer = require('../account/moodle/moodleMockServer');
 
 const accountService = app.service('accounts');
@@ -39,7 +39,7 @@ describe('General login service', function () {
 			.then(moodle => {
 				mockMoodle = moodle;
 				return Promise.all([
-					testObjects.createTestSystem(moodle.url),
+					testObjects.createTestSystem({url: moodle.url}),
 					testObjects.createTestUser()]);
 			})
 			.then(([system, testUser]) => {

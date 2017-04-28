@@ -5,6 +5,10 @@ const mongoose = require('mongoose');
 const app = require('../../../src/app');
 const userService = app.service('users');
 const chai = require('chai');
+const loginHelper = require('../helpers/login');
+const testObjects = require('../helpers/testObjects')(app);
+const promisify = require('es6-promisify');
+const expect = chai.expect;
 
 describe('user service', function () {
 	it('registered the users service', () => {
@@ -55,4 +59,7 @@ describe('user service', function () {
 				chai.expect(array).to.include("TEST_BASE", "TEST_BASE_2", "TEST_SUB");
 			});
 	});
+
+	after(testObjects.cleanup);
 });
+
