@@ -6,7 +6,7 @@ const CourseModel = require('../../user-group/model').courseModel;
 const ClassModel = require('../../user-group/model').classModel;
 const aws = require('aws-sdk');
 const fs = require('fs');
-const path = require('path');
+const pathUtil = require('path').posix;
 const logger = require('winston');
 let awsConfig;
 try {
@@ -19,30 +19,31 @@ try {
 const AbstractFileStorageStrategy = require('./interface.js');
 
 /**
- * verifies whether the given userId has permission for the given context (course, user, class)
+ * verifies whether the given userId has permission for the given directory (course, user, class)
  * @param userId [String]
- * @param storageContext [String], e.g. users/{userId}
+ * @param path [String], e.g. users/{userId}
  * @returns {*}
  */
-const verifyStorageContext = (userId, storageContext) => {
-	var values = storageContext.split("/");
-	if (values.length < 2) return Promise.reject(new errors.BadRequest("StorageContext is invalid"));
-	var context = values[0];
-	switch (context) {
-		case 'users':
-			return UserModel.findById(values[1]).exec()
-				.then(res => {
-					if (!res || res._id != userId.toString()) {
-						return Promise.reject(new errors.Forbidden("You don't have permissions!"));
-					}
-					return Promise.resolve(res);
-				});
+const checkPermissions = (userId, path) => {
+	var values = path.split("/");
+	if (values.length < 2) return Promise.reject(new errors.BadRequest("Path is invalid"));
+	const contextType = values[0];
+	const contextId = values[1];
+	switch (contextType) {
+		case 'users':	// user's own files
+			if (contextId != userId.toString()) {
+				return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+			} else {
+				return Promise.resolve();
+			}
 		case 'courses':
 			// checks, a) whether the user is student or teacher of the course, b) the course exists
-			return CourseModel.find({$and: [
-				{$or:[{userIds: userId}, {teacherIds: userId}]},
-				{_id: values[1]}
-			]}).exec().then(res => {
+			return CourseModel.find({
+				$and: [
+					{$or: [{userIds: userId}, {teacherIds: userId}]},
+					{_id: contextId}
+				]
+			}).exec().then(res => {
 				if (!res || res.length <= 0) {
 					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 				}
@@ -50,10 +51,12 @@ const verifyStorageContext = (userId, storageContext) => {
 			});
 		case 'classes':
 			// checks, a) whether the user is student or teacher of the class, b) the class exists
-			return ClassModel.find({$and: [
-				{$or:[{userIds: userId}, {teacherIds: userId}]},
-				{_id: values[1]}
-			]}).exec().then(res => {
+			return ClassModel.find({
+				$and: [
+					{$or: [{userIds: userId}, {teacherIds: userId}]},
+					{_id: contextId}
+				]
+			}).exec().then(res => {
 				if (!res || res.length <= 0) {
 					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 				}
@@ -65,7 +68,7 @@ const verifyStorageContext = (userId, storageContext) => {
 };
 
 const createAWSObject = (schoolId) => {
-	if(!awsConfig.endpointUrl) throw new Error('AWS integration is not configured on the server');
+	if (!awsConfig.endpointUrl) throw new Error('AWS integration is not configured on the server');
 	var config = new aws.Config(awsConfig);
 	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
 	let bucketName = `bucket-${schoolId}`;
@@ -76,29 +79,29 @@ const createAWSObject = (schoolId) => {
 /**
  * split files-list in files, that are in current directory, and the sub-directories
  * @param data is the files-list
+ * @param path the current directory, everything else is filtered
  */
-const splitFilesAndDirectories = (storageContext, data) => {
+const splitFilesAndDirectories = (path, data) => {
 	let files = [];
 	let directories = [];
 
 	// gets name of current directory
-	let values = storageContext.split("/").filter((v, index) => {
+	let values = path.split("/").filter((v, index) => {
 		return v && index > 1;
 	});
 	let currentDir = values.join("/");
 	let currentDirRegEx = new RegExp("^(\/|)" + currentDir + '(\/|)', "i");
 
 	data.forEach(entry => {
-		if(!entry.path.match(currentDirRegEx)) return;
+		if (!entry.path.match(currentDirRegEx)) return;
 		const relativePath = entry.path.replace(currentDirRegEx, '');
 
-		if(relativePath === '') {
+		if (relativePath === '') {
 			files.push(entry);
 		} else {
 			directories.push(relativePath.split("/")[0]);
 		}
 	});
-
 
 
 	// delete duplicates in directories
@@ -154,7 +157,7 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 					type: res.ContentType,
 					thumbnail: res.Metadata.thumbnail
 				};
-		});
+			});
 	}))
 		.then(data => {
 			return splitFilesAndDirectories(storageContext, data);
@@ -175,28 +178,29 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	getFiles(userId, storageContext) {
-		if (!userId || !storageContext) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		return verifyStorageContext(userId, storageContext)
+	getFiles(userId, path) {
+		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		return checkPermissions(userId, path)
 			.then(res => UserModel.findById(userId).exec())
 			.then(result => {
-				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+				if (!result) return Promise.reject(errors.NotFound("User not found"));
+				if(!result.schoolId) return Promise.reject(errors.GeneralError("school not set"));
 
 				var awsObject = createAWSObject(result.schoolId);
 				const params = {
 					Bucket: awsObject.bucket,
-					Prefix: storageContext
+					Prefix: path
 				};
 				return promisify(awsObject.s3.listObjectsV2, awsObject.s3)(params)
 					.then(res => {
-						return Promise.resolve(getFileMetadata(storageContext, res.Contents, awsObject.bucket, awsObject.s3));
+						return Promise.resolve(getFileMetadata(path, res.Contents, awsObject.bucket, awsObject.s3));
 					});
 			});
 	}
 
-	deleteFile(userId, storageContext, fileName) {
-		if (!userId || !storageContext || !fileName) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		return verifyStorageContext(userId, storageContext)
+	deleteFile(userId, path) {
+		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		return checkPermissions(userId, path)
 			.then(res => UserModel.findById(userId).exec())
 			.then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
@@ -206,7 +210,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					Delete: {
 						Objects: [
 							{
-								Key: `${storageContext}/${fileName}`
+								Key: path
 							}
 						],
 						Quiet: true
@@ -216,52 +220,53 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	generateSignedUrl(userId, storageContext, fileName, fileType, action) {
-		if (!userId || !storageContext || !fileName || !action || (action == 'putObject' && !fileType)) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		return verifyStorageContext(userId, storageContext)
-			.then(res => {
-			return UserModel.findById(userId).exec().then(result => {
-				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+	generateSignedUrl(userId, path, fileType, action) {
+		if (!userId || !path || !action || (action == 'putObject' && !fileType)) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		const fileName = pathUtil.basename(path);
+		const dirName = pathUtil.dirname(path);
+		return checkPermissions(userId, path)
+			.then(() => {
+				return UserModel.findById(userId).exec().then(result => {
+					if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
-				const awsObject = createAWSObject(result.schoolId);
-				let params = {
-					Bucket: awsObject.bucket,
-					Key: `${storageContext}/${fileName}`,
-					Expires: 60
-				};
+					const awsObject = createAWSObject(result.schoolId);
+					let params = {
+						Bucket: awsObject.bucket,
+						Key: path,
+						Expires: 60
+					};
 
-				if(action == 'putObject') params.ContentType = fileType;
+					if (action == 'putObject') params.ContentType = fileType;
 
-				return promisify(awsObject.s3.getSignedUrl, awsObject.s3)(action, params)
-					.then(res => Promise.resolve({
-						url: res,
-						header: {
-							"Content-Type": fileType,
-							"x-amz-meta-path": storageContext,
-							"x-amz-meta-name": fileName,
-							"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
-						}
-					}));
+					return promisify(awsObject.s3.getSignedUrl, awsObject.s3)(action, params)
+						.then(res => Promise.resolve({
+							url: res,
+							header: {
+								"Content-Type": fileType,
+								"x-amz-meta-path": dirName,
+								"x-amz-meta-name": fileName,
+								"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
+							}
+						}));
+				});
 			});
-		});
 	}
 
-	createDirectory(userId, storageContext, dirName) {
-		if (!userId || !storageContext || !dirName) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		return verifyStorageContext(userId, storageContext)
+	createDirectory(userId, path) {
+		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		return checkPermissions(userId, path)
 			.then(res => {
 				return UserModel.findById(userId).exec().then(result => {
 					if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
 					const awsObject = createAWSObject(result.schoolId);
-					const dirPath = `${storageContext}/${dirName}`;
-					var fileStream = fs.createReadStream(path.join(__dirname, '..', 'resources', '.scfake'));
+					var fileStream = fs.createReadStream(pathUtil.join(__dirname, '..', 'resources', '.scfake'));
 					let params = {
 						Bucket: awsObject.bucket,
-						Key: `${dirPath}/.scfake`,
+						Key: `${path}/.scfake`,
 						Body: fileStream,
 						Metadata: {
-							path: dirPath,
+							path: path,
 							name: '.scfake'
 						}
 					};
@@ -271,17 +276,16 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	deleteDirectory(userId, storageContext) {
-		if (!userId || !storageContext) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		return verifyStorageContext(userId, storageContext)
+	deleteDirectory(userId, path) {
+		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		return checkPermissions(userId, path)
 			.then(res => UserModel.findById(userId).exec())
 			.then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 				const awsObject = createAWSObject(result.schoolId);
-				const s3 = awsObject.s3;
 				const params = {
 					Bucket: awsObject.bucket,
-					Prefix: storageContext
+					Prefix: path
 				};
 				return this._deleteAllInDirectory(awsObject, params);
 			});
