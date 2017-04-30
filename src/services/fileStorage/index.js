@@ -69,11 +69,12 @@ class FileStorageService {
 	}
 
 	/**
-	 * @param data, contains storageContext
 	 * @returns {Promise}
+	 * @param query contains the file path
+	 * @param payload contains fileStorageType and userId, set by middleware
 	 */
-	find(data) {
-		return createCorrectStrategy(data.payload.fileStorageType).getFiles(data.payload.userId, data.query.storageContext);
+	find({query, payload}) {
+		return createCorrectStrategy(payload.fileStorageType).getFiles(payload.userId, query.path);
 	}
 
 	/**
@@ -81,7 +82,7 @@ class FileStorageService {
 	 * @returns {Promise}
 	 */
 	remove(id, params) {
-		return createCorrectStrategy(params.payload.fileStorageType).deleteFile(params.payload.userId, params.query.storageContext, params.query.fileName);
+		return createCorrectStrategy(params.payload.fileStorageType).deleteFile(params.payload.userId, params.query.path);
 	}
 }
 
@@ -117,11 +118,13 @@ class SignedUrlService {
 	}
 
 	/**
-	 * @param data, contains storageContext, fileName, fileType, action
+	 * @param path where to store the file
+	 * @param fileType MIME type
+	 * @param action the AWS action, e.g. putObject
 	 * @returns {Promise}
 	 */
-	create(data, params) {
-		return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(params.payload.userId, data.storageContext, data.fileName, data.fileType, data.action);
+	create({path, fileType, action}, params) {
+		return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(params.payload.userId, path, fileType, action);
 	}
 }
 
@@ -171,7 +174,7 @@ class DirectoryService {
 	 * @returns {Promise}
 	 */
 	create(data, params) {
-		return createCorrectStrategy(params.payload.fileStorageType).createDirectory(params.payload.userId, data.storageContext, data.dirName);
+		return createCorrectStrategy(params.payload.fileStorageType).createDirectory(params.payload.userId, data.path);
 	}
 
 	/**
@@ -183,7 +186,7 @@ class DirectoryService {
 	 */
 	remove(id, params) {
 		return createCorrectStrategy(params.payload.fileStorageType)
-			.deleteDirectory(params.payload.userId, params.query.storageContext);
+			.deleteDirectory(params.payload.userId, params.query.path);
 	}
 }
 
