@@ -18,8 +18,6 @@ When running the server locally, it is served at [http://localhost:3030/docs/](h
 1. Clone directory into local folder
 2. Go into the cloned folder and enter `npm install`
 
-For connecting to the [SchulCloud Calendar-Service](https://github.com/schul-cloud/schulcloud-calendar) you have to set `export CALENDAR_SERVICE_ENABLED=true`.
-
 ## Run
 
 1. Go into project folder
