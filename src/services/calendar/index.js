@@ -20,7 +20,7 @@ const convertEventToJsonApi = (body) => {
 					location: body.location,
 					description: body.description,
 					dtstart: body.startDate,
-					dtend: body.endDate || new Date(body.startDate.getTime() + body.duration).toISOString(),
+					dtend: body.endDate || new Date(new Date(body.startDate).getTime() + body.duration).toISOString(),
 					dtstamp: new Date,
 					transp: "OPAQUE",
 					sequence: 0,
@@ -80,7 +80,7 @@ class Service {
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.calendar + '/events/',
+			uri: serviceUrls.calendar + '/events?all=true',
 			headers: {
 				'Authorization': userId
 			},
