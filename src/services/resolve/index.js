@@ -83,7 +83,6 @@ class ScopeResolver {
 							attributes: scope.attributes
 						}));
 					});
-
 					return Promise.resolve(response);
 				});
 			});

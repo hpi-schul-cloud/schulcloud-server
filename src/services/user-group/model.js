@@ -17,14 +17,29 @@ const getUserGroupSchema = (additional = {}) => {
 	});
 };
 
+/**
+ * duration {Number} - the duration of a course lesson
+ * startTime {Number] - the start time of a course lesson as milliseconds
+ * weekday {Number} - from 0 to 6, the weekday the course take place (e.g. 0 = monday, 1 = tuesday ... )
+ */
+const timeSchema = new Schema({
+	weekday: {type: Number, min: 0, max: 6, required: true},
+	startTime: {type: Number},
+	duration: {type: Number}
+});
+
 const courseModel = mongoose.model('course', getUserGroupSchema({
 	description: {type: String},
 	classIds: [{type: Schema.Types.ObjectId, required: true, ref: 'class'}],
 	teacherIds: [{type: Schema.Types.ObjectId, required: true, ref: 'user'}],
 	ltiToolIds: [{type: Schema.Types.ObjectId, required: true, ref: 'ltiTool'}],
 	color: {type: String, required: true, 'default': '#1DE9B6'},
-	gradeSystem: {type: Boolean}
+	gradeSystem: {type: Boolean},
+	startDate: {type: Date},
+	untilDate: {type: Date},
+	times: [timeSchema]
 }));
+
 const classModel =  mongoose.model('class', getUserGroupSchema({
 	teacherIds: [{type: Schema.Types.ObjectId, ref: 'user', required: true}]
 }));
