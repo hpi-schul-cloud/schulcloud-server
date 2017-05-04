@@ -21,11 +21,13 @@ const getUserGroupSchema = (additional = {}) => {
  * duration {Number} - the duration of a course lesson
  * startTime {Number] - the start time of a course lesson as milliseconds
  * weekday {Number} - from 0 to 6, the weekday the course take place (e.g. 0 = monday, 1 = tuesday ... )
+ * eventId {String} - id of the event in the external calendar-service
  */
 const timeSchema = new Schema({
 	weekday: {type: Number, min: 0, max: 6, required: true},
 	startTime: {type: Number},
-	duration: {type: Number}
+	duration: {type: Number},
+	eventId: {type: String}
 });
 
 const courseModel = mongoose.model('course', getUserGroupSchema({
