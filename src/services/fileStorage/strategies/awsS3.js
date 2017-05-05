@@ -26,6 +26,7 @@ const AbstractFileStorageStrategy = require('./interface.js');
  */
 const checkPermissions = (userId, path) => {
 	var values = path.split("/");
+	if (values[0] == '') values = values.slice(1);	// omit empty component for leading slash
 	if (values.length < 2) return Promise.reject(new errors.BadRequest("Path is invalid"));
 	const contextType = values[0];
 	const contextId = values[1];
@@ -63,7 +64,7 @@ const checkPermissions = (userId, path) => {
 				return Promise.resolve(res);
 			});
 		default:
-			return Promise.reject("StorageContext is invalid");
+			return Promise.reject(new errors.BadRequest("StorageContext is invalid"));
 	}
 };
 
@@ -82,24 +83,22 @@ const createAWSObject = (schoolId) => {
  * @param path the current directory, everything else is filtered
  */
 const splitFilesAndDirectories = (path, data) => {
+	path = removeLeadingSlash(path);
 	let files = [];
 	let directories = [];
 
-	// gets name of current directory
-	let values = path.split("/").filter((v, index) => {
-		return v && index > 1;
-	});
-	let currentDir = values.join("/");
-	let currentDirRegEx = new RegExp("^(\/|)" + currentDir + '(\/|)', "i");
-
 	data.forEach(entry => {
-		if (!entry.path.match(currentDirRegEx)) return;
-		const relativePath = entry.path.replace(currentDirRegEx, '');
+		const relativePath = removeLeadingSlash(entry.key.replace(path, ''));
+		const pathComponents = relativePath.split('/');
 
-		if (relativePath === '') {
+		if (pathComponents.length == 1) {
 			files.push(entry);
 		} else {
-			directories.push(relativePath.split("/")[0]);
+			if(entry.name == ".scfake") {	// prevent duplicates showing up by only considering .scfake
+				const components = entry.key.split('/');
+				const directoryName = components[components.length - 2];	// the component before '.scfake'
+				directories.push(directoryName);
+			}
 		}
 	});
 
@@ -123,6 +122,11 @@ const splitFilesAndDirectories = (path, data) => {
 	};
 };
 
+const removeLeadingSlash = path => {
+	if (path[0] == '/') path = path.substring(1);
+	return path;
+};
+
 const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 	const headObject = promisify(s3.headObject, s3);
 	const _getPath = (path) => {
@@ -130,8 +134,10 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 			return "/";
 		}
 
+		let pathComponents = path.split("/");
+		if(pathComponents[0] == '') pathComponents = pathComponents.slice(1);	// omit leading slash
 		// remove first and second directory from storageContext because it's just meta
-		return `/${path.split("/").filter((v, index) => index > 1).join("/")}`;
+		return `/${pathComponents.slice(2).join("/")}`;
 	};
 
 	const _getFileName = (path) => {
@@ -143,6 +149,9 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 		let values = path.split("/");
 		return values[values.length - 1];
 	};
+	awsObjects.forEach(e => {
+		e.Key = removeLeadingSlash(e.Key);
+	});
 
 	return Promise.all(awsObjects.map((object) => {
 
@@ -157,6 +166,10 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 					type: res.ContentType,
 					thumbnail: res.Metadata.thumbnail
 				};
+			})
+			.catch(e => {
+				console.error(e);
+				return Promise.reject(e);
 			});
 	}))
 		.then(data => {
@@ -222,8 +235,10 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	generateSignedUrl(userId, path, fileType, action) {
 		if (!userId || !path || !action || (action == 'putObject' && !fileType)) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		path = removeLeadingSlash(pathUtil.normalize(path));	// remove leading and double slashes
 		const fileName = pathUtil.basename(path);
-		const dirName = pathUtil.dirname(path);
+		let dirName = pathUtil.dirname(path);
+
 		return checkPermissions(userId, path)
 			.then(() => {
 				return UserModel.findById(userId).exec().then(result => {
@@ -256,6 +271,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return checkPermissions(userId, path)
 			.then(res => {
+				if(path[0] == '/') path = path.substring(1);
 				return UserModel.findById(userId).exec().then(result => {
 					if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
