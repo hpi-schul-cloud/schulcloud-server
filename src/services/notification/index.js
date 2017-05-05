@@ -3,7 +3,7 @@
 const request = require('request-promise-native');
 const hooks = require('./hooks/index');
 
-const REQUEST_TIMEOUT = 4000; // in ms
+const REQUEST_TIMEOUT = 8000; // in ms
 
 /**
  * maps jsonapi properties of a response to fit anything but jsonapi
@@ -12,6 +12,7 @@ const REQUEST_TIMEOUT = 4000; // in ms
 const mapResponseProps = (response) => {
 	response.type = response.data.type;
 	response.id = response.data.id;
+	return response;
 };
 
 class MessageService {
@@ -70,7 +71,6 @@ class DeviceService {
 	}
 
 	create(data, params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
