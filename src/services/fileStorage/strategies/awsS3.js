@@ -166,10 +166,6 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 					type: res.ContentType,
 					thumbnail: res.Metadata.thumbnail
 				};
-			})
-			.catch(e => {
-				console.error(e);
-				return Promise.reject(e);
 			});
 	}))
 		.then(data => {
