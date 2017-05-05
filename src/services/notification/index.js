@@ -150,6 +150,7 @@ class NotificationService {
 	get(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 
+		const userId = (params.account ||{}).userId || params.payload.userId;
 		const options = {
 			uri: serviceUrls.notification + '/notifications/' + id,
 			headers: {
