@@ -139,6 +139,18 @@ class Service {
 					}
 				],
 				summary: 'Gets all events for a given user'
+			},
+			remove: {
+				parameters: [
+					{
+						description: 'a valid event id',
+						required: true,
+						in: "path",
+						name: 'id',
+						type: 'string'
+					}
+				],
+				summary: 'Deletes a event from the calendar-service'
 			}
 		};
 	}
@@ -202,22 +214,26 @@ class Service {
 		});
 	}
 
-	/**remove(id, params) {
+	remove(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.calendar + '/events?all=true',
+			uri: serviceUrls.calendar + '/events/' + id,
 			headers: {
 				'Authorization': userId
 			},
 			json: true,
 			method: 'DELETE',
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
+			body: {"data": [{"type": "event"}]}
 		};
 
-		return request(options);
-	}**/
+		return request(options).then(res => {
+			// calendar returns nothing if event was successfully deleted
+			if (!res) return {message: "Successful deleted event"};
+		});
+	}
 
 	setup(app, path) {
 		this.app = app;
