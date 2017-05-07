@@ -20,7 +20,7 @@ const persistCourseTimesEvent = (hook) => {
 				(course.times || []).forEach(time => {
 					if (JSON.stringify(time._id) == JSON.stringify(courseTimeId)) time.eventId = event._id;
 				});
-
+				
 				return courseService.patch(courseId, course);
 			})
 		}

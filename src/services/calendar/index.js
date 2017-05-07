@@ -17,8 +17,10 @@ const convertJsonApiToEvent = (event) => {
 	event.title = event.attributes.summary;
 	event.location = event.attributes.location;
 	event.description = event.attributes.description;
-	event["x-sc-courseId"]  = event.attributes["x-sc-courseId"];
-	event["x-sc-courseTimeId"] = event.attributes["x-sc-courseTimeId"];
+
+	// calendar service ignore case of x-params on event-creation
+	event["x-sc-courseId"]  = event.attributes["x-sc-courseid"];
+	event["x-sc-courseTimeId"] = event.attributes["x-sc-coursetimeid"];
 	return event;
 };
 
