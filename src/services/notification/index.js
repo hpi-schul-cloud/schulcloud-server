@@ -70,6 +70,24 @@ class DeviceService {
 		this.options = options || {};
 	}
 
+	get(id, params) {
+		const serviceUrls = this.app.get('services') || {};
+
+		const userId = (params.account ||{}).userId || params.payload.userId;
+		const options = {
+			uri: serviceUrls.notification + '/devices/' + id +'?token=' + userId,
+			headers: {
+				'token': userId
+			},
+			json: true,
+			timeout: REQUEST_TIMEOUT
+		};
+
+		return request(options).then(devices => {
+			return devices;
+		});
+	}
+
 	create(data, params) {
 		const serviceUrls = this.app.get('services') || {};
 
