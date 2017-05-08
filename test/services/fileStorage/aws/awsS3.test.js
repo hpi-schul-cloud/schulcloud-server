@@ -147,7 +147,7 @@ describe('AWS file storage strategy', function () {
 
 	describe("DELETE /fileStorage/", function () {
 		it("deletes a file correctly", function () {
-			return aws.deleteFile("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "example.jpg").then(res => {
+			return aws.deleteFile("0000d213816abba584714c0a", "users/0000d213816abba584714c0a/example.jpg").then(res => {
 				expect(res).to.not.be.undefined;
 				expect(res.Deleted).to.have.lengthOf(1);
 				expect(res.Deleted[0].Key).to.equal("users/0000d213816abba584714c0a/example.jpg");
@@ -156,7 +156,7 @@ describe('AWS file storage strategy', function () {
 		});
 
 		it("deletes a folder correctly", function () {
-			return aws.deleteDirectory("0000d213816abba584714c0a", "users/0000d213816abba584714c0a/", "folderToBeDeleted")
+			return aws.deleteDirectory("0000d213816abba584714c0a", "users/0000d213816abba584714c0a/folderToBeDeleted/")
 				.then(res => {
 				expect(res).to.not.be.undefined;
 				expect(res.Deleted).to.have.lengthOf(2);
@@ -178,7 +178,7 @@ describe('AWS file storage strategy', function () {
 
 	describe("POST /fileStorage/signedUrl", function () {
 		it("creates valid signed url", function () {
-			return aws.generateSignedUrl("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "example.jpg", "mime/image", "putObject").then(res => {
+			return aws.generateSignedUrl("0000d213816abba584714c0a", "users/0000d213816abba584714c0a/example.jpg", "mime/image", "putObject").then(res => {
 				expect(res).to.not.be.undefined;
 				expect(res.url).to.be.equal("successfully created signed url");
 				return;
@@ -198,7 +198,7 @@ describe('AWS file storage strategy', function () {
 
 	describe("POST /fileStorage/directories", function () {
 		it("creates a new directory", function () {
-			return aws.createDirectory("0000d213816abba584714c0a", "users/0000d213816abba584714c0a", "test").then(res => {
+			return aws.createDirectory("0000d213816abba584714c0a", "users/0000d213816abba584714c0a/test/").then(res => {
 				expect(res).to.not.be.undefined;
 				expect(res).to.be.equal("successfully put object");
 				return;
