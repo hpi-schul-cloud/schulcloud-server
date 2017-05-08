@@ -5,6 +5,13 @@ const hooks = require('./hooks');
 
 const REQUEST_TIMEOUT = 4000; // in ms
 
+function toQueryString(paramsObject) {
+	return Object
+		.keys(paramsObject)
+		.map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
+		.join('&');
+}
+
 /**
  * Converts the Server-Request-Body to JsonApi-Body
  * @param body
@@ -61,7 +68,7 @@ class Service {
 		};
 
 		return request(options).then(events => {
-			events = events.data.map(event => {
+			events = (events.data || []).map(event => {
 				return Object.assign(event, {
 					title: event.summary,
 					allDay: false, // TODO: find correct value
@@ -78,9 +85,12 @@ class Service {
 
 		const serviceUrls = this.app.get('services') || {};
 
+		const query = params.query;
+		if(!('all' in query)) query.all = true;
+
 		const userId = (params.account ||{}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.calendar + '/events?all=true',
+			uri: serviceUrls.calendar + '/events?' + toQueryString(params.query),
 			headers: {
 				'Authorization': userId
 			},
@@ -89,13 +99,12 @@ class Service {
 		};
 
 		return request(options).then(events => {
-			events = events.data.map(event => {
+			events = (events.data || events || []).map(event => {
 				return Object.assign(event, {
 					title: event.summary,
 					allDay: false, // TODO: find correct value
 					start: Date.parse(event.dtstart),
-					end: Date.parse(event.dtend),
-					url: '' // TODO: add x-sc-field
+					end: Date.parse(event.dtend)
 				});
 			});
 			return events;
