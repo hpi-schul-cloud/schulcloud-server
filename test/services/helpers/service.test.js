@@ -55,14 +55,15 @@ describe('Mail Service', () => {
 
 	it('should send an email using nodemailer-mock', function () {
 
-		// call a service that uses nodemailer
-		return mailService.create(emailOptions)
-			.then((response) => {
-				winston.info(response);
-				expect(response.accepted).to.have.lengthOf(1);
-				expect(response.accepted[0]).to.be.equal("accepted");
-				expect(response.response).to.contain("success");
-
+		mailService.create(emailOptions)
+			.then(_ => {
+				// get the array of emails we sent
+				const sentMail = nodemailerMock.mock.sentMail();
+				expect(sentMail.length).to.equal(1);
+				expect(sentMail[0].to).to.equal(emailOptions.email);
+				expect(sentMail[0].subject).to.equal(emailOptions.subject);
+				expect(sentMail[0].html).to.equal(emailOptions.content.html);
+				expect(sentMail[0].text).to.equal(emailOptions.content.text);
 				return;
 			});
 	});
