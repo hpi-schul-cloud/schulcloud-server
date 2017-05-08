@@ -97,28 +97,19 @@ const splitFilesAndDirectories = (path, data) => {
 			if(entry.name == ".scfake") {	// prevent duplicates showing up by only considering .scfake
 				const components = entry.key.split('/');
 				const directoryName = components[components.length - 2];	// the component before '.scfake'
-				directories.push(directoryName);
+				directories.push({
+					name: directoryName
+				});
 			}
 		}
-	});
-
-
-	// delete duplicates in directories
-	let withoutDuplicates = [];
-	directories.forEach(d => {
-		if (withoutDuplicates.indexOf(d) == -1) withoutDuplicates.push(d);
 	});
 
 	// remove .scfake fake file
 	files = files.filter(f => f.name != ".scfake");
 
 	return {
-		files: files,
-		directories: withoutDuplicates.map(v => {
-			return {
-				name: v
-			};
-		})
+		files,
+		directories
 	};
 };
 
