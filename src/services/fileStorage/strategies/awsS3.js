@@ -219,7 +219,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					Delete: {
 						Objects: [
 							{
-								Key: path
+								Key: removeLeadingSlash(path)
 							}
 						],
 						Quiet: true
