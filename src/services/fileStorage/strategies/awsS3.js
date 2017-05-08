@@ -288,7 +288,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				const awsObject = createAWSObject(result.schoolId);
 				const params = {
 					Bucket: awsObject.bucket,
-					Prefix: path
+					Prefix: removeLeadingSlash(path)
 				};
 				return this._deleteAllInDirectory(awsObject, params);
 			});
