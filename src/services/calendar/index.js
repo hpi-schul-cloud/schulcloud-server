@@ -6,6 +6,25 @@ const hooks = require('./hooks');
 const REQUEST_TIMEOUT = 4000; // in ms
 
 /**
+ * converts a jsonApi-event to a plain event
+ * @param event {object}
+ */
+const convertJsonApiToEvent = (event) => {
+	event._id = event.attributes.uid;
+	event.start = new Date(event.attributes.dtstart).getTime();
+	event.end = new Date(event.attributes.dtend).getTime();
+	event.summary = event.attributes.summary;
+	event.title = event.attributes.summary;
+	event.location = event.attributes.location;
+	event.description = event.attributes.description;
+
+	// calendar service ignore case of x-params on event-creation
+	event["x-sc-courseId"]  = event.attributes["x-sc-courseid"];
+	event["x-sc-courseTimeId"] = event.attributes["x-sc-coursetimeid"];
+	return event;
+};
+
+/**
  * Converts the Server-Request-Body to JsonApi-Body
  * @param body
  * @returns {object} - valid json-api body for calendar-service
@@ -27,13 +46,14 @@ const convertEventToJsonApi = (body) => {
 					repeat_freq: body.frequency,
 					repeat_wkst: body.weekday,
 					repeat_until: body.repeat_until,
-					"x-sc-courseId": body.courseId
+					"x-sc-courseId": body.courseId,
+					"x-sc-courseTimeId": body.courseTimeId
 				},
 				relationships: {
 					"scope-ids": [
 						body.scopeId
 					],
-					"separate-users": true
+					"separate-users": false
 				}
 			}
 		]
@@ -98,6 +118,11 @@ class Service {
 						type: 'string'
 					},
 					{
+						description: 'the course-time reference of a event, e.g. for linking to a specific course-time',
+						name: 'courseTimeId',
+						type: 'string'
+					},
+					{
 						description: 'the scope reference of a event',
 						name: 'scopeId',
 						type: 'string'
@@ -116,6 +141,18 @@ class Service {
 					}
 				],
 				summary: 'Gets all events for a given user'
+			},
+			remove: {
+				parameters: [
+					{
+						description: 'a valid event id',
+						required: true,
+						in: "path",
+						name: 'id',
+						type: 'string'
+					}
+				],
+				summary: 'Deletes a event from the calendar-service'
 			}
 		};
 	}
@@ -146,7 +183,7 @@ class Service {
 					url: '' // TODO: add x-sc-field
 				});
 			});
-			return events;
+			return events.map(convertJsonApiToEvent);
 		});
 	}
 
@@ -174,7 +211,29 @@ class Service {
 					url: '' // TODO: add x-sc-field
 				});
 			});
-			return events;
+
+			return events.map(convertJsonApiToEvent);
+		});
+	}
+
+	remove(id, params) {
+		const serviceUrls = this.app.get('services') || {};
+
+		const userId = (params.account ||{}).userId || params.payload.userId;
+		const options = {
+			uri: serviceUrls.calendar + '/events/' + id,
+			headers: {
+				'Authorization': userId
+			},
+			json: true,
+			method: 'DELETE',
+			timeout: REQUEST_TIMEOUT,
+			body: {"data": [{"type": "event"}]}
+		};
+
+		return request(options).then(res => {
+			// calendar returns nothing if event was successfully deleted
+			if (!res) return {message: "Successful deleted event"};
 		});
 	}
 
