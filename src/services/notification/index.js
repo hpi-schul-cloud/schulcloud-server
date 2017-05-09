@@ -15,6 +15,13 @@ const mapResponseProps = (response) => {
 	return response;
 };
 
+const toQueryString = (paramsObject) => {
+	return Object
+		.keys(paramsObject)
+		.map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
+		.join('&');
+};
+
 class MessageService {
 	constructor(options) {
 		this.options = options || {};
@@ -189,9 +196,8 @@ class NotificationService {
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
 
-		// TODO: Still missing some query params
 		const options = {
-			uri: serviceUrls.notification + '/notifications/' + '?user=' + userId,
+			uri: serviceUrls.notification + '/notifications/' + '?user=' + userId + '&' + toQueryString(params.query),
 			headers: {
 				'token': userId
 			},
