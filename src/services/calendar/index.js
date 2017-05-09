@@ -199,7 +199,6 @@ class Service {
 		const serviceUrls = this.app.get('services') || {};
 
 		const query = params.query;
-		if(!('all' in query)) query.all = true;
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
 		const options = {
