@@ -22,11 +22,11 @@ const persistCourseTimesEvent = (hook) => {
 				});
 				
 				return courseService.patch(courseId, course);
-			})
+			});
 		}
 	})).then(_ => {
 		return Promise.resolve(hook);
-	})
+	});
 };
 
 exports.before = {

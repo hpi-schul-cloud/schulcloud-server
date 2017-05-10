@@ -160,6 +160,18 @@ class Service {
 					}
 				],
 				summary: 'Deletes a event from the calendar-service'
+			},
+			update: {
+				parameters: [
+					{
+						description: 'a valid event id',
+						required: true,
+						in: "path",
+						name: 'id',
+						type: 'string'
+					}
+				],
+				summary: 'Updates a event from the calendar-service'
 			}
 		};
 	}
@@ -242,6 +254,28 @@ class Service {
 		return request(options).then(res => {
 			// calendar returns nothing if event was successfully deleted
 			if (!res) return {message: "Successful deleted event"};
+			return res;
+		});
+	}
+
+	update(id, data, params) {
+		const serviceUrls = this.app.get('services') || {};
+
+		const userId = (params.account ||{}).userId || params.payload.userId;
+		const options = {
+			uri: serviceUrls.calendar + '/events/' + id,
+			method: 'PUT',
+			headers: {
+				'Authorization': userId
+			},
+			body: convertEventToJsonApi(data),
+			json: true,
+			timeout: REQUEST_TIMEOUT
+		};
+
+		return request(options).then(events => {
+			events = (events.data || events || []);
+			return events.map(convertJsonApiToEvent);
 		});
 	}
 
