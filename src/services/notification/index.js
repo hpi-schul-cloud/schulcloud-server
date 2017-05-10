@@ -38,7 +38,7 @@ class MessageService {
 			headers: {
 				'token': userId
 			},
-			body: data,
+			body: Object.assign(data, {serviceUrl: serviceUrls.notification}),
 			json: true,
 			timeout: REQUEST_TIMEOUT
 		};
@@ -99,6 +99,7 @@ class DeviceService {
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
+
 		const options = {
 			uri: serviceUrls.notification + '/devices/',
 			method: 'POST',
