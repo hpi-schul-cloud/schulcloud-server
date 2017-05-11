@@ -17,7 +17,9 @@ const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const setupSwagger = require('./swagger');
 const prettyError = require('pretty-error').start();
-const consoleStamp = require('console-stamp')(console);
+
+require('console-stamp')(console);
+require('console-stamp')(winston );
 
 let secrets;
 try {
