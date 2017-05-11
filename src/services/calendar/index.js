@@ -180,7 +180,7 @@ class Service {
 
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = params.query.userId || (params.account ||{}).userId || params.payload.userId;
 		const options = {
 			uri: serviceUrls.calendar + '/events/',
 			method: 'POST',
@@ -212,7 +212,7 @@ class Service {
 
 		const query = params.query;
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = params.query.userId || (params.account ||{}).userId || params.payload.userId;
 		const options = {
 			uri: serviceUrls.calendar + '/events?' + toQueryString(params.query),
 			headers: {
@@ -223,7 +223,7 @@ class Service {
 		};
 
 		return request(options).then(events => {
-			events = (events.data || events || []).map(event => {
+			events = params.query.userId || (events.data || events || []).map(event => {
 				return Object.assign(event, {
 					title: event.summary,
 					allDay: false, // TODO: find correct value
@@ -239,7 +239,7 @@ class Service {
 	remove(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = params.query.userId || (params.account ||{}).userId || params.payload.userId;
 		const options = {
 			uri: serviceUrls.calendar + '/events/' + id,
 			headers: {
@@ -261,7 +261,7 @@ class Service {
 	update(id, data, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = params.query.userId || (params.account ||{}).userId || params.payload.userId;
 		const options = {
 			uri: serviceUrls.calendar + '/events/' + id,
 			method: 'PUT',
