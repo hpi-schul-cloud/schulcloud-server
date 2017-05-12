@@ -5,7 +5,6 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
 const filterApplicableSubmissions = hook => {
-	console.log(hook.result.data);
 	let uId = hook.params.account.userId;
 	hook.result.data = hook.result.data.filter(function(c){
 		return c.homeworkId.publicSubmissions
