@@ -3,6 +3,8 @@
 const service = require('feathers-mongoose');
 const {homeworkModel, submissionModel, commentModel} = require('./model');
 const hooks = require('./hooks');
+const submissionHooks = require('./hooks/submissions');
+const commentHooks = require('./hooks/comments');
 
 module.exports = function() {
 	const app = this;
@@ -28,8 +30,8 @@ module.exports = function() {
 		}
 	}));
 	const submissionService = app.service('/submissions');
-	submissionService.before(hooks.before);
-	submissionService.after(hooks.after);
+	submissionService.before(submissionHooks.before);
+	submissionService.after(submissionHooks.after);
 
 	/* Comment model */
 	app.use('/comments', service({
@@ -40,6 +42,6 @@ module.exports = function() {
 		}
 	}));
 	const commentService = app.service('/comments');
-	commentService.before(hooks.before);
-	commentService.after(hooks.after);
+	commentService.before(commentHooks.before);
+	commentService.after(commentHooks.after);
 };
