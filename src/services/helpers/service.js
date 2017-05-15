@@ -2,7 +2,7 @@ const promisify = require("es6-promisify");
 const nodemailer = require('nodemailer');
 
 const checkForToken = (params, app) => {
-	if (params.headers.token) {
+	if ((params.headers || {}).token) {
 		const userId = params.headers.token;
 		return app.service('/users/').get(userId);
 	}
