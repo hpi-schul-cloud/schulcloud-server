@@ -66,9 +66,9 @@ describe('notification service', function () {
 			});
 	});
 
-	it('GET /notification/devices', () => {
+	it('FIND /notification/devices', () => {
 		notificationService = app.service('notification/devices/');
-		return notificationService.get('0000d213816abba584714c0a', { payload: {userId: '0000d213816abba584714c0a'}})
+		return notificationService.find({query: {}, payload: {userId: '0000d213816abba584714c0a'}})
 			.then(result => {
 				expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
 				expect(result.data.type).to.equal('messages');
