@@ -20,7 +20,8 @@ const lessonSchema = new Schema({
 		hidden: { type: Boolean }
 	}],
 	materialIds: [{type: Schema.Types.ObjectId, ref: 'material'}],
-	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
+	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'},
+	hidden: { type: Boolean }
 },{
 	timestamps: true
 });
