@@ -13,7 +13,7 @@ const fileStorageTypes = ['awsS3'];
 const schoolSchema = new Schema({
 	name: {type: String, required: true},
 	address: {type: Object},
-	fileStorageType: {type: String, required: true, enum: fileStorageTypes},
+	fileStorageType: {type: String, enum: fileStorageTypes},
 	systems: [{type: Schema.Types.ObjectId, ref: 'system'}],
 	federalState: {type: Schema.Types.ObjectId, ref: 'federalstate'},
 	createdAt: {type: Date, 'default': Date.now},
