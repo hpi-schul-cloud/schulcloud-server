@@ -9,7 +9,7 @@ const filterApplicableHomework = hook => {
 	hook.result.data = hook.result.data.filter(function(c){
 		return (new Date(c.availableDate).getTime() < Date.now()
 			&& c.courseId != null
-			&& c.courseId.userIds.indexOf(uId) != -1)
+			&& (c.courseId.userIds || []).indexOf(uId) != -1)
 			|| JSON.stringify(c.teacherId)==JSON.stringify(uId);
 	});
 	return Promise.resolve(hook);
