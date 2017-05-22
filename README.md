@@ -1,5 +1,5 @@
 # Schul-Cloud Server
-based on nodejs and [feathersjs](https://feathersjs.com/)
+Based on [Node.js](https://nodejs.org/en/) and [feathersjs](https://feathersjs.com/)
 
 Dev: ![Travis Status](https://travis-ci.org/schul-cloud/schulcloud-server.svg?branch=master)
 Production: ![Travis Status](https://travis-ci.org/schul-cloud/schulcloud-server.svg?branch=production)
