@@ -16,7 +16,7 @@ class FilePermissionHelper {
 	 */
 	checkExtraPermissions(userId, fileKey, permissionTypes) {
 		if (!fileKey || fileKey === '') return Promise.reject(new errors.Forbidden("You don't have permissions!"));
-		
+
 		return FilePermissionModel.find({key: fileKey}).exec().then(res => {
 			// res-object should be unique for file key, but it's safer to map all permissions
 			let permissions = _.flatten(res.map(filePermissions => filePermissions.permissions));
@@ -34,14 +34,7 @@ class FilePermissionHelper {
 		});
 	}
 
-	/**
-	 * verifies whether the given userId has permission for the given directory (course, user, class)
-	 * @param userId {String}
-	 * @param filePath {String} - e.g. users/{userId}
-	 * @param permissions [String] - extra permissions to check
-	 * @returns {*}
-	 */
-	checkPermissions(userId, filePath, permissions = ["can-read", "can-write"]) {
+	checkNormalPermissions(userId, filePath) {
 		let values = filePath.split("/");
 		if (values[0] === '') values = values.slice(1);	// omit empty component for leading slash
 		if (values.length < 2) return Promise.reject(new errors.BadRequest("Path is invalid"));
@@ -50,7 +43,7 @@ class FilePermissionHelper {
 		switch (contextType) {
 			case 'users':	// user's own files
 				if (contextId !== userId.toString()) {
-					return this.checkExtraPermissions(userId, filePath, permissions)
+					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 				} else {
 					return Promise.resolve();
 				}
@@ -63,7 +56,7 @@ class FilePermissionHelper {
 					]
 				}).exec().then(res => {
 					if (!res || res.length <= 0) {
-						return this.checkExtraPermissions(userId, filePath, permissions);
+						return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 					}
 					return Promise.resolve(res);
 				});
@@ -76,14 +69,25 @@ class FilePermissionHelper {
 					]
 				}).exec().then(res => {
 					if (!res || res.length <= 0) {
-						return this.checkExtraPermissions(userId, filePath, permissions);
+						return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 					}
 					return Promise.resolve(res);
 				});
 			default:
 				return Promise.reject(new errors.BadRequest("Path is invalid"));
 		}
-	};
+	}
+
+	/**
+	 * verifies whether the given userId has permission for the given directory (course, user, class)
+	 * @param userId {String}
+	 * @param filePath {String} - e.g. users/{userId}
+	 * @param permissions [String] - extra permissions to check
+	 * @returns {*}
+	 */
+	checkPermissions(userId, filePath, permissions = ["can-read", "can-write"]) {
+		return this.checkNormalPermissions(userId, filePath).catch(err => this.checkExtraPermissions(userId, filePath, permissions));
+	}
 }
 
 module.exports = new FilePermissionHelper();
