@@ -7,8 +7,10 @@ module.exports = function (app) {
 		/* example configuration */
 		docsPath: '/docs',
 		version: '0.0.1',
-		basePath: '',
+		basePath: '/',
+		host: 'schul.tech:3030',
 		uiIndex: path.join(__dirname, 'swagger.html'),
+		schemes: ['https'],
 		info: {
 			'title': 'Schul-Cloud API',
 			'description': 'This is the Schul-Cloud API.',
