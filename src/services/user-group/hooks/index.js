@@ -12,7 +12,9 @@ exports.before = {
 	get: [],
 	create: [],
 	update: [restrictToCurrentSchool],
-	patch: [restrictToCurrentSchool],
+	patch: [(hook) => {
+		console.log(hook.data.times);
+	}],
 	remove: [restrictToCurrentSchool]
 };
 
