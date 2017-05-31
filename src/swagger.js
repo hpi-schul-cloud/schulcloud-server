@@ -11,6 +11,18 @@ module.exports = function (app) {
 		host: 'schul.tech:3030',
 		uiIndex: path.join(__dirname, 'swagger.html'),
 		schemes: ['https'],
+		securityDefinitions: {
+			bearer: {
+				type: "apiKey",
+				name: "Authorization",
+				in: "header"
+			}
+		},
+		security: [
+			{
+				bearer: []
+			}
+		],
 		info: {
 			'title': 'Schul-Cloud API',
 			'description': 'This is the Schul-Cloud API.',
