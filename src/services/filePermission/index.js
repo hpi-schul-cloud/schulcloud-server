@@ -10,8 +10,8 @@ module.exports = function() {
 	const options = {
     Model: filePermissionModel,
     paginate: {
-      default: 100,
-      max: 100
+      default: 10000,
+      max: 10000
     },
 		lean: true
   };
