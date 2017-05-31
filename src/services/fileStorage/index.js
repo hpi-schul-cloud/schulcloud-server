@@ -20,13 +20,13 @@ class FileStorageService {
 			create: {
 				parameters: [
 					{
-						description: 'the id of the school the storage will be create',
+						description: 'the id of the school for which the storage will be created',
 						required: true,
 						name: 'schoolId',
 						type: 'string'
 					}
 				],
-				summary: 'Creates a new storage for a given school',
+				summary: 'Creates a new storage environment for a given school',
 				notes: 'Returns meta data of the created storage'
 			},
 			find: {
@@ -34,28 +34,22 @@ class FileStorageService {
 					{
 						description: 'the context of the file-storage',
 						required: true,
-						name: 'storageContext',
+						name: 'path',
 						type: 'string'
 					}
 				],
-				summary: 'Gets all files and directories for the given context'
+				summary: 'Retrieve all files and immediate sub-directories for the given path'
 			},
 			remove: {
 				parameters: [
 					{
-						description: 'the storageContext in which the file is stored',
+						description: 'The path where the file can be found',
 						required: true,
-						name: 'storageContext',
-						type: 'string'
-					},
-					{
-						description: 'the name of the file which has to be deleted',
-						required: true,
-						name: 'fileName',
+						name: 'path',
 						type: 'string'
 					}
 				],
-				summary: 'remove a file from a given storageContext'
+				summary: 'remove a file'
 			}
 		};
 	}
@@ -93,21 +87,21 @@ class SignedUrlService {
 			create: {
 				parameters: [
 					{
-						description: 'the context of the file-storage',
+						description: 'The path where the file can be found/should be created',
 						required: true,
-						name: 'storageContext',
-						type: 'string'
-					},
-					{
-						description: 'the name of the file that will be uploaded',
-						required: true,
-						name: 'fileName',
+						name: 'path',
 						type: 'string'
 					},
 					{
 						description: 'the mime type of the file that will be uploaded',
 						required: true,
 						name: 'fileType',
+						type: 'string'
+					},
+					{
+						description: 'What the signed URL should be for, e.g. downloading (getObject) or uploading (putObject)',
+						required: true,
+						name: 'action',
 						type: 'string'
 					}
 				],
@@ -131,36 +125,24 @@ class SignedUrlService {
 class DirectoryService {
 	constructor() {
 		this.docs = {
-			description: 'A service for handeling the directory structure',
+			description: 'A service for handling directories',
 			create: {
 				parameters: [
 					{
-						description: 'the context of the file-storage',
+						description: 'the path of the directory to be created',
 						required: true,
-						name: 'storageContext',
-						type: 'string'
-					},
-					{
-						description: 'the name of the directory that will be created',
-						required: true,
-						name: 'dirName',
+						name: 'path',
 						type: 'string'
 					}
 				],
-				summary: 'Creates a folder for a given storageContext'
+				summary: 'Creates a folder for a given path'
 			},
 			remove: {
 				parameters: [
 					{
-						description: 'the context of the file-storage',
+						description: 'the path of the directory to be removed',
 						required: true,
-						name: 'storageContext',
-						type: 'string'
-					},
-					{
-						description: 'the name of the directory to be removed',
-						required: true,
-						name: 'dirName',
+						name: 'path',
 						type: 'string'
 					}
 				],
