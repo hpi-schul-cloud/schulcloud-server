@@ -45,7 +45,7 @@ module.exports = function () {
     app.configure(fileStorage);
     app.configure(filePermission);
     app.configure(link);
-  	app.configure(news);
+    app.configure(news);
 	app.configure(helpers);
 	app.configure(homework);
 	app.configure(federalState);
