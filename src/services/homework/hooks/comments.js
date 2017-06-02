@@ -6,7 +6,7 @@ const auth = require('feathers-authentication');
 
 exports.before = {
   all: [auth.hooks.authenticate('jwt')],
-  find: [],
+  find: [globalHooks.mapPaginationQuery.bind(this)],
   get: [],
   create: [],
   update: [],
