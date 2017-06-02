@@ -6,17 +6,24 @@ const auth = require('feathers-authentication');
 
 const filterApplicableSubmissions = hook => {
 	let uId = hook.params.account.userId;
-	hook.result.data = hook.result.data.filter(function(c){
+	let data = hook.result.data || hook.result;
+	data = data.filter(function(c){
 		return c.homeworkId.publicSubmissions
 				|| JSON.stringify(c.homeworkId.teacherId) == JSON.stringify(uId)
 				|| JSON.stringify(c.studentId) == JSON.stringify(uId);
 	});
+
+	if (hook.result.data)
+		hook.result.data = data;
+	else
+		hook.result = data;
+
 	return Promise.resolve(hook);
 };
 
 exports.before = {
   all: [auth.hooks.authenticate('jwt')],
-  find: [],
+  find: [globalHooks.mapPaginationQuery.bind(this)],
   get: [],
   create: [],
   update: [],
