@@ -10,8 +10,8 @@ module.exports = function () {
 	const options = {
 		Model: link,
 		paginate: {
-			default: 5,
-			max: 25
+			default: 10000,
+			max: 10000
 		},
 		lean: true
 	};
@@ -19,7 +19,7 @@ module.exports = function () {
 	let linkService = service(options);
 
 	function redirectToTarget(req, res, next) {
-		if(req.method == 'GET') {	// capture these requests and issue a redirect
+		if(req.method == 'GET' && !req.query.target) {	// capture these requests and issue a redirect
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then(data => res.redirect(data.target))

@@ -3,6 +3,8 @@
 const service = require('feathers-mongoose');
 const {homeworkModel, submissionModel, commentModel} = require('./model');
 const hooks = require('./hooks');
+const submissionHooks = require('./hooks/submissions');
+const commentHooks = require('./hooks/comments');
 
 module.exports = function() {
 	const app = this;
@@ -11,8 +13,8 @@ module.exports = function() {
 	app.use('/homework', service({
 		Model: homeworkModel,
 		paginate: {
-			default: 25,
-			max: 100
+			default: 100000,
+			max: 100000
 		}
 	}));
 	const hwService = app.service('/homework');
@@ -23,23 +25,23 @@ module.exports = function() {
 	app.use('/submissions', service({
 		Model: submissionModel,
 		paginate: {
-			default: 25,
-			max: 100
+			default: 500,
+			max: 5000
 		}
 	}));
 	const submissionService = app.service('/submissions');
-	submissionService.before(hooks.before);
-	submissionService.after(hooks.after);
+	submissionService.before(submissionHooks.before);
+	submissionService.after(submissionHooks.after);
 
 	/* Comment model */
 	app.use('/comments', service({
 		Model: commentModel,
 		paginate: {
-			default: 25,
-			max: 100
+			default: 500,
+			max: 5000
 		}
 	}));
 	const commentService = app.service('/comments');
-	commentService.before(hooks.before);
-	commentService.after(hooks.after);
+	commentService.before(commentHooks.before);
+	commentService.after(commentHooks.after);
 };

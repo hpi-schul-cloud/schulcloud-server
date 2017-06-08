@@ -2,12 +2,11 @@ const promisify = require('es6-promisify');
 const errors = require('feathers-errors');
 const SchoolModel = require('../../school/model');
 const UserModel = require('../../user/model');
-const CourseModel = require('../../user-group/model').courseModel;
-const ClassModel = require('../../user-group/model').classModel;
 const aws = require('aws-sdk');
 const fs = require('fs');
 const pathUtil = require('path').posix;
 const logger = require('winston');
+const filePermissionHelper = require('../../filePermission/utils/filePermissionHelper');
 let awsConfig;
 try {
 	awsConfig = require("../../../../config/secrets.json").aws;
@@ -18,55 +17,6 @@ try {
 
 const AbstractFileStorageStrategy = require('./interface.js');
 
-/**
- * verifies whether the given userId has permission for the given directory (course, user, class)
- * @param userId [String]
- * @param path [String], e.g. users/{userId}
- * @returns {*}
- */
-const checkPermissions = (userId, path) => {
-	var values = path.split("/");
-	if (values[0] == '') values = values.slice(1);	// omit empty component for leading slash
-	if (values.length < 2) return Promise.reject(new errors.BadRequest("Path is invalid"));
-	const contextType = values[0];
-	const contextId = values[1];
-	switch (contextType) {
-		case 'users':	// user's own files
-			if (contextId != userId.toString()) {
-				return Promise.reject(new errors.Forbidden("You don't have permissions!"));
-			} else {
-				return Promise.resolve();
-			}
-		case 'courses':
-			// checks, a) whether the user is student or teacher of the course, b) the course exists
-			return CourseModel.find({
-				$and: [
-					{$or: [{userIds: userId}, {teacherIds: userId}]},
-					{_id: contextId}
-				]
-			}).exec().then(res => {
-				if (!res || res.length <= 0) {
-					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
-				}
-				return Promise.resolve(res);
-			});
-		case 'classes':
-			// checks, a) whether the user is student or teacher of the class, b) the class exists
-			return ClassModel.find({
-				$and: [
-					{$or: [{userIds: userId}, {teacherIds: userId}]},
-					{_id: contextId}
-				]
-			}).exec().then(res => {
-				if (!res || res.length <= 0) {
-					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
-				}
-				return Promise.resolve(res);
-			});
-		default:
-			return Promise.reject(new errors.BadRequest("StorageContext is invalid"));
-	}
-};
 
 const createAWSObject = (schoolId) => {
 	if (!awsConfig.endpointUrl) throw new Error('AWS integration is not configured on the server');
@@ -180,7 +130,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	getFiles(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		return checkPermissions(userId, path)
+		return filePermissionHelper.checkPermissions(userId, path)
 			.then(res => UserModel.findById(userId).exec())
 			.then(result => {
 				if (!result) return Promise.reject(errors.NotFound("User not found"));
@@ -200,7 +150,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	deleteFile(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		return checkPermissions(userId, path)
+		return filePermissionHelper.checkPermissions(userId, path, ['can-write'])
 			.then(res => UserModel.findById(userId).exec())
 			.then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
@@ -226,7 +176,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		const fileName = pathUtil.basename(path);
 		let dirName = pathUtil.dirname(path);
 
-		return checkPermissions(userId, path)
+		return filePermissionHelper.checkPermissions(userId, path)
 			.then(() => {
 				return UserModel.findById(userId).exec().then(result => {
 					if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
@@ -256,7 +206,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	createDirectory(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		return checkPermissions(userId, path)
+		return filePermissionHelper.checkPermissions(userId, path)
 			.then(res => {
 				if(path[0] == '/') path = path.substring(1);
 				return UserModel.findById(userId).exec().then(result => {
@@ -281,7 +231,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	deleteDirectory(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		return checkPermissions(userId, path)
+		return filePermissionHelper.checkPermissions(userId, path)
 			.then(res => UserModel.findById(userId).exec())
 			.then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));

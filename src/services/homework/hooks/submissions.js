@@ -4,14 +4,13 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
-const filterApplicableHomework = hook => {
+const filterApplicableSubmissions = hook => {
 	let uId = hook.params.account.userId;
 	let data = hook.result.data || hook.result;
 	data = data.filter(function(c){
-		return (new Date(c.availableDate).getTime() < Date.now()
-			&& c.courseId != null
-			&& (c.courseId.userIds || []).indexOf(uId) != -1)
-			|| JSON.stringify(c.teacherId)==JSON.stringify(uId);
+		return c.homeworkId.publicSubmissions
+				|| JSON.stringify(c.homeworkId.teacherId) == JSON.stringify(uId)
+				|| JSON.stringify(c.studentId) == JSON.stringify(uId);
 	});
 
 	if (hook.result.data)
@@ -34,7 +33,7 @@ exports.before = {
 
 exports.after = {
   all: [],
-  find: [filterApplicableHomework],
+  find: [filterApplicableSubmissions],
   get: [],
   create: [],
   update: [],

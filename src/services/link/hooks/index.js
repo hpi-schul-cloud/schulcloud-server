@@ -9,7 +9,7 @@ const service = require('../index');
 exports.before = service => {
 	return {
 		all: [],
-		find: [hooks.disable()],
+		find: [],
 		get: [hooks.disable('external')],	// handled by redirection middleware
 		create: [auth.authenticate('jwt')],
 		update: [hooks.disable()],
