@@ -153,7 +153,13 @@ elif [ "$ACTION" = "import" ]; then
 	 		collection=${path%.json}
 	 	fi
 		echo "Importing $DB/$collection from $path"
-		mongoimport --host $HOST $CREDENTIALS --db $DB --collection $collection $path $STYLE --drop
+
+		if [ "$PASSWORD" == "" ];
+		then
+			mongoimport --host $HOST --db $DB --collection $collection $path $STYLE --drop
+		else
+			mongoimport --host $HOST $CREDENTIALS --db $DB --collection $collection $path $STYLE --drop
+		fi
 	done
 
 else
