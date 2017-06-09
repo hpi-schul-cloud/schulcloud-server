@@ -5,14 +5,15 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
 const filterApplicableSubmissions = hook => {
-	let uId = hook.params.account.userId;
 	let data = hook.result.data || hook.result;
-	data = data.filter(function(c){
-		return c.homeworkId.publicSubmissions
+	if(hook.params.account) {
+		let uId = hook.params.account.userId;
+		data = data.filter(function (c) {
+			return c.homeworkId.publicSubmissions
 				|| JSON.stringify(c.homeworkId.teacherId) == JSON.stringify(uId)
 				|| JSON.stringify(c.studentId) == JSON.stringify(uId);
-	});
-
+		});
+	}
 	if (hook.result.data)
 		hook.result.data = data;
 	else
