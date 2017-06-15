@@ -8,7 +8,7 @@ const logger = require('winston');
 const system = require('./strategies/system');
 const hooks = require('./hooks');
 
-let authenticationSecret = null;
+let authenticationSecret = "secret";
 try {
 	authenticationSecret = require("../../../config/secrets.json").authentication;
 } catch (e) {
@@ -49,11 +49,10 @@ module.exports = function() {
 		name: 'jwt',
 		entity: 'account',
 		service: 'accounts',
-		header: 'Authorization'
+		header: 'Authorization',
+		secretOrKey: authenticationSecret
 	};
-	if(authenticationSecret) {
-		Object.assign(jwtConfig, {secretOrKey: authenticationSecret});
-	}
+
 
 	// Configure feathers-authentication
 	app.configure(auth(authConfig));
