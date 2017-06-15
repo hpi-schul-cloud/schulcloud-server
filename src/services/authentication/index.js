@@ -30,6 +30,7 @@ module.exports = function() {
 			algorithm: 'HS256',
 			expiresIn: '30d'
 		},
+		secret: authenticationSecret
 	});
 
 
