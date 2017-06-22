@@ -3,9 +3,17 @@
 const auth = require('feathers-authentication');
 const jwt = require('feathers-authentication-jwt');
 const local = require('feathers-authentication-local');
-const system = require('./strategies/system');
+const logger = require('winston');
 
+const system = require('./strategies/system');
 const hooks = require('./hooks');
+
+let authenticationSecret = "secret";
+try {
+	authenticationSecret = require("../../../config/secrets.json").authentication;
+} catch (e) {
+	logger.log('warn', 'Could not read authentication secret, using insecure default value.');
+}
 
 module.exports = function() {
     const app = this;
@@ -16,12 +24,13 @@ module.exports = function() {
 		service: 'accounts',
 		jwt: {
 			header: { typ: 'access' },
-			audience: 'https://yourdomain.com',
+			audience: 'https://schul-cloud.org',
 			subject: 'anonymous',
 			issuer: 'feathers',
 			algorithm: 'HS256',
-			expiresIn: '1d'
-		}
+			expiresIn: '30d'
+		},
+		secret: authenticationSecret
 	});
 
 
@@ -40,7 +49,8 @@ module.exports = function() {
 		name: 'jwt',
 		entity: 'account',
 		service: 'accounts',
-		header: 'Authorization'
+		header: 'Authorization',
+		secretOrKey: authenticationSecret
 	};
 
 
