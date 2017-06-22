@@ -66,10 +66,7 @@ const filterApplicableHomework = hook => {
 				console.log(c);
 				return c;
 			});
-			if (hook.result.data)
-				hook.result.data = data;
-			else
-				hook.result = data;
+			(hook.result.data)?(hook.result.data = data):(hook.result = data);
 	});
 };
 
@@ -86,7 +83,7 @@ exports.before = {
 exports.after = {
   all: [],
   find: [filterApplicableHomework],
-  get: [],
+  get: [filterApplicableHomework],
   create: [],
   update: [],
   patch: [],
