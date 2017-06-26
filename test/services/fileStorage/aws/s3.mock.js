@@ -19,6 +19,9 @@ var mockAws = {
 			createBucket: function(params, callback){
 				callback(null, "successfully created bucket");
 			},
+			putBucketCors: function (params) {
+				return "successfully inserted cors";
+			},
 			listObjectsV2: function (params, callback) {
 				callback(null, testListObjectsReturn);
 			},

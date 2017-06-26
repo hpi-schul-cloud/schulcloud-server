@@ -124,7 +124,14 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				const awsObject = createAWSObject(result._id);
 				const createBucket = promisify(awsObject.s3.createBucket, awsObject.s3);
 				return createBucket({Bucket: awsObject.bucket})
-					.then(res => Promise.resolve({message: "Successfully created s3-bucket!", data: res}));
+					.then(res => {
+						awsObject.s3.putBucketCors({
+							Bucket: awsObject.bucket,
+							CORSConfiguration: {
+							CORSRules: awsConfig.cors_rules
+						}});
+						return Promise.resolve({message: "Successfully created s3-bucket!", data: res});
+					});
 			});
 	}
 
