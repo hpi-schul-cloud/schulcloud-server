@@ -65,6 +65,7 @@
     "randexp": "^0.4.4",
     "request-promise-native": "^1.0.3",
     "serve-favicon": "^2.3.2",
+    "strip-js": "^1.0.6",
     "winston": "^2.3.0"
   },
   "devDependencies": {
