@@ -23,7 +23,7 @@ const lessonSchema = new Schema({
 	courseId: { type: Schema.Types.ObjectId, required: true, ref: 'course' },
 	hidden: { type: Boolean },
 	shareToken: { type: String, unique: true }, // token for topic sharing
-	originalTopic: { type: Schema.Types.ObjectId, required: true, ref: 'topic' } // if current topic was copied from another, for later fancy stuff
+	originalTopic: { type: Schema.Types.ObjectId, ref: 'topic' } // if current topic was copied from another, for later fancy stuff
 },{
 	timestamps: true
 });
