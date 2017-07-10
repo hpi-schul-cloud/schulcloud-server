@@ -6,7 +6,7 @@ const aws = require('aws-sdk');
 const fs = require('fs');
 const pathUtil = require('path').posix;
 const logger = require('winston');
-const filePermissionHelper = require('../../filePermission/utils/filePermissionHelper');
+const filePermissionHelper = require('../utils/filePermissionHelper');
 let awsConfig;
 try {
 	awsConfig = require("../../../../config/secrets.json").aws;

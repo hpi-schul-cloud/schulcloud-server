@@ -2,6 +2,7 @@
 const hooks = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
 const errors = require('feathers-errors');
+const ProxyService = require('./proxy');
 
 const strategies = {
 	awsS3: AWSStrategy
@@ -194,4 +195,7 @@ module.exports = function () {
 	fileStorageService.after(hooks.after);
 	signedUrlService.after(hooks.after);
 	directoryService.after(hooks.after);
+
+	// Setup proxy model
+	app.configure(ProxyService);
 };

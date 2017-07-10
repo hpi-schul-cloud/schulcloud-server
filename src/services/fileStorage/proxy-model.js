@@ -6,11 +6,11 @@ const Schema = mongoose.Schema;
 const permissionTypes = ['can-read', 'can-write'];
 
 /**
- * handles multiple permissions for a file, etc. for file sharing
+ * handles meta-data for a file
  * @param key {String} - the key/path to the file
  * @param permissions [Permission] - given extra permission for this file (except the normal permissions)
  */
-const filePermissionSchema = new Schema({
+const fileSchema = new Schema({
 	key: {type: String, required: true, unique : true},
 	permissions: [{
 		userId: {type: Schema.Types.ObjectId, ref: 'user'},
@@ -20,6 +20,6 @@ const filePermissionSchema = new Schema({
 	updatedAt: {type: Date, 'default': Date.now}
 });
 
-const filePermissionModel = mongoose.model('filePermission', filePermissionSchema);
+const fileModel = mongoose.model('file', fileSchema);
 
-module.exports = filePermissionModel;
+module.exports = fileModel;

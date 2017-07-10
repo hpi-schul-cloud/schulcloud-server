@@ -1,7 +1,7 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const filePermissionModel = require('./model');
+const filePermissionModel = require('./proxy-model');
 const hooks = require('./hooks');
 
 module.exports = function() {
