@@ -6,6 +6,8 @@ const errors = require('feathers-errors');
 const swaggerDocs = require('./docs/');
 const filePermissionHelper = require('./utils/filePermissionHelper');
 const removeLeadingSlash = require('./utils/leadingSlashHelper');
+const FileModel = require('./model').fileModel;
+const UserModel = require('../user/model');
 
 const strategies = {
 	awsS3: AWSStrategy
@@ -36,7 +38,23 @@ class FileStorageService {
 	 * @param payload contains fileStorageType and userId, set by middleware
 	 */
 	find({query, payload}) {
-		return createCorrectStrategy(payload.fileStorageType).getFiles(payload.userId, query.path);
+		let path = query.path;
+		console.log(path);
+		let userId = payload.userId;
+		return filePermissionHelper.checkPermissions(userId, path)
+			.then(result => {
+				// find all files for given path
+				let filePromise = FileModel.find({path: path}).exec();
+				let directoryPromise = FileModel.find({key: path}).exec();
+
+				return Promise.all([filePromise, directoryPromise]).then(([files, directories]) => {
+					return {
+						files: files,
+						directories: directories
+					}
+				});
+			});
+		//return createCorrectStrategy(payload.fileStorageType).getFiles(payload.userId, query.path);
 	}
 
 	/**
