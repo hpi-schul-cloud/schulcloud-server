@@ -39,7 +39,6 @@ class FileStorageService {
 	 */
 	find({query, payload}) {
 		let path = query.path;
-		console.log(path);
 		let userId = payload.userId;
 		return filePermissionHelper.checkPermissions(userId, path)
 			.then(result => {
@@ -81,7 +80,7 @@ class SignedUrlService {
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
 
-		// todo: convert path to flat storage!
+		// todo: convert path to flat storage! think of multiple files with same name ..
 
 		return filePermissionHelper.checkPermissions(userId, path).then(_ => {
 			return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, path, fileType, action);
