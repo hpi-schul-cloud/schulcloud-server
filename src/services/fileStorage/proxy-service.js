@@ -97,23 +97,33 @@ class SignedUrlService {
 		let userId = params.payload.userId;
 		let fileName = pathUtil.basename(path);
 		let dirName = pathUtil.dirname(path);
+		// todo: maybe refactor search so that I can put the file-proxy-id (@id) instead of the full path
 
 		// all files are uploaded to a flat-storage architecture without real folders
 		// converts the real filename to a unique one in flat-storage
-		let flatFileName = generateFlatFileName(fileName);
-		return filePermissionHelper.checkPermissions(userId, path).then(_ => {
-			return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action)
-				.then(res => Promise.resolve({
-					url: res,
-					header: {
-						// add meta data for later using
-						"Content-Type": fileType,
-						"x-amz-meta-path": dirName,
-						"x-amz-meta-name": fileName,
-						"x-amz-meta-flat-name": flatFileName,
-						"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
-					}
-			}));
+		// if action = getObject, file should exist in proxy db
+		let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({});
+
+		return fileProxyPromise.then(res => {
+			if (!res) return;
+
+			let flatFileName = res.flatFileName || generateFlatFileName(fileName);
+			return filePermissionHelper.checkPermissions(userId, path).then(_ => {
+				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action)
+					.then(res => {
+						return {
+							url: res,
+							header: {
+								// add meta data for later using
+								"Content-Type": fileType,
+								"x-amz-meta-path": dirName,
+								"x-amz-meta-name": fileName,
+								"x-amz-meta-flat-name": flatFileName,
+								"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
+							}
+						}
+					});
+			});
 		});
 	}
 }
