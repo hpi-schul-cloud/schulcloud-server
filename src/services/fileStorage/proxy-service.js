@@ -42,7 +42,7 @@ class FileStorageService {
 		let path = query.path;
 		let userId = payload.userId;
 		return filePermissionHelper.checkPermissions(userId, path)
-			.then(result => {
+			.then(_ => {
 				// find all files and directories for given path
 				let filePromise = FileModel.find({path: path}).exec();
 				let directoryPromise = FileModel.find({key: path}).exec();
@@ -62,7 +62,22 @@ class FileStorageService {
 	 * @returns {Promise}
 	 */
 	remove(id, params) {
-		return createCorrectStrategy(params.payload.fileStorageType).deleteFile(params.payload.userId, params.query.path);
+		let path = params.query.path;
+		console.log(path);
+		let userId = params.payload.userId;
+		return filePermissionHelper.checkPermissions(userId, path, ['can-write'])
+			.then(_ => {
+				// find file for path in proxy db, delete it and delete referenced file
+				// todo: maybe refactor search so that I can put the file-proxy-id (@id) instead of the full path
+				return FileModel.findOne({key: path}).exec()
+					.then(file => {
+						if (!file) return [];
+						return FileModel.find({_id: file._id}).remove().exec()
+							.then(_ => {
+								return createCorrectStrategy(params.payload.fileStorageType).deleteFile(userId, file.flatFileName);
+							});
+					});
+			});
 	}
 }
 

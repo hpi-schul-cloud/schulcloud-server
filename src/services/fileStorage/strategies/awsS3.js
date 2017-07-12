@@ -154,8 +154,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	deleteFile(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		return filePermissionHelper.checkPermissions(userId, path, ['can-write'])
-			.then(res => UserModel.findById(userId).exec())
+		 return UserModel.findById(userId).exec()
 			.then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 				const awsObject = createAWSObject(result.schoolId);
