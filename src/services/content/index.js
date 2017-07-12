@@ -101,7 +101,7 @@ module.exports = function () {
 
 	// Set up our after hooks
 	contentService.after(hooks.after);
-	contentService.after(hooks.after);
+	materialService.after(hooks.after);
 };
 
 module.exports.Service = Service;
