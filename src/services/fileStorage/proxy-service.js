@@ -8,6 +8,7 @@ const filePermissionHelper = require('./utils/filePermissionHelper');
 const removeLeadingSlash = require('./utils/filePathHelper').removeLeadingSlash;
 const generateFlatFileName = require('./utils/filePathHelper').generateFileNameSuffix;
 const FileModel = require('./model').fileModel;
+const DirectoryModel = require('./model').directoryModel;
 const UserModel = require('../user/model');
 
 const strategies = {
@@ -45,7 +46,7 @@ class FileStorageService {
 			.then(_ => {
 				// find all files and directories for given path
 				let filePromise = FileModel.find({path: path}).exec();
-				let directoryPromise = FileModel.find({key: path}).exec();
+				let directoryPromise = DirectoryModel.find({path: path}).exec();
 
 				return Promise.all([filePromise, directoryPromise]).then(([files, directories]) => {
 					return {
@@ -134,11 +135,25 @@ class DirectoryService {
 	}
 
 	/**
-	 * @param data, contains storageContext, dirName
+	 * @param data, contains path
 	 * @returns {Promise}
 	 */
 	create(data, params) {
-		return createCorrectStrategy(params.payload.fileStorageType).createDirectory(params.payload.userId, data.path);
+		let userId = params.payload.userId;
+		let path = data.path;
+		let fileName = pathUtil.basename(path);
+		let dirName = pathUtil.dirname(path);
+
+		return filePermissionHelper.checkPermissions(userId, path)
+			.then(_ => {
+				// create db entry for new directory
+				return DirectoryModel.create({
+					key: path,
+					name: fileName,
+					path: dirName
+				});
+				//return createCorrectStrategy(params.payload.fileStorageType).createDirectory(params.payload.userId, data.path);
+			});
 	}
 
 	/**

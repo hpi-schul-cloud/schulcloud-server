@@ -191,6 +191,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		});
 	}
 
+	/**** @DEPRECATED ****/
 	createDirectory(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return filePermissionHelper.checkPermissions(userId, path)
