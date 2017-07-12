@@ -13,6 +13,7 @@ const permissionTypes = ['can-read', 'can-write'];
  * @param name {String} - the name of the file, e.g. cloudy_pastel.jpeg
  * @param size {Number} - the size of the file in byte
  * @param type {String} - the type of the file, e.g. mime/image
+ * @param flatFileName {String} - the name of the real file on the storage
  * @param thumbnail {String} - the url of the file's thumbnail image
  * @param permissions [Permission] - given extra permission for this file (except the normal permissions)
  */
@@ -22,6 +23,7 @@ const fileSchema = new Schema({
 	name: {type: String},
 	size: {type: Number},
 	type: {type: String},
+	flatFileName: {type: String},
 	thumbnail: {type: String},
 	permissions: [{
 		userId: {type: Schema.Types.ObjectId, ref: 'user'},

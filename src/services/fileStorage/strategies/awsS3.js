@@ -7,7 +7,7 @@ const fs = require('fs');
 const pathUtil = require('path').posix;
 const logger = require('winston');
 const filePermissionHelper = require('../utils/filePermissionHelper');
-const removeLeadingSlash = require('../utils/leadingSlashHelper');
+const removeLeadingSlash = require('../utils/filePathHelper').removeLeadingSlash;
 let awsConfig;
 try {
 	awsConfig = require("../../../../config/secrets.json").aws;
@@ -176,8 +176,6 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	generateSignedUrl(userId, path, fileType, action) {
 		if (!userId || !path || !action || (action === 'putObject' && !fileType)) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		const fileName = pathUtil.basename(path);
-		let dirName = pathUtil.dirname(path);
 		return UserModel.findById(userId).exec().then(result => {
 			if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
@@ -190,16 +188,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 			if (action === 'putObject') params.ContentType = fileType;
 
-			return promisify(awsObject.s3.getSignedUrl, awsObject.s3)(action, params)
-				.then(res => Promise.resolve({
-					url: res,
-					header: {
-						"Content-Type": fileType,
-						"x-amz-meta-path": dirName,
-						"x-amz-meta-name": fileName,
-						"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
-					}
-				}));
+			return promisify(awsObject.s3.getSignedUrl, awsObject.s3)(action, params);
 		});
 	}
 

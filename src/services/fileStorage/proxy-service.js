@@ -5,7 +5,8 @@ const AWSStrategy = require('./strategies/awsS3');
 const errors = require('feathers-errors');
 const swaggerDocs = require('./docs/');
 const filePermissionHelper = require('./utils/filePermissionHelper');
-const removeLeadingSlash = require('./utils/leadingSlashHelper');
+const removeLeadingSlash = require('./utils/filePathHelper').removeLeadingSlash;
+const generateFlatFileName = require('./utils/filePathHelper').generateFileNameSuffix;
 const FileModel = require('./model').fileModel;
 const UserModel = require('../user/model');
 
@@ -42,7 +43,7 @@ class FileStorageService {
 		let userId = payload.userId;
 		return filePermissionHelper.checkPermissions(userId, path)
 			.then(result => {
-				// find all files for given path
+				// find all files and directories for given path
 				let filePromise = FileModel.find({path: path}).exec();
 				let directoryPromise = FileModel.find({key: path}).exec();
 
@@ -79,11 +80,25 @@ class SignedUrlService {
 	create({path, fileType, action}, params) {
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
+		let fileName = pathUtil.basename(path);
+		let dirName = pathUtil.dirname(path);
 
-		// todo: convert path to flat storage! think of multiple files with same name ..
-
+		// all files are uploaded to a flat-storage architecture without real folders
+		// converts the real filename to a unique one in flat-storage
+		let flatFileName = generateFlatFileName(fileName);
 		return filePermissionHelper.checkPermissions(userId, path).then(_ => {
-			return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, path, fileType, action);
+			return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action)
+				.then(res => Promise.resolve({
+					url: res,
+					header: {
+						// add meta data for later using
+						"Content-Type": fileType,
+						"x-amz-meta-path": dirName,
+						"x-amz-meta-name": fileName,
+						"x-amz-meta-flat-name": flatFileName,
+						"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
+					}
+			}));
 		});
 	}
 }
