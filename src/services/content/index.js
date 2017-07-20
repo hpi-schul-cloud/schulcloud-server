@@ -47,8 +47,10 @@ class Service {
 		delete params.query.filter;
 
     const serviceUrls = this.app.get('services') || {};
+    params.Q = params.query;
+    delete params.query;
 		const requestOptions = {
-			uri: serviceUrls.content + "/contents",
+			uri: serviceUrls.content,
 			qs: params.query
 		};
 		return request(requestOptions).then(string => {
