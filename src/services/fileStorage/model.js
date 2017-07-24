@@ -16,6 +16,7 @@ const permissionTypes = ['can-read', 'can-write'];
  * @param flatFileName {String} - the name of the real file on the storage
  * @param thumbnail {String} - the url of the file's thumbnail image
  * @param permissions [Permission] - given extra permission for this file (except the normal permissions)
+ * @param shareToken {String} - hash for enabling sharing. if undefined than sharing is disabled
  */
 const fileSchema = new Schema({
 	key: {type: String, required: true, unique: true},
@@ -29,6 +30,7 @@ const fileSchema = new Schema({
 		userId: {type: Schema.Types.ObjectId, ref: 'user'},
 		permissions: [{type: String, enum: permissionTypes}]
 	}],
+	shareToken: {type: String},
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now}
 });
