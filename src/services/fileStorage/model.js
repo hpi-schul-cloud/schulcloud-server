@@ -39,15 +39,11 @@ const fileSchema = new Schema({
  * Information: key could be redundant because it is just path + name, but it is easier to handle different server calls
  * @param path {String} - the path in which the file exists users/0000d231816abba584714c9e/
  * @param name {String} - the name of the file, e.g. folder
- * @param directories [Directory] - the sub-directories, todo: maybe it's not necessary...
- * @param files [File] - the files in the given directory, todo: maybe it's not necessary...
  */
 const directorySchema = new Schema({
 	key: {type: String, required: true, unique: true},
 	path: {type: String},
 	name: {type: String},
-	directories: [{type: Schema.Types.ObjectId, required: true, ref: 'directory'}],
-	files: [{type: Schema.Types.ObjectId, required: true, ref: 'file'}],
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now}
 });

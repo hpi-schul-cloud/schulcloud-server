@@ -31,10 +31,8 @@ const params = {
 
 // todo: list all files for all school-buckets
 awsObject.s3.listObjectsV2(params, function (err, data) {
-    console.log(data);
-        
+
     // todo: copy all files to route-folder (flat)
 
     // todo: save meta-data in proxy db
 });
-    

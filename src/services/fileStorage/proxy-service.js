@@ -22,7 +22,7 @@ const createCorrectStrategy = (fileStorageType) => {
 
 class FileStorageService {
 	constructor() {
-		this.docs = swaggerDocs.fileStorageService
+		this.docs = swaggerDocs.fileStorageService;
 	}
 
 	/**
@@ -51,7 +51,7 @@ class FileStorageService {
 					return {
 						files: files,
 						directories: directories
-					}
+					};
 				});
 			});
 	}
@@ -119,7 +119,7 @@ class SignedUrlService {
 								"x-amz-meta-flat-name": flatFileName,
 								"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 							}
-						}
+						};
 					});
 			});
 		});
