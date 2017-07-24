@@ -20,6 +20,33 @@ const createCorrectStrategy = (fileStorageType) => {
 	return new strategy();
 };
 
+/** find all files in deleted (virtual) directory with regex (also nested) **/
+const deleteAllFilesInDirectory = (path, fileStorageType, userId) => {
+	return FileModel.find({path: {$regex : "^" + path}}).exec()
+		.then(files => {
+			// delete virtual and referenced real files
+			return Promise.all(
+				files.map(f => {
+					return FileModel.findOne({_id: f._id}).remove().exec()
+						.then(_ => {
+							return createCorrectStrategy(fileStorageType).deleteFile(userId, f.flatFileName);
+						});
+				}));
+		});
+};
+
+/** find all sub directories in deleted (virtual) directory with regex (also nested) **/
+const deleteAllSubDirectories = (path) => {
+	return DirectoryModel.find({path: {$regex : "^" + path}}).exec()
+		.then(directories => {
+			// delete virtual and referenced real files
+			return Promise.all(
+				directories.map(f => {
+					return DirectoryModel.findOne({_id: f._id}).remove().exec();
+				}));
+		});
+};
+
 class FileStorageService {
 	constructor() {
 		this.docs = swaggerDocs.fileStorageService;
@@ -170,19 +197,11 @@ class DirectoryService {
 						if (!directory) return [];
 						return DirectoryModel.find({_id: directory._id}).remove().exec()
 							.then(_ => {
-								// find all files in deleted (virtual) directory
 								path = directory.key + "/";
-								return FileModel.find({path: path}).exec()
-									.then(files => {
-										// delete virtual and referenced real files
-										return Promise.all(
-											files.map(f => {
-												return FileModel.findOne({_id: f._id}).remove().exec()
-													.then(_ => {
-														return createCorrectStrategy(params.payload.fileStorageType).deleteFile(userId, f.flatFileName);
-													});
-											}));
-									});
+								// delete all files and directories in the deleted directory
+								let filesDeletePromise = deleteAllFilesInDirectory(path, params.payload.fileStorageType, userId);
+								let directoriesDeletePromise = deleteAllSubDirectories(path);
+								return Promise.all([filesDeletePromise, directoriesDeletePromise]);
 							});
 					});
 			});
