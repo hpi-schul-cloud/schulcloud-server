@@ -9,7 +9,6 @@ const removeLeadingSlash = require('./utils/filePathHelper').removeLeadingSlash;
 const generateFlatFileName = require('./utils/filePathHelper').generateFileNameSuffix;
 const FileModel = require('./model').fileModel;
 const DirectoryModel = require('./model').directoryModel;
-const UserModel = require('../user/model');
 
 const strategies = {
 	awsS3: AWSStrategy
@@ -55,7 +54,6 @@ class FileStorageService {
 					}
 				});
 			});
-		//return createCorrectStrategy(payload.fileStorageType).getFiles(payload.userId, query.path);
 	}
 
 	/**
@@ -64,7 +62,6 @@ class FileStorageService {
 	 */
 	remove(id, params) {
 		let path = params.query.path;
-		console.log(path);
 		let userId = params.payload.userId;
 		return filePermissionHelper.checkPermissions(userId, path, ['can-write'])
 			.then(_ => {
@@ -142,7 +139,7 @@ class DirectoryService {
 		let userId = params.payload.userId;
 		let path = data.path;
 		let fileName = pathUtil.basename(path);
-		let dirName = pathUtil.dirname(path);
+		let dirName = pathUtil.dirname(path) + "/";
 
 		return filePermissionHelper.checkPermissions(userId, path)
 			.then(_ => {
@@ -152,7 +149,6 @@ class DirectoryService {
 					name: fileName,
 					path: dirName
 				});
-				//return createCorrectStrategy(params.payload.fileStorageType).createDirectory(params.payload.userId, data.path);
 			});
 	}
 
@@ -164,8 +160,32 @@ class DirectoryService {
 	 * @returns {Promise}
 	 */
 	remove(id, params) {
-		return createCorrectStrategy(params.payload.fileStorageType)
-			.deleteDirectory(params.payload.userId, params.query.path);
+		let path = params.query.path;
+		let userId = params.payload.userId;
+		return filePermissionHelper.checkPermissions(userId, path, ['can-write'])
+			.then(_ => {
+				// find directory and delete it
+				return DirectoryModel.findOne({key: path}).exec()
+					.then(directory => {
+						if (!directory) return [];
+						return DirectoryModel.find({_id: directory._id}).remove().exec()
+							.then(_ => {
+								// find all files in deleted (virtual) directory
+								path = directory.key + "/";
+								return FileModel.find({path: path}).exec()
+									.then(files => {
+										// delete virtual and referenced real files
+										return Promise.all(
+											files.map(f => {
+												return FileModel.findOne({_id: f._id}).remove().exec()
+													.then(_ => {
+														return createCorrectStrategy(params.payload.fileStorageType).deleteFile(userId, f.flatFileName);
+													});
+											}));
+									});
+							});
+					});
+			});
 	}
 }
 
