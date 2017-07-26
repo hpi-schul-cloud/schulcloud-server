@@ -13,9 +13,10 @@ class FilePermissionHelper {
 	 * @param userId {String} - the User for which the permissions are checked
 	 * @param fileKey {String} - the key/path to the file
 	 * @param permissionTypes [String] - the type of permissions which will be checked
+	 * @param throwError {Boolean} - whether to throw an error or not
 	 */
-	checkExtraPermissions(userId, fileKey, permissionTypes) {
-		if (!fileKey || fileKey === '') return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+	checkExtraPermissions(userId, fileKey, permissionTypes, throwError) {
+		if (!fileKey || fileKey === '') throwError ? Promise.reject(new errors.Forbidden("You don't have permissions!")) : false;
 
 		return FilePermissionModel.find({key: fileKey}).exec().then(res => {
 			// res-object should be unique for file key, but it's safer to map all permissions
@@ -26,11 +27,11 @@ class FilePermissionHelper {
 					return JSON.stringify(userId) === JSON.stringify(p.userId) && _.difference(permissionTypes, p.permissions).length === 0;
 				}).length > 0;
 
-			if (!permissionExists) return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+			if (!permissionExists) return throwError ? Promise.reject(new errors.Forbidden("You don't have permissions!")) : false;
 
-			return Promise.resolve();
+			return Promise.resolve(true);
 		}).catch(err => {
-			return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+			return throwError ? Promise.reject(new errors.Forbidden("You don't have permissions!")) : false;
 		});
 	}
 
@@ -45,7 +46,7 @@ class FilePermissionHelper {
 				if (contextId !== userId.toString()) {
 					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 				} else {
-					return Promise.resolve();
+					return Promise.resolve(true);
 				}
 			case 'courses':
 				// checks, a) whether the user is student or teacher of the course, b) the course exists
@@ -58,7 +59,7 @@ class FilePermissionHelper {
 					if (!res || res.length <= 0) {
 						return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 					}
-					return Promise.resolve(res);
+					return Promise.resolve(true);
 				});
 			case 'classes':
 				// checks, a) whether the user is student or teacher of the class, b) the class exists
@@ -71,7 +72,7 @@ class FilePermissionHelper {
 					if (!res || res.length <= 0) {
 						return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 					}
-					return Promise.resolve(res);
+					return Promise.resolve(true);
 				});
 			default:
 				return Promise.reject(new errors.BadRequest("Path is invalid"));
@@ -83,10 +84,11 @@ class FilePermissionHelper {
 	 * @param userId {String}
 	 * @param filePath {String} - e.g. users/{userId}
 	 * @param permissions [String] - extra permissions to check
+	 * @param throwError {Boolean} - whether to throw an error or not
 	 * @returns {*}
 	 */
-	checkPermissions(userId, filePath, permissions = ["can-read", "can-write"]) {
-		return this.checkNormalPermissions(userId, filePath).catch(err => this.checkExtraPermissions(userId, filePath, permissions));
+	checkPermissions(userId, filePath, permissions = ["can-read", "can-write"], throwError = true) {
+		return this.checkNormalPermissions(userId, filePath).catch(err => this.checkExtraPermissions(userId, filePath, permissions, throwError));
 	}
 }
 
