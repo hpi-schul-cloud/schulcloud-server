@@ -46,7 +46,7 @@ class FilePermissionHelper {
 				if (contextId !== userId.toString()) {
 					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 				} else {
-					return Promise.resolve(true);
+					return Promise.resolve({context: 'user'});
 				}
 			case 'courses':
 				// checks, a) whether the user is student or teacher of the course, b) the course exists
@@ -59,7 +59,7 @@ class FilePermissionHelper {
 					if (!res || res.length <= 0) {
 						return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 					}
-					return Promise.resolve(true);
+					return Promise.resolve({context: res[0]});
 				});
 			case 'classes':
 				// checks, a) whether the user is student or teacher of the class, b) the class exists
@@ -72,7 +72,7 @@ class FilePermissionHelper {
 					if (!res || res.length <= 0) {
 						return Promise.reject(new errors.Forbidden("You don't have permissions!"));
 					}
-					return Promise.resolve(true);
+					return Promise.resolve({context: res[0]});
 				});
 			default:
 				return Promise.reject(new errors.BadRequest("Path is invalid"));
