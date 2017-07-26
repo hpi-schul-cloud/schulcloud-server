@@ -13,7 +13,7 @@ const homeworkModel = mongoose.model('homework', new Schema({
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now},
 	name: {type: String, required: true},
-	description: {type: String, required: true},
+	description: {type: String},
 	dueDate: {type: Date, required: true},
 	availableDate: {type: Date, required: true},
 	teacherId: {type: Schema.Types.ObjectId, required: true, ref: 'user'},

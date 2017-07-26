@@ -6,7 +6,8 @@ const aws = require('aws-sdk');
 const fs = require('fs');
 const pathUtil = require('path').posix;
 const logger = require('winston');
-const filePermissionHelper = require('../../filePermission/utils/filePermissionHelper');
+const filePermissionHelper = require('../utils/filePermissionHelper');
+const removeLeadingSlash = require('../utils/filePathHelper').removeLeadingSlash;
 let awsConfig;
 try {
 	awsConfig = require("../../../../config/secrets.json").aws;
@@ -41,10 +42,10 @@ const splitFilesAndDirectories = (path, data) => {
 		const relativePath = removeLeadingSlash(entry.key.replace(path, ''));
 		const pathComponents = relativePath.split('/');
 
-		if (pathComponents.length == 1) {
+		if (pathComponents.length === 1) {
 			files.push(entry);
 		} else {
-			if(entry.name == ".scfake") {	// prevent duplicates showing up by only considering .scfake
+			if(entry.name === ".scfake") {	// prevent duplicates showing up by only considering .scfake
 				const components = entry.key.split('/');
 				const directoryName = components[components.length - 2];	// the component before '.scfake'
 				directories.push({
@@ -61,11 +62,6 @@ const splitFilesAndDirectories = (path, data) => {
 		files,
 		directories
 	};
-};
-
-const removeLeadingSlash = path => {
-	if (path[0] == '/') path = path.substring(1);
-	return path;
 };
 
 const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
@@ -135,6 +131,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
+	/** @DEPRECATED **/
 	getFiles(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return filePermissionHelper.checkPermissions(userId, path)
@@ -157,8 +154,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	deleteFile(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		return filePermissionHelper.checkPermissions(userId, path, ['can-write'])
-			.then(res => UserModel.findById(userId).exec())
+		return UserModel.findById(userId).exec()
 			.then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 				const awsObject = createAWSObject(result.schoolId);
@@ -178,39 +174,24 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 	}
 
 	generateSignedUrl(userId, path, fileType, action) {
-		if (!userId || !path || !action || (action == 'putObject' && !fileType)) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		path = removeLeadingSlash(pathUtil.normalize(path));	// remove leading and double slashes
-		const fileName = pathUtil.basename(path);
-		let dirName = pathUtil.dirname(path);
+		if (!userId || !path || !action || (action === 'putObject' && !fileType)) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		return UserModel.findById(userId).exec().then(result => {
+			if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
-		return filePermissionHelper.checkPermissions(userId, path)
-			.then(() => {
-				return UserModel.findById(userId).exec().then(result => {
-					if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+			const awsObject = createAWSObject(result.schoolId);
+			let params = {
+				Bucket: awsObject.bucket,
+				Key: path,
+				Expires: 60
+			};
 
-					const awsObject = createAWSObject(result.schoolId);
-					let params = {
-						Bucket: awsObject.bucket,
-						Key: path,
-						Expires: 60
-					};
+			if (action === 'putObject') params.ContentType = fileType;
 
-					if (action == 'putObject') params.ContentType = fileType;
-
-					return promisify(awsObject.s3.getSignedUrl, awsObject.s3)(action, params)
-						.then(res => Promise.resolve({
-							url: res,
-							header: {
-								"Content-Type": fileType,
-								"x-amz-meta-path": dirName,
-								"x-amz-meta-name": fileName,
-								"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
-							}
-						}));
-				});
-			});
+			return promisify(awsObject.s3.getSignedUrl, awsObject.s3)(action, params);
+		});
 	}
 
+	/**** @DEPRECATED ****/
 	createDirectory(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return filePermissionHelper.checkPermissions(userId, path)
@@ -236,6 +217,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
+	/**** @DEPRECATED ****/
 	deleteDirectory(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return filePermissionHelper.checkPermissions(userId, path)
@@ -251,6 +233,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
+	/**** @DEPRECATED ****/
 	_deleteAllInDirectory(awsObject, params) {
 		return promisify(awsObject.s3.listObjectsV2, awsObject.s3)(params)
 			.then(data => {

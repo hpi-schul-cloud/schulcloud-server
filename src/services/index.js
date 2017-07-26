@@ -1,6 +1,5 @@
 'use strict';
 const fileStorage = require('./fileStorage');
-const filePermission = require('./filePermission');
 const link = require('./link');
 const news = require('./news');
 const content = require('./content');
@@ -44,7 +43,6 @@ module.exports = function () {
     app.configure(calendar);
     app.configure(lesson);
     app.configure(fileStorage);
-    app.configure(filePermission);
     app.configure(link);
     app.configure(news);
 	app.configure(helpers);

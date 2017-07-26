@@ -2,7 +2,7 @@ const errors = require('feathers-errors');
 const _ = require('lodash');
 const CourseModel = require('../../user-group/model').courseModel;
 const ClassModel = require('../../user-group/model').classModel;
-const FilePermissionModel = require('../model');
+const FilePermissionModel = require('../model').fileModel;
 
 class FilePermissionHelper {
 	constructor() {

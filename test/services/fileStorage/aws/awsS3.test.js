@@ -46,7 +46,7 @@ describe('AWS file storage strategy', function () {
 		mockery.disable();
 	});
 
-	describe("POST /fileStorage", function () {
+	describe("create", function () {
 		it('creates a bucket for the given school', function () {
 			return aws.create(options.schoolId).then(res => {
 				expect(res).to.not.be.undefined;
@@ -76,27 +76,9 @@ describe('AWS file storage strategy', function () {
 		});
 	});
 
-	describe("GET /fileStorage", function () {
+	describe("getFiles", function () {
 		it("gets all stored files for one user", function () {
 			return aws.getFiles("0000d213816abba584714c0a", "users/0000d213816abba584714c0a").then(res => {
-				expect(res).to.not.be.undefined;
-				expect(res.files.length).to.be.equal(1);
-				expect(res.directories.length).to.be.equal(0);
-				return;
-			});
-		});
-
-		it("gets all stored files for one course", function () {
-			return aws.getFiles("0000d213816abba584714c0a", "courses/0000dcfbfb5c7a3f00bf21ab").then(res => {
-				expect(res).to.not.be.undefined;
-				expect(res.files.length).to.be.equal(1);
-				expect(res.directories.length).to.be.equal(0);
-				return;
-			});
-		});
-
-		it("gets all stored files for the teacher of a course", function () {
-			return aws.getFiles("0000d231816abba584714c9e", "courses/0000dcfbfb5c7a3f00bf21ab").then(res => {
 				expect(res).to.not.be.undefined;
 				expect(res.files.length).to.be.equal(1);
 				expect(res.directories.length).to.be.equal(0);
@@ -145,7 +127,7 @@ describe('AWS file storage strategy', function () {
 		});
 	});
 
-	describe("DELETE /fileStorage/", function () {
+	describe("delete file", function () {
 		it("deletes a file correctly", function () {
 			return aws.deleteFile("0000d213816abba584714c0a", "users/0000d213816abba584714c0a/example.jpg").then(res => {
 				expect(res).to.not.be.undefined;
@@ -176,11 +158,11 @@ describe('AWS file storage strategy', function () {
 		});
 	});
 
-	describe("POST /fileStorage/signedUrl", function () {
+	describe("generate signed url", function () {
 		it("creates valid signed url", function () {
 			return aws.generateSignedUrl("0000d213816abba584714c0a", "users/0000d213816abba584714c0a/example.jpg", "mime/image", "putObject").then(res => {
 				expect(res).to.not.be.undefined;
-				expect(res.url).to.be.equal("successfully created signed url");
+				expect(res).to.be.equal("successfully created signed url");
 				return;
 			});
 		});
@@ -196,7 +178,7 @@ describe('AWS file storage strategy', function () {
 		});
 	});
 
-	describe("POST /fileStorage/directories", function () {
+	describe("create directory", function () {
 		it("creates a new directory", function () {
 			return aws.createDirectory("0000d213816abba584714c0a", "users/0000d213816abba584714c0a/test/").then(res => {
 				expect(res).to.not.be.undefined;
