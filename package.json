@@ -45,6 +45,7 @@
     "feathers-configuration": "^0.3.3",
     "feathers-errors": "^2.5.0",
     "feathers-hooks": "^1.7.1",
+    "feathers-mongodb-fuzzy-search": "^1.0.1",
     "feathers-mongoose": "^3.6.2",
     "feathers-rest": "^1.6.0",
     "feathers-socketio": "^1.4.2",

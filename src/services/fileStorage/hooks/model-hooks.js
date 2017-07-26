@@ -3,10 +3,11 @@
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
+const search = require('feathers-mongodb-fuzzy-search');
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [],
+	find: [search({escape: false})],
 	get: [],
 	create: [],
 	update: [],
