@@ -10,7 +10,7 @@ const filterApplicableSubmissions = hook => {
 	data = data.filter(function(c){
 		return c.homeworkId.publicSubmissions
 				|| JSON.stringify(c.homeworkId.teacherId) == JSON.stringify(uId)
-				|| JSON.stringify(c.studentId) == JSON.stringify(uId);
+				|| JSON.stringify(c.studentId._id) == JSON.stringify(uId);
 	});
 
 	if (hook.result.data)
