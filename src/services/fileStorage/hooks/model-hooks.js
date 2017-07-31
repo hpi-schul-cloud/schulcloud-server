@@ -19,7 +19,7 @@ const restrictToCurrentUser = hook => {
 				allowedFiles.push(f);
 			}
 			return;
-		})
+		});
 	})).then(_ => {
 		// get context folder name
 		return Promise.all(allowedFiles.map(f => {
@@ -38,7 +38,7 @@ const restrictToCurrentUser = hook => {
 			hook.result.data = files;
 			return hook;
 		});
-	})
+	});
 };
 
 exports.before = {
