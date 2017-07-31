@@ -20,6 +20,7 @@ const userGroup = require('./user-group');
 const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
 const notification = require('./notification');
+const releases = require('./releases');
 
 const mongoose = require('mongoose');
 
@@ -49,4 +50,5 @@ module.exports = function () {
 	app.configure(federalState);
 	app.configure(passwordRecovery);
 	app.configure(notification);
+	app.configure(releases);
 };
