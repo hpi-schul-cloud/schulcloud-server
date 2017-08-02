@@ -52,7 +52,9 @@
 	"permissions": [
 		"LESSONS_VIEW",
 		"TOOL_NEW_VIEW",
-		"COURSE_EDIT"
+		"COURSE_EDIT",
+		"STUDENT_CREATE",
+		"TEACHER_CREATE"
 	],
 	"__v": 0
 },
