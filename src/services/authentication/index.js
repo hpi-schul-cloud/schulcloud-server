@@ -74,6 +74,11 @@ module.exports = function() {
 		loginStrategy: require('../account/strategies/itslearning')
 	}));
 
+	app.configure(system({
+		name: 'iserv',
+		loginStrategy: require('../account/strategies/iserv')
+	}));
+
 
 	const authenticationService = app.service('authentication');
 

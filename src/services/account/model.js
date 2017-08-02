@@ -13,6 +13,9 @@ const accountSchema = new Schema({
 	userId: {type: Schema.Types.ObjectId, ref: 'user'},
 	systemId: {type: Schema.Types.ObjectId, ref: 'system'}, // if systemId => SSO
 
+	oaClientId: {type: String}, // just for oauth2-systems
+	oaClientSecret: {type: String}, // just for oauth2-systems
+
 	expiresAt: {type: Date},
 
 	activated: {type: Boolean, 'default': false}
