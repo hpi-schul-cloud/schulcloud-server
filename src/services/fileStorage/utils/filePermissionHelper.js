@@ -15,10 +15,16 @@ class FilePermissionHelper {
 	 * @param permissionTypes [String] - the type of permissions which will be checked
 	 * @param throwError {Boolean} - whether to throw an error or not
 	 */
-	checkExtraPermissions(userId, fileKey, permissionTypes, throwError) {
+	checkExtraPermissions(userId, fileKey, permissionTypes, throwError, queries) {
 		if (!fileKey || fileKey === '') throwError ? Promise.reject(new errors.Forbidden("You don't have permissions!")) : false;
 
 		return FilePermissionModel.find({key: fileKey}).exec().then(res => {
+
+			// check whether key and shareToken are identical to return file
+			if (res[0].key === (queries || {}).key && res[0].shareToken === (queries || {}).shareToken) {
+				return Promise.resolve(true);
+			}
+
 			// res-object should be unique for file key, but it's safer to map all permissions
 			let permissions = _.flatten(res.map(filePermissions => filePermissions.permissions));
 
@@ -87,8 +93,8 @@ class FilePermissionHelper {
 	 * @param throwError {Boolean} - whether to throw an error or not
 	 * @returns {*}
 	 */
-	checkPermissions(userId, filePath, permissions = ["can-read", "can-write"], throwError = true) {
-		return this.checkNormalPermissions(userId, filePath).catch(err => this.checkExtraPermissions(userId, filePath, permissions, throwError));
+	checkPermissions(userId, filePath, permissions = ["can-read", "can-write"], throwError = true, queries) {
+		return this.checkNormalPermissions(userId, filePath).catch(err => this.checkExtraPermissions(userId, filePath, permissions, throwError, queries));
 	}
 }
 

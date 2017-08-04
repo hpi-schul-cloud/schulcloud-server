@@ -3,7 +3,6 @@
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
-const search = require('feathers-mongodb-fuzzy-search');
 const permissions = require('../utils/filePermissionHelper');
 const FileModel = require('../model').fileModel;
 
@@ -11,9 +10,10 @@ const restrictToCurrentUser = hook => {
 	let files = hook.result.data;
 	let userId = hook.params.account.userId;
 	let allowedFiles = [];
+	let queries = hook.params.query;
 	// permissions check for each file
 	return Promise.all(files.map(f => {
-		return permissions.checkPermissions(userId, f.key, ['can-write'], false).then(isAllowed => {
+		return permissions.checkPermissions(userId, f.key, ['can-write'], false, queries).then(isAllowed => {
 			if (isAllowed) {
 				f.context = isAllowed.context;
 				allowedFiles.push(f);
@@ -43,7 +43,7 @@ const restrictToCurrentUser = hook => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [search({escape: false})],
+	find: [],
 	get: [],
 	create: [],
 	update: [],
