@@ -3,6 +3,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const gender = ['male', 'female', "other", null];
+
 const userSchema = new Schema({
 	roles: [{type: Schema.Types.ObjectId, ref: 'role'}],
 	email: {type: String, required: true, lowercase: true},
@@ -11,6 +13,8 @@ const userSchema = new Schema({
 
 	firstName: {type: String, required: true},
 	lastName: {type: String, required: true},
+
+	gender: {type: String, enum: gender},
 
 	preferences: {type: Object} // blackbox for frontend stuff like "cookies accepted"
 },{
