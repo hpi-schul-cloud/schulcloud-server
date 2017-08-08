@@ -13,6 +13,8 @@ chai.use(chaiHttp);
 
 describe('Lernsax single-sign-on', function () {
 
+	this.timeout(5000);
+
 	let mockLernsax = null;
 
 	function createLernsaxTestServer() {
