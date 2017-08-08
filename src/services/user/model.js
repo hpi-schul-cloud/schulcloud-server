@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const gender = ['male', 'female', "other", null];
+const gender = ['male', 'female', 'other', null];
 
 const userSchema = new Schema({
 	roles: [{type: Schema.Types.ObjectId, ref: 'role'}],
