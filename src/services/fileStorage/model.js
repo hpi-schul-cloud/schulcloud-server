@@ -50,6 +50,8 @@ const directorySchema = new Schema({
 	updatedAt: {type: Date, 'default': Date.now}
 });
 
+// make file-model searchable
+fileSchema.index({ name: 'text' });
 const fileModel = mongoose.model('file', fileSchema);
 const directoryModel = mongoose.model('directory', directorySchema);
 
