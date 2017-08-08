@@ -11,7 +11,7 @@ let should = require('chai').should();
 let expect = require('chai').expect;
 chai.use(chaiHttp);
 
-describe('Lernsax single-sign-on', function() {
+describe('Lernsax single-sign-on', function () {
 
 	let mockLernsax = null;
 
@@ -26,29 +26,30 @@ describe('Lernsax single-sign-on', function() {
 			});
 	});
 
-	it('should succeed when input with correct credentials', function() {
-		let mockSystem = mockLernsax.url.replace('http://', '');
-		var loginService = new LernsaxLoginStrategy();
-		return loginService.login(config.testLernSaxUser,
-				mockSystem + `/webdav.php?username=${config.testLernSaxUser.username}&password=${config.testLernSaxUser.password}`). // not mandatory, just for the mock server
-				then((response) => {
-			var _res = response;
-			expect(_res).to.be.not.undefined;
-			expect(_res.success).to.be.true;
-			expect(_res.username).to.equal(config.testLernSaxUser.username);
-		});
+	it('should succeed when input with correct credentials', function () {
+		let mockSystem = {
+			url: mockLernsax.url.replace('http://', '') + `/webdav.php?username=${config.testLernSaxUser.username}&password=${config.testLernSaxUser.password}` // not mandatory, just for the mock server
+		};
+		let loginService = new LernsaxLoginStrategy();
+		return loginService.login(config.testLernSaxUser, mockSystem)
+			.then((response) => {
+				var _res = response;
+				expect(_res).to.be.not.undefined;
+				expect(_res.success).to.be.true;
+				expect(_res.username).to.equal(config.testLernSaxUser.username);
+			});
 	});
 
-	it('should fail when input wrong user credentials', function() {
+	it('should fail when input wrong user credentials', function () {
 		let mockSystem = mockLernsax.url.replace('http://', '');
 		var loginService = new LernsaxLoginStrategy();
 		return loginService.login(config.testLernSaxUser,
-				mockSystem + `/webdav.php?username=${config.testLernSaxUserFail.username}&password=${config.testLernSaxUserFail.password}`). // not mandatory, just for the mock server
-				then((result) => {
-				expect(result).to.be.nil;
-			})
+			mockSystem + `/webdav.php?username=${config.testLernSaxUserFail.username}&password=${config.testLernSaxUserFail.password}`).// not mandatory, just for the mock server
+		then((result) => {
+			expect(result).to.be.nil;
+		})
 			.catch((err) => {
-			expect(err).to.equal('NotAuthenticated: wrong password');
-		});
+				expect(err).to.equal('NotAuthenticated: wrong password');
+			});
 	});
 });
