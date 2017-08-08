@@ -8,7 +8,7 @@
 	},
 	"services": {
 		"calendar": "https://schul.tech:3000",
-		"content": "https://schul-cloud.org:8090",
+		"content": "https://schul-cloud.org:8090/content",
 		"notification": "https://schul-cloud.org:3030"
 	}
 }
