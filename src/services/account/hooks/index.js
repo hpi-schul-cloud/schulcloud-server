@@ -80,8 +80,8 @@ const restrictAccess = (hook) => {
 	let queries = hook.params.query;
 
 	return new Promise ((resolve, reject) => {
-		if (!queries.username)
-			return reject(new errors.NotAuthenticated("No auth token"));
+		if (!queries.username && !queries.userId)
+			return reject(new errors.BadRequest("Not allowed"));
 		else
 			return resolve();
 	});
