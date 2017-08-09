@@ -1,9 +1,8 @@
 let secrets = {
 	"smtp": process.env.SMTP,
 	"sendmail": {
-	"sendmail": true,
-		"newline": "unix",
-		"path": "/usr/sbin/sendmail"
+		"host": process.env.SMTP_HOST,
+		"port": process.env.SMTP_PORT
 },
 	"aws": {
 	"signatureVersion": "v4",
