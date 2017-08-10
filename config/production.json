@@ -1,6 +1,6 @@
 {
 	"host": "localhost",
-	"port": 8080,
+	"port": "PORT",
 	"mongodb": "MONGO_URI",
 	"public": "../public/",
 	"auth": {
