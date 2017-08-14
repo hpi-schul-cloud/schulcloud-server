@@ -10,7 +10,7 @@ const filePermissionHelper = require('../utils/filePermissionHelper');
 const removeLeadingSlash = require('../utils/filePathHelper').removeLeadingSlash;
 let awsConfig;
 try {
-	awsConfig = require("../../../../config/secrets.json").aws;
+	(process.env.NODE_ENV === 'production') ? awsConfig = require("../../../../config/secrets.js").aws : awsConfig = require("../../../../config/secrets.json").aws;
 } catch (e) {
 	logger.log('warn', 'The AWS config couldn\'t be read');
 	awsConfig = {};
