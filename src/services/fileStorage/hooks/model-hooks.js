@@ -4,7 +4,6 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const permissions = require('../utils/filePermissionHelper');
-const FileModel = require('../model').fileModel;
 
 const restrictToCurrentUser = hook => {
 	let files = hook.result.data;
