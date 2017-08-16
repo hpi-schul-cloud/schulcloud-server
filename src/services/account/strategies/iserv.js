@@ -28,7 +28,7 @@ class IServLoginStrategy extends AbstractLoginStrategy {
 		logger.debug("[iserv]: Trying to connect to IServ-Server");
 		return iservAuth.owner.getToken(username, password)
 			.then(client => {	// verify that the login did succeed
-				if (!client.accessToken) return Promise.reject(new Error('failed to obtain token'));
+				if (!client.accessToken && !client.data.accessToken) return Promise.reject(new Error('failed to obtain token'));
 				logger.debug("[iserv]: Successfully connect to IServ-Server");
 				return Promise.resolve(client);
 			});

@@ -11,7 +11,7 @@ let should = require('chai').should();
 let expect = require('chai').expect;
 chai.use(chaiHttp);
 
-describe('Lernsax single-sign-on', function () {
+describe('IServ single-sign-on', function () {
 
 	this.timeout(5000);
 

@@ -17,7 +17,7 @@ module.exports = function () {
 			mockIServ.post('/iserv/oauth/v2/token', (req, res) => {
 				if (req.body.username === config.testIServUser.username && req.body.password === config.testIServUser.password) {
 					res.setHeader('Content-Type', 'application/json');
-					res.json({statusCode: "200"});
+					res.json({statusCode: "200", accessToken: true});
 					return;
 				}
 				res.setHeader('Content-Type', 'application/json');
