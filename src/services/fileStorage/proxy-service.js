@@ -104,6 +104,15 @@ class FileStorageService {
 					});
 			});
 	}
+
+	/**
+	 * @param data
+	 * @param params
+	 */
+	patch(id, data, params) {
+		console.log(data);
+		console.log(params);
+	}
 }
 
 class SignedUrlService {

@@ -34,7 +34,24 @@ module.exports = {
 				}
 			],
 			summary: 'remove a file'
-		}
+		},
+		patch: {
+			parameters: [
+				{
+					description: 'The path where the file can be found',
+					required: true,
+					name: 'path',
+					type: 'string'
+				},
+				{
+					description: 'The path where the file should be moved to',
+					required: true,
+					name: 'direction',
+					type: 'string'
+				}
+			],
+			summary: 'moves a file to a new path'
+		},
 	},
 	directoryService: {
 		description: 'A service for handling directories',
