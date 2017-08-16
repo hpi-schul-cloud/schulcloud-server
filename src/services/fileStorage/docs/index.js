@@ -38,15 +38,27 @@ module.exports = {
 		patch: {
 			parameters: [
 				{
-					description: 'The path where the file can be found',
+					description: 'The name of the file',
+					required: true,
+					name: 'fileName',
+					type: 'string'
+				},
+				{
+					description: 'The path where the file can be found, have to have a slash at the end',
 					required: true,
 					name: 'path',
 					type: 'string'
 				},
 				{
-					description: 'The path where the file should be moved to',
+					description: 'The path where the file should be moved to, have to have a slash at the end',
 					required: true,
-					name: 'direction',
+					name: 'destination',
+					type: 'string'
+				},
+				{
+					description: 'The id of the file in the proxy db',
+					required: true,
+					name: 'id',
 					type: 'string'
 				}
 			],
