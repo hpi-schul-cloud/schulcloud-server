@@ -9,7 +9,7 @@ const AbstractLoginStrategy = require('./interface.js');
 
 class IServLoginStrategy extends AbstractLoginStrategy {
 	login({username, password}, system) {
-
+		
 		const iservOptions = {
 			username: username,
 			password: password,
@@ -31,7 +31,7 @@ class IServLoginStrategy extends AbstractLoginStrategy {
 				logger.info(user);
 				return Promise.resolve(user);
 			}).catch(err => {
-				logger.error(err);
+				logger.info(err.body);
 				return Promise.reject(err);
 			});
 	}
