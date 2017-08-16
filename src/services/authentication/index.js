@@ -8,12 +8,15 @@ const logger = require('winston');
 const system = require('./strategies/system');
 const hooks = require('./hooks');
 
-let authenticationSecret = "secret";
+
+let secrets;
 try {
-	authenticationSecret = require("../../../config/secrets.json").authentication;
-} catch (e) {
-	logger.log('warn', 'Could not read authentication secret, using insecure default value.');
+	(process.env.NODE_ENV === 'production') ? secrets = require('../../../config/secrets.js') : secrets = require('../../../config/secrets.json');
+} catch(error) {
+	secrets = {};
 }
+
+let authenticationSecret = (secrets.authentication) ? secrets.authentication : "secrets";
 
 module.exports = function() {
     const app = this;
