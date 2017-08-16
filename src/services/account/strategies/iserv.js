@@ -3,7 +3,7 @@ const logger = require('winston');
 const promisify = require('es6-promisify');
 const errors = require('feathers-errors');
 const path = require('path');
-const ClientOAuth2 = require('client-oauth2')
+const ClientOAuth2 = require('client-oauth2');
 
 const AbstractLoginStrategy = require('./interface.js');
 
@@ -28,10 +28,10 @@ class IServLoginStrategy extends AbstractLoginStrategy {
 
 		return iservAuth.owner.getToken(username, password)
 			.then((user) => {
-				console.log(user);
+				logger.info(user);
 				return Promise.resolve(user);
 			}).catch(err => {
-				console.log(err);
+				logger.error(err);
 				return Promise.reject(err);
 			});
 	}
