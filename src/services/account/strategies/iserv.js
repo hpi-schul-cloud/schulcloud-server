@@ -1,9 +1,8 @@
 'use strict';
-const logger = require('winston');
 const promisify = require('es6-promisify');
 const errors = require('feathers-errors');
-const path = require('path');
 const ClientOAuth2 = require('client-oauth2');
+const logger = require('winston');
 
 const AbstractLoginStrategy = require('./interface.js');
 
@@ -26,13 +25,12 @@ class IServLoginStrategy extends AbstractLoginStrategy {
 			authorizationUri: `${iservOptions.wwwroot}/iserv/oauth/v2/auth`,
 		});
 
+		logger.debug("[iserv]: Trying to connect to IServ-Server");
 		return iservAuth.owner.getToken(username, password)
-			.then((user) => {
-				logger.info(user);
-				return Promise.resolve(user);
-			}).catch(err => {
-				logger.info(err.body);
-				return Promise.reject(err);
+			.then(client => {	// verify that the login did succeed
+				if (!client.accessToken) return Promise.reject(new Error('failed to obtain token'));
+				logger.debug("[iserv]: Successfully connect to IServ-Server");
+				return Promise.resolve(client);
 			});
 	}
 }
