@@ -18,6 +18,7 @@ const homeworkModel = mongoose.model('homework', new Schema({
 	availableDate: {type: Date, required: true},
 	teacherId: {type: Schema.Types.ObjectId, required: true, ref: 'user'},
 	courseId: {type: Schema.Types.ObjectId, 'default': null, ref: 'course'},
+    lessonId: {type: Schema.Types.ObjectId, 'default': null, ref: 'lesson'},
 	private: {type: Boolean},
 	publicSubmissions: {type: Boolean}
 }));
