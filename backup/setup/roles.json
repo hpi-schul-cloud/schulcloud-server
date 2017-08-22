@@ -70,5 +70,16 @@
 	],
 	"permissions": [],
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d186816abba584714d01"
+	},
+	"name": "helpdesk",
+	"roles": [],
+	"permissions": [
+		"HELPDESK_VIEW"
+	],
+	"__v": 0
 }]
 
