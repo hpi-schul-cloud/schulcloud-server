@@ -7,7 +7,9 @@
 	"permissions": [
 		"BASE_VIEW",
 		"DASHBOARD_VIEW",
-		"TOOL_VIEW"
+		"TOOL_VIEW",
+		"HOMEWORK_CREATE",
+		"PASSWORD_EDIT"
 	],
 	"__v": 0
 },
@@ -69,6 +71,22 @@
 		}
 	],
 	"permissions": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d186816abba584714d00"
+	},
+	"name": "demo",
+	"roles": [
+	],
+	"permissions": [
+		"LESSONS_VIEW",
+		"TOOL_NEW_VIEW",
+		"BASE_VIEW",
+		"DASHBOARD_VIEW",
+		"TOOL_VIEW"
+	],
 	"__v": 0
 }]
 
