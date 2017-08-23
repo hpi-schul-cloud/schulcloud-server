@@ -6,11 +6,11 @@ const auth = require('feathers-authentication');
 
 const filterApplicableSubmissions = hook => {
 	let uId = hook.params.account.userId;
-	let data = hook.result.data || hook.result;
+	let data = hook.result.data;
 	data = data.filter(function(c){
 		return c.homeworkId.publicSubmissions
-				|| JSON.stringify(c.homeworkId.teacherId) == JSON.stringify(uId)
-				|| JSON.stringify(c.studentId._id) == JSON.stringify(uId);
+				|| JSON.stringify(c.homeworkId.teacherId) == JSON.stringify(hook.params.account.userId)
+				|| JSON.stringify(c.studentId) == JSON.stringify(hook.params.account.userId);
 	});
 
 	if (hook.result.data)
