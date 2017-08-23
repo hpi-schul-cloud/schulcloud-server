@@ -21,6 +21,7 @@ const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
 const notification = require('./notification');
 const releases = require('./releases');
+const helpdesk = require('./helpdesk');
 
 const mongoose = require('mongoose');
 
@@ -51,4 +52,5 @@ module.exports = function () {
 	app.configure(passwordRecovery);
 	app.configure(notification);
 	app.configure(releases);
+	app.configure(helpdesk);
 };

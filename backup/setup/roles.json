@@ -83,14 +83,28 @@
 		"$oid": "0000d186816abba584714d00"
 	},
 	"name": "demo",
-	"roles": [
-	],
+	"roles": [],
 	"permissions": [
 		"LESSONS_VIEW",
 		"TOOL_NEW_VIEW",
 		"BASE_VIEW",
 		"DASHBOARD_VIEW",
 		"TOOL_VIEW"
+	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d186816abba584714d01"
+	},
+	"name": "helpdesk",
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c95"
+		}
+	],
+	"permissions": [
+		"HELPDESK_VIEW"
 	],
 	"__v": 0
 }]
