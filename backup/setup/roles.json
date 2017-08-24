@@ -85,11 +85,38 @@
 	"name": "demo",
 	"roles": [],
 	"permissions": [
-		"LESSONS_VIEW",
-		"TOOL_NEW_VIEW",
 		"BASE_VIEW",
 		"DASHBOARD_VIEW",
 		"TOOL_VIEW"
+	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d186816abba584714d02"
+	},
+	"name": "demoStudent",
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714d00"
+		}
+	],
+	"permissions": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d186816abba584714d03"
+	},
+	"name": "demoTeacher",
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714d00"
+		}
+	],
+	"permissions": [
+		"LESSONS_VIEW",
+		"TOOL_NEW_VIEW"
 	],
 	"__v": 0
 },
