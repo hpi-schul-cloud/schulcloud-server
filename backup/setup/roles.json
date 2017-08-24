@@ -61,7 +61,8 @@
 		"TOOL_NEW_VIEW",
 		"COURSE_EDIT",
 		"STUDENT_CREATE",
-		"TEACHER_CREATE"
+		"TEACHER_CREATE",
+		"NEWS_EDIT"
 	],
 	"__v": 0
 },
