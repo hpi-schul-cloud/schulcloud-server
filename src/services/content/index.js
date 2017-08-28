@@ -2,6 +2,8 @@
 
 const request = require('request-promise-native');
 const hooks = require('./hooks');
+const material = require('./material-model');
+const service = require('feathers-mongoose');
 
 const REQUEST_TIMEOUT = 8000; // in ms
 
@@ -66,9 +68,20 @@ class SearchService {
 module.exports = function () {
 	const app = this;
 
+	// Initialize material model
+	const options = {
+		Model: material,
+		paginate: {
+			default: 10,
+			max: 25
+		},
+		lean: true
+	};
+
 	// Initialize our service with options it requires
 	app.use('/content/resources', new ResourcesService());
 	app.use('/content/search', new SearchService());
+	app.use('/materials', service(options));
 
 	// Get our initialize service to that we can bind hooks
 	const resourcesService = app.service('/content/resources');
