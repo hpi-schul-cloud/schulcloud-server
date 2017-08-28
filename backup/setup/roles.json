@@ -7,7 +7,14 @@
 	"permissions": [
 		"BASE_VIEW",
 		"DASHBOARD_VIEW",
-		"TOOL_VIEW"
+		"TOOL_VIEW",
+		"HOMEWORK_CREATE",
+		"PASSWORD_EDIT",
+		"FOLDER_DELETE",
+		"FOLDER_CREATE",
+		"FILE_DELETE",
+		"FILE_CREATE",
+		"CALENDAR_EVENT_CREATE"
 	],
 	"__v": 0
 },
@@ -69,6 +76,63 @@
 		}
 	],
 	"permissions": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d186816abba584714d00"
+	},
+	"name": "demo",
+	"roles": [],
+	"permissions": [
+		"BASE_VIEW",
+		"DASHBOARD_VIEW",
+		"TOOL_VIEW"
+	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d186816abba584714d02"
+	},
+	"name": "demoStudent",
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714d00"
+		}
+	],
+	"permissions": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d186816abba584714d03"
+	},
+	"name": "demoTeacher",
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714d00"
+		}
+	],
+	"permissions": [
+		"LESSONS_VIEW",
+		"TOOL_NEW_VIEW"
+	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d186816abba584714d01"
+	},
+	"name": "helpdesk",
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c95"
+		}
+	],
+	"permissions": [
+		"HELPDESK_VIEW"
+	],
 	"__v": 0
 }]
 

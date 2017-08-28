@@ -19,7 +19,6 @@ module.exports = function (app) {
 
 		// POST
 		create({headers, email, subject, content}, params) {
-
 			return checkForToken(params, app)
 				.then(user => {
 					let transporter;
