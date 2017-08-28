@@ -65,6 +65,40 @@ class SearchService {
 	}
 }
 
+class RedirectService {
+	constructor(options) {
+		this.options = options || {};
+	}
+
+	find(params) {
+		const serviceUrls = this.app.get('services') || {};
+		const options = {
+			uri: serviceUrls.content + '/resources/' + params.id,
+			json: true,
+			timeout: REQUEST_TIMEOUT
+		};
+		return request(options).then(resource => {
+			// Increase Click Counter
+			request.patch(serviceUrls.content + '/resources/' + params.id, {
+				json: {
+					$inc: {
+						clickCount: 1
+					}
+				}
+			});
+			return resource.url;
+		});
+	}
+
+	static redirect(req, res, next) {
+		res.redirect(res.data);
+	}
+
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
 module.exports = function () {
 	const app = this;
 
@@ -80,6 +114,7 @@ module.exports = function () {
 
 	// Initialize our service with options it requires
 	app.use('/content/resources', new ResourcesService());
+	app.use('/content/resources/:id/redirect', new RedirectService(), RedirectService.redirect);
 	app.use('/content/search', new SearchService());
 	app.use('/materials', service(options));
 
