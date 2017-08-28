@@ -26,6 +26,8 @@ exports.isAdmin = function (options) {
 
 exports.hasPermission = function (permissionName) {
 	return hook => {
+		if (process.env.NODE_ENV === 'test')
+			return Promise.resolve(hook);
 		const service = hook.app.service('/users/');
 			return service.get({_id: (hook.params.account.userId || "")})
 				.then(user => {
