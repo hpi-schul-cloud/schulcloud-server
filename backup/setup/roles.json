@@ -67,7 +67,8 @@
 		"SYSTEM_EDIT",
 		"SYSTEM_CREATE",
 		"ACCOUNT_CREATE",
-		"USER_CREATE"
+		"USER_CREATE",
+		"SCHOOL_EDIT"
 	],
 	"__v": 0
 },
