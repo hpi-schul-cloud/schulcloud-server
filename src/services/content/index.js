@@ -70,16 +70,16 @@ class RedirectService {
 		this.options = options || {};
 	}
 
-	find(params) {
+	get(id) {
 		const serviceUrls = this.app.get('services') || {};
 		const options = {
-			uri: serviceUrls.content + '/resources/' + params.id,
+			uri: serviceUrls.content + '/resources/' + id,
 			json: true,
 			timeout: REQUEST_TIMEOUT
 		};
 		return request(options).then(resource => {
 			// Increase Click Counter
-			request.patch(serviceUrls.content + '/resources/' + params.id, {
+			request.patch(serviceUrls.content + '/resources/' + id, {
 				json: {
 					$inc: {
 						clickCount: 1
@@ -114,8 +114,8 @@ module.exports = function () {
 
 	// Initialize our service with options it requires
 	app.use('/content/resources', new ResourcesService());
-	app.use('/content/resources/:id/redirect', new RedirectService(), RedirectService.redirect);
 	app.use('/content/search', new SearchService());
+	app.use('/content/redirect', new RedirectService(), RedirectService.redirect);
 	app.use('/materials', service(options));
 
 	// Get our initialize service to that we can bind hooks
