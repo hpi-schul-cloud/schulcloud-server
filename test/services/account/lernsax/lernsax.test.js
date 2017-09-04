@@ -45,7 +45,7 @@ describe('Lernsax single-sign-on', function () {
 	it('should fail when input wrong user credentials', function () {
 		let mockSystem = mockLernsax.url.replace('http://', '');
 		var loginService = new LernsaxLoginStrategy();
-		return loginService.login(config.testLernSaxUser,
+		return loginService.login(config.testLernSaxUserFail,
 			mockSystem + `/webdav.php?username=${config.testLernSaxUserFail.username}&password=${config.testLernSaxUserFail.password}`).// not mandatory, just for the mock server
 		then((result) => {
 			expect(result).to.be.nil;
