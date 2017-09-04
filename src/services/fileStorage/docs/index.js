@@ -34,7 +34,36 @@ module.exports = {
 				}
 			],
 			summary: 'remove a file'
-		}
+		},
+		patch: {
+			parameters: [
+				{
+					description: 'The name of the file',
+					required: true,
+					name: 'fileName',
+					type: 'string'
+				},
+				{
+					description: 'The path where the file can be found, have to have a slash at the end',
+					required: true,
+					name: 'path',
+					type: 'string'
+				},
+				{
+					description: 'The path where the file should be moved to, have to have a slash at the end',
+					required: true,
+					name: 'destination',
+					type: 'string'
+				},
+				{
+					description: 'The id of the file in the proxy db',
+					required: true,
+					name: 'id',
+					type: 'string'
+				}
+			],
+			summary: 'moves a file to a new path'
+		},
 	},
 	directoryService: {
 		description: 'A service for handling directories',
