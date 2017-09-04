@@ -39,7 +39,6 @@ const courseModel = mongoose.model('course', getUserGroupSchema({
 	substitutionIds: [{type: Schema.Types.ObjectId, required: true, ref: 'user'}],
 	ltiToolIds: [{type: Schema.Types.ObjectId, required: true, ref: 'ltiTool'}],
 	color: {type: String, required: true, 'default': '#1DE9B6'},
-	gradeSystem: {type: Boolean},
 	startDate: {type: Date},
 	untilDate: {type: Date},
 	times: [timeSchema]
