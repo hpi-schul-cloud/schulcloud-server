@@ -35,6 +35,7 @@ const restrictToCurrentUser = hook => {
 			return f;
 		})).then(files => {
 			hook.result.data = files;
+			hook.result.total = files.length;
 			return hook;
 		});
 	});
