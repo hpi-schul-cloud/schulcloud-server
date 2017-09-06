@@ -6,21 +6,21 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
 const filterApplicableHomework = hook => {
-	let uId = hook.params.account.userId;
-	let data = hook.result.data || hook.result;
-	data = data.filter(function (c) {
-		return (new Date(c.availableDate).getTime() < Date.now()
-			&& c.courseId != null
-			&& (c.courseId.userIds || []).indexOf(uId) != -1)
-			|| JSON.stringify(c.teacherId) == JSON.stringify(uId);
-	});
+    let uId = hook.params.account.userId;
+    let data = hook.result.data || hook.result;
+    data = data.filter(function (c) {
+        return (new Date(c.availableDate).getTime() < Date.now()
+            && c.courseId != null
+            && ((c.courseId.userIds || []).indexOf(uId) != -1) && !c.private)
+            || JSON.stringify(c.teacherId) == JSON.stringify(uId);
+    });
 
-	if (hook.result.data)
-		hook.result.data = data;
-	else
-		hook.result = data;
+    if (hook.result.data)
+        hook.result.data = data;
+    else
+        hook.result = data;
 
-	return Promise.resolve(hook);
+    return Promise.resolve(hook);
 };
 
 exports.before = {

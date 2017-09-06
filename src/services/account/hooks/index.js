@@ -9,6 +9,7 @@ const globalHooks = require('../../../hooks');
 
 const MoodleLoginStrategy = require('../strategies/moodle');
 const ITSLearningLoginStrategy = require('../strategies/itslearning');
+const IServLoginStrategy = require('../strategies/iserv');
 const LernsaxLoginStrategy = require('../strategies/lernsax');
 const LocalLoginStrategy = require('../strategies/local');
 
@@ -18,6 +19,7 @@ const strategies = {
 	moodle: MoodleLoginStrategy,
 	itslearning: ITSLearningLoginStrategy,
 	lernsax: LernsaxLoginStrategy,
+	iserv: IServLoginStrategy,
 	local: LocalLoginStrategy
 };
 

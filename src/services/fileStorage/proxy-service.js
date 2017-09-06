@@ -104,6 +104,34 @@ class FileStorageService {
 					});
 			});
 	}
+
+	/**
+	 * @param id, the file-id in the proxy-db
+	 * @param data, contains fileName, path and destination. Path and destination have to have a slash at the end!
+	 */
+	patch(id, data, params) {
+		let fileName = data.fileName;
+		let path = data.path;
+		let destination = data.destination;
+
+		if (!id || !fileName || !path || !destination) return Promise.reject(new errors.BadRequest('Missing parameters'));
+
+		let userId = params.payload.userId;
+		return filePermissionHelper.checkPermissions(userId, path + fileName)
+			.then(_ => {
+				// check destination permissions
+				return filePermissionHelper.checkPermissions(userId, destination + fileName)
+					.then(_ => {
+						// patch file direction in proxy db
+						return FileModel.update({_id: id,}, {
+							$set: {
+								key: destination + fileName,
+								path: destination
+							}
+						}).exec();
+					});
+			});
+	}
 }
 
 class SignedUrlService {
