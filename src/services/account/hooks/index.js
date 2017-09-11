@@ -5,6 +5,7 @@ const hooks = require('feathers-hooks');
 const local = require('feathers-authentication-local');
 const errors = require('feathers-errors');
 const bcrypt = require('bcryptjs');
+const globalHooks = require('../../../hooks');
 
 const MoodleLoginStrategy = require('../strategies/moodle');
 const ITSLearningLoginStrategy = require('../strategies/itslearning');
@@ -99,11 +100,12 @@ exports.before = {
 		local.hooks.hashPassword({ passwordField: 'password' }),
 		checkUnique
 	],
-	update: [auth.hooks.authenticate('jwt')],
+	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('ACCOUNT_EDIT'),
 			validatePassword,
 			local.hooks.hashPassword({ passwordField: 'password' })],
-	remove: [auth.hooks.authenticate('jwt')]
+	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_CREATE')]
 };
 
 exports.after = {

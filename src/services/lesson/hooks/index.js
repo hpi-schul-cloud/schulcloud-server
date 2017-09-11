@@ -3,6 +3,7 @@
 const stripJs = require('strip-js');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
+const globalHooks = require('../../../hooks');
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt'), (hook) => {
@@ -22,12 +23,12 @@ exports.before = {
 
 		return hook;
 	}],
-	find: [],
-	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: []
+	find: [globalHooks.hasPermission('TOPIC_VIEW')],
+	get: [globalHooks.hasPermission('TOPIC_VIEW')],
+	create: [globalHooks.hasPermission('TOPIC_CREATE')],
+	update: [globalHooks.hasPermission('TOPIC_EDIT')],
+	patch: [globalHooks.hasPermission('TOPIC_EDIT')],
+	remove: [globalHooks.hasPermission('TOPIC_CREATE')]
 };
 
 exports.after = {

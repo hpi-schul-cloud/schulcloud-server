@@ -31,12 +31,12 @@ exports.before = {
 
 		return hook;
 	}],
-	find: [globalHooks.mapPaginationQuery.bind(this)],
-	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: []
+	find: [globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.mapPaginationQuery.bind(this)],
+	get: [globalHooks.hasPermission('HOMEWORK_VIEW')],
+	create: [globalHooks.hasPermission('HOMEWORK_CREATE')],
+	update: [globalHooks.hasPermission('HOMEWORK_EDIT')],
+	patch: [globalHooks.hasPermission('HOMEWORK_EDIT')],
+	remove: [globalHooks.hasPermission('HOMEWORK_CREATE')]
 };
 
 exports.after = {
