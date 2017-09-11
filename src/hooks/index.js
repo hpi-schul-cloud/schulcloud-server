@@ -34,7 +34,7 @@ exports.hasPermission = function (permissionName) {
 					user.permissions = Array.from(user.permissions);
 
 					if(!(user.permissions || []).includes(permissionName)) {
-						throw new errors.Forbidden(`You don't have the permission ${permissionName}.`);
+						throw new errors.Forbidden("You don't have the permission ${permissionName}.";
 					}
 					return Promise.resolve(hook);
 				});
