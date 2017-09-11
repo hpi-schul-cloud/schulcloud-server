@@ -39,12 +39,12 @@ const addWholeClassToCourse = (hook) => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [restrictToCurrentSchool],
-	get: [],
-	create: [],
-	update: [restrictToCurrentSchool],
-	patch: [restrictToCurrentSchool],
-	remove: [restrictToCurrentSchool]
+	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool],
+	get: [globalHooks.hasPermission('USERGROUP_VIEW')],
+	create: [globalHooks.hasPermission('USERGROUP_CREATE')],
+	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
+	patch: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
+	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool]
 };
 
 exports.after = {
