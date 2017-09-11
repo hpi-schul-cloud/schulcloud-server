@@ -22,12 +22,12 @@ const filterApplicableSubmissions = hook => {
 
 exports.before = {
   all: [auth.hooks.authenticate('jwt')],
-  find: [globalHooks.hasPermission('SUBMISSIONS_VIEW'), globalHooks.mapPaginationQuery.bind(this)],
-  get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
-  create: [globalHooks.hasPermission('SUBMISSIONS_CREATE')],
-  update: [globalHooks.hasPermission('SUBMISSIONS_EDIT')],
-  patch: [globalHooks.hasPermission('SUBMISSIONS_EDIT')],
-  remove: [globalHooks.hasPermission('SUBMISSIONS_CREATE')]
+  find: [globalHooks.mapPaginationQuery.bind(this)],
+  get: [],
+  create: [],
+  update: [],
+  patch: [],
+  remove: []
 };
 
 exports.after = {

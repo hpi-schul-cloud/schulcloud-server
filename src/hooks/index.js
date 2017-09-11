@@ -26,18 +26,10 @@ exports.isAdmin = function (options) {
 
 exports.hasPermission = function (permissionName) {
 	return hook => {
-		if (process.env.NODE_ENV === 'test')
-			return Promise.resolve(hook);
-		const service = hook.app.service('/users/');
-			return service.get({_id: (hook.params.account.userId || "")})
-				.then(user => {
-					user.permissions = Array.from(user.permissions);
-
-					if(!(user.permissions || []).includes(permissionName)) {
-						throw new errors.Forbidden(`You don't have the permission ${permissionName}.`);
-					}
-					return Promise.resolve(hook);
-				});
+		if(!(hook.params.user.permissions || []).includes(permissionName)) {
+			throw new errors.Forbidden(`You don't have the permission ${permissionName}. Your permissions are ${hook.params.user.permissions}`);
+		}
+		return Promise.resolve(hook);
 	};
 };
 
