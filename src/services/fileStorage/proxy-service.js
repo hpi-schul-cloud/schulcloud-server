@@ -236,26 +236,45 @@ class DirectoryService {
 	}
 }
 
+class FileTotalSizeService {
+
+	find({query, payload}) {
+		let sum = 0;
+		return FileModel.find({schoolId: payload.schoolId}).exec()
+			.then(files => {
+				files.map(file => {
+					sum += file.size;
+				});
+
+				return {total: files.length, totalSize: sum};
+		});
+	}
+}
+
 module.exports = function () {
 	const app = this;
 
 	// Initialize our service with any options it requires
 	app.use('/fileStorage/directories', new DirectoryService());
 	app.use('/fileStorage/signedUrl', new SignedUrlService());
+	app.use('/fileStorage/total', new FileTotalSizeService());
 	app.use('/fileStorage', new FileStorageService());
 
 	// Get our initialize service to that we can bind hooks
 	const fileStorageService = app.service('/fileStorage');
 	const signedUrlService = app.service('/fileStorage/signedUrl');
 	const directoryService = app.service('/fileStorage/directories');
+	const fileTotalSizeService = app.service('/fileStorage/total');
 
 	// Set up our before hooks
 	fileStorageService.before(hooks.before);
 	signedUrlService.before(hooks.before);
 	directoryService.before(hooks.before);
+	fileTotalSizeService.before(hooks.before);
 
 	// Set up our after hooks
 	fileStorageService.after(hooks.after);
 	signedUrlService.after(hooks.after);
 	directoryService.after(hooks.after);
+	fileTotalSizeService.after(hooks.after);
 };
