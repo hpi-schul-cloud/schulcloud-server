@@ -43,12 +43,12 @@ const restrictToCurrentUser = hook => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
-	get: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
-	create: [globalHooks.hasPermission('FILESTORAGE_CREATE')],
-	update: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
-	patch: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
-	remove: [globalHooks.hasPermission('FILESTORAGE_CREATE')]
+	find: [],
+	get: [],
+	create: [],
+	update: [],
+	patch: [],
+	remove: []
 };
 
 exports.after = {

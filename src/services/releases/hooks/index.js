@@ -9,9 +9,9 @@ const service = require('../index');
 exports.before = service => {
 	return {
 		all: [auth.authenticate('jwt')],
-		find: [globalHooks.hasPermission('RELEASES_VIEW')],
-		get: [globalHooks.hasPermission('RELEASES_VIEW')],
-		create: [globalHooks.hasPermission('RELEASES_CREATE')],
+		find: [],
+		get: [],
+		create: [],
 		update: [hooks.disable()],
 		patch: [hooks.disable()],
 		remove: [hooks.disable()]
