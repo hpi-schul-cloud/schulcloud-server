@@ -63,7 +63,7 @@ class FileStorageService {
 	/**
 	 * @returns {Promise}
 	 * @param query contains the file path
-	 * @param payload contains fileStorageType and userId, set by middleware
+	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
 	 */
 	find({query, payload}) {
 		let path = query.path;
@@ -238,6 +238,11 @@ class DirectoryService {
 
 class FileTotalSizeService {
 
+	/**
+	 * @returns total file size and amount of files
+	 * @param query currently not needed
+	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
+	 */
 	find({query, payload}) {
 		let sum = 0;
 		return FileModel.find({schoolId: payload.schoolId}).exec()
