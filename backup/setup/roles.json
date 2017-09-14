@@ -15,7 +15,9 @@
 		"FILE_DELETE",
 		"FILE_CREATE",
 		"FILE_MOVE",
-		"CALENDAR_EVENT_CREATE"
+		"CALENDAR_EVENT_CREATE",
+		"CONTENT_VIEW",
+		"CONTENT_NON_OER_VIEW"
 	],
 	"__v": 0
 },
@@ -88,7 +90,8 @@
 	"permissions": [
 		"BASE_VIEW",
 		"DASHBOARD_VIEW",
-		"TOOL_VIEW"
+		"TOOL_VIEW",
+		"CONTENT_VIEW"
 	],
 	"__v": 0
 },
