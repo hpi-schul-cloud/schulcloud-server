@@ -88,7 +88,7 @@ exports.computeProperty = function (Model, functionName, variableName) {
 		return Model.findById(hook.result._id)	// get the model instance to call functions etc  TODO make query results not lean
 			.then(modelInstance => modelInstance[functionName]())	// compute that property
 			.then(result => {
-				hook.result[variableName] = result;		// save it in the resulting object
+				hook.result[variableName] = Array.from(result);		// save it in the resulting object
 			})
 			.catch(e => logger.error(e))
 			.then(_ => Promise.resolve(hook));

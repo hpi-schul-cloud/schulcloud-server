@@ -17,6 +17,7 @@ const permissionTypes = ['can-read', 'can-write'];
  * @param thumbnail {String} - the url of the file's thumbnail image
  * @param permissions [Permission] - given extra permission for this file (except the normal permissions)
  * @param shareToken {String} - hash for enabling sharing. if undefined than sharing is disabled
+ * @param schoolId {ObjectId} - id of the school for file referencing
  */
 const fileSchema = new Schema({
 	key: {type: String, required: true, unique: true},
@@ -31,6 +32,7 @@ const fileSchema = new Schema({
 		permissions: [{type: String, enum: permissionTypes}]
 	}],
 	shareToken: {type: String},
+	schoolId: {type: Schema.Types.ObjectId, ref: 'school'},
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now}
 });

@@ -8,12 +8,14 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const types = ['moodle', 'itslearning', 'lernsax', 'local'];
+const types = ['moodle', 'itslearning', 'lernsax', 'iserv', 'local'];
 
 const systemSchema = new Schema({
 	type: { type: String, required: true, enum: types },
 	url: {type: String, required: false},
-	alias: {type: String}
+	alias: {type: String},
+	oaClientId: {type: String}, // just for oauth2-systems
+	oaClientSecret: {type: String}, // just for oauth2-systems
 },{
 	timestamps: true
 });
