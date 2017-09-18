@@ -2,6 +2,7 @@
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
+const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.
 
 // don't require authentication for internal requests
@@ -26,6 +27,17 @@ exports.isAdmin = function (options) {
 
 exports.hasPermission = function (permissionName) {
 	return hook => {
+		if ((hook.params.headers|| {})["x-api-key"]) {
+			return KeysModel.findOne({ key: hook.params.headers["x-api-key"]})
+				.then(res => {
+					if (!res)
+						throw new errors.NotAuthenticated('API Key is invalid');
+					return Promise.resolve(hook);
+				})
+				.catch(err => {
+					throw new errors.NotAuthenticated('API Key is invalid.');
+				});
+		}
 		if (process.env.NODE_ENV === 'test')
 			return Promise.resolve(hook);
 		const service = hook.app.service('/users/');

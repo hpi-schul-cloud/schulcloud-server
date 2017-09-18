@@ -11,7 +11,7 @@ exports.before = {
 	find: [globalHooks.hasPermission('NOTIFICATION_VIEW')],
 	get: [globalHooks.hasPermission('NOTIFICATION_VIEW')],
 	create: [globalHooks.hasPermission('NOTIFICATION_CREATE')],
-	update: [globalHooks.hasPermission('NOTIFICAITON_EDIT')],
+	update: [globalHooks.hasPermission('NOTIFICATION_EDIT')],
 	patch: [globalHooks.hasPermission('NOTIFICATION_EDIT')],
 	remove: [globalHooks.hasPermission('NOTIFICATION_CREATE')]
 };

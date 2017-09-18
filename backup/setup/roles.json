@@ -1,10 +1,10 @@
 [{
-	"_id": {
-		"$oid": "0000d186816abba584714c95"
-	},
-	"name": "user",
-	"roles": [],
-	"permissions": [
+		"_id": {
+			"$oid": "0000d186816abba584714c95"
+		},
+		"name": "user",
+		"roles": [],
+		"permissions": [
 		"BASE_VIEW",
 		"DASHBOARD_VIEW",
 		"TOOL_VIEW",
@@ -14,7 +14,7 @@
 		"FOLDER_CREATE",
 		"FILE_DELETE",
 		"FILE_CREATE",
-    "FILE_MOVE",
+		"FILE_MOVE",
 		"CALENDAR_EVENT_CREATE",
 		"ACCOUNT_EDIT",
 		"CALENDAR_VIEW",
@@ -28,7 +28,7 @@
 		"NEWS_VIEW",
 		"NOTIFICATION_VIEW",
 		"NOTIFICATION_EDIT",
-		"NOTIFICAITON_CREATE",
+		"NOTIFICATION_CREATE",
 		"PWRECOVERY_VIEW",
 		"PWRECOVERY_EDIT",
 		"PWRECOVERY_CREATE",

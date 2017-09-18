@@ -47,8 +47,8 @@ class ScopeResolver {
 
 				// find courses and classes where user is student or teacher
 				return Promise.all([
-					courseService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}}),
-					classService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}})
+					courseService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}, headers: {"x-api-key": (params.headers || {})["x-api-key"]}}),
+					classService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}, headers: {"x-api-key": (params.headers || {})["x-api-key"]}})
 				]).then(([courses, classes]) => {
 					courses.data = courses.data.map(c => {
 						c.attributes = {
