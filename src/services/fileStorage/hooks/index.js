@@ -15,6 +15,7 @@ const resolveStorageType = (hook) => {
 		_id: hook.params.payload.userId,
 		$populate: ['schoolId']
 	}}).then(res => {
+		hook.params.payload.schoolId = res.data[0].schoolId._id;
 		hook.params.payload.fileStorageType = res.data[0].schoolId.fileStorageType;
 		return hook;
 	});
