@@ -102,7 +102,6 @@ exports.before = {
 	],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('ACCOUNT_EDIT'),
 			validatePassword,
 			local.hooks.hashPassword({ passwordField: 'password' })],
 	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_CREATE')]
