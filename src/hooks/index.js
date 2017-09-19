@@ -27,7 +27,7 @@ exports.isAdmin = function (options) {
 
 exports.hasPermission = function (permissionName) {
 	return hook => {
-		if ((hook.params.headers|| {})["x-api-key"]) {
+		if ((hook.params.headers || {})["x-api-key"]) {
 			return KeysModel.findOne({ key: hook.params.headers["x-api-key"]})
 				.then(res => {
 					if (!res)
