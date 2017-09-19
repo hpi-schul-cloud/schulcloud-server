@@ -49,7 +49,9 @@
 		"SUBMISSIONS_EDIT",
 		"FILESTORAGE_VIEW",
 		"FILESTORAGE_EDIT",
-		"FILESTORAGE_CREATE"
+		"FILESTORAGE_CREATE",
+		"CONTENT_VIEW",
+		"CONTENT_NON_OER_VIEW"
 	],
 	"__v": 0
 },
@@ -149,7 +151,8 @@
 	"permissions": [
 		"BASE_VIEW",
 		"DASHBOARD_VIEW",
-		"TOOL_VIEW"
+		"TOOL_VIEW",
+		"CONTENT_VIEW"
 	],
 	"__v": 0
 },
