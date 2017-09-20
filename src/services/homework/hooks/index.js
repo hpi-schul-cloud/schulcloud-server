@@ -61,8 +61,6 @@ const addStats = hook => {
             });
             (hook.result.data)?(hook.result.data = data):(hook.result = data);
     });
-    
-    return Promise.resolve(hook);
 }
 
 exports.before = {
