@@ -5,17 +5,15 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
-const getAverageRating = function(submissions,gradeSystem){
+const getAverageRating = function(submissions){
     // Durchschnittsnote berechnen
     if (submissions.length > 0) {
         // Nur bewertete Abgaben einbeziehen
-        let submissiongrades = submissions.filter(function(sub){return Number.isInteger(sub.grade);});
+        let submissiongrades = submissions.filter(s => Number.isInteger(s.grade));
         // Abgaben vorhanden?
         if(submissiongrades.length > 0){
             // Noten aus Abgabe auslesen
-            submissiongrades = submissiongrades.map(function (sub) {
-                return sub.grade;
-            });
+            submissiongrades = submissiongrades.map(s => s.grade);
             // Durchschnittsnote berechnen
             const ratingsum = submissiongrades.reduce(function(a, b) { return a + b; }, 0);
             return (ratingsum / submissiongrades.length).toFixed(2);
@@ -38,10 +36,10 @@ const filterApplicableHomework = hook => {
 const addStats = hook => {
     let data = hook.result.data || hook.result;
     const submissionService = hook.app.service('/submissions');
+    const arrayed = !(Array.isArray(data));
+    data = (Array.isArray(data))?(data):([data]);
     return submissionService.find({query: {
-            homeworkId: {$in: data.map(function(n){
-                return n._id;
-            })}
+            homeworkId: {$in: (data.map(n => n._id))}
         }}).then((submissions) => {
             data = data.map(function(e){
                 var c = JSON.parse(JSON.stringify(e)) // don't know why, but without this line it's not working :/
@@ -55,10 +53,11 @@ const addStats = hook => {
                         && n.gradeComment != '' && Number.isInteger(n.grade)}).length,
                     gradePercentage: (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                         && n.gradeComment != '' && Number.isInteger(n.grade)}).length/c.courseId.userIds.length)*100,
-                    averageGrade: getAverageRating(submissions.data, c.courseId.gradeSystem)
+                    averageGrade: getAverageRating(submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId);}))
                 };
                 return c;
             });
+            if(arrayed){data = data[0];}
             (hook.result.data)?(hook.result.data = data):(hook.result = data);
     });
 }
@@ -82,7 +81,7 @@ exports.before = {
 exports.after = {
   all: [],
   find: [filterApplicableHomework, addStats],
-  get: [],
+  get: [addStats],
   create: [],
   update: [],
   patch: [],
