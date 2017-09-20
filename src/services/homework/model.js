@@ -13,11 +13,12 @@ const homeworkModel = mongoose.model('homework', new Schema({
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now},
 	name: {type: String, required: true},
-	description: {type: String, required: true},
+	description: {type: String},
 	dueDate: {type: Date, required: true},
 	availableDate: {type: Date, required: true},
 	teacherId: {type: Schema.Types.ObjectId, required: true, ref: 'user'},
 	courseId: {type: Schema.Types.ObjectId, 'default': null, ref: 'course'},
+    lessonId: {type: Schema.Types.ObjectId, 'default': null, ref: 'lesson'},
 	private: {type: Boolean},
 	publicSubmissions: {type: Boolean}
 }));
@@ -28,10 +29,11 @@ const submissionModel = mongoose.model('submission', new Schema({
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now},
 	comment: {type: String},
-	grade: {type: Number},
+	grade: {type: Number, min: 0, max: 100},
 	gradeComment: {type: String},
 	homeworkId: {type: Schema.Types.ObjectId, required: true, ref: 'homework'},
 	studentId: {type: Schema.Types.ObjectId, required: true, ref: 'user'},
+	fileIds: [{type: Schema.Types.ObjectId, ref: 'file'}],
 	comments: [{type: Schema.Types.ObjectId, ref: 'comment'}]
 }));
 

@@ -23,7 +23,8 @@
     "start": "node src/",
     "startd": "nodemon src/",
     "coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- -- test/**/*.test.js",
-    "mocha": "NODE_ENV=test mocha test/ --recursive"
+    "mocha": "NODE_ENV=test mocha test/ --recursive",
+    "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive"
   },
   "dependencies": {
     "aws-sdk": "^2.7.24",
@@ -31,6 +32,7 @@
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
+    "client-oauth2": "^4.1.0",
     "compression": "^1.6.2",
     "console-stamp": "^0.2.5",
     "cors": "^2.8.1",
@@ -65,6 +67,7 @@
     "randexp": "^0.4.4",
     "request-promise-native": "^1.0.3",
     "serve-favicon": "^2.3.2",
+    "strip-js": "^1.0.6",
     "winston": "^2.3.0"
   },
   "devDependencies": {

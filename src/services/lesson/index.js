@@ -10,8 +10,8 @@ module.exports = function () {
 	const options = {
 		Model: lesson,
 		paginate: {
-			default: 10,
-			max: 50
+			default: 500,
+			max: 500
 		},
 		lean: true
 	};

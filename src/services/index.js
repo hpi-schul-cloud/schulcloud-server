@@ -1,6 +1,5 @@
 'use strict';
 const fileStorage = require('./fileStorage');
-const filePermission = require('./filePermission');
 const link = require('./link');
 const news = require('./news');
 const content = require('./content');
@@ -21,6 +20,8 @@ const userGroup = require('./user-group');
 const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
 const notification = require('./notification');
+const releases = require('./releases');
+const helpdesk = require('./helpdesk');
 
 const mongoose = require('mongoose');
 
@@ -43,7 +44,6 @@ module.exports = function () {
     app.configure(calendar);
     app.configure(lesson);
     app.configure(fileStorage);
-    app.configure(filePermission);
     app.configure(link);
     app.configure(news);
 	app.configure(helpers);
@@ -51,4 +51,6 @@ module.exports = function () {
 	app.configure(federalState);
 	app.configure(passwordRecovery);
 	app.configure(notification);
+	app.configure(releases);
+	app.configure(helpdesk);
 };

@@ -16,6 +16,12 @@ module.exports = function () {
 	// Initialize our service with any options it requires
 	app.use('/accounts', service(options));
 
+	app.use('/accounts/confirm', {
+		create(data, params) {
+			return account.update({_id: data.accountId}, {$set: {activated: true}});
+		}
+	});
+
 	// Get our initialize service to that we can bind hooks
 	const accountService = app.service('/accounts');
 
