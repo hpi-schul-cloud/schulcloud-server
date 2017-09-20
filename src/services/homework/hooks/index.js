@@ -88,7 +88,6 @@ exports.before = {
 };
 
 exports.after = {
-<<<<<<< HEAD
   all: [],
   find: [filterApplicableHomework],
   get: [filterApplicableHomework],
@@ -96,13 +95,4 @@ exports.after = {
   update: [],
   patch: [],
   remove: []
-=======
-    all: [],
-    find: [filterApplicableHomework],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
->>>>>>> refs/remotes/origin/master
 };
