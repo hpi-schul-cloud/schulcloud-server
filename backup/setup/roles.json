@@ -65,7 +65,7 @@
 		"COURSE_EDIT",
 		"STUDENT_CREATE",
 		"TEACHER_CREATE",
-		"NEWS_EDIT"
+		"SCHOOL_NEWS_EDIT"
 	],
 	"__v": 0
 },
