@@ -4,6 +4,19 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
+const newsModel = require('../model').newsModel;
+const newsHistoryModel = require('../model').newsHistoryModel;
+const logger = require('winston');
+
+const deleteNewsHistory = hook => {
+	newsModel.findOne({ _id: hook.id })
+		.then(news => {
+			for(let i = 0; i < news.history.length; i++) {
+				newsHistoryModel.findOneAndRemove({ _id: news.history[i] })
+					.catch(err => logger.log('error', err));
+			}
+		});
+};
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
@@ -12,7 +25,7 @@ exports.before = {
 	create: [],
 	update: [restrictToCurrentSchool],
 	patch: [restrictToCurrentSchool],
-	remove: [restrictToCurrentSchool]
+	remove: [restrictToCurrentSchool, deleteNewsHistory]
 };
 
 exports.after = {
