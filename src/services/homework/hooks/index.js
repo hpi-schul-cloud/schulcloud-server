@@ -34,15 +34,14 @@ const getAverageRating = function(submissions,gradeSystem){
 };
 
 const filterApplicableHomework = hook => {
-    let uId = hook.params.account.userId;
+
     let data = hook.result.data || hook.result;
     data = data.filter(function (c) {
         return (new Date(c.availableDate).getTime() < Date.now()
             && c.courseId != null
-            && ((c.courseId.userIds || []).indexOf(uId) != -1) && !c.private)
-            || JSON.stringify(c.teacherId) == JSON.stringify(uId);
+            && ((c.courseId.userIds || []).indexOf(hook.params.account.userId) != -1) && !c.private)
+            || JSON.stringify(c.teacherId) == JSON.stringify(hook.params.account.userId);
     });
-
     const submissionService = hook.app.service('/submissions');
     return submissionService.find({query: {
             homeworkId: {$in: data.map(function(n){
@@ -50,7 +49,8 @@ const filterApplicableHomework = hook => {
             })}
         }}).then((submissions) => {
             data = data.map(function(c){
-                c.stats = {
+                c.stats = "undefined long string ####################"
+                /*c["stats"] = {
                     userCount: c.courseId.userIds.length,
                     submissionCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                         && n.comment != undefined && n.comment != ""}).length,
@@ -62,9 +62,18 @@ const filterApplicableHomework = hook => {
                         && n.gradeComment != '' && n.grade != null}).length/c.courseId.userIds.length,
                     averageGrade: getAverageRating(submissions.data, c.courseId.gradeSystem)
                 };
-                console.log(c);
+                console.log("-------------------");
+                console.log("C:",c);
+                console.log("Stats:",c.stats);
+                */
                 return c;
             });
+            data = data.map(function(c){
+                c["abc"] = "cde";
+                return c;
+            });
+            console.log("OUTPUT:",data);
+            console.log("-------------------");
             (hook.result.data)?(hook.result.data = data):(hook.result = data);
     });
     
