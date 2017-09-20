@@ -49,12 +49,12 @@ const addStats = hook => {
                     userCount: c.courseId.userIds.length,
                     submissionCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                         && n.comment != undefined && n.comment != ""}).length,
-                    submissionPercentage: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                        && n.comment != undefined && n.comment != ""}).length/c.courseId.userIds.length,
+                    submissionPercentage: (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
+                        && n.comment != undefined && n.comment != ""}).length/c.courseId.userIds.length)*100,
                     gradeCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                         && n.gradeComment != '' && Number.isInteger(n.grade)}).length,
-                    gradePercentage: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                        && n.gradeComment != '' && Number.isInteger(n.grade)}).length/c.courseId.userIds.length,
+                    gradePercentage: (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
+                        && n.gradeComment != '' && Number.isInteger(n.grade)}).length/c.courseId.userIds.length)*100,
                     averageGrade: getAverageRating(submissions.data, c.courseId.gradeSystem)
                 };
                 return c;
