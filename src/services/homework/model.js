@@ -20,7 +20,8 @@ const homeworkModel = mongoose.model('homework', new Schema({
 	courseId: {type: Schema.Types.ObjectId, 'default': null, ref: 'course'},
     lessonId: {type: Schema.Types.ObjectId, 'default': null, ref: 'lesson'},
 	private: {type: Boolean},
-	publicSubmissions: {type: Boolean}
+	publicSubmissions: {type: Boolean},
+    archived: [{type: Schema.Types.ObjectId, ref: 'user'}]
 }));
 
 
