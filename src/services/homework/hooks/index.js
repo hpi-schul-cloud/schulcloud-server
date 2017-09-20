@@ -9,24 +9,15 @@ const getAverageRating = function(submissions,gradeSystem){
     // Durchschnittsnote berechnen
     if (submissions.length > 0) {
         // Nur bewertete Abgaben einbeziehen
-        let submissiongrades = submissions.filter(function(sub){return (sub.grade!=null);});
+        let submissiongrades = submissions.filter(function(sub){return Number.isInteger(sub.grade);});
         // Abgaben vorhanden?
         if(submissiongrades.length > 0){
-            // Noten aus Abgabe auslesen (& in Notensystem umwandeln)
-            if (gradeSystem) {
-                submissiongrades = submissiongrades.map(function (sub) {
-                    return 6 - Math.ceil(sub.grade / 3);
-                });
-            } else {
-                submissiongrades = submissiongrades.map(function (sub) {
-                    return sub.grade;
-                });
-            }
-            // Durchschnittsnote berechnen
-            let ratingsum = 0;
-            submissiongrades.forEach(function (e) {
-                ratingsum += e;
+            // Noten aus Abgabe auslesen
+            submissiongrades = submissiongrades.map(function (sub) {
+                return sub.grade;
             });
+            // Durchschnittsnote berechnen
+            const ratingsum = submissiongrades.reduce(function(a, b) { return a + b; }, 0);
             return (ratingsum / submissiongrades.length).toFixed(2);
         }
     }
@@ -34,51 +25,45 @@ const getAverageRating = function(submissions,gradeSystem){
 };
 
 const filterApplicableHomework = hook => {
-
     let data = hook.result.data || hook.result;
     data = data.filter(function (c) {
         return (new Date(c.availableDate).getTime() < Date.now()
             && c.courseId != null
             && ((c.courseId.userIds || []).indexOf(hook.params.account.userId) != -1) && !c.private)
-            || JSON.stringify(c.teacherId) == JSON.stringify(hook.params.account.userId);
-    });
+          || JSON.stringify(c.teacherId) == JSON.stringify(hook.params.account.userId);
+    });    
+    return Promise.resolve(hook);
+};
+
+const addStats = hook => {
+    let data = hook.result.data || hook.result;
     const submissionService = hook.app.service('/submissions');
     return submissionService.find({query: {
             homeworkId: {$in: data.map(function(n){
                 return n._id;
             })}
         }}).then((submissions) => {
-            data = data.map(function(c){
-                c.stats = "undefined long string ####################"
-                /*c["stats"] = {
+            data = data.map(function(e){
+                var c = JSON.parse(JSON.stringify(e)) // don't know why, but without this line it's not working :/
+                c.stats = {
                     userCount: c.courseId.userIds.length,
                     submissionCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                         && n.comment != undefined && n.comment != ""}).length,
                     submissionPercentage: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                         && n.comment != undefined && n.comment != ""}).length/c.courseId.userIds.length,
                     gradeCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                        && n.gradeComment != '' && n.grade != null}).length,
+                        && n.gradeComment != '' && Number.isInteger(n.grade)}).length,
                     gradePercentage: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                        && n.gradeComment != '' && n.grade != null}).length/c.courseId.userIds.length,
+                        && n.gradeComment != '' && Number.isInteger(n.grade)}).length/c.courseId.userIds.length,
                     averageGrade: getAverageRating(submissions.data, c.courseId.gradeSystem)
                 };
-                console.log("-------------------");
-                console.log("C:",c);
-                console.log("Stats:",c.stats);
-                */
                 return c;
             });
-            data = data.map(function(c){
-                c["abc"] = "cde";
-                return c;
-            });
-            console.log("OUTPUT:",data);
-            console.log("-------------------");
             (hook.result.data)?(hook.result.data = data):(hook.result = data);
     });
     
     return Promise.resolve(hook);
-};
+}
 
 exports.before = {
     all: [auth.hooks.authenticate('jwt'), (hook) => {
@@ -98,8 +83,8 @@ exports.before = {
 
 exports.after = {
   all: [],
-  find: [filterApplicableHomework],
-  get: [filterApplicableHomework],
+  find: [filterApplicableHomework, addStats],
+  get: [],
   create: [],
   update: [],
   patch: [],
