@@ -34,7 +34,6 @@ const filterApplicableHomework = hook => {
 };
 
 const hasViewPermission = hook => {
-    console.log(hook.params.query);
     if(!hook.params.query['$populate'].includes('courseId')){
         hook.params.query['$populate'].push('courseId');
     }
