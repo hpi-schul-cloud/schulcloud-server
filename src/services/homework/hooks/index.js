@@ -22,7 +22,8 @@ const getAverageRating = function(submissions){
     return undefined;
 };
 
-const hasViewPermission = hook => {
+const hasViewPermissionBefore = hook => {
+    // Add populate to query to be able to filter permissions
     if(hook.params.query['$populate']){
         if(!hook.params.query['$populate'].includes('courseId')){
             hook.params.query['$populate'].push('courseId');
@@ -31,23 +32,30 @@ const hasViewPermission = hook => {
         hook.params.query['$populate'] = ['courseId'];
     }
 
+    // filter most homeworks where the user has no view permission
     if(!hook.params.query['$or']){
-        hook.params.query['$or'] = [
-            {teacherId: hook.params.account.userId},
-            {
-                'courseId.userIds': hook.params.account.userId,
-                'private': false,
-                'availableDate': { $lte: Date.now() }
-            }
-        ];
+        console.log("$OR");
+        hook.params.query['$or'] = [{teacherId: hook.params.account.userId},
+                                    {   'private': false,
+                                        'availableDate': { $lte: Date.now() } }];
     }else{
         hook.params.query['$or'].push({teacherId: hook.params.account.userId});
-        hook.params.query['$or'].push({ 'courseId.userIds': hook.params.account.userId,
-                                        'private': false,
+        hook.params.query['$or'].push({ 'private': false,
                                         'availableDate': { $lte: Date.now() } });
     }
     return Promise.resolve(hook);
 }
+
+const hasViewPermissionAfter = hook => {
+    // filter any other homeworks where the user has no view permission
+    let data = hook.result.data || hook.result;
+    data = data.filter(function (c) {
+        return (c.courseId != null
+                && ((c.courseId.userIds || []).indexOf(hook.params.account.userId) != -1))
+          || JSON.stringify(c.teacherId) == JSON.stringify(hook.params.account.userId);
+    });
+    return Promise.resolve(hook);
+};
 
 const addStats = hook => {
     let data = hook.result.data || hook.result;
@@ -90,8 +98,8 @@ exports.before = {
 
         return hook;
     }],
-    find: [globalHooks.mapPaginationQuery.bind(this), hasViewPermission],
-    get: [hasViewPermission],
+    find: [globalHooks.mapPaginationQuery.bind(this), hasViewPermissionBefore],
+    get: [hasViewPermissionBefore],
     create: [],
     update: [],
     patch: [],
@@ -100,8 +108,8 @@ exports.before = {
 
 exports.after = {
   all: [],
-  find: [addStats],
-  get: [addStats],
+  find: [hasViewPermissionAfter,addStats],
+  get: [hasViewPermissionAfter,addStats],
   create: [],
   update: [],
   patch: [],
