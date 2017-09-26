@@ -33,6 +33,30 @@ const filterApplicableHomework = hook => {
     return Promise.resolve(hook);
 };
 
+const hasViewPermission = hook => {
+    console.log(hook.params.query);
+    if(!hook.params.query['$populate'].includes('courseId')){
+        hook.params.query['$populate'].push('courseId');
+    }
+
+    if(!hook.params.query['$or']){
+        hook.params.query['$or'] = [
+            {teacherId: hook.params.account.userId},
+            {
+                'courseId.userIds': hook.params.account.userId,
+                'private': false,
+                'availableDate': { $lte: Date.now() }
+            }
+        ];
+    }else{
+        hook.params.query['$or'].push({teacherId: hook.params.account.userId});
+        hook.params.query['$or'].push({ 'courseId.userIds': hook.params.account.userId,
+                                        'private': false,
+                                        'availableDate': { $lte: Date.now() } });
+    }
+    return Promise.resolve(hook);
+}
+
 const addStats = hook => {
     let data = hook.result.data || hook.result;
     const submissionService = hook.app.service('/submissions');
@@ -74,8 +98,8 @@ exports.before = {
 
         return hook;
     }],
-    find: [globalHooks.mapPaginationQuery.bind(this)],
-    get: [],
+    find: [globalHooks.mapPaginationQuery.bind(this), hasViewPermission],
+    get: [hasViewPermission],
     create: [],
     update: [],
     patch: [],
@@ -84,7 +108,7 @@ exports.before = {
 
 exports.after = {
   all: [],
-  find: [filterApplicableHomework, addStats],
+  find: [addStats],
   get: [addStats],
   create: [],
   update: [],
