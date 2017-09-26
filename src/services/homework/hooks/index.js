@@ -34,14 +34,11 @@ const hasViewPermissionBefore = hook => {
 
     // filter most homeworks where the user has no view permission
     if(!hook.params.query['$or']){
-        console.log("$OR");
         hook.params.query['$or'] = [{teacherId: hook.params.account.userId},
-                                    {   'private': false,
-                                        'availableDate': { $lte: Date.now() } }];
+                                    {'private': false, 'availableDate': { $lte: Date.now() } }];
     }else{
         hook.params.query['$or'].push({teacherId: hook.params.account.userId});
-        hook.params.query['$or'].push({ 'private': false,
-                                        'availableDate': { $lte: Date.now() } });
+        hook.params.query['$or'].push({'private': false, 'availableDate': { $lte: Date.now() } });
     }
     return Promise.resolve(hook);
 }
