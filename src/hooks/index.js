@@ -27,6 +27,12 @@ exports.isAdmin = function (options) {
 
 exports.hasPermission = function (permissionName) {
 	return hook => {
+		// If it was an internal call then skip this hook
+		if (!hook.params.provider) {
+			return hook;
+		}
+
+		// If an api key was provided, skip
 		if ((hook.params.headers || {})["x-api-key"]) {
 			return KeysModel.findOne({ key: hook.params.headers["x-api-key"]})
 				.then(res => {
@@ -38,8 +44,11 @@ exports.hasPermission = function (permissionName) {
 					throw new errors.NotAuthenticated('API Key is invalid.');
 				});
 		}
+		// If test then skip too
 		if (process.env.NODE_ENV === 'test')
 			return Promise.resolve(hook);
+
+		// Otherwise check for user permissions
 		const service = hook.app.service('/users/');
 			return service.get({_id: (hook.params.account.userId || "")})
 				.then(user => {
