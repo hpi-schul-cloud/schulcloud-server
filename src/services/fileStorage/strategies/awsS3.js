@@ -125,7 +125,9 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 							Bucket: awsObject.bucket,
 							CORSConfiguration: {
 							CORSRules: awsConfig.cors_rules
-						}});
+						}}, (err, data) => {
+							if (err) logger.log(err);
+						});
 						return Promise.resolve({message: "Successfully created s3-bucket!", data: res});
 					});
 			});
