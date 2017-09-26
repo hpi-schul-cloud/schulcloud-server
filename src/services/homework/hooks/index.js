@@ -22,20 +22,13 @@ const getAverageRating = function(submissions){
     return undefined;
 };
 
-const filterApplicableHomework = hook => {
-    let data = hook.result.data || hook.result;
-    data = data.filter(function (c) {
-        return (new Date(c.availableDate).getTime() < Date.now()
-            && c.courseId != null
-            && ((c.courseId.userIds || []).indexOf(hook.params.account.userId) != -1) && !c.private)
-          || JSON.stringify(c.teacherId) == JSON.stringify(hook.params.account.userId);
-    });
-    return Promise.resolve(hook);
-};
-
 const hasViewPermission = hook => {
-    if(!hook.params.query['$populate'].includes('courseId')){
-        hook.params.query['$populate'].push('courseId');
+    if(hook.params.query['$populate'])
+        if(!hook.params.query['$populate'].includes('courseId'))){
+            hook.params.query['$populate'].push('courseId');
+        }
+    }else{
+        hook.params.query['$populate'] = ['courseId'];
     }
 
     if(!hook.params.query['$or']){
