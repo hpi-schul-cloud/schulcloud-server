@@ -76,10 +76,10 @@ const addStats = hook => {
                         userCount: ((c.courseId || {}).userIds || []).length,
                         submissionCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                             && n.comment != undefined && n.comment != ""}).length,
-                        submissionPercentage: (submissionP)?submissionP.toFixed(2):undefined,
+                        submissionPercentage: (submissionP && submissionP != Infinity)?submissionP.toFixed(2):undefined,
                         gradeCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                             && ( n.gradeComment != '' || Number.isInteger(n.grade) )}).length,
-                        gradePercentage: (gradeP)?gradeP.toFixed(2):undefined,
+                        gradePercentage: (gradeP && gradeP != Infinity)?gradeP.toFixed(2):undefined,
                         averageGrade: getAverageRating(submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId);}))
                     };
                 }
