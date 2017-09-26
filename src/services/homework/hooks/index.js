@@ -24,7 +24,7 @@ const getAverageRating = function(submissions){
 
 const hasViewPermission = hook => {
     if(hook.params.query['$populate'])
-        if(!hook.params.query['$populate'].includes('courseId'))){
+        if(!hook.params.query['$populate'].includes('courseId')){
             hook.params.query['$populate'].push('courseId');
         }
     }else{
