@@ -3,15 +3,29 @@
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
+const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
+const newsModel = require('../model').newsModel;
+const newsHistoryModel = require('../model').newsHistoryModel;
+const logger = require('winston');
+
+const deleteNewsHistory = hook => {
+	newsModel.findOne({ _id: hook.id })
+		.then(news => {
+			for(let i = 0; i < news.history.length; i++) {
+				newsHistoryModel.findOneAndRemove({ _id: news.history[i] })
+					.catch(err => logger.log('error', err));
+			}
+		});
+};
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [globalHooks.hasPermission('NEWS_VIEW')],
+	find: [globalHooks.hasPermission('NEWS_VIEW'), restrictToCurrentSchool],
 	get: [globalHooks.hasPermission('NEWS_VIEW')],
 	create: [globalHooks.hasPermission('NEWS_CREATE')],
-	update: [globalHooks.hasPermission('NEWS_EDIT')],
-	patch: [globalHooks.hasPermission('NEWS_EDIT')],
-	remove: [globalHooks.hasPermission('NEWS_CREATE')]
+	update: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool],
+	patch: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool],
+	remove: [globalHooks.hasPermission('NEWS_CREATE'), restrictToCurrentSchool]
 };
 
 exports.after = {

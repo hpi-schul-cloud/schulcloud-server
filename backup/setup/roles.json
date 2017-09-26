@@ -125,7 +125,8 @@
 		"NEWS_EDIT",
 		"NEWS_CREATE",
 		"ACCOUNT_CREATE",
-		"USER_CREATE"
+		"USER_CREATE",
+		"SCHOOL_NEWS_EDIT"
 	],
 	"__v": 0
 },
