@@ -52,7 +52,7 @@ const hasViewPermissionAfter = hook => {
         const isTeacher = (e.teacherId == hook.params.account.userId);
         const isStudent = ( (e.courseId != null)
                         && ((e.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) );
-        const published = ( new Date(e.availableDate) < new Date() );               
+        const published = (( new Date(e.availableDate) < new Date() )) && !e.private;   
         return isTeacher || (isStudent && published);
     }
 
@@ -60,7 +60,8 @@ const hasViewPermissionAfter = hook => {
     if(data[0] != undefined){
         data = data.filter(hasPermission);
     }else{
-        if(data[0] != undefined && !hasPermission(data)){
+        // check if it is a single homework AND user has view permission
+        if(data.schoolId != undefined && !hasPermission(data)){
             return Promise.reject(new errors.Forbidden("You don't have permissions!"));
         }
     }
