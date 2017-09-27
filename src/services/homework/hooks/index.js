@@ -42,19 +42,19 @@ const addStats = hook => {
             homeworkId: {$in: (data.map(n => n._id))}
         }}).then((submissions) => {
             data = data.map(function(e){
-                var c = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
+                var c = JSON.parse(JSON.stringify(e)) // don't know why, but without this line it's not working :/
                 if(!c.private){
                     let submissionP = (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                        && n.comment != undefined && n.comment != "";}).length/((c.courseId || {}).userIds || []).length)*100;
+                        && n.comment != undefined && n.comment != ""}).length/((c.courseId || {}).userIds || []).length)*100;
                     let gradeP = (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                            && ( n.gradeComment != '' || Number.isInteger(n.grade) );}).length/((c.courseId || {}).userIds || []).length)*100;
+                            && ( n.gradeComment != '' || Number.isInteger(n.grade) )}).length/((c.courseId || {}).userIds || []).length)*100;
                     c.stats = {
                         userCount: ((c.courseId || {}).userIds || []).length,
                         submissionCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                            && n.comment != undefined && n.comment != "";}).length,
+                            && n.comment != undefined && n.comment != ""}).length,
                         submissionPercentage: (submissionP)?submissionP.toFixed(2):undefined,
                         gradeCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                            && ( n.gradeComment != '' || Number.isInteger(n.grade) );}).length,
+                            && ( n.gradeComment != '' || Number.isInteger(n.grade) )}).length,
                         gradePercentage: (gradeP)?gradeP.toFixed(2):undefined,
                         averageGrade: getAverageRating(submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId);}))
                     };
@@ -64,7 +64,7 @@ const addStats = hook => {
             if(arrayed){data = data[0];}
             (hook.result.data)?(hook.result.data = data):(hook.result = data);
     });
-};
+}
 
 exports.before = {
     all: [auth.hooks.authenticate('jwt'), (hook) => {
