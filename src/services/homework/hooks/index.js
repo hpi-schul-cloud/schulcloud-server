@@ -60,7 +60,7 @@ const hasViewPermissionAfter = hook => {
     if(data[0] != undefined){
         data = data.filter(hasPermission);
     }else{
-        if(!hasPermission(data)){
+        if(data[0] != undefined && !hasPermission(data)){
             return Promise.reject(new errors.Forbidden("You don't have permissions!"));
         }
     }
