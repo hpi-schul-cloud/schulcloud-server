@@ -46,11 +46,19 @@ const hasViewPermissionBefore = hook => {
 const hasViewPermissionAfter = hook => {
     // filter any other homeworks where the user has no view permission
     let data = hook.result.data || hook.result;
-    data = data.filter(function (c) {
-        return (c.courseId != null
-                && ((c.courseId.userIds || []).indexOf(hook.params.account.userId) != -1))
-          || JSON.stringify(c.teacherId) == JSON.stringify(hook.params.account.userId);
-    });
+    if(data[0] != undefined){
+        data = data.filter(function (c) {
+            return (c.courseId != null
+                    && (((c.courseId || {}).userIds || []).indexOf(hook.params.account.userId) != -1))
+              || JSON.stringify(c.teacherId) == JSON.stringify(hook.params.account.userId);
+        });
+    }else{
+        if(!((data.courseId != null
+                && (((data.courseId || {}).userIds || []).indexOf(hook.params.account.userId) != -1))
+          || JSON.stringify(data.teacherId) == JSON.stringify(hook.params.account.userId))){
+            data = undefined;
+        }
+    }
     return Promise.resolve(hook);
 };
 
