@@ -41,7 +41,6 @@ const hasViewPermissionBefore = hook => {
         hook.params.query['$or'].push({teacherId: hook.params.account.userId});
         hook.params.query['$or'].push({'private': false });
     }
-    console.log()
     return Promise.resolve(hook);
 }
 
