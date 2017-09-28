@@ -68,11 +68,6 @@ module.exports = function() {
 	}));
 
 	app.configure(system({
-		name: 'lernsax',
-		loginStrategy: require('../account/strategies/lernsax')
-	}));
-
-	app.configure(system({
 		name: 'itslearning',
 		loginStrategy: require('../account/strategies/itslearning')
 	}));
