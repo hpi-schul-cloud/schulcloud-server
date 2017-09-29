@@ -64,8 +64,6 @@ describe('homework service', function() {
 			});
 	});
 
-/*
-    // NEEDS https://trello.com/c/wDnMRPE4/766-jeder-kann-die-hausaufgaben-von-jedem-sehen-%F0%9F%91%8D
     it('contains statistics as a teacher', () => {
 		return homeworkService.find({
 			query: {_id: "59cce3f6c6abf042248e888d"},
@@ -80,7 +78,8 @@ describe('homework service', function() {
                 expect(result.data[0].grade).to.equal(undefined);
 			});
 	});
-    // NEEDS https://trello.com/c/jdIvESVd/751-meinel-in-sch%C3%BCleransicht-wenn-feedback-gegeben-wurde
+/*
+    // NEEDS SUBMISSON DATA
     it('contains grade as a student', () => {
 		return homeworkService.find({
 			query: {_id: "59cce3f6c6abf042248e888d"},
