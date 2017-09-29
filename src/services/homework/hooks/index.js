@@ -43,6 +43,15 @@ const addStats = hook => {
         }}).then((submissions) => {
             data = data.map(function(e){
                 var c = JSON.parse(JSON.stringify(e)) // don't know why, but without this line it's not working :/
+
+                // save grade in assignment if user is student of this task
+                const submission = submissions.data.filter(s => {
+                    return ( (c._id.toString() == s.homeworkId.toString()) && (s.grade) );
+                });
+                if(submission.length == 1  && c.teacherId.toString() != hook.params.account.userId.toString()){
+                    c.grade = submission[0].grade;
+                }
+
                 if(!c.private){
                     let submissionP = (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                         && n.comment != undefined && n.comment != ""}).length/((c.courseId || {}).userIds || []).length)*100;
