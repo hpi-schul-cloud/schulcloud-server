@@ -4,6 +4,7 @@ const stripJs = require('strip-js');
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
+const errors = require('feathers-errors');
 
 const getAverageRating = function(submissions){
     // Durchschnittsnote berechnen
@@ -22,14 +23,49 @@ const getAverageRating = function(submissions){
     return undefined;
 };
 
-const filterApplicableHomework = hook => {
-    let data = hook.result.data || hook.result;
-    data = data.filter(function (c) {
-        return (new Date(c.availableDate).getTime() < Date.now()
-            && c.courseId != null
-            && ((c.courseId.userIds || []).indexOf(hook.params.account.userId) != -1) && !c.private)
-          || JSON.stringify(c.teacherId) == JSON.stringify(hook.params.account.userId);
-    });
+const hasViewPermissionBefore = hook => {
+    // Add populate to query to be able to filter permissions
+    if(hook.params.query['$populate']){
+        if(!hook.params.query['$populate'].includes('courseId')){
+            hook.params.query['$populate'].push('courseId');
+        }
+    }else{
+        hook.params.query['$populate'] = ['courseId'];
+    }
+
+    // filter most homeworks where the user has no view permission
+    if(!hook.params.query['$or']){
+        hook.params.query['$or'] = [{teacherId: hook.params.account.userId},
+                                    {'private': {$nin:[true]} }];
+    }else{
+        hook.params.query['$or'].push({teacherId: hook.params.account.userId});
+        hook.params.query['$or'].push({'private': {$nin:[true]} });
+    }
+    return Promise.resolve(hook);
+}
+
+const hasViewPermissionAfter = hook => {
+    // filter any other homeworks where the user has no view permission
+    // user is teacher OR ( user is in courseId of task AND availableDate < Date.now() )
+    // availableDate < Date.now()
+    function hasPermission(e){
+        const isTeacher = (e.teacherId == hook.params.account.userId);
+        const isStudent = ( (e.courseId != null)
+                        && ((e.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) );
+        const published = (( new Date(e.availableDate) < new Date() )) && !e.private;   
+        return isTeacher || (isStudent && published);
+    }
+
+    let data = JSON.parse(JSON.stringify(hook.result.data || hook.result));
+    if(data[0] != undefined){
+        data = data.filter(hasPermission);
+    }else{
+        // check if it is a single homework AND user has view permission
+        if(data.schoolId != undefined && !hasPermission(data)){
+            return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+        }
+    }
+    (hook.result.data)?(hook.result.data = data):(hook.result = data);
     return Promise.resolve(hook);
 };
 
@@ -61,10 +97,10 @@ const addStats = hook => {
                         userCount: ((c.courseId || {}).userIds || []).length,
                         submissionCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                             && n.comment != undefined && n.comment != ""}).length,
-                        submissionPercentage: (submissionP)?submissionP.toFixed(2):undefined,
+                        submissionPercentage: (submissionP && submissionP != Infinity)?submissionP.toFixed(2):undefined,
                         gradeCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                             && ( n.gradeComment != '' || Number.isInteger(n.grade) )}).length,
-                        gradePercentage: (gradeP)?gradeP.toFixed(2):undefined,
+                        gradePercentage: (gradeP && gradeP != Infinity)?gradeP.toFixed(2):undefined,
                         averageGrade: getAverageRating(submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId);}))
                     };
                 }
@@ -83,8 +119,8 @@ exports.before = {
 
         return hook;
     }],
-    find: [globalHooks.mapPaginationQuery.bind(this)],
-    get: [],
+    find: [globalHooks.mapPaginationQuery.bind(this), hasViewPermissionBefore],
+    get: [hasViewPermissionBefore],
     create: [],
     update: [],
     patch: [],
@@ -93,8 +129,8 @@ exports.before = {
 
 exports.after = {
   all: [],
-  find: [filterApplicableHomework, addStats],
-  get: [addStats],
+  find: [hasViewPermissionAfter,addStats],
+  get: [hasViewPermissionAfter,addStats],
   create: [],
   update: [],
   patch: [],
