@@ -107,8 +107,11 @@ exports.mapPaginationQuery = (hook) => {
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
 	return userService.find({query: {
-		_id: hook.params.account.userId
+		_id: hook.params.account.userId,
+		$populate: 'roles'
 	}}).then(res => {
+		if (res.data[0].roles[0].name === 'superhero')
+			return hook;
 		hook.params.query.schoolId = res.data[0].schoolId;
 		return hook;
 	});
