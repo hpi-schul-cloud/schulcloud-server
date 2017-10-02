@@ -1,0 +1,51 @@
+[{
+	"_id": {
+		"$oid": "59d1f68be0a06325e8b5288c"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"studentId": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+    "homeworkId": {
+		"$oid": "59d1f63ce0a06325e8b5288b"
+	},
+	"comment": "\u003cp\u003eAbgabe\u003c/p\u003e\r\n",
+    "comments": [],
+    "fileIds": [],
+	"gradeComment": "\u003cp\u003eBewertung\u003c/p\u003e\r\n",
+	"grade": 67,
+	"updatedAt": {
+		"$date": "2017-09-28T12:10:46.181Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T12:10:46.180Z"
+	},
+	"__v": 0
+},{
+	"_id": {
+		"$oid": "59d1fb3f395c8218f82cb915"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"studentId": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+    "homeworkId": {
+		"$oid": "59d1fae6395c8218f82cb914"
+	},
+	"comment": "\u003cp\u003eAbgabe\u003c/p\u003e\r\n",
+    "comments": [],
+    "fileIds": [],
+	"gradeComment": "\u003cp\u003eBewertung\u003c/p\u003e\r\n",
+	"grade": 67,
+	"updatedAt": {
+		"$date": "2017-09-28T12:10:46.181Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T12:10:46.180Z"
+	},
+	"__v": 0
+}]
