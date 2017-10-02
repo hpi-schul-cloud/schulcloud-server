@@ -66,28 +66,34 @@ describe('homework service', function() {
 
     it('contains statistics as a teacher', () => {
 		return homeworkService.find({
-			query: {_id: "59cce3f6c6abf042248e888d"},
+			query: {_id: "59d1f63ce0a06325e8b5288b"},
 			account: {userId: '0000d231816abba584714c9e'}}).then(result => {
                 expect(result.data[0].stats.userCount).to.equal(2);
-                expect(result.data[0].stats.submissionCount).to.equal(0);
-                expect(result.data[0].stats.submissionPercentage).to.equal(undefined);
-                expect(result.data[0].stats.gradeCount).to.equal(0);
-                expect(result.data[0].stats.gradePercentage).to.equal(undefined);
-                expect(result.data[0].stats.averageGrade).to.equal(undefined);
+                expect(result.data[0].stats.submissionCount).to.equal(1);
+                expect(result.data[0].stats.submissionPercentage).to.equal('50.00');
+                expect(result.data[0].stats.gradeCount).to.equal(1);
+                expect(result.data[0].stats.gradePercentage).to.equal('50.00');
+                expect(result.data[0].stats.averageGrade).to.equal('67.00');
                 // no grade as a teacher
                 expect(result.data[0].grade).to.equal(undefined);
 			});
 	});
-/*
-    // NEEDS SUBMISSON DATA
     it('contains grade as a student', () => {
 		return homeworkService.find({
-			query: {_id: "59cce3f6c6abf042248e888d"},
+			query: {_id: "59d1f63ce0a06325e8b5288b"},
 			account: {userId: '0000d224816abba584714c9c'}}).then(result => {
-                expect(result.data[0].grade).to.not.equal(undefined);
+                expect(result.data[0].grade).to.not.equal('67.00');
                 // no stats as a student
-                //expect(result.data[0].stats).to.equal(undefined);
+                expect(result.data[0].stats).to.equal(undefined);
 			});
 	});
-*/
+    it('contains statistics as students when publicSubmissions:true', () => {
+		return homeworkService.find({
+			query: {_id: "59d1fae6395c8218f82cb914"},
+			account: {userId: '0000d224816abba584714c9c'}}).then(result => {
+                expect(result.data[0].grade).to.not.equal('67.00');
+                // no stats as a student
+                expect(result.data[0].stats).to.not.equal(undefined);
+			});
+	});
 });

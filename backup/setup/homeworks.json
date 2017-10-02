@@ -303,4 +303,65 @@
 		"$date": "2017-09-28T12:10:46.180Z"
 	},
 	"__v": 0
+},{
+	"_id": {
+		"$oid": "59d1f63ce0a06325e8b5288b"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"name": "Aufgabe an Ida (Mathe) - mit Abgabe & Bewertung",
+	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-20T10:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2300-10-25T15:00:00.000Z"
+	},
+	"archived": [],
+	"lessonId": null,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"updatedAt": {
+		"$date": "2017-09-28T12:10:46.181Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T12:10:46.180Z"
+	},
+	"__v": 0
+},{
+	"_id": {
+		"$oid": "59d1fae6395c8218f82cb914"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"name": "Aufgabe an Ida (Mathe) - mit Abgabe, Bewertung, PublicSubmissions",
+	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-20T10:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2300-10-25T15:00:00.000Z"
+	},
+	"archived": [],
+	"lessonId": null,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"updatedAt": {
+		"$date": "2017-09-28T12:10:46.181Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T12:10:46.180Z"
+	},
+    "publicSubmissions": true,
+	"__v": 0
 }]
