@@ -7,8 +7,8 @@ const auth = require('feathers-authentication');
 const filterApplicableSubmissions = hook => {
     let data = hook.result.data || hook.result; 
     if(hook.params.account){
-        data = data.filter(function(c){
-            let c = JSON.parse(JSON.stringify(c));
+        data = data.filter(function(e){
+            let c = JSON.parse(JSON.stringify(e));
             return c.homeworkId.publicSubmissions
                     || JSON.stringify(c.homeworkId.teacherId) == JSON.stringify(hook.params.account.userId)
                     || JSON.stringify(c.studentId) == JSON.stringify(hook.params.account.userId)
