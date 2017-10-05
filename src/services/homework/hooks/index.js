@@ -88,7 +88,9 @@ const addStats = hook => {
                     c.grade = submission[0].grade;
                 }
 
-                if(!c.private){
+                if( !c.private && (
+                    ( ((c.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && c.publicSubmissions )
+                    || ( c.teacherId == hook.params.account.userId.toString() ) ) ){
                     let submissionP = (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                         && n.comment != undefined && n.comment != ""}).length/((c.courseId || {}).userIds || []).length)*100;
                     let gradeP = (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
