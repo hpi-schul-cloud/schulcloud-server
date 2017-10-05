@@ -10,9 +10,9 @@ const filterApplicableSubmissions = hook => {
         data = data.filter(function(e){
             let c = JSON.parse(JSON.stringify(e));
             return c.homeworkId.publicSubmissions
-                    || JSON.stringify(c.homeworkId.teacherId) == JSON.stringify(hook.params.account.userId)
-                    || JSON.stringify(c.studentId) == JSON.stringify(hook.params.account.userId)
-                    || c.coWorkers.includes(hook.params.account.userId);
+                    || c.homeworkId.teacherId.toString() == hook.params.account.userId.toString()
+                    || c.studentId.toString() == hook.params.account.userId.toString()
+                    || c.coWorkers.includes(hook.params.account.userId.toString());
         });
         (hook.result.data)?(hook.result.data = data):(hook.result = data);
     }
