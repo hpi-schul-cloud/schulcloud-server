@@ -22,6 +22,8 @@ const homeworkModel = mongoose.model('homework', new Schema({
     private: {type: Boolean},
     publicSubmissions: {type: Boolean},
     teamSubmissions: {type: Boolean},
+    minCoWorkers: {type: Number, min: 0},
+    maxCoWorkers: {type: Number, min: 0},
     archived: [{type: Schema.Types.ObjectId, ref: 'user'}]
 }));
 
@@ -36,8 +38,6 @@ const submissionModel = mongoose.model('submission', new Schema({
     homeworkId: {type: Schema.Types.ObjectId, required: true, ref: 'homework'},
     studentId: {type: Schema.Types.ObjectId, required: true, ref: 'user'},
     coWorkers: [{type: Schema.Types.ObjectId, required: true, ref: 'user'}],
-    minCoWorkers: {type: Number, min: 0},
-    maxCoWorkers: {type: Number, min: 0},
     fileIds: [{type: Schema.Types.ObjectId, ref: 'file'}],
     comments: [{type: Schema.Types.ObjectId, ref: 'comment'}]
 }));
