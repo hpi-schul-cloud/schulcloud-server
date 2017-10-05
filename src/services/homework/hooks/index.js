@@ -11,13 +11,26 @@ const getAverageRating = function(submissions){
     if (submissions.length > 0) {
         // Nur bewertete Abgaben einbeziehen
         let submissiongrades = submissions.filter(s => Number.isInteger(s.grade));
+        // Abgabe für jedes Teammitglied einzeln werten
+        let numSubmissions = 0;
+        let grades = [];
+        submissiongrades.forEach(e => {
+            if(e.coWorkers){
+                numSubmissions += e.coWorkers.length;
+                for (var i = 0; i < e.coWorkers.length; i++) { 
+                    grades.push(e.grade);
+                }
+            }else{
+                numSubmissions += 1;
+                grades.push(e.grade);
+            }
+        });
+        
         // Abgaben vorhanden?
-        if(submissiongrades.length > 0){
-            // Noten aus Abgabe auslesen
-            submissiongrades = submissiongrades.map(s => s.grade);
+        if(numSubmissions > 0){
             // Durchschnittsnote berechnen
-            const ratingsum = submissiongrades.reduce(function(a, b) { return a + b; }, 0);
-            return (ratingsum / submissiongrades.length).toFixed(2);
+            const gradeSum = grades.reduce(function(a, b) { return a + b; }, 0);
+            return (gradeSum / numSubmissions).toFixed(2);
         }
     }
     return undefined;
