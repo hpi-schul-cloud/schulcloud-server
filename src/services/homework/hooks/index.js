@@ -13,23 +13,20 @@ const getAverageRating = function(submissions){
         let submissiongrades = submissions.filter(s => Number.isInteger(s.grade));
         // Abgabe für jedes Teammitglied einzeln werten
         let numSubmissions = 0;
-        let grades = [];
+        let gradeSum = 0;
         submissiongrades.forEach(e => {
             if(e.coWorkers){
                 numSubmissions += e.coWorkers.length;
-                for (var i = 0; i < e.coWorkers.length; i++) { 
-                    grades.push(e.grade);
-                }
+                gradeSum += (e.coWorkers.length * e.grade);
             }else{
                 numSubmissions += 1;
-                grades.push(e.grade);
+                gradeSum += e.grade;
             }
         });
         
         // Abgaben vorhanden?
         if(numSubmissions > 0){
             // Durchschnittsnote berechnen
-            const gradeSum = grades.reduce(function(a, b) { return a + b; }, 0);
             return (gradeSum / numSubmissions).toFixed(2);
         }
     }
