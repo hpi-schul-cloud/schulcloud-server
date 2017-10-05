@@ -97,8 +97,7 @@ const addStats = hook => {
                             && ( n.gradeComment != '' || Number.isInteger(n.grade) )}).length/((c.courseId || {}).userIds || []).length)*100;
                     c.stats = {
                         userCount: ((c.courseId || {}).userIds || []).length,
-                        submissionCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                            && n.comment != undefined && n.comment != ""}).length,
+                        submissionCount: submissions.data.filter(function(n){return  JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && n.comment != undefined && n.comment != ""}).map(e => {return (e.coWorkers.length || 1)}).reduce((a, b) => a+b, 0),
                         submissionPercentage: (submissionP && submissionP != Infinity)?submissionP.toFixed(2):undefined,
                         gradeCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                             && ( n.gradeComment != '' || Number.isInteger(n.grade) )}).length,
