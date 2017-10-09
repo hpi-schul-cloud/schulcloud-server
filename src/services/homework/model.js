@@ -22,8 +22,7 @@ const homeworkModel = mongoose.model('homework', new Schema({
     private: {type: Boolean},
     publicSubmissions: {type: Boolean},
     teamSubmissions: {type: Boolean},
-    minCoWorkers: {type: Number, min: 0},
-    maxCoWorkers: {type: Number, min: 0},
+    maxCoWorkers: {type: Number, 'default': 1, min: 1},
     archived: [{type: Schema.Types.ObjectId, ref: 'user'}]
 }));
 
