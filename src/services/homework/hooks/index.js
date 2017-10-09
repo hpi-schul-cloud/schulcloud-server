@@ -12,10 +12,10 @@ const getAverageRating = function(submissions){
         // Nur bewertete Abgaben einbeziehen
         let submissiongrades = submissions.filter(s => Number.isInteger(s.grade));
         // Abgabe für jedes Teammitglied einzeln werten
-        let numSubmissions = 0;
-        let gradeSum = 0;
+        var numSubmissions = 0;
+        var gradeSum = 0;
         submissiongrades.forEach(e => {
-            if(e.coWorkers){
+            if(e.coWorkers && e.coWorkers.length > 0){
                 numSubmissions += e.coWorkers.length;
                 gradeSum += (e.coWorkers.length * e.grade);
             }else{
@@ -23,7 +23,7 @@ const getAverageRating = function(submissions){
                 gradeSum += e.grade;
             }
         });
-        
+
         // Abgaben vorhanden?
         if(numSubmissions > 0){
             // Durchschnittsnote berechnen
