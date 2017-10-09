@@ -21,7 +21,7 @@ const filterApplicableSubmissions = hook => {
 };
 
 const noSubmissionBefore = hook => {
-    if(hook.data.coWorkers){ // don't filter if no person was changed
+    if(hook.data.coWorkers){
         if(!Array.isArray(hook.data.coWorkers)){
             hook.data.coWorkers = [hook.data.coWorkers];
         }
@@ -39,9 +39,10 @@ const noSubmissionBefore = hook => {
         }}).then((submissions) => {
             let submissionsForMe = submissions.data.filter(raw => { 
                 let e = JSON.parse(JSON.stringify(raw));
-                return (e.coWorkers.includes(hook.params.account.userId.toString())) 
-                    || (e.studentId.toString() == hook.params.account.userId.toString());
+                return (e.coWorkers.includes(hook.params.account.userId.toString()))
+                       && (e.studentId._id.toString() != hook.params.account.userId.toString());
             });
+            console.log(submissionsForMe);
             if(submissionsForMe.length > 0){
                 return Promise.reject(new errors.Forbidden(submissions[0].studentId.firstName + " " + submissions[0].studentId.lastName + " hat bereits für dich abgegeben!"));
             }
@@ -50,26 +51,38 @@ const noSubmissionBefore = hook => {
                 let e = JSON.parse(JSON.stringify(raw));
                 hook.data.coWorkers.forEach(coWorker => {
                     if((e.coWorkers.includes(coWorker.toString())) 
-                    || (e.studentId.toString() == coWorker.toString())){
+                    || (e.studentId._id.toString() == coWorker.toString())){
                         return true;
                     }
                 });
                 return false;
             });
             if(submissionsForCoWorkers.length > 0){
-                return Promise.reject(new errors.Forbidden("Einer deiner Teammitglieder hat bereits eine Lösung abgegeben!"));
+                return Promise.reject(new errors.Forbidden("Einer deiner Teammitglieder hat bereits selbst eine Lösung abgegeben!"));
             }
-            return Promise.resolve(hook)
         });
+};
+
+
+const maxCoWorkers = hook => {
+    // min/max CoWorkers OKAY?
+    const homeworkService = hook.app.service('/homework');
+    return homeworkService.get(hook.data.homeworkId,
+        {account: {userId: hook.params.account.userId}}).then(homework => {
+        if(hook.data.coWorkers.length > homework.maxCoWorkers){
+            return Promise.reject(new errors.Forbidden("Dein Team ist größer als erlaubt! ( maximal "+ homework.maxCoWorkers +" Teammitglieder erlaubt)"));
+        }
+        return Promise.resolve(hook)
+    });
 };
 
 exports.before = {
   all: [auth.hooks.authenticate('jwt')],
   find: [globalHooks.mapPaginationQuery.bind(this)],
   get: [],
-  create: [noSubmissionBefore],
-  update: [noSubmissionBefore],
-  patch: [noSubmissionBefore],
+  create: [noSubmissionBefore, maxCoWorkers],
+  update: [noSubmissionBefore, maxCoWorkers],
+  patch: [noSubmissionBefore, maxCoWorkers],
   remove: []
 };
 

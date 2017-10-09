@@ -35,20 +35,23 @@ const getAverageRating = function(submissions){
 
 const hasViewPermissionBefore = hook => {
     // Add populate to query to be able to filter permissions
-    if(hook.params.query['$populate']){
+    if((hook.params.query||{})['$populate']){
         if(!hook.params.query['$populate'].includes('courseId')){
             hook.params.query['$populate'].push('courseId');
         }
     }else{
+        if(!hook.params.query){
+            hook.params.query = {};
+        }
         hook.params.query['$populate'] = ['courseId'];
     }
-
+    const userId = (hook.params.account || {}).userId;
     // filter most homeworks where the user has no view permission
     if(!hook.params.query['$or']){
-        hook.params.query['$or'] = [{teacherId: hook.params.account.userId},
+        hook.params.query['$or'] = [{teacherId: userId},
                                     {'private': {$nin:[true]} }];
     }else{
-        hook.params.query['$or'].push({teacherId: hook.params.account.userId});
+        hook.params.query['$or'].push({teacherId: userId});
         hook.params.query['$or'].push({'private': {$nin:[true]} });
     }
     return Promise.resolve(hook);
@@ -59,9 +62,9 @@ const hasViewPermissionAfter = hook => {
     // user is teacher OR ( user is in courseId of task AND availableDate < Date.now() )
     // availableDate < Date.now()
     function hasPermission(e){
-        const isTeacher = (e.teacherId == hook.params.account.userId);
+        const isTeacher = (e.teacherId == (hook.params.account || {}).userId);
         const isStudent = ( (e.courseId != null)
-                        && ((e.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) );
+                        && ((e.courseId || {}).userIds || []).includes(((hook.params.account || {}).userId || "").toString()) );
         const published = (( new Date(e.availableDate) < new Date() )) && !e.private;   
         return isTeacher || (isStudent && published);
     }
