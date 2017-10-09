@@ -17,13 +17,29 @@ const filterApplicableSubmissions = hook => {
 	return Promise.resolve(hook);
 };
 
+const canGrade = hook => {
+    if(Number.isInteger(hook.data.grade)){
+        const homeworkService = hook.app.service('/homework');
+        return homeworkService.get(hook.data.homeworkId,
+        {account: {userId: hook.params.account.userId}}).then(homework => {
+            if(homework.teacherId != hook.params.account.userId){
+                return Promise.reject(new errors.Forbidden());
+            }else{
+                return Promise.resolve(hook);
+            }
+        });
+    }else{
+        return Promise.resolve(hook);
+    }
+};
+
 exports.before = {
   all: [auth.hooks.authenticate('jwt')],
   find: [globalHooks.mapPaginationQuery.bind(this)],
   get: [],
-  create: [],
-  update: [],
-  patch: [],
+  create: [canGrade],
+  update: [canGrade],
+  patch: [canGrade],
   remove: []
 };
 
