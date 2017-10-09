@@ -3,6 +3,7 @@
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
+const errors = require('feathers-errors');
 
 const filterApplicableSubmissions = hook => {
     let data = hook.result.data || hook.result; 
