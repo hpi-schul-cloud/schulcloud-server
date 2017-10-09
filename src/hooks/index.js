@@ -122,8 +122,11 @@ exports.denyIfNotCurrentSchool = ({errorMessage = 'Die angefragte Ressource gehÃ
 	hook => {
 	let userService = hook.app.service("users");
 	return userService.find({query: {
-		_id: hook.params.account.userId
+		_id: hook.params.account.userId,
+		$populate: 'roles'
 	}}).then(res => {
+		if (res.data[0].roles[0].name === 'superhero')
+			return hook;
 		let requesterSchoolId = res.data[0].schoolId;
 		let requestedUserSchoolId = (hook.result || {}).schoolId;
 		if(!requesterSchoolId.equals(requestedUserSchoolId)) {
