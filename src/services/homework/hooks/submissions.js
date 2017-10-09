@@ -42,7 +42,6 @@ const noSubmissionBefore = hook => {
                 return (e.coWorkers.includes(hook.params.account.userId.toString()))
                        && (e.studentId._id.toString() != hook.params.account.userId.toString());
             });
-            console.log(submissionsForMe);
             if(submissionsForMe.length > 0){
                 return Promise.reject(new errors.Conflict({
                   "message": submissions[0].studentId.firstName + " " + submissions[0].studentId.lastName + " hat bereits für dich abgegeben!"
@@ -78,7 +77,7 @@ const maxCoWorkers = hook => {
                   "message": "Dein Team ist größer als erlaubt! ( maximal "+ homework.maxCoWorkers +" Teammitglieder erlaubt)"
                 }));
         }
-        return Promise.resolve(hook)
+        return Promise.resolve(hook);
     });
 };
 

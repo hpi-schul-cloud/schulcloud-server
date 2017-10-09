@@ -55,7 +55,7 @@ const hasViewPermissionBefore = hook => {
         hook.params.query['$or'].push({'private': {$nin:[true]} });
     }
     return Promise.resolve(hook);
-}
+};
 
 const hasViewPermissionAfter = hook => {
     // filter any other homeworks where the user has no view permission
@@ -91,7 +91,7 @@ const addStats = hook => {
             homeworkId: {$in: (data.map(n => n._id))}
         }}).then((submissions) => {
             data = data.map(function(e){
-                var c = JSON.parse(JSON.stringify(e)) // don't know why, but without this line it's not working :/
+                var c = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
 
                 // save grade in assignment if user is student of this task
                 const submission = submissions.data.filter(s => {
@@ -105,15 +105,15 @@ const addStats = hook => {
                     ( ((c.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && c.publicSubmissions )
                     || ( c.teacherId == hook.params.account.userId.toString() ) ) ){
                     let submissionP = (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                        && n.comment != undefined && n.comment != ""}).length/((c.courseId || {}).userIds || []).length)*100;
+                        && n.comment != undefined && n.comment != "";}).length/((c.courseId || {}).userIds || []).length)*100;
                     let gradeP = (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                            && ( n.gradeComment != '' || Number.isInteger(n.grade) )}).length/((c.courseId || {}).userIds || []).length)*100;
+                            && ( n.gradeComment != '' || Number.isInteger(n.grade) );}).length/((c.courseId || {}).userIds || []).length)*100;
                     c.stats = {
                         userCount: ((c.courseId || {}).userIds || []).length,
-                        submissionCount: submissions.data.filter(function(n){return  JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && n.comment != undefined && n.comment != ""}).map(e => {return (e.coWorkers.length || 1)}).reduce((a, b) => a+b, 0),
+                        submissionCount: submissions.data.filter(function(n){return  JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && n.comment != undefined && n.comment != "";}).map(e => {return (e.coWorkers.length || 1);}).reduce((a, b) => a+b, 0),
                         submissionPercentage: (submissionP && submissionP != Infinity)?submissionP.toFixed(2):undefined,
                         gradeCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                            && ( n.gradeComment != '' || Number.isInteger(n.grade) )}).length,
+                            && ( n.gradeComment != '' || Number.isInteger(n.grade) );}).length,
                         gradePercentage: (gradeP && gradeP != Infinity)?gradeP.toFixed(2):undefined,
                         averageGrade: getAverageRating(submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId);}))
                     };
@@ -122,9 +122,9 @@ const addStats = hook => {
             });
             if(arrayed){data = data[0];}
             (hook.result.data)?(hook.result.data = data):(hook.result = data);
-            return Promise.resolve(hook)
+            return Promise.resolve(hook);
     });
-}
+};
 
 exports.before = {
     all: [auth.hooks.authenticate('jwt'), (hook) => {
