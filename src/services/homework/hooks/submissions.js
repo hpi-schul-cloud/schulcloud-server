@@ -44,7 +44,9 @@ const noSubmissionBefore = hook => {
             });
             console.log(submissionsForMe);
             if(submissionsForMe.length > 0){
-                return Promise.reject(new errors.Forbidden(submissions[0].studentId.firstName + " " + submissions[0].studentId.lastName + " hat bereits für dich abgegeben!"));
+                return Promise.reject(new errors.Conflict({
+                  "message": submissions[0].studentId.firstName + " " + submissions[0].studentId.lastName + " hat bereits für dich abgegeben!"
+                }));
             }
 
             let submissionsForCoWorkers = submissions.data.filter(raw => { 
@@ -58,7 +60,9 @@ const noSubmissionBefore = hook => {
                 return false;
             });
             if(submissionsForCoWorkers.length > 0){
-                return Promise.reject(new errors.Forbidden("Einer deiner Teammitglieder hat bereits selbst eine Lösung abgegeben!"));
+                return Promise.reject(new errors.Conflict({
+                  "message": "Einer deiner Teammitglieder hat bereits selbst eine Lösung abgegeben!"
+                }));
             }
         });
 };
@@ -70,7 +74,9 @@ const maxCoWorkers = hook => {
     return homeworkService.get(hook.data.homeworkId,
         {account: {userId: hook.params.account.userId}}).then(homework => {
         if(hook.data.coWorkers.length > homework.maxCoWorkers){
-            return Promise.reject(new errors.Forbidden("Dein Team ist größer als erlaubt! ( maximal "+ homework.maxCoWorkers +" Teammitglieder erlaubt)"));
+            return Promise.reject(new errors.Conflict({
+                  "message": "Dein Team ist größer als erlaubt! ( maximal "+ homework.maxCoWorkers +" Teammitglieder erlaubt)"
+                }));
         }
         return Promise.resolve(hook)
     });
