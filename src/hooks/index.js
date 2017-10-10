@@ -110,7 +110,12 @@ exports.restrictToCurrentSchool = hook => {
 		_id: hook.params.account.userId,
 		$populate: 'roles'
 	}}).then(res => {
-		if (res.data[0].roles[0].name === 'superhero')
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'superhero')
+				access = true;
+		});
+		if (access)
 			return hook;
 		hook.params.query.schoolId = res.data[0].schoolId;
 		return hook;
@@ -122,8 +127,16 @@ exports.denyIfNotCurrentSchool = ({errorMessage = 'Die angefragte Ressource gehÃ
 	hook => {
 	let userService = hook.app.service("users");
 	return userService.find({query: {
-		_id: hook.params.account.userId
+		_id: hook.params.account.userId,
+		$populate: 'roles'
 	}}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'superhero')
+				access = true;
+		});
+		if (access)
+			return hook;
 		let requesterSchoolId = res.data[0].schoolId;
 		let requestedUserSchoolId = (hook.result || {}).schoolId;
 		if(!requesterSchoolId.equals(requestedUserSchoolId)) {
