@@ -84,6 +84,7 @@ const maxCoWorkers = hook => {
         }
         return Promise.resolve(hook);
     });
+};
 
 const canGrade = hook => {
     if(Number.isInteger(hook.data.grade)){
@@ -107,7 +108,7 @@ exports.before = {
   get: [],
   create: [noSubmissionBefore, maxCoWorkers, canGrade],
   update: [noSubmissionBefore, maxCoWorkers, canGrade],
-  patch:  [noSubmissionBefore, maxCoWorkers, canGrade],
+  patch: [noSubmissionBefore, maxCoWorkers, canGrade],
   remove: []
 };
 
