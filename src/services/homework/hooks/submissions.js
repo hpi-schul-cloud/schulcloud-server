@@ -77,7 +77,7 @@ const maxCoWorkers = hook => {
                   "message": "Teamabgaben sind nicht erlaubt!"
                 }));
         }
-        if(hook.data.coWorkers.length > homework.maxCoWorkers && homework.maxCoWorkers > 1 && homework.teamSubmissions){
+        if(hook.data.coWorkers.length > homework.maxCoWorkers && homework.maxCoWorkers >= 1 && homework.teamSubmissions){
             return Promise.reject(new errors.Conflict({
                   "message": "Dein Team ist größer als erlaubt! ( maximal "+ homework.maxCoWorkers +" Teammitglieder erlaubt)"
                 }));
