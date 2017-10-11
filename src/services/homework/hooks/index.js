@@ -104,17 +104,34 @@ const addStats = hook => {
                 if( !c.private && (
                     ( ((c.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && c.publicSubmissions )
                     || ( c.teacherId == hook.params.account.userId.toString() ) ) ){
-                    let submissionP = (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                        && n.comment != undefined && n.comment != "";}).length/((c.courseId || {}).userIds || []).length)*100;
-                    let gradeP = (submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                            && ( n.gradeComment != '' || Number.isInteger(n.grade) );}).length/((c.courseId || {}).userIds || []).length)*100;
+                    let submissionP = (
+                        submissions.data.filter(function(n){
+                            return JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && n.comment != undefined && n.comment != "";})
+                        .map(e => {return (e.coWorkers.length || 1);})
+                        .reduce((a, b) => a+b, 0)
+                        / ((c.courseId || {}).userIds || []).length
+                    )*100;
+                    let gradeP = (submissions.data.filter(function(n){
+                            return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
+                                && ( n.gradeComment != '' || Number.isInteger(n.grade) );})
+                        .map(e => {return (e.coWorkers.length || 1);})
+                        .reduce((a, b) => a+b, 0)
+                        / ((c.courseId || {}).userIds || []).length
+                    )*100;
                     c.stats = {
                         userCount: ((c.courseId || {}).userIds || []).length,
-                        submissionCount: submissions.data.filter(function(n){return  JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && n.comment != undefined && n.comment != "";}).map(e => {return (e.coWorkers.length || 1);}).reduce((a, b) => a+b, 0),
+                        submissionCount: 
+                            submissions.data.filter(function(n){
+                                return  JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && n.comment != undefined && n.comment != "";})
+                                .map(e => {return (e.coWorkers.length || 1);})
+                                .reduce((a, b) => a+b, 0),
                         submissionPercentage: (submissionP && submissionP != Infinity)?submissionP.toFixed(2):undefined,
-                        gradeCount: submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                            && ( n.gradeComment != '' || Number.isInteger(n.grade) );}).length,
-                        gradePercentage: (gradeP && gradeP != Infinity)?gradeP.toFixed(2):undefined,
+                        gradeCount: 
+                            submissions.data.filter(function(n){
+                                return JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && ( n.gradeComment != '' || Number.isInteger(n.grade) );})
+                            .map(e => {return (e.coWorkers.length || 1);})
+                            .reduce((a, b) => a+b, 0),
+                        gradePercentage:(gradeP && gradeP != Infinity)?gradeP.toFixed(2):undefined,
                         averageGrade: getAverageRating(submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId);}))
                     };
                 }
