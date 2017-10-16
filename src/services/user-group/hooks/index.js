@@ -73,7 +73,7 @@ const deleteWholeClassFromCourse = (hook) => {
 			});
 		});
 	});
-}
+};
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],

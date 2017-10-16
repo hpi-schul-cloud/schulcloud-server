@@ -72,7 +72,7 @@ describe('Moodle single-sign-on', function () {
 					const account = res.body;
 					account.should.have.property('_id');
 
-					account.username.should.equal(newTestAccount.username);
+					account.username.should.equal(newTestAccount.username.toLowerCase());
 					account.should.have.property('token');
 					account.token.should.equal(mockMoodle.responseToken);
 
