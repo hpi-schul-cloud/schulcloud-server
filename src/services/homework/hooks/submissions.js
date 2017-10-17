@@ -10,6 +10,9 @@ const filterApplicableSubmissions = hook => {
     if(hook.params.account){
         data = data.filter(function(e){
             let c = JSON.parse(JSON.stringify(e));
+            if(typeof c.coWorkers === 'object'){
+                c.coWorkers = c.coWorkers.map(e => {return e._id;});
+            }
             return c.homeworkId.publicSubmissions
                     || c.homeworkId.teacherId.toString() == hook.params.account.userId.toString()
                     || c.studentId.toString() == hook.params.account.userId.toString()
@@ -28,7 +31,7 @@ const noSubmissionBefore = hook => {
         if(!hook.data.coWorkers.includes(hook.params.account.userId.toString())){
             hook.data.coWorkers.push(hook.params.account.userId.toString());
         }
-    }else{
+    }else if(!(hook.data.grade && hook.data.gradeComment)){
         hook.data.coWorkers = [hook.params.account.userId.toString()];
     }
 
@@ -69,22 +72,26 @@ const noSubmissionBefore = hook => {
 
 const maxCoWorkers = hook => {
     // min/max CoWorkers OKAY?
-    const homeworkService = hook.app.service('/homework');
-    return homeworkService.get(hook.data.homeworkId,
-    {account: {userId: hook.params.account.userId}}).then(homework => {
-        if(hook.data.coWorkers.length > 1 && !homework.teamSubmissions){
-            return Promise.reject(new errors.Conflict({
-                  "message": "Teamabgaben sind nicht erlaubt!"
-                }));
-        }
-        if(homework.teamSubmissions && homework.maxCoWorkers 
-        && homework.maxCoWorkers >= 1 && hook.data.coWorkers.length > homework.maxCoWorkers){
-            return Promise.reject(new errors.Conflict({
-                  "message": "Dein Team ist größer als erlaubt! ( maximal "+ homework.maxCoWorkers +" Teammitglieder erlaubt)"
-                }));
-        }
+    if(hook.data.homeworkId){
+        const homeworkService = hook.app.service('/homework');
+        return homeworkService.get(hook.data.homeworkId,
+        {account: {userId: hook.params.account.userId}}).then(homework => {
+            if(hook.data.coWorkers.length > 1 && !homework.teamSubmissions){
+                return Promise.reject(new errors.Conflict({
+                      "message": "Teamabgaben sind nicht erlaubt!"
+                    }));
+            }
+            if(homework.teamSubmissions && homework.maxCoWorkers 
+            && homework.maxCoWorkers >= 1 && hook.data.coWorkers.length > homework.maxCoWorkers){
+                return Promise.reject(new errors.Conflict({
+                      "message": "Dein Team ist größer als erlaubt! ( maximal "+ homework.maxCoWorkers +" Teammitglieder erlaubt)"
+                    }));
+            }
+            return Promise.resolve(hook);
+        });
+    }else{
         return Promise.resolve(hook);
-    });
+    }
 };
 
 const canGrade = hook => {
