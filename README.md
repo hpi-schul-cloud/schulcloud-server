@@ -1,4 +1,5 @@
-# SchulCloud
+# Schul-Cloud Server
+Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com/)
 
 Dev: ![Travis Status](https://travis-ci.org/schul-cloud/schulcloud-server.svg?branch=master)
 Production: ![Travis Status](https://travis-ci.org/schul-cloud/schulcloud-server.svg?branch=production)
@@ -14,6 +15,9 @@ When running the server locally, it is served at [http://localhost:3030/docs/](h
 * mongoDB
 
 ## Setup
+
+There are blog posts on how to setup [client](https://github.com/schul-cloud/schulcloud-client) and [server](https://github.com/schul-cloud/schulcloud-server) under [Windows](https://schul-cloud.github.io/blog/2017-05-18/setup-schul-cloud-client-and-sever-under-windows) and [Linux](https://schul-cloud.github.io/blog/2017-04-21/setup-development-under-ubuntu).
+
 
 1. Clone directory into local folder
 2. Go into the cloned folder and enter `npm install`

@@ -18,9 +18,12 @@ const defaultHeaders = require('./middleware/defaultHeaders');
 const setupSwagger = require('./swagger');
 const prettyError = require('pretty-error').start();
 
+require('console-stamp')(console);
+require('console-stamp')(winston );
+
 let secrets;
 try {
-	secrets = require('../config/secrets.json');
+	(process.env.NODE_ENV === 'production') ? secrets = require('../config/secrets.js') : secrets = require('../config/secrets.json');
 } catch(error) {
 	secrets = {};
 }

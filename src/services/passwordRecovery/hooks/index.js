@@ -24,13 +24,13 @@ const hashId = (hook) => {
 
 exports.before = {
 	all: [],
-	find: [],
+	find: [auth.hooks.authenticate('jwt')],
 	get: [],
 	create: [hashId,
 		local.hooks.hashPassword({passwordField: 'password'})],
-	update: [],
-	patch: [],
-	remove: []
+	update: [auth.hooks.authenticate('jwt')],
+	patch: [auth.hooks.authenticate('jwt')],
+	remove: [auth.hooks.authenticate('jwt')]
 };
 
 exports.after = {

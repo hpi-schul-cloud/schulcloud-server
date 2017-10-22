@@ -28,7 +28,19 @@ describe('fileStorage service', function () {
 		assert.ok(app.service('fileStorage'));
 	});
 
+	it('registered the fileModel service', () => {
+		assert.ok(app.service('files'));
+	});
+
+	it('registered the directoryModel service', () => {
+		assert.ok(app.service('directories'));
+	});
+
 	it('should has a properly worked creation function', () => {
 		assert.ok(app.service('fileStorage').create({schoolId: '0000d186816abba584714c5f'}));
+	});
+
+	it('should has a properly worked find function', () => {
+		assert.ok(app.service('fileStorage').find({qs: {path: 'users/0000d213816abba584714c0a/'}}));
 	});
 });

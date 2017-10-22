@@ -19,8 +19,12 @@ const lessonSchema = new Schema({
 		content: {},
 		hidden: { type: Boolean }
 	}],
-	materialIds: [{type: Schema.Types.ObjectId, ref: 'material'}],
-	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
+	materialIds: [{ type: Schema.Types.ObjectId, ref: 'material' }],
+	courseId: { type: Schema.Types.ObjectId, required: true, ref: 'course' },
+	hidden: { type: Boolean },
+	shareToken: { type: String, unique: true }, // token for topic sharing
+	originalTopic: { type: Schema.Types.ObjectId, ref: 'topic' }, // if current topic was copied from another, for later fancy stuff
+    position: { type: Number, default: 0 }
 },{
 	timestamps: true
 });

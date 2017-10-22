@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs');
 
 const MoodleLoginStrategy = require('../strategies/moodle');
 const ITSLearningLoginStrategy = require('../strategies/itslearning');
-const LernsaxLoginStrategy = require('../strategies/lernsax');
+const IServLoginStrategy = require('../strategies/iserv');
 const LocalLoginStrategy = require('../strategies/local');
 
 // don't initialize strategies here - otherwise massive overhead
@@ -16,7 +16,7 @@ const LocalLoginStrategy = require('../strategies/local');
 const strategies = {
 	moodle: MoodleLoginStrategy,
 	itslearning: ITSLearningLoginStrategy,
-	lernsax: LernsaxLoginStrategy,
+	iserv: IServLoginStrategy,
 	local: LocalLoginStrategy
 };
 
@@ -76,10 +76,21 @@ const checkUnique = (hook) => {
 		});
 };
 
+const restrictAccess = (hook) => {
+	let queries = hook.params.query;
+
+	return new Promise ((resolve, reject) => {
+		if (!queries.username && !queries.userId)
+			return reject(new errors.BadRequest("Not allowed"));
+		else
+			return resolve();
+	});
+};
+
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
 	// otherwise we cannot get the accounts required for login
-	find: [],
+	find: [restrictAccess],
 	get: [],
 	create: [
 		validateCredentials,

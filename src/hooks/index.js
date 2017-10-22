@@ -88,7 +88,7 @@ exports.computeProperty = function (Model, functionName, variableName) {
 		return Model.findById(hook.result._id)	// get the model instance to call functions etc  TODO make query results not lean
 			.then(modelInstance => modelInstance[functionName]())	// compute that property
 			.then(result => {
-				hook.result[variableName] = result;		// save it in the resulting object
+				hook.result[variableName] = Array.from(result);		// save it in the resulting object
 			})
 			.catch(e => logger.error(e))
 			.then(_ => Promise.resolve(hook));
@@ -107,8 +107,16 @@ exports.mapPaginationQuery = (hook) => {
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
 	return userService.find({query: {
-		_id: hook.params.account.userId
+		_id: hook.params.account.userId,
+		$populate: 'roles'
 	}}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'superhero')
+				access = true;
+		});
+		if (access)
+			return hook;
 		hook.params.query.schoolId = res.data[0].schoolId;
 		return hook;
 	});
@@ -119,8 +127,16 @@ exports.denyIfNotCurrentSchool = ({errorMessage = 'Die angefragte Ressource gehÃ
 	hook => {
 	let userService = hook.app.service("users");
 	return userService.find({query: {
-		_id: hook.params.account.userId
+		_id: hook.params.account.userId,
+		$populate: 'roles'
 	}}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'superhero')
+				access = true;
+		});
+		if (access)
+			return hook;
 		let requesterSchoolId = res.data[0].schoolId;
 		let requestedUserSchoolId = (hook.result || {}).schoolId;
 		if(!requesterSchoolId.equals(requestedUserSchoolId)) {

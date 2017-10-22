@@ -3,9 +3,20 @@
 const auth = require('feathers-authentication');
 const jwt = require('feathers-authentication-jwt');
 const local = require('feathers-authentication-local');
-const system = require('./strategies/system');
+const logger = require('winston');
 
+const system = require('./strategies/system');
 const hooks = require('./hooks');
+
+
+let secrets;
+try {
+	(process.env.NODE_ENV === 'production') ? secrets = require('../../../config/secrets.js') : secrets = require('../../../config/secrets.json');
+} catch(error) {
+	secrets = {};
+}
+
+let authenticationSecret = (secrets.authentication) ? secrets.authentication : "secrets";
 
 module.exports = function() {
     const app = this;
@@ -16,12 +27,13 @@ module.exports = function() {
 		service: 'accounts',
 		jwt: {
 			header: { typ: 'access' },
-			audience: 'https://yourdomain.com',
+			audience: 'https://schul-cloud.org',
 			subject: 'anonymous',
 			issuer: 'feathers',
 			algorithm: 'HS256',
-			expiresIn: '1d'
-		}
+			expiresIn: '30d'
+		},
+		secret: authenticationSecret
 	});
 
 
@@ -40,7 +52,8 @@ module.exports = function() {
 		name: 'jwt',
 		entity: 'account',
 		service: 'accounts',
-		header: 'Authorization'
+		header: 'Authorization',
+		secretOrKey: authenticationSecret
 	};
 
 
@@ -55,13 +68,13 @@ module.exports = function() {
 	}));
 
 	app.configure(system({
-		name: 'lernsax',
-		loginStrategy: require('../account/strategies/lernsax')
+		name: 'itslearning',
+		loginStrategy: require('../account/strategies/itslearning')
 	}));
 
 	app.configure(system({
-		name: 'itslearning',
-		loginStrategy: require('../account/strategies/itslearning')
+		name: 'iserv',
+		loginStrategy: require('../account/strategies/iserv')
 	}));
 
 
