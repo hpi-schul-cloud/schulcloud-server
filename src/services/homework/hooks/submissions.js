@@ -31,7 +31,7 @@ const noSubmissionBefore = hook => {
         if(!hook.data.coWorkers.includes(hook.params.account.userId.toString())){
             hook.data.coWorkers.push(hook.params.account.userId.toString());
         }
-    }else if(!(hook.data.grade && hook.data.gradeComment)){
+    }else if(!(hook.data.grade || hook.data.gradeComment)){
         hook.data.coWorkers = [hook.params.account.userId.toString()];
     }
 
@@ -47,13 +47,13 @@ const noSubmissionBefore = hook => {
             });
             if(submissionsForMe.length > 0){
                 return Promise.reject(new errors.Conflict({
-                  "message": submissions[0].studentId.firstName + " " + submissions[0].studentId.lastName + " hat bereits für dich abgegeben!"
+                  "message": submissionsForMe[0].studentId.firstName + " " + submissionsForMe[0].studentId.lastName + " hat bereits für dich abgegeben!"
                 }));
             }
 
             let submissionsForCoWorkers = submissions.data.filter(raw => { 
                 let e = JSON.parse(JSON.stringify(raw));
-                hook.data.coWorkers.forEach(coWorker => {
+                (hook.data.coWorkers || [hook.params.account.userId]).forEach(coWorker => {
                     if((e.coWorkers.includes(coWorker.toString())) 
                     || (e.studentId._id.toString() == coWorker.toString())){
                         return true;
@@ -72,7 +72,7 @@ const noSubmissionBefore = hook => {
 
 const maxCoWorkers = hook => {
     // min/max CoWorkers OKAY?
-    if(hook.data.homeworkId){
+    if(hook.data.homeworkId && hook.data.coWorkers){
         const homeworkService = hook.app.service('/homework');
         return homeworkService.get(hook.data.homeworkId,
         {account: {userId: hook.params.account.userId}}).then(homework => {
