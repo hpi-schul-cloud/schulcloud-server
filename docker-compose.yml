@@ -13,12 +13,13 @@ services:
       - 3030:3030
     links:
       - schulcloud-server-mongodb:mongodb
+    external_links:
+      - schulcloud-content:content
     networks:
        - default
        - schulcloud-server-network
     volumes:
       - .:/app
-    command: npm run startd
 
 
   schulcloud-server-mongodb:
@@ -27,13 +28,7 @@ services:
       - data-schulcloud-server:/data/db
       - .:/app
     ports:
-      - 27017
-# https://github.com/docker-library/healthcheck/blob/master/mongo/docker-healthcheck
-    healthcheck:
-      test: ["CMD", "/app/docker-healthcheck"]
-      interval: 5s
-      timeout: 1s
-      retries: 3
+      - 27017:27017
 
   schulcloud-server-mongodb-feed:
       image: mongo:3.4.3
