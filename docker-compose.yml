@@ -21,7 +21,6 @@ services:
        - schulcloud-server-network
     volumes:
       - .:/app
-    command: npm run startd
 
   schulcloud-server-mongodb:
     image: mongo:3.4.3
