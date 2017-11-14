@@ -16,7 +16,10 @@ services:
       - schulcloud-server-mongodb:mongodb
     external_links:
       - schulcloud-content:content
+<<<<<<< 0fa82db893cc0d0f833ec08ba431b1edcfa3933d
 
+=======
+>>>>>>> no healthchecks
     networks:
        - default
        - schulcloud-server-network
