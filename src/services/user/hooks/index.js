@@ -3,6 +3,7 @@
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
+const errors = require('feathers-errors');
 
 /**
  *
@@ -19,6 +20,25 @@ const mapRoleFilterQuery = (hook) => {
 	return Promise.resolve(hook);
 };
 
+const checkUnique = (hook) => {
+	let userService = hook.service;
+	const {email} = hook.data;
+	return userService.find({ query: {email: email}})
+		.then(result => {
+			if(result.data.length > 0) return Promise.reject(new errors.BadRequest('Die E-Mail Adresse ist bereits in Verwendung!'));
+			return Promise.resolve(hook);
+		});
+};
+
+const checkUniqueAccount = (hook) => {
+	let accountService = hook.app.service('/accounts');
+	const {email} = hook.data;
+	return accountService.find({ query: {username: email}})
+		.then(result => {
+			if(result.length > 0) return Promise.reject(new errors.BadRequest('Ein Account mit dieser E-Mail Adresse existiert bereits!'));
+			return Promise.resolve(hook);
+		});
+};
 
 exports.before = function(app) {
 	return {
@@ -32,6 +52,8 @@ exports.before = function(app) {
 		],
 		get: [auth.hooks.authenticate('jwt')],
 		create: [
+			checkUnique,
+			checkUniqueAccount,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [
