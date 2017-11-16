@@ -22,6 +22,7 @@ const passwordRecovery = require('./passwordRecovery');
 const notification = require('./notification');
 const releases = require('./releases');
 const helpdesk = require('./helpdesk');
+const statistic = require('./statistic');
 
 const mongoose = require('mongoose');
 
@@ -53,4 +54,5 @@ module.exports = function () {
 	app.configure(notification);
 	app.configure(releases);
 	app.configure(helpdesk);
+	app.configure(statistic);
 };
