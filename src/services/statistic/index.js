@@ -12,56 +12,71 @@ const fileModel = require('../fileStorage/model');
 
 class StatisticsService {
 	find({query, payload}) {
-		const userPromise = userModel.count().exec();
-		const schoolPromise = schoolModel.count().exec();
-		const accountPromise = accountModel.count().exec();
-		const homeworkPromise = homeworkModel.homeworkModel.count().exec();
-		const submissionPromise = homeworkModel.submissionModel.count().exec();
-		const commentPromise = homeworkModel.commentModel.count().exec();
-		const lessonPromise = lessonModel.count().exec();
-		const classPromise = groupModel.classModel.count().exec();
-		const coursePromise = groupModel.courseModel.count().exec();
-		const teacherPromise = userModel.count({roles: '0000d186816abba584714c98'}).exec();
-		const studentPromise = userModel.count({roles: '0000d186816abba584714c99'}).exec();
-		const filePromise = fileModel.fileModel.count().exec();
-		const directoryPromise = fileModel.directoryModel.count().exec();
 
-		return Promise.all([userPromise, schoolPromise, accountPromise, homeworkPromise, submissionPromise, commentPromise, lessonPromise, classPromise, coursePromise, teacherPromise, studentPromise, filePromise, directoryPromise])
-			.then(res => {
-				res = res.map((result, i) => {
-					switch (i) {
-						case 0:
-							return {users: result};
-						case 1:
-							return {schools: result};
-						case 2:
-							return {accounts: result};
-						case 3:
-							return {homework: result};
-						case 4:
-							return {submissions: result};
-						case 5:
-							return {comments: result};
-						case 6:
-							return {lessons: result};
-						case 7:
-							return {classes: result};
-						case 8:
-							return {courses: result};
-						case 9:
-							return {teachers: result};
-						case 10:
-							return {students: result};
-						case 11:
-							return {files: result};
-						case 12:
-							return {directories: result};
-						default:
-							return {result};
-					}
-				});
-				return Object.assign(...res);
+		let promises = [
+			{
+				name: 'users',
+				promise: userModel.count().exec()
+			},
+			{
+				name: 'schools',
+				promise: schoolModel.count().exec()
+			},
+			{
+				name: 'accounts',
+				promise: accountModel.count().exec()
+			},
+			{
+				name: 'homework',
+				promise: homeworkModel.homeworkModel.count().exec()
+			},
+			{
+				name: 'submissions',
+				promise: homeworkModel.submissionModel.count().exec()
+			},
+			{
+				name: 'comments',
+				promise: homeworkModel.commentModel.count().exec()
+			},
+			{
+				name: 'lessons',
+				promise: lessonModel.count().exec()
+			},
+			{
+				name: 'classes',
+				promise: groupModel.classModel.count().exec()
+			},
+			{
+				name: 'courses',
+				promise: groupModel.courseModel.count().exec()
+			},
+			{
+				name: 'teachers',
+				promise: userModel.count({roles: '0000d186816abba584714c98'}).exec()
+			},
+			{
+				name: 'students',
+				promise: userModel.count({roles: '0000d186816abba584714c99'}).exec()
+			},
+			{
+				name: 'files',
+				promise: fileModel.fileModel.count().exec()
+			},
+			{
+				name: 'directories',
+				promise: fileModel.directoryModel.count().exec()
+			},
+		];
+
+		let statistics = {};
+
+
+		return Promise.all(promises.map(p => {
+			return p.promise.then(res => {
+				statistics[p.name] = res;
+				return res;
 			});
+		})).then(_ => statistics);
 	}
 }
 
