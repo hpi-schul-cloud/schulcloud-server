@@ -108,8 +108,27 @@ class StatisticsService {
 				});
 
 				let counts = {};
-				stats.forEach(function(x) { counts[x] = (counts[x] || 0)+1; });
-				return counts;
+				stats.forEach((x) => { counts[x] = (counts[x] || 0)+1; });
+
+				const ordered = {};
+				Object.keys(counts).sort().forEach((key) => {
+					ordered[key] = counts[key];
+				});
+
+				let x = [];
+				let y = [];
+
+				if (params.query.array) {
+
+					for (let key in ordered) {
+						if (ordered.hasOwnProperty(key)) {
+							x.push(key);
+							y.push(ordered[key]);
+						}
+					}
+				}
+
+				return (params.query.array) ? {x,y} : ordered;
 			});
 	}
 }
