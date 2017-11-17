@@ -2,6 +2,10 @@
 
 const service = require('feathers-mongoose');
 const hooks = require('./hooks/index');
+const moment = require('moment');
+const _ = require('lodash');
+const swaggerDocs = require('./docs/');
+
 const schoolModel = require('../school/model');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
@@ -9,8 +13,6 @@ const homeworkModel = require('../homework/model');
 const lessonModel = require('../lesson/model');
 const groupModel = require('../user-group/model');
 const fileModel = require('../fileStorage/model');
-const moment = require('moment');
-const _ = require('lodash');
 
 let promises = [
 	{
@@ -93,6 +95,10 @@ const fetchStatistics = () => {
 };
 
 class StatisticsService {
+	constructor() {
+		this.docs = swaggerDocs.statisticsService;
+	}
+
 	find({query, payload}) {
 		return fetchStatistics()
 			.then(statistics => {
@@ -118,8 +124,7 @@ class StatisticsService {
 				let x = [];
 				let y = [];
 
-				if (params.query.array) {
-
+				if (params.query.returnArray) {
 					for (let key in ordered) {
 						if (ordered.hasOwnProperty(key)) {
 							x.push(key);
@@ -128,7 +133,7 @@ class StatisticsService {
 					}
 				}
 
-				return (params.query.array) ? {x,y} : ordered;
+				return (params.query.returnArray) ? {x,y} : ordered;
 			});
 	}
 }
