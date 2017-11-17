@@ -10,13 +10,13 @@ const filterApplicableSubmissions = hook => {
     if(hook.params.account){
         data = data.filter(function(e){
             let c = JSON.parse(JSON.stringify(e));
-            if(typeof c.coWorkers === 'object'){
-                c.coWorkers = c.coWorkers.map(e => {return e._id;});
+            if(typeof c.coWorkers[0] === 'object'){
+                c.coWorkers = c.coWorkers.map(e => {return e._id;}); // map coWorkers list to _id list (if $populate(d) is used)
             }
-            return c.homeworkId.publicSubmissions
-                    || c.homeworkId.teacherId.toString() == hook.params.account.userId.toString()
-                    || c.studentId.toString() == hook.params.account.userId.toString()
-                    || c.coWorkers.includes(hook.params.account.userId.toString());
+            return     c.homeworkId.publicSubmissions                                               // publicSubmissions allowes (everyone can see)
+                    || c.homeworkId.teacherId.toString() == hook.params.account.userId.toString()   // or user is teacher
+                    || c.studentId.toString() == hook.params.account.userId.toString()              // or is student (may not needed because all students should be in coWorkers)
+                    || c.coWorkers.includes(hook.params.account.userId.toString());                 // or in the team                    
         });
         (hook.result.data)?(hook.result.data = data):(hook.result = data);
     }
@@ -34,7 +34,7 @@ const noSubmissionBefore = hook => {
     }else if(!(hook.data.grade || hook.data.gradeComment)){
         hook.data.coWorkers = [hook.params.account.userId.toString()];
     }
-
+    //console.log("studentId");
     const submissionService = hook.app.service('/submissions');
     return submissionService.find({query: {
             homeworkId: hook.data.homeworkId,
@@ -71,7 +71,6 @@ const noSubmissionBefore = hook => {
 
 
 const maxCoWorkers = hook => {
-    // min/max CoWorkers OKAY?
     if(hook.data.homeworkId && hook.data.coWorkers){
         const homeworkService = hook.app.service('/homework');
         return homeworkService.get(hook.data.homeworkId,
@@ -95,17 +94,18 @@ const maxCoWorkers = hook => {
 };
 
 const canGrade = hook => {
-    if(Number.isInteger(hook.data.grade)){
+    if(Number.isInteger(hook.data.grade) || typeof hook.data.gradeComment == "string"){ // does the user try to grade?
+        // get homework data to get the teacherId
         const homeworkService = hook.app.service('/homework');
         return homeworkService.get(hook.data.homeworkId,
         {account: {userId: hook.params.account.userId}}).then(homework => {
-            if(homework.teacherId != hook.params.account.userId){
+            if(homework.teacherId != hook.params.account.userId){ // user isn't a teacher of this homework
                 return Promise.reject(new errors.Forbidden());
             }else{
                 return Promise.resolve(hook);
             }
         });
-    }else{
+    }else{ // no grading => no possible rejections
         return Promise.resolve(hook);
     }
 };
@@ -115,8 +115,8 @@ exports.before = {
   find: [globalHooks.mapPaginationQuery.bind(this)],
   get: [],
   create: [noSubmissionBefore, maxCoWorkers, canGrade],
-  update: [noSubmissionBefore, maxCoWorkers, canGrade],
-  patch: [noSubmissionBefore, maxCoWorkers, canGrade],
+  update: [maxCoWorkers, canGrade],
+  patch:  [maxCoWorkers, canGrade],
   remove: []
 };
 
