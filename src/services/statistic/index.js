@@ -2,6 +2,7 @@
 
 const service = require('feathers-mongoose');
 const hooks = require('./hooks/index');
+const hooks2 = require('./hooks/index2');
 const schoolModel = require('../school/model');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
@@ -9,6 +10,7 @@ const homeworkModel = require('../homework/model');
 const lessonModel = require('../lesson/model');
 const groupModel = require('../user-group/model');
 const fileModel = require('../fileStorage/model');
+const statisticModel = require('./model');
 
 class StatisticsService {
 	find({query, payload}) {
@@ -76,22 +78,39 @@ class StatisticsService {
 				statistics[p.name] = res;
 				return res;
 			});
-		})).then(_ => statistics);
+		})).then(_ => {
+			statisticModel.create(statistics);
+
+			return statistics;
+		});
 	}
 }
 
 module.exports = function () {
 	const app = this;
 
+	const options = {
+		Model: statisticModel,
+		paginate: {
+			default: 100,
+			max: 50000
+		},
+		lean: true
+	};
+
 	// Initialize our service with any options it requires
-	app.use('/statistics', new StatisticsService());
+	app.use('/statistics/fetch', new StatisticsService());
+	app.use('/statistics', service(options));
 
 	// Get our initialize service to that we can bind hooks
+	const statisticsFetchService = app.service('/statistics/fetch');
 	const statisticsService = app.service('/statistics');
 
 	// Set up our before hooks
+	statisticsFetchService.before(hooks.before);
 	statisticsService.before(hooks.before);
 
 	// Set up our after hooks
+	statisticsFetchService.after(hooks.after);
 	statisticsService.after(hooks.after);
 };
