@@ -2,7 +2,6 @@
 
 const service = require('feathers-mongoose');
 const hooks = require('./hooks/index');
-const hooks2 = require('./hooks/index2');
 const schoolModel = require('../school/model');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
@@ -10,66 +9,80 @@ const homeworkModel = require('../homework/model');
 const lessonModel = require('../lesson/model');
 const groupModel = require('../user-group/model');
 const fileModel = require('../fileStorage/model');
-const statisticModel = require('./model');
+const moment = require('moment');
+const _ = require('lodash');
+
+let promises = [
+	{
+		name: 'users',
+		promise: userModel.count().exec(),
+		model: userModel.find().exec()
+	},
+	{
+		name: 'schools',
+		promise: schoolModel.count().exec(),
+		model: schoolModel.find().exec()
+	},
+	{
+		name: 'accounts',
+		promise: accountModel.count().exec(),
+		model: accountModel.find().exec()
+	},
+	{
+		name: 'homework',
+		promise: homeworkModel.homeworkModel.count().exec(),
+		model: homeworkModel.homeworkModel.find().exec()
+	},
+	{
+		name: 'submissions',
+		promise: homeworkModel.submissionModel.count().exec(),
+		model: homeworkModel.submissionModel.find().exec()
+	},
+	{
+		name: 'comments',
+		promise: homeworkModel.commentModel.count().exec(),
+		model: homeworkModel.commentModel.find().exec()
+	},
+	{
+		name: 'lessons',
+		promise: lessonModel.count().exec(),
+		model: lessonModel.find().exec()
+	},
+	{
+		name: 'classes',
+		promise: groupModel.classModel.count().exec(),
+		model: groupModel.classModel.find().exec()
+	},
+	{
+		name: 'courses',
+		promise: groupModel.courseModel.count().exec(),
+		model: groupModel.courseModel.find().exec()
+	},
+	{
+		name: 'teachers',
+		promise: userModel.count({roles: '0000d186816abba584714c98'}).exec(),
+		model: userModel.find({roles: '0000d186816abba584714c98'}).exec()
+	},
+	{
+		name: 'students',
+		promise: userModel.count({roles: '0000d186816abba584714c99'}).exec(),
+		model: userModel.find({roles: '0000d186816abba584714c99'}).exec()
+	},
+	{
+		name: 'files',
+		promise: fileModel.fileModel.count().exec(),
+		model: fileModel.fileModel.find().exec()
+	},
+	{
+		name: 'directories',
+		promise: fileModel.directoryModel.count().exec(),
+		model: fileModel.directoryModel.find().exec()
+	},
+];
 
 const fetchStatistics = () => {
-	let promises = [
-		{
-			name: 'users',
-			promise: userModel.count().exec()
-		},
-		{
-			name: 'schools',
-			promise: schoolModel.count().exec()
-		},
-		{
-			name: 'accounts',
-			promise: accountModel.count().exec()
-		},
-		{
-			name: 'homework',
-			promise: homeworkModel.homeworkModel.count().exec()
-		},
-		{
-			name: 'submissions',
-			promise: homeworkModel.submissionModel.count().exec()
-		},
-		{
-			name: 'comments',
-			promise: homeworkModel.commentModel.count().exec()
-		},
-		{
-			name: 'lessons',
-			promise: lessonModel.count().exec()
-		},
-		{
-			name: 'classes',
-			promise: groupModel.classModel.count().exec()
-		},
-		{
-			name: 'courses',
-			promise: groupModel.courseModel.count().exec()
-		},
-		{
-			name: 'teachers',
-			promise: userModel.count({roles: '0000d186816abba584714c98'}).exec()
-		},
-		{
-			name: 'students',
-			promise: userModel.count({roles: '0000d186816abba584714c99'}).exec()
-		},
-		{
-			name: 'files',
-			promise: fileModel.fileModel.count().exec()
-		},
-		{
-			name: 'directories',
-			promise: fileModel.directoryModel.count().exec()
-		},
-	];
 
 	let statistics = {};
-
 
 	return Promise.all(promises.map(p => {
 		return p.promise.then(res => {
@@ -79,55 +92,40 @@ const fetchStatistics = () => {
 	})).then(_ => statistics);
 };
 
-class StatisticsFetchService {
+class StatisticsService {
 	find({query, payload}) {
 		return fetchStatistics()
 			.then(statistics => {
-				statisticModel.create(statistics);
-
 				return statistics;
-			})
+			});
 	}
-}
 
-class StatisticsRecentService {
-	find({query, payload}) {
-		return fetchStatistics()
-			.then(statistics => {
-				return statistics;
-			})
+	get(id, params) {
+		return _.find(promises, {name: id}).model
+			.then(generic => {
+				let stats =	generic.map(gen => {
+					return moment(gen.createdAt).format('YYYY-MM-DD');
+				});
+
+				let counts = {};
+				stats.forEach(function(x) { counts[x] = (counts[x] || 0)+1; });
+				return counts;
+			});
 	}
 }
 
 module.exports = function () {
 	const app = this;
 
-	const options = {
-		Model: statisticModel,
-		paginate: {
-			default: 100,
-			max: 50000
-		},
-		lean: true
-	};
-
 	// Initialize our service with any options it requires
-	app.use('/statistics/recent', new StatisticsRecentService());
-	app.use('/statistics/fetch', new StatisticsFetchService());
-	app.use('/statistics', service(options));
+	app.use('/statistics', new StatisticsService());
 
 	// Get our initialize service to that we can bind hooks
-	const statisticsRecentService = app.service('/statistics/recent');
-	const statisticsFetchService = app.service('/statistics/fetch');
 	const statisticsService = app.service('/statistics');
 
 	// Set up our before hooks
-	statisticsRecentService.before(hooks.before);
-	statisticsFetchService.before(hooks.before);
 	statisticsService.before(hooks.before);
 
 	// Set up our after hooks
-	statisticsRecentService.after(hooks.after);
-	statisticsFetchService.after(hooks.after);
 	statisticsService.after(hooks.after);
 };

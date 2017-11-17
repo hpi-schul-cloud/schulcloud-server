@@ -8,11 +8,11 @@ describe('statistic service', function() {
 		assert.ok(app.service('statistics'));
 	});
 
-	it('should be able to trigger fetch route', () => {
-		assert.ok(app.service('statistics/fetch').find());
+	it('should be able to find one value stats', () => {
+		assert.ok(app.service('statistics').find());
 	});
 
-	it('should be able to trigger recent route', () => {
-		assert.ok(app.service('statistics/recent').find());
+	it('should be able to get users stats', () => {
+		assert.ok(app.service('statistics').find({qs: "users"}));
 	});
 });

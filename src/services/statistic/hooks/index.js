@@ -5,9 +5,9 @@ const auth = require('feathers-authentication');
 const globalHooks = require('../../../hooks');
 
 exports.before = {
-	all: [],
-	find: [auth.hooks.authenticate('jwt'), globalHooks.isSuperHero()],
-	get: [hooks.disable()],
+	all: [auth.hooks.authenticate('jwt'), globalHooks.isSuperHero()],
+	find: [],
+	get: [],
 	create: [hooks.disable()],
 	update: [hooks.disable()],
 	patch: [hooks.disable()],
