@@ -11,4 +11,8 @@ describe('statistic service', function() {
 	it('should be able to trigger fetch route', () => {
 		assert.ok(app.service('statistics/fetch').find());
 	});
+
+	it('should be able to trigger recent route', () => {
+		assert.ok(app.service('statistics/recent').find());
+	});
 });
