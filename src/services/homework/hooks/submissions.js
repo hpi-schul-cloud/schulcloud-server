@@ -55,29 +55,30 @@ const preventMultipleSubmissions = hook => {
                 homeworkId: hook.data.homeworkId,
                 $populate: ['studentId']
         }}).then((submissions) => {
-            // check that no one has already submitted for the current User
-            let submissionsForMe = submissions.data.filter(raw => { 
-                let e = JSON.parse(JSON.stringify(raw));
-                return (e.coWorkers.includes(hook.params.account.userId.toString()))
-                       && (e.studentId._id.toString() != hook.params.account.userId.toString());
-            });
-            if(submissionsForMe.length > 0){
-                return Promise.reject(new errors.Conflict({
-                  "message": submissionsForMe[0].studentId.firstName + " " + submissionsForMe[0].studentId.lastName + " hat bereits für dich abgegeben!"
-                }));
-            }
-            // check if a coWorker submitted a solution on his own => display names
-            if(hook.data.coWorkers){
-                let toRemove = '';
-                let submissionsForCoWorkers = submissions.data.filter(raw => { 
+            if(hook.method == "create"){
+                // check that no one has already submitted for the current User
+                let submissionsForMe = submissions.data.filter(raw => { 
                     let e = JSON.parse(JSON.stringify(raw));
-                    for (var i = 0; i < hook.data.coWorkers.length; i++) {
-                        const coWorker = hook.data.coWorkers[i].toString();
-                        if((e.coWorkers.includes(coWorker)
-                            || (e.studentId._id.toString() == coWorker))
-                            && (e.studentId._id.toString() != hook.params.account.userId.toString())){
+                    return (e.coWorkers.includes(hook.params.account.userId.toString()))
+                           && (e.studentId._id.toString() != hook.params.account.userId.toString());
+                });
+                if(submissionsForMe.length > 0){
+                    return Promise.reject(new errors.Conflict({
+                      "message": submissionsForMe[0].studentId.firstName + " " + submissionsForMe[0].studentId.lastName + " hat bereits für dich abgegeben!"
+                    }));
+                }
+            }
+            function coWorkerHasAlreadySubmitted(Promise, hook, submissions, newCoWorkers){
+                let toRemove = '';
+                let submissionsForCoWorkers = submissions.data.filter(submissionRAW => { 
+                    let submission = JSON.parse(JSON.stringify(submissionRAW));
+                    for (var i = 0; i < newCoWorkers.length; i++) {
+                        const coWorker = newCoWorkers[i].toString();
+                        if(submission.coWorkers.includes(coWorker)
+                            || (submission.studentId._id.toString() == coWorker)
+                        ){
                             toRemove += (toRemove == '')?'':', ';
-                            toRemove += e.studentId.firstName + ' ' + e.studentId.lastName;
+                            toRemove += submission.studentId.firstName + ' ' + submission.studentId.lastName;
                             return true;
                         }
                     }
@@ -87,6 +88,24 @@ const preventMultipleSubmissions = hook => {
                     return Promise.reject(new errors.Conflict({
                       "message": toRemove + ((submissionsForCoWorkers.length == 1)?' hat':' haben') + ' bereits eine Lösung abgegeben! Entferne diese' + ((submissionsForCoWorkers.length == 1)?'s Mitglied!':' Mitglieder!')
                     }));
+                }else{
+                    return Promise.resolve(hook);
+                }
+            }
+            // check if a coWorker submitted a solution on his own => display names
+            if(hook.data.coWorkers){
+                // patch => only check for new team members
+                if(hook.id){
+                    return hook.app.service('/submissions').get(hook.id,{account: {userId: hook.params.account.userId}})
+                    .then(currentSubmission => {
+                        currentSubmission = JSON.parse(JSON.stringify(currentSubmission));
+                        const newCoWorkers = hook.data.coWorkers.filter(coWorker => {
+                            return !currentSubmission.coWorkers.includes(coWorker.toString());
+                        });
+                        return coWorkerHasAlreadySubmitted(Promise, hook, submissions, newCoWorkers);
+                    });
+                }else{
+                    return coWorkerHasAlreadySubmitted(Promise, hook, submissions, hook.data.coWorkers);
                 }
             }
         });
