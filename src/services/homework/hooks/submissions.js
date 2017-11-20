@@ -24,25 +24,29 @@ const filterApplicableSubmissions = hook => {
 };
 
 const normalizeCoWorkers = hook => {
-    if(hook.data.coWorkers && !(hook.data.grade || hook.data.gradeComment)){  // if student (noGrading) is going to modify coWorkers
+    console.log(typeof hook.data.coWorkers,hook.data.coWorkers);
+    if(!(hook.data.grade || hook.data.gradeComment)){  // if student (noGrading) is going to modify coWorkers
         // make coWorkers an Array if it isn't already
         if(!Array.isArray(hook.data.coWorkers)){
             hook.data.coWorkers = (hook.data.coWorkers)?([hook.data.coWorkers]):[];
         }
-        // add current User if he isn't included already
-        if(!hook.data.coWorkers.includes(hook.params.account.userId.toString())){
-            hook.data.coWorkers.push(hook.params.account.userId.toString());
-        }
-        // set current User as studentId (allways contains the user who did the latest changes)
-        if(hook.data.studentId){
-            hook.data.studentId = hook.params.account.userId.toString();
+        //  prevent that tasks have no owners
+        if(!hook.data.coWorkers || hook.data.coWorkers.length == 0){
+            hook.data.coWorkers = [hook.params.account.userId.toString()];
+        }else{
+            // current user is not going to remove himself
+            if(hook.data.coWorkers.includes(hook.params.account.userId.toString())){
+                hook.data.studentId = hook.params.account.userId.toString();
+            }else{
+                // he removed himself => new owner needed
+                hook.data.studentId = hook.data.coWorkers[0];
+            }
         }
     }
 };
 const setCoWorkers = hook => {
     if(!(hook.data.coWorkers || hook.data.grade || hook.data.gradeComment)){  // if student (no grading) is going to submit without coWorkers set
-        // set current User as coWorker if no coWorker Data submitted
-        hook.data.coWorkers = [hook.params.account.userId.toString()];
+        hook.data.coWorkers = [hook.params.account.userId.toString()]; // set current User as coWorker
     }
 };
 
@@ -57,10 +61,10 @@ const preventMultipleSubmissions = hook => {
         }}).then((submissions) => {
             if(hook.method == "create"){
                 // check that no one has already submitted for the current User
-                let submissionsForMe = submissions.data.filter(raw => { 
-                    let e = JSON.parse(JSON.stringify(raw));
-                    return (e.coWorkers.includes(hook.params.account.userId.toString()))
-                           && (e.studentId._id.toString() != hook.params.account.userId.toString());
+                let submissionsForMe = submissions.data.filter(submissionRAW => { // is there an submission for the current user?
+                    let submissions = JSON.parse(JSON.stringify(submissionRAW));
+                    return (submissions.coWorkers.includes(hook.params.account.userId.toString()))
+                           && (submissions.studentId._id.toString() != hook.params.account.userId.toString());
                 });
                 if(submissionsForMe.length > 0){
                     return Promise.reject(new errors.Conflict({
@@ -157,7 +161,8 @@ const isCoWorker = hook => {
     // only allow deletion for team Members
     const submissionService = hook.app.service('/submissions');
     return submissionService.get(hook.id).then((submission) => {
-        if(JSON.parse(JSON.stringify(submission.coWorkers)).includes(hook.params.account.userId.toString())
+        submission = JSON.parse(JSON.stringify(submission));
+        if(submission.coWorkers.includes(hook.params.account.userId.toString())
             || submission.studentId == hook.params.account.userId.toString()){
             return Promise.resolve(hook);
         }
@@ -173,8 +178,8 @@ exports.before = {
   find: [globalHooks.mapPaginationQuery.bind(this)],
   get: [],
   create: [setCoWorkers, normalizeCoWorkers, preventMultipleSubmissions, maxCoWorkers, canGrade],
-  update: [normalizeCoWorkers, preventMultipleSubmissions, maxCoWorkers, canGrade],
-  patch:  [normalizeCoWorkers, preventMultipleSubmissions, maxCoWorkers, canGrade],
+  update: [isCoWorker, normalizeCoWorkers, preventMultipleSubmissions, maxCoWorkers, canGrade],
+  patch:  [isCoWorker, normalizeCoWorkers, preventMultipleSubmissions, maxCoWorkers, canGrade],
   remove: [isCoWorker]
 };
 
