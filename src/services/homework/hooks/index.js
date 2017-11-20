@@ -15,9 +15,9 @@ const getAverageRating = function(submissions){
         var numSubmissions = 0;
         var gradeSum = 0;
         submissiongrades.forEach(e => {
-            if(e.coWorkers && e.coWorkers.length > 0){
-                numSubmissions += e.coWorkers.length;
-                gradeSum += (e.coWorkers.length * e.grade);
+            if(e.teamMembers && e.teamMembers.length > 0){
+                numSubmissions += e.teamMembers.length;
+                gradeSum += (e.teamMembers.length * e.grade);
             }else{
                 numSubmissions += 1;
                 gradeSum += e.grade;
@@ -107,14 +107,14 @@ const addStats = hook => {
                     let submissionP = (
                         submissions.data.filter(function(n){
                             return JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && n.comment != undefined && n.comment != "";})
-                        .map(e => {return (e.coWorkers.length || 1);})
+                        .map(e => {return (e.teamMembers.length || 1);})
                         .reduce((a, b) => a+b, 0)
                         / ((c.courseId || {}).userIds || []).length
                     )*100;
                     let gradeP = (submissions.data.filter(function(n){
                             return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
                                 && ( n.gradeComment != '' || Number.isInteger(n.grade) );})
-                        .map(e => {return (e.coWorkers.length || 1);})
+                        .map(e => {return (e.teamMembers.length || 1);})
                         .reduce((a, b) => a+b, 0)
                         / ((c.courseId || {}).userIds || []).length
                     )*100;
@@ -123,13 +123,13 @@ const addStats = hook => {
                         submissionCount: 
                             submissions.data.filter(function(n){
                                 return  JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && n.comment != undefined && n.comment != "";})
-                                .map(e => {return (e.coWorkers.length || 1);})
+                                .map(e => {return (e.teamMembers.length || 1);})
                                 .reduce((a, b) => a+b, 0),
                         submissionPercentage: (submissionP && submissionP != Infinity)?submissionP.toFixed(2):undefined,
                         gradeCount: 
                             submissions.data.filter(function(n){
                                 return JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && ( n.gradeComment != '' || Number.isInteger(n.grade) );})
-                            .map(e => {return (e.coWorkers.length || 1);})
+                            .map(e => {return (e.teamMembers.length || 1);})
                             .reduce((a, b) => a+b, 0),
                         gradePercentage:(gradeP && gradeP != Infinity)?gradeP.toFixed(2):undefined,
                         averageGrade: getAverageRating(submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId);}))
