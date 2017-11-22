@@ -59,6 +59,9 @@ module.exports = function () {
 	app.configure(helpdesk);
 	app.configure(statistic);
 	app.configure(pseudo);
+<<<<<<< cbb467892991e70ebd29f4cf00d257a39ae8be19
 	app.configure(feedback);
 	app.configure(lrs);
+=======
+>>>>>>> add route
 };
