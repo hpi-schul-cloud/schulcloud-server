@@ -74,7 +74,7 @@
     "request-promise-native": "^1.0.3",
     "serve-favicon": "^2.3.2",
     "strip-js": "^1.0.6",
-	"uuid": "^3.1.0",
+  	"uuid": "^3.1.0",
     "winston": "^2.3.0"
   },
   "devDependencies": {
