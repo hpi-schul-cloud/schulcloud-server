@@ -13,8 +13,11 @@ const authentication = require('./authentication');
 const user = require('./user');
 const role = require('./role');
 const pseudo = require("./pseudonym");
+<<<<<<< 3717a8047a7e1d54c429ae7aff5e76e590330900
 const lrs = require("./lrs");
 const feedback = require("./feedback");
+=======
+>>>>>>> add route
 const helpers = require('./helpers');
 const resolve = require('./resolve');
 
