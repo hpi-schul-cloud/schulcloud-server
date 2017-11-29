@@ -24,7 +24,6 @@ const filterApplicableSubmissions = hook => {
 };
 
 const normalizeTeamMembers = hook => {
-    console.log(typeof hook.data.teamMembers,hook.data.teamMembers);
     if(!(hook.data.grade || hook.data.gradeComment)){  // if student (noGrading) is going to modify teamMembers
         // make teamMembers an Array if it isn't already
         if(!Array.isArray(hook.data.teamMembers)){
@@ -121,7 +120,8 @@ const maxTeamMembers = hook => {
     if(hook.data.homeworkId && hook.data.teamMembers){
         const homeworkService = hook.app.service('/homework');
         return homeworkService.get(hook.data.homeworkId,
-        {account: {userId: hook.params.account.userId}}).then(homework => {
+            {account: {userId: hook.params.account.userId}})
+        .then(homework => {
             if(hook.data.teamMembers.length > 1 && !homework.teamSubmissions){
                 return Promise.reject(new errors.Conflict({
                       "message": "Teamabgaben sind nicht erlaubt!"
