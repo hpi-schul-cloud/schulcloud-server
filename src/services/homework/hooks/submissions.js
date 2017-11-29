@@ -23,7 +23,7 @@ const filterApplicableSubmissions = hook => {
 	return Promise.resolve(hook);
 };
 
-const normalizeCoWorkers = hook => {
+const normalizeTeamMembers = hook => {
     console.log(typeof hook.data.teamMembers,hook.data.teamMembers);
     if(!(hook.data.grade || hook.data.gradeComment)){  // if student (noGrading) is going to modify teamMembers
         // make teamMembers an Array if it isn't already
@@ -44,7 +44,7 @@ const normalizeCoWorkers = hook => {
         }
     }
 };
-const setCoWorkers = hook => {
+const setTeamMembers = hook => {
     if(!(hook.data.teamMembers || hook.data.grade || hook.data.gradeComment)){  // if student (no grading) is going to submit without teamMembers set
         hook.data.teamMembers = [hook.params.account.userId.toString()]; // set current User as teamMember
     }
@@ -72,12 +72,12 @@ const preventMultipleSubmissions = hook => {
                     }));
                 }
             }
-            function teamMemberHasAlreadySubmitted(Promise, hook, submissions, newCoWorkers){
+            function teamMemberHasAlreadySubmitted(Promise, hook, submissions, newTeamMembers){
                 let toRemove = '';
-                let submissionsForCoWorkers = submissions.data.filter(submissionRAW => { 
+                let submissionsForTeamMembers = submissions.data.filter(submissionRAW => { 
                     let submission = JSON.parse(JSON.stringify(submissionRAW));
-                    for (var i = 0; i < newCoWorkers.length; i++) {
-                        const teamMember = newCoWorkers[i].toString();
+                    for (var i = 0; i < newTeamMembers.length; i++) {
+                        const teamMember = newTeamMembers[i].toString();
                         if(submission.teamMembers.includes(teamMember)
                             || (submission.studentId._id.toString() == teamMember)
                         ){
@@ -88,9 +88,9 @@ const preventMultipleSubmissions = hook => {
                     }
                     return false;
                 });
-                if(submissionsForCoWorkers.length > 0){
+                if(submissionsForTeamMembers.length > 0){
                     return Promise.reject(new errors.Conflict({
-                      "message": toRemove + ((submissionsForCoWorkers.length == 1)?' hat':' haben') + ' bereits eine Lösung abgegeben! Entferne diese' + ((submissionsForCoWorkers.length == 1)?'s Mitglied!':' Mitglieder!')
+                      "message": toRemove + ((submissionsForTeamMembers.length == 1)?' hat':' haben') + ' bereits eine Lösung abgegeben! Entferne diese' + ((submissionsForTeamMembers.length == 1)?'s Mitglied!':' Mitglieder!')
                     }));
                 }else{
                     return Promise.resolve(hook);
@@ -103,10 +103,10 @@ const preventMultipleSubmissions = hook => {
                     return hook.app.service('/submissions').get(hook.id,{account: {userId: hook.params.account.userId}})
                     .then(currentSubmission => {
                         currentSubmission = JSON.parse(JSON.stringify(currentSubmission));
-                        const newCoWorkers = hook.data.teamMembers.filter(teamMember => {
+                        const newTeamMembers = hook.data.teamMembers.filter(teamMember => {
                             return !currentSubmission.teamMembers.includes(teamMember.toString());
                         });
-                        return teamMemberHasAlreadySubmitted(Promise, hook, submissions, newCoWorkers);
+                        return teamMemberHasAlreadySubmitted(Promise, hook, submissions, newTeamMembers);
                     });
                 }else{
                     return teamMemberHasAlreadySubmitted(Promise, hook, submissions, hook.data.teamMembers);
@@ -117,7 +117,7 @@ const preventMultipleSubmissions = hook => {
 };
 
 
-const maxCoWorkers = hook => {
+const maxTeamMembers = hook => {
     if(hook.data.homeworkId && hook.data.teamMembers){
         const homeworkService = hook.app.service('/homework');
         return homeworkService.get(hook.data.homeworkId,
@@ -127,10 +127,10 @@ const maxCoWorkers = hook => {
                       "message": "Teamabgaben sind nicht erlaubt!"
                     }));
             }
-            if(homework.teamSubmissions && homework.maxCoWorkers 
-            && homework.maxCoWorkers >= 1 && hook.data.teamMembers.length > homework.maxCoWorkers){
+            if(homework.teamSubmissions && homework.maxTeamMembers 
+            && homework.maxTeamMembers >= 1 && hook.data.teamMembers.length > homework.maxTeamMembers){
                 return Promise.reject(new errors.Conflict({
-                      "message": "Dein Team ist größer als erlaubt! ( maximal "+ homework.maxCoWorkers +" Teammitglieder erlaubt)"
+                      "message": "Dein Team ist größer als erlaubt! ( maximal "+ homework.maxTeamMembers +" Teammitglieder erlaubt)"
                     }));
             }
             return Promise.resolve(hook);
@@ -157,7 +157,7 @@ const canGrade = hook => {
     }
 };
 
-const isCoWorker = hook => {
+const isTeamMember = hook => {
     // only allow deletion for team Members
     const submissionService = hook.app.service('/submissions');
     return submissionService.get(hook.id).then((submission) => {
@@ -177,10 +177,10 @@ exports.before = {
   all: [auth.hooks.authenticate('jwt')],
   find: [globalHooks.mapPaginationQuery.bind(this)],
   get: [],
-  create: [setCoWorkers, normalizeCoWorkers, preventMultipleSubmissions, maxCoWorkers, canGrade],
-  update: [isCoWorker, normalizeCoWorkers, preventMultipleSubmissions, maxCoWorkers, canGrade],
-  patch:  [isCoWorker, normalizeCoWorkers, preventMultipleSubmissions, maxCoWorkers, canGrade],
-  remove: [isCoWorker]
+  create: [setTeamMembers, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
+  update: [isTeamMember, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
+  patch:  [isTeamMember, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
+  remove: [isTeamMember]
 };
 
 exports.after = {
