@@ -47,6 +47,9 @@ const setTeamMembers = hook => {
     if(!(hook.data.teamMembers || hook.data.grade || hook.data.gradeComment)){  // if student (no grading) is going to submit without teamMembers set
         hook.data.teamMembers = [hook.params.account.userId.toString()]; // set current User as teamMember
     }
+    if(!hook.data.teamMembers.includes(hook.params.account.userId.toString())){
+        hook.data.teamMembers.push(hook.params.account.userId.toString())
+    }
 };
 
 const preventMultipleSubmissions = hook => {
