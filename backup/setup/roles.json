@@ -4,6 +4,8 @@
 	},
 	"name": "user",
 	"roles": [],
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"permissions": [
 		"BASE_VIEW",
 		"DASHBOARD_VIEW",
@@ -26,6 +28,8 @@
 		"$oid": "0000d186816abba584714c96"
 	},
 	"name": "administrator",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"roles": [
 		{
 			"$oid": "0000d186816abba584714c95"
@@ -41,6 +45,8 @@
 		"$oid": "0000d186816abba584714c97"
 	},
 	"name": "superhero",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"roles": [
 		{
 			"$oid": "0000d186816abba584714c95"
@@ -54,6 +60,8 @@
 		"$oid": "0000d186816abba584714c98"
 	},
 	"name": "teacher",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"roles": [
 		{
 			"$oid": "0000d186816abba584714c95"
@@ -74,6 +82,8 @@
 		"$oid": "0000d186816abba584714c99"
 	},
 	"name": "student",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"roles": [
 		{
 			"$oid": "0000d186816abba584714c95"
@@ -87,6 +97,8 @@
 		"$oid": "0000d186816abba584714d00"
 	},
 	"name": "demo",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"roles": [],
 	"permissions": [
 		"BASE_VIEW",
@@ -101,6 +113,8 @@
 		"$oid": "0000d186816abba584714d02"
 	},
 	"name": "demoStudent",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"roles": [
 		{
 			"$oid": "0000d186816abba584714d00"
@@ -114,6 +128,8 @@
 		"$oid": "0000d186816abba584714d03"
 	},
 	"name": "demoTeacher",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"roles": [
 		{
 			"$oid": "0000d186816abba584714d00"
@@ -130,6 +146,8 @@
 		"$oid": "0000d186816abba584714d01"
 	},
 	"name": "helpdesk",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"roles": [
 		{
 			"$oid": "0000d186816abba584714c95"
