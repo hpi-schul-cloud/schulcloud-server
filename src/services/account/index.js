@@ -5,6 +5,9 @@ const account = require('./model');
 const hooks = require('./hooks');
 const hooksCJWT = require('./hooksCJWT');
 const CryptoJS = require("crypto-js");
+const RandExp = require('randexp');
+const Chance = require('chance');
+const chance = new Chance();
 
 class CustomJWTService {
 	constructor(authentication) {
@@ -62,6 +65,50 @@ class CustomJWTService {
 	}
 }
 
+function randomGen(arr) {
+	let pos = Math.floor(Math.random() * arr.length);
+	let tempEle = arr[pos];
+
+	arr = arr.filter(item => item !== tempEle);
+
+	if (arr.length === 0)
+		return tempEle;
+
+	return tempEle + randomGen(arr);
+}
+
+class PasswordGenService {
+	/**
+	 * generates a random String depending on the query params
+	 * @param query (length<Integer> | readable<Boolean>)
+	 * @returns {Promise.<TResult>}
+	 */
+	find({query, payload}) {
+		if (query.readable) {
+			let p2 = new Promise((resolve, reject) => {
+				let arr = [chance.first(), chance.last(), chance.character({symbols: true}), chance.natural({min: 0, max: 9999})];
+
+				resolve(randomGen(arr));
+			});
+
+			return p2.then(res => {
+				return res;
+			})
+		}
+
+		let length = (query.length) ? query.length : 255;
+		let minLength = (query.length) ? query.length : 8;
+
+		let p1 = new Promise((resolve, reject) => {
+			resolve(new RandExp("^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\-_!<>§$%&\/()=?\\;:,.#+*~']).{" + minLength + "," + length + "}$").gen());
+		});
+
+		return p1.then(res => {
+			return res;
+		});
+	}
+}
+
 module.exports = function () {
 	const app = this;
 
@@ -72,9 +119,13 @@ module.exports = function () {
 	};
 
 	// Initialize our service with any options it requires
+
+	app.use('/accounts/pwgen', new PasswordGenService());
+
 	app.use('/accounts', service(options));
 
 	app.use('/accounts/jwt', new CustomJWTService(app.get("secrets").authentication));
+
 
 	app.use('/accounts/confirm', {
 		create(data, params) {
