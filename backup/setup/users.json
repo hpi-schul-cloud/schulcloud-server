@@ -6,6 +6,8 @@
 	"firstName": "Thorsten",
 	"lastName": "Test",
 	"email": "localhost",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"schoolId": {
 		"$oid": "0000d186816abba584714c5f"
 	},
@@ -23,6 +25,8 @@
 	"firstName": "Jan",
 	"lastName": "Renz",
 	"email": "jan@example.org",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"schoolId": {
 		"$oid": "0000d186816abba584714c5f"
 	},
@@ -40,6 +44,8 @@
 	"firstName": "Ida",
 	"lastName": "Renz",
 	"email" : "ida.renz@schul-cloud.org",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"schoolId": {
 		"$oid": "0000d186816abba584714c5f"
 	},
@@ -56,6 +62,8 @@
 	"__v": 0,
 	"firstName": "Cord",
 	"lastName": "Carl",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"schoolId": {
 		"$oid": "0000d186816abba584714c5f"
 	},
@@ -74,11 +82,72 @@
 	},
 	"firstName" : "Maxim",
 	"lastName" : "Asjoma",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"email" : "maxim.asjoma@hpi.de",
 	"roles" : [
 		{
 			"$oid": "0000d186816abba584714c99"
 		}
+	],
+	"__v" : 0
+},
+{
+	"_id" : {
+		"$oid": "599ec14d8e4e364ec18ff46d"
+	},
+	"updatedAt" : { "$date": "2017-08-24T12:06:37.148Z" },
+	"createdAt" : { "$date": "2017-08-24T12:06:37.148Z" },
+	"email" : "demo-schueler@schul-cloud.org",
+	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
+	"firstName" : "Fritz",
+	"lastName" : "Schmidt",
+	"roles" : [
+		{
+			"$oid": "0000d186816abba584714d02"
+		}
+	],
+	"__v" : 0
+},
+{
+	"_id" : {
+		"$oid": "599ec1688e4e364ec18ff46e"
+		},
+	"updatedAt" : { "$date": "2017-10-26T15:20:37.310Z" },
+	"createdAt" : { "$date": "2017-08-24T12:07:04.416Z" },
+	"email" : "demo-lehrer@schul-cloud.org",
+	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
+	"firstName" : "Erika",
+	"lastName" : "Meier",
+	"roles" : [
+		{ "$oid": "0000d186816abba584714d03" }
+	],
+	"__v" : 0,
+	"gender" : "female"
+},
+{
+	"_id" : { "$oid": "59ad4c412b442b7f81810285" },
+	"updatedAt" : { "$date": "2017-09-04T12:51:13.952Z" },
+	"createdAt" : { "$date": "2017-09-04T12:51:13.952Z" },
+	"email" : "klara.fall@schul-cloud.org",
+	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
+	"firstName" : "Klara",
+	"lastName" : "Fall",
+	"roles" : [
+		{ "$oid": "0000d186816abba584714c98"}
+	],
+	"__v" : 0
+},
+{
+	"_id" : { "$oid": "59ae89b71f513506904e1cc9" },
+	"updatedAt" : { "$date": "2017-09-05T11:25:43.556Z" },
+	"createdAt" : { "$date": "2017-09-05T11:25:43.556Z" },
+	"email" : "paula.meyer@schul-cloud.org",
+	"firstName" : "Paula",
+	"lastName" : "Meyer",
+	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
+	"roles" : [
+		{ "$oid": "0000d186816abba584714c99" }
 	],
 	"__v" : 0
 }]
