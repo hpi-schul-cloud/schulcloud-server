@@ -30,25 +30,41 @@ const normalizeTeamMembers = hook => {
             hook.data.teamMembers = (hook.data.teamMembers)?([hook.data.teamMembers]):[];
         }
         //  prevent that tasks have no owners
-        if(!hook.data.teamMembers || hook.data.teamMembers.length == 0){
+        if(hook.method == "update" && (!hook.data.teamMembers || hook.data.teamMembers.length == 0)){
             hook.data.teamMembers = [hook.params.account.userId.toString()];
-        }else{
+        }
+        if(hook.data.teamMembers){
             // current user is not going to remove himself
             if(hook.data.teamMembers.includes(hook.params.account.userId.toString())){
                 hook.data.studentId = hook.params.account.userId.toString();
             }else{
-                // he removed himself => new owner needed
-                hook.data.studentId = hook.data.teamMembers[0];
+                // only allow removing from user if he isn't owner
+                const submissionService = hook.app.service('/submissions');
+                return submissionService.get(hook.id).then((submission) => {
+                    // is student?
+                    submission = JSON.parse(JSON.stringify(submission));
+                    if(submission.studentId == hook.params.account.userId.toString()){
+                        return Promise.reject(new errors.Conflict({
+                            "message": "Du hast diese Abgabe erstellt! Du darfst dich nicht selbst von dieser löschen"
+                        }));
+                    }else{
+                        hook.data.studentId = hook.data.teamMembers[0];
+                    }
+                    return Promise.resolve(hook);
+                });
             }
         }
     }
 };
 const setTeamMembers = hook => {
+    //hook = JSON.parse(JSON.stringify(hook));
     if(!(hook.data.teamMembers || hook.data.grade || hook.data.gradeComment)){  // if student (no grading) is going to submit without teamMembers set
         hook.data.teamMembers = [hook.params.account.userId.toString()]; // set current User as teamMember
     }
     if(!hook.data.teamMembers.includes(hook.params.account.userId.toString())){
-        hook.data.teamMembers.push(hook.params.account.userId.toString())
+        return Promise.reject(new errors.Conflict({
+            "message": "Du kannst nicht ausschließlich für andere Abgeben. Füge dich selbst zur Abgabe hinzu!"
+        }));
     }
 };
 
@@ -160,16 +176,27 @@ const canGrade = hook => {
     }
 };
 
-const isTeamMember = hook => {
+const hasEditPermission = hook => {
     // only allow deletion for team Members
     const submissionService = hook.app.service('/submissions');
     return submissionService.get(hook.id).then((submission) => {
+        // is student?
         submission = JSON.parse(JSON.stringify(submission));
         if(submission.teamMembers.includes(hook.params.account.userId.toString())
-            || submission.studentId == hook.params.account.userId.toString()){
+            || submission.studentId == hook.params.account.userId.toString()
+        ){
             return Promise.resolve(hook);
         }
-        return Promise.reject(new errors.Forbidden());
+        //is teacher?
+        const homeworkService = hook.app.service('/homework');
+        return homeworkService.get(hook.data.homeworkId,
+        {account: {userId: hook.params.account.userId}}).then(homework => {
+            if(homework.teacherId == hook.params.account.userId){ // user isn't a teacher of this homework
+                return Promise.resolve(hook);
+            }else{
+                return Promise.reject(new errors.Forbidden());
+            }
+        });
     })
 };
 
@@ -181,9 +208,9 @@ exports.before = {
   find: [globalHooks.mapPaginationQuery.bind(this)],
   get: [],
   create: [setTeamMembers, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
-  update: [isTeamMember, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
-  patch:  [isTeamMember, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
-  remove: [isTeamMember]
+  update: [hasEditPermission, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
+  patch:  [hasEditPermission, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
+  remove: [hasEditPermission]
 };
 
 exports.after = {
