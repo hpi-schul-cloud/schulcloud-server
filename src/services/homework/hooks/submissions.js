@@ -45,7 +45,7 @@ const normalizeTeamMembers = hook => {
                     submission = JSON.parse(JSON.stringify(submission));
                     if(submission.studentId == hook.params.account.userId.toString()){
                         return Promise.reject(new errors.Conflict({
-                            "message": "Du hast diese Abgabe erstellt! Du darfst dich nicht selbst von dieser löschen"
+                            "message": "Du hast diese Abgabe erstellt. Du darfst dich nicht selbst von dieser löschen!"
                         }));
                     }else{
                         hook.data.studentId = hook.data.teamMembers[0];
