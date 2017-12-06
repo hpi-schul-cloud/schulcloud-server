@@ -38,7 +38,7 @@ const normalizeTeamMembers = hook => {
             if(hook.data.teamMembers.includes(hook.params.account.userId.toString())){
                 hook.data.studentId = hook.params.account.userId.toString();
             }else{
-                // only allow removing from user if he isn't owner
+                // only allow removing the current user if he isn't owner
                 const submissionService = hook.app.service('/submissions');
                 return submissionService.get(hook.id).then((submission) => {
                     // is student?
@@ -47,7 +47,7 @@ const normalizeTeamMembers = hook => {
                         return Promise.reject(new errors.Conflict({
                             "message": "Du hast diese Abgabe erstellt. Du darfst dich nicht selbst von dieser löschen!"
                         }));
-                    }else{
+                    }else {
                         hook.data.studentId = hook.data.teamMembers[0];
                     }
                     return Promise.resolve(hook);
@@ -159,6 +159,22 @@ const maxTeamMembers = hook => {
     }
 };
 
+const canRemoveTeamMember = hook => {
+    const submissionService = hook.app.service('/submissions');
+    return submissionService.get(hook.id).then((submission) => {
+       submission = JSON.parse(JSON.stringify(submission));
+       hook.data = JSON.parse(JSON.stringify(hook.data));
+       console.log(submission.teamMembers, submission.studentId.toString(), !hook.data.teamMembers.includes(submission.studentId.toString()))
+       if(!hook.data.teamMembers.includes(submission.studentId.toString())){
+            return Promise.reject(new errors.Conflict({
+                "message": "Du darfst den Ersteller nicht von der Abgabe löschen!"
+            }));
+       }else{
+           return Promise.resolve(hook);
+       }
+    });
+};
+
 const canGrade = hook => {
     if(Number.isInteger(hook.data.grade) || typeof hook.data.gradeComment == "string"){ // does the user try to grade?
         // get homework data to get the teacherId
@@ -208,8 +224,8 @@ exports.before = {
   find: [globalHooks.mapPaginationQuery.bind(this)],
   get: [],
   create: [setTeamMembers, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
-  update: [hasEditPermission, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
-  patch:  [hasEditPermission, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
+  update: [hasEditPermission, normalizeTeamMembers, canRemoveTeamMember, preventMultipleSubmissions, maxTeamMembers, canGrade],
+  patch:  [hasEditPermission, normalizeTeamMembers, canRemoveTeamMember, preventMultipleSubmissions, maxTeamMembers, canGrade],
   remove: [hasEditPermission]
 };
 
