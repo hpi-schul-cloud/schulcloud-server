@@ -113,6 +113,7 @@ const addStats = hook => {
                     )*100;
                     let gradeP = (submissions.data.filter(function(n){
                             return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
+                                && ( n.gradeComment || n.grade)
                                 && ( n.gradeComment != '' || Number.isInteger(n.grade) );})
                         .map(e => {return (e.teamMembers.length || 1);})
                         .reduce((a, b) => a+b, 0)
@@ -128,7 +129,7 @@ const addStats = hook => {
                         submissionPercentage: (submissionP && submissionP != Infinity)?submissionP.toFixed(2):undefined,
                         gradeCount: 
                             submissions.data.filter(function(n){
-                                return JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && ( n.gradeComment != '' || Number.isInteger(n.grade) );})
+                                return JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && (n.gradeComment || n.grade) && ( n.gradeComment != '' || Number.isInteger(n.grade) );})
                             .map(e => {return (e.teamMembers.length || 1);})
                             .reduce((a, b) => a+b, 0),
                         gradePercentage:(gradeP && gradeP != Infinity)?gradeP.toFixed(2):undefined,
