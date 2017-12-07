@@ -164,8 +164,7 @@ const canRemoveTeamMember = hook => {
     return submissionService.get(hook.id).then((submission) => {
        submission = JSON.parse(JSON.stringify(submission));
        hook.data = JSON.parse(JSON.stringify(hook.data));
-       console.log(submission.teamMembers, submission.studentId.toString(), !hook.data.teamMembers.includes(submission.studentId.toString()))
-       if(!hook.data.teamMembers.includes(submission.studentId.toString())){
+       if(hook.data.teamMembers && !hook.data.teamMembers.includes(submission.studentId.toString())){
             return Promise.reject(new errors.Conflict({
                 "message": "Du darfst den Ersteller nicht von der Abgabe löschen!"
             }));
