@@ -21,6 +21,8 @@ const homeworkModel = mongoose.model('homework', new Schema({
     lessonId: {type: Schema.Types.ObjectId, 'default': null, ref: 'lesson'},
     private: {type: Boolean},
     publicSubmissions: {type: Boolean},
+    teamSubmissions: {type: Boolean},
+    maxTeamMembers: {type: Number, 'default':null, min: 1},
     archived: [{type: Schema.Types.ObjectId, ref: 'user'}]
 }));
 
@@ -34,6 +36,7 @@ const submissionModel = mongoose.model('submission', new Schema({
     gradeComment: {type: String},
     homeworkId: {type: Schema.Types.ObjectId, required: true, ref: 'homework'},
     studentId: {type: Schema.Types.ObjectId, required: true, ref: 'user'},
+    teamMembers: [{type: Schema.Types.ObjectId, required: true, ref: 'user'}],
     fileIds: [{type: Schema.Types.ObjectId, ref: 'file'}],
     comments: [{type: Schema.Types.ObjectId, ref: 'comment'}]
 }));
