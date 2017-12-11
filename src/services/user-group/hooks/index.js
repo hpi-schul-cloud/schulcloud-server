@@ -48,11 +48,11 @@ const deleteWholeClassFromCourse = (hook) => {
 	let courseId = hook.id;
 	return CourseModel.findById(courseId).exec().then(course => {
 		if (!course) return hook;
-		
+
 		let removedClasses = _.differenceBy(course.classIds, requestBody.classIds, (v) => JSON.stringify(v));
 		if (removedClasses.length < 1) return hook;
 		return Promise.all(removedClasses.map(classId => {
-			return ClassModel.findById(classId).exec().then(c =>  c.userIds);
+			return ClassModel.findById(classId).exec().then(c =>  (c || []).userIds);
 		})).then(studentIds => {
 			// flatten deep arrays and remove duplicates
             studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
@@ -73,7 +73,7 @@ const deleteWholeClassFromCourse = (hook) => {
 			});
 		});
 	});
-}
+};
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
