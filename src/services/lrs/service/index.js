@@ -1,4 +1,5 @@
 const xapi = require('../../../xapi.js');
+const request = require("request-promise-native");
 
 class LearningLockerStore {
 	constructor(opts) {
