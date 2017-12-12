@@ -16,7 +16,18 @@ exports.before = {
 
 exports.after = {
   all: [],
-  find: [],
+  find: (hook) => {
+  	if (!hook.result.data.length) {
+  	  let pseudoService = hook.app.service('pseudonym');
+  	  return pseudoService.create({
+		  userId: hook.params.query.userId,
+		  toolId: hook.params.query.toolId
+	  }).then((pseudonym) => {
+		hook.result.data = [pseudonym];
+		return hook;
+	  })
+	}
+  },
   get: [],
   create: [],
   update: [],
