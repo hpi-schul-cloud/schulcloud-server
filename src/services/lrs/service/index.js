@@ -12,15 +12,16 @@ class LearningLockerStore {
 
 	create(data, params) {
 		return new Promise((resolve, reject) => {
-			const feedback = this.app.service("feedback");
+			const client = app.get("redis");
 			const feedback_key = data.feedback_key;
 
-			feedback.get(feedback_key)
-				.then(user => {
-					const xapi = data.xapi;
+			client.get("token-" + feedback_key, (err, res) => {
+				if(err) reject(err);
 
-
-				});
+				if(res) {
+					const user = JSON.parse(res);
+				}
+			})
 		});
 	}
 
