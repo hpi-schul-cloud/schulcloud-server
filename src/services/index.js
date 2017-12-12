@@ -13,6 +13,8 @@ const authentication = require('./authentication');
 const user = require('./user');
 const role = require('./role');
 const pseudo = require("./pseudonym");
+const lrs = require("./lrs");
+const feedback = require("./feedback");
 const helpers = require('./helpers');
 const resolve = require('./resolve');
 
@@ -57,4 +59,6 @@ module.exports = function () {
 	app.configure(helpdesk);
 	app.configure(statistic);
 	app.configure(pseudo);
+	app.configure(feedback);
+	app.configure(lrs);
 };

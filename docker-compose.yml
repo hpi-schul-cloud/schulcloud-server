@@ -30,6 +30,11 @@ services:
     ports:
       - 27017:27017
 
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+
   schulcloud-server-mongodb-feed:
       image: mongo:3.4.3
       volumes:
