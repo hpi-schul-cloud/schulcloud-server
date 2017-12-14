@@ -10,7 +10,6 @@ const globalHooks = require('../../../hooks');
 const MoodleLoginStrategy = require('../strategies/moodle');
 const ITSLearningLoginStrategy = require('../strategies/itslearning');
 const IServLoginStrategy = require('../strategies/iserv');
-const LernsaxLoginStrategy = require('../strategies/lernsax');
 const LocalLoginStrategy = require('../strategies/local');
 
 // don't initialize strategies here - otherwise massive overhead
@@ -18,7 +17,6 @@ const LocalLoginStrategy = require('../strategies/local');
 const strategies = {
 	moodle: MoodleLoginStrategy,
 	itslearning: ITSLearningLoginStrategy,
-	lernsax: LernsaxLoginStrategy,
 	iserv: IServLoginStrategy,
 	local: LocalLoginStrategy
 };
@@ -50,6 +48,12 @@ const validateCredentials = (hook) => {
 				hook.data.token = client.token;
 			}
 		});
+};
+
+const trimPassword = (hook) => {
+	hook.data.password = hook.data.password.trim();
+	
+	return hook;
 };
 
 const validatePassword = (hook) => {
@@ -97,6 +101,7 @@ exports.before = {
 	get: [],
 	create: [
 		validateCredentials,
+		trimPassword,
 		local.hooks.hashPassword({ passwordField: 'password' }),
 		checkUnique
 	],

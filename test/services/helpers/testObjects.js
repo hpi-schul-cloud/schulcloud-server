@@ -36,7 +36,7 @@ module.exports = function (app) {
 		// required fields for user
 		firstName = 'Max',
 		lastName = 'Mustermann',
-		email = 'max@mustermann.de',
+		email = 'max' + Date.now() + '@mustermann.de',
 		schoolId = '584ad186816abba584714c94'
 	} = {}) {
 		return userService.create({
