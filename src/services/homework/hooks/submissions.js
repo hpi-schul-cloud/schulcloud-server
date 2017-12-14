@@ -20,212 +20,219 @@ const filterApplicableSubmissions = hook => {
         });
         (hook.result.data)?(hook.result.data = data):(hook.result = data);
     }
-	return Promise.resolve(hook);
+    return Promise.resolve(hook);
 };
 
-const normalizeTeamMembers = hook => {
-    if(!(hook.data.grade || hook.data.gradeComment)){  // if student (noGrading) is going to modify teamMembers
-        // make teamMembers an Array if it isn't already
-        if(!Array.isArray(hook.data.teamMembers)){
-            hook.data.teamMembers = (hook.data.teamMembers)?([hook.data.teamMembers]):[];
-        }
-        //  prevent that tasks have no owners
-        if(hook.method == "update" && (!hook.data.teamMembers || hook.data.teamMembers.length == 0)){
-            hook.data.teamMembers = [hook.params.account.userId.toString()];
-        }
-        if(hook.data.teamMembers){
-            // current user is not going to remove himself
-            if(hook.data.teamMembers.includes(hook.params.account.userId.toString())){
-                hook.data.studentId = hook.params.account.userId.toString();
-            }else{
-                // only allow removing the current user if he isn't owner
-                const submissionService = hook.app.service('/submissions');
-                return submissionService.get(hook.id).then((submission) => {
-                    // is student?
-                    submission = JSON.parse(JSON.stringify(submission));
-                    if(submission.studentId == hook.params.account.userId.toString()){
-                        return Promise.reject(new errors.Conflict({
-                            "message": "Du hast diese Abgabe erstellt. Du darfst dich nicht selbst von dieser löschen!"
-                        }));
-                    }else {
-                        hook.data.studentId = hook.data.teamMembers[0];
-                    }
-                    return Promise.resolve(hook);
-                });
-            }
-        }
+const stringifyUserId = hook => {
+    if((hook.params.account||{}).userId){
+        hook.params.account.userId = hook.params.account.userId.toString();
     }
+    return Promise.resolve(hook);
 };
-const setTeamMembers = hook => {
-    //hook = JSON.parse(JSON.stringify(hook));
-    if(!(hook.data.teamMembers || hook.data.grade || hook.data.gradeComment)){  // if student (no grading) is going to submit without teamMembers set
-        hook.data.teamMembers = [hook.params.account.userId.toString()]; // set current User as teamMember
+
+const insertSubmissionData = hook => {
+    const submissionId = hook.id || hook.data.submissionId;
+    if(submissionId){
+        const submissionService = hook.app.service('/submissions');
+        return submissionService.get(submissionId, {account: {userId: hook.params.account.userId}})
+        .then(submission => {
+            hook.data.submission = submission;
+            hook.data = JSON.parse(JSON.stringify(hook.data));
+            hook.data.isTeamMember = false;
+            hook.data.isOwner = false;
+            if(hook.data.submission.studentId._id == hook.params.account.userId){
+                hook.data.isOwner = true;
+                hook.data.isTeamMember = true;
+            }
+            if((hook.data.submission.teamMembers||[]).includes(hook.params.account.userId)){
+                hook.data.isTeamMember = true;
+            }
+            return Promise.resolve(hook);
+        })
+        .catch(err => {
+            return Promise.reject(new errors.GeneralError({"message":"[500 INTERNAL ERROR] - can't reach submission service"}));
+        })
     }
-    if(!hook.data.teamMembers.includes(hook.params.account.userId.toString())){
+    return Promise.resolve(hook);
+}
+
+const insertHomeworkData = hook => {
+    const homeworkId = hook.data.homeworkId || (hook.data.submission||{}).homeworkId;
+    if(homeworkId){
+        const homeworkService = hook.app.service('/homework');
+        return homeworkService.get(homeworkId, {account: {userId: hook.params.account.userId}})
+        .then(homework => {
+            hook.data.homework = homework;
+            // isTeacher?
+            hook.data.isTeacher = false;
+            if((hook.data.homework.courseId.teacherIds||[]).includes(hook.params.account.userId)
+            ||(hook.data.homework.teacherId == hook.params.account.userId)){
+                hook.data.isTeacher = true;
+            }
+            return Promise.resolve(hook);
+        })
+        .catch(err => {
+            return Promise.reject(new errors.GeneralError({"message":"[500 INTERNAL ERROR] - can't reach homework service"}));
+        })
+    }
+    return Promise.reject(new errors.BadRequest());
+}
+
+const insertSubmissionsData = hook => {
+    // get all the submissions for the homework
+    const submissionService = hook.app.service('/submissions');
+    return submissionService.find({
+        query: {
+            homeworkId: hook.data.homeworkId,
+            $populate: ['studentId']
+    }}).then((submissions) => {
+        hook.data.submissions = submissions.data;
+        return Promise.resolve(hook);
+    })
+    .catch(err => {
+        return Promise.reject(new errors.GeneralError({"message":"[500 INTERNAL ERROR] - can't reach submission service"}));
+    })
+}
+
+const preventNoTeamMember = hook => {
+    if(!(hook.data.submission||{}).teamMembers){
+        hook.data.teamMembers = [hook.params.account.userId];
+    }
+    if(hook.method == "update" && (!hook.data.teamMembers || hook.data.teamMembers.length == 0)){
+        return Promise.reject(new errors.Conflict({
+            "message": "Abgaben ohne TeamMember sind nicht erlaubt!"
+        }));
+    }
+    return Promise.resolve(hook);
+};
+
+const setTeamMembers = hook => {
+    if(!hook.data.teamMembers){  // if student (no grading) is going to submit without teamMembers set
+        hook.data.teamMembers = [hook.params.account.userId];
+    }
+    if(!hook.data.teamMembers.includes(hook.params.account.userId)){
         return Promise.reject(new errors.Conflict({
             "message": "Du kannst nicht ausschließlich für andere Abgeben. Füge dich selbst zur Abgabe hinzu!"
         }));
     }
 };
 
-const preventMultipleSubmissions = hook => {
-    if(!(hook.data.grade || hook.data.gradeComment)){ // if student wan't to submit anything
-        // get all the submissions for the homework
-        const submissionService = hook.app.service('/submissions');
-        return submissionService.find({
-            query: {
-                homeworkId: hook.data.homeworkId,
-                $populate: ['studentId']
-        }}).then((submissions) => {
-            if(hook.method == "create"){
-                // check that no one has already submitted for the current User
-                let submissionsForMe = submissions.data.filter(submissionRAW => { // is there an submission for the current user?
-                    let submissions = JSON.parse(JSON.stringify(submissionRAW));
-                    return (submissions.teamMembers.includes(hook.params.account.userId.toString()))
-                           && (submissions.studentId._id.toString() != hook.params.account.userId.toString());
-                });
-                if(submissionsForMe.length > 0){
-                    return Promise.reject(new errors.Conflict({
-                      "message": submissionsForMe[0].studentId.firstName + " " + submissionsForMe[0].studentId.lastName + " hat bereits für dich abgegeben!"
-                    }));
+const noSubmissionBefore = hook => {
+    // check that no one has already submitted for the current User
+    let submissionsForMe = hook.data.submissions.filter(submission => { // is there an submission for the current user?
+        return (submission.teamMembers.includes(hook.params.account.userId))
+               && (submission.studentId._id != hook.params.account.userId);
+    });
+    if(submissionsForMe.length > 0){
+        return Promise.reject(new errors.Conflict({
+          "message": submissionsForMe[0].studentId.firstName + " " + submissionsForMe[0].studentId.lastName + " hat bereits für dich abgegeben!"
+        }));
+    }
+    return Promise.resolve(hook);
+}
+
+const noDuplicateSubmissionForTeamMembers = hook => {
+    if(!hook.data.isTeacher && hook.data.teamMembers){
+        // check if a teamMember submitted a solution on his own => display names
+        let newTeamMembers = hook.data.teamMembers;
+        if(hook.data.submission){
+            newTeamMembers = newTeamMembers.filter(teamMember => {
+                return !hook.data.submission.teamMembers.includes(teamMember.toString());
+            });
+        }
+
+        let toRemove = '';
+        let submissionsForTeamMembers = hook.data.submissions.filter(submission => { 
+            for (var i = 0; i < newTeamMembers.length; i++) {
+                const teamMember = newTeamMembers[i].toString();
+                if(submission.teamMembers.includes(teamMember)
+                    || (submission.studentId._id.toString() == teamMember)
+                ){
+                    toRemove += (toRemove == '')?'':', ';
+                    toRemove += submission.studentId.firstName + ' ' + submission.studentId.lastName;
+                    return true;
                 }
             }
-            function teamMemberHasAlreadySubmitted(Promise, hook, submissions, newTeamMembers){
-                let toRemove = '';
-                let submissionsForTeamMembers = submissions.data.filter(submissionRAW => { 
-                    let submission = JSON.parse(JSON.stringify(submissionRAW));
-                    for (var i = 0; i < newTeamMembers.length; i++) {
-                        const teamMember = newTeamMembers[i].toString();
-                        if(submission.teamMembers.includes(teamMember)
-                            || (submission.studentId._id.toString() == teamMember)
-                        ){
-                            toRemove += (toRemove == '')?'':', ';
-                            toRemove += submission.studentId.firstName + ' ' + submission.studentId.lastName;
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-                if(submissionsForTeamMembers.length > 0){
-                    return Promise.reject(new errors.Conflict({
-                      "message": toRemove + ((submissionsForTeamMembers.length == 1)?' hat':' haben') + ' bereits eine Lösung abgegeben! Entferne diese' + ((submissionsForTeamMembers.length == 1)?'s Mitglied!':' Mitglieder!')
-                    }));
-                }else{
-                    return Promise.resolve(hook);
-                }
-            }
-            // check if a teamMember submitted a solution on his own => display names
-            if(hook.data.teamMembers){
-                // patch => only check for new team members
-                if(hook.id){
-                    return hook.app.service('/submissions').get(hook.id,{account: {userId: hook.params.account.userId}})
-                    .then(currentSubmission => {
-                        currentSubmission = JSON.parse(JSON.stringify(currentSubmission));
-                        const newTeamMembers = hook.data.teamMembers.filter(teamMember => {
-                            return !currentSubmission.teamMembers.includes(teamMember.toString());
-                        });
-                        return teamMemberHasAlreadySubmitted(Promise, hook, submissions, newTeamMembers);
-                    });
-                }else{
-                    return teamMemberHasAlreadySubmitted(Promise, hook, submissions, hook.data.teamMembers);
-                }
-            }
+            return false;
         });
+        if(submissionsForTeamMembers.length > 0){
+            return Promise.reject(new errors.Conflict({
+              "message": toRemove + ((submissionsForTeamMembers.length == 1)?' hat':' haben') + ' bereits eine Lösung abgegeben! Entferne diese' + ((submissionsForTeamMembers.length == 1)?'s Mitglied!':' Mitglieder!')
+            }));
+        }else{
+            return Promise.resolve(hook);
+        }
     }
 };
 
-
 const maxTeamMembers = hook => {
-    if(hook.data.homeworkId && hook.data.teamMembers){
-        const homeworkService = hook.app.service('/homework');
-        return homeworkService.get(hook.data.homeworkId,
-            {account: {userId: hook.params.account.userId}})
-        .then(homework => {
-            if(hook.data.teamMembers.length > 1 && !homework.teamSubmissions){
-                return Promise.reject(new errors.Conflict({
-                      "message": "Teamabgaben sind nicht erlaubt!"
-                    }));
-            }
-            if(homework.teamSubmissions && homework.maxTeamMembers 
-            && homework.maxTeamMembers >= 1 && hook.data.teamMembers.length > homework.maxTeamMembers){
-                return Promise.reject(new errors.Conflict({
-                      "message": "Dein Team ist größer als erlaubt! ( maximal "+ homework.maxTeamMembers +" Teammitglieder erlaubt)"
-                    }));
-            }
-            return Promise.resolve(hook);
-        });
+    if(!hook.data.isTeacher && hook.data.homework.teamSubmissions){
+        if((hook.data.homework.maxTeamMembers||0)>= 1
+            && hook.data.teamMembers.length > hook.data.homework.maxTeamMembers){
+            return Promise.reject(new errors.Conflict({
+              "message": "Dein Team ist größer als erlaubt! ( maximal "+ hook.data.homework.maxTeamMembers +" Teammitglieder erlaubt)"
+            }));
+        }
+    }else{
+        if((hook.data.teamMembers||[]).length > 1){
+            return Promise.reject(new errors.Conflict({
+              "message": "Teamabgaben sind nicht erlaubt!"
+            }));
+        }
+    }
+    return Promise.resolve(hook);
+};
+
+const canRemoveOwner = hook => {
+    if(hook.data.teamMembers
+    && !hook.data.teamMembers.includes(hook.data.submission.studentId)){
+        if(hook.data.isOwner){
+            return Promise.reject(new errors.Conflict({
+                "message": "Du hast diese Abgabe erstellt. Du darfst dich nicht selbst von dieser löschen!"
+            }));
+        }else{
+            return Promise.reject(new errors.Conflict({
+                "message": "Du darfst den Ersteller nicht von der Abgabe löschen!"
+            }));
+        }
+    }
+    return Promise.resolve(hook);
+};
+
+const canGrade = hook => {
+    if( !hook.data.isTeacher
+        && (Number.isInteger(hook.data.grade) || typeof hook.data.gradeComment == "string")){   // students try to grade? BLOCK!
+        return Promise.reject(new errors.Forbidden());
     }else{
         return Promise.resolve(hook);
     }
 };
 
-const canRemoveTeamMember = hook => {
-    const submissionService = hook.app.service('/submissions');
-    return submissionService.get(hook.id).then((submission) => {
-       submission = JSON.parse(JSON.stringify(submission));
-       hook.data = JSON.parse(JSON.stringify(hook.data));
-       if(hook.data.teamMembers && !hook.data.teamMembers.includes(submission.studentId.toString())){
-            return Promise.reject(new errors.Conflict({
-                "message": "Du darfst den Ersteller nicht von der Abgabe löschen!"
-            }));
-       }else{
-           return Promise.resolve(hook);
-       }
-    });
-};
-
-const canGrade = hook => {
-    if(Number.isInteger(hook.data.grade) || typeof hook.data.gradeComment == "string"){ // does the user try to grade?
-        // get homework data to get the teacherId
-        const homeworkService = hook.app.service('/homework');
-        return homeworkService.get(hook.data.homeworkId,
-        {account: {userId: hook.params.account.userId}}).then(homework => {
-            if(homework.teacherId != hook.params.account.userId){ // user isn't a teacher of this homework
-                return Promise.reject(new errors.Forbidden());
-            }else{
-                return Promise.resolve(hook);
-            }
-        });
-    }else{ // no grading => no possible rejections
+const hasEditPermission = hook => {
+    // may check that the teacher can't edit the submission itself (only grading allowed)
+    if(hook.data.isTeamMember || hook.data.isTeacher){
         return Promise.resolve(hook);
+    }else{
+        return Promise.reject(new errors.Forbidden());
     }
 };
 
-const hasEditPermission = hook => {
-    // only allow deletion for team Members
-    const submissionService = hook.app.service('/submissions');
-    return submissionService.get(hook.id).then((submission) => {
-        // is student?
-        submission = JSON.parse(JSON.stringify(submission));
-        if(submission.teamMembers.includes(hook.params.account.userId.toString())
-            || submission.studentId == hook.params.account.userId.toString()
-        ){
-            return Promise.resolve(hook);
-        }
-        //is teacher?
-        const homeworkService = hook.app.service('/homework');
-        return homeworkService.get(hook.data.homeworkId,
-        {account: {userId: hook.params.account.userId}}).then(homework => {
-            if(homework.teacherId == hook.params.account.userId){ // user isn't a teacher of this homework
-                return Promise.resolve(hook);
-            }else{
-                return Promise.reject(new errors.Forbidden());
-            }
-        });
-    })
+const hasDeletePermission = hook => {
+    if(hook.data.isTeamMember){
+        return Promise.resolve(hook);
+    }else{
+        return Promise.reject(new errors.Forbidden());
+    }
 };
 
-/*
-Note: always set the teamMembers
-*/
 exports.before = {
-  all: [auth.hooks.authenticate('jwt')],
+  all: [auth.hooks.authenticate('jwt'), stringifyUserId],
   find: [globalHooks.mapPaginationQuery.bind(this)],
   get: [],
-  create: [setTeamMembers, normalizeTeamMembers, preventMultipleSubmissions, maxTeamMembers, canGrade],
-  update: [hasEditPermission, normalizeTeamMembers, canRemoveTeamMember, preventMultipleSubmissions, maxTeamMembers, canGrade],
-  patch:  [hasEditPermission, normalizeTeamMembers, canRemoveTeamMember, preventMultipleSubmissions, maxTeamMembers, canGrade],
-  remove: [hasEditPermission]
+  create: [                      insertHomeworkData, insertSubmissionsData, setTeamMembers, noSubmissionBefore,                     noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
+  update: [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
+  patch:  [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
+  remove: [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasDeletePermission]
 };
 
 exports.after = {
