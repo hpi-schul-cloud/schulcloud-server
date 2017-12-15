@@ -32,7 +32,7 @@ exports.before = {
 	create: [globalHooks.hasPermission('FILESTORAGE_CREATE')],
 	update: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
 	patch: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
-	remove: [globalHooks.hasPermission('FILESTORAGE_CREATE')]
+	remove: [globalHooks.hasPermission('FILESTORAGE_REMOVE')]
 };
 
 exports.after = {
