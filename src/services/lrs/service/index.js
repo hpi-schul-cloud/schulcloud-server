@@ -32,8 +32,6 @@ class LearningLockerStore {
 			feedback.get(feedback_key)
 				.then(user => {
 					const xapi = data.xapi;
-
-
 				});
 		});
 	}
