@@ -1,7 +1,7 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const {courseModel, classModel,gradeModel} = require('./model');
+const {courseModel, courseGroupModel, classModel, gradeModel} = require('./model');
 const hooks = require('./hooks');
 
 module.exports = function() {
@@ -19,6 +19,19 @@ module.exports = function() {
 	const courseService = app.service('/courses');
 	courseService.before(hooks.before);
 	courseService.after(hooks.after);
+
+	/* CourseGroup model */
+	app.use('/courseGroups', service({
+		Model: courseGroupModel,
+		paginate: {
+			default: 25,
+			max: 100
+		},
+		lean: true
+	}));
+	const courseGroupService = app.service('/courseGroups');
+	courseGroupService.before(hooks.before);
+	courseGroupService.after(hooks.after);
 
 
 	/* Class model */
