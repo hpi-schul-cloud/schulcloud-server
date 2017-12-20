@@ -65,18 +65,25 @@ const replacePseudonym = (hook) => {
 const replacePseudonym = (hook) => {
 	let userId = hook.params.account.userId;
 	let pseudoService = hook.app.service('pseudonym');
-	let data = hook.result;
-
-	return pseudoService.find({
-		query: {
-			userId: userId,
-			toolId: data._id
+	if (Array.isArray(hook.result)) { // FIND
+		for (let tool in hook.result) {
+			// TODO: replace placeholder
 		}
-	}).then((pseudonym) => {
-		data.pseudonymizedUrl = data.url.replace('{PSEUDONYM}', pseudonym.data[0].token);
 		return hook;
-	});
-};
+	} else { // GET
+		let toolId = hook.result._id
+
+		return pseudoService.find({
+			query: {
+				userId: userId,
+				toolId: toolId
+			}
+		}).then((pseudonym) => {
+			hook.result.pseudonymizedUrl = hook.result.url.replace('{PSEUDONYM}', pseudonym.data[0].token);
+			return hook;
+		});
+	}
+}
 
 exports.after = {
   all: [],
