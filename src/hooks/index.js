@@ -24,6 +24,20 @@ exports.isAdmin = function (options) {
 	};
 };
 
+exports.isSuperHero = function (options) {
+	return hook => {
+		const userService = hook.app.service('/users/');
+		return userService.find({query: {_id: (hook.params.account.userId || ""), $populate: 'roles'}})
+			.then(user => {
+				user.data[0].roles = Array.from(user.data[0].roles);
+				if(!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
+					throw new errors.Forbidden('you are not a superhero, sorry...');
+				}
+				return Promise.resolve(hook);
+			});
+	};
+};
+
 exports.hasPermission = function (permissionName) {
 	return hook => {
 		if(!(hook.params.user.permissions || []).includes(permissionName)) {
@@ -97,7 +111,7 @@ exports.computeProperty = function (Model, functionName, variableName) {
 };
 
 exports.mapPaginationQuery = (hook) => {
-	if(hook.params.query.$limit === '-1') {
+	if((hook.params.query || {}).$limit === '-1') {
 		hook.params.paginate = false;
 		delete hook.params.query.$limit;
 		return Promise.resolve(hook);

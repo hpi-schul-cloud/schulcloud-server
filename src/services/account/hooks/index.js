@@ -49,6 +49,12 @@ const validateCredentials = (hook) => {
 		});
 };
 
+const trimPassword = (hook) => {
+	hook.data.password = hook.data.password.trim();
+	
+	return hook;
+};
+
 const validatePassword = (hook) => {
 	let password_verification = hook.data.password_verification;
 
@@ -94,6 +100,7 @@ exports.before = {
 	get: [],
 	create: [
 		validateCredentials,
+		trimPassword,
 		local.hooks.hashPassword({ passwordField: 'password' }),
 		checkUnique
 	],
