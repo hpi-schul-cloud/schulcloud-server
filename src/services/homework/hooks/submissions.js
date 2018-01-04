@@ -212,7 +212,7 @@ const hasEditPermission = hook => {
                 return Promise.reject(new errors.Forbidden());
             }
         });
-    })
+    });
 };
 
 /*
