@@ -9,6 +9,8 @@
 			"$oid": "0000d186816abba584714c90"
 		}
 	],
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"__v": 0
 },
 {
@@ -28,6 +30,18 @@
 			"$oid": "0000d186816abba584714c92"
 		}
 	],
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"__v": 0
+},
+{
+	"_id" : { "$oid": "599ec0bb8e4e364ec18ff46c" },
+	"updatedAt" : { "$date": "2017-08-28T08:56:19.717Z" },
+	"name" : "Demo Schule",
+	"federalState" : { "$oid": "0000b186816abba584714c53" },
+	"createdAt" : { "$date": "2017-08-24T12:04:11.721Z"},
+	"systems" : [],
+	"__v" : 0,
+	"fileStorageType" : "awsS3"
 }]
 
