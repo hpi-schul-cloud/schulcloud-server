@@ -105,8 +105,8 @@ const addStats = hook => {
                     ( ((c.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && c.publicSubmissions )
                     || ( c.teacherId == hook.params.account.userId.toString() ) ) ){
                     function isValidSubmission(submission){
-                        return  (n.comment && n.comment != "")
-                             || (n.fileIds && n.fileIds.length > 0);
+                        return  (submission.comment && submission.comment != "")
+                             || (submission.fileIds && submission.fileIds.length > 0);
                     }
                     function isGraded(submission){
                         return  (submission.gradeComment && submission.gradeComment != '')
@@ -117,17 +117,17 @@ const addStats = hook => {
                     const currentSubmissions = submissions.data.filter(function(submission){return c._id.toString() == submission.homeworkId.toString();});
                     const validSubmissions = currentSubmissions.filter(isValidSubmission);
                     const gradedSubmissions = currentSubmissions.filter(isGraded)
-                    const NumberOfUsersWithSubmission = validSubmissions.map(e => {return (e.teamMembers || [1]).length);}).reduce((a, b) => a+b, 0);
-                    const NumberOfGradedUsers = gradedSubmissions.map(e => {return (e.teamMembers || [1]).length);}).reduce((a, b) => a+b, 0);
+                    const NumberOfUsersWithSubmission = validSubmissions.map(e => {return (e.teamMembers || [1]).length;}).reduce((a, b) => a+b, 0);
+                    const NumberOfGradedUsers = gradedSubmissions.map(e => {return (e.teamMembers || [1]).length;}).reduce((a, b) => a+b, 0);
                     const submissionPerc = ( NumberOfUsersWithSubmission / NumberOfCourseMembers)*100;
                     const gradePerc = (NumberOfGradedUsers / NumberOfCourseMembers)*100;
 
                     c.stats = {
-                        userCount:              ((c.courseId || {}).userIds || []).length;
-                        submissionCount:        validSubmissions.map(e => {return (e.teamMembers || [1]).length;}).reduce((a, b) => a+b, 0);
-                        submissionPercentage:   (submissionPerc != Infinity)?submissionPerc.toFixed(2):undefined;
-                        gradeCount:             currentSubmissions.filter(isGraded).reduce((a, b) => a+b, 0);
-                        gradePercentage:        (gradePerc != Infinity)?gradePerc.toFixed(2):undefined;
+                        userCount:              ((c.courseId || {}).userIds || []).length,
+                        submissionCount:        NumberOfUsersWithSubmission,
+                        submissionPercentage:   (submissionPerc != Infinity)?submissionPerc.toFixed(2):undefined,
+                        gradeCount:             NumberOfGradedUsers,
+                        gradePercentage:        (gradePerc != Infinity)?gradePerc.toFixed(2):undefined,
                         averageGrade:           getAverageRating(currentSubmissions)
                     };
                 }
