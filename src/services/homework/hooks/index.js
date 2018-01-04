@@ -117,8 +117,8 @@ const addStats = hook => {
                     const currentSubmissions = submissions.data.filter(function(submission){return c._id.toString() == submission.homeworkId.toString();});
                     const validSubmissions = currentSubmissions.filter(isValidSubmission);
                     const gradedSubmissions = currentSubmissions.filter(isGraded);
-                    const NumberOfUsersWithSubmission = validSubmissions.map(e => {return (e.teamMembers || [1]).length;}).reduce((a, b) => a+b, 0);
-                    const NumberOfGradedUsers = gradedSubmissions.map(e => {return (e.teamMembers || [1]).length;}).reduce((a, b) => a+b, 0);
+                    const NumberOfUsersWithSubmission = validSubmissions.map(e => {return ((e.teamMembers || []).length || 1);}).reduce((a, b) => a+b, 0);
+                    const NumberOfGradedUsers = gradedSubmissions.map(e => {return ((e.teamMembers || []).length || 1);}).reduce((a, b) => a+b, 0);
                     const submissionPerc = ( NumberOfUsersWithSubmission / NumberOfCourseMembers)*100;
                     const gradePerc = (NumberOfGradedUsers / NumberOfCourseMembers)*100;
 
