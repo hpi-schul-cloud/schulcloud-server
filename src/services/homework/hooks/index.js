@@ -32,7 +32,15 @@ const getAverageRating = function(submissions){
     }
     return undefined;
 };
-
+function isValidSubmission(submission){
+    return  (submission.comment && submission.comment != "")
+         || (submission.fileIds && submission.fileIds.length > 0);
+}
+function isGraded(submission){
+    return  (submission.gradeComment && submission.gradeComment != '')
+         || (submission.grade && Number.isInteger(submission.grade));
+}
+                    
 const hasViewPermissionBefore = hook => {
     // Add populate to query to be able to filter permissions
     if((hook.params.query||{})['$populate']){
@@ -104,14 +112,6 @@ const addStats = hook => {
                 if( !c.private && (
                     ( ((c.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && c.publicSubmissions )
                     || ( c.teacherId == hook.params.account.userId.toString() ) ) ){
-                    function isValidSubmission(submission){
-                        return  (submission.comment && submission.comment != "")
-                             || (submission.fileIds && submission.fileIds.length > 0);
-                    }
-                    function isGraded(submission){
-                        return  (submission.gradeComment && submission.gradeComment != '')
-                             || (submission.grade && Number.isInteger(submission.grade));
-                    }
 
                     const NumberOfCourseMembers = ((c.courseId || {}).userIds || []).length;
                     const currentSubmissions = submissions.data.filter(function(submission){return c._id.toString() == submission.homeworkId.toString();});
