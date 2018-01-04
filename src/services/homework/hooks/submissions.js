@@ -15,6 +15,7 @@ const filterApplicableSubmissions = hook => {
             }
             return     c.homeworkId.publicSubmissions                                               // publicSubmissions allowes (everyone can see)
                     || c.homeworkId.teacherId.toString() == hook.params.account.userId.toString()   // or user is teacher
+                    || ((c.homeworkId.courseId || {}).substitutionIds || []).includes(hook.params.account.userId.toString())   // or user is teacher
                     || c.studentId.toString() == hook.params.account.userId.toString()              // or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
                     || c.teamMembers.includes(hook.params.account.userId.toString());                 // or in the team                    
         });

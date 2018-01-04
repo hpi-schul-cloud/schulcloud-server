@@ -49,9 +49,11 @@ const hasViewPermissionBefore = hook => {
     // filter most homeworks where the user has no view permission
     if(!hook.params.query['$or']){
         hook.params.query['$or'] = [{teacherId: userId},
+                                    {substitutionIds: userId},
                                     {'private': {$nin:[true]} }];
     }else{
         hook.params.query['$or'].push({teacherId: userId});
+        hook.params.query['$or'].push({substitutionIds: userId});
         hook.params.query['$or'].push({'private': {$nin:[true]} });
     }
     return Promise.resolve(hook);
@@ -62,7 +64,8 @@ const hasViewPermissionAfter = hook => {
     // user is teacher OR ( user is in courseId of task AND availableDate < Date.now() )
     // availableDate < Date.now()
     function hasPermission(e){
-        const isTeacher = (e.teacherId == (hook.params.account || {}).userId);
+        const isTeacher = (e.teacherId == (hook.params.account || {}).userId) 
+                        || (((e.courseId || {}).substitutionIds||[]).includes((hook.params.account || {}).userId.toString()));
         const isStudent = ( (e.courseId != null)
                         && ((e.courseId || {}).userIds || []).includes(((hook.params.account || {}).userId || "").toString()) );
         const published = (( new Date(e.availableDate) < new Date() )) && !e.private;   
@@ -103,7 +106,8 @@ const addStats = hook => {
 
                 if( !c.private && (
                     ( ((c.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && c.publicSubmissions )
-                    || ( c.teacherId == hook.params.account.userId.toString() ) ) ){
+                    || ( c.teacherId == hook.params.account.userId.toString() )
+                    || ((c.courseId || {}).substitutionIds || []).includes(hook.params.account.userId.toString()) ) ){
                     let submissionP = (
                         submissions.data.filter(function(n){
                             return JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && n.comment != undefined && n.comment != "";})
