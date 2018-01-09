@@ -14,6 +14,7 @@ const lessonSchema = new Schema({
 	date: { type: Date },
 	time: { type: Date },
 	contents: [{
+		user : {type : Schema.ObjectId, ref : 'user'},
 		component: { type: String },
 		title: { type: String },
 		content: {},
