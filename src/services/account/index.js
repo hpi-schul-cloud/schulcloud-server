@@ -93,7 +93,7 @@ class PasswordGenService {
 
 			return p2.then(res => {
 				return res;
-			})
+			});
 		}
 
 		let length = (query.length) ? query.length : 255;
