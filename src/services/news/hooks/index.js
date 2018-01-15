@@ -24,8 +24,8 @@ exports.before = {
 	get: [],
 	create: [],
 	update: [restrictToCurrentSchool],
-	patch: [restrictToCurrentSchool],
-	remove: [restrictToCurrentSchool, deleteNewsHistory]
+	patch: [restrictToCurrentSchool, globalHooks.permitGroupOperation],
+	remove: [restrictToCurrentSchool, globalHooks.permitGroupOperation, deleteNewsHistory]
 };
 
 exports.after = {
