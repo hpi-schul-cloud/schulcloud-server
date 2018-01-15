@@ -15,6 +15,13 @@ describe('user service', function () {
 		assert.ok(userService);
 	});
 
+	it('rejects on group patching', function() {
+		return userService.patch(null, {email: 'test'}).catch(err => {
+			chai.expect(err).to.be.not.undefined;
+			chai.expect(err.message).to.equal('Patch operation on this service requires an id!');
+		});
+	});
+
 	it('resolves permissions correctly', function () {
 		function create_test_base() {
 			return app.service('roles')

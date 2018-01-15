@@ -71,6 +71,13 @@ exports.resolveToIds = (serviceName, path, key, hook) => {
 	});
 };
 
+exports.permitGroupPatch = (hook) => {
+	if (!hook.id) {
+		throw new errors.Forbidden('Patch operation on this service requires an id!');
+	}
+	return Promise.resolve(hook);
+};
+
 
 const _resolveToId = (service, key, value) => {
 	let query = {};
