@@ -18,7 +18,7 @@ describe('user service', function () {
 	it('rejects on group patching', function() {
 		return userService.patch(null, {email: 'test'}).catch(err => {
 			chai.expect(err).to.be.not.undefined;
-			chai.expect(err.message).to.equal('Patch operation on this service requires an id!');
+			chai.expect(err.message).to.equal('Operation on this service requires an id!');
 		});
 	});
 
