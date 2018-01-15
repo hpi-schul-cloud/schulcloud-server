@@ -51,10 +51,10 @@ const insertSubmissionData = hook => {
         })
         .catch(err => {
             return Promise.reject(new errors.GeneralError({"message":"[500 INTERNAL ERROR] - can't reach submission service"}));
-        })
+        });
     }
     return Promise.resolve(hook);
-}
+};
 
 const insertHomeworkData = hook => {
     const homeworkId = hook.data.homeworkId || (hook.data.submission||{}).homeworkId;
@@ -73,10 +73,10 @@ const insertHomeworkData = hook => {
         })
         .catch(err => {
             return Promise.reject(new errors.GeneralError({"message":"[500 INTERNAL ERROR] - can't reach homework service"}));
-        })
+        });
     }
     return Promise.reject(new errors.BadRequest());
-}
+};
 
 const insertSubmissionsData = hook => {
     // get all the submissions for the homework
@@ -91,8 +91,8 @@ const insertSubmissionsData = hook => {
     })
     .catch(err => {
         return Promise.reject(new errors.GeneralError({"message":"[500 INTERNAL ERROR] - can't reach submission service"}));
-    })
-}
+    });
+};
 
 const preventNoTeamMember = hook => {
     if(!(hook.data.submission||{}).teamMembers){
@@ -129,7 +129,7 @@ const noSubmissionBefore = hook => {
         }));
     }
     return Promise.resolve(hook);
-}
+};
 
 const noDuplicateSubmissionForTeamMembers = hook => {
     if(!hook.data.isTeacher && hook.data.teamMembers){
@@ -231,8 +231,8 @@ exports.before = {
   get: [],
   create: [                      insertHomeworkData, insertSubmissionsData, setTeamMembers, noSubmissionBefore,                     noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
   update: [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
-  patch:  [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
-  remove: [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasDeletePermission]
+  patch:  [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, globalHooks.permitGroupOperation, canGrade],
+  remove: [insertSubmissionData, insertHomeworkData, insertSubmissionsData, globalHooks.permitGroupOperation, hasDeletePermission]
 };
 
 exports.after = {

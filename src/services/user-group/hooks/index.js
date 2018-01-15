@@ -81,8 +81,8 @@ exports.before = {
 	get: [],
 	create: [],
 	update: [restrictToCurrentSchool],
-	patch: [restrictToCurrentSchool, deleteWholeClassFromCourse],
-	remove: [restrictToCurrentSchool]
+	patch: [restrictToCurrentSchool, globalHooks.permitGroupOperation, deleteWholeClassFromCourse],
+	remove: [restrictToCurrentSchool, globalHooks.permitGroupOperation]
 };
 
 exports.after = {

@@ -13,8 +13,8 @@ exports.before = function(app) {
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [],
-		patch: [],
-		remove: []
+		patch: [globalHooks.permitGroupOperation],
+		remove: [globalHooks.permitGroupOperation]
 	};
 };
 

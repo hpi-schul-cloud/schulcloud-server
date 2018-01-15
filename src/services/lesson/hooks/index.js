@@ -1,5 +1,6 @@
 'use strict';
 
+const globalHooks = require('../../../hooks');
 const stripJs = require('strip-js');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
@@ -26,8 +27,8 @@ exports.before = {
 	get: [],
 	create: [],
 	update: [],
-	patch: [],
-	remove: []
+	patch: [globalHooks.permitGroupOperation],
+	remove: [globalHooks.permitGroupOperation]
 };
 
 exports.after = {
