@@ -15,7 +15,7 @@ const filterApplicableSubmissions = hook => {
             }
             return     c.homeworkId.publicSubmissions                                               // publicSubmissions allowes (everyone can see)
                     || c.homeworkId.teacherId.toString() == hook.params.account.userId.toString()   // or user is teacher
-                    || ((c.homeworkId.courseId || {}).substitutionIds || []).includes(hook.params.account.userId.toString())   // or user is teacher
+                    || ((c.homeworkId.courseId || {}).substitutionIds || []).includes(hook.params.account.userId.toString())   // or user is substitution teacher
                     || c.studentId.toString() == hook.params.account.userId.toString()              // or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
                     || c.teamMembers.includes(hook.params.account.userId.toString());                 // or in the team                    
         });
@@ -66,8 +66,9 @@ const insertHomeworkData = hook => {
             hook.data.homework = homework;
             // isTeacher?
             hook.data.isTeacher = false;
-            if((hook.data.homework.courseId.teacherIds||[]).includes(hook.params.account.userId)
-            ||(hook.data.homework.teacherId == hook.params.account.userId)){
+            if((hook.data.homework.teacherId == hook.params.account.userId)
+             ||(hook.data.homework.courseId.teacherIds||[]).includes(hook.params.account.userId)
+             ||(hook.data.homework.courseId.substitutionIds||[]).includes(hook.params.account.userId)){
                 hook.data.isTeacher = true;
             }
             return Promise.resolve(hook);
