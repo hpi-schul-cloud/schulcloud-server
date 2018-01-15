@@ -231,8 +231,8 @@ exports.before = {
   get: [],
   create: [                      insertHomeworkData, insertSubmissionsData, setTeamMembers, noSubmissionBefore,                     noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
   update: [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
-  patch:  [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
-  remove: [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasDeletePermission]
+  patch:  [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, globalHooks.permitGroupOperation, canGrade],
+  remove: [insertSubmissionData, insertHomeworkData, insertSubmissionsData, globalHooks.permitGroupOperation, hasDeletePermission]
 };
 
 exports.after = {

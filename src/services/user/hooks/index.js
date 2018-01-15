@@ -62,10 +62,11 @@ exports.before = function(app) {
 		],
 		patch: [
 			auth.hooks.authenticate('jwt'),
-			globalHooks.permitGroupPatch,
+			globalHooks.permitGroupOperation,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
-		remove: [auth.hooks.authenticate('jwt')]
+		remove: [auth.hooks.authenticate('jwt'),
+			globalHooks.permitGroupOperation]
 	};
 };
 

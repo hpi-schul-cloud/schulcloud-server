@@ -71,9 +71,9 @@ exports.resolveToIds = (serviceName, path, key, hook) => {
 	});
 };
 
-exports.permitGroupPatch = (hook) => {
+exports.permitGroupOperation = (hook) => {
 	if (!hook.id) {
-		throw new errors.Forbidden('Patch operation on this service requires an id!');
+		throw new errors.Forbidden('Operation on this service requires an id!');
 	}
 	return Promise.resolve(hook);
 };

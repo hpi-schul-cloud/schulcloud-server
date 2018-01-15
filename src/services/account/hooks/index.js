@@ -107,10 +107,11 @@ exports.before = {
 	],
 	update: [auth.hooks.authenticate('jwt')],
 	patch: [auth.hooks.authenticate('jwt'),
-			globalHooks.permitGroupPatch,
+			globalHooks.permitGroupOperation,
 			validatePassword,
 			local.hooks.hashPassword({ passwordField: 'password' })],
-	remove: [auth.hooks.authenticate('jwt')]
+	remove: [auth.hooks.authenticate('jwt'),
+			globalHooks.permitGroupOperation]
 };
 
 exports.after = {
