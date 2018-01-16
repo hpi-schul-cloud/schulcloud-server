@@ -4,7 +4,6 @@ const globalHooks = require('../../../hooks');
 const stripJs = require('strip-js');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
-const globalHooks = require('../../../hooks');
 const lesson = require('../model');
 
 exports.before = {
