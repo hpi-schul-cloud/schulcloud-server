@@ -29,8 +29,8 @@ exports.before = {
 	create: [hashId,
 		local.hooks.hashPassword({passwordField: 'password'})],
 	update: [auth.hooks.authenticate('jwt')],
-	patch: [auth.hooks.authenticate('jwt')],
-	remove: [auth.hooks.authenticate('jwt')]
+	patch: [auth.hooks.authenticate('jwt'), globalHooks.permitGroupOperation],
+	remove: [auth.hooks.authenticate('jwt'), globalHooks.permitGroupOperation]
 };
 
 exports.after = {

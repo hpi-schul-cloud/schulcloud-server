@@ -1,6 +1,6 @@
 'use strict';
 
-const {isAdmin, ifNotLocal} = require('../../../hooks');
+const {isAdmin, ifNotLocal, permitGroupOperation} = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
@@ -10,8 +10,8 @@ exports.before = {
 	get: [],
 	create: [auth.hooks.authenticate('jwt')],
 	update: [auth.hooks.authenticate('jwt')],
-	patch: [auth.hooks.authenticate('jwt')],
-	remove: [auth.hooks.authenticate('jwt')]
+	patch: [auth.hooks.authenticate('jwt'), permitGroupOperation],
+	remove: [auth.hooks.authenticate('jwt'), permitGroupOperation]
 };
 
 exports.after = {
