@@ -7,7 +7,6 @@ const errors = require('feathers-errors');
 const bcrypt = require('bcryptjs');
 const globalHooks = require('../../../hooks');
 
-const globalHooks = require('../../../hooks');
 const MoodleLoginStrategy = require('../strategies/moodle');
 const ITSLearningLoginStrategy = require('../strategies/itslearning');
 const IServLoginStrategy = require('../strategies/iserv');
