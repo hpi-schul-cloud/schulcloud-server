@@ -10,8 +10,8 @@ exports.before = {
 	get: [globalHooks.hasPermission('FEDERALSTATE_VIEW')],
 	create: [globalHooks.hasPermission('FEDERALSTATE_CREATE')],
 	update: [globalHooks.hasPermission('FEDERALSTATE_EDIT')],
-	patch: [globalHooks.hasPermission('FEDERALSTATE_EDIT')],
-	remove: [globalHooks.hasPermission('FEDERALSTATE_CREATE')]
+	patch: [globalHooks.hasPermission('FEDERALSTATE_EDIT'),globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('FEDERALSTATE_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {

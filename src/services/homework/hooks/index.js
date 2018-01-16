@@ -150,8 +150,8 @@ exports.before = {
 	get: [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore],
 	create: [globalHooks.hasPermission('HOMEWORK_CREATE')],
 	update: [globalHooks.hasPermission('HOMEWORK_EDIT')],
-	patch: [globalHooks.hasPermission('HOMEWORK_EDIT')],
-	remove: [globalHooks.hasPermission('HOMEWORK_CREATE')]
+	patch: [globalHooks.hasPermission('HOMEWORK_EDIT'),globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('HOMEWORK_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {

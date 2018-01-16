@@ -24,8 +24,8 @@ exports.before = {
 	get: [globalHooks.hasPermission('NEWS_VIEW')],
 	create: [globalHooks.hasPermission('NEWS_CREATE')],
 	update: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool],
-	patch: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool],
-	remove: [globalHooks.hasPermission('NEWS_CREATE'), restrictToCurrentSchool]
+	patch: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool,globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('NEWS_CREATE'), restrictToCurrentSchool,globalHooks.permitGroupOperation,deleteNewsHistory]
 };
 
 exports.after = {

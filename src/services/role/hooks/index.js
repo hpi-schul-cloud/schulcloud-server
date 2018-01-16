@@ -13,8 +13,8 @@ exports.before = function(app) {
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [globalHooks.hasPermission('ROLE_EDIT')],
-		patch: [globalHooks.hasPermission('ROLE_EDIT')],
-		remove: [globalHooks.hasPermission('ROLE_CREATE')]
+		patch: [globalHooks.hasPermission('ROLE_EDIT'),globalHooks.permitGroupOperation],
+		remove: [globalHooks.hasPermission('ROLE_CREATE'),globalHooks.permitGroupOperation]
 	};
 };
 

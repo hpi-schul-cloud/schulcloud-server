@@ -7,6 +7,7 @@ const errors = require('feathers-errors');
 const bcrypt = require('bcryptjs');
 const globalHooks = require('../../../hooks');
 
+const globalHooks = require('../../../hooks');
 const MoodleLoginStrategy = require('../strategies/moodle');
 const ITSLearningLoginStrategy = require('../strategies/itslearning');
 const IServLoginStrategy = require('../strategies/iserv');
@@ -107,9 +108,10 @@ exports.before = {
 	],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
+			globalHooks.permitGroupOperation,
 			validatePassword,
 			local.hooks.hashPassword({ passwordField: 'password' })],
-	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_CREATE')]
+	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {

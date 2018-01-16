@@ -16,8 +16,8 @@ exports.before = {
   get: [globalHooks.hasPermission('COMMENTS_VIEW')],
   create: [globalHooks.hasPermission('COMMENTS_CREATE')],
   update: [globalHooks.hasPermission('COMMENTS_EDIT')],
-  patch: [globalHooks.hasPermission('COMMENTS_EDIT')],
-  remove: [globalHooks.hasPermission('COMMENTS_CREATE')]
+  patch: [globalHooks.hasPermission('COMMENTS_EDIT'),globalHooks.permitGroupOperation],
+  remove: [globalHooks.hasPermission('COMMENTS_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {

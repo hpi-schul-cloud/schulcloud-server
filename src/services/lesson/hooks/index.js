@@ -1,5 +1,6 @@
 'use strict';
 
+const globalHooks = require('../../../hooks');
 const stripJs = require('strip-js');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
@@ -27,8 +28,8 @@ exports.before = {
 	get: [globalHooks.hasPermission('TOPIC_VIEW')],
 	create: [globalHooks.hasPermission('TOPIC_CREATE')],
 	update: [globalHooks.hasPermission('TOPIC_EDIT')],
-	patch: [globalHooks.hasPermission('TOPIC_EDIT')],
-	remove: [globalHooks.hasPermission('TOPIC_CREATE')]
+	patch: [globalHooks.hasPermission('TOPIC_EDIT'),globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('TOPIC_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {

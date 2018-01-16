@@ -81,8 +81,8 @@ exports.before = {
 	get: [],
 	create: [globalHooks.hasPermission('USERGROUP_CREATE')],
 	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
-	patch: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, deleteWholeClassFromCourse],
-	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool]
+	patch: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation, deleteWholeClassFromCourse],
+	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation]
 };
 
 exports.after = {
