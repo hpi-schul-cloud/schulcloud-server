@@ -27,6 +27,7 @@ There are blog posts on how to setup [client](https://github.com/schul-cloud/sch
 1. Go into project folder
 2. run `mongod`
 2. run `npm start`
+3. run `npm run setup`
 
 ## How to name your branch
 
