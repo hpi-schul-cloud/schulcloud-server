@@ -73,7 +73,7 @@ const hasViewPermissionAfter = hook => {
         const isTeacher = (e.teacherId == (hook.params.account || {}).userId);
         const isStudent = ( (e.courseId != null)
                         && ((e.courseId || {}).userIds || []).includes(((hook.params.account || {}).userId || "").toString()) );
-        const published = (( new Date(e.availableDate) < new Date() )) && !e.private;   
+        const published = (( new Date(e.availableDate) < new Date() )) && !e.private;
         return isTeacher || (isStudent && published);
     }
 
@@ -144,15 +144,14 @@ exports.before = {
         if (hook.data && hook.data.description) {
             hook.data.description = stripJs(hook.data.description);
         }
-
-        return hook;
-    }],
-    find: [globalHooks.mapPaginationQuery.bind(this), hasViewPermissionBefore],
-    get: [hasViewPermissionBefore],
-    create: [],
-    update: [],
-    patch: [globalHooks.permitGroupOperation],
-    remove: [globalHooks.permitGroupOperation]
+		return hook;
+	}],
+	find: [globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.mapPaginationQuery.bind(this), hasViewPermissionBefore],
+	get: [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore],
+	create: [globalHooks.hasPermission('HOMEWORK_CREATE')],
+	update: [globalHooks.hasPermission('HOMEWORK_EDIT')],
+	patch: [globalHooks.hasPermission('HOMEWORK_EDIT'),globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('HOMEWORK_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {

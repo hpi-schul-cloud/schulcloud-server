@@ -77,12 +77,12 @@ const deleteWholeClassFromCourse = (hook) => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [restrictToCurrentSchool],
+	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool],
 	get: [],
-	create: [],
-	update: [restrictToCurrentSchool],
-	patch: [restrictToCurrentSchool, globalHooks.permitGroupOperation, deleteWholeClassFromCourse],
-	remove: [restrictToCurrentSchool, globalHooks.permitGroupOperation]
+	create: [globalHooks.hasPermission('USERGROUP_CREATE')],
+	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
+	patch: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation, deleteWholeClassFromCourse],
+	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation]
 };
 
 exports.after = {
