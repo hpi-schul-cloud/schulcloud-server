@@ -3,6 +3,7 @@
 const service = require('feathers-mongoose');
 const {courseModel, courseGroupModel, classModel, gradeModel} = require('./model');
 const hooks = require('./hooks');
+const courseGroupsHooks = require('./hooks/courseGroups');
 
 module.exports = function() {
 	const app = this;
@@ -30,8 +31,8 @@ module.exports = function() {
 		lean: true
 	}));
 	const courseGroupService = app.service('/courseGroups');
-	courseGroupService.before(hooks.before);
-	courseGroupService.after(hooks.after);
+	courseGroupService.before(courseGroupsHooks.before);
+	courseGroupService.after(courseGroupsHooks.after);
 
 
 	/* Class model */
