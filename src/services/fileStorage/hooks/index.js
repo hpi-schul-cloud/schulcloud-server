@@ -27,12 +27,12 @@ exports.before = {
 		resolveUserId,
 		resolveStorageType
 	],
-	find: [],
-	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: []
+	find: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
+	get: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
+	create: [globalHooks.hasPermission('FILESTORAGE_CREATE')],
+	update: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
+	patch: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
+	remove: [globalHooks.hasPermission('FILESTORAGE_REMOVE')]
 };
 
 exports.after = {

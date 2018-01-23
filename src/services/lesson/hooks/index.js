@@ -23,12 +23,12 @@ exports.before = {
 		}
 		return hook;
 	}],
-	find: [],
-	get: [],
-	create: [],
-	update: [],
-	patch: [globalHooks.permitGroupOperation],
-	remove: [globalHooks.permitGroupOperation]
+	find: [globalHooks.hasPermission('TOPIC_VIEW')],
+	get: [globalHooks.hasPermission('TOPIC_VIEW')],
+	create: [globalHooks.hasPermission('TOPIC_CREATE')],
+	update: [globalHooks.hasPermission('TOPIC_EDIT')],
+	patch: [globalHooks.hasPermission('TOPIC_EDIT'),globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('TOPIC_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {

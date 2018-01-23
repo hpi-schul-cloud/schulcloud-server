@@ -2,6 +2,7 @@
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
+const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.
 
 // don't require authentication for internal requests
@@ -40,10 +41,38 @@ exports.isSuperHero = function (options) {
 
 exports.hasPermission = function (permissionName) {
 	return hook => {
-		if(!(hook.params.user.permissions || []).includes(permissionName)) {
-			throw new errors.Forbidden(`You don't have the permission ${permissionName}. Your permissions are ${hook.params.user.permissions}`);
+		// If it was an internal call then skip this hook
+		if (!hook.params.provider) {
+			return hook;
 		}
-		return Promise.resolve(hook);
+
+		// If an api key was provided, skip
+		if ((hook.params.headers || {})["x-api-key"]) {
+			return KeysModel.findOne({ key: hook.params.headers["x-api-key"]})
+				.then(res => {
+					if (!res)
+						throw new errors.NotAuthenticated('API Key is invalid');
+					return Promise.resolve(hook);
+				})
+				.catch(err => {
+					throw new errors.NotAuthenticated('API Key is invalid.');
+				});
+		}
+		// If test then skip too
+		if (process.env.NODE_ENV === 'test')
+			return Promise.resolve(hook);
+
+		// Otherwise check for user permissions
+		const service = hook.app.service('/users/');
+			return service.get({_id: (hook.params.account.userId || "")})
+				.then(user => {
+					user.permissions = Array.from(user.permissions);
+
+					if(!(user.permissions || []).includes(permissionName)) {
+						throw new errors.Forbidden(`You don't have the permission ${permissionName}.`);
+					}
+					return Promise.resolve(hook);
+				});
 	};
 };
 

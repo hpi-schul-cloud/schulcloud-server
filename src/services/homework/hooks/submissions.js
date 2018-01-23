@@ -6,7 +6,7 @@ const auth = require('feathers-authentication');
 const errors = require('feathers-errors');
 
 const filterApplicableSubmissions = hook => {
-    let data = hook.result.data || hook.result; 
+    let data = hook.result.data || hook.result;
     if(hook.params.account){
         data = data.filter(function(e){
             let c = JSON.parse(JSON.stringify(e));
@@ -16,7 +16,7 @@ const filterApplicableSubmissions = hook => {
             return     c.homeworkId.publicSubmissions                                               // publicSubmissions allowes (everyone can see)
                     || c.homeworkId.teacherId.toString() == hook.params.account.userId.toString()   // or user is teacher
                     || c.studentId.toString() == hook.params.account.userId.toString()              // or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
-                    || c.teamMembers.includes(hook.params.account.userId.toString());                 // or in the team                    
+                    || c.teamMembers.includes(hook.params.account.userId.toString());                 // or in the team
         });
         (hook.result.data)?(hook.result.data = data):(hook.result = data);
     }
@@ -227,12 +227,12 @@ const hasDeletePermission = hook => {
 
 exports.before = {
   all: [auth.hooks.authenticate('jwt'), stringifyUserId],
-  find: [globalHooks.mapPaginationQuery.bind(this)],
-  get: [],
-  create: [                      insertHomeworkData, insertSubmissionsData, setTeamMembers, noSubmissionBefore,                     noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
-  update: [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
-  patch:  [insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, globalHooks.permitGroupOperation, canGrade],
-  remove: [insertSubmissionData, insertHomeworkData, insertSubmissionsData, globalHooks.permitGroupOperation, hasDeletePermission]
+  find: [globalHooks.hasPermission('SUBMISSIONS_VIEW'), globalHooks.mapPaginationQuery.bind(this)],
+  get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
+  create: [globalHooks.hasPermission('SUBMISSIONS_CREATE'), insertHomeworkData, insertSubmissionsData, setTeamMembers, noSubmissionBefore,                     noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
+  update: [globalHooks.hasPermission('SUBMISSIONS_EDIT'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
+  patch:  [globalHooks.hasPermission('SUBMISSIONS_EDIT'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, globalHooks.permitGroupOperation, canGrade],
+  remove: [globalHooks.hasPermission('SUBMISSIONS_CREATE'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, globalHooks.permitGroupOperation, hasDeletePermission]
 };
 
 exports.after = {

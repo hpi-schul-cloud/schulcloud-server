@@ -37,12 +37,12 @@ exports.before = {
 	all: [
 		auth.hooks.authenticate('jwt')
 	],
-	find: [],
-	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: []
+	find: [globalHooks.hasPermission('CALENDAR_VIEW')],
+	get: [globalHooks.hasPermission('CALENDAR_VIEW')],
+	create: [globalHooks.hasPermission('CALENDAR_CREATE')],
+	update: [globalHooks.hasPermission('CALENDAR_EDIT')],
+	patch: [globalHooks.hasPermission('CALENDAR_EDIT')],
+	remove: [globalHooks.hasPermission('CALENDAR_CREATE')]
 };
 
 exports.after = {
