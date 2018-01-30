@@ -67,8 +67,8 @@ module.exports = function() {
 					query: {
 						ltiToolIds: params.toolId,
 						$or: [
-							{ userIds: userId },
-							{ teacherIds: userId }
+							{userIds: userId},
+							{teacherIds: userId}
 						]
 					}
 				}).then(courses => {
