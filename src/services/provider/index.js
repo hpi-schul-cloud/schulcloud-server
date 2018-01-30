@@ -1,15 +1,10 @@
 'use strict';
+var ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = function() {
 	const app = this;
 
 	// TODO: check permissions for tool and user combination
-
-	app.use('/provider', {
-		find(params) {
-			return Promise.resolve([]);
-		}
-	})
 
 	app.use('/provider/:toolId/users/:token/metadata', {
 		find(params) {
@@ -37,8 +32,6 @@ module.exports = function() {
 					return Promise.resolve({
 						'user_id': params.token,
 						'username': "foo",
-						'firstname': "First",
-						'lastname': "Name",
 						'type': user.roles[0].name,
 						'school_id': user.schoolId
 					});
