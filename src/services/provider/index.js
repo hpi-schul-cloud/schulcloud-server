@@ -37,6 +37,8 @@ module.exports = function() {
 					return Promise.resolve({
 						'user_id': params.token,
 						'username': "foo",
+						'firstname': "First",
+						'lastname': "Name",
 						'type': user.roles[0].name,
 						'school_id': user.schoolId
 					});
