@@ -1,14 +1,18 @@
 'use strict';
+var ObjectId = require('mongoose').Types.ObjectId;
 
 module.exports = function() {
 	const app = this;
 
-	app.use('/provider/users/:token/metadata', {
+	// TODO: check permissions for tool and user combination
+
+	app.use('/provider/:toolId/users/:token/metadata', {
 		find(params) {
 			const pseudoService = app.service("pseudonym");
 			return pseudoService.find({
 				query: {
-					token: params.token
+					token: params.token,
+					toolId: params.toolId
 				}
 			}).then(pseudonym => {
 				console.log(pseudonym);
@@ -28,8 +32,6 @@ module.exports = function() {
 					return Promise.resolve({
 						'user_id': params.token,
 						'username': "foo",
-						'firstname': "First",
-						'lastname': "Name",
 						'type': user.roles[0].name,
 						'school_id': user.schoolId
 					});
@@ -38,24 +40,29 @@ module.exports = function() {
 		}
 	});
 
-	app.use('/provider/users/:token/groups', {
+	app.use('/provider/:toolId/users/:token/groups', {
 		find(params) {
 			console.log(params);
 			const pseudoService = app.service("pseudonym");
 			return pseudoService.find({
 				query: {
-					token: params.token
+					token: params.token,
+					toolId: params.toolId
 				}
 			}).then(pseudonym => {
 				console.log(pseudonym);
 				if (!pseudonym.data[0]) {
 					return Promise.reject("User not found by token");
 				}
-				const toolId = (pseudonym.data[0].toolId);
+				const userId = (pseudonym.data[0].userId);
 				const courseService = app.service("courses");
 				return courseService.find({
 					query: {
-						ltiToolIds: toolId
+						ltiToolIds: params.toolId,
+						$or: [
+							{ userIds: userId },
+							{ teacherIds: userId }
+						]
 					}
 				}).then(courses => {
 					console.log();
@@ -68,5 +75,52 @@ module.exports = function() {
 			});
 		}
 	});
-	// app.use('/provider/:id/groups', groupService());
+
+	app.use('/provider/:toolId/groups', {
+		get(id, params) {
+			const courseService = app.service("courses");
+			return courseService.find({
+				query: {
+					_id: id,
+					ltiToolIds: params.toolId,
+					$populate: ['userIds', 'teacherIds']
+				}
+			}).then(courses => {
+				if (!courses.data[0]) {
+					return Promise.reject("Group not found");
+				}
+				const course = courses.data[0];
+
+				const pseudoService = app.service("pseudonym");
+
+				return Promise.all([
+					pseudoService.find({
+						query: {
+							userId: course.userIds[0]._id,
+							toolId: params.toolId
+						}
+					}),
+					pseudoService.find({
+						query: {
+							userId: course.teacherIds[0]._id,
+							toolId: params.toolId
+						}
+					}),
+				]).then(([users, teachers]) => {
+					return Promise.resolve({
+						students: [
+							users.data.map(user => ({
+								"user_id": user.token
+							}))
+						],
+						teachers: [
+							teachers.data.map(user => ({
+								"user_id": user.token
+							}))
+						]
+					});
+				});
+			});
+		}
+	});
 };
