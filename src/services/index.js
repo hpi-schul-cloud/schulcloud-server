@@ -26,6 +26,7 @@ const notification = require('./notification');
 const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
+const provider = require('./provider');
 
 const mongoose = require('mongoose');
 
@@ -61,4 +62,5 @@ module.exports = function () {
 	app.configure(pseudo);
 	app.configure(feedback);
 	app.configure(lrs);
+	app.configure(provider);
 };
