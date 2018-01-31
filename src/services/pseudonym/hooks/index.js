@@ -17,16 +17,30 @@ exports.before = {
 exports.after = {
   all: [],
   find: (hook) => {
-  	if (!hook.result.data.length) {
-  	  let pseudoService = hook.app.service('pseudonym');
-  	  return pseudoService.create({
-		  userId: hook.params.query.userId,
-		  toolId: hook.params.query.toolId
-	  }).then((pseudonym) => {
-		hook.result.data = [pseudonym];
-		return hook;
-	  })
+  	const userIds = (Array.isArray(hook.params.query.userId)
+	  ? hook.params.query.userId
+	  : [hook.params.query.userId]);
+  	const toolIds = (Array.isArray(hook.params.query.toolId)
+	  ? hook.params.query.toolId
+	  : [hook.params.query.toolId]);
+
+  	let pseudoService = hook.app.service('pseudonym');
+  	let pseudonyms = []
+  	for (let userId of userIds) {
+	  for (let toolId of toolIds) {
+		if (!hook.result.data.find(entry => (entry.userId.toString() == userId && entry.toolId == toolId))) {
+		  pseudonyms.push({userId, toolId});
+		}
+	  }
 	}
+
+	return pseudoService.create(pseudonyms).then((pseudonym) => {
+	  if (pseudonym) {
+	  	hook.result.data = hook.result.data.concat(pseudonym);
+	  }
+
+	  return hook;
+	})
   },
   get: [],
   create: [],

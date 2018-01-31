@@ -82,8 +82,7 @@ module.exports = function() {
 			return courseService.find({
 				query: {
 					_id: id,
-					ltiToolIds: params.toolId,
-					$populate: ['userIds', 'teacherIds']
+					ltiToolIds: params.toolId
 				}
 			}).then(courses => {
 				if (!courses.data[0]) {
@@ -96,13 +95,13 @@ module.exports = function() {
 				return Promise.all([
 					pseudoService.find({
 						query: {
-							userId: course.userIds[0]._id,
+							userId: course.userIds,
 							toolId: params.toolId
 						}
 					}),
 					pseudoService.find({
 						query: {
-							userId: course.teacherIds[0]._id,
+							userId: course.teacherIds,
 							toolId: params.toolId
 						}
 					}),
