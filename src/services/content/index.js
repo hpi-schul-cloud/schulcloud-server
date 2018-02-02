@@ -74,17 +74,12 @@ class RedirectService {
 	get(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		request({
-			method: 'POST',
-			uri: 'http://localhost:3030/content/rating/', //TODO change this...
-			body: {
-				materialId: id,
-				userId: params.query.userId,
-				topicId: params.query.topicId,
-				courseId: params.query.courseId
-			},
-			json: true,
-			timeout: REQUEST_TIMEOUT
+        // TODO prevent duplicate creation
+		this.options.ratingService.create({
+			materialId: id,
+			userId: params.query.userId,
+			topicId: params.query.topicId,
+			courseId: params.query.courseId
 		});
 
 		return request({
@@ -116,13 +111,13 @@ class RedirectService {
 module.exports = function () {
 	const app = this;
 
-	const ratingServiceOptions = {
+	const ratingService = mongooseService({
 		Model: ratingModel,
 		paginate: {
 			default: 10,
 			max: 25
 		}
-	};
+	});
 
 	// Initialize material model
 	const options = {
@@ -137,22 +132,18 @@ module.exports = function () {
 	// Initialize our service with options it requires
 	app.use('/content/resources', new ResourcesService());
 	app.use('/content/search', new SearchService());
-	app.use('/content/redirect', new RedirectService(), RedirectService.redirect);
-	app.use('/content/rating', mongooseService(ratingServiceOptions));
+	app.use('/content/redirect', new RedirectService({ratingService}), RedirectService.redirect);
 	app.use('/materials', mongooseService(options));
 
 	// Get our initialize service to that we can bind hooks
 	const resourcesService = app.service('/content/resources');
 	const searchService = app.service('/content/search');
-	const ratingService = app.service('/content/rating');
 
 	// Set up our before hooks
 	resourcesService.before(hooks.before);
 	searchService.before(hooks.before);
-	// ratingService.before(hooks.before); // TODO comment out to test with postman
 
 	// Set up our after hooks
 	resourcesService.after(hooks.after);
 	searchService.after(hooks.after);
-	ratingService.after(hooks.after);
 };
