@@ -74,12 +74,19 @@ class RedirectService {
 	get(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-        // TODO prevent duplicate creation
-		this.options.ratingService.create({
+		const rating = {
 			materialId: id,
 			userId: params.query.userId,
 			topicId: params.query.topicId,
 			courseId: params.query.courseId
+		};
+
+		this.options.ratingService.find({
+			query: Object.assign({$limit: 0}, rating)
+		}).then(foundObjects => {
+			if(foundObjects.total === 0){
+				this.options.ratingService.create(rating);
+			}
 		});
 
 		return request({
@@ -116,7 +123,8 @@ module.exports = function () {
 		paginate: {
 			default: 10,
 			max: 25
-		}
+		},
+		lean: true
 	});
 
 	// Initialize material model
