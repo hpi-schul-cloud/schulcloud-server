@@ -76,6 +76,39 @@ exports.hasPermission = function (permissionName) {
 	};
 };
 
+// non hook releated function
+exports.hasPermissionNoHook = function (hook, userId, permissionName) {
+	const service = hook.app.service('/users/');
+	return service.get({_id: (userId || "")})
+		.then(user => {
+			user.permissions = Array.from(user.permissions);
+			return (user.permissions || []).includes(permissionName);
+		});
+};
+
+exports.hasRoleNoHook = function (hook, userId, roleName, account = false) {
+	const userService = hook.app.service('/users/');
+	const accountService = hook.app.service('/accounts/');
+	if (account) {
+	 		return accountService.get(userId)
+				.then(account => {
+					return userService.find({query: {_id: (account.userId || ""), $populate: 'roles'}})
+						.then(user => {
+							user.data[0].roles = Array.from(user.data[0].roles);
+
+							return (user.data[0].roles.filter(u => (u.name === roleName)).length > 0);
+						});
+				});
+		} else {
+			return userService.find({query: {_id: (userId || ""), $populate: 'roles'}})
+				.then(user => {
+					user.data[0].roles = Array.from(user.data[0].roles);
+
+					return (user.data[0].roles.filter(u => (u.name === roleName)).length > 0);
+				});
+		}
+};
+
 // resolves IDs of objects from serviceName specified by *key* instead of their *_id*
 exports.resolveToIds = (serviceName, path, key, hook) => {
 	// get ids from a probably really deep nested path
