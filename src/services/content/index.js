@@ -72,14 +72,26 @@ class RedirectService {
 	}
 
 	get(id, params) {
-		console.log(`got a request from topic ${params.query.topicId}, which is in course ${params.query.courseId}`);
 		const serviceUrls = this.app.get('services') || {};
-		const options = {
-			uri: serviceUrls.content + '/resources/' + id,
+
+		request({
+			method: 'POST',
+			uri: 'http://localhost:3030/content/rating/', //TODO change this...
+			body: {
+				materialId: id,
+				userId: params.query.userId,
+				topicId: params.query.topicId,
+				courseId: params.query.courseId
+			},
 			json: true,
 			timeout: REQUEST_TIMEOUT
-		};
-		return request(options).then(resource => {
+		});
+
+		return request({
+			uri: `${serviceUrls.content}/resources/${id}`,
+			json: true,
+			timeout: REQUEST_TIMEOUT
+		}).then(resource => {
 			// Increase Click Counter
 			request.patch(serviceUrls.content + '/resources/' + id, {
 				json: {
@@ -94,16 +106,6 @@ class RedirectService {
 
 	static redirect(req, res, next) {
 		res.redirect(res.data);
-		// TODO
-		// const serviceUrls = this.app.get('services') || {};
-		// request.post(`${serviceUrls.content}/rating/`, {
-		// 	json: {
-		// 		'materialId': ,
-		// 		'userId': ,
-		// 		'topicId': ,
-		// 		'courseId':
-		// 	}
-		// })
 	}
 
 	setup(app, path) {
@@ -111,16 +113,16 @@ class RedirectService {
 	}
 }
 
-const ratingServiceOptions = {
-	Model: ratingModel,
-	paginate: {
-		default: 10,
-		max: 25
-	}
-};
-
 module.exports = function () {
 	const app = this;
+
+	const ratingServiceOptions = {
+		Model: ratingModel,
+		paginate: {
+			default: 10,
+			max: 25
+		}
+	};
 
 	// Initialize material model
 	const options = {
@@ -147,7 +149,7 @@ module.exports = function () {
 	// Set up our before hooks
 	resourcesService.before(hooks.before);
 	searchService.before(hooks.before);
-	ratingService.before(hooks.before); // TODO comment in
+	// ratingService.before(hooks.before); // TODO comment out to test with postman
 
 	// Set up our after hooks
 	resourcesService.after(hooks.after);
