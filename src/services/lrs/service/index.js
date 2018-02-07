@@ -10,10 +10,13 @@ class LearningLockerStore {
 		return new Promise((resolve, reject) => {
 			console.log("getting data from lrs");
 
-			xapi().get('/statements')
+			xapi(this.app).get('/statements')
 				.then(statements => {
 					console.log(statements);
-					resolve(JSON.parse(statements));
+					resolve(statements);
+				})
+				.catch(response => {
+					resolve(response);
 				})
 		})
 	}
