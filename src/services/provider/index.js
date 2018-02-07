@@ -5,6 +5,12 @@ module.exports = function() {
 
 	// TODO: check permissions for tool and user combination
 
+	app.use('/provider', {
+		find(params) {
+			return Promise.resolve([]);
+		}
+	})
+
 	app.use('/provider/:toolId/users/:token/metadata', {
 		find(params) {
 			const pseudoService = app.service("pseudonym");
