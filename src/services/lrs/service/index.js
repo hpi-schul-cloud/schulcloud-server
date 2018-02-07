@@ -1,4 +1,4 @@
-const request = require("request-promise-native");
+const xapi = require('../../../xapi.js');
 
 class LearningLockerStore {
 	constructor(opts) {
@@ -6,8 +6,16 @@ class LearningLockerStore {
 		this.app	 = null;
 	}
 
-	get(params) {
-		//TODO
+	find(params) {
+		return new Promise((resolve, reject) => {
+			console.log("getting data from lrs");
+
+			xapi().get('/statements')
+				.then(statements => {
+					console.log(statements);
+					resolve(JSON.parse(statements));
+				})
+		})
 	}
 
 	create(data, params) {

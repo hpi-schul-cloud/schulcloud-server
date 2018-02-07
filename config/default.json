@@ -6,9 +6,11 @@
 	"auth": {
 		"secret": "FQ5lS1j41dcZdaPFPP3VRPH6W2bt8Z19bmvcVz+8SH8PtfVpVTl/p+9D0jIdRhwC1UrWg69lTU9koFgugf9oZg=="
 	},
+	"xapiAuth": "MzJhODhlM2E0YjdkZDE3OThhMjE1YjI3MDE0N2NmNjRkM2IwZGI2YjowNzA0NWUzZTM5OTE0M2M0OTYzOTNkNDRlNzdiODFkY2ViODdlNjEw",
 	"services": {
 		"calendar": "http://localhost:3000",
 		"content": "https://schul-cloud.org:8090",
-		"notification": "http://localhost:3031"
+		"notification": "http://localhost:3031",
+		"xapi": "https://bp.schul-cloud.org/data/xAPI"
 	}
 }
