@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const fileStorageTypes = ['awsS3'];
+const chatTypes = ['rChat'];
 
 const schoolSchema = new Schema({
 	name: {type: String, required: true},
@@ -16,6 +17,10 @@ const schoolSchema = new Schema({
 	fileStorageType: {type: String, enum: fileStorageTypes},
 	systems: [{type: Schema.Types.ObjectId, ref: 'system'}],
 	federalState: {type: Schema.Types.ObjectId, ref: 'federalstate'},
+	chatType: {
+		type: { type: String, enum: chatTypes},
+		url: { type: String}
+	},
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now}
 },{

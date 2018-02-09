@@ -16,6 +16,8 @@ const userSchema = new Schema({
 
 	gender: {type: String, enum: gender},
 
+	chatId: {type: String},
+
 	preferences: {type: Object} // blackbox for frontend stuff like "cookies accepted"
 },{
 	timestamps: true
