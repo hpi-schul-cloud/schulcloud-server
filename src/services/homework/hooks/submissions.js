@@ -167,8 +167,8 @@ const noDuplicateSubmissionForTeamMembers = hook => {
 
 const maxTeamMembers = hook => {
     if(!hook.data.isTeacher && hook.data.homework.teamSubmissions){
-        if((hook.data.homework.maxTeamMembers||0)>= 1
-            && hook.data.teamMembers.length > hook.data.homework.maxTeamMembers){
+        if((hook.data.homework.maxTeamMembers || 0)>= 1
+            && (hook.data.teamMembers || []).length > hook.data.homework.maxTeamMembers){
             return Promise.reject(new errors.Conflict({
               "message": "Dein Team ist größer als erlaubt! ( maximal "+ hook.data.homework.maxTeamMembers +" Teammitglieder erlaubt)"
             }));
