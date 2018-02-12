@@ -37,7 +37,7 @@ const submissionModel = mongoose.model('submission', new Schema({
     homeworkId: {type: Schema.Types.ObjectId, required: true, ref: 'homework'},
     studentId: {type: Schema.Types.ObjectId, required: true, ref: 'user'},
     teamMembers: [{type: Schema.Types.ObjectId, required: true, ref: 'user'}],
-    courseGroup: {type: Schema.Types.ObjectId, ref: 'courseGroup'},
+    courseGroupId: {type: Schema.Types.ObjectId, ref: 'courseGroup'},
     fileIds: [{type: Schema.Types.ObjectId, ref: 'file'}],
     comments: [{type: Schema.Types.ObjectId, ref: 'comment'}]
 }));
