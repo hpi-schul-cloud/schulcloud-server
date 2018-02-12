@@ -8,10 +8,10 @@ exports.before = {
 	all: [],
 	find: [],
 	get: [],
-	create: [auth.hooks.authenticate('jwt')],
-	update: [auth.hooks.authenticate('jwt')],
-	patch: [auth.hooks.authenticate('jwt')],
-	remove: [auth.hooks.authenticate('jwt')]
+	create: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')],
+	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_EDIT')],
+	patch: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_EDIT')],
+	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
 };
 
 exports.after = {

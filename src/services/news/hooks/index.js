@@ -20,12 +20,12 @@ const deleteNewsHistory = hook => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [restrictToCurrentSchool],
-	get: [],
-	create: [],
-	update: [restrictToCurrentSchool],
-	patch: [restrictToCurrentSchool],
-	remove: [restrictToCurrentSchool, deleteNewsHistory]
+	find: [globalHooks.hasPermission('NEWS_VIEW'), restrictToCurrentSchool],
+	get: [globalHooks.hasPermission('NEWS_VIEW')],
+	create: [globalHooks.hasPermission('NEWS_CREATE')],
+	update: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool],
+	patch: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool,globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('NEWS_CREATE'), restrictToCurrentSchool,globalHooks.permitGroupOperation,deleteNewsHistory]
 };
 
 exports.after = {

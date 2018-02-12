@@ -32,7 +32,15 @@ const getAverageRating = function(submissions){
     }
     return undefined;
 };
-
+function isValidSubmission(submission){
+    return  (submission.comment && submission.comment != "")
+         || (submission.fileIds && submission.fileIds.length > 0);
+}
+function isGraded(submission){
+    return  (submission.gradeComment && submission.gradeComment != '')
+         || (submission.grade && Number.isInteger(submission.grade));
+}
+                    
 const hasViewPermissionBefore = hook => {
     // Add populate to query to be able to filter permissions
     if((hook.params.query||{})['$populate']){
@@ -65,7 +73,7 @@ const hasViewPermissionAfter = hook => {
         const isTeacher = (e.teacherId == (hook.params.account || {}).userId);
         const isStudent = ( (e.courseId != null)
                         && ((e.courseId || {}).userIds || []).includes(((hook.params.account || {}).userId || "").toString()) );
-        const published = (( new Date(e.availableDate) < new Date() )) && !e.private;   
+        const published = (( new Date(e.availableDate) < new Date() )) && !e.private;
         return isTeacher || (isStudent && published);
     }
 
@@ -104,36 +112,23 @@ const addStats = hook => {
                 if( !c.private && (
                     ( ((c.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && c.publicSubmissions )
                     || ( c.teacherId == hook.params.account.userId.toString() ) ) ){
-                    let submissionP = (
-                        submissions.data.filter(function(n){
-                            return JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && n.comment != undefined && n.comment != "";})
-                        .map(e => {return (e.teamMembers.length || 1);})
-                        .reduce((a, b) => a+b, 0)
-                        / ((c.courseId || {}).userIds || []).length
-                    )*100;
-                    let gradeP = (submissions.data.filter(function(n){
-                            return JSON.stringify(c._id) == JSON.stringify(n.homeworkId)
-                                && ( n.gradeComment || n.grade)
-                                && ( n.gradeComment != '' || Number.isInteger(n.grade) );})
-                        .map(e => {return (e.teamMembers.length || 1);})
-                        .reduce((a, b) => a+b, 0)
-                        / ((c.courseId || {}).userIds || []).length
-                    )*100;
+
+                    const NumberOfCourseMembers = ((c.courseId || {}).userIds || []).length;
+                    const currentSubmissions = submissions.data.filter(function(submission){return c._id.toString() == submission.homeworkId.toString();});
+                    const validSubmissions = currentSubmissions.filter(isValidSubmission);
+                    const gradedSubmissions = currentSubmissions.filter(isGraded);
+                    const NumberOfUsersWithSubmission = validSubmissions.map(e => {return ((e.teamMembers || []).length || 1);}).reduce((a, b) => a+b, 0);
+                    const NumberOfGradedUsers = gradedSubmissions.map(e => {return ((e.teamMembers || []).length || 1);}).reduce((a, b) => a+b, 0);
+                    const submissionPerc = ( NumberOfUsersWithSubmission / NumberOfCourseMembers)*100;
+                    const gradePerc = (NumberOfGradedUsers / NumberOfCourseMembers)*100;
+
                     c.stats = {
-                        userCount: ((c.courseId || {}).userIds || []).length,
-                        submissionCount: 
-                            submissions.data.filter(function(n){
-                                return  JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && n.comment != undefined && n.comment != "";})
-                                .map(e => {return (e.teamMembers.length || 1);})
-                                .reduce((a, b) => a+b, 0),
-                        submissionPercentage: (submissionP && submissionP != Infinity)?submissionP.toFixed(2):undefined,
-                        gradeCount: 
-                            submissions.data.filter(function(n){
-                                return JSON.stringify(c._id) == JSON.stringify(n.homeworkId) && (n.gradeComment || n.grade) && ( n.gradeComment != '' || Number.isInteger(n.grade) );})
-                            .map(e => {return (e.teamMembers.length || 1);})
-                            .reduce((a, b) => a+b, 0),
-                        gradePercentage:(gradeP && gradeP != Infinity)?gradeP.toFixed(2):undefined,
-                        averageGrade: getAverageRating(submissions.data.filter(function(n){return JSON.stringify(c._id) == JSON.stringify(n.homeworkId);}))
+                        userCount:              ((c.courseId || {}).userIds || []).length,
+                        submissionCount:        NumberOfUsersWithSubmission,
+                        submissionPercentage:   (submissionPerc != Infinity)?submissionPerc.toFixed(2):undefined,
+                        gradeCount:             NumberOfGradedUsers,
+                        gradePercentage:        (gradePerc != Infinity)?gradePerc.toFixed(2):undefined,
+                        averageGrade:           getAverageRating(currentSubmissions)
                     };
                 }
                 return c;
@@ -149,15 +144,14 @@ exports.before = {
         if (hook.data && hook.data.description) {
             hook.data.description = stripJs(hook.data.description);
         }
-
-        return hook;
-    }],
-    find: [globalHooks.mapPaginationQuery.bind(this), hasViewPermissionBefore],
-    get: [hasViewPermissionBefore],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
+		return hook;
+	}],
+	find: [globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.mapPaginationQuery.bind(this), hasViewPermissionBefore],
+	get: [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore],
+	create: [globalHooks.hasPermission('HOMEWORK_CREATE')],
+	update: [globalHooks.hasPermission('HOMEWORK_EDIT')],
+	patch: [globalHooks.hasPermission('HOMEWORK_EDIT'),globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('HOMEWORK_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {

@@ -25,7 +25,7 @@ const addWholeClassToCourse = (hook) => {
 
 			// add all students of classes to course, if not already added
 			return Promise.all(studentIds.map(s => {
-				if (course.userIds.indexOf(s) < 0) {
+				if (!_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(s))) {
 					return CourseModel.update({_id: course._id}, {$push: {userIds: s}}).exec();
 				} else {
 					return {};
@@ -55,11 +55,11 @@ const deleteWholeClassFromCourse = (hook) => {
 			return ClassModel.findById(classId).exec().then(c =>  (c || []).userIds);
 		})).then(studentIds => {
 			// flatten deep arrays and remove duplicates
-            studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
+      studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
 			// remove all students of classes from course, if they are in course
 			return Promise.all(studentIds.map(s => {
-				if (course.userIds.indexOf(s) >= 0) {
+				if (!_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(s))) {
 					return CourseModel.update({_id: course._id}, {$pull: {userIds: s}}).exec();
 				} else {
 					return {};
@@ -77,12 +77,12 @@ const deleteWholeClassFromCourse = (hook) => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [restrictToCurrentSchool],
+	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool],
 	get: [],
-	create: [],
-	update: [restrictToCurrentSchool],
-	patch: [restrictToCurrentSchool, deleteWholeClassFromCourse],
-	remove: [restrictToCurrentSchool]
+	create: [globalHooks.hasPermission('USERGROUP_CREATE')],
+	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
+	patch: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation, deleteWholeClassFromCourse],
+	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation]
 };
 
 exports.after = {

@@ -14,13 +14,16 @@ const lessonSchema = new Schema({
 	date: { type: Date },
 	time: { type: Date },
 	contents: [{
+		user : {type : Schema.ObjectId, ref : 'user'},
 		component: { type: String },
 		title: { type: String },
 		content: {},
 		hidden: { type: Boolean }
 	}],
 	materialIds: [{ type: Schema.Types.ObjectId, ref: 'material' }],
-	courseId: { type: Schema.Types.ObjectId, required: true, ref: 'course' },
+	/** a lesson can be inside a course or a courseGroup */
+	courseId: { type: Schema.Types.ObjectId, ref: 'course' },
+	courseGroupId: { type: Schema.Types.ObjectId, ref: 'courseGroup'},
 	hidden: { type: Boolean },
 	shareToken: { type: String, unique: true }, // token for topic sharing
 	originalTopic: { type: Schema.Types.ObjectId, ref: 'topic' }, // if current topic was copied from another, for later fancy stuff

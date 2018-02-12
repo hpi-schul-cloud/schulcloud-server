@@ -19,6 +19,18 @@ module.exports = function () {
 	// Initialize our service with any options it requires
 	app.use('/lessons', service(options));
 
+	// Return all lesson.contets which have component = query.type And User = query.user or null
+	app.use('/lessons/contents/:type/',{
+		find(params){
+			return lesson.aggregate([
+				{ $unwind :'$contents'},
+				{ $match : {"contents.component" : params.query.type}},
+				{ $match : {"contents.user_id" : { $in: [params.query.user, null ]}}},
+				{ $project : { _id: "$contents._id", content : "$contents.content"} }
+				]).exec();
+		}
+	});
+
 	// Get our initialize service to that we can bind hooks
 	const systemService = app.service('/lessons');
 
