@@ -6,7 +6,16 @@ const auth = require('feathers-authentication');
 
 exports.before = {
   all: [],
-  find: [],
+  find: (hook) => {
+	  if (hook.params.query.toolId) { // rewrite tool id if there is a origin tool (same provider)
+		  let toolService = hook.app.service('ltiTools');
+		  return toolService.get(hook.params.query.toolId).then(tool => {
+		  	hook.params.query.toolId = tool.originTool || hook.params.query.toolId;
+			return hook;
+		  });
+
+	  }
+  },
   get: [],
   create: [],
   update: [],

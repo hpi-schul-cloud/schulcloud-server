@@ -15,6 +15,7 @@ exports.before = {
 };
 
 const replacePseudonym = (hook) => {
+	if (!hook.params.account) return hook;
 	let userId = hook.params.account.userId;
 	let pseudoService = hook.app.service('pseudonym');
 	let data = hook.result;
