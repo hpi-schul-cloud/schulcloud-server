@@ -112,16 +112,12 @@ module.exports = function() {
 					}),
 				]).then(([users, teachers]) => {
 					return Promise.resolve({
-						students: [
-							users.data.map(user => ({
-								"user_id": user.token
-							}))
-						],
-						teachers: [
-							teachers.data.map(user => ({
-								"user_id": user.token
-							}))
-						]
+						students: users.data.map(user => ({
+							"user_id": user.token
+						})),
+						teachers: teachers.data.map(user => ({
+							"user_id": user.token
+						}))
 					});
 				});
 			});
