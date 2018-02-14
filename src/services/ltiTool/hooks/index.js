@@ -31,54 +31,6 @@ const replacePseudonym = (hook) => {
 	});
 };
 
-const replacePseudonym = (hook) => {
-	let userId = hook.params.account.userId;
-	let pseudoService = hook.app.service('pseudonym');
-	let data = hook.result;
-
-	return pseudoService.find({
-		query: {
-			userId: userId,
-			toolId: data._id
-		}
-	}).then((pseudonym) => {
-		data.pseudonymizedUrl = data.url.replace('{PSEUDONYM}', pseudonym.data[0].token);
-		return hook;
-	});
-};
-
-const replacePseudonym = (hook) => {
-	let userId = hook.params.account.userId;
-	let pseudoService = hook.app.service('pseudonym');
-	let data = hook.result;
-
-	return pseudoService.find({
-		query: {
-			userId: userId,
-			toolId: data._id
-		}
-	}).then((pseudonym) => {
-		data.pseudonymizedUrl = data.url.replace('{PSEUDONYM}', pseudonym.data[0].token);
-		return hook;
-	});
-};
-
-const replacePseudonym = (hook) => {
-	let userId = hook.params.account.userId;
-	let pseudoService = hook.app.service('pseudonym');
-	let data = hook.result;
-
-	return pseudoService.find({
-		query: {
-			userId: userId,
-			toolId: data._id
-		}
-	}).then((pseudonym) => {
-		data.pseudonymizedUrl = data.url.replace('{PSEUDONYM}', pseudonym.data[0].token);
-		return hook;
-	});
-};
-
 exports.after = {
   all: [],
   find: [],

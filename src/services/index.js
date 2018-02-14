@@ -12,9 +12,6 @@ const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
 const role = require('./role');
-const pseudo = require("./pseudonym");
-const lrs = require("./lrs");
-const feedback = require("./feedback");
 const helpers = require('./helpers');
 const resolve = require('./resolve');
 
@@ -26,6 +23,8 @@ const notification = require('./notification');
 const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
+const pseudo = require("./pseudonym");
+const lrs = require("./lrs");
 const provider = require('./provider');
 
 const mongoose = require('mongoose');
@@ -60,7 +59,6 @@ module.exports = function () {
 	app.configure(helpdesk);
 	app.configure(statistic);
 	app.configure(pseudo);
-	app.configure(feedback);
 	app.configure(lrs);
 	app.configure(provider);
 };

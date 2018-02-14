@@ -21,8 +21,7 @@ class LearningLockerStore {
 	create(data) {
 		return new Promise((resolve, reject) => {
 			xapi(this.app).post('/statements', {
-				body: data,
-				json: true
+				body: data
 			})
 			.then(result => {
 				resolve(result);

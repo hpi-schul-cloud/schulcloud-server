@@ -7,39 +7,35 @@ module.exports = function() {
 
 	app.use('/provider', {
 		find(params) {
-			return Promise.resolve([]);
+			return Promise.resolve("OK");
 		}
 	})
 
 	app.use('/provider/:toolId/users/:token/metadata', {
 		find(params) {
-			const pseudoService = app.service("pseudonym");
-			return pseudoService.find({
+			return app.service("pseudonym").find({
 				query: {
 					token: params.token,
 					toolId: params.toolId
 				}
 			}).then(pseudonym => {
-				console.log(pseudonym);
 				if (!pseudonym.data[0]) {
 					return Promise.reject("User not found by token");
 				}
 				const userId = (pseudonym.data[0].userId);
-				const userService = app.service("users");
-				return userService.find({
+				return app.service("users").find({
 					query: {
 						_id: userId,
 						$populate: ['roles']
 					}
 				}).then(users => {
-					console.log(users.data[0]);
 					const user = users.data[0];
-					return Promise.resolve({
+					return {
 						'user_id': params.token,
 						'username': "foo",
 						'type': user.roles[0].name,
 						'school_id': user.schoolId
-					});
+					};
 				});
 			});
 		}
@@ -47,21 +43,21 @@ module.exports = function() {
 
 	app.use('/provider/:toolId/users/:token/groups', {
 		find(params) {
-			console.log(params);
 			const pseudoService = app.service("pseudonym");
+
 			return pseudoService.find({
 				query: {
 					token: params.token,
 					toolId: params.toolId
 				}
 			}).then(pseudonym => {
-				console.log(pseudonym);
 				if (!pseudonym.data[0]) {
 					return Promise.reject("User not found by token");
 				}
+
 				const userId = (pseudonym.data[0].userId);
-				const courseService = app.service("courses");
-				return courseService.find({
+
+				return app.service("courses").find({
 					query: {
 						ltiToolIds: params.toolId,
 						$or: [
@@ -70,12 +66,11 @@ module.exports = function() {
 						]
 					}
 				}).then(courses => {
-					console.log();
-					return Promise.resolve(courses.data.map(course => ({
+					return courses.data.map(course => ({
 						id: course._id,
 						name: course.name,
 						studentCount: course.userIds.length
-					})));
+					}));
 				});
 			});
 		}
@@ -94,7 +89,6 @@ module.exports = function() {
 					return Promise.reject("Group not found");
 				}
 				const course = courses.data[0];
-
 				const pseudoService = app.service("pseudonym");
 
 				return Promise.all([
@@ -110,16 +104,15 @@ module.exports = function() {
 							toolId: params.toolId
 						}
 					}),
-				]).then(([users, teachers]) => {
-					return Promise.resolve({
+				]).then(([users, teachers]) => ({
 						students: users.data.map(user => ({
 							"user_id": user.token
 						})),
 						teachers: teachers.data.map(user => ({
 							"user_id": user.token
 						}))
-					});
-				});
+					})
+				);
 			});
 		}
 	});

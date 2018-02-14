@@ -21,7 +21,6 @@ services:
     volumes:
       - .:/app
 
-
   schulcloud-server-mongodb:
     image: mongo:3.4.3
     volumes:
