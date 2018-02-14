@@ -1,8 +1,8 @@
-exports.before = {
+exports.before = { // TODO: check permissions for teacher and provider
 	all: [],
 	find: [],
 	get: [],
-	create: [],
+	create: [], 
 	update: [],
 	patch: [],
 	remove: []

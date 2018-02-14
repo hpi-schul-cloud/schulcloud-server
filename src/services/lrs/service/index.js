@@ -8,11 +8,8 @@ class LearningLockerStore {
 
 	find(params) {
 		return new Promise((resolve, reject) => {
-			console.log("getting data from lrs");
-
 			xapi(this.app).get('/statements')
 				.then(statements => {
-					console.log(statements);
 					resolve(statements);
 				})
 				.catch(response => {
@@ -21,17 +18,18 @@ class LearningLockerStore {
 		})
 	}
 
-	create(data, params) {
+	create(data) {
 		return new Promise((resolve, reject) => {
-
-			const feedback = this.app.service("feedback");
-
-			const feedback_key = data.feedback_key;
-
-			feedback.get(feedback_key)
-				.then(user => {
-					const xapi = data.xapi;
-				});
+			xapi(this.app).post('/statements', {
+				body: data,
+				json: true
+			})
+			.then(result => {
+				resolve(result);
+			})
+			.catch(response => {
+				resolve(response);
+			});
 		});
 	}
 
