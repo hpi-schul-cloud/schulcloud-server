@@ -13,7 +13,6 @@ exports.before = {
 		  	hook.params.query.toolId = tool.originTool || hook.params.query.toolId;
 			return hook;
 		  });
-
 	  }
   },
   get: [],

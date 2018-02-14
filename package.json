@@ -70,7 +70,6 @@
     "pretty-error": "^2.0.3",
     "querystring": "^0.2.0",
     "randexp": "^0.4.6",
-	"redis": "^2.8.0",
     "request-promise-native": "^1.0.3",
     "serve-favicon": "^2.3.2",
     "strip-js": "^1.0.6",

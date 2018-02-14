@@ -11,6 +11,7 @@ services:
       NODE_ENV: development
     ports:
       - 3030:3030
+      - 5959:5959
     links:
       - schulcloud-server-mongodb:mongodb
     external_links:
