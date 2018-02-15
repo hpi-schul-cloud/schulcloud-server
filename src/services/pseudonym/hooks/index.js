@@ -36,7 +36,7 @@ exports.after = {
   	let pseudonyms = []
   	for (let userId of userIds) {
 	  for (let toolId of toolIds) {
-		if (!hook.result.data.find(entry => (entry.userId.toString() == userId && entry.toolId == toolId))) {
+		if (!hook.result.data.find(entry => (entry.userId.toString() == userId && entry.toolId.toString() == toolId))) {
 		  pseudonyms.push({userId, toolId});
 		}
 	  }

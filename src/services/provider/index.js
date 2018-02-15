@@ -20,7 +20,7 @@ module.exports = function() {
 				}
 			}).then(pseudonym => {
 				if (!pseudonym.data[0]) {
-					return Promise.reject("User not found by token");
+					return { errors: {"description": "User not found by token"}};
 				}
 				const userId = (pseudonym.data[0].userId);
 				return app.service("users").find({
@@ -31,10 +31,12 @@ module.exports = function() {
 				}).then(users => {
 					const user = users.data[0];
 					return {
-						'user_id': params.token,
-						'username': "foo",
-						'type': user.roles[0].name,
-						'school_id': user.schoolId
+						data: {
+							'user_id': params.token,
+							'username': "foo",
+							'type': user.roles[0].name
+						}
+
 					};
 				});
 			});
@@ -43,9 +45,7 @@ module.exports = function() {
 
 	app.use('/provider/:toolId/users/:token/groups', {
 		find(params) {
-			const pseudoService = app.service("pseudonym");
-
-			return pseudoService.find({
+			return app.service("pseudonym").find({
 				query: {
 					token: params.token,
 					toolId: params.toolId
@@ -65,13 +65,15 @@ module.exports = function() {
 							{teacherIds: userId}
 						]
 					}
-				}).then(courses => {
-					return courses.data.map(course => ({
-						id: course._id,
-						name: course.name,
-						studentCount: course.userIds.length
-					}));
-				});
+				}).then(courses => ({
+					data: {
+						groups: courses.data.map(course => ({
+							group_id: course._id,
+							name: course.name,
+							student_count: course.userIds.length
+						}))
+					}
+				}));
 			});
 		}
 	});
