@@ -88,7 +88,7 @@ module.exports = function() {
 				}
 			}).then(courses => {
 				if (!courses.data[0]) {
-					return Promise.reject("Group not found");
+					return { errors: {"description": "Group not found"}};
 				}
 				const course = courses.data[0];
 				const pseudoService = app.service("pseudonym");
@@ -107,14 +107,15 @@ module.exports = function() {
 						}
 					}),
 				]).then(([users, teachers]) => ({
+					data: {
 						students: users.data.map(user => ({
 							"user_id": user.token
 						})),
 						teachers: teachers.data.map(user => ({
 							"user_id": user.token
 						}))
-					})
-				);
+					}
+				}));
 			});
 		}
 	});
