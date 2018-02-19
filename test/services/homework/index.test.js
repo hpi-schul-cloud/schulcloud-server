@@ -63,6 +63,7 @@ describe('homework service', function() {
                 private: true
             },
             account: {userId: '0000d231816abba584714c9e'}}).then(result => {
+                console.log(result);
                 expect(result.total).to.equal(0);
             });
     });
