@@ -12,12 +12,12 @@ const addToSubmission = hook => {
 
 exports.before = {
   all: [auth.hooks.authenticate('jwt')],
-  find: [globalHooks.mapPaginationQuery.bind(this)],
-  get: [],
-  create: [],
-  update: [],
-  patch: [globalHooks.permitGroupOperation],
-  remove: [globalHooks.permitGroupOperation]
+  find: [globalHooks.hasPermission('COMMENTS_VIEW'), globalHooks.mapPaginationQuery.bind(this)],
+  get: [globalHooks.hasPermission('COMMENTS_VIEW')],
+  create: [globalHooks.hasPermission('COMMENTS_CREATE')],
+  update: [globalHooks.hasPermission('COMMENTS_EDIT')],
+  patch: [globalHooks.hasPermission('COMMENTS_EDIT'),globalHooks.permitGroupOperation],
+  remove: [globalHooks.hasPermission('COMMENTS_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {

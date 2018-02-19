@@ -8,13 +8,13 @@ exports.before = function(app) {
 	return {
 		all: [auth.hooks.authenticate('jwt')],
 		find: [],
-		get: [],
-		create: [
+		get: [globalHooks.hasPermission('ROLE_VIEW')],
+		create: [globalHooks.hasPermission('ROLE_CREATE'),
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
-		update: [],
-		patch: [globalHooks.permitGroupOperation],
-		remove: [globalHooks.permitGroupOperation]
+		update: [globalHooks.hasPermission('ROLE_EDIT')],
+		patch: [globalHooks.hasPermission('ROLE_EDIT'),globalHooks.permitGroupOperation],
+		remove: [globalHooks.hasPermission('ROLE_CREATE'),globalHooks.permitGroupOperation]
 	};
 };
 

@@ -6,12 +6,12 @@ const auth = require('feathers-authentication');
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [],
-	get: [],
-	create: [],
-	update: [],
-	patch: [globalHooks.permitGroupOperation],
-	remove: [globalHooks.permitGroupOperation]
+	find: [globalHooks.hasPermission('HELPDESK_VIEW')],
+	get: [globalHooks.hasPermission('HELPDESK_VIEW')],
+	create: [globalHooks.hasPermission('HELPDESK_CREATE')],
+	update: [globalHooks.hasPermission('HELPDESK_EDIT')],
+	patch: [globalHooks.hasPermission('HELPDESK_EDIT'),globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {
