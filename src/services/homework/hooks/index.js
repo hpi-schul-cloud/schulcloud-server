@@ -41,14 +41,14 @@ function isGraded(submission){
          || (submission.grade && Number.isInteger(submission.grade));
 }
 function isTeacher(userId, homework){
-	const user = userId.toString();
-	let isTeacher = (homework.teacherId.toString() == user);
-	if(!isTeacher && !homework.private){
-		const isCourseTeacher = homework.courseId.teacherIds.includes(user);
-		const isCourseSubstitution = homework.courseId.substitutionIds.includes(user);
-		isTeacher = isCourseTeacher || isCourseSubstitution;
-	}
-	return isTeacher;
+    const user = userId.toString();
+    let isTeacher = (homework.teacherId.toString() == user);
+    if(!isTeacher && !homework.private){
+        const isCourseTeacher = homework.courseId.teacherIds.includes(user);
+        const isCourseSubstitution = homework.courseId.substitutionIds.includes(user);
+        isTeacher = isCourseTeacher || isCourseSubstitution;
+    }
+    return isTeacher;
 }
 
 const hasViewPermissionBefore = hook => {
@@ -120,7 +120,7 @@ const addStats = hook => {
                 const submission = submissions.data.filter(s => {
                     return ( (c._id.toString() == s.homeworkId.toString()) && (s.grade) );
                 });
-				if(submission.length == 1  && !isTeacher(hook.params.account.userId, c)){
+                if(submission.length == 1  && !isTeacher(hook.params.account.userId, c)){
                     c.grade = submission[0].grade;
                 }
 
@@ -156,20 +156,20 @@ const addStats = hook => {
 };
 
 const hasPatchPermission = hook => {
-	const homeworkService = hook.app.service('/homework');
-	return homeworkService.get(hook.id,{
-		query: {$populate: ['courseId']},
-		account: {userId: hook.params.account.userId}
-	}).then((homework) => {
-		if(isTeacher(hook.params.account.userId, homework)) {
-			return Promise.resolve(hook);
-		}else{
-			return Promise.reject(new errors.Forbidden());
-		}
-	})
-	.catch(err => {
-		return Promise.reject(new errors.GeneralError({"message":"[500 INTERNAL ERROR] - can't reach homework service @isTeacher function"}));
-	});
+    const homeworkService = hook.app.service('/homework');
+    return homeworkService.get(hook.id,{
+        query: {$populate: ['courseId']},
+        account: {userId: hook.params.account.userId}
+    }).then((homework) => {
+        if(isTeacher(hook.params.account.userId, homework)) {
+            return Promise.resolve(hook);
+        }else{
+            return Promise.reject(new errors.Forbidden());
+        }
+    })
+    .catch(err => {
+        return Promise.reject(new errors.GeneralError({"message":"[500 INTERNAL ERROR] - can't reach homework service @isTeacher function"}));
+    });
 };
 
 exports.before = {
@@ -177,14 +177,14 @@ exports.before = {
         if (hook.data && hook.data.description) {
             hook.data.description = stripJs(hook.data.description);
         }
-		return hook;
-	}],
-	find: [globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.mapPaginationQuery.bind(this), hasViewPermissionBefore],
-	get: [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore],
-	create: [globalHooks.hasPermission('HOMEWORK_CREATE')],
-	update: [globalHooks.hasPermission('HOMEWORK_EDIT')],
-	patch: [globalHooks.hasPermission('HOMEWORK_EDIT'),globalHooks.permitGroupOperation, hasPatchPermission],
-	remove: [globalHooks.hasPermission('HOMEWORK_CREATE'),globalHooks.permitGroupOperation]
+        return hook;
+    }],
+    find: [globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.mapPaginationQuery.bind(this), hasViewPermissionBefore],
+    get: [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore],
+    create: [globalHooks.hasPermission('HOMEWORK_CREATE')],
+    update: [globalHooks.hasPermission('HOMEWORK_EDIT')],
+    patch: [globalHooks.hasPermission('HOMEWORK_EDIT'),globalHooks.permitGroupOperation, hasPatchPermission],
+    remove: [globalHooks.hasPermission('HOMEWORK_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {
