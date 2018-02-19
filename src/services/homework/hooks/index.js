@@ -40,7 +40,17 @@ function isGraded(submission){
     return  (submission.gradeComment && submission.gradeComment != '')
          || (submission.grade && Number.isInteger(submission.grade));
 }
-                    
+function isTeacher(userId, homework){
+	const user = userId.toString();
+	let isTeacher = (homework.teacherId.toString() == user);
+	if(!isTeacher && !homework.private){
+		const isCourseTeacher = homework.courseId.teacherIds.includes(user);
+		const isCourseSubstitution = homework.courseId.substitutionIds.includes(user);
+		isTeacher = isCourseTeacher || isCourseSubstitution;
+	}
+	return isTeacher;
+}
+
 const hasViewPermissionBefore = hook => {
     // Add populate to query to be able to filter permissions
     if((hook.params.query||{})['$populate']){
@@ -73,7 +83,6 @@ const hasViewPermissionAfter = hook => {
     // user is teacher OR ( user is in courseId of task AND availableDate < Date.now() )
     // availableDate < Date.now()
     function hasPermission(e){
-        console.log(e.courseId);
         const isTeacher = (e.teacherId == (hook.params.account || {}).userId)
                         || (!e.private && ((e.courseId || {}).teacherIds||[]).includes((hook.params.account || {}).userId.toString()))
                         || (!e.private && ((e.courseId || {}).substitutionIds||[]).includes((hook.params.account || {}).userId.toString()));
@@ -111,13 +120,13 @@ const addStats = hook => {
                 const submission = submissions.data.filter(s => {
                     return ( (c._id.toString() == s.homeworkId.toString()) && (s.grade) );
                 });
-                if(submission.length == 1  && c.teacherId.toString() != hook.params.account.userId.toString()){
+				if(submission.length == 1  && !isTeacher(hook.params.account.userId, c)){
                     c.grade = submission[0].grade;
                 }
 
                 if( !c.private && (
                     ( ((c.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && c.publicSubmissions )
-                    || ( c.teacherId == hook.params.account.userId.toString() ) ) ){
+                    || isTeacher(hook.params.account.userId, c) ) ){
 
                     const NumberOfCourseMembers = ((c.courseId || {}).userIds || []).length;
                     const currentSubmissions = submissions.data.filter(function(submission){return c._id.toString() == submission.homeworkId.toString();});
@@ -136,6 +145,7 @@ const addStats = hook => {
                         gradePercentage:        (gradePerc != Infinity)?gradePerc.toFixed(2):undefined,
                         averageGrade:           getAverageRating(currentSubmissions)
                     };
+                    c.isTeacher = isTeacher(hook.params.account.userId, c);
                 }
                 return c;
             });
@@ -143,6 +153,23 @@ const addStats = hook => {
             (hook.result.data)?(hook.result.data = data):(hook.result = data);
             return Promise.resolve(hook);
     });
+};
+
+const hasPatchPermission = hook => {
+	const homeworkService = hook.app.service('/homework');
+	return homeworkService.get(hook.id,{
+		query: {$populate: ['courseId']},
+		account: {userId: hook.params.account.userId}
+	}).then((homework) => {
+		if(isTeacher(hook.params.account.userId, homework)) {
+			return Promise.resolve(hook);
+		}else{
+			return Promise.reject(new errors.Forbidden());
+		}
+	})
+	.catch(err => {
+		return Promise.reject(new errors.GeneralError({"message":"[500 INTERNAL ERROR] - can't reach homework service @isTeacher function"}));
+	});
 };
 
 exports.before = {
@@ -156,7 +183,7 @@ exports.before = {
 	get: [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore],
 	create: [globalHooks.hasPermission('HOMEWORK_CREATE')],
 	update: [globalHooks.hasPermission('HOMEWORK_EDIT')],
-	patch: [globalHooks.hasPermission('HOMEWORK_EDIT'),globalHooks.permitGroupOperation],
+	patch: [globalHooks.hasPermission('HOMEWORK_EDIT'),globalHooks.permitGroupOperation, hasPatchPermission],
 	remove: [globalHooks.hasPermission('HOMEWORK_CREATE'),globalHooks.permitGroupOperation]
 };
 
