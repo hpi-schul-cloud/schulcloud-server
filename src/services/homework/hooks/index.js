@@ -102,6 +102,7 @@ const hasViewPermissionAfter = hook => {
         }
     }
     (hook.result.data)?(hook.result.data = data):(hook.result = data);
+    (hook.result.data)?(hook.result.total = data.length):(hook.total = data.length);
     return Promise.resolve(hook);
 };
 

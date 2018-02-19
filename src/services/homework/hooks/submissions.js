@@ -32,6 +32,7 @@ const filterApplicableSubmissions = hook => {
                 return false;
             }
         });
+        (hook.result.data)?(hook.result.total = data.length):(hook.total = data.length);
         (hook.result.data)?(hook.result.data = data):(hook.result = data);
     }
     return Promise.resolve(hook);
