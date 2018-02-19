@@ -23,7 +23,7 @@ const filterApplicableSubmissions = hook => {
                 return courseService.get(c.homeworkId.courseId)
                     .then(course => {
                         return ((course || {}).teacherIds || []).includes(hook.params.account.userId.toString())   // or user is teacher
-                            || ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString())   // or user is substitution teacher
+                            || ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString());   // or user is substitution teacher
                     })
                     .catch(err => {
                         return Promise.reject(new errors.GeneralError({"message":"[500 INTERNAL ERROR] - can't reach course service"}));
