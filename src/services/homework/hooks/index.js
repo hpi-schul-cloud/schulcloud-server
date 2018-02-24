@@ -63,18 +63,6 @@ const hasViewPermissionBefore = hook => {
         }
         hook.params.query['$populate'] = ['courseId'];
     }
-    /*
-    const userId = (hook.params.account || {}).userId;
-    // filter most homeworks where the user has no view permission
-    hook.params.query['$or'] = undefined;
-    if(!hook.params.query['$or']){
-        //hook.params.query['$or'] = [{'courseId.teacherIds': userId},
-        //                            {'private': {$nin:[true]} }];
-    }else{
-        //hook.params.query['$or'].push({teacherId: userId});
-        //hook.params.query['$or'].push({'courseId.teacherIds': userId});
-        //hook.params.query['$or'].push({'private': {$nin:[true]} });
-    }*/
     return Promise.resolve(hook);
 };
 
