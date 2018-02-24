@@ -13,11 +13,26 @@ const filterApplicableSubmissions = hook => {
             if(typeof c.teamMembers[0] === 'object'){
                 c.teamMembers = c.teamMembers.map(e => {return e._id;}); // map teamMembers list to _id list (if $populate(d) is used)
             }
-            return     c.homeworkId.publicSubmissions                                               // publicSubmissions allowes (everyone can see)
-                    || c.homeworkId.teacherId.toString() == hook.params.account.userId.toString()   // or user is teacher
-                    || c.studentId.toString() == hook.params.account.userId.toString()              // or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
-                    || c.teamMembers.includes(hook.params.account.userId.toString());                 // or in the team
+            if(c.homeworkId.publicSubmissions                                               // publicSubmissions allowed (everyone can see)
+            || c.homeworkId.teacherId.toString() == hook.params.account.userId.toString()   // or user is teacher
+            || c.studentId.toString() == hook.params.account.userId.toString()              // or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
+            || c.teamMembers.includes(hook.params.account.userId.toString())){				// or in the team
+                return true;
+            }else if(c.homeworkId.courseId) {
+                const courseService = hook.app.service('/courses');
+                return courseService.get(c.homeworkId.courseId)
+                    .then(course => {
+                        return ((course || {}).teacherIds || []).includes(hook.params.account.userId.toString())   // or user is teacher
+                            || ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString());   // or user is substitution teacher
+                    })
+                    .catch(err => {
+                        return Promise.reject(new errors.GeneralError({"message":"[500 INTERNAL ERROR] - can't reach course service"}));
+                    });
+            }else{
+                return false;
+            }
         });
+        (hook.result.data)?(hook.result.total = data.length):(hook.total = data.length);
         (hook.result.data)?(hook.result.data = data):(hook.result = data);
     }
     return Promise.resolve(hook);
@@ -65,8 +80,9 @@ const insertHomeworkData = hook => {
             hook.data.homework = homework;
             // isTeacher?
             hook.data.isTeacher = false;
-            if((hook.data.homework.courseId.teacherIds||[]).includes(hook.params.account.userId)
-            ||(hook.data.homework.teacherId == hook.params.account.userId)){
+            if((hook.data.homework.teacherId == hook.params.account.userId)
+             ||(hook.data.homework.courseId.teacherIds||[]).includes(hook.params.account.userId)
+             ||(hook.data.homework.courseId.substitutionIds||[]).includes(hook.params.account.userId)){
                 hook.data.isTeacher = true;
             }
             return Promise.resolve(hook);
@@ -142,7 +158,7 @@ const noDuplicateSubmissionForTeamMembers = hook => {
         }
 
         let toRemove = '';
-        let submissionsForTeamMembers = hook.data.submissions.filter(submission => { 
+        let submissionsForTeamMembers = hook.data.submissions.filter(submission => {
             for (var i = 0; i < newTeamMembers.length; i++) {
                 const teamMember = newTeamMembers[i].toString();
                 if(submission.teamMembers.includes(teamMember)

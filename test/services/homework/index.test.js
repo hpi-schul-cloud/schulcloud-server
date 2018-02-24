@@ -9,7 +9,7 @@ const expect = chai.expect;
 
 describe('homework service', function() {
     this.timeout(10000);
-    
+
     it('registered the homework service', () => {
         assert.ok(app.service('homework'));
     });
@@ -30,9 +30,9 @@ describe('homework service', function() {
     };
     it("CREATE task", () => {
         homeworkService.create(testAufgabe)
-			.then(result => {
+            .then(result => {
                 expect(result.name).to.equal("Testaufgabe");
-			});
+            });
     });
     it("DELETE task", () => {
         return homeworkService.find({
@@ -48,26 +48,29 @@ describe('homework service', function() {
 
     // PERMISSION TESTS
     it('FIND only my own tasks', () => {
-		return homeworkService.find({
-			query: {},
-			account: {userId: '0000d231816abba584714c9e'}}).then(result => {
+        return homeworkService.find({
+            query: {},
+            account: {userId: '0000d231816abba584714c9e'}}).then(result => {
                 expect(result.total).to.be.above(0);
                 expect(result.data.filter(e => {return e.teacherId != "0000d231816abba584714c9e";}).length).to.equal(0);
-			});
-	});
+            });
+    });
 
     it('try to FIND tasks of others', () => {
-		return homeworkService.find({
-			query: {teacherId: "0000d224816abba584714c9c"},
-			account: {userId: '0000d231816abba584714c9e'}}).then(result => {
+        return homeworkService.find({
+            query: {
+                teacherId: "0000d224816abba584714c9c",
+                private: true
+            },
+            account: {userId: '0000d231816abba584714c9e'}}).then(result => {
                 expect(result.total).to.equal(0);
-			});
-	});
+            });
+    });
 
     it('contains statistics as a teacher', () => {
-		return homeworkService.find({
-			query: {_id: "59d1f63ce0a06325e8b5288b"},
-			account: {userId: '0000d231816abba584714c9e'}}).then(result => {
+        return homeworkService.find({
+            query: {_id: "59d1f63ce0a06325e8b5288b"},
+            account: {userId: '0000d231816abba584714c9e'}}).then(result => {
                 expect(result.data[0].stats.userCount).to.equal(2);
                 expect(result.data[0].stats.submissionCount).to.equal(1);
                 expect(result.data[0].stats.submissionPercentage).to.equal('50.00');
@@ -76,24 +79,24 @@ describe('homework service', function() {
                 expect(result.data[0].stats.averageGrade).to.equal('67.00');
                 // no grade as a teacher
                 expect(result.data[0].grade).to.equal(undefined);
-			});
-	});
+            });
+    });
     it('contains grade as a student', () => {
-		return homeworkService.find({
-			query: {_id: "59d1f63ce0a06325e8b5288b"},
-			account: {userId: '0000d224816abba584714c9c'}}).then(result => {
+        return homeworkService.find({
+            query: {_id: "59d1f63ce0a06325e8b5288b"},
+            account: {userId: '0000d224816abba584714c9c'}}).then(result => {
                 expect(result.data[0].grade).to.not.equal('67.00');
                 // no stats as a student
                 expect(result.data[0].stats).to.equal(undefined);
-			});
-	});
+            });
+    });
     it('contains statistics as students when publicSubmissions:true', () => {
-		return homeworkService.find({
-			query: {_id: "59d1fae6395c8218f82cb914"},
-			account: {userId: '0000d224816abba584714c9c'}}).then(result => {
+        return homeworkService.find({
+            query: {_id: "59d1fae6395c8218f82cb914"},
+            account: {userId: '0000d224816abba584714c9c'}}).then(result => {
                 expect(result.data[0].grade).to.not.equal('67.00');
                 // no stats as a student
                 expect(result.data[0].stats).to.not.equal(undefined);
-			});
-	});
+            });
+    });
 });
