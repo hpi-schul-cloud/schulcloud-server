@@ -3,7 +3,7 @@
 const request = require('request-promise-native');
 const hooks = require('./hooks');
 const material = require('./material-model');
-const ratingModel = require('./rating-model');
+const ratingrequestModel = require('./ratingrequest-model');
 const mongooseService = require('feathers-mongoose');
 
 const REQUEST_TIMEOUT = 8000; // in ms
@@ -43,6 +43,27 @@ class ResourcesService {
 	}
 }
 
+class RatingService {
+	constructor(options) {
+		this.options = options || {};
+	}
+
+	create(data, params) {
+		const serviceUrls = this.app.get('services') || {};
+		return request({
+			method: 'POST',
+			uri: `${serviceUrls.content}/ratings`,
+			json: true,
+			body: data,
+			timeout: REQUEST_TIMEOUT
+		});
+	}
+
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
 class SearchService {
 	constructor(options) {
 		this.options = options || {};
@@ -74,18 +95,18 @@ class RedirectService {
 	get(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const rating = {
+		const ratingrequest = {
 			materialId: id,
 			userId: params.query.userId,
 			topicId: params.query.topicId,
 			courseId: params.query.courseId
 		};
 
-		this.options.ratingService.find({
-			query: Object.assign({$limit: 0}, rating)
+		this.options.ratingrequestService.find({
+			query: Object.assign({$limit: 0}, ratingrequest)
 		}).then(foundObjects => {
 			if(foundObjects.total === 0){
-				this.options.ratingService.create(rating);
+				this.options.ratingrequestService.create(ratingrequest);
 			}
 		});
 
@@ -118,8 +139,8 @@ class RedirectService {
 module.exports = function () {
 	const app = this;
 
-	const ratingService = mongooseService({
-		Model: ratingModel,
+	const ratingrequestService = mongooseService({
+		Model: ratingrequestModel,
 		paginate: {
 			default: 10,
 			max: 25
@@ -139,8 +160,9 @@ module.exports = function () {
 
 	// Initialize our service with options it requires
 	app.use('/content/resources', new ResourcesService());
+	app.use('/content/ratings', new RatingService());
 	app.use('/content/search', new SearchService());
-	app.use('/content/redirect', new RedirectService({ratingService}), RedirectService.redirect);
+	app.use('/content/redirect', new RedirectService({ratingrequestService}), RedirectService.redirect);
 	app.use('/materials', mongooseService(options));
 
 	// Get our initialize service to that we can bind hooks
