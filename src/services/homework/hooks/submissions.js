@@ -92,23 +92,7 @@ const insertSubmissionData = hook => {
 const insertHomeworkData = hook => {
     const homeworkId = hook.data.homeworkId || (hook.data.submission || {}).homeworkId;
     if (homeworkId) {
-        const homeworkService = hook.app.service('/homework'); <<
-        << << < HEAD
-        return homeworkService.get(homeworkId, { account: { userId: hook.params.account.userId } })
-            .then(homework => {
-                hook.data.homework = homework;
-                // isTeacher?
-                hook.data.isTeacher = false;
-                if ((hook.data.homework.courseId.teacherIds || []).includes(hook.params.account.userId) ||
-                    (hook.data.homework.teacherId == hook.params.account.userId)) {
-                    hook.data.isTeacher = true;
-                }
-                return Promise.resolve(hook);
-            })
-            .catch(err => {
-                return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach homework service" }));
-            }); ===
-        === =
+        const homeworkService = hook.app.service('/homework'); 
         return homeworkService.get(homeworkId, { account: { userId: hook.params.account.userId } })
             .then(homework => {
                 hook.data.homework = homework;
@@ -123,8 +107,7 @@ const insertHomeworkData = hook => {
             })
             .catch(err => {
                 return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach homework service" }));
-            }); >>>
-        >>> > master
+            }); 
     }
     return Promise.reject(new errors.BadRequest());
 };
