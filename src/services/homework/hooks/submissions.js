@@ -12,7 +12,7 @@ const filterApplicableSubmissions = hook => {
             let c = JSON.parse(JSON.stringify(e));
             if (typeof c.teamMembers[0] === 'object') {
                 c.teamMembers = c.teamMembers.map(e => { return e._id; }); // map teamMembers list to _id list (if $populate(d) is used)
-            }
+            } 
 
             let promise;
             if (typeof c.courseGroupId === 'object') {
@@ -23,13 +23,33 @@ const filterApplicableSubmissions = hook => {
                 promise = Promise.resolve({ userIds: [] });
             }
             return promise.then(courseGroup => {
-                return c.homeworkId.publicSubmissions // publicSubmissions allowes (everyone can see)
-                    || (c.homeworkId.teacherId || {}).toString() == hook.params.account.userId.toString() // or user is teacher
-                    || c.studentId.toString() == hook.params.account.userId.toString() // or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
-                    || c.teamMembers.includes(hook.params.account.userId.toString()) // or is a teamMember
-                    || courseGroup.userIds.includes(hook.params.account.userId.toString()); // or in the courseGroup
+                if (c.homeworkId.publicSubmissions // publicSubmissions allowes (everyone can see)
+                    ||
+                    (c.homeworkId.teacherId || {}).toString() == hook.params.account.userId.toString() // or user is teacher
+                    ||
+                    c.studentId.toString() == hook.params.account.userId.toString() // or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
+                    ||
+                    c.teamMembers.includes(hook.params.account.userId.toString()) // or is a teamMember
+                    ||
+                    courseGroup.userIds.includes(hook.params.account.userId.toString())) { // or in the courseGroup
+                    return true;
+                } else if (c.homeworkId.courseId) {
+                    const courseService = hook.app.service('/courses');
+                    return courseService.get(c.homeworkId.courseId)
+                        .then(course => {
+                            return ((course || {}).teacherIds || []).includes(hook.params.account.userId.toString()) // or user is teacher
+                                ||
+                                ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString()); // or user is substitution teacher
+                        })
+                        .catch(err => {
+                            return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach course service" }));
+                        });
+                } else {
+                    return false;
+                }
             });
         })).then(result => {
+            (hook.result.data) ? (hook.result.total = data.length) : (hook.total = data.length);
             (hook.result.data) ? (hook.result.data = data) : (hook.result = data);
         });
     }
@@ -72,7 +92,8 @@ const insertSubmissionData = hook => {
 const insertHomeworkData = hook => {
     const homeworkId = hook.data.homeworkId || (hook.data.submission || {}).homeworkId;
     if (homeworkId) {
-        const homeworkService = hook.app.service('/homework');
+        const homeworkService = hook.app.service('/homework'); <<
+        << << < HEAD
         return homeworkService.get(homeworkId, { account: { userId: hook.params.account.userId } })
             .then(homework => {
                 hook.data.homework = homework;
@@ -86,7 +107,24 @@ const insertHomeworkData = hook => {
             })
             .catch(err => {
                 return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach homework service" }));
-            });
+            }); ===
+        === =
+        return homeworkService.get(homeworkId, { account: { userId: hook.params.account.userId } })
+            .then(homework => {
+                hook.data.homework = homework;
+                // isTeacher?
+                hook.data.isTeacher = false;
+                if ((hook.data.homework.teacherId == hook.params.account.userId) ||
+                    (hook.data.homework.courseId.teacherIds || []).includes(hook.params.account.userId) ||
+                    (hook.data.homework.courseId.substitutionIds || []).includes(hook.params.account.userId)) {
+                    hook.data.isTeacher = true;
+                }
+                return Promise.resolve(hook);
+            })
+            .catch(err => {
+                return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach homework service" }));
+            }); >>>
+        >>> > master
     }
     return Promise.reject(new errors.BadRequest());
 };
