@@ -43,7 +43,11 @@ There are blog posts on how to setup [client](https://github.com/schul-cloud/sch
             "type": "node",
             "request": "launch",
             "name": "Launch SC-Server",
-            "program": "${workspaceFolder}/src/index.js"
+            "program": "${workspaceFolder}/src/index.js",
+            "skipFiles": [
+              "<node_internals>/**"
+            ]
+
         }
     ]
 }
