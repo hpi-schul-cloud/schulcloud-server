@@ -61,6 +61,10 @@ const validatePassword = (hook) => {
 	let password_verification = hook.data.password_verification;
 	let password = hook.data.password;
 
+	// in case sso created account skip
+	if (!hook.params.account.userId)
+		return hook;
+
 	return Promise.all([globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_CREATE'), globalHooks.hasRoleNoHook(hook, hook.id, 'student', true)])
 		.then(results => {
 			if (results[0] && results[1]) {

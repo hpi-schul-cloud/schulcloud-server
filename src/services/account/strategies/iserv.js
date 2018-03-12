@@ -22,7 +22,7 @@ class IServLoginStrategy extends AbstractLoginStrategy {
 			clientId: iservOptions.client_id,
 			clientSecret: iservOptions.client_secret,
 			accessTokenUri: `${iservOptions.wwwroot}/iserv/oauth/v2/token`,
-			authorizationUri: `${iservOptions.wwwroot}/iserv/oauth/v2/auth`,
+			authorizationUri: `${iservOptions.wwwroot}/iserv/oauth/v2/auth`
 		});
 
 		logger.debug("[iserv]: Trying to connect to IServ-Server");
