@@ -1,5 +1,5 @@
 const promisify = require('es6-promisify');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const SchoolModel = require('../../school/model');
 const UserModel = require('../../user/model');
 const aws = require('aws-sdk');

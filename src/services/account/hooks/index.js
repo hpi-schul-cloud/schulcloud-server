@@ -1,9 +1,8 @@
 'use strict';
 
-const auth = require('feathers-authentication');
-const hooks = require('feathers-hooks');
-const local = require('feathers-authentication-local');
-const errors = require('feathers-errors');
+const auth = require('@feathersjs/authentication');
+const local = require('@feathersjs/authentication-local');
+const errors = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
 const globalHooks = require('../../../hooks');
 

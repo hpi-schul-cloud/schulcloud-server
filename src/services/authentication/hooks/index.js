@@ -1,8 +1,8 @@
 'use strict';
 
-const auth = require('feathers-authentication');
-const local = require('feathers-authentication-local');
-const jwt = require('feathers-authentication-jwt');
+const auth = require('@feathersjs/authentication');
+const local = require('@feathersjs/authentication-local');
+const jwt = require('@feathersjs/authentication-jwt');
 
 const injectUserId = (hook) => {
 	const accountId = hook.params.payload.accountId;

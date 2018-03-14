@@ -2,9 +2,8 @@
 
 const stripJs = require('strip-js');
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
-const errors = require('feathers-errors');
+const auth = require('@feathersjs/authentication');
+const errors = require('@feathersjs/errors');
 
 const getAverageRating = function(submissions){
     // Durchschnittsnote berechnen
