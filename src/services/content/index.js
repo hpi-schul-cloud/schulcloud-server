@@ -5,6 +5,8 @@ const hooks = require('./hooks');
 const material = require('./material-model');
 const ratingrequestModel = require('./ratingrequest-model');
 const mongooseService = require('feathers-mongoose');
+const ObjectId = require('mongoose').Types.ObjectId;
+
 
 const REQUEST_TIMEOUT = 8000; // in ms
 
@@ -56,6 +58,8 @@ class RatingService {
 			json: true,
 			body: data,
 			timeout: REQUEST_TIMEOUT
+		}).then(() => {
+		//	TODO set ratingrequest from pending to done
 		});
 	}
 
@@ -80,6 +84,40 @@ class SearchService {
 		return request(options).then(message => {
 			return message;
 		});
+	}
+
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
+class RatingrequestService {
+	constructor(options) {
+		this.options = options || {};
+	}
+
+	get(userId, params) {
+		const serviceUrls = this.app.get('services') || {};
+
+		return this.options.ratingrequestService.find({
+			query: {
+				userId: ObjectId(userId),
+				state: "pending"
+                // TODO? not older than n days
+			}
+		}).then(ratingrequests => {
+			if(ratingrequests.total === 0){
+				return [];
+			}
+
+			const materialIds = ratingrequests.data.map(it => it.materialId.toString());
+
+			return this.options.resourcesService.find({
+				query: { _id: { $in: materialIds } }
+			});
+		});
+
+
 	}
 
 	setup(app, path) {
@@ -139,6 +177,18 @@ class RedirectService {
 module.exports = function () {
 	const app = this;
 
+	app.use('/content/resources', new ResourcesService());
+	const resourcesService = app.service('/content/resources');
+	resourcesService.before(hooks.before);
+	resourcesService.after(hooks.after);
+
+	app.use('/content/search', new SearchService());
+	const searchService = app.service('/content/search');
+	searchService.before(hooks.before);
+	searchService.after(hooks.after);
+
+	app.use('/content/ratings', new RatingService());
+
 	const ratingrequestService = mongooseService({
 		Model: ratingrequestModel,
 		paginate: {
@@ -147,8 +197,10 @@ module.exports = function () {
 		},
 		lean: true
 	});
+	app.use('/content/ratingrequest', new RatingrequestService({ratingrequestService, resourcesService}));
 
-	// Initialize material model
+	app.use('/content/redirect', new RedirectService({ratingrequestService}), RedirectService.redirect);
+
 	const options = {
 		Model: material,
 		paginate: {
@@ -157,23 +209,5 @@ module.exports = function () {
 		},
 		lean: true
 	};
-
-	// Initialize our service with options it requires
-	app.use('/content/resources', new ResourcesService());
-	app.use('/content/ratings', new RatingService());
-	app.use('/content/search', new SearchService());
-	app.use('/content/redirect', new RedirectService({ratingrequestService}), RedirectService.redirect);
 	app.use('/materials', mongooseService(options));
-
-	// Get our initialize service to that we can bind hooks
-	const resourcesService = app.service('/content/resources');
-	const searchService = app.service('/content/search');
-
-	// Set up our before hooks
-	resourcesService.before(hooks.before);
-	searchService.before(hooks.before);
-
-	// Set up our after hooks
-	resourcesService.after(hooks.after);
-	searchService.after(hooks.after);
 };
