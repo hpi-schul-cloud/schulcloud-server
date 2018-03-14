@@ -1,6 +1,6 @@
 const logger = require('winston');
 const promisify = require('es6-promisify');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const request = require('request-promise-native');
 
 const AbstractLoginStrategy = require('./interface.js');

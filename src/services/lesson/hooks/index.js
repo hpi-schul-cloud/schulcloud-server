@@ -2,8 +2,7 @@
 
 const globalHooks = require('../../../hooks');
 const stripJs = require('strip-js');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const lesson = require('../model');
 
 const checkIfCourseGroupLesson = (permission1, permission2, isCreating, hook) => {

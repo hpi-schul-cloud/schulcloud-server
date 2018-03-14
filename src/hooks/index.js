@@ -1,5 +1,5 @@
 'use strict';
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
 const KeysModel = require('../services/keys/model');

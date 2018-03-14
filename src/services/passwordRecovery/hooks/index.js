@@ -1,10 +1,9 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const bcrypt = require('bcryptjs');
-const local = require('feathers-authentication-local');
+const local = require('@feathersjs/authentication-local');
 
 const hashId = (hook) => {
 	if (!hook.data.password) {
