@@ -52,15 +52,23 @@ class RatingService {
 
 	create(data, params) {
 		const serviceUrls = this.app.get('services') || {};
-		return request({
-			method: 'POST',
-			uri: `${serviceUrls.content}/ratings`,
-			json: true,
-			body: data,
-			timeout: REQUEST_TIMEOUT
-		}).then(() => {
-		//	TODO set ratingrequest from pending to done
-		});
+		return this.options.ratingrequestService.patch(null, { state: "done" }, {
+			query: {
+				_id: params.query.ratingrequestId,
+				state: "pending"
+			}
+		}).then(patchedData => {
+			if(patchedData.length !== 1){
+				return
+			}
+			return request({
+				method: 'POST',
+				uri: `${serviceUrls.content}/ratings`,
+				json: true,
+				body: data,
+				timeout: REQUEST_TIMEOUT
+			})
+		})
 	}
 
 	setup(app, path) {
@@ -187,8 +195,6 @@ module.exports = function () {
 	searchService.before(hooks.before);
 	searchService.after(hooks.after);
 
-	app.use('/content/ratings', new RatingService());
-
 	const ratingrequestService = mongooseService({
 		Model: ratingrequestModel,
 		paginate: {
@@ -200,6 +206,8 @@ module.exports = function () {
 	app.use('/content/ratingrequest', new RatingrequestService({ratingrequestService, resourcesService}));
 
 	app.use('/content/redirect', new RedirectService({ratingrequestService}), RedirectService.redirect);
+
+	app.use('/content/ratings', new RatingService({ratingrequestService}));
 
 	const options = {
 		Model: material,
