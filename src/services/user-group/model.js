@@ -49,9 +49,13 @@ const courseGroupModel = mongoose.model('courseGroup', getUserGroupSchema({
 	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
 }));
 
-const classModel =  mongoose.model('class', getUserGroupSchema({
+const classSchema = getUserGroupSchema({
 	teacherIds: [{type: Schema.Types.ObjectId, ref: 'user', required: true}]
-}));
+});
+classSchema.index({ name: 1}, {unique: true});
+
+const classModel =  mongoose.model('class', classSchema);
+
 const gradeModel =  mongoose.model('grade', getUserGroupSchema());
 
 module.exports = {
