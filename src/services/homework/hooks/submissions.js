@@ -82,7 +82,7 @@ const insertSubmissionData = hook => {
                     hook.data.isTeamMember = true;
                 }
 
-                if (hook.data.courseGroupId) {
+                if (hook.data.submission.courseGroupId || hook.data.courseGroupId) {
                     hook.data.isTeamMember = true;
                     (hook.data.submission.teamMembers || []).push(hook.params.account.userId);
                 }
