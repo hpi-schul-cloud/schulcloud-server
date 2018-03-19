@@ -77,9 +77,16 @@ const insertSubmissionData = hook => {
                     hook.data.isOwner = true;
                     hook.data.isTeamMember = true;
                 }
+
                 if ((hook.data.submission.teamMembers || []).includes(hook.params.account.userId)) {
                     hook.data.isTeamMember = true;
                 }
+
+                if (hook.data.courseGroupId) {
+                    hook.data.isTeamMember = true;
+                    (hook.data.submission.teamMembers || []).push(hook.params.account.userId);
+                }
+
                 return Promise.resolve(hook);
             })
             .catch(err => {
@@ -220,7 +227,8 @@ const maxTeamMembers = hook => {
 
 const canRemoveOwner = hook => {
     if (hook.data.teamMembers &&
-        !hook.data.teamMembers.includes(hook.data.submission.studentId)) {
+        !hook.data.teamMembers.includes(hook.data.submission.studentId) &&
+        !hook.data.courseGroupId) {
         if (hook.data.isOwner) {
             return Promise.reject(new errors.Conflict({
                 "message": "Du hast diese Abgabe erstellt. Du darfst dich nicht selbst von dieser löschen!"
