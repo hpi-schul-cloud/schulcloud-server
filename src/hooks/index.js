@@ -207,6 +207,22 @@ exports.restrictToCurrentSchool = hook => {
 	});
 };
 
+exports.addCurrentSchoolIdFromUser = hook => {
+	let userService = hook.app.service("users");
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId
+		}
+	}).then(res => {
+		if (hook.method == "get" || hook.method == "find"){
+			hook.params.query.schoolId = res.data[0].schoolId;
+		}else{
+			hook.data.schoolId = res.data[0].schoolId.toString();
+		}
+		return hook;
+	});
+};
+
 // meant to be used as an after hook
 exports.denyIfNotCurrentSchool = ({errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!'}) =>
 	hook => {
