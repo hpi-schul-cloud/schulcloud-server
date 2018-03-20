@@ -50,9 +50,10 @@ describe('helpdesk service', function() {
 
 		return helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
 			.then(result => {
-				expect(result.statusCode).to.equal(200);
-				expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
-			});
+				assert.equal(result.statusCode, 200);
+				assert.equal(result.data.id, '59199dbe8d4be221143cc866');
+			}
+		);
 	});
 
 	it('POST /helpdesk with invalid data', () => {
@@ -67,8 +68,9 @@ describe('helpdesk service', function() {
 
 		return helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
 			.then(result => {
-				expect(result.statusCode).to.equal(500);
-			});
+				assert.equal(result.statusCode, 500);
+			}
+		);
 	});
 });
 
