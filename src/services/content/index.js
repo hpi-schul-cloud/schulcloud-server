@@ -106,6 +106,8 @@ class RatingrequestService {
 
 	get(userId, params) {
 		const serviceUrls = this.app.get('services') || {};
+		const courseService = this.app.service('/courses');
+		const lessonsService = this.app.service('/lessons'); // topics
 
 		return this.options.ratingrequestService.find({
 			query: {
@@ -117,12 +119,36 @@ class RatingrequestService {
 			if(ratingrequests.total === 0){
 				return [];
 			}
-
+			const courseIds = ratingrequests.data.map(it => it.courseId.toString());
+			const topicIds = ratingrequests.data.map(it => it.topicId.toString());
 			const materialIds = ratingrequests.data.map(it => it.materialId.toString());
+
+			return Promise.all([
+				lessonsService.find({
+					query: { _id: { $in: topicIds } }
+				}),
+				courseService.find({
+					query: { _id: { $in: courseIds } }
+				}),
+				this.options.resourcesService.find({
+					query: { _id: { $in: materialIds } }
+				})
+			]).then(([topics,courses,contents]) =>{
+				ratingrequests.data.map((request) =>{
+					request.title 		 = contents.data.find( function (content) { return String(content._id) === String(request.materialId);}).title;
+					request.courseTitle  = courses.data.find(  function (course)  { return String(course._id)  === String(request.courseId);}).name;
+					request.topicTitle 	 = topics.data.find(   function (topic)   { return String(topic._id)   === String(request.topicId);}).name;
+					request.providerName = contents.data.find( function (content) { return String(content._id) === String(request.materialId);}).providerName;
+				});
+				return ratingrequests;
+			});
+
+
+		/*	const materialIds = ratingrequests.data.map(it => it.materialId.toString());
 
 			return this.options.resourcesService.find({
 				query: { _id: { $in: materialIds } }
-			});
+			});*/
 		});
 
 
@@ -208,7 +234,6 @@ module.exports = function () {
 	app.use('/content/redirect', new RedirectService({ratingrequestService}), RedirectService.redirect);
 
 	app.use('/content/ratings', new RatingService({ratingrequestService}));
-
 	const options = {
 		Model: material,
 		paginate: {
