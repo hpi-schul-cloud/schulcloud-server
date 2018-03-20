@@ -13,7 +13,8 @@ describe('helpdesk service', function() {
 			subject: 'Dies ist ein Titel',
 			currentTarget: 'Dies ist der CurrentState',
 			targetState: 'Dies ist der TargetState',
-			category: 'dashboard'
+			category: 'dashboard',
+			schoolId: '5836bb5664582c35df3bc000'
 		};
 
 	before(function (done) {
