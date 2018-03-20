@@ -202,22 +202,14 @@ exports.restrictToCurrentSchool = hook => {
 		});
 		if (access)
 			return hook;
-		hook.params.query.schoolId = res.data[0].schoolId;
-		return hook;
-	});
-};
-
-exports.addCurrentSchoolIdFromUser = hook => {
-	let userService = hook.app.service("users");
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId
-		}
-	}).then(res => {
-		if (hook.method == "get" || hook.method == "find"){
-			hook.params.query.schoolId = res.data[0].schoolId;
+		if (hook.method == "get" || hook.method == "find" || hook.method == "remove"){
+			if(hook.params.query.schoolId != res.data[0].schoolId){
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+			}
 		}else{
-			hook.data.schoolId = res.data[0].schoolId.toString();
+			if(res.data[0].schoolId.toString() != hook.data.schoolId){
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+			}
 		}
 		return hook;
 	});

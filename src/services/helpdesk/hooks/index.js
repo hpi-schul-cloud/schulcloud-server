@@ -3,16 +3,16 @@
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
-const addCurrentSchoolIdFromUser = globalHooks.ifNotLocal(globalHooks.addCurrentSchoolIdFromUser);
+const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
 	find: [globalHooks.hasPermission('HELPDESK_VIEW')],
 	get: [globalHooks.hasPermission('HELPDESK_VIEW')],
-	create: [globalHooks.hasPermission('HELPDESK_CREATE'), addCurrentSchoolIdFromUser],
-	update: [globalHooks.hasPermission('HELPDESK_EDIT'), addCurrentSchoolIdFromUser],
-	patch: [globalHooks.hasPermission('HELPDESK_EDIT'),globalHooks.permitGroupOperation, addCurrentSchoolIdFromUser],
-	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation, addCurrentSchoolIdFromUser]
+	create: [globalHooks.hasPermission('HELPDESK_CREATE'),restrictToCurrentSchool],
+	update: [globalHooks.hasPermission('HELPDESK_EDIT'),restrictToCurrentSchool],
+	patch: [globalHooks.hasPermission('HELPDESK_EDIT'),globalHooks.permitGroupOperation,restrictToCurrentSchool],
+	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation,restrictToCurrentSchool]
 };
 
 exports.after = {
