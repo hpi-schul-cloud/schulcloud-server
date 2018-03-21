@@ -207,10 +207,22 @@ const noDuplicateSubmissionForTeamMembers = hook => {
     }
 };
 
+const populateCourseGroup = hook => {
+    if (!hook.data.courseGroupId) {
+        return Promise.resolve(hook);
+    }
+    
+    return hook.app.service('/courseGroups/').get(hook.data.courseGroupId).then(courseGroup => {
+        hook.courseGroupTemp = courseGroup;
+        return Promise.resolve(hook);
+    });
+};
+
 const maxTeamMembers = hook => {
     if (!hook.data.isTeacher && hook.data.homework.teamSubmissions) {
         if ((hook.data.homework.maxTeamMembers || 0) >= 1 &&
-            (hook.data.teamMembers || []).length > hook.data.homework.maxTeamMembers) {
+            ((hook.data.teamMembers || []).length > hook.data.homework.maxTeamMembers) ||
+            (hook.courseGroupTemp && (hook.courseGroupTemp.userIds || []).length > hook.data.homework.maxTeamMembers)) {
             return Promise.reject(new errors.Conflict({
                 "message": "Dein Team ist größer als erlaubt! ( maximal " + hook.data.homework.maxTeamMembers + " Teammitglieder erlaubt)"
             }));
@@ -272,9 +284,9 @@ exports.before = {
     all: [auth.hooks.authenticate('jwt'), stringifyUserId],
     find: [globalHooks.hasPermission('SUBMISSIONS_VIEW'), globalHooks.mapPaginationQuery.bind(this)],
     get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
-    create: [globalHooks.hasPermission('SUBMISSIONS_CREATE'), insertHomeworkData, insertSubmissionsData, setTeamMembers, noSubmissionBefore, noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
-    update: [globalHooks.hasPermission('SUBMISSIONS_EDIT'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, canGrade],
-    patch: [globalHooks.hasPermission('SUBMISSIONS_EDIT'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, maxTeamMembers, globalHooks.permitGroupOperation, canGrade],
+    create: [globalHooks.hasPermission('SUBMISSIONS_CREATE'), insertHomeworkData, insertSubmissionsData, setTeamMembers, noSubmissionBefore, noDuplicateSubmissionForTeamMembers, populateCourseGroup, maxTeamMembers, canGrade],
+    update: [globalHooks.hasPermission('SUBMISSIONS_EDIT'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, populateCourseGroup, maxTeamMembers, canGrade],
+    patch: [globalHooks.hasPermission('SUBMISSIONS_EDIT'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, populateCourseGroup, maxTeamMembers, globalHooks.permitGroupOperation, canGrade],
     remove: [globalHooks.hasPermission('SUBMISSIONS_CREATE'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, globalHooks.permitGroupOperation, hasDeletePermission]
 };
 
