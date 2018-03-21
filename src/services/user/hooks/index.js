@@ -40,7 +40,7 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
-const addUserToClass = (hook, classObj) => {
+const addUserToClassHelper = (hook, classObj) => {
 	let classService = hook.app.service('/classes');
 	let newUserIds = classObj.userIds;
 	newUserIds.push(hook.result._id);
@@ -61,6 +61,7 @@ const handleClassNames = (hook) => {
 	//console.log(hook.data);
     if(hook.data.className){
 		//do magic
+		//ToDo: why errorcode 400?
 		classService.find({ query: {name: hook.data.className}})
 			.then(result => {
 				let classToChange = null;
@@ -73,62 +74,21 @@ const handleClassNames = (hook) => {
 						userIds: []
 					})
 						.then(result => {
-							addUserToClass(hook, result)
+							addUserToClassHelper(hook, result)
 						})
 						.catch(exception => {
+							//what if not the expected exception?
 							classService.find({ 
 								query: {name: hook.data.className}
 							})
 								.then(result => {
-									addUserToClass(hook, result.data[0]);
+									addUserToClassHelper(hook, result.data[0]);
 								})
 						});
 				} else {
-					addUserToClass(hook,result.data[0]);
+					addUserToClassHelper(hook,result.data[0]);
 				}
 			})
-
-
-		/*
-		classService.find({ query: {name: hook.data.className}})
-			.then(result => {
-				let newUserId = hook.result._id;
-				if(result.total > 0) {
-					//unlock
-					console.log("class found")
-					console.log(result.data[0]);
-					console.log("new user")
-					console.log(hook.result);
-					let existingClass = result.data[0];
-					
-					let newUserIds = existingClass.userIds;
-					newUserIds.push(newUserId);
-
-					let changedClass = classService.patch(existingClass._id, {userIds: newUserIds})
-						.then(result => {
-							console.log("changed class");
-							console.log(result);
-						})
-					
-				} else {
-					console.log("creating new class")
-					let newClass = classService.create({
-						name: hook.data.className, 
-						schoolId: hook.data.schoolId, 
-						teacherIds: [], 
-						userIds: [newUserId]
-					})
-						.then(result =>{
-							console.log("new class: ");
-							console.log(result);
-							//unlock
-						})
-						.catch(exception => {
-							console.log(exception);
-						})
-				}
-			});
-		*/
 	}
 };
 
