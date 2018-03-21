@@ -40,6 +40,98 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
+const addUserToClass = (hook, classObj) => {
+	let classService = hook.app.service('/classes');
+	let newUserIds = classObj.userIds;
+	newUserIds.push(hook.result._id);
+
+	classService.patch(classObj._id, {userIds: newUserIds});
+};
+
+/**
+ * handleClassNames 
+ * this function looks up classes given by name and created the class if needed
+ * it will also add the user to this class
+ * @param hook - contains and request body
+ */
+const handleClassNames = (hook) => {
+	let requestBody = hook.data;
+	let classService = hook.app.service('/classes');
+	console.log("hookdata");
+	//console.log(hook.data);
+    if(hook.data.className){
+		//do magic
+		classService.find({ query: {name: hook.data.className}})
+			.then(result => {
+				let classToChange = null;
+				if (result.total == 0) {
+					//try create class
+					classService.create({
+						name: hook.data.className, 
+						schoolId: hook.data.schoolId, 
+						teacherIds: [], 
+						userIds: []
+					})
+						.then(result => {
+							addUserToClass(hook, result)
+						})
+						.catch(exception => {
+							classService.find({ 
+								query: {name: hook.data.className}
+							})
+								.then(result => {
+									addUserToClass(hook, result.data[0]);
+								})
+						});
+				} else {
+					addUserToClass(hook,result.data[0]);
+				}
+			})
+
+
+		/*
+		classService.find({ query: {name: hook.data.className}})
+			.then(result => {
+				let newUserId = hook.result._id;
+				if(result.total > 0) {
+					//unlock
+					console.log("class found")
+					console.log(result.data[0]);
+					console.log("new user")
+					console.log(hook.result);
+					let existingClass = result.data[0];
+					
+					let newUserIds = existingClass.userIds;
+					newUserIds.push(newUserId);
+
+					let changedClass = classService.patch(existingClass._id, {userIds: newUserIds})
+						.then(result => {
+							console.log("changed class");
+							console.log(result);
+						})
+					
+				} else {
+					console.log("creating new class")
+					let newClass = classService.create({
+						name: hook.data.className, 
+						schoolId: hook.data.schoolId, 
+						teacherIds: [], 
+						userIds: [newUserId]
+					})
+						.then(result =>{
+							console.log("new class: ");
+							console.log(result);
+							//unlock
+						})
+						.catch(exception => {
+							console.log(exception);
+						})
+				}
+			});
+		*/
+	}
+};
+
 exports.before = function(app) {
 	return {
 		all: [],
@@ -139,7 +231,7 @@ exports.after = {
 		globalHooks.computeProperty(User, 'getPermissions', 'permissions'),
 		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'}))
 	],
-	create: [],
+	create: [handleClassNames],
 	update: [],
 	patch: [],
 	remove: []
