@@ -211,7 +211,7 @@ exports.restrictToCurrentSchool = hook => {
 		} else {
 			if (hook.data.schoolId == undefined) {
 				hook.data.schoolId = res.data[0].schoolId.toString();
-			} else if (hook.data.schoolId != res.data[0].schoolId {
+			} else if (hook.data.schoolId != res.data[0].schoolId) {
 				throw new errors.Forbidden('You do not have valid permissions to access this.');
 			}
 		}
