@@ -57,8 +57,6 @@ const addUserToClassHelper = (hook, classObj) => {
 const handleClassNames = (hook) => {
 	let requestBody = hook.data;
 	let classService = hook.app.service('/classes');
-	console.log("hookdata");
-	//console.log(hook.data);
     if(hook.data.className){
 		classService.find({ query: {name: hook.data.className}})
 			.then(result => {
