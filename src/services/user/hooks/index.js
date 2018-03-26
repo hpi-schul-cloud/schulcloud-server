@@ -60,8 +60,6 @@ const handleClassNames = (hook) => {
 	console.log("hookdata");
 	//console.log(hook.data);
     if(hook.data.className){
-		//do magic
-		//ToDo: why errorcode 400?
 		classService.find({ query: {name: hook.data.className}})
 			.then(result => {
 				let classToChange = null;
@@ -77,13 +75,17 @@ const handleClassNames = (hook) => {
 							addUserToClassHelper(hook, result)
 						})
 						.catch(exception => {
-							//what if not the expected exception?
-							classService.find({ 
-								query: {name: hook.data.className}
-							})
-								.then(result => {
-									addUserToClassHelper(hook, result.data[0]);
+							if (exception.code == 409) {
+								//class was created by other process
+								classService.find({ 
+									query: {name: hook.data.className}
 								})
+									.then(result => {
+										addUserToClassHelper(hook, result.data[0]);
+									})
+							} else {
+								throw(exception);
+							}
 						});
 				} else {
 					addUserToClassHelper(hook,result.data[0]);
