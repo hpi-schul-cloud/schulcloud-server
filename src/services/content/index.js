@@ -118,12 +118,14 @@ class RatingrequestService {
 				return [];
 			}
 
-			const materialIds = ratingrequests.data.map(it => it.materialId.toString());
-
-			return this.options.resourcesService.find({
-				query: { _id: { $in: materialIds } }
-			});
-		});
+			return Promise.all(ratingrequests.data.map(ratingrequest => {
+				const materialId = ratingrequest.materialId.toString();
+				return this.options.resourcesService.get(materialId).then(resource => {
+					resource.ratingrequestid = ratingrequest._id;
+					return resource;
+				});
+			}));
+		})
 
 
 	}
