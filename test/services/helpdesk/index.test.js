@@ -5,6 +5,7 @@ const app = require('../../../src/app');
 const helpdeskService = app.service('helpdesk');
 const chai = require('chai');
 const expect = require('chai').expect;
+const logger = app.logger;
 
 describe('helpdesk service', function() {
 
@@ -17,6 +18,7 @@ describe('helpdesk service', function() {
 			category: 'dashboard',
 			schoolId: '5836bb5664582c35df3bc000'
 		};
+		
 
 	before(function (done) {
 		this.timeout(10000);
@@ -30,6 +32,9 @@ describe('helpdesk service', function() {
 	after(function(done) {
 		helpdeskService.remove(testProblem)
 			.then(result => {
+				done();
+			}).catch((error) => {
+				logger.info('Could not remove: ' + error);
 				done();
 			});
 	});
@@ -89,5 +94,29 @@ describe('helpdesk service', function() {
 			}
 		);
 	});
+
+	it('DELETE /helpdesk with user from same school', () => {
+
+		helpdeskService.remove('5836bb5664582c35df3bc214', { payload: {userId: '0000d213816abba584714c0a'}})
+			.then(result => {
+				expect(result).to.not.be.undefined;
+			}
+		);
+
+	});
+
+	it('DELETE /helpdesk with user from different school', () => {
+
+		helpdeskService.remove('5836bb5664582c35df3bc214', { payload: {userId: '599ec1688e4e364ec18ff46e'}})
+			.catch(err => {
+				expect(err).to.not.be.undefined;
+				//The security hook adds the schoolid, and this does not match
+				expect(err.code).to.equal(404);
+			}
+		);
+
+	});
+
+
 });
 
