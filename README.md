@@ -27,6 +27,31 @@ There are blog posts on how to setup [client](https://github.com/schul-cloud/sch
 1. Go into project folder
 2. run `mongod`
 2. run `npm start`
+3. run `npm run setup`
+
+## Run with Debug in Visual Studio Code
+
+#Change in launch.json
+```
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch SC-Server",
+            "program": "${workspaceFolder}/src/index.js",
+            "skipFiles": [
+              "<node_internals>/**"
+            ]
+
+        }
+    ]
+}
+```
 
 ## Run with docker
 

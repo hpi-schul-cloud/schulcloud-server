@@ -5,6 +5,7 @@ const hooks = require('feathers-hooks');
 const local = require('feathers-authentication-local');
 const errors = require('feathers-errors');
 const bcrypt = require('bcryptjs');
+const globalHooks = require('../../../hooks');
 
 const MoodleLoginStrategy = require('../strategies/moodle');
 const ITSLearningLoginStrategy = require('../strategies/itslearning');
@@ -50,25 +51,41 @@ const validateCredentials = (hook) => {
 };
 
 const trimPassword = (hook) => {
-	hook.data.password = hook.data.password.trim();
-	
+	if (hook.data.password)
+		hook.data.password = hook.data.password.trim();
+
 	return hook;
 };
 
 const validatePassword = (hook) => {
 	let password_verification = hook.data.password_verification;
+	let password = hook.data.password;
 
-	if (password_verification) {
-		return new Promise((resolve, reject) => {
-			bcrypt.compare(password_verification, hook.params.account.password, (err, res) => {
-				if (err)
-					reject(new errors.BadRequest('Ups, bcrypt ran into an error.'));
-				if (!res)
-					reject(new errors.BadRequest('Password does not match!'));
-				resolve();
-			});
+	// in case sso created account skip
+	if (!hook.params.account.userId)
+		return hook;
+
+	return Promise.all([globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_CREATE'), globalHooks.hasRoleNoHook(hook, hook.id, 'student', true)])
+		.then(results => {
+			if (results[0] && results[1]) {
+				return hook;
+			} else {
+				if (password && !password_verification)
+					throw new errors.Forbidden('Password was given, but no verification password');
+
+				if (password_verification) {
+					return new Promise((resolve, reject) => {
+						bcrypt.compare(password_verification, hook.params.account.password, (err, res) => {
+							if (err)
+								reject(new errors.BadRequest('Ups, bcrypt ran into an error.'));
+							if (!res)
+								reject(new errors.BadRequest('Password does not match!'));
+							resolve();
+						});
+					});
+				}
+			}
 		});
-	}
 };
 
 const checkUnique = (hook) => {
@@ -104,11 +121,13 @@ exports.before = {
 		local.hooks.hashPassword({ passwordField: 'password' }),
 		checkUnique
 	],
-	update: [auth.hooks.authenticate('jwt')],
+	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
+			globalHooks.permitGroupOperation,
+			trimPassword,
 			validatePassword,
 			local.hooks.hashPassword({ passwordField: 'password' })],
-	remove: [auth.hooks.authenticate('jwt')]
+	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_CREATE'),globalHooks.permitGroupOperation]
 };
 
 exports.after = {

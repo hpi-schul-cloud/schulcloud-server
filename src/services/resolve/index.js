@@ -47,8 +47,8 @@ class ScopeResolver {
 
 				// find courses and classes where user is student or teacher
 				return Promise.all([
-					courseService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}}),
-					classService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}})
+					courseService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}, headers: {"x-api-key": (params.headers || {})["x-api-key"]}}),
+					classService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}, headers: {"x-api-key": (params.headers || {})["x-api-key"]}})
 				]).then(([courses, classes]) => {
 					courses.data = courses.data.map(c => {
 						c.attributes = {
@@ -114,14 +114,14 @@ class UserResolver {
 
 		// only if both services fail the error will be thrown
 		const getScope = Promise.all([
-			userService.get(id).then(data => {
+			userService.get(id, {headers: {"x-api-key": (params.headers || {})["x-api-key"]}}).then(data => {
 				data.type = 'user';
 				return data;
 			}).catch(_ => undefined),
-			courseService.get(id).then(data => {
+			courseService.get(id, {headers: {"x-api-key": (params.headers || {})["x-api-key"]}}).then(data => {
 				return data;
 			}).catch(_ => undefined),
-			classService.get(id).then(data => {
+			classService.get(id, {headers: {"x-api-key": (params.headers || {})["x-api-key"]}}).then(data => {
 				return data;
 			}).catch(_ => undefined)
 		]).then(([userData, courseData, classData]) => {

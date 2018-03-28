@@ -12,8 +12,8 @@ exports.before = {
 	get: [],
 	create: [],
 	update: [],
-	patch: [],
-	remove: []
+	patch: [globalHooks.permitGroupOperation],
+	remove: [globalHooks.permitGroupOperation]
 };
 
 exports.after = {
