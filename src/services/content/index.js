@@ -133,15 +133,16 @@ class RatingrequestService {
 				this.options.resourcesService.find({
 					query: { _id: { $in: materialIds } }
 				})
-			]).then(([topics,courses,contents]) =>{
-				//TODO title/providername possible without find?
-				ratingrequests.data.map((request) =>{
-					request.title 		 = contents.data.find( function (content) { return String(content._id) === String(request.materialId);}).title;
-					request.courseTitle  = courses.data.find(  function (course)  { return String(course._id)  === String(request.courseId);}).name;
-					request.topicTitle 	 = topics.data.find(   function (topic)   { return String(topic._id)   === String(request.topicId);}).name;
-					request.providerName = contents.data.find( function (content) { return String(content._id) === String(request.materialId);}).providerName;
+			]).then(([topics,courses,contents]) => {
+				return ratingrequests.data.map(ratingrequest => {
+					const content = contents.data.find(it => ratingrequest.materialId.equals(it._id));
+					ratingrequest.title = content.title;
+					ratingrequest.providerName = content.providerName;
+
+					ratingrequest.courseTitle  = courses.data.find(it => ratingrequest.courseId.equals(it._id)).name;
+					ratingrequest.topicTitle 	 = topics.data.find(it => ratingrequest.topicId.equals(it._id)).name;
+					return ratingrequest;
 				});
-				return ratingrequests.data;
 			});
 		});
 	}
