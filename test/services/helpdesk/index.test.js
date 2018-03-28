@@ -71,5 +71,23 @@ describe('helpdesk service', function() {
 			}
 		);
 	});
+
+	it('POST /helpdesk with invalid data regarding schoolID', () => {
+
+		let postBody = {
+			subject: 'Dies ist ein Titel 4',
+			currentTarget: 'Dies ist der CurrentState 3',
+			targetState: 'Dies ist der TargetState 3',
+			category: 'dashboard',
+			schoolId: '599ec0bb8e4e364ec18ff46c'
+		};
+
+		helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
+			.catch(err => {
+				expect(err).to.not.be.undefined;
+				expect(err.code).to.equal(403);
+			}
+		);
+	});
 });
 
