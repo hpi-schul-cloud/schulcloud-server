@@ -54,7 +54,7 @@ class RatingService {
 		const serviceUrls = this.app.get('services') || {};
 		return this.options.ratingrequestService.patch(null, { state: "done" }, {
 			query: {
-				_id: params.query.ratingrequestId,
+				_id: data._id,
 				state: "pending"
 			}
 		}).then(patchedData => {
