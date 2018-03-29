@@ -44,6 +44,11 @@ const courseModel = mongoose.model('course', getUserGroupSchema({
 	times: [timeSchema]
 }));
 
+// represents a sub-group of students inside a course, e.g. for projects etc.
+const courseGroupModel = mongoose.model('courseGroup', getUserGroupSchema({
+	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
+}));
+
 const classModel =  mongoose.model('class', getUserGroupSchema({
 	teacherIds: [{type: Schema.Types.ObjectId, ref: 'user', required: true}]
 }));
@@ -51,6 +56,7 @@ const gradeModel =  mongoose.model('grade', getUserGroupSchema());
 
 module.exports = {
 	courseModel,
+	courseGroupModel,
 	classModel,
 	gradeModel
 };
