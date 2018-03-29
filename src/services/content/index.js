@@ -18,7 +18,7 @@ class ResourcesService {
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
 		return request({
-			uri: serviceUrls.content + '/resources/',
+			uri: `${serviceUrls.content}/ratedresources/`,
 			qs: params.query,
 			json: true,
 			timeout: REQUEST_TIMEOUT
@@ -28,7 +28,7 @@ class ResourcesService {
 	get(id) {
 		const serviceUrls = this.app.get('services') || {};
 		return request({
-			uri: serviceUrls.content + '/resources/' + id,
+			uri: `${serviceUrls.content}/ratedresources/${id}`,
 			json: true,
 			timeout: REQUEST_TIMEOUT
 		});
@@ -78,7 +78,7 @@ class SearchService {
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
 		const options = {
-			uri: serviceUrls.content + '/search/',
+			uri: `${serviceUrls.content}/search/`,
 			qs: params.query,
 			json: true,
 			timeout: REQUEST_TIMEOUT
@@ -175,7 +175,7 @@ class RedirectService {
 			timeout: REQUEST_TIMEOUT
 		}).then(resource => {
 			// Increase Click Counter
-			request.patch(serviceUrls.content + '/resources/' + id, {
+			request.patch(`${serviceUrls.content}/resources/${id}`, {
 				json: {
 					$inc: {
 						clickCount: 1
