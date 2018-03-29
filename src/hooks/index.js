@@ -202,7 +202,7 @@ exports.restrictToCurrentSchool = hook => {
 		});
 		if (access)
 			return hook;
-		if (hook.method == "get" || hook.method == "find" || hook.method == "remove") {
+		if (hook.method == "get" || hook.method == "find") {
 			if (hook.params.query.schoolId == undefined) {
 				hook.params.query.schoolId = res.data[0].schoolId;
 			} else if (hook.params.query.schoolId != res.data[0].schoolId) {

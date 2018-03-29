@@ -18,7 +18,7 @@ describe('helpdesk service', function() {
 			category: 'dashboard',
 			schoolId: '5836bb5664582c35df3bc000'
 		};
-		
+
 
 	before(function (done) {
 		this.timeout(10000);
@@ -76,47 +76,6 @@ describe('helpdesk service', function() {
 			}
 		);
 	});
-
-	it('POST /helpdesk with invalid data regarding schoolID', () => {
-
-		let postBody = {
-			subject: 'Dies ist ein Titel 4',
-			currentTarget: 'Dies ist der CurrentState 3',
-			targetState: 'Dies ist der TargetState 3',
-			category: 'dashboard',
-			schoolId: '599ec0bb8e4e364ec18ff46c'
-		};
-
-		helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
-			.catch(err => {
-				expect(err).to.not.be.undefined;
-				expect(err.code).to.equal(403);
-			}
-		);
-	});
-
-	it('DELETE /helpdesk with user from same school', () => {
-
-		helpdeskService.remove('5836bb5664582c35df3bc214', { payload: {userId: '0000d213816abba584714c0a'}})
-			.then(result => {
-				expect(result).to.not.be.undefined;
-			}
-		);
-
-	});
-
-	it('DELETE /helpdesk with user from different school', () => {
-
-		helpdeskService.remove('5836bb5664582c35df3bc214', { payload: {userId: '599ec1688e4e364ec18ff46e'}})
-			.catch(err => {
-				expect(err).to.not.be.undefined;
-				//The security hook adds the schoolid, and this does not match
-				expect(err.code).to.equal(404);
-			}
-		);
-
-	});
-
 
 });
 
