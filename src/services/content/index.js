@@ -17,26 +17,20 @@ class ResourcesService {
 
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
-		const options = {
+		return request({
 			uri: serviceUrls.content + '/resources/',
 			qs: params.query,
 			json: true,
 			timeout: REQUEST_TIMEOUT
-		};
-		return request(options).then(message => {
-			return message;
-		});
+		})
 	}
 
 	get(id) {
 		const serviceUrls = this.app.get('services') || {};
-		const options = {
+		return request({
 			uri: serviceUrls.content + '/resources/' + id,
 			json: true,
 			timeout: REQUEST_TIMEOUT
-		};
-		return request(options).then(message => {
-			return message;
 		});
 	}
 
