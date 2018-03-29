@@ -11,7 +11,7 @@ exports.before = {
 	create: [globalHooks.hasPermission('HELPDESK_CREATE')],
 	update: [globalHooks.hasPermission('HELPDESK_EDIT')],
 	patch: [globalHooks.hasPermission('HELPDESK_EDIT'),globalHooks.permitGroupOperation],
-	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation]
+	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation, globalHooks.checkSchoolOwnership]
 };
 
 exports.after = {
