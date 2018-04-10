@@ -23,6 +23,8 @@ const addWholeClassToCourse = (hook) => {
 			// flatten deep arrays and remove duplicates
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
+			hook.result.userIds = hook.result.userIds.concat(studentIds);
+
 			// add all students of classes to course, if not already added
 			return Promise.all(studentIds.map(s => {
 				if (!_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(s))) {
@@ -85,11 +87,53 @@ exports.before = {
 	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation]
 };
 
+const createChatGroup = (hook) => {
+	let result = hook.result;
+
+	let schoolService = hook.app.service("schools");
+	let groupChatService = hook.app.service('chat/group');
+
+	return schoolService.find({query: {
+		_id: hook.result.schoolId
+	}}).then(res => {
+		let school = res.data[0];
+
+		if ((school || {}).chatType) {
+			let obj = {
+				name: result.name,
+				chatType: school.chatType,
+				_id: result._id
+			};
+
+			// TODO: get rid of other userGroup Types or add them
+
+			if (result.classIds)
+				obj.type = 'course';
+			else
+				obj.type = 'class';
+
+			return groupChatService.create(obj)
+				.then(res => {
+					// TODO: update group Object with chatId
+
+					return hook;
+				})
+				.catch(_ => {
+					// ignore err, as the flow has to go on
+
+					return hook;
+				});
+		}
+
+		return hook;
+	});
+};
+
 exports.after = {
 	all: [],
 	find: [],
 	get: [globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'}))],
-	create: [addWholeClassToCourse],
+	create: [addWholeClassToCourse, createChatGroup],
 	update: [],
 	patch: [addWholeClassToCourse],
 	remove: []

@@ -25,10 +25,10 @@ const strategies = {
 const validateCredentials = (hook) => {
 	const {username, password, systemId} = hook.data;
 
-	if(!username) throw new errors.BadRequest('no username specified');
-	if(!password) throw new errors.BadRequest('no password specified');
+	if (!username) throw new errors.BadRequest('no username specified');
+	if (!password) throw new errors.BadRequest('no password specified');
 
-	if(!systemId) return;
+	if (!systemId) return;
 
 	const app = hook.app;
 	const systemService = app.service('/systems');
@@ -91,10 +91,10 @@ const validatePassword = (hook) => {
 const checkUnique = (hook) => {
 	let accountService = hook.service;
 	const {username, systemId} = hook.data;
-	return accountService.find({ query: {username, systemId}})
+	return accountService.find({query: {username, systemId}})
 		.then(result => {
 			const filtered = result.filter(a => a.systemId == systemId);	// systemId might be null. In that case, accounts with any systemId will be returned
-			if(filtered.length > 0) return Promise.reject(new errors.BadRequest('Der Benutzername ist bereits vergeben!'));
+			if (filtered.length > 0) return Promise.reject(new errors.BadRequest('Der Benutzername ist bereits vergeben!'));
 			return Promise.resolve(hook);
 		});
 };
@@ -102,12 +102,45 @@ const checkUnique = (hook) => {
 const restrictAccess = (hook) => {
 	let queries = hook.params.query;
 
-	return new Promise ((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		if (!queries.username && !queries.userId)
 			return reject(new errors.BadRequest("Not allowed"));
 		else
 			return resolve();
 	});
+};
+
+const createChatUser = (hook) => {
+	let data = hook.data;
+
+	let userService = hook.app.service('users');
+	let userChatService = hook.app.service('chat/user');
+
+	return userService.find({query: {_id: data.userId, $populate: ['schoolId']}})
+		.then(user => {
+			if ((user.data[0].schoolId || {}).chatType) {
+				let obj = {
+					username: data.username,
+					password: data.password,
+					email: user.data[0].email,
+					name: user.data[0].firstName + '.' + user.data[0].lastName,
+					chatType: user.data[0].schoolId.chatType
+				};
+
+				return userChatService.create(obj)
+					.then(res => {
+						// TODO: update user Object with chatId
+						return hook;
+					})
+					.catch(err => {
+						// ignore err, as the flow has to go on
+
+						return hook;
+					});
+			}
+
+			return hook;
+		});
 };
 
 exports.before = {
@@ -117,17 +150,18 @@ exports.before = {
 	get: [],
 	create: [
 		validateCredentials,
+		checkUnique,
 		trimPassword,
-		local.hooks.hashPassword({ passwordField: 'password' }),
-		checkUnique
+		createChatUser,
+		local.hooks.hashPassword({passwordField: 'password'})
 	],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
-			globalHooks.permitGroupOperation,
-			trimPassword,
-			validatePassword,
-			local.hooks.hashPassword({ passwordField: 'password' })],
-	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_CREATE'),globalHooks.permitGroupOperation]
+		globalHooks.permitGroupOperation,
+		trimPassword,
+		validatePassword,
+		local.hooks.hashPassword({passwordField: 'password'})],
+	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_CREATE'), globalHooks.permitGroupOperation]
 };
 
 exports.after = {
