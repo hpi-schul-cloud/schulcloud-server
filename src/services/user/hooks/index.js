@@ -63,32 +63,30 @@ const handleClassNames = (hook) => {
 				let classToChange = null;
 				if (result.total == 0) {
 					//try create class
-					classService.create({
+					return classService.create({
 						name: hook.data.className, 
 						schoolId: hook.data.schoolId, 
 						teacherIds: [], 
 						userIds: []
-					})
-						.then(result => {
-							addUserToClassHelper(hook, result)
-						})
-						.catch(exception => {
-							if (exception.code == 409) {
-								//class was created by other process
-								classService.find({ 
-									query: {name: hook.data.className}
-								})
-									.then(result => {
-										addUserToClassHelper(hook, result.data[0]);
-									})
-							} else {
-								throw(exception);
-							}
-						});
+					});
 				} else {
-					addUserToClassHelper(hook,result.data[0]);
+					return Promise.resolve(result.data[0]);
 				}
 			})
+			.catch(exception => {
+				if (exception.code === 409) {
+					//class was created by other process
+					return classService.find({query: {name: hook.data.className}});
+				} else {
+					throw(exception);
+				}
+			})
+			.then(result => {
+				if (typeof result.total !== 'undefined') {
+					result = result.data[0];
+				}
+				addUserToClassHelper(hook, result);
+			});
 	}
 };
 
