@@ -8,7 +8,7 @@ const KeysModel = require('../services/keys/model');
 // don't require authentication for internal requests
 exports.ifNotLocal = function (hookForRemoteRequests) {
 	return function (hook) {
-		if (typeof(hook.params.provider) != 'undefined') {	// meaning it's not a local call
+		if (typeof(hook.params.provider) != 'undefined' || hook.params.callHooksRemote === true) {	// meaning it's not a local call
 			// Call the specified hook
 			return hookForRemoteRequests.call(this, hook);
 		}
