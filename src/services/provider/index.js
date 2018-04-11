@@ -1,5 +1,7 @@
 'use strict';
 
+const errors = require('feathers-errors');
+
 module.exports = function() {
 	const app = this;
 
@@ -8,6 +10,27 @@ module.exports = function() {
 	app.use('/provider', {
 		find(params) {
 			return Promise.resolve("OK");
+		}
+	})
+
+	app.service('/provider').before({
+		find: context => {
+			console.log(context.params.headers.authorization)
+			return context.app.service('/oauth2proxy/introspect')
+				.create({token: context.params.headers.authorization})
+				.then(active => {
+					if(active) {
+						console.log('yap')
+						return context
+
+					} else {
+						console.log('nop')
+						throw new errors.BadRequest('Not Authorized')
+					}
+				}).catch(error => {
+					console.log(error)
+					throw new Error(error)
+				});
 		}
 	})
 

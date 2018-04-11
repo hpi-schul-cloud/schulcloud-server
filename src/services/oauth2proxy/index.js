@@ -13,82 +13,84 @@ const resolver = (resolve, reject) => (error, data, response) => {
 	resolve(data)
 }
 
-class ConsentService {
-	constructor(opts) {
-		this.options = opts;
-		this.app	 = null;
-	}
-
-	refreshToken() {
-		return this.oauth2.clientCredentials
-			.getToken({ scope: this.scope })
-			.then((result) => {
-				const token = this.oauth2.accessToken.create(result);
-				const hydraClient = Hydra.ApiClient.instance;
-				hydraClient.authentications.oauth2.accessToken = token.token.access_token;
-				return Promise.resolve(token);
-			})
-			.catch((error) => {
-				console.log('Could not refresh access token' + error.message);
-			});
-	}
-
-	get(id) {
-		return new Promise((resolve, reject) =>
-			this.refreshToken().then(() => {
-				this.hydra.getOAuth2ConsentRequest(id, resolver(consentRequest => {
-					resolve(consentRequest);
-				}))
-			})
-		);
-	}
-
-	patch(id, data) {
-		return new Promise((resolve, reject) =>
-			this.refreshToken().then(() => {
-				this.hydra.getOAuth2ConsentRequest(id, resolver(consentRequest => {
-					this.hydra.acceptOAuth2ConsentRequest(
-						id,
-						data,
-						resolver(_ => resolve(consentRequest))
-					)
-				}))
-			})
-		)
-	}
-
-	setup(app, path) {
-		this.app = app;
-		this.scope = 'hydra.consent'
-
-		Hydra.ApiClient.instance.basePath = app.settings.services.hydra.url
-
-		this.hydra = new Hydra.OAuth2Api()
-
-		this.oauth2 = OAuth2.create({
-			client: {
-				id: qs.escape(app.settings.services.hydra.clientId),
-				secret: qs.escape(app.settings.services.hydra.clientSecret)
-			},
-			auth: {
-				tokenHost: Hydra.ApiClient.instance.basePath,
-				authorizePath: '/oauth2/auth',
-				tokenPath: '/oauth2/token'
-			},
-			options: {
-				useBodyAuth: false,
-				useBasicAuthorizationHeader: true
-			}
-		})
-
-		this.refreshToken().then()
-	}
-}
-
 module.exports = function() {
 	const app = this;
 
-	app.use('/oauth2proxy/consentRequest/', new ConsentService());
+	const scope = 'hydra.*'
+
+	Hydra.ApiClient.instance.basePath = app.settings.services.hydra.url
+
+	const hydra = new Hydra.OAuth2Api()
+
+	const oauth2 = OAuth2.create({
+		client: {
+			id: qs.escape(app.settings.services.hydra.clientId),
+			secret: qs.escape(app.settings.services.hydra.clientSecret)
+		},
+		auth: {
+			tokenHost: Hydra.ApiClient.instance.basePath,
+			authorizePath: '/oauth2/auth',
+			tokenPath: '/oauth2/token'
+		},
+		options: {
+			useBodyAuth: false,
+			useBasicAuthorizationHeader: true
+		}
+	})
+
+	const refreshToken = () => oauth2.clientCredentials
+		.getToken({ scope })
+		.then((result) => {
+			const token = oauth2.accessToken.create(result);
+			const hydraClient = Hydra.ApiClient.instance;
+			hydraClient.authentications.oauth2.accessToken = token.token.access_token;
+			console.log(token)
+			return Promise.resolve(token);
+		})
+		.catch((error) => {
+			console.log('Could not refresh access token' + error.message);
+		});
+
+	refreshToken().then()
+
+	app.use('/oauth2proxy/consentRequest', {
+		get(id) {
+			return new Promise((resolve, reject) =>
+				refreshToken().then(() => {
+					hydra.getOAuth2ConsentRequest(id, resolver(consentRequest => {
+						resolve(consentRequest);
+					}))
+				})
+			);
+		},
+		patch(id, data) {
+			return new Promise((resolve, reject) =>
+				refreshToken().then(() => {
+					hydra.getOAuth2ConsentRequest(id, resolver(consentRequest => {
+						hydra.acceptOAuth2ConsentRequest(
+							id,
+							data,
+							resolver(_ => resolve(consentRequest))
+						)
+					}))
+				})
+			)
+		}
+	});
+
+	// check if token is valid
+	app.use('/oauth2proxy/introspect', {
+		create(data) {
+			const { token } = data
+			return new Promise((resolve, reject) =>
+				refreshToken().then(() => {
+					hydra.introspectOAuth2Token(token, {'scope': "openid"}, resolver(valid => {
+						resolve(valid.active)
+					}))
+				})
+			);
+		}
+	});
 
 	// Get our initialize service to that we can bind hooks
 	const consentService = app.service('/oauth2proxy/consentRequest');

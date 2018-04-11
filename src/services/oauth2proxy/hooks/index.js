@@ -4,12 +4,26 @@ exports.before = {
 	get: [],
 	create: [],
 	update: [],
-	patch: hook => {
-		hook.data.idTokenExtra = {
-			pseudonym: 'abdcefgh' // TODO: use actual pseudonym
-		}
-		hook.data.accessTokenExtra = {}
-		return hook
+	patch: async hook => {
+		let toolService = hook.app.service('ltiTools');
+		return toolService.find({
+			query: {
+				oAuthClientId: hook.data.clientId
+			}
+		}).then(tools => {
+			let pseudoService = hook.app.service('pseudonym');
+			return pseudoService.find({
+				query: {
+					toolId: tools.data[0]._id,
+					userId: hook.data.subject
+				}
+			}).then(pseudonyms => {
+				hook.data.idTokenExtra = {
+					pseudonym: pseudonyms.data[0].token
+				}
+				return hook
+			})
+		});
 	},
 	remove: []
 };
