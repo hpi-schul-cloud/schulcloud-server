@@ -18,9 +18,7 @@ exports.before = {
 					userId: hook.data.subject
 				}
 			}).then(pseudonyms => {
-				hook.data.idTokenExtra = {
-					pseudonym: pseudonyms.data[0].token
-				}
+				hook.data.subject = pseudonyms.data[0].token
 				return hook
 			})
 		});

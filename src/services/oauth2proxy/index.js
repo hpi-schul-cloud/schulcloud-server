@@ -16,7 +16,7 @@ const resolver = (resolve, reject) => (error, data, response) => {
 module.exports = function() {
 	const app = this;
 
-	const scope = 'hydra.*'
+	const scope = 'hydra.consent hydra.introspect'
 
 	Hydra.ApiClient.instance.basePath = app.settings.services.hydra.url
 
@@ -44,11 +44,10 @@ module.exports = function() {
 			const token = oauth2.accessToken.create(result);
 			const hydraClient = Hydra.ApiClient.instance;
 			hydraClient.authentications.oauth2.accessToken = token.token.access_token;
-			console.log(token)
 			return Promise.resolve(token);
 		})
 		.catch((error) => {
-			console.log('Could not refresh access token' + error.message);
+			console.log('Could not refresh access token: ' + error.message);
 		});
 
 	refreshToken().then()
@@ -84,8 +83,11 @@ module.exports = function() {
 			const { token } = data
 			return new Promise((resolve, reject) =>
 				refreshToken().then(() => {
-					hydra.introspectOAuth2Token(token, {'scope': "openid"}, resolver(valid => {
-						resolve(valid.active)
+					hydra.introspectOAuth2Token(token, {'scope': "openid"},
+					resolver(introspection => { resolve(introspection) },
+					error => {
+						console.log(error)
+						resolve(false)
 					}))
 				})
 			);

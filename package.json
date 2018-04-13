@@ -18,14 +18,14 @@
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
     "test": "./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run coverage",
-	"test-windows": "sh ./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run mocha-windows",
+    "test-windows": "sh ./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run mocha-windows",
     "backup": "./backup.sh -a -b export",
     "setup": "./backup.sh -p setup/ -a import",
     "start": "node src/",
     "startd": "nodemon -L src/",
     "coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- -- test/**/*.test.js",
     "mocha": "NODE_ENV=test mocha test/ --recursive",
-	"mocha-windows": "set NODE_ENV=test && mocha test/ --recursive",
+    "mocha-windows": "set NODE_ENV=test && mocha test/ --recursive",
     "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive"
   },
   "dependencies": {
@@ -64,6 +64,7 @@
     "moodle-client": "^0.4.0",
     "node-sass": "^4.2.0",
     "nodemailer": "^3.0.2",
+    "ory-hydra-sdk": "^0.11.12",
     "passport": "^0.3.2",
     "passport-strategy": "^1.0.0",
     "phantomjs-prebuilt": "^2.1.14",
@@ -72,8 +73,9 @@
     "randexp": "^0.4.6",
     "request-promise-native": "^1.0.3",
     "serve-favicon": "^2.3.2",
+    "simple-oauth2": "^1.5.2",
     "strip-js": "^1.0.6",
-  	"uuid": "^3.1.0",
+    "uuid": "^3.1.0",
     "winston": "^2.3.0"
   },
   "devDependencies": {
