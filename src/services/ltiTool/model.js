@@ -24,7 +24,8 @@ const ltiToolSchema = new Schema({
   isLocal: {type: Boolean},
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now },
-  originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool'}
+  originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool'},
+  oAuthClientId: { type: String }
 });
 
 const ltiToolModel = mongoose.model('ltiTool', ltiToolSchema);
