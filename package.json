@@ -18,17 +18,18 @@
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
     "test": "./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run coverage",
-	"test-windows": "sh ./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run mocha-windows",
+    "test-windows": "sh ./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run mocha-windows",
     "backup": "./backup.sh -a -b export",
     "setup": "./backup.sh -p setup/ -a import",
     "start": "node src/",
     "startd": "nodemon src/",
     "coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- -- test/**/*.test.js",
     "mocha": "NODE_ENV=test mocha test/ --recursive",
-	"mocha-windows": "set NODE_ENV=test && mocha test/ --recursive",
+    "mocha-windows": "set NODE_ENV=test && mocha test/ --recursive",
     "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive"
   },
   "dependencies": {
+    "async-lock": "^1.1.2",
     "aws-sdk": "^2.7.24",
     "bcryptjs": "latest",
     "body-parser": "^1.15.2",
@@ -64,6 +65,7 @@
     "moodle-client": "^0.4.0",
     "node-sass": "^4.2.0",
     "nodemailer": "^3.0.2",
+    "nodemon": "^1.17.1",
     "passport": "^0.3.2",
     "passport-strategy": "^1.0.0",
     "phantomjs-prebuilt": "^2.1.14",

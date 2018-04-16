@@ -4,6 +4,7 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const errors = require('feathers-errors');
+const asyncLock = require('async-lock');
 
 /**
  *
@@ -40,12 +41,21 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
-const addUserToClassHelper = (hook, classObj) => {
-	let classService = hook.app.service('/classes');
-	let newUserIds = classObj.userIds;
-	newUserIds.push(hook.result._id);
 
-	classService.patch(classObj._id, {userIds: newUserIds});
+const lock = new asyncLock();
+
+const addUserToClassHelper = (hook, classId) => {
+	let classService = hook.app.service('/classes');
+
+	lock.acquire(classId, function(){
+		//dostuff
+		return classService.find({query: {_id: classId}})
+			.then(result => {
+				var newUserIds = result.data[0].userIds;
+				newUserIds.push(hook.result._id);
+				return classService.patch(classId, {userIds: newUserIds});
+			});
+	});
 };
 
 /**
@@ -85,7 +95,7 @@ const handleClassNames = (hook) => {
 				if (typeof result.total !== 'undefined') {
 					result = result.data[0];
 				}
-				addUserToClassHelper(hook, result);
+				return addUserToClassHelper(hook, result._id);
 			});
 	}
 };
