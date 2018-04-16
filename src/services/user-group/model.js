@@ -49,11 +49,9 @@ const courseGroupModel = mongoose.model('courseGroup', getUserGroupSchema({
 	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
 }));
 
-const classSchema = getUserGroupSchema({
+const classModel =  mongoose.model('class',getUserGroupSchema({
 	teacherIds: [{type: Schema.Types.ObjectId, ref: 'user', required: true}]
-});
-
-const classModel =  mongoose.model('class', classSchema);
+}));
 
 const gradeModel =  mongoose.model('grade', getUserGroupSchema());
 
