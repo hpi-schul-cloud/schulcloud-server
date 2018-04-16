@@ -42,12 +42,12 @@ const checkUniqueAccount = (hook) => {
 };
 
 
-const lock = new asyncLock();
+const addUserToClassLock = new asyncLock();
 
 const addUserToClassHelper = (hook, classId) => {
 	let classService = hook.app.service('/classes');
 
-	lock.acquire(classId, function(){
+	addUserToClassLock.acquire(classId, function(){
 		//dostuff
 		return classService.find({query: {_id: classId}})
 			.then(result => {
@@ -57,6 +57,8 @@ const addUserToClassHelper = (hook, classId) => {
 			});
 	});
 };
+
+const classCreationLock = new asyncLock();
 
 /**
  * handleClassNames 
@@ -68,11 +70,10 @@ const handleClassNames = (hook) => {
 	let requestBody = hook.data;
 	let classService = hook.app.service('/classes');
     if(hook.data.className){
-		classService.find({ query: {name: hook.data.className}})
+		classCreationLock.acquire(hook.data.className, function(){
+			return classService.find({ query: {name: hook.data.className}})
 			.then(result => {
-				let classToChange = null;
 				if (result.total == 0) {
-					//try create class
 					return classService.create({
 						name: hook.data.className, 
 						schoolId: hook.data.schoolId, 
@@ -82,19 +83,9 @@ const handleClassNames = (hook) => {
 				} else {
 					return Promise.resolve(result.data[0]);
 				}
-			})
-			.catch(exception => {
-				if (exception.code === 409) {
-					//class was created by other process
-					return classService.find({query: {name: hook.data.className}});
-				} else {
-					throw(exception);
-				}
-			})
+			});
+		}) 
 			.then(result => {
-				if (typeof result.total !== 'undefined') {
-					result = result.data[0];
-				}
 				return addUserToClassHelper(hook, result._id);
 			});
 	}
