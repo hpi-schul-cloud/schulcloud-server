@@ -11,6 +11,11 @@
 		"calendar": "http://localhost:3000",
 		"content": "https://schul-cloud.org:8090",
 		"notification": "http://localhost:3031",
-		"xapi": "https://bp.schul-cloud.org/data/xAPI"
+		"xapi": "https://bp.schul-cloud.org/data/xAPI",
+		"hydra": {
+			"url": "http://ory-hydra-example--hydra:4444",
+			"clientId": "consent-app",
+			"clientSecret": "consent-secret"
+		}
 	}
 }

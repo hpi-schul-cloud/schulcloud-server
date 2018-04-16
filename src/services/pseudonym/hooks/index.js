@@ -14,6 +14,7 @@ exports.before = {
 			return hook;
 		  });
 	  }
+	  return hook
   },
   get: [],
   create: [],
