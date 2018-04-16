@@ -62,7 +62,7 @@ const classCreationLock = new asyncLock();
 
 /**
  * handleClassNames 
- * this function looks up classes given by name and created the class if needed
+ * this function looks up classes given by name and creates the class if needed
  * it will also add the user to this class
  * @param hook - contains and request body
  */
