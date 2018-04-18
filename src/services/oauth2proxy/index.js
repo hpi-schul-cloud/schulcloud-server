@@ -17,20 +17,21 @@ module.exports = function() {
 	const app = this;
 
 	const scope = 'hydra.consent hydra.introspect'
+	const hydraConfig =  app.settings.services.hydra
 
-	Hydra.ApiClient.instance.basePath = 'https://bp.schul-cloud.org/hydra'
+	Hydra.ApiClient.instance.basePath = hydraConfig.host + hydraConfig.path
 
 	const hydra = new Hydra.OAuth2Api()
 
 	const oauth2 = OAuth2.create({
 		client: {
-			id: qs.escape(app.settings.services.hydra.clientId),
-			secret: qs.escape(app.settings.services.hydra.clientSecret)
+			id: qs.escape(hydraConfig.clientId),
+			secret: qs.escape(hydraConfig.clientSecret)
 		},
 		auth: {
-			tokenHost: 'https://bp.schul-cloud.org',
-			authorizePath: '/hydra/oauth2/auth',
-			tokenPath: '/hydra/oauth2/token'
+			tokenHost: hydraConfig.host,
+			authorizePath: hydraConfig.path + '/oauth2/auth',
+			tokenPath: hydraConfig.path + '/oauth2/token'
 		},
 		options: {
 			useBodyAuth: false,

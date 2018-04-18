@@ -13,7 +13,8 @@
 		"notification": "http://localhost:3031",
 		"xapi": "https://bp.schul-cloud.org/data/xAPI",
 		"hydra": {
-			"url": "http://ory-hydra-example--hydra:4444",
+			"host": "https://bp.schul-cloud.org",
+			"path": "/hydra",
 			"clientId": "consent-app",
 			"clientSecret": "consent-secret"
 		}
