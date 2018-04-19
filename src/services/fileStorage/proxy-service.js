@@ -176,7 +176,7 @@ class SignedUrlService {
 								"Content-Type": fileType,
 								"x-amz-meta-path": dirName,
 								"x-amz-meta-name": encodeURIComponent(fileName),
-								"x-amz-meta-flat-name": encodeURIComponent(flatFileName),
+								"x-amz-meta-flat-name": flatFileName,
 								"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 							}
 						};
