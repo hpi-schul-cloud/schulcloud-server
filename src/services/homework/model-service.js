@@ -21,15 +21,6 @@ module.exports = function() {
 	hwService.before(hooks.before);
 	hwService.after(hooks.after);
 
-	/* Homework model */
-	app.use('/homework/copy', service({
-		Model: homeworkModel,
-		paginate: {
-			default: 100000,
-			max: 100000
-		}
-	}));
-
 	/* Submission model */
 	app.use('/submissions', service({
 		Model: submissionModel,

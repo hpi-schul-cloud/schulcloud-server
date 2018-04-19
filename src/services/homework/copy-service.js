@@ -1,6 +1,7 @@
 const hooks = require('./hooks');
 const errors = require('feathers-errors');
 const HomeworkModel = require('./model').homeworkModel;
+const _ = require('lodash');
 
 class HomeworkCopyService {
 	/**
@@ -8,37 +9,21 @@ class HomeworkCopyService {
 	 * @returns {id of new homework}
 	 */
 	get(id, params) {
-        console.log("copy",id);
-        //TODO: get old homework by id and create new one
-        /*
-        // not working
-        HomeworkModel.get(id).exec().then((oldAssignment) => {
-            console.log("oldAssignment", oldAssignment);
-            let assignment = JSON.parse(JSON.stringify(oldAssignment));
-            // sanitize before copy
-            delete assignment._id;
-            delete assignment.stats;
-            delete assignment.isTeacher;
-            delete assignment.archived;
-            delete assignment.__v;
-            if(assignment.courseId){
-                if((assignment.courseId||{})._id){
-                    assignment.courseId = assignment.courseId._id;
-                }
-            }else{
-                delete assignment.courseId
-            }
-            assignment.private = true;
 
-            // post copied task
-            return HomeworkModel.create(assignment).exec().then((newAssignment) => {
-                return newAssignment;
-            }).catch(err => {
-                return Promise.reject(new errors.GeneralError(err));
-            })
-            return;
-        });
-        */
+        return HomeworkModel.findOne({_id: id}).exec()
+			.then(copyAssignment => {
+				let tempAssignment = JSON.parse(JSON.stringify(copyAssignment));
+				tempAssignment = _.omit(tempAssignment, ['_id', 'stats', 'isTeacher', 'archived', '__v' ]);
+				tempAssignment.private = true;
+				tempAssignment.name = tempAssignment.name + " - Copy";
+
+				return HomeworkModel.create(tempAssignment, (err, res) => {
+					if (err)
+						return err;
+					else
+						return res;
+				})
+			});
 	}
 }
 
@@ -52,8 +37,10 @@ module.exports = function () {
 	const homeworkCopyService = app.service('/homework/copy');
 
 	// Set up our before hooks
-	homeworkCopyService.before(hooks.before);
+	//TODO: New hooks for Copy Service
+	//homeworkCopyService.before(hooks.before);
 
 	// Set up our after hooks
-	homeworkCopyService.after(hooks.after);
+	//TODO: New hooks for Copy Service
+	//homeworkCopyService.after(hooks.after);
 };
