@@ -4,6 +4,7 @@ const OAuth2 = require('simple-oauth2')
 const qs = require('querystring')
 
 const resolver = (resolve, reject) => (error, data, response) => {
+	reject = (reject ? reject : error => console.log(error))
 	if (error) {
 		return reject(error)
 	} else if (response.statusCode < 200 || response.statusCode >= 400) {
