@@ -1,4 +1,4 @@
-const hooks = require('./hooks');
+const hooks = require('./hooks/copy');
 const errors = require('feathers-errors');
 const HomeworkModel = require('./model').homeworkModel;
 const _ = require('lodash');
@@ -6,7 +6,7 @@ const _ = require('lodash');
 class HomeworkCopyService {
 	/**
 	 * @param id = id of homework to copy
-	 * @returns {id of new homework}
+	 * @returns {new homework}
 	 */
 	get(id, params) {
 
@@ -37,10 +37,8 @@ module.exports = function () {
 	const homeworkCopyService = app.service('/homework/copy');
 
 	// Set up our before hooks
-	//TODO: New hooks for Copy Service
-	//homeworkCopyService.before(hooks.before);
+	homeworkCopyService.before(hooks.before);
 
 	// Set up our after hooks
-	//TODO: New hooks for Copy Service
-	//homeworkCopyService.after(hooks.after);
+	homeworkCopyService.after(hooks.after);
 };
