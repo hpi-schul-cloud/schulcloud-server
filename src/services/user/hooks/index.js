@@ -41,23 +41,6 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
-
-const addUserToClassLock = new asyncLock();
-
-const addUserToClassHelper = (hook, classId) => {
-	let classService = hook.app.service('/classes');
-
-	addUserToClassLock.acquire(classId, function(){
-		//dostuff
-		return classService.find({query: {_id: classId}})
-			.then(result => {
-				var newUserIds = result.data[0].userIds;
-				newUserIds.push(hook.result._id);
-				return classService.patch(classId, {userIds: newUserIds});
-			});
-	});
-};
-
 const classCreationLock = new asyncLock();
 
 /**
@@ -86,7 +69,7 @@ const handleClassNames = (hook) => {
 			});
 		}) 
 			.then(result => {
-				return addUserToClassHelper(hook, result._id);
+				return classService.patch(result._id, {$push: {userIds: hook.result.id}});
 			});
 	}
 };
