@@ -232,3 +232,20 @@ exports.denyIfNotCurrentSchool = ({errorMessage = 'Die angefragte Ressource gehÃ
 			return hook;
 		});
 	};
+
+exports.checkSchoolOwnership = hook => {
+	let userId = hook.params.account.userId;
+	let objectId = hook.id;
+	let service = hook.path;
+
+	let genericService = hook.app.service(service);
+	let userService = hook.app.service('users');
+
+	return Promise.all([userService.get(userId), genericService.get(objectId)])
+		.then(res => {
+			if (res[0].schoolId.equals(res[1].schoolId))
+				return hook;
+			else
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+		});
+};
