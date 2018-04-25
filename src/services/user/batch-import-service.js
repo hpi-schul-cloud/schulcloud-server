@@ -18,8 +18,8 @@ module.exports = function () {
 	const userBatchImportService = app.service('/users/import');
 
 	// Set up our before hooks
-	userService.before(hooks.before(app));	// TODO: refactor
+	userBatchImportService.before(hooks.before(app));	// TODO: refactor
 
 	// Set up our after hooks
-	userService.after(hooks.after);
+	userBatchImportService.after(hooks.after);
 };
