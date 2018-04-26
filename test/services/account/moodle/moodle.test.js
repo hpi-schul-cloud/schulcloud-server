@@ -55,6 +55,7 @@ describe('Moodle single-sign-on', function () {
 		return new Promise((resolve, reject) => {
 			chai.request(app)
 				.post('/accounts')
+				.set('X-API-TOKEN', 'example') //acts as client
 				.set('Accept', 'application/json')
 				.set('content-type', 'application/x-www-form-urlencoded')
 				//send credentials
