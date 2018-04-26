@@ -20,7 +20,7 @@ let secrets = {
 	}]
 },
 	"authentication": process.env.AUTHENTICATION,
-	"valid_Tokens": process.env.VALID_TOKENS || ["example"]
+	"valid_Tokens": process.env.VALID_TOKENS || "example"
 };
 
 module.exports = secrets;

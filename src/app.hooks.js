@@ -10,7 +10,7 @@ const _ = require('lodash');
  * @returns either the hook itself, as it was successful or denies the request.
  */
 const friendlyCheck = (hook) => {
-	let friends = hook.app.get('secrets').valid_Tokens;
+	let friends = hook.app.get('secrets').valid_Tokens.split(' ');
 
 	if (_.includes(friends, hook.params.headers['x-api-token']))
 		return Promise.resolve(hook);
