@@ -18,6 +18,8 @@ const defaultHeaders = require('./middleware/defaultHeaders');
 const setupSwagger = require('./swagger');
 const prettyError = require('pretty-error').start();
 
+const appHooks = require('./app.hooks');
+
 require('console-stamp')(console);
 require('console-stamp')(winston );
 
@@ -54,7 +56,9 @@ app.use(compress())
 	// auth is setup in /authentication/
 
 	.configure(services)
-	.configure(middleware);
+	.configure(middleware)
+
+	.hooks(appHooks);
 
 winston.cli();	// optimize for cli, like using colors
 winston.level = 'debug';

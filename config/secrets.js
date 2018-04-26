@@ -19,7 +19,8 @@ let secrets = {
 		"MaxAgeSeconds": 300
 	}]
 },
-	"authentication": process.env.AUTHENTICATION
+	"authentication": process.env.AUTHENTICATION,
+	"valid_Tokens": process.env.VALID_TOKENS || ["example"]
 };
 
 module.exports = secrets;
