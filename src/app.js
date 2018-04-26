@@ -25,7 +25,7 @@ require('console-stamp')(winston );
 
 let secrets;
 try {
-	(process.env.NODE_ENV === 'production') ? secrets = require('../config/secrets.js') : secrets = require('../config/secrets.json');
+	(process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') ? secrets = require('../config/secrets.js') : secrets = require('../config/secrets.json');
 } catch(error) {
 	secrets = {};
 }
