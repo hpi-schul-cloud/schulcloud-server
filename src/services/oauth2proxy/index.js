@@ -60,7 +60,7 @@ module.exports = function() {
 				refreshToken().then(() => {
 					hydra.getOAuth2ConsentRequest(id, resolver(consentRequest => {
 						resolve(consentRequest);
-					}))
+					}, reject))
 				})
 			);
 		},
@@ -71,7 +71,7 @@ module.exports = function() {
 						hydra.acceptOAuth2ConsentRequest(
 							id,
 							data,
-							resolver(_ => resolve(consentRequest))
+							resolver(_ => resolve(consentRequest), reject)
 						)
 					}))
 				})
