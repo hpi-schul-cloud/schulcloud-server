@@ -58,9 +58,7 @@ module.exports = function() {
 		get(id) {
 			return new Promise((resolve, reject) =>
 				refreshToken().then(() => {
-					hydra.getOAuth2ConsentRequest(id, resolver(consentRequest => {
-						resolve(consentRequest);
-					}, reject))
+					hydra.getOAuth2ConsentRequest(id, resolver(resolve, reject))
 				})
 			);
 		},
@@ -86,11 +84,12 @@ module.exports = function() {
 			return new Promise((resolve, reject) =>
 				refreshToken().then(() => {
 					hydra.introspectOAuth2Token(token, {'scope': "openid"},
-					resolver(introspection => { resolve(introspection) },
-					error => {
-						console.log(error)
-						resolve(false)
-					}))
+					resolver(resolve,
+						error => {
+							console.log(error)
+							resolve(false)
+						})
+					)
 				})
 			);
 		}
