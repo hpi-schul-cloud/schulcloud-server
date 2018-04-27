@@ -8,10 +8,12 @@ const CryptoJS = require("crypto-js");
 const RandExp = require('randexp');
 const Chance = require('chance');
 const chance = new Chance();
+const swaggerDocs =require('./docs/');
 
 class CustomJWTService {
 	constructor(authentication) {
 		this.authentication = authentication;
+		this.docs = swaggerDocs.accountService.CustomJWTService;
 	}
 
 	create(data) {
@@ -83,6 +85,11 @@ class PasswordGenService {
 	 * @param query (length<Integer> | readable<Boolean>)
 	 * @returns {Promise.<TResult>}
 	 */
+
+	constructor(){
+		this.docs = swaggerDocs.accountService.passwordGenService;
+	}
+
 	find({query, payload}) {
 		if (query.readable) {
 			let p2 = new Promise((resolve, reject) => {

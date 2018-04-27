@@ -1,6 +1,8 @@
 'use strict';
 
 const errors = require('feathers-errors');
+const swaggerDocs = require('./docs/');
+const swagger = require('feathers-swagger');
 
 // get an json api conform entry
 const getDataEntry = ({type, id, name, authorities = ["can-read"], attributes = {}}) => {
@@ -16,6 +18,11 @@ const getDataEntry = ({type, id, name, authorities = ["can-read"], attributes = 
 
 // get scopes from user object Id
 class ScopeResolver {
+
+	constructor(){
+		this.docs = swaggerDocs.resolveService.scopesService;
+	}
+
 	get(id, params) {
 		const userService = this.app.service('/users');
 		const courseService = this.app.service('/courses');
@@ -95,6 +102,11 @@ class ScopeResolver {
 
 // get users from UUID (e.g. course id)
 class UserResolver {
+
+	constructor(){
+		this.docs = swaggerDocs.resolveService.usersService;
+	}
+
 	get(id, params) {
 		// token should NOT be userId but for testing purpose it's easier right now
 		const userService = this.app.service('/users');
@@ -188,4 +200,5 @@ module.exports = function () {
 	// Initialize our service with any options it requires
 	app.use('/resolve/scopes', new ScopeResolver());
 	app.use('/resolve/users', new UserResolver());
+	
 };

@@ -4,12 +4,14 @@ const request = require('request-promise-native');
 const hooks = require('./hooks');
 const material = require('./material-model');
 const service = require('feathers-mongoose');
+const swaggerDocs = require('./docs/');
 
 const REQUEST_TIMEOUT = 8000; // in ms
 
 class ResourcesService {
 	constructor(options) {
 		this.options = options || {};
+		this.docs = swaggerDocs.contentService.resourcesService;
 	}
 
 	find(params) {
@@ -45,6 +47,7 @@ class ResourcesService {
 class SearchService {
 	constructor(options) {
 		this.options = options || {};
+		this.docs = swaggerDocs.contentService.searchService;
 	}
 
 	find(params) {
@@ -68,6 +71,7 @@ class SearchService {
 class RedirectService {
 	constructor(options) {
 		this.options = options || {};
+		this.docs = swaggerDocs.contentService.redirectService;
 	}
 
 	get(id) {
