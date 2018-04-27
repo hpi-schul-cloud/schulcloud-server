@@ -10,12 +10,20 @@ const _ = require('lodash');
  * @returns either the hook itself, as it was successful or denies the request.
  */
 const friendlyCheck = (hook) => {
-	let friends = hook.app.get('secrets').valid_Tokens.split(' ');
+	let sec = hook.app.get('secrets').valid_Tokens;
+	let friends = typeof sec === 'object' ? sec : JSON.parse(sec);
+	
+	let friend = _.find(friends, {key: hook.params.headers['x-api-token']});
 
-	if (_.includes(friends, hook.params.headers['x-api-token']))
-		return Promise.resolve(hook);
-	else
+	if (friend) {
+		if (friend.permissions[hook.path]) {
+			return Promise.resolve(hook);
+		} else {
+			return Promise.reject(new errors.Forbidden('Your api key is not entitled to request this resource!'));
+		}
+	} else {
 		return Promise.reject(new errors.Forbidden('Thanks for being interested in our api!\nIn case you are interested in a job at us, please email jan.renz [at] hpi.de'));
+	}
 };
 
 module.exports = {
