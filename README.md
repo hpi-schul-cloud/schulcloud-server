@@ -34,6 +34,30 @@ There are blog posts on how to setup [client](https://github.com/schul-cloud/sch
 1. Go into project folder
 2. run `docker-compose up`
 
+## Run with Debug in Visual Studio Code
+
+#Change in launch.json
+```
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch SC-Server",
+            "program": "${workspaceFolder}/src/index.js",
+            "skipFiles": [
+              "<node_internals>/**"
+            ]
+
+        }
+    ]
+}
+```
+
 ## How to name your branch
 
 1. Take the last part of the url of your Trello ticket (e.g. "8-setup-feather-js")
