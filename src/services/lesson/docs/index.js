@@ -1,18 +1,17 @@
 module.exports = {
 	lessonService: {
-		description: "A service to do mails",
-		create: {
+		description: "A service to do lessons",
+		find: {
 			parameters: [
 				{
-					description: "mail",
+					description: "query",
 					required: true,
 					name: "name",
-					type: "string"
+					type: "query"
 				}
 			],
-			summary: "Create an email",
-			notes:
-				"Does some stuff"
+			summary:
+				"find sth"
 		}
 	}
 };

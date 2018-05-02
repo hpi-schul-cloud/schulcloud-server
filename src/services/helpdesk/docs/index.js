@@ -1,18 +1,23 @@
 module.exports = {
 	helpdeskService: {
-		description: "A service to do something",
+		description: "A service for helpdesks",
+		find: {
+			summary: "find"
+		},
 		create: {
-			parameters: [
-				{
-					description: "service",
-					required: true,
-					name: "name",
-					type: "string"
-				}
-			],
-			summary: "Create something",
-			notes:
-				"Does some stuff"
+			summary: "create"
+		},
+		remove: {
+			summary: "remove"
+		},
+		update: {
+			summary: "update"
+		},
+		patch: {
+			summary: "patch"
+		},
+		get: {
+			summary: "get"
 		}
 	}
 };
