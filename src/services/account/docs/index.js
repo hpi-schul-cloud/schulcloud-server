@@ -1,33 +1,36 @@
 module.exports = {
 	accountService: {
+		description: "A service for accounts",
 		CustomJWTService: {
-			description: "A service to do sth",
 			create: {
 				parameters: [
 					{
-						description: "description",
+						description: "Userdata for the User to be created",
 						required: true,
-						name: "username",
-						type: "string"
+						name: "Data",
+						type: "data"
 					}
 				],
-				summary: "Do Something",
-				notes: "Does stuff."
+				summary: "Creates a new Account"
 			}
 		},
 		passwordGenService: {
-			description: "A service to do passwords",
 			find: {
 				parameters: [
 					{
-						description: "description",
+						description: "query used to generate",
 						required: true,
-						name: "username",
-						type: "string"
+						name: "query",
+						type: "object"
+					},
+					{
+						description: "payload",
+						required: true,
+						name: "payload",
+						type: "object"
 					}
 				],
-				summary: "Do stuff",
-				notes: "notes"
+				summary: "Generates a random String depending on the query parameters"
 			}
 		}
 	}

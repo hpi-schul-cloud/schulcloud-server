@@ -20,7 +20,7 @@ const getDataEntry = ({type, id, name, authorities = ["can-read"], attributes = 
 class ScopeResolver {
 
 	constructor(){
-		this.docs = swaggerDocs.resolveService.scopesService;
+		this.docs = swaggerDocs.resolveService.scopeResolverService;
 	}
 
 	get(id, params) {
@@ -104,7 +104,7 @@ class ScopeResolver {
 class UserResolver {
 
 	constructor(){
-		this.docs = swaggerDocs.resolveService.usersService;
+		this.docs = swaggerDocs.resolveService.userResolverService;
 	}
 
 	get(id, params) {

@@ -1,60 +1,54 @@
 module.exports = {
 	contentService: {
+		description: "A Service for content",
 		resourcesService: {
-			description: "A service to do something",
 			get: {
 				parameters: [
 					{
-						description: "get resourves service",
+						description: "id of the course",
 						required: true,
-						name: "name",
-						type: "string"
+						name: "course",
+						type: "id"
 					}
 				],
-				summary: "get something",
-				notes: "Does some stuff"
+				summary: "get the content of the course by the course id"
             },
             find: {
 				parameters: [
 					{
-						description: "find resourves service",
+						description: "query to search with",
 						required: true,
 						name: "name",
-						type: "string"
+						type: "query"
 					}
 				],
-				summary: "get something",
-				notes: "Does some stuff"
+				summary: "executes the query within the content resources"
 			}
         },
         searchService: {
-			description: "A service to search something",
 			find: {
 				parameters: [
 					{
-						description: "find search service",
+						description: "query to search with",
 						required: true,
 						name: "name",
-						type: "string"
+						type: "query"
 					}
 				],
-				summary: "get something",
-				notes: "Does some stuff"
+				summary: "executes the query within the content search"
 			}
         },
         redirectService: {
-			description: "A service to redirect something",
 			get: {
 				parameters: [
 					{
-						description: "get redirect service",
+						description: "id of the required resource",
 						required: true,
 						name: "name",
-						type: "string"
+						type: "id"
 					}
 				],
-				summary: "get something",
-				notes: "Does some stuff"
+				summary: "returns the required resource url and increases the click counter"
 			}
 		}
 	}

@@ -1,32 +1,44 @@
 module.exports = {
 	resolveService: {
         description: "A service for resolve",
-		scopesService: {
+		scopeResolverService: {
 			get: {
 				parameters: [
 					{
-						description: "ID of scopes to return",
+						description: "id of the user",
 						required: true,
-						name: "resourceId",
-						type: "integer"
+						name: "userId",
+						type: "id"
+					},
+					{
+						description: "params",
+						required: true,
+						name: "params",
+						type: "params"
 					}
 				],
 				summary:
-					"Do something with the id"
+					"Get scopes like courses and classes from user object Id"
 			}
         },
-        usersService: {
+        userResolverService: {
 			get: {
 				parameters: [
 					{
-						description: "ID of users to return",
+						description: "UUID (e.g. course id)",
 						required: true,
-						name: "resourceId",
-						type: "integer"
+						name: "Id",
+						type: "id"
+					},
+					{
+						description: "params",
+						required: true,
+						name: "params",
+						type: "params"
 					}
 				],
 				summary:
-					"Do something else with the id"
+					"Get users from UUID (e.g. course id)"
 			}
 		}
 	}
