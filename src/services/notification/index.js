@@ -2,6 +2,7 @@
 
 const request = require('request-promise-native');
 const hooks = require('./hooks/index');
+const swaggerDocs = require('./docs/');
 
 const REQUEST_TIMEOUT = 8000; // in ms
 
@@ -25,6 +26,7 @@ const toQueryString = (paramsObject) => {
 class MessageService {
 	constructor(options) {
 		this.options = options || {};
+		this.docs = swaggerDocs.notificationService.messagesService;
 	}
 
 	create(data, params) {
@@ -75,6 +77,7 @@ class MessageService {
 class DeviceService {
 	constructor(options) {
 		this.options = options || {};
+		this.docs = swaggerDocs.notificationService.deviceService;
 	}
 
 	find(params) {
@@ -140,6 +143,7 @@ class DeviceService {
 class CallbackService {
 	constructor(options) {
 		this.options = options || {};
+		this.docs = swaggerDocs.notificationService.callbackService;
 	}
 
 	create(data, params) {
@@ -171,6 +175,7 @@ class CallbackService {
 class NotificationService {
 	constructor(options) {
 		this.options = options || {};
+		this.docs = swaggerDocs.notificationService;
 	}
 
 	get(id, params) {

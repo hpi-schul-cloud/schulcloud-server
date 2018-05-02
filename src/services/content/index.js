@@ -117,10 +117,13 @@ module.exports = function () {
 	};
 
 	// Initialize our service with options it requires
+	var materialService = service(options);
+	materialService.docs = swaggerDocs.materialService;
+
 	app.use('/content/resources', new ResourcesService());
 	app.use('/content/search', new SearchService());
 	app.use('/content/redirect', new RedirectService(), RedirectService.redirect);
-	app.use('/materials', service(options));
+	app.use('/materials', materialService);
 
 	// Get our initialize service to that we can bind hooks
 	const resourcesService = app.service('/content/resources');

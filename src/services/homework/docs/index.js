@@ -1,18 +1,70 @@
 module.exports = {
 	homeworkService: {
-		description: "A service to do mails",
+		description: "A service for homework",
+		
+		find: {
+			summary: "find"
+		},
 		create: {
-			parameters: [
-				{
-					description: "mail",
-					required: true,
-					name: "name",
-					type: "string"
-				}
-			],
-			summary: "Create an email",
-			notes:
-				"Does some stuff"
+			summary: "create"
+		},
+		remove: {
+			summary: "remove"
+		},
+		update: {
+			summary: "update"
+		},
+		patch: {
+			summary: "patch"
+		},
+		get: {
+			summary: "get"
+		}
+	},
+
+	submissionService: {
+		description: "a service for submissions",
+
+		find: {
+			summary: "find"
+		},
+		create: {
+			summary: "create"
+		},
+		remove: {
+			summary: "remove"
+		},
+		update: {
+			summary: "update"
+		},
+		patch: {
+			summary: "patch"
+		},
+		get: {
+			summary: "get"
+		}
+	},
+
+	commentService:{
+		description: "A service for comments",
+
+		find: {
+			summary: "find"
+		},
+		create: {
+			summary: "create"
+		},
+		remove: {
+			summary: "remove"
+		},
+		update: {
+			summary: "update"
+		},
+		patch: {
+			summary: "patch"
+		},
+		get: {
+			summary: "get"
 		}
 	}
 };

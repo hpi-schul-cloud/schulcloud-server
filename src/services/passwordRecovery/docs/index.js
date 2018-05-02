@@ -1,18 +1,36 @@
 module.exports = {
 	passwordRecoveryService: {
-		description: "A service to do mails",
+		description: "A service for password recovery",
+		find: {
+			summary: "find"
+		},
 		create: {
-			parameters: [
-				{
-					description: "mail",
-					required: true,
-					name: "name",
-					type: "string"
-				}
-			],
-			summary: "Create an email",
-			notes:
-				"Does some stuff"
+			summary: "create"
+		},
+		remove: {
+			summary: "remove"
+		},
+		update: {
+			summary: "update"
+		},
+		patch: {
+			summary: "patch"
+		},
+		get: {
+			summary: "get"
+		},
+		changePasswordService: {
+			create: {
+				parameters: [
+					{
+						description: "data about user an passwords",
+						required: true,
+						name: "data",
+						type: "data"
+					}
+				],
+				summary: "change password",
+			}
 		}
 	}
 };

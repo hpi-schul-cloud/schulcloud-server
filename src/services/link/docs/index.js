@@ -1,18 +1,23 @@
 module.exports = {
 	linkService: {
-		description: "A service to do mails",
+		description: "A service to do links",
+		find: {
+			summary: "find"
+		},
 		create: {
-			parameters: [
-				{
-					description: "mail",
-					required: true,
-					name: "name",
-					type: "string"
-				}
-			],
-			summary: "Create an email",
-			notes:
-				"Does some stuff"
+			summary: "create"
+		},
+		remove: {
+			summary: "remove"
+		},
+		update: {
+			summary: "update"
+		},
+		patch: {
+			summary: "patch"
+		},
+		get: {
+			summary: "get"
 		}
 	}
 };

@@ -248,6 +248,11 @@ class FileTotalSizeService {
 	 * @param query currently not needed
 	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
 	 */
+
+	constructor(){
+		this.docs = swaggerDocs.fileTotalSizeService;
+	}
+
 	find({query, payload}) {
 		let sum = 0;
 		return FileModel.find({schoolId: payload.schoolId}).exec()

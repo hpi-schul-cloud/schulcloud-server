@@ -3,6 +3,7 @@
 const service = require('feathers-mongoose');
 const link = require('./link-model');
 const hooks = require('./hooks');
+const swaggerDocs = require('./docs/');
 
 module.exports = function () {
 	const app = this;
@@ -17,6 +18,7 @@ module.exports = function () {
 	};
 
 	let linkService = service(options);
+	linkService.docs = swaggerDocs.linkService;
 
 	function redirectToTarget(req, res, next) {
 		if(req.method == 'GET' && !req.query.target) {	// capture these requests and issue a redirect

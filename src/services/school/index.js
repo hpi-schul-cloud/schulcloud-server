@@ -3,6 +3,7 @@
 const service = require('feathers-mongoose');
 const school = require('./model');
 const hooks = require('./hooks');
+const swaggerDocs = require('./docs');
 
 module.exports = function () {
 	const app = this;
@@ -17,7 +18,10 @@ module.exports = function () {
 	};
 
 	// Initialize our service with any options it requires
-	app.use('/schools', service(options));
+	var schoolServiceApp = service(options);
+	schoolServiceApp.docs = swaggerDocs.schoolService;
+
+	app.use('/schools', schoolServiceApp);
 
 	// Get our initialize service to that we can bind hooks
 	const schoolService = app.service('/schools');

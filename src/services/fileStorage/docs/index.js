@@ -1,120 +1,185 @@
 module.exports = {
 	fileStorageService: {
-		description: 'A service to handle external file storages',
+		description: "A service to handle external file storages",
 		create: {
 			parameters: [
 				{
-					description: 'the id of the school for which the storage will be created',
+					description:
+						"the id of the school for which the storage will be created",
 					required: true,
-					name: 'schoolId',
-					type: 'string'
+					name: "schoolId",
+					type: "string"
 				}
 			],
-			summary: 'Creates a new storage environment for a given school',
-			notes: 'Returns meta data of the created storage'
+			summary: "Creates a new storage environment for a given school",
+			notes: "Returns meta data of the created storage"
 		},
 		find: {
 			parameters: [
 				{
-					description: 'the context of the file-storage',
+					description: "the context of the file-storage",
 					required: true,
-					name: 'path',
-					type: 'string'
+					name: "path",
+					type: "string"
 				}
 			],
-			summary: 'Retrieve all files and immediate sub-directories for the given path'
+			summary:
+				"Retrieve all files and immediate sub-directories for the given path"
 		},
 		remove: {
 			parameters: [
 				{
-					description: 'The path where the file can be found',
+					description: "The path where the file can be found",
 					required: true,
-					name: 'path',
-					type: 'string'
+					name: "path",
+					type: "string"
 				}
 			],
-			summary: 'remove a file'
+			summary: "remove a file"
 		},
 		patch: {
 			parameters: [
 				{
-					description: 'The name of the file',
+					description: "The name of the file",
 					required: true,
-					name: 'fileName',
-					type: 'string'
+					name: "fileName",
+					type: "string"
 				},
 				{
-					description: 'The path where the file can be found, have to have a slash at the end',
+					description:
+						"The path where the file can be found, have to have a slash at the end",
 					required: true,
-					name: 'path',
-					type: 'string'
+					name: "path",
+					type: "string"
 				},
 				{
-					description: 'The path where the file should be moved to, have to have a slash at the end',
+					description:
+						"The path where the file should be moved to, have to have a slash at the end",
 					required: true,
-					name: 'destination',
-					type: 'string'
+					name: "destination",
+					type: "string"
 				},
 				{
-					description: 'The id of the file in the proxy db',
+					description: "The id of the file in the proxy db",
 					required: true,
-					name: 'id',
-					type: 'string'
+					name: "id",
+					type: "string"
 				}
 			],
-			summary: 'moves a file to a new path'
-		},
+			summary: "moves a file to a new path"
+		}
 	},
 	directoryService: {
-		description: 'A service for handling directories',
+		description: "A service for handling directories",
 		create: {
 			parameters: [
 				{
-					description: 'the path of the directory to be created',
+					description: "the path of the directory to be created",
 					required: true,
-					name: 'path',
-					type: 'string'
+					name: "path",
+					type: "string"
 				}
 			],
-			summary: 'Creates a folder for a given path'
+			summary: "Creates a folder for a given path"
 		},
 		remove: {
 			parameters: [
 				{
-					description: 'the path of the directory to be removed',
+					description: "the path of the directory to be removed",
 					required: true,
-					name: 'path',
-					type: 'string'
+					name: "path",
+					type: "string"
 				}
 			],
-			summary: 'Removes a folder for a given storageContext'
+			summary: "Removes a folder for a given storageContext"
+		}
+	},
+	fileTotalSizeService: {
+		find: {
+			parameters: [
+				{
+					description: "query"
+				},
+				{
+					description: "payload"
+				}
+			],
+			summary: "find"
 		}
 	},
 	signedUrlService: {
-		description: 'A service for generating signed urls, e.g. for uploading (action = putObject) and downloading files (action = getObject)',
+		description:
+			"A service for generating signed urls, e.g. for uploading (action = putObject) and downloading files (action = getObject)",
 		create: {
 			parameters: [
 				{
-					description: 'The path where the file can be found/should be created',
+					description:
+						"The path where the file can be found/should be created",
 					required: true,
-					name: 'path',
-					type: 'string'
+					name: "path",
+					type: "string"
 				},
 				{
-					description: 'the mime type of the file that will be uploaded',
+					description:
+						"the mime type of the file that will be uploaded",
 					required: true,
-					name: 'fileType',
-					type: 'string'
+					name: "fileType",
+					type: "string"
 				},
 				{
-					description: 'What the signed URL should be for, e.g. downloading (getObject) or uploading (putObject)',
+					description:
+						"What the signed URL should be for, e.g. downloading (getObject) or uploading (putObject)",
 					required: true,
-					name: 'action',
-					type: 'string'
+					name: "action",
+					type: "string"
 				}
 			],
-			summary: 'Creates a new signed url for the given file information and path, e.g. for uploading or downloading',
-			notes: 'Returns a url as string'
+			summary:
+				"Creates a new signed url for the given file information and path, e.g. for uploading or downloading",
+			notes: "Returns a url as string"
+		}
+	},
+	fileService: {
+		description: "Service for files",
+		find: {
+			summary: "find"
+		},
+		create: {
+			summary: "create"
+		},
+		remove: {
+			summary: "remove"
+		},
+		update: {
+			summary: "update"
+		},
+		patch: {
+			summary: "patch"
+		},
+		get: {
+			summary: "get"
+		}
+	},
+
+	directoriesService: {
+		description: "Service for directories",
+		find: {
+			summary: "find"
+		},
+		create: {
+			summary: "create"
+		},
+		remove: {
+			summary: "remove"
+		},
+		update: {
+			summary: "update"
+		},
+		patch: {
+			summary: "patch"
+		},
+		get: {
+			summary: "get"
 		}
 	}
 };

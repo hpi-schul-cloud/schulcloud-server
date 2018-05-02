@@ -1,7 +1,10 @@
+const swaggerDocs = require ('./docs');
+
 class SystemVerifier {
 	constructor(app, options = {}) {
 		this.app = app;
 		this.options = options;
+		this.docs = swaggerDocs.authenticationService;
 
 		if (!options.loginStrategy) {
 			throw new Error(`You must implement a loginStrategy and pass it as class in the options.`);

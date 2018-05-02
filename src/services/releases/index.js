@@ -4,8 +4,14 @@ const service = require('feathers-mongoose');
 const release = require('./release-model');
 const hooks = require('./hooks/index');
 const rp = require('request-promise-native');
+const swaggerDocs = require('./docs/');
 
 class ReleaseFetchService {
+
+	constructor(){
+		this.docs = swaggerDocs.releasesService.releaseFetchService;
+	}
+
 	find({query, payload}) {
 		let options = {
 			uri: 'https://api.github.com/repos/schul-cloud/schulcloud-client/releases',
@@ -52,8 +58,11 @@ module.exports = function () {
 	};
 
 	// Initialize our service with any options it requires
+	var releaseServiceApp = service(options);
+	releaseServiceApp.docs = swaggerDocs.releasesService;
+
 	app.use('/releases/fetch', new ReleaseFetchService());
-	app.use('/releases', service(options));
+	app.use('/releases', releaseServiceApp);
 
 	// Get our initialize service to that we can bind hooks
 	const releaseFetchService = app.service('/releases/fetch');

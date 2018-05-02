@@ -4,6 +4,7 @@ const service = require('feathers-mongoose');
 const fileModel = require('./model').fileModel;
 const directoryModel = require('./model').directoryModel;
 const hooks = require('./hooks/model-hooks');
+const swaggerDocs = require('./docs');
 
 module.exports = function () {
 	const app = this;
@@ -27,12 +28,18 @@ module.exports = function () {
 	};
 
 	// Initialize our service with any options it requires
-	app.use('/files', service(fileOptions));
+	var fileService = service(fileOptions);
+	fileService.docs = swaggerDocs.fileService;
+
+	var directoryService = service(directoryOptions);
+	directoryService.docs = swaggerDocs.directoriesService;
+
+	app.use('/files', fileService);
 	const fileModelService = app.service('files');
 	fileModelService.before(hooks.before);
 	fileModelService.after(hooks.after);
 
-	app.use('/directories', service(directoryOptions));
+	app.use('/directories', directoryService);
 	const directoryModelService = app.service('directories');
 	directoryModelService.before(hooks.before);
 	directoryModelService.after(hooks.after);

@@ -31,6 +31,17 @@ module.exports = {
 			notes:
 				"Returns a JSON Web Token for the associated user in case of success."
 			//errorResponses: []
+		},
+		verify: {
+			parameters: [
+				{
+					description: "req"
+				},
+				{
+					description: "done"
+				}
+			],
+			summary: "remove"
 		}
 	}
 };

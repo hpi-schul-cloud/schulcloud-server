@@ -1,7 +1,7 @@
 module.exports = {
 	contentService: {
-		description: "A Service for content",
 		resourcesService: {
+			description: "A Service for content",
 			get: {
 				parameters: [
 					{
@@ -12,8 +12,8 @@ module.exports = {
 					}
 				],
 				summary: "get the content of the course by the course id"
-            },
-            find: {
+			},
+			find: {
 				parameters: [
 					{
 						description: "query to search with",
@@ -24,8 +24,8 @@ module.exports = {
 				],
 				summary: "executes the query within the content resources"
 			}
-        },
-        searchService: {
+		},
+		searchService: {
 			find: {
 				parameters: [
 					{
@@ -37,8 +37,8 @@ module.exports = {
 				],
 				summary: "executes the query within the content search"
 			}
-        },
-        redirectService: {
+		},
+		redirectService: {
 			get: {
 				parameters: [
 					{
@@ -48,8 +48,30 @@ module.exports = {
 						type: "id"
 					}
 				],
-				summary: "returns the required resource url and increases the click counter"
+				summary:
+					"returns the required resource url and increases the click counter"
 			}
+		}
+	},
+	materialService: {
+		description: "A service for material",
+		find: {
+			summary: "find"
+		},
+		create: {
+			summary: "create"
+		},
+		remove: {
+			summary: "remove"
+		},
+		update: {
+			summary: "update"
+		},
+		patch: {
+			summary: "patch"
+		},
+		get: {
+			summary: "get"
 		}
 	}
 };

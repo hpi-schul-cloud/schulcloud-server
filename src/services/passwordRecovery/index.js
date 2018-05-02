@@ -5,9 +5,11 @@ const passwordRecovery = require('./model');
 const hooks = require('./hooks');
 const AccountModel = require('./../account/model');
 const errors = require('feathers-errors');
+const swaggerDocs = require('./docs/');
 
 class ChangePasswordService {
 	constructor() {
+		this.docs = swaggerDocs.passwordRecoveryService.changePasswordService;
 	}
 
 	create(data) {
@@ -36,7 +38,10 @@ module.exports = function () {
 	};
 
 	// Initialize our service with any options it requires
-	app.use('/passwordRecovery', service(options));
+	var passwordRecoveryServiceApp = service(options);
+	passwordRecoveryServiceApp.docs = swaggerDocs.passwordRecoveryService;
+
+	app.use('/passwordRecovery', passwordRecoveryServiceApp);
 
 	app.use('/passwordRecovery/reset', new ChangePasswordService);
 

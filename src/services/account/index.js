@@ -116,6 +116,16 @@ class PasswordGenService {
 	}
 }
 
+class confirmService {
+	constructor(){
+		this.docs = swaggerDocs.accountService.confirmService;
+	}
+
+	create(data, params) {
+		return account.update({_id: data.accountId}, {$set: {activated: true}});
+	}
+}
+
 module.exports = function () {
 	const app = this;
 
@@ -129,16 +139,15 @@ module.exports = function () {
 
 	app.use('/accounts/pwgen', new PasswordGenService());
 
-	app.use('/accounts', service(options));
+	var accountsService = service(options);
+	accountsService.docs = swaggerDocs.accountService;
+
+	app.use('/accounts', accountsService);
 
 	app.use('/accounts/jwt', new CustomJWTService(app.get("secrets").authentication));
 
 
-	app.use('/accounts/confirm', {
-		create(data, params) {
-			return account.update({_id: data.accountId}, {$set: {activated: true}});
-		}
-	});
+	app.use('/accounts/confirm', new confirmService());
 
 	// Get our initialize service to that we can bind hooks
 	const customJWTService = app.service('/accounts/jwt');
