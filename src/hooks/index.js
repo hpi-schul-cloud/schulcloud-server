@@ -187,6 +187,18 @@ exports.mapPaginationQuery = (hook) => {
 	}
 };
 
+exports.checkCorrectCourseId = (hook) => {
+	let courseService = hook.app.service('courses');
+
+	return courseService.find({ query: { teacherIds: {$in: [hook.params.account.userId] } }})
+		.then(courses => {
+			if (courses.data.some(course => { return course._id == hook.data.courseId; }))
+				return hook;
+			else
+				throw new errors.Forbidden("The entered course doesn't belong to you!");
+		});
+};
+
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
 	return userService.find({
@@ -215,6 +227,7 @@ exports.restrictToCurrentSchool = hook => {
 				throw new errors.Forbidden('You do not have valid permissions to access this.');
 			}
 		}
+
 		return hook;
 	});
 };
