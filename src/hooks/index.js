@@ -207,6 +207,7 @@ exports.restrictToCurrentSchool = hook => {
 	});
 };
 
+//TODO: hooks $or condition gets overwritten if set, check first
 exports.restrictToUsersOwnCourses = hook => {
 	let userService = hook.app.service('users');
 	return userService.find({
@@ -222,7 +223,7 @@ exports.restrictToUsersOwnCourses = hook => {
 		});
 		if (access)
 			return hook;
-		hook.params.query.$or =[
+		hook.params.query.$or = [
 			{ userIds: res.data[0]._id },
 			{ teacherIds: res.data[0]._id }
 		];
