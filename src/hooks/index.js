@@ -232,6 +232,29 @@ exports.restrictToCurrentSchool = hook => {
 	});
 };
 
+exports.restrictToUsersOwnCourses = hook => {
+	let userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'admin' || role.name === 'superhero' )
+				access = true;
+		});
+		if (access)
+			return hook;
+		hook.params.query.$or =[
+			{ userIds: res.data[0]._id },
+			{ teacherIds: res.data[0]._id }
+		];
+		return hook;
+	});
+};
+
 // meant to be used as an after hook
 exports.denyIfNotCurrentSchool = ({ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' }) =>
 	hook => {
@@ -257,3 +280,20 @@ exports.denyIfNotCurrentSchool = ({ errorMessage = 'Die angefragte Ressource geh
 			return hook;
 		});
 	};
+
+exports.checkSchoolOwnership = hook => {
+	let userId = hook.params.account.userId;
+	let objectId = hook.id;
+	let service = hook.path;
+
+	let genericService = hook.app.service(service);
+	let userService = hook.app.service('users');
+
+	return Promise.all([userService.get(userId), genericService.get(objectId)])
+		.then(res => {
+			if (res[0].schoolId.equals(res[1].schoolId))
+				return hook;
+			else
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+		});
+};

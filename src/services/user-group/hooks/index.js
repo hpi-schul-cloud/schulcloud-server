@@ -8,6 +8,7 @@ const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
+const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 /**
  * adds all students to a course when a class is added to the course
@@ -77,8 +78,8 @@ const deleteWholeClassFromCourse = (hook) => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool],
-	get: [],
+	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool, restrictToUsersOwnCourses],
+	get: [restrictToUsersOwnCourses],
 	create: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
 	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
 	patch: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation, deleteWholeClassFromCourse],
