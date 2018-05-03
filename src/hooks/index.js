@@ -207,6 +207,29 @@ exports.restrictToCurrentSchool = hook => {
 	});
 };
 
+exports.restrictToUsersOwnCourses = hook => {
+	let userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'admin' || role.name === 'superhero' )
+				access = true;
+		});
+		if (access)
+			return hook;
+		hook.params.query.$or =[
+			{ userIds: res.data[0]._id },
+			{ teacherIds: res.data[0]._id }
+		];
+		return hook;
+	});
+};
+
 // meant to be used as an after hook
 exports.denyIfNotCurrentSchool = ({errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!'}) =>
 	hook => {
