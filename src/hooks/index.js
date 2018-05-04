@@ -225,7 +225,7 @@ exports.restrictToUsersOwnCourses = hook => {
 		if (access)
 			return hook;
 		
-		if (hook.method ==="get") {
+		if (hook.method === "get") {
 			let courseService = hook.app.service('courses');
 			return courseService.get(hook.id).then(course => {
 				if (!(_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
@@ -234,13 +234,15 @@ exports.restrictToUsersOwnCourses = hook => {
 					throw new errors.Forbidden('You are not in that course.');
 				}
 			});
-		} /*else {
-			hook.params.query.$or = [
-				{ userIds: res.data[0]._id },
-				{ teacherIds: res.data[0]._id },
-				{ substitutionIds: res.data[0]._id }
-			];
-		}*/
+		} else {
+			if (typeof(hook.params.query.$or) === 'undefined') {
+				hook.params.query.$or = [
+					{ userIds: res.data[0]._id },
+					{ teacherIds: res.data[0]._id },
+					{ substitutionIds: res.data[0]._id }
+				];
+			}
+		}
 		return hook;
 	});
 };
