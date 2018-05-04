@@ -17,8 +17,7 @@ module.exports = function () {
 		lean: true
 	};
 	
-	var lessonService =  service(options);
-	
+	var lessonService =  service(options);	
 	lessonService.docs 	 = swaggerDocs.lessonService;
 
 	// Initialize our service with any options it requires
@@ -38,7 +37,7 @@ module.exports = function () {
 				{ $project : { _id: "$contents._id", content : "$contents.content"} }
 				]).exec();
 		}
-	};
+	}
 
 	app.use('/lessons/contents/:type/', new lessonContent());
 

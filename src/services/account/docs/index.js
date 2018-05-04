@@ -25,7 +25,7 @@ module.exports = {
 					{
 						description: "Userdata for the User to be created",
 						required: true,
-						name: "Data",
+						name: "Userdata",
 						type: "data"
 					}
 				],

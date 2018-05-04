@@ -2,6 +2,13 @@ module.exports = {
 	statisticsService: {
 		description: 'A service to return statistics',
 		find: {
+			parameters: [
+				{
+					description: "Object containing query and payload",
+					name: "query, payload",
+					type: "object"
+				}
+			],
 			summary: 'Returns the count of specific collections.'
 		},
 		get: {

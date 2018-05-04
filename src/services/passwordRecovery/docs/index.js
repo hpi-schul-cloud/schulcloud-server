@@ -23,7 +23,7 @@ module.exports = {
 			create: {
 				parameters: [
 					{
-						description: "data about user an passwords",
+						description: "data about user and password",
 						required: true,
 						name: "data",
 						type: "data"

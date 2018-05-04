@@ -4,10 +4,16 @@ module.exports = {
 		get: {
 			parameter: [
 				{
-					description: "id"
+					description: "notification id",
+					required: true,
+					name: "id",
+					type: "id"
 				},
 				{
-					description: "params"
+					description: "params",
+					required: true,
+					name: "params",
+					type: "params"
 				}
 			],
 			summary: "get"
@@ -24,10 +30,17 @@ module.exports = {
 			create: {
 				parameter: [
 					{
-						description: "data"
+						description: "data",
+						required: true,
+						name: "data",
+						type: "data"
 					},
 					{
-						description: "params"
+						description:
+							"params including an account and a payload",
+						required: true,
+						name: "params",
+						type: "params"
 					}
 				],
 				summary: "create"
@@ -35,10 +48,17 @@ module.exports = {
 			get: {
 				parameter: [
 					{
-						description: "id"
+						description: "id",
+						required: true,
+						name: "id",
+						type: "id"
 					},
 					{
-						description: "params"
+						description:
+							"params including an account and a payload",
+						required: true,
+						name: "params",
+						type: "params"
 					}
 				],
 				summary: "get"
@@ -48,18 +68,27 @@ module.exports = {
 			find: {
 				parameter: [
 					{
-						description: "params"
+						description: "params",
+						required: true,
+						name: "params",
+						type: "params"
 					}
 				],
-				summary: "find"
+				summary: "find, returns devices"
 			},
 			create: {
 				parameter: [
 					{
-						description: "data"
+						description: "data",
+						required: true,
+						name: "data",
+						type: "data"
 					},
 					{
-						description: "params"
+						description: "params",
+						required: true,
+						name: "params",
+						type: "params"
 					}
 				],
 				summary: "create"
@@ -67,10 +96,16 @@ module.exports = {
 			remove: {
 				parameter: [
 					{
-						description: "id"
+						description: "device id",
+						required: true,
+						name: "id",
+						type: "id"
 					},
 					{
-						description: "params"
+						description: "params",
+						required: true,
+						name: "params",
+						type: "params"
 					}
 				],
 				summary: "remove"
@@ -80,10 +115,16 @@ module.exports = {
 			create: {
 				parameter: [
 					{
-						description: "data"
+						description: "data",
+						required: true,
+						name: "data",
+						type: "data"
 					},
 					{
-						description: "params"
+						description: "params",
+						required: true,
+						name: "params",
+						type: "params"
 					}
 				],
 				summary: "create"

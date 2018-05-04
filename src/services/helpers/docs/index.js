@@ -10,9 +10,7 @@ module.exports = {
 					type: "string"
 				}
 			],
-			summary: "Create an email",
-			notes:
-				"Does some stuff"
+			summary: "Create an email"
 		}
 	}
 };

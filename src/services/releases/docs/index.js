@@ -23,21 +23,13 @@ module.exports = {
 			find: {
 				parameters: [
 					{
-						description: "query",
+						description: "object including query and payload",
 						required: true,
-						name: "name",
-						type: "query"
-					},
-					{
-						description: "payload",
-						required: true,
-						name: "name",
-						type: "payload"
+						name: "query, payload",
+						type: "object"
 					}
 				],
-				summary: "Create an email",
-				notes:
-					"Does some stuff"
+				summary: "find"
 			}
 		}
 		
