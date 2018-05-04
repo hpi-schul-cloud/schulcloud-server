@@ -234,13 +234,13 @@ exports.restrictToUsersOwnCourses = hook => {
 					throw new errors.Forbidden('You are not in that course.');
 				}
 			});
-		} else {
+		} /*else {
 			hook.params.query.$or = [
 				{ userIds: res.data[0]._id },
 				{ teacherIds: res.data[0]._id },
 				{ substitutionIds: res.data[0]._id }
 			];
-		}
+		}*/
 		return hook;
 	});
 };
