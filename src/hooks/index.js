@@ -2,6 +2,7 @@
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
+const _ = require('lodash');
 const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.
 
@@ -223,13 +224,22 @@ exports.restrictToUsersOwnCourses = hook => {
 		});
 		if (access)
 			return hook;
-		hook.params.query.$or = [
-			{ userIds: res.data[0]._id },
-			{ teacherIds: res.data[0]._id }
-		];
-		hook.params.query._id = hook.id;
-		if (hook.method === 'get') {
-			hook.id = undefined;
+		
+		if (hook.method ==="get") {
+			let courseService = hook.app.service('courses');
+			return courseService.get(hook.id).then(course => {
+				if (!(_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(course.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(course.substitutionIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
+					throw new errors.Forbidden('You are not in that course.');
+				}
+			});
+		} else {
+			hook.params.query.$or = [
+				{ userIds: res.data[0]._id },
+				{ teacherIds: res.data[0]._id },
+				{ substitutionIds: res.data[0]._id }
+			];
 		}
 		return hook;
 	});
