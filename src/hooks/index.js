@@ -219,7 +219,7 @@ exports.restrictToUsersOwnCourses = hook => {
 	}).then(res => {
 		let access = false;
 		res.data[0].roles.map(role => {
-			if (role.name === 'admin' || role.name === 'superhero' )
+			if (role.name === 'administrator' || role.name === 'superhero' )
 				access = true;
 		});
 		if (access)
@@ -234,7 +234,7 @@ exports.restrictToUsersOwnCourses = hook => {
 					throw new errors.Forbidden('You are not in that course.');
 				}
 			});
-		} else {
+		} else if (hook.method === "find") {
 			if (typeof(hook.params.query.$or) === 'undefined') {
 				hook.params.query.$or = [
 					{ userIds: res.data[0]._id },
