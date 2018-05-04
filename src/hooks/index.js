@@ -227,6 +227,10 @@ exports.restrictToUsersOwnCourses = hook => {
 			{ userIds: res.data[0]._id },
 			{ teacherIds: res.data[0]._id }
 		];
+		hook.params.query._id = hook.id;
+		if (hook.method === 'get') {
+			hook.id = undefined;
+		}
 		return hook;
 	});
 };
