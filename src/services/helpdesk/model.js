@@ -20,7 +20,7 @@ const problemSchema = new Schema({
 	notes: {type: String},
 	order: {type: Number, default: 0},
 	userId: {type: Schema.Types.ObjectId, ref: 'user'},
-	schoolId: {type: Schema.Types.ObjectId, ref: 'school'},
+	schoolId: {type: Schema.Types.ObjectId, ref: 'school', required: true},
 	forwardedAt: {type: Date},
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now}

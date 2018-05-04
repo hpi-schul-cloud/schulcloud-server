@@ -9,7 +9,7 @@ const KeysModel = require('../services/keys/model');
 // don't require authentication for internal requests
 exports.ifNotLocal = function (hookForRemoteRequests) {
 	return function (hook) {
-		if (typeof(hook.params.provider) != 'undefined') {	// meaning it's not a local call
+		if (typeof (hook.params.provider) != 'undefined') {	// meaning it's not a local call
 			// Call the specified hook
 			return hookForRemoteRequests.call(this, hook);
 		}
@@ -29,7 +29,7 @@ exports.isAdmin = function (options) {
 exports.isSuperHero = function (options) {
 	return hook => {
 		const userService = hook.app.service('/users/');
-		return userService.find({query: {_id: (hook.params.account.userId || ""), $populate: 'roles'}})
+		return userService.find({ query: { _id: (hook.params.account.userId || ""), $populate: 'roles' } })
 			.then(user => {
 				user.data[0].roles = Array.from(user.data[0].roles);
 				if (!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
@@ -49,7 +49,7 @@ exports.hasPermission = function (permissionName) {
 
 		// If an api key was provided, skip
 		if ((hook.params.headers || {})["x-api-key"]) {
-			return KeysModel.findOne({key: hook.params.headers["x-api-key"]})
+			return KeysModel.findOne({ key: hook.params.headers["x-api-key"] })
 				.then(res => {
 					if (!res)
 						throw new errors.NotAuthenticated('API Key is invalid');
@@ -65,7 +65,7 @@ exports.hasPermission = function (permissionName) {
 
 		// Otherwise check for user permissions
 		const service = hook.app.service('/users/');
-		return service.get({_id: (hook.params.account.userId || "")})
+		return service.get({ _id: (hook.params.account.userId || "") })
 			.then(user => {
 				user.permissions = Array.from(user.permissions);
 
@@ -80,7 +80,7 @@ exports.hasPermission = function (permissionName) {
 // non hook releated function
 exports.hasPermissionNoHook = function (hook, userId, permissionName) {
 	const service = hook.app.service('/users/');
-	return service.get({_id: (userId || "")})
+	return service.get({ _id: (userId || "") })
 		.then(user => {
 			user.permissions = Array.from(user.permissions);
 			return (user.permissions || []).includes(permissionName);
@@ -93,7 +93,7 @@ exports.hasRoleNoHook = function (hook, userId, roleName, account = false) {
 	if (account) {
 		return accountService.get(userId)
 			.then(account => {
-				return userService.find({query: {_id: (account.userId || ""), $populate: 'roles'}})
+				return userService.find({ query: { _id: (account.userId || ""), $populate: 'roles' } })
 					.then(user => {
 						user.data[0].roles = Array.from(user.data[0].roles);
 
@@ -101,7 +101,7 @@ exports.hasRoleNoHook = function (hook, userId, roleName, account = false) {
 					});
 			});
 	} else {
-		return userService.find({query: {_id: (userId || ""), $populate: 'roles'}})
+		return userService.find({ query: { _id: (userId || ""), $populate: 'roles' } })
 			.then(user => {
 				user.data[0].roles = Array.from(user.data[0].roles);
 
@@ -145,7 +145,7 @@ exports.permitGroupOperation = (hook) => {
 const _resolveToId = (service, key, value) => {
 	let query = {};
 	query[key] = value;
-	return service.find({query})
+	return service.find({ query })
 		.then(results => {
 			const result = results.data[0];
 			if (!result) throw new TypeError(`No records found where ${key} is ${value}.`);
@@ -188,6 +188,18 @@ exports.mapPaginationQuery = (hook) => {
 	}
 };
 
+exports.checkCorrectCourseId = (hook) => {
+	let courseService = hook.app.service('courses');
+
+	return courseService.find({ query: { teacherIds: {$in: [hook.params.account.userId] } }})
+		.then(courses => {
+			if (courses.data.some(course => { return course._id == hook.data.courseId; }))
+				return hook;
+			else
+				throw new errors.Forbidden("The entered course doesn't belong to you!");
+		});
+};
+
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
 	return userService.find({
@@ -203,7 +215,43 @@ exports.restrictToCurrentSchool = hook => {
 		});
 		if (access)
 			return hook;
-		hook.params.query.schoolId = res.data[0].schoolId;
+		if (hook.method == "get" || hook.method == "find") {
+			if (hook.params.query.schoolId == undefined) {
+				hook.params.query.schoolId = res.data[0].schoolId;
+			} else if (hook.params.query.schoolId != res.data[0].schoolId) {
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+			}
+		} else {
+			if (hook.data.schoolId == undefined) {
+				hook.data.schoolId = res.data[0].schoolId.toString();
+			} else if (hook.data.schoolId != res.data[0].schoolId) {
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+			}
+		}
+
+		return hook;
+	});
+};
+
+exports.restrictToUsersOwnCourses = hook => {
+	let userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'admin' || role.name === 'superhero' )
+				access = true;
+		});
+		if (access)
+			return hook;
+		hook.params.query.$or =[
+			{ userIds: res.data[0]._id },
+			{ teacherIds: res.data[0]._id }
+		];
 		return hook;
 	});
 };
@@ -248,7 +296,7 @@ exports.restrictToUsersOwnCourses = hook => {
 };
 
 // meant to be used as an after hook
-exports.denyIfNotCurrentSchool = ({errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!'}) =>
+exports.denyIfNotCurrentSchool = ({ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' }) =>
 	hook => {
 		let userService = hook.app.service("users");
 		return userService.find({
