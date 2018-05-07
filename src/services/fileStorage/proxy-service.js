@@ -146,10 +146,15 @@ class SignedUrlService {
 	 * @returns {Promise}
 	 */
 	create({path, fileType, action}, params) {
+		
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
-		let fileName = pathUtil.basename(path);
+		let fileName = encodeURIComponent(pathUtil.basename(path));
 		let dirName = pathUtil.dirname(path);
+		
+		// normalize utf-8 chars
+		path = `${dirName}/${fileName}`;
+		
 		// todo: maybe refactor search so that I can put the file-proxy-id (@id) instead of the full path
 
 		// all files are uploaded to a flat-storage architecture without real folders
@@ -170,7 +175,7 @@ class SignedUrlService {
 								// add meta data for later using
 								"Content-Type": fileType,
 								"x-amz-meta-path": dirName,
-								"x-amz-meta-name": fileName,
+								"x-amz-meta-name": encodeURIComponent(fileName),
 								"x-amz-meta-flat-name": flatFileName,
 								"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 							}

@@ -15,10 +15,13 @@ const getAverageRating = function(submissions){
         var numSubmissions = 0;
         var gradeSum = 0;
         submissiongrades.forEach(e => {
-            if(e.teamMembers && e.teamMembers.length > 0){
+            if(e.courseGroupId && (e.courseGroupId.userIds || []) > 0) {
+                numSubmissions += e.courseGroupId.userIds.length;
+                gradeSum += (e.courseGroupId.userIds * e.grade);
+            } else if(e.teamMembers && e.teamMembers.length > 0) {
                 numSubmissions += e.teamMembers.length;
                 gradeSum += (e.teamMembers.length * e.grade);
-            }else{
+            } else {
                 numSubmissions += 1;
                 gradeSum += e.grade;
             }
@@ -100,7 +103,8 @@ const addStats = hook => {
     const arrayed = !(Array.isArray(data));
     data = (Array.isArray(data))?(data):([data]);
     return submissionService.find({query: {
-            homeworkId: {$in: (data.map(n => n._id))}
+            homeworkId: {$in: (data.map(n => n._id))},
+            $populate: ['courseGroupId']
         }}).then((submissions) => {
             data = data.map(function(e){
                 var c = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
@@ -121,8 +125,13 @@ const addStats = hook => {
                     const currentSubmissions = submissions.data.filter(function(submission){return c._id.toString() == submission.homeworkId.toString();});
                     const validSubmissions = currentSubmissions.filter(isValidSubmission);
                     const gradedSubmissions = currentSubmissions.filter(isGraded);
-                    const NumberOfUsersWithSubmission = validSubmissions.map(e => {return ((e.teamMembers || []).length || 1);}).reduce((a, b) => a+b, 0);
-                    const NumberOfGradedUsers = gradedSubmissions.map(e => {return ((e.teamMembers || []).length || 1);}).reduce((a, b) => a+b, 0);
+                    const NumberOfUsersWithSubmission = validSubmissions.map(e => {
+                        return e.courseGroupId ? ((e.courseGroupId.userIds || []).length || 1) : ((e.teamMembers || []).length || 1);
+                    }).reduce((a, b) => a+b, 0);
+
+                    const NumberOfGradedUsers = gradedSubmissions.map(e => {
+                        return e.courseGroupId ? ((e.courseGroupId.userIds || []).length || 1) : ((e.teamMembers || []).length || 1);
+                    }).reduce((a, b) => a+b, 0);
                     const submissionPerc = ( NumberOfUsersWithSubmission / NumberOfCourseMembers)*100;
                     const gradePerc = (NumberOfGradedUsers / NumberOfCourseMembers)*100;
 
