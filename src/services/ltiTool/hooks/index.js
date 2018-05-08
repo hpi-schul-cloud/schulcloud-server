@@ -16,17 +16,17 @@ exports.before = {
 
 const replacePseudonym = (hook) => {
 	if (!hook.params.account) return hook;
-	let userId = hook.params.account.userId;
-	let pseudoService = hook.app.service('pseudonym');
-	let data = hook.result;
 
-	return pseudoService.find({
+	const { userId } = hook.params.account;
+	const { _id, url } = hook.result;
+
+	return hook.app.service('pseudonym').find({
 		query: {
 			userId: userId,
-			toolId: data._id
+			toolId: _id
 		}
-	}).then((pseudonym) => {
-		data.pseudonymizedUrl = data.url.replace('{PSEUDONYM}', pseudonym.data[0].token);
+	}).then(({data}) => {
+		hook.result.pseudonymizedUrl = url.replace('{PSEUDONYM}', data[0].token);
 		return hook;
 	});
 };

@@ -4,15 +4,13 @@ exports.before = {
 	get: [],
 	create: [],
 	update: [],
-	patch: async hook => {
-		let toolService = hook.app.service('ltiTools');
-		return toolService.find({
+	patch: hook => {
+		return hook.app.service('ltiTools').find({
 			query: {
 				oAuthClientId: hook.data.clientId
 			}
 		}).then(tools => {
-			let pseudoService = hook.app.service('pseudonym');
-			return pseudoService.find({
+			return hook.app.service('pseudonym').find({
 				query: {
 					toolId: tools.data[0]._id,
 					userId: hook.data.subject

@@ -2,9 +2,9 @@ const hooks = require("./hooks");
 const Hydra = require('ory-hydra-sdk')
 const OAuth2 = require('simple-oauth2')
 const qs = require('querystring')
+const logger = require('winston');
 
 const resolver = (resolve, reject) => (error, data, response) => {
-	reject = (reject ? reject : error => console.log(error))
 	if (error) {
 		return reject(error)
 	} else if (response.statusCode < 200 || response.statusCode >= 400) {
@@ -18,7 +18,7 @@ module.exports = function() {
 	const app = this;
 
 	const scope = 'hydra.consent hydra.introspect'
-	const hydraConfig =  app.settings.services.hydra
+	const hydraConfig = app.settings.services.hydra
 
 	Hydra.ApiClient.instance.basePath = hydraConfig.host + hydraConfig.path
 
@@ -49,7 +49,7 @@ module.exports = function() {
 			return Promise.resolve(token);
 		})
 		.catch((error) => {
-			console.log('Could not refresh access token: ' + error.message);
+			logger.log('warn', 'Could not refresh access token: ' + error.message);
 		});
 
 	refreshToken().then()
@@ -84,12 +84,12 @@ module.exports = function() {
 			return new Promise((resolve, reject) =>
 				refreshToken().then(() => {
 					hydra.introspectOAuth2Token(token, {'scope': "openid"},
-					resolver(resolve,
-						error => {
-							console.log(error)
-							resolve(false)
-						})
-					)
+						resolver(resolve,
+							error => {
+								logger.log(error)
+								resolve(false)
+							})
+						)
 				})
 			);
 		}

@@ -42,7 +42,6 @@ module.exports = function() {
 				context.params.toolIds = context.params.toolIds.concat(tools.data.map(tool => tool._id)) // all origin tool ids
 				return context
 			});
-			return context
 		});
 	}
 

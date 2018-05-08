@@ -1,56 +1,74 @@
 'use strict';
-
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
+const errors = require('feathers-errors');
+
+const toArray = data => (Array.isArray(data) ? data	: [data])
+
+// check if all users from query exist
+const validateUserIds = hook => {
+	if(!hook.params.query || !hook.params.query.userId ) return hook
+
+	const users = toArray(hook.params.query.userId);
+	return Promise.all(users.map(userId => hook.app.service('users').get(userId)))
+		.then(_ => hook)
+		.catch(error => { throw new errors.NotFound(error.message);	})
+}
+
+// check if the queries tool exists
+const validateToolId = hook => {
+	if(!hook.params.query || !hook.params.query.toolId) return hook
+
+	return hook.app.service('ltiTools').get(hook.params.query.toolId)
+		.then(_ => hook)
+		.catch(error => { throw new errors.NotFound(error.message);	})
+}
+
+// rewrite tool id if there is a origin tool (content-specific pseudonym)
+const replaceToolWithOrigin = hook => {
+	if (!hook.params.query.toolId) return hook
+
+	return hook.app.service('ltiTools').get(hook.params.query.toolId).then(tool => {
+		hook.params.query.toolId = tool.originTool || hook.params.query.toolId;
+		return hook;
+	});
+}
+
+const createMissingPseudonyms = hook => {
+	const toolId = hook.params.query.toolId.toString();
+	const missingPseudonyms = toArray(hook.params.query.userId)
+		.filter(userId =>  !hook.result.data.find(entry => {
+			console.log(entry.userId.toString(), userId, entry.userId.toString()===userId);
+			console.log(entry.toolId.toString(), toolId, entry.toolId.toString()===toolId);
+			console.log(entry.userId.toString() === userId &&
+				entry.toolId.toString() === toolId);
+			return (entry.userId.toString() === userId &&
+				entry.toolId.toString() === toolId)
+		}))
+		.map(userId => ({userId, toolId}));
+
+	if (!missingPseudonyms.length) return hook;
+
+	return hook.app.service('pseudonym')
+		.create(missingPseudonyms)
+		.then(results => {
+			hook.result.data = hook.result.data.concat(results);
+			return hook
+		})
+}
 
 exports.before = {
-  all: [],
-  find: (hook) => {
-	  if (hook.params.query.toolId) { // rewrite tool id if there is a origin tool (same provider)
-		  let toolService = hook.app.service('ltiTools');
-		  return toolService.get(hook.params.query.toolId).then(tool => {
-		  	hook.params.query.toolId = tool.originTool || hook.params.query.toolId;
-			return hook;
-		  });
-	  }
-	  return hook
-  },
-  get: [],
-  create: [],
-  update: [],
-  patch: [],
-  remove: []
+  all: [validateUserIds, validateToolId],
+  find: [replaceToolWithOrigin],
+  get: [_ => {throw new errors.MethodNotAllowed()}],
+  create: [globalHooks.ifNotLocal(_ => {throw new errors.MethodNotAllowed()})],
+  update: [_ => {throw new errors.MethodNotAllowed()}],
+  patch: [_ => {throw new errors.MethodNotAllowed()}],
+  remove: [_ => {throw new errors.MethodNotAllowed()}]
 };
 
 exports.after = {
   all: [],
-  find: (hook) => {
-  	const userIds = (Array.isArray(hook.params.query.userId)
-	  ? hook.params.query.userId
-	  : [hook.params.query.userId]);
-  	const toolIds = (Array.isArray(hook.params.query.toolId)
-	  ? hook.params.query.toolId
-	  : [hook.params.query.toolId]);
-
-  	let pseudoService = hook.app.service('pseudonym');
-  	let pseudonyms = []
-  	for (let userId of userIds) {
-	  for (let toolId of toolIds) {
-		if (!hook.result.data.find(entry => (entry.userId.toString() == userId && entry.toolId.toString() == toolId))) {
-		  pseudonyms.push({userId, toolId});
-		}
-	  }
-	}
-
-	return pseudoService.create(pseudonyms).then((pseudonym) => {
-	  if (pseudonym) {
-	  	hook.result.data = hook.result.data.concat(pseudonym);
-	  }
-
-	  return hook;
-	})
-  },
+  find: [createMissingPseudonyms],
   get: [],
   create: [],
   update: [],
