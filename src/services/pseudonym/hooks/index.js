@@ -37,10 +37,6 @@ const createMissingPseudonyms = hook => {
 	const toolId = hook.params.query.toolId.toString();
 	const missingPseudonyms = toArray(hook.params.query.userId)
 		.filter(userId =>  !hook.result.data.find(entry => {
-			console.log(entry.userId.toString(), userId, entry.userId.toString()===userId);
-			console.log(entry.toolId.toString(), toolId, entry.toolId.toString()===toolId);
-			console.log(entry.userId.toString() === userId &&
-				entry.toolId.toString() === toolId);
 			return (entry.userId.toString() === userId &&
 				entry.toolId.toString() === toolId)
 		}))
