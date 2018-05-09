@@ -4,4 +4,4 @@ WORKDIR /schulcloud-server
 COPY . .
 RUN npm install
 
-CMD npm run mocha
+CMD npm run start

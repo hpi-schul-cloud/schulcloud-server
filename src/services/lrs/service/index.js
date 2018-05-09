@@ -1,14 +1,20 @@
-const xapi = require('../../../xapi.js');
+const rp = require('request-promise-native');
 
 class LearningLockerStore {
-	constructor(opts) {
-		this.options = opts;
-		this.app	 = null;
+	constructor(app) {
+		this.xapi = rp.defaults({
+			baseUrl: app.get('services').xapi,
+			json: true,
+			headers: {
+				Authorization: app.get('xapiAuth'),
+				'X-Experience-API-Version': '1.0.3'
+			}
+		});
 	}
 
 	find(params) {
 		return new Promise((resolve, reject) => {
-			xapi(this.app).get('/statements')
+			this.xapi.get('/statements')
 				.then(statements => {
 					resolve(statements);
 				})
@@ -20,7 +26,7 @@ class LearningLockerStore {
 
 	create(data) {
 		return new Promise((resolve, reject) => {
-			xapi(this.app).post('/statements', {
+			this.xapi.post('/statements', {
 				body: data
 			})
 			.then(result => {
@@ -32,13 +38,7 @@ class LearningLockerStore {
 		});
 	}
 
-	setup(app, path) {
-		this.app = app;
-	}
+
 }
 
-function service(opts) {
-	return new LearningLockerStore(opts);
-}
-
-module.exports = service;
+module.exports = app => new LearningLockerStore(app);

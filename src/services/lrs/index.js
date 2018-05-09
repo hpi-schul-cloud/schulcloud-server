@@ -1,10 +1,9 @@
 const hooks = require("./hooks");
-const service = require("./service");
 
 module.exports = function() {
 	const app = this;
 
-	app.use("/lrs", service());
+	app.use("/lrs", require("./service")(app));
 
 	const lrs = app.service("/lrs");
 

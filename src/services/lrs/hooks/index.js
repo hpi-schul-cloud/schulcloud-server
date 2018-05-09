@@ -1,8 +1,10 @@
-exports.before = { // TODO: check permissions for teacher and provider
-	all: [],
+const auth = require('feathers-authentication').hooks;
+
+exports.before = {
+	all: [auth.authenticate('jwt')],
 	find: [],
 	get: [],
-	create: [], 
+	create: [],
 	update: [],
 	patch: [],
 	remove: []
