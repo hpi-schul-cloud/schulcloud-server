@@ -29,6 +29,8 @@ There are blog posts on how to setup [client](https://github.com/schul-cloud/sch
 2. run `npm start`
 3. run `npm run setup`
 
+## Run with Debug in Visual Studio Code
+
 #Change in launch.json
 ```
 {
