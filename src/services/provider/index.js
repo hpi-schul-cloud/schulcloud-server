@@ -6,7 +6,6 @@ module.exports = function() {
 	const app = this;
 
 	const tokenIsActive = context => {
-		console.log(context.params.headers.authorization);
 		return context.app.service('/oauth2proxy/introspect')
 			.create({token: context.params.headers.authorization.replace('Bearer ', '')})
 			.then(introspection => {

@@ -34,13 +34,20 @@ const replaceToolWithOrigin = hook => {
 }
 
 const createMissingPseudonyms = hook => {
-	const toolId = hook.params.query.toolId.toString();
-	const missingPseudonyms = toArray(hook.params.query.userId)
-		.filter(userId =>  !hook.result.data.find(entry => {
-			return (entry.userId.toString() === userId &&
-				entry.toolId.toString() === toolId)
-		}))
-		.map(userId => ({userId, toolId}));
+	if(!hook.params.query.toolId || hook.params.query.userId) return hook;
+	const toolIds = toArray(hook.params.query.toolId);
+	const userIds = toArray(hook.params.query.userId);
+	let missingPseudonyms = []
+
+	for (let userId of userIds) {
+		for (let toolId of toolIds) {
+			if (!hook.result.data.find(entry => (
+			entry.userId.toString() == userId &&
+			entry.toolId.toString() == toolId))) {
+				missingPseudonyms.push({userId, toolId});
+			}
+		}
+	}
 
 	if (!missingPseudonyms.length) return hook;
 
