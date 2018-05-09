@@ -5,17 +5,20 @@ const errors = require('feathers-errors');
 module.exports = function() {
 	const app = this;
 
-	const tokenIsActive = context => context.app.service('/oauth2proxy/introspect')
-		.create({token: context.params.headers.authorization})
-		.then(introspection => {
-			if(introspection.active) {
-				context.params.tokenInfo = introspection
-				return context
-			}
-			throw new errors.BadRequest('Access token invalid')
-		}).catch(error => {
+	const tokenIsActive = context => {
+		console.log(context.params.headers.authorization);
+		return context.app.service('/oauth2proxy/introspect')
+			.create({token: context.params.headers.authorization})
+			.then(introspection => {
+				if(introspection.active) {
+					context.params.tokenInfo = introspection
+					return context
+				}
+				throw new errors.BadRequest('Access token invalid')
+			}).catch(error => {
 			throw new Error(error)
 		})
+	};
 
 	const userIsMatching = context => {
 		if (context.params.tokenInfo.sub === context.params.token) {
