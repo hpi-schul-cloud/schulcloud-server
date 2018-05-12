@@ -2,6 +2,7 @@
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
+const _ = require('lodash');
 const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.
 
@@ -251,6 +252,45 @@ exports.restrictToUsersOwnCourses = hook => {
 			{ userIds: res.data[0]._id },
 			{ teacherIds: res.data[0]._id }
 		];
+		return hook;
+	});
+};
+
+//TODO: hooks $or condition gets overwritten if set, check first
+exports.restrictToUsersOwnCourses = hook => {
+	let userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'administrator' || role.name === 'superhero' )
+				access = true;
+		});
+		if (access)
+			return hook;
+		
+		if (hook.method === "get") {
+			let courseService = hook.app.service('courses');
+			return courseService.get(hook.id).then(course => {
+				if (!(_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(course.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(course.substitutionIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
+					throw new errors.Forbidden('You are not in that course.');
+				}
+			});
+		} else if (hook.method === "find") {
+			if (typeof(hook.params.query.$or) === 'undefined') {
+				hook.params.query.$or = [
+					{ userIds: res.data[0]._id },
+					{ teacherIds: res.data[0]._id },
+					{ substitutionIds: res.data[0]._id }
+				];
+			}
+		}
 		return hook;
 	});
 };
