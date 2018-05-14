@@ -5,8 +5,7 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const service = require('../index');
 
-exports.before = service => {
-	return {
+exports.before = {
 		all: [auth.hooks.authenticate('jwt')],
 		find: [],
 		get: [],
@@ -14,7 +13,6 @@ exports.before = service => {
 		update: [],
 		patch: [],
 		remove: []
-	};
 };
 
 exports.after = {
