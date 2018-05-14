@@ -34,7 +34,7 @@ const replaceToolWithOrigin = hook => {
 }
 
 const createMissingPseudonyms = hook => {
-	if(!hook.params.query.toolId || hook.params.query.userId) return hook;
+	if(!hook.params.query.toolId || !hook.params.query.userId) return hook;
 	const toolIds = toArray(hook.params.query.toolId);
 	const userIds = toArray(hook.params.query.userId);
 	let missingPseudonyms = []
