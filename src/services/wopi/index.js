@@ -4,6 +4,7 @@
  */
 const hooks = require('./hooks');
 const errors = require('feathers-errors');
+const rp = require('request-promise-native');
 const FileModel = require('../fileStorage/model').fileModel;
 
 /** Wopi-CheckFileInfo-Service
@@ -20,13 +21,29 @@ class WopiFilesService {
  * retrieves a content of a file
  */
 class WopiFilesContentsService {
+	constructor(app) {
+		this.app = app;
+	}
+	
 	//todo: generate signedUrl from signedUrlService
-  find({query, fileId, payload}) {
+  find({query, fileId, payload, account}) {
+		let signedUrlService = this.app.service('fileStorage/signedUrl');
+
 		// check whether a valid file is requested
 		return FileModel.findOne({_id: fileId}).then(file => {
 			if (!file) throw new errors.NotFound("Not a valid Schul-Cloud file!");
-			console.log(file);
-			return 'success';
+
+			// generate signed Url for fetching file from storage
+			return signedUrlService.create({
+				path: file.key,
+				fileType: file.type,
+				action: 'getObject',
+				userPayload: payload,
+				account: account
+			}).then(signedUrl => {
+				// directly fetching file
+				return rp(signedUrl.url);
+			});
 		});
 	}
 
@@ -41,8 +58,9 @@ module.exports = function () {
 	const app = this;
 
 	// Initialize our service with any options it requires
+	// todo: Refactor: Standardize wopi path-names (not to write every time) 
   app.use('/wopi/files/', new WopiFilesService());
-	app.use('/wopi/files/:fileId/contents', new WopiFilesContentsService());
+	app.use('/wopi/files/:fileId/contents', new WopiFilesContentsService(app));
 
 	// Get our initialize service to that we can bind hooks
 	const filesService = app.service('/wopi/files');

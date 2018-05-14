@@ -5,7 +5,11 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
 const resolveUserId = (hook) => {
-	hook.params.payload.userId = hook.params.account.userId ? hook.params.account.userId : '';
+	// local workaround if authentication is disabled
+	hook.params.payload = hook.params.payload || hook.data.userPayload;
+	hook.params.account = hook.params.account || hook.data.account;
+
+	hook.params.payload.userId = hook.params.account.userId || '';
 	return hook;
 };
 
