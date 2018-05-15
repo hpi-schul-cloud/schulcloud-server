@@ -13,7 +13,7 @@ exports.before = {
     update: [],
     patch: [],
     remove: []
-}
+};
 
 exports.after = {
     all: [],
@@ -23,4 +23,4 @@ exports.after = {
     update: [],
     patch: [],
     remove: []
-}
+};
