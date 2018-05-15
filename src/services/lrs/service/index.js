@@ -1,6 +1,6 @@
 class LearningLockerStore {
 	constructor(app) {
-		this.xapi = require('request-promise-native').defaults({
+		this.xapi = require('request-promise').defaults({
 			baseUrl: app.get('services').xapi,
 			json: true,
 			headers: {

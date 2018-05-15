@@ -89,5 +89,25 @@ describe('provider service', function() {
 		});
 	});
 
-	// TODO: GET /provider/groups
+	it("returns group on GET groups", () => {
+		return pseudonymService.find({
+			query: {
+				userId: testUser._id,
+				toolId: testTool._id
+			}
+		}).then(result => {
+			const token = result.data[0].token;
+			return app.service('/provider/groups').get(testCourseId, {
+				token,
+				tokenInfo: {
+					sub: token,
+					client_id: testTool.oAuthClientId
+				}
+			}).then(group => {
+				expect(group.data.students).to.be.a('Array');
+				expect(group.data.teachers).to.be.a('Array');
+				expect(group.data.students[0].user_id).to.eql(token);
+			});
+		});
+	});
 });
