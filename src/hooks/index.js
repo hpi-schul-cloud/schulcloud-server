@@ -337,3 +337,15 @@ exports.checkSchoolOwnership = hook => {
 				throw new errors.Forbidden('You do not have valid permissions to access this.');
 		});
 };
+
+exports.sendEmailToAdmin = hook => {
+	mailService.create({
+		email: 'katrin.klein@student.hpi.de',
+		subject: "test Mailserver",
+		headers: {},
+		content: {
+			text: "test mail",
+			html: "",
+		}
+	});
+};

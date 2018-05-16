@@ -18,7 +18,7 @@ exports.before = {
 exports.after = {
 	all: [],
 	find: [],
-	get: [],
+	get: [globalHooks.sendEmailToAdmin],
 	create: [],
 	update: [],
 	patch: [],
