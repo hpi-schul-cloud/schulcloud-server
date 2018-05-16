@@ -339,13 +339,26 @@ exports.checkSchoolOwnership = hook => {
 };
 
 exports.sendEmailToAdmin = hook => {
-	mailService.create({
-		email: 'katrin.klein@student.hpi.de',
-		subject: "test Mailserver",
-		headers: {},
-		content: {
-			text: "test mail",
-			html: "",
+	const mailService = hook.app.service('/mails'); 
+
+	let infoText = "Ein neues Problem wurde gemeldet." + "\n"
+		+ "User: " + "TODO an User kommen" + "\n"
+		+ "Kategorie: " + hook.params.category + "\n"
+		+ "Betreff: " + hooks.params.subject + "\n"
+		+ "Schauen Sie für weitere Details und zur Bearbeitung bitte in das Helpdesk der Schul-Cloud.\n\n"
+		+ "Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
+
+		if (infoHtml) {
+			content = { "text": infoText, "html": infoHtml };
+		} else {
+		    content = { "text": infoText };
 		}
+
+	mailService.create({
+		email: "katrin.klein@student.hpi.de",
+		subject: "Ein neues Problem wurde gemeldet",
+		headers: {},
+		content: content
 	});
+	return hook;
 };
