@@ -338,27 +338,45 @@ exports.checkSchoolOwnership = hook => {
 		});
 };
 
-exports.sendEmailToAdmin = hook => {
-	const mailService = hook.app.service('/mails'); 
-
-	let infoText = "Ein neues Problem wurde gemeldet." + "\n"
-		+ "User: " + "TODO an User kommen" + "\n"
-		+ "Kategorie: " + hook.params.category + "\n"
-		+ "Betreff: " + hooks.params.subject + "\n"
-		+ "Schauen Sie für weitere Details und zur Bearbeitung bitte in das Helpdesk der Schul-Cloud.\n\n"
-		+ "Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
-
-		if (infoHtml) {
-			content = { "text": infoText, "html": infoHtml };
-		} else {
-		    content = { "text": infoText };
+//TODO: Build this function to be the global function for all mails, for every use case and refactor old mailings
+exports.sendEmail = function (maildata) {
+	return (hook) => {
+		const userService = hook.app.service('/users');
+		const mailService = hook.app.service('/mails');
+		let roles = maildata.roles || [];
+		
+		// debug
+		let data = hook.params;
+		let maildata2 = maildata;
+		
+		let mail = {};
+		mail.subject = maildata.subject || "E-Mail von der Schul-Cloud";
+		mail.text = maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." };
+		mail.headers = maildata.headers || {};
+		
+		//TODO: Template building
+		//z.B.: maildata.template = { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
+		//if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
+		// mail.html = generatedHtml || "";
+		
+		//TODO: switch-case mail to [user_id/roles/?]
+		//if (roles) / if (userid) ...
+		if (roles) {
+			userService.find({query: {
+					roles: [roles],
+					$populate: ['roles']
+				}}).then((users) => {
+				users.data.map(user => {
+					mailService.create({
+						email: user.email || "schurigh@gmail.com",
+						subject: mail.subject,
+						headers: mail.headers,
+						content: { "text": mail.text, "html": mail.html }
+					});
+				});
+			});
 		}
-
-	mailService.create({
-		email: "katrin.klein@student.hpi.de",
-		subject: "Ein neues Problem wurde gemeldet",
-		headers: {},
-		content: content
-	});
-	return hook;
+		
+		return hook;
+	};
 };
