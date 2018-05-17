@@ -24,8 +24,42 @@ class LearningLockerStore {
 
 	create(data) {
 		return new Promise((resolve, reject) => {
+			//TODO: Put in hook
+			//pseudoService.find()
+			//console.log(data);
 			this.xapi.post('/statements', {
-				body: data
+				body: {
+					actor: {
+						account: {
+							name: data.actorId,
+							homePage: "https://bp.schul-cloud.org/"
+						},
+						objectType: "Agent"
+					},
+					verb: {
+						id: data.verbId,
+						display: data.verbDisplayName,
+					},
+					object: {
+						id: data.objectId,
+						definition: {
+							name: {
+								de: data.objectName
+							},
+							description: {
+								de: data.objectDescription
+							}
+						},
+						objectType: "Activity"
+					},
+					context: {
+						contextActivities: {
+							parent: {
+								id: data.courseId
+							}
+						}
+					}
+				}
 			})
 			.then(result => {
 				resolve(result);
