@@ -88,11 +88,10 @@ class WopiFilesContentsService {
 				flatFileName: file.flatFileName
 			}).then(signedUrl => {
 				// put binary content directly to file in storage
-				// todo: fix wrong false encoding ..
 				let options = {
 					method: 'PUT',
 					uri: signedUrl.url,
-					body: data.toString('binary')
+					body: data
 				};
 
 				return rp(options).then(_ => {

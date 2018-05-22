@@ -42,10 +42,7 @@ app.use(compress())
 	.use('/', serveStatic(app.get('public')))
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({extended: true}))
-	.use(bodyParser.raw({
-    type: 'application/octet-stream',
-    limit: '10mb'
-	}))
+	.use(bodyParser.raw({type: () => true, limit: '10mb'}))
 
 	.use(defaultHeaders)
 	.get('/system_info/haproxy', (req, res) => { res.send({ "timestamp":new Date().getTime() });})
