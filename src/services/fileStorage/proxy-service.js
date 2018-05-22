@@ -143,9 +143,10 @@ class SignedUrlService {
 	 * @param path where to store the file
 	 * @param fileType MIME type
 	 * @param action the AWS action, e.g. putObject
+	 * @param flatFileName a pregenerated file name for the flat storage
 	 * @returns {Promise}
 	 */
-	create({path, fileType, action}, params) {
+	create({path, fileType, action, flatFileName}, params) {
 		
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
@@ -160,7 +161,7 @@ class SignedUrlService {
 		// all files are uploaded to a flat-storage architecture without real folders
 		// converts the real filename to a unique one in flat-storage
 		// if action = getObject, file should exist in proxy db
-		let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({});
+		let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({flatFileName});
 
 		return fileProxyPromise.then(res => {
 			if (!res) return;

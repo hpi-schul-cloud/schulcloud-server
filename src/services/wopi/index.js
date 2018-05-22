@@ -70,7 +70,6 @@ class WopiFilesContentsService {
 	/*
 	* updates a file’s binary contents, file has to exist in proxy db
 	* https://wopirest.readthedocs.io/en/latest/files/PutFile.html
-	* todo: allow binary content, feathers-server just allow json for now ...
 	*/
 	create(data, {query, fileId, payload, account}) {
 		let signedUrlService = this.app.service('fileStorage/signedUrl');
@@ -85,12 +84,21 @@ class WopiFilesContentsService {
 				fileType: file.type,
 				action: 'putObject',
 				userPayload: payload,
-				account: account
+				account: account,
+				flatFileName: file.flatFileName
 			}).then(signedUrl => {
-				// todo: put binary content
-				// todo: probably updating proxy db entry for requested file
-				return Promise.resolve(signedUrl);
-				//return rp(signedUrl.url);
+				// put binary content directly to file in storage
+				// todo: fix wrong false encoding ..
+				let options = {
+					method: 'PUT',
+					uri: signedUrl.url,
+					body: data.toString('binary')
+				};
+
+				return rp(options).then(_ => {
+					// todo: probably updating proxy db entry for requested file (e.g. version)
+					return Promise.resolve(200);
+				});
 			});
 		});
 	}
