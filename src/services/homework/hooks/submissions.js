@@ -19,22 +19,20 @@ const filterSchoolSubmissions = hook => {
 				}
 			}).then(res => {
 				let user = res.data[0];
-				let or = [];
 				user.roles.map(role => {
 					// hero/admin/helpdesk/(demo)teacher: restrict request to schools submissions
 					if (["superhero","administrator","helpdesk","teacher","demoTeacher"].indexOf(role.name) !== -1) {
-						or.push(
+						hook.params.query.$or = [
 							{ schoolId: user.schoolId }
-						);
+						];
 					}
 					// (demo)student: restrict request to users submissions
 					if (["student","demoStudent"].indexOf(role.name) !== -1) {
-						or.push(
+						hook.params.query.$or = [
 							{ studentId: user._id }
-						);
+						];
 					}
 				});
-				hook.params.query.$or = or;
 			}).catch(err => {
 				return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach users service" }));
 			});
