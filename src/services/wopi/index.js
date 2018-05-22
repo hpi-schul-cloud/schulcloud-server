@@ -6,26 +6,45 @@ const hooks = require('./hooks');
 const errors = require('feathers-errors');
 const rp = require('request-promise-native');
 const FileModel = require('../fileStorage/model').fileModel;
+const filePermissionHelper = require('../fileStorage/utils/filePermissionHelper');
 
 /** Wopi-CheckFileInfo-Service
+ * returns information about a file, a user’s permissions on that file, and general information about the capabilities that the WOPI host has on the file.
  * https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html
+ * todo: host capabilities: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#wopi-host-capabilities-properties, https://github.com/coatsy/wopi-node/blob/master/src/models/DetailedFile.ts
  */
-class WopiFilesService {
-	get(id, params) {
-		return Promise.resolve({success: true});
+class WopiFilesInfoService {
+	get(fileId, {query, account, payload}) {
+		// check whether a valid file is requested
+		return FileModel.findOne({_id: fileId}).then(file => {
+			if (!file) throw new errors.NotFound("Not a valid Schul-Cloud file!");
+
+			// check for permissions
+			return filePermissionHelper.checkPermissions(account.userId, file.path).then(_ => {
+				return Promise.resolve({
+					// property descriptions: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#required-response-properties
+					BaseFileName: file.name,
+					OwnerId: account.userId, // if an user passes the permission check, it's valid to handle it as file-owner
+					UserId: account.userId,
+					Size: file.size,
+					Version: file['__v']
+				});
+			});
+		});
 	}
 }
 
 /** Wopi-Get/PutFile-Service
- * https://wopirest.readthedocs.io/en/latest/files/GetFile.html 
- * retrieves a content of a file
  */
 class WopiFilesContentsService {
 	constructor(app) {
 		this.app = app;
 	}
 	
-	//todo: generate signedUrl from signedUrlService
+	/**
+	 * retrieves a file`s binary contents
+	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html 
+	 */
   find({query, fileId, payload, account}) {
 		let signedUrlService = this.app.service('fileStorage/signedUrl');
 
@@ -48,9 +67,32 @@ class WopiFilesContentsService {
 	}
 
 
-	//todo: generate signedUrl and directly put file here
-	create(data, params) {
-		return Promise.resolve(true);
+	/*
+	* updates a file’s binary contents, file has to exist in proxy db
+	* https://wopirest.readthedocs.io/en/latest/files/PutFile.html
+	* todo: allow binary content, feathers-server just allow json for now ...
+	*/
+	create(data, {query, fileId, payload, account}) {
+		let signedUrlService = this.app.service('fileStorage/signedUrl');
+
+		// check whether a valid file is requested
+		return FileModel.findOne({_id: fileId}).then(file => {
+			if (!file) throw new errors.NotFound("Not a valid Schul-Cloud file!");
+
+			// generate signedUrl for updating file to storage
+			return signedUrlService.create({
+				path: file.key,
+				fileType: file.type,
+				action: 'putObject',
+				userPayload: payload,
+				account: account
+			}).then(signedUrl => {
+				// todo: put binary content
+				// todo: probably updating proxy db entry for requested file
+				return Promise.resolve(signedUrl);
+				//return rp(signedUrl.url);
+			});
+		});
 	}
 }
 
@@ -59,7 +101,7 @@ module.exports = function () {
 
 	// Initialize our service with any options it requires
 	// todo: Refactor: Standardize wopi path-names (not to write every time) 
-  app.use('/wopi/files/', new WopiFilesService());
+  app.use('/wopi/files/', new WopiFilesInfoService());
 	app.use('/wopi/files/:fileId/contents', new WopiFilesContentsService(app));
 
 	// Get our initialize service to that we can bind hooks
