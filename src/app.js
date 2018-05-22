@@ -18,12 +18,14 @@ const defaultHeaders = require('./middleware/defaultHeaders');
 const setupSwagger = require('./swagger');
 const prettyError = require('pretty-error').start();
 
+const appHooks = require('./app.hooks');
+
 require('console-stamp')(console);
 require('console-stamp')(winston );
 
 let secrets;
 try {
-	(process.env.NODE_ENV === 'production') ? secrets = require('../config/secrets.js') : secrets = require('../config/secrets.json');
+	(process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') ? secrets = require('../config/secrets.js') : secrets = require('../config/secrets.json');
 } catch(error) {
 	secrets = {};
 }
@@ -42,8 +44,8 @@ app.use(compress())
 	.use('/', serveStatic(app.get('public')))
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({extended: true}))
-
 	.use(defaultHeaders)
+
 	.get('/system_info/haproxy', (req, res) => { res.send({ "timestamp":new Date().getTime() });})
 	.get('/ping', (req, res) => { res.send({ "message":"pong","timestamp":new Date().getTime() });})
 
@@ -54,7 +56,8 @@ app.use(compress())
 	// auth is setup in /authentication/
 
 	.configure(services)
-	.configure(middleware);
+	.configure(middleware)
+	.hooks(appHooks);
 
 winston.cli();	// optimize for cli, like using colors
 winston.level = 'debug';

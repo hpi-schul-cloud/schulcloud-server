@@ -53,6 +53,11 @@ There are blog posts on how to setup [client](https://github.com/schul-cloud/sch
 }
 ```
 
+# Additional Information
+## X-API-TOKEN
+Your client needs to add the header `X-API-TOKEN:example` to be able to communicate with the server.
+The Value can be changed in the config files `secrets.js/secrets.json`.
+
 ## How to name your branch
 
 1. Take the last part of the url of your Trello ticket (e.g. "8-setup-feather-js")
