@@ -320,7 +320,7 @@ const hasDeletePermission = hook => {
 exports.before = {
     all: [auth.hooks.authenticate('jwt'), stringifyUserId],
     find: [globalHooks.hasPermission('SUBMISSIONS_VIEW'), filterSchoolSubmissions, globalHooks.mapPaginationQuery.bind(this)],
-    get: [globalHooks.hasPermission('SUBMISSIONS_VIEW'), filterSchoolSubmissions],
+    get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
     create: [globalHooks.hasPermission('SUBMISSIONS_CREATE'), insertHomeworkData, insertSubmissionsData, setTeamMembers, noSubmissionBefore, noDuplicateSubmissionForTeamMembers, populateCourseGroup, maxTeamMembers, canGrade],
     update: [globalHooks.hasPermission('SUBMISSIONS_EDIT'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, populateCourseGroup, maxTeamMembers, canGrade],
     patch: [globalHooks.hasPermission('SUBMISSIONS_EDIT'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, populateCourseGroup, maxTeamMembers, globalHooks.permitGroupOperation, canGrade],
