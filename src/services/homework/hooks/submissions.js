@@ -5,6 +5,44 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const errors = require('feathers-errors');
 
+const filterSchoolSubmissions = hook => {
+	// if no db query was given, try to slim down/restrict db request
+	if (Object.keys(hook.params.query).length === 0) {
+		// if user is given
+		//TODO: what if hook.params.account is not set?
+		if (hook.params.account) {
+			let userService = hook.app.service('users');
+			return userService.find({
+				query: {
+					_id: hook.params.account.userId,
+					$populate: ['roles']
+				}
+			}).then(res => {
+				let user = res.data[0];
+				let or = [];
+				user.roles.map(role => {
+					// hero/admin/helpdesk/(demo)teacher: restrict request to schools submissions
+					if (["superhero","administrator","helpdesk","teacher","demoTeacher"].indexOf(role.name) !== -1) {
+						or.push(
+							{ schoolId: user.schoolId }
+						);
+					}
+					// (demo)student: restrict request to users submissions
+					if (["student","demoStudent"].indexOf(role.name) !== -1) {
+						or.push(
+							{ studentId: user._id }
+						);
+					}
+				});
+				hook.params.query.$or = or;
+			}).catch(err => {
+				return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach users service" }));
+			});
+		}
+	}
+	return hook;
+};
+
 const filterApplicableSubmissions = hook => {
     let data = hook.result.data || hook.result;
     if (hook.params.account) {
@@ -12,7 +50,7 @@ const filterApplicableSubmissions = hook => {
             let c = JSON.parse(JSON.stringify(e));
             if (typeof c.teamMembers[0] === 'object') {
                 c.teamMembers = c.teamMembers.map(e => { return e._id; }); // map teamMembers list to _id list (if $populate(d) is used)
-            } 
+            }
 
             let promise;
             if (typeof c.courseGroupId === 'object') {
@@ -99,7 +137,7 @@ const insertSubmissionData = hook => {
 const insertHomeworkData = hook => {
     const homeworkId = hook.data.homeworkId || (hook.data.submission || {}).homeworkId;
     if (homeworkId) {
-        const homeworkService = hook.app.service('/homework'); 
+        const homeworkService = hook.app.service('/homework');
         return homeworkService.get(homeworkId, { account: { userId: hook.params.account.userId } })
             .then(homework => {
                 hook.data.homework = homework;
@@ -114,7 +152,7 @@ const insertHomeworkData = hook => {
             })
             .catch(err => {
                 return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach homework service" }));
-            }); 
+            });
     }
     return Promise.reject(new errors.BadRequest());
 };
@@ -280,10 +318,11 @@ const hasDeletePermission = hook => {
     }
 };
 
+
 exports.before = {
     all: [auth.hooks.authenticate('jwt'), stringifyUserId],
-    find: [globalHooks.hasPermission('SUBMISSIONS_VIEW'), globalHooks.mapPaginationQuery.bind(this)],
-    get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
+    find: [globalHooks.hasPermission('SUBMISSIONS_VIEW'), filterSchoolSubmissions, globalHooks.mapPaginationQuery.bind(this)],
+    get: [globalHooks.hasPermission('SUBMISSIONS_VIEW'), filterSchoolSubmissions],
     create: [globalHooks.hasPermission('SUBMISSIONS_CREATE'), insertHomeworkData, insertSubmissionsData, setTeamMembers, noSubmissionBefore, noDuplicateSubmissionForTeamMembers, populateCourseGroup, maxTeamMembers, canGrade],
     update: [globalHooks.hasPermission('SUBMISSIONS_EDIT'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, populateCourseGroup, maxTeamMembers, canGrade],
     patch: [globalHooks.hasPermission('SUBMISSIONS_EDIT'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, populateCourseGroup, maxTeamMembers, globalHooks.permitGroupOperation, canGrade],
