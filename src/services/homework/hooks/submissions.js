@@ -5,7 +5,7 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const errors = require('feathers-errors');
 
-const filterSchoolSubmissions = hook => {
+const filterRequestedSubmissions = hook => {
 	// if no db query was given, try to slim down/restrict db request
 	if (Object.keys(hook.params.query).length === 0) {
 		// if user is given
@@ -319,7 +319,7 @@ const hasDeletePermission = hook => {
 
 exports.before = {
     all: [auth.hooks.authenticate('jwt'), stringifyUserId],
-    find: [globalHooks.hasPermission('SUBMISSIONS_VIEW'), filterSchoolSubmissions, globalHooks.mapPaginationQuery.bind(this)],
+    find: [globalHooks.hasPermission('SUBMISSIONS_VIEW'), filterRequestedSubmissions, globalHooks.mapPaginationQuery.bind(this)],
     get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
     create: [globalHooks.hasPermission('SUBMISSIONS_CREATE'), insertHomeworkData, insertSubmissionsData, setTeamMembers, noSubmissionBefore, noDuplicateSubmissionForTeamMembers, populateCourseGroup, maxTeamMembers, canGrade],
     update: [globalHooks.hasPermission('SUBMISSIONS_EDIT'), insertSubmissionData, insertHomeworkData, insertSubmissionsData, hasEditPermission, preventNoTeamMember, canRemoveOwner, noDuplicateSubmissionForTeamMembers, populateCourseGroup, maxTeamMembers, canGrade],
