@@ -53,7 +53,7 @@ exports.after = {
 			"subject":"Ein Problem wurde gemeldet.",
 			"roles":["helpdesk", "administrator"],
 			"content": {
-				"text": createinfoText(hook.data.userId, hook.data.category, hook.data.subject) //TODO: convert Userid into user
+				"text": createinfoText(hook.data.userId, hook.data.category, hook.data.subject)
 			}
 		});
 	}],

@@ -353,19 +353,20 @@ exports.sendEmail = (hook, maildata) => {
 	mail.text = maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." };
 	mail.headers = maildata.headers || {};
 	
-	//TODO: user id to user object
-	/*userService.find({query: { _id: (hook.params.account.userId || "")
-		}}).then((users) => {
-		mail.username = users[0] usw
-		}
-	*/
-	
 	//TODO: later: Template building
 	//z.B.: maildata.template = { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
 	//if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
 	// mail.html = generatedHtml || "";
 	
 	//TODO: switch-case mail to [user_id/roles/?]
+	//TODO: user id to user object
+	/*
+	if (typeof maildata.user_id == string)
+	userService.find({query: { _id: (hook.params.account.userId || "")
+		}}).then((users) => {
+		mail.username = users[0].firstname lastname usw
+		}
+	*/
 	//if (roles) / if (userid) ...
 	if (roles) {
 		userService.find({query: {
