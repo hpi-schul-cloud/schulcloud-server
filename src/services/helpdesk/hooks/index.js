@@ -13,7 +13,7 @@ function createinfoText(user, category, subject){
 	+ "Betreff: " + subject + "\n"
 	+ "Schauen Sie für weitere Details und zur Bearbeitung bitte in das Helpdesk der Schul-Cloud.\n\n"
 	+ "Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
-};
+}
 
 const sendHelpdeskEmail = hook => {
 	let infoText = "Ein neues Problem wurde gemeldet." + "\n"
@@ -49,14 +49,14 @@ exports.after = {
 	find: [],
 	get: [],
 	create: [ hook => {
-		globalHooks.sendEmail({
+		globalHooks.sendEmail(hook, {
 			"subject":"Ein Problem wurde gemeldet.",
 			"roles":["helpdesk", "administrator"],
 			"content": {
 				"text": createinfoText(hook.data.userId, hook.data.category, hook.data.subject) //TODO: convert Userid into user
 			}
-		})}
-	],
+		});
+	}],
 	update: [],
 	patch: [],
 	remove: []
