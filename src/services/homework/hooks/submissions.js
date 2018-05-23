@@ -20,14 +20,14 @@ const filterRequestedSubmissions = hook => {
 			}).then(res => {
 				let user = res.data[0];
 				user.roles.map(role => {
-					// hero/admin/helpdesk/(demo)teacher: restrict request to schools submissions
-					if (["superhero","administrator","helpdesk","teacher","demoTeacher"].indexOf(role.name) !== -1) {
+					// admin/superhero/teacher/demoteacher - retrieve all submissions of users school
+					if ((role.permissions || []).includes("SUBMISSIONS_SCHOOL_VIEW")) {
 						hook.params.query.$or = [
 							{ schoolId: user.schoolId }
 						];
-					}
-					// (demo)student: restrict request to users submissions
-					if (["student","demoStudent"].indexOf(role.name) !== -1) {
+					} else {
+						// helpdesk/student/demostudent - only get users submissions
+						// helpdesk will get no submissions obviously - is that okay?
 						hook.params.query.$or = [
 							{ studentId: user._id }
 						];
