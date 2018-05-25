@@ -342,7 +342,19 @@ exports.checkSchoolOwnership = hook => {
 exports.sendEmail = (hook, maildata) => {
 	const userService = hook.app.service('/users');
 	const mailService = hook.app.service('/mails');
+	
 	let roles = maildata.roles || [];
+	if(typeof maildata.role == "string"){
+		roles = [maildata.roles]
+	}
+	let userIDs = maildata.userIds || [];
+	if(typeof maildata.userId == "string"){
+		userIDs = [maildata.userId]
+	}
+	let emails = maildata.emails || [];
+	if(typeof maildata.email == "string"){
+		emails = [maildata.email]
+	}
 	
 	// debug
 	let data = hook.params;
@@ -367,8 +379,8 @@ exports.sendEmail = (hook, maildata) => {
 		mail.username = users[0].firstname lastname usw
 		}
 	*/
-	//if (roles) / if (userid) ...
-	if (roles) {
+	//if (roles) / if (userid) / email adresse / ... 
+	if (roles.length > 0) {				//working but not restricted to same schoolID 
 		userService.find({query: {
 			roles: [roles],
 			$populate: ['roles']
@@ -380,6 +392,30 @@ exports.sendEmail = (hook, maildata) => {
 					headers: mail.headers,
 					content: {"text": mail.text, "html": mail.html}
 				});
+			});
+		});
+	}
+	else if (userIDs.length > 0){			//not sure if working, probably not
+		userIDs.forEach(function(entry){
+			userService.find({query: {
+				_id: entry
+			}}).then((user) => {
+				mailService.create({
+					email: user.email || "schurigh@gmail.com",
+					subject: mail.subject,
+					headers: mail.headers,
+					content: {"text": mail.text, "html": mail.html}
+				});
+			});
+		})
+	}
+	else if (emails.length > 0){			//works
+		emails.forEach(function(entry){
+			mailService.create({
+				email: entry || "schurigh@gmail.com",
+				subject: mail.subject,
+				headers: mail.headers,
+				content: {"text": mail.text, "html": mail.html}
 			});
 		});
 	}

@@ -15,6 +15,8 @@ function createinfoText(user, category, subject){
 	+ "Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
 }
 
+
+//Is this doing anything right now?
 const sendHelpdeskEmail = hook => {
 	let infoText = "Ein neues Problem wurde gemeldet." + "\n"
 		+ "User: [get submitted data] \n"
@@ -53,7 +55,7 @@ exports.after = {
 			"subject":"Ein Problem wurde gemeldet.",
 			"roles":["helpdesk", "administrator"],
 			"content": {
-				"text": createinfoText(hook.data.userId, hook.data.category, hook.data.subject)
+				"text": createinfoText(hook.params.account.username, hook.data.category, hook.data.subject)
 			}
 		});
 	}],
