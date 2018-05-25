@@ -343,23 +343,11 @@ exports.sendEmail = (hook, maildata) => {
 	const userService = hook.app.service('/users');
 	const mailService = hook.app.service('/mails');
 	
-	let roles = maildata.roles || [];
-	if(typeof maildata.role == "string"){
-		roles = [maildata.roles]
-	}
-	let userIDs = maildata.userIds || [];
-	if(typeof maildata.userId == "string"){
-		userIDs = [maildata.userId]
-	}
-	let emails = maildata.emails || [];
-	if(typeof maildata.email == "string"){
-		emails = [maildata.email]
-	}
+	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
+	let userIDs = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
+	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
 	
-	// debug
-	let data = hook.params;
-	let maildata2 = maildata;
-	
+	//needed?
 	let mail = {};
 	mail.subject = maildata.subject || "E-Mail von der Schul-Cloud";
 	mail.text = maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." };
@@ -370,17 +358,9 @@ exports.sendEmail = (hook, maildata) => {
 	//if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
 	// mail.html = generatedHtml || "";
 	
-	//TODO: switch-case mail to [user_id/roles/?]
-	//TODO: user id to user object
-	/*
-	if (typeof maildata.user_id == string)
-	userService.find({query: { _id: (hook.params.account.userId || "")
-		}}).then((users) => {
-		mail.username = users[0].firstname lastname usw
-		}
-	*/
-	//if (roles) / if (userid) / email adresse / ... 
-	if (roles.length > 0) {				//working but not restricted to same schoolID 
+	//TODO: add all emailed receipients to array and check array before send
+	//TODO: test combined send
+	if (roles.length > 0) {				//working but not restricted to same schoolID
 		userService.find({query: {
 			roles: [roles],
 			$populate: ['roles']
@@ -392,15 +372,19 @@ exports.sendEmail = (hook, maildata) => {
 					headers: mail.headers,
 					content: {"text": mail.text, "html": mail.html}
 				});
+				//TODO: .then() check if receipient already got mail
 			});
 		});
 	}
-	else if (userIDs.length > 0){			//not sure if working, probably not
+	
+	if (userIDs.length > 0){			//not sure if working, probably not
 		userIDs.forEach(function(entry){
+			//TODO: check if id and convert if not
 			userService.find({query: {
-				_id: entry
+				_id: mongooose.ObjectId(entry)
 			}}).then((user) => {
 				mailService.create({
+					//TODO: check if receipient already got mail
 					email: user.email || "schurigh@gmail.com",
 					subject: mail.subject,
 					headers: mail.headers,
@@ -409,8 +393,11 @@ exports.sendEmail = (hook, maildata) => {
 			});
 		})
 	}
-	else if (emails.length > 0){			//works
+	
+	if (emails.length > 0){			//works
 		emails.forEach(function(entry){
+			//TODO: check if receipient already got mail
+			//TODO: JS validate email format
 			mailService.create({
 				email: entry || "schurigh@gmail.com",
 				subject: mail.subject,
