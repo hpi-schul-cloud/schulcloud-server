@@ -112,12 +112,31 @@ const restrictAccess = (hook) => {
 
 const checkExistence = (hook) => {
 	let accountService = hook.service;
-	const {userId} = hook.data;
+	const {userId, systemId} = hook.data;
+
+	if (!userId && systemId) // for sso accounts
+		return Promise.resolve(hook);
+
 	return accountService.find({ query: {userId}})
 		.then(result => {
-			if(result.length > 0) return Promise.reject(new errors.BadRequest('Der Account existiert bereits!'));
+			const filtered = result.filter(a => a.systemId == systemId);	// systemId might be null. In that case, accounts with any systemId will be returned
+			if(filtered.length > 0) return Promise.reject(new errors.BadRequest('Der Account existiert bereits!'));
 			return Promise.resolve(hook);
 		});
+};
+
+const securePatching = (hook) => {
+	const accountService = hook.service;
+	if (hook.data.userId) {
+		return accountService.get(hook.id)
+			.then(res => {
+				if (res.systemId)
+					return Promise.resolve(hook);
+				else
+					return Promise.reject(new errors.Forbidden('Die userId kann nicht geändert werden.'));
+			});
+	}
+	return Promise.resolve(hook);
 };
 
 exports.before = {
@@ -134,6 +153,7 @@ exports.before = {
 	],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
+			securePatching,
 			globalHooks.permitGroupOperation,
 			trimPassword,
 			validatePassword,
