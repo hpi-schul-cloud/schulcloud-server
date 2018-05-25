@@ -2,6 +2,8 @@
 
 const assert = require('assert');
 const app = require('../../../src/app');
+const accountService = app.service('/accounts');
+const userService = app.service('/users');
 
 describe('account service', function () {
 	it('registered the accounts service', () => {
@@ -9,8 +11,6 @@ describe('account service', function () {
 	});
 
 	it('the account already exists', () => {
-		const accountService = app.service('/accounts');
-
 		let accountObject = {
 			username: "max" + Date.now() + "@mHuEsLtIeXrmann.de",
 			password: "ca4t9fsfr3dsd",
@@ -24,9 +24,6 @@ describe('account service', function () {
 	});
 
 	it('create an account', () => {
-		const userService = app.service('/users');
-		const accountService = app.service('/accounts');
-
 		let userObject = {
 			firstName: "Max",
 			lastName: "Mustermann",
@@ -54,8 +51,6 @@ describe('account service', function () {
 	});
 
 	it('fail to patch userId', () => {
-		const accountService = app.service('/accounts');
-
 		return accountService.patch("0000d213816abba584714caa", { userId: "0000d186816abba584714c5e" })
 			.catch(exception => {
 				assert.equal(exception.message, 'Die userId kann nicht geändert werden.');
@@ -64,8 +59,6 @@ describe('account service', function () {
 	});
 
 	it('not able to access whole find', () => {
-		const accountService = app.service('/accounts');
-
 		return accountService.find()
 			.catch(exception => {
 				assert.equal(exception.message, 'Cannot read property \'username\' of undefined');
