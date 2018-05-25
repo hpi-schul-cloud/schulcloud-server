@@ -110,12 +110,23 @@ const restrictAccess = (hook) => {
 	});
 };
 
+const checkExistence = (hook) => {
+	let accountService = hook.service;
+	const {userId} = hook.data;
+	return accountService.find({ query: {userId}})
+		.then(result => {
+			if(result.length > 0) return Promise.reject(new errors.BadRequest('Der Account existiert bereits!'));
+			return Promise.resolve(hook);
+		});
+};
+
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
 	// otherwise we cannot get the accounts required for login
 	find: [restrictAccess],
 	get: [],
 	create: [
+		checkExistence,
 		validateCredentials,
 		trimPassword,
 		local.hooks.hashPassword({ passwordField: 'password' }),
