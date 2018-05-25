@@ -23,6 +23,36 @@ describe('account service', function () {
 			});
 	});
 
+	it('create an account', () => {
+		const userService = app.service('/users');
+		const accountService = app.service('/accounts');
+
+		let userObject = {
+			firstName: "Max",
+			lastName: "Mustermann",
+			email: "max" + Date.now() + "@mustermann.de",
+			schoolId: "584ad186816abba584714c94"
+		};
+
+		return userService.create(userObject)
+			.then(user => {
+				let accountObject = {
+					username: "max" + Date.now() + "@mHuEsLtIeXrmann.de",
+					password: "ca4t9fsfr3dsd",
+					userId: user._id
+				};
+
+				assert.equal(user.lastName, userObject.lastName);
+
+				return accountService.create(accountObject)
+					.then(account => {
+						assert.ok(account);
+						assert.equal(account.username, accountObject.username.toLowerCase());
+					});
+			});
+
+	});
+
 	it('not able to access whole find', () => {
 		const accountService = app.service('/accounts');
 
