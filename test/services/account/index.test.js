@@ -53,6 +53,16 @@ describe('account service', function () {
 
 	});
 
+	it('fail to patch userId', () => {
+		const accountService = app.service('/accounts');
+
+		return accountService.patch("0000d213816abba584714caa", { userId: "0000d186816abba584714c5e" })
+			.catch(exception => {
+				assert.equal(exception.message, 'Die userId kann nicht geändert werden.');
+				assert.equal(exception.code, 403);
+			});
+	});
+
 	it('not able to access whole find', () => {
 		const accountService = app.service('/accounts');
 
