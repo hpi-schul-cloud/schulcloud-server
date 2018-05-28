@@ -40,6 +40,17 @@ exports.isSuperHero = function (options) {
 	};
 };
 
+exports.hasRole = function (hook, userId, roleName) {
+	const userService = hook.app.service('/users/');
+
+	return userService.get((userId || ''), { query: { $populate: 'roles'}})
+		.then(user => {
+			user.roles = Array.from(user.roles);
+
+			return (_.some(user.roles, u => u.name == roleName));
+			});
+};
+
 exports.hasPermission = function (permissionName) {
 	return hook => {
 		// If it was an internal call then skip this hook
@@ -272,7 +283,7 @@ exports.restrictToUsersOwnCourses = hook => {
 		});
 		if (access)
 			return hook;
-		
+
 		if (hook.method === "get") {
 			let courseService = hook.app.service('courses');
 			return courseService.get(hook.id).then(course => {

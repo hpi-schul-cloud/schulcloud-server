@@ -65,9 +65,9 @@ const validatePassword = (hook) => {
 	if (!hook.params.account.userId)
 		return hook;
 
-	return Promise.all([globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_CREATE'), globalHooks.hasRoleNoHook(hook, hook.id, 'student', true)])
+	return Promise.all([globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_CREATE'), globalHooks.hasRoleNoHook(hook, hook.id, 'student', true), globalHooks.hasRole(hook, hook.params.account.userId, 'superhero')])
 		.then(results => {
-			if (results[0] && results[1]) {
+			if ((results[0] && results[1]) || results[2]) {
 				return hook;
 			} else {
 				if (password && !password_verification)
@@ -110,12 +110,42 @@ const restrictAccess = (hook) => {
 	});
 };
 
+const checkExistence = (hook) => {
+	let accountService = hook.service;
+	const {userId, systemId} = hook.data;
+
+	if (!userId && systemId) // for sso accounts
+		return Promise.resolve(hook);
+
+	return accountService.find({ query: {userId}})
+		.then(result => {
+			const filtered = result.filter(a => a.systemId == systemId);	// systemId might be null. In that case, accounts with any systemId will be returned
+			if(filtered.length > 0) return Promise.reject(new errors.BadRequest('Der Account existiert bereits!'));
+			return Promise.resolve(hook);
+		});
+};
+
+const securePatching = (hook) => {
+	const accountService = hook.service;
+	if (hook.data.userId) {
+		return accountService.get(hook.id)
+			.then(res => {
+				if (res.systemId)
+					return Promise.resolve(hook);
+				else
+					return Promise.reject(new errors.Forbidden('Die userId kann nicht geändert werden.'));
+			});
+	}
+	return Promise.resolve(hook);
+};
+
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
 	// otherwise we cannot get the accounts required for login
 	find: [restrictAccess],
 	get: [],
 	create: [
+		checkExistence,
 		validateCredentials,
 		trimPassword,
 		local.hooks.hashPassword({ passwordField: 'password' }),
@@ -123,6 +153,7 @@ exports.before = {
 	],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
+			securePatching,
 			globalHooks.permitGroupOperation,
 			trimPassword,
 			validatePassword,
