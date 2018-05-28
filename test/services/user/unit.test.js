@@ -4,6 +4,7 @@ const assert = require('assert');
 const mongoose = require('mongoose');
 const app = require('../../../src/app');
 const userService = app.service('users');
+const classService = app.service('classes');
 const chai = require('chai');
 const loginHelper = require('../helpers/login');
 const testObjects = require('../helpers/testObjects')(app);
@@ -64,6 +65,52 @@ describe('user service', function () {
 				const array = Array.from(user.permissions);
 				chai.expect(array).to.have.lengthOf(3);
 				chai.expect(array).to.include("TEST_BASE", "TEST_BASE_2", "TEST_SUB");
+			});
+	});
+
+	it('resolves classnames on creation', function () {
+		let studentIds = [];
+
+		function create_students() {
+			return Promise.all([
+				userService.create({
+					"firstName": "Max",
+					"lastName": "Mustermann",
+					"email": "max" + Date.now() + "@test.de",
+					"schoolId": '584ad186816abba584714c94',
+					"className": "testClass3a"
+				})
+				.then(user=>{
+					studentIds.push(user._id);
+				}),
+				userService.create({
+					"firstName": "Moritz",
+					"lastName": "Mustermann",
+					"email": "moritz" + Date.now() + "@test.de",
+					"schoolId": '584ad186816abba584714c94',
+					"className": "testClass3a"
+				})
+				.then(user=>{
+					studentIds.push(user._id);
+				})
+			]);
+		}
+
+		return create_students()
+			.then(result => {
+				return new Promise((resolve, reject)=>{
+					setTimeout(function(){ //todo: avoid timeout
+						classService.find({query: {name: "testClass3a"}})
+						.then(result => {
+							resolve(result);
+						}); 
+					}, 500);
+					//should it fail, try adjusting the timeout.
+				});
+			})
+			.then(result => {
+				chai.expect(result.total).to.equal(1);
+				chai.expect(result.data[0].userIds).to.include(studentIds[0], studentIds[1]);
 			});
 	});
 

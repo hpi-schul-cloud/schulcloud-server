@@ -4,6 +4,7 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const errors = require('feathers-errors');
+const asyncLock = require('async-lock');
 
 /**
  *
@@ -38,6 +39,39 @@ const checkUniqueAccount = (hook) => {
 			if(result.length > 0) return Promise.reject(new errors.BadRequest('Ein Account mit dieser E-Mail Adresse existiert bereits!'));
 			return Promise.resolve(hook);
 		});
+};
+
+const classCreationLock = new asyncLock();
+
+/**
+ * handleClassNames 
+ * this function looks up classes given by name and creates the class if needed
+ * it will also add the user to this class
+ * @param hook - contains and request body
+ */
+const handleClassNames = (hook) => {
+	let requestBody = hook.data;
+	let classService = hook.app.service('/classes');
+    if(hook.data.className){
+		classCreationLock.acquire(hook.data.className, function(){
+			return classService.find({ query: {name: hook.data.className}})
+			.then(result => {
+				if (result.total == 0) {
+					return classService.create({
+						name: hook.data.className, 
+						schoolId: hook.data.schoolId, 
+						teacherIds: [], 
+						userIds: []
+					});
+				} else {
+					return Promise.resolve(result.data[0]);
+				}
+			});
+		}) 
+			.then(result => {
+				return classService.patch(result._id, {$push: {userIds: hook.result.id}});
+			});
+	}
 };
 
 exports.before = function(app) {
@@ -139,7 +173,7 @@ exports.after = {
 		globalHooks.computeProperty(User, 'getPermissions', 'permissions'),
 		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'}))
 	],
-	create: [],
+	create: [handleClassNames],
 	update: [],
 	patch: [],
 	remove: []
