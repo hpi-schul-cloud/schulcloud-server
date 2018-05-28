@@ -1,4 +1,5 @@
 const auth = require('feathers-authentication').hooks;
+const verbs = require('../verbs.js').verbs;
 
 const checkPseudonym = context => {
 	let pseudonymService = context.app.service('pseudonym');
@@ -14,6 +15,19 @@ const checkPseudonym = context => {
 	});
 };
 
+const checkVerb = context => {
+	if(context.data.verb){
+		context.data.verb = verbs[context.data.verb];
+	}
+	else{
+		context.data.verb = {
+			id: context.data.verbId,
+			display: context.data.verbDisplayName,
+		}
+	}
+	return context;
+}
+
 const createStatement = context => {
 	context.data = {
 		actor: {
@@ -23,10 +37,7 @@ const createStatement = context => {
 			},
 			objectType: "Agent"
 		},
-		verb: {
-			id: context.data.verbId,
-			display: context.data.verbDisplayName,
-		},
+		verb: context.data.verb,
 		object: {
 			id: context.data.objectId,
 			definition: {
@@ -54,7 +65,7 @@ exports.before = {
 	all: [auth.authenticate('jwt')],
 	find: [],
 	get: [],
-	create: [checkPseudonym, createStatement],
+	create: [checkPseudonym, checkVerb, createStatement],
 	update: [],
 	patch: [],
 	remove: []
