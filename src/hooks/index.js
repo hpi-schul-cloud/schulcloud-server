@@ -346,7 +346,8 @@ exports.sendEmail = (hook, maildata) => {
 	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
 	let userIDs = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
 	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
-	
+	var receipients = [];
+
 	//needed?
 	let mail = {};
 	mail.subject = maildata.subject || "E-Mail von der Schul-Cloud";
@@ -358,54 +359,53 @@ exports.sendEmail = (hook, maildata) => {
 	//if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
 	// mail.html = generatedHtml || "";
 	
-	//TODO: add all emailed receipients to array and check array before send
-	//TODO: test combined send
-	if (roles.length > 0) {				//working but not restricted to same schoolID
-		userService.find({query: {
-			roles: [roles],
-			$populate: ['roles']
-		}}).then((users) => {
-			users.data.map(user => {
-				mailService.create({
-					email: user.email || "schurigh@gmail.com",
-					subject: mail.subject,
-					headers: mail.headers,
-					content: {"text": mail.text, "html": mail.html}
-				});
-				//TODO: .then() check if receipient already got mail
-			});
-		});
+	let promises = [];
+
+	if (roles.length > 0) {
+		promises.push(
+			userService.find({query: {
+				roles: [roles],
+				$schoolId: hook.data.schoolId,
+				$populate: ['roles']
+			}})
+		)
 	}
 	
-	if (userIDs.length > 0){			//not sure if working, probably not
+	if (userIDs.length > 0){
 		userIDs.forEach(function(entry){
-			//TODO: check if id and convert if not
-			userService.find({query: {
-				_id: mongooose.ObjectId(entry)
-			}}).then((user) => {
-				mailService.create({
-					//TODO: check if receipient already got mail
-					email: user.email || "schurigh@gmail.com",
-					subject: mail.subject,
-					headers: mail.headers,
-					content: {"text": mail.text, "html": mail.html}
-				});
-			});
+			//TODO: check if id and convert if not PROBLEM: we cant give objectIds bc the testing if id or array not possible
+			promises.push(
+				userService.find({query: {
+					_id: mongoose.Types.ObjectId(entry)
+				}})
+			)
 		})
 	}
 	
-	if (emails.length > 0){			//works
+	if (emails.length > 0){
 		emails.forEach(function(entry){
-			//TODO: check if receipient already got mail
 			//TODO: JS validate email format
+			receipients.push(entry);
+		});
+	}
+
+	Promise.all(promises).then((users) => {
+		users.data.map(user => {
+			receipients.push(user.email);
+		});
+
+		var receipientsDuplicatefree = receipients.filter(function(a){if (!this[a]) {this[a] = 1; return a;}},{});
+
+		receipientsDuplicatefree.forEach(function(entry){	//PromiseAll, await nachlesen
 			mailService.create({
-				email: entry || "schurigh@gmail.com",
+				email: entry,
 				subject: mail.subject,
 				headers: mail.headers,
 				content: {"text": mail.text, "html": mail.html}
-			});
+			})
 		});
-	}
+
+	});
 	
 	return hook;
 };

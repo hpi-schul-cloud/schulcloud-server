@@ -59,7 +59,7 @@
     "istanbul": "^0.4.5",
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
-    "mongoose": "^4.7.6",
+    "mongoose": "^4.13.14",
     "mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
     "moodle-client": "^0.4.0",
     "node-sass": "^4.2.0",

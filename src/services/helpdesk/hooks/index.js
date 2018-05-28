@@ -45,6 +45,7 @@ exports.before = {
 	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation, globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership)]
 };
 
+
 //TODO: call from local function sendHelpdeskEmail, not directly, not working
 exports.after = {
 	all: [],
@@ -52,7 +53,7 @@ exports.after = {
 	get: [],
 	create: [ hook => {
 		globalHooks.sendEmail(hook, {
-			"subject":"Ein Problem wurde gemeldet.",
+			"subject": "Ein Problem wurde gemeldet.",
 			"userIds": hook.data.userId,
 			//"roles":["helpdesk", "administrator"],
 			"content": {
