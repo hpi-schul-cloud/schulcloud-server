@@ -26,7 +26,7 @@ const checkVerb = context => {
 		}
 	}
 	return context;
-}
+};
 
 const createStatement = context => {
 	context.data = {
@@ -52,7 +52,7 @@ const createStatement = context => {
 		},
 		context: {
 			contextActivities: {
-				parent: {
+				grouping: {
 					id: context.data.courseId
 				}
 			}
