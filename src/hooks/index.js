@@ -373,7 +373,7 @@ exports.sendEmail = (hook, maildata) => {
 		promises.push(
 			userService.find({query: {
 				roles: [roles],
-				//$schoolId: hook.data.schoolId,		<=== doenst work that way
+				schoolId: hook.data.schoolId,
 				$populate: ['roles']
 			}})
 		)
