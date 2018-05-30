@@ -348,3 +348,98 @@ exports.checkSchoolOwnership = hook => {
 				throw new errors.Forbidden('You do not have valid permissions to access this.');
 		});
 };
+
+//TODO: Build this function to be the global function for all mails, for every use case and refactor old mailings
+exports.sendEmail = (hook, maildata) => {
+	const userService = hook.app.service('/users');
+	const mailService = hook.app.service('/mails');
+	
+	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
+	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
+	var userIDs = [];
+	try {
+		userIDs = (maildata.userIds.length > 0 && !(typeof maildata.userIds === "string") ? maildata.userIds : [maildata.userIds]);
+	} catch(e){}
+	var receipients = [];
+	
+	//TODO: later: Template building
+	//z.B.: maildata.template = { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
+	//if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
+	// mail.html = generatedHtml || "";
+	
+	let promises = [];
+
+	if (roles.length > 0) {
+		promises.push(
+			userService.find({query: {
+				roles: [roles],
+				schoolId: hook.data.schoolId,
+				$populate: ['roles']
+			}})
+		)
+	}
+	
+	if (userIDs.length > 0){
+		userIDs.forEach(function(entry){
+			promises.push(
+				userService.find({query: {
+					_id: (typeof entry === "string" ? mongoose.Types.ObjectId(entry) : entry)
+				}})
+			)
+		})
+	}
+	
+	if (emails.length > 0){
+		emails.forEach(function(entry){
+			var re = /\S+@\S+\.\S+/;
+    		if (re.test(entry)){
+				receipients.push(entry);
+			}
+		});
+	}
+
+	if(promises.length > 0){
+		Promise.all(promises)
+		.catch(function(err){
+			var error = err;
+		})
+		.then(users => {		
+			users.forEach(function(entry){
+				entry.data.forEach(function(e){
+					receipients.push(e.email);
+				})
+			});
+
+			var receipientsDuplicatefree = receipients.filter(function(a){if (!this[a]) {this[a] = 1; return a;}},{});
+
+			receipientsDuplicatefree.forEach(function(entry){
+				mailService.create({
+					email: entry,
+					subject: maildata.subject || "E-Mail von der Schul-Cloud",
+					headers: maildata.headers || {},
+					content: {
+						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+						"html": ""
+					}
+				})
+			});
+		});
+	}
+	else {
+		var receipientsDuplicatefree = receipients.filter(function(a){if (!this[a]) {this[a] = 1; return a;}},{});
+
+			receipientsDuplicatefree.forEach(function(entry){
+				mailService.create({
+					email: entry,
+					subject: maildata.subject || "E-Mail von der Schul-Cloud",
+					headers: maildata.headers || {},
+					content: {
+						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+						"html": ""
+					}
+				})
+			});
+	}
+	
+	return hook;
+};
