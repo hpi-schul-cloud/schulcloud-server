@@ -358,12 +358,6 @@ exports.sendEmail = (hook, maildata) => {
 	let userIDs = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
 	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
 	var receipients = [];
-
-	//needed?
-	let mail = {};
-	mail.subject = maildata.subject || "E-Mail von der Schul-Cloud";
-	mail.text = maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." };
-	mail.headers = maildata.headers || {};
 	
 	//TODO: later: Template building
 	//z.B.: maildata.template = { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
@@ -395,24 +389,29 @@ exports.sendEmail = (hook, maildata) => {
 	
 	if (emails.length > 0){
 		emails.forEach(function(entry){
-			//TODO: JS validate email format
-			receipients.push(entry);
+			var re = /\S+@\S+\.\S+/;
+    		if (re.test(entry)){
+				receipients.push(entry);
+			}
 		});
 	}
 
-	Promise.all(promises).then((users) => {
-		users.data.map(user => {
-			receipients.push(user.email);
+	Promise.all(promises).then(users => {		//Promise not working bc of multiple POST
+		users.forEach(function(entry){
+			receipients.push(entry.data[0].user.email);
 		});
 
 		var receipientsDuplicatefree = receipients.filter(function(a){if (!this[a]) {this[a] = 1; return a;}},{});
 
-		receipientsDuplicatefree.forEach(function(entry){	//PromiseAll, await nachlesen
+		receipientsDuplicatefree.forEach(function(entry){
 			mailService.create({
 				email: entry,
-				subject: mail.subject,
-				headers: mail.headers,
-				content: {"text": mail.text, "html": mail.html}
+				subject: maildata.subject || "E-Mail von der Schul-Cloud",
+				headers: maildata.headers || {},
+				content: {
+					"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+					"html": ""
+				}
 			})
 		});
 

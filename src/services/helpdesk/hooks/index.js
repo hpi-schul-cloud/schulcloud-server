@@ -54,8 +54,9 @@ exports.after = {
 	create: [ hook => {
 		globalHooks.sendEmail(hook, {
 			"subject": "Ein Problem wurde gemeldet.",
-			"userIds": hook.data.userId,
-			//"roles":["helpdesk", "administrator"],
+			"emails": ["falsch", "richtig@email.nice"],
+			"userIds": [hook.data.userId, hook.data.userId],
+			"roles":["helpdesk", "administrator"],
 			"content": {
 				"text": createinfoText(hook.params.account.username, hook.data.category, hook.data.subject)
 			}
