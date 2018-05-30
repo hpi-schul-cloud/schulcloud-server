@@ -355,8 +355,11 @@ exports.sendEmail = (hook, maildata) => {
 	const mailService = hook.app.service('/mails');
 	
 	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
-	let userIDs = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
 	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
+	var userIDs = [];
+	try {
+		userIDs = (maildata.userIds.length > 0 && !(typeof maildata.userIds === "string") ? maildata.userIds : [maildata.userIds]);
+	} catch(e){}
 	var receipients = [];
 	
 	//TODO: later: Template building
@@ -370,7 +373,7 @@ exports.sendEmail = (hook, maildata) => {
 		promises.push(
 			userService.find({query: {
 				roles: [roles],
-				$schoolId: hook.data.schoolId,
+				//$schoolId: hook.data.schoolId,		<=== doenst work that way
 				$populate: ['roles']
 			}})
 		)
@@ -378,10 +381,9 @@ exports.sendEmail = (hook, maildata) => {
 	
 	if (userIDs.length > 0){
 		userIDs.forEach(function(entry){
-			//TODO: check if id and convert if not PROBLEM: we cant give objectIds bc the testing if id or array not possible
 			promises.push(
 				userService.find({query: {
-					_id: mongoose.Types.ObjectId(entry)
+					_id: (typeof entry === "string" ? mongoose.Types.ObjectId(entry) : entry)
 				}})
 			)
 		})
@@ -396,26 +398,48 @@ exports.sendEmail = (hook, maildata) => {
 		});
 	}
 
-	Promise.all(promises).then(users => {		//Promise not working bc of multiple POST
-		users.forEach(function(entry){
-			receipients.push(entry.data[0].user.email);
-		});
+	if(promises.length > 0){
+		Promise.all(promises)
+		.catch(function(err){
+			var error = err;
+		})
+		.then(users => {		
+			users.forEach(function(entry){
+				entry.data.forEach(function(e){
+					receipients.push(e.email);
+				})
+			});
 
+			var receipientsDuplicatefree = receipients.filter(function(a){if (!this[a]) {this[a] = 1; return a;}},{});
+
+			receipientsDuplicatefree.forEach(function(entry){
+				mailService.create({
+					email: entry,
+					subject: maildata.subject || "E-Mail von der Schul-Cloud",
+					headers: maildata.headers || {},
+					content: {
+						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+						"html": ""
+					}
+				})
+			});
+		});
+	}
+	else {
 		var receipientsDuplicatefree = receipients.filter(function(a){if (!this[a]) {this[a] = 1; return a;}},{});
 
-		receipientsDuplicatefree.forEach(function(entry){
-			mailService.create({
-				email: entry,
-				subject: maildata.subject || "E-Mail von der Schul-Cloud",
-				headers: maildata.headers || {},
-				content: {
-					"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
-					"html": ""
-				}
-			})
-		});
-
-	});
+			receipientsDuplicatefree.forEach(function(entry){
+				mailService.create({
+					email: entry,
+					subject: maildata.subject || "E-Mail von der Schul-Cloud",
+					headers: maildata.headers || {},
+					content: {
+						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+						"html": ""
+					}
+				})
+			});
+	}
 	
 	return hook;
 };

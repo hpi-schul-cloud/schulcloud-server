@@ -45,6 +45,7 @@ exports.before = {
 	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation, globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership)]
 };
 
+const mongoose = require('mongoose');
 
 //TODO: call from local function sendHelpdeskEmail, not directly, not working
 exports.after = {
@@ -55,8 +56,8 @@ exports.after = {
 		globalHooks.sendEmail(hook, {
 			"subject": "Ein Problem wurde gemeldet.",
 			"emails": ["falsch", "richtig@email.nice"],
-			"userIds": [hook.data.userId, hook.data.userId],
-			"roles":["helpdesk", "administrator"],
+			//"userIds": mongoose.Types.ObjectId(hook.data.userId),
+			//"roles":["helpdesk", "administrator"],
 			"content": {
 				"text": createinfoText(hook.params.account.username, hook.data.category, hook.data.subject)
 			}
