@@ -22,16 +22,15 @@ module.exports = function (app) {
 			return checkForToken(params, app)
 				.then(user => {
 					let transporter;
-					/*if (app.get("secrets").smtp) {
+					if (app.get("secrets").smtp) {
 						transporter = nodemailer.createTransport(app.get("secrets").smtp || {});
 					} else {
 						transporter = nodemailer.createTransport(app.get("secrets").sendmail || {});
-					}*/
-					transporter = nodemailer.createTransport("smtps://m04518fd:Schulcloud1!@w00b3e51.kasserver.com");
+					}
 
 					let sendMail = promisify(transporter.sendMail, transporter);
 					return sendMail({
-						from: process.env.SMTP_SENDER || 'schulcloud@it-stack.de',
+						from: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 						headers: headers,
 						to: user ? user.email : email,
 						subject: subject,
