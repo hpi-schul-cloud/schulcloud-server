@@ -349,18 +349,17 @@ exports.checkSchoolOwnership = hook => {
 		});
 };
 
-//TODO: Build this function to be the global function for all mails, for every use case and refactor old mailings
 exports.sendEmail = (hook, maildata) => {
 	const userService = hook.app.service('/users');
 	const mailService = hook.app.service('/mails');
 	
 	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
 	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
-	var userIDs = [];
+	let userIDs = [];
 	try {
 		userIDs = (maildata.userIds.length > 0 && !(typeof maildata.userIds === "string") ? maildata.userIds : [maildata.userIds]);
 	} catch(e){}
-	var receipients = [];
+	let receipients = [];
 	
 	//TODO: later: Template building
 	//z.B.: maildata.template = { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
@@ -376,22 +375,22 @@ exports.sendEmail = (hook, maildata) => {
 				schoolId: hook.data.schoolId,
 				$populate: ['roles']
 			}})
-		)
+		);
 	}
 	
 	if (userIDs.length > 0){
-		userIDs.forEach(function(entry){
+		userIDs.map (entry => {
 			promises.push(
 				userService.find({query: {
 					_id: (typeof entry === "string" ? mongoose.Types.ObjectId(entry) : entry)
 				}})
-			)
-		})
+			);
+		});
 	}
 	
 	if (emails.length > 0){
 		emails.forEach(function(entry){
-			var re = /\S+@\S+\.\S+/;
+			let re = /\S+@\S+\.\S+/;
     		if (re.test(entry)){
 				receipients.push(entry);
 			}
@@ -404,15 +403,15 @@ exports.sendEmail = (hook, maildata) => {
 			var error = err;
 		})
 		.then(users => {		
-			users.forEach(function(entry){
-				entry.data.forEach(function(e){
+			users.map(entry => {
+				entry.data.map(e => {
 					receipients.push(e.email);
-				})
+				});
 			});
 
-			var receipientsDuplicatefree = receipients.filter(function(a){if (!this[a]) {this[a] = 1; return a;}},{});
+			let receipientsDuplicatefree = receipients.filter(function(a) {if (!this[a]) {this[a] = 1; return a;} },{});
 
-			receipientsDuplicatefree.forEach(function(entry){
+			receipientsDuplicatefree.map(entry => {
 				mailService.create({
 					email: entry,
 					subject: maildata.subject || "E-Mail von der Schul-Cloud",
@@ -421,14 +420,14 @@ exports.sendEmail = (hook, maildata) => {
 						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
 						"html": ""
 					}
-				})
+				});
 			});
 		});
 	}
 	else {
-		var receipientsDuplicatefree = receipients.filter(function(a){if (!this[a]) {this[a] = 1; return a;}},{});
+		let receipientsDuplicatefree = receipients.filter(function(a) {if (!this[a]) {this[a] = 1; return a;} },{});
 
-			receipientsDuplicatefree.forEach(function(entry){
+			receipientsDuplicatefree.map(entry=> {
 				mailService.create({
 					email: entry,
 					subject: maildata.subject || "E-Mail von der Schul-Cloud",
@@ -437,7 +436,7 @@ exports.sendEmail = (hook, maildata) => {
 						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
 						"html": ""
 					}
-				})
+				});
 			});
 	}
 	

@@ -15,26 +15,6 @@ function createinfoText(user, category, subject){
 	+ "Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
 }
 
-
-//Is this doing anything right now?
-const sendHelpdeskEmail = hook => {
-	let infoText = "Ein neues Problem wurde gemeldet." + "\n"
-		+ "User: [get submitted data] \n"
-		+ "Kategorie: [hook.result.data?] \n"
-		+ "Betreff: [hook.result.data?] \n"
-		+ "Schauen Sie für weitere Details und zur Bearbeitung bitte in das Helpdesk der Schul-Cloud.\n\n"
-		+ "Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
-	//TODO: sendEmail() in here not working
-	globalHooks.sendEmail({
-		"subject":"Ein Problem wurde gemeldet.",
-		"roles":["helpdesk", "administrator"],
-		"content": {
-			"text": infoText
-		}
-	});
-	return hook;
-};
-
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
 	find: [globalHooks.hasPermission('HELPDESK_VIEW')],
@@ -45,9 +25,6 @@ exports.before = {
 	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation, globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership)]
 };
 
-const mongoose = require('mongoose');
-
-//TODO: call from local function sendHelpdeskEmail, not directly, not working
 exports.after = {
 	all: [],
 	find: [],
