@@ -76,7 +76,7 @@ class WopiFilesContentsService {
 
 		// check whether a valid file is requested
 		return FileModel.findOne({_id: fileId}).then(file => {
-			if (!file) throw new errors.NotFound("Not a valid Schul-Cloud file!");
+			if (!file) throw new errors.NotFound("The requested file was not found!");
 
 			// generate signedUrl for updating file to storage
 			return signedUrlService.create({
@@ -95,7 +95,6 @@ class WopiFilesContentsService {
 				};
 
 				return rp(options).then(_ => {
-					// todo: probably updating proxy db entry for requested file (e.g. version)
 					return Promise.resolve(200);
 				});
 			});
