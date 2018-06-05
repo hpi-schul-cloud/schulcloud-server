@@ -28,9 +28,9 @@ module.exports = function () {
 					let prefs = user.preferences || {};
 
 					if (Date.parse(prefs.releaseDate) < Date.parse(release.createdAt)) {
-						socket.emit('releaseTrigger', {bool: true, createdAt: release.createdAt});
+						socket.emit('newReleaseAvailable', {bool: true, createdAt: release.createdAt});
 					} else if (typeof prefs.releaseDate == 'undefined')
-						socket.emit('releaseTrigger', {bool: true, createdAt: release.createdAt});
+						socket.emit('newReleaseAvailable', {bool: true, createdAt: release.createdAt});
 
 					return Promise.resolve(true);
 				});
