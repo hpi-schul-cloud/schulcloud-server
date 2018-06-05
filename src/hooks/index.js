@@ -349,6 +349,10 @@ exports.checkSchoolOwnership = hook => {
 		});
 };
 
+//TODO: later: Template building
+//z.B.: maildata.template = { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
+//if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
+// mail.html = generatedHtml || "";
 exports.sendEmail = (hook, maildata) => {
 	const userService = hook.app.service('/users');
 	const mailService = hook.app.service('/mails');
@@ -371,20 +375,20 @@ exports.sendEmail = (hook, maildata) => {
 	}
 	
 	if (userIDs.length > 0){
-		userIDs.map (entry => {
+		userIDs.map (id => {
 			promises.push(
 				userService.find({query: {
-					_id: mongoose.Types.ObjectId(entry)
+					_id: mongoose.Types.ObjectId(id)
 				}})
 			);
 		});
 	}
 	
 	if (emails.length > 0){
-		emails.map(entry => {
+		emails.map(email => {
 			let re = /\S+@\S+\.\S+/;
-    		if (re.test(entry)){
-				receipients.push(entry);
+    		if (re.test(email)){
+				receipients.push(email);
 			}
 		});
 	}
@@ -394,18 +398,18 @@ exports.sendEmail = (hook, maildata) => {
 		.catch(err => {
 			var error = err;
 		})
-		.then(users => {		
-			users.map(entry => {
-				entry.data.map(e => {
-					receipients.push(e.email);
+		.then(promise => {
+			promise.map(result => {
+				result.data.map(user => {
+					receipients.push(user.email);
 				});
 			});
 
-			let receipientsDuplicatefree = receipients.filter(a => {if (!this[a]) {this[a] = 1; return a;} },{});
+			let receipientsDuplicatefree = _.uniq(receipients)
 
-			receipientsDuplicatefree.map(entry => {
+			receipientsDuplicatefree.map(email => {
 				mailService.create({
-					email: entry,
+					email: email,
 					subject: maildata.subject || "E-Mail von der Schul-Cloud",
 					headers: maildata.headers || {},
 					content: {
@@ -418,11 +422,11 @@ exports.sendEmail = (hook, maildata) => {
 		});
 	}
 	else {
-		let receipientsDuplicatefree = receipients.filter(a =>{if (!this[a]) {this[a] = 1; return a;} },{});
+		let receipientsDuplicatefree =  _.uniq(receipients)
 
-			receipientsDuplicatefree.map(entry=> {
+			receipientsDuplicatefree.map(email=> {
 				mailService.create({
-					email: entry,
+					email: email,
 					subject: maildata.subject || "E-Mail von der Schul-Cloud",
 					headers: maildata.headers || {},
 					content: {
