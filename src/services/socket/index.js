@@ -2,13 +2,13 @@
 
 const socketio = require('feathers-socketio');
 const jwtDecode = require('jwt-decode');
+const compress = require('compression');
 
 module.exports = function () {
 	const app = this;
 
-	app.use(() => {}).configure(socketio(io => {
+	app.use(compress()).configure(socketio(io => {
 		io.on('connection', (socket) => {
-
 			let cookies = socket.handshake.headers.cookie.split(';');
 			let jwt = '';
 			cookies.map(cookie => {
@@ -21,7 +21,7 @@ module.exports = function () {
 			let releasePromise = app.service('releases').find({query: {$sort: '-createdAt'}});
 			let userPromise = app.service('users').get(jwtDecoded.userId);
 
-			Promise.all([userPromise, releasePromise])
+			return Promise.all([userPromise, releasePromise])
 				.then((result) => {
 					let user = result[0];
 					let release = result[1].data[0];
@@ -32,6 +32,7 @@ module.exports = function () {
 					} else if (typeof prefs.releaseDate == 'undefined')
 						socket.emit('releaseTrigger', {bool: true, createdAt: release.createdAt});
 
+					return Promise.resolve(true);
 				});
 			});
 	}));
