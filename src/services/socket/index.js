@@ -9,14 +9,23 @@ module.exports = function () {
 
 	app.use(compress()).configure(socketio(io => {
 		io.on('connection', (socket) => {
-			let cookies = socket.handshake.headers.cookie.split(';');
+			let cookies = [];
+			try {
+				cookies = socket.handshake.headers.cookie.split(';');
+			}catch(e) {
+				return;
+			}
 			let jwt = '';
 			cookies.map(cookie => {
 				if (cookie.includes('jwt')) {
 					jwt = cookie.split('=')[1];
 				}
 			});
-			let jwtDecoded = jwtDecode(jwt);
+			let jwtDecoded = {};
+			if (jwt)
+				jwtDecoded = jwtDecode(jwt);
+			else
+				return;
 
 			let releasePromise = app.service('releases').find({query: {$sort: '-createdAt'}});
 			let userPromise = app.service('users').get(jwtDecoded.userId);
@@ -32,7 +41,7 @@ module.exports = function () {
 					} else if (typeof prefs.releaseDate == 'undefined')
 						socket.emit('newReleaseAvailable', {bool: true, createdAt: release.createdAt});
 
-					return Promise.resolve(true);
+					return Promise.resolve();
 				});
 			});
 	}));
