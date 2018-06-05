@@ -7,7 +7,6 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 
 function createinfoText(user, category, subject){
 	return "Ein neues Problem wurde gemeldet." + "\n"
-	//TODO: try to get the submitted data on POST (wont work on find/get I think) and implement
 	+ "User: " + user + "\n"
 	+ "Kategorie: "+ category + "\n"
 	+ "Betreff: " + subject + "\n"
@@ -32,7 +31,7 @@ exports.after = {
 	create: [ hook => {
 		globalHooks.sendEmail(hook, {
 			"subject": "Ein Problem wurde gemeldet.",
-			"roles":["helpdesk", "administrator"],
+			"roles": ["helpdesk", "administrator"],
 			"content": {
 				"text": createinfoText(hook.params.account.username, hook.data.category, hook.data.subject)
 			}

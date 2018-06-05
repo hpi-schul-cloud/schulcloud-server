@@ -355,16 +355,8 @@ exports.sendEmail = (hook, maildata) => {
 	
 	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
 	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
-	let userIDs = [];
-	try {
-		userIDs = (maildata.userIds.length > 0 && !(typeof maildata.userIds === "string") ? maildata.userIds : [maildata.userIds]);
-	} catch(e){}
+	let userIDs = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
 	let receipients = [];
-	
-	//TODO: later: Template building
-	//z.B.: maildata.template = { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
-	//if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
-	// mail.html = generatedHtml || "";
 	
 	let promises = [];
 
@@ -382,14 +374,14 @@ exports.sendEmail = (hook, maildata) => {
 		userIDs.map (entry => {
 			promises.push(
 				userService.find({query: {
-					_id: (typeof entry === "string" ? mongoose.Types.ObjectId(entry) : entry)
+					_id: mongoose.Types.ObjectId(entry)
 				}})
 			);
 		});
 	}
 	
 	if (emails.length > 0){
-		emails.forEach(function(entry){
+		emails.map(entry => {
 			let re = /\S+@\S+\.\S+/;
     		if (re.test(entry)){
 				receipients.push(entry);
@@ -399,7 +391,7 @@ exports.sendEmail = (hook, maildata) => {
 
 	if(promises.length > 0){
 		Promise.all(promises)
-		.catch(function(err){
+		.catch(err => {
 			var error = err;
 		})
 		.then(users => {		
@@ -409,7 +401,7 @@ exports.sendEmail = (hook, maildata) => {
 				});
 			});
 
-			let receipientsDuplicatefree = receipients.filter(function(a) {if (!this[a]) {this[a] = 1; return a;} },{});
+			let receipientsDuplicatefree = receipients.filter(a => {if (!this[a]) {this[a] = 1; return a;} },{});
 
 			receipientsDuplicatefree.map(entry => {
 				mailService.create({
@@ -422,10 +414,11 @@ exports.sendEmail = (hook, maildata) => {
 					}
 				});
 			});
+		return hook;
 		});
 	}
 	else {
-		let receipientsDuplicatefree = receipients.filter(function(a) {if (!this[a]) {this[a] = 1; return a;} },{});
+		let receipientsDuplicatefree = receipients.filter(a =>{if (!this[a]) {this[a] = 1; return a;} },{});
 
 			receipientsDuplicatefree.map(entry=> {
 				mailService.create({
@@ -438,7 +431,6 @@ exports.sendEmail = (hook, maildata) => {
 					}
 				});
 			});
+		return hook;
 	}
-	
-	return hook;
 };
