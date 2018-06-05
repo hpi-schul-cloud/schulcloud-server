@@ -153,6 +153,21 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					});
 			});
 	}
+	
+	copyFile(userId, path) {
+		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		return UserModel.findById(userId).exec()
+			.then(result => {
+				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+				const awsObject = createAWSObject(result.schoolId);
+				const params = {
+					Bucket: awsObject.bucket,
+					CopySource: awsObject.bucket+"/HappyFacejpg",
+					Key: "HappyFaceCopyjpg"
+				};
+				return promisify(awsObject.s3.copyObject, awsObject.s3)(params);
+			});
+	}
 
 	deleteFile(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));

@@ -261,6 +261,30 @@ class FileTotalSizeService {
 	}
 }
 
+class CopyService {
+	/**
+	 * @param params, json parsed instructions
+	 * @returns {Promise}
+	 */
+	create(id, params) {
+		let path = params.query.path;
+		let userId = params.payload.userId;
+		return filePermissionHelper.checkPermissions(userId, path, ['can-write'])
+			.then(_ => {
+				// find file for path in proxy db, delete it and delete referenced file
+				// todo: maybe refactor search so that I can put the file-proxy-id (@id) instead of the full path
+				return FileModel.findOne({key: path}).exec()
+					.then(file => {
+						if (!file) return [];
+						return FileModel.find({_id: file._id}).remove().exec()
+							.then(_ => {
+								return createCorrectStrategy(params.payload.fileStorageType).copyFile(userId, file.flatFileName);
+							});
+					});
+			});
+	}
+}
+
 module.exports = function () {
 	const app = this;
 
@@ -268,6 +292,7 @@ module.exports = function () {
 	app.use('/fileStorage/directories', new DirectoryService());
 	app.use('/fileStorage/signedUrl', new SignedUrlService());
 	app.use('/fileStorage/total', new FileTotalSizeService());
+	app.use('/fileStorage/copy', new CopyService());
 	app.use('/fileStorage', new FileStorageService());
 
 	// Get our initialize service to that we can bind hooks
@@ -275,16 +300,19 @@ module.exports = function () {
 	const signedUrlService = app.service('/fileStorage/signedUrl');
 	const directoryService = app.service('/fileStorage/directories');
 	const fileTotalSizeService = app.service('/fileStorage/total');
+	const copyService = app.service('/fileStorage/copy');
 
 	// Set up our before hooks
 	fileStorageService.before(hooks.before);
 	signedUrlService.before(hooks.before);
 	directoryService.before(hooks.before);
 	fileTotalSizeService.before(hooks.before);
+	copyService.before(hooks.before);
 
 	// Set up our after hooks
 	fileStorageService.after(hooks.after);
 	signedUrlService.after(hooks.after);
 	directoryService.after(hooks.after);
 	fileTotalSizeService.after(hooks.after);
+	copyService.after(hooks.after);
 };
