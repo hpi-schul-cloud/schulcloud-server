@@ -28,6 +28,19 @@ const checkVerb = context => {
 	return context;
 };
 
+const checkResult= context => {
+	if(context.data.success && context.data.reachedScore && context.data.maxScore){
+		context.data.result = {
+			success: context.data.success,
+			score: {
+				raw: context.data.reachedScore,
+				max: context.data.maxScore
+			}
+		}
+	}
+	return context;
+};
+
 const createStatement = context => {
 	context.data = {
 		actor: {
@@ -56,7 +69,8 @@ const createStatement = context => {
 					id: context.data.courseId
 				}
 			}
-		}
+		},
+		result: context.data.result,
 	};
 	return context;
 };
@@ -65,7 +79,7 @@ exports.before = {
 	all: [auth.authenticate('jwt')],
 	find: [],
 	get: [],
-	create: [checkPseudonym, checkVerb, createStatement],
+	create: [checkPseudonym, checkVerb, checkResult, createStatement],
 	update: [],
 	patch: [],
 	remove: []
