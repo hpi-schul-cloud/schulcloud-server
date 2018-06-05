@@ -1,4 +1,5 @@
 'use strict';
+const auth = require('feathers-authentication');
 const globalHooks = require('../../../hooks');
 const errors = require('feathers-errors');
 
@@ -59,8 +60,30 @@ const createMissingPseudonyms = hook => {
 		})
 }
 
+const filterValidUsers = context => {
+	let validUserIds = [context.params.account.userId]
+
+	return context.app.service('courses').find({
+		query: {
+			teacherIds: context.params.account.userId,
+			$populate: 'classIds'
+		}
+	}).then(courses => {
+		for (let course of courses.data) {
+			validUserIds = validUserIds.concat(course.userIds)
+			for (let _class of course.classIds) {
+				validUserIds = validUserIds.concat(_class.userIds)
+			}
+		}
+		validUserIds = validUserIds.map(element => element.toString())
+		context.result.data = context.result.data.filter(pseudonym =>
+			validUserIds.includes(pseudonym.userId._id.toString()));
+		return context
+	})
+}
+
 exports.before = {
-  all: [validateUserIds, validateToolId],
+  all: [auth.hooks.authenticate('jwt'), validateUserIds, validateToolId],
   find: [replaceToolWithOrigin],
   get: [_ => {throw new errors.MethodNotAllowed()}],
   create: [globalHooks.ifNotLocal(_ => {throw new errors.MethodNotAllowed()})],
@@ -71,7 +94,7 @@ exports.before = {
 
 exports.after = {
   all: [],
-  find: [createMissingPseudonyms],
+  find: [createMissingPseudonyms, globalHooks.ifNotLocal(filterValidUsers)],
   get: [],
   create: [],
   update: [],
