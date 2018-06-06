@@ -396,7 +396,7 @@ exports.sendEmail = (hook, maildata) => {
 	if(promises.length > 0){
 		Promise.all(promises)
 		.catch(err => {
-			var error = err;
+			let error = err;
 		})
 		.then(promise => {
 			promise.map(result => {
