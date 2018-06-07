@@ -263,23 +263,32 @@ class FileTotalSizeService {
 
 class CopyService {
 	/**
-	 * @param params, json parsed instructions
+	 * @param fileData, json parsed fileData
 	 * @returns {Promise}
 	 */
-	create(id, params) {
-		let path = params.query.path;
+	patch(id, fileData, params) {
+		let fileId = id;
+		let oldPath = fileData.query.oldPath;
+		let newPath = fileData.query.newPath;
 		let userId = params.payload.userId;
-		return filePermissionHelper.checkPermissions(userId, path, ['can-write'])
+		
+		if (!id || !oldPath || !newPath || !userId) {
+			return Promise.reject(new errors.BadRequest('Missing parameters'));
+		}
+		
+		// check source
+		return filePermissionHelper.checkPermissions(userId, oldPath)
 			.then(_ => {
-				// find file for path in proxy db, delete it and delete referenced file
-				// todo: maybe refactor search so that I can put the file-proxy-id (@id) instead of the full path
-				return FileModel.findOne({key: path}).exec()
-					.then(file => {
-						if (!file) return [];
-						return FileModel.find({_id: file._id}).remove().exec()
-							.then(_ => {
-								return createCorrectStrategy(params.payload.fileStorageType).copyFile(userId, file.flatFileName);
-							});
+				// check destination permissions
+				return filePermissionHelper.checkPermissions(userId, newPath)
+					.then(_ => {
+						// patch file direction in proxy db
+						return FileModel.update({_id: id,}, {
+							$set: {
+								key: destination + fileName,
+								path: destination
+							}
+						}).exec();
 					});
 			});
 	}
