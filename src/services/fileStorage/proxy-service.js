@@ -47,6 +47,20 @@ const deleteAllSubDirectories = (path) => {
 		});
 };
 
+/** find all objects for given @model in renamed (virtual) directory with regex (also nested) and changes its path and key */
+const relinkAllObjectsInDirectory = (oldPath, newPath, model) => {
+	return model.find({path: {$regex : "^" + oldPath}}).exec()
+	.then(objects => {
+		return Promise.all(
+			objects.map(o => {
+				// just changed that substring of path which ends on the renamed directory's old path (because of deeper nested files)
+				o.path = newPath + "/" + o.path.substring(oldPath.length + 1);
+				o.key = o.path + o.name;
+				return model.update({_id: o._id}, o).exec();
+			}));
+	});
+};
+
 class FileStorageService {
 	constructor() {
 		this.docs = swaggerDocs.fileStorageService;
@@ -269,12 +283,10 @@ class DirectoryRenameService {
 						
 						return DirectoryModel.update({_id: directory._id}, directory).exec()
 							.then(_ => {
-								path = directory.key + "/";
-								/**delete all files and directories in the deleted directory
-								let filesDeletePromise = deleteAllFilesInDirectory(path, params.payload.fileStorageType, userId);
-								let directoriesDeletePromise = deleteAllSubDirectories(path);
-								return Promise.all([filesDeletePromise, directoriesDeletePromise]);**/
-								return {success: true};
+								// change paths and keys of all files and directories in the renamed directory
+								let filesRenamePromise = relinkAllObjectsInDirectory(path, directory.key, FileModel);
+								let directoriesRenamePromise = relinkAllObjectsInDirectory(path, directory.key, DirectoryModel);
+								return Promise.all([filesRenamePromise, directoriesRenamePromise]);
 							});
 					});
 				});
