@@ -241,6 +241,46 @@ class DirectoryService {
 	}
 }
 
+class DirectoryRenameService {
+		constructor() {
+			this.docs = swaggerDocs.directoryRenameService;
+		}
+	
+		/**
+		 * @param data, contains path, newName
+		 * @returns {Promise}
+		 */
+		create(data, params) {
+			let userId = params.payload.userId;
+			let path = data.path;
+			let newName = data.newName;
+
+			if (!path || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
+	
+			return filePermissionHelper.checkPermissions(userId, path)
+				.then(_ => {
+					// find directory and renaming it
+					return DirectoryModel.findOne({key: path}).exec()
+					.then(directory => {
+						if (!directory) return Promise.reject(new errors.NotFound('The given directory was not found!'));
+
+						directory.name = newName;
+						directory.key = directory.path + newName;
+						
+						return DirectoryModel.update({_id: directory._id}, directory).exec()
+							.then(_ => {
+								path = directory.key + "/";
+								/**delete all files and directories in the deleted directory
+								let filesDeletePromise = deleteAllFilesInDirectory(path, params.payload.fileStorageType, userId);
+								let directoriesDeletePromise = deleteAllSubDirectories(path);
+								return Promise.all([filesDeletePromise, directoriesDeletePromise]);**/
+								return {success: true};
+							});
+					});
+				});
+		}
+}
+
 class FileTotalSizeService {
 
 	/**
@@ -266,6 +306,7 @@ module.exports = function () {
 
 	// Initialize our service with any options it requires
 	app.use('/fileStorage/directories', new DirectoryService());
+	app.use('/fileStorage/directories/rename', new DirectoryRenameService());
 	app.use('/fileStorage/signedUrl', new SignedUrlService());
 	app.use('/fileStorage/total', new FileTotalSizeService());
 	app.use('/fileStorage', new FileStorageService());
@@ -274,17 +315,20 @@ module.exports = function () {
 	const fileStorageService = app.service('/fileStorage');
 	const signedUrlService = app.service('/fileStorage/signedUrl');
 	const directoryService = app.service('/fileStorage/directories');
+	const directoryRenameService = app.service('/fileStorage/directories/rename');
 	const fileTotalSizeService = app.service('/fileStorage/total');
 
 	// Set up our before hooks
 	fileStorageService.before(hooks.before);
 	signedUrlService.before(hooks.before);
 	directoryService.before(hooks.before);
+	directoryRenameService.before(hooks.before);
 	fileTotalSizeService.before(hooks.before);
 
 	// Set up our after hooks
 	fileStorageService.after(hooks.after);
 	signedUrlService.after(hooks.after);
 	directoryService.after(hooks.after);
+	directoryRenameService.after(hooks.after);
 	fileTotalSizeService.after(hooks.after);
 };
