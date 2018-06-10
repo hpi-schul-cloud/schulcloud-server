@@ -359,7 +359,7 @@ exports.sendEmail = (hook, maildata) => {
 	
 	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
 	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
-	let userIDs = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
+	let userIds = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
 	let receipients = [];
 	
 	let promises = [];
@@ -374,12 +374,10 @@ exports.sendEmail = (hook, maildata) => {
 		);
 	}
 	
-	if (userIDs.length > 0){
-		userIDs.map (id => {
+	if (userIds.length > 0){
+		userIds.map (id => {
 			promises.push(
-				userService.find({query: {
-					_id: mongoose.Types.ObjectId(id)
-				}})
+				userService.get(id)
 			);
 		});
 	}
@@ -395,9 +393,6 @@ exports.sendEmail = (hook, maildata) => {
 
 	if(promises.length > 0){
 		Promise.all(promises)
-		.catch(err => {
-			let error = err;
-		})
 		.then(promise => {
 			promise.map(result => {
 				result.data.map(user => {
@@ -419,6 +414,9 @@ exports.sendEmail = (hook, maildata) => {
 				});
 			});
 		return hook;
+		})
+		.catch(err => {
+			let error = err;
 		});
 	}
 	else {
