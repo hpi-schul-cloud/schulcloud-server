@@ -15,6 +15,7 @@ const service = require('../index');
  * @param {*} hook 
  */
 const wopiAuthentication = hook => {
+  hook.params.headers = hook.params.headers || {};
   let jwt = hook.params.headers.authorization || (hook.params.query || {}).access_token; // depends on client
   if (!jwt) throw new Error('access_token is missing!');
   
