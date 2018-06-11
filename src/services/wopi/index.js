@@ -8,6 +8,7 @@ const rp = require('request-promise-native');
 const FileModel = require('../fileStorage/model').fileModel;
 const filePermissionHelper = require('../fileStorage/utils/filePermissionHelper');
 const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
+const docs = require('./docs');
 
 /** Wopi-CheckFileInfo-Service
  * returns information about a file, a user’s permissions on that file, and general information about the capabilities that the WOPI host has on the file.
@@ -15,6 +16,10 @@ const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
  * todo: host capabilities: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#wopi-host-capabilities-properties, https://github.com/coatsy/wopi-node/blob/master/src/models/DetailedFile.ts
  */
 class WopiFilesInfoService {
+	constructor() {
+		this.docs = docs.wopiFilesInfoService;
+	}
+
 	get(fileId, {query, account, payload}) {
 		// check whether a valid file is requested
 		return FileModel.findOne({_id: fileId}).then(file => {
@@ -40,6 +45,7 @@ class WopiFilesInfoService {
 class WopiFilesContentsService {
 	constructor(app) {
 		this.app = app;
+		this.docs = docs.wopiFilesContentsService;
 	}
 	
 	/**
