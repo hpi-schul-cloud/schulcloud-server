@@ -20,7 +20,7 @@ const HOST_CAPABILITIES = [
   "SupportsUserInfo"
 ];
 
-const CURRENTLY_IMPLEMENTED = [];
+const CURRENTLY_IMPLEMENTED = ["SupportsDeleteFile"];
 
 const defaultCapabilities = () => {
   let caps = {};

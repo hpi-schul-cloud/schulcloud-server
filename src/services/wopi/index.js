@@ -8,19 +8,20 @@ const rp = require('request-promise-native');
 const FileModel = require('../fileStorage/model').fileModel;
 const filePermissionHelper = require('../fileStorage/utils/filePermissionHelper');
 const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
+const filePostActionHelper = require('./utils/filePostActionHelper');
 const docs = require('./docs');
 
 /** Wopi-CheckFileInfo-Service
  * returns information about a file, a user’s permissions on that file, and general information about the capabilities that the WOPI host has on the file.
  * https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html
- * todo: host capabilities: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#wopi-host-capabilities-properties, https://github.com/coatsy/wopi-node/blob/master/src/models/DetailedFile.ts
  */
 class WopiFilesInfoService {
-	constructor() {
+	constructor(app) {
+		this.app = app;
 		this.docs = docs.wopiFilesInfoService;
 	}
 
-	get(fileId, {query, account, payload}) {
+	find({fileId, account}) {
 		// check whether a valid file is requested
 		return FileModel.findOne({_id: fileId}).then(file => {
 			if (!file) throw new errors.NotFound("Not a valid Schul-Cloud file!");
@@ -38,6 +39,19 @@ class WopiFilesInfoService {
 			});
 		});
 	}
+
+	create(data, {payload, fileId, account, headers}) {
+		let wopiHeader = headers['x-wopi-override'];
+		if (!wopiHeader) return new errors.BadRequest("Missing params!");
+
+		// check whether a valid file is requested
+		return FileModel.findOne({_id: fileId}).then(file => {
+			if (!file) throw new errors.NotFound("The requested file was not found!");
+
+			// trigger specific action
+			return filePostActionHelper(wopiHeader)(file, payload, account, this.app);
+		});
+	}
 }
 
 /** Wopi-Get/PutFile-Service
@@ -52,7 +66,7 @@ class WopiFilesContentsService {
 	 * retrieves a file`s binary contents
 	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html 
 	 */
-  find({query, fileId, payload, account}) {
+  find({fileId, payload, account}) {
 		let signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
@@ -78,7 +92,7 @@ class WopiFilesContentsService {
 	* updates a file’s binary contents, file has to exist in proxy db
 	* https://wopirest.readthedocs.io/en/latest/files/PutFile.html
 	*/
-	create(data, {query, fileId, payload, account}) {
+	create(data, {fileId, payload, account}) {
 		let signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
@@ -114,11 +128,11 @@ module.exports = function () {
 
 	// Initialize our service with any options it requires
 	// todo: Refactor: Standardize wopi path-names (not to write every time) 
-  app.use('/wopi/files/', new WopiFilesInfoService());
+  app.use('/wopi/files/:fileId', new WopiFilesInfoService(app));
 	app.use('/wopi/files/:fileId/contents', new WopiFilesContentsService(app));
 
 	// Get our initialize service to that we can bind hooks
-	const filesService = app.service('/wopi/files');
+	const filesService = app.service('/wopi/files/:fileId');
 	const filesContentService = app.service('/wopi/files/:fileId/contents');
 
 	// Set up our before hooks
