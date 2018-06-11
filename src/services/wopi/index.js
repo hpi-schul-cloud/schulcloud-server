@@ -7,6 +7,7 @@ const errors = require('feathers-errors');
 const rp = require('request-promise-native');
 const FileModel = require('../fileStorage/model').fileModel;
 const filePermissionHelper = require('../fileStorage/utils/filePermissionHelper');
+const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
 
 /** Wopi-CheckFileInfo-Service
  * returns information about a file, a user’s permissions on that file, and general information about the capabilities that the WOPI host has on the file.
@@ -21,14 +22,14 @@ class WopiFilesInfoService {
 
 			// check for permissions
 			return filePermissionHelper.checkPermissions(account.userId, file.path).then(_ => {
-				return Promise.resolve({
+				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), {
 					// property descriptions: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#required-response-properties
 					BaseFileName: file.name,
 					OwnerId: account.userId, // if an user passes the permission check, it's valid to handle it as file-owner
 					UserId: account.userId,
 					Size: file.size,
 					Version: file['__v']
-				});
+				}));
 			});
 		});
 	}
