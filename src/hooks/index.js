@@ -404,9 +404,7 @@ exports.sendEmail = (hook, maildata) => {
 				}
 			});
 
-			let receipientsDuplicatefree = _.uniq(receipients)
-
-			receipientsDuplicatefree.map(email => {
+			_.uniq(receipients).map(email => {
 				try {
 					mailService.create({
 						email: email,
@@ -428,23 +426,21 @@ exports.sendEmail = (hook, maildata) => {
 		});
 	}
 	else {
-		let receipientsDuplicatefree =  _.uniq(receipients)
-
-			receipientsDuplicatefree.map(email=> {
-				try {
-					mailService.create({
-						email: email,
-						subject: maildata.subject || "E-Mail von der Schul-Cloud",
-						headers: maildata.headers || {},
-						content: {
-							"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
-							"html": ""
-						}
-					});
-				} catch (error){
-					throw new errors.BadRequest(error.message);
-				}
-			});
+		_.uniq(receipients).map(email=> {
+			try {
+				mailService.create({
+					email: email,
+					subject: maildata.subject || "E-Mail von der Schul-Cloud",
+					headers: maildata.headers || {},
+					content: {
+						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+						"html": ""
+					}
+				});
+			} catch (error){
+				throw new errors.BadRequest(error.message);
+			}
+		});
 		return hook;
 	}
 };
