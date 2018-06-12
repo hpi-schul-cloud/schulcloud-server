@@ -42,7 +42,7 @@ class WopiFilesInfoService {
 
 	create(data, {payload, fileId, account, headers}) {
 		let wopiHeader = headers['x-wopi-override'];
-		if (!wopiHeader) return new errors.BadRequest("Missing params!");
+		if (!wopiHeader) throw new errors.BadRequest("Missing params!");
 
 		// check whether a valid file is requested
 		return FileModel.findOne({_id: fileId}).then(file => {

@@ -1,14 +1,12 @@
 'use strict';
 const assert = require('assert');
 const app = require('../../../src/app');
-const fileModelService = app.service('files');
-const wopiFileInfoService = app.service('wopi/files/:fileId');
 const mockAws = require('../fileStorage/aws/s3.mock');
 const mockery = require('mockery');
 
 describe('wopi service', function () {
 
-	const testUserId = "5937c000a5896d0515fbf270";
+	const testUserId = "599ec14d8e4e364ec18ff46d";
    
   const testFile = {
     "_id" : "597860e9667a0659ed0b0006",
@@ -37,24 +35,21 @@ describe('wopi service', function () {
 	const testUserPayload = {
 		"userId" : "599ec14d8e4e364ec18ff46d",
 		"email" : "demo-schueler@schul-cloud.org",
-		"schoolId" : "599ec0bb8e4e364ec18ff46c",
-		"firstName" : "Fritz",
-		"lastName" : "Schmidt",
+		"schoolId" : "599ec0bb8e4e364ec18ff46c"
 	};
 
 	before(function (done) {
 		this.timeout(10000);
-		fileModelService.create(testFile)
+		// Enable mockery to mock objects
+		mockery.enable({
+			warnOnUnregistered: false
+		});
+
+		mockery.registerMock('aws-sdk', mockAws);
+
+		delete require.cache[require.resolve('../../../src/services/fileStorage/strategies/awsS3')];
+		app.service('files').create(testFile)
 			.then(_ => {
-				// Enable mockery to mock objects
-				mockery.enable({
-					warnOnUnregistered: false
-				});
-
-				mockery.registerMock('aws-sdk', mockAws);
-
-				delete require.cache[require.resolve('../../../src/services/fileStorage/strategies/awsS3')];
-
 				done();
 			});
 	});
@@ -62,7 +57,7 @@ describe('wopi service', function () {
 
 	after(function(done) {
     this.timeout(10000);
-		fileModelService.remove(testFile._id)
+		app.service('files').remove(testFile._id)
 			.then(_ => {
 				mockery.deregisterAll();
 				mockery.disable();
@@ -79,10 +74,10 @@ describe('wopi service', function () {
   });
 
 	it('GET /wopi/files/:fileId', done => {
-		wopiFileInfoService.find({
+		app.service('wopi/files/:fileId').find({
       query: {access_token: testAccessToken},
       fileId: testFile._id,
-      account: {userId: "5937c000a5896d0515fbf270"} //same as above
+      account: {userId: testUserId}
     }).then(result => {
         assert.equal(result['BaseFileName'], testFile.name);
         assert.equal(result['Size'], testFile.size);
@@ -90,20 +85,31 @@ describe('wopi service', function () {
 			});
 	});
 
-	it('POST /wopi/files:fileId Action Delete', done => {
+	it('POST /wopi/files/:fileId Action Delete', () => {
 		let headers = {};
 		headers['x-wopi-override'] = 'DELETE';
 		headers['authorization'] = testAccessToken;
-		fileModelService.create(testFile2).then(_ => {
-			wopiFileInfoService.create({}, {
-				account: {userId: testUserId},
-				payload: testUserPayload,
-				headers: headers,
-				fileId: testFile2._id
-			}).then(result => {
-				console.log(result);
-				done();
-			}).catch(e => console.log(e));
+
+		assert.ok(app.service('wopi/files/:fileId').create({}, {
+			account: {userId: testUserId},
+			payload: testUserPayload,
+			headers: headers,
+			fileId: testFile2._id
+		}));
+	});
+
+	it('POST /wopi/files/:fileId No Action', done => {
+		let headers = {};
+		headers['authorization'] = testAccessToken;
+		app.service('wopi/files/:fileId').create({}, {
+			account: {userId: testUserId},
+			payload: testUserPayload,
+			headers: headers,
+			fileId: testFile2._id
+		}).catch(e => {
+			assert.equal(e.name, 'BadRequest');
+			assert.equal(e.message, 'Missing params!');
+			done();
 		});
 	});
 });
