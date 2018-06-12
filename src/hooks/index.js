@@ -393,20 +393,14 @@ exports.sendEmail = (hook, maildata) => {
 
 	if(promises.length > 0){
 		Promise.all(promises)
-		.then(promises => {
-			promises.map(result => {
-				try {
+		.then(promise => {
+			promise.map(result => {
+				if (result.data){
 					result.data.map(user => {
-					receipients.push(user.email);
-					});
-				}
-				catch (outererror){
-					try {
-						receipients.push(result.email);
-					}
-					catch (innererror){
-						throw new errors.BadRequest(innererror.message);
-					}
+						receipients.push(user.email);
+						});
+				} else if (result.email) {
+					receipients.push(result.email);
 				}
 			});
 
