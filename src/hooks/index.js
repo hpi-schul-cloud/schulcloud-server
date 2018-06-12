@@ -367,7 +367,7 @@ exports.sendEmail = (hook, maildata) => {
 	if (roles.length > 0) {
 		promises.push(
 			userService.find({query: {
-				roles: [roles],
+				roles: roles,
 				schoolId: hook.data.schoolId,
 				$populate: ['roles']
 			}})
@@ -393,45 +393,63 @@ exports.sendEmail = (hook, maildata) => {
 
 	if(promises.length > 0){
 		Promise.all(promises)
-		.then(promise => {
-			promise.map(result => {
-				result.data.map(user => {
+		.then(promises => {
+			promises.map(result => {
+				try {
+					result.data.map(user => {
 					receipients.push(user.email);
-				});
+					});
+				}
+				catch (outererror){
+					try {
+						receipients.push(result.email);
+					}
+					catch (innererror){
+						throw new errors.BadRequest(innererror.message);
+					}
+				}
 			});
 
 			let receipientsDuplicatefree = _.uniq(receipients)
 
 			receipientsDuplicatefree.map(email => {
-				mailService.create({
-					email: email,
-					subject: maildata.subject || "E-Mail von der Schul-Cloud",
-					headers: maildata.headers || {},
-					content: {
-						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
-						"html": ""
-					}
-				});
+				try {
+					mailService.create({
+						email: email,
+						subject: maildata.subject || "E-Mail von der Schul-Cloud",
+						headers: maildata.headers || {},
+						content: {
+							"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+							"html": ""
+						}
+					});
+				} catch (error){
+					throw new errors.BadRequest(error.message);
+				}
 			});
 		return hook;
 		})
-		.catch(err => {
-			let error = err;
+		.catch(error => {
+			throw new errors.BadRequest(error.message);
 		});
 	}
 	else {
 		let receipientsDuplicatefree =  _.uniq(receipients)
 
 			receipientsDuplicatefree.map(email=> {
-				mailService.create({
-					email: email,
-					subject: maildata.subject || "E-Mail von der Schul-Cloud",
-					headers: maildata.headers || {},
-					content: {
-						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
-						"html": ""
-					}
-				});
+				try {
+					mailService.create({
+						email: email,
+						subject: maildata.subject || "E-Mail von der Schul-Cloud",
+						headers: maildata.headers || {},
+						content: {
+							"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+							"html": ""
+						}
+					});
+				} catch (error){
+					throw new errors.BadRequest(error.message);
+				}
 			});
 		return hook;
 	}
