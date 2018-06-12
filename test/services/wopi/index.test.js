@@ -32,7 +32,15 @@ describe('wopi service', function () {
     "__v" : 0
   };
 
-  const testAccessToken = "TEST";
+	const testAccessToken = "TEST";
+	
+	const testUserPayload = {
+		"userId" : "599ec14d8e4e364ec18ff46d",
+		"email" : "demo-schueler@schul-cloud.org",
+		"schoolId" : "599ec0bb8e4e364ec18ff46c",
+		"firstName" : "Fritz",
+		"lastName" : "Schmidt",
+	};
 
 	before(function (done) {
 		this.timeout(10000);
@@ -84,16 +92,18 @@ describe('wopi service', function () {
 
 	it('POST /wopi/files:fileId Action Delete', done => {
 		let headers = {};
-		headers['X-WOPI-OVERRIDE'] = 'DELETE';
+		headers['x-wopi-override'] = 'DELETE';
 		headers['authorization'] = testAccessToken;
 		fileModelService.create(testFile2).then(_ => {
-			wopiFileInfoService.create({
-				fileId: testFile2._id,
-				account: {userId: testUserId}
-			}, {headers: headers}).then(result => {
+			wopiFileInfoService.create({}, {
+				account: {userId: testUserId},
+				payload: testUserPayload,
+				headers: headers,
+				fileId: testFile2._id
+			}).then(result => {
 				console.log(result);
 				done();
-			});
-		}).catch(e => console.log(e));
+			}).catch(e => console.log(e));
+		});
 	});
 });
