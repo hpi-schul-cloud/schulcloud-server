@@ -8,9 +8,9 @@ module.exports = function (app) {
 		docsPath: '/docs',
 		version: '0.0.1',
 		basePath: '/',
-		host: 'schul.tech:3030',
+		host: 'localhost:3030',
 		uiIndex: path.join(__dirname, 'swagger.html'),
-		schemes: ['https'],
+		//schemes: ['https'],
 		securityDefinitions: {
 			bearer: {
 				type: "apiKey",
