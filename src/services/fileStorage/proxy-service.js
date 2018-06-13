@@ -266,13 +266,13 @@ class CopyService {
 	 * @param fileData, json parsed fileData
 	 * @returns {Promise}
 	 */
-	patch(id, fileData, params) {
-		let fileId = id;
-		let oldPath = fileData.query.oldPath;
-		let newPath = fileData.query.newPath;
-		let userId = params.payload.userId;
+	patch(id, unknown, params) {
+		let oldPath = params.query.oldPath;
+		let newPath = params.query.newPath;
+		let filename = params.query.filename;
+		let userId = params.account.userId;
 		
-		if (!id || !oldPath || !newPath || !userId) {
+		if (!id || !oldPath || !newPath || !filename || !userId) {
 			return Promise.reject(new errors.BadRequest('Missing parameters'));
 		}
 		
@@ -282,13 +282,18 @@ class CopyService {
 				// check destination permissions
 				return filePermissionHelper.checkPermissions(userId, newPath)
 					.then(_ => {
-						// patch file direction in proxy db
-						return FileModel.update({_id: id,}, {
-							$set: {
-								key: destination + fileName,
-								path: destination
-							}
-						}).exec();
+						return Promise.all([
+							// patch file direction in proxy db
+							FileModel.update({_id: id,}, {
+								$set: {
+									key: newPath + filename,
+									path: newPath
+								}
+							}).exec()
+						], [
+							// copy aws file
+							createCorrectStrategy(params.payload.fileStorageType).copyFile(userId, params.query)
+						]);
 					});
 			});
 	}
