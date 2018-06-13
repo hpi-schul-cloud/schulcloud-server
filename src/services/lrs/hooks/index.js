@@ -45,9 +45,7 @@ const checkParent = context => {
 	if(context.data.parentId){
 		context.data.parent =
 			{
-				parent: {
-					id: context.data.parentId
-				}
+				id: context.data.parentId
 			};
 	}
 	return context;
@@ -92,7 +90,7 @@ exports.before = {
 	all: [auth.authenticate('jwt')],
 	find: [],
 	get: [],
-	create: [checkPseudonym, checkVerb, checkResult, createStatement, checkParent],
+	create: [checkPseudonym, checkVerb, checkResult, checkParent, createStatement],
 	update: [],
 	patch: [],
 	remove: []
