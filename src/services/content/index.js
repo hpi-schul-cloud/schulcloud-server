@@ -3,7 +3,10 @@
 const request = require('request-promise-native');
 const hooks = require('./hooks');
 const material = require('./material-model');
-const service = require('feathers-mongoose');
+const ratingrequestModel = require('./ratingrequest-model');
+const mongooseService = require('feathers-mongoose');
+const ObjectId = require('mongoose').Types.ObjectId;
+
 
 const REQUEST_TIMEOUT = 8000; // in ms
 
@@ -14,27 +17,52 @@ class ResourcesService {
 
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
-		const options = {
-			uri: serviceUrls.content + '/resources/',
+		return request({
+			uri: `${serviceUrls.content}/ratedresources/`,
 			qs: params.query,
 			json: true,
 			timeout: REQUEST_TIMEOUT
-		};
-		return request(options).then(message => {
-			return message;
-		});
+		})
 	}
 
 	get(id) {
 		const serviceUrls = this.app.get('services') || {};
-		const options = {
-			uri: serviceUrls.content + '/resources/' + id,
+		return request({
+			uri: `${serviceUrls.content}/ratedresources/${id}`,
 			json: true,
 			timeout: REQUEST_TIMEOUT
-		};
-		return request(options).then(message => {
-			return message;
 		});
+	}
+
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
+class RatingService {
+	constructor(options) {
+		this.options = options || {};
+	}
+
+	create(data, params) {
+		const serviceUrls = this.app.get('services') || {};
+		return this.options.ratingrequestService.patch(null, { state: "done" }, {
+			query: {
+				_id: data._id,
+				state: "pending"
+			}
+		}).then(patchedData => {
+			if(patchedData.length !== 1){
+				return
+			}
+			return request({
+				method: 'POST',
+				uri: `${serviceUrls.content}/ratings`,
+				json: true,
+				body: data,
+				timeout: REQUEST_TIMEOUT
+			})
+		})
 	}
 
 	setup(app, path) {
@@ -50,7 +78,7 @@ class SearchService {
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
 		const options = {
-			uri: serviceUrls.content + '/search/',
+			uri: `${serviceUrls.content}/search/`,
 			qs: params.query,
 			json: true,
 			timeout: REQUEST_TIMEOUT
@@ -65,21 +93,89 @@ class SearchService {
 	}
 }
 
+class RatingrequestService {
+	constructor(options) {
+		this.options = options || {};
+	}
+
+	get(userId, params) {
+		const serviceUrls = this.app.get('services') || {};
+		const courseService = this.app.service('/courses');
+		const lessonsService = this.app.service('/lessons'); // topics
+
+		return this.options.ratingrequestService.find({
+			query: {
+				userId: ObjectId(userId),
+				state: "pending"
+                // TODO? not older than n days
+			}
+		}).then(ratingrequests => {
+			if(ratingrequests.total === 0){
+				return [];
+			}
+			const courseIds = ratingrequests.data.map(it => it.courseId.toString());
+			const topicIds = ratingrequests.data.map(it => it.topicId.toString());
+			const materialIds = ratingrequests.data.map(it => it.materialId.toString());
+
+			return Promise.all([
+				lessonsService.find({
+					query: { _id: { $in: topicIds } }
+				}),
+				courseService.find({
+					query: { _id: { $in: courseIds } }
+				}),
+				this.options.resourcesService.find({
+					query: { _id: { $in: materialIds } }
+				})
+			]).then(([topics,courses,contents]) => {
+				return ratingrequests.data.map(ratingrequest => {
+					const content = contents.data.find(it => ratingrequest.materialId.equals(it._id));
+					ratingrequest.title = content.title;
+					ratingrequest.providerName = content.providerName;
+
+					ratingrequest.courseTitle  = courses.data.find(it => ratingrequest.courseId.equals(it._id)).name;
+					ratingrequest.topicTitle 	 = topics.data.find(it => ratingrequest.topicId.equals(it._id)).name;
+					return ratingrequest;
+				});
+			});
+		});
+	}
+
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
 class RedirectService {
 	constructor(options) {
 		this.options = options || {};
 	}
 
-	get(id) {
+	get(id, params) {
 		const serviceUrls = this.app.get('services') || {};
-		const options = {
-			uri: serviceUrls.content + '/resources/' + id,
+
+		const ratingrequest = {
+			materialId: id,
+			userId: params.query.userId,
+			topicId: params.query.topicId,
+			courseId: params.query.courseId
+		};
+
+		this.options.ratingrequestService.find({
+			query: Object.assign({$limit: 0}, ratingrequest)
+		}).then(foundObjects => {
+			if(foundObjects.total === 0){
+				this.options.ratingrequestService.create(ratingrequest);
+			}
+		});
+
+		return request({
+			uri: `${serviceUrls.content}/resources/${id}`,
 			json: true,
 			timeout: REQUEST_TIMEOUT
-		};
-		return request(options).then(resource => {
+		}).then(resource => {
 			// Increase Click Counter
-			request.patch(serviceUrls.content + '/resources/' + id, {
+			request.patch(`${serviceUrls.content}/resources/${id}`, {
 				json: {
 					$inc: {
 						clickCount: 1
@@ -102,7 +198,29 @@ class RedirectService {
 module.exports = function () {
 	const app = this;
 
-	// Initialize material model
+	app.use('/content/resources', new ResourcesService());
+	const resourcesService = app.service('/content/resources');
+	resourcesService.before(hooks.before);
+	resourcesService.after(hooks.after);
+
+	app.use('/content/search', new SearchService());
+	const searchService = app.service('/content/search');
+	searchService.before(hooks.before);
+	searchService.after(hooks.after);
+
+	const ratingrequestService = mongooseService({
+		Model: ratingrequestModel,
+		paginate: {
+			default: 10,
+			max: 25
+		},
+		lean: true
+	});
+	app.use('/content/ratingrequest', new RatingrequestService({ratingrequestService, resourcesService}));
+
+	app.use('/content/redirect', new RedirectService({ratingrequestService}), RedirectService.redirect);
+
+	app.use('/content/ratings', new RatingService({ratingrequestService}));
 	const options = {
 		Model: material,
 		paginate: {
@@ -111,22 +229,5 @@ module.exports = function () {
 		},
 		lean: true
 	};
-
-	// Initialize our service with options it requires
-	app.use('/content/resources', new ResourcesService());
-	app.use('/content/search', new SearchService());
-	app.use('/content/redirect', new RedirectService(), RedirectService.redirect);
-	app.use('/materials', service(options));
-
-	// Get our initialize service to that we can bind hooks
-	const resourcesService = app.service('/content/resources');
-	const searchService = app.service('/content/search');
-
-	// Set up our before hooks
-	resourcesService.before(hooks.before);
-	searchService.before(hooks.before);
-
-	// Set up our after hooks
-	resourcesService.after(hooks.after);
-	searchService.after(hooks.after);
+	app.use('/materials', mongooseService(options));
 };
