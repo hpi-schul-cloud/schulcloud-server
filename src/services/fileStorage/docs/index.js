@@ -142,6 +142,13 @@ module.exports = {
 					type: 'string',
 					in: 'body'
 				},
+				{
+					description: 'Indicates the school-bucket, if the file is stored in an other school',
+					required: false,
+					name: 'externalSchoolId',
+					type: 'string',
+					in: 'body'
+				}
 			],
 			summary: 'Copies a file from a given path to a new file'
 		}

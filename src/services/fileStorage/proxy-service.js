@@ -268,13 +268,11 @@ class CopyService {
 	}
 
 	/**
-	 * @param data, contains oldPath and newPath. 
+	 * @param data, contains oldPath, newPath and externalSchoolId (optional). 
 	 * @returns {Promise}
 	 */
 	create(data, params) {
-		let fileName = data.fileName;
-		let oldPath = data.oldPath;
-		let newPath = data.newPath;
+		let {fileName, oldPath, newPath, externalSchoolId} = data;
 		let userId = params.account.userId;
 		
 		if (!oldPath || !fileName || !newPath || !userId) {
@@ -297,17 +295,16 @@ class CopyService {
 						}
 						
 						// check permissions for oldPath and newPath
-						let oldPathPromise = filePermissionHelper.checkPermissions(userId, oldPath);
-						let newPathPromise = filePermissionHelper.checkPermissions(userId, newPath);
+						let oldPathPromise = filePermissionHelper.checkPermissions(userId, oldPath + fileName);
+						let newPathPromise = filePermissionHelper.checkPermissions(userId, newPath + newFileName);
 
 						return Promise.all([oldPathPromise, newPathPromise]).then(_ => {
 							
 							// copy file on external storage
 							let newFlatFileName = generateFlatFileName(newFileName);
-							return createCorrectStrategy(params.payload.fileStorageType).copyFile(userId, file.flatFileName, newFlatFileName).then(_ => {
+							return createCorrectStrategy(params.payload.fileStorageType).copyFile(userId, file.flatFileName, newFlatFileName, externalSchoolId).then(_ => {
 
 								// create proxy object from copied;
-
 								let newFileObject = { 
 									key: newPath + newFileName,
 									path: newPath,

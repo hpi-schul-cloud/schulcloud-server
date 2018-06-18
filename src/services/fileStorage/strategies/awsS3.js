@@ -154,19 +154,23 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 	
-	copyFile(userId, oldPath, newPath) {
+	copyFile(userId, oldPath, newPath, externalSchoolId) {
 		if (!userId || !oldPath || !newPath) {
 			return Promise.reject(new errors.BadRequest('Missing parameters'));
 		}
 		return UserModel.findById(userId).exec()
 			.then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+
 				const awsObject = createAWSObject(result.schoolId);
+				let sourceBucket = `bucket-${externalSchoolId || result.schoolId}`;  //files can be copied to different schools
+
 				const params = {
 					Bucket: awsObject.bucket, // destination bucket
-					CopySource: `/${awsObject.bucket}/${oldPath}`, // full source path (with bucket)
+					CopySource: `/${sourceBucket}/${oldPath}`, // full source path (with bucket)
 					Key: newPath // destination path
 				};
+
 				return promisify(awsObject.s3.copyObject, awsObject.s3)(params);
 			});
 	}
