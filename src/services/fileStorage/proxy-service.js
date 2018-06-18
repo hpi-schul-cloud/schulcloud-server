@@ -262,38 +262,67 @@ class FileTotalSizeService {
 }
 
 class CopyService {
+
+	constructor() {
+		this.docs = swaggerDocs.copyService;
+	}
+
 	/**
-	 * @param fileData, json parsed fileData
+	 * @param data, contains oldPath and newPath. 
 	 * @returns {Promise}
 	 */
-	patch(id, unknown, params) {
-		let oldPath = params.query.oldPath;
-		let newPath = params.query.newPath;
-		let filename = params.query.filename;
+	create(data, params) {
+		let fileName = data.fileName;
+		let oldPath = data.oldPath;
+		let newPath = data.newPath;
 		let userId = params.account.userId;
 		
-		if (!id || !oldPath || !newPath || !filename || !userId) {
+		if (!oldPath || !fileName || !newPath || !userId) {
 			return Promise.reject(new errors.BadRequest('Missing parameters'));
 		}
-		
-		// check source
-		return filePermissionHelper.checkPermissions(userId, oldPath)
-			.then(_ => {
-				// check destination permissions
-				return filePermissionHelper.checkPermissions(userId, newPath)
-					.then(_ => {
-						return Promise.all([
-							// patch file direction in proxy db
-							FileModel.update({_id: id,}, {
-								$set: {
-									key: newPath + filename,
-									path: newPath
-								}
-							}).exec()
-						], [
-							// copy aws file
-							createCorrectStrategy(params.payload.fileStorageType).copyFile(userId, params.query)
-						]);
+
+		// first check if given file is valid
+		return FileModel.findOne({key: oldPath + fileName}).exec()
+			.then(file => {
+				if (!file) throw new errors.NotFound("The file was not found!");
+
+				// check that theres no file on 'newPath', otherwise change name of file
+				return FileModel.findOne({key: newPath + fileName}).exec()
+					.then(newFile => {
+						let newFileName = fileName;
+						if (newFile) {
+							let name = fileName.substring(0, fileName.lastIndexOf('.'));
+							let extension = fileName.split('.').pop();
+							newFileName = `${name}_${Date.now()}.${extension}`;
+						}
+						
+						// check permissions for oldPath and newPath
+						let oldPathPromise = filePermissionHelper.checkPermissions(userId, oldPath);
+						let newPathPromise = filePermissionHelper.checkPermissions(userId, newPath);
+
+						return Promise.all([oldPathPromise, newPathPromise]).then(_ => {
+							
+							// copy file on external storage
+							let newFlatFileName = generateFlatFileName(newFileName);
+							return createCorrectStrategy(params.payload.fileStorageType).copyFile(userId, file.flatFileName, newFlatFileName).then(_ => {
+
+								// create proxy object from copied;
+
+								let newFileObject = { 
+									key: newPath + newFileName,
+									path: newPath,
+									name: newFileName,
+									type: file.type,
+									size: file.size,
+									flatFileName: newFlatFileName,
+									thumbnail: file.thumbnail,
+									schoolId: file.schoolId,
+									permissions: file.permissions || [] 
+								};
+
+								return FileModel.create(newFileObject);
+							});
+						});
 					});
 			});
 	}
