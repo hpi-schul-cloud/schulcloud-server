@@ -369,7 +369,8 @@ exports.sendEmail = (hook, maildata) => {
 			userService.find({query: {
 				roles: roles,
 				schoolId: hook.data.schoolId,
-				$populate: ['roles']
+				$populate: ['roles'],
+				$limit : 1000
 			}})
 		);
 	}
@@ -405,19 +406,17 @@ exports.sendEmail = (hook, maildata) => {
 			});
 
 			_.uniq(receipients).map(email => {
-				try {
-					mailService.create({
-						email: email,
-						subject: maildata.subject || "E-Mail von der Schul-Cloud",
-						headers: maildata.headers || {},
-						content: {
-							"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
-							"html": ""
-						}
-					});
-				} catch (error){
+				mailService.create({
+					email: email,
+					subject: maildata.subject || "E-Mail von der Schul-Cloud",
+					headers: maildata.headers || {},
+					content: {
+						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+						"html": ""
+					}
+				}).catch (error => {
 					throw new errors.BadRequest(error.message);
-				}
+				});
 			});
 		return hook;
 		})
@@ -427,19 +426,18 @@ exports.sendEmail = (hook, maildata) => {
 	}
 	else {
 		_.uniq(receipients).map(email=> {
-			try {
-				mailService.create({
-					email: email,
-					subject: maildata.subject || "E-Mail von der Schul-Cloud",
-					headers: maildata.headers || {},
-					content: {
-						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
-						"html": ""
-					}
-				});
-			} catch (error){
+			mailService.create({
+				email: email,
+				subject: maildata.subject || "E-Mail von der Schul-Cloud",
+				headers: maildata.headers || {},
+				content: {
+					"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+					"html": ""
+				}
+			})
+			.catch (error => {
 				throw new errors.BadRequest(error.message);
-			}
+			});
 		});
 		return hook;
 	}
