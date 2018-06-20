@@ -1,6 +1,7 @@
 const errors = require('feathers-errors');
 const _ = require('lodash');
 const CourseModel = require('../../user-group/model').courseModel;
+const LessonModel = require('../../lesson/model').lessonModel;
 const ClassModel = require('../../user-group/model').classModel;
 const FilePermissionModel = require('../model').fileModel;
 
@@ -62,8 +63,19 @@ class FilePermissionHelper {
 						{_id: contextId}
 					]
 				}).exec().then(res => {
+					// user is not in that course, check if the file is one of a shared lesson
 					if (!res || res.length <= 0) {
-						return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+						return LessonModel.find({
+							$and: [
+								{"contents.content.text": /.*values[2].*/i},
+								{ "shareToken": "ByFWZSBWX" }
+								]
+						}).exec().then(res => {
+							if (!res || res.length <= 0) {
+								return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+							}
+							return Promise.resolve({context: res[0]});
+						});
 					}
 					return Promise.resolve({context: res[0]});
 				});
