@@ -108,7 +108,7 @@ describe('wopi service', function () {
 			fileId: testFile2._id
 		}).catch(e => {
 			assert.equal(e.name, 'BadRequest');
-			assert.equal(e.message, 'Missing params!');
+			assert.equal(e.message, 'X-WOPI-Override header was not provided or was empty!');
 			done();
 		});
 	});
