@@ -1,7 +1,7 @@
 const errors = require('feathers-errors');
 const _ = require('lodash');
 const CourseModel = require('../../user-group/model').courseModel;
-const LessonModel = require('../../lesson/model').lessonModel;
+const LessonModel = require('../../lesson/model');
 const ClassModel = require('../../user-group/model').classModel;
 const FilePermissionModel = require('../model').fileModel;
 
@@ -67,8 +67,8 @@ class FilePermissionHelper {
 					if (!res || res.length <= 0) {
 						return LessonModel.find({
 							$and: [
-								{"contents.content.text": /.*values[2].*/i},
-								{ "shareToken": "ByFWZSBWX" }
+								{ "contents.content.text": { $regex: values[2], $options: 'i'}},
+								{ "shareToken": { $exists: true }}
 								]
 						}).exec().then(res => {
 							if (!res || res.length <= 0) {
