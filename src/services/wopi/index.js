@@ -9,6 +9,7 @@ const FileModel = require('../fileStorage/model').fileModel;
 const filePermissionHelper = require('../fileStorage/utils/filePermissionHelper');
 const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
 const filePostActionHelper = require('./utils/filePostActionHelper');
+const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
 const docs = require('./docs');
 
 /** Wopi-CheckFileInfo-Service
@@ -127,8 +128,8 @@ module.exports = function () {
 
 	// Initialize our service with any options it requires
 	// todo: Refactor: Standardize wopi path-names (not to write every time) 
-  app.use('/wopi/files/:fileId', new WopiFilesInfoService(app));
-	app.use('/wopi/files/:fileId/contents', new WopiFilesContentsService(app));
+  app.use('/wopi/files/:fileId', new WopiFilesInfoService(app), handleResponseHeaders);
+	app.use('/wopi/files/:fileId/contents', new WopiFilesContentsService(app), handleResponseHeaders);
 
 	// Get our initialize service to that we can bind hooks
 	const filesService = app.service('/wopi/files/:fileId');

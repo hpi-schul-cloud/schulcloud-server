@@ -64,8 +64,8 @@ const checkLockHeader = hook => {
 };
 
 const setLockResponseHeader = hook => {
-  // todo: set response header!
-  hook.params.headers['x-wopi-lock'] = hook.result.lockId;
+  if (hook.result.lockId) hook.result.headerPipes = [{key: 'X-WOPI-Lock', value: hook.result.lockId}];
+
   return hook;
 };
 
