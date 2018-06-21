@@ -1,9 +1,7 @@
 'use strict';
 
-const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
+const errors = require('feathers-errors');
 const auth = require('feathers-authentication');
-const service = require('../index');
 
 /**
  * handles the authentication for wopi-clients, the wopi-specific param 'access-token' has to be a valid jwt for the current system
@@ -24,14 +22,23 @@ const wopiAuthentication = hook => {
   return auth.hooks.authenticate('jwt')(hook);
 };
 
+/**
+ * All editing (POST, PATCH, DELETE) actions should include the wopi-override header!
+ */
+const retrieveWopiOverrideHeader = hook => {
+  if (!hook.params.headers['x-wopi-override']) throw new errors.BadRequest("X-WOPI-Override header was not provided or was empty!");
+  hook.params.wopiAction = hook.params.headers['x-wopi-override'];
+  return hook;
+};
+
 exports.before = {
 		all: [wopiAuthentication],
 		find: [],
 		get: [],
-		create: [],
-		update: [],
-		patch: [],
-		remove: []
+		create: [retrieveWopiOverrideHeader],
+		update: [retrieveWopiOverrideHeader],
+		patch: [retrieveWopiOverrideHeader],
+		remove: [retrieveWopiOverrideHeader]
 };
 
 exports.after = {

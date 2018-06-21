@@ -40,16 +40,13 @@ class WopiFilesInfoService {
 		});
 	}
 
-	create(data, {payload, fileId, account, headers}) {
-		let wopiHeader = headers['x-wopi-override'];
-		if (!wopiHeader) throw new errors.BadRequest("Missing params!");
-
+	create(data, {payload, fileId, account, wopiAction}) {
 		// check whether a valid file is requested
 		return FileModel.findOne({_id: fileId}).then(file => {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
 
 			// trigger specific action
-			return filePostActionHelper(wopiHeader)(file, payload, account, this.app);
+			return filePostActionHelper(wopiAction)(file, payload, account, this.app);
 		});
 	}
 }
