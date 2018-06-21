@@ -16,6 +16,7 @@ const permissionTypes = ['can-read', 'can-write'];
  * @param flatFileName {String} - the name of the real file on the storage
  * @param thumbnail {String} - the url of the file's thumbnail image
  * @param permissions [Permission] - given extra permission for this file (except the normal permissions)
+ * @param lockId {ObjectId} - indicates whether a file is locked for editing or not (wopi-related)
  * @param shareToken {String} - hash for enabling sharing. if undefined than sharing is disabled
  * @param schoolId {ObjectId} - id of the school for file referencing
  */
@@ -31,6 +32,7 @@ const fileSchema = new Schema({
 		userId: {type: Schema.Types.ObjectId, ref: 'user'},
 		permissions: [{type: String, enum: permissionTypes}]
 	}],
+	lockId: {type: Schema.Types.ObjectId},
 	shareToken: {type: String},
 	schoolId: {type: Schema.Types.ObjectId, ref: 'school'},
 	createdAt: {type: Date, 'default': Date.now},

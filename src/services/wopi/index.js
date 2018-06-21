@@ -89,7 +89,9 @@ class WopiFilesContentsService {
 	* updates a file’s binary contents, file has to exist in proxy db
 	* https://wopirest.readthedocs.io/en/latest/files/PutFile.html
 	*/
-	create(data, {fileId, payload, account}) {
+	create(data, {fileId, payload, account, wopiAction}) {
+		if (wopiAction !== 'PUT') throw new errors.BadRequest("Wrong X-WOPI-Override header value!");
+
 		let signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
