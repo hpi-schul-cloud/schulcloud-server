@@ -112,4 +112,32 @@ describe('wopi service', function () {
 			done();
 		});
 	});
+
+	it('POST /wopi/files/:fileId Action Lock and GetLock', done => {
+		let headers = {};
+		headers['authorization'] = testAccessToken;
+		headers['x-wopi-override'] = "LOCK";
+		app.service('wopi/files/:fileId').create({}, {
+			account: {userId: testUserId},
+			payload: testUserPayload,
+			headers: headers,
+			fileId: testFile._id
+		}).then(res => {
+			let lockId = res.lockId;
+			assert.notEqual(lockId, undefined);
+
+			headers['authorization'] = testAccessToken;
+			headers['x-wopi-override'] = "GET_LOCK";
+			app.service('wopi/files/:fileId').create({}, {
+				account: {userId: testUserId},
+				payload: testUserPayload,
+				headers: headers,
+				fileId: testFile._id
+			}).then(res => {
+				assert.equal(lockId.toString(), res.lockId.toString());
+
+				done();
+			});
+		});
+	});
 });

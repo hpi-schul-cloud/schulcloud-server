@@ -64,8 +64,7 @@ const checkLockHeader = hook => {
 };
 
 const setLockResponseHeader = hook => {
-  if (hook.result.lockId) hook.result.headerPipes = [{key: 'X-WOPI-Lock', value: hook.result.lockId}];
-
+  hook.result.headerPipes = [{key: 'X-WOPI-Lock', value: hook.result.lockId || ""}];
   return hook;
 };
 
@@ -80,10 +79,10 @@ exports.before = {
 };
 
 exports.after = {
-  all: [setLockResponseHeader],
+  all: [],
   find: [],
   get: [],
-  create: [],
+  create: [setLockResponseHeader],
   update: [],
   patch: [],
   remove: []

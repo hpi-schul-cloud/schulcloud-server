@@ -116,7 +116,7 @@ class WopiFilesContentsService {
 				};
 
 				return rp(options).then(_ => {
-					return Promise.resolve(200);
+					return Promise.resolve({lockId: file.lockId});
 				});
 			});
 		});
@@ -128,8 +128,8 @@ module.exports = function () {
 
 	// Initialize our service with any options it requires
 	// todo: Refactor: Standardize wopi path-names (not to write every time) 
-  app.use('/wopi/files/:fileId', new WopiFilesInfoService(app), handleResponseHeaders);
 	app.use('/wopi/files/:fileId/contents', new WopiFilesContentsService(app), handleResponseHeaders);
+  app.use('/wopi/files/:fileId', new WopiFilesInfoService(app), handleResponseHeaders);
 
 	// Get our initialize service to that we can bind hooks
 	const filesService = app.service('/wopi/files/:fileId');
