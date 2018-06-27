@@ -23,7 +23,7 @@ const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
 const wopi = require('./wopi');
-
+const socket = require('./socket');
 const mongoose = require('mongoose');
 
 module.exports = function () {
@@ -54,6 +54,7 @@ module.exports = function () {
 	app.configure(notification);
 	app.configure(releases);
 	app.configure(helpdesk);
-    app.configure(statistic);
-    app.configure(wopi);
+  app.configure(statistic);
+  app.configure(wopi);
+  app.configure(socket);
 };
