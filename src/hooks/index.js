@@ -386,7 +386,7 @@ exports.sendEmail = (hook, maildata) => {
 	if (emails.length > 0){
 		emails.map(email => {
 			let re = /\S+@\S+\.\S+/;
-    		if (re.test(email)){
+			if (re.test(email)){
 				receipients.push(email);
 			}
 		});
@@ -411,7 +411,7 @@ exports.sendEmail = (hook, maildata) => {
 					subject: maildata.subject || "E-Mail von der Schul-Cloud",
 					headers: maildata.headers || {},
 					content: {
-						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
 						"html": ""
 					}
 				}).catch (error => {
@@ -431,7 +431,7 @@ exports.sendEmail = (hook, maildata) => {
 				subject: maildata.subject || "E-Mail von der Schul-Cloud",
 				headers: maildata.headers || {},
 				content: {
-					"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." }, 
+					"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
 					"html": ""
 				}
 			})
