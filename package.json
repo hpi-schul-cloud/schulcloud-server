@@ -23,11 +23,12 @@
     "setup": "./backup.sh -p setup/ -a import",
     "start": "node src/",
     "startd": "nodemon src/",
-	"debug": "nodemon --inspect=5959 src/",
+    "debug": "nodemon --inspect=5959 src/",
     "coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- -- test/**/*.test.js",
     "mocha": "NODE_ENV=test mocha test/ --recursive",
     "mocha-windows": "set NODE_ENV=test && mocha test/ --recursive",
-    "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive"
+    "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
+    "mocha-test-specific-windows": "set NODE_ENV=test && mocha test/app.hooks.test.js"
   },
   "dependencies": {
     "aws-sdk": "^2.7.24",
