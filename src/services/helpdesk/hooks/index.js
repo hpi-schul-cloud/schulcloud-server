@@ -33,7 +33,10 @@ exports.after = {
 			"subject": "Ein Problem wurde gemeldet.",
 			"roles": ["helpdesk", "administrator"],
 			"content": {
-				"text": createinfoText(hook.params.account.username, hook.data.category, hook.data.subject)
+				"text": createinfoText(
+					(hook.params.account||{}).username||"nouser",
+					(hook.data||{}).category||"nocategory",
+					(hook.data||{}).subject||"nosubject" )
 			}
 		});
 	}],
