@@ -130,5 +130,41 @@ module.exports = {
 			summary: 'Creates a new signed url for the given file information and path, e.g. for uploading or downloading',
 			notes: 'Returns a url as string'
 		}
+	},
+	copyService: {
+		description: 'A service for copying files',
+		patch: {
+			parameters: [
+				{
+					description: 'The path where the file can be found/should be created',
+					required: true,
+					name: 'oldPath',
+					type: 'string',
+					in: 'body'
+				},
+				{
+					description: 'The path where the copied file should be stored',
+					required: true,
+					name: 'newPath',
+					type: 'string',
+					in: 'body'
+				},
+				{
+					description: 'The name of the file which will be copied',
+					required: true,
+					name: 'fileName',
+					type: 'string',
+					in: 'body'
+				},
+				{
+					description: 'Indicates the school-bucket, if the file is stored in an other school',
+					required: false,
+					name: 'externalSchoolId',
+					type: 'string',
+					in: 'body'
+				}
+			],
+			summary: 'Copies a file from a given path to a new file'
+		}
 	}
 };
