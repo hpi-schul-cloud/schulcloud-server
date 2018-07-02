@@ -1,14 +1,14 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const school = require('./model');
+const schoolModels = require('./model');
 const hooks = require('./hooks');
 
 module.exports = function () {
 	const app = this;
 
 	const options = {
-		Model: school,
+		Model: schoolModels.schoolModel,
 		paginate: {
 			default: 50,
 			max: 250
@@ -27,4 +27,28 @@ module.exports = function () {
 
 	// Set up our after hooks
 	schoolService.after(hooks.after);
+
+	/* year Service */
+	app.use('/years', service({
+		Model: schoolModels.yearModel,
+		paginate: {
+			default: 500,
+			max: 5000
+		}
+	}));
+	const yearService = app.service('/years');
+	yearService.before(hooks.before);
+	yearService.after(hooks.after);
+
+	/* gradeLevel Service */
+	app.use('/gradeLevels', service({
+		Model: schoolModels.gradeLevelModel,
+		paginate: {
+			default: 500,
+			max: 5000
+		}
+	}));
+	const gradeLevelService = app.service('/gradeLevels');
+	gradeLevelService.before(hooks.before);
+	gradeLevelService.after(hooks.after);
 };

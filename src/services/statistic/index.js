@@ -22,8 +22,8 @@ let promises = [
 	},
 	{
 		name: 'schools',
-		promise: schoolModel.count().exec(),
-		model: schoolModel.find().exec()
+		promise: schoolModel.schoolModel.count().exec(),
+		model: schoolModel.schoolModel.find().exec()
 	},
 	{
 		name: 'accounts',

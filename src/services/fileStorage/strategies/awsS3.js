@@ -114,7 +114,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	create(schoolId) {
 		if (!schoolId) return Promise.reject(new errors.BadRequest('No school id parameter given'));
-		return SchoolModel.findById(schoolId).exec()
+		return SchoolModel.schoolModel.findById(schoolId).exec()
 			.then((result) => {
 				if (!result) return Promise.reject(new errors.NotFound('school not found'));
 				const awsObject = createAWSObject(result._id);
