@@ -9,6 +9,7 @@ const removeLeadingSlash = require('./utils/filePathHelper').removeLeadingSlash;
 const generateFlatFileName = require('./utils/filePathHelper').generateFileNameSuffix;
 const FileModel = require('./model').fileModel;
 const DirectoryModel = require('./model').directoryModel;
+const LessonModel = require('../lesson/model');
 
 const strategies = {
 	awsS3: AWSStrategy
@@ -53,11 +54,33 @@ const relinkAllObjectsInDirectory = (oldPath, newPath, model) => {
 	.then(objects => {
 		return Promise.all(
 			objects.map(o => {
+				let oldKey = o.key;
 				// just changed that substring of path which ends on the renamed directory's old path (because of deeper nested files)
 				o.path = newPath + "/" + o.path.substring(oldPath.length + 1);
 				o.key = o.path + o.name;
-				return model.update({_id: o._id}, o).exec();
+				return model.update({_id: o._id}, o).exec().then(_ => {
+					// also relink object (actually files) which are included in lessons
+					return relinkFileInLessons(oldKey, o.key);
+				});
 			}));
+	});
+};
+
+/** modifies the file-link in all corresponding lessons */
+const relinkFileInLessons = (oldPath, newPath) => {
+	return LessonModel.find({"contents.content.text": { $regex: oldPath, $options: 'i'}}).then(lessons => {
+		if (lessons && lessons.length > 0) {
+			return Promise.all(lessons.map(l => {
+				l.contents.map(content => {
+					if (content.component === "text" && content.content.text) {
+							content.content.text = content.content.text.replace(new RegExp(oldPath, "g"), newPath);
+					}
+				});
+				
+				return LessonModel.update({_id: l._id}, l).exec();
+			}));
+		}
+		return Promise.resolve(_);
 	});
 };
 
@@ -283,8 +306,8 @@ class FileRenameService {
 						
 						return FileModel.update({_id: file._id}, file).exec()
 							.then(_ => {
-								// todo: modify lessons which include the given file
-								return Promise.resolve(_);
+								// modify lessons which include the given file
+								return relinkFileInLessons(path, file.key);
 							});
 					});
 				});
