@@ -28,6 +28,10 @@ class AbstractFileStorageStrategy {
 	deleteDirectory() {
 		throw new TypeError("deleteDirectory method has to be implemented.");
 	}
+
+	copyFile() {
+		throw new TypeError("copyFile method has to be implemented.");
+	}
 }
 
 module.exports = AbstractFileStorageStrategy;
