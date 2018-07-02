@@ -25,7 +25,7 @@ class WopiFilesInfoService {
 	find({fileId, account}) {
 		// check whether a valid file is requested
 		return FileModel.findOne({_id: fileId}).then(file => {
-			if (!file) throw new errors.NotFound("Not a valid Schul-Cloud file!");
+			if (!file) throw new errors.NotFound("The requested file was not found!");
 
 			// check for permissions
 			return filePermissionHelper.checkPermissions(account.userId, file.path).then(_ => {
@@ -69,7 +69,7 @@ class WopiFilesContentsService {
 
 		// check whether a valid file is requested
 		return FileModel.findOne({_id: fileId}).then(file => {
-			if (!file) throw new errors.NotFound("Not a valid Schul-Cloud file!");
+			if (!file) throw new errors.NotFound("The requested file was not found!");
 
 			// generate signed Url for fetching file from storage
 			return signedUrlService.create({
