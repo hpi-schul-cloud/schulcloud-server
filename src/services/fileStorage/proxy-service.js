@@ -255,6 +255,42 @@ class DirectoryService {
 	}
 }
 
+class FileRenameService {
+		constructor() {
+			this.docs = swaggerDocs.fileRenameService;
+		}
+
+		/**
+		 * @param data, contains path, newName
+		 * @returns {Promise}
+		 */
+		create(data, params) {
+			let userId = params.payload.userId;
+			let path = data.path;
+			let newName = data.newName;
+
+			if (!path || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
+
+			return filePermissionHelper.checkPermissions(userId, path)
+				.then(_ => {
+					// find file and rename it
+					return FileModel.findOne({key: path}).exec()
+					.then(file => {
+						if (!file) return Promise.reject(new errors.NotFound('The given file was not found!'));
+
+						file.name = newName;
+						file.key = file.path + newName;
+						
+						return FileModel.update({_id: file._id}, file).exec()
+							.then(_ => {
+								// todo: modify lessons which include the given file
+								return Promise.resolve(_);
+							});
+					});
+				});
+		}
+}
+
 class DirectoryRenameService {
 		constructor() {
 			this.docs = swaggerDocs.directoryRenameService;
@@ -273,7 +309,7 @@ class DirectoryRenameService {
 	
 			return filePermissionHelper.checkPermissions(userId, path)
 				.then(_ => {
-					// find directory and renaming it
+					// find directory and rename it
 					return DirectoryModel.findOne({key: path}).exec()
 					.then(directory => {
 						if (!directory) return Promise.reject(new errors.NotFound('The given directory was not found!'));
@@ -383,6 +419,7 @@ module.exports = function () {
 	// Initialize our service with any options it requires
 	app.use('/fileStorage/directories', new DirectoryService());
 	app.use('/fileStorage/directories/rename', new DirectoryRenameService());
+	app.use('/fileStorage/rename', new FileRenameService());
 	app.use('/fileStorage/signedUrl', new SignedUrlService());
 	app.use('/fileStorage/total', new FileTotalSizeService());
 	app.use('/fileStorage/copy', new CopyService());
@@ -393,6 +430,7 @@ module.exports = function () {
 	const signedUrlService = app.service('/fileStorage/signedUrl');
 	const directoryService = app.service('/fileStorage/directories');
 	const directoryRenameService = app.service('/fileStorage/directories/rename');
+	const fileRenameService = app.service('/fileStorage/rename');
 	const fileTotalSizeService = app.service('/fileStorage/total');
 	const copyService = app.service('/fileStorage/copy');
 
@@ -401,6 +439,7 @@ module.exports = function () {
 	signedUrlService.before(hooks.before);
 	directoryService.before(hooks.before);
 	directoryRenameService.before(hooks.before);
+	fileRenameService.before(hooks.before);
 	fileTotalSizeService.before(hooks.before);
 	copyService.before(hooks.before);
 
@@ -409,6 +448,7 @@ module.exports = function () {
 	signedUrlService.after(hooks.after);
 	directoryService.after(hooks.after);
 	directoryRenameService.after(hooks.after);
+	fileRenameService.after(hooks.after);
 	fileTotalSizeService.after(hooks.after);
 	copyService.after(hooks.after);
 };
