@@ -17,6 +17,7 @@ const FileModel = require('../../fileStorage/model').fileModel;
  };
 
  /** https://wopirest.readthedocs.io/en/latest/files/Lock.html
+  * https://wopirest.readthedocs.io/en/latest/files/RefreshLock.html
   * adoption: the lockId was checked in a hook before
   */
  const lock = (file) => {
@@ -27,16 +28,23 @@ const FileModel = require('../../fileStorage/model').fileModel;
  };
 
  /** https://wopirest.readthedocs.io/en/latest/files/GetLock.html */
- const getLock = (file, payload, account, app) => {
-  return FileModel.findOne({_id: file._id}).exec().then(result => {
+ const getLock = (file) => {
+  return FileModel.findOne({_id: file._id}).exec().then(_ => {
     return Promise.resolve({lockId: file.lockId});
   });
+ };
+
+ /** https://wopirest.readthedocs.io/en/latest/files/Unlock.html */
+ const unlock = (file) => {
+   return FileModel.update({_id: file._id}, {$unset: {lockId: 1}}).exec();
  };
 
  const actionHeaderMap = {
    'DELETE': deleteFile,
    'LOCK': lock,
-   'GET_LOCK': getLock
+   'GET_LOCK': getLock,
+   'UNLOCK': unlock,
+   'REFRESH_LOCK': lock
  };
 
  module.exports = header => {
