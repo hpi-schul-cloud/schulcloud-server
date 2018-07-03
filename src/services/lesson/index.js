@@ -36,6 +36,7 @@ class LessonFilesService {
 	}
 }
 
+//TODO: Create better hooks or make an internal service, not usuable for others.
 class LessonCopyService {
 
 	constructor(app) {

@@ -32,11 +32,12 @@ class CourseCopyService {
 					if (err)
 						return err;
 					else {
-						let homeworkPromise = homeworkModel.find({courseId: data._id});
+						let homeworkPromise = homeworkModel.find({courseId: data._id}); //TODO: populate lessonId
 						let lessonsPromise = lessonsModel.find({courseId: data._id});
 
 						Promise.all([homeworkPromise, lessonsPromise])
 							.then(([homeworks, lessons]) => {
+								//TODO: push result into array, wrap in Promise
 								lessons.forEach(lesson => {
 									this.app.service('/lessons/copy').create({
 										lessonId: lesson._id,
@@ -45,6 +46,8 @@ class CourseCopyService {
 										userId: params.account.userId
 									});
 								});
+
+								//TODO: TASK: clone homework. CONDITIONS: Wait for LessonClone Promise. If homework contains lessonId, search for new replacement by lesson Name.
 
 							});
 					}
