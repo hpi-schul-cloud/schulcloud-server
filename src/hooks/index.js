@@ -216,10 +216,9 @@ exports.injectUserId = (hook) => {
 		hook.params.account = { userId: hook.data.userId };
 		hook.params.payload = { userId: hook.data.userId };
 		delete hook.data.userId;
+	}
 
-		return hook;
-	} else
-		return hook;
+	return hook;
 };
 
 exports.restrictToCurrentSchool = hook => {
