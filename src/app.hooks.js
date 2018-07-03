@@ -9,21 +9,19 @@ const stripJs = require('strip-js');
  */
 const stripDeepJs = (data) => {
 	if (typeof data === "object") {
-		for (var key in data) {
-			let hasKey = data.hasOwnProperty(key);
-			if(hasKey && typeof data[key] === "string") {
-				data[key] = stripJs(data[key]);
-			} else if (hasKey && Array.isArray(data[key])) {
-				stripDeepJs(data[key]);
-			} else if (hasKey && typeof data[key] === "object") {
-				stripDeepJs(data[key]);
-			}
-		}
-	} else if (typeof data === "string") {
+		Object.entries(data).forEach(([key, value]) => {
+			if(typeof value === "string")
+				data[key] = stripJs(value);
+			else if (Array.isArray(value))
+				stripDeepJs(value);
+			else if (typeof value === "object")
+				stripDeepJs(value);
+		});
+	} else if (typeof data === "string")
 		data = stripJs(data);
-	} else if (Array.isArray(data)) {
+	else if (Array.isArray(data)) {
 		for (let i = 0; i < data.length; i++) {
-			if (typeof data === "string") {
+			if (typeof data[i] === "string") {
 				data[i] = stripJs(data[i]);
 			} else if (Array.isArray(data[i])) {
 				stripDeepJs(data[i]);
