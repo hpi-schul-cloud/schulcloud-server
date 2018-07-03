@@ -12,6 +12,8 @@ const filePostActionHelper = require('./utils/filePostActionHelper');
 const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
 const docs = require('./docs');
 
+const wopiPrefix = '/wopi/files/';
+
 /** Wopi-CheckFileInfo-Service
  * returns information about a file, a user’s permissions on that file, and general information about the capabilities that the WOPI host has on the file.
  * https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html
@@ -127,13 +129,12 @@ module.exports = function () {
 	const app = this;
 
 	// Initialize our service with any options it requires
-	// todo: Refactor: Standardize wopi path-names (not to write every time) 
-	app.use('/wopi/files/:fileId/contents', new WopiFilesContentsService(app), handleResponseHeaders);
-  app.use('/wopi/files/:fileId', new WopiFilesInfoService(app), handleResponseHeaders);
+	app.use(wopiPrefix + ':fileId/contents', new WopiFilesContentsService(app), handleResponseHeaders);
+  app.use(wopiPrefix + ':fileId', new WopiFilesInfoService(app), handleResponseHeaders);
 
 	// Get our initialize service to that we can bind hooks
-	const filesService = app.service('/wopi/files/:fileId');
-	const filesContentService = app.service('/wopi/files/:fileId/contents');
+	const filesService = app.service(wopiPrefix + ':fileId');
+	const filesContentService = app.service(wopiPrefix + ':fileId/contents');
 
 	// Set up our before hooks
 	filesService.before(hooks.before);
