@@ -4,9 +4,12 @@ const service = require('feathers-mongoose');
 const {courseModel, courseGroupModel, classModel, gradeModel} = require('./model');
 const hooks = require('./hooks');
 const courseGroupsHooks = require('./hooks/courseGroups');
+const courseCopyService = require('./course-copy-service');
 
 module.exports = function() {
 	const app = this;
+
+	app.configure(courseCopyService);
 
 	/* Course model */
 	app.use('/courses', service({

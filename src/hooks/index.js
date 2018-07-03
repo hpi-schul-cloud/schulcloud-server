@@ -211,6 +211,17 @@ exports.checkCorrectCourseId = (hook) => {
 		});
 };
 
+exports.injectUserId = (hook) => {
+	if (typeof (hook.params.provider) == 'undefined') {
+		hook.params.account = { userId: hook.data.userId };
+		hook.params.payload = { userId: hook.data.userId };
+		delete hook.data.userId;
+
+		return hook;
+	} else
+		return hook;
+};
+
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
 	return userService.find({
@@ -356,12 +367,12 @@ exports.checkSchoolOwnership = hook => {
 exports.sendEmail = (hook, maildata) => {
 	const userService = hook.app.service('/users');
 	const mailService = hook.app.service('/mails');
-	
+
 	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
 	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
 	let userIds = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
 	let receipients = [];
-	
+
 	let promises = [];
 
 	if (roles.length > 0) {
@@ -374,7 +385,7 @@ exports.sendEmail = (hook, maildata) => {
 			}})
 		);
 	}
-	
+
 	if (userIds.length > 0){
 		userIds.map (id => {
 			promises.push(
@@ -382,7 +393,7 @@ exports.sendEmail = (hook, maildata) => {
 			);
 		});
 	}
-	
+
 	if (emails.length > 0){
 		emails.map(email => {
 			let re = /\S+@\S+\.\S+/;
