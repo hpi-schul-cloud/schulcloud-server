@@ -76,11 +76,11 @@ const relinkFileInLessons = (oldPath, newPath) => {
 							content.content.text = content.content.text.replace(new RegExp(oldPath, "g"), newPath);
 					}
 				});
-				
+
 				return LessonModel.update({_id: l._id}, l).exec();
 			}));
 		}
-		return Promise.resolve(_);
+		return Promise.resolve();
 	});
 };
 
@@ -183,15 +183,15 @@ class SignedUrlService {
 	 * @returns {Promise}
 	 */
 	create({path, fileType, action}, params) {
-		
+
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
 		let fileName = encodeURIComponent(pathUtil.basename(path));
 		let dirName = pathUtil.dirname(path);
-		
+
 		// normalize utf-8 chars
 		path = `${dirName}/${fileName}`;
-		
+
 		// todo: maybe refactor search so that I can put the file-proxy-id (@id) instead of the full path
 
 		// all files are uploaded to a flat-storage architecture without real folders
@@ -303,7 +303,7 @@ class FileRenameService {
 
 						file.name = newName;
 						file.key = file.path + newName;
-						
+
 						return FileModel.update({_id: file._id}, file).exec()
 							.then(_ => {
 								// modify lessons which include the given file
@@ -318,7 +318,7 @@ class DirectoryRenameService {
 		constructor() {
 			this.docs = swaggerDocs.directoryRenameService;
 		}
-	
+
 		/**
 		 * @param data, contains path, newName
 		 * @returns {Promise}
@@ -329,7 +329,7 @@ class DirectoryRenameService {
 			let newName = data.newName;
 
 			if (!path || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
-	
+
 			return filePermissionHelper.checkPermissions(userId, path)
 				.then(_ => {
 					// find directory and rename it
@@ -339,7 +339,7 @@ class DirectoryRenameService {
 
 						directory.name = newName;
 						directory.key = directory.path + newName;
-						
+
 						return DirectoryModel.update({_id: directory._id}, directory).exec()
 							.then(_ => {
 								// change paths and keys of all files and directories in the renamed directory
@@ -379,13 +379,13 @@ class CopyService {
 	}
 
 	/**
-	 * @param data, contains oldPath, newPath and externalSchoolId (optional). 
+	 * @param data, contains oldPath, newPath and externalSchoolId (optional).
 	 * @returns {Promise}
 	 */
 	create(data, params) {
 		let {fileName, oldPath, newPath, externalSchoolId} = data;
 		let userId = params.account.userId;
-		
+
 		if (!oldPath || !fileName || !newPath || !userId) {
 			return Promise.reject(new errors.BadRequest('Missing parameters'));
 		}
@@ -404,19 +404,19 @@ class CopyService {
 							let extension = fileName.split('.').pop();
 							newFileName = `${name}_${Date.now()}.${extension}`;
 						}
-						
+
 						// check permissions for oldPath and newPath
 						let oldPathPromise = filePermissionHelper.checkPermissions(userId, oldPath + fileName);
 						let newPathPromise = filePermissionHelper.checkPermissions(userId, newPath + newFileName);
 
 						return Promise.all([oldPathPromise, newPathPromise]).then(_ => {
-							
+
 							// copy file on external storage
 							let newFlatFileName = generateFlatFileName(newFileName);
 							return createCorrectStrategy(params.payload.fileStorageType).copyFile(userId, file.flatFileName, newFlatFileName, externalSchoolId).then(_ => {
 
 								// create proxy object from copied;
-								let newFileObject = { 
+								let newFileObject = {
 									key: newPath + newFileName,
 									path: newPath,
 									name: newFileName,
@@ -425,7 +425,7 @@ class CopyService {
 									flatFileName: newFlatFileName,
 									thumbnail: file.thumbnail,
 									schoolId: file.schoolId,
-									permissions: file.permissions || [] 
+									permissions: file.permissions || []
 								};
 
 								return FileModel.create(newFileObject);
