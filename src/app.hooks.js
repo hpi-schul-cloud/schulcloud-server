@@ -8,7 +8,7 @@ const stripJs = require('strip-js');
  * @returns data - clean without JS
  */
 const stripDeepJs = (data) => {
-	if (typeof data === "object") {
+	if (typeof data === "object" && data !== null) {
 		Object.entries(data).forEach(([key, value]) => {
 			if(typeof value === "string")
 				data[key] = stripJs(value);
