@@ -51,7 +51,11 @@ const courseGroupModel = mongoose.model('courseGroup', getUserGroupSchema({
 
 const classModel =  mongoose.model('class', getUserGroupSchema({
 	teacherIds: [{type: Schema.Types.ObjectId, ref: 'user', required: true}],
-	invitationLink: {type: String}
+	invitationLink: {type: String},
+
+	year: {type: Schema.Types.ObjectId, ref: 'year'},
+	greadeLevel: {type: Schema.Types.ObjectId, ref: 'gradeLevel'},
+	nameSuffix: {type: String}
 }));
 const gradeModel =  mongoose.model('grade', getUserGroupSchema());
 
