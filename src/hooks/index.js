@@ -348,3 +348,97 @@ exports.checkSchoolOwnership = hook => {
 				throw new errors.Forbidden('You do not have valid permissions to access this.');
 		});
 };
+
+//TODO: later: Template building
+//z.B.: maildata.template = { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
+//if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
+// mail.html = generatedHtml || "";
+exports.sendEmail = (hook, maildata) => {
+	const userService = hook.app.service('/users');
+	const mailService = hook.app.service('/mails');
+	
+	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
+	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
+	let userIds = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
+	let receipients = [];
+	
+	let promises = [];
+
+	if (roles.length > 0) {
+		promises.push(
+			userService.find({query: {
+				roles: roles,
+				schoolId: hook.data.schoolId,
+				$populate: ['roles'],
+				$limit : 1000
+			}})
+		);
+	}
+	
+	if (userIds.length > 0){
+		userIds.map (id => {
+			promises.push(
+				userService.get(id)
+			);
+		});
+	}
+	
+	if (emails.length > 0){
+		emails.map(email => {
+			let re = /\S+@\S+\.\S+/;
+			if (re.test(email)){
+				receipients.push(email);
+			}
+		});
+	}
+
+	if(promises.length > 0){
+		Promise.all(promises)
+		.then(promise => {
+			promise.map(result => {
+				if (result.data){
+					result.data.map(user => {
+						receipients.push(user.email);
+						});
+				} else if (result.email) {
+					receipients.push(result.email);
+				}
+			});
+
+			_.uniq(receipients).map(email => {
+				mailService.create({
+					email: email,
+					subject: maildata.subject || "E-Mail von der Schul-Cloud",
+					headers: maildata.headers || {},
+					content: {
+						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
+						"html": ""
+					}
+				}).catch (error => {
+					throw new errors.BadRequest(error.message);
+				});
+			});
+		return hook;
+		})
+		.catch(error => {
+			throw new errors.BadRequest(error.message);
+		});
+	}
+	else {
+		_.uniq(receipients).map(email=> {
+			mailService.create({
+				email: email,
+				subject: maildata.subject || "E-Mail von der Schul-Cloud",
+				headers: maildata.headers || {},
+				content: {
+					"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
+					"html": ""
+				}
+			})
+			.catch (error => {
+				throw new errors.BadRequest(error.message);
+			});
+		});
+		return hook;
+	}
+};
