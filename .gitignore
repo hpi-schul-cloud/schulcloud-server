@@ -35,3 +35,5 @@ data/
 backup/*
 !backup/setup/
 
+# Visual Studio Code data
+.vscode
