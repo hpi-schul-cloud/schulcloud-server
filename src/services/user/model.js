@@ -15,12 +15,13 @@ const userSchema = new Schema({
 	lastName: {type: String, required: true},
 
 	gender: {type: String, enum: gender},
-
 	birthday: {type: Date},
 
-	preferences: {type: Object}, // blackbox for frontend stuff like "cookies accepted"
+	children: [{type: Schema.Types.ObjectId, ref: 'user'}],
+	parents: [{type: Schema.Types.ObjectId, ref: 'user'}],
+	hasAnalogPrivacyConsent: {type: Boolean},
 
-	children: [{type: Schema.Types.ObjectId, ref: 'user'}]
+	preferences: {type: Object} // blackbox for frontend stuff like "cookies accepted"
 },{
 	timestamps: true
 });
