@@ -2,13 +2,14 @@
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
+const _ = require('lodash');
 const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function (hookForRemoteRequests) {
 	return function (hook) {
-		if (typeof(hook.params.provider) != 'undefined') {	// meaning it's not a local call
+		if (typeof (hook.params.provider) != 'undefined') {	// meaning it's not a local call
 			// Call the specified hook
 			return hookForRemoteRequests.call(this, hook);
 		}
@@ -28,7 +29,7 @@ exports.isAdmin = function (options) {
 exports.isSuperHero = function (options) {
 	return hook => {
 		const userService = hook.app.service('/users/');
-		return userService.find({query: {_id: (hook.params.account.userId || ""), $populate: 'roles'}})
+		return userService.find({ query: { _id: (hook.params.account.userId || ""), $populate: 'roles' } })
 			.then(user => {
 				user.data[0].roles = Array.from(user.data[0].roles);
 				if (!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
@@ -37,6 +38,17 @@ exports.isSuperHero = function (options) {
 				return Promise.resolve(hook);
 			});
 	};
+};
+
+exports.hasRole = function (hook, userId, roleName) {
+	const userService = hook.app.service('/users/');
+
+	return userService.get((userId || ''), { query: { $populate: 'roles'}})
+		.then(user => {
+			user.roles = Array.from(user.roles);
+
+			return (_.some(user.roles, u => u.name == roleName));
+			});
 };
 
 exports.hasPermission = function (permissionName) {
@@ -48,7 +60,7 @@ exports.hasPermission = function (permissionName) {
 
 		// If an api key was provided, skip
 		if ((hook.params.headers || {})["x-api-key"]) {
-			return KeysModel.findOne({key: hook.params.headers["x-api-key"]})
+			return KeysModel.findOne({ key: hook.params.headers["x-api-key"] })
 				.then(res => {
 					if (!res)
 						throw new errors.NotAuthenticated('API Key is invalid');
@@ -64,7 +76,7 @@ exports.hasPermission = function (permissionName) {
 
 		// Otherwise check for user permissions
 		const service = hook.app.service('/users/');
-		return service.get({_id: (hook.params.account.userId || "")})
+		return service.get({ _id: (hook.params.account.userId || "") })
 			.then(user => {
 				user.permissions = Array.from(user.permissions);
 
@@ -79,7 +91,7 @@ exports.hasPermission = function (permissionName) {
 // non hook releated function
 exports.hasPermissionNoHook = function (hook, userId, permissionName) {
 	const service = hook.app.service('/users/');
-	return service.get({_id: (userId || "")})
+	return service.get({ _id: (userId || "") })
 		.then(user => {
 			user.permissions = Array.from(user.permissions);
 			return (user.permissions || []).includes(permissionName);
@@ -92,7 +104,7 @@ exports.hasRoleNoHook = function (hook, userId, roleName, account = false) {
 	if (account) {
 		return accountService.get(userId)
 			.then(account => {
-				return userService.find({query: {_id: (account.userId || ""), $populate: 'roles'}})
+				return userService.find({ query: { _id: (account.userId || ""), $populate: 'roles' } })
 					.then(user => {
 						user.data[0].roles = Array.from(user.data[0].roles);
 
@@ -100,7 +112,7 @@ exports.hasRoleNoHook = function (hook, userId, roleName, account = false) {
 					});
 			});
 	} else {
-		return userService.find({query: {_id: (userId || ""), $populate: 'roles'}})
+		return userService.find({ query: { _id: (userId || ""), $populate: 'roles' } })
 			.then(user => {
 				user.data[0].roles = Array.from(user.data[0].roles);
 
@@ -144,7 +156,7 @@ exports.permitGroupOperation = (hook) => {
 const _resolveToId = (service, key, value) => {
 	let query = {};
 	query[key] = value;
-	return service.find({query})
+	return service.find({ query })
 		.then(results => {
 			const result = results.data[0];
 			if (!result) throw new TypeError(`No records found where ${key} is ${value}.`);
@@ -187,6 +199,18 @@ exports.mapPaginationQuery = (hook) => {
 	}
 };
 
+exports.checkCorrectCourseId = (hook) => {
+	let courseService = hook.app.service('courses');
+
+	return courseService.find({ query: { teacherIds: {$in: [hook.params.account.userId] } }})
+		.then(courses => {
+			if (courses.data.some(course => { return course._id == hook.data.courseId; }))
+				return hook;
+			else
+				throw new errors.Forbidden("The entered course doesn't belong to you!");
+		});
+};
+
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
 	return userService.find({
@@ -202,13 +226,88 @@ exports.restrictToCurrentSchool = hook => {
 		});
 		if (access)
 			return hook;
-		hook.params.query.schoolId = res.data[0].schoolId;
+		if (hook.method == "get" || hook.method == "find") {
+			if (hook.params.query.schoolId == undefined) {
+				hook.params.query.schoolId = res.data[0].schoolId;
+			} else if (hook.params.query.schoolId != res.data[0].schoolId) {
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+			}
+		} else {
+			if (hook.data.schoolId == undefined) {
+				hook.data.schoolId = res.data[0].schoolId.toString();
+			} else if (hook.data.schoolId != res.data[0].schoolId) {
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+			}
+		}
+
+		return hook;
+	});
+};
+
+exports.restrictToUsersOwnCourses = hook => {
+	let userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'admin' || role.name === 'superhero' )
+				access = true;
+		});
+		if (access)
+			return hook;
+		hook.params.query.$or =[
+			{ userIds: res.data[0]._id },
+			{ teacherIds: res.data[0]._id }
+		];
+		return hook;
+	});
+};
+
+//TODO: hooks $or condition gets overwritten if set, check first
+exports.restrictToUsersOwnCourses = hook => {
+	let userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'administrator' || role.name === 'superhero' )
+				access = true;
+		});
+		if (access)
+			return hook;
+
+		if (hook.method === "get") {
+			let courseService = hook.app.service('courses');
+			return courseService.get(hook.id).then(course => {
+				if (!(_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(course.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(course.substitutionIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
+					throw new errors.Forbidden('You are not in that course.');
+				}
+			});
+		} else if (hook.method === "find") {
+			if (typeof(hook.params.query.$or) === 'undefined') {
+				hook.params.query.$or = [
+					{ userIds: res.data[0]._id },
+					{ teacherIds: res.data[0]._id },
+					{ substitutionIds: res.data[0]._id }
+				];
+			}
+		}
 		return hook;
 	});
 };
 
 // meant to be used as an after hook
-exports.denyIfNotCurrentSchool = ({errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!'}) =>
+exports.denyIfNotCurrentSchool = ({ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' }) =>
 	hook => {
 		let userService = hook.app.service("users");
 		return userService.find({
@@ -248,4 +347,98 @@ exports.checkSchoolOwnership = hook => {
 			else
 				throw new errors.Forbidden('You do not have valid permissions to access this.');
 		});
+};
+
+//TODO: later: Template building
+//z.B.: maildata.template = { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
+//if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
+// mail.html = generatedHtml || "";
+exports.sendEmail = (hook, maildata) => {
+	const userService = hook.app.service('/users');
+	const mailService = hook.app.service('/mails');
+	
+	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
+	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
+	let userIds = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
+	let receipients = [];
+	
+	let promises = [];
+
+	if (roles.length > 0) {
+		promises.push(
+			userService.find({query: {
+				roles: roles,
+				schoolId: hook.data.schoolId,
+				$populate: ['roles'],
+				$limit : 1000
+			}})
+		);
+	}
+	
+	if (userIds.length > 0){
+		userIds.map (id => {
+			promises.push(
+				userService.get(id)
+			);
+		});
+	}
+	
+	if (emails.length > 0){
+		emails.map(email => {
+			let re = /\S+@\S+\.\S+/;
+			if (re.test(email)){
+				receipients.push(email);
+			}
+		});
+	}
+
+	if(promises.length > 0){
+		Promise.all(promises)
+		.then(promise => {
+			promise.map(result => {
+				if (result.data){
+					result.data.map(user => {
+						receipients.push(user.email);
+						});
+				} else if (result.email) {
+					receipients.push(result.email);
+				}
+			});
+
+			_.uniq(receipients).map(email => {
+				mailService.create({
+					email: email,
+					subject: maildata.subject || "E-Mail von der Schul-Cloud",
+					headers: maildata.headers || {},
+					content: {
+						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
+						"html": ""
+					}
+				}).catch (error => {
+					throw new errors.BadRequest(error.message);
+				});
+			});
+		return hook;
+		})
+		.catch(error => {
+			throw new errors.BadRequest(error.message);
+		});
+	}
+	else {
+		_.uniq(receipients).map(email=> {
+			mailService.create({
+				email: email,
+				subject: maildata.subject || "E-Mail von der Schul-Cloud",
+				headers: maildata.headers || {},
+				content: {
+					"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
+					"html": ""
+				}
+			})
+			.catch (error => {
+				throw new errors.BadRequest(error.message);
+			});
+		});
+		return hook;
+	}
 };

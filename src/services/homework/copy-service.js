@@ -22,7 +22,7 @@ class HomeworkCopyService {
 						return err;
 					else
 						return res;
-				})
+				});
 			});
 	}
 }

@@ -32,9 +32,9 @@ exports.before = {
 	}],
 	find: [globalHooks.hasPermission('TOPIC_VIEW')],
 	get: [globalHooks.hasPermission('TOPIC_VIEW')],
-	create: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true)],
+	create: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true), globalHooks.checkCorrectCourseId],
 	update: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false)],
-	patch: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false), globalHooks.permitGroupOperation],
+	patch: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false), globalHooks.permitGroupOperation, globalHooks.checkCorrectCourseId],
 	remove: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false), globalHooks.permitGroupOperation]
 };
 
