@@ -18,7 +18,9 @@ const userSchema = new Schema({
 
 	birthday: {type: Date},
 
-	preferences: {type: Object} // blackbox for frontend stuff like "cookies accepted"
+	preferences: {type: Object}, // blackbox for frontend stuff like "cookies accepted"
+
+	children: [{type: Schema.Types.ObjectId, ref: 'user'}]
 },{
 	timestamps: true
 });
