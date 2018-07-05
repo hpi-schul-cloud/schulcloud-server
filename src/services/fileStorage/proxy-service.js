@@ -80,7 +80,7 @@ const relinkFileInLessons = (oldPath, newPath) => {
 				return LessonModel.update({_id: l._id}, l).exec();
 			}));
 		}
-		return Promise.resolve();
+		return Promise.resolve({});
 	});
 };
 
