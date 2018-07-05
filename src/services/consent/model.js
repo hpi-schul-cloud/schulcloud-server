@@ -9,11 +9,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const consentSchema = new Schema({
-	userId: {type: Schema.Types.ObjectId, ref: 'user', required: true},
-	name: {type: String},
-	dateOfConsent: {type: Date, 'default': Date.now},
-	parentName: {type: String},
-	dateOfParentConsent: {type: Date, 'default': Date.now}
+	userId: {type: Schema.Types.ObjectId, ref: 'user', required: true, index: true},
+	dateOfUserConsent: {type: Date, 'default': Date.now},
+	parentConsents: [{
+		parentId: {type: Schema.Types.ObjectId, ref: 'user'},
+		dateOfConsent: {type: Date, 'default': Date.now}
+	}]
 });
 
 const consentVersionSchema = new Schema({
