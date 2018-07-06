@@ -28,7 +28,7 @@
     "mocha": "NODE_ENV=test mocha test/ --recursive",
     "mocha-windows": "set NODE_ENV=test && mocha test/ --recursive",
     "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
-    "mocha-test-specific-windows": "set NODE_ENV=test && mocha test/services/homework/index.test.js"
+    "mocha-test-specific-windows": "set NODE_ENV=test && mocha test/app.hooks.test.js"
   },
   "dependencies": {
     "aws-sdk": "^2.7.24",
@@ -74,8 +74,8 @@
     "querystring": "^0.2.0",
     "randexp": "^0.4.6",
     "request-promise-native": "^1.0.3",
+    "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
-    "strip-js": "^1.0.6",
     "winston": "^2.3.0"
   },
   "devDependencies": {

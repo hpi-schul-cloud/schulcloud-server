@@ -1,6 +1,5 @@
 // Global hooks that run for every service
-
-const stripJs = require('strip-js');
+const sanitizeHtml = require('sanitize-html');
 
 /**
  * Strips JS Code from an object/array/string and returns clean version of it
@@ -11,18 +10,18 @@ const stripDeepJs = (data) => {
 	if (typeof data === "object" && data !== null) {
 		Object.entries(data).forEach(([key, value]) => {
 			if(typeof value === "string")
-				data[key] = stripJs(value);
+				data[key] = sanitizeHtml(value);
 			else if (Array.isArray(value))
 				stripDeepJs(value);
 			else if (typeof value === "object")
 				stripDeepJs(value);
 		});
 	} else if (typeof data === "string")
-		data = stripJs(data);
+		data = sanitizeHtml(data);
 	else if (Array.isArray(data)) {
 		for (let i = 0; i < data.length; i++) {
 			if (typeof data[i] === "string") {
-				data[i] = stripJs(data[i]);
+				data[i] = sanitizeHtml(data[i]);
 			} else if (Array.isArray(data[i])) {
 				stripDeepJs(data[i]);
 			} else if (typeof data[i] === "object") {

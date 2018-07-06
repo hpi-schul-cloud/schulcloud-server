@@ -36,15 +36,15 @@ describe('JS Sanitization Service', function () {
 		let postBody = {
 			"schoolId": "0000d186816abba584714c5f",
 			//"schoolId": "5836bb5664582c35df3bc000",
-			"title": '<script>alert("test");</script>SanitizationTest',
-			"content": '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>',
+			"title": '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
+			"content": '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 		};
 		
 		return newsService.create(postBody, {payload: {userId: '0000d213816abba584714c0a'}})
 			.then(news => {
 				currentUsedId = news._id;
-				expect(news.title).to.equal("SanitizationTest");
-				expect(news.content).to.equal("<p>SanitizationTest<a>SanitizationTest</a></p>");
+				expect(news.title).to.equal('SanitizationTest äöüß§$%/()=');
+				expect(news.content).to.equal("<p>SanitizationTest<a>SanitizationTest</a></p>äöüß§$%/()=");
 			});
 	});
 	
@@ -52,6 +52,22 @@ describe('JS Sanitization Service', function () {
 		return newsService.remove(currentUsedId, {payload: {userId: '0000d213816abba584714c0a'}}).then(result => {
 			expect(result).to.not.be.undefined;
 		});
+	});
+	
+	it('POST FAIL /news (JS sanitization)', () => {
+		let postBody = {
+			"schoolId": "0000d186816abba584714c5f",
+			//"schoolId": "5836bb5664582c35df3bc000",
+			"title": '<script>alert("test");</script>',
+			"content": 'a',
+		};
+		
+		return newsService.create(postBody, {payload: {userId: '0000d213816abba584714c0a'}})
+			.catch(exception => {
+				expect(exception).to.not.be.undefined;
+				assert.equal(exception.code, 400);
+				assert.equal(exception.message, "news validation failed: title: Path `title` is required.");
+			});
 	});
 	
 	// ###################################
@@ -63,9 +79,9 @@ describe('JS Sanitization Service', function () {
 	
 	it('POST /helpdesk (JS sanitization)', () => {
 		let postBody = {
-			subject: '<script>alert("test");</script>SanitizationTest',
-			currentState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>',
-			targetState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>',
+			subject: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
+			currentState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			targetState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			category: 'dashboard',
 			schoolId: '0000d186816abba584714c5f'
 			//schoolId: '5836bb5664582c35df3bc000'
@@ -74,9 +90,9 @@ describe('JS Sanitization Service', function () {
 		return helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
 			.then(result => {
 				currentUsedId = result._id;
-				expect(result.subject).to.equal('SanitizationTest');
-				expect(result.currentState).to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>');
-				expect(result.targetState).to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>');
+				expect(result.subject).to.equal('SanitizationTest äöüß§$%/()=');
+				expect(result.currentState).to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>äöüß§$%/()=');
+				expect(result.targetState).to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>äöüß§$%/()=');
 			});
 	});
 	
@@ -84,6 +100,24 @@ describe('JS Sanitization Service', function () {
 		return helpdeskService.remove(currentUsedId, {payload: {userId: '0000d213816abba584714c0a'}})
 			.then(result => {
 				expect(result).to.not.be.undefined;
+			});
+	});
+	
+	it('POST FAIL /helpdesk (JS sanitization)', () => {
+		let postBody = {
+			subject: '<script>alert("test");</script>',
+			currentState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			targetState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			category: 'dashboard',
+			schoolId: '0000d186816abba584714c5f'
+			//schoolId: '5836bb5664582c35df3bc000'
+		};
+		
+		return helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
+			.catch(exception => {
+				expect(exception).to.not.be.undefined;
+				assert.equal(exception.code, 400);
+				assert.equal(exception.message, "problem validation failed: subject: Path `subject` is required.");
 			});
 	});
 	
@@ -116,6 +150,24 @@ describe('JS Sanitization Service', function () {
 		return courseService.remove(currentUsedId, {payload: {userId: '0000d213816abba584714c0a'}})
 			.then(result => {
 				expect(result).to.not.be.undefined;
+			});
+	});
+	
+	it('POST FAIL /courses (JS sanitization)', () => {
+		let postBody = {
+			name: '<script>alert("test");</script>',
+			description: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>',
+			color: '#d32f22',
+			teacherIds: [],
+			schoolId: '0000d186816abba584714c5f'
+			//schoolId: '5836bb5664582c35df3bc000'
+		};
+		
+		return courseService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
+			.catch(exception => {
+				expect(exception).to.not.be.undefined;
+				assert.equal(exception.code, 400);
+				assert.equal(exception.message, "course validation failed: name: Path `name` is required.");
 			});
 	});
 });
