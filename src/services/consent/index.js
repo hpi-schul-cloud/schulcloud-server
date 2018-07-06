@@ -22,7 +22,7 @@ module.exports = function () {
 
 	/*ConsentVersion Model*/
 	app.use('/consentVersions', service({
-		Model: consentModel,
+		Model: consentVersionModel,
 		paginate: {
 			default: 25,
 			max: 100
