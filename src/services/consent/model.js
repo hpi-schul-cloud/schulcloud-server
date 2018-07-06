@@ -18,6 +18,7 @@ const consentSchema = new Schema({
 });
 
 const consentVersionSchema = new Schema({
+	versionNumber: {type: String},
 	consentText: {type: String},
 	date: {type: Date}
 });
