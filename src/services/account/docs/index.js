@@ -34,21 +34,7 @@ module.exports = {
 		},
 		passwordGenService: {
 			find: {
-				parameters: [
-					{
-						description: "query used to generate",
-						required: true,
-						name: "query",
-						type: "object"
-					},
-					{
-						description: "payload",
-						required: true,
-						name: "payload",
-						type: "object"
-					}
-				],
-				summary: "Generates a random String depending on the query parameters"
+				summary: "Generates a random String"
 			}
 		},
 		confirmService:{
