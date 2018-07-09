@@ -140,4 +140,12 @@ describe('wopi service', function () {
 			});
 		});
 	});
+
+	it ('GET /wopi/files/:fileId/contents', () => {
+		assert.ok(app.service('wopi/files/:fileId/contents').find({
+			query: {access_token: testAccessToken},
+      fileId: testFile._id,
+			account: {userId: testUserId}
+		}));
+	});
 });
