@@ -2,6 +2,7 @@
 
 const request = require('request-promise-native');
 const hooks = require('./hooks');
+const swaggerDocs = require('./docs/');
 
 const REQUEST_TIMEOUT = 4000; // in ms
 
@@ -67,113 +68,37 @@ const convertEventToJsonApi = (body) => {
 	};
 };
 
+class SubscriptionsService {
+	constructor(options) {
+		this.options = options || {};
+		this.docs = swaggerDocs.subscriptions;
+	}
+	
+	create(data,params) {
+		
+	}
+	
+	find(params) {		//find as name useful ?
+		
+	}
+	
+	remove(id, params) {
+		
+	}
+	
+	update(id, data, params) {
+		
+	}
+	
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
 class Service {
 	constructor(options) {
 		this.options = options || {};
-		this.docs = {
-			description: 'A proxy-service to handle the standalone schul-cloud calendar service ',
-			create: {
-				parameters: [
-					{
-						description: 'the title or summary of a event',
-						name: 'summary',
-						type: 'string'
-					},
-					{
-						description: 'the location of a event',
-						name: 'location',
-						type: 'string'
-					},
-					{
-						description: 'the description of a event',
-						name: 'description',
-						type: 'string'
-					},
-					{
-						description: 'the startDate of a event',
-						name: 'startDate',
-						type: 'date'
-					},
-					{
-						description: 'the endDate of a event',
-						name: 'endDate',
-						type: 'date'
-					},
-					{
-						description: 'the duration of a event',
-						name: 'duration',
-						type: 'number'
-					},
-					{
-						description: 'the frequency of a event',
-						name: 'frequency',
-						type: 'string'
-					},
-					{
-						description: 'the weekday of a event',
-						name: 'weekday',
-						type: 'string'
-					},
-					{
-						description: 'the repeat_until of a event',
-						name: 'repeat_until',
-						type: 'date'
-					},
-					{
-						description: 'the course reference of a event, e.g. for linking to a course page',
-						name: 'courseId',
-						type: 'string'
-					},
-					{
-						description: 'the course-time reference of a event, e.g. for linking to a specific course-time',
-						name: 'courseTimeId',
-						type: 'string'
-					},
-					{
-						description: 'the scope reference of a event',
-						name: 'scopeId',
-						type: 'string'
-					}
-
-				],
-				summary: 'Creates a new event for the given scope'
-			},
-			find: {
-				parameters: [
-					{
-						description: 'a valid user id',
-						required: true,
-						name: 'userId',
-						type: 'string'
-					}
-				],
-				summary: 'Gets all events for a given user'
-			},
-			remove: {
-				parameters: [
-					{
-						description: 'a valid event id',
-						required: true,
-						in: "path",
-						name: 'id',
-						type: 'string'
-					}
-				],
-				summary: 'Deletes a event from the calendar-service'
-			},
-			update: {
-				parameters: [
-					{
-						description: 'a valid event id',
-						required: true,
-						in: "path",
-						name: 'id',
-						type: 'string'
-					}
-				],
-				summary: 'Updates a event from the calendar-service'
-			}
-		};
+		this.docs = swaggerDocs.calendar;
 	}
 
 	create(data, params) {
@@ -284,6 +209,8 @@ class Service {
 module.exports = function () {
 	const app = this;
 
+	/* _____ Calendar-Service _____ */
+	
 	// Initialize our service with any options it requires
 	app.use('/calendar', new Service());
 
@@ -295,6 +222,13 @@ module.exports = function () {
 
 	// Set up our after hooks
 	contentService.after(hooks.after);
+	
+	/* _____ Subscriptions-Service _____ */
+	app.use('/subscriptions', new Service());
+	const contentSubscriptionsService = app.service('/subscriptions');
+	contentSubscriptionsService.before(hooks.before);		//should work with subscriptions too
+	contentSubscriptionsService.after(hooks.after);
+	
 };
 
 module.exports.Service = Service;
