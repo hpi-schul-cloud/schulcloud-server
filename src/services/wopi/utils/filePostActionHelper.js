@@ -39,12 +39,25 @@ const FileModel = require('../../fileStorage/model').fileModel;
    return FileModel.update({_id: file._id}, {$unset: {lockId: 1}}).exec();
  };
 
+ /** https://wopirest.readthedocs.io/en/latest/files/RenameFile.html */
+ const renameFile = (file, payload, account, app) => {
+  let fileRenameService = app.service('fileStorage/rename');
+  return fileRenameService.create({
+    path: file.key,
+    newName: payload.wopiRequestedName,
+    userPayload: payload,
+    account: account
+  });
+ };
+
+
  const actionHeaderMap = {
    'DELETE': deleteFile,
    'LOCK': lock,
    'GET_LOCK': getLock,
    'UNLOCK': unlock,
-   'REFRESH_LOCK': lock
+   'REFRESH_LOCK': lock,
+   'RENAME_FILE': renameFile
  };
 
  module.exports = header => {

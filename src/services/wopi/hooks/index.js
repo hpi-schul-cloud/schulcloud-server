@@ -29,6 +29,7 @@ const wopiAuthentication = hook => {
 const retrieveWopiOverrideHeader = hook => {
   hook.params.headers = hook.params.headers || [];
   if (!hook.params.headers['x-wopi-override']) throw new errors.BadRequest("X-WOPI-Override header was not provided or was empty!");
+  hook.params.payload.wopiRequestedName = hook.params.headers['x-wopi-requestedname'];
   hook.params.wopiAction = hook.params.headers['x-wopi-override'];
   return hook;
 };
