@@ -1,0 +1,12 @@
+[{
+    "userId": { "$oid": "59ae89b71f513506904e1cc9" },
+    "parentConsents": [{
+        "parentId": {"$oid": "0000d213816abba584714c0b"},
+        "dateOfConsent": { "$date": "2017-01-01T00:06:37.148Z" }
+    }]
+},
+{
+    "userId": { "$oid": "0000d213816abba584714c0b" },
+    "parentConsents": [ ]
+}]
+

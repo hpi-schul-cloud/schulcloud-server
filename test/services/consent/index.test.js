@@ -24,7 +24,7 @@ describe('consent service', function() {
         });
   });
 
-  it('gets consent versions', function() {
+  it('finds consent versions', function() {
     return consentVersionService
       .find({"versionNumber": "testversion"})
       .then(consentVersion => {
