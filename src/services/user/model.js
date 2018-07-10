@@ -32,7 +32,7 @@ userSchema.methods.getPermissions = function() {
 };
 
 const registrationPinSchema = new Schema({
-	email: {type: String, required: true, index: true},
+	email: {type: String, required: true},
 	pin: {type: String},
 }, {
 	timestamps: true
