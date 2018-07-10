@@ -36,6 +36,22 @@ describe('fileStorage service', function () {
 		assert.ok(app.service('directories'));
 	});
 
+	it ('registered the directory rename service', () => {
+		assert.ok(app.service('fileStorage/directories/rename'));
+	});
+
+	it ('registered the file rename service', () => {
+		assert.ok(app.service('fileStorage/rename'));
+	});
+
+	it ('registered the file copy service', () => {
+		assert.ok(app.service('fileStorage/copy'));
+	});
+
+	it ('registered the file total service', () => {
+		assert.ok(app.service('fileStorage/total'));
+	});
+
 	it('should has a properly worked creation function', () => {
 		assert.ok(app.service('fileStorage').create({schoolId: '0000d186816abba584714c5f'}));
 	});

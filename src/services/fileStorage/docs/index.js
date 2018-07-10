@@ -90,6 +90,50 @@ module.exports = {
 			summary: 'Removes a folder for a given storageContext'
 		}
 	},
+	fileRenameService: {
+		description: 'A service that handles renaming a file',
+		create: {
+			parameters: [
+				{
+					description: 'the path of the file to be renamed',
+					required: true,
+					name: 'path',
+					in: 'body',
+					type: 'string'
+				},
+				{
+					description: 'the new name for the file to be renamed',
+					required: true,
+					name: 'newName',
+					in: 'body',
+					type: 'string'
+				}
+			],
+			summary: 'Renames a given file, modifies lessons which include the renamed file'
+		},
+	},
+	directoryRenameService: {
+		description: 'A service that handles renaming a virtual directory',
+		create: {
+			parameters: [
+				{
+					description: 'the path of the directory to be renamed',
+					required: true,
+					name: 'path',
+					in: 'body',
+					type: 'string'
+				},
+				{
+					description: 'the new name for the directory to be renamed',
+					required: true,
+					name: 'newName',
+					in: 'body',
+					type: 'string'
+				}
+			],
+			summary: 'Renames a given directory, also recursively sub-directories and files'
+		},
+	},
 	signedUrlService: {
 		description: 'A service for generating signed urls, e.g. for uploading (action = putObject) and downloading files (action = getObject)',
 		create: {
