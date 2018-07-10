@@ -39,19 +39,17 @@ class CourseCopyService {
 	 */
 	create(data, params) {
 		let tempData = JSON.parse(JSON.stringify(data));
-		tempData = _.omit(tempData, ['_id']);
+		tempData = _.omit(tempData, ['_id', 'courseId']);
 
 		return courseModel.findOne({_id: data._id}).exec()
-			.then(initCourse => {
-				let tempCourse = JSON.parse(JSON.stringify(initCourse));
+			.then(course => {
+				let tempCourse = JSON.parse(JSON.stringify(course));
 				tempCourse = _.omit(tempCourse, ['_id', 'createdAt', 'updatedAt', '__v', 'name', 'color', 'teacherIds', 'classIds', 'userIds', 'substitutionIds']);
 
-				tempCourse = Object.assign(tempCourse, tempData);
+				tempCourse = Object.assign(tempCourse, tempData, {userId: params.account.userId});
 
-				return courseModel.create(tempCourse, (err, res) => {
-					if (err)
-						return err;
-					else {
+				return this.app.service('courses').create(tempCourse)
+					.then(res => {
 						let homeworkPromise = homeworkModel.find({courseId: data._id}).populate('lessonId');
 						let lessonsPromise = lessonsModel.find({courseId: data._id});
 
@@ -59,7 +57,7 @@ class CourseCopyService {
 							.then(([homeworks, lessons]) => {
 								let createdLessons = [];
 
-								Promise.all(lessons.map(lesson => {
+								return Promise.all(lessons.map(lesson => {
 									return createLesson(lesson._id, res._id, data._id, params.account.userId, this.app)
 										.then(lessonRes => {
 											createdLessons.push({_id: lessonRes._id, name: lessonRes.name});
@@ -67,23 +65,22 @@ class CourseCopyService {
 								}))
 									.then(_ => {
 										return Promise.all(homeworks.map(homework => {
+											let convertedLesson = undefined;
 											if (homework.archived.length > 0 || homework.teacherId.toString() !== params.account.userId.toString())
 												return;
 											else if (homework.lessonId) {
-												let coresLesson = createdLessons.filter(h => {
+												convertedLesson = createdLessons.filter(h => {
 													return h.name === homework.lessonId.name;
 												});
-
-												return createHomework(homework, res._id, coresLesson[0]._id, params.account.userId, this.app);
+												convertedLesson = convertedLesson[0]._id;
 											}
-											return createHomework(homework, res._id, undefined, params.account.userId, this.app);
+											return createHomework(homework, res._id, convertedLesson, params.account.userId, this.app);
 										}))
 											.then(_ => {
 												return res;
 											});
 									});
 							});
-					}
 				});
 			});
 	}

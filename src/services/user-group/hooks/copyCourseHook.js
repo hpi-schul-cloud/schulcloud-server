@@ -7,16 +7,20 @@ const _ = require('lodash');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
-//TODO: throw in some security. Course belongs to Teacher (should be fine), as we only want to clone personal courses.
+const injectCourseId = (hook) => {
+	hook.data.courseId = hook.data._id;
+
+	return hook;
+};
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [],
-	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: []
+	find: [hooks.disable()],
+	get: [hooks.disable()],
+	create: [injectCourseId, globalHooks.checkCorrectCourseId],
+	update: [hooks.disable()],
+	patch: [hooks.disable()],
+	remove: [hooks.disable()]
 };
 
 exports.after = {

@@ -26,6 +26,12 @@ class HomeworkCopyService {
 			});
 	}
 
+	/**
+	 * Copies a homework if the homework belongs to the user.
+	 * @param data consists of the _id to copy, can have courseId/lessonId to add to correct course/lesson.
+	 * @param params consists of information about the user.
+	 * @returns new homework.
+	 */
 	create(data, params) {
 
 		return HomeworkModel.findOne({ _id: data._id })

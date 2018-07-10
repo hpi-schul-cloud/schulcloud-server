@@ -36,7 +36,6 @@ class LessonFilesService {
 	}
 }
 
-//TODO: Create better hooks or make an internal service, not usuable for others.
 class LessonCopyService {
 
 	constructor(app) {
@@ -45,35 +44,37 @@ class LessonCopyService {
 
 	/**
 	 * Clones a lesson to a specified course, including files.
-	 * @param data consists of lessonId and newCourseId (target, source).
+	 * @param data consists of lessonId and newCourseId (target, source), courseId.
 	 * @param params user Object and other params.
 	 * @returns newly created lesson.
 	 * Needs courseId in data, as the hook needs it for checks.
+	 * Can only be used if the teacher is teacher of the course.
+	 * If wanted to be used for sharing: Create new hooks, check if teacher of Course or if topic shareable.
 	 */
 	create(data, params) {
 		let {lessonId, newCourseId} = data;
 		let fileChangelog = [];
 
 		return lesson.findOne({_id: lessonId}).populate('courseId')
-			.then(oldLesson => {
-				let origLesson = JSON.parse(JSON.stringify(oldLesson));
-				delete origLesson._id;
-				delete origLesson.shareToken;
-				delete origLesson.courseId;
-				origLesson.courseId = newCourseId;
-				let originalSchoolId = oldLesson.courseId.schoolId;
+			.then(sourceLesson => {
+				let tempLesson = JSON.parse(JSON.stringify(sourceLesson));
+				delete tempLesson._id;
+				delete tempLesson.shareToken;
+				delete tempLesson.courseId;
+				tempLesson.courseId = newCourseId;
+				let originalSchoolId = sourceLesson.courseId.schoolId;
 
-				return lesson.create(origLesson, (err, res) => {
+				return lesson.create(tempLesson, (err, res) => {
 					if (err)
 						return err;
 
 					let topic = res;
 
-					return FileModel.find({path: {$regex: oldLesson.courseId._id}}).then(files => {
+					return FileModel.find({path: {$regex: sourceLesson.courseId._id}}).then(files => {
 						return Promise.all((files || []).filter(f => {
 
 							// check whether the file is included in any lesson
-							return _.some((oldLesson.contents || []), content => {
+							return _.some((sourceLesson.contents || []), content => {
 								return content.component === "text" && content.content.text && _.includes(content.content.text, f.key);
 							});
 						}))
@@ -93,7 +94,7 @@ class LessonCopyService {
 									return fileStorageService.create(fileData)
 										.then(newFile => {
 											fileChangelog.push({
-												"old": `${oldLesson.courseId._id}/${f.name}`,
+												"old": `${sourceLesson.courseId._id}/${f.name}`,
 												"new": `${newCourseId}/${newFile.name}`
 											});
 										});
