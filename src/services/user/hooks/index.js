@@ -136,7 +136,7 @@ exports.after = {
 	find: [decorateUsers],
 	get: [
 		decorateUser,
-		globalHooks.computeProperty(User, 'getPermissions', 'permissions'),
+		globalHooks.computeProperty(User.userModel, 'getPermissions', 'permissions'),
 		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'}))
 	],
 	create: [],

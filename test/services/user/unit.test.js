@@ -4,6 +4,7 @@ const assert = require('assert');
 const mongoose = require('mongoose');
 const app = require('../../../src/app');
 const userService = app.service('users');
+const registrationPinService = app.service('registrationPins');
 const chai = require('chai');
 const loginHelper = require('../helpers/login');
 const testObjects = require('../helpers/testObjects')(app);
@@ -70,3 +71,26 @@ describe('user service', function () {
 	after(testObjects.cleanup);
 });
 
+describe('registrationPin Service', function() {
+	it ('registered the registrationPin Service', () => {
+		assert.ok(registrationPinService);
+	});
+
+	it ('creates pins correctly', function() {
+		return registrationPinService
+			.create({"email": "test.adresse@schul-cloud.org"})
+				.then(pinObject => registrationPinService.find({"email": "test.adresse@schul-cloud.org"}))
+				.then(pinObjects => {
+					chai.expect(pinObjects.data[0]).to.have.property('pin');
+				});
+	});
+
+	it ('overwrites old pins', function() {
+		return registrationPinService.create({"email": "test.adresse@schul-cloud.org"})
+				.then(pinObject => registrationPinService.create({"email": "test.adresse@schul-cloud.org"}))
+				.then(pinObject => registrationPinService.find({"email": "test.adresse@schul-cloud.org"}))
+				.then(pinObjects => {
+					chai.expect(pinObjects.data).to.have.lengthOf(1);
+				});
+	});
+});

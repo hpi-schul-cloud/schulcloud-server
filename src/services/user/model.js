@@ -31,5 +31,16 @@ userSchema.methods.getPermissions = function() {
 	return roleModel.resolvePermissions(this.roles);
 };
 
+const registrationPinSchema = new Schema({
+	email: {type: String, required: true, index: true},
+	pin: {type: String},
+}, {
+	timestamps: true
+});
+
+const registrationPinModel = mongoose.model('registrationPin', registrationPinSchema);
 const userModel = mongoose.model('user', userSchema);
-module.exports = userModel;
+module.exports = {
+	userModel,
+	registrationPinModel
+};

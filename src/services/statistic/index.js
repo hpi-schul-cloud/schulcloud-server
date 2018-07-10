@@ -17,8 +17,8 @@ const fileModel = require('../fileStorage/model');
 let promises = [
 	{
 		name: 'users',
-		promise: userModel.count().exec(),
-		model: userModel.find().exec()
+		promise: userModel.userModel.count().exec(),
+		model: userModel.userModel.find().exec()
 	},
 	{
 		name: 'schools',
@@ -62,13 +62,13 @@ let promises = [
 	},
 	{
 		name: 'teachers',
-		promise: userModel.count({roles: '0000d186816abba584714c98'}).exec(),
-		model: userModel.find({roles: '0000d186816abba584714c98'}).exec()
+		promise: userModel.userModel.count({roles: '0000d186816abba584714c98'}).exec(),
+		model: userModel.userModel.find({roles: '0000d186816abba584714c98'}).exec()
 	},
 	{
 		name: 'students',
-		promise: userModel.count({roles: '0000d186816abba584714c99'}).exec(),
-		model: userModel.find({roles: '0000d186816abba584714c99'}).exec()
+		promise: userModel.userModel.count({roles: '0000d186816abba584714c99'}).exec(),
+		model: userModel.userModel.find({roles: '0000d186816abba584714c99'}).exec()
 	},
 	{
 		name: 'files',
