@@ -93,12 +93,9 @@ class LessonCopyService {
 									return fileStorageService.create(fileData)
 										.then(newFile => {
 											fileChangelog.push({
-												"old": `${oldLesson.courseId}/${f.name}`,
+												"old": `${oldLesson.courseId._id}/${f.name}`,
 												"new": `${newCourseId}/${newFile.name}`
 											});
-										})
-										.catch(err => {
-											// aws down error thrown
 										});
 								}))
 									.then(_ => {
@@ -110,7 +107,7 @@ class LessonCopyService {
 											}
 										});
 
-										return lesson.update({_id: topic._id}, {json: topic});
+										return lesson.update({_id: topic._id}, topic);
 									});
 							});
 					});
