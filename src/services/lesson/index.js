@@ -45,12 +45,9 @@ class LessonCopyService {
 
 	/**
 	 * Clones a lesson to a specified course, including files.
-	 * @param data consists of lessonId and newCourseId (target, source), courseId.
+	 * @param data consists of lessonId and newCourseId (target, source).
 	 * @param params user Object and other params.
 	 * @returns newly created lesson.
-	 * Needs courseId in data, as the hook needs it for checks.
-	 * Can only be used if the teacher is teacher of the course.
-	 * If wanted to be used for sharing: Create new hooks, check if teacher of Course or if topic shareable.
 	 */
 	create(data, params) {
 		let {lessonId, newCourseId} = data;

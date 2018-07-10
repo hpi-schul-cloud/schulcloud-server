@@ -15,8 +15,8 @@ const createHomework = (homework, courseId, lessonId, userId, app) => {
 		});
 };
 
-const createLesson = (lessonId, newCourseId, courseId, userId, app) => {
-	return app.service('lessons/copy').create({lessonId, newCourseId, courseId, userId})
+const createLesson = (lessonId, newCourseId, userId, app) => {
+	return app.service('lessons/copy').create({lessonId, newCourseId, userId})
 		.then(res => {
 			return res;
 		})
@@ -58,7 +58,7 @@ class CourseCopyService {
 								let createdLessons = [];
 
 								return Promise.all(lessons.map(lesson => {
-									return createLesson(lesson._id, res._id, data._id, params.account.userId, this.app)
+									return createLesson(lesson._id, res._id, params.account.userId, this.app)
 										.then(lessonRes => {
 											createdLessons.push({_id: lessonRes._id, name: lessonRes.name});
 										});

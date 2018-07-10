@@ -19,30 +19,15 @@ const checkForShareToken = (hook) => {
 
 	return lesson.findOne({_id: lessonId}).populate('courseId')
 		.then(topic => {
-			if (topic.shareToken == shareToken || topic.courseId.teacherIds.filter(t => t != hook.params.account.userId).length > 0)
+			if ((topic.shareToken == shareToken && shareToken != undefined) || topic.courseId.teacherIds.filter(t => t.toString() == hook.params.account.userId).length > 0)
 				return hook;
 			else
 				throw new errors.Forbidden("The entered lesson doesn't belong to you or is not allowed to be shared!");
-		})
+		});
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt'), (hook) => {
-		if(hook.data && hook.data.contents) {
-			hook.data.contents = (hook.data.contents || []).map((item) =>{
-				item.user = item.user || hook.params.account.userId;
-				switch (item.component) {
-					case 'text':
-						if (item.content && item.content.text) {
-							item.content.text = stripJs(item.content.text);
-						}
-						break;
-				}
-				return item;
-			});
-		}
-		return hook;
-	}],
+	all: [auth.hooks.authenticate('jwt')],
 	find: [hooks.disable()],
 	get: [hooks.disable()],
 	create: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true), globalHooks.injectUserId, checkForShareToken],

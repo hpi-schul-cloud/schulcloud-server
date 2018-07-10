@@ -5,6 +5,7 @@ const app = require('../../../src/app');
 const lessonService = app.service('lessons');
 const lessonCopyService = app.service('lessons/copy');
 const chai = require('chai');
+const errors = require('feathers-errors');
 
 const testLesson = {
 	name: 'testLesson',
@@ -32,7 +33,7 @@ describe('lessons service', function () {
 	});
 
 	it('copies a lesson', () => {
-		return lessonCopyService.create({lessonId, courseId: testLesson.courseId, newCourseId: testLesson.courseId, userId: '0000d231816abba584714c9e' })
+		return lessonCopyService.create({lessonId, newCourseId: testLesson.courseId, userId: '0000d231816abba584714c9e' })
 			.then(lesson => {
 				chai.expect(lesson.name).to.equal(testLesson.name);
 				chai.expect(lesson.description).to.equal(testLesson.description);
