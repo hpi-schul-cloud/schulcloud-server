@@ -4,6 +4,7 @@ const assert = require('assert');
 const app = require('../../../src/app');
 const chai = require('chai');
 const homeworkService = app.service('homework');
+const homeworkCopyService = app.service('homework/copy');
 const expect = chai.expect;
 
 
@@ -11,7 +12,8 @@ describe('homework service', function() {
     this.timeout(10000);
 
     it('registered the homework service', () => {
-        assert.ok(app.service('homework'));
+        assert.ok(homeworkService);
+        assert.ok(homeworkCopyService);
     });
 
     const testAufgabe = {
@@ -99,4 +101,15 @@ describe('homework service', function() {
                 expect(result.data[0].stats).to.not.equal(undefined);
             });
     });
+
+    it('copies a homework via POST', () => {
+    	return homeworkCopyService.create({_id: "59d1f63ce0a06325e8b5288b", userId: "0000d231816abba584714c9e"})
+			.then(homework => {
+				expect(homework.courseId).to.equal(null);
+				expect(homework.lessonId).to.equal(null);
+				expect(homework.name).to.equal("Aufgabe an Ida (Mathe) - mit Abgabe & Bewertung");
+				expect(homework.stats).to.equal(undefined);
+				expect(homework.grade).to.equal(undefined);
+			});
+	});
 });
