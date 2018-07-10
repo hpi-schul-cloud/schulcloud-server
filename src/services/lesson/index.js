@@ -54,7 +54,7 @@ class LessonCopyService {
 		let {lessonId, newCourseId} = data;
 		let fileChangelog = [];
 
-		return lesson.findOne({ _id: lessonId }).populate('courseId')
+		return lesson.findOne({_id: lessonId}).populate('courseId')
 			.then(oldLesson => {
 				let origLesson = JSON.parse(JSON.stringify(oldLesson));
 				delete origLesson._id;
@@ -69,44 +69,51 @@ class LessonCopyService {
 
 					let topic = res;
 
-				return FileModel.find({path: {$regex: oldLesson.courseId._id}}).then(files => {
-					return Promise.all((files || []).filter(f => {
+					return FileModel.find({path: {$regex: oldLesson.courseId._id}}).then(files => {
+						return Promise.all((files || []).filter(f => {
 
-						// check whether the file is included in any lesson
-						return _.some((oldLesson.contents || []), content => {
-							return content.component === "text" && content.content.text && _.includes(content.content.text, f.key);
-						});
-					}))
-						.then(lessonFiles => {
-							return Promise.all(lessonFiles.map(f => {
+							// check whether the file is included in any lesson
+							return _.some((oldLesson.contents || []), content => {
+								return content.component === "text" && content.content.text && _.includes(content.content.text, f.key);
+							});
+						}))
+							.then(lessonFiles => {
+								return Promise.all(lessonFiles.map(f => {
 
-								let fileData = {
-									fileName: f.name,
-									oldPath: f.path,
-									newPath: `courses/${newCourseId}/`,
-									externalSchoolId: originalSchoolId,
-									userId: params.account.userId
-								};
+									let fileData = {
+										fileName: f.name,
+										oldPath: f.path,
+										newPath: `courses/${newCourseId}/`,
+										externalSchoolId: originalSchoolId,
+										userId: params.account.userId
+									};
 
-								let fileStorageService = this.app.service('/fileStorage/copy/');
+									let fileStorageService = this.app.service('/fileStorage/copy/');
 
-								return fileStorageService.create(fileData).then(newFile => {
-									fileChangelog.push({"old": `${oldLesson.courseId}/${f.name}`, "new": `${newCourseId}/${newFile.name}` });
-								});
-							}))
-								.then(_ => {
-									topic.contents.map(content => {
-										if (content.component === "text" && content.content.text) {
-											fileChangelog.map(change => {
-												content.content.text = content.content.text.replace(new RegExp(change.old, "g"), change.new);
+									return fileStorageService.create(fileData)
+										.then(newFile => {
+											fileChangelog.push({
+												"old": `${oldLesson.courseId}/${f.name}`,
+												"new": `${newCourseId}/${newFile.name}`
 											});
-										}
-									});
+										})
+										.catch(err => {
+											// aws down error thrown
+										});
+								}))
+									.then(_ => {
+										topic.contents.map(content => {
+											if (content.component === "text" && content.content.text) {
+												fileChangelog.map(change => {
+													content.content.text = content.content.text.replace(new RegExp(change.old, "g"), change.new);
+												});
+											}
+										});
 
-									return lesson.update({_id: topic._id}, {json: topic});
-								});
-						});
-				});
+										return lesson.update({_id: topic._id}, {json: topic});
+									});
+							});
+					});
 				});
 			});
 	}
@@ -134,14 +141,14 @@ module.exports = function () {
 
 
 	// Return all lesson.contets which have component = query.type And User = query.user or null
-	app.use('/lessons/contents/:type/',{
-		find(params){
+	app.use('/lessons/contents/:type/', {
+		find(params) {
 			return lesson.aggregate([
-				{ $unwind :'$contents'},
-				{ $match : {"contents.component" : params.query.type}},
-				{ $match : {"contents.user_id" : { $in: [params.query.user, null ]}}},
-				{ $project : { _id: "$contents._id", content : "$contents.content"} }
-				]).exec();
+				{$unwind: '$contents'},
+				{$match: {"contents.component": params.query.type}},
+				{$match: {"contents.user_id": {$in: [params.query.user, null]}}},
+				{$project: {_id: "$contents._id", content: "$contents.content"}}
+			]).exec();
 		}
 	});
 

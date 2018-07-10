@@ -5,6 +5,26 @@ const homeworkModel = require('../homework/model').homeworkModel;
 const lessonsModel = require('../lesson/model');
 const _ = require('lodash');
 
+const createHomework = (homework, courseId, lessonId, userId, app) => {
+	return app.service('homework/copy').create({_id: homework._id, courseId, lessonId, userId})
+		.then(res => {
+			return res;
+		})
+		.catch(err => {
+			return Promise.reject(err);
+		});
+};
+
+const createLesson = (lessonId, newCourseId, courseId, userId, app) => {
+	return app.service('lessons/copy').create({lessonId, newCourseId, courseId, userId})
+		.then(res => {
+			return res;
+		})
+		.catch(err => {
+			return Promise.reject(err);
+		});
+};
+
 class CourseCopyService {
 
 	constructor(app) {
@@ -24,7 +44,7 @@ class CourseCopyService {
 		return courseModel.findOne({_id: data._id}).exec()
 			.then(initCourse => {
 				let tempCourse = JSON.parse(JSON.stringify(initCourse));
-				tempCourse = _.omit(tempCourse, ['_id', 'createdAt', 'updatedAt', '__v', 'name', 'color', 'teacherIds','classIds','userIds','substitutionIds']);
+				tempCourse = _.omit(tempCourse, ['_id', 'createdAt', 'updatedAt', '__v', 'name', 'color', 'teacherIds', 'classIds', 'userIds', 'substitutionIds']);
 
 				tempCourse = Object.assign(tempCourse, tempData);
 
@@ -32,28 +52,41 @@ class CourseCopyService {
 					if (err)
 						return err;
 					else {
-						let homeworkPromise = homeworkModel.find({courseId: data._id}); //TODO: populate lessonId
+						let homeworkPromise = homeworkModel.find({courseId: data._id}).populate('lessonId');
 						let lessonsPromise = lessonsModel.find({courseId: data._id});
 
-						Promise.all([homeworkPromise, lessonsPromise])
+						return Promise.all([homeworkPromise, lessonsPromise])
 							.then(([homeworks, lessons]) => {
-								//TODO: push result into array, wrap in Promise
-								lessons.forEach(lesson => {
-									this.app.service('/lessons/copy').create({
-										lessonId: lesson._id,
-										newCourseId: res._id,
-										courseId: data._id,
-										userId: params.account.userId
+								let createdLessons = [];
+
+								Promise.all(lessons.map(lesson => {
+									return createLesson(lesson._id, res._id, data._id, params.account.userId, this.app)
+										.then(lessonRes => {
+											createdLessons.push({_id: lessonRes._id, name: lessonRes.name});
+										});
+								}))
+									.then(_ => {
+										return Promise.all(homeworks.map(homework => {
+											if (homework.archived.length > 0 || homework.teacherId.toString() !== params.account.userId.toString())
+												return;
+											else if (homework.lessonId) {
+												let coresLesson = createdLessons.filter(h => {
+													return h.name === homework.lessonId.name;
+												});
+
+												return createHomework(homework, res._id, coresLesson[0]._id, params.account.userId, this.app);
+											}
+											return createHomework(homework, res._id, undefined, params.account.userId, this.app);
+										}))
+											.then(_ => {
+												return res;
+											});
 									});
-								});
-
-								//TODO: TASK: clone homework. CONDITIONS: Wait for LessonClone Promise. If homework contains lessonId, search for new replacement by lesson Name.
-
 							});
 					}
 				});
-				});
-		}
+			});
+	}
 
 }
 

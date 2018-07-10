@@ -25,6 +25,26 @@ class HomeworkCopyService {
 				});
 			});
 	}
+
+	create(data, params) {
+
+		return HomeworkModel.findOne({ _id: data._id })
+			.then(copyAssignment => {
+				let tempAssignment = JSON.parse(JSON.stringify(copyAssignment));
+				tempAssignment = _.omit(tempAssignment, ['_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId' ]);
+				tempAssignment.courseId = data.courseId;
+				tempAssignment.lessonId = data.lessonId;
+
+				return HomeworkModel.create(tempAssignment, (err, res) => {
+					if (err)
+						return err;
+					else
+						return res;
+				});
+			});
+
+	}
+
 }
 
 module.exports = function () {

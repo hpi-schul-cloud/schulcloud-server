@@ -9,7 +9,7 @@ const HomeworkModel = require('../model').homeworkModel;
 
 const hasViewPermissionBefore = hook => {
 	let account = hook.params.account;
-	let homeworkId = hook.id;
+	let homeworkId = hook.id || hook.data._id;
 
 	return HomeworkModel.findOne({_id: homeworkId}).exec()
 		.then(res => {
@@ -25,7 +25,7 @@ exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
 	find: [hooks.disable()],
 	get: [globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasViewPermissionBefore],
-	create: [hooks.disable()],
+	create: [globalHooks.injectUserId, globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasViewPermissionBefore],
 	update: [hooks.disable()],
 	patch: [hooks.disable()],
 	remove: [hooks.disable()]
