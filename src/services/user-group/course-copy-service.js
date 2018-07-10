@@ -41,12 +41,12 @@ class CourseCopyService {
 		let tempData = JSON.parse(JSON.stringify(data));
 		tempData = _.omit(tempData, ['_id', 'courseId']);
 
-		return courseModel.findOne({_id: data._id}).exec()
+		return courseModel.findOne({_id: data._id})
 			.then(course => {
 				let tempCourse = JSON.parse(JSON.stringify(course));
 				tempCourse = _.omit(tempCourse, ['_id', 'createdAt', 'updatedAt', '__v', 'name', 'color', 'teacherIds', 'classIds', 'userIds', 'substitutionIds']);
 
-				tempCourse = Object.assign(tempCourse, tempData, {userId: params.account.userId});
+				tempCourse = Object.assign(tempCourse, tempData, {userId: (params.account || {}).userId});
 
 				return this.app.service('courses').create(tempCourse)
 					.then(res => {

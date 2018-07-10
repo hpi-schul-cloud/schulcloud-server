@@ -17,7 +17,7 @@ exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
 	find: [hooks.disable()],
 	get: [hooks.disable()],
-	create: [injectCourseId, globalHooks.checkCorrectCourseId],
+	create: [globalHooks.injectUserId, injectCourseId, globalHooks.ifNotLocal(globalHooks.checkCorrectCourseId)],
 	update: [hooks.disable()],
 	patch: [hooks.disable()],
 	remove: [hooks.disable()]

@@ -153,7 +153,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					});
 			});
 	}
-	
+
 	copyFile(userId, oldPath, newPath, externalSchoolId) {
 		if (!userId || !oldPath || !newPath) {
 			return Promise.reject(new errors.BadRequest('Missing parameters'));
