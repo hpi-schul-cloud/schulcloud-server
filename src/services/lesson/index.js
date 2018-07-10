@@ -2,7 +2,8 @@
 
 const service = require('feathers-mongoose');
 const lesson = require('./model');
-const hooks = require('./hooks');
+const hooks = require('./hooks/index');
+const copyHooks = require('./hooks/copy');
 const _ = require('lodash');
 const errors = require('feathers-errors');
 const FileModel = require('../fileStorage/model').fileModel;
@@ -58,9 +59,7 @@ class LessonCopyService {
 		return lesson.findOne({_id: lessonId}).populate('courseId')
 			.then(sourceLesson => {
 				let tempLesson = JSON.parse(JSON.stringify(sourceLesson));
-				delete tempLesson._id;
-				delete tempLesson.shareToken;
-				delete tempLesson.courseId;
+				tempLesson = _.omit(tempLesson, ['_id', 'shareToken', 'courseId']);
 				tempLesson.courseId = newCourseId;
 				let originalSchoolId = sourceLesson.courseId.schoolId;
 
@@ -158,7 +157,7 @@ module.exports = function () {
 	// Set up our before hooks
 	systemService.before(hooks.before);
 	lessonFilesService.before(hooks.before);
-	lessonCopyService.before(hooks.before);
+	lessonCopyService.before(copyHooks.before);
 
 	// Set up our after hooks
 	systemService.after(hooks.after);
