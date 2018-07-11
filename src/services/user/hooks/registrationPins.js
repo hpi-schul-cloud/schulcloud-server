@@ -20,7 +20,7 @@ const removeOldPin = (hook) => {
 };
 
 const generatePin = (hook) => {
-	let pin = Math.floor(Math.random() * 9999);
+	let pin = Math.floor((Math.random() * 9999)+1000);
 	hook.data.pin = pin.toString();
 	return Promise.resolve(hook);
 };
