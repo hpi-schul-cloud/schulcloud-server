@@ -12,17 +12,24 @@ describe('consent service', function() {
     assert.ok(consentVersionService);
   });
 
-  it('creates consents', function() {
+  it('creates consents correctly', function() {
     return consentService
       .create({
         "userId": "59ae89b71f513506904e1cc9",
         "parentConsents": [{"parentId": "0000d213816abba584714c0b" }]
       })
-        .then(consent => consentService.get(consent._id))
+        .then(consent => {return consentService.get(consent._id)})
         .then(consent => {
           chai.expect(consent).to.exist;
-        });
+          chai.expect(consent.parentConsents[0]).to.have.property("dateOfConsent");
+          chai.expect(consent).to.not.have.property("dateOfUserConsent");
+        })
+        
   });
+
+  it('patches date of user consent');
+  it('doesnt create second consent for same user');
+
 
   it('finds consent versions', function() {
     return consentVersionService
