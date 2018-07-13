@@ -16,14 +16,26 @@ describe('consent service', function() {
     return consentService
       .create({
         "userId": "59ae89b71f513506904e1cc9",
-        "parentConsents": [{"parentId": "0000d213816abba584714c0b" }]
+        "userConsent": {
+          "privacyConsent": true,
+          "termsOfUseConsent": true,
+          "thirdPartyConsent": true,
+          "researchConsent": true
+        },
+        "parentConsents": [{
+          "parentId": "0000d213816abba584714c0b",
+          "privacyConsent": true,
+          "termsOfUseConsent": true,
+          "thirdPartyConsent": true,
+          "researchConsent": true 
+        }]
       })
-        .then(consent => {return consentService.get(consent._id)})
+        .then(consent => {return consentService.get(consent._id);})
         .then(consent => {
           chai.expect(consent).to.exist;
-          chai.expect(consent.parentConsents[0]).to.have.property("dateOfConsent");
-          chai.expect(consent).to.not.have.property("dateOfUserConsent");
-        })
+          chai.expect(consent.parentConsents[0]).to.have.property("dateOfPrivacyConsent");
+          chai.expect(consent).to.have.property("userConsent");
+        });
         
   });
 

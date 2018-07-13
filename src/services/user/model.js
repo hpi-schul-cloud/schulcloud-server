@@ -19,7 +19,6 @@ const userSchema = new Schema({
 
 	children: [{type: Schema.Types.ObjectId, ref: 'user'}],
 	parents: [{type: Schema.Types.ObjectId, ref: 'user'}],
-	hasAnalogPrivacyConsent: {type: Boolean},
 
 	preferences: {type: Object} // blackbox for frontend stuff like "cookies accepted"
 },{

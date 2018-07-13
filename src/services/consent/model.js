@@ -8,12 +8,32 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const consentForm = ['analog', 'digital'];
+
 const consentSchema = new Schema({
 	userId: {type: Schema.Types.ObjectId, ref: 'user', required: true},
-	dateOfUserConsent: {type: Date},
+	userConsent: {
+		form: {type: String, enum: consentForm},
+		dateOfPrivacyConsent: {type: Date},
+		dateOfTermsOfUseConsent: {type: Date},
+		dateOfThirdPartyConsent: {type: Date},
+		dateOfResearchConsent: {type: Date},
+		privacyConsent: {type: Boolean},
+		termsOfUseConsent: {type: Boolean},
+		thirdPartyConsent: {type: Boolean},
+		researchConsent: {type: Boolean}
+	},
 	parentConsents: [{
 		parentId: {type: Schema.Types.ObjectId, ref: 'user'},
-		dateOfConsent: {type: Date, 'default': Date.now}
+		form: {type: String, enum: consentForm, default: 'digital'},
+		dateOfPrivacyConsent: {type: Date},
+		dateOfTermsOfUseConsent: {type: Date},
+		dateOfThirdPartyConsent: {type: Date},
+		dateOfResearchConsent: {type: Date},
+		privacyConsent: {type: Boolean},
+		termsOfUseConsent: {type: Boolean},
+		thirdPartyConsent: {type: Boolean},
+		researchConsent: {type: Boolean},
 	}]
 });
 
