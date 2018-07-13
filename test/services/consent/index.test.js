@@ -51,4 +51,12 @@ describe('consent service', function() {
         chai.expect(consentVersion.data[0]).to.have.property("versionNumber", "testversion");
       });
   });
+
+  it('checks access on get', function() {
+    return consentService
+      .find({query: {userId: "59ae89b71f513506904e1cc9"}})
+      .then(consent => {
+        chai.expect(consent).to.exist;
+      });
+  });
 });

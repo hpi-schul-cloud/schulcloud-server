@@ -145,6 +145,7 @@
 	"email" : "paula.meyer@schul-cloud.org",
 	"firstName" : "Paula",
 	"lastName" : "Meyer",
+	"birthday": { "$date": "2010-09-05T11:25:43.556Z" },
 	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
 	"roles" : [
 		{ "$oid": "0000d186816abba584714c99" }

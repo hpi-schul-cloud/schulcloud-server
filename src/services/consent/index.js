@@ -2,7 +2,8 @@
 
 const service = require('feathers-mongoose');
 const {consentModel, consentVersionModel} = require('./model');
-const hooks = require('./hooks');
+const consentHooks = require('./hooks/consents');
+const consentVersionHooks = require('./hooks/consentversions');
 
 module.exports = function () {
 	const app = this;
@@ -17,8 +18,8 @@ module.exports = function () {
 		lean: true
 	}));
 	const consentService = app.service('/consents');
-	consentService.before(hooks.before);
-	consentService.after(hooks.after);
+	consentService.before(consentHooks.before);
+	consentService.after(consentHooks.after);
 
 	/*ConsentVersion Model*/
 	app.use('/consentVersions', service({
@@ -30,6 +31,6 @@ module.exports = function () {
 		lean: true
 	}));
 	const consentVersionService = app.service('/consentVersions');
-	consentVersionService.before(hooks.before);
-	consentVersionService.after(hooks.after);
+	consentVersionService.before(consentVersionHooks.before);
+	consentVersionService.after(consentVersionHooks.after);
 };
