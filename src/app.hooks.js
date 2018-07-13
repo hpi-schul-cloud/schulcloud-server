@@ -1,32 +1,59 @@
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
 
+
+const sanitize = (data, options) => {
+	// https://www.npmjs.com/package/sanitize-html
+	if ((options||{}).html === true) {
+		// editor-content data
+		data = sanitizeHtml(data, {
+			allowedTags: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span',
+				'nl', 'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+				'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video' ],
+			allowedAttributes: false, // allow all attributes of allowed tags
+			allowedSchemes: [ 'http', 'https', 'ftp', 'mailto' ],
+			parser: {
+				decodeEntities: true
+			}
+		});
+		data = data.replace(/(&lt;script&gt;).*(&lt;\/script&gt;)/i, ''); // force remove escaped script tags
+	} else {
+		// non editor-content data
+		data = sanitizeHtml(data, {
+			allowedTags: [], // disallow all tags
+			allowedAttributes: [], // disallow all attributes
+			allowedSchemes: [], // disallow url schemes
+			parser: {
+				decodeEntities: true
+			}
+		});
+	}
+	return data;
+};
+
 /**
- * Strips JS Code from an object/array/string and returns clean version of it
+ * Strips JS/HTML Code from data and returns clean version of it
  * @param data {object/array/string}
  * @returns data - clean without JS
  */
-const stripDeepJs = (data) => {
+const sanitizeDeep = (data) => {
 	if (typeof data === "object" && data !== null) {
 		Object.entries(data).forEach(([key, value]) => {
-			if(typeof value === "string")
-				data[key] = sanitizeHtml(value);
-			else if (Array.isArray(value))
-				stripDeepJs(value);
-			else if (typeof value === "object")
-				stripDeepJs(value);
+			if(typeof value === "string" && key === "content") // editor content, html allowed
+				data[key] = sanitize(value, {html:true});
+			else if(typeof value === "string")
+				data[key] = sanitize(value, {html:false});
+			else
+				sanitizeDeep(value);
 		});
 	} else if (typeof data === "string")
-		data = sanitizeHtml(data);
+		data = sanitize(data, {html:false});
 	else if (Array.isArray(data)) {
 		for (let i = 0; i < data.length; i++) {
-			if (typeof data[i] === "string") {
-				data[i] = sanitizeHtml(data[i]);
-			} else if (Array.isArray(data[i])) {
-				stripDeepJs(data[i]);
-			} else if (typeof data[i] === "object") {
-				stripDeepJs(data[i]);
-			}
+			if (typeof data[i] === "string")
+				data[i] = sanitize(data[i], {html:false});
+			else
+				sanitizeDeep(data[i]);
 		}
 	}
 	return data;
@@ -34,7 +61,7 @@ const stripDeepJs = (data) => {
 
 const stripJsUniversal = (hook) => {
 	if (hook.data && hook.path && hook.path !== "authentication") {
-		stripDeepJs(hook.data);
+		sanitizeDeep(hook.data);
 	}
 	return hook;
 };
