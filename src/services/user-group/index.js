@@ -4,7 +4,7 @@ const service = require('feathers-mongoose');
 const {courseModel, courseGroupModel, classModel, gradeModel} = require('./model');
 const hooks = require('./hooks');
 const courseGroupsHooks = require('./hooks/courseGroups');
-const classHooks = require('./hooks/classes')
+const classHooks = require('./hooks/classes');
 
 module.exports = function() {
 	const app = this;
