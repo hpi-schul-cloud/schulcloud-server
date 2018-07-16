@@ -39,9 +39,27 @@ describe('consent service', function() {
         
   });
 
-  it('patches date of user consent');
+  it('patches date of user consent', function () {
+    return consentService
+      .create({
+        "userId": "0000d213816abba584714c0b",
+        })
+        .then(consent => {
+          return consentService.patch(consent._id, {
+            "userConsent": {
+              "privacyConsent": true,
+              "termsOfUseConsent": true,
+              "thirdPartyConsent": true,
+              "researchConsent": true
+            }
+          });
+        })
+        .then(consent => {
+          chai.expect(consent).to.have.property("userConsent");
+        });
+  });
+  
   it('doesnt create second consent for same user');
-
 
   it('finds consent versions', function() {
     return consentVersionService

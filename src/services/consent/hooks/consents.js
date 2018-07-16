@@ -4,30 +4,46 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
-const addDatesCreate = (hook) => {
+const addDates = (hook) => {
 	if (hook.data.parentConsents) {
-		hook.data.parentConsents[0].dateOfPrivacyConsent = Date.now();
-		hook.data.parentConsents[0].dateOfResearchConsent = Date.now();
-		hook.data.parentConsents[0].dateOfTermsOfUseConsent = Date.now();
-		hook.data.parentConsents[0].dateOfThirdPartyConsent = Date.now();
+		let parentConsent = hook.data.parentConsents[0];
+		if ("privacyConsent" in parentConsent) {
+			parentConsent.dateOfPrivacyConsent = Date.now();
+		}
+		if ("researchConsent" in parentConsent) {
+			parentConsent.dateOfResearchConsent = Date.now();
+		}
+		if ("termsOfUseConsent" in parentConsent) {
+			parentConsent.dateOfTermsOfUseConsent = Date.now();
+		}
+		if ("thirdPartyConsent" in parentConsent) {
+			parentConsent.dateOfThirdPartyConsent = Date.now();
+		}
 	}
 	if (hook.data.userConsent) {
-		hook.data.userConsent.dateOfPrivacyConsent = Date.now();
-		hook.data.userConsent.dateOfResearchConsent = Date.now();
-		hook.data.userConsent.dateOfTermsOfUseConsent = Date.now();
-		hook.data.userConsent.dateOfThirdPartyConsent = Date.now();
+		let userConsent = hook.data.userConsent;
+		if ("privacyConsent" in userConsent) {
+			userConsent.dateOfPrivacyConsent = Date.now();
+		}
+		if ("researchConsent" in userConsent) {
+			userConsent.dateOfResearchConsent = Date.now();
+		}
+		if ("termsOfUseConsent" in userConsent) {
+			userConsent.dateOfTermsOfUseConsent = Date.now();
+		}
+		if ("thirdPartyConsent" in userConsent) {
+			userConsent.dateOfThirdPartyConsent = Date.now();
+		}
 	}
 };
-
-//patch
 
 exports.before = {
 	all: [],
 	find: [],
 	get: [],
-	create: [addDatesCreate],
-	update: [],
-	patch: [],
+	create: [addDates],
+	update: [addDates],
+	patch: [addDates],
 	remove: []
 };
 
