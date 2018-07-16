@@ -1,14 +1,13 @@
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
 
-
 const sanitize = (data, options) => {
 	// https://www.npmjs.com/package/sanitize-html
 	if ((options||{}).html === true) {
 		// editor-content data
 		data = sanitizeHtml(data, {
-			allowedTags: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span',
-				'nl', 'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+			allowedTags: [ 'h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span',
+				'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
 				'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video' ],
 			allowedAttributes: false, // allow all attributes of allowed tags
 			allowedSchemes: [ 'http', 'https', 'ftp', 'mailto' ],
@@ -16,7 +15,8 @@ const sanitize = (data, options) => {
 				decodeEntities: true
 			}
 		});
-		data = data.replace(/(&lt;script&gt;).*(&lt;\/script&gt;)/i, ''); // force remove escaped script tags
+		//data = data.replace(/(&lt;script&gt;).*?(&lt;\/script&gt;)/gim, ''); // force remove script tags
+		//data = data.replace(/(<script>).*?(<\/script>)/gim, ''); // force remove script tags
 	} else {
 		// non editor-content data
 		data = sanitizeHtml(data, {
@@ -39,10 +39,12 @@ const sanitize = (data, options) => {
 const sanitizeDeep = (data) => {
 	if (typeof data === "object" && data !== null) {
 		Object.entries(data).forEach(([key, value]) => {
-			if(typeof value === "string" && key === "content") // editor content, html allowed
-				data[key] = sanitize(value, {html:true});
-			else if(typeof value === "string")
-				data[key] = sanitize(value, {html:false});
+			if(typeof value === "string")
+				// enable html for all current editors
+				if(["content", "text", "comment", "gradeComment"].indexOf(key)>=0)
+					data[key] = sanitize(value, {html:true});
+				else
+					data[key] = sanitize(value, {html:false});
 			else
 				sanitizeDeep(value);
 		});
@@ -59,7 +61,7 @@ const sanitizeDeep = (data) => {
 	return data;
 };
 
-const stripJsUniversal = (hook) => {
+const sanitizeData = (hook) => {
 	if (hook.data && hook.path && hook.path !== "authentication") {
 		sanitizeDeep(hook.data);
 	}
@@ -71,9 +73,9 @@ module.exports = {
 		all: [],
 		find: [],
 		get: [],
-		create: [stripJsUniversal],
-		update: [stripJsUniversal],
-		patch: [stripJsUniversal],
+		create: [sanitizeData],
+		update: [sanitizeData],
+		patch: [sanitizeData],
 		remove: []
 	},
 	
