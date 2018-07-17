@@ -31,17 +31,6 @@ exports.before = {
 	remove: []
 };
 
-//taken from https://stackoverflow.com/a/7091965, slightly varied
-function getAge(birthDate) {
-    var today = new Date();
-    var age = today.getFullYear() - birthDate.getFullYear();
-    var m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    return age;
-}
-
 const accessCheck = (hook) => {
 	let access = true;
 	let data = hook.result.data || hook.result;
@@ -53,12 +42,12 @@ const accessCheck = (hook) => {
 				access = false;
 				return Promise.resolve;
 			}
-			let age = getAge(user.birthday);
-			
+			let age = user.age;
+
 			if (age < 18) {
 				let parentConsent = data[0].parentConsents[0];
 				//check parent consents
-				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent && 
+				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent &&
 					parentConsent.thirdPartyConsent && parentConsent.researchConsent)) {
 						access = false;
 						return Promise.resolve();
@@ -67,7 +56,7 @@ const accessCheck = (hook) => {
 			if (age > 14) {
 				//check user consents
 				let userConsent = data[0].userConsent;
-				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent && 
+				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
 					userConsent.thirdPartyConsent && userConsent.userConsent)) {
 						access = false;
 						return Promise.resolve();
@@ -75,7 +64,7 @@ const accessCheck = (hook) => {
 			}
 
 		})
-		.then(function () {
+		.then(() => {
             (hook.result.data)?(hook.result.data[0].access = access):(hook.result.access = access);
             return Promise.resolve(hook);
 		})
