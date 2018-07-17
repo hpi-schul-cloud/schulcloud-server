@@ -25,7 +25,7 @@ const consentSchema = new Schema({
 	},
 	parentConsents: [{
 		parentId: {type: Schema.Types.ObjectId, ref: 'user'},
-		form: {type: String, enum: consentForm, default: 'digital'},
+		form: {type: String, enum: consentForm, 'default': 'digital'},
 		dateOfPrivacyConsent: {type: Date, 'default': Date.now},
 		dateOfTermsOfUseConsent: {type: Date, 'default': Date.now},
 		dateOfThirdPartyConsent: {type: Date, 'default': Date.now},
@@ -35,6 +35,15 @@ const consentSchema = new Schema({
 		thirdPartyConsent: {type: Boolean},
 		researchConsent: {type: Boolean},
 	}]
+});
+
+consentSchema.pre('save', function(next) {
+	if (this.parentConsents.length == 0)
+		this.parentConsents = undefined;
+	if (this.userConsent.form == undefined)
+		this.userConsent = undefined;
+
+	next();
 });
 
 const consentVersionSchema = new Schema({
