@@ -80,7 +80,7 @@ const accessCheck = (hook) => {
 						return Promise.resolve();
 					}
 			}
-			if (age > 14) {
+			if (age > 13) {
 				//check user consents
 				let userConsent = data[0].userConsent;
 				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent && 
