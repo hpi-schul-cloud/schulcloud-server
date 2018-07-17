@@ -17,6 +17,7 @@ describe('consent service', function() {
       .create({
         "userId": "59ae89b71f513506904e1cc9",
         "userConsent": {
+          "form": "digital",
           "privacyConsent": true,
           "termsOfUseConsent": true,
           "thirdPartyConsent": true,
@@ -27,7 +28,7 @@ describe('consent service', function() {
           "privacyConsent": true,
           "termsOfUseConsent": true,
           "thirdPartyConsent": true,
-          "researchConsent": true 
+          "researchConsent": true
         }]
       })
         .then(consent => {return consentService.get(consent._id);})
@@ -36,7 +37,7 @@ describe('consent service', function() {
           chai.expect(consent.parentConsents[0]).to.have.property("dateOfPrivacyConsent");
           chai.expect(consent).to.have.property("userConsent");
         });
-        
+
   });
 
   it('patches date of user consent');
