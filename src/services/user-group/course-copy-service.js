@@ -66,7 +66,7 @@ class CourseCopyService {
 									.then(_ => {
 										return Promise.all(homeworks.map(homework => {
 											let convertedLesson = undefined;
-											if (homework.archived.length > 0 || homework.teacherId.toString() !== params.account.userId.toString())
+											if (homework.archived.length > 0 || (homework.teacherId.toString() !== params.account.userId.toString() && homework.private))
 												return;
 											else if (homework.lessonId) {
 												convertedLesson = createdLessons.filter(h => {
@@ -74,7 +74,7 @@ class CourseCopyService {
 												});
 												convertedLesson = convertedLesson[0]._id;
 											}
-											return createHomework(homework, res._id, convertedLesson, params.account.userId, this.app);
+											return createHomework(homework, res._id, convertedLesson, params.account.userId.toString() == homework.teacherId.toString() ? params.account.userId : homework.teacherId, this.app);
 										}))
 											.then(_ => {
 												return res;

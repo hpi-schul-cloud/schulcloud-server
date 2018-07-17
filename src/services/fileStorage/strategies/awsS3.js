@@ -167,7 +167,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 				const params = {
 					Bucket: awsObject.bucket, // destination bucket
-					CopySource: `/${sourceBucket}/${oldPath}`, // full source path (with bucket)
+					CopySource: `/${sourceBucket}/${encodeURIComponent(oldPath)}`, // full source path (with bucket)
 					Key: newPath // destination path
 				};
 

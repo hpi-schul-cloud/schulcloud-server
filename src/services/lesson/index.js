@@ -71,14 +71,14 @@ class LessonCopyService {
 
 							// check whether the file is included in any lesson
 							return _.some((sourceLesson.contents || []), content => {
-								return content.component === "text" && content.content.text && _.includes(content.content.text, f.key);
+								return content.component === "text" && content.content.text && _.includes(content.content.text, decodeURIComponent(f.key));
 							});
 						}))
 							.then(lessonFiles => {
 								return Promise.all(lessonFiles.map(f => {
 
 									let fileData = {
-										fileName: f.name,
+										fileName: encodeURIComponent(f.name),
 										oldPath: f.path,
 										newPath: `courses/${newCourseId}/`,
 										externalSchoolId: originalSchoolId,
@@ -96,15 +96,17 @@ class LessonCopyService {
 										});
 								}))
 									.then(_ => {
+										return Promise.all(
 										topic.contents.map(content => {
 											if (content.component === "text" && content.content.text) {
 												fileChangelog.map(change => {
 													content.content.text = content.content.text.replace(new RegExp(change.old, "g"), change.new);
 												});
 											}
-										});
-
-										return lesson.update({_id: topic._id}, topic);
+										}))
+											.then(_ => {
+												return lesson.update({_id: topic._id}, topic);
+											});
 									});
 							});
 					});
