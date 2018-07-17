@@ -4,46 +4,13 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
-const addDates = (hook) => {
-	if (hook.data.parentConsents) {
-		let parentConsent = hook.data.parentConsents[0];
-		if ("privacyConsent" in parentConsent) {
-			parentConsent.dateOfPrivacyConsent = Date.now();
-		}
-		if ("researchConsent" in parentConsent) {
-			parentConsent.dateOfResearchConsent = Date.now();
-		}
-		if ("termsOfUseConsent" in parentConsent) {
-			parentConsent.dateOfTermsOfUseConsent = Date.now();
-		}
-		if ("thirdPartyConsent" in parentConsent) {
-			parentConsent.dateOfThirdPartyConsent = Date.now();
-		}
-	}
-	if (hook.data.userConsent) {
-		let userConsent = hook.data.userConsent;
-		if ("privacyConsent" in userConsent) {
-			userConsent.dateOfPrivacyConsent = Date.now();
-		}
-		if ("researchConsent" in userConsent) {
-			userConsent.dateOfResearchConsent = Date.now();
-		}
-		if ("termsOfUseConsent" in userConsent) {
-			userConsent.dateOfTermsOfUseConsent = Date.now();
-		}
-		if ("thirdPartyConsent" in userConsent) {
-			userConsent.dateOfThirdPartyConsent = Date.now();
-		}
-	}
-};
-
 exports.before = {
 	all: [],
 	find: [],
 	get: [],
-	create: [addDates],
-	update: [addDates],
-	patch: [addDates],
+	create: [],
+	update: [],
+	patch: [],
 	remove: []
 };
 
