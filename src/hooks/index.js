@@ -213,34 +213,34 @@ exports.checkCorrectCourseId = (hook) => {
 
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId,
-			$populate: 'roles'
-		}
-	}).then(res => {
-		let access = false;
-		res.data[0].roles.map(role => {
-			if (role.name === 'superhero')
-				access = true;
-		});
-		if (access)
-			return hook;
-		if (hook.method == "get" || hook.method == "find") {
-			if (hook.params.query.schoolId == undefined) {
-				hook.params.query.schoolId = res.data[0].schoolId;
-			} else if (hook.params.query.schoolId != res.data[0].schoolId) {
-				throw new errors.Forbidden('You do not have valid permissions to access this.');
+		return userService.find({
+			query: {
+				_id: hook.params.account.userId,
+				$populate: 'roles'
 			}
-		} else {
-			if (hook.data.schoolId == undefined) {
-				hook.data.schoolId = res.data[0].schoolId.toString();
-			} else if (hook.data.schoolId != res.data[0].schoolId) {
-				throw new errors.Forbidden('You do not have valid permissions to access this.');
+		}).then(res => {
+			let access = false;
+			res.data[0].roles.map(role => {
+				if (role.name === 'superhero')
+					access = true;
+			});
+			if (access)
+				return hook;
+			if (hook.method == "get" || hook.method == "find") {
+				if (hook.params.query.schoolId == undefined) {
+					hook.params.query.schoolId = res.data[0].schoolId;
+				} else if (hook.params.query.schoolId != res.data[0].schoolId) {
+					throw new errors.Forbidden('You do not have valid permissions to access this.');
+				}
+			} else {
+				if (hook.data.schoolId == undefined) {
+					hook.data.schoolId = res.data[0].schoolId.toString();
+				} else if (hook.data.schoolId != res.data[0].schoolId) {
+					throw new errors.Forbidden('You do not have valid permissions to access this.');
+				}
 			}
-		}
 
-		return hook;
+			return hook;
 	});
 };
 
@@ -356,12 +356,12 @@ exports.checkSchoolOwnership = hook => {
 exports.sendEmail = (hook, maildata) => {
 	const userService = hook.app.service('/users');
 	const mailService = hook.app.service('/mails');
-	
+
 	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
 	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
 	let userIds = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
 	let receipients = [];
-	
+
 	let promises = [];
 
 	if (roles.length > 0) {
@@ -374,7 +374,7 @@ exports.sendEmail = (hook, maildata) => {
 			}})
 		);
 	}
-	
+
 	if (userIds.length > 0){
 		userIds.map (id => {
 			promises.push(
@@ -382,7 +382,7 @@ exports.sendEmail = (hook, maildata) => {
 			);
 		});
 	}
-	
+
 	if (emails.length > 0){
 		emails.map(email => {
 			let re = /\S+@\S+\.\S+/;
