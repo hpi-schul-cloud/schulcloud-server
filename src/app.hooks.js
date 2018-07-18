@@ -6,8 +6,8 @@ const sanitize = (data, options) => {
 	if ((options||{}).html === true) {
 		// editor-content data
 		data = sanitizeHtml(data, {
-			allowedTags: [ 'h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span',
-				'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+			allowedTags: [ 'h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span', 'del',
+				'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div', 'rechnen',
 				'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video' ],
 			allowedAttributes: false, // allow all attributes of allowed tags
 			allowedSchemes: [ 'http', 'https', 'ftp', 'mailto' ],
