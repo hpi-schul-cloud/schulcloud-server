@@ -53,7 +53,7 @@ describe('Sanitization Service', function () {
 		let postBody = {
 			"schoolId": "0000d186816abba584714c5f",
 			//"schoolId": "5836bb5664582c35df3bc000",
-			"title": '<script>alert("test");</script>',
+			"title": '<script>alert("test");</script><b></b><i></i><img src="bla" />',
 			"content": 'a',
 		};
 		
@@ -100,7 +100,7 @@ describe('Sanitization Service', function () {
 	
 	it('POST FAIL /helpdesk (Sanitization)', () => {
 		let postBody = {
-			subject: '<script>alert("test");</script>',
+			subject: '<script>alert("test");</script><b></b><i></i><img src="bla" />',
 			currentState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			targetState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			category: 'dashboard',
@@ -137,7 +137,7 @@ describe('Sanitization Service', function () {
 			name: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
 			description: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			color: '#d32f22',
-			teacherIds: [],
+			teacherIds: ["0000d213816abba584714c0a"],
 			schoolId: '0000d186816abba584714c5f'
 			//schoolId: '5836bb5664582c35df3bc000'
 		};
@@ -152,7 +152,7 @@ describe('Sanitization Service', function () {
 	
 	it('POST FAIL /courses (Sanitization)', () => {
 		let postBody = {
-			name: '<script>alert("test");</script>',
+			name: '<script>alert("test");</script><b></b><i></i><img src="bla" />',
 			description: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			color: '#d32f22',
 			teacherIds: ["0000d213816abba584714c0a"],
@@ -168,7 +168,7 @@ describe('Sanitization Service', function () {
 			});
 	});
 	
-	/*it('POST /lessons (Sanitization)', () => {
+	it('POST /lessons (Sanitization)', () => {
 		let postBody = {
 			"courseId": currentUsedId,
 			"name": '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
@@ -188,22 +188,19 @@ describe('Sanitization Service', function () {
 			"position": 0,
 			"materialIds": []
 		};
-		//console.log(postBody);
 		
-		return lessonService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
+		return lessonService.create(postBody, { account: { userId: '0000d213816abba584714c0a'}})
 			.then(lresult => {
-				//console.log("########");
-				//console.log(lresult);
 				currentLessonId = lresult._id;
 				expect(lresult.name).to.equal('SanitizationTest äöüß§$%/()=');
-				expect(lresult.description).to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>äöüß§$%/()=');
+				expect(lresult.contents[0].content.text).to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>äöüß§$%/()=');
 			});
 	});
-
+	
 	it('POST FAIL /lessons (Sanitization)', () => {
 		let postBody = {
 			"courseId": currentUsedId,
-			"name": '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
+			"name": '<script>alert("test");</script><b></b><i></i><img src="bla" />',
 			"contents": [
 				{
 					"title": '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
@@ -221,11 +218,11 @@ describe('Sanitization Service', function () {
 			"materialIds": []
 		};
 		
-		return lessonService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
+		return lessonService.create(postBody, { account: { userId: '0000d213816abba584714c0a'}})
 			.catch(exception => {
 				expect(exception).to.not.be.undefined;
 				expect(exception.code).to.equal(400);
-				expect(exception.message).to.equal("course validation failed: name: Path `name` is required.");
+				expect(exception.message).to.equal("lesson validation failed: name: Path `name` is required.");
 			});
 	});
 	
@@ -235,7 +232,7 @@ describe('Sanitization Service', function () {
 				expect(result).to.not.be.undefined;
 				expect(result.name).to.equal('SanitizationTest äöüß§$%/()=');
 			});
-	});*/
+	});
 	
 	it('DELETE /courses (Sanitization)', () => {
 		return courseService.remove(currentUsedId, {payload: {userId: '0000d213816abba584714c0a'}})

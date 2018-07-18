@@ -204,7 +204,7 @@ exports.checkCorrectCourseId = (hook) => {
 
 	return courseService.find({ query: { teacherIds: {$in: [hook.params.account.userId] } }})
 		.then(courses => {
-			if (courses.data.some(course => { return course._id == hook.data.courseId; }))
+			if (courses.data.some(course => { return course._id.toString() === hook.data.courseId.toString(); }))
 				return hook;
 			else
 				throw new errors.Forbidden("The entered course doesn't belong to you!");
