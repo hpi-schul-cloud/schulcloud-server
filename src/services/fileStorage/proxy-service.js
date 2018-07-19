@@ -9,6 +9,7 @@ const removeLeadingSlash = require('./utils/filePathHelper').removeLeadingSlash;
 const generateFlatFileName = require('./utils/filePathHelper').generateFileNameSuffix;
 const FileModel = require('./model').fileModel;
 const DirectoryModel = require('./model').directoryModel;
+const LessonModel = require('../lesson/model');
 
 const strategies = {
 	awsS3: AWSStrategy
@@ -45,6 +46,42 @@ const deleteAllSubDirectories = (path) => {
 					return DirectoryModel.findOne({_id: f._id}).remove().exec();
 				}));
 		});
+};
+
+/** find all objects for given @model in renamed (virtual) directory with regex (also nested) and changes its path and key */
+const relinkAllObjectsInDirectory = (oldPath, newPath, model) => {
+	return model.find({path: {$regex : "^" + oldPath}}).exec()
+	.then(objects => {
+		return Promise.all(
+			objects.map(o => {
+				let oldKey = o.key;
+				// just changed that substring of path which ends on the renamed directory's old path (because of deeper nested files)
+				o.path = newPath + "/" + o.path.substring(oldPath.length + 1);
+				o.key = o.path + o.name;
+				return model.update({_id: o._id}, o).exec().then(_ => {
+					// also relink object (actually files) which are included in lessons
+					return relinkFileInLessons(oldKey, o.key);
+				});
+			}));
+	});
+};
+
+/** modifies the file-link in all corresponding lessons */
+const relinkFileInLessons = (oldPath, newPath) => {
+	return LessonModel.find({"contents.content.text": { $regex: oldPath, $options: 'i'}}).then(lessons => {
+		if (lessons && lessons.length > 0) {
+			return Promise.all(lessons.map(l => {
+				l.contents.map(content => {
+					if (content.component === "text" && content.content.text) {
+							content.content.text = content.content.text.replace(new RegExp(oldPath, "g"), newPath);
+					}
+				});
+
+				return LessonModel.update({_id: l._id}, l).exec();
+			}));
+		}
+		return Promise.resolve({});
+	});
 };
 
 class FileStorageService {
@@ -146,15 +183,15 @@ class SignedUrlService {
 	 * @returns {Promise}
 	 */
 	create({path, fileType, action}, params) {
-		
+
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
 		let fileName = encodeURIComponent(pathUtil.basename(path));
 		let dirName = pathUtil.dirname(path);
-		
+
 		// normalize utf-8 chars
 		path = `${dirName}/${fileName}`;
-		
+
 		// todo: maybe refactor search so that I can put the file-proxy-id (@id) instead of the full path
 
 		// all files are uploaded to a flat-storage architecture without real folders
@@ -241,6 +278,80 @@ class DirectoryService {
 	}
 }
 
+class FileRenameService {
+		constructor() {
+			this.docs = swaggerDocs.fileRenameService;
+		}
+
+		/**
+		 * @param data, contains path, newName
+		 * @returns {Promise}
+		 */
+		create(data, params) {
+			let userId = params.payload.userId;
+			let path = data.path;
+			let newName = data.newName;
+
+			if (!path || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
+
+			return filePermissionHelper.checkPermissions(userId, path)
+				.then(_ => {
+					// find file and rename it
+					return FileModel.findOne({key: path}).exec()
+					.then(file => {
+						if (!file) return Promise.reject(new errors.NotFound('The given file was not found!'));
+
+						file.name = newName;
+						file.key = file.path + newName;
+
+						return FileModel.update({_id: file._id}, file).exec()
+							.then(_ => {
+								// modify lessons which include the given file
+								return relinkFileInLessons(path, file.key);
+							});
+					});
+				});
+		}
+}
+
+class DirectoryRenameService {
+		constructor() {
+			this.docs = swaggerDocs.directoryRenameService;
+		}
+
+		/**
+		 * @param data, contains path, newName
+		 * @returns {Promise}
+		 */
+		create(data, params) {
+			let userId = params.payload.userId;
+			let path = data.path;
+			let newName = data.newName;
+
+			if (!path || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
+
+			return filePermissionHelper.checkPermissions(userId, path)
+				.then(_ => {
+					// find directory and rename it
+					return DirectoryModel.findOne({key: path}).exec()
+					.then(directory => {
+						if (!directory) return Promise.reject(new errors.NotFound('The given directory was not found!'));
+
+						directory.name = newName;
+						directory.key = directory.path + newName;
+
+						return DirectoryModel.update({_id: directory._id}, directory).exec()
+							.then(_ => {
+								// change paths and keys of all files and directories in the renamed directory
+								let filesRenamePromise = relinkAllObjectsInDirectory(path, directory.key, FileModel);
+								let directoriesRenamePromise = relinkAllObjectsInDirectory(path, directory.key, DirectoryModel);
+								return Promise.all([filesRenamePromise, directoriesRenamePromise]);
+							});
+					});
+				});
+		}
+}
+
 class FileTotalSizeService {
 
 	/**
@@ -261,30 +372,106 @@ class FileTotalSizeService {
 	}
 }
 
+class CopyService {
+
+	constructor() {
+		this.docs = swaggerDocs.copyService;
+	}
+
+	/**
+	 * @param data, contains oldPath, newPath and externalSchoolId (optional).
+	 * @returns {Promise}
+	 */
+	create(data, params) {
+		let {fileName, oldPath, newPath, externalSchoolId} = data;
+		let userId = params.account.userId;
+
+		if (!oldPath || !fileName || !newPath || !userId) {
+			return Promise.reject(new errors.BadRequest('Missing parameters'));
+		}
+
+		// first check if given file is valid
+		return FileModel.findOne({key: oldPath + fileName}).exec()
+			.then(file => {
+				if (!file) throw new errors.NotFound("The file was not found!");
+
+				// check that theres no file on 'newPath', otherwise change name of file
+				return FileModel.findOne({key: newPath + fileName}).exec()
+					.then(newFile => {
+						let newFileName = fileName;
+						if (newFile) {
+							let name = fileName.substring(0, fileName.lastIndexOf('.'));
+							let extension = fileName.split('.').pop();
+							newFileName = `${name}_${Date.now()}.${extension}`;
+						}
+
+						// check permissions for oldPath and newPath
+						let oldPathPromise = filePermissionHelper.checkPermissions(userId, oldPath + fileName);
+						let newPathPromise = filePermissionHelper.checkPermissions(userId, newPath + newFileName);
+
+						return Promise.all([oldPathPromise, newPathPromise]).then(_ => {
+
+							// copy file on external storage
+							let newFlatFileName = generateFlatFileName(newFileName);
+							return createCorrectStrategy(params.payload.fileStorageType).copyFile(userId, file.flatFileName, newFlatFileName, externalSchoolId).then(_ => {
+
+								// create proxy object from copied;
+								let newFileObject = {
+									key: newPath + newFileName,
+									path: newPath,
+									name: newFileName,
+									type: file.type,
+									size: file.size,
+									flatFileName: newFlatFileName,
+									thumbnail: file.thumbnail,
+									schoolId: file.schoolId,
+									permissions: file.permissions || []
+								};
+
+								return FileModel.create(newFileObject);
+							});
+						});
+					});
+			});
+	}
+}
+
 module.exports = function () {
 	const app = this;
 
 	// Initialize our service with any options it requires
 	app.use('/fileStorage/directories', new DirectoryService());
+	app.use('/fileStorage/directories/rename', new DirectoryRenameService());
+	app.use('/fileStorage/rename', new FileRenameService());
 	app.use('/fileStorage/signedUrl', new SignedUrlService());
 	app.use('/fileStorage/total', new FileTotalSizeService());
+	app.use('/fileStorage/copy', new CopyService());
 	app.use('/fileStorage', new FileStorageService());
 
 	// Get our initialize service to that we can bind hooks
 	const fileStorageService = app.service('/fileStorage');
 	const signedUrlService = app.service('/fileStorage/signedUrl');
 	const directoryService = app.service('/fileStorage/directories');
+	const directoryRenameService = app.service('/fileStorage/directories/rename');
+	const fileRenameService = app.service('/fileStorage/rename');
 	const fileTotalSizeService = app.service('/fileStorage/total');
+	const copyService = app.service('/fileStorage/copy');
 
 	// Set up our before hooks
 	fileStorageService.before(hooks.before);
 	signedUrlService.before(hooks.before);
 	directoryService.before(hooks.before);
+	directoryRenameService.before(hooks.before);
+	fileRenameService.before(hooks.before);
 	fileTotalSizeService.before(hooks.before);
+	copyService.before(hooks.before);
 
 	// Set up our after hooks
 	fileStorageService.after(hooks.after);
 	signedUrlService.after(hooks.after);
 	directoryService.after(hooks.after);
+	directoryRenameService.after(hooks.after);
+	fileRenameService.after(hooks.after);
 	fileTotalSizeService.after(hooks.after);
+	copyService.after(hooks.after);
 };

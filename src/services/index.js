@@ -27,6 +27,7 @@ const pseudo = require("./pseudonym");
 const lrs = require("./lrs");
 const provider = require('./provider');
 const oauth2proxy = require('./oauth2proxy');
+const socket = require('./socket');
 
 const mongoose = require('mongoose');
 
@@ -63,4 +64,5 @@ module.exports = function () {
 	app.configure(lrs);
 	app.configure(provider);
 	app.configure(oauth2proxy);
+	app.configure(socket);
 };
