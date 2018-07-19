@@ -4,7 +4,7 @@ const request = require('request-promise-native');
 const hooks = require('./hooks');
 const swaggerDocs = require('./docs/');
 
-const REQUEST_TIMEOUT = 4000; // in ms
+const REQUEST_TIMEOUT = 10*60*1000; // in ms 4000
 
 function toQueryString(paramsObject) {
 	return Object
@@ -68,26 +68,138 @@ const convertEventToJsonApi = (body) => {
 	};
 };
 
+const mappingScopeIdToTarget = scope => {
+	//to do
+}
+
+const getScopeFromTarget = (target,account) =>{
+	
+}
+
+const convertSubscriptionToJsonApi = (body,account,ressourceUrl) => {
+	return {
+		'links':{
+			'self':ressourceUrl
+		},
+		'data':[
+			{
+				type: "subscription",		//or "external-feed"
+				id:account.userId,
+				attributes:Object.assign({
+					'last-update-status':body['last-update-status'] || 200,
+					'last-updated':body['last-updated'] || createTimeStamp()
+				},body),
+				relationships:{
+					"scope-ids": [
+						account.userId	//
+					],
+					"separate-users": body['separate-users'] || false
+				}
+			}
+		]
+	}
+}
+
+const createTimeStamp = () => {
+	const d = new Date();
+	const fix2 = n =>{
+		return (n<10 ? '0'+n : n );
+	}
+	//example "2017-01-23T10:00:00Z"
+	return 	d.getFullYear()+'-'+
+			fix2(d.getMonth())+'-'+
+			fix2(d.getDay())+'T'+
+			fix2(d.getHours())+':'+
+			fix2(d.getMinutes())+':'+
+			fix2(d.getSeconds())+'Z';
+}
+
+
 class SubscriptionsService {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = swaggerDocs.subscriptions;
 	}
 	
-	create(data,params) {
+	create(data, params) {		
+		const serviceUrls = this.app.get('services') || {};
+		const ressourceUrl = serviceUrls.calendar + '/subscriptions/'; 
+		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
+		const jsonApiBody = convertSubscriptionToJsonApi(data,params.account,ressourceUrl);
+		console.log(JSON.stringify(jsonApiBody));
+		const options = {
+			uri: ressourceUrl,
+			method: 'POST',
+			headers: {
+				'Authorization': userId
+			},
+			body: jsonApiBody,
+			json: true,
+			timeout: REQUEST_TIMEOUT
+		};
+
+		return request(options).then(data => {		
+			return data
+		}).catch({
 		
+		});
 	}
 	
-	find(params) {		//find as name useful ?
+	//get and find are switch over the parameters
+	//to return single resources for edit modal window
+	/*get(id,params) {
+		console.log('GET');
+	} */
+	
+	//to return multiple resources for initial data 
+	find(params) {
+		const serviceUrls = this.app.get('services') || {};
+		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
+		const options = {
+			uri: serviceUrls.calendar + '/subscriptions?' + toQueryString(params.query),
+			//method: 'GET',
+			headers: {
+				'Authorization': userId
+			},
+			json: true,
+			timeout: REQUEST_TIMEOUT
+		};
+
+		return request(options).then(data => {
+			return data
+		});
 		
 	}
-	
+
 	remove(id, params) {
+		console.log('REMOVE');
+	}
+	
+	patch(id,data,params) {
+		const serviceUrls = this.app.get('services') || {};
+		const ressourceUrl = serviceUrls.calendar + '/subscriptions/'; 
+		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
+		const jsonApiBody = convertSubscriptionToJsonApi(data,params.account,ressourceUrl);
+
+		const options = {
+			uri: ressourceUrl + id,
+			method: 'PUT',
+			headers: {
+				'Authorization': userId
+			},
+			body: jsonApiBody,
+			json: true,
+			timeout: REQUEST_TIMEOUT
+		};
 		
+		return request(options).then(data => {
+			return data
+		});	
 	}
 	
 	update(id, data, params) {
-		
+		console.log('UPDATE');
+		console.log(id,data,params);
 	}
 	
 	setup(app, path) {
@@ -132,7 +244,7 @@ class Service {
 	}
 
 	find(params) {
-
+		
 		const serviceUrls = this.app.get('services') || {};
 		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
 		const options = {
@@ -146,6 +258,7 @@ class Service {
 
 		return request(options).then(events => {
 			events = (params.query || {}).userId || (events.data || events || []).map(event => {
+				
 				return Object.assign(event, {
 					title: event.summary,
 					allDay: false, // TODO: find correct value
@@ -156,9 +269,11 @@ class Service {
 
 			return events.map(convertJsonApiToEvent);
 		});
+		
 	}
 
 	remove(id, params) {
+
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
@@ -181,6 +296,7 @@ class Service {
 	}
 
 	update(id, data, params) {
+
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
@@ -224,10 +340,10 @@ module.exports = function () {
 	contentService.after(hooks.after);
 	
 	/* _____ Subscriptions-Service _____ */
-	app.use('/subscriptions', new Service());
+	app.use('/subscriptions', new SubscriptionsService());
 	const contentSubscriptionsService = app.service('/subscriptions');
 	contentSubscriptionsService.before(hooks.before);		//should work with subscriptions too
-	contentSubscriptionsService.after(hooks.after);
+	contentSubscriptionsService.after(hooks.afterSubscriptions);
 	
 };
 
