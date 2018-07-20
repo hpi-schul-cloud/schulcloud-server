@@ -22,9 +22,9 @@ const addDisplayName = (hook) => {
     data = (Array.isArray(data))?(data):([data]);
 	
 	data = data.map(function (currentClass) {
-		if (currentClass.nameFormat = "static") {
+		if (currentClass.nameFormat == "static") {
 			currentClass.displayName = currentClass.name;
-		} else if (currentClass.nameFormat = "gradeLevel+name") {
+		} else if (currentClass.nameFormat == "gradeLevel+name") {
 			currentClass.displayName = currentClass.gradeLevel + currentClass.name;
 		}
 		return currentClass
