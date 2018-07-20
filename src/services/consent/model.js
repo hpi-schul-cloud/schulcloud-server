@@ -14,10 +14,10 @@ const consentSchema = new Schema({
 	userId: {type: Schema.Types.ObjectId, ref: 'user', required: true},
 	userConsent: {
 		form: {type: String, enum: consentForm},
-		dateOfPrivacyConsent: {type: Date, 'default': Date.now},
-		dateOfTermsOfUseConsent: {type: Date, 'default': Date.now},
-		dateOfThirdPartyConsent: {type: Date, 'default': Date.now},
-		dateOfResearchConsent: {type: Date, 'default': Date.now},
+		dateOfPrivacyConsent: {type: Date},
+		dateOfTermsOfUseConsent: {type: Date},
+		dateOfThirdPartyConsent: {type: Date},
+		dateOfResearchConsent: {type: Date},
 		privacyConsent: {type: Boolean},
 		termsOfUseConsent: {type: Boolean},
 		thirdPartyConsent: {type: Boolean},
@@ -25,25 +25,16 @@ const consentSchema = new Schema({
 	},
 	parentConsents: [{
 		parentId: {type: Schema.Types.ObjectId, ref: 'user'},
-		form: {type: String, enum: consentForm, 'default': 'digital'},
-		dateOfPrivacyConsent: {type: Date, 'default': Date.now},
-		dateOfTermsOfUseConsent: {type: Date, 'default': Date.now},
-		dateOfThirdPartyConsent: {type: Date, 'default': Date.now},
-		dateOfResearchConsent: {type: Date, 'default': Date.now},
+		form: {type: String, enum: consentForm},
+		dateOfPrivacyConsent: {type: Date},
+		dateOfTermsOfUseConsent: {type: Date},
+		dateOfThirdPartyConsent: {type: Date},
+		dateOfResearchConsent: {type: Date},
 		privacyConsent: {type: Boolean},
 		termsOfUseConsent: {type: Boolean},
 		thirdPartyConsent: {type: Boolean},
 		researchConsent: {type: Boolean},
 	}]
-});
-
-consentSchema.pre('save', function(next) {
-	if (this.parentConsents.length == 0)
-		this.parentConsents = undefined;
-	if (this.userConsent.form == undefined)
-		this.userConsent = undefined;
-
-	next();
 });
 
 const consentVersionSchema = new Schema({

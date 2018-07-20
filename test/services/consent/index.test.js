@@ -40,7 +40,7 @@ describe('consent service', function() {
 
   });
 
-  it('patches date of user consent'/*, function () {
+  it('patches date of user consent', function () {
     return consentService
       .create({
         "userId": "0000d213816abba584714c0b",
@@ -57,9 +57,9 @@ describe('consent service', function() {
         })
         .then(consent => {
           chai.expect(consent).to.have.property("userConsent");
-          //chai.expect(consent.userConsent).to.have.property("dateOfPrivacyConsent");
+          chai.expect(consent.userConsent).to.have.property("dateOfPrivacyConsent");
         });
-  }*/);
+  });
   
   it('doesnt create second consent for same user');
 
