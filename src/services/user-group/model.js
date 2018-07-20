@@ -49,7 +49,7 @@ const courseGroupModel = mongoose.model('courseGroup', getUserGroupSchema({
 	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
 }));
 
-const nameFormats = ["static", "gradeLevel+name" ]
+const nameFormats = ["static", "gradeLevel+name" ];
 
 const classModel =  mongoose.model('class', getUserGroupSchema({
 	teacherIds: [{type: Schema.Types.ObjectId, ref: 'user', required: true}],

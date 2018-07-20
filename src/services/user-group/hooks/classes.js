@@ -27,13 +27,13 @@ const addDisplayName = (hook) => {
 		} else if (currentClass.nameFormat == "gradeLevel+name") {
 			currentClass.displayName = currentClass.gradeLevel + currentClass.name;
 		}
-		return currentClass
-	})
+		return currentClass;
+	});
 
 	if(arrayed){data = data[0];}
     (hook.result.data)?(hook.result.data = data):(hook.result = data);
 	return Promise.resolve(hook);	
-}
+};
 
 exports.after = {
 	all: [],
