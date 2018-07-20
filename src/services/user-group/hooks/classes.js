@@ -16,10 +16,33 @@ exports.before = {
 	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation]
 };
 
+const addDisplayName = (hook) => {
+	let data = hook.result.data || hook.result;
+    const arrayed = !(Array.isArray(data));
+    data = (Array.isArray(data))?(data):([data]);
+	
+	data = data.map(function (currentClass) {
+		if (currentClass.nameFormat = "static") {
+			currentClass.displayName = currentClass.name;
+		} else if (currentClass.nameFormat = "gradeLevel+name") {
+			currentClass.displayName = currentClass.gradeLevel + currentClass.name;
+		}
+		return currentClass
+	})
+
+	if(arrayed){data = data[0];}
+    (hook.result.data)?(hook.result.data = data):(hook.result = data);
+	return Promise.resolve(hook);	
+}
+
 exports.after = {
 	all: [],
-	find: [],
-	get: [globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'}))],
+	find: [addDisplayName],
+	get: [
+		addDisplayName,
+		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'})
+		
+	)],
 	create: [],
 	update: [],
 	patch: [],
