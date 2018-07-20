@@ -65,38 +65,3 @@ exports.afterSubscriptions = {
 	patch: [],
 	remove: []
 }
-
-/* example: hook.result from calendar /event
-[ { type: 'event',
-    id: '54be9721-9873-438d-9b50-593e0d7635cb',
-    attributes:
-     { summary: 'test',
-       location: 'test',
-       description: 'test',
-       dtstart: '2018-07-11T00:00:00.000Z',
-       dtend: '2018-07-11T01:00:00.000Z',
-       dtstamp: '2018-07-17T10:33:24.796Z',
-       uid: '410b6adc-fd6a-4706-bf76-c2a5c8d7f8b7' },
-    relationships: { 'scope-ids': [Array] },
-    title: 'test',
-    allDay: false,
-    start: 1531267200000,
-    end: 1531270800000,
-    url: '',
-    _id: '410b6adc-fd6a-4706-bf76-c2a5c8d7f8b7',
-    summary: 'test',
-    location: 'test',
-    description: 'test',
-    'x-sc-courseId': undefined,
-    'x-sc-courseTimeId': undefined } ]
-	
-*/
-
-/* 
-{ links: { self: 'https://schul-cloud.org:3000/subscriptions' },
-  data:
-   [ { type: 'subscription',
-       id: '62a11270-5eef-411d-bbbf-dcf7e059d8c5',
-       attributes: [Object],
-       relationships: [Object] } ] }
-*/

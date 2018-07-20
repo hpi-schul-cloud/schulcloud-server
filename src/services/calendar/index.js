@@ -4,7 +4,7 @@ const request = require('request-promise-native');
 const hooks = require('./hooks');
 const swaggerDocs = require('./docs/');
 
-const REQUEST_TIMEOUT = 10*60*1000; // in ms 4000
+const REQUEST_TIMEOUT = 4000; // in ms 4000
 
 function toQueryString(paramsObject) {
 	return Object
@@ -77,6 +77,9 @@ const getScopeFromTarget = (target,account) =>{
 }
 
 const convertSubscriptionToJsonApi = (body,account,ressourceUrl) => {
+	if(!(typeof body==='object')) 
+		return {}
+	
 	return {
 		'links':{
 			'self':ressourceUrl
@@ -85,14 +88,9 @@ const convertSubscriptionToJsonApi = (body,account,ressourceUrl) => {
 			{
 				type: "subscription",		//or "external-feed"
 				id:account.userId,
-				attributes:Object.assign({
-					'last-update-status':body['last-update-status'] || 200,
-					'last-updated':body['last-updated'] || createTimeStamp()
-				},body),
+				attributes:body,
 				relationships:{
-					"scope-ids": [
-						account.userId	//
-					],
+					"scope-ids": [account.userId],
 					"separate-users": body['separate-users'] || false
 				}
 			}
@@ -100,108 +98,102 @@ const convertSubscriptionToJsonApi = (body,account,ressourceUrl) => {
 	}
 }
 
-const createTimeStamp = () => {
-	const d = new Date();
-	const fix2 = n =>{
-		return (n<10 ? '0'+n : n );
-	}
-	//example "2017-01-23T10:00:00Z"
-	return 	d.getFullYear()+'-'+
-			fix2(d.getMonth())+'-'+
-			fix2(d.getDay())+'T'+
-			fix2(d.getHours())+':'+
-			fix2(d.getMinutes())+':'+
-			fix2(d.getSeconds())+'Z';
+const validRoute={
+	'subscriptions':'subscriptions',
+	'events':'events'
+}	
+const validMethode={
+	'GET':'GET',
+	'POST':'POST',
+	'DELETE':'DELETE',
+	'PUT':'PUT'
+}
+/**
+ * converts a jsonApi-event to a plain event
+ * @param opt {object} -> self = this, params, data, id, before, after, service, method
+ * 			
+ */
+const getRequestHandler = (opt) =>{	
+	const 	self=opt.self, 
+			params=opt.params, 
+			data=opt.data, 
+			id=opt.id, 
+			before=opt.before, 
+			after=opt.after,
+			service=validRoute[opt.service]||'subscriptions',		
+			method=validMethode[(opt.method||'GET').toUpperCase()];			
+	const 	query=params.query;
+
+	const uri = (self.app.get('services') || {}).calendar + '/'+service ; 
+	const uriParams = id ? '/'+id : (query ? '?'+toQueryString(query) : '')
+	const userId = (query || {}).userId || (params.account ||{}).userId || params.payload.userId;
+
+	const options = {
+		uri: uri + uriParams,
+		method: method,
+		headers: {'Authorization': userId},
+		json: true,
+		timeout: REQUEST_TIMEOUT
+	};
+	
+	if(data){
+		if( before )
+			options.body=before(data,params.account,uri);
+		else 
+			options.body=data;
+	}	
+	
+	return request(options).then(data => {	
+		if(after)
+			data=after(data);
+		return data
+	});
 }
 
-
+//update and get not implemented
 class SubscriptionsService {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = swaggerDocs.subscriptions;
 	}
-	
-	create(data, params) {		
-		const serviceUrls = this.app.get('services') || {};
-		const ressourceUrl = serviceUrls.calendar + '/subscriptions/'; 
-		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
-		const jsonApiBody = convertSubscriptionToJsonApi(data,params.account,ressourceUrl);
-		console.log(JSON.stringify(jsonApiBody));
-		const options = {
-			uri: ressourceUrl,
-			method: 'POST',
-			headers: {
-				'Authorization': userId
-			},
-			body: jsonApiBody,
-			json: true,
-			timeout: REQUEST_TIMEOUT
-		};
-
-		return request(options).then(data => {		
-			return data
-		}).catch({
-		
+	create(data, params) {
+		return getRequestHandler({
+			self:this,
+			method:'post',
+			params:params,
+			data:data,
+			before:convertSubscriptionToJsonApi
 		});
 	}
-	
-	//get and find are switch over the parameters
-	//to return single resources for edit modal window
-	/*get(id,params) {
-		console.log('GET');
-	} */
-	
 	//to return multiple resources for initial data 
-	find(params) {
-		const serviceUrls = this.app.get('services') || {};
-		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
-		const options = {
-			uri: serviceUrls.calendar + '/subscriptions?' + toQueryString(params.query),
-			//method: 'GET',
-			headers: {
-				'Authorization': userId
-			},
-			json: true,
-			timeout: REQUEST_TIMEOUT
-		};
-
-		return request(options).then(data => {
-			return data
+	find(params){
+		return getRequestHandler({
+			self:this,
+			params:params
 		});
-		
-	}
-
+	} 
+	
 	remove(id, params) {
-		console.log('REMOVE');
+		return getRequestHandler({
+			self:this,
+			method:'delete',
+			params:params,
+			before:convertSubscriptionToJsonApi,
+			id:id
+		});
 	}
-	
-	patch(id,data,params) {
-		const serviceUrls = this.app.get('services') || {};
-		const ressourceUrl = serviceUrls.calendar + '/subscriptions/'; 
-		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
-		const jsonApiBody = convertSubscriptionToJsonApi(data,params.account,ressourceUrl);
+	//use as update  
+	patch(id, data, params) {
+		return getRequestHandler({
+			self:this,
+			method:'put',
+			params:params,
+			data:data,
+			before:convertSubscriptionToJsonApi,
+			id:id
+		});
+	}
 
-		const options = {
-			uri: ressourceUrl + id,
-			method: 'PUT',
-			headers: {
-				'Authorization': userId
-			},
-			body: jsonApiBody,
-			json: true,
-			timeout: REQUEST_TIMEOUT
-		};
-		
-		return request(options).then(data => {
-			return data
-		});	
-	}
-	
-	update(id, data, params) {
-		console.log('UPDATE');
-		console.log(id,data,params);
-	}
-	
 	setup(app, path) {
 		this.app = app;
 	}
@@ -214,7 +206,6 @@ class Service {
 	}
 
 	create(data, params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
@@ -243,8 +234,7 @@ class Service {
 		});
 	}
 
-	find(params) {
-		
+	find(params) {		
 		const serviceUrls = this.app.get('services') || {};
 		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
 		const options = {
