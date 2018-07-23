@@ -33,7 +33,7 @@ const gradeLevelSchema = new Schema({
 });
 
 const schoolModel = mongoose.model('school', schoolSchema);
-const yearModel = mongoose.model('yearSchema', yearSchema);
+const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
