@@ -4,7 +4,7 @@ const request = require('request-promise-native');
 const hooks = require('./hooks');
 const swaggerDocs = require('./docs/');
 
-const REQUEST_TIMEOUT = 4000; // in ms 4000
+const REQUEST_TIMEOUT = 4000; // in ms
 
 function toQueryString(paramsObject) {
 	return Object
@@ -75,11 +75,17 @@ const mappingScopeIdToTarget = scope => {
 const getScopeFromTarget = (target,account) =>{
 	
 }
-
+/**
+ * Converts the Server-Request-Body to JsonApi-Body
+ * @param body
+ * @param account
+ * @param ressourceUrl
+ * @returns {object} - valid json-api body for calendar-subscription-service
+ */
 const convertSubscriptionToJsonApi = (body,account,ressourceUrl) => {
 	if(!(typeof body==='object')) 
-		return {}
-	
+		body={}
+
 	return {
 		'links':{
 			'self':ressourceUrl
@@ -88,14 +94,23 @@ const convertSubscriptionToJsonApi = (body,account,ressourceUrl) => {
 			{
 				type: "subscription",		//or "external-feed"
 				id:account.userId,
-				attributes:body,
+				attributes:{
+					"description":body.description,
+					"ics-url":body["ics-url"],
+					"subscriptionId":body.subscriptionId,
+					"schoolId":body.schoolId
+				}, 
 				relationships:{
-					"scope-ids": [account.userId],
+					"scope-ids": [account.userId],	//pass scope  body.scopeId 
 					"separate-users": body['separate-users'] || false
 				}
 			}
 		]
 	}
+}
+
+const convertSubscriptionToRequest = body => {
+	
 }
 
 const validRoute={
@@ -108,25 +123,20 @@ const validMethode={
 	'DELETE':'DELETE',
 	'PUT':'PUT'
 }
-/**
- * converts a jsonApi-event to a plain event
- * @param opt {object} -> self = this, params, data, id, before, after, service, method
- * 			
- */
-const getRequestHandler = (opt) =>{	
-	const 	self=opt.self, 
-			params=opt.params, 
-			data=opt.data, 
-			id=opt.id, 
-			before=opt.before, 
-			after=opt.after,
-			service=validRoute[opt.service]||'subscriptions',		
-			method=validMethode[(opt.method||'GET').toUpperCase()];			
-	const 	query=params.query;
 
-	const uri = (self.app.get('services') || {}).calendar + '/'+service ; 
-	const uriParams = id ? '/'+id : (query ? '?'+toQueryString(query) : '')
-	const userId = (query || {}).userId || (params.account ||{}).userId || params.payload.userId;
+const getRequestHandler = (opt) =>{	
+	const 	self	= opt.self, 
+			params	= opt.params, 
+			data	= opt.data, 
+			id		= opt.id, 
+			before	= opt.before, 
+			after	= opt.after,
+			service	= validRoute[opt.service]||'subscriptions',		
+			method	= validMethode[(opt.method||'GET').toUpperCase()];			
+
+	const 	uri 	= (self.app.get('services') || {}).calendar + '/'+service ; 
+	const 	uriParams = id ? '/'+id : (Object.keys(params.query).length > 0 ? '?'+toQueryString(params.query) : '')
+	const 	userId 	= (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
 
 	const options = {
 		uri: uri + uriParams,
@@ -135,14 +145,10 @@ const getRequestHandler = (opt) =>{
 		json: true,
 		timeout: REQUEST_TIMEOUT
 	};
-	
-	if(data){
-		if( before )
-			options.body=before(data,params.account,uri);
-		else 
-			options.body=data;
-	}	
-	
+
+	if( before )
+		options.body=before(data,params.account,uri);
+
 	return request(options).then(data => {	
 		if(after)
 			data=after(data);
@@ -181,7 +187,8 @@ class SubscriptionsService {
 			before:convertSubscriptionToJsonApi,
 			id:id
 		});
-	}
+	} 
+
 	//use as update  
 	patch(id, data, params) {
 		return getRequestHandler({
