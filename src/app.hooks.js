@@ -36,17 +36,17 @@ const sanitize = (data, options) => {
  * @param data {object/array/string}
  * @returns data - clean without JS
  */
-const sanitizeDeep = (data) => {
+const sanitizeDeep = (data, path) => {
 	if (typeof data === "object" && data !== null) {
 		Object.entries(data).forEach(([key, value]) => {
 			if(typeof value === "string")
 				// enable html for all current editors
-				if(["content", "text", "comment", "gradeComment", "description"].indexOf(key)>=0)
-					data[key] = sanitize(value, {html:true});
+				if (["content", "text", "comment", "gradeComment", "description"].includes(key) && ["lessons", "news", "homework"].includes(path))
+					data[key] = sanitize(value, {html: true});
 				else
-					data[key] = sanitize(value, {html:false});
+					data[key] = sanitize(value, {html: false});
 			else
-				sanitizeDeep(value);
+				sanitizeDeep(value, path);
 		});
 	} else if (typeof data === "string")
 		data = sanitize(data, {html:false});
@@ -55,7 +55,7 @@ const sanitizeDeep = (data) => {
 			if (typeof data[i] === "string")
 				data[i] = sanitize(data[i], {html:false});
 			else
-				sanitizeDeep(data[i]);
+				sanitizeDeep(data[i], path);
 		}
 	}
 	return data;
@@ -63,7 +63,7 @@ const sanitizeDeep = (data) => {
 
 const sanitizeData = (hook) => {
 	if (hook.data && hook.path && hook.path !== "authentication") {
-		sanitizeDeep(hook.data);
+		sanitizeDeep(hook.data, hook.path);
 	}
 	return hook;
 };
