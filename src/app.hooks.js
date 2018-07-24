@@ -41,7 +41,7 @@ const sanitizeDeep = (data) => {
 		Object.entries(data).forEach(([key, value]) => {
 			if(typeof value === "string")
 				// enable html for all current editors
-				if(["content", "text", "comment", "gradeComment"].indexOf(key)>=0)
+				if(["content", "text", "comment", "gradeComment", "description"].indexOf(key)>=0)
 					data[key] = sanitize(value, {html:true});
 				else
 					data[key] = sanitize(value, {html:false});
@@ -78,7 +78,7 @@ module.exports = {
 		patch: [sanitizeData],
 		remove: []
 	},
-	
+
 	after: {
 		all: [],
 		find: [],
