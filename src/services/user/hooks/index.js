@@ -40,6 +40,18 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
+const schoolIdFromClassId = (hook) => {
+	if (!("schoolId" in hook.data) && "classId" in hook.data) {
+		return hook.app.service('/classes').get(hook.data.classId)
+			.then(res => {
+				hook.data.schoolId = res.schoolId;
+				return Promise.resolve(hook);
+			});
+	} else {
+		return Promise.resolve(hook);
+	}
+}
+
 exports.before = function(app) {
 	return {
 		all: [],
@@ -52,6 +64,7 @@ exports.before = function(app) {
 		],
 		get: [auth.hooks.authenticate('jwt')],
 		create: [
+			schoolIdFromClassId,
 			checkUnique,
 			checkUniqueAccount,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
@@ -142,6 +155,17 @@ const decorateUsers = (hook) => {
 	});
 };
 
+const handleClassId = (hook) => {
+	if (!"classId" in hook.data) {
+		return Promise.resolve(hook);
+	} else {
+	hook.app.service('/classes').patch(hook.data.classId, {
+		$push: {userIds: hook.result._id}
+	}).then(res => {
+		return Promise.resolve(hook);
+	});};
+}
+
 const User = require('../model');
 
 exports.after = {
@@ -152,7 +176,7 @@ exports.after = {
 		globalHooks.computeProperty(User.userModel, 'getPermissions', 'permissions'),
 		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'}))
 	],
-	create: [],
+	create: [handleClassId],
 	update: [],
 	patch: [],
 	remove: []
