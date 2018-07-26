@@ -15,8 +15,8 @@ const sanitize = (data, options) => {
 				decodeEntities: true
 			}
 		});
-		//data = data.replace(/(&lt;script&gt;).*?(&lt;\/script&gt;)/gim, ''); // force remove script tags
-		//data = data.replace(/(<script>).*?(<\/script>)/gim, ''); // force remove script tags
+		data = data.replace(/(&lt;script&gt;).*?(&lt;\/script&gt;)/gim, ''); // force remove script tags
+		data = data.replace(/(<script>).*?(<\/script>)/gim, ''); // force remove script tags
 	} else {
 		// non editor-content data
 		data = sanitizeHtml(data, {
