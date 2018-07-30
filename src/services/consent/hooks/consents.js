@@ -85,6 +85,7 @@ const redirectDic = {
 const accessCheck = (hook) => {
 	let access = true;
 	let redirect = redirectDic['ue18'];
+	let requiresParentConsent = true;
 	let data = hook.result.data || hook.result;
 	data = (Array.isArray(data)) ? (data) : ([data]);
 
@@ -95,7 +96,7 @@ const accessCheck = (hook) => {
 		.then(user => {
 			if (!user.birthday) {
 				access = false;
-				redirect = redirectDic['err'];
+				requiresParentConsent = false;
 				return Promise.resolve;
 			}
 			let age = user.age;
@@ -124,11 +125,20 @@ const accessCheck = (hook) => {
 			}
 			if (age > 17)
 				redirect = redirectDic['ue18'];
+				requiresParentConsent = true;
 			if ((user.preferences || {}).firstLogin)
 				redirect = redirectDic['normal'];
 		})
 		.then(() => {
-			(hook.result.data) ? (hook.result.data[0].access = access, hook.result.data[0].redirect = redirect) : (hook.result.access = access, hook.result.redirect = redirect);
+			if (hook.result.data) {
+				hook.result.data[0].access = access; 
+				hook.result.data[0].redirect = redirect;
+				hook.result.data[0].requiresParentConsent = requiresParentConsent;
+			} else {
+				hook.result.access = access;
+				hook.result.redirect = redirect;
+				hook.result.requiresParentConsent = requiresParentConsent;
+			};
 			return Promise.resolve(hook);
 		})
 		.catch(err => {
