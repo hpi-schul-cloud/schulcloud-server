@@ -15,8 +15,11 @@ const FileModel = require('../../fileStorage/model').fileModel;
  */
 const wopiAuthentication = hook => {
   hook.params.headers = hook.params.headers || {};
-  let jwt = hook.params.headers.authorization || (hook.params.query || {}).access_token; // depends on client
+  let jwt =  (hook.params.query || {}).access_token || hook.params.headers.authorization; // depends on client
   if (!jwt) throw new Error('access_token is missing!');
+
+  // remove client specific stuff
+  if(jwt.indexOf("?permission") >= 0) jwt = jwt.slice(0, jwt.indexOf("?permission"));
   
   hook.params.headers.authorization = jwt;
 
