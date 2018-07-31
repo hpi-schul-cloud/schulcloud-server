@@ -78,6 +78,7 @@ const redirectDic = {
 	u14: '/firstLogin/U14/',
 	u18: '/firstLogin/14_17/',
 	ue18: '/firstLogin/UE18/',
+	existing: '/firstLogin/existing/',
 	normal: '/dashboard/',
 	err: '/consentError'
 };
@@ -97,6 +98,7 @@ const accessCheck = (hook) => {
 			if (!user.birthday) {
 				access = false;
 				requiresParentConsent = false;
+				redirect = redirectDic['existing'];
 				return Promise.resolve;
 			}
 			let age = user.age;
@@ -119,13 +121,15 @@ const accessCheck = (hook) => {
 				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
 					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
 					access = false;
-					redirect = redirectDic['err'];
-					return Promise.resolve();
+					if ((user.preferences || {}).firstLogin) {
+						redirect = redirectDic['err'];
+						return Promise.resolve();
+					}
 				}
 			}
 			if (age > 17)
 				redirect = redirectDic['ue18'];
-				requiresParentConsent = true;
+				requiresParentConsent = false;
 			if ((user.preferences || {}).firstLogin)
 				redirect = redirectDic['normal'];
 		})
