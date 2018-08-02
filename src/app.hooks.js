@@ -39,13 +39,16 @@ const sanitize = (data, options) => {
 const sanitizeDeep = (data, path) => {
 	if (typeof data === "object" && data !== null) {
 		Object.entries(data).forEach(([key, value]) => {
-			if(typeof value === "string")
+			if(typeof value === "string") {
+				// ignore values completely
+				if (["password"].includes(key))
+					return data;
 				// enable html for all current editors
 				if (["content", "text", "comment", "gradeComment", "description"].includes(key) && ["lessons", "news", "homework"].includes(path))
 					data[key] = sanitize(value, {html: true});
 				else
 					data[key] = sanitize(value, {html: false});
-			else
+			} else
 				sanitizeDeep(value, path);
 		});
 	} else if (typeof data === "string")
