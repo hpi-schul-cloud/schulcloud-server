@@ -25,7 +25,7 @@ const addDisplayName = (hook) => {
 		if (currentClass.nameFormat == "static") {
 			currentClass.displayName = currentClass.name;
 		} else if (currentClass.nameFormat == "gradeLevel+name") {
-			currentClass.displayName = currentClass.gradeLevel + currentClass.name;
+			currentClass.displayName = currentClass.gradeLevel + " " + currentClass.name;
 		}
 		return currentClass;
 	});
