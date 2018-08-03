@@ -1,6 +1,7 @@
 'use strict';
 
 const errors = require('feathers-errors');
+const hooks = require('./hooks');
 
 // get an json api conform entry
 const getDataEntry = ({type, id, name, authorities = ["can-read"], attributes = {}}) => {
@@ -86,8 +87,67 @@ class ScopeResolver {
 					return Promise.resolve(response);
 				});
 			});
-	}
+	}		// query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}
+			//query: {{userIds: user._id}}
 
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
+// get scopes from school by id
+class GroupsResolver {
+	get(id, params){		//id==schul.id 
+		const userId		= params.query.userId;//params.headers['user-id']; //! important to set => replace with hooks jwt
+		const userService   = this.app.service('/users');
+		const courseService = this.app.service('/courses');
+		const classService  = this.app.service('/classes');
+		const schoolService = this.app.service('/schools');
+		const roleService   = this.app.service('/roles');
+	
+		const response = {
+			schoolId:id,
+			userId:userId,
+			data:[]
+		};
+
+		const reducerRole = (arr,roleName) => {
+			arr.push({'name':roleName});
+			return arr
+		}
+		
+		const reducerResponse = (input,element) => {	
+			input.data.push({
+				id:element._id,
+				name:element.name,
+				type:input.type
+			});
+			return input
+		}
+			
+		const selectingRoles= ['student','teacher','administrator'].reduce(reducerRole,[]);
+
+		return userService.get(userId).then( user =>{	//test if user exist 
+			return schoolService.get(id).then( school =>{		//test if school exist
+				[school].reduce(reducerResponse,{data:response.data,type:'school'});
+		
+				return Promise.all([
+					courseService.find({query:{$or: [{schoolId:id}]}, headers: {"x-api-key": (params.headers || {})["x-api-key"]}}).then(courses=>{
+						courses.data.reduce(reducerResponse,{data:response.data,type:'course'});
+					}),
+					classService.find({query:{schoolId:id}, headers: {"x-api-key": (params.headers || {})["x-api-key"]}}).then(classes=>{
+						classes.data.reduce(reducerResponse,{data:response.data,type:'class'});
+					}),
+					roleService.find({query:{$or:selectingRoles}}).then(roles=>{
+						roles.data.reduce(reducerResponse,{data:response.data,type:'role'});
+					}),
+				]).then( () => {
+					return Promise.resolve(response);
+				}).catch( err => {return Promise.resolve('Can not collect all data.')} );		
+			}).catch( err => {return Promise.resolve('Can not find school.')} )
+		}).catch(err => {return Promise.resolve('Can not find user.')} );
+	}
+	
 	setup(app, path) {
 		this.app = app;
 	}
@@ -188,4 +248,9 @@ module.exports = function () {
 	// Initialize our service with any options it requires
 	app.use('/resolve/scopes', new ScopeResolver());
 	app.use('/resolve/users', new UserResolver());
+	app.use('/resolve/groups', new GroupsResolver());	//! hooks before after is important 
+	
+	const groupsResolverService = app.service('/resolve/groups');
+	groupsResolverService.before(hooks.before);
+	groupsResolverService.after(hooks.after);
 };

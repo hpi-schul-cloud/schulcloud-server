@@ -2,6 +2,7 @@
 
 const request = require('request-promise-native');
 const hooks = require('./hooks');
+const swaggerDocs = require('./docs/');
 
 const REQUEST_TIMEOUT = 4000; // in ms
 
@@ -67,117 +68,151 @@ const convertEventToJsonApi = (body) => {
 	};
 };
 
+const mappingScopeIdToTarget = scope => {
+	//to do
+}
+
+const getScopeFromTarget = (target,account) =>{
+	
+}
+/**
+ * Converts the Server-Request-Body to JsonApi-Body
+ * @param body
+ * @param account
+ * @param ressourceUrl
+ * @returns {object} - valid json-api body for calendar-subscription-service
+ */
+const convertSubscriptionToJsonApi = (body,account,ressourceUrl) => {
+	if(!(typeof body==='object')) 
+		body={}
+
+	return {
+		'links':{
+			'self':ressourceUrl
+		},
+		'data':[
+			{
+				type: "subscription",		//or "external-feed"
+				id:account.userId,
+				attributes:{
+					"description":body.description,
+					"ics-url":body["ics-url"],
+					"subscriptionId":body.subscriptionId,
+					"schoolId":body.schoolId
+				}, 
+				relationships:{
+					"scope-ids": [account.userId],	//pass scope  body.scopeId 
+					"separate-users": body['separate-users'] || false
+				}
+			}
+		]
+	}
+}
+
+const convertSubscriptionToRequest = body => {
+	
+}
+
+const validRoute={
+	'subscriptions':'subscriptions',
+	'events':'events'
+}	
+const validMethode={
+	'GET':'GET',
+	'POST':'POST',
+	'DELETE':'DELETE',
+	'PUT':'PUT'
+}
+
+const getRequestHandler = (opt) =>{	
+	const 	self	= opt.self, 
+			params	= opt.params, 
+			data	= opt.data, 
+			id		= opt.id, 
+			before	= opt.before, 
+			after	= opt.after,
+			service	= validRoute[opt.service]||'subscriptions',		
+			method	= validMethode[(opt.method||'GET').toUpperCase()];			
+
+	const 	uri 	= (self.app.get('services') || {}).calendar + '/'+service ; 
+	const 	uriParams = id ? '/'+id : (Object.keys(params.query).length > 0 ? '?'+toQueryString(params.query) : '')
+	const 	userId 	= (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
+
+	const options = {
+		uri: uri + uriParams,
+		method: method,
+		headers: {'Authorization': userId},
+		json: true,
+		timeout: REQUEST_TIMEOUT
+	};
+
+	if( before )
+		options.body=before(data,params.account,uri);
+
+	return request(options).then(data => {	
+		if(after)
+			data=after(data);
+		return data
+	});
+}
+
+//update and get not implemented
+class SubscriptionsService {
+	constructor(options) {
+		this.options = options || {};
+		this.docs = swaggerDocs.subscriptions;
+	}
+	create(data, params) {
+		return getRequestHandler({
+			self:this,
+			method:'post',
+			params:params,
+			data:data,
+			before:convertSubscriptionToJsonApi
+		});
+	}
+	//to return multiple resources for initial data 
+	find(params){
+		return getRequestHandler({
+			self:this,
+			params:params
+		});
+	} 
+	
+	remove(id, params) {
+		return getRequestHandler({
+			self:this,
+			method:'delete',
+			params:params,
+			before:convertSubscriptionToJsonApi,
+			id:id
+		});
+	} 
+
+	//use as update  
+	patch(id, data, params) {
+		return getRequestHandler({
+			self:this,
+			method:'put',
+			params:params,
+			data:data,
+			before:convertSubscriptionToJsonApi,
+			id:id
+		});
+	}
+
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
 class Service {
 	constructor(options) {
 		this.options = options || {};
-		this.docs = {
-			description: 'A proxy-service to handle the standalone schul-cloud calendar service ',
-			create: {
-				parameters: [
-					{
-						description: 'the title or summary of a event',
-						name: 'summary',
-						type: 'string'
-					},
-					{
-						description: 'the location of a event',
-						name: 'location',
-						type: 'string'
-					},
-					{
-						description: 'the description of a event',
-						name: 'description',
-						type: 'string'
-					},
-					{
-						description: 'the startDate of a event',
-						name: 'startDate',
-						type: 'date'
-					},
-					{
-						description: 'the endDate of a event',
-						name: 'endDate',
-						type: 'date'
-					},
-					{
-						description: 'the duration of a event',
-						name: 'duration',
-						type: 'number'
-					},
-					{
-						description: 'the frequency of a event',
-						name: 'frequency',
-						type: 'string'
-					},
-					{
-						description: 'the weekday of a event',
-						name: 'weekday',
-						type: 'string'
-					},
-					{
-						description: 'the repeat_until of a event',
-						name: 'repeat_until',
-						type: 'date'
-					},
-					{
-						description: 'the course reference of a event, e.g. for linking to a course page',
-						name: 'courseId',
-						type: 'string'
-					},
-					{
-						description: 'the course-time reference of a event, e.g. for linking to a specific course-time',
-						name: 'courseTimeId',
-						type: 'string'
-					},
-					{
-						description: 'the scope reference of a event',
-						name: 'scopeId',
-						type: 'string'
-					}
-
-				],
-				summary: 'Creates a new event for the given scope'
-			},
-			find: {
-				parameters: [
-					{
-						description: 'a valid user id',
-						required: true,
-						name: 'userId',
-						type: 'string'
-					}
-				],
-				summary: 'Gets all events for a given user'
-			},
-			remove: {
-				parameters: [
-					{
-						description: 'a valid event id',
-						required: true,
-						in: "path",
-						name: 'id',
-						type: 'string'
-					}
-				],
-				summary: 'Deletes a event from the calendar-service'
-			},
-			update: {
-				parameters: [
-					{
-						description: 'a valid event id',
-						required: true,
-						in: "path",
-						name: 'id',
-						type: 'string'
-					}
-				],
-				summary: 'Updates a event from the calendar-service'
-			}
-		};
+		this.docs = swaggerDocs.calendar;
 	}
 
 	create(data, params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
@@ -206,8 +241,7 @@ class Service {
 		});
 	}
 
-	find(params) {
-
+	find(params) {		
 		const serviceUrls = this.app.get('services') || {};
 		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
 		const options = {
@@ -221,6 +255,7 @@ class Service {
 
 		return request(options).then(events => {
 			events = (params.query || {}).userId || (events.data || events || []).map(event => {
+				
 				return Object.assign(event, {
 					title: event.summary,
 					allDay: false, // TODO: find correct value
@@ -231,9 +266,11 @@ class Service {
 
 			return events.map(convertJsonApiToEvent);
 		});
+		
 	}
 
 	remove(id, params) {
+
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
@@ -256,6 +293,7 @@ class Service {
 	}
 
 	update(id, data, params) {
+
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
@@ -284,6 +322,8 @@ class Service {
 module.exports = function () {
 	const app = this;
 
+	/* _____ Calendar-Service _____ */
+	
 	// Initialize our service with any options it requires
 	app.use('/calendar', new Service());
 
@@ -295,6 +335,13 @@ module.exports = function () {
 
 	// Set up our after hooks
 	contentService.after(hooks.after);
+	
+	/* _____ Subscriptions-Service _____ */
+	app.use('/subscriptions', new SubscriptionsService());
+	const contentSubscriptionsService = app.service('/subscriptions');
+	contentSubscriptionsService.before(hooks.before);		//should work with subscriptions too
+	contentSubscriptionsService.after(hooks.afterSubscriptions);
+	
 };
 
 module.exports.Service = Service;

@@ -11,6 +11,7 @@ const courseModel = require('../../user-group/model').courseModel;
  * **/
 const persistCourseTimesEvent = (hook) => {
 	let courseService = hook.app.service("courses");
+
 	return Promise.all(hook.result.map(event => {
 		if (event["x-sc-courseId"]) {
 			let courseId = event["x-sc-courseId"];
@@ -54,3 +55,13 @@ exports.after = {
 	patch: [],
 	remove: []
 };
+
+exports.afterSubscriptions = {
+	all: [],
+	find: [],
+	get: [],
+	create: [],
+	update: [],
+	patch: [],
+	remove: []
+}
