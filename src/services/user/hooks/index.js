@@ -52,6 +52,16 @@ const schoolIdFromClassId = (hook) => {
 	}
 }
 
+const sanitizeData = (hook) => {
+	if ("email" in hook.data) {
+		var regex = RegExp("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
+		if (!regex.test(hook.data.email)) {
+			return Promise.reject(new errors.BadRequest('Bitte gib eine valide E-Mail Adresse an!'));
+		}
+	}
+	return Promise.resolve(hook);
+}
+
 exports.before = function(app) {
 	return {
 		all: [],
@@ -65,6 +75,7 @@ exports.before = function(app) {
 		get: [auth.hooks.authenticate('jwt')],
 		create: [
 			schoolIdFromClassId,
+			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
@@ -72,12 +83,14 @@ exports.before = function(app) {
 		update: [
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
+			sanitizeData,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		patch: [
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
-      globalHooks.permitGroupOperation,
+			globalHooks.permitGroupOperation,
+			sanitizeData,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USER_CREATE'), globalHooks.permitGroupOperation]
