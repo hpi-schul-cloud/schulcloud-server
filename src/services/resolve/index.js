@@ -1,7 +1,7 @@
 'use strict';
 
 const errors = require('feathers-errors');
-//const hooks = require('./hooks');
+const hooks = require('./hooks');
 
 // get an json api conform entry
 const getDataEntry = ({type, id, name, authorities = ["can-read"], attributes = {}}) => {
@@ -95,7 +95,7 @@ class ScopeResolver {
 	}
 }
 
-// get scopes from school by id
+// get groupsIds from school by schoolId 
 class GroupsResolver {
 	get(id, params){		//id==schul.id 
 		const userId		= params.query.userId;//params.headers['user-id']; //! important to set => replace with hooks jwt
@@ -104,6 +104,13 @@ class GroupsResolver {
 		const classService  = this.app.service('/classes');
 		const schoolService = this.app.service('/schools');
 		const roleService   = this.app.service('/roles');
+
+		const err_message={
+			additional:'Error by query class-Service, or course-Service, or role-Service.',
+			schoolService:'Not expect error by use school services.',
+			not_valid_id:'Not valid user or school id.',
+			can_not_find_user:'Can not find user.'
+		}
 	
 		const response = {
 			schoolId:id,
@@ -113,8 +120,8 @@ class GroupsResolver {
 
 		const reducerRole = (arr,roleName) => {
 			arr.push({'name':roleName});
-			return arr;
-		};
+			return arr
+		}
 		
 		const reducerResponse = (input,element) => {	
 			input.data.push({
@@ -122,13 +129,20 @@ class GroupsResolver {
 				name:element.name,
 				type:input.type
 			});
-			return input;
-		};
+			return input
+		}
 			
 		const selectingRoles= ['student','teacher','administrator'].reduce(reducerRole,[]);
 
-		return userService.get(userId).then( user =>{	//test if user exist 
-			return schoolService.get(id).then( school =>{		//test if school exist
+		return userService.find({
+			query: {
+				$and:[{schoolId:id},{_id:userId}]
+			}
+		}).then( user =>{	//test if user exist 
+			if(user.data.length<=0){
+				return Promise.resolve(err_message.can_not_find_user);
+			}
+			return schoolService.get(id).then( school =>{		//test if school exist ..an sich mit user abgedeckt wenn Schulname nicht benötigt wird
 				[school].reduce(reducerResponse,{data:response.data,type:'school'});
 		
 				return Promise.all([
@@ -143,9 +157,9 @@ class GroupsResolver {
 					}),
 				]).then( () => {
 					return Promise.resolve(response);
-				}).catch( err => {return Promise.resolve('Can not collect all data.');} );		
-			}).catch( err => {return Promise.resolve('Can not find school.');} );
-		}).catch(err => {return Promise.resolve('Can not find user.');} );
+				}).catch( err => {return Promise.resolve(err_message.additional)} );		
+			}).catch( err => {return Promise.resolve(err_message.schoolService)} )
+		}).catch(err => {return Promise.resolve(not_valid_id)} );
 	}
 	
 	setup(app, path) {
@@ -250,7 +264,7 @@ module.exports = function () {
 	app.use('/resolve/users', new UserResolver());
 	app.use('/resolve/groups', new GroupsResolver());	//! hooks before after is important 
 	
-	//const groupsResolverService = app.service('/resolve/groups');
-	//groupsResolverService.before(hooks.before);
-	//groupsResolverService.after(hooks.after);
+	const groupsResolverService = app.service('/resolve/groups');
+	groupsResolverService.before(hooks.before);
+	groupsResolverService.after(hooks.after);
 };
