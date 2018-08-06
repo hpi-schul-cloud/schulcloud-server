@@ -172,12 +172,13 @@ const handleClassId = (hook) => {
 	if (!"classId" in hook.data) {
 		return Promise.resolve(hook);
 	} else {
-	hook.app.service('/classes').patch(hook.data.classId, {
-		$push: {userIds: hook.result._id}
-	}).then(res => {
-		return Promise.resolve(hook);
-	});};
-}
+		hook.app.service('/classes').patch(hook.data.classId, {
+			$push: {userIds: hook.result._id}
+		}).then(res => {
+			return Promise.resolve(hook);
+		});
+	}
+};
 
 const User = require('../model');
 
