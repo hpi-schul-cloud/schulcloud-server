@@ -159,7 +159,7 @@ class GroupsResolver {
 					return Promise.resolve(response);
 				}).catch( err => {return Promise.resolve(err_message.additional)} );		
 			}).catch( err => {return Promise.resolve(err_message.schoolService)} )
-		}).catch(err => {return Promise.resolve(not_valid_id)} );
+		}).catch(err => {return Promise.resolve(err_message.not_valid_id)} );
 	}
 	
 	setup(app, path) {
