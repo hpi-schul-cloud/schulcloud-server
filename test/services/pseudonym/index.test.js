@@ -47,9 +47,10 @@ describe('pseudonym service', function() {
 
 	after(done => {
 		Promise.all([
+			pseudonymService.remove(null, {query: {}}),
 			toolService.remove(testTool1),
-			toolService.remove(testTool2)
-		]).then(results => {
+			toolService.remove(testTool2),
+		]).then((results) => {
 			done();
 		});
 	});
@@ -114,6 +115,7 @@ describe('pseudonym service', function() {
 				toolId: testTool2._id
 			}
 		}).then(result => {
+			expect(result.data.length).to.eql(1);
 			expect(result.data[0].pseudonym).to.eql(pseudonym);
 		});
 	});
