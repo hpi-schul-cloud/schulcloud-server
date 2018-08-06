@@ -139,9 +139,14 @@ class GroupsResolver {
 				$and:[{schoolId:id},{_id:userId}]
 			}
 		}).then( user =>{	//test if user exist 
-			if(user.data.length<=0){
-				return Promise.resolve(err_message.can_not_find_user);
+			console.log(user);
+			
+			if(user.data.length<=0){	//error response is change at 06.08.18, maybe it can remove
+				return Promise.reject(
+					new errors.NotFound(err_message.can_not_find_user)
+				);
 			}
+			
 			return schoolService.get(id).then( school =>{		//test if school exist ..an sich mit user abgedeckt wenn Schulname nicht benötigt wird
 				[school].reduce(reducerResponse,{data:response.data,type:'school'});
 		
@@ -157,9 +162,15 @@ class GroupsResolver {
 					}),
 				]).then( () => {
 					return Promise.resolve(response);
-				}).catch( err => {return Promise.resolve(err_message.additional)} );		
-			}).catch( err => {return Promise.resolve(err_message.schoolService)} )
-		}).catch(err => {return Promise.resolve(err_message.not_valid_id)} );
+				}).catch( err => {return Promise.reject(
+					new errors.GeneralError(err_message.additional)
+				)});		
+			}).catch( err => {return Promise.reject(
+				new errors.GeneralError(err_message.schoolService)
+			)});
+		}).catch(err => {return Promise.reject(
+			new errors.BadRequest(err_message.not_valid_id)
+		)});
 	}
 	
 	setup(app, path) {
