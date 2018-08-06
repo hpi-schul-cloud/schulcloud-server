@@ -98,7 +98,7 @@ class ScopeResolver {
 // get groupsIds from school by schoolId 
 class GroupsResolver {
 	get(id, params){		//id==schul.id 
-		const userId		= params.query.userId;//params.headers['user-id']; //! important to set => replace with hooks jwt
+		const userId		= (params.query||{}).userId;//params.headers['user-id']; //! important to set => replace with hooks jwt
 		const userService   = this.app.service('/users');
 		const courseService = this.app.service('/courses');
 		const classService  = this.app.service('/classes');
