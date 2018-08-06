@@ -102,8 +102,8 @@ describe('pseudonym service', function() {
 				toolId: testTool2._id
 			}
 		}).then(result => {
-			pseudonym = result.data[0].token;
-			expect(result.data[0].token).to.be.a('String');
+			pseudonym = result.data[0].pseudonym;
+			expect(result.data[0].pseudonym).to.be.a('String');
 		});
 	});
 
@@ -114,7 +114,7 @@ describe('pseudonym service', function() {
 				toolId: testTool2._id
 			}
 		}).then(result => {
-			expect(result.data[0].token).to.eql(pseudonym);
+			expect(result.data[0].pseudonym).to.eql(pseudonym);
 		});
 	});
 
@@ -125,7 +125,7 @@ describe('pseudonym service', function() {
 				toolId: testTool1._id
 			}
 		}).then(result => {
-			expect(result.data[0].token).to.eql(pseudonym);
+			expect(result.data[0].pseudonym).to.eql(pseudonym);
 		});
 	});
 
@@ -138,8 +138,8 @@ describe('pseudonym service', function() {
 				toolId: testTool1._id
 			}
 		}).then(result => {
-			pseudonyms = result.data.map(pseudonym => pseudonym.token);
-			expect(result.data[0].token).to.be.a('String');
+			pseudonyms = result.data.map(pseudonym => pseudonym.pseudonym);
+			expect(result.data[0].pseudonym).to.be.a('String');
 		});
 	});
 
@@ -151,8 +151,8 @@ describe('pseudonym service', function() {
 				toolId: testTool1._id
 			}
 		}).then(result => {
-			expect(result.data[0].token).to.eql(pseudonyms[0]);
-			expect(result.data[1].token).to.eql(pseudonyms[1]);
+			expect(result.data[0].pseudonym).to.eql(pseudonyms[0]);
+			expect(result.data[1].pseudonym).to.eql(pseudonyms[1]);
 		});
 	});
 
