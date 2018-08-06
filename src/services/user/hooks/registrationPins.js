@@ -25,17 +25,28 @@ const generatePin = (hook) => {
 	return Promise.resolve(hook);
 };
 
-function createinfoHtml(){
-	return "HTML: Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der HPI Schul-Cloud ermöglichen.\n" +
+// implement html later
+function createinfoHtml() {
+	return "Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der HPI Schul-Cloud ermöglichen.\n" +
 		"Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen.\n\n" +
 		"<span style='font-size:200%;font-weight:bold;'>PIN: " + pin + "</span>\n\n" +
 		"Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
 }
-function createinfoText(){
-	return "Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der HPI Schul-Cloud ermöglichen.\n" +
-		"Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen.\n\n" +
-		"PIN: " + pin + "\n\n" +
-		"Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
+
+function createinfoText(hook) {
+	let text = "";
+	if (hook.data.byParent === true || hook.data.byParent === "true") {
+		text = "Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der HPI Schul-Cloud ermöglichen.\n" +
+			"Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen.\n\n" +
+			"PIN: " + pin + "\n\n" +
+			"Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
+	} else {
+		text = "Vielen Dank, dass du die HPI Schul-Cloud nutzen möchtest.\n" +
+			"Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen.\n\n" +
+			"PIN: " + pin + "\n\n" +
+			"Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
+	}
+	return text;
 }
 
 const mailPin = (hook) => {
@@ -43,8 +54,7 @@ const mailPin = (hook) => {
 		"subject": "Schul-Cloud: Registrierung mit PIN verifizieren",
 		"emails": (hook.data||{}).email,
 		"content": {
-			"html": createinfoHtml(),
-			"text": createinfoText()
+			"text": createinfoText(hook)
 		}
 	});
 	return Promise.resolve(hook);
