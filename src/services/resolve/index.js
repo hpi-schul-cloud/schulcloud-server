@@ -1,7 +1,7 @@
 'use strict';
 
 const errors = require('feathers-errors');
-const hooks = require('./hooks');
+//const hooks = require('./hooks');
 
 // get an json api conform entry
 const getDataEntry = ({type, id, name, authorities = ["can-read"], attributes = {}}) => {
@@ -113,8 +113,8 @@ class GroupsResolver {
 
 		const reducerRole = (arr,roleName) => {
 			arr.push({'name':roleName});
-			return arr
-		}
+			return arr;
+		};
 		
 		const reducerResponse = (input,element) => {	
 			input.data.push({
@@ -122,8 +122,8 @@ class GroupsResolver {
 				name:element.name,
 				type:input.type
 			});
-			return input
-		}
+			return input;
+		};
 			
 		const selectingRoles= ['student','teacher','administrator'].reduce(reducerRole,[]);
 
@@ -143,9 +143,9 @@ class GroupsResolver {
 					}),
 				]).then( () => {
 					return Promise.resolve(response);
-				}).catch( err => {return Promise.resolve('Can not collect all data.')} );		
-			}).catch( err => {return Promise.resolve('Can not find school.')} )
-		}).catch(err => {return Promise.resolve('Can not find user.')} );
+				}).catch( err => {return Promise.resolve('Can not collect all data.');} );		
+			}).catch( err => {return Promise.resolve('Can not find school.');} );
+		}).catch(err => {return Promise.resolve('Can not find user.');} );
 	}
 	
 	setup(app, path) {
@@ -250,7 +250,7 @@ module.exports = function () {
 	app.use('/resolve/users', new UserResolver());
 	app.use('/resolve/groups', new GroupsResolver());	//! hooks before after is important 
 	
-	const groupsResolverService = app.service('/resolve/groups');
-	groupsResolverService.before(hooks.before);
-	groupsResolverService.after(hooks.after);
+	//const groupsResolverService = app.service('/resolve/groups');
+	//groupsResolverService.before(hooks.before);
+	//groupsResolverService.after(hooks.after);
 };
