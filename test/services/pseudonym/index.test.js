@@ -5,6 +5,7 @@ const app = require('../../../src/app');
 const chai = require('chai');
 const pseudonymService = app.service('pseudonym');
 const toolService = app.service('ltiTools');
+const userService = app.service('users');
 const expect = chai.expect;
 
 describe('pseudonym service', function() {
@@ -34,12 +35,42 @@ describe('pseudonym service', function() {
 		"secret": "1",
 		"key": "1",
 	};
+	const testUser1 = {
+		"_id": "599ec1688e4e314ec18ff46d",
+		"accounts": [],
+		"schoolId": "0000d186816abba584714c5f",
+		"email": "testuser1@testusers.net",
+		"firstName": "Max",
+		"lastName": "Tester",
+		"roles": []
+	};
+	const testUser2 = {
+		"_id": "599ec1688e4e324ec18ff46e",
+		"accounts": [],
+		"schoolId": "0000d186816abba584714c5f",
+		"email": "testuser2@testusers.net",
+		"firstName": "Max",
+		"lastName": "Tester",
+		"roles": []
+	};
+	const testUser3 = {
+		"_id": "59ad4c412b242b7f81810286",
+		"accounts": [],
+		"schoolId": "0000d186816abba584714c5f",
+		"email": "testuser3@testusers.net",
+		"firstName": "Max",
+		"lastName": "Tester",
+		"roles": []
+	};
 
 	before(done => {
 		this.timeout(10000);
 		Promise.all([
 			toolService.create(testTool1),
-			toolService.create(testTool2)
+			toolService.create(testTool2),
+			userService.create(testUser1),
+			userService.create(testUser2),
+			userService.create(testUser3),
 		]).then(results => {
 			done();
 		});
@@ -47,9 +78,13 @@ describe('pseudonym service', function() {
 
 	after(done => {
 		Promise.all([
+			pseudonymService.remove(null, {query: {}}),
 			toolService.remove(testTool1),
-			toolService.remove(testTool2)
-		]).then(results => {
+			toolService.remove(testTool2),
+			userService.remove(testUser1),
+			userService.remove(testUser2),
+			userService.remove(testUser3),
+		]).then((results) => {
 			done();
 		});
 	});
@@ -59,7 +94,7 @@ describe('pseudonym service', function() {
 	});
 
 	it("throws MethodNotAllowed on GET", () => {
-		return pseudonymService.get('5a79cb15c3874f9aea14daa6').then(_ => {
+		return pseudonymService.get(testTool1._id).then(_ => {
 			throw new Error('Was not supposed to succeed');
 		}).catch(err => {
 			assert(err.name, 'MethodNotAllowed');
@@ -68,7 +103,7 @@ describe('pseudonym service', function() {
 	});
 
 	it("throws MethodNotAllowed on UPDATE", () => {
-		return pseudonymService.update('5a79cb15c3874f9aea14daa6', {}).then(_ => {
+		return pseudonymService.update(testTool1._id, {}).then(_ => {
 			throw new Error('Was not supposed to succeed');
 		}).catch(err => {
 			assert(err.name, 'MethodNotAllowed');
@@ -77,7 +112,7 @@ describe('pseudonym service', function() {
 	});
 
 	it("throws MethodNotAllowed on PATCH", () => {
-		return pseudonymService.patch('5a79cb15c3874f9aea14daa6', {}).then(_ => {
+		return pseudonymService.patch(testTool1._id, {}).then(_ => {
 			throw new Error('Was not supposed to succeed');
 		}).catch(err => {
 			assert(err.name, 'MethodNotAllowed');
@@ -86,7 +121,7 @@ describe('pseudonym service', function() {
 	});
 
 	it("throws MethodNotAllowed on REMOVE", () => {
-		return pseudonymService.remove('5a79cb15c3874f9aea14daa6').then(_ => {
+		return pseudonymService.remove(testTool1._id).then(_ => {
 			throw new Error('Was not supposed to succeed');
 		}).catch(err => {
 			assert(err.name, 'MethodNotAllowed');
@@ -98,7 +133,7 @@ describe('pseudonym service', function() {
 	it("creates missing pseudonym on FIND for derived tool", () => {
 		return pseudonymService.find({
 			query: {
-				userId: '59ad4c412b442b7f81810285',
+				userId: testUser3._id,
 				toolId: testTool2._id
 			}
 		}).then(result => {
@@ -110,10 +145,11 @@ describe('pseudonym service', function() {
 	it("returns existing pseudonym on FIND for derived tool", () => {
 		return pseudonymService.find({
 			query: {
-				userId: '59ad4c412b442b7f81810285',
+				userId: testUser3._id,
 				toolId: testTool2._id
 			}
 		}).then(result => {
+			expect(result.data.length).to.eql(1);
 			expect(result.data[0].pseudonym).to.eql(pseudonym);
 		});
 	});
@@ -121,7 +157,7 @@ describe('pseudonym service', function() {
 	it("returns existing pseudonym on FIND for origin tool", () => {
 		return pseudonymService.find({
 			query: {
-				userId: '59ad4c412b442b7f81810285',
+				userId: testUser3._id,
 				toolId: testTool1._id
 			}
 		}).then(result => {
@@ -129,30 +165,16 @@ describe('pseudonym service', function() {
 		});
 	});
 
-	let pseudonyms = [];
 	it("creates missing pseudonyms on FIND with multiple users", () => {
 		return pseudonymService.find({
 			query: {
-				userId: ['599ec1688e4e364ec18ff46e',
-					'599ec14d8e4e364ec18ff46d'],
+				userId: [testUser1._id,
+					testUser2._id],
 				toolId: testTool1._id
 			}
 		}).then(result => {
-			pseudonyms = result.data.map(pseudonym => pseudonym.pseudonym);
-			expect(result.data[0].pseudonym).to.be.a('String');
-		});
-	});
-
-	it("returns existing pseudonyms on FIND", () => {
-		return pseudonymService.find({
-			query: {
-				userId: ['599ec1688e4e364ec18ff46e',
-					'599ec14d8e4e364ec18ff46d'],
-				toolId: testTool1._id
-			}
-		}).then(result => {
-			expect(result.data[0].pseudonym).to.eql(pseudonyms[0]);
-			expect(result.data[1].pseudonym).to.eql(pseudonyms[1]);
+			expect(result.data).to.be.a('Array');
+			expect(result.data.length).to.eql(2);
 		});
 	});
 

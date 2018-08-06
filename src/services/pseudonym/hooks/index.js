@@ -22,8 +22,9 @@ const createMissingPseudonyms = hook => {
 	for (let userId of userIds) {
 		for (let toolId of toolIds) {
 			if (!hook.result.data.find(entry => (
-					entry.userId.toString() == userId &&
-					entry.toolId.toString() == toolId))) {
+				entry.userId.toString() === userId.toString() &&
+				entry.toolId.toString() === toolId.toString())
+			)) {
 				missingPseudonyms.push({userId, toolId});
 			}
 		}
@@ -67,7 +68,7 @@ exports.before = {
 	create: [globalHooks.ifNotLocal(_ => {throw new errors.MethodNotAllowed();})],
 	update: [_ => {throw new errors.MethodNotAllowed();}],
 	patch: [_ => {throw new errors.MethodNotAllowed();}],
-	remove: [_ => {throw new errors.MethodNotAllowed();}]
+	remove: [globalHooks.ifNotLocal(_ => {throw new errors.MethodNotAllowed();})]
 };
 
 exports.after = {
