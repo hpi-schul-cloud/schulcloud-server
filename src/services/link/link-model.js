@@ -15,7 +15,7 @@ const linkSchema = new Schema({
 	_id: {
 		type: ShortId,
 		len: linkLength,
-		base: 62,   // a-Z, 0-9
+		base: 'abcdefghkmnopqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ123456789', // Base 62 (a-Z, 0-9) without similiar looking chars
 		retries: 20  // number of retries on collision
 	},
 	target: {type: String, required: true},
