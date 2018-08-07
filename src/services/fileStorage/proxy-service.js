@@ -203,8 +203,13 @@ class SignedUrlService {
 			if (!res) return;
 
 			let flatFileName = res.flatFileName || generateFlatFileName(fileName);
-			return filePermissionHelper.checkPermissions(userId, path).then(_ => {
-				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action)
+			return filePermissionHelper.checkPermissions(userId, path).then(p => {
+
+				// set external schoolId if file is shared
+				let externalSchoolId;
+				if (p.permission === 'shared') externalSchoolId = res.schoolId; 
+				
+				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId)
 					.then(res => {
 						return {
 							url: res,

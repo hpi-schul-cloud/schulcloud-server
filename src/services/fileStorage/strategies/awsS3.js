@@ -196,12 +196,14 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	generateSignedUrl(userId, path, fileType, action) {
+	generateSignedUrl(userId, path, fileType, action, externalSchoolId) {
 		if (!userId || !path || !action || (action === 'putObject' && !fileType)) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return UserModel.findById(userId).exec().then(result => {
 			if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
-			const awsObject = createAWSObject(result.schoolId);
+			let schoolId = externalSchoolId || result.schoolId;
+
+			const awsObject = createAWSObject(schoolId);
 			let params = {
 				Bucket: awsObject.bucket,
 				Key: path,

@@ -1,6 +1,5 @@
 'use strict';
 
-const stripJs = require('strip-js');
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
