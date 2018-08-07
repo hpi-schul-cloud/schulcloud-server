@@ -47,7 +47,7 @@ describe('helpdesk service', function() {
 
 		let postBody = {
 			subject: 'Dies ist ein Titel 2',
-			currentTarget: 'Dies ist der CurrentState',
+			currentState: 'Dies ist der CurrentState',
 			targetState: 'Dies ist der TargetState',
 			category: 'dashboard',
 			schoolId: '5836bb5664582c35df3bc000'
@@ -56,6 +56,9 @@ describe('helpdesk service', function() {
 		return helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
 			.then(result => {
 				expect(result.subject).to.equal('Dies ist ein Titel 2');
+				expect(result.currentState).to.equal('Dies ist der CurrentState');
+				expect(result.targetState).to.equal('Dies ist der TargetState');
+				expect(result.category).to.equal('dashboard');
 			}
 		);
 	});
@@ -64,7 +67,7 @@ describe('helpdesk service', function() {
 
 		let postBody = {
 			subject: 'Dies ist ein Titel 3',
-			currentTarget: 'Dies ist der CurrentState 2',
+			currentState: 'Dies ist der CurrentState 2',
 			targetState: 'Dies ist der TargetState 2',
 			category: 'dashboard'
 		};
