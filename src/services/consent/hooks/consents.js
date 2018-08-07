@@ -83,17 +83,12 @@ const redirectDic = {
 	err: '/consentError'
 };
 
-const accessCheck = (hook) => {
+const accessCheck = (consent, app) => {
 	let access = true;
 	let redirect = redirectDic['ue18'];
 	let requiresParentConsent = true;
-	let data = hook.result.data || hook.result;
-	data = (Array.isArray(data)) ? (data) : ([data]);
 
-	if (data.length == 0)
-		return hook;
-
-	return hook.app.service('users').get(data[0].userId)
+	return app.service('users').get(consent.userId)
 		.then(user => {
 			if (!user.birthday) {
 				access = false;
@@ -105,7 +100,7 @@ const accessCheck = (hook) => {
 
 			if (age < 18) {
 				redirect = redirectDic['u14'];
-				let parentConsent = data[0].parentConsents[0] || {};
+				let parentConsent = consent.parentConsents[0] || {};
 				//check parent consents
 				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent &&
 					parentConsent.thirdPartyConsent && parentConsent.researchConsent)) {
@@ -117,7 +112,7 @@ const accessCheck = (hook) => {
 			if (age > 13) {
 				redirect = redirectDic['u18'];
 				//check user consents
-				let userConsent = data[0].userConsent || {};
+				let userConsent = consent.userConsent || {};
 				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
 					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
 					access = false;
@@ -134,16 +129,10 @@ const accessCheck = (hook) => {
 				redirect = redirectDic['normal'];
 		})
 		.then(() => {
-			if (hook.result.data) {
-				hook.result.data[0].access = access; 
-				hook.result.data[0].redirect = redirect;
-				hook.result.data[0].requiresParentConsent = requiresParentConsent;
-			} else {
-				hook.result.access = access;
-				hook.result.redirect = redirect;
-				hook.result.requiresParentConsent = requiresParentConsent;
-			};
-			return Promise.resolve(hook);
+			consent.access = access;
+			consent.redirect = redirect;
+			consent.requiresParentConsent = requiresParentConsent;
+			return Promise.resolve(consent);
 		})
 		.catch(err => {
 			return Promise.reject(err);
@@ -151,10 +140,33 @@ const accessCheck = (hook) => {
 
 };
 
+const decorateConsent = (hook) => {
+	return accessCheck(hook.result, hook.app)
+		.then(consent => {
+			hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
+			hook.result = consent;
+		})
+	.then(() => Promise.resolve(hook));
+}
+
+const decorateConsents = (hook) => {
+	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
+	const consentPromises = (hook.result.data || []).map(consent => {
+		return accessCheck(consent, hook.app).then(result => {
+			return result
+		});
+	});
+
+	return Promise.all(consentPromises).then(users => {
+		hook.result.data = users;
+		return Promise.resolve(hook);
+	});
+}
+
 exports.after = {
 	all: [],
-	find: [accessCheck],
-	get: [accessCheck],
+	find: [decorateConsents],
+	get: [decorateConsent],
 	create: [],
 	update: [],
 	patch: [],
