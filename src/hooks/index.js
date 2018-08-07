@@ -221,9 +221,11 @@ exports.checkCorrectCourseId = (hook) => {
 
 exports.injectUserId = (hook) => {
 	if (typeof (hook.params.provider) == 'undefined') {
-		hook.params.account = { userId: hook.data.userId };
-		hook.params.payload = { userId: hook.data.userId };
-		delete hook.data.userId;
+		if (hook.data.userId) {
+			hook.params.account = {userId: hook.data.userId};
+			hook.params.payload = {userId: hook.data.userId};
+			delete hook.data.userId;
+		}
 	}
 
 	return hook;
