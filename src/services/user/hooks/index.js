@@ -23,17 +23,24 @@ const mapRoleFilterQuery = (hook) => {
 const checkUnique = (hook) => {
 	let userService = hook.service;
 	const {email} = hook.data;
-	return userService.find({ query: {email: email}})
+	return userService.find({ query: {email: email, $populate: ["roles"]}})
 		.then(result => {
-			if(result.data.length > 0) return Promise.reject(new errors.BadRequest('Die E-Mail Adresse ist bereits in Verwendung!'));
-			return Promise.resolve(hook);
+			if(result.data.length <= 0) {
+				return Promise.resolve(hook);
+			} else if (result.data.length === 1 && result.data[0].roles[0].name === "parent") {
+				hook.data.children = hook.data.children.concat(result.data[0].children);
+				userService.patch(result.data[0]._id, hook.data);
+				return Promise.reject(new errors.BadRequest('parentCreatePatch'));
+			} else {
+				return Promise.reject(new errors.BadRequest('Die E-Mail Adresse ist bereits in Verwendung!'));
+			}
 		});
 };
 
 const checkUniqueAccount = (hook) => {
 	let accountService = hook.app.service('/accounts');
 	const {email} = hook.data;
-	return accountService.find({ query: {username: email}})
+	return accountService.find({ query: {username: email, $populate: ["roles"]}})
 		.then(result => {
 			if(result.length > 0) return Promise.reject(new errors.BadRequest('Ein Account mit dieser E-Mail Adresse existiert bereits!'));
 			return Promise.resolve(hook);
