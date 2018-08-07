@@ -122,11 +122,13 @@ const accessCheck = (consent, app) => {
 					}
 				}
 			}
-			if (age > 17)
+			if (age > 17){
 				redirect = redirectDic['ue18'];
 				requiresParentConsent = false;
-			if ((user.preferences || {}).firstLogin)
+			}
+			if ((user.preferences || {}).firstLogin){
 				redirect = redirectDic['normal'];
+			}
 		})
 		.then(() => {
 			consent.access = access;
