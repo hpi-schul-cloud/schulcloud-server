@@ -201,15 +201,24 @@ exports.mapPaginationQuery = (hook) => {
 
 exports.checkCorrectCourseId = (hook) => {
 	let courseService = hook.app.service('courses');
+	const courseId = hook.data.courseId.toString();
+	let query = {};
 
-	return courseService.find({ query: { teacherIds: {$in: [hook.params.account.userId] } }})
+	if (hook.data.courseGroupId) {
+		delete hook.data.courseId;
+		query = {$or: [{teacherIds: {$in: [hook.params.account.userId]}}, {userIds: {$in: [hook.params.account.userId]}}]};
+	} else
+		query = { teacherIds: {$in: [hook.params.account.userId] } };
+
+	return courseService.find({ query: query})
 		.then(courses => {
-			if (courses.data.some(course => { return course._id.toString() === hook.data.courseId.toString(); }))
+			if (courses.data.some(course => { return course._id.toString() === courseId; }))
 				return hook;
 			else
 				throw new errors.Forbidden("The entered course doesn't belong to you!");
 		});
 };
+
 
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
@@ -332,12 +341,12 @@ exports.checkSchoolOwnership = hook => {
 exports.sendEmail = (hook, maildata) => {
 	const userService = hook.app.service('/users');
 	const mailService = hook.app.service('/mails');
-	
+
 	let roles = (typeof maildata.roles === "string" ? [maildata.roles] : maildata.roles) || [];
 	let emails = (typeof maildata.emails === "string" ? [maildata.emails] : maildata.emails) || [];
 	let userIds = (typeof maildata.userIds === "string" ? [maildata.userIds] : maildata.userIds) || [];
 	let receipients = [];
-	
+
 	let promises = [];
 
 	if (roles.length > 0) {
@@ -350,7 +359,7 @@ exports.sendEmail = (hook, maildata) => {
 			}})
 		);
 	}
-	
+
 	if (userIds.length > 0){
 		userIds.map (id => {
 			promises.push(
@@ -358,7 +367,7 @@ exports.sendEmail = (hook, maildata) => {
 			);
 		});
 	}
-	
+
 	if (emails.length > 0){
 		emails.map(email => {
 			let re = /\S+@\S+\.\S+/;
