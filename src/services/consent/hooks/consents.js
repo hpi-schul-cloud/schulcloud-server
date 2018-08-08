@@ -79,6 +79,7 @@ const redirectDic = {
 	u18: '/firstLogin/14_17/',
 	ue18: '/firstLogin/UE18/',
 	existing: '/firstLogin/existing/',
+	existingGeb: '/firstLogin/existingGeb14',
 	normal: '/dashboard/',
 	err: '/consentError'
 };
@@ -117,7 +118,7 @@ const accessCheck = (consent, app) => {
 					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
 					access = false;
 					if ((user.preferences || {}).firstLogin) {
-						redirect = redirectDic['err'];
+						redirect = redirectDic['existingGeb'];
 						return Promise.resolve();
 					}
 				}
