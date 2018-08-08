@@ -149,13 +149,13 @@ const decorateConsent = (hook) => {
 			hook.result = consent;
 		})
 	.then(() => Promise.resolve(hook));
-}
+};
 
 const decorateConsents = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 	const consentPromises = (hook.result.data || []).map(consent => {
 		return accessCheck(consent, hook.app).then(result => {
-			return result
+			return result;
 		});
 	});
 
@@ -163,7 +163,7 @@ const decorateConsents = (hook) => {
 		hook.result.data = users;
 		return Promise.resolve(hook);
 	});
-}
+};
 
 exports.after = {
 	all: [],

@@ -30,7 +30,7 @@ describe('consent service', function() {
           "thirdPartyConsent": true,
           "researchConsent": true
         }]
-      }, {"account" : {"_id" :"0000d213816abba584714c0b"}})
+      })
         .then(consent => {return consentService.get(consent._id);})
         .then(consent => {
           chai.expect(consent).to.exist;

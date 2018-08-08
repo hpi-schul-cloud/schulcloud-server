@@ -15,11 +15,4 @@ describe('years service', function() {
     assert.ok(app.service('years'));
     assert.ok(app.service('gradeLevels'));
   });
-
-  it('gets years', function() {
-    return app.service('years').find()
-      .then(years => {
-        chai.expect(years[0]).to.have.property("name");
-      })
-  })
 });
