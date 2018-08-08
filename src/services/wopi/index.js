@@ -81,8 +81,14 @@ class WopiFilesContentsService {
 				userPayload: payload,
 				account: account
 			}).then(signedUrl => {
+				
 				// directly fetching file
-				return rp(signedUrl.url);
+				let options = {
+					uri: signedUrl.url,
+					encoding: 'latin1'
+				};
+
+				return rp(options);
 			});
 		});
 	}

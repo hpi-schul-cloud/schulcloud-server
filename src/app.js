@@ -15,6 +15,7 @@ const middleware = require('./middleware');
 const services = require('./services');
 const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
+const handleResponseType = require('./middleware/handleReponseType');
 const setupSwagger = require('./swagger');
 const prettyError = require('pretty-error').start();
 const allHooks = require('./app.hooks');
@@ -50,7 +51,7 @@ app.use(compress())
 	.get('/ping', (req, res) => { res.send({ "message":"pong","timestamp":new Date().getTime() });})
 
 	.configure(hooks())
-	.configure(rest())
+	.configure(rest(handleResponseType))
 	.configure(socketio())
 
 	// auth is setup in /authentication/
