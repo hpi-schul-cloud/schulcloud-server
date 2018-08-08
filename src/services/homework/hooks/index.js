@@ -1,6 +1,5 @@
 'use strict';
 
-const stripJs = require('strip-js');
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
@@ -171,12 +170,7 @@ const hasPatchPermission = hook => {
 };
 
 exports.before = {
-    all: [auth.hooks.authenticate('jwt'), (hook) => {
-        if (hook.data && hook.data.description) {
-            hook.data.description = stripJs(hook.data.description);
-        }
-        return hook;
-    }],
+    all: [auth.hooks.authenticate('jwt')],
     find: [globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.mapPaginationQuery.bind(this), hasViewPermissionBefore],
     get: [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore],
     create: [globalHooks.hasPermission('HOMEWORK_CREATE')],
