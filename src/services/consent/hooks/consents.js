@@ -62,11 +62,19 @@ const addDates = (hook) => {
 	}
 };
 
+const mapInObjectToArray = (hook) => {
+	if(!Array.isArray(hook.params.query.userId["$in"])){
+		console.log("map");
+		hook.params.query.userId["$in"] = Object.values(hook.params.query.userId["$in"]);
+		console.log(hook.params.query.userId["$in"]);
+	}
+	return hook;
+};
 
 
 exports.before = {
 	all: [],
-	find: [auth.hooks.authenticate('jwt'), globalHooks.ifNotLocal(restrictToUserOrRole)],
+	find: [auth.hooks.authenticate('jwt'), globalHooks.ifNotLocal(restrictToUserOrRole), mapInObjectToArray],
 	get: [auth.hooks.authenticate('jwt')],
 	create: [addDates],
 	update: [auth.hooks.authenticate('jwt'), addDates],
