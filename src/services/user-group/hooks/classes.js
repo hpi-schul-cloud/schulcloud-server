@@ -5,6 +5,7 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
+const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
 
 const populateGradeLevel = (hook) => {
 	// Add populate to query to be able to show year in displayName
@@ -23,8 +24,8 @@ const populateGradeLevel = (hook) => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool, populateGradeLevel],
-	get: [populateGradeLevel],
+	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool, restrictToUsersOwnClasses, populateGradeLevel],
+	get: [restrictToUsersOwnClasses, populateGradeLevel],
 	create: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
 	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
 	patch: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],

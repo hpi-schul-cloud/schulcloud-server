@@ -291,6 +291,44 @@ exports.restrictToUsersOwnCourses = hook => {
 	});
 };
 
+exports.restrictToUsersOwnClasses = hook => {
+	let userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'administrator' || role.name === 'superhero' )
+				access = true;
+		});
+		if (access)
+			return hook;
+
+		if (hook.method === "get") {
+			let classService = hook.app.service('classes');
+			return classService.get(hook.id).then(result => {
+				if (!(_.some(result.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(result.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(result.substitutionIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
+					throw new errors.Forbidden('You are not in that class.');
+				}
+			});
+		} else if (hook.method === "find") {
+			if (typeof(hook.params.query.$or) === 'undefined') {
+				hook.params.query.$or = [
+					{ userIds: res.data[0]._id },
+					{ teacherIds: res.data[0]._id },
+					{ substitutionIds: res.data[0]._id }
+				];
+			}
+		}
+		return hook;
+	});
+};
+
 // meant to be used as an after hook
 exports.denyIfNotCurrentSchool = ({ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' }) =>
 	hook => {
