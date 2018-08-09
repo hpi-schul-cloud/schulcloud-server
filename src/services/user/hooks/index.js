@@ -57,7 +57,7 @@ const schoolIdFromClassId = (hook) => {
 	} else {
 		return Promise.resolve(hook);
 	}
-}
+};
 
 const sanitizeData = (hook) => {
 	if ("email" in hook.data) {
@@ -67,7 +67,7 @@ const sanitizeData = (hook) => {
 		}
 	}
 	return Promise.resolve(hook);
-}
+};
 
 exports.before = function(app) {
 	return {
@@ -176,7 +176,7 @@ const decorateUsers = (hook) => {
 };
 
 const handleClassId = (hook) => {
-	if (!"classId" in hook.data) {
+	if (!("classId" in hook.data)) {
 		return Promise.resolve(hook);
 	} else {
 		hook.app.service('/classes').patch(hook.data.classId, {

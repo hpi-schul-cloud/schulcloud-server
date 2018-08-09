@@ -201,15 +201,24 @@ exports.mapPaginationQuery = (hook) => {
 
 exports.checkCorrectCourseId = (hook) => {
 	let courseService = hook.app.service('courses');
+	const courseId = hook.data.courseId.toString();
+	let query = {};
 
-	return courseService.find({ query: { teacherIds: {$in: [hook.params.account.userId] } }})
+	if (hook.data.courseGroupId) {
+		delete hook.data.courseId;
+		query = {$or: [{teacherIds: {$in: [hook.params.account.userId]}}, {userIds: {$in: [hook.params.account.userId]}}]};
+	} else
+		query = { teacherIds: {$in: [hook.params.account.userId] } };
+
+	return courseService.find({ query: query})
 		.then(courses => {
-			if (courses.data.some(course => { return course._id == hook.data.courseId; }))
+			if (courses.data.some(course => { return course._id.toString() === courseId; }))
 				return hook;
 			else
 				throw new errors.Forbidden("The entered course doesn't belong to you!");
 		});
 };
+
 
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
@@ -244,30 +253,6 @@ exports.restrictToCurrentSchool = hook => {
 	});
 };
 
-exports.restrictToUsersOwnCourses = hook => {
-	let userService = hook.app.service('users');
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId,
-			$populate: 'roles'
-		}
-	}).then(res => {
-		let access = false;
-		res.data[0].roles.map(role => {
-			if (role.name === 'admin' || role.name === 'superhero' )
-				access = true;
-		});
-		if (access)
-			return hook;
-		hook.params.query.$or =[
-			{ userIds: res.data[0]._id },
-			{ teacherIds: res.data[0]._id }
-		];
-		return hook;
-	});
-};
-
-//TODO: hooks $or condition gets overwritten if set, check first
 exports.restrictToUsersOwnCourses = hook => {
 	let userService = hook.app.service('users');
 	return userService.find({

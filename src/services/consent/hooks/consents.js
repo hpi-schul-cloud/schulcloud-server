@@ -79,6 +79,7 @@ const redirectDic = {
 	u18: '/firstLogin/14_17/',
 	ue18: '/firstLogin/UE18/',
 	existing: '/firstLogin/existing/',
+	existingGeb: '/firstLogin/existingGeb14',
 	normal: '/dashboard/',
 	err: '/consentError'
 };
@@ -117,7 +118,7 @@ const accessCheck = (consent, app) => {
 					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
 					access = false;
 					if ((user.preferences || {}).firstLogin) {
-						redirect = redirectDic['err'];
+						redirect = redirectDic['existingGeb'];
 						return Promise.resolve();
 					}
 				}
@@ -149,13 +150,13 @@ const decorateConsent = (hook) => {
 			hook.result = consent;
 		})
 	.then(() => Promise.resolve(hook));
-}
+};
 
 const decorateConsents = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 	const consentPromises = (hook.result.data || []).map(consent => {
 		return accessCheck(consent, hook.app).then(result => {
-			return result
+			return result;
 		});
 	});
 
@@ -163,7 +164,7 @@ const decorateConsents = (hook) => {
 		hook.result.data = users;
 		return Promise.resolve(hook);
 	});
-}
+};
 
 exports.after = {
 	all: [],

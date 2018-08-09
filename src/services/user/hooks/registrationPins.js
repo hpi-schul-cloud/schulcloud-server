@@ -30,14 +30,19 @@ function createinfoText(hook) {
 	if (hook.data.byParent === true || hook.data.byParent === "true") {
 		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der HPI Schul-Cloud ermöglichen.
 Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen.
-\nPIN: ${pin}
-\nMit Freundlichen Grüßen
+
+PIN: ${pin}
+
+Mit Freundlichen Grüßen
 Ihr Schul-Cloud Team`;
+	
 	} else {
 		text = `Vielen Dank, dass du die HPI Schul-Cloud nutzen möchtest.
 Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen.
-\nPIN: ${pin}
-\nMit Freundlichen Grüßen
+
+PIN: ${pin}
+
+Mit Freundlichen Grüßen
 Ihr Schul-Cloud Team`;
 	}
 	return text;

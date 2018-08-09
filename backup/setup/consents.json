@@ -1,11 +1,6 @@
 [{
-    "_id" : { "$oid" : "5b47429d6b35d8b9216e58ca"},
-    "userId": { "$oid": "0000d213816abba584714c0b" },
-    "parentConsents": [ ]
-},
-{
-    "_id" : { "$oid" : "0000d213816abba584714c0b"},
-    "userId": { "$oid": "0000d213816abba584714c0b" },
+    "_id" : { "$oid" : "000069d5c43227155b73abab"},
+    "userId": { "$oid": "0000d224816abba584714c9c" },
     "userConsent": {
         "form": "digital",
         "privacyConsent": true,
@@ -17,5 +12,16 @@
         "dateOfThirdPartyConsent": { "$date": "2017-01-01T00:06:37.148Z" },
         "dateOfResearchConsent": { "$date": "2017-01-01T00:06:37.148Z" }
     },
-    "parentConsents": [ ]
+    "parentConsents": [ {
+        "parentId": { "$oid" : "0000d213816abba584714c0b"},
+        "form": "digital",
+        "privacyConsent": true,
+        "termsOfUseConsent": true,
+        "thirdPartyConsent": true,
+        "researchConsent": true,
+        "dateOfPrivacyConsent": { "$date": "2017-01-01T00:06:37.148Z" },
+        "dateOfTermsOfUseConsent": { "$date": "2017-01-01T00:06:37.148Z" },
+        "dateOfThirdPartyConsent": { "$date": "2017-01-01T00:06:37.148Z" },
+        "dateOfResearchConsent": { "$date": "2017-01-01T00:06:37.148Z" }
+    } ]
 }]
