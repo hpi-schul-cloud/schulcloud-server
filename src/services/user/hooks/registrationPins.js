@@ -7,7 +7,7 @@ const _ = require('lodash');
 let pin = null;
 
 const removeOldPin = (hook) => {
-	return hook.app.service('registrationPins').find({email: hook.data.email})
+	return hook.app.service('registrationPins').find({query:{email: hook.data.email}})
 		.then(pins => {
 			if (pins.total > 0) {
 				return hook.app.service('registrationPins').remove(pins.data[0]._id)
