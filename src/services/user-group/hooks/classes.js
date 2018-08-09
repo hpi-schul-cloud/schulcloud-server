@@ -40,10 +40,20 @@ const addDisplayName = (hook) => {
 		if (currentClass.nameFormat == "static") {
 			currentClass.displayName = currentClass.name;
 		} else if (currentClass.nameFormat == "gradeLevel+name") {
-			currentClass.displayName = `${currentClass.gradeLevel.name} ${currentClass.name}`;
+			currentClass.displayName = `${currentClass.gradeLevel.name}${currentClass.name}`;
 		}
 		return currentClass;
 	});
+
+	if (hook.params.query['$sort'] == "displayName") {
+		data.sort(function (a,b) {
+			return a.displayName > b.displayName;
+		})
+	} else if (hook.params.query['$sort'] == "-displayName") {
+		data.sort(function (a,b) {
+			return b.displayName > b.displayName;
+		})
+	}
 
 	if(arrayed){data = data[0];}
     (hook.result.data)?(hook.result.data = data):(hook.result = data);
