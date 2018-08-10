@@ -63,7 +63,7 @@ const addDates = (hook) => {
 };
 
 const mapInObjectToArray = (hook) => {
-	if(!Array.isArray(hook.params.query.userId["$in"])){
+	if(((hook.params.query||{}).userId||{})["$in"] && !Array.isArray(((hook.params.query||{}).userId||{})["$in"])){
 		console.log("map");
 		hook.params.query.userId["$in"] = Object.values(hook.params.query.userId["$in"]);
 		console.log(hook.params.query.userId["$in"]);
