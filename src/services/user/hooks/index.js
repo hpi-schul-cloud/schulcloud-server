@@ -72,34 +72,48 @@ const sanitizeData = (hook) => {
 	return Promise.resolve(hook);
 };
 
-const pinIsVerified = hook => {
-	return hook.app.service('/registrationPins').find({query:{email: hook.params.query.email||hook.data.email, verified: true}})
-	.then(pins => {
-		if (pins.data.length === 1 && pins.data[0].pin) {
-			let age = globalHooks.getAge(hook.data.birthday);
-			if (
-				(
-					(hook.data.roles[0]||"") === "student" &&
-					(RegExp("^[0-9a-fA-F]{24}$").test(hook.data.classId) || RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId)) &&
-					age > 18
-				) ||
-				(
-					(hook.data.roles[0]||"") !== "student" &&
-					!hook.data.classId &&
-					RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId) &&
-					!hook.data.birthday
-				)
-			) {
-				hook.app.service('/registrationPins').remove(pins.data[0]._id);
-			}
-			
+const jwtIsExist = function () {
+	return function (hook) {
+		if (hook.params.headers.authorization != 'undefined') {	
+			return (auth.hooks.authenticate('jwt')).call(this, hook);
+		}else{
 			return Promise.resolve(hook);
 		}
-		else{
-			return Promise.reject(new errors.BadRequest('Der Pin wurde noch nicht bei der Registrierung eingetragen.'));
-		}
-			
-	});
+	}; 
+};
+
+const pinIsVerified = hook => {
+	if( ( hook.params||{} ).account && hook.params.account.userId  ){
+		return globalHooks.hasPermission('ADMIN_VIEW')(hook);
+	}else{
+		return hook.app.service('/registrationPins').find({query:{email: hook.params.query.email||hook.data.email, verified: true}})
+		.then(pins => {
+			if (pins.data.length === 1 && pins.data[0].pin) {
+				let age = globalHooks.getAge(hook.data.birthday);
+				if (
+					(
+						(hook.data.roles[0]||"") === "student" &&
+						(RegExp("^[0-9a-fA-F]{24}$").test(hook.data.classId) || RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId)) &&
+						age > 18
+					) ||
+					(
+						(hook.data.roles[0]||"") !== "student" &&
+						!hook.data.classId &&
+						RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId) &&
+						!hook.data.birthday
+					)
+				) {
+					hook.app.service('/registrationPins').remove(pins.data[0]._id);
+				}
+				
+				return Promise.resolve(hook);
+			}
+			else{
+				return Promise.reject(new errors.BadRequest('Der Pin wurde noch nicht bei der Registrierung eingetragen.'));
+			}
+				
+		});
+	}
 }
 
 exports.before = function(app) {
@@ -114,6 +128,7 @@ exports.before = function(app) {
 		],
 		get: [auth.hooks.authenticate('jwt')],
 		create: [
+			jwtIsExist(),
 			pinIsVerified,
 			schoolIdFromClassId,
 			sanitizeData,
