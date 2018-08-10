@@ -1,9 +1,6 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
-const _ = require('lodash');
 let pin = null;
 
 const removeOldPin = (hook) => {
@@ -48,12 +45,11 @@ Ihr Schul-Cloud Team`;
 	return text;
 }
 
-const verifiedByValidRequest = hook =>{
-	if(hook.result.total == 1 && hook.result.data[0].verified==false){ // More then one is undefined status in system, becouse in system logic should not come to it.
-		console.log('verifiedByValidRequest -> change to true');
-		hook.app.service('registrationPins').patch(hook.result.data[0]._id,{verified:true});
+const checkAndVerifyPin = hook =>{
+	if(hook.result.data.length === 1 && hook.result.data[0].verified===false) {
+		hook.app.service('registrationPins').patch(hook.result.data[0]._id, {verified: true});
 	}
-}
+};
 
 const mailPin = (hook) => {
 	globalHooks.sendEmail(hook, {
@@ -79,7 +75,7 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [verifiedByValidRequest],
+	find: [checkAndVerifyPin],
 	get: [],
 	create: [],
 	update: [],

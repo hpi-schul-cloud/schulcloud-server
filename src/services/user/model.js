@@ -33,10 +33,7 @@ userSchema.methods.getPermissions = function() {
 const registrationPinSchema = new Schema({
 	email: {type: String, required: true},
 	pin: {type: String},
-	verified: {
-		type: Boolean,
-		default: false
-	}
+	verified: {	type: Boolean, default: false }
 },{
 	timestamps: true
 });

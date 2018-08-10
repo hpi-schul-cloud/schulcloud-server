@@ -50,7 +50,7 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
-const schoolIdFromClassId = (hook) => {
+const schoolIdFromClassId = hook => {
 	if (!("schoolId" in hook.data) && "classId" in hook.data) {
 		return hook.app.service('/classes').get(hook.data.classId)
 			.then(res => {
@@ -72,11 +72,27 @@ const sanitizeData = (hook) => {
 	return Promise.resolve(hook);
 };
 
-const pinIsVerified = hook =>{
-	return hook.app.service('registrationPins').find({query:{email: hook.params.query.email,verified:true}})
+const pinIsVerified = hook => {
+	return hook.app.service('/registrationPins').find({query:{email: hook.params.query.email||hook.data.email, verified: true}})
 	.then(pins => {
-		if (pins.total==1){ 	// More then one is undefined status in system, becouse in system logic should not come to it. 
-			hook.app.service('registrationPins').remove(pins.data[0]._id)
+		if (pins.data.length === 1 && pins.data[0].pin) {
+			let age = globalHooks.getAge(hook.data.birthday);
+			if (
+				(
+					(hook.data.roles[0]||"") === "student" &&
+					(RegExp("^[0-9a-fA-F]{24}$").test(hook.data.classId) || RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId)) &&
+					age > 18
+				) ||
+				(
+					(hook.data.roles[0]||"") !== "student" &&
+					!hook.data.classId &&
+					RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId) &&
+					!hook.data.birthday
+				)
+			) {
+				hook.app.service('/registrationPins').remove(pins.data[0]._id);
+			}
+			
 			return Promise.resolve(hook);
 		}
 		else{
@@ -138,7 +154,7 @@ const getDisplayName = (user, app) => {
 			return (user.roles || []).includes(role);
 		});
 
-		user.age = getAge(user.birthday);
+		user.age = globalHooks.getAge(user.birthday);
 
 		if(isProtectedUser) {
 			return user.lastName ? user.lastName : user._id;
@@ -146,17 +162,6 @@ const getDisplayName = (user, app) => {
 			return user.lastName ? `${user.firstName} ${user.lastName}` : user._id;
 		}
 	});
-};
-
-const getAge = (dateString) => {
-	const today = new Date();
-	const birthDate = new Date(dateString);
-	let age = today.getFullYear() - birthDate.getFullYear();
-	let m = today.getMonth() - birthDate.getMonth();
-	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-		age--;
-	}
-	return age;
 };
 
 /**
