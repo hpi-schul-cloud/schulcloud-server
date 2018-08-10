@@ -69,6 +69,21 @@ const sanitizeData = (hook) => {
 	return Promise.resolve(hook);
 };
 
+const pinIsVerified = hook =>{
+	return hook.app.service('registrationPins').find({query:{email: hook.data.email}})
+	.then(pins => {
+		console.log(pins);
+		if (pins.total==1 && pins.data[0].verified==true){ 	// More then one is undefined status in system, becouse in system logic should not come to it. 
+			hook.app.service('registrationPins').remove(pins.data[0]._id)
+			return Promise.resolve(hook);
+		}
+		else{
+			return Promise.reject(new errors.BadRequest('Der Pin wurde noch nicht bei der Registrierung eingetragen.'));
+		}
+			
+	})
+}
+
 exports.before = function(app) {
 	return {
 		all: [],
@@ -81,6 +96,7 @@ exports.before = function(app) {
 		],
 		get: [auth.hooks.authenticate('jwt')],
 		create: [
+			pinIsVerified,
 			schoolIdFromClassId,
 			sanitizeData,
 			checkUnique,
