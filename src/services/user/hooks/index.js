@@ -25,12 +25,15 @@ const checkUnique = (hook) => {
 	const {email} = hook.data;
 	return userService.find({ query: {email: email, $populate: ["roles"]}})
 		.then(result => {
+			// new user, email not found
 			if(result.data.length <= 0) {
 				return Promise.resolve(hook);
-			} else if (result.data.length === 1 && result.data[0].roles[0].name === "parent") {
-				hook.data.children = hook.data.children.concat(result.data[0].children);
-				userService.patch(result.data[0]._id, hook.data);
+			// existing user with this email, patch children -> create service will not block on same email
+			} else if (result.data.length === 1 && result.data[0].roles.filter(role => role.name === "student").length === 0) {
+				(result.data[0]||{}).children = result.data[0].children.concat(hook.data.children);
+				userService.patch(result.data[0]._id, result.data[0]);
 				return Promise.reject(new errors.BadRequest('parentCreatePatch'));
+			// existing user, not parent, deny
 			} else {
 				return Promise.reject(new errors.BadRequest('Die E-Mail Adresse ist bereits in Verwendung!'));
 			}

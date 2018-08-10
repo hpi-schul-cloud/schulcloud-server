@@ -5,6 +5,7 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
+const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
 
 const populateGradeLevel = (hook) => {
 	// Add populate to query to be able to show year in displayName
@@ -23,8 +24,8 @@ const populateGradeLevel = (hook) => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool, populateGradeLevel],
-	get: [populateGradeLevel],
+	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool, restrictToUsersOwnClasses, populateGradeLevel],
+	get: [restrictToUsersOwnClasses, populateGradeLevel],
 	create: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
 	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
 	patch: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
@@ -40,10 +41,20 @@ const addDisplayName = (hook) => {
 		if (currentClass.nameFormat == "static") {
 			currentClass.displayName = currentClass.name;
 		} else if (currentClass.nameFormat == "gradeLevel+name") {
-			currentClass.displayName = `${currentClass.gradeLevel.name} ${currentClass.name}`;
+			currentClass.displayName = `${currentClass.gradeLevel.name}${currentClass.name}`;
 		}
 		return currentClass;
 	});
+
+	if (hook.params.query['$sort'] == "displayName") {
+		data.sort(function (a,b) {
+			return a.displayName > b.displayName;
+		})
+	} else if (hook.params.query['$sort'] == "-displayName") {
+		data.sort(function (a,b) {
+			return b.displayName > b.displayName;
+		})
+	}
 
 	if(arrayed){data = data[0];}
     (hook.result.data)?(hook.result.data = data):(hook.result = data);
