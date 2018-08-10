@@ -45,14 +45,13 @@ const addDisplayName = (hook) => {
 		}
 		return currentClass;
 	});
-
-	if (hook.params.query['$sort'] == "displayName") {
-		data.sort(function (a,b) {
+	if (((hook.params.query||{})['$sort']||{}).displayName == 1) {
+		data.sort((a, b) => {
 			return a.displayName > b.displayName;
 		})
-	} else if (hook.params.query['$sort'] == "-displayName") {
-		data.sort(function (a,b) {
-			return b.displayName > b.displayName;
+	} else if (((hook.params.query||{})['$sort']||{}).displayName == -1) {
+		data.sort((a, b) => {
+			return a.displayName < b.displayName;
 		})
 	}
 
