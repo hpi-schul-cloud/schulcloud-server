@@ -72,9 +72,9 @@ const sanitizeData = (hook) => {
 	return Promise.resolve(hook);
 };
 
-const jwtIsExist = function () {
+const checkJwt = () => {
 	return function (hook) {
-		if (hook.params.headers.authorization != 'undefined') {	
+		if (hook.params.headers.authorization != undefined) {
 			return (auth.hooks.authenticate('jwt')).call(this, hook);
 		}else{
 			return Promise.resolve(hook);
@@ -84,7 +84,7 @@ const jwtIsExist = function () {
 
 const pinIsVerified = hook => {
 	if( ( hook.params||{} ).account && hook.params.account.userId  ){
-		return (globalHooks.hasPermission('ADMIN_VIEW')).call(this, hook);
+		return (globalHooks.hasPermission('CREATE_USER')).call(this, hook);
 	}else{
 		return hook.app.service('/registrationPins').find({query:{email: hook.params.query.email||hook.data.email, verified: true}})
 		.then(pins => {
@@ -128,7 +128,7 @@ exports.before = function(app) {
 		],
 		get: [auth.hooks.authenticate('jwt')],
 		create: [
-			jwtIsExist(),
+			checkJwt(),
 			pinIsVerified,
 			schoolIdFromClassId,
 			sanitizeData,
