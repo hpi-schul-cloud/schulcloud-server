@@ -23,6 +23,9 @@ const mapRoleFilterQuery = (hook) => {
 const checkUnique = (hook) => {
 	let userService = hook.service;
 	const {email} = hook.data;
+	if (email === undefined) {
+		return Promise.reject(new errors.BadRequest(`Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.`));
+	}
 	return userService.find({ query: {email: email, $populate: ["roles"]}})
 		.then(result => {
 			// new user, email not found
@@ -32,10 +35,10 @@ const checkUnique = (hook) => {
 			} else if (result.data.length === 1 && result.data[0].roles.filter(role => role.name === "student").length === 0) {
 				(result.data[0]||{}).children = result.data[0].children.concat(hook.data.children);
 				userService.patch(result.data[0]._id, result.data[0]);
-				return Promise.reject(new errors.BadRequest('parentCreatePatch'));
+				return Promise.reject(new errors.BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!"));
 			// existing user, not parent, deny
 			} else {
-				return Promise.reject(new errors.BadRequest('Die E-Mail Adresse ist bereits in Verwendung!'));
+				return Promise.reject(new errors.BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
 			}
 		});
 };
@@ -45,7 +48,7 @@ const checkUniqueAccount = (hook) => {
 	const {email} = hook.data;
 	return accountService.find({ query: {username: email, $populate: ["roles"]}})
 		.then(result => {
-			if(result.length > 0) return Promise.reject(new errors.BadRequest('Ein Account mit dieser E-Mail Adresse existiert bereits!'));
+			if(result.length > 0) return Promise.reject(new errors.BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`));
 			return Promise.resolve(hook);
 		});
 };
@@ -83,9 +86,9 @@ const checkJwt = () => {
 };
 
 const pinIsVerified = hook => {
-	if( ( hook.params||{} ).account && hook.params.account.userId  ){
+	if((hook.params||{}).account && hook.params.account.userId){
 		return (globalHooks.hasPermission('CREATE_USER')).call(this, hook);
-	}else{
+	} else {
 		return hook.app.service('/registrationPins').find({query:{email: hook.params.query.email||hook.data.email, verified: true}})
 		.then(pins => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
