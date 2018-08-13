@@ -30,7 +30,7 @@ const checkUnique = (hook) => {
 				return Promise.resolve(hook);
 			// existing user with this email, patch children -> create service will not block on same email
 			} else if (result.data.length === 1 && result.data[0].roles.filter(role => role.name === "student").length === 0) {
-				(result.data[0]||{}).children = result.data[0].children.concat(hook.data.children);
+				(result.data[0]||{}).children = (result.data[0].children||[]).concat(hook.data.children);
 				userService.patch(result.data[0]._id, result.data[0]);
 				return Promise.reject(new errors.BadRequest('parentCreatePatch'));
 			// existing user, not parent, deny
@@ -128,8 +128,8 @@ exports.before = function(app) {
 		],
 		get: [auth.hooks.authenticate('jwt')],
 		create: [
-			checkJwt(),
-			pinIsVerified,
+			//checkJwt(),
+			//pinIsVerified,
 			schoolIdFromClassId,
 			sanitizeData,
 			checkUnique,
