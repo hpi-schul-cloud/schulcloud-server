@@ -1,21 +1,20 @@
-
-
 const registerStudent = function(data, params, app) {
     let pininput = data["email-pin"]; 
     let usermail = data["parent-email"] ? data["parent-email"] : data["student-email"];
-    let parent = null;
-    let user;
-
     let passwort = data["initial-password"];
+    let parent = null, user, account, consentPromise;
+    
+	if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
+    // geht das hier mit promise reject?
+		return Promise.reject("Bitte gib eine eigene E-Mail Adresse für dein Kind an.");
+	}
+	
     return app.service('registrationPins').find({
         query: { "pin": pininput, "email": usermail, verified:false }
     }).then(check => {
         //check pin
         if (!(check.data && check.data.length>0 && check.data[0].pin === pininput)) {
             return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
-        }
-        if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
-            return Promise.reject("Bitte gib eine eigene E-Mail Adresse für dein Kind an.");
         }
         return Promise.resolve;
     }).then(function() {
@@ -86,8 +85,8 @@ const registerStudent = function(data, params, app) {
             consentPromise = app.service('consents').create({userId: user._id, userConsent: consent});
         }
         consentPromise.catch(err => {
-            return Promise.reject(err)
-        })
+            return Promise.reject(err);
+        });
         return consentPromise;
     }).then(function() {
         return Promise.resolve({user, parent});
