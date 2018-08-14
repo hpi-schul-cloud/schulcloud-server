@@ -101,7 +101,6 @@ const registerStudent = function(data, params, app) {
                 return Promise.reject(new Error("Fehler beim Speichern der Einverständniserklärung."));
             })
     }).then(function() {
-        return Promise.reject("test");
         return Promise.resolve({user, parent});
     }).catch(err => {
         //console.log(err);
@@ -125,26 +124,6 @@ const registerStudent = function(data, params, app) {
             .then(() => {
                 return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung."));
             })
-        /*
-        //If user for student created, remove that user, cannot do this bc no rights to do this
-        let userpromise = api(req).get('/users/', {
-            qs: {email: req.body["student-email"]}
-        }).then(students => {
-            return api(req).delete('/users/' + students._id);
-        });
-
-        //If account for student created, remove that account, cannot do this bc no rights to do this
-        let accpromise = api(req).get('/accounts/', {
-            qs: {email: req.body["student-email"]}
-        }).then(students => {
-            return api(req).delete('/accounts/' + students._id);
-        });
-
-        Promise.all([userpromise, accpromise]).then(()=>{*/
-            
-        /*}).catch(err => {
-            res.status(500).send((err.error||{}).message || err.message || "Fehler bei der Registrierung.");
-        });*/
     });
 };
 
