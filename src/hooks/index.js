@@ -212,7 +212,6 @@ exports.checkCorrectCourseId = (hook) => {
 
 	return courseService.find({ query: query})
 		.then(courses => {
-
 			if (courses.data.some(course => { return course._id.toString() === courseId; }))
 				return hook;
 			else
@@ -254,30 +253,6 @@ exports.restrictToCurrentSchool = hook => {
 	});
 };
 
-exports.restrictToUsersOwnCourses = hook => {
-	let userService = hook.app.service('users');
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId,
-			$populate: 'roles'
-		}
-	}).then(res => {
-		let access = false;
-		res.data[0].roles.map(role => {
-			if (role.name === 'admin' || role.name === 'superhero' )
-				access = true;
-		});
-		if (access)
-			return hook;
-		hook.params.query.$or =[
-			{ userIds: res.data[0]._id },
-			{ teacherIds: res.data[0]._id }
-		];
-		return hook;
-	});
-};
-
-//TODO: hooks $or condition gets overwritten if set, check first
 exports.restrictToUsersOwnCourses = hook => {
 	let userService = hook.app.service('users');
 	return userService.find({
