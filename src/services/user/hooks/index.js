@@ -78,9 +78,9 @@ const sanitizeData = (hook) => {
 
 const checkJwt = () => {
 	return function (hook) {
-		if (hook.params.headers.authorization != undefined) {
+		if (((hook.params||{}).headers||{}).authorization != undefined) {
 			return (auth.hooks.authenticate('jwt')).call(this, hook);
-		}else{
+		} else {
 			return Promise.resolve(hook);
 		}
 	}; 
@@ -90,7 +90,7 @@ const pinIsVerified = hook => {
 	if((hook.params||{}).account && hook.params.account.userId){
 		return (globalHooks.hasPermission('CREATE_USER')).call(this, hook);
 	} else {
-		return hook.app.service('/registrationPins').find({query:{email: hook.params.query.email||hook.data.email, verified: true}})
+		return hook.app.service('/registrationPins').find({query:{email: (hook.params.query||{}).parentEmail||hook.data.email, verified: true}})
 		.then(pins => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
 				let age = globalHooks.getAge(hook.data.birthday);
@@ -132,8 +132,8 @@ exports.before = function(app) {
 		],
 		get: [auth.hooks.authenticate('jwt')],
 		create: [
-			//checkJwt(),
-			//pinIsVerified,
+			checkJwt(),
+			pinIsVerified,
 			schoolIdFromClassId,
 			sanitizeData,
 			checkUnique,

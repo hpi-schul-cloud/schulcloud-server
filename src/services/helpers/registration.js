@@ -21,7 +21,7 @@ const registerStudent = function(data, params, app) {
         if (!(check.data && check.data.length>0 && check.data[0].pin === pininput)) {
             return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
         }
-        return Promise.resolve;
+		return Promise.resolve();
     }).then(function() {
         //create user
         user = {
@@ -31,10 +31,9 @@ const registerStudent = function(data, params, app) {
             gender: data["gender"],
             roles: ["student"],
             classId: data.classId,
-            birthday: new Date(data["student-birthdate"]),
-            parentEmail: data["parent-email"]//used to verify that pin was has been confirmed
+            birthday: new Date(data["student-birthdate"])
         };
-        return app.service('users').create(user)
+        return app.service('users').create(user, {query:{parentEmail: data["parent-email"]}})
         .then(newUser => {
             user = newUser;
         })
@@ -51,7 +50,9 @@ const registerStudent = function(data, params, app) {
         };
         return app.service('accounts').create(account)
             .then(newAccount => {account = newAccount})
-            .catch(err => {return Promise.reject(new Error("Fehler beim Erstellen des Accounts."));});
+            .catch(err => {
+            	return Promise.reject(new Error("Fehler beim Erstellen des Schüler-Accounts."));
+            });
     }).then(res => {
         //add parent if necessary    
         if(data["parent-email"]) {
@@ -99,31 +100,32 @@ const registerStudent = function(data, params, app) {
                 return Promise.resolve();
             }).catch(err => {
                 return Promise.reject(new Error("Fehler beim Speichern der Einverständniserklärung."));
-            })
+            });
     }).then(function() {
         return Promise.resolve({user, parent});
     }).catch(err => {
         //console.log(err);
         let rollbackPromises = [];
         if (user && user._id) {
-            rollbackPromises.push(userModel.userModel.findOne({_id: user._id}).remove().exec())
+            rollbackPromises.push(userModel.userModel.findOne({_id: user._id}).remove().exec());
         }
         if (parent && parent._id) {
-            rollbackPromises.push(userModel.userModel.findOne({_id: parent._id}).remove().exec())
+            rollbackPromises.push(userModel.userModel.findOne({_id: parent._id}).remove().exec());
         }
         if (account && account._id) {
-            rollbackPromises.push(accountModel.findOne({_id: account._id}).remove().exec())
+            rollbackPromises.push(accountModel.findOne({_id: account._id}).remove().exec());
         }
         if (consent && consent._id) {
-            rollbackPromises.push(consentModel.consentModel.findOne({_id: consent._id}).remove().exec())
+            rollbackPromises.push(consentModel.consentModel.findOne({_id: consent._id}).remove().exec());
         }
         Promise.all(rollbackPromises)
-            .catch(err => {
-                return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator."));
-            })
-            .then(() => {
-                return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung."));
-            })
+		.catch(err => {
+			return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator."));
+		})
+		.then(() => {
+			return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung."));
+		});
+		return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung."));
     });
 };
 
