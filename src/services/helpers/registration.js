@@ -1,10 +1,13 @@
 const errors = require('feathers-errors');
+const userModel = require('../user/model');
+const accountModel = require('../account/model');
+const consentModel = require('../consent/model')
 
 const registerStudent = function(data, params, app) {
     let pininput = data["email-pin"]; 
     let usermail = data["parent-email"] ? data["parent-email"] : data["student-email"];
     let passwort = data["initial-password"];
-    let parent = null, user, account, consentPromise;
+    let parent = null, user = null, account = null, consent = null, consentPromise;
     
 	if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
     // geht das hier mit promise reject?
@@ -32,14 +35,13 @@ const registerStudent = function(data, params, app) {
             parentEmail: data["parent-email"]//used to verify that pin was has been confirmed
         };
         return app.service('users').create(user)
+        .then(newUser => {
+            user = newUser;
+        })
         .catch(err =>{
             return Promise.reject("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");
         });
-    }).then(newUser => {
-        user = newUser;
-        if (!user) {
-			return Promise.reject(new Error("Fehler beim Erstellen des Accounts."));
-		}
+    }).then(() => {
         // create account
         account = {
             username: user.email, 
@@ -47,7 +49,9 @@ const registerStudent = function(data, params, app) {
             userId: user._id, 
             activated: true
         };
-        return app.service('accounts').create(account);
+        return app.service('accounts').create(account)
+            .then(newAccount => {account = newAccount})
+            .catch(err => {return Promise.reject(new Error("Fehler beim Erstellen des Accounts."));});
     }).then(res => {
         //add parent if necessary    
         if(data["parent-email"]) {
@@ -76,7 +80,7 @@ const registerStudent = function(data, params, app) {
         }
     }).then(function(){
         //store consent
-        let consent = {
+        consent = {
             form: 'digital',
             privacyConsent: data.Erhebung,
             thirdPartyConsent: data.Pseudonymisierung,
@@ -89,16 +93,38 @@ const registerStudent = function(data, params, app) {
         } else {
             consentPromise = app.service('consents').create({userId: user._id, userConsent: consent});
         }
-        consentPromise.catch(err => {
-            return Promise.reject(err);
-        });
-        return consentPromise;
+        return consentPromise
+            .then(newConsent => {
+                consent = newConsent;
+                return Promise.resolve();
+            }).catch(err => {
+                return Promise.reject(new Error("Fehler beim Speichern der Einverständniserklärung."));
+            })
     }).then(function() {
+        return Promise.reject("test");
         return Promise.resolve({user, parent});
     }).catch(err => {
-    	//console.log(err);
-		return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung."));
-
+        //console.log(err);
+        let rollbackPromises = [];
+        if (user && user._id) {
+            rollbackPromises.push(userModel.userModel.findOne({_id: user._id}).remove().exec())
+        }
+        if (parent && parent._id) {
+            rollbackPromises.push(userModel.userModel.findOne({_id: parent._id}).remove().exec())
+        }
+        if (account && account._id) {
+            rollbackPromises.push(accountModel.findOne({_id: account._id}).remove().exec())
+        }
+        if (consent && consent._id) {
+            rollbackPromises.push(consentModel.consentModel.findOne({_id: consent._id}).remove().exec())
+        }
+        Promise.all(rollbackPromises)
+            .catch(err => {
+                return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator."));
+            })
+            .then(() => {
+                return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung."));
+            })
         /*
         //If user for student created, remove that user, cannot do this bc no rights to do this
         let userpromise = api(req).get('/users/', {
