@@ -97,7 +97,7 @@ const registerStudent = function(data, params, app) {
         return Promise.resolve({user, parent});
     }).catch(err => {
     	//console.log(err);
-        return new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung.");
+		return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung."));
 
         /*
         //If user for student created, remove that user, cannot do this bc no rights to do this
