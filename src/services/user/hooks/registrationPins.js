@@ -45,9 +45,10 @@ Ihr Schul-Cloud Team`;
 	return text;
 }
 
-const checkAndVerifyPin = hook =>{
+const checkAndVerifyPin = hook => {
 	if(hook.result.data.length === 1 && hook.result.data[0].verified===false) {
-		hook.app.service('registrationPins').patch(hook.result.data[0]._id, {verified: true});
+		//hook.app.service('registrationPins').patch(hook.result.data[0]._id, {verified: true});
+		return hook.app.service('registrationPins').update({_id: hook.result.data[0]._id}, {$set: {verified: true}});
 	}
 };
 

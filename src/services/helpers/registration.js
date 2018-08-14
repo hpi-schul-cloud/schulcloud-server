@@ -1,3 +1,5 @@
+const errors = require('feathers-errors');
+
 const registerStudent = function(data, params, app) {
     let pininput = data["email-pin"]; 
     let usermail = data["parent-email"] ? data["parent-email"] : data["student-email"];
@@ -35,13 +37,16 @@ const registerStudent = function(data, params, app) {
         });
     }).then(newUser => {
         user = newUser;
+        if (!user) {
+			return Promise.reject(new Error("Fehler beim Erstellen des Accounts."));
+		}
         // create account
         account = {
             username: user.email, 
             password: passwort, 
             userId: user._id, 
             activated: true
-        }
+        };
         return app.service('accounts').create(account);
     }).then(res => {
         //add parent if necessary    
@@ -58,9 +63,9 @@ const registerStudent = function(data, params, app) {
             .then(newParent => {
                 parent = newParent;
                 //add parent to student, because now, we can
-                return Promise.resolve()
+                return Promise.resolve();
             }).catch(err => {
-                if (err.error.message==="parentCreatePatch") {
+                if (err.message.startsWith("parentCreatePatch")) {
                     return Promise.resolve();
                 } else {
                     return Promise.reject(new Error("Fehler beim Erstellen des Elternaccounts."));
@@ -91,7 +96,8 @@ const registerStudent = function(data, params, app) {
     }).then(function() {
         return Promise.resolve({user, parent});
     }).catch(err => {
-        return Promise.reject((err.error||{}).message || err.message || "Fehler bei der Registrierung.");
+    	//console.log(err);
+        return new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung.");
 
         /*
         //If user for student created, remove that user, cannot do this bc no rights to do this
@@ -114,7 +120,7 @@ const registerStudent = function(data, params, app) {
             res.status(500).send((err.error||{}).message || err.message || "Fehler bei der Registrierung.");
         });*/
     });
-}
+};
 
 module.exports = function (app) {
 
