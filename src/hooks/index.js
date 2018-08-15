@@ -219,6 +219,17 @@ exports.checkCorrectCourseId = (hook) => {
 		});
 };
 
+exports.injectUserId = (hook) => {
+	if (typeof (hook.params.provider) == 'undefined') {
+		if (hook.data.userId) {
+			hook.params.account = {userId: hook.data.userId};
+			hook.params.payload = {userId: hook.data.userId};
+			delete hook.data.userId;
+		}
+	}
+
+	return hook;
+};
 
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
