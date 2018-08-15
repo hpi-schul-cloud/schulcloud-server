@@ -7,7 +7,12 @@ const registerStudent = function(data, params, app) {
     let pininput = data["email-pin"]; 
     let usermail = data["parent-email"] ? data["parent-email"] : data["student-email"];
     let passwort = data["initial-password"];
-    let parent = null, user = null, account = null, consent = null, consentPromise;
+    let datearr = data["student-birthdate"].split(".");
+    let userbirthday = new Date(`${datearr[1]}.${datearr[0]}.${datearr[2]}`);
+    if (userbirthday instanceof Date && isNaN(userbirthday)) {
+		return Promise.reject("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut.");
+	}
+    let parent = null, user = null, account = null, consent = null, consentPromise = null;
     
 	if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
     // geht das hier mit promise reject?
@@ -31,7 +36,7 @@ const registerStudent = function(data, params, app) {
             gender: data["gender"],
             roles: ["student"],
             classId: data.classId,
-            birthday: new Date(data["student-birthdate"])
+            birthday: userbirthday
         };
         return app.service('users').create(user, {query:{parentEmail: data["parent-email"]}})
         .then(newUser => {
