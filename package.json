@@ -55,7 +55,7 @@
     "feathers-hooks": "^1.7.1",
     "feathers-mongoose": "^3.6.2",
     "feathers-rest": "^1.6.0",
-    "feathers-socketio": "^1.4.2",
+    "feathers-socketio": "^2.0.1",
     "feathers-swagger": "^0.3.2",
     "freeport": "^1.0.5",
     "istanbul": "^0.4.5",
@@ -76,6 +76,8 @@
     "request-promise-native": "^1.0.3",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
+    "socketio-file-upload": "^0.6.2",
+    "strip-js": "^1.0.6",
     "winston": "^2.3.0"
   },
   "devDependencies": {
