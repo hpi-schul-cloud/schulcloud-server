@@ -12,24 +12,15 @@ module.exports = function () {
 	var images = {};
 	app.use(siofu.router);
 	app.use('/clipboard/uploads', express.static('uploads'));
-	app.configure(socketio({
-		path: '/clipboard-ws/'
-	  },(io) => {
+	app.configure(socketio((io) => {
 
-		io.use(function (socket, next) {
-			// Exposing a request property to services and hooks
-			socket.feathers.headers = socket.handshake.headers;
-			next();
-		  });
-		
-		io.use(auth.express.authenticate('jwt'));
-
-		io.on('connection', (socket) => {
+		let clipboardWs = io.of('clipboard');
+		clipboardWs.on('connection', (socket) => {
 
 			let courseId = socket.request._query.courseId;
 			if(!courseId) return;
 			let user = {};
-			app.service('users').get(jwtDecoded.userId).then((result) => { user = result});
+			app.service('users').get(socket.client.userId).then((result) => { user = result});
 
 			console.log("someone connected to room " + courseId);
 			socket.join(courseId);
@@ -40,7 +31,7 @@ module.exports = function () {
 
 			socket.on("pushToClipboard", (media) => {
 				console.log(media);
-				io.to(courseId).emit("pushToClipboard", media);
+				clipboardWs.to(courseId).emit("pushToClipboard", media);
 			});
 
 			var uploader = new siofu();
@@ -54,7 +45,7 @@ module.exports = function () {
 					file: event.file.name,
 					sender: user && (user.firstName + " " + user.lastName)
 				};
-				io.to(courseId).emit('clipboardUpdate', file);
+				clipboardWs.to(courseId).emit('clipboardUpdate', file);
 				images[courseId] = images[courseId] || [];
 				images[courseId].push(file);
 			})
