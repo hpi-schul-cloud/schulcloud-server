@@ -69,7 +69,6 @@ const mapInObjectToArray = (hook) => {
 	return hook;
 };
 
-
 exports.before = {
 	all: [],
 	find: [auth.hooks.authenticate('jwt'), globalHooks.ifNotLocal(restrictToUserOrRole), mapInObjectToArray],
