@@ -81,7 +81,7 @@ const checkJwt = () => {
 
 const pinIsVerified = hook => {
 	if((hook.params||{}).account && hook.params.account.userId){
-		return (globalHooks.hasPermission('CREATE_USER')).call(this, hook);
+		return (globalHooks.hasPermission('USER_CREATE')).call(this, hook);
 	} else {
 		return hook.app.service('/registrationPins').find({query:{email: (hook.params.query||{}).parentEmail||hook.data.email, verified: true}})
 		.then(pins => {
