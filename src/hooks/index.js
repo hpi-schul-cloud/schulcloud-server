@@ -301,7 +301,7 @@ exports.restrictToUsersOwnClasses = hook => {
 	}).then(res => {
 		let access = false;
 		res.data[0].roles.map(role => {
-			if (role.name === 'administrator' || role.name === 'superhero' )
+			if (['administrator', 'superhero'].includes(role.name))
 				access = true;
 		});
 		if (access)
@@ -311,8 +311,7 @@ exports.restrictToUsersOwnClasses = hook => {
 			let classService = hook.app.service('classes');
 			return classService.get(hook.id).then(result => {
 				if (!(_.some(result.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
-					!(_.some(result.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
-					!(_.some(result.substitutionIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
+					!(_.some(result.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
 					throw new errors.Forbidden('You are not in that class.');
 				}
 			});
