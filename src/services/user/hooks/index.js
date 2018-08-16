@@ -59,18 +59,6 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
-const schoolIdFromClassId = hook => {
-	if (!("schoolId" in hook.data) && "classId" in hook.data) {
-		return hook.app.service('/classes').get(hook.data.classId)
-			.then(res => {
-				hook.data.schoolId = res.schoolId;
-				return Promise.resolve(hook);
-			});
-	} else {
-		return Promise.resolve(hook);
-	}
-};
-
 const sanitizeData = (hook) => {
 	if ("email" in hook.data) {
 		var regex = RegExp("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
@@ -139,7 +127,6 @@ exports.before = function(app) {
 		create: [
 			checkJwt(),
 			pinIsVerified,
-			schoolIdFromClassId,
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,

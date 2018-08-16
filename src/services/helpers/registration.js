@@ -27,6 +27,23 @@ const registerStudent = function(data, params, app) {
             return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
         }
 		return Promise.resolve();
+    }).then(function () {
+        //resolve class or school Id
+        classPromise = app.service('classes').find({query: {_id: data.classOrSchoolId}});
+        schoolPromise = app.service('schools').find({query: {_id: data.classOrSchoolId}});
+        return Promise.all([classPromise, schoolPromise])
+            .then(([classes, schools]) => {
+                if (classes.total == 1) {
+                    data.classId = data.classOrSchoolId;
+                    data.schoolId = classes.data[0].schoolId;
+                    return Promise.resolve();
+                }
+                if (schools.total == 1) {
+                    data.schools = data.classOrSchoolId;
+                    return Promise.resolve();
+                }
+                return Promise.reject("Ungültiger Link");
+            })
     }).then(function() {
         //create user
         user = {
@@ -35,9 +52,10 @@ const registerStudent = function(data, params, app) {
             email: data["student-email"],
             gender: data["gender"],
             roles: ["student"],
-            classId: data.classId,
+            schoolId: data.schoolId,
             birthday: userbirthday
         };
+        if (data.classId) user.classId = data.classId;
         return app.service('users').create(user, {query:{parentEmail: data["parent-email"]}})
         .then(newUser => {
             user = newUser;
