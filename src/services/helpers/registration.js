@@ -48,7 +48,7 @@ const registerStudent = function(data, params, app) {
                     return Promise.resolve();
                 }
                 if (schools.total === 1) {
-                    data.schools = data.classOrSchoolId;
+                    data.schoolId = data.classOrSchoolId;
                     return Promise.resolve();
                 }
                 return Promise.reject("Ungültiger Link");
@@ -93,14 +93,14 @@ const registerStudent = function(data, params, app) {
                 lastName: data["parent-secondname"],
                 email: data["parent-email"],
                 children: [user._id],
-                schoolId: user.schoolId,
+                schoolId: data.schoolId,
                 roles: ["parent"]
             };
             return app.service('users').create(parent, { _additional:{asTask:'parent'} })
             .then(newParent => {
                 parent = newParent;
                 //add parent to student, because now, we can
-                return Promise.resolve();
+                return app.service('users').patch(user._id, {$push: {parents: parent._id }});
             }).catch(err => {
                 if (err.message.startsWith("parentCreatePatch")) {
                     return Promise.resolve();
