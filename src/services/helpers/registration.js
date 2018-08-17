@@ -140,16 +140,16 @@ const registerStudent = function(data, params, app) {
     }).catch(err => {
         let rollbackPromises = [];
         if (user && user._id) {
-            rollbackPromises.push(userModel.userModel.findOne({_id: user._id}).remove().exec());
+            rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: user._id}).exec());
         }
         if (parent && parent._id) {
-            rollbackPromises.push(userModel.userModel.findOne({_id: parent._id}).remove().exec());
+            rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: parent._id}).exec());
         }
         if (account && account._id) {
-            rollbackPromises.push(accountModel.findOne({_id: account._id}).remove().exec());
+            rollbackPromises.push(accountModel.findOneAndRemove({_id: account._id}).exec());
         }
         if (consent && consent._id) {
-            rollbackPromises.push(consentModel.consentModel.findOne({_id: consent._id}).remove().exec());
+            rollbackPromises.push(consentModel.consentModel.findOneAndRemove({_id: consent._id}).exec());
         }
         Promise.all(rollbackPromises)
 		.catch(err => {
