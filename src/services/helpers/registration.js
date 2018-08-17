@@ -97,17 +97,19 @@ const registerStudent = function(data, params, app) {
                 roles: ["parent"]
             };
             return app.service('users').create(parent, { _additional:{asTask:'parent'} })
-            .then(newParent => {
-                parent = newParent;
-                //add parent to student, because now, we can
-                return app.service('users').patch(user._id, {$push: {parents: parent._id }});
-            }).catch(err => {
+            .catch(err => {
                 if (err.message.startsWith("parentCreatePatch")) {
                     return Promise.resolve();
                 } else {
                     return Promise.reject(new Error("Fehler beim Erstellen des Elternaccounts."));
                 }
-            });
+            }).then(newParent => {
+                parent = newParent;
+                //add parent to student, because now, we can
+                return app.service('users').patch(user._id, {$push: {parents: parent._id }});
+            }).catch(err => {
+                return Promise.reject("Fehler beim Verknüpfen der Eltern.")
+            }) ;
         } else {
             return Promise.resolve();
         }
@@ -136,7 +138,6 @@ const registerStudent = function(data, params, app) {
     }).then(function() {
         return Promise.resolve({user, parent});
     }).catch(err => {
-        //console.log(err);
         let rollbackPromises = [];
         if (user && user._id) {
             rollbackPromises.push(userModel.userModel.findOne({_id: user._id}).remove().exec());
