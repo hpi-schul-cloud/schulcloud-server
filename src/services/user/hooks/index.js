@@ -42,9 +42,9 @@ const checkUnique = (hook) => {
 			const isStudent	= user.roles.filter( role => role.name === "student" ).length == 0 ? false : true;
 			const asTask	= ( hook.params._additional || {} ).asTask;
 			
-			if(isLoggedIn || asRole=='student' ){			
+			if(isLoggedIn || asTask=='student' ){			
 				return Promise.reject(new errors.BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
-			}else if(asRole=='parent' && length==1){
+			}else if(asTask=='parent' && length==1){
 					userService.update({_id: user._id}, {
 						$set: {
 							children: (user.children||[]).concat(input.children),
@@ -124,6 +124,21 @@ const pinIsVerified = hook => {
 	}
 }
 
+// student administrator helpdesk superhero teacher parent
+const permissionRoleCreate = hook =>{
+	if( hook.data.length <= 0 ){
+		return Promise.reject(new errors.BadRequest('No input data.'));
+	}
+	const isLoggedIn = ( hook.params || {} ).account && hook.params.account.userId ? true : false;
+	if( isLoggedIn==true  && globalHooks.arrayIncludes(hook.data.roles,['student','teacher'],['parent','administrator','helpdesk','superhero']) ||
+		isLoggedIn==false && globalHooks.arrayIncludes(hook.data.roles,['student','parent'],['teacher','administrator','helpdesk','superhero'])
+	){
+		return Promise.resolve(hook);
+	}else{
+		return Promise.reject(new errors.BadRequest('You have not the permissions to create this roles. ('+roles+')'));
+	}
+}
+
 exports.before = function(app) {
 	return {
 		all: [],
@@ -140,7 +155,8 @@ exports.before = function(app) {
 			pinIsVerified,
 			sanitizeData,
 			checkUnique,
-			checkUniqueAccount,		
+			checkUniqueAccount,	
+			permissionRoleCreate,			
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [

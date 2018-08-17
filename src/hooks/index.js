@@ -467,7 +467,7 @@ exports.sendEmail = (hook, maildata) => {
 
 exports.getAge = function (dateString) {
 	if(dateString==undefined) {
-		return undefined
+		return undefined;
 	}
 	const today = new Date();
 	const birthDate = new Date(dateString);
@@ -478,3 +478,18 @@ exports.getAge = function (dateString) {
 	}
 	return age;
 };
+
+exports.arrayIncludes = (array,includesList,excludesList) =>{
+	includesList.forEach(item=>{
+		if( array.includes(item)==false ){
+			return false
+		}
+	});
+	excludesList.forEach(item=>{
+		if( array.includes(item) ){
+			return false
+		}
+	});
+	return true
+}
+
