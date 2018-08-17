@@ -466,6 +466,9 @@ exports.sendEmail = (hook, maildata) => {
 };
 
 exports.getAge = function (dateString) {
+	if(dateString==undefined) {
+		return undefined
+	}
 	const today = new Date();
 	const birthDate = new Date(dateString);
 	let age = today.getFullYear() - birthDate.getFullYear();

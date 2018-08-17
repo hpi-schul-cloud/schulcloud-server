@@ -28,24 +28,34 @@ const checkUnique = (hook) => {
 	}
 	return userService.find({ query: {email: email, $populate: ["roles"]}})
 		.then(result => {
-			// new user, email not found
-			if(result.data.length <= 0) {
-				return Promise.resolve(hook);
-			// existing user with this email, patch children
-			} else if (result.data.length === 1 && result.data[0].roles.filter(role => role.name === "student").length === 0) {
-				(result.data[0]||{}).children = (result.data[0].children||[]).concat(hook.data.children);
-				userService.update({_id: result.data[0]._id}, {
-					$set: {
-						children: result.data[0].children,
-						firstName: hook.data.firstName,
-						lastName: hook.data.lastName
-					}
-				});
-				return Promise.reject(new errors.BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!"));
-			// existing user, role student, deny
-			} else {
-				return Promise.reject(new errors.BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
+			const length = result.data.length;
+			if( length==undefined || length>2 ){
+				return Promise.reject(new errors.BadRequest('Fehler beim prüfen der Datenbank informationen.'));
 			}
+			if(length<=0){
+				return Promise.resolve(hook);
+			}
+
+			const user 		= typeof result.data[0] == 'object' ? result.data[0] : {};
+			const input		= typeof hook.data == 'object' ? hook.data : {};
+			const isLoggedIn= ( hook.params || {} ).account && hook.params.account.userId ? true : false;
+			const isStudent	= user.roles.filter( role => role.name === "student" ).length == 0 ? false : true;
+			const asTask	= ( hook.params._additional || {} ).asTask;
+			
+			if(isLoggedIn || asRole=='student' ){			
+				return Promise.reject(new errors.BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
+			}else if(asRole=='parent' && length==1){
+					userService.update({_id: user._id}, {
+						$set: {
+							children: (user.children||[]).concat(input.children),
+							firstName: input.firstName,
+							lastName: input.lastName
+						}
+					});
+					return Promise.reject(new errors.BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!")); /* to stop the create process, the message are catch and resolve in regestration hook */
+			}
+			
+			return Promise.resolve(hook);
 		});
 };
 
@@ -82,8 +92,9 @@ const checkJwt = () => {
 const pinIsVerified = hook => {
 	if((hook.params||{}).account && hook.params.account.userId){
 		return (globalHooks.hasPermission('USER_CREATE')).call(this, hook);
-	} else {
-		return hook.app.service('/registrationPins').find({query:{email: (hook.params.query||{}).parentEmail||hook.data.email, verified: true}})
+	} else {	
+		let email=(hook.params._additional||{}).parentEmail||hook.data.email;
+		return hook.app.service('/registrationPins').find({query:{email:email , verified: true}})
 		.then(pins => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
 				let age = globalHooks.getAge(hook.data.birthday);
@@ -129,7 +140,7 @@ exports.before = function(app) {
 			pinIsVerified,
 			sanitizeData,
 			checkUnique,
-			checkUniqueAccount,
+			checkUniqueAccount,		
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [

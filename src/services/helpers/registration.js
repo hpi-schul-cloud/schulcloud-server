@@ -56,7 +56,7 @@ const registerStudent = function(data, params, app) {
             birthday: userbirthday
         };
         if (data.classId) user.classId = data.classId;
-        return app.service('users').create(user, {query:{parentEmail: data["parent-email"]}})
+        return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })	//{query:{parentEmail: data["parent-email"]}}
         .then(newUser => {
             user = newUser;
         })
@@ -87,7 +87,7 @@ const registerStudent = function(data, params, app) {
                 schoolId: user.schoolId,
                 roles: ["parent"]
             };
-            return app.service('users').create(parent)
+            return app.service('users').create(parent, { _additional:{asTask:'parent'} })
             .then(newParent => {
                 parent = newParent;
                 //add parent to student, because now, we can
