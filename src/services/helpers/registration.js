@@ -6,18 +6,18 @@ const globalHooks = require('../../hooks');
 
 const registerStudent = function(data, params, app) {
     let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
-    let pininput = data["email-pin"];
-    let usermail = data["parent-email"] ? data["parent-email"] : data["student-email"];
+    let pinInput = data["email-pin"];
+    let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
     let passwort = data["initial-password"];
-    let datearr = data["student-birthdate"].split(".");
+    let dateArr = data["student-birthdate"].split(".");
     
     // wrong birthday object?
-    let userbirthday = new Date(`${datearr[1]}.${datearr[0]}.${datearr[2]}`);
-    if (userbirthday instanceof Date && isNaN(userbirthday)) {
+    let userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
+    if (userBirthday instanceof Date && isNaN(userBirthday)) {
 		return Promise.reject("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut.");
 	}
 	// wrong age?
-	let age = globalHooks.getAge(userbirthday);
+	let age = globalHooks.getAge(userBirthday);
     if (data["parent-email"] && age >= 18) {
 		return Promise.reject(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`);
 	} else if (!data["parent-email"] && age < 18) {
@@ -29,10 +29,10 @@ const registerStudent = function(data, params, app) {
 	}
 	
     return app.service('registrationPins').find({
-        query: { "pin": pininput, "email": usermail, verified:false }
+        query: { "pin": pinInput, "email": userMail, verified:false }
     }).then(check => {
         //check pin
-        if (!(check.data && check.data.length>0 && check.data[0].pin === pininput)) {
+        if (!(check.data && check.data.length>0 && check.data[0].pin === pinInput)) {
             return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
         }
 		return Promise.resolve();
@@ -62,7 +62,7 @@ const registerStudent = function(data, params, app) {
             gender: data["gender"],
             roles: ["student"],
             schoolId: data.schoolId,
-            birthday: userbirthday
+            birthday: userBirthday
         };
         if (data.classId) user.classId = data.classId;
         return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })	//{query:{parentEmail: data["parent-email"]}}
