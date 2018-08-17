@@ -1,22 +1,31 @@
 const errors = require('feathers-errors');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
-const consentModel = require('../consent/model')
+const consentModel = require('../consent/model');
+const globalHooks = require('../../hooks');
 
 const registerStudent = function(data, params, app) {
-    let pininput = data["email-pin"]; 
+    let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
+    let pininput = data["email-pin"];
     let usermail = data["parent-email"] ? data["parent-email"] : data["student-email"];
     let passwort = data["initial-password"];
     let datearr = data["student-birthdate"].split(".");
+    
+    // wrong birthday object?
     let userbirthday = new Date(`${datearr[1]}.${datearr[0]}.${datearr[2]}`);
     if (userbirthday instanceof Date && isNaN(userbirthday)) {
 		return Promise.reject("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut.");
 	}
-    let parent = null, user = null, account = null, consent = null, consentPromise = null;
-    
+	// wrong age?
+	let age = globalHooks.getAge(userbirthday);
+    if (data["parent-email"] && age >= 18) {
+		return Promise.reject(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`);
+	} else if (!data["parent-email"] && age < 18) {
+		return Promise.reject(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`);
+	}
+ 	// identical emails?
 	if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
-    // geht das hier mit promise reject?
-		return Promise.reject("Bitte gib eine eigene E-Mail Adresse für dein Kind an.");
+		return Promise.reject("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.");
 	}
 	
     return app.service('registrationPins').find({
@@ -33,12 +42,12 @@ const registerStudent = function(data, params, app) {
         schoolPromise = app.service('schools').find({query: {_id: data.classOrSchoolId}});
         return Promise.all([classPromise, schoolPromise])
             .then(([classes, schools]) => {
-                if (classes.total == 1) {
+                if (classes.total === 1) {
                     data.classId = data.classOrSchoolId;
                     data.schoolId = classes.data[0].schoolId;
                     return Promise.resolve();
                 }
-                if (schools.total == 1) {
+                if (schools.total === 1) {
                     data.schools = data.classOrSchoolId;
                     return Promise.resolve();
                 }
