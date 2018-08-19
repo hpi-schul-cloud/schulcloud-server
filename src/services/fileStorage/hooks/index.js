@@ -28,6 +28,7 @@ const resolveStorageType = (hook) => {
 exports.before = {
 	all: [
 		auth.hooks.authenticate('jwt'),
+		globalHooks.injectUserId,
 		resolveUserId,
 		resolveStorageType
 	],
