@@ -52,7 +52,7 @@ const checkUnique = (hook) => {
 							lastName: input.lastName
 						}
 					});
-					return Promise.reject(new errors.BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!")); /* to stop the create process, the message are catch and resolve in regestration hook */
+					return Promise.reject(new errors.BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!", user)); /* to stop the create process, the message are catch and resolve in regestration hook */
 			}
 			
 			return Promise.resolve(hook);

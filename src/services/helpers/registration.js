@@ -99,14 +99,15 @@ const registerStudent = function(data, params, app) {
             return app.service('users').create(parent, { _additional:{asTask:'parent'} })
             .catch(err => {
                 if (err.message.startsWith("parentCreatePatch")) {
-                    return Promise.resolve();
+                    return Promise.resolve(err.data);
                 } else {
                     return Promise.reject(new Error("Fehler beim Erstellen des Elternaccounts."));
                 }
             }).then(newParent => {
                 parent = newParent;
                 //add parent to student, because now, we can
-                return app.service('users').patch(user._id, {$push: {parents: parent._id }});
+                return userModel.userModel.findByIdAndUpdate(user._id, {$push: {parents: parent._id }});
+                //return userModel.userModel.patch(user._id, {$push: {parents: parent._id }});
             }).catch(err => {
                 return Promise.reject("Fehler beim Verknüpfen der Eltern.");
             }) ;
