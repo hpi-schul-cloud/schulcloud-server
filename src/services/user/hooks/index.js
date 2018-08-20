@@ -122,7 +122,7 @@ const pinIsVerified = hook => {
 				
 		});
 	}
-}
+};
 
 // student administrator helpdesk superhero teacher parent
 const permissionRoleCreate = hook =>{
@@ -135,9 +135,9 @@ const permissionRoleCreate = hook =>{
 	){
 		return Promise.resolve(hook);
 	}else{
-		return Promise.reject(new errors.BadRequest('You have not the permissions to create this roles. ('+roles+')'));
+		return Promise.reject(new errors.BadRequest('You have not the permissions to create this roles.'));
 	}
-}
+};
 
 exports.before = function(app) {
 	return {

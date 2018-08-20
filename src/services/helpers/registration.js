@@ -23,7 +23,7 @@ const registerStudent = function(data, params, app) {
 	} else if (!data["parent-email"] && age < 18) {
 		return Promise.reject(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`);
 	}
- 	// identical emails?
+    // identical emails?
 	if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
 		return Promise.reject("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.");
 	}
@@ -52,7 +52,7 @@ const registerStudent = function(data, params, app) {
                     return Promise.resolve();
                 }
                 return Promise.reject("Ungültiger Link");
-            })
+            });
     }).then(function() {
         //create user
         user = {
@@ -81,9 +81,9 @@ const registerStudent = function(data, params, app) {
             activated: true
         };
         return app.service('accounts').create(account)
-            .then(newAccount => {account = newAccount})
+            .then(newAccount => {account = newAccount;})
             .catch(err => {
-            	return Promise.reject(new Error("Fehler beim Erstellen des Schüler-Accounts."));
+                return Promise.reject(new Error("Fehler beim Erstellen des Schüler-Accounts."));
             });
     }).then(res => {
         //add parent if necessary    
@@ -108,7 +108,7 @@ const registerStudent = function(data, params, app) {
                 //add parent to student, because now, we can
                 return app.service('users').patch(user._id, {$push: {parents: parent._id }});
             }).catch(err => {
-                return Promise.reject("Fehler beim Verknüpfen der Eltern.")
+                return Promise.reject("Fehler beim Verknüpfen der Eltern.");
             }) ;
         } else {
             return Promise.resolve();

@@ -482,14 +482,14 @@ exports.getAge = function (dateString) {
 exports.arrayIncludes = (array,includesList,excludesList) =>{
 	includesList.forEach(item=>{
 		if( array.includes(item)==false ){
-			return false
+			return false;
 		}
 	});
 	excludesList.forEach(item=>{
 		if( array.includes(item) ){
-			return false
+			return false;
 		}
 	});
-	return true
-}
+	return true;
+};
 

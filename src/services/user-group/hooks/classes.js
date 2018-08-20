@@ -48,11 +48,11 @@ const addDisplayName = (hook) => {
 	if (((hook.params.query||{})['$sort']||{}).displayName == 1) {
 		data.sort((a, b) => {
 			return a.displayName > b.displayName;
-		})
+		});
 	} else if (((hook.params.query||{})['$sort']||{}).displayName == -1) {
 		data.sort((a, b) => {
 			return a.displayName < b.displayName;
-		})
+		});
 	}
 
 	if(arrayed){data = data[0];}
