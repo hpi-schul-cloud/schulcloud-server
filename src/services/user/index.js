@@ -3,12 +3,13 @@
 const service = require('feathers-mongoose');
 const user = require('./model');
 const hooks = require('./hooks');
+const registrationPinsHooks = require('./hooks/registrationPins');
 
 module.exports = function () {
 	const app = this;
 
 	const options = {
-		Model: user,
+		Model: user.userModel,
 		paginate: {
 			default: 25,
 			max: 1000
@@ -27,4 +28,16 @@ module.exports = function () {
 
 	// Set up our after hooks
 	userService.after(hooks.after);
+
+	/* registrationPin Service */
+	app.use('/registrationPins', service({
+		Model: user.registrationPinModel,
+		paginate: {
+			default: 500,
+			max: 5000
+		}
+	}));
+	const registrationPinService = app.service('/registrationPins');
+	registrationPinService.before(registrationPinsHooks.before);
+	registrationPinService.after(registrationPinsHooks.after);
 };

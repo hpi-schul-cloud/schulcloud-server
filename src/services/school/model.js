@@ -24,6 +24,20 @@ const schoolSchema = new Schema({
 	timestamps: true
 });
 
-const schoolModel = mongoose.model('school', schoolSchema);
+const yearSchema = new Schema({
+	name: {type: String, required: true}
+});
 
-module.exports = schoolModel;
+const gradeLevelSchema = new Schema({
+	name: {type: String, required: true}
+});
+
+const schoolModel = mongoose.model('school', schoolSchema);
+const yearModel = mongoose.model('year', yearSchema);
+const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
+
+module.exports = {
+	schoolModel,
+	yearModel,
+	gradeLevelModel
+};

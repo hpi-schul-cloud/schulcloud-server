@@ -233,34 +233,34 @@ exports.injectUserId = (hook) => {
 
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId,
-			$populate: 'roles'
-		}
-	}).then(res => {
-		let access = false;
-		res.data[0].roles.map(role => {
-			if (role.name === 'superhero')
-				access = true;
-		});
-		if (access)
-			return hook;
-		if (hook.method == "get" || hook.method == "find") {
-			if (hook.params.query.schoolId == undefined) {
-				hook.params.query.schoolId = res.data[0].schoolId;
-			} else if (hook.params.query.schoolId != res.data[0].schoolId) {
-				throw new errors.Forbidden('You do not have valid permissions to access this.');
+		return userService.find({
+			query: {
+				_id: hook.params.account.userId,
+				$populate: 'roles'
 			}
-		} else {
-			if (hook.data.schoolId == undefined) {
-				hook.data.schoolId = res.data[0].schoolId.toString();
-			} else if (hook.data.schoolId != res.data[0].schoolId) {
-				throw new errors.Forbidden('You do not have valid permissions to access this.');
+		}).then(res => {
+			let access = false;
+			res.data[0].roles.map(role => {
+				if (role.name === 'superhero')
+					access = true;
+			});
+			if (access)
+				return hook;
+			if (hook.method == "get" || hook.method == "find") {
+				if (hook.params.query.schoolId == undefined) {
+					hook.params.query.schoolId = res.data[0].schoolId;
+				} else if (hook.params.query.schoolId != res.data[0].schoolId) {
+					throw new errors.Forbidden('You do not have valid permissions to access this.');
+				}
+			} else {
+				if (hook.data.schoolId == undefined) {
+					hook.data.schoolId = res.data[0].schoolId.toString();
+				} else if (hook.data.schoolId != res.data[0].schoolId) {
+					throw new errors.Forbidden('You do not have valid permissions to access this.');
+				}
 			}
-		}
 
-		return hook;
+			return hook;
 	});
 };
 
@@ -287,6 +287,43 @@ exports.restrictToUsersOwnCourses = hook => {
 					!(_.some(course.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
 					!(_.some(course.substitutionIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
 					throw new errors.Forbidden('You are not in that course.');
+				}
+			});
+		} else if (hook.method === "find") {
+			if (typeof(hook.params.query.$or) === 'undefined') {
+				hook.params.query.$or = [
+					{ userIds: res.data[0]._id },
+					{ teacherIds: res.data[0]._id },
+					{ substitutionIds: res.data[0]._id }
+				];
+			}
+		}
+		return hook;
+	});
+};
+
+exports.restrictToUsersOwnClasses = hook => {
+	let userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (['administrator', 'superhero'].includes(role.name))
+				access = true;
+		});
+		if (access)
+			return hook;
+
+		if (hook.method === "get") {
+			let classService = hook.app.service('classes');
+			return classService.get(hook.id).then(result => {
+				if (!(_.some(result.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(result.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
+					throw new errors.Forbidden('You are not in that class.');
 				}
 			});
 		} else if (hook.method === "find") {
@@ -438,3 +475,32 @@ exports.sendEmail = (hook, maildata) => {
 		return hook;
 	}
 };
+
+exports.getAge = function (dateString) {
+	if(dateString==undefined) {
+		return undefined;
+	}
+	const today = new Date();
+	const birthDate = new Date(dateString);
+	let age = today.getFullYear() - birthDate.getFullYear();
+	let m = today.getMonth() - birthDate.getMonth();
+	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+		age--;
+	}
+	return age;
+};
+
+exports.arrayIncludes = (array,includesList,excludesList) =>{
+	includesList.forEach(item=>{
+		if( array.includes(item)==false ){
+			return false;
+		}
+	});
+	excludesList.forEach(item=>{
+		if( array.includes(item) ){
+			return false;
+		}
+	});
+	return true;
+};
+
