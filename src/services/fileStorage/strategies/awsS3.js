@@ -153,7 +153,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					});
 			});
 	}
-	
+
 	copyFile(userId, oldPath, newPath, externalSchoolId) {
 		if (!userId || !oldPath || !newPath) {
 			return Promise.reject(new errors.BadRequest('Missing parameters'));
@@ -167,7 +167,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 				const params = {
 					Bucket: awsObject.bucket, // destination bucket
-					CopySource: `/${sourceBucket}/${oldPath}`, // full source path (with bucket)
+					CopySource: `/${sourceBucket}/${encodeURIComponent(oldPath)}`, // full source path (with bucket)
 					Key: newPath // destination path
 				};
 
