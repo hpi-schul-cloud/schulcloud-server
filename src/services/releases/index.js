@@ -39,6 +39,32 @@ class ReleaseFetchService {
 	}
 }
 
+class NewReleaseForUserService {
+	find(params) {
+		let releasePromise = this.app.service('releases').find({query: {$sort: '-createdAt'}});
+		let userId = (params.account ||{}).userId || params.payload.userId;
+		let userPromise = this.app.service('users').get(userId);
+		let updatePreferences = (releaseDate) => this.app.service('users').patch(userId, {
+			"preferences.lastReleaseDate": releaseDate, //syntax of "p.x" prevents other preferences of being forgotten
+		});
+
+		return Promise.all([userPromise, releasePromise])
+				.then(([user, release]) => {
+					release = release.data[0];
+					if(!release) return false;
+
+					updatePreferences(release.createdAt).then((data) => {}).catch(() => {});
+
+					let prefs = user.preferences || {};
+					
+					return !!prefs.lastReleaseDate && Date.parse(prefs.lastReleaseDate) < Date.parse(release.createdAt);
+				}).then((newRelease) => ({newRelease}));
+	}
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
 module.exports = function () {
 	const app = this;
 
@@ -53,17 +79,21 @@ module.exports = function () {
 
 	// Initialize our service with any options it requires
 	app.use('/releases/fetch', new ReleaseFetchService());
+	app.use('/releases/newRelease', new NewReleaseForUserService());
 	app.use('/releases', service(options));
 
 	// Get our initialize service to that we can bind hooks
 	const releaseFetchService = app.service('/releases/fetch');
+	const newReleaseService = app.service('/releases/newRelease');
 	const releaseService = app.service('/releases');
 
 	// Set up our before hooks
 	releaseService.before(hooks.before(releaseService));
+	newReleaseService.before(hooks.before(newReleaseService));
 	releaseFetchService.before(hooks.before(releaseFetchService));
 
 	// Set up our after hooks
 	releaseService.after(hooks.after);
+	newReleaseService.after(hooks.after);
 	releaseFetchService.after(hooks.after);
 };

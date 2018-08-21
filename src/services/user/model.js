@@ -16,7 +16,9 @@ const userSchema = new Schema({
 
 	gender: {type: String, enum: gender},
 
-	preferences: {type: Object} // blackbox for frontend stuff like "cookies accepted"
+	preferences: {
+		lastReleaseDate: {type: Date},
+	}
 },{
 	timestamps: true
 });
