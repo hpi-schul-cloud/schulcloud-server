@@ -15,18 +15,18 @@ const registerStudent = function(data, params, app) {
     // wrong birthday object?
     let userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
     if (userBirthday instanceof Date && isNaN(userBirthday)) {
-		return Promise.reject("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut.");
+		return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
 	}
 	// wrong age?
 	let age = globalHooks.getAge(userBirthday);
     if (data["parent-email"] && age >= 18) {
-		return Promise.reject(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`);
+		return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
 	} else if (!data["parent-email"] && age < 18) {
-		return Promise.reject(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`);
+		return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
 	}
     // identical emails?
 	if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
-		return Promise.reject("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.");
+		return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
 	}
 	
     return app.service('registrationPins').find({
