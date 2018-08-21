@@ -5,6 +5,7 @@ const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
 const registerStudent = function(data, params, app) {
+
     let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
     let pinInput = data["email-pin"];
     let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
@@ -73,18 +74,30 @@ const registerStudent = function(data, params, app) {
             return Promise.reject("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");
         });
     }).then(() => {
-        // create account
-        account = {
-            username: user.email, 
-            password: passwort, 
-            userId: user._id, 
-            activated: true
-        };
-        return app.service('accounts').create(account)
-            .then(newAccount => {account = newAccount;})
-            .catch(err => {
-                return Promise.reject(new Error("Fehler beim Erstellen des Schüler-Accounts."));
-            });
+			account = {
+				username: user.email, 
+				password: passwort, 
+				userId: user._id, 
+				activated: true
+			};
+		if( (params.query||{}).sso=='sso' && (params.query||{}).accountId ){
+
+			let accountId=(params.query||{}).accountId;
+			return app.service('accounts').update({_id: accountId}, {$set: {activated:true,userId: user._id}})
+			.then(account=>{
+				account.username = account.username; // !important for roleback catch
+			})
+			.catch(err=>{
+				return Promise.reject(new Error("Fehler der Account existiert nicht."));
+			});
+		}else{
+			return app.service('accounts').create(account)
+				.then(newAccount => {account = newAccount;})
+				.catch(err => {
+					return Promise.reject(new Error("Fehler beim Erstellen des Schüler-Accounts."));
+				});
+		}
+        
     }).then(res => {
         //add parent if necessary    
         if(data["parent-email"]) {
