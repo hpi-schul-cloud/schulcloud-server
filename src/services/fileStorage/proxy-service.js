@@ -207,8 +207,8 @@ class SignedUrlService {
 
 				// set external schoolId if file is shared
 				let externalSchoolId;
-				if (p.permission === 'shared') externalSchoolId = res.schoolId; 
-				
+				if (p.permission === 'shared') externalSchoolId = res.schoolId;
+
 				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId)
 					.then(res => {
 						return {
@@ -400,7 +400,7 @@ class CopyService {
 			.then(file => {
 				if (!file) throw new errors.NotFound("The file was not found!");
 
-				// check that theres no file on 'newPath', otherwise change name of file
+				// check that there's no file on 'newPath', otherwise change name of file
 				return FileModel.findOne({key: newPath + fileName}).exec()
 					.then(newFile => {
 						let newFileName = fileName;
@@ -424,7 +424,7 @@ class CopyService {
 								let newFileObject = {
 									key: newPath + newFileName,
 									path: newPath,
-									name: newFileName,
+									name: decodeURIComponent(newFileName),
 									type: file.type,
 									size: file.size,
 									flatFileName: newFlatFileName,
