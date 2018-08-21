@@ -62,6 +62,39 @@
 },
 {
 	"_id": {
+		"$oid": "0000d186816abba584714c98"
+	},
+	"name": "teacher",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c95"
+		}
+	],
+	"permissions": [
+		"ACCOUNT_CREATE",
+		"COURSE_EDIT",
+		"LESSONS_VIEW",
+		"NEWS_CREATE",
+		"NEWS_EDIT",
+		"SCHOOL_NEWS_EDIT",
+		"STUDENT_CREATE",
+		"SUBMISSIONS_SCHOOL_VIEW",
+		"TEACHER_CREATE",
+		"TOOL_CREATE",
+		"TOOL_EDIT",
+		"TOOL_NEW_VIEW",
+		"TOPIC_CREATE",
+		"TOPIC_EDIT",
+		"USER_CREATE",
+		"USERGROUP_CREATE",
+		"USERGROUP_EDIT"
+	],
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "0000d186816abba584714c96"
 	},
 	"name": "administrator",
@@ -78,6 +111,7 @@
 		"HELPDESK_EDIT",
 		"HELPDESK_VIEW",
 		"SCHOOL_EDIT",
+		"STUDENT_CREATE",
 		"SUBMISSIONS_SCHOOL_VIEW",
 		"SYSTEM_EDIT",
 		"SYSTEM_CREATE",
@@ -109,39 +143,6 @@
 		"SCHOOL_CREATE",
 		"SCHOOL_EDIT",
 		"SUBMISSIONS_SCHOOL_VIEW"
-	],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000d186816abba584714c98"
-	},
-	"name": "teacher",
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c95"
-		}
-	],
-	"permissions": [
-		"ACCOUNT_CREATE",
-		"COURSE_EDIT",
-		"LESSONS_VIEW",
-		"NEWS_CREATE",
-		"NEWS_EDIT",
-		"SCHOOL_NEWS_EDIT",
-		"STUDENT_CREATE",
-		"SUBMISSIONS_SCHOOL_VIEW",
-		"TEACHER_CREATE",
-		"TOOL_CREATE",
-		"TOOL_EDIT",
-		"TOOL_NEW_VIEW",
-		"TOPIC_CREATE",
-		"TOPIC_EDIT",
-		"USER_CREATE",
-		"USERGROUP_CREATE",
-		"USERGROUP_EDIT"
 	],
 	"__v": 0
 },
