@@ -100,12 +100,12 @@ const pinIsVerified = hook => {
 				let age = globalHooks.getAge(hook.data.birthday);
 				if (
 					(
-						(hook.data.roles[0]||"") === "student" &&
+						((hook.data.roles||[])[0]||"") === "student" &&
 						(RegExp("^[0-9a-fA-F]{24}$").test(hook.data.classId) || RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId)) &&
 						age > 18
 					) ||
 					(
-						(hook.data.roles[0]||"") !== "student" &&
+						((hook.data.roles||[])[0]||"") !== "student" &&
 						!hook.data.classId &&
 						RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId) &&
 						!hook.data.birthday
@@ -131,7 +131,7 @@ const permissionRoleCreate = hook =>{
 	}
 	const isLoggedIn = ( hook.params || {} ).account && hook.params.account.userId ? true : false;
 	if( isLoggedIn==true  && globalHooks.arrayIncludes(hook.data.roles,['student','teacher'],['parent','administrator','helpdesk','superhero']) ||
-		isLoggedIn==false && globalHooks.arrayIncludes(hook.data.roles,['student','parent'],['teacher','administrator','helpdesk','superhero'])
+		isLoggedIn==false && globalHooks.arrayIncludes((hook.data.roles||[]),['student','parent'],['teacher','administrator','helpdesk','superhero'])
 	){
 		return Promise.resolve(hook);
 	}else{
