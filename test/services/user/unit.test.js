@@ -10,7 +10,7 @@ const loginHelper = require('../helpers/login');
 const testObjects = require('../helpers/testObjects')(app);
 const promisify = require('es6-promisify');
 const expect = chai.expect;
-/*
+
 describe('user service', function () {
 	it('registered the users service', () => {
 		assert.ok(userService);
@@ -24,6 +24,17 @@ describe('user service', function () {
 	});
 	
 	it('resolves permissions correctly', function () {
+		const prepareUser = function(userObject) {
+			return registrationPinService.create({"email": userObject.email})
+				.then(registrationPin => {
+					return registrationPinService.find({
+						query: { "pin": registrationPin.pin, "email": registrationPin.email, verified: false }
+					});
+				}).then(_ => {
+					return userService.create(userObject);
+				});
+		};
+
 		function create_test_base() {
 			return app.service('roles')
 				.create({
@@ -49,7 +60,7 @@ describe('user service', function () {
 
 		return create_test_base()
 			.then(test_base => create_test_subrole(test_base))
-			.then(test_subrole => userService.create({
+			.then(test_subrole => prepareUser({
 				"id": "0000d231816abba584714d01",
 				"accounts": [],
 				"schoolId": "0000d186816abba584714c5f",
@@ -70,7 +81,6 @@ describe('user service', function () {
 
 	after(testObjects.cleanup);
 });
-*/
 
 describe('registrationPin Service', function() {
 	it ('registered the registrationPin Service', () => {
