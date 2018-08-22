@@ -130,7 +130,7 @@ const permissionRoleCreate = hook =>{
 		return Promise.reject(new errors.BadRequest('No input data.'));
 	}
 	const isLoggedIn = ( hook.params || {} ).account && hook.params.account.userId ? true : false;
-	if( isLoggedIn==true  && globalHooks.arrayIncludes(hook.data.roles,['student','teacher'],['parent','administrator','helpdesk','superhero']) ||
+	if( isLoggedIn==true  && globalHooks.arrayIncludes((hook.data.roles||[]),['student','teacher'],['parent','administrator','helpdesk','superhero']) ||
 		isLoggedIn==false && globalHooks.arrayIncludes((hook.data.roles||[]),['student','parent'],['teacher','administrator','helpdesk','superhero'])
 	){
 		return Promise.resolve(hook);
