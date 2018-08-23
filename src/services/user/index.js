@@ -8,7 +8,7 @@ const errors = require('feathers-errors');
 
 const userDataFilter=(user)=>{
 	return {
-		"_id":user._id,
+		"userId":user._id,
 		"email":user.email,
 		"firstName":user.firstName,
 		"lastName":user.lastName,
@@ -25,7 +25,6 @@ class UserLinkImportService {
         }
 		
 		get(hash,params){	//can not use get becouse the hash can have / that mapped to non existing routes
-			console.log('hash',hash);
 			return this.userService.find({ query: { importHash: hash }})
 			.then(users=>{
 				if(users.data.length<=0 || users.data.length>1){
