@@ -4,6 +4,42 @@ const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
+const insertUserToDB = (data)=>{
+	const user = {
+            firstName: data["student-firstname"],
+            lastName: data["student-secondname"],
+            email: data["student-email"],
+            gender: data["gender"],
+            roles: ["student"],
+            schoolId: data.schoolId,
+            birthday: userBirthday
+	};
+	if (data.classId) user.classId = data.classId;
+	
+	if(data.importHash){
+		return app.service('users').find({ query: { importHash: data.importHash, _id: data._id }} ).then(users=>{
+			if(users.data.length<=0 || users.data.length>1){
+				throw new errors.BadRequest("Kein Schüler für die eingegebenen Daten gefunden.");
+			}
+			let oldUser=users.data[0];
+			Object.keys(user).forEach(key=>{
+				if( oldUser[key]==undefined ){
+					oldUser[key]=data[key];
+				}
+			});
+			delete oldUser.importHash;
+	
+			return app.service('users').remove(oldUser._id).then( ()=>{
+				return app.service('users').create(oldUser, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
+				.catch(err=> { throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.")} );
+			})
+		})
+	}else{	
+		return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
+		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.")} );
+	}
+}
+
 const registerStudent = function(data, params, app) {
 
     let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
@@ -14,7 +50,7 @@ const registerStudent = function(data, params, app) {
     
     // wrong birthday object?
     let userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
-    if (userBirthday instanceof Date && isNaN(userBirthday)) {
+    if (userBirthday instanceof Date || isNaN(userBirthday)) {
 		return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
 	}
 	// wrong age?
@@ -56,23 +92,13 @@ const registerStudent = function(data, params, app) {
             });
     }).then(function() {
         //create user
-        user = {
-            firstName: data["student-firstname"],
-            lastName: data["student-secondname"],
-            email: data["student-email"],
-            gender: data["gender"],
-            roles: ["student"],
-            schoolId: data.schoolId,
-            birthday: userBirthday
-        };
-        if (data.classId) user.classId = data.classId;
-        return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })	//{query:{parentEmail: data["parent-email"]}}
-        .then(newUser => {
+       
+        return insertUserToDB(data).then(newUser => {
             user = newUser;
         })
-        .catch(err =>{
-            return Promise.reject("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");
-        });
+       // .catch(err =>{
+       //     return Promise.reject("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");
+      //  });
     }).then(() => {
 			account = {
 				username: user.email, 
