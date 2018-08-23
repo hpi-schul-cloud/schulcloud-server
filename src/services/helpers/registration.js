@@ -4,7 +4,7 @@ const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
-const insertUserToDB = (app,data,params,userBirthday)=>{
+const insertUserToDB = (app,data,userBirthday)=>{
 	const user = {
             firstName: data["student-firstname"],
             lastName: data["student-secondname"],
@@ -16,10 +16,8 @@ const insertUserToDB = (app,data,params,userBirthday)=>{
 	};
 	if (data.classId) user.classId = data.classId;
 	
-	const importHash=params.query.importHash;
-	if(importHash){
-		const userId=params.query.userId;
-		return app.service('users').find({ query: { importHash: importHash, _id: userId }} ).then(users=>{
+	if(data.importHash){
+		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId }} ).then(users=>{
 			if(users.data.length<=0 || users.data.length>1){
 				throw new errors.BadRequest("Kein Schüler für die eingegebenen Daten gefunden.");
 			}
