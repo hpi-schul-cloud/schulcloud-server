@@ -23,7 +23,7 @@ const insertUserToDB = (data)=>{
 			}
 			let oldUser=users.data[0];
 			Object.keys(user).forEach(key=>{
-				if( oldUser[key]==undefined ){
+				if( oldUser[key]===undefined ){
 					oldUser[key]=data[key];
 				}
 			});
@@ -38,7 +38,7 @@ const insertUserToDB = (data)=>{
 		return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
 		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.")} );
 	}
-}
+};
 
 const registerStudent = function(data, params, app) {
 
@@ -50,7 +50,7 @@ const registerStudent = function(data, params, app) {
     
     // wrong birthday object?
     let userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
-    if (userBirthday instanceof Date || isNaN(userBirthday)) {
+    if (userBirthday instanceof Date && isNaN(userBirthday)) {
 		return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
 	}
 	// wrong age?
