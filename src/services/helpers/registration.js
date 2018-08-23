@@ -106,8 +106,8 @@ const registerStudent = function(data, params, app) {
 
 			let accountId=(params.query||{}).accountId;
 			return app.service('accounts').update({_id: accountId}, {$set: {activated:true,userId: user._id}})
-			.then(account=>{
-				account.username = account.username; // !important for roleback catch
+			.then(accountResponse=>{
+				account.username = accountResponse.username; // !important for roleback catch
 			})
 			.catch(err=>{
 				return Promise.reject(new Error("Fehler der Account existiert nicht."));
