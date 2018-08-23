@@ -18,7 +18,7 @@ const userDataFilter=(user)=>{
 	}
 }
 
-class UserHashService {
+class UserLinkImportService {
 		constructor(userService) {
 			this.userService = userService;
 			this.docs = {}
@@ -53,7 +53,7 @@ module.exports = function () {
 	app.use('/users', service(options));
 
 	const userService = app.service('/users');	
-	app.use('users/hash',new UserHashService(userService));	//do not use hooks
+	app.use('users/linkImport',new UserLinkImportService(userService));	//do not use hooks
 
 	
 	userService.before(hooks.before(app));	// TODO: refactor
