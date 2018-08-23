@@ -4,7 +4,7 @@ const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
-const insertUserToDB = (data,params)=>{
+const insertUserToDB = (data,params,userBirthday)=>{
 	const user = {
             firstName: data["student-firstname"],
             lastName: data["student-secondname"],
@@ -95,7 +95,7 @@ const registerStudent = function(data, params, app) {
             });
     }).then(function() {
         //create user
-        return insertUserToDB(data,params).then(newUser => {
+        return insertUserToDB(data,params,userBirthday).then(newUser => {
             user = newUser;
         })
     }).then(() => {
