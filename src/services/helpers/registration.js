@@ -106,7 +106,7 @@ const registerStudent = function(data, params, app) {
 				userId: user._id, 
 				activated: true
 			};
-		if( (params.query||{}).sso=='sso' && (params.query||{}).accountId ){
+		if( (params.query||{}).sso==='sso' && (params.query||{}).accountId ){
 
 			let accountId=(params.query||{}).accountId;
 			return app.service('accounts').update({_id: accountId}, {$set: {activated:true,userId: user._id}})
