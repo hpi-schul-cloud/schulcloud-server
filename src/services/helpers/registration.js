@@ -17,7 +17,7 @@ const insertUserToDB = (data)=>{
 	if (data.classId) user.classId = data.classId;
 	
 	if(data.importHash){
-		return app.service('users').find({ query: { importHash: data.importHash, _id: data._id }} ).then(users=>{
+		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId }} ).then(users=>{
 			if(users.data.length<=0 || users.data.length>1){
 				throw new errors.BadRequest("Kein Schüler für die eingegebenen Daten gefunden.");
 			}
@@ -92,13 +92,9 @@ const registerStudent = function(data, params, app) {
             });
     }).then(function() {
         //create user
-       
         return insertUserToDB(data).then(newUser => {
             user = newUser;
         })
-       // .catch(err =>{
-       //     return Promise.reject("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");
-      //  });
     }).then(() => {
 			account = {
 				username: user.email, 
