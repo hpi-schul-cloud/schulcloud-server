@@ -92,7 +92,7 @@ const registerStudent = function(data, params, app) {
             });
     }).then(function() {
         //create user
-        return insertUserToDB(app,data,params,userBirthday).then(newUser => {
+        return insertUserToDB(app,data,userBirthday).then(newUser => {
             user = newUser;
         })
     }).then(() => {
