@@ -1,6 +1,7 @@
 const errors = require('feathers-errors');
 const _ = require('lodash');
 const CourseModel = require('../../user-group/model').courseModel;
+const LessonModel = require('../../lesson/model');
 const ClassModel = require('../../user-group/model').classModel;
 const FilePermissionModel = require('../model').fileModel;
 
@@ -16,13 +17,13 @@ class FilePermissionHelper {
 	 * @param throwError {Boolean} - whether to throw an error or not
 	 */
 	checkExtraPermissions(userId, fileKey, permissionTypes, throwError, queries) {
-		if (!fileKey || fileKey === '') throwError ? Promise.reject(new errors.Forbidden("You don't have permissions!")) : false;
+		if (!fileKey || fileKey === '') return throwError ? Promise.reject(new errors.Forbidden("You don't have permissions!")) : false;
 
 		return FilePermissionModel.find({key: fileKey}).exec().then(res => {
 
 			// check whether key and shareToken are identical to return file
 			if (res[0].key === (queries || {}).key && res[0].shareToken === (queries || {}).shareToken) {
-				return Promise.resolve(true);
+				return Promise.resolve({permission: "shared"});
 			}
 
 			// res-object should be unique for file key, but it's safer to map all permissions
@@ -35,7 +36,7 @@ class FilePermissionHelper {
 
 			if (!permissionExists) return throwError ? Promise.reject(new errors.Forbidden("You don't have permissions!")) : false;
 
-			return Promise.resolve(true);
+			return Promise.resolve({permission: "shared"});
 		}).catch(err => {
 			return throwError ? Promise.reject(new errors.Forbidden("You don't have permissions!")) : false;
 		});
@@ -62,8 +63,19 @@ class FilePermissionHelper {
 						{_id: contextId}
 					]
 				}).exec().then(res => {
+					// user is not in that course, check if the file is one of a shared lesson
 					if (!res || res.length <= 0) {
-						return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+						return LessonModel.find({
+							$and: [
+								{ "contents.content.text": { $regex: filePath, $options: 'i'}},
+								{ "shareToken": { $exists: true }}
+								]
+						}).exec().then(res => {
+							if (!res || res.length <= 0) {
+								return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+							}
+							return Promise.resolve({context: res[0]});
+						});
 					}
 					return Promise.resolve({context: res[0]});
 				});

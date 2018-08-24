@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const lessonSchema = new Schema({
-	name: { type: String },
+	name: { type: String, required: true },
 	description: { type: String },
 	date: { type: Date },
 	time: { type: Date },
@@ -17,7 +17,7 @@ const lessonSchema = new Schema({
 		user : {type : Schema.ObjectId, ref : 'user'},
 		component: { type: String },
 		title: { type: String },
-		content: {},
+		content: { },
 		hidden: { type: Boolean }
 	}],
 	materialIds: [{ type: Schema.Types.ObjectId, ref: 'material' }],

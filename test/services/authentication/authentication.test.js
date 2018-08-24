@@ -16,6 +16,7 @@ chai.use(chaiHttp);
 var should = chai.should();
 const expect = chai.expect;
 
+/*
 describe('General login service', function () {
 
 	const testAccount = {
@@ -104,3 +105,4 @@ describe('General login service', function () {
 			});
 	});
 });
+*/

@@ -18,15 +18,17 @@
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
     "test": "./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run coverage",
-	"test-windows": "sh ./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run mocha-windows",
+    "test-windows": "sh ./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run mocha-windows",
     "backup": "./backup.sh -a -b export",
     "setup": "./backup.sh -p setup/ -a import",
     "start": "node src/",
     "startd": "nodemon src/",
+    "debug": "nodemon --inspect=5959 src/",
     "coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- -- test/**/*.test.js",
     "mocha": "NODE_ENV=test mocha test/ --recursive",
-	"mocha-windows": "set NODE_ENV=test && mocha test/ --recursive",
-    "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive"
+    "mocha-windows": "set NODE_ENV=test && mocha test/ --recursive",
+    "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
+    "mocha-test-specific-windows": "set NODE_ENV=test && mocha test/app.hooks.test.js"
   },
   "dependencies": {
     "aws-sdk": "^2.7.24",
@@ -57,6 +59,7 @@
     "feathers-swagger": "^0.3.2",
     "freeport": "^1.0.5",
     "istanbul": "^0.4.5",
+    "jwt-decode": "^2.2.0",
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
     "mongoose": "^4.7.6",
@@ -71,8 +74,8 @@
     "querystring": "^0.2.0",
     "randexp": "^0.4.6",
     "request-promise-native": "^1.0.3",
+    "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
-    "strip-js": "^1.0.6",
     "winston": "^2.3.0"
   },
   "devDependencies": {

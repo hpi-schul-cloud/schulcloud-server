@@ -37,7 +37,7 @@
 		"RELEASES_VIEW",
 		"ROLE_VIEW",
 		"USERGROUP_VIEW",
-		"COURSEGROUP_CREATE", 
+		"COURSEGROUP_CREATE",
 		"COURSEGROUP_EDIT",
 		"SYSTEM_VIEW",
 		"USER_VIEW",
@@ -62,6 +62,39 @@
 },
 {
 	"_id": {
+		"$oid": "0000d186816abba584714c98"
+	},
+	"name": "teacher",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c95"
+		}
+	],
+	"permissions": [
+		"ACCOUNT_CREATE",
+		"COURSE_EDIT",
+		"LESSONS_VIEW",
+		"NEWS_CREATE",
+		"NEWS_EDIT",
+		"SCHOOL_NEWS_EDIT",
+		"STUDENT_CREATE",
+		"SUBMISSIONS_SCHOOL_VIEW",
+		"TEACHER_CREATE",
+		"TOOL_CREATE",
+		"TOOL_EDIT",
+		"TOOL_NEW_VIEW",
+		"TOPIC_CREATE",
+		"TOPIC_EDIT",
+		"USER_CREATE",
+		"USERGROUP_CREATE",
+		"USERGROUP_EDIT"
+	],
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "0000d186816abba584714c96"
 	},
 	"name": "administrator",
@@ -73,16 +106,18 @@
 		}
 	],
 	"permissions": [
+		"ACCOUNT_CREATE",
 		"ADMIN_VIEW",
+		"HELPDESK_EDIT",
+		"HELPDESK_VIEW",
+		"SCHOOL_EDIT",
+		"STUDENT_CREATE",
+		"SUBMISSIONS_SCHOOL_VIEW",
 		"SYSTEM_EDIT",
 		"SYSTEM_CREATE",
-		"ACCOUNT_CREATE",
 		"USER_CREATE",
-		"SCHOOL_EDIT",
 		"USERGROUP_CREATE",
-		"USERGROUP_EDIT",
-		"HELPDESK_VIEW",
-		"HELPDESK_EDIT"
+		"USERGROUP_EDIT"
 	],
 	"__v": 0
 },
@@ -99,46 +134,15 @@
 		}
 	],
 	"permissions": [
-		"SCHOOL_CREATE",
-		"SCHOOL_EDIT",
-		"ROLE_EDIT",
-		"ROLE_CREATE",
 		"FEDERALSTATE_CREATE",
 		"FEDERALSTATE_EDIT",
+		"RELEASES_CREATE",
 		"RELEASES_EDIT",
-		"RELEASES_CREATE"
-	],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000d186816abba584714c98"
-	},
-	"name": "teacher",
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c95"
-		}
-	],
-	"permissions": [
-		"LESSONS_VIEW",
-		"TOOL_NEW_VIEW",
-		"COURSE_EDIT",
-		"STUDENT_CREATE",
-		"TEACHER_CREATE",
-		"USERGROUP_EDIT",
-		"USERGROUP_CREATE",
-		"TOPIC_EDIT",
-		"TOPIC_CREATE",
-		"TOOL_EDIT",
-		"TOOL_CREATE",
-		"NEWS_EDIT",
-		"NEWS_CREATE",
-		"ACCOUNT_CREATE",
-		"USER_CREATE",
-		"SCHOOL_NEWS_EDIT"
+		"ROLE_CREATE",
+		"ROLE_EDIT",
+		"SCHOOL_CREATE",
+		"SCHOOL_EDIT",
+		"SUBMISSIONS_SCHOOL_VIEW"
 	],
 	"__v": 0
 },
@@ -154,6 +158,17 @@
 			"$oid": "0000d186816abba584714c95"
 		}
 	],
+	"permissions": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5b45f8d28c8dba65f8871e19"
+	},
+	"name": "parent",
+	"updatedAt" : { "$date": "2017-07-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-07-01T00:06:37.148Z" },
+	"roles": [],
 	"permissions": [],
 	"__v": 0
 },
@@ -211,6 +226,7 @@
 	],
 	"permissions": [
 		"LESSONS_VIEW",
+		"SUBMISSIONS_SCHOOL_VIEW",
 		"TOOL_NEW_VIEW"
 	],
 	"__v": 0

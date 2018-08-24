@@ -8,7 +8,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const categories = ['dashboard', 'courses', 'classes', 'calendar', 'homework', 'files', 'content', 'administration', 'login_registration', 'other'];
+const categories = ['dashboard', 'courses', 'classes', 'calendar', 'homework', 'files', 'content', 'administration', 'login_registration', 'other', 'technical_problem'];
 const states = ['open', 'closed', 'submitted'];
 
 const problemSchema = new Schema({
@@ -20,7 +20,7 @@ const problemSchema = new Schema({
 	notes: {type: String},
 	order: {type: Number, default: 0},
 	userId: {type: Schema.Types.ObjectId, ref: 'user'},
-	schoolId: {type: Schema.Types.ObjectId, ref: 'school'},
+	schoolId: {type: Schema.Types.ObjectId, ref: 'school', required: true},
 	forwardedAt: {type: Date},
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now}

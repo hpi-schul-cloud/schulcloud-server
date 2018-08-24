@@ -23,6 +23,8 @@ const notification = require('./notification');
 const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
+const socket = require('./socket');
+const consent = require('./consent');
 
 const mongoose = require('mongoose');
 
@@ -55,4 +57,6 @@ module.exports = function () {
 	app.configure(releases);
 	app.configure(helpdesk);
 	app.configure(statistic);
+    app.configure(socket);
+    app.configure(consent);
 };

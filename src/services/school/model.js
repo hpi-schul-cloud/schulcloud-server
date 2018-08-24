@@ -17,11 +17,27 @@ const schoolSchema = new Schema({
 	systems: [{type: Schema.Types.ObjectId, ref: 'system'}],
 	federalState: {type: Schema.Types.ObjectId, ref: 'federalstate'},
 	createdAt: {type: Date, 'default': Date.now},
-	updatedAt: {type: Date, 'default': Date.now}
+	updatedAt: {type: Date, 'default': Date.now},
+	experimental: {type: Boolean, 'default': false},
+	pilot: {type: Boolean, 'default': false}
 },{
 	timestamps: true
 });
 
-const schoolModel = mongoose.model('school', schoolSchema);
+const yearSchema = new Schema({
+	name: {type: String, required: true}
+});
 
-module.exports = schoolModel;
+const gradeLevelSchema = new Schema({
+	name: {type: String, required: true}
+});
+
+const schoolModel = mongoose.model('school', schoolSchema);
+const yearModel = mongoose.model('year', yearSchema);
+const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
+
+module.exports = {
+	schoolModel,
+	yearModel,
+	gradeLevelModel
+};
