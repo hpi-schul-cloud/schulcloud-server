@@ -15,13 +15,13 @@ const userDataFilter=(user)=>{
 		"importHash":user.importHash,
 		"schoolId":user.schoolId,
 		"birthday":user.birthday
-	}
-}
+	};
+};
 
 class UserLinkImportService {
 		constructor(userService) {
 			this.userService = userService;
-			this.docs = {}
+			this.docs = {};
         }
 		
 		get(hash,params){	//can not use get becouse the hash can have / that mapped to non existing routes
