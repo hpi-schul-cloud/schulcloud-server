@@ -31,12 +31,12 @@ const insertUserToDB = (app,data,userBirthday)=>{
 	
 			return app.service('users').remove(oldUser._id).then( ()=>{
 				return app.service('users').create(oldUser, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
-				.catch(err=> { throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.")} );
-			})
-		})
+				.catch(err=> { throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.");} );
+			});
+		});
 	}else{	
 		return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
-		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.")} );
+		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");} );
 	}
 };
 
@@ -94,7 +94,7 @@ const registerStudent = function(data, params, app) {
         //create user
         return insertUserToDB(app,data,userBirthday).then(newUser => {
             user = newUser;
-        })
+        });
     }).then(() => {
 			account = {
 				username: user.email, 
