@@ -40,16 +40,30 @@ const insertUserToDB = (app,data,userBirthday)=>{
 	}
 };
 
-const registerStudent = function(data, params, app) {
+const formatBirthdate1=(datestamp)=>{
+	if( datestamp==undefined ) 
+		return '';
+	
+	const d = datestamp.split('.');
+	return d[1]+'.'+d[0]+'.'+d[2]
+}
 
+const formatBirthdate2=(datestamp)=>{
+	if( datestamp==undefined ) 
+		return '';
+	
+	const d = datestamp.split('T')[0].split(/-/g);
+	return d[1]+'.'+d[2]+'.'+d[0];
+}
+
+const registerStudent = function(data, params, app) {
     let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
     let pinInput = data["email-pin"];
     let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
     let passwort = data["initial-password"];
-    let dateArr = data["student-birthdate"].split(".");
-    
+    let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
     // wrong birthday object?
-    let userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
+    let userBirthday = new Date(formatedBirthday);
     if (userBirthday instanceof Date && isNaN(userBirthday)) {
 		return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
 	}
@@ -107,7 +121,7 @@ const registerStudent = function(data, params, app) {
 			let accountId=(params.query||{}).accountId;
 			return app.service('accounts').update({_id: accountId}, {$set: {activated:true,userId: user._id}})
 			.then(accountResponse=>{
-				account.username = accountResponse.username; // !important for roleback catch
+				account._id = accountResponse._id; // !important for roleback catch
 			})
 			.catch(err=>{
 				return Promise.reject(new Error("Fehler der Account existiert nicht."));
