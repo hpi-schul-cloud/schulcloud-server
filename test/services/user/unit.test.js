@@ -90,7 +90,7 @@ describe('registrationPin Service', function() {
 	it ('creates pins correctly', function() {
 		return registrationPinService
 			.create({"email": "test.adresse@schul-cloud.org"})
-				.then(pinObject => registrationPinService.find({"email": "test.adresse@schul-cloud.org"}))
+				.then(pinObject => registrationPinService.find({query: {"email": "test.adresse@schul-cloud.org"}}))
 				.then(pinObjects => {
 					chai.expect(pinObjects.data[0]).to.have.property('pin');
 				});
@@ -99,7 +99,7 @@ describe('registrationPin Service', function() {
 	it ('overwrites old pins', function() {
 		return registrationPinService.create({"email": "test.adresse@schul-cloud.org"})
 				.then(pinObject => registrationPinService.create({"email": "test.adresse@schul-cloud.org"}))
-				.then(pinObject => registrationPinService.find({"email": "test.adresse@schul-cloud.org"}))
+				.then(pinObject => registrationPinService.find({query: {"email": "test.adresse@schul-cloud.org"}}))
 				.then(pinObjects => {
 					chai.expect(pinObjects.data).to.have.lengthOf(1);
 				});

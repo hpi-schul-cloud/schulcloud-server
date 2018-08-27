@@ -107,7 +107,7 @@ const registerStudent = function(data, params, app) {
 			let accountId=(params.query||{}).accountId;
 			return app.service('accounts').update({_id: accountId}, {$set: {activated:true,userId: user._id}})
 			.then(accountResponse=>{
-				account.username = accountResponse.username; // !important for roleback catch
+				account = accountResponse;
 			})
 			.catch(err=>{
 				return Promise.reject(new Error("Fehler der Account existiert nicht."));
@@ -172,7 +172,7 @@ const registerStudent = function(data, params, app) {
                 return Promise.reject(new Error("Fehler beim Speichern der Einverständniserklärung."));
             });
     }).then(function() {
-        return Promise.resolve({user, parent});
+        return Promise.resolve({user, parent, account, consent});
     }).catch(err => {
         let rollbackPromises = [];
         if (user && user._id) {
