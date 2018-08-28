@@ -4,6 +4,12 @@ const HomeworkModel = require('./model').homeworkModel;
 const _ = require('lodash');
 
 class HomeworkCopyService {
+
+	constructor(app) {
+		this.app = app;
+	}
+
+
 	/**
 	 * @param id = id of homework to copy
 	 * @returns {new homework}
@@ -33,6 +39,7 @@ class HomeworkCopyService {
 	 * @returns new homework.
 	 */
 	create(data, params) {
+		const userId = data.newTeacherId;
 
 		return HomeworkModel.findOne({ _id: data._id })
 			.then(copyAssignment => {
@@ -41,12 +48,18 @@ class HomeworkCopyService {
 				tempAssignment.courseId = data.courseId;
 				tempAssignment.lessonId = data.lessonId;
 
-				return HomeworkModel.create(tempAssignment, (err, res) => {
-					if (err)
-						return err;
-					else
-						return res;
-				});
+				return this.app.service('users').get(userId)
+					.then(user => {
+						tempAssignment.schoolId = user.schoolId;
+						tempAssignment.teacherId = user._id;
+
+						return HomeworkModel.create(tempAssignment, (err, res) => {
+							if (err)
+								return err;
+							else
+								return res;
+						});
+					});
 			});
 
 	}
@@ -57,7 +70,7 @@ module.exports = function () {
 	const app = this;
 
 	// Initialize our service with any options it requires
-	app.use('/homework/copy', new HomeworkCopyService());
+	app.use('/homework/copy', new HomeworkCopyService(app));
 
 	// Get our initialize service to that we can bind hooks
 	const homeworkCopyService = app.service('/homework/copy');

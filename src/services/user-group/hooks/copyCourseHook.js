@@ -32,3 +32,13 @@ exports.after = {
 	patch: [],
 	remove: []
 };
+
+exports.beforeShare = {
+	all: [auth.hooks.authenticate('jwt')],
+	find: [hooks.disable()],
+	get: [],
+	create: [],
+	update: [hooks.disable()],
+	patch: [hooks.disable()],
+	remove: [hooks.disable()]
+};

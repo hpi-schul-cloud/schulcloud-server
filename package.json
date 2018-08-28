@@ -76,6 +76,7 @@
     "request-promise-native": "^1.0.3",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
+    "shortid": "^2.2.13",
     "winston": "^2.3.0"
   },
   "devDependencies": {
