@@ -76,6 +76,29 @@ describe('registration service', function() {
         });
     });
 
+    it('fails with invalid pin', () => {
+        let email = 'max' + Date.now() + '@mustermann.de';
+        return registrationPinService.create({"email": email})
+        .then(registrationPin => {
+            let pin = Number(registrationPin.pin);
+            pin = pin == 9999 ? 1000 : pin + 1;
+            //make sure we pass a wrong pin
+            return registrationService.create({
+                classOrSchoolId: "0000d186816abba584714c5f",
+                "email-pin": String(pin),
+                "pin-sent": "yes",
+                gender: "male",
+                "student-birthdate": "15.10.1999",
+                "student-email": email,
+                "student-firstname": "Max",
+                "student-secondname": "Mustermann",
+            });
+        }).catch(err => {
+            chai.expect(err).to.be.not.undefined;
+            chai.expect(err.message).to.equal("Ungültige Pin, bitte überprüfe die Eingabe.");
+        });
+    });
+
     it('fails if parent and student email are the same', () => {
         return registrationService.create({
             "student-email": "max.sameadress@mustermann.de",
