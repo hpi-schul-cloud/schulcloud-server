@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const freeport = promisify(require('freeport'));	// uses promises with freeport
 const config = require('./config');
 
-/*
 module.exports = function () {
 	const findFreePort = freeport();
 
@@ -33,4 +32,3 @@ module.exports = function () {
 	});
 
 };
-*/
