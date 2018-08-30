@@ -7,6 +7,7 @@ module.exports = function (app) {
 	const userService = app.service('users');
 	const classesService = app.service('classes');
 	const coursesService = app.service('courses');
+	const registrationPinsService = app.service('registrationPins');
 
 	let createdAccountIds = [];
 	let createdUserIds = [];
@@ -39,15 +40,23 @@ module.exports = function (app) {
 		email = 'max' + Date.now() + '@mustermann.de',
 		schoolId = '584ad186816abba584714c94'
 	} = {}) {
-		return userService.create({
-			// required fields for user
-			firstName,
-			lastName,
-			email,
-			schoolId
-		})
+		return registrationPinsService.create({"email": email})
+				.then(registrationPin => {
+					return registrationPinsService.find({
+						query: { "pin": registrationPin.pin, "email": registrationPin.email, verified: false }
+					});
+				}).then(_ => {
+					return userService.create({
+						// required fields for user
+						firstName,
+						lastName,
+						email,
+						schoolId
+					});
+				})
+		
 			.then(user => {
-				createdCourses.push(user.id);
+				createdUserIds.push(user.id);
 				return user;
 			});
 	}

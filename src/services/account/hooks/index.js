@@ -79,7 +79,7 @@ const validatePassword = (hook) => {
 							if (err)
 								reject(new errors.BadRequest('Ups, bcrypt ran into an error.'));
 							if (!res)
-								reject(new errors.BadRequest('Password does not match!'));
+								reject(new errors.BadRequest('Dein Passwort ist nicht korrekt!'));
 							resolve();
 						});
 					});
