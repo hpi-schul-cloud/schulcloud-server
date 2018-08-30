@@ -65,6 +65,7 @@
     "mongoose": "^4.7.6",
     "mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
     "moodle-client": "^0.4.0",
+    "nanoid": "^1.2.2",
     "node-sass": "^4.2.0",
     "nodemailer": "^3.0.2",
     "passport": "^0.3.2",
@@ -76,7 +77,6 @@
     "request-promise-native": "^1.0.3",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
-    "shortid": "^2.2.13",
     "winston": "^2.3.0"
   },
   "devDependencies": {

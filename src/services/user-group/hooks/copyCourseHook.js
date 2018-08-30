@@ -35,7 +35,7 @@ exports.after = {
 
 exports.beforeShare = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [hooks.disable()],
+	find: [],
 	get: [],
 	create: [],
 	update: [hooks.disable()],

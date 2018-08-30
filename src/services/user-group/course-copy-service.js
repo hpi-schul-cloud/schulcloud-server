@@ -4,7 +4,7 @@ const courseModel = require('./model').courseModel;
 const homeworkModel = require('../homework/model').homeworkModel;
 const lessonsModel = require('../lesson/model');
 const _ = require('lodash');
-const shortId = require('shortid');
+const nanoid = require('nanoid');
 
 const createHomework = (homework, courseId, lessonId, userId, app, newTeacherId) => {
 	return app.service('homework/copy').create({_id: homework._id, courseId, lessonId, userId, newTeacherId})
@@ -94,6 +94,15 @@ class CourseShareService {
 		this.app = app;
 	}
 
+	// If provided with param shareToken then return course name
+	find(params) {
+		return courseModel.findOne({ shareToken: params.query.shareToken })
+			.then(course => {
+				return course.name;
+			});
+	}
+
+	// otherwise create a shareToken for given courseId and the respective lessons.
 	get(id, params) {
 		const coursesService = this.app.service('courses');
 		const lessonsService = this.app.service('lessons');
@@ -107,7 +116,7 @@ class CourseShareService {
 						.then(lessons => {
 							for (let i = 0; i < lessons.data.length; i++) {
 								if (!lessons.data[i].shareToken) {
-									lessonsModel.findByIdAndUpdate(lessons.data[i]._id, {shareToken: shortId.generate() })
+									lessonsModel.findByIdAndUpdate(lessons.data[i]._id, {shareToken: nanoid(12) })
 										.then(_ => {
 										});
 								}
@@ -115,7 +124,7 @@ class CourseShareService {
 							}
 						});
 
-					return coursesService.patch(id, {shareToken: shortId.generate() })
+					return coursesService.patch(id, {shareToken: nanoid(12) })
 						.then(res => {
 							return { shareToken: res.shareToken };
 						});
@@ -129,6 +138,7 @@ class CourseShareService {
 	create(data, params) {
 		const shareToken = data.shareToken;
 		const userId = (params.account || {}).userId;
+		const courseName = data.courseName;
 		const copyService = this.app.service('courses/copy');
 
 		return courseModel.find({shareToken})
@@ -138,6 +148,9 @@ class CourseShareService {
 				tempCourse = _.omit(tempCourse, ['createdAt', 'updatedAt', '__v', 'teacherIds', 'classIds', 'userIds', 'substitutionIds', 'shareToken', 'schoolId']);
 
 				tempCourse.teacherIds = [ userId ];
+
+				if (courseName)
+					tempCourse.name = courseName;
 
 				return this.app.service('users').get(userId)
 					.then(user => {
