@@ -5,7 +5,6 @@ const app = require('../../../src/app');
 const chai = require('chai');
 const pseudonymService = app.service('pseudonym');
 const toolService = app.service('ltiTools');
-const userService = app.service('users');
 const expect = chai.expect;
 
 describe('pseudonym service', function() {
@@ -36,31 +35,13 @@ describe('pseudonym service', function() {
 		"key": "1",
 	};
 	const testUser1 = {
-		"_id": "599ec1688e4e314ec18ff46d",
-		"accounts": [],
-		"schoolId": "0000d186816abba584714c5f",
-		"email": "testuser1@testusers.net",
-		"firstName": "Max",
-		"lastName": "Tester",
-		"roles": []
+		"_id": "0000d231816abba584714c9e",
 	};
 	const testUser2 = {
-		"_id": "599ec1688e4e324ec18ff46e",
-		"accounts": [],
-		"schoolId": "0000d186816abba584714c5f",
-		"email": "testuser2@testusers.net",
-		"firstName": "Max",
-		"lastName": "Tester",
-		"roles": []
+		"_id": "0000d224816abba584714c9c",
 	};
 	const testUser3 = {
-		"_id": "59ad4c412b242b7f81810286",
-		"accounts": [],
-		"schoolId": "0000d186816abba584714c5f",
-		"email": "testuser3@testusers.net",
-		"firstName": "Max",
-		"lastName": "Tester",
-		"roles": []
+		"_id": "0000d213816abba584714c0a",
 	};
 
 	before(done => {
@@ -68,9 +49,6 @@ describe('pseudonym service', function() {
 		Promise.all([
 			toolService.create(testTool1),
 			toolService.create(testTool2),
-			userService.create(testUser1),
-			userService.create(testUser2),
-			userService.create(testUser3),
 		]).then(results => {
 			done();
 		});
@@ -81,9 +59,6 @@ describe('pseudonym service', function() {
 			pseudonymService.remove(null, {query: {}}),
 			toolService.remove(testTool1),
 			toolService.remove(testTool2),
-			userService.remove(testUser1),
-			userService.remove(testUser2),
-			userService.remove(testUser3),
 		]).then((results) => {
 			done();
 		});
