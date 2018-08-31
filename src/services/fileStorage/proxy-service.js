@@ -213,12 +213,12 @@ class SignedUrlService {
 					// add meta data for later using
 					"Content-Type": fileType,
 					"x-amz-meta-path": dirName,
-					"x-amz-meta-name": encodeURIComponent(fileName),
+					"x-amz-meta-name": fileName,
 					"x-amz-meta-flat-name": flatFileName,
 					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"				
 				};
 
-				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId,download)
+				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId, download)
 					.then(res => {
 						return {
 							url: res,
