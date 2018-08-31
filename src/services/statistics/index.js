@@ -3,8 +3,6 @@
 const ua = require('universal-analytics');
 const hooks = require('./hooks');
 
-const url = require('url');
-
 class Service {
 
     constructor(options) {
