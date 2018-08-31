@@ -31,7 +31,7 @@
     "mocha-test-specific-windows": "set NODE_ENV=test && mocha test/app.hooks.test.js"
   },
   "dependencies": {
-    "aws-sdk": "^2.7.24",
+    "aws-sdk": "^2.306.0",
     "bcryptjs": "latest",
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
