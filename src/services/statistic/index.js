@@ -14,141 +14,72 @@ const lessonModel = require('../lesson/model');
 const groupModel = require('../user-group/model');
 const fileModel = require('../fileStorage/model');
 
-/*let promises = [
-	{
-		name: 'users',
-		promise: userModel.userModel.count().exec(),
-		model: userModel.userModel.find().exec()
-	},
-	{
-		name: 'schools',
-		promise: schoolModel.schoolModel.count().exec(),
-		model: schoolModel.schoolModel.find().exec()
-	},
-	{
-		name: 'accounts',
-		promise: accountModel.count().exec(),
-		model: accountModel.find().exec()
-	},
-	{
-		name: 'homework',
-		promise: homeworkModel.homeworkModel.count().exec(),
-		model: homeworkModel.homeworkModel.find().exec()
-	},
-	{
-		name: 'submissions',
-		promise: homeworkModel.submissionModel.count().exec(),
-		model: homeworkModel.submissionModel.find().exec()
-	},
-	{
-		name: 'comments',
-		promise: homeworkModel.commentModel.count().exec(),
-		model: homeworkModel.commentModel.find().exec()
-	},
-	{
-		name: 'lessons',
-		promise: lessonModel.count().exec(),
-		model: lessonModel.find().exec()
-	},
-	{
-		name: 'classes',
-		promise: groupModel.classModel.count().exec(),
-		model: groupModel.classModel.find().exec()
-	},
-	{
-		name: 'courses',
-		promise: groupModel.courseModel.count().exec(),
-		model: groupModel.courseModel.find().exec()
-	},
-	{
-		name: 'teachers',
-		promise: userModel.userModel.count({roles: '0000d186816abba584714c98'}).exec(),
-		model: userModel.userModel.find({roles: '0000d186816abba584714c98'}).exec()
-	},
-	{
-		name: 'students',
-		promise: userModel.userModel.count({roles: '0000d186816abba584714c99'}).exec(),
-		model: userModel.userModel.find({roles: '0000d186816abba584714c99'}).exec()
-	},
-	{
-		name: 'files',
-		promise: fileModel.fileModel.count().exec(),
-		model: fileModel.fileModel.find().exec()
-	},
-	{
-		name: 'directories',
-		promise: fileModel.directoryModel.count().exec(),
-		model: fileModel.directoryModel.find().exec()
-	},
-];*/
-
 const getPromises = (userId) => {
 
-	//let userObj = userModel.userModel.find({_id: userId}).exec()
 	return userModel.userModel.findById(userId).populate('roles').then((user) => {
 		user.roles = Array.from(user.roles);
 			if (user.roles.filter(u => (u.name === 'administrator')).length) {
 				return [
 					{
 						name: 'users',
-						promise: userModel.userModel.count().exec(),
-						model: userModel.userModel.find().exec()
+						promise: userModel.userModel.count({schoolId: user.schoolId}).exec(),
+						model: userModel.userModel.find({schoolId: user.schoolId}).exec()
 					},
-					{
+					/*{
 						name: 'accounts',
 						promise: accountModel.count().exec(),
 						model: accountModel.find().exec()
-					},
+					},*/
 					{
 						name: 'homework',
-						promise: homeworkModel.homeworkModel.count().exec(),
-						model: homeworkModel.homeworkModel.find().exec()
+						promise: homeworkModel.homeworkModel.count({schoolId: user.schoolId}).exec(),
+						model: homeworkModel.homeworkModel.find({schoolId: user.schoolId}).exec()
 					},
 					{
 						name: 'submissions',
-						promise: homeworkModel.submissionModel.count().exec(),
-						model: homeworkModel.submissionModel.find().exec()
+						promise: homeworkModel.submissionModel.count({schoolId: user.schoolId}).exec(),
+						model: homeworkModel.submissionModel.find({schoolId: user.schoolId}).exec()
 					},
-					{
+					/*{
 						name: 'comments',
 						promise: homeworkModel.commentModel.count().exec(),
 						model: homeworkModel.commentModel.find().exec()
-					},
-					{
+					},*/
+					/*{
 						name: 'lessons',
 						promise: lessonModel.count().exec(),
 						model: lessonModel.find().exec()
-					},
+					},*/
 					{
 						name: 'classes',
-						promise: groupModel.classModel.count().exec(),
-						model: groupModel.classModel.find().exec()
+						promise: groupModel.classModel.count({schoolId: user.schoolId}).exec(),
+						model: groupModel.classModel.find({schoolId: user.schoolId}).exec()
 					},
 					{
 						name: 'courses',
-						promise: groupModel.courseModel.count().exec(),
-						model: groupModel.courseModel.find().exec()
+						promise: groupModel.courseModel.count({schoolId: user.schoolId}).exec(),
+						model: groupModel.courseModel.find({schoolId: user.schoolId}).exec()
 					},
 					{
 						name: 'teachers',
-						promise: userModel.userModel.count({roles: '0000d186816abba584714c98'}).exec(),
-						model: userModel.userModel.find({roles: '0000d186816abba584714c98'}).exec()
+						promise: userModel.userModel.count({roles: '0000d186816abba584714c98', schoolId: user.schoolId}).exec(),
+						model: userModel.userModel.find({roles: '0000d186816abba584714c98',schoolId: user.schoolId}).exec()
 					},
 					{
 						name: 'students',
-						promise: userModel.userModel.count({roles: '0000d186816abba584714c99'}).exec(),
-						model: userModel.userModel.find({roles: '0000d186816abba584714c99'}).exec()
+						promise: userModel.userModel.count({roles: '0000d186816abba584714c99', schoolId: user.schoolId}).exec(),
+						model: userModel.userModel.find({roles: '0000d186816abba584714c99', schoolId: user.schoolId}).exec()
 					},
 					{
 						name: 'files',
-						promise: fileModel.fileModel.count().exec(),
-						model: fileModel.fileModel.find().exec()
+						promise: fileModel.fileModel.count({schoolId: user.schoolId}).exec(),
+						model: fileModel.fileModel.find({schoolId: user.schoolId}).exec()
 					},
-					{
+					/*{
 						name: 'directories',
 						promise: fileModel.directoryModel.count().exec(),
 						model: fileModel.directoryModel.find().exec()
-					},
+					},*/
 				];
 			} else if (user.roles.filter(u => (u.name === 'superhero')).length) {
 				return [
@@ -241,42 +172,46 @@ class StatisticsService {
 
 	find(params) {
 		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
-		let promises = getPromises(userId);
-		return fetchStatistics(promises)
-			.then(statistics => {
-				return statistics;
-			});
+		return getPromises(userId).then(promises => {
+			return fetchStatistics(promises)
+				.then(statistics => {
+					return statistics;
+				});
+		});
 	}
 
 	get(id, params) {
-		return _.find(promises, {name: id}).model
-			.then(generic => {
-				let stats =	generic.map(gen => {
-					return moment(gen.createdAt).format('YYYY-MM-DD');
-				});
+		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
+		return getPromises(userId).then(promises => {
+			return _.find(promises, {name: id}).model
+				.then(generic => {
+					let stats =	generic.map(gen => {
+						return moment(gen.createdAt).format('YYYY-MM-DD');
+					});
 
-				let counts = {};
-				stats.forEach((x) => { counts[x] = (counts[x] || 0)+1; });
+					let counts = {};
+					stats.forEach((x) => { counts[x] = (counts[x] || 0)+1; });
 
-				const ordered = {};
-				Object.keys(counts).sort().forEach((key) => {
-					ordered[key] = counts[key];
-				});
+					const ordered = {};
+					Object.keys(counts).sort().forEach((key) => {
+						ordered[key] = counts[key];
+					});
 
-				let x = [];
-				let y = [];
+					let x = [];
+					let y = [];
 
-				if (params.query.returnArray) {
-					for (let key in ordered) {
-						if (ordered.hasOwnProperty(key)) {
-							x.push(key);
-							y.push(ordered[key]);
+					if (params.query.returnArray) {
+						for (let key in ordered) {
+							if (ordered.hasOwnProperty(key)) {
+								x.push(key);
+								y.push(ordered[key]);
+							}
 						}
 					}
-				}
 
-				return (params.query.returnArray) ? {x,y} : ordered;
-			});
+					return (params.query.returnArray) ? {x,y} : ordered;
+				});
+		});
 	}
 }
 
