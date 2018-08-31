@@ -30,11 +30,30 @@ exports.forceHookResolve = (forcedHook) => {
 
 exports.isAdmin = function (options) {
 	return hook => {
-		if (!(hook.params.user.permissions || []).includes('ADMIN')) {
-			throw new errors.Forbidden('you are not an administrator');
-		}
+		const userService = hook.app.service('/users/');
+		return userService.find({ query: { _id: (hook.params.account.userId || ""), $populate: 'roles' } })
+			.then(user => {
+				user.data[0].roles = Array.from(user.data[0].roles);
+				if (user.data[0].roles.filter(u => (u.name === 'administrator')).length == 0) {
+					throw new errors.Forbidden('you are not an administrator');
+				}
+				return Promise.resolve(hook);
+			});
+	};
+};
 
-		return Promise.resolve(hook);
+exports.isAdminOrSuperHero = function (options) {
+	return hook => {
+		const userService = hook.app.service('/users/');
+		return userService.find({ query: { _id: (hook.params.account.userId || ""), $populate: 'roles' } })
+			.then(user => {
+				user.data[0].roles = Array.from(user.data[0].roles);
+				if (user.data[0].roles.filter(u => (u.name === 'superhero')).length == 0 &&
+				user.data[0].roles.filter(u => (u.name === 'administrator')).length == 0) {
+					throw new errors.Forbidden('you are not an admin or superhero');
+				}
+				return Promise.resolve(hook);
+			});
 	};
 };
 
@@ -44,7 +63,7 @@ exports.isSuperHero = function (options) {
 		return userService.find({ query: { _id: (hook.params.account.userId || ""), $populate: 'roles' } })
 			.then(user => {
 				user.data[0].roles = Array.from(user.data[0].roles);
-				if (!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
+				if (user.data[0].roles.filter(u => (u.name === 'superhero')).length == 0) {
 					throw new errors.Forbidden('you are not a superhero, sorry...');
 				}
 				return Promise.resolve(hook);
