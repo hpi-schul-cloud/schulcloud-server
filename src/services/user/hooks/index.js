@@ -76,6 +76,17 @@ const sanitizeData = (hook) => {
 			return Promise.reject(new errors.BadRequest('Bitte gib eine valide E-Mail Adresse an!'));
 		}
 	}
+	const idRegExp = RegExp("^[0-9a-fA-F]{24}$");
+	if ("schoolId" in hook.data) {
+		if (!idRegExp.test(hook.data.schoolId)) {
+			return Promise.reject(new errors.BadRequest('invalid Id'));
+		}
+	}
+	if ("classId" in hook.data) {
+		if (!idRegExp.test(hook.data.classId)) {
+			return Promise.reject(new errors.BadRequest('invalid Id'));
+		}
+	}
 	return Promise.resolve(hook);
 };
 
@@ -93,24 +104,13 @@ const pinIsVerified = hook => {
 	if((hook.params||{}).account && hook.params.account.userId){
 		return (globalHooks.hasPermission('USER_CREATE')).call(this, hook);
 	} else {	
-		let email=(hook.params._additional||{}).parentEmail||hook.data.email;
+		const email=(hook.params._additional||{}).parentEmail||hook.data.email;
 		return hook.app.service('/registrationPins').find({query:{email:email , verified: true}})
 		.then(pins => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
-				let age = globalHooks.getAge(hook.data.birthday);
-				if (
-					(
-						((hook.data.roles||[])[0]||"") === "student" &&
-						(RegExp("^[0-9a-fA-F]{24}$").test(hook.data.classId) || RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId)) &&
-						age > 18
-					) ||
-					(
-						((hook.data.roles||[])[0]||"") !== "student" &&
-						!hook.data.classId &&
-						RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId) &&
-						!hook.data.birthday
-					)
-				) {
+				const age = globalHooks.getAge(hook.data.birthday);
+				
+				if (!((hook.data.roles||[]).includes("student") && age < 18)) {
 					hook.app.service('/registrationPins').remove(pins.data[0]._id);
 				}
 				
