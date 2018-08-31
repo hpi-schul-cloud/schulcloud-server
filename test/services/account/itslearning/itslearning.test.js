@@ -6,7 +6,6 @@ const itsLearningService = require('../../../../src/services/account/strategies/
 const expect = require('chai').expect;
 var itsLearningLoginService = new itsLearningService();
 
-/*
 describe('ITSLearning System', () => {
 	const newTestAccount = {
 		username: "Lars.Lange",
@@ -37,4 +36,3 @@ describe('ITSLearning System', () => {
 		});
 	});
 });
-*/

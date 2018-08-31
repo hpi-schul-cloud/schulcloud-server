@@ -4,16 +4,66 @@ const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
-const registerStudent = function(data, params, app) {
+const insertUserToDB = (app,data,userBirthday)=>{
+	const user = {
+            firstName: data["student-firstname"],
+            lastName: data["student-secondname"],
+            email: data["student-email"],
+            gender: data["gender"],
+            roles: ["student"],
+            schoolId: data.schoolId,
+            birthday: userBirthday
+	};
+	if (data.classId) user.classId = data.classId;
+	
+	if(data.importHash){
+		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId }} ).then(users=>{
+			if(users.data.length<=0 || users.data.length>1){
+				throw new errors.BadRequest("Kein Schüler für die eingegebenen Daten gefunden.");
+			}
+			let oldUser=users.data[0];
+			Object.keys(user).forEach(key=>{
+				if( oldUser[key]===undefined ){
+					oldUser[key]=data[key];
+				}
+			});
+			delete oldUser.importHash;
+	
+			return app.service('users').remove(oldUser._id).then( ()=>{
+				return app.service('users').create(oldUser, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
+				.catch(err=> { throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.");} );
+			});
+		});
+	}else{	
+		return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
+		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");} );
+	}
+};
 
+const formatBirthdate1=(datestamp)=>{
+	if( datestamp==undefined ) 
+		return '';
+	
+	const d = datestamp.split('.');
+	return d[1]+'.'+d[0]+'.'+d[2];
+};
+
+const formatBirthdate2=(datestamp)=>{
+	if( datestamp==undefined ) 
+		return '';
+	
+	const d = datestamp.split('T')[0].split(/-/g);
+	return d[1]+'.'+d[2]+'.'+d[0];
+};
+
+const registerStudent = function(data, params, app) {
     let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
     let pinInput = data["email-pin"];
     let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
     let passwort = data["initial-password"];
-    let dateArr = data["student-birthdate"].split(".");
-    
+    let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
     // wrong birthday object?
-    let userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
+    let userBirthday = new Date(formatedBirthday);
     if (userBirthday instanceof Date && isNaN(userBirthday)) {
 		return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
 	}
@@ -56,22 +106,8 @@ const registerStudent = function(data, params, app) {
             });
     }).then(function() {
         //create user
-        user = {
-            firstName: data["student-firstname"],
-            lastName: data["student-secondname"],
-            email: data["student-email"],
-            gender: data["gender"],
-            roles: ["student"],
-            schoolId: data.schoolId,
-            birthday: userBirthday
-        };
-        if (data.classId) user.classId = data.classId;
-        return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })	//{query:{parentEmail: data["parent-email"]}}
-        .then(newUser => {
+        return insertUserToDB(app,data,userBirthday).then(newUser => {
             user = newUser;
-        })
-        .catch(err =>{
-            return Promise.reject("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");
         });
     }).then(() => {
 			account = {
@@ -80,12 +116,12 @@ const registerStudent = function(data, params, app) {
 				userId: user._id, 
 				activated: true
 			};
-		if( (params.query||{}).sso=='sso' && (params.query||{}).accountId ){
+		if( (params.query||{}).sso==='sso' && (params.query||{}).accountId ){
 
 			let accountId=(params.query||{}).accountId;
 			return app.service('accounts').update({_id: accountId}, {$set: {activated:true,userId: user._id}})
-			.then(account=>{
-				account.username = account.username; // !important for roleback catch
+			.then(accountResponse=>{
+				account = accountResponse;
 			})
 			.catch(err=>{
 				return Promise.reject(new Error("Fehler der Account existiert nicht."));
@@ -150,7 +186,7 @@ const registerStudent = function(data, params, app) {
                 return Promise.reject(new Error("Fehler beim Speichern der Einverständniserklärung."));
             });
     }).then(function() {
-        return Promise.resolve({user, parent});
+        return Promise.resolve({user, parent, account, consent});
     }).catch(err => {
         let rollbackPromises = [];
         if (user && user._id) {
