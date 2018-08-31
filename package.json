@@ -76,6 +76,7 @@
     "request-promise-native": "^1.0.3",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
+    "universal-analytics": "^0.4.17",
     "winston": "^2.3.0"
   },
   "devDependencies": {

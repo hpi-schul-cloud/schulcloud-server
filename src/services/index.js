@@ -8,6 +8,7 @@ const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
+const statistics = require('./statistics');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
@@ -46,6 +47,7 @@ module.exports = function () {
     app.configure(content);
     app.configure(calendar);
     app.configure(lesson);
+    app.configure(statistics);
     app.configure(fileStorage);
     app.configure(link);
     app.configure(news);
