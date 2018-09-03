@@ -5,27 +5,38 @@ const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
 const populateUser = (app, data) => {
-    let user = {
-        firstName: data["student-firstname"],
-        lastName: data["student-secondname"],
-        email: data["student-email"],
-        gender: data["gender"],
-        roles: ["student"],
-        schoolId: data.schoolId,
-    };
-    let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
-    user.birthday = new Date(formatedBirthday);
-    if (data.classId) user.classId = data.classId;
-
+    let user = {};
+    if (data["student-firstname"]) {
+        user = {
+            firstName: data["student-firstname"],
+            lastName: data["student-secondname"],
+            email: data["student-email"],
+            gender: data["gender"],
+            roles: ["student"],
+            schoolId: data.schoolId,
+        };
+        let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
+        user.birthday = new Date(formatedBirthday);
+        if (data.classId) user.classId = data.classId;
+    } else if (data.firstname) {
+        user = {
+            firstName: data.firstname,
+            lastName: data.lastName,
+            email: data.email,
+            schoolId: data.schoolId,
+        };
+    }
+    
     if(data.importHash){
-		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId }} ).then(users=>{
+		return app.service('users').find({ query: { importHash: data.importHash/*, _id: data.userId*/ }} ).then(users=>{
 			if(users.data.length<=0 || users.data.length>1){
 				throw new errors.BadRequest("Kein Schüler für die eingegebenen Daten gefunden.");
 			}
 			let oldUser=users.data[0];
 			Object.keys(user).forEach(key=>{
+                //does not overwrite attributes of oldUser. Is this intentional?
 				if( oldUser[key]===undefined ){
-					oldUser[key]=data[key];
+					oldUser[key]=user[key];
 				}
 			});
             delete oldUser.importHash;
@@ -91,24 +102,31 @@ const registerStudent = function(data, params, app) {
             user = populatedUser;
         });
     }).then(function () {
-        // wrong birthday object?
-        if (user.birthday instanceof Date && isNaN(user.birthday)) {
-            return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
+        if (user.roles.includes("student")) {
+            // wrong birthday object?
+            if (user.birthday instanceof Date && isNaN(user.birthday)) {
+                return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
+            }
+            // wrong age?
+            let age = globalHooks.getAge(user.birthday);
+            if (data["parent-email"] && age >= 18) {
+                return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
+            } else if (!data["parent-email"] && age < 18) {
+                return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
+            }
         }
-        // wrong age?
-        let age = globalHooks.getAge(user.birthday);
-        if (data["parent-email"] && age >= 18) {
-            return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
-        } else if (!data["parent-email"] && age < 18) {
-            return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
-        }
+        
         // identical emails?
         if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
             return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
         }
+
+        if (data["password-1"] && data["passwort-1"] !== data["passwort-2"]) {
+            return new errors.BadRequest("Die Passwörter stimmen nicht überein");
+        } 
         return Promise.resolve();       
     }).then(function () {
-        let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
+        let userMail = data["parent-email"] || data["student-email"] || data["email"];
         let pinInput = data["email-pin"];
         return app.service('registrationPins').find({
             query: { "pin": pinInput, "email": userMail, verified:false }
@@ -126,7 +144,7 @@ const registerStudent = function(data, params, app) {
             user = newUser;
         });
     }).then(() => {
-        let passwort = data["initial-password"];
+        let passwort = data["initial-password"] || data["password-1"];
         account = {
             username: user.email, 
             password: passwort, 
