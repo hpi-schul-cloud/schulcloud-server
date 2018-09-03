@@ -4,19 +4,19 @@ const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
-const insertUserToDB = (app,data)=>{
-	const user = {
-            firstName: data["student-firstname"],
-            lastName: data["student-secondname"],
-            email: data["student-email"],
-            gender: data["gender"],
-            roles: ["student"],
-            schoolId: data.schoolId,
-            birthday: data.userBirthday
-	};
-	if (data.classId) user.classId = data.classId;
-	
-	if(data.importHash){
+const populateUser = (app, data) => {
+    let user = {
+        firstName: data["student-firstname"],
+        lastName: data["student-secondname"],
+        email: data["student-email"],
+        gender: data["gender"],
+        roles: ["student"],
+        schoolId: data.schoolId,
+        birthday: data.userBirthday
+    };
+    if (data.classId) user.classId = data.classId;
+
+    if(data.importHash){
 		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId }} ).then(users=>{
 			if(users.data.length<=0 || users.data.length>1){
 				throw new errors.BadRequest("Kein Schüler für die eingegebenen Daten gefunden.");
@@ -27,13 +27,19 @@ const insertUserToDB = (app,data)=>{
 					oldUser[key]=data[key];
 				}
 			});
-			delete oldUser.importHash;
-	
-			return app.service('users').remove(oldUser._id).then( ()=>{
-				return app.service('users').create(oldUser, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
-				.catch(err=> { throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.");} );
-			});
-		});
+            delete oldUser.importHash;
+            return oldUser;
+        });
+    }
+    return Promise.resolve(user);
+};
+
+const insertUserToDB = (app,data,user)=>{
+	if(user._id){
+        return app.service('users').remove(user._id).then( ()=>{
+            return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
+            .catch(err=> { throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.");} );
+        });
 	}else{	
 		return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
 		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");} );
@@ -109,7 +115,10 @@ const registerStudent = function(data, params, app) {
             });
     }).then(function() {
         //create user
-        return insertUserToDB(app,data).then(newUser => {
+        return populateUser(app,data)
+        .then(oldUser => {
+            return insertUserToDB(app,data,oldUser);
+        }).then(newUser => {
             user = newUser;
         });
     }).then(() => {
