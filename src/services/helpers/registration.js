@@ -58,15 +58,11 @@ const formatBirthdate2=(datestamp)=>{
 
 const registerStudent = function(data, params, app) {
     let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
-    let pinInput = data["email-pin"];
-    let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
-    let passwort = data["initial-password"];
-   // wrong birthday object?
-    
-	
+
     return new Promise(function (resolve, reject) {
         let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
         data.userBirthday = new Date(formatedBirthday);
+        // wrong birthday object?
         if (data.userBirthday instanceof Date && isNaN(data.userBirthday)) {
             return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
         }
@@ -83,16 +79,17 @@ const registerStudent = function(data, params, app) {
         }
         resolve();
     }).then(function () {
+        let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
+        let pinInput = data["email-pin"];
         return app.service('registrationPins').find({
             query: { "pin": pinInput, "email": userMail, verified:false }
+        }).then(check => {
+            //check pin
+            if (!(check.data && check.data.length>0 && check.data[0].pin === pinInput)) {
+                return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
+            }
+            return Promise.resolve();
         });
-    })
-    .then(check => {
-        //check pin
-        if (!(check.data && check.data.length>0 && check.data[0].pin === pinInput)) {
-            return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
-        }
-		return Promise.resolve();
     }).then(function () {
         //resolve class or school Id
         classPromise = app.service('classes').find({query: {_id: data.classOrSchoolId}});
@@ -116,12 +113,13 @@ const registerStudent = function(data, params, app) {
             user = newUser;
         });
     }).then(() => {
-			account = {
-				username: user.email, 
-				password: passwort, 
-				userId: user._id, 
-				activated: true
-			};
+        let passwort = data["initial-password"];
+        account = {
+            username: user.email, 
+            password: passwort, 
+            userId: user._id, 
+            activated: true
+        };
 		if( (params.query||{}).sso==='sso' && (params.query||{}).accountId ){
 
 			let accountId=(params.query||{}).accountId;
