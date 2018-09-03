@@ -12,8 +12,9 @@ const populateUser = (app, data) => {
         gender: data["gender"],
         roles: ["student"],
         schoolId: data.schoolId,
-        birthday: data.userBirthday
     };
+    let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
+    user.birthday = new Date(formatedBirthday);
     if (data.classId) user.classId = data.classId;
 
     if(data.importHash){
@@ -66,36 +67,7 @@ const registerStudent = function(data, params, app) {
     let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
 
     return new Promise(function (resolve, reject) {
-        let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
-        data.userBirthday = new Date(formatedBirthday);
-        // wrong birthday object?
-        if (data.userBirthday instanceof Date && isNaN(data.userBirthday)) {
-            return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
-        }
-        // wrong age?
-        let age = globalHooks.getAge(data.userBirthday);
-        if (data["parent-email"] && age >= 18) {
-            return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
-        } else if (!data["parent-email"] && age < 18) {
-            return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
-        }
-        // identical emails?
-        if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
-            return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
-        }
         resolve();
-    }).then(function () {
-        let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
-        let pinInput = data["email-pin"];
-        return app.service('registrationPins').find({
-            query: { "pin": pinInput, "email": userMail, verified:false }
-        }).then(check => {
-            //check pin
-            if (!(check.data && check.data.length>0 && check.data[0].pin === pinInput)) {
-                return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
-            }
-            return Promise.resolve();
-        });
     }).then(function () {
         //resolve class or school Id
         classPromise = app.service('classes').find({query: {_id: data.classOrSchoolId}});
@@ -113,12 +85,44 @@ const registerStudent = function(data, params, app) {
                 }
                 return Promise.reject("Ungültiger Link");
             });
+    }).then(function () {
+        return populateUser(app, data)
+        .then(populatedUser => {
+            user = populatedUser;
+        });
+    }).then(function () {
+        // wrong birthday object?
+        if (user.birthday instanceof Date && isNaN(user.birthday)) {
+            return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
+        }
+        // wrong age?
+        let age = globalHooks.getAge(user.birthday);
+        if (data["parent-email"] && age >= 18) {
+            return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
+        } else if (!data["parent-email"] && age < 18) {
+            return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
+        }
+        // identical emails?
+        if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
+            return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
+        }
+        return Promise.resolve();       
+    }).then(function () {
+        let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
+        let pinInput = data["email-pin"];
+        return app.service('registrationPins').find({
+            query: { "pin": pinInput, "email": userMail, verified:false }
+        }).then(check => {
+            //check pin
+            if (!(check.data && check.data.length>0 && check.data[0].pin === pinInput)) {
+                return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
+            }
+            return Promise.resolve();
+        });
     }).then(function() {
         //create user
-        return populateUser(app,data)
-        .then(oldUser => {
-            return insertUserToDB(app,data,oldUser);
-        }).then(newUser => {
+        return insertUserToDB(app,data,user)
+        .then(newUser => {
             user = newUser;
         });
     }).then(() => {
