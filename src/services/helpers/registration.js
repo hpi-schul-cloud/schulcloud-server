@@ -4,7 +4,7 @@ const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
-const insertUserToDB = (app,data,userBirthday)=>{
+const insertUserToDB = (app,data)=>{
 	const user = {
             firstName: data["student-firstname"],
             lastName: data["student-secondname"],
@@ -12,7 +12,7 @@ const insertUserToDB = (app,data,userBirthday)=>{
             gender: data["gender"],
             roles: ["student"],
             schoolId: data.schoolId,
-            birthday: userBirthday
+            birthday: data.userBirthday
 	};
 	if (data.classId) user.classId = data.classId;
 	
@@ -61,27 +61,33 @@ const registerStudent = function(data, params, app) {
     let pinInput = data["email-pin"];
     let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
     let passwort = data["initial-password"];
-    let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
-    // wrong birthday object?
-    let userBirthday = new Date(formatedBirthday);
-    if (userBirthday instanceof Date && isNaN(userBirthday)) {
-		return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
-	}
-	// wrong age?
-	let age = globalHooks.getAge(userBirthday);
-    if (data["parent-email"] && age >= 18) {
-		return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
-	} else if (!data["parent-email"] && age < 18) {
-		return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
-	}
-    // identical emails?
-	if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
-		return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
-	}
+   // wrong birthday object?
+    
 	
-    return app.service('registrationPins').find({
-        query: { "pin": pinInput, "email": userMail, verified:false }
-    }).then(check => {
+    return new Promise(function (resolve, reject) {
+        let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
+        data.userBirthday = new Date(formatedBirthday);
+        if (data.userBirthday instanceof Date && isNaN(data.userBirthday)) {
+            return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
+        }
+        // wrong age?
+        let age = globalHooks.getAge(data.userBirthday);
+        if (data["parent-email"] && age >= 18) {
+            return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
+        } else if (!data["parent-email"] && age < 18) {
+            return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
+        }
+        // identical emails?
+        if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
+            return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
+        }
+        resolve();
+    }).then(function () {
+        return app.service('registrationPins').find({
+            query: { "pin": pinInput, "email": userMail, verified:false }
+        });
+    })
+    .then(check => {
         //check pin
         if (!(check.data && check.data.length>0 && check.data[0].pin === pinInput)) {
             return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
@@ -106,7 +112,7 @@ const registerStudent = function(data, params, app) {
             });
     }).then(function() {
         //create user
-        return insertUserToDB(app,data,userBirthday).then(newUser => {
+        return insertUserToDB(app,data).then(newUser => {
             user = newUser;
         });
     }).then(() => {
