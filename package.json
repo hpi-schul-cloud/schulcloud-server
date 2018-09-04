@@ -19,6 +19,7 @@
     "lint": "eslint ./src ./test --ext .js --fix",
     "test": "./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run coverage",
     "test-windows": "sh ./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run mocha-windows",
+    "test-windows-wo-db": "npm run lint && npm run mocha-windows",
     "backup": "./backup.sh -a -b export",
     "setup": "./backup.sh -p setup/ -a import",
     "start": "node src/",
