@@ -108,6 +108,12 @@ const accessCheck = (consent, app) => {
 
 	return app.service('users').get((consent.userId), { query: { $populate: 'roles'}})
 		.then(user => {
+			if (userHasOneRole(user, ["demoTeacher", "demoStudent"])) {
+				requiresParentConsent = false;
+				redirect = redirectDic['normal'];
+				return Promise.resolve();
+			}
+
 			if (userHasOneRole(user, ["teacher", "administrator"])) {
 				let userConsent = consent.userConsent || {};
 				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
