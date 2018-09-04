@@ -182,7 +182,7 @@ class SignedUrlService {
 	 * @param action the AWS action, e.g. putObject
 	 * @returns {Promise}
 	 */
-	create({path, fileType, action}, params) {
+	create({path, fileType, action, download}, params) {
 
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
@@ -198,7 +198,7 @@ class SignedUrlService {
 		// converts the real filename to a unique one in flat-storage
 		// if action = getObject, file should exist in proxy db
 		let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({});
-
+		
 		return fileProxyPromise.then(res => {
 			if (!res) return;
 
@@ -209,18 +209,20 @@ class SignedUrlService {
 				let externalSchoolId;
 				if (p.permission === 'shared') externalSchoolId = res.schoolId;
 
-				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId)
+				let header =  {							
+					// add meta data for later using
+					"Content-Type": fileType,
+					"x-amz-meta-path": dirName,
+					"x-amz-meta-name": fileName,
+					"x-amz-meta-flat-name": flatFileName,
+					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"				
+				};
+
+				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId, download)
 					.then(res => {
 						return {
 							url: res,
-							header: {
-								// add meta data for later using
-								"Content-Type": fileType,
-								"x-amz-meta-path": dirName,
-								"x-amz-meta-name": encodeURIComponent(fileName),
-								"x-amz-meta-flat-name": flatFileName,
-								"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
-							}
+							header: header
 						};
 					});
 			});

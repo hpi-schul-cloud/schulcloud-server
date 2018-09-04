@@ -196,7 +196,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	generateSignedUrl(userId, path, fileType, action, externalSchoolId) {
+	generateSignedUrl(userId, path, fileType, action, externalSchoolId, download) {
 		if (!userId || !path || !action || (action === 'putObject' && !fileType)) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return UserModel.userModel.findById(userId).exec().then(result => {
 			if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
@@ -209,7 +209,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				Key: path,
 				Expires: 60
 			};
-
+			
+			if(download) params["ResponseContentDisposition"] = 'attachment';
 			if (action === 'putObject') params.ContentType = fileType;
 
 			return promisify(awsObject.s3.getSignedUrl, awsObject.s3)(action, params);

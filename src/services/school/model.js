@@ -19,7 +19,8 @@ const schoolSchema = new Schema({
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now},
 	experimental: {type: Boolean, 'default': false},
-	pilot: {type: Boolean, 'default': false}
+	pilot: {type: Boolean, 'default': false},
+	currentYear: {type: Schema.Types.ObjectId, ref:'year'}
 },{
 	timestamps: true
 });
