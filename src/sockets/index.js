@@ -2,10 +2,14 @@
 
 const socketio = require('feathers-socketio');
 const clipboard = require('./clipboard');
-const socket = require('./socket');
 
 module.exports = function () {
 	const app = this;
+
+	//configure your socket here
+	//make use of a namespace io.of('<namespace>') and connect it as <url>/<namespace>;
+	app.configure(clipboard);
+
 	app.configure(socketio((io) => {
 		io.use(function (socket, next) {
 			let jwt = extractTokenFromCookies(socket.handshake.headers.cookie);
@@ -19,9 +23,6 @@ module.exports = function () {
 				});
 		});
     }));
-
-    app.configure(socket);
-    app.configure(clipboard);
 
 	function extractTokenFromCookies(cookies) {
 		try {
