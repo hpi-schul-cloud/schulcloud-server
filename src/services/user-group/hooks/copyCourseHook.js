@@ -36,7 +36,7 @@ exports.after = {
 exports.beforeShare = {
 	all: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USERGROUP_CREATE')],
 	find: [],
-	get: [],
+	get: [globalHooks.ifNotLocal(globalHooks.checkCorrectCourseId)],
 	create: [],
 	update: [hooks.disable()],
 	patch: [hooks.disable()],
