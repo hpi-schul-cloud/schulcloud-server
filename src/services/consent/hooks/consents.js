@@ -85,8 +85,20 @@ const redirectDic = {
 	ue18: '/firstLogin/UE18/',
 	existing: '/firstLogin/existing/',
 	existingGeb: '/firstLogin/existingGeb14',
+	existingEmpl: '/firstLogin/existingEmployee',
 	normal: '/dashboard/',
 	err: '/consentError'
+};
+
+const userHasOneRole = (user, roles) => {
+	if (!(roles instanceof Array)) roles = [roles];
+	let value = false;
+	user.roles.map(role => {
+		if (roles.includes(role.name)) {
+			value = true;
+		}
+	});
+	return value;
 };
 
 const accessCheck = (consent, app) => {
@@ -94,8 +106,21 @@ const accessCheck = (consent, app) => {
 	let redirect = redirectDic['ue18'];
 	let requiresParentConsent = true;
 
-	return app.service('users').get(consent.userId)
+	return app.service('users').get((consent.userId), { query: { $populate: 'roles'}})
 		.then(user => {
+			if (userHasOneRole(user, ["teacher", "administrator"])) {
+				let userConsent = consent.userConsent || {};
+				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
+					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
+						access = false;
+						requiresParentConsent = false;
+						redirect = redirectDic['existingEmpl'];
+						return Promise.resolve();
+					}
+				redirect = redirectDic['normal'];
+				return Promise.resolve();
+			}
+
 			if (!user.birthday) {
 				access = false;
 				requiresParentConsent = false;
