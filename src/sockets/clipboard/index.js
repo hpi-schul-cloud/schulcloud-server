@@ -13,7 +13,6 @@ module.exports = function () {
 	var images = {};
 	app.use(siofu.router);
 	app.use('/clipboard/uploads', function (req, res, next) {
-		debugger;
 		if (auth.hooks.authenticate('jwt')(req, res, next)) {
 			return feathers.static(path.join(__dirname, 'uploads'));
 		} else {
