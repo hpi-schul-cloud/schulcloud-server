@@ -45,7 +45,7 @@ class CourseCopyService {
 		return courseModel.findOne({_id: data._id})
 			.then(course => {
 				let tempCourse = JSON.parse(JSON.stringify(course));
-				tempCourse = _.omit(tempCourse, ['_id', 'createdAt', 'updatedAt', '__v', 'name', 'color', 'teacherIds', 'classIds', 'userIds', 'substitutionIds', 'shareToken']);
+				tempCourse = _.omit(tempCourse, ['_id', 'createdAt', 'updatedAt', '__v', 'name', 'color', 'teacherIds', 'classIds', 'userIds', 'substitutionIds', 'shareToken', 'untilDate', 'startDate', 'times']);
 
 				tempCourse = Object.assign(tempCourse, tempData, {userId: (params.account || {}).userId});
 
@@ -131,7 +131,7 @@ class CourseShareService {
 				}
 
 				return {shareToken: course.shareToken };
-			})
+			});
 
 	}
 
@@ -145,7 +145,7 @@ class CourseShareService {
 			.then(course => {
 				course = course[0];
 				let tempCourse = JSON.parse(JSON.stringify(course));
-				tempCourse = _.omit(tempCourse, ['createdAt', 'updatedAt', '__v', 'teacherIds', 'classIds', 'userIds', 'substitutionIds', 'shareToken', 'schoolId']);
+				tempCourse = _.omit(tempCourse, ['createdAt', 'updatedAt', '__v', 'teacherIds', 'classIds', 'userIds', 'substitutionIds', 'shareToken', 'schoolId', 'untilDate', 'startDate', 'times']);
 
 				tempCourse.teacherIds = [ userId ];
 
@@ -162,7 +162,7 @@ class CourseShareService {
 							.then(res => { return res; })
 							.catch(err => { return err; });
 					});
-			})
+			});
 	}
 }
 

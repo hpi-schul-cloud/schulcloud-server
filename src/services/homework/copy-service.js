@@ -39,7 +39,7 @@ class HomeworkCopyService {
 	 * @returns new homework.
 	 */
 	create(data, params) {
-		const userId = data.newTeacherId;
+		const userId = data.newTeacherId || params.payload.userId || (params.account || {}).userId;
 
 		return HomeworkModel.findOne({ _id: data._id })
 			.then(copyAssignment => {
