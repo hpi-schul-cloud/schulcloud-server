@@ -31,7 +31,7 @@
     "mocha-test-specific-windows": "set NODE_ENV=test && mocha test/app.hooks.test.js"
   },
   "dependencies": {
-    "aws-sdk": "^2.7.24",
+    "aws-sdk": "^2.306.0",
     "bcryptjs": "latest",
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
@@ -63,6 +63,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
     "mongoose": "^4.7.6",
+    "mongoose-id-validator": "^0.4.3",
     "mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
     "moodle-client": "^0.4.0",
     "node-sass": "^4.2.0",
@@ -76,6 +77,7 @@
     "request-promise-native": "^1.0.3",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
+    "uuid": "^3.3.2",
     "winston": "^2.3.0"
   },
   "devDependencies": {
