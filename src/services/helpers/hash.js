@@ -33,10 +33,10 @@ module.exports = function (app) {
 						if(err!==null){
 							reject(  new errors.BadRequest('Can not create hash.') ); 
 						}
-						if(data.save===true){
+						if(data.save===true || data.save==="true"){
 							hash=hash.replace(/\/|\$|\./g,rndChar());
 						}
-						if(data.patchUser===true){
+						if(data.patchUser===true || data.patchUser==="true"){
 							userModel.findOneAndUpdate(
 								{'email': data.toHash},
 								{
