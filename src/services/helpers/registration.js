@@ -28,7 +28,7 @@ const populateUser = (app, data) => {
     }
     
     if(data.importHash){
-		return app.service('users').find({ query: { importHash: data.importHash/*, _id: data.userId*/ }} ).then(users=>{
+		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId }} ).then(users=>{
 			if(users.data.length<=0 || users.data.length>1){
 				throw new errors.BadRequest("Kein Schüler für die eingegebenen Daten gefunden.");
 			}
