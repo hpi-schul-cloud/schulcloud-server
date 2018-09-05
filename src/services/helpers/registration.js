@@ -18,9 +18,9 @@ const populateUser = (app, data) => {
         let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
         user.birthday = new Date(formatedBirthday);
         if (data.classId) user.classId = data.classId;
-    } else if (data.firstname) {
+    } else if (data.firstName) {
         user = {
-            firstName: data.firstname,
+            firstName: data.firstName,
             lastName: data.lastName,
             email: data.email,
             schoolId: data.schoolId,
