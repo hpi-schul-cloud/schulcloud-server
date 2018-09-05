@@ -1,7 +1,7 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-let pin = null;
+const auth = require('feathers-authentication');
 
 const removeOldPin = (hook) => {
 	return hook.app.service('registrationPins').find({query:{email: hook.data.email}})
@@ -17,13 +17,14 @@ const removeOldPin = (hook) => {
 };
 
 const generatePin = (hook) => {
-	pin = Math.floor((Math.random() * 8999)+1000);
+	let pin = Math.floor((Math.random() * 8999)+1000);
 	hook.data.pin = pin.toString();
 	return Promise.resolve(hook);
 };
 
 function createinfoText(hook) {
 	let text;
+	let pin = hook.data.pin;
 	if (hook.data.byParent === true || hook.data.byParent === "true") {
 		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der HPI Schul-Cloud ermöglichen.
 Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen.
@@ -68,8 +69,22 @@ const mailPin = (hook) => {
 	return Promise.resolve(hook);
 };
 
+const returnPinOnlyToSuperHero = async (hook) => {
+	let isSuperhero = false;
+
+	if(((hook.params||{}).account||{}).userId){
+		const userService = hook.app.service('/users/');
+		const currentUser = await userService.get(hook.params.account.userId, {query: {$populate: 'roles'}});
+		isSuperhero = currentUser.roles.map((role) => {return role.name;}).includes('superhero');
+	}
+
+	if(!isSuperhero){
+		globalHooks.removeResponse()(hook);
+	}
+}
+
 exports.before = {
-	all: [],
+	all: [globalHooks.forceHookResolve(auth.hooks.authenticate('jwt'))],
 	find: [],
 	get: [],
 	create: [removeOldPin, generatePin, mailPin],
@@ -79,10 +94,10 @@ exports.before = {
 };
 
 exports.after = {
-	all: [],
+	all: [globalHooks.removeResponse(['get', 'find', 'create'])],
 	find: [checkAndVerifyPin],
 	get: [],
-	create: [],
+	create: [returnPinOnlyToSuperHero],
 	update: [],
 	patch: [],
 	remove: []
