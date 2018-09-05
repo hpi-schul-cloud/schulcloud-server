@@ -1,5 +1,6 @@
 'use strict';
 
+const commonHooks = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const auth = require('feathers-authentication');
 
@@ -85,12 +86,12 @@ const returnPinOnlyToSuperHero = async (hook) => {
 
 exports.before = {
 	all: [globalHooks.forceHookResolve(auth.hooks.authenticate('jwt'))],
-	find: [],
-	get: [],
+	find: commonHooks.disable('external'),
+	get: commonHooks.disable('external'),
 	create: [removeOldPin, generatePin, mailPin],
-	update: [],
-	patch: [],
-	remove: []
+	update: commonHooks.disable('external'),
+	patch: commonHooks.disable('external'),
+	remove: commonHooks.disable('external'),
 };
 
 exports.after = {
