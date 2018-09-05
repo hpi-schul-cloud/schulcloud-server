@@ -5,6 +5,8 @@ const jwt = require('feathers-authentication-jwt');
 const local = require('feathers-authentication-local');
 const logger = require('winston');
 
+const extractors = require('passport-jwt').ExtractJwt;
+
 const system = require('./strategies/system');
 const hooks = require('./hooks');
 
@@ -48,11 +50,31 @@ module.exports = function() {
 		passwordField: 'password'
 	};
 
+	const cookieExtractor = function(req) {
+		let cookies = req.headers.cookie;
+		try {
+			cookies = cookies.split(';');
+			let jwt = undefined;
+			cookies.map(cookie => {
+				if (cookie.includes('jwt')) {
+					jwt = cookie.split('=')[1];
+				}
+			});
+			return jwt;
+		} catch(e) {
+			return undefined;
+		}
+	};
+
 	const jwtConfig = {
 		name: 'jwt',
 		entity: 'account',
 		service: 'accounts',
 		header: 'Authorization',
+		jwtFromRequest: extractors.fromExtractors([
+			cookieExtractor, 
+			extractors.fromHeader("authorization")
+		]),
 		secretOrKey: authenticationSecret
 	};
 

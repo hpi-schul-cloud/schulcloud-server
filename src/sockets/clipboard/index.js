@@ -1,24 +1,14 @@
 'use strict';
 
 const socketio = require('feathers-socketio');
-const feathers = require('feathers');
 const siofu = require("socketio-file-upload");
 const logger = require('winston');
 const path = require("path");
-const errors = require('feathers-errors');
-const auth = require('feathers-authentication');
 
 module.exports = function () {
 	const app = this;
 	var images = {};
 	app.use(siofu.router);
-	app.use('/clipboard/uploads', function (req, res, next) {
-		if (auth.hooks.authenticate('jwt')(req, res, next)) {
-			return feathers.static(path.join(__dirname, 'uploads'));
-		} else {
-			next(new errors.NotAuthenticated('Not authentificated'));
-		}
-	});
 	app.configure(socketio((io) => {
 
 		let clipboardWs = io.of('clipboard');
