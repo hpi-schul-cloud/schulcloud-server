@@ -105,9 +105,11 @@ const accessCheck = (consent, app) => {
 	let access = true;
 	let redirect = redirectDic['ue18'];
 	let requiresParentConsent = true;
+	let user;
 
 	return app.service('users').get((consent.userId), { query: { $populate: 'roles'}})
-		.then(user => {
+		.then(response => {
+			user = response;
 			if (userHasOneRole(user, ["demoTeacher", "demoStudent"])) {
 				requiresParentConsent = false;
 				redirect = redirectDic['normal'];
@@ -168,10 +170,17 @@ const accessCheck = (consent, app) => {
 			}
 		})
 		.then(() => {
+			if (redirect == redirectDic['normal'] && !(user.preferences || {}).firstLogin) {
+				let updatedPreferences = user.preferences || {};
+				updatedPreferences.firstLogin = true;
+				return app.service('users').patch(user._id, {preferences: updatedPreferences});
+			}
+			return;
+		}).then(() => {
 			consent.access = access;
 			consent.redirect = redirect;
 			consent.requiresParentConsent = requiresParentConsent;
-			return Promise.resolve(consent);
+			return consent;
 		})
 		.catch(err => {
 			return Promise.reject(err);
