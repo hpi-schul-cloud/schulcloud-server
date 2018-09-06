@@ -86,7 +86,7 @@ const returnPinOnlyToSuperHero = async (hook) => {
 
 	globalHooks.removeResponse()(hook);
 	return Promise.resolve(hook);
-}
+};
 
 exports.before = {
 	all: [globalHooks.forceHookResolve(auth.hooks.authenticate('jwt'))],

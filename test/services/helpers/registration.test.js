@@ -98,6 +98,7 @@ describe('registration service', function() {
 
     it('fails if parent and student email are the same', () => {
         return registrationService.create({
+            "classOrSchoolId": "0000d186816abba584714c5f",
             "student-email": "max.sameadress@mustermann.de",
             "parent-email": "max.sameadress@mustermann.de",
             "student-birthdate": "18.02.2015"

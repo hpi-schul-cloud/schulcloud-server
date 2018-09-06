@@ -25,8 +25,8 @@ exports.forceHookResolve = (forcedHook) => {
 		.catch(() => {
 			return Promise.resolve(hook);
 		});
-	}
-}
+	};
+};
 
 exports.isAdmin = function (options) {
 	return hook => {
