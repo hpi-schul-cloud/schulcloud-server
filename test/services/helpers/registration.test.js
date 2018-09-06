@@ -18,7 +18,6 @@ describe('registration service', function() {
             let registrationInput = {
                 classOrSchoolId: "0000d186816abba584714c5f",
                 "email-pin": registrationPin.pin,
-                "pin-sent": "yes",
                 "initial-password": "pw123",
                 gender: "male",
                 "student-birthdate": "15.10.1999",
@@ -48,7 +47,6 @@ describe('registration service', function() {
             let registrationInput = {
                 classOrSchoolId: "0000d186816abba584714c5f",
                 "email-pin": registrationPin.pin,
-                "pin-sent": "yes",
                 "initial-password": "pw123",
                 gender: "male",
                 "student-birthdate": "15.10.2014",
@@ -86,7 +84,6 @@ describe('registration service', function() {
             return registrationService.create({
                 classOrSchoolId: "0000d186816abba584714c5f",
                 "email-pin": String(pin),
-                "pin-sent": "yes",
                 gender: "male",
                 "student-birthdate": "15.10.1999",
                 "student-email": email,
@@ -116,7 +113,6 @@ describe('registration service', function() {
             let registrationInput = {
                 classOrSchoolId: "0000d186816abba584714c5f",
                 "email-pin": registrationPin.pin,
-                "pin-sent": "yes",
                 gender: "male",
                 "student-birthdate": "15.10.1999",
                 "student-email": email,

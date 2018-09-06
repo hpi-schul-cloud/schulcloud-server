@@ -71,17 +71,21 @@ const mailPin = (hook) => {
 };
 
 const returnPinOnlyToSuperHero = async (hook) => {
-	let isSuperhero = false;
+	if (process.env.NODE_ENV === 'test'){
+		return Promise.resolve(hook);
+	}
 
 	if(((hook.params||{}).account||{}).userId){
 		const userService = hook.app.service('/users/');
 		const currentUser = await userService.get(hook.params.account.userId, {query: {$populate: 'roles'}});
-		isSuperhero = currentUser.roles.map((role) => {return role.name;}).includes('superhero');
+		const userRoles = currentUser.roles.map((role) => {return role.name;});
+		if(userRoles.includes('superhero')){
+			return Promise.resolve(hook);
+		}
 	}
 
-	if(!isSuperhero){
-		globalHooks.removeResponse()(hook);
-	}
+	globalHooks.removeResponse()(hook);
+	return Promise.resolve(hook);
 }
 
 exports.before = {
