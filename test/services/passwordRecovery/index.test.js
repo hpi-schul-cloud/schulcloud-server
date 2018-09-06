@@ -31,7 +31,6 @@ describe('passwordRecovery service', function() {
 
 	it('registered the passwordRecovery service', () => {
 		assert.ok(passwordRecoveryService);
-		done();
 	});
 
 	it('_id is 24 characters long', (done) => {
