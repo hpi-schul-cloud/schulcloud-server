@@ -53,6 +53,8 @@ const validateCredentials = (hook) => {
 const trimPassword = (hook) => {
 	if (hook.data.password)
 		hook.data.password = hook.data.password.trim();
+	if (hook.data.password_verification)
+		hook.data.password_verification = hook.data.password_verification.trim();
 
 	return hook;
 };
@@ -60,6 +62,14 @@ const trimPassword = (hook) => {
 const validatePassword = (hook) => {
 	let password_verification = hook.data.password_verification;
 	let password = hook.data.password;
+
+	// Check against Pattern which is also used in Frontend
+	const pattern = new RegExp('^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~\']).{8,255}$');
+	let patternResult = pattern.test(password);
+
+	// only check result if also a password was really given
+	if (!patternResult && password)
+		throw new errors.BadRequest('Dein Passwort stimmt mit dem Pattern nicht überein.');
 
 	// in case sso created account skip
 	if (!hook.params.account.userId)
