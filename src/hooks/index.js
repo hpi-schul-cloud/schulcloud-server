@@ -108,6 +108,16 @@ exports.hasRoleNoHook = function (hook, userId, roleName, account = false) {
 					.then(user => {
 						user.data[0].roles = Array.from(user.data[0].roles);
 
+						if (Array.isArray(roleName)) {
+							let arr = [];
+
+							roleName.forEach(el => {
+								arr.push(_.some(user.data[0].roles, u => u.name == el));
+							});
+
+							return arr;
+						}
+
 						return (user.data[0].roles.filter(u => (u.name === roleName)).length > 0);
 					});
 			});

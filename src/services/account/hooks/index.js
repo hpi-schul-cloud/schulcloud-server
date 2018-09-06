@@ -65,9 +65,10 @@ const validatePassword = (hook) => {
 	if (!hook.params.account.userId)
 		return hook;
 
-	return Promise.all([globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_CREATE'), globalHooks.hasRoleNoHook(hook, hook.id, 'student', true), globalHooks.hasRole(hook, hook.params.account.userId, 'superhero')])
+	return Promise.all([globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_CREATE'), globalHooks.hasRoleNoHook(hook, hook.id, 'student', true), globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'), globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'), globalHooks.hasRoleNoHook(hook, hook.id, ['administrator', 'superero'], true)])
 		.then(results => {
-			if ((results[0] && results[1]) || results[2]) {
+			// (if user is teacher and destination id is student) || superhero || admin and id is not admin or superhero
+			if ((results[0] && results[1]) || results[2] || (results[3] && ! results[4].some((el) => {return el === true}))) {
 				return hook;
 			} else {
 				if (password && !password_verification)
