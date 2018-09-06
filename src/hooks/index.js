@@ -482,14 +482,14 @@ exports.sendEmail = (hook, maildata) => {
 						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
 						"html": ""
 					}
-				}).catch (error => {
-					throw new errors.BadRequest(error.message);
+				}).catch (err => {
+					throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 				});
 			});
 		return hook;
 		})
-		.catch(error => {
-			throw new errors.BadRequest(error.message);
+		.catch(err => {
+			throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 		});
 	}
 	else {
@@ -503,8 +503,8 @@ exports.sendEmail = (hook, maildata) => {
 					"html": ""
 				}
 			})
-			.catch (error => {
-				throw new errors.BadRequest(error.message);
+			.catch (err => {
+				throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 			});
 		});
 		return hook;
