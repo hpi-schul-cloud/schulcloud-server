@@ -18,7 +18,6 @@ describe('registration service', function() {
             let registrationInput = {
                 classOrSchoolId: "0000d186816abba584714c5f",
                 "email-pin": registrationPin.pin,
-                "pin-sent": "yes",
                 "initial-password": "pw123",
                 gender: "male",
                 "student-birthdate": "15.10.1999",
@@ -48,7 +47,6 @@ describe('registration service', function() {
             let registrationInput = {
                 classOrSchoolId: "0000d186816abba584714c5f",
                 "email-pin": registrationPin.pin,
-                "pin-sent": "yes",
                 "initial-password": "pw123",
                 gender: "male",
                 "student-birthdate": "15.10.2014",
@@ -86,7 +84,6 @@ describe('registration service', function() {
             return registrationService.create({
                 classOrSchoolId: "0000d186816abba584714c5f",
                 "email-pin": String(pin),
-                "pin-sent": "yes",
                 gender: "male",
                 "student-birthdate": "15.10.1999",
                 "student-email": email,
@@ -101,6 +98,7 @@ describe('registration service', function() {
 
     it('fails if parent and student email are the same', () => {
         return registrationService.create({
+            "classOrSchoolId": "0000d186816abba584714c5f",
             "student-email": "max.sameadress@mustermann.de",
             "parent-email": "max.sameadress@mustermann.de",
             "student-birthdate": "18.02.2015"
@@ -116,7 +114,6 @@ describe('registration service', function() {
             let registrationInput = {
                 classOrSchoolId: "0000d186816abba584714c5f",
                 "email-pin": registrationPin.pin,
-                "pin-sent": "yes",
                 gender: "male",
                 "student-birthdate": "15.10.1999",
                 "student-email": email,

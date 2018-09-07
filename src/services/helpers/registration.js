@@ -4,36 +4,59 @@ const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
-const insertUserToDB = (app,data,userBirthday)=>{
-	const user = {
+const populateUser = (app, data) => {
+    let user = {};
+    if (data["student-firstname"]) {
+        user = {
             firstName: data["student-firstname"],
             lastName: data["student-secondname"],
             email: data["student-email"],
             gender: data["gender"],
             roles: ["student"],
             schoolId: data.schoolId,
-            birthday: userBirthday
-	};
-	if (data.classId) user.classId = data.classId;
-	
-	if(data.importHash){
-		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId }} ).then(users=>{
+        };
+        let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
+        user.birthday = new Date(formatedBirthday);
+        if (data.classId) user.classId = data.classId;
+    } else if (data.firstName) {
+        user = {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            schoolId: data.schoolId,
+        };
+    }
+    
+    if(data.importHash){
+		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId, $populate: ['roles'] }} ).then(users=>{
 			if(users.data.length<=0 || users.data.length>1){
 				throw new errors.BadRequest("Kein Schüler für die eingegebenen Daten gefunden.");
 			}
-			let oldUser=users.data[0];
+			let oldUser=users.data[0]; 
 			Object.keys(user).forEach(key=>{
-				if( oldUser[key]===undefined ){
-					oldUser[key]=data[key];
+                //does not overwrite attributes of oldUser. Is this intentional?
+				if( oldUser[key]===undefined || oldUser[key]===null ){
+					oldUser[key]=user[key];
 				}
-			});
-			delete oldUser.importHash;
-	
-			return app.service('users').remove(oldUser._id).then( ()=>{
-				return app.service('users').create(oldUser, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
-				.catch(err=> { throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.");} );
-			});
-		});
+            });
+            oldUser.roles = oldUser.roles.map(role => {
+                if (role.name) {
+                    return role.name;
+                }
+            });
+            delete oldUser.importHash;
+            return oldUser;
+        });
+    }
+    return Promise.resolve(user);
+};
+
+const insertUserToDB = (app,data,user)=>{
+	if(user._id){
+        return app.service('users').remove(user._id).then( ()=>{
+            return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
+            .catch(err=> { throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.");} );
+        });
 	}else{	
 		return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
 		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");} );
@@ -58,35 +81,9 @@ const formatBirthdate2=(datestamp)=>{
 
 const registerStudent = function(data, params, app) {
     let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
-    let pinInput = data["email-pin"];
-    let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
-    let passwort = data["initial-password"];
-    let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
-    // wrong birthday object?
-    let userBirthday = new Date(formatedBirthday);
-    if (userBirthday instanceof Date && isNaN(userBirthday)) {
-		return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
-	}
-	// wrong age?
-	let age = globalHooks.getAge(userBirthday);
-    if (data["parent-email"] && age >= 18) {
-		return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
-	} else if (!data["parent-email"] && age < 18) {
-		return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
-	}
-    // identical emails?
-	if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
-		return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
-	}
-	
-    return app.service('registrationPins').find({
-        query: { "pin": pinInput, "email": userMail, verified:false }
-    }).then(check => {
-        //check pin
-        if (!(check.data && check.data.length>0 && check.data[0].pin === pinInput)) {
-            return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
-        }
-		return Promise.resolve();
+
+    return new Promise(function (resolve, reject) {
+        resolve();
     }).then(function () {
         //resolve class or school Id
         classPromise = app.service('classes').find({query: {_id: data.classOrSchoolId}});
@@ -104,18 +101,61 @@ const registerStudent = function(data, params, app) {
                 }
                 return Promise.reject("Ungültiger Link");
             });
+    }).then(function () {
+        return populateUser(app, data)
+        .then(populatedUser => {
+            user = populatedUser;
+        });
+    }).then(function () {
+        if ((user.roles||[]).includes("student")) {
+            // wrong birthday object?
+            if (user.birthday instanceof Date && isNaN(user.birthday)) {
+                return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
+            }
+            // wrong age?
+            let age = globalHooks.getAge(user.birthday);
+            if (data["parent-email"] && age >= 18) {
+                return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
+            } else if (!data["parent-email"] && age < 18) {
+                return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
+            }
+        }
+        
+        // identical emails?
+        if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
+            return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
+        }
+
+        if (data["password-1"] && data["passwort-1"] !== data["passwort-2"]) {
+            return new errors.BadRequest("Die Passwörter stimmen nicht überein");
+        } 
+        return Promise.resolve();       
+    }).then(function () {
+        let userMail = data["parent-email"] || data["student-email"] || data["email"];
+        let pinInput = data["email-pin"];
+        return app.service('registrationPins').find({
+            query: { "pin": pinInput, "email": userMail, verified:false }
+        }).then(check => {
+            //check pin
+            if (!(check.data && check.data.length>0 && check.data[0].pin === pinInput)) {
+                return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
+            }
+            return Promise.resolve();
+        });
     }).then(function() {
         //create user
-        return insertUserToDB(app,data,userBirthday).then(newUser => {
+        return insertUserToDB(app,data,user)
+        .then(newUser => {
             user = newUser;
         });
     }).then(() => {
-			account = {
-				username: user.email, 
-				password: passwort, 
-				userId: user._id, 
-				activated: true
-			};
+        let passwort = data["initial-password"] || data["password-1"];
+        account = {
+            username: user.email, 
+            password: passwort, 
+            userId: user._id, 
+            activated: true
+        };
 		if( (params.query||{}).sso==='sso' && (params.query||{}).accountId ){
 
 			let accountId=(params.query||{}).accountId;
@@ -190,7 +230,13 @@ const registerStudent = function(data, params, app) {
     }).catch(err => {
         let rollbackPromises = [];
         if (user && user._id) {
-            rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: user._id}).exec());
+            if (data.importHash) {
+                rollbackPromises.push(userModel.userModel.findOneAndUpdate(
+                    {_id: user._id}, {$set: {importHash: data.importHash}}).exec()
+                );
+            } else {
+                rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: user._id}).exec());
+            }   
         }
         if (parent && parent._id) {
             rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: parent._id}).exec());
