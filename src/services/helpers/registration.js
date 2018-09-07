@@ -36,7 +36,7 @@ const populateUser = (app, data) => {
 			let oldUser=users.data[0]; 
 			Object.keys(user).forEach(key=>{
                 //does not overwrite attributes of oldUser. Is this intentional?
-				if( oldUser[key]===undefined ){
+				if( oldUser[key]===undefined || oldUser[key]===null ){
 					oldUser[key]=user[key];
 				}
 			});
