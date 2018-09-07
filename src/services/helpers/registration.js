@@ -3,6 +3,7 @@ const userModel = require('../user/model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
+const _ = require('lodash');
 
 const populateUser = (app, data) => {
     let user = {};
@@ -28,11 +29,11 @@ const populateUser = (app, data) => {
     }
     
     if(data.importHash){
-		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId }} ).then(users=>{
+		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId, $populate: ['roles'] }} ).then(users=>{
 			if(users.data.length<=0 || users.data.length>1){
 				throw new errors.BadRequest("Kein Schüler für die eingegebenen Daten gefunden.");
 			}
-			let oldUser=users.data[0];
+			let oldUser=users.data[0]; 
 			Object.keys(user).forEach(key=>{
                 //does not overwrite attributes of oldUser. Is this intentional?
 				if( oldUser[key]===undefined ){
@@ -74,6 +75,12 @@ const formatBirthdate2=(datestamp)=>{
 	return d[1]+'.'+d[2]+'.'+d[0];
 };
 
+const hasRole = function(user, roleName) {
+    user.roles = Array.from(user.roles);
+
+	return (_.some(user.roles, u => (u.name == roleName || u == roleName)));
+};
+
 const registerStudent = function(data, params, app) {
     let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
 
@@ -102,7 +109,7 @@ const registerStudent = function(data, params, app) {
             user = populatedUser;
         });
     }).then(function () {
-        if ((user.roles||[]).includes("student")) {
+        if (hasRole(user, 'student')) {
             // wrong birthday object?
             if (user.birthday instanceof Date && isNaN(user.birthday)) {
                 return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
