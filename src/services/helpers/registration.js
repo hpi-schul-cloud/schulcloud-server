@@ -230,7 +230,13 @@ const registerStudent = function(data, params, app) {
     }).catch(err => {
         let rollbackPromises = [];
         if (user && user._id) {
-            rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: user._id}).exec());
+            if (data.importHash) {
+                rollbackPromises.push(userModel.userModel.findOneAndUpdate(
+                    {_id: user._id}, {$set: {importHash: data.importHash}}).exec()
+                );
+            } else {
+                rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: user._id}).exec());
+            }   
         }
         if (parent && parent._id) {
             rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: parent._id}).exec());
