@@ -17,13 +17,14 @@ describe('registration service', function() {
         .then(registrationPin => {
             let registrationInput = {
                 classOrSchoolId: "0000d186816abba584714c5f",
-                "email-pin": registrationPin.pin,
-                "initial-password": "pw123",
+                pin: registrationPin.pin,
+                password_1: "pw123",
+                password_2: "pw123",
                 gender: "male",
-                "student-birthdate": "15.10.1999",
-                "student-email": email,
-                "student-firstname": "Max",
-                "student-secondname": "Mustermann",
+                birthDate: "15.10.1999",
+                email: email,
+                firstName: "Max",
+                secondName: "Mustermann",
                 Erhebung: true,
                 Forschung: true,
                 Nutzungsbedingungen: true,
@@ -46,20 +47,21 @@ describe('registration service', function() {
         .then(registrationPin => {
             let registrationInput = {
                 classOrSchoolId: "0000d186816abba584714c5f",
-                "email-pin": registrationPin.pin,
-                "initial-password": "pw123",
+                pin: registrationPin.pin,
                 gender: "male",
-                "student-birthdate": "15.10.2014",
-                "student-email": 'max' + Date.now() + '@mustermann.de',
-                "student-firstname": "Max",
-                "student-secondname": "Mustermann",
+                password_1: "pw123",
+                password_2: "pw123",
+                birthDate: "15.10.2014",
+                email: 'max' + Date.now() + '@mustermann.de',
+                firstName: "Max",
+                secondName: "Mustermann",
                 Erhebung: true,
                 Forschung: true,
                 Nutzungsbedingungen: true,
                 Pseudonymisierung: true,
-                "parent-email": email,
-                "parent-firstname": "Moritz",
-                "parent-secondname": "Mustermann"
+                parent_email: email,
+                parent_firstName: "Moritz",
+                parent_secondName: "Mustermann"
             };
             return registrationService.create(registrationInput);
         })
@@ -83,12 +85,12 @@ describe('registration service', function() {
             //make sure we pass a wrong pin
             return registrationService.create({
                 classOrSchoolId: "0000d186816abba584714c5f",
-                "email-pin": String(pin),
+                pin: String(pin),
                 gender: "male",
-                "student-birthdate": "15.10.1999",
-                "student-email": email,
-                "student-firstname": "Max",
-                "student-secondname": "Mustermann",
+                birthDate: "15.10.1999",
+                email: email,
+                firstName: "Max",
+                secondName: "Mustermann",
             });
         }).catch(err => {
             chai.expect(err).to.be.not.undefined;
@@ -98,10 +100,10 @@ describe('registration service', function() {
 
     it('fails if parent and student email are the same', () => {
         return registrationService.create({
-            "classOrSchoolId": "0000d186816abba584714c5f",
-            "student-email": "max.sameadress@mustermann.de",
-            "parent-email": "max.sameadress@mustermann.de",
-            "student-birthdate": "18.02.2015"
+            classOrSchoolId: "0000d186816abba584714c5f",
+            email: "max.sameadress@mustermann.de",
+            parent_email: "max.sameadress@mustermann.de",
+            birthDate: "18.02.2015"
         }).catch(err => {
             chai.expect(err.message).to.equal("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.");
         });
@@ -113,12 +115,12 @@ describe('registration service', function() {
         .then(registrationPin => {
             let registrationInput = {
                 classOrSchoolId: "0000d186816abba584714c5f",
-                "email-pin": registrationPin.pin,
+                pin: registrationPin.pin,
                 gender: "male",
-                "student-birthdate": "15.10.1999",
-                "student-email": email,
-                "student-firstname": "Max",
-                "student-secondname": "Mustermann",
+                birthDate: "15.10.1999",
+                email: email,
+                firstName: "Max",
+                secondName: "Mustermann",
                 Erhebung: true,
                 Forschung: true,
                 Nutzungsbedingungen: true,
