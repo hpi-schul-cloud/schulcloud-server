@@ -32,20 +32,19 @@ const populateUser = (app, data) => {
 			if(users.data.length<=0 || users.data.length>1){
 				throw new errors.BadRequest("Kein Schüler für die eingegebenen Daten gefunden.");
 			}
-			let oldUser=users.data[0]; 
-			Object.keys(user).forEach(key=>{
-                //does not overwrite attributes of oldUser. Is this intentional?
-				if( oldUser[key]===undefined || oldUser[key]===null ){
-					oldUser[key]=user[key];
+			let oldUser=users.data[0];
+			Object.keys(oldUser).forEach(key=>{
+				if( oldUser[key]!==null ){
+					user[key]=oldUser[key];
 				}
             });
-            oldUser.roles = oldUser.roles.map(role => {
+            user.roles = user.roles.map(role => {
                 if (role.name) {
                     return role.name;
                 }
             });
-            delete oldUser.importHash;
-            return oldUser;
+            delete user.importHash;
+            return [user, oldUser];
         });
     }
     return Promise.resolve(user);
@@ -80,7 +79,7 @@ const formatBirthdate2=(datestamp)=>{
 };
 
 const registerStudent = function(data, params, app) {
-    let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
+    let parent = null, user = null, oldUser = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
 
     return new Promise(function (resolve, reject) {
         resolve();
@@ -104,7 +103,7 @@ const registerStudent = function(data, params, app) {
     }).then(function () {
         return populateUser(app, data)
         .then(populatedUser => {
-            user = populatedUser;
+            [user, oldUser] = populatedUser;
         });
     }).then(function () {
         if ((user.roles||[]).includes("student")) {
@@ -230,13 +229,13 @@ const registerStudent = function(data, params, app) {
     }).catch(err => {
         let rollbackPromises = [];
         if (user && user._id) {
-            if (data.importHash) {
-                rollbackPromises.push(userModel.userModel.findOneAndUpdate(
-                    {_id: user._id}, {$set: {importHash: data.importHash}}).exec()
-                );
-            } else {
-                rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: user._id}).exec());
-            }   
+            rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: user._id}).exec()
+            .then(_ => {
+                if (oldUser) {
+                    return userModel.userModel.create(oldUser).exec();
+                }
+            }));
+                 
         }
         if (parent && parent._id) {
             rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: parent._id}).exec());
