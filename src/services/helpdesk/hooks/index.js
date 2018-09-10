@@ -29,7 +29,7 @@ exports.after = {
 	find: [],
 	get: [],
 	create: [ hook => {
-		globalHooks.sendEmail(hook, {
+		/*globalHooks.sendEmail(hook, {
 			"subject": "Ein Problem wurde gemeldet.",
 			"roles": ["helpdesk", "administrator"],
 			"content": {
@@ -38,7 +38,7 @@ exports.after = {
 					(hook.data||{}).category||"nocategory",
 					(hook.data||{}).subject||"nosubject" )
 			}
-		});
+		});*/
 	}],
 	update: [],
 	patch: [],
