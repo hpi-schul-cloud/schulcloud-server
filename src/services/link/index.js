@@ -49,7 +49,7 @@ module.exports = function () {
 			// base link
 			if (data.role === 'teacher') linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}/byemployee`;
 			if (data.role === 'student') linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}`;
-			if (linkData.hash) linkData.link += `?id=${linkData.hash}`;
+			if (linkData.hash) linkData.link += `?importHash=${linkData.hash}`;
 			
 			// generate short url
 			await app.service('link').create({target: linkData.link}).then(generatedShortLink => {
