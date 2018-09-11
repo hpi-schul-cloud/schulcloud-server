@@ -5,27 +5,20 @@ const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
 const populateUser = (app, data) => {
-    let user = {};
-    if (data["student-firstname"]) {
-        user = {
-            firstName: data["student-firstname"],
-            lastName: data["student-secondname"],
-            email: data["student-email"],
-            gender: data["gender"],
-            roles: ["student"],
-            schoolId: data.schoolId,
-        };
-        let formatedBirthday = data["student-birthdate"] ? formatBirthdate1(data["student-birthdate"]) : data["birthday"] ? formatBirthdate2(data["birthday"]) : '' ;
-        user.birthday = new Date(formatedBirthday);
-        if (data.classId) user.classId = data.classId;
-    } else if (data.firstName) {
-        user = {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            schoolId: data.schoolId,
-        };
-    }
+    let oldUser;
+    let user = {
+        firstName: data.firstName,
+        lastName: data.secondName,
+        email: data.email,
+        roles: ["student"],
+        schoolId: data.schoolId,
+    };
+
+    let formatedBirthday = formatBirthdate1(data.birthDate);
+    user.birthday = new Date(formatedBirthday);
+
+    if (data.classId) user.classId = data.classId;
+    if (data.gender) user.gender = data.gender;
     
     if(data.importHash){
 		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId, $populate: ['roles'] }} ).then(users=>{
@@ -44,20 +37,20 @@ const populateUser = (app, data) => {
                 }
             });
             delete user.importHash;
-            return [user, oldUser];
+            return {user, oldUser};
         });
     }
-    return Promise.resolve(user);
+    return Promise.resolve({user, oldUser});
 };
 
 const insertUserToDB = (app,data,user)=>{
 	if(user._id){
         return app.service('users').remove(user._id).then( ()=>{
-            return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
+            return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
             .catch(err=> { throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.");} );
         });
 	}else{	
-		return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })
+		return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
 		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");} );
 	}
 };
@@ -70,20 +63,13 @@ const formatBirthdate1=(datestamp)=>{
 	return d[1]+'.'+d[0]+'.'+d[2];
 };
 
-const formatBirthdate2=(datestamp)=>{
-	if( datestamp==undefined ) 
-		return '';
-	
-	const d = datestamp.split('T')[0].split(/-/g);
-	return d[1]+'.'+d[2]+'.'+d[0];
-};
-
 const registerStudent = function(data, params, app) {
-    let parent = null, user = null, oldUser = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
+    let parent = null, user = null, oldUser = null, account = null, consent = null, consentPromise = null;
 
     return new Promise(function (resolve, reject) {
         resolve();
     }).then(function () {
+        let classPromise = null, schoolPromise = null;
         //resolve class or school Id
         classPromise = app.service('classes').find({query: {_id: data.classOrSchoolId}});
         schoolPromise = app.service('schools').find({query: {_id: data.classOrSchoolId}});
@@ -102,8 +88,9 @@ const registerStudent = function(data, params, app) {
             });
     }).then(function () {
         return populateUser(app, data)
-        .then(populatedUser => {
-            [user, oldUser] = populatedUser;
+        .then(response => {
+            user = response.user;
+            oldUser = response.oldUser;
         });
     }).then(function () {
         if ((user.roles||[]).includes("student")) {
@@ -113,25 +100,25 @@ const registerStudent = function(data, params, app) {
             }
             // wrong age?
             let age = globalHooks.getAge(user.birthday);
-            if (data["parent-email"] && age >= 18) {
+            if (data.parent_email && age >= 18) {
                 return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
-            } else if (!data["parent-email"] && age < 18) {
+            } else if (!data.parent_email && age < 18) {
                 return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
             }
         }
         
         // identical emails?
-        if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
+        if (data.parent_email && data.parent_email === data.email) {
             return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
         }
 
-        if (data["password-1"] && data["passwort-1"] !== data["passwort-2"]) {
+        if (data.password_1 && data.passwort_1 !== data.passwort_2) {
             return new errors.BadRequest("Die Passwörter stimmen nicht überein");
         } 
         return Promise.resolve();       
     }).then(function () {
-        let userMail = data["parent-email"] || data["student-email"] || data["email"];
-        let pinInput = data["email-pin"];
+        let userMail = data.parent_email || data.student_email || data.email;
+        let pinInput = data.pin;
         return app.service('registrationPins').find({
             query: { "pin": pinInput, "email": userMail, verified:false }
         }).then(check => {
@@ -148,16 +135,15 @@ const registerStudent = function(data, params, app) {
             user = newUser;
         });
     }).then(() => {
-        let passwort = data["initial-password"] || data["password-1"];
         account = {
             username: user.email, 
-            password: passwort, 
+            password: data.password_1, 
             userId: user._id, 
             activated: true
         };
-		if( (params.query||{}).sso==='sso' && (params.query||{}).accountId ){
+		if( data.sso==='sso' && data.accountId ){
 
-			let accountId=(params.query||{}).accountId;
+			let accountId = data.accountId;
 			return app.service('accounts').update({_id: accountId}, {$set: {activated:true,userId: user._id}})
 			.then(accountResponse=>{
 				account = accountResponse;
@@ -175,11 +161,11 @@ const registerStudent = function(data, params, app) {
         
     }).then(res => {
         //add parent if necessary    
-        if(data["parent-email"]) {
+        if(data.parent_email) {
             parent = {
-                firstName: data["parent-firstname"],
-                lastName: data["parent-secondname"],
-                email: data["parent-email"],
+                firstName: data.parent_firstName,
+                lastName: data.parent_secondName,
+                email: data.parent_email,
                 children: [user._id],
                 schoolId: data.schoolId,
                 roles: ["parent"]
@@ -193,7 +179,6 @@ const registerStudent = function(data, params, app) {
                 }
             }).then(newParent => {
                 parent = newParent;
-                //add parent to student, because now, we can
                 return userModel.userModel.findByIdAndUpdate(user._id, {$push: {parents: parent._id }});
                 //return userModel.userModel.patch(user._id, {$push: {parents: parent._id }});
             }).catch(err => {
@@ -208,7 +193,7 @@ const registerStudent = function(data, params, app) {
             form: 'digital',
             privacyConsent: data.Erhebung,
             thirdPartyConsent: data.Pseudonymisierung,
-            termsOfUseConsent: Boolean(data.Nutzungsbedingungen),
+            termsOfUseConsent: data.Nutzungsbedingungen,
             researchConsent: data.Forschung
         };
         if (parent) {
