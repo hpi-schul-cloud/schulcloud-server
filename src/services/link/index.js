@@ -47,9 +47,15 @@ module.exports = function () {
 			}
 			
 			// base link
-			if (data.role === 'teacher') linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}/byemployee`;
-			if (data.role === 'student') linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}`;
+			if (data.role === 'student') {
+				linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}`;
+			} else {
+				linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}/byemployee`;
+			}
 			if (linkData.hash) linkData.link += `?importHash=${linkData.hash}`;
+			
+			// remove possible double-slashes in url except the protocol ones
+			linkData.link = linkData.link.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
 			
 			// generate short url
 			await app.service('link').create({target: linkData.link}).then(generatedShortLink => {
