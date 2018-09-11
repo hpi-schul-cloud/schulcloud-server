@@ -8,9 +8,9 @@ const populateUser = (app, data) => {
     let oldUser;
     let user = {
         firstName: data.firstName,
-        lastName: data.secondName,
+        lastName: data.lastName,
         email: data.email,
-        roles: ["student"],
+        roles: data.roles,
         schoolId: data.schoolId,
     };
 
@@ -191,10 +191,10 @@ const registerStudent = function(data, params, app) {
         //store consent
         consent = {
             form: 'digital',
-            privacyConsent: data.Erhebung,
-            thirdPartyConsent: data.Pseudonymisierung,
-            termsOfUseConsent: data.Nutzungsbedingungen,
-            researchConsent: data.Forschung
+            privacyConsent: data.privacyConsent,
+            thirdPartyConsent: data.thirdPartyConsent,
+            termsOfUseConsent: data.termsOfUseConsent,
+            researchConsent: data.researchConsent
         };
         if (parent) {
             consent.parentId = parent._id;
