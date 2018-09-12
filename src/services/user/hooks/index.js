@@ -125,7 +125,7 @@ const pinIsVerified = hook => {
 };
 
 // student administrator helpdesk superhero teacher parent
-const permissionRoleCreate = hook =>{
+/*const permissionRoleCreate = hook =>{
 	if( hook.data.length <= 0 ){
 		return Promise.reject(new errors.BadRequest('No input data.'));
 	}
@@ -137,7 +137,7 @@ const permissionRoleCreate = hook =>{
 	}else{
 		return Promise.reject(new errors.BadRequest('You have not the permissions to create this roles.'));
 	}
-};
+};*/
 
 exports.before = function(app) {
 	return {
@@ -156,7 +156,7 @@ exports.before = function(app) {
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,	
-			permissionRoleCreate,			
+			//permissionRoleCreate,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [
