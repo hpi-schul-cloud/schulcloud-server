@@ -128,7 +128,7 @@ describe('registration service', function() {
             };
             return registrationService.create(registrationInput).catch(err => {
                 //no password given, should result in an error.
-                chai.expect(err.message).to.equal("Fehler beim Erstellen des Schüler-Accounts.");
+                chai.expect(err.message).to.equal("Fehler beim Erstellen des Accounts.");
                 //a user has been created before the error. Lets check if he was deleted...
                 return userModel.userModel.findOne({email: email});
             }).then(users => {
