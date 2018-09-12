@@ -125,13 +125,30 @@ const pinIsVerified = hook => {
 };
 
 // student administrator helpdesk superhero teacher parent
-const permissionRoleCreate = hook =>{
+const permissionRoleCreate = async (hook) =>{
+	if (!hook.params.provider) {
+		//internal call
+		return hook;
+	}
+
 	if( hook.data.length <= 0 ){
 		return Promise.reject(new errors.BadRequest('No input data.'));
 	}
-	const isLoggedIn = ( hook.params || {} ).account && hook.params.account.userId ? true : false;
-	if( isLoggedIn==true  && globalHooks.arrayIncludes((hook.data.roles||[]),['student','teacher'],['parent','administrator','helpdesk','superhero']) ||
-		isLoggedIn==false && globalHooks.arrayIncludes((hook.data.roles||[]),['student','parent'],['teacher','administrator','helpdesk','superhero'])
+
+	let isLoggedIn = false;
+	if(((hook.params||{}).account||{}).userId){
+		isLoggedIn = true;
+		const userService = hook.app.service('/users/');
+		const currentUser = await userService.get(hook.params.account.userId, {query: {$populate: 'roles'}});
+		const userRoles = currentUser.roles.map((role) => {return role.name;});
+		if(userRoles.includes('superhero')){
+			//call from superhero Dashboard
+			return Promise.resolve(hook);
+		}
+	}
+
+	if( isLoggedIn===true  && globalHooks.arrayIncludes((hook.data.roles||[]),['student','teacher'],['parent','administrator','helpdesk','superhero']) ||
+		isLoggedIn===false && globalHooks.arrayIncludes((hook.data.roles||[]),['student','parent'],['teacher','administrator','helpdesk','superhero'])
 	){
 		return Promise.resolve(hook);
 	}else{
@@ -156,7 +173,7 @@ exports.before = function(app) {
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,	
-			permissionRoleCreate,			
+			//permissionRoleCreate,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [
