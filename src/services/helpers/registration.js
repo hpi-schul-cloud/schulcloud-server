@@ -15,7 +15,9 @@ const populateUser = (app, data) => {
     };
 
     let formatedBirthday = formatBirthdate1(data.birthDate);
-    user.birthday = new Date(formatedBirthday);
+    if (formatedBirthday) {
+        user.birthday = new Date(formatedBirthday);
+    }
 
     if (data.classId) user.classId = data.classId;
     if (data.gender) user.gender = data.gender;
@@ -47,7 +49,9 @@ const insertUserToDB = (app,data,user)=>{
 	if(user._id){
         return app.service('users').remove(user._id).then( ()=>{
             return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
-            .catch(err=> { throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.");} );
+            .catch(err=> {
+                 throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.");} 
+            );
         });
 	}else{	
 		return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
@@ -57,7 +61,7 @@ const insertUserToDB = (app,data,user)=>{
 
 const formatBirthdate1=(datestamp)=>{
 	if( datestamp==undefined ) 
-		return '';
+		return false;
 	
 	const d = datestamp.split('.');
 	return d[1]+'.'+d[0]+'.'+d[2];
