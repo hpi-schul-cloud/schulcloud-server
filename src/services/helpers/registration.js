@@ -25,7 +25,7 @@ const populateUser = (app, data) => {
     if(data.importHash){
 		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId, $populate: ['roles'] }} ).then(users=>{
 			if(users.data.length<=0 || users.data.length>1){
-				throw new errors.BadRequest("Kein Schüler für die eingegebenen Daten gefunden.");
+				throw new errors.BadRequest("Kein Nutzer für die eingegebenen Daten gefunden.");
 			}
 			let oldUser=users.data[0];
 			Object.keys(oldUser).forEach(key=>{
@@ -50,12 +50,12 @@ const insertUserToDB = (app,data,user)=>{
         return app.service('users').remove(user._id).then( ()=>{
             return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
             .catch(err=> {
-                 throw new errors.BadRequest("Fehler beim Updaten der Schülerdaten.");} 
+                 throw new errors.BadRequest("Fehler beim Updaten der Nutzerdaten.");}
             );
         });
 	}else{	
 		return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
-		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");} );
+		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Nutzers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");} );
 	}
 };
 
@@ -124,10 +124,10 @@ const registerStudent = function(data, params, app) {
         let userMail = data.parent_email || data.student_email || data.email;
         let pinInput = data.pin;
         return app.service('registrationPins').find({
-            query: { "pin": pinInput, "email": userMail, verified:false }
+            query: { "pin": pinInput, "email": userMail, verified: false }
         }).then(check => {
             //check pin
-            if (!(check.data && check.data.length>0 && check.data[0].pin === pinInput)) {
+            if (!(check.data && check.data.length > 0 && check.data[0].pin === pinInput)) {
                 return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
             }
             return Promise.resolve();
@@ -145,10 +145,10 @@ const registerStudent = function(data, params, app) {
             userId: user._id, 
             activated: true
         };
-		if( data.sso==='sso' && data.accountId ){
+		if( data.sso === 'sso' && data.accountId ){
 
 			let accountId = data.accountId;
-			return app.service('accounts').update({_id: accountId}, {$set: {activated:true,userId: user._id}})
+			return app.service('accounts').update({_id: accountId}, {$set: {activated: true, userId: user._id}})
 			.then(accountResponse=>{
 				account = accountResponse;
 			})
@@ -159,7 +159,7 @@ const registerStudent = function(data, params, app) {
 			return app.service('accounts').create(account)
 				.then(newAccount => {account = newAccount;})
 				.catch(err => {
-					return Promise.reject(new Error("Fehler beim Erstellen des Schüler-Accounts."));
+					return Promise.reject(new Error("Fehler beim Erstellen des Accounts."));
 				});
 		}
         
