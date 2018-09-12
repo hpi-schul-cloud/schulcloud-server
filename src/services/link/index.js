@@ -20,7 +20,7 @@ module.exports = function () {
 	let linkService = service(options);
 
 	function redirectToTarget(req, res, next) {
-		if(req.method == 'GET' && !req.query.target) {	// capture these requests and issue a redirect
+		if(req.method === 'GET' && !req.query.target) {	// capture these requests and issue a redirect
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then(data => res.redirect(data.target))
@@ -63,6 +63,9 @@ module.exports = function () {
 			}).catch(err => {
 				return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
 			});
+			
+			// remove possible double-slashes in url except the protocol ones
+			linkData.shortLink = linkData.shortLink.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
 			
 			return linkData;
 		}
