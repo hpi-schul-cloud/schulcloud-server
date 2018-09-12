@@ -147,8 +147,8 @@ const permissionRoleCreate = async (hook) =>{
 		}
 	}
 
-	if( isLoggedIn==true  && globalHooks.arrayIncludes((hook.data.roles||[]),['student','teacher'],['parent','administrator','helpdesk','superhero']) ||
-		isLoggedIn==false && globalHooks.arrayIncludes((hook.data.roles||[]),['student','parent'],['teacher','administrator','helpdesk','superhero'])
+	if( isLoggedIn===true  && globalHooks.arrayIncludes((hook.data.roles||[]),['student','teacher'],['parent','administrator','helpdesk','superhero']) ||
+		isLoggedIn===false && globalHooks.arrayIncludes((hook.data.roles||[]),['student','parent'],['teacher','administrator','helpdesk','superhero'])
 	){
 		return Promise.resolve(hook);
 	}else{
@@ -173,7 +173,7 @@ exports.before = function(app) {
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,	
-			permissionRoleCreate,
+			//permissionRoleCreate,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [
