@@ -24,11 +24,11 @@ describe('registration service', function() {
                 birthDate: "15.10.1999",
                 email: email,
                 firstName: "Max",
-                secondName: "Mustermann",
-                Erhebung: true,
-                Forschung: true,
-                Nutzungsbedingungen: true,
-                Pseudonymisierung: true
+                lastName: "Mustermann",
+                privacyConsent: true,
+                researchConsent: true,
+                thirdPartyConsent: true,
+                termsOfUseConsent: true
             };
             return registrationService.create(registrationInput);
         })
@@ -54,14 +54,14 @@ describe('registration service', function() {
                 birthDate: "15.10.2014",
                 email: 'max' + Date.now() + '@mustermann.de',
                 firstName: "Max",
-                secondName: "Mustermann",
-                Erhebung: true,
-                Forschung: true,
-                Nutzungsbedingungen: true,
-                Pseudonymisierung: true,
+                lastName: "Mustermann",
+                privacyConsent: true,
+                researchConsent: true,
+                thirdPartyConsent: true,
+                termsOfUseConsent: true,
                 parent_email: email,
                 parent_firstName: "Moritz",
-                parent_secondName: "Mustermann"
+                parent_lastName: "Mustermann"
             };
             return registrationService.create(registrationInput);
         })
@@ -90,7 +90,7 @@ describe('registration service', function() {
                 birthDate: "15.10.1999",
                 email: email,
                 firstName: "Max",
-                secondName: "Mustermann",
+                lastName: "Mustermann",
             });
         }).catch(err => {
             chai.expect(err).to.be.not.undefined;
@@ -120,15 +120,16 @@ describe('registration service', function() {
                 birthDate: "15.10.1999",
                 email: email,
                 firstName: "Max",
-                secondName: "Mustermann",
-                Erhebung: true,
-                Forschung: true,
-                Nutzungsbedingungen: true,
-                Pseudonymisierung: true
+                lastName: "Mustermann",
+                privacyConsent: true,
+                researchConsent: true,
+                thirdPartyConsent: true,
+                termsOfUseConsent: true
             };
             return registrationService.create(registrationInput).catch(err => {
+                //no password given, should result in an error.
                 chai.expect(err.message).to.equal("Fehler beim Erstellen des Schüler-Accounts.");
-                //a user should have been created before the error. Lets check if he was deleted...
+                //a user has been created before the error. Lets check if he was deleted...
                 return userModel.userModel.findOne({email: email});
             }).then(users => {
                 chai.expect(users).to.equal(null);

@@ -10,7 +10,7 @@ const populateUser = (app, data) => {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        roles: data.roles,
+        roles: ["student"],
         schoolId: data.schoolId,
     };
 
@@ -164,7 +164,7 @@ const registerStudent = function(data, params, app) {
         if(data.parent_email) {
             parent = {
                 firstName: data.parent_firstName,
-                lastName: data.parent_secondName,
+                lastName: data.parent_lastName,
                 email: data.parent_email,
                 children: [user._id],
                 schoolId: data.schoolId,
