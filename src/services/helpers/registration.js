@@ -221,7 +221,7 @@ const registerStudent = function(data, params, app) {
             rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: user._id}).exec()
             .then(_ => {
                 if (oldUser) {
-                    return userModel.userModel.create(oldUser).exec();
+                    return userModel.userModel.create(oldUser);
                 }
             }));
                  

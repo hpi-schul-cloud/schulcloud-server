@@ -136,4 +136,51 @@ describe('registration service', function() {
             });
         });
     });
+
+    it('processes teachers correctly', () => {
+        let email = 'max' + Date.now() + '@mustermann.de';
+        let hash, user;
+        let hashData = {
+            toHash: email,
+            save: true
+        };
+        return app.service('hash').create(hashData)
+        .then(newHash => {
+            hash = newHash;
+            return userModel.userModel.create({
+                email: email,
+                firstName: "Max",
+                lastName: "Mustermann",
+                schoolId: "0000d186816abba584714c5f",
+                roles: ["0000d186816abba584714c98"],//teacher
+                importHash: hash
+            });
+        }).then(newUser => {
+            user = newUser;
+            return registrationPinService.create({"email": email});
+        }).then(registrationPin => {
+            let registrationInput = {
+                classOrSchoolId: "0000d186816abba584714c5f",
+                pin: registrationPin.pin,
+                password_1: "pw123",
+                password_2: "pw123",
+                email: email,
+                firstName: "Max",
+                lastName: "Mustermann",
+                importHash: hash,
+                userId: user._id,
+                privacyConsent: true,
+                researchConsent: true,
+                thirdPartyConsent: true,
+                termsOfUseConsent: true
+            };
+            return registrationService.create(registrationInput).then(response => {
+                chai.expect(response.user).to.have.property("_id");
+                chai.expect(response.account).to.have.property("_id");
+                chai.expect(response.consent).to.have.property("_id");
+                chai.expect(response.consent).to.have.property("userConsent");
+                chai.expect(response.parent).to.equal(null);
+            });
+        });
+    });
 });
