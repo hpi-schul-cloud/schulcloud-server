@@ -124,8 +124,8 @@ const pinIsVerified = hook => {
 	}
 };
 
-// student administrator helpdesk superhero teacher parent
-/*const permissionRoleCreate = hook =>{
+/* DEPRECATED for permissionRoleCreate, will be reactivated or deleted in phase 3
+const permissionRoleCreate = hook =>{
 	if( hook.data.length <= 0 ){
 		return Promise.reject(new errors.BadRequest('No input data.'));
 	}
