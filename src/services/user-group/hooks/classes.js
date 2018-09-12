@@ -47,11 +47,11 @@ const addDisplayName = (hook) => {
 	});
 	if (((hook.params.query||{})['$sort']||{}).displayName == 1) {
 		data.sort((a, b) => {
-			return a.displayName > b.displayName;
+			return a.displayName.toLowerCase() > b.displayName.toLowerCase();
 		});
 	} else if (((hook.params.query||{})['$sort']||{}).displayName == -1) {
 		data.sort((a, b) => {
-			return a.displayName < b.displayName;
+			return a.displayName.toLowerCase() < b.displayName.toLowerCase();
 		});
 	}
 
