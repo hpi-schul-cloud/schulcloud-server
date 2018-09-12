@@ -183,8 +183,8 @@ const registerStudent = function(data, params, app) {
                 }
             }).then(newParent => {
                 parent = newParent;
-                return userModel.userModel.findByIdAndUpdate(user._id, {$push: {parents: parent._id }});
-                //return userModel.userModel.patch(user._id, {$push: {parents: parent._id }});
+                return userModel.userModel.findByIdAndUpdate(user._id, {parents: [parent._id] }, {new: true}).exec()
+                .then(updatedUser => user = updatedUser);
             }).catch(err => {
                 return Promise.reject("Fehler beim Verknüpfen der Eltern.");
             }) ;
@@ -235,14 +235,13 @@ const registerStudent = function(data, params, app) {
         if (consent && consent._id) {
             rollbackPromises.push(consentModel.consentModel.findOneAndRemove({_id: consent._id}).exec());
         }
-        Promise.all(rollbackPromises)
+        return Promise.all(rollbackPromises)
 		.catch(err => {
 			return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator."));
 		})
 		.then(() => {
 			return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung."));
 		});
-		return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung."));
     });
 };
 
