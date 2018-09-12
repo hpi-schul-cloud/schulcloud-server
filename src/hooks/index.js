@@ -525,6 +525,7 @@ exports.getAge = function (dateString) {
 	return age;
 };
 
+/* DEPRECATED for permissionRoleCreate, will be reactivated or deleted in phase 3
 exports.arrayIncludes = (array,includesList,excludesList) =>{
 	for(let i=0; i<includesList.length; i++){
 		if( array.includes(includesList[i])==false ){
@@ -537,7 +538,6 @@ exports.arrayIncludes = (array,includesList,excludesList) =>{
 			return false;
 		}
 	}
-	
 	return true;
 };
-
+*/
