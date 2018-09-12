@@ -526,16 +526,18 @@ exports.getAge = function (dateString) {
 };
 
 exports.arrayIncludes = (array,includesList,excludesList) =>{
-	includesList.forEach(item=>{
-		if( array.includes(item)==false ){
+	for(let i=0; i<includesList.length; i++){
+		if( array.includes(includesList[i])==false ){
 			return false;
 		}
-	});
-	excludesList.forEach(item=>{
-		if( array.includes(item) ){
+	}
+
+	for(let i=0; i<excludesList.length; i++){
+		if( array.includes(excludesList[i]) ){
 			return false;
 		}
-	});
+	}
+	
 	return true;
 };
 
