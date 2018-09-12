@@ -5,13 +5,14 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
-function createinfoText(user, category, subject){
+function createinfoText(user, category, subject, cloud){
 	return "Ein neues Problem wurde gemeldet." + "\n"
 	+ "User: " + user + "\n"
 	+ "Kategorie: "+ category + "\n"
 	+ "Betreff: " + subject + "\n"
-	+ "Schauen Sie für weitere Details und zur Bearbeitung bitte in das Helpdesk der Schul-Cloud.\n\n"
-	+ "Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
+	+ "Schauen Sie für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der "+ cloud +".\n\n"
+	+ "Mit freundlichen Grüßen\n"
+	+ "Deine " + cloud;
 }
 
 exports.before = {
@@ -36,7 +37,8 @@ exports.after = {
 				"text": createinfoText(
 					(hook.params.account||{}).username||"nouser",
 					(hook.data||{}).category||"nocategory",
-					(hook.data||{}).subject||"nosubject" )
+					(hook.data||{}).subject||"nosubject",
+					(hook.data||{}).cloud)
 			}
 		});
 	}],
