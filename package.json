@@ -31,6 +31,7 @@
     "mocha-test-specific-windows": "set NODE_ENV=test && mocha test/app.hooks.test.js"
   },
   "dependencies": {
+    "@feathersjs/socketio": "^3.2.4",
     "aws-sdk": "^2.7.24",
     "bcryptjs": "latest",
     "body-parser": "^1.15.2",
