@@ -85,7 +85,7 @@ class WopiFilesContentsService {
 				// directly fetching file
 				let options = {
 					uri: signedUrl.url,
-					encoding: 'latin1'
+					encoding: null
 				};
 
 				return rp(options);
