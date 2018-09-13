@@ -525,17 +525,29 @@ exports.getAge = function (dateString) {
 	return age;
 };
 
-exports.arrayIncludes = (array, includesList, excludesList) =>{
-	for(let i=0; i < includesList.length; i++){
-		if(array.includes(includesList[i]) === false){
-			return false;
+/************************************************************************************************
+ *	@params testList 			[array] 	List of elements to test.							*
+ *	@params includesList	[array]		List to test if one of this elements in params testList.*
+ *	@params excludesList	[array]		List to test if any of this is not in params testList	*
+ *																								*
+ *	@example																					*
+ *	arrayIncludes(['student','teacher'], ['student','teacher','admin'], ['superhero']) == true	*
+ *	arrayIncludes(['student','teacher'], ['student','teacher','admin'], ['student'])   == false *
+ *  arrayIncludes(['student','teacher'], ['parent','admin'], []) 					   == false *
+ *	arrayIncludes(['student','teacher'], ['parent','admin'], []) 					   == false *
+ ************************************************************************************************/
+exports.arrayIncludes = (testList, includesList, excludesList) =>{
+	let inList=false;
+	for(let i=0; i < includesList.length; i++){		//test with OR condition
+		if(testList.includes(includesList[i])){
+			inList=true;
 		}
 	}
 
-	for(let i=0; i<excludesList.length; i++){
-		if(array.includes(excludesList[i])){
+	for(let i=0; i<excludesList.length; i++){		//test with AND condition
+		if(testList.includes(excludesList[i])){
 			return false;
 		}
 	}
-	return true;
+	return inList;
 };
