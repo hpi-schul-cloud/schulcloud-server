@@ -4,6 +4,7 @@
 	
 **/
 const mongoose = require('mongoose');
+const logger = require('winston');
 
 const host=process.env.HOST||'http://localhost:3030';
 const chai = require('chai');
@@ -11,11 +12,14 @@ const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
 const should = chai.should();
-const c = require('./components/');
+const {getAllRoutes,createLogins,clearLogins} = require('./components/');
 
+
+/************************************ 
+ *	Defined test for each method.	*
+ ************************************/
+ //methods: [ 'find', 'post', 'get', 'put', 'patch', 'delete' ]
 let tests={};
-
-//methods: [ 'find', 'post', 'get', 'put', 'patch', 'delete' ]
 tests.find = (route,login)=>{ 	
 		const code    = route.code||200;
 		const message = 'route='+route.name+' methode=get role='+login.name+(code!=200 ? ' code='+code : '');
@@ -82,26 +86,29 @@ tests.delete = (route,login)=>{
 }
 
 
-
+/**************************************** 
+ *	Execute every task step by step		*
+ ****************************************/
 //create login accounts
 new Promise( (resolve,reject)=>{
+	logger.info('Request existing roles...');
 	mongoose.model('role').find({},(err,roles)=>{
 		if(err){
-			console.log('Can not read roles.',err);
+			logger.error('Can not read roles.',err);
 			reject(err);
 		}
 		resolve(roles);
 	});
 }).then(roles=>{	
-	return c.createLogins({
+	return createLogins({
 		roles:roles,
-		routes:c.getAllRoutes()
+		routes:getAllRoutes()
 	}).catch(err =>{
-		console.log('Can not create login data',err);
+		logger.error('Can not create login data',err);
 		throw err
 	});		
 }).catch(err=>{
-	console.log('test data can not create.',err);
+	logger.error('test data can not create.',err);
 })
 .then(data=>{		
 	//execute tests
@@ -127,7 +134,8 @@ new Promise( (resolve,reject)=>{
 		});	
 
 		after( ()=>{
-			return c.clearLogins(data);
+			logger.info('Clear login data from db...');
+			return clearLogins(data);
 		});
 	});
 	
@@ -135,5 +143,5 @@ new Promise( (resolve,reject)=>{
 	run();	//force to start tests 
 	
 }).catch(err=>{
-	console.log('Test can not execute.',err);
+	logger.error('Test can not execute.',err);
 });

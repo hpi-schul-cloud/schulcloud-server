@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const logger = require('winston');
 const getJWT = require('./getJWT');
 
 module.exports = (save)=>{
+	logger.info('Create logins data in db...');
 	if(save==undefined) save={};
 	return new Promise( (resolve,reject)=>{
 		const roles    = save.roles;
@@ -22,6 +24,7 @@ module.exports = (save)=>{
 			}		
 		});
 
+		logger.info('Create users...');
 		mongoose.model('user').create(usersSetting,(err,users)=>{
 			if(err) reject(err);
 			users.forEach(user=>{
@@ -37,6 +40,7 @@ module.exports = (save)=>{
 					activated:true 		//Extra User für nicht aktiviert?
 				}
 			});
+			logger.info('Create accounts with token...');
 			return mongoose.model('account').create(accountsSetting,(err,accounts)=>{
 				if(err) reject(err);
 				

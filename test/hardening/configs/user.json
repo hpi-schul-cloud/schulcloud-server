@@ -5,6 +5,9 @@
 		"response":{
 			"code":404,
 			"message":"Page not found"
+		},
+		"query":{
+		
 		}
 	}
 	
