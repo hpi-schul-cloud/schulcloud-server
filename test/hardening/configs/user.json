@@ -1,0 +1,11 @@
+[
+	{
+		"methods":["GET","FIND"],
+		"roles":["student","teacher"],
+		"response":{
+			"code":404,
+			"message":"Page not found"
+		}
+	}
+	
+]
