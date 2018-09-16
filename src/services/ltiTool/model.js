@@ -8,7 +8,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const ltiToolSchema = new Schema({
+const ltiTool = new Schema({
   name: { type: String },
   url: { type: String, required: true },
   key: { type: String },
@@ -28,6 +28,6 @@ const ltiToolSchema = new Schema({
   oAuthClientId: { type: String }
 });
 
-const ltiToolModel = mongoose.model('ltiTool', ltiToolSchema);
+const ltiToolModel = mongoose.model('ltiTool', ltiTool);
 
 module.exports = ltiToolModel;

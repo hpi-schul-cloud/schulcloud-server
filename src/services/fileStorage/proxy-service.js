@@ -182,7 +182,7 @@ class SignedUrlService {
 	 * @param action the AWS action, e.g. putObject
 	 * @returns {Promise}
 	 */
-	create({path, fileType, action}, params) {
+	create({path, fileType, action, download}, params) {
 
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
@@ -198,24 +198,31 @@ class SignedUrlService {
 		// converts the real filename to a unique one in flat-storage
 		// if action = getObject, file should exist in proxy db
 		let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({});
-
+		
 		return fileProxyPromise.then(res => {
 			if (!res) return;
 
 			let flatFileName = res.flatFileName || generateFlatFileName(fileName);
-			return filePermissionHelper.checkPermissions(userId, path).then(_ => {
-				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action)
+			return filePermissionHelper.checkPermissions(userId, path).then(p => {
+
+				// set external schoolId if file is shared
+				let externalSchoolId;
+				if (p.permission === 'shared') externalSchoolId = res.schoolId;
+
+				let header =  {							
+					// add meta data for later using
+					"Content-Type": fileType,
+					"x-amz-meta-path": dirName,
+					"x-amz-meta-name": fileName,
+					"x-amz-meta-flat-name": flatFileName,
+					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"				
+				};
+
+				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId, download)
 					.then(res => {
 						return {
 							url: res,
-							header: {
-								// add meta data for later using
-								"Content-Type": fileType,
-								"x-amz-meta-path": dirName,
-								"x-amz-meta-name": encodeURIComponent(fileName),
-								"x-amz-meta-flat-name": flatFileName,
-								"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
-							}
+							header: header
 						};
 					});
 			});
@@ -395,7 +402,7 @@ class CopyService {
 			.then(file => {
 				if (!file) throw new errors.NotFound("The file was not found!");
 
-				// check that theres no file on 'newPath', otherwise change name of file
+				// check that there's no file on 'newPath', otherwise change name of file
 				return FileModel.findOne({key: newPath + fileName}).exec()
 					.then(newFile => {
 						let newFileName = fileName;
@@ -419,7 +426,7 @@ class CopyService {
 								let newFileObject = {
 									key: newPath + newFileName,
 									path: newPath,
-									name: newFileName,
+									name: decodeURIComponent(newFileName),
 									type: file.type,
 									size: file.size,
 									flatFileName: newFlatFileName,

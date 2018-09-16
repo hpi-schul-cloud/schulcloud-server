@@ -23,9 +23,38 @@ const mapRoleFilterQuery = (hook) => {
 const checkUnique = (hook) => {
 	let userService = hook.service;
 	const {email} = hook.data;
-	return userService.find({ query: {email: email}})
+	if (email === undefined) {
+		return Promise.reject(new errors.BadRequest(`Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.`));
+	}
+	return userService.find({ query: {email: email, $populate: ["roles"]}})
 		.then(result => {
-			if(result.data.length > 0) return Promise.reject(new errors.BadRequest('Die E-Mail Adresse ist bereits in Verwendung!'));
+			const length = result.data.length;
+			if( length==undefined || length>2 ){
+				return Promise.reject(new errors.BadRequest('Fehler beim prüfen der Datenbank informationen.'));
+			}
+			if(length<=0){
+				return Promise.resolve(hook);
+			}
+
+			const user 		= typeof result.data[0] == 'object' ? result.data[0] : {};
+			const input		= typeof hook.data == 'object' ? hook.data : {};
+			const isLoggedIn= ( hook.params || {} ).account && hook.params.account.userId ? true : false;
+			const isStudent	= user.roles.filter( role => role.name === "student" ).length == 0 ? false : true;
+			const asTask	= ( hook.params._additional || {} ).asTask;
+			
+			if(isLoggedIn || asTask=='student' ){			
+				return Promise.reject(new errors.BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
+			}else if(asTask=='parent' && length==1){
+					userService.update({_id: user._id}, {
+						$set: {
+							children: (user.children||[]).concat(input.children),
+							firstName: input.firstName,
+							lastName: input.lastName
+						}
+					});
+					return Promise.reject(new errors.BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!", user)); /* to stop the create process, the message are catch and resolve in regestration hook */
+			}
+			
 			return Promise.resolve(hook);
 		});
 };
@@ -33,11 +62,98 @@ const checkUnique = (hook) => {
 const checkUniqueAccount = (hook) => {
 	let accountService = hook.app.service('/accounts');
 	const {email} = hook.data;
-	return accountService.find({ query: {username: email}})
+	return accountService.find({ query: {username: email, $populate: ["roles"]}})
 		.then(result => {
-			if(result.length > 0) return Promise.reject(new errors.BadRequest('Ein Account mit dieser E-Mail Adresse existiert bereits!'));
+			if(result.length > 0) return Promise.reject(new errors.BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`));
 			return Promise.resolve(hook);
 		});
+};
+
+const sanitizeData = (hook) => {
+	if ("email" in hook.data) {
+		var regex = RegExp("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
+		if (!regex.test(hook.data.email)) {
+			return Promise.reject(new errors.BadRequest('Bitte gib eine valide E-Mail Adresse an!'));
+		}
+	}
+	const idRegExp = RegExp("^[0-9a-fA-F]{24}$");
+	if ("schoolId" in hook.data) {
+		if (!idRegExp.test(hook.data.schoolId)) {
+			return Promise.reject(new errors.BadRequest('invalid Id'));
+		}
+	}
+	if ("classId" in hook.data) {
+		if (!idRegExp.test(hook.data.classId)) {
+			return Promise.reject(new errors.BadRequest('invalid Id'));
+		}
+	}
+	return Promise.resolve(hook);
+};
+
+const checkJwt = () => {
+	return function (hook) {
+		if (((hook.params||{}).headers||{}).authorization != undefined) {
+			return (auth.hooks.authenticate('jwt')).call(this, hook);
+		} else {
+			return Promise.resolve(hook);
+		}
+	}; 
+};
+
+const pinIsVerified = hook => {
+	if((hook.params||{}).account && hook.params.account.userId){
+		return (globalHooks.hasPermission('USER_CREATE')).call(this, hook);
+	} else {	
+		const email=(hook.params._additional||{}).parentEmail||hook.data.email;
+		return hook.app.service('/registrationPins').find({query:{email:email , verified: true}})
+		.then(pins => {
+			if (pins.data.length === 1 && pins.data[0].pin) {
+				const age = globalHooks.getAge(hook.data.birthday);
+				
+				if (!((hook.data.roles||[]).includes("student") && age < 18)) {
+					hook.app.service('/registrationPins').remove(pins.data[0]._id);
+				}
+				
+				return Promise.resolve(hook);
+			}
+			else{
+				return Promise.reject(new errors.BadRequest('Der Pin wurde noch nicht bei der Registrierung eingetragen.'));
+			}
+				
+		});
+	}
+};
+
+// student administrator helpdesk superhero teacher parent
+const permissionRoleCreate = async (hook) =>{
+	if (!hook.params.provider) {
+		//internal call
+		return hook;
+	}
+
+	if( hook.data.length <= 0 ){
+		return Promise.reject(new errors.BadRequest('No input data.'));
+	}
+
+	let isLoggedIn = false;
+	if(((hook.params||{}).account||{}).userId){
+		isLoggedIn = true;
+		const userService = hook.app.service('/users/');
+		const currentUser = await userService.get(hook.params.account.userId, {query: {$populate: 'roles'}});
+		const userRoles = currentUser.roles.map((role) => {return role.name;});
+		if(userRoles.includes('superhero')){
+			//call from superhero Dashboard
+			return Promise.resolve(hook);
+		}
+	}
+
+	if( isLoggedIn===true  && globalHooks.arrayIncludes((hook.data.roles||[]),['student','teacher'],['parent','administrator','helpdesk','superhero']) ||
+		isLoggedIn===false && globalHooks.arrayIncludes((hook.data.roles||[]),['student','parent'],['teacher','administrator','helpdesk','superhero'])
+	){
+		return Promise.resolve(hook);
+	}else{
+		return Promise.reject(new errors.BadRequest('You have not the permissions to create this roles.'));
+	}
 };
 
 exports.before = function(app) {
@@ -52,19 +168,25 @@ exports.before = function(app) {
 		],
 		get: [auth.hooks.authenticate('jwt')],
 		create: [
+			checkJwt(),
+			pinIsVerified,
+			sanitizeData,
 			checkUnique,
-			checkUniqueAccount,
+			checkUniqueAccount,	
+			//permissionRoleCreate,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
+			sanitizeData,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		patch: [
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
-      globalHooks.permitGroupOperation,
+			globalHooks.permitGroupOperation,
+			sanitizeData,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USER_CREATE'), globalHooks.permitGroupOperation]
@@ -86,6 +208,8 @@ const getDisplayName = (user, app) => {
 		let isProtectedUser = protectedRoleIds.find(role => {
 			return (user.roles || []).includes(role);
 		});
+
+		user.age = globalHooks.getAge(user.birthday);
 
 		if(isProtectedUser) {
 			return user.lastName ? user.lastName : user._id;
@@ -129,6 +253,18 @@ const decorateUsers = (hook) => {
 	});
 };
 
+const handleClassId = (hook) => {
+	if (!("classId" in hook.data)) {
+		return Promise.resolve(hook);
+	} else {
+		hook.app.service('/classes').patch(hook.data.classId, {
+			$push: {userIds: hook.result._id}
+		}).then(res => {
+			return Promise.resolve(hook);
+		});
+	}
+};
+
 const User = require('../model');
 
 exports.after = {
@@ -136,10 +272,10 @@ exports.after = {
 	find: [decorateUsers],
 	get: [
 		decorateUser,
-		globalHooks.computeProperty(User, 'getPermissions', 'permissions'),
+		globalHooks.computeProperty(User.userModel, 'getPermissions', 'permissions'),
 		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'}))
 	],
-	create: [],
+	create: [handleClassId],
 	update: [],
 	patch: [],
 	remove: []

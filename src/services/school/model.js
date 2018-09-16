@@ -19,11 +19,26 @@ const schoolSchema = new Schema({
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now},
 	experimental: {type: Boolean, 'default': false},
-	pilot: {type: Boolean, 'default': false}
+	pilot: {type: Boolean, 'default': false},
+	currentYear: {type: Schema.Types.ObjectId, ref:'year'}
 },{
 	timestamps: true
 });
 
-const schoolModel = mongoose.model('school', schoolSchema);
+const yearSchema = new Schema({
+	name: {type: String, required: true}
+});
 
-module.exports = schoolModel;
+const gradeLevelSchema = new Schema({
+	name: {type: String, required: true}
+});
+
+const schoolModel = mongoose.model('school', schoolSchema);
+const yearModel = mongoose.model('year', yearSchema);
+const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
+
+module.exports = {
+	schoolModel,
+	yearModel,
+	gradeLevelModel
+};

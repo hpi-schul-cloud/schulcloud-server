@@ -28,6 +28,8 @@ const lrs = require("./lrs");
 const provider = require('./provider');
 const oauth2proxy = require('./oauth2proxy');
 const socket = require('./socket');
+const pseudonym = require("./pseudonym");
+const consent = require('./consent');
 
 const mongoose = require('mongoose');
 
@@ -52,17 +54,18 @@ module.exports = function () {
     app.configure(fileStorage);
     app.configure(link);
     app.configure(news);
-	app.configure(helpers);
-	app.configure(homework);
-	app.configure(federalState);
-	app.configure(passwordRecovery);
-	app.configure(notification);
-	app.configure(releases);
-	app.configure(helpdesk);
-	app.configure(statistic);
-	app.configure(pseudo);
+    app.configure(helpers);
+    app.configure(homework);
+    app.configure(federalState);
+    app.configure(passwordRecovery);
+    app.configure(notification);
+    app.configure(releases);
+    app.configure(helpdesk);
+    app.configure(statistic);
+    app.configure(socket);
+    app.configure(pseudonym);
+    app.configure(consent);
 	app.configure(lrs);
 	app.configure(provider);
 	app.configure(oauth2proxy);
-	app.configure(socket);
 };

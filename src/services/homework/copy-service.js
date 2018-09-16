@@ -25,6 +25,32 @@ class HomeworkCopyService {
 				});
 			});
 	}
+
+	/**
+	 * Copies a homework if the homework belongs to the user.
+	 * @param data consists of the _id to copy, can have courseId/lessonId to add to correct course/lesson.
+	 * @param params consists of information about the user.
+	 * @returns new homework.
+	 */
+	create(data, params) {
+
+		return HomeworkModel.findOne({ _id: data._id })
+			.then(copyAssignment => {
+				let tempAssignment = JSON.parse(JSON.stringify(copyAssignment));
+				tempAssignment = _.omit(tempAssignment, ['_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId' ]);
+				tempAssignment.courseId = data.courseId;
+				tempAssignment.lessonId = data.lessonId;
+
+				return HomeworkModel.create(tempAssignment, (err, res) => {
+					if (err)
+						return err;
+					else
+						return res;
+				});
+			});
+
+	}
+
 }
 
 module.exports = function () {
