@@ -17,10 +17,14 @@ const HOST_CAPABILITIES = [
   "SupportsLocks",
   "SupportsRename",
   "SupportsUpdate",
-  "SupportsUserInfo"
+  "SupportsUserInfo",
+  "UserCanWrite",
+  "UserCanRename"
 ];
 
-const CURRENTLY_IMPLEMENTED = ["SupportsDeleteFile", "SupportsLocks", "SupportsGetLock", "SupportsRename"];
+//TODO: Check UserCanWrite/UserCanRename via extra perm check
+
+const CURRENTLY_IMPLEMENTED = ["SupportsDeleteFile", "SupportsLocks", "SupportsGetLock", "SupportsRename", "UserCanWrite", "SupportsUpdate", "UserCanRename"];
 
 const defaultCapabilities = () => {
   let caps = {};
