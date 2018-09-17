@@ -14,8 +14,10 @@ class Service {
     }
 
     create(data, params) {
-        let visitor = ua(data.tid);
-        visitor.pageview(data).send();
+        if(data.tid){
+            let visitor = ua(data.tid);
+            visitor.pageview(data).send();
+        }
         let model = new StatisticsModel({
             firstPaint: data.cm1,
             timeToInteractive: data.cm2,
