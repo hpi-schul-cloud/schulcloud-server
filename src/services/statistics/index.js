@@ -32,7 +32,7 @@ class Service {
         return model.save()
             .then(_ => 'succes')
             .catch(err => {
-                console.log(err);
+                console.log(err); // eslint-disable-line no-console
                 return 'err';
             });
     }
