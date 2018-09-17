@@ -3,6 +3,8 @@
 const ua = require('universal-analytics');
 const hooks = require('./hooks');
 
+const StatisticsModel = require('./model');
+
 class Service {
 
     constructor(options) {
@@ -14,7 +16,25 @@ class Service {
     create(data, params) {
         let visitor = ua(data.tid);
         visitor.pageview(data).send();
-        return Promise.resolve('send');
+        let model = new StatisticsModel({
+            firstPaint: data.cm1,
+            timeToInteractive: data.cm2,
+            pageLoaded: data.cm3,
+            domInteractiveTime: data.cm4,
+            domContentLoaded: data.cm5,
+            downlink: data.cm6,
+            connection: data.cd1,
+            path: data.dp,
+            dl: data.dl,
+            qt: data.qt,
+            cid: data.cid
+        });
+        return model.save()
+            .then(_ => 'succes')
+            .catch(err => {
+                console.log(err);
+                return 'err';
+            });
     }
 
     setup(app, path) {
