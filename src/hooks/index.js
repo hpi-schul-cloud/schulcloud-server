@@ -16,6 +16,18 @@ exports.ifNotLocal = function (hookForRemoteRequests) {
 	};
 };
 
+exports.forceHookResolve = (forcedHook) => {
+	return (hook) => {
+		forcedHook(hook)
+		.then(() => {
+			return Promise.resolve(hook);
+		})
+		.catch(() => {
+			return Promise.resolve(hook);
+		});
+	};
+};
+
 exports.isAdmin = function (options) {
 	return hook => {
 		if (!(hook.params.user.permissions || []).includes('ADMIN')) {
@@ -85,6 +97,29 @@ exports.hasPermission = function (permissionName) {
 				}
 				return Promise.resolve(hook);
 			});
+	};
+};
+
+exports.removeResponse = function (excludeOptions) {
+	/*
+	excludeOptions = false => allways remove response
+	excludeOptions = undefined => remove response when not GET or FIND request
+	excludeOptions = ['get', ...] => remove when method not in array
+	*/
+	return (hook) => {
+		// If it was an internal call then skip this hook
+		if (!hook.params.provider) {
+			return hook;
+		}
+
+		if(excludeOptions === undefined){
+			excludeOptions = ['get', 'find'];
+		}
+		if(Array.isArray(excludeOptions) && excludeOptions.includes(hook.method)){
+			return Promise.resolve(hook);
+		}
+		hook.result = {status: 200};
+		return Promise.resolve(hook);
 	};
 };
 
@@ -447,14 +482,14 @@ exports.sendEmail = (hook, maildata) => {
 						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
 						"html": ""
 					}
-				}).catch (error => {
-					throw new errors.BadRequest(error.message);
+				}).catch (err => {
+					throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 				});
 			});
 		return hook;
 		})
-		.catch(error => {
-			throw new errors.BadRequest(error.message);
+		.catch(err => {
+			throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 		});
 	}
 	else {
@@ -468,8 +503,8 @@ exports.sendEmail = (hook, maildata) => {
 					"html": ""
 				}
 			})
-			.catch (error => {
-				throw new errors.BadRequest(error.message);
+			.catch (err => {
+				throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 			});
 		});
 		return hook;
@@ -490,17 +525,17 @@ exports.getAge = function (dateString) {
 	return age;
 };
 
-exports.arrayIncludes = (array,includesList,excludesList) =>{
-	includesList.forEach(item=>{
-		if( array.includes(item)==false ){
+exports.arrayIncludes = (array, includesList, excludesList) =>{
+	for(let i=0; i < includesList.length; i++){
+		if(array.includes(includesList[i]) === false){
 			return false;
 		}
-	});
-	excludesList.forEach(item=>{
-		if( array.includes(item) ){
+	}
+
+	for(let i=0; i<excludesList.length; i++){
+		if(array.includes(excludesList[i])){
 			return false;
 		}
-	});
+	}
 	return true;
 };
-
