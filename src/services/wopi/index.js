@@ -124,7 +124,10 @@ class WopiFilesContentsService {
 				};
 
 				return rp(options).then(_ => {
-					return Promise.resolve({lockId: file.lockId});
+					return FileModel.findOneAndUpdate({_id: fileId}, {$inc: { __v: 1}, updatedAt: Date.now()}).exec()
+						.then(_ => {
+							return Promise.resolve({lockId: file.lockId});
+						});
 				});
 			});
 		});
