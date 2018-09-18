@@ -69,11 +69,22 @@ const mapInObjectToArray = (hook) => {
 	return hook;
 };
 
+const mapToUpsert = (hook) => {
+	hook.params.mongoose = Object.assign({}, hook.params.mongoose, {upsert: true});
+	hook.params.query = {userId: hook.data.userId};
+
+	return hook.app.service("consents").patch(null, hook.data, hook.params)
+		.then(result => {
+			hook.result = result[0];
+			return hook;
+		});
+};
+
 exports.before = {
 	all: [],
 	find: [auth.hooks.authenticate('jwt'), globalHooks.ifNotLocal(restrictToUserOrRole), mapInObjectToArray],
 	get: [auth.hooks.authenticate('jwt')],
-	create: [addDates],
+	create: [addDates, mapToUpsert],
 	update: [auth.hooks.authenticate('jwt'), addDates],
 	patch: [auth.hooks.authenticate('jwt'), addDates],
 	remove: [auth.hooks.authenticate('jwt'),]
@@ -87,7 +98,7 @@ const redirectDic = {
 	existingGeb: '/firstLogin/existingGeb14',
 	existingEmpl: '/firstLogin/existingEmployee',
 	normal: '/dashboard/',
-	err: '/consentError'
+	err: '/firstLogin/consentError'
 };
 
 const userHasOneRole = (user, roles) => {
