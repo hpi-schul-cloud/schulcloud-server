@@ -4,7 +4,7 @@ const service = require('feathers-mongoose');
 const passwordRecovery = require('./model');
 const hooks = require('./hooks');
 const AccountModel = require('./../account/model');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 
 class ChangePasswordService {
 	constructor() {
@@ -45,11 +45,14 @@ module.exports = function () {
 
 	const changePasswordService = app.service('/passwordRecovery/reset');
 
-	// Set up our before hooks
-	passwordRecoveryService.before(hooks.before);
-	changePasswordService.before(hooks.before);
+	// Set up our before and after hooks
+	passwordRecoveryService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 
-	// Set up our after hooks
-	passwordRecoveryService.after(hooks.after);
-	changePasswordService.after(hooks.after);
+	changePasswordService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 };

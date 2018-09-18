@@ -2,7 +2,7 @@
 
 const commonHooks = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 
 const removeOldPin = (hook) => {
 	return hook.app.service('registrationPins').find({query:{email: hook.data.email}})
@@ -90,12 +90,12 @@ const returnPinOnlyToSuperHero = async (hook) => {
 
 exports.before = {
 	all: [globalHooks.forceHookResolve(auth.hooks.authenticate('jwt'))],
-	find: commonHooks.disable('external'),
-	get: commonHooks.disable('external'),
+	find: commonHooks.disallow('external'),
+	get: commonHooks.disallow('external'),
 	create: [removeOldPin, generatePin, mailPin],
-	update: commonHooks.disable('external'),
-	patch: commonHooks.disable('external'),
-	remove: commonHooks.disable('external'),
+	update: commonHooks.disallow('external'),
+	patch: commonHooks.disallow('external'),
+	remove: commonHooks.disallow('external'),
 };
 
 exports.after = {

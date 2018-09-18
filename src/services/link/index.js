@@ -80,9 +80,9 @@ module.exports = function () {
 	// Get our initialize service to that we can bind hooks
 	linkService = app.service('/link');
 
-	// Set up our before hooks
-	linkService.before(hooks.before(linkService));
-
-	// Set up our after hooks
-	linkService.after(hooks.after);
+	// Set up our before and after hooks
+	linkService.hooks({
+		before: hooks.before(linkService),
+		after: hooks.after
+	});
 };

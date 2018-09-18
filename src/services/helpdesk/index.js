@@ -22,9 +22,9 @@ module.exports = function () {
 	// Get our initialize service to that we can bind hooks
 	const helpdeskService = app.service('/helpdesk');
 
-	// Set up our before hooks
-	helpdeskService.before(hooks.before);
-
-	// Set up our after hooks
-	helpdeskService.after(hooks.after);
+	// Set up our before and after hooks
+	helpdeskService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 };

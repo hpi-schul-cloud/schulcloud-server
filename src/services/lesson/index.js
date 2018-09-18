@@ -5,7 +5,7 @@ const lesson = require('./model');
 const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
 const _ = require('lodash');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const FileModel = require('../fileStorage/model').fileModel;
 
 class LessonFilesService {
@@ -153,12 +153,18 @@ module.exports = function () {
 	const lessonFilesService = app.service('/lessons/:lessonId/files/');
 	const lessonCopyService = app.service('/lessons/copy');
 
-	// Set up our before hooks
-	systemService.before(hooks.before);
-	lessonFilesService.before(hooks.before);
-	lessonCopyService.before(copyHooks.before);
+	// Set up our before anf after hooks
+	systemService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 
-	// Set up our after hooks
-	systemService.after(hooks.after);
-	lessonFilesService.after(hooks.after);
+	lessonFilesService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
+
+	lessonCopyService.hooks({
+		before: hooks.before
+	});
 };

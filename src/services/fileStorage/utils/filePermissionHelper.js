@@ -1,4 +1,4 @@
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const _ = require('lodash');
 const CourseModel = require('../../user-group/model').courseModel;
 const LessonModel = require('../../lesson/model');

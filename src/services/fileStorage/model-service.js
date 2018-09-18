@@ -29,11 +29,15 @@ module.exports = function () {
 	// Initialize our service with any options it requires
 	app.use('/files', service(fileOptions));
 	const fileModelService = app.service('files');
-	fileModelService.before(hooks.before);
-	fileModelService.after(hooks.after);
+	fileModelService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 
 	app.use('/directories', service(directoryOptions));
 	const directoryModelService = app.service('directories');
-	directoryModelService.before(hooks.before);
-	directoryModelService.after(hooks.after);
+	directoryModelService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 };

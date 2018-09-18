@@ -231,15 +231,24 @@ module.exports = function () {
 	const callbackService = app.service('/notification/callback');
 	const notificationService = app.service('/notification');
 
-	// Set up our before hooks
-	messageService.before(hooks.before);
-	deviceService.before(hooks.before);
-	callbackService.before(hooks.before);
-	notificationService.before(hooks.before);
+	// Set up our before and after hooks
+	messageService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 
-	// Set up our after hooks
-	messageService.after(hooks.after);
-	deviceService.after(hooks.after);
-	callbackService.after(hooks.after);
-	notificationService.after(hooks.after);
+	deviceService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
+
+	callbackService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
+
+	notificationService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 };

@@ -2,7 +2,7 @@
 const pathUtil = require('path').posix;
 const hooks = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const swaggerDocs = require('./docs/');
 const filePermissionHelper = require('./utils/filePermissionHelper');
 const removeLeadingSlash = require('./utils/filePathHelper').removeLeadingSlash;
@@ -464,21 +464,39 @@ module.exports = function () {
 	const fileTotalSizeService = app.service('/fileStorage/total');
 	const copyService = app.service('/fileStorage/copy');
 
-	// Set up our before hooks
-	fileStorageService.before(hooks.before);
-	signedUrlService.before(hooks.before);
-	directoryService.before(hooks.before);
-	directoryRenameService.before(hooks.before);
-	fileRenameService.before(hooks.before);
-	fileTotalSizeService.before(hooks.before);
-	copyService.before(hooks.before);
+	// Set up our before and after hooks
+	fileStorageService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 
-	// Set up our after hooks
-	fileStorageService.after(hooks.after);
-	signedUrlService.after(hooks.after);
-	directoryService.after(hooks.after);
-	directoryRenameService.after(hooks.after);
-	fileRenameService.after(hooks.after);
-	fileTotalSizeService.after(hooks.after);
-	copyService.after(hooks.after);
+	signedUrlService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
+
+	directoryService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
+
+	directoryRenameService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
+
+	fileRenameService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
+
+	fileTotalSizeService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
+
+	copyService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 };

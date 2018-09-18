@@ -1,9 +1,8 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
-const errors = require('feathers-errors');
+const auth = require('@feathersjs/authentication');
+const errors = require('@feathersjs/errors');
 const HomeworkModel = require('../model').homeworkModel;
 
 const hasViewPermissionBefore = hook => {
@@ -22,12 +21,12 @@ const hasViewPermissionBefore = hook => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [hooks.disable()],
+	find: [],
 	get: [globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasViewPermissionBefore],
 	create: [globalHooks.injectUserId, globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasViewPermissionBefore],
-	update: [hooks.disable()],
-	patch: [hooks.disable()],
-	remove: [hooks.disable()]
+	update: [],
+	patch: [],
+	remove: []
 };
 
 exports.after = {

@@ -1,8 +1,8 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
+const local = require('@feathersjs/authentication-local');
 
 exports.before = function(app) {
 	return {
@@ -21,7 +21,7 @@ exports.before = function(app) {
 const Role = require('../model');
 
 exports.after = {
-	all: [hooks.remove('password')],
+	all: [local.hooks.protect('password')],
 	find: [],
 	get: [globalHooks.computeProperty(Role, 'getPermissions', 'permissions')],
 	create: [],

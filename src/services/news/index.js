@@ -15,13 +15,17 @@ module.exports = function() {
 		}
 	}));
 	const NewsService = app.service('/news');
-	NewsService.before(hooks.before);
-	NewsService.after(hooks.after);
+	NewsService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
     
     app.use('/newshistory', service({
 		Model: newsHistoryModel
 	}));
 	const NewsHistoryService = app.service('/newshistory');
-	NewsHistoryService.before(hooks.before);
-	NewsHistoryService.after(hooks.after);
+	NewsHistoryService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 };

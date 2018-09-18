@@ -1,6 +1,6 @@
 'use strict';
 
-const socketio = require('feathers-socketio');
+const socketio = require('@feathersjs/socketio');
 const jwtDecode = require('jwt-decode');
 const compress = require('compression');
 

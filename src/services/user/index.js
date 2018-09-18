@@ -4,7 +4,7 @@ const service = require('feathers-mongoose');
 const user = require('./model');
 const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 
 const userDataFilter=(user)=>{
 	return {
@@ -54,9 +54,12 @@ module.exports = function () {
 	const userService = app.service('/users');	
 	app.use('users/linkImport',new UserLinkImportService(userService));	//do not use hooks
 
-	
-	userService.before(hooks.before(app));	// TODO: refactor
-	userService.after(hooks.after);
+	userService.hooks({
+		before: hooks.before(app),
+		after: hooks.after
+	});
+	//userService.hooks.before(hooks.before(app));	// TODO: refactor
+	//userService.hooks.after(hooks.after);
 
 	/* registrationPin Service */
 	app.use('/registrationPins', service({
@@ -67,6 +70,10 @@ module.exports = function () {
 		}
 	}));
 	const registrationPinService = app.service('/registrationPins');
-	registrationPinService.before(registrationPinsHooks.before);
-	registrationPinService.after(registrationPinsHooks.after);
+	registrationPinService.hooks({
+		before: registrationPinsHooks.before,
+		after: registrationPinsHooks.after
+	});
+	//registrationPinService.before(registrationPinsHooks.before);
+	//registrationPinService.after(registrationPinsHooks.after);
 };

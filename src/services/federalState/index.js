@@ -22,9 +22,9 @@ module.exports = function () {
 	// Get our initialize service to that we can bind hooks
 	const federalStateService = app.service('/federalStates');
 
-	// Set up our before hooks
-	federalStateService.before(hooks.before);
-
-	// Set up our after hooks
-	federalStateService.after(hooks.after);
+	// Set up our before and after hooks
+	federalStateService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 };

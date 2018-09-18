@@ -1,8 +1,7 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 
 const resolveUserId = (hook) => {
 	hook.params.payload.userId = hook.params.account.userId ? hook.params.account.userId : '';

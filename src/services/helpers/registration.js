@@ -1,4 +1,4 @@
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');

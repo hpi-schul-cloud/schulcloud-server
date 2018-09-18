@@ -22,8 +22,10 @@ module.exports = function() {
 		lean: true
 	}));
 	const courseService = app.service('/courses');
-	courseService.before(hooks.before);
-	courseService.after(hooks.after);
+	courseService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 
 	/* CourseGroup model */
 	app.use('/courseGroups', service({
@@ -35,8 +37,10 @@ module.exports = function() {
 		lean: true
 	}));
 	const courseGroupService = app.service('/courseGroups');
-	courseGroupService.before(courseGroupsHooks.before);
-	courseGroupService.after(courseGroupsHooks.after);
+	courseGroupService.hooks({
+		before: courseGroupsHooks.before,
+		after: courseGroupsHooks.after
+	});
 
 
 	/* Class model */
@@ -49,8 +53,10 @@ module.exports = function() {
 		lean: true
 	}));
 	const classService = app.service('/classes');
-	classService.before(classHooks.before);
-	classService.after(classHooks.after);
+	classService.hooks({
+		before: classHooks.before,
+		after: classHooks.after
+	});
 
 
 	/* Grade model */
@@ -63,6 +69,8 @@ module.exports = function() {
 		lean: true
 	}));
 	const gradeService = app.service('/grades');
-	gradeService.before(hooks.before);
-	gradeService.after(hooks.after);
+	gradeService.hooks({
+		before: hooks.before,
+		after: hooks.after
+	});
 };

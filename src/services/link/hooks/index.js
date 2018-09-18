@@ -1,8 +1,8 @@
 'use strict';
 
+const commonHooks = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication').hooks;
+const auth = require('@feathersjs/authentication').hooks;
 const model = require('../link-model');
 const service = require('../index');
 
@@ -10,11 +10,11 @@ exports.before = service => {
 	return {
 		all: [],
 		find: [],
-		get: [hooks.disable('external')],	// handled by redirection middleware
+		get: [commonHooks.disallow('external')],	// handled by redirection middleware
 		create: [auth.authenticate('jwt'), globalHooks.hasPermission('LINK_CREATE')],
-		update: [hooks.disable()],
-		patch: [hooks.disable()],
-		remove: [hooks.disable()]
+		update: [],
+		patch: [],
+		remove: []
 	};
 };
 

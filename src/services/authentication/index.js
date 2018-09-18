@@ -1,8 +1,8 @@
 'use strict';
 
-const auth = require('feathers-authentication');
-const jwt = require('feathers-authentication-jwt');
-const local = require('feathers-authentication-local');
+const auth = require('@feathersjs/authentication');
+const jwt = require('@feathersjs/authentication-jwt');
+const local = require('@feathersjs/authentication-local');
 const logger = require('winston');
 
 const system = require('./strategies/system');
