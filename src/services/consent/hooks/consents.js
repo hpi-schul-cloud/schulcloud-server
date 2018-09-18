@@ -98,7 +98,7 @@ const redirectDic = {
 	existingGeb: '/firstLogin/existingGeb14',
 	existingEmpl: '/firstLogin/existingEmployee',
 	normal: '/dashboard/',
-	err: '/consentError'
+	err: '/firstLogin/consentError'
 };
 
 const userHasOneRole = (user, roles) => {
