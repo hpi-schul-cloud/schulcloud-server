@@ -58,8 +58,6 @@ module.exports = function () {
 		before: hooks.before(app),
 		after: hooks.after
 	});
-	//userService.hooks.before(hooks.before(app));	// TODO: refactor
-	//userService.hooks.after(hooks.after);
 
 	/* registrationPin Service */
 	app.use('/registrationPins', service({
@@ -74,6 +72,4 @@ module.exports = function () {
 		before: registrationPinsHooks.before,
 		after: registrationPinsHooks.after
 	});
-	//registrationPinService.before(registrationPinsHooks.before);
-	//registrationPinService.after(registrationPinsHooks.after);
 };

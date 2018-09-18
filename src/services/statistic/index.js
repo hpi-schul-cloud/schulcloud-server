@@ -1,7 +1,6 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const auth = require('@feathersjs/authentication');
 const hooks = require('./hooks/index');
 const moment = require('moment');
 const _ = require('lodash');
@@ -149,7 +148,6 @@ module.exports = function () {
 	const statisticsService = app.service('/statistics');
 
 	// Set up our before and after hooks
-	console.log(hooks.before);
 	app.service('statistics').hooks({
 		before: hooks.before,
 		after: hooks.after
