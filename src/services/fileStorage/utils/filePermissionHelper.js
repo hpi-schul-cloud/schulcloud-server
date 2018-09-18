@@ -22,7 +22,7 @@ class FilePermissionHelper {
 		return FilePermissionModel.find({key: fileKey}).exec().then(res => {
 
 			// check whether key and shareToken are identical to return file
-			if (res[0].key === (queries || {}).key && res[0].shareToken === (queries || {}).shareToken) {
+			if (res[0].key === (queries || {}).key && res[0].shareToken === (queries || {}).shareToken && typeof (queries || {}).shareToken !== 'undefined') {
 				return Promise.resolve({permission: "shared"});
 			}
 

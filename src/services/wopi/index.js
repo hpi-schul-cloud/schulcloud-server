@@ -10,6 +10,7 @@ const filePermissionHelper = require('../fileStorage/utils/filePermissionHelper'
 const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
 const filePostActionHelper = require('./utils/filePostActionHelper');
 const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
+const UserModel = require('../user/model');
 const docs = require('./docs');
 
 const wopiPrefix = '/wopi/files/';
@@ -30,15 +31,18 @@ class WopiFilesInfoService {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
 
 			// check for permissions
-			return filePermissionHelper.checkPermissions(account.userId, file.path).then(_ => {
+			return filePermissionHelper.checkPermissions(account.userId, file.key, ["can-read", "can-write"], true, {key: file.key, shareToken: file.shareToken}).then(_ => {
+				return UserModel.findById(account.userId).exec().then(user => {
 				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), {
 					// property descriptions: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#required-response-properties
 					BaseFileName: file.name,
 					OwnerId: account.userId, // if an user passes the permission check, it's valid to handle it as file-owner
 					UserId: account.userId,
 					Size: file.size,
-					Version: file['__v']
+					Version: file['__v'],
+					UserFriendlyName: `${user.firstName} ${user.lastName}`
 				}));
+			});
 			});
 		});
 	}
