@@ -1,6 +1,7 @@
 'use strict';
 
 const service = require('feathers-mongoose');
+const auth = require('@feathersjs/authentication');
 const hooks = require('./hooks/index');
 const moment = require('moment');
 const _ = require('lodash');
@@ -62,13 +63,13 @@ let promises = [
 	},
 	{
 		name: 'teachers',
-		promise: userModel.userModel.count({roles: '0000d186816abba584714c98'}).exec(),
-		model: userModel.userModel.find({roles: '0000d186816abba584714c98'}).exec()
+		promise: userModel.userModel.count({ roles: '0000d186816abba584714c98' }).exec(),
+		model: userModel.userModel.find({ roles: '0000d186816abba584714c98' }).exec()
 	},
 	{
 		name: 'students',
-		promise: userModel.userModel.count({roles: '0000d186816abba584714c99'}).exec(),
-		model: userModel.userModel.find({roles: '0000d186816abba584714c99'}).exec()
+		promise: userModel.userModel.count({ roles: '0000d186816abba584714c99' }).exec(),
+		model: userModel.userModel.find({ roles: '0000d186816abba584714c99' }).exec()
 	},
 	{
 		name: 'files',
@@ -99,7 +100,7 @@ class StatisticsService {
 		this.docs = swaggerDocs.statisticsService;
 	}
 
-	find({query, payload}) {
+	find({ query, payload }) {
 		return fetchStatistics()
 			.then(statistics => {
 				return statistics;
@@ -107,14 +108,14 @@ class StatisticsService {
 	}
 
 	get(id, params) {
-		return _.find(promises, {name: id}).model
+		return _.find(promises, { name: id }).model
 			.then(generic => {
-				let stats =	generic.map(gen => {
+				let stats = generic.map(gen => {
 					return moment(gen.createdAt).format('YYYY-MM-DD');
 				});
 
 				let counts = {};
-				stats.forEach((x) => { counts[x] = (counts[x] || 0)+1; });
+				stats.forEach((x) => { counts[x] = (counts[x] || 0) + 1; });
 
 				const ordered = {};
 				Object.keys(counts).sort().forEach((key) => {
@@ -133,7 +134,7 @@ class StatisticsService {
 					}
 				}
 
-				return (params.query.returnArray) ? {x,y} : ordered;
+				return (params.query.returnArray) ? { x, y } : ordered;
 			});
 	}
 }
@@ -148,8 +149,46 @@ module.exports = function () {
 	const statisticsService = app.service('/statistics');
 
 	// Set up our before and after hooks
-	statisticsService.hooks({
+	console.log(hooks.before);
+	app.service('statistics').hooks({
 		before: hooks.before,
 		after: hooks.after
 	});
+
+	/*app.service('statistics').hooks({
+		before: {
+			all: [
+				// Use normal functions
+				auth.hooks.authenticate('jwt')
+			],
+			find: [
+				// Use ES6 arrow functions
+				context => console.log('before find hook 1 ran'),
+				context => console.log('before find hook 2 ran')
+			],
+			get: [],
+			create: [],
+			update: [],
+			patch: [],
+			remove: []
+		},
+		after: {
+			all: [],
+			find: [],
+			get: [],
+			create: [],
+			update: [],
+			patch: [],
+			remove: []
+		},
+		error: {
+			all: [],
+			find: [],
+			get: [],
+			create: [],
+			update: [],
+			patch: [],
+			remove: []
+		}
+	});*/
 };
