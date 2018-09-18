@@ -236,7 +236,7 @@ exports.mapPaginationQuery = (hook) => {
 
 exports.checkCorrectCourseId = (hook) => {
 	let courseService = hook.app.service('courses');
-	const courseId = hook.data.courseId.toString();
+	const courseId = (hook.data.courseId || '').toString() || (hook.id || '').toString();
 	let query = {};
 
 	if (hook.data.courseGroupId) {
