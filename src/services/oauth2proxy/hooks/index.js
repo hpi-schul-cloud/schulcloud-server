@@ -10,7 +10,10 @@ const setSubject = hook => {
 				userId: hook.data.subject
 			}
 		}).then(pseudonyms => {
-			hook.data.subject = pseudonyms.data[0].token
+			const pseudonym = pseudonyms.data[0].token;
+			const iframe = `<iframe title="username" src="https://bp.schul-cloud.org/account/username/${pseudonym}" 
+style="height: 26px; width: 180px; border: none;"></iframe>`;
+			hook.data.subject = iframe;
 			return hook
 		})
 	});
