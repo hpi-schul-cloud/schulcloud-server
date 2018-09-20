@@ -9,6 +9,9 @@
 	"services": {
 		"calendar": "http://localhost:3000",
 		"content": "https://schul-cloud.org:8090",
-		"notification": "http://localhost:3031"
+		"notification": "http://localhost:3031",
+		"hydra": {
+			"adminUrl": "http://localhost:9001"
+		}
 	}
 }

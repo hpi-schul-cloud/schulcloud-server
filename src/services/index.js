@@ -26,6 +26,7 @@ const statistic = require('./statistic');
 const socket = require('./socket');
 const pseudonym = require("./pseudonym");
 const consent = require('./consent');
+const oauth2 = require('./oauth2');
 
 const mongoose = require('mongoose');
 
@@ -61,4 +62,5 @@ module.exports = function () {
     app.configure(socket);
     app.configure(pseudonym);
     app.configure(consent);
+    app.configure(oauth2);
 };
