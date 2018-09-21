@@ -72,6 +72,18 @@ const filterValidUsers = context => {
 		}
 	}).then(courses => {
 		for (let course of courses.data) {
+			validUserIds = validUserIds.concat(course.userIds)
+			for (let _class of course.classIds) {
+				validUserIds = validUserIds.concat(_class.userIds)
+			}
+		}
+		validUserIds = validUserIds.map(element => element.toString())
+		context.result.data = context.result.data.filter(pseudonym =>
+			validUserIds.includes(pseudonym.userId._id.toString())
+		);
+		return context
+	})
+}
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
