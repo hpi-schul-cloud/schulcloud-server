@@ -61,7 +61,34 @@ describe('consent service', function() {
         });
   });
   
-  it('doesnt create second consent for same user');
+  it('patches instead of creating second consent for same user', function () {
+    const userId = "58b40278dac20e0645353e3a";
+    return consentService
+      .create({
+        "userId": userId,
+        })
+        .then(consent => {
+          return consentService.create({
+            "userId": userId,
+            "userConsent": {
+              "privacyConsent": true,
+              "termsOfUseConsent": true,
+              "thirdPartyConsent": true,
+              "researchConsent": true
+            }
+          });
+        })
+        .then(consent => {
+          return consentService.find({query: {userId: userId}});
+        })
+        .then(results => {
+          chai.expect(results.total).to.equal(1);
+          chai.expect(results.data[0]).to.have.property("userConsent");
+          chai.expect(results.data[0].userConsent).to.have.property("privacyConsent");
+          chai.expect(results.data[0].userConsent.privacyConsent).to.equal(true);
+        });
+  });
+  
 
   it('finds consent versions', function() {
     return consentVersionService

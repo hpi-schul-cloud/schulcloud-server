@@ -14,7 +14,7 @@ const injectCourseId = (hook) => {
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USERGROUP_CREATE')],
 	find: [hooks.disable()],
 	get: [hooks.disable()],
 	create: [globalHooks.injectUserId, injectCourseId, globalHooks.ifNotLocal(globalHooks.checkCorrectCourseId)],
@@ -31,4 +31,14 @@ exports.after = {
 	update: [],
 	patch: [],
 	remove: []
+};
+
+exports.beforeShare = {
+	all: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USERGROUP_CREATE')],
+	find: [],
+	get: [globalHooks.ifNotLocal(globalHooks.checkCorrectCourseId)],
+	create: [globalHooks.injectUserId],
+	update: [hooks.disable()],
+	patch: [hooks.disable()],
+	remove: [hooks.disable()]
 };
