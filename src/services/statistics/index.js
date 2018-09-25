@@ -2,6 +2,7 @@
 
 const ua = require('universal-analytics');
 const hooks = require('./hooks');
+const logger = require('winston');
 
 const StatisticsModel = require('./model');
 
@@ -29,12 +30,13 @@ class Service {
             path: data.dp,
             dl: data.dl,
             qt: data.qt,
-            cid: data.cid
+            cid: data.cid,
+            swEnabled: data.swEnabled
         });
         return model.save()
-            .then(_ => 'succes')
+            .then(_ => 'success')
             .catch(err => {
-                console.log(err); // eslint-disable-line no-console
+                logger.error(err); 
                 return 'err';
             });
     }

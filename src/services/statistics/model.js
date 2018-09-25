@@ -18,7 +18,9 @@ const StatisticsSchema = new Schema({
     path: { type: String, required: true },
     dl: { type: String, required: true },
     qt: { type: Number, 'default': 0 },
-    cid: { type: String, required: true }
+    cid: { type: String, required: true },
+
+    swEnabled: { type: Boolean, 'default': false }
 
 });
 
