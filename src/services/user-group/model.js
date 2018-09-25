@@ -41,6 +41,7 @@ const courseModel = mongoose.model('course', getUserGroupSchema({
 	color: {type: String, required: true, 'default': '#1DE9B6'},
 	startDate: {type: Date},
 	untilDate: {type: Date},
+	shareToken: { type: String, unique: true },
 	times: [timeSchema]
 }));
 
