@@ -40,7 +40,10 @@ app.use(compress())
 	.options('*', cors())
 	.use(cors())
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
-	.use('/', serveStatic(app.get('public')))
+//	.use('/', serveStatic(app.get('public')))
+	.use('/',(req,res)=>{
+		res.status(308).redirect('/docs/');
+	})
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({extended: true}))
 
