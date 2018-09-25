@@ -10,7 +10,7 @@ const filePermissionHelper = require('../fileStorage/utils/filePermissionHelper'
 const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
 const filePostActionHelper = require('./utils/filePostActionHelper');
 const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
-const UserModel = require('../user/model');
+const UserModel = require('../user/model').userModel;
 const docs = require('./docs');
 
 const wopiPrefix = '/wopi/files/';
@@ -128,7 +128,7 @@ class WopiFilesContentsService {
 				};
 
 				return rp(options).then(_ => {
-					return FileModel.findOneAndUpdate({_id: fileId}, {$inc: { __v: 1}, updatedAt: Date.now()}).exec()
+					return FileModel.findOneAndUpdate({_id: fileId}, {$inc: { __v: 1}, updatedAt: Date.now(), size: data.length}).exec()
 						.then(_ => {
 							return Promise.resolve({lockId: file.lockId});
 						});
