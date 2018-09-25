@@ -69,11 +69,22 @@ const mapInObjectToArray = (hook) => {
 	return hook;
 };
 
+const mapToUpsert = (hook) => {
+	hook.params.mongoose = Object.assign({}, hook.params.mongoose, {upsert: true});
+	hook.params.query = {userId: hook.data.userId};
+
+	return hook.app.service("consents").patch(null, hook.data, hook.params)
+		.then(result => {
+			hook.result = result[0];
+			return hook;
+		});
+};
+
 exports.before = {
 	all: [],
 	find: [auth.hooks.authenticate('jwt'), globalHooks.ifNotLocal(restrictToUserOrRole), mapInObjectToArray],
 	get: [auth.hooks.authenticate('jwt')],
-	create: [addDates],
+	create: [addDates, mapToUpsert],
 	update: [auth.hooks.authenticate('jwt'), addDates],
 	patch: [auth.hooks.authenticate('jwt'), addDates],
 	remove: [auth.hooks.authenticate('jwt'),]
@@ -85,17 +96,50 @@ const redirectDic = {
 	ue18: '/firstLogin/UE18/',
 	existing: '/firstLogin/existing/',
 	existingGeb: '/firstLogin/existingGeb14',
+	existingEmpl: '/firstLogin/existingEmployee',
 	normal: '/dashboard/',
-	err: '/consentError'
+	err: '/firstLogin/consentError'
+};
+
+const userHasOneRole = (user, roles) => {
+	if (!(roles instanceof Array)) roles = [roles];
+	let value = false;
+	user.roles.map(role => {
+		if (roles.includes(role.name)) {
+			value = true;
+		}
+	});
+	return value;
 };
 
 const accessCheck = (consent, app) => {
 	let access = true;
 	let redirect = redirectDic['ue18'];
 	let requiresParentConsent = true;
+	let user;
 
-	return app.service('users').get(consent.userId)
-		.then(user => {
+	return app.service('users').get((consent.userId), { query: { $populate: 'roles'}})
+		.then(response => {
+			user = response;
+			if (userHasOneRole(user, ["demoTeacher", "demoStudent"])) {
+				requiresParentConsent = false;
+				redirect = redirectDic['normal'];
+				return Promise.resolve();
+			}
+
+			if (userHasOneRole(user, ["teacher", "administrator"])) {
+				let userConsent = consent.userConsent || {};
+				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
+					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
+						access = false;
+						requiresParentConsent = false;
+						redirect = redirectDic['existingEmpl'];
+						return Promise.resolve();
+					}
+				redirect = redirectDic['normal'];
+				return Promise.resolve();
+			}
+
 			if (!user.birthday) {
 				access = false;
 				requiresParentConsent = false;
@@ -137,10 +181,17 @@ const accessCheck = (consent, app) => {
 			}
 		})
 		.then(() => {
+			if (redirect == redirectDic['normal'] && !(user.preferences || {}).firstLogin) {
+				let updatedPreferences = user.preferences || {};
+				updatedPreferences.firstLogin = true;
+				return app.service('users').patch(user._id, {preferences: updatedPreferences});
+			}
+			return;
+		}).then(() => {
 			consent.access = access;
 			consent.redirect = redirect;
 			consent.requiresParentConsent = requiresParentConsent;
-			return Promise.resolve(consent);
+			return consent;
 		})
 		.catch(err => {
 			return Promise.reject(err);

@@ -1,5 +1,6 @@
 const errors = require('feathers-errors');
 const bcrypt = require('bcryptjs');
+const userModel = require('../user/model').userModel;
 
 const rnd=(max)=>{
 	return Math.floor(Math.random() * Math.floor(max));
@@ -21,21 +22,33 @@ module.exports = function (app) {
         
 		create(data, params) {
 			return new Promise( (resolve,reject)=>{
-				if( data.toHash==undefined ){ 
+				if( data.toHash===undefined ){
 					reject(  new errors.BadRequest('Please set toHash key.') ); 
 				}
 				bcrypt.genSalt(8, function(err, salt) {
-					if(err!=null){
+					if(err!==null){
 						reject(  new errors.BadRequest('Can not create salt.') ); 
 					}
 					bcrypt.hash(data.toHash, salt, function(err, hash) {
-						if(err!=null){
+						if(err!==null){
 							reject(  new errors.BadRequest('Can not create hash.') ); 
 						}
-						if(data.save==true){
+						if(data.save===true || data.save==="true"){
 							hash=hash.replace(/\/|\$|\./g,rndChar());
 						}
-						resolve(hash);		
+						if(data.patchUser===true || data.patchUser==="true"){
+							userModel.findOneAndUpdate(
+								{'email': data.toHash},
+								{
+									'$set': {
+										'importHash': hash
+									}
+								}
+							).then(_ => {
+								resolve(hash);
+							});
+						}
+						resolve(hash);
 					});
 				});	
 				
