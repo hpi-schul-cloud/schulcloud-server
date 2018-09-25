@@ -1,0 +1,19 @@
+{
+	"model":{
+		"pin":"123"
+	},
+	"id":"123",
+	"responses":[
+		{
+			"methods":["GET","FIND"],
+			"roles":["student","teacher"],
+			"code":404,
+			"response":{},
+			"query":{				
+				"id":"123",			
+				"age":"18"		
+			}
+		}
+		
+	]
+}

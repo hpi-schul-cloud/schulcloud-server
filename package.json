@@ -28,7 +28,8 @@
     "mocha": "NODE_ENV=test mocha test/ --recursive",
     "mocha-windows": "set NODE_ENV=test && mocha test/ --recursive",
     "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
-    "mocha-test-specific-windows": "set NODE_ENV=test && mocha test/app.hooks.test.js"
+    "mocha-test-specific-windows": "set NODE_ENV=test && mocha test/app.hooks.test.js",
+    "hardening-test": "mocha --delay --timeout 10000 --slow 0 ./test/hardening/index"
   },
   "dependencies": {
     "aws-sdk": "^2.306.0",

@@ -1,0 +1,24 @@
+{
+	"model":{
+		"firstName":"automatically",
+		"lastName":"createByHardeningTest"
+	},
+	"moongose": {
+		"path":"user/model.js",
+		"model":"userModel"
+	},
+	"id":"123",
+	"responses":[
+		{
+			"methods":["GET","FIND"],
+			"roles":["student","teacher"],
+			"code":404,
+			"response":{},
+			"query":{				
+				"id":"123",			
+				"age":"18"		
+			}
+		}
+		
+	]
+}

@@ -1,6 +1,8 @@
 const docs = require('../../../src/app').docs.paths;
 const logger = require('winston');
 
+
+
 module.exports = getAllRoutes = ()=>{
 	logger.info('Fetch all routes and methodes from server app...');
 	let convert={};
@@ -29,7 +31,6 @@ module.exports = getAllRoutes = ()=>{
 		}
 		convert[route].route='/'+route;
 		convert[route].name=route;
-		
 	});
 	return convert
 }

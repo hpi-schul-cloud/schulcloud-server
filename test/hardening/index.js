@@ -7,12 +7,14 @@ const mongoose = require('mongoose');
 const logger = require('winston');
 
 const host=process.env.HOST||'http://localhost:3030';
+const showErrorNotes = false;
+const showResponse = true;
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
 const should = chai.should();
-const {getAllRoutes,createLogins,clearLogins} = require('./components/');
+const {getAllRoutes,createLogins,clearLogins,importDescriptionsHelper,readConfig} = require('./components/');
 
 
 /************************************ 
@@ -21,28 +23,29 @@ const {getAllRoutes,createLogins,clearLogins} = require('./components/');
  //methods: [ 'find', 'post', 'get', 'put', 'patch', 'delete' ]
 let tests={};
 tests.find = (route,login)=>{ 	
-		const code    = route.code||200;
-		const message = 'route='+route.name+' methode=get role='+login.name+(code!=200 ? ' code='+code : '');
-		it(message, done=>{		//replace with which code is expected 
-			login.agent
-			.get(route.route)
-			.set('Authorization',login.Authorization)
-			.query(route.query||{})
-			.end((err, response)=>{
-				if(err) done(err);
-				//console.log('<------------------------------------------------>');
-				//console.log( response.status );
-				
-				
-				if(response.body.data){
-					response.body.data.should.be.a('array');
-				//	console.log( response.body.data.length );
-				}
-				should.not.exist(err);
-				response.should.have.status(code);
-				done();
-			});
-		})
+	const {id,query,code,response,data} = readConfig('find',route,login);
+	//console.log(id,query,code,response,data);
+	
+	const message = 'route='+route.name+' methode=get role='+login.name+(code!=200 ? ' code='+code : '');
+	it(message, done=>{		//replace with which code is expected 
+		login.agent
+		.get(route.route)
+		.set('Authorization',login.Authorization)
+		.query(query)
+		.end((err, response)=>{
+			if(showResponse){
+				logger.info(err ? '[error]\n' : '[success]\n',response.status+'\n',response.body);
+			}
+			if(err) done(err);
+						
+			if(response.body.data){
+				response.body.data.should.be.a('array');
+			}
+			//should.not.exist(err);
+			response.should.have.status(code);
+			done();
+		});
+	})
 }
 
 tests.post = (route,login)=>{
@@ -89,6 +92,7 @@ tests.delete = (route,login)=>{
 /**************************************** 
  *	Execute every task step by step		*
  ****************************************/
+ let rollback;
 //create login accounts
 new Promise( (resolve,reject)=>{
 	logger.info('Request existing roles...');
@@ -107,8 +111,18 @@ new Promise( (resolve,reject)=>{
 		logger.error('Can not create login data',err);
 		throw err
 	});		
-}).catch(err=>{
-	logger.error('test data can not create.',err);
+}).then(data=>{
+	rollback=data;		//pass login data to catchs for clear it
+	const iDH=importDescriptionsHelper({roles:data.roles,showErrorNotes});
+	const updateData=iDH(data);
+	//console.log(updateData);
+	return updateData;
+	
+})
+.catch(err=>{
+	logger.error('Test data can not create.',err);
+	logger.info('Try to clear all data from db.');
+	clearLogins(rollback);
 })
 .then(data=>{		
 	//execute tests
@@ -144,4 +158,7 @@ new Promise( (resolve,reject)=>{
 	
 }).catch(err=>{
 	logger.error('Test can not execute.',err);
+	logger.info('Try to clear all data from db.');
+	clearLogins(rollback);
+	//clear other data
 });

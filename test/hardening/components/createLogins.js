@@ -4,10 +4,17 @@ const getJWT = require('./getJWT');
 
 module.exports = (save)=>{
 	logger.info('Create logins data in db...');
+	if(process.env.TEST_PW===undefined){
+		return Promise.reject('The env variable TEST_PW is not set.');
+	}
+	if(process.env.TEST_HASH===undefined){
+		return Promise.reject('The env variable TEST_HASH is not set.');
+	}
 	if(save==undefined) save={};
+	
 	return new Promise( (resolve,reject)=>{
 		const roles    = save.roles;
-		save.schoolId  = mongoose.Types.ObjectId(); //or better create school?
+		const schoolId  = mongoose.Types.ObjectId(); //or better create school?
 		const password = process.env.TEST_PW.trim(); 	
 		const passwordHash = process.env.TEST_HASH.trim(); 
 		
@@ -20,7 +27,8 @@ module.exports = (save)=>{
 				email:role.name+'@hardening-test.de',
 				schoolId: save.schoolId,
 				firstName: role.name,
-				lastName: 'hardening-test'
+				lastName: 'hardening-test',
+				schoolId: schoolId
 			}		
 		});
 
@@ -67,6 +75,7 @@ module.exports = (save)=>{
 				});
 				
 				Promise.all(promiseToken).then(()=>{
+					logger.info('Create logins ready!');
 					resolve(save);
 				});
 			});	
