@@ -30,9 +30,25 @@ class WopiFilesInfoService {
 		return FileModel.findOne({_id: fileId}).then(file => {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
 
+			let splitPath = file.path.split('/');
+			let isCourse = splitPath[0] == 'courses';
+			let userService = this.app.service('users');
+
 			// check for permissions
 			return filePermissionHelper.checkPermissions(account.userId, file.key, ["can-read", "can-write"], true, {key: file.key, shareToken: file.shareToken}).then(_ => {
-				return UserModel.findById(account.userId).exec().then(user => {
+				return userService.get(account.userId, { query: { $populate: 'roles'}}).then(user => {
+					let isTeacher = false;
+
+					user.roles.map(role => {
+						if (role.name === 'teacher')
+							isTeacher = true;
+					});
+
+					let canWrite = true;
+
+					if (isCourse && !isTeacher || file.studentCanEdit)
+						canWrite = false;
+
 				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), {
 					// property descriptions: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#required-response-properties
 					BaseFileName: file.name,
@@ -40,7 +56,8 @@ class WopiFilesInfoService {
 					UserId: account.userId,
 					Size: file.size,
 					Version: file['__v'],
-					UserFriendlyName: `${user.firstName} ${user.lastName}`
+					UserFriendlyName: `${user.firstName} ${user.lastName}`,
+					UserCanWrite: canWrite
 				}));
 			});
 			});

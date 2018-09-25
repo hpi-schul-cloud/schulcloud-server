@@ -457,7 +457,7 @@ class NewFileService {
 	 * @returns new File
 	 */
 	create(data, params) {
-		const {path, name, key} = data;
+		const {path, name, key, studentCanEdit, schoolId} = data;
 
 		let signedUrlService = this.app.service('fileStorage/signedUrl');
 		let fType = name.split('.');
@@ -480,7 +480,6 @@ class NewFileService {
 			};
 
 			return rp(options).then(_ => {
-				//TODO: Get SchoolId from User
 				return FileModel.create({
 					path,
 					name,
@@ -488,7 +487,9 @@ class NewFileService {
 					size: buffer.length,
 					flatFileName: flatFileName,
 					type: returnFileType(name),
-					thumbnail: 'https://schulcloud.org/images/login-right.png'
+					thumbnail: 'https://schulcloud.org/images/login-right.png',
+					studentCanEdit,
+					schoolId
 				})
 					.then(_ => {
 						return Promise.resolve();
