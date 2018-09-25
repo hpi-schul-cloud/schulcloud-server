@@ -186,7 +186,8 @@ class SignedUrlService {
 	 * @param flatFileName a pregenerated file name for the flat storage
 	 * @returns {Promise}
 	 */
-	create({path, fileType, action, flatFileName}, params) {
+
+	create({path, fileType, action, download, flatFileName}, params) {
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
 		let fileName = encodeURIComponent(pathUtil.basename(path));
@@ -200,8 +201,8 @@ class SignedUrlService {
 		// all files are uploaded to a flat-storage architecture without real folders
 		// converts the real filename to a unique one in flat-storage
 		// if action = getObject, file should exist in proxy db
-		let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({flatFileName});
-
+    let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({flatFileName});
+    
 		return fileProxyPromise.then(res => {
 			if (!res) return;
 
@@ -212,18 +213,20 @@ class SignedUrlService {
 				let externalSchoolId;
 				if (p.permission === 'shared') externalSchoolId = res.schoolId;
 
-				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId)
+				let header =  {							
+					// add meta data for later using
+					"Content-Type": fileType,
+					"x-amz-meta-path": dirName,
+					"x-amz-meta-name": fileName,
+					"x-amz-meta-flat-name": flatFileName,
+					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"				
+				};
+
+				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId, download)
 					.then(res => {
 						return {
 							url: res,
-							header: {
-								// add meta data for later using
-								"Content-Type": fileType,
-								"x-amz-meta-path": dirName,
-								"x-amz-meta-name": encodeURIComponent(fileName),
-								"x-amz-meta-flat-name": flatFileName,
-								"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
-							}
+							header: header
 						};
 					});
 			});

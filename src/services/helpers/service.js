@@ -37,6 +37,8 @@ module.exports = function (app) {
 						html: content.html,
 						text: content.text
 					});
+				}).catch(err => {
+					return Promise.reject(err);
 				});
 		}
 	}

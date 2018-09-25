@@ -67,7 +67,7 @@ class FilePermissionHelper {
 					if (!res || res.length <= 0) {
 						return LessonModel.find({
 							$and: [
-								{ "contents.content.text": { $regex: filePath, $options: 'i'}},
+								{ "contents.content.text": { $regex: decodeURIComponent(filePath), $options: 'i'}},
 								{ "shareToken": { $exists: true }}
 								]
 						}).exec().then(res => {

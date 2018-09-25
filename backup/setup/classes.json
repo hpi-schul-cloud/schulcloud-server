@@ -13,6 +13,7 @@
 		{ "$oid": "599ec14d8e4e364ec18ff46d"},
 		{ "$oid": "59ae89b71f513506904e1cc9"}
 	],
+	"nameFormat" : "static",
 	"__v" : 0
 }
 ]

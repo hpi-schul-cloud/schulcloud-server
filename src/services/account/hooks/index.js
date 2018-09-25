@@ -65,13 +65,22 @@ const validatePassword = (hook) => {
 	if (!hook.params.account.userId)
 		return hook;
 
-	return Promise.all([globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_CREATE'), globalHooks.hasRoleNoHook(hook, hook.id, 'student', true), globalHooks.hasRole(hook, hook.params.account.userId, 'superhero')])
+	return Promise.all([
+		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_CREATE'),
+		globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
+		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'ADMIN_VIEW'),
+		globalHooks.hasRoleNoHook(hook, hook.id, 'teacher', true),
+		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero')])
 		.then(results => {
-			if ((results[0] && results[1]) || results[2]) {
+			// if manager has STUDENT_CREATE (=is teacher) and pw-patched user is student
+					// if manager has ADMIN_VIEW (=is admin) and pw-patched user is teacher or student
+							// if superhero
+									// if my accountid == pw-patched accountid (edit own account in user list...)
+			if ((results[0] && results[1]) || (results[2] && (results[1] || results[3])) || results[4] || hook.params.account._id.toString() === hook.id) {
 				return hook;
 			} else {
 				if (password && !password_verification)
-					throw new errors.Forbidden('Password was given, but no verification password');
+					throw new errors.Forbidden('Du darfst das Passwort dieses Nutzers nicht ändern oder die Passwortfelder wurden falsch ausgefüllt.');
 
 				if (password_verification) {
 					return new Promise((resolve, reject) => {
@@ -79,7 +88,7 @@ const validatePassword = (hook) => {
 							if (err)
 								reject(new errors.BadRequest('Ups, bcrypt ran into an error.'));
 							if (!res)
-								reject(new errors.BadRequest('Password does not match!'));
+								reject(new errors.BadRequest('Dein Passwort ist nicht korrekt!'));
 							resolve();
 						});
 					});
