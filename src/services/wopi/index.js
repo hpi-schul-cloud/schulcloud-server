@@ -46,7 +46,7 @@ class WopiFilesInfoService {
 
 					let canWrite = true;
 
-					if (isCourse && !isTeacher || file.studentCanEdit)
+					if (isCourse && !isTeacher && !file.studentCanEdit)
 						canWrite = false;
 
 				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), {
