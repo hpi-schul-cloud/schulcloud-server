@@ -51,10 +51,10 @@ module.exports = function () {
     const app = this;
 
     // Initialize our service with any options it requires
-    app.use('/statistics', new Service());
+    app.use('/analytics', new Service());
 
     // Get our initialize service to that we can bind hooks
-    const contentService = app.service('/statistics');
+    const contentService = app.service('/analytics');
 
     // Set up our before hooks
     contentService.before(hooks.before);

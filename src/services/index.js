@@ -8,7 +8,7 @@ const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
-const statistics = require('./statistics');
+const analytics = require('./analytics');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
@@ -37,6 +37,7 @@ module.exports = function () {
     mongoose.Promise = global.Promise;
 
     app.configure(authentication);
+    app.configure(analytics);
     app.configure(user);
     app.configure(role);
     app.configure(account);
@@ -48,7 +49,6 @@ module.exports = function () {
     app.configure(content);
     app.configure(calendar);
     app.configure(lesson);
-    app.configure(statistics);
     app.configure(fileStorage);
     app.configure(link);
     app.configure(news);
