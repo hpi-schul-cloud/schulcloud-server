@@ -4,7 +4,7 @@ const ua = require('universal-analytics');
 const hooks = require('./hooks');
 const logger = require('winston');
 
-const StatisticsModel = require('./model');
+const AnalyticsModel = require('./model');
 
 class Service {
 
@@ -19,7 +19,7 @@ class Service {
             let visitor = ua(data.tid);
             visitor.pageview(data).send();
         }
-        let model = new StatisticsModel({
+        let model = new AnalyticsModel({
             firstPaint: data.cm1,
             timeToInteractive: data.cm2,
             pageLoaded: data.cm3,

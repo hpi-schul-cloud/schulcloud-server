@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const StatisticsSchema = new Schema({
+const AnalyticsSchema = new Schema({
 
     createdAt: { type: Date, 'default': Date.now },
 
@@ -24,4 +24,4 @@ const StatisticsSchema = new Schema({
 
 });
 
-module.exports = mongoose.model('Statistics', StatisticsSchema);
+module.exports = mongoose.model('Analytics', AnalyticsSchema);
