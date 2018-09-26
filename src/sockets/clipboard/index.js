@@ -4,6 +4,8 @@ const socketio = require('feathers-socketio');
 const siofu = require("socketio-file-upload");
 const logger = require('winston');
 const path = require("path");
+const fileType = require('file-type');
+const readChunk = require('read-chunk');
 
 module.exports = function () {
 	const app = this;
@@ -33,34 +35,42 @@ module.exports = function () {
 			app.service('users').get(socket.client.userId).then((result) => { 
 				user = result;
 				course.users[user._id] = user;
-				socket.nsp.to(courseId).emit("clipboardState", course);
+				io.of('clipboard').to(courseId).emit('clipboardState', course);
 			});
 
 			socket.on("ADD_MEDIA", (media) => {
 				media.id = ++course.lastId;
 				course.media.push(media);
-				socket.nsp.to(courseId).emit("clipboardState", course);
+				io.of('clipboard').to(courseId).emit('clipboardState', course);
 			});
 
 			socket.on("ADD_TO_BOARD", (media) => {
+				if(!media) return;
 				course.board[media.id] = media;
-				socket.nsp.to(courseId).emit("clipboardState", course);
+				io.of('clipboard').to(courseId).emit('clipboardState', course);
 			});
 
 			socket.on("UPDATE_MEDIA_ON_BOARD", (media) => {
+				if(!media) return;
 				course.board[media.id] = media;
-				socket.nsp.to(courseId).emit("clipboardState", course);
+				io.of('clipboard').to(courseId).emit('clipboardState', course);
 			});
 
-			initUploadSocket(socket, (filename) => {
+			socket.on("REMOVE_MEDIA_FROM_BOARD", (media) => {
+				if(!media) return;
+				delete course.board[media.id];
+				io.of('clipboard').to(courseId).emit('clipboardState', course);
+			});
+
+			initUploadSocket(socket, (uploadedFile) => {
 				let file = {
-					file: filename,
+					file: path.basename(uploadedFile.pathName),
 					sender: user && (user.firstName + " " + user.lastName),
-					type: "image",
+					type: fileType(readChunk.sync(uploadedFile.pathName, 0, 4100)),
 					id: ++course.lastId,
 				};
 				course.media.push(file);
-				socket.nsp.to(courseId).emit("clipboardState", course);
+				io.of('clipboard').to(courseId).emit('clipboardState', course);
 			});
 		});
 	}));
@@ -74,7 +84,11 @@ module.exports = function () {
 			});
 
 			uploader.on("saved", function(event){
-				onUpload(path.basename(event.file.pathName));
+				onUpload(event.file);
+			});
+
+			uploader.on("error", function(event){
+				logger.error(event);
 			});
 
 		return uploader;

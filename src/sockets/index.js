@@ -1,6 +1,6 @@
 'use strict';
 
-const socketio = require('@feathersjs/socketio');
+const socketio = require('feathers-socketio');
 const clipboard = require('./clipboard');
 
 module.exports = function () {

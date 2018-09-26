@@ -31,7 +31,6 @@
     "mocha-test-specific-windows": "set NODE_ENV=test && mocha test/app.hooks.test.js"
   },
   "dependencies": {
-    "@feathersjs/socketio": "^3.2.4",
     "aws-sdk": "^2.7.24",
     "bcryptjs": "latest",
     "body-parser": "^1.15.2",
@@ -58,6 +57,7 @@
     "feathers-rest": "^1.6.0",
     "feathers-socketio": "^2.0.1",
     "feathers-swagger": "^0.3.2",
+    "file-type": "^9.0.0",
     "freeport": "^1.0.5",
     "istanbul": "^0.4.5",
     "jwt-decode": "^2.2.0",
@@ -74,9 +74,11 @@
     "pretty-error": "^2.0.3",
     "querystring": "^0.2.0",
     "randexp": "^0.4.6",
+    "read-chunk": "^3.0.0",
     "request-promise-native": "^1.0.3",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
+    "socketio": "^1.0.0",
     "socketio-file-upload": "^0.6.2",
     "strip-js": "^1.0.6",
     "winston": "^2.3.0"
