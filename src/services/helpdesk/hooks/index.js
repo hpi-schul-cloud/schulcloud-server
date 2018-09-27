@@ -36,7 +36,7 @@ const sendEmail = () => {
 					(hook.params.account||{}).username||"nouser",
 					data.category||"nocategory",
 					data.subject||"nosubject",
-					data.cloud)
+					data.cloud||"Schul-Cloud")
 			}
 		});
 		return Promise.resolve(hook);
