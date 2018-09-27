@@ -23,9 +23,11 @@ const notification = require('./notification');
 const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
-const clipboard = require('./clipboard');
-
+const pseudonym = require("./pseudonym");
+const consent = require('./consent');
 const mongoose = require('mongoose');
+
+const clipboard = require('./clipboard');
 
 module.exports = function () {
     const app = this;
@@ -48,13 +50,17 @@ module.exports = function () {
     app.configure(fileStorage);
     app.configure(link);
     app.configure(news);
-	app.configure(helpers);
-	app.configure(homework);
-	app.configure(federalState);
-	app.configure(passwordRecovery);
-	app.configure(notification);
-	app.configure(releases);
-	app.configure(helpdesk);
+
+    app.configure(helpers);
+    app.configure(homework);
+    app.configure(federalState);
+    app.configure(passwordRecovery);
+    app.configure(notification);
+    app.configure(releases);
+    app.configure(helpdesk);
     app.configure(statistic);
+    app.configure(pseudonym);
+    app.configure(consent);
+
     app.configure(clipboard);
 };

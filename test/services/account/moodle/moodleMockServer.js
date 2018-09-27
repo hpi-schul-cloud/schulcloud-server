@@ -3,7 +3,6 @@ const promisify = require("es6-promisify");
 const bodyParser = require('body-parser');
 const freeport = promisify(require('freeport'));	// uses promises with freeport
 
-
 module.exports = function({
 	port=null,
 	acceptUsers,

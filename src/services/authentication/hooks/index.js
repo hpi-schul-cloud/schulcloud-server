@@ -10,6 +10,9 @@ const injectUserId = (hook) => {
 		if(account.userId) {
 			hook.params.payload.userId = account.userId;
 		}
+		if( account.systemId ){
+			hook.params.payload.systemId = account.systemId;
+		}
 		return hook;
 	});
 };

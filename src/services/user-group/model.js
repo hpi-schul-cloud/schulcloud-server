@@ -41,6 +41,7 @@ const courseModel = mongoose.model('course', getUserGroupSchema({
 	color: {type: String, required: true, 'default': '#1DE9B6'},
 	startDate: {type: Date},
 	untilDate: {type: Date},
+	shareToken: { type: String, unique: true },
 	times: [timeSchema]
 }));
 
@@ -49,8 +50,15 @@ const courseGroupModel = mongoose.model('courseGroup', getUserGroupSchema({
 	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
 }));
 
+const nameFormats = ["static", "gradeLevel+name" ];
+
 const classModel =  mongoose.model('class', getUserGroupSchema({
-	teacherIds: [{type: Schema.Types.ObjectId, ref: 'user', required: true}]
+	teacherIds: [{type: Schema.Types.ObjectId, ref: 'user', required: true}],
+	invitationLink: {type: String},
+	name: {type: String, required: false},
+	year: {type: Schema.Types.ObjectId, ref: 'year'},
+	gradeLevel: {type: Schema.Types.ObjectId, ref: 'gradeLevel'},
+	nameFormat: {type: String, enum: nameFormats, default: "static"}
 }));
 const gradeModel =  mongoose.model('grade', getUserGroupSchema());
 
