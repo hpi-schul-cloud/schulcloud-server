@@ -14,6 +14,8 @@ describe('link service', function () {
 	});
 
 	it(`generates a link of length ${service.Model.linkLength} that has the correct target set`, function () {
+		this.timeout(10000);
+		
 		const url = "https://schul-cloud.org:8080/ping/";
 		return service.create({target: url})
 			.then(data => {

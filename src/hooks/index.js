@@ -236,7 +236,7 @@ exports.mapPaginationQuery = (hook) => {
 
 exports.checkCorrectCourseId = (hook) => {
 	let courseService = hook.app.service('courses');
-	const courseId = hook.data.courseId.toString();
+	const courseId = (hook.data.courseId || '').toString() || (hook.id || '').toString();
 	let query = {};
 
 	if (hook.data.courseGroupId) {
@@ -525,17 +525,17 @@ exports.getAge = function (dateString) {
 	return age;
 };
 
-exports.arrayIncludes = (array,includesList,excludesList) =>{
-	includesList.forEach(item=>{
-		if( array.includes(item)==false ){
+exports.arrayIncludes = (array, includesList, excludesList) =>{
+	for(let i=0; i < includesList.length; i++){
+		if(array.includes(includesList[i]) === false){
 			return false;
 		}
-	});
-	excludesList.forEach(item=>{
-		if( array.includes(item) ){
+	}
+
+	for(let i=0; i<excludesList.length; i++){
+		if(array.includes(excludesList[i])){
 			return false;
 		}
-	});
+	}
 	return true;
 };
-

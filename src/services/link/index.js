@@ -20,7 +20,7 @@ module.exports = function () {
 	let linkService = service(options);
 
 	function redirectToTarget(req, res, next) {
-		if(req.method == 'GET' && !req.query.target) {	// capture these requests and issue a redirect
+		if(req.method === 'GET' && !req.query.target) {	// capture these requests and issue a redirect
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then(data => res.redirect(data.target))
@@ -47,9 +47,15 @@ module.exports = function () {
 			}
 			
 			// base link
-			if (data.role === 'teacher') linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}/byemployee`;
-			if (data.role === 'student') linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}`;
-			if (linkData.hash) linkData.link += `?id=${linkData.hash}`;
+			if (data.role === 'student') {
+				linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}`;
+			} else {
+				linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}/byemployee`;
+			}
+			if (linkData.hash) linkData.link += `?importHash=${linkData.hash}`;
+			
+			// remove possible double-slashes in url except the protocol ones
+			linkData.link = linkData.link.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
 			
 			// generate short url
 			await app.service('link').create({target: linkData.link}).then(generatedShortLink => {
@@ -57,6 +63,9 @@ module.exports = function () {
 			}).catch(err => {
 				return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
 			});
+			
+			// remove possible double-slashes in url except the protocol ones
+			linkData.shortLink = linkData.shortLink.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
 			
 			return linkData;
 		}
