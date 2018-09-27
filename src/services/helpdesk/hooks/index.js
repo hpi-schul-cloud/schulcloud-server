@@ -27,19 +27,19 @@ exports.before = {
 
 const sendEmail = () => {
 	return hook=>{
-	  const data=hook.data||{};
-	   globalHooks.sendEmail(hook, {
-			 "subject": "Ein Problem wurde gemeldet.",
-			 "roles": ["helpdesk", "administrator"],
-			 "content": {
-				 "text": createinfoText(
-					 (hook.params.account||{}).username||"nouser",
-					 data.category||"nocategory",
-					 data.subject||"nosubject",
-					 data.cloud)
-			 }
+		const data=hook.data||{};
+		globalHooks.sendEmail(hook, {
+			"subject": "Ein Problem wurde gemeldet.",
+			"roles": ["helpdesk", "administrator"],
+			"content": {
+				"text": createinfoText(
+					(hook.params.account||{}).username||"nouser",
+					data.category||"nocategory",
+					data.subject||"nosubject",
+					data.cloud)
+			}
 		});
-	 return Promise.resolve( hook );
+		return Promise.resolve(hook);
 	}
  }
 
@@ -47,7 +47,7 @@ exports.after = {
 	all: [],
 	find: [],
 	get: [],
-	create: [ sendEmail() ],
+	create: [sendEmail()],
 	update: [],
 	patch: [],
 	remove: []
