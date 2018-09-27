@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const ShortId = require('mongoose-shortid-nodeps');
 
 const Schema = mongoose.Schema;
-const linkLength = 4;
+const linkLength = 5;
 
 const linkSchema = new Schema({
 	_id: {

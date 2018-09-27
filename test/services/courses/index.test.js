@@ -4,6 +4,7 @@ const assert = require('assert');
 const app = require('../../../src/app');
 const courseService = app.service('courses');
 const copyCourseService = app.service('courses/copy');
+const shareCourseService = app.service('courses/share');
 const chai = require('chai');
 const expect = chai.expect;
 
@@ -20,6 +21,7 @@ const testCourse = {
 };
 
 let courseId = undefined;
+let shareToken = undefined;
 
 describe('courses service', function () {
 	it('registered the courses service', () => {
@@ -52,6 +54,28 @@ describe('courses service', function () {
 			.then(course => {
 				chai.expect(course.name).to.equal(newCourseName);
 				chai.expect(course.userIds).to.have.lengthOf(0);
+			});
+	});
+
+	it('creates a shareToken for a course', () => {
+		return shareCourseService.get('0000dcfbfb5c7a3f00bf21ab')
+			.then(course => {
+				shareToken = course.shareToken;
+				chai.expect(course.shareToken).to.not.be.undefined;
+			});
+	});
+
+	it('find name of course through shareToken', () => {
+		return shareCourseService.find({query: { shareToken }})
+			.then(courseName => {
+				chai.expect(courseName).to.equal('Mathe');
+			});
+	});
+
+	it('creates a course copy through shareToken', () => {
+		return shareCourseService.create({ shareToken, courseName: 'testCourse 76', userId: testUserId})
+			.then(course => {
+				chai.expect(course.name).to.equal('testCourse 76');
 			});
 	});
 });
