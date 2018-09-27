@@ -5,13 +5,14 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
-function createinfoText(user, category, subject){
+function createinfoText(user, category, subject, cloud){
 	return "Ein neues Problem wurde gemeldet." + "\n"
 	+ "User: " + user + "\n"
 	+ "Kategorie: "+ category + "\n"
 	+ "Betreff: " + subject + "\n"
-	+ "Schauen Sie für weitere Details und zur Bearbeitung bitte in das Helpdesk der Schul-Cloud.\n\n"
-	+ "Mit Freundlichen Grüßen\nIhr Schul-Cloud Team";
+	+ "Schauen Sie für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der "+ cloud +".\n\n"
+	+ "Mit freundlichen Grüßen\n"
+	+ "Deine " + cloud;
 }
 
 exports.before = {
@@ -24,22 +25,29 @@ exports.before = {
 	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation, globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership)]
 };
 
-exports.after = {
-	all: [],
-	find: [],
-	get: [],
-	create: [ hook => {
+const sendEmail = () => {
+	return hook=>{
+		const data=hook.data||{};
 		globalHooks.sendEmail(hook, {
 			"subject": "Ein Problem wurde gemeldet.",
 			"roles": ["helpdesk", "administrator"],
 			"content": {
 				"text": createinfoText(
 					(hook.params.account||{}).username||"nouser",
-					(hook.data||{}).category||"nocategory",
-					(hook.data||{}).subject||"nosubject" )
+					data.category||"nocategory",
+					data.subject||"nosubject",
+					data.cloud||"Schul-Cloud")
 			}
 		});
-	}],
+		return Promise.resolve(hook);
+	}
+ }
+
+exports.after = {
+	all: [],
+	find: [],
+	get: [],
+	create: [sendEmail()],
 	update: [],
 	patch: [],
 	remove: []
