@@ -25,23 +25,29 @@ exports.before = {
 	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation, globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership)]
 };
 
+const sendEmail = () => {
+	return hook=>{
+	  const data=hook.data||{};
+	   globalHooks.sendEmail(hook, {
+			 "subject": "Ein Problem wurde gemeldet.",
+			 "roles": ["helpdesk", "administrator"],
+			 "content": {
+				 "text": createinfoText(
+					 (hook.params.account||{}).username||"nouser",
+					 data.category||"nocategory",
+					 data.subject||"nosubject",
+					 data.cloud)
+			 }
+		});
+	 return Promise.resolve( hook );
+	}
+ }
+
 exports.after = {
 	all: [],
 	find: [],
 	get: [],
-	create: [ hook => {
-		globalHooks.sendEmail(hook, {
-			"subject": "Ein Problem wurde gemeldet.",
-			"roles": ["helpdesk", "administrator"],
-			"content": {
-				"text": createinfoText(
-					(hook.params.account||{}).username||"nouser",
-					(hook.data||{}).category||"nocategory",
-					(hook.data||{}).subject||"nosubject",
-					(hook.data||{}).cloud)
-			}
-		});
-	}],
+	create: [ sendEmail() ],
 	update: [],
 	patch: [],
 	remove: []
