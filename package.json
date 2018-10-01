@@ -66,6 +66,7 @@
     "mongoose-id-validator": "^0.4.3",
     "mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
     "moodle-client": "^0.4.0",
+    "nanoid": "^1.2.2",
     "node-sass": "^4.2.0",
     "nodemailer": "^3.0.2",
     "ory-hydra-sdk": "^0.11.12",
