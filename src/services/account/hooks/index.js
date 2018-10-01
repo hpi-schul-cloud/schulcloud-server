@@ -11,6 +11,7 @@ const MoodleLoginStrategy = require('../strategies/moodle');
 const ITSLearningLoginStrategy = require('../strategies/itslearning');
 const IServLoginStrategy = require('../strategies/iserv');
 const LocalLoginStrategy = require('../strategies/local');
+const LdapLoginStrategy = require('../strategies/ldap');
 
 // don't initialize strategies here - otherwise massive overhead
 // TODO: initialize all strategies here once
@@ -18,7 +19,8 @@ const strategies = {
 	moodle: MoodleLoginStrategy,
 	itslearning: ITSLearningLoginStrategy,
 	iserv: IServLoginStrategy,
-	local: LocalLoginStrategy
+	local: LocalLoginStrategy,
+	ldap: LdapLoginStrategy,
 };
 
 // This is only for SSO
