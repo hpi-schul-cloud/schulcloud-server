@@ -32,7 +32,7 @@ const fileSchema = new Schema({
 		permissions: [{type: String, enum: permissionTypes}]
 	}],
 	shareToken: {type: String},
-	schoolId: {type: Schema.Types.ObjectId, ref: 'school'},
+	schoolId: [{type: Schema.Types.ObjectId, ref: 'school'}],
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now}
 });
