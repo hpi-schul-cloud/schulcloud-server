@@ -6,59 +6,56 @@ const ldap = require('ldapjs');
 
 const AbstractLoginStrategy = require('./interface.js');
 
-const acceptedCredentials = [
-	{ username: 'a', password: 'a' },	// administrator
-	{ username: 'lehrer@schul-cloud.org', password: 'schulcloud' },	// teacher
-	{ username: 'schueler@schul-cloud.org', password: 'schulcloud' }	// student
-];
-
 class LdapLoginStrategy extends AbstractLoginStrategy {
 
-
 	login({ username, password }, system) {
+		const SCHOOL = 'N21Testschule'; // TODO: use user's school id (needs real data in DB/IDM)
 
 		const client = ldap.createClient({
-			url: 'ldaps://idm.niedersachsen.cloud:636'
+			url: 'ldaps://idm.niedersachsen.cloud:636' // TODO: port 7636 throws self-signed certificate error
 		});
 
-		client.bind(process.env.LDAPUSER, process.env.LDAPPW, function (err) {
-			//if (err) return Promise.reject(err);
-			var opts = {
-				filter: 'uid=michael.sternberg',
-				scope: 'sub',
-				attributes: []
-			};
+		const ldapRootPath = 'dc=idm,dc=nbc';
+		const qualifiedUser = `uid=${username},cn=users,${ldapRootPath}`;
 
-			client.search('ou=N21Testschule,dc=idm,dc=nbc', opts, function (err, res) {
+        const client = ldap.createClient({
+	        url: 'ldaps://idm.niedersachsen.cloud:636'
+	    });
 
-				res.on('searchEntry', function (entry) {
-					console.log('entry: ' + JSON.stringify(entry.object));
-				});
-				res.on('searchReference', function (referral) {
-					console.log('referral: ' + referral.uris.join());
-				});
-				res.on('error', function (err) {
-					console.error('error: ' + err.message);
-				});
-				res.on('end', function (result) {
-					console.log('status: ' + result.status);
-				});
-			});
+        return new Promise((reject, resolve) => {
+			client.bind(qualifiedUser, password || process.env.LDAPPW, function(err) {
+	            if (err) {
+	            	reject(new errors.NotAuthenticated('Wrong credentials'));
+	            } else {
+	            	resolve(client);
+	            }
+	        });
+        }).then((client) => {
+        	const opts = {
+        		filter: 'uid=' + username,
+        		scope: 'sub',
+        		attributes: []
+        	};
+
+        	return new Promise((reject, resolve) => {
+        		client.search(`ou=${SCHOOL},${ldapRootPath}`, opts, function (err, res) {
+
+	        		res.on('searchEntry', function (entry) {
+	        			resolve(entry.object);
+	        		});
+	        		res.on('error', reject);
+	        		res.on('end', function (result) {
+	        			// TODO: handle status codes != 0
+	        			console.log('LDAP status: ' + result.status);
+	        		});
+	        	});
+        	});
+
+			// TODO: create User based on search data
+        }).then((user) => {
+			console.log(user);
 		});
 
-		//this part is copied from local strategy, and doesnt make sense yet.
-
-		let found = acceptedCredentials.find((credentials) => {
-			return credentials.username == username
-				&& credentials.password == password;
-		});
-
-		if (found) {
-			return Promise.resolve(found);
-		} else {
-			return Promise.reject(new errors.NotAuthenticated('Wrong credentials'));
-		}
-		//ToDo: create User
 	}
 }
 
