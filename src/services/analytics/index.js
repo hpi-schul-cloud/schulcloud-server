@@ -27,11 +27,16 @@ class Service {
             domContentLoaded: data.cm5,
             downlink: data.cm6,
             connection: data.cd1,
+            requestStart: data.cm7,
+            responseStart: data.cm8,
+            responseEnd: data.cm9,
             path: data.dp,
             dl: data.dl,
             qt: data.qt,
             cid: data.cid,
-            swEnabled: data.swEnabled
+            swOffline: data.cd3,
+            swEnabled: data.cd4,
+            school: data.cd5
         });
         return model.save()
             .then(_ => 'success')
