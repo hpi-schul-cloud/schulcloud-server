@@ -18,41 +18,36 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 		const ldapRootPath = 'dc=idm,dc=nbc';
 		const qualifiedUser = `uid=${username},cn=users,${ldapRootPath}`;
 
-        const client = ldap.createClient({
-	        url: 'ldaps://idm.niedersachsen.cloud:636'
-	    });
-
-        return new Promise((reject, resolve) => {
+		return new Promise((resolve, reject) => {
 			client.bind(qualifiedUser, password || process.env.LDAPPW, function(err) {
-	            if (err) {
-	            	reject(new errors.NotAuthenticated('Wrong credentials'));
-	            } else {
-	            	resolve(client);
-	            }
-	        });
-        }).then((client) => {
-        	const opts = {
-        		filter: 'uid=' + username,
-        		scope: 'sub',
-        		attributes: []
-        	};
+				if (err) {
+					reject(new errors.NotAuthenticated('Wrong credentials'));
+				} else {
+					resolve(client);
+				}
+			});
+		}).then((client) => {
+			const opts = {
+				filter: 'uid=' + username,
+				scope: 'sub',
+				attributes: []
+			};
 
-        	return new Promise((reject, resolve) => {
-        		client.search(`ou=${SCHOOL},${ldapRootPath}`, opts, function (err, res) {
-
-	        		res.on('searchEntry', function (entry) {
-	        			resolve(entry.object);
-	        		});
-	        		res.on('error', reject);
-	        		res.on('end', function (result) {
-	        			// TODO: handle status codes != 0
-	        			console.log('LDAP status: ' + result.status);
-	        		});
-	        	});
-        	});
+			return new Promise((resolve, reject) => {
+				client.search(`ou=${SCHOOL},${ldapRootPath}`, opts, function (err, res) {
+					res.on('searchEntry', function (entry) {
+						resolve(entry.object);
+					});
+					res.on('error', reject);
+					res.on('end', function (result) {
+						// TODO: handle status codes != 0
+						console.log('LDAP status: ' + result.status);
+					});
+				});
+			});
 
 			// TODO: create User based on search data
-        }).then((user) => {
+		}).then((user) => {
 			console.log(user);
 		});
 
