@@ -10,16 +10,18 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 
 	login({ username, password }, system) {
 		const SCHOOL = 'N21Testschule'; // TODO: use user's school id (needs real data in DB/IDM)
+		const USER = process.env.LDAPUSER ? process.env.LDAPUSER : username;
+		password = process.env.LDAPPW ? process.env.LDAPPW : password;
 
 		const client = ldap.createClient({
 			url: 'ldaps://idm.niedersachsen.cloud:636' // TODO: port 7636 throws self-signed certificate error
 		});
 
 		const ldapRootPath = 'dc=idm,dc=nbc';
-		const qualifiedUser = `uid=${username},cn=users,${ldapRootPath}`;
+		const qualifiedUser = `uid=${USER},cn=users,${ldapRootPath}`;
 
 		return new Promise((resolve, reject) => {
-			client.bind(qualifiedUser, password || process.env.LDAPPW, function(err) {
+			client.bind(qualifiedUser, password, function(err) {
 				if (err) {
 					reject(new errors.NotAuthenticated('Wrong credentials'));
 				} else {
@@ -39,10 +41,9 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 						resolve(entry.object);
 					});
 					res.on('error', reject);
-					res.on('end', function (result) {
-						// TODO: handle status codes != 0
-						console.log('LDAP status: ' + result.status);
-					});
+					// if the promise has not resolved by now, the user is not
+					// a member of this school:
+					res.on('end', reject);
 				});
 			});
 
