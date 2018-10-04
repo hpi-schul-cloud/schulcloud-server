@@ -69,11 +69,20 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
-const removeFromClass = (hook) => {
+const removeStudentFromClassesAndCourses = (hook) => {
+	const classesService = hook.app.service('/classes');
 	let user = hook;
-	console.log(hook);
-	console.log(user.id);
-	console.log(user.name);
+	let query = { userIds: {$in: [user.id] } };
+
+	return classesService.find({ query: query})
+	.then(classes => {
+		return Promise.all(
+			classes.data.map(c => {
+				c.userIds.splice(c.userIds.indexOf(user.id), 1);
+				return classesService.patch(c._id, c);
+			})
+		).then(_ => hook);
+	});
 };
 
 const sanitizeData = (hook) => {
@@ -285,5 +294,5 @@ exports.after = {
 	create: [handleClassId],
 	update: [],
 	patch: [],
-	remove: [removeFromClass]
+	remove: [removeStudentFromClassesAndCourses]
 };
