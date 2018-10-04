@@ -18,7 +18,7 @@ const ldapConfigSchema = new Schema({
 	timestamps: true
 });
 
-const ldapConfigModel = mongoose.model('ldapConfig', ldapConfigSchema);
+const ldapConfigModel = mongoose.model('ldapconfig', ldapConfigSchema);
 
 module.exports = {
 	ldapConfigModel
