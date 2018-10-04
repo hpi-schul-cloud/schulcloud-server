@@ -22,7 +22,7 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 			.then(school => {
 				return app.service('ldapConfigs').get(school.ldapConfig)
 					.then(config => {
-						return Promise.resolve(Object.assign(config, {ou: school.ldapSchoolIdentifier}))
+						return Promise.resolve(Object.assign(config, {ou: school.ldapSchoolIdentifier}));
 					});
 			})
 			.then(config => {
