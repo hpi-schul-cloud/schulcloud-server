@@ -11,5 +11,5 @@ module.exports = function () {
 	app.use('/mails', new MailService());
 	app.use('/registration', new RegistrationService());
 	app.use('/hash', new HashService());
-	app.user('/sync', new SyncService());
+	app.use('/sync', new SyncService());
 };
