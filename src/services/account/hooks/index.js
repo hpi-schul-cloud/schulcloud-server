@@ -110,6 +110,16 @@ const checkUnique = (hook) => {
 		});
 };
 
+const removePassword = (hook) => {
+	const {strategy} = hook.data;
+
+	if(strategy == 'ldap')
+	{
+		hook.data.password = '';
+	}
+	return Promise.resolve(hook);
+};
+
 const restrictAccess = (hook) => {
 	let queries = hook.params.query;
 
@@ -160,7 +170,8 @@ exports.before = {
 		validateCredentials,
 		trimPassword,
 		local.hooks.hashPassword({ passwordField: 'password' }),
-		checkUnique
+		checkUnique,
+		removePassword
 	],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
