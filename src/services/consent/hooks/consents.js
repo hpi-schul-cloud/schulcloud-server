@@ -78,6 +78,7 @@ const mapToUpsert = (hook) => {
 			hook.result = result[0];
 			return hook;
 		});
+	
 };
 
 exports.before = {
