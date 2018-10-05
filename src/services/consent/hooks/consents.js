@@ -71,7 +71,7 @@ const mapInObjectToArray = (hook) => {
 const checkExisting = (hook) => {
 	return hook.app.service("consents").find({query:{userId:hook.data.userId}})
 		.then(consents => {
-			if (consents.data.length > 0 && consents.data[0].userConsent) {
+			if (consents.data.length > 0) {
 				// merge existing consent with submitted one, submitted data is primary and overwrites databse
 				hook.data = Object.assign(consents.data[0], hook.data);
 				return hook.app.service('consents').remove(consents.data[0]._id).then(() => {
