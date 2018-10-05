@@ -19,9 +19,13 @@ module.exports = function (app) {
 		}
 
 		_syncFromLdap(app) {
+			let config;
 			return app.service('ldapConfigs').get("5bb73935de31231cefdad572")
-				.then(config => {
+				.then(foundConfig => {
+					config = foundConfig;
 					return this._getSchoolDataFromLdap(config);
+				}).then(data => {
+					return this._createSchoolsFromLdapData(app, data, config);
 				});
 		}
 
@@ -106,9 +110,18 @@ module.exports = function (app) {
 			});
 		}
 
-		_createSchoolsFromLdapData(data) {
-			//ToDo
-			return true;
+		_createSchoolsFromLdapData(app, data, config) {
+			return Promise.all(data.map(school => {
+				let schoolData = {
+					name: school.displayName,
+					systems: ["5bb217cf3505d8796a2aa939"], //ToDo: dont hardcode this
+					ldapConfig: config._id,
+					ldapSchoolIdentifier: school.ou,
+					currentYear: "5b7de0021a3a07c20a1c165e", //18/19
+					federalState: "0000b186816abba584714c58"
+				};
+				return app.service('schools').create(schoolData);
+			}));
 		}
 
 		_createUsersFromLdapData(data, school) {
