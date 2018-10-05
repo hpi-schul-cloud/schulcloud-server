@@ -68,19 +68,20 @@ const mapInObjectToArray = (hook) => {
 	return hook;
 };
 
-const mapToUpsert = (hook) => {
-	hook.params.mongoose = Object.assign({}, hook.params.mongoose, {upsert: true, 'new': true});
-	hook.params.query = {userId: hook.data.userId};
-	
-	// TODO: think about a better way for this
-	// problematic upsert patch but probably the best solution with 1 db call instead of two
-	// upsert patch updates existing data or inserts of no document found without knowing the specific id
-	return hook.app.service("consents").patch(null, hook.data, hook.params)
-		.then(result => {
-			// set to null to prevent this create hook to actually create something
-			// patch will update/insert so create not needed
-			hook.result = null;
-			return hook;
+const checkExisting = (hook) => {
+	return hook.app.service("consents").find({query:{userId:hook.data.userId}})
+		.then(consents => {
+			if (consents.data.length > 0 && consents.data[0].userConsent) {
+				// merge existing consent with submitted one, submitted data is primary and overwrites databse
+				hook.data = Object.assign(consents.data[0], hook.data);
+				return hook.app.service('consents').remove(consents.data[0]._id).then(() => {
+					return hook;
+				});
+			} else {
+				return hook;
+			}
+		}).catch(err => {
+			return Promise.reject(err);
 		});
 };
 
@@ -88,7 +89,7 @@ exports.before = {
 	all: [],
 	find: [auth.hooks.authenticate('jwt'), globalHooks.ifNotLocal(restrictToUserOrRole), mapInObjectToArray],
 	get: [auth.hooks.authenticate('jwt')],
-	create: [addDates, mapToUpsert],
+	create: [addDates, checkExisting],
 	update: [auth.hooks.authenticate('jwt'), addDates],
 	patch: [auth.hooks.authenticate('jwt'), addDates],
 	remove: [auth.hooks.authenticate('jwt'),]
@@ -226,20 +227,11 @@ const decorateConsents = (hook) => {
 	});
 };
 
-// needed to pass the patched/inserted object back to the service
-const returnPatchedConsent = (hook) => {
-	return hook.app.service('consents').find({query:{'userId':hook.data.userId}})
-		.then(result => {
-			hook.result = result.data[0];
-			return hook;
-		});
-};
-
 exports.after = {
 	all: [],
 	find: [decorateConsents],
 	get: [decorateConsent],
-	create: [returnPatchedConsent],
+	create: [],
 	update: [],
 	patch: [],
 	remove: []
