@@ -5,14 +5,14 @@ const Schema = mongoose.Schema;
 
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
-		name: {type: String, required: true},
-		schoolId: {type: Schema.Types.ObjectId, required: true},
-		userIds: [{type: Schema.Types.ObjectId, ref: 'user'}],
-		createdAt: {type: Date, 'default': Date.now},
-		updatedAt: {type: Date, 'default': Date.now}
+		name: { type: String, required: true },
+		schoolId: { type: Schema.Types.ObjectId, required: true },
+		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+		createdAt: { type: Date, 'default': Date.now },
+		updatedAt: { type: Date, 'default': Date.now }
 	};
 
-	return new Schema(Object.assign(schema, additional),{
+	return new Schema(Object.assign(schema, additional), {
 		timestamps: true
 	});
 };
@@ -25,34 +25,44 @@ const getUserGroupSchema = (additional = {}) => {
  * room {String} - a specific location for the recurring course lesson, e.g. a room number
  */
 const timeSchema = new Schema({
-	weekday: {type: Number, min: 0, max: 6, required: true},
-	startTime: {type: Number},
-	duration: {type: Number},
-	eventId: {type: String},
-	room: {type: String}
+	weekday: { type: Number, min: 0, max: 6, required: true },
+	startTime: { type: Number },
+	duration: { type: Number },
+	eventId: { type: String },
+	room: { type: String }
 });
 
 
 const teamUserModel = new Schema({
-	userId:{type: Schema.Types.ObjectId, ref: 'user'},
-	roles: [{type: Schema.Types.ObjectId, ref: 'role'}],
+	userId: { type: Schema.Types.ObjectId, ref: 'user' },
+	roles: { type: Schema.Types.ObjectId, ref: 'role' }     	//only pass roles that have name.substring(0,4)==='team'
 });
 
 const teamsModel = mongoose.model('teams', getUserGroupSchema({
-	schoolId:   [{type: Schema.Types.ObjectId, required: true}], //@override
-	userIds:    [teamUserModel],    							 //@override
-	description:{type: String},
-	classIds:   [{type: Schema.Types.ObjectId, required: true, ref: 'class'}],
-	substitutionIds: [{type: Schema.Types.ObjectId, required: true, ref: 'user'}],
-	ltiToolIds: [{type: Schema.Types.ObjectId, required: true, ref: 'ltiTool'}],
-	color:      {type: String, required: true, 'default': '#1DE9B6'},
-	startDate:  {type: Date},
-	untilDate:  {type: Date},
+	//@override
+	schoolIds: {
+		type: Array,
+		required: true,
+		validate: {
+			validator: function (array) {
+				return array.length > 0 && array.every((v) => v instanceof Schema.Types.ObjectId);
+			}
+		}
+	},
+	//@override
+	userIds: [teamUserModel],
+	description: { type: String },
+	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
+	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
+	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
+	color: { type: String, required: true, 'default': '#1DE9B6' },
+	startDate: { type: Date },
+	untilDate: { type: Date },
 	shareToken: { type: String, unique: true },
-	times:      [timeSchema],
-	features:   [{type: String, enum: ['isTeam']}]
+	times: [timeSchema],
+	features: [{ type: String, enum: ['isTeam'] }]
 }));
 
 module.exports = {
-    teamsModel
+	teamsModel
 }

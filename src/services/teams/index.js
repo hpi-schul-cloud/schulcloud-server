@@ -1,14 +1,14 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const teams = require('./model');
+const {teamsModel} = require('./model');
 const hooks = require('./hooks');
 
 module.exports = function () {
 	const app = this;
 
 	const options = {
-		Model: teams,
+		Model: teamsModel,
 		paginate: {
 			default: 10,
 			max: 25
