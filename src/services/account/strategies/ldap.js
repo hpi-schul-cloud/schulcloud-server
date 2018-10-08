@@ -54,26 +54,20 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 
 						return userPromise = app.service('users').create(newUserData);
 					});
-				} else userPromise = Promise.resolve(users[0]);
+				} else {
+					userPromise = Promise.resolve(users.data[0]);
+				}
 
-				/* //ToDo create account - avoid saving password - currently causing endless loop
-				if (accounts.length == 0) {
-					let newAccountData = {
-						username: username,
-						password: password,
-						systemId: system._id
-					};
-					accountPromise = app.service('accounts').create(newAccountData);
-				}*/
-				if (accounts.length != 0) accountPromise = Promise.resolve(accounts[0]);
+				if (accounts.length != 0) {
+					accountPromise = Promise.resolve(accounts[0]);
+				}
 
 				return Promise.all([userPromise, accountPromise]);
 			}).then(([user, account]) => {
-
 				if (account && !account.userId == user._id) {
 					return app.service('accounts').patch(account._id, {userId: user._id});
 				}
-				return Promise.resolve;
+				return Promise.resolve();
 			}).catch((err) => {
 				return Promise.reject(err);
 			});
