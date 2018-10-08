@@ -69,7 +69,7 @@ module.exports = function (app) {
 			return this._connect(config, qualifiedUsername, password)
 				.then(() => {
 					const options = {
-						filter: qualifiedUsername,
+						filter: null,
 						scope: 'sub',
 						attributes: []
 					};
