@@ -18,7 +18,7 @@ module.exports = function (app) {
 		}
 
 		_getClient(config) {
-			let client = this.clients[config];
+			let client = this.clients[config._id];
 			if (client && client.connected) {
 				return Promise.resolve(client);
 			} else {
@@ -69,11 +69,11 @@ module.exports = function (app) {
 			return this._connect(config, qualifiedUsername, password)
 				.then(() => {
 					const options = {
-						filter: 'uid=' + qualifiedUsername,
+						filter: qualifiedUsername,
 						scope: 'sub',
 						attributes: []
 					};
-					const searchString = `${qualifiedUsername},${config.rootPath}`;
+					const searchString = `${qualifiedUsername}`;
 					return this.searchObject(config, searchString, options);
 				});
 		}
@@ -87,10 +87,10 @@ module.exports = function (app) {
 							reject(err);
 						}
 						res.on('error', reject);
-						res.on('searchEntry', function (entry) {
+						res.on('searchEntry', (entry) => {
 							objects.push(entry.object);
 						});
-						res.on('end', function(result) {
+						res.on('end', (result) => {
 							if (result.status === 0) {
 								resolve(objects);
 							} else {
