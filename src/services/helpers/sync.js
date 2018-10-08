@@ -87,7 +87,26 @@ module.exports = function (app) {
 					username: school.ldapSchoolIdentifier + "/" + idmUser.uid,
 					systemId: "5bb217cf3505d8796a2aa939" //toDo: dont hardcode
 				};
-				return accountModel.create(accountData);
+				//return accountModel.create(accountData);
+				//-------------------------------------------------------------------
+				//THIS IS FOR DEMO ONLY, AND HAS TO BE REMOVED BEFORE NOVEMBER!!!!!
+				let accountPromise = accountModel.create(accountData);
+				let consentData = {
+					userId: user._id,
+					parentConsents: [{
+						form: "analog",
+						privacyConsent: true,
+						termsOfUseConsent: true,
+						thirdPartyConsent: true,
+						researchConsent: true
+					}]
+				};
+				let consentPromise = app.service('consents').create(consentData);
+				return Promise.all([accountPromise, consentPromise])
+				.then(([account, consent]) => {
+					return Promise.resolve(account);
+				});
+				//-------------------------------------------------------------------
 			});
 		}
 
@@ -97,6 +116,7 @@ module.exports = function (app) {
 				return app.service('users').find({query: {ldapId: idmUser.entryUUID}})
 				.then(users => {
 					if (users.total != 0) {
+						//toDo: check for changes
 						return Promise.resolve(users.data[0]);
 					}
 					if (idmUser.mail == undefined) return Promise.resolve("no email");
