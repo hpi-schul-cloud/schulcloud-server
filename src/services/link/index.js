@@ -39,11 +39,13 @@ module.exports = function () {
 		async create(data, params) {
 			let linkData = {};
 			if (data.toHash) {
-				await app.service('hash').create(data).then(generatedHash => {
-					linkData.hash = generatedHash;
-				}).catch(err => {
-					return Promise.reject(new Error('Fehler beim Generieren des Hashes.'));
-				});
+				try {
+					await app.service('hash').create(data).then(generatedHash => {
+						linkData.hash = generatedHash;
+					});
+				} catch (err) {
+					return Promise.reject(new Error(`Fehler beim Generieren des Hashes. ${err}`));
+				}
 			}
 			
 			// base link
@@ -80,18 +82,22 @@ module.exports = function () {
 		async create(data, params) {
 			let linkData = {};
 			if (data.toHash) {
-				await app.service('hash').create(data).then(generatedHash => {
-					linkData.hash = generatedHash;
-				}).catch(err => {
-					return Promise.reject(new Error('Fehler beim Generieren des Hashes.'));
-				});
+				try {
+					await app.service('hash').create(data).then(generatedHash => {
+						linkData.hash = generatedHash;
+					});
+				} catch (err) {
+					return Promise.reject(new Error(`Fehler beim Generieren des Hashes. ${err}`));
+				}
 			}
 			
 			// base link
-			if (data.role === 'expert') {
+			if (data.role === 'teamexpert') {
 				linkData.link = `${(data.host || process.env.HOST)}/teams/${data.teamId}/invite/expert`;
-			} else if (data.role === 'leader') {
-				linkData.link = `${(data.host || process.env.HOST)}/teams/${data.teamId}/invite/leader`;
+			} else if (data.role === 'teamadministrator') {
+				linkData.link = `${(data.host || process.env.HOST)}/teams/${data.teamId}/invite/admin`;
+			} else if (data.role === 'teammember') {
+				linkData.link = `${(data.host || process.env.HOST)}/teams/${data.teamId}/invite/member`;
 			} else {
 				return Promise.reject(new Error('Fehler bei der Rollenangabe.'));
 			}
