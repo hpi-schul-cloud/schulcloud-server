@@ -25,7 +25,10 @@ module.exports = function () {
 			if(!courses[courseId]) courses[courseId] = {
 				media: [],
 				users: {},
-				board: {},
+				board: {
+					layout: '1x1',
+					media: {}
+				},
 				lastId: 0
 			};
 			let course = courses[courseId];
@@ -35,31 +38,31 @@ module.exports = function () {
 			app.service('users').get(socket.client.userId).then((result) => { 
 				user = result;
 				course.users[user._id] = user;
-				io.of('clipboard').to(courseId).emit('clipboardState', course);
+				broadcastUpdate('users');
 			});
 
 			socket.on("ADD_MEDIA", (media) => {
 				media.id = ++course.lastId;
 				course.media.push(media);
-				io.of('clipboard').to(courseId).emit('clipboardState', course);
+				broadcastUpdate('media');
 			});
 
-			socket.on("ADD_TO_BOARD", (media) => {
-				if(!media) return;
-				course.board[media.id] = media;
-				io.of('clipboard').to(courseId).emit('clipboardState', course);
+			socket.on("SET_BOARD_LAYOUT", (layout) => {
+				course.board.layout = layout.key;
+				course.board.media = Object.values(course.board.media)
+										.filter((media) => !!media)
+										.slice(0, layout.maxElements || 1)
+										.reduce((acc, media, i) => {
+											acc[i] = media;
+											return acc;
+										}, {});
+				broadcastUpdate('board');
 			});
 
-			socket.on("UPDATE_MEDIA_ON_BOARD", (media) => {
+			socket.on("SET_MEDIA_ON_BOARD", (media) => {
 				if(!media) return;
-				course.board[media.id] = media;
-				io.of('clipboard').to(courseId).emit('clipboardState', course);
-			});
-
-			socket.on("REMOVE_MEDIA_FROM_BOARD", (media) => {
-				if(!media) return;
-				delete course.board[media.id];
-				io.of('clipboard').to(courseId).emit('clipboardState', course);
+				course.board.media[media.slot] = media.media;
+				broadcastUpdate('board');
 			});
 
 			initUploadSocket(socket, (uploadedFile) => {
@@ -70,8 +73,14 @@ module.exports = function () {
 					id: ++course.lastId,
 				};
 				course.media.push(file);
-				io.of('clipboard').to(courseId).emit('clipboardState', course);
+				broadcastUpdate('media');
 			});
+
+			let broadcastUpdate = (key) => {
+				io.of('clipboard').to(courseId).emit('clipboardStateUpdate', {
+					[key]: course[key]
+				});
+			};
 		});
 	}));
 
