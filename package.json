@@ -19,12 +19,13 @@
     "lint": "eslint ./src ./test --ext .js --fix",
     "test": "./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run coverage",
     "test-windows": "sh ./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run mocha-windows",
+    "test-windows-wo-db": "npm run lint && npm run mocha-windows",
     "backup": "./backup.sh -a -b export",
     "setup": "./backup.sh -p setup/ -a import",
     "start": "node src/",
     "startd": "nodemon src/",
     "debug": "nodemon --inspect=5959 src/",
-    "coverage": "NODE_ENV=test istanbul cover node_modules/.bin/_mocha -- -- test/**/*.test.js",
+    "coverage": "NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha -- -- test/**/*.test.js",
     "mocha": "NODE_ENV=test mocha test/ --recursive",
     "mocha-windows": "set NODE_ENV=test && mocha test/ --recursive",
     "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
@@ -58,7 +59,6 @@
     "feathers-socketio": "^1.4.2",
     "feathers-swagger": "^0.3.2",
     "freeport": "^1.0.5",
-    "istanbul": "^0.4.5",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
@@ -66,6 +66,7 @@
     "mongoose-id-validator": "^0.4.3",
     "mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
     "moodle-client": "^0.4.0",
+    "nanoid": "^1.2.2",
     "node-sass": "^4.2.0",
     "nodemailer": "^3.0.2",
     "passport": "^0.3.2",
@@ -85,6 +86,7 @@
     "eslint-plugin-react": "^6.9.0",
     "mocha": "^3.2.0",
     "mockery": "^2.0.0",
-    "nodemailer-mock": "^1.1.10"
+    "nodemailer-mock": "^1.1.10",
+    "nyc": "^13.0.1"
   }
 }
