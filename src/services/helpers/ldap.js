@@ -17,7 +17,41 @@ module.exports = function (app) {
 			this.clients[config._id] = client;
 		}
 
-		_removeClient(config) {
+		_getClient(config) {
+			let client = this.clients[config];
+			if (client && client.connected) {
+				return Promise.resolve(client);
+			} else {
+				return this._connect(config).then((client) => {
+					this._addClient(config, client);
+					return Promise.resolve(client);
+				});
+			}
+		}
+
+		_connect(config, username, password) {
+			username = username || `uid=${config.searchUser},cn=users,${config.rootPath}`;
+			password = password || config.searchUserPassword;
+
+			return new Promise((resolve, reject) => {
+				if (! (config && config.url)) {
+					reject('Invalid URL in config object.');
+				}
+				const client = ldap.createClient({
+					url: config.url
+				});
+
+				client.bind(username, password, (err) => {
+					if (err) {
+						reject(new errors.NotAuthenticated('Wrong credentials'));
+					} else {
+						resolve(client);
+					}
+				});
+			});
+		}
+
+		_disconnect(config) {
 			return new Promise((resolve, reject) => {
 				if (! (config && config._id)) {
 					reject('Invalid config object');
@@ -26,36 +60,22 @@ module.exports = function (app) {
 					if (err) {
 						reject(err);
 					}
-					delete this.clients[config._id];
-					resolve(true);
+					resolve();
 				});
 			});
 		}
 
-		_getClient(config) {
-			let client = this.clients[config];
-			if (client) {
-				return Promise.resolve(client);
-			} else {
-				return this._connect(config);
-			}
-		}
-
-		_connect(config) {
-			const client = ldap.createClient({
-				url: config.url
-			});
-			const loginUser = `uid=${config.searchUser},cn=users,${config.rootPath}`;
-			return new Promise((resolve, reject) => {
-				client.bind(loginUser, config.searchUserPassword, (err) => {
-					if (err) {
-						reject(new errors.NotAuthenticated('Wrong credentials'));
-					} else {
-						this._addClient(config, client);
-						resolve(client);
-					}
+		authorize(config, school, qualifiedUsername, password) {
+			return this._connect(config, qualifiedUsername, password)
+				.then(() => {
+					const options = {
+						filter: 'uid=' + qualifiedUsername,
+						scope: 'sub',
+						attributes: []
+					};
+					const searchString = `${qualifiedUsername},${config.rootPath}`;
+					return this.searchObject(config, searchString, options);
 				});
-			});
 		}
 
 		searchCollection(config, searchString, options) {
@@ -80,6 +100,16 @@ module.exports = function (app) {
 					});
 				});
 			});
+		}
+
+		searchObject(config, searchString, options) {
+			return this.searchCollection(config, searchString, options)
+				.then((objects) => {
+					if (objects.length > 0) {
+						return Promise.resolve(objects[0]);
+					}
+					return Promise.reject('Object not found');
+				});
 		}
 
 		getSchools(config) {
