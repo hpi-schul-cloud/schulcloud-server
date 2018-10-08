@@ -107,25 +107,22 @@ const extractOne = (res) => {
         return res.data[0]
     } else {
        // logger.error('extractOne() length!=1');
-        throw new errors.BadRequest('Bad intern call. (1)');
-    }
-}
-
-const extractMultiple = (res) =>{
-    if(res.data.length>0){
-        return res.data
-    }else{
-       // logger.error('extractMultiple(), No team is avaible.');
-        throw new errors.NotFound('No team is avaible.');
+        if(res.data.length===0){
+            throw new errors.NotFound('No team is avaible.');
+        }else{
+            throw new errors.BadRequest('Bad intern call. (1)');
+        } 
     }
 }
 
 const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
-    const id     = hook.id;
+    const teamId = hook.id;
     const method = hook.method;
     const userId = hook.params.account.userId;
 
-    //get user
+    /****************
+     *  get user    *
+     * **************/
     const usersService = hook.app.service('users');
     const waitUser     = usersService.find({
         query: {
@@ -138,10 +135,12 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
         throw new errors.BadRequest('User can not found.',err);
     })
 
-    //get team 
+    /****************
+     *  get team    *
+     * **************/
     const teamsService = hook.app.service('teams');
-    const waitTeams = new Promise((resolve, reject) => {
-        if (method === 'create' && id === undefined) {
+    const waitTeams    = new Promise((resolve, reject) => {
+        if (method === 'create' && teamId === undefined) {
 
             //set owner
             const index = hook.data.userIds.indexOf(userId);
@@ -155,40 +154,46 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             hook.data.features=['isTeam'];          
 
             resolve();       //team do not exist
-        } else if (method === 'find' && id === undefined) {     //!!Abhängigkeit von token und query userId wird nicht geprüft -> to be discuss!
+        } else if (method === 'find' && teamId === undefined) {     //!!Abhängigkeit von token und query userId wird nicht geprüft -> to be discuss!
             //return teams 
-            const i=userId;
             teamsService.find({
                 query:{
-                    userIds:{$elemMatch:{userId}}
+                    userIds: {$elemMatch:{userId}}
                 }
             }).then(teams=>{
-                resolve( extractMultiple(teams) );
+                resolve( teams.data );
             }).catch(err=>{ 
-                err.code===404 ? reject(err) : reject( new errors.BadRequest('Bad intern call. (2)',err) ); //pass valid error response 404 for no team found
+               reject( new errors.BadRequest('Bad intern call. (2)',err) ); 
             });          
-        } else if (id) {
-            teamsService.get(id).then(teams => {    //but for user with id and schoolId
+        } else if (teamId) {
+            teamsService.find({                     //match test by teamId and userId
+                query:{
+                    _id     : teamId,
+                    userIds : {$elemMatch:{userId}}   
+                }
+            }).then(teams => {  
                 resolve(extractOne(teams));
             }).catch(err => {        
-                reject( new errors.BadRequest('Wrong input. (1)',err) );
+                err.code===404 ? reject(err) : reject( new errors.BadRequest('Wrong input. (1)',err) );
             });
         }
     });
 
+    /***************
+     *   execute    *
+     * **************/
     return Promise.all([waitUser, waitTeams]).then( data => {
         //const inputSchoolId = (hook.data||{}).schoolId || (hook.params.query||{}).schoolId;
         const user = data[0];
-        const team = data[1];
+        let   team = data[1];
         if (data.length!=2 || user === undefined) {
             throw new errors.BadRequest('Bad intern call. (3)');
         }
-        const schoolId = user.schoolId.toString();  //take from user db
-        
-
-        if (schoolId === undefined) {
+        if (user.schoolId === undefined) {
             throw new errors.BadRequest('User has no school.');
         }
+        const schoolId = user.schoolId.toString();  //take from user db
+        
         /* todo: superhero
         let access = false;
         //superhero can pass it
@@ -252,7 +257,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
         }
 
         //todo: create test if teamname in schoolId/s unique 
-        
+
         return Promise.resolve(hook);
     })
 });
@@ -267,12 +272,28 @@ const existId = (hook) => {
     }
 };
 
-const testInputForCreate=hook=>{
-    const data=hook.data;
-    //todo: ?
+const testInputForCreate=hook=>{  
+    if(hook.data.userIds===undefined){
+        hook.data.userIds=[];
+    }
+
+    if( !(Array.isArray(hook.data.userIds)) ){
+        throw new errors.BadRequest('Wrong input. (3)')
+    }
     return hook
 }
 
+const blockedMethode=(hook)=>{
+    throw new error.MethodNotAllowed('Method is not allowed!');
+}
+
+const filterRemove=(hook)=>{
+    if(typeof hook.result==='object' && hook.result._id !== undefined){
+        hook.result={message:'Successful removed!'};
+    }
+    const h=hook;
+    return hook
+}
 
 //todo: TeamPermissions
 exports.before = {
@@ -280,7 +301,7 @@ exports.before = {
     find: [],
     get: [],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
     create: [globalHooks.injectUserId,testInputForCreate],
-    update: [],
+    update: [blockedMethode],
     patch: [deleteWholeClassFromTeam],
     remove: []
 };
@@ -294,5 +315,5 @@ exports.after = {
     create: [addWholeClassToTeam],
     update: [],                             //test schoolId remove
     patch: [addWholeClassToTeam],         //test schoolId remove
-    remove: []
+    remove: [filterRemove]
 };
