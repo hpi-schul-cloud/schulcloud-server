@@ -94,7 +94,7 @@ module.exports = function (app) {
 
 		getUsers(config, school) {
 			const options = {
-				filter: 'univentionObjectType=container/ou',
+				filter: 'univentionObjectType=users/user',
 				scope: 'sub',
 				attributes: []
 			};

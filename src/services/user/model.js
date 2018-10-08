@@ -23,7 +23,9 @@ const userSchema = new Schema({
 	parents: [{type: Schema.Types.ObjectId, ref: 'user'}],
 
 	preferences: {type: Object}, // blackbox for frontend stuff like "cookies accepted"
-	ldapDn: {type:String}
+	
+	ldapDn: {type:String},
+	ldapId: {type:String}
 },{
 	timestamps: true
 });
