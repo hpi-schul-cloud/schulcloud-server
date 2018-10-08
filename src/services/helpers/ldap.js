@@ -126,7 +126,7 @@ module.exports = function (app) {
 			const options = {
 				filter: 'univentionObjectType=users/user',
 				scope: 'sub',
-				attributes: []
+				attributes: ["givenName", "sn", "mail", "dn", "entryUUID", "uid", "objectClass", "memberOf"]
 			};
 
 			const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${config.rootPath}`;

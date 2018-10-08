@@ -40,7 +40,7 @@ module.exports = function (app) {
 			return Promise.all(data.map(school => {
 				let schoolData = {
 					name: school.displayName,
-					systems: ["5bb217cf3505d8796a2aa939"], //ToDo: dont hardcode this
+					systems: ["5bb217cf3505d8796a2aa939"], //ToDo: dont hardcode this, do for all ldap
 					ldapConfig: config._id,
 					ldapSchoolIdentifier: school.ou,
 					currentYear: "5b7de0021a3a07c20a1c165e", //18/19
@@ -65,7 +65,7 @@ module.exports = function (app) {
 						schoolId: school._id,
 						email: email,
 						ldapDn: idmUser.dn,
-						ldapId: idmUser.uidNumber //use entryUUID
+						ldapId: idmUser.entryUUID //use entryUUID
 					};
 					if (idmUser.objectClass.includes("ucsschoolTeacher")) {
 						newUserData.role = "teacher";
