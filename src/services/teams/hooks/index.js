@@ -1,11 +1,11 @@
 'use strict';
 
-const auth   = require('feathers-authentication');
+const auth        = require('feathers-authentication');
 //const hooks       = require('feathers-hooks');
-const errors = require('feathers-errors');
+const errors      = require('feathers-errors');
 const logger      = require('winston');
 const globalHooks = require('../../../hooks');
-const _      = require('lodash');
+const _           = require('lodash');
 
 
 
@@ -31,15 +31,28 @@ const createUserWithRole=(userId,selectedRole)=>{
     return {userId,role,roleName:selectedRole||'teammember'}
 }
 
+const extractOne = (res) => {
+    if (res.data.length == 1) {
+        return res.data[0]
+    } else {
+       // logger.error('extractOne() length!=1');
+        if(res.data.length===0){
+            throw new errors.NotFound('No team is avaible.');
+        }else{
+            throw new errors.BadRequest('Bad intern call. (1)');
+        } 
+    }
+}
+
 /** !!!todo: update for teams!!! **/
 
 /**
  * adds all students to a team when a class is added to the team
  * @param hook - contains created/patched object and request body
- */
+ *//*
 const addWholeClassToTeam = (hook) => {
     let requestBody = hook.data;
-    let team = hook.result;
+    let team        = hook.result;
     if ((requestBody.classIds || []).length > 0) { // just team do have a property "classIds"
         return Promise.all(requestBody.classIds.map(classId => {
             return ClassModel.findById(classId).exec().then(c => c.userIds);
@@ -61,18 +74,40 @@ const addWholeClassToTeam = (hook) => {
     }
 };
 
+const arrayDiff=(a,b)=>{
+    return a.filter( i=>b.indexOf(i)<0 );
+} */
 
 /** !!!todo: update for teams!!! **/
 
 /**
- * deletes all students from a team when a class is removed from the team
- * this function goes into a before hook before we have to check whether there is a class missing
- * in the patch-body which was in the team before
  * @param hook - contains and request body
  */
-const deleteWholeClassFromTeam = (hook) => {
-    let requestBody = hook.data;
-    let teamId = hook.id;
+const updateUsersForEachClass = (hook) => {
+    if(hook.data.classIds.length<=0){
+        return hook
+    }
+
+    return hook.app.service('classes').find({
+        query:{$or:hook.data.classIds.map( _id=>{
+                return {_id}
+            })
+        }
+    }).then(classes=>{
+        let userIds=[];
+           
+        classes.data.forEach( classObj=>{
+            classObj.userIds.forEach(_id=>{
+                if( userIds.includes(_id)===false ){
+                    userIds.push(_id);
+                }
+            });
+        });
+
+        hook.data.userIds=userIds;
+        return hook
+    })
+    /*
     return TeamModel.findById(teamId).exec().then(team => {
         if (!team) return hook;
 
@@ -99,21 +134,10 @@ const deleteWholeClassFromTeam = (hook) => {
                 return hook;
             });
         });
-    });
+    }); */
 };
 
-const extractOne = (res) => {
-    if (res.data.length == 1) {
-        return res.data[0]
-    } else {
-       // logger.error('extractOne() length!=1');
-        if(res.data.length===0){
-            throw new errors.NotFound('No team is avaible.');
-        }else{
-            throw new errors.BadRequest('Bad intern call. (1)');
-        } 
-    }
-}
+
 
 const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
     const teamId = hook.id;
@@ -248,8 +272,11 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
         if(hook.data.userIds!==undefined && hook.data.userIds.length>0){
              hook.data.userIds=hook.data.userIds.map((userId_or_userObject)=>{
                  if(typeof userId_or_userObject === 'string'){                      //if userId has no role, it should map to member
-                    return createUserWithRole(userId);
+                    return createUserWithRole(userId_or_userObject);
                 }else if(typeof userId_or_userObject === 'object'){
+                    if(userId_or_userObject.role===undefined){
+                        return createUserWithRole(userId_or_userObject);
+                    }
                     return userId_or_userObject
                 }
                 //if other type do not pass it
@@ -272,48 +299,58 @@ const existId = (hook) => {
     }
 };
 
-const testInputForCreate=hook=>{  
+const testInputData=hook=>{  
     if(hook.data.userIds===undefined){
         hook.data.userIds=[];
+    }else if( !(Array.isArray(hook.data.userIds)) ){
+        throw new errors.BadRequest('Wrong input. (3)')
     }
 
-    if( !(Array.isArray(hook.data.userIds)) ){
-        throw new errors.BadRequest('Wrong input. (3)')
+    if(hook.data.classIds===undefined){
+        hook.data.classIds=[];
+    }else if( !(Array.isArray(hook.data.classIds)) ){
+        throw new errors.BadRequest('Wrong input. (4)')
     }
     return hook
 }
 
 const blockedMethode=(hook)=>{
-    throw new error.MethodNotAllowed('Method is not allowed!');
+    throw new errors.MethodNotAllowed('Method is not allowed!');
 }
 
 const filterRemove=(hook)=>{
     if(typeof hook.result==='object' && hook.result._id !== undefined){
-        hook.result={message:'Successful removed!'};
+        hook.result={_id:hook.result._id};
     }
-    const h=hook;
     return hook
 }
 
+const patchMongoResult = globalHooks.ifNotLocal(hook=>{
+    if(typeof hook.result==='object' && Array.isArray(hook.result.data) ){
+        hook.result=hook.result.data;
+    }
+    return hook
+});
+
 //todo: TeamPermissions
 exports.before = {
-    all: [auth.hooks.authenticate('jwt'), existId, restrictToCurrentSchoolAndUser],
-    find: [],
-    get: [],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
-    create: [globalHooks.injectUserId,testInputForCreate],
+    all: [auth.hooks.authenticate('jwt'), existId],
+    find: [restrictToCurrentSchoolAndUser],
+    get: [restrictToCurrentSchoolAndUser],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
+    create: [globalHooks.injectUserId,testInputData,updateUsersForEachClass,restrictToCurrentSchoolAndUser], //inject is needed?
     update: [blockedMethode],
-    patch: [deleteWholeClassFromTeam],
-    remove: []
+    patch: [testInputData,updateUsersForEachClass,restrictToCurrentSchoolAndUser],
+    remove: [restrictToCurrentSchoolAndUser]
 };
 
 //todo:clear unused values 
 //todo: update moongose 
 exports.after = {
     all: [],
-    find: [],                               //todo: filter related
+    find: [patchMongoResult],                
     get: [],                                 //see before (?)
-    create: [addWholeClassToTeam],
+    create: [],
     update: [],                             //test schoolId remove
-    patch: [addWholeClassToTeam],         //test schoolId remove
+    patch: [],          //test schoolId remove
     remove: [filterRemove]
 };
