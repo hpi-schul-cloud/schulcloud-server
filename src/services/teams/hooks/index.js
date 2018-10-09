@@ -20,7 +20,7 @@ const hasTeamPermission=(permsissions,teamId)=>{
 
     }
 }
-exports.hasTeamPermission=hasTeamPermission;    //to use it global 
+exports.hasTeamPermission=hasTeamPermission;    //to use it global
 
 /**
 *   helper
@@ -58,13 +58,13 @@ const extractOne = (res) => {
             throw new errors.NotFound('The user is not in this team, or no team is avaible.');
         }else{
             throw new errors.BadRequest('Bad intern call. (1)');
-        } 
+        }
     }
 }
 
 /**
 *   helper
-*   @requires const Schema = require('mongoose').Schema; 
+*   @requires const Schema = require('mongoose').Schema;
 */
 const testIfObjectId = (id)=>{
     if(id instanceof Schema.Types.ObjectId){
@@ -76,11 +76,11 @@ const testIfObjectId = (id)=>{
  * @param hook - mapped userIds from class to userIds, clear all double userId inputs
  */
 const updateUsersForEachClass = (hook) => {
-    if(hook.data.classIds.length<=0){
+    if(!hook.data.classIds || hook.data.classIds.length<=0){
         return hook
     }
 
-    
+
     let newUserList = [hook.params.account.userId];   // //add current userId?
     const add=(id)=>{
         if( newUserList.includes(id)===false){
@@ -96,7 +96,7 @@ const updateUsersForEachClass = (hook) => {
             })
         }
     }).then(classes=>{
-        //add userIds from classes 
+        //add userIds from classes
         classes.data.forEach( classObj=>{
             classObj.userIds.forEach(_id=>{
                 add(_id)
@@ -104,7 +104,7 @@ const updateUsersForEachClass = (hook) => {
         });
 
         //add userIds from userId list
-        hook.data.userIds.forEach(obj_or_id=>{ 
+        hook.data.userIds.forEach(obj_or_id=>{
             add( (typeof obj_or_id==='object' ? obj_or_id.userId : obj_or_id) );
         });
         //update userId list
@@ -118,7 +118,7 @@ const updateUsersForEachClass = (hook) => {
 
 /**
 *   @param hook - main hook for team services
-*   @method all 
+*   @method all
 *   @ifNotLocal - work only for extern requests
 **/
 const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
@@ -159,32 +159,32 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
                 hook.data.userIds.push(value);      //add owner
             }else{
                 hook.data.userIds[index]=value;     //replace with obj
-            } 
+            }
 
             //add team flag
-            hook.data.features=['isTeam'];              
+            hook.data.features=['isTeam'];
 
             resolve();       //team do not exist
         } else if (method === 'find' && teamId === undefined) {     //!!Abhängigkeit von token und query userId wird nicht geprüft -> to be discuss!
-            //return teams 
+            //return teams
             teamsService.find({
                 query:{
                     userIds: {$elemMatch:{userId}}
                 }
             }).then(teams=>{
                 resolve( teams.data );
-            }).catch(err=>{ 
-               reject( new errors.BadRequest('Bad intern call. (2)',err) ); 
-            });          
+            }).catch(err=>{
+               reject( new errors.BadRequest('Bad intern call. (2)',err) );
+            });
         } else if (teamId) {
             teamsService.find({                     //match test by teamId and userId
                 query:{
                     _id     : teamId,
-                    userIds : {$elemMatch:{userId}}   
+                    userIds : {$elemMatch:{userId}}
                 }
-            }).then(teams => {  
+            }).then(teams => {
                 resolve(extractOne(teams));
-            }).catch(err => {        
+            }).catch(err => {
                 err.code===404 ? reject(err) : reject( new errors.BadRequest('Wrong input. (1)',err) );
             });
         }
@@ -204,7 +204,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             throw new errors.BadRequest('User has no school.');
         }
         const schoolId = user.schoolId.toString();  //take from user db
-        
+
         /* todo: superhero
         let access = false;
         //superhero can pass it
@@ -228,7 +228,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
                     throw new errors.Forbidden('You do not have valid permissions to access this.(1)');
                 }
             });
-           
+
 
             //test if user in team
           //  const userIsInTeam
@@ -238,7 +238,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
         }
 
         //add current schoolId to hook
-        //todo: maybe schoolId can pass in every case to hook.data.schoolId 
+        //todo: maybe schoolId can pass in every case to hook.data.schoolId
         //todo2: maybe it work better to create test if is already set and rejected, after it set one time
         if (method == "get" || method == "find") {                  //by find and get use query to pass additional data
             if (hook.params.query.schoolId == undefined) {          //should undefined
@@ -248,11 +248,11 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             }
         } else {                                                     //for any other methode add it do data
             if (hook.data.schoolIds == undefined) {                   //should undefined
-                hook.data.schoolIds = [schoolId];                     //need array 
+                hook.data.schoolIds = [schoolId];                     //need array
             } else if (hook.data.schoolId != schoolId) {              //account schoolId === send schoolId
                 throw new errors.Forbidden('You do not have valid permissions to access this.(3)');
             }
-        }  
+        }
 
         //move to additonal hook?
         //map userIds to {userId:teamRoleId} tupel
@@ -273,7 +273,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             });
         }
 
-        //todo: create test if teamname in schoolId/s unique 
+        //todo: create test if teamname in schoolId/s unique
 
         return Promise.resolve(hook);
     })
@@ -308,15 +308,15 @@ const injectCurrentUserToTopLevel= (hook)=>{
             userIdObj.permissions=role.permissions;
             userIdObj.name=role.name;
             hook.result.user=userIdObj;
-            return hook 
-        });  
+            return hook
+        });
     }
 }
 
 /**
  * @param hook - test and update missing data for methodes that contain hook.data
  */
-const testInputData=hook=>{  
+const testInputData=hook=>{
     if(hook.data.userIds===undefined){
         hook.data.userIds=[];
     }else if( !(Array.isArray(hook.data.userIds)) ){
@@ -341,7 +341,7 @@ const blockedMethode=(hook)=>{
 /**
  * @param hook - clear and map return ressources to related
  * @method remove,create
- * @after hook 
+ * @after hook
  */
 const filterRemoveCreateResult=(hook)=>{
     if(typeof hook.result==='object' && hook.result._id !== undefined){
@@ -353,7 +353,7 @@ const filterRemoveCreateResult=(hook)=>{
 /**
  * @param hook - clear and map return ressources to related
  * @method find
- * @after hook 
+ * @after hook
  * @requires hook.filterMoongoseResult
  */
 const filterFindResult=(hook)=>{
@@ -377,7 +377,7 @@ const filterFindResult=(hook)=>{
  * @param hook - clear and map return ressources to related
  * @moongose   - only for return ressource from moongose model
  * @ifNotLocal - work only for extern requests
- * @after hook 
+ * @after hook
  */
 const filterMoongoseResult = globalHooks.ifNotLocal(hook=>{
     if(typeof hook.result==='object' && Array.isArray(hook.result.data) ){
@@ -389,16 +389,16 @@ const filterMoongoseResult = globalHooks.ifNotLocal(hook=>{
 /**
  * @param hook - to inject data that are saved in link services
  * @requires injectLinkData||updateUsersForEachClass - to execute updateUsersForEachClass if no link must be inject
- * @example { 
-    "_id" : "yyyy", 
-    "target" : "localhost:3100/teams/0000d186816abba584714c5f", 
-    "createdAt" : ISODate("2018-08-28T10:12:29.131+0000"), 
+ * @example {
+    "_id" : "yyyy",
+    "target" : "localhost:3100/teams/0000d186816abba584714c5f",
+    "createdAt" : ISODate("2018-08-28T10:12:29.131+0000"),
     "data" : {
-        "role" : "5bb5c545fb457b1c3c0c7e13", 
-        "teamId" : "5bbb13541fe9ec2d1c462535", 
-        "invitee" : "user@schul-cloud.org", 
+        "role" : "5bb5c545fb457b1c3c0c7e13",
+        "teamId" : "5bbb13541fe9ec2d1c462535",
+        "invitee" : "user@schul-cloud.org",
         "inviter" : "0000d224816abba584714c9c"
-    }, 
+    },
     "__v" : NumberInt(0)
 }
  */
@@ -407,7 +407,7 @@ const injectLinkData=(fallback)=>{
         if(hook.data.shortId && hook.id=='adduser'){
             return hook.app.service('link').get(hook.data.shortId).then(link=>{
                 hook.id=link.data.teamId;   //inject teamId
-                
+
                 delete hook.data.shortId;      //clear it from posted data
                 hook.injectLink=link;   //to pass the id for later remove
                 if(hook.data.userIds===undefined){
@@ -427,8 +427,8 @@ const injectLinkData=(fallback)=>{
 }
 
 /**
- * 
- * @param hook 
+ *
+ * @param hook
  */
 const removeLink=(hook)=>{
     if(hook.injectLink!==undefined){
@@ -461,11 +461,11 @@ exports.before = {
     remove: [restrictToCurrentSchoolAndUser]
 };
 
-//todo:clear unused values 
-//todo: update moongose 
+//todo:clear unused values
+//todo: update moongose
 exports.after = {
     all: [],
-    find: [filterMoongoseResult,filterFindResult],                
+    find: [filterMoongoseResult,filterFindResult],
     get: [injectCurrentUserToTopLevel,injectLinkInformationForLeaders],                                 //see before (?)
     create: [filterRemoveCreateResult],
     update: [],                             //test schoolId remove
