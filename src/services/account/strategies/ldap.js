@@ -15,7 +15,7 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 
 		return app.service('schools').get(schoolId)
 			.then(school => {
-				return app.service('accounts').find({ query: {username: school.ldapSchoolIdentifier + '/' + username }})
+				return app.service('accounts').find({ query: {username: username }})
 				.then(([account]) => {
 					return app.service('users').get(account.userId);
 				})

@@ -11,8 +11,20 @@ class SystemVerifier {
 		this.verify = this.verify.bind(this);
 	}
 
+	//Create LDAP username
+	_getUsername({ username, password, systemId, strategy, schoolId }) {
+		return this.app.service('schools').get(schoolId)
+			.then(school => {
+				if (strategy == 'ldap') {
+					return school.ldapSchoolIdentifier + '/' + username;
+				} else {
+					return username;
+				}
+			});
+	}
+
 	// either get an existing account or create a new one #SSO
-	_getAccount ({username, password, systemId, strategy, schoolId}) {
+	_getAccount({ username, password, systemId, strategy, schoolId }) {
 		return this.app.service('/accounts').find({
 			paginate: false,
 			query: {
@@ -20,7 +32,7 @@ class SystemVerifier {
 				systemId
 			}
 		}).then(accounts => {
-			if(accounts.length) {
+			if (accounts.length) {
 				return accounts[0];
 			} else {
 				// create account
@@ -35,30 +47,33 @@ class SystemVerifier {
 		});
 	}
 
-	verify (req, done) {
-		const {username, password, systemId, strategy, schoolId} = req.body;
+	verify(req, done) {
+		const { username, password, systemId, strategy, schoolId } = req.body;
 
-		this.app.service('/systems').get(systemId).then(system => {
-			return this.loginStrategy.login({username, password}, system, schoolId);
-		}).then(_ => {
-			// credentials are valid at this point => get or create account
-			return this._getAccount({
-				username,
-				password,
-				systemId,
-				strategy,
-				schoolId
-			}).then(account => {
-				const payload = {
-					accountId: account._id,
-					userId: account.userId
-				};
-				done(null, account, payload);
+		this._getUsername({ username, password, systemId, strategy, schoolId })
+			.then(username => {
+				this.app.service('/systems').get(systemId).then(system => {
+					return this.loginStrategy.login({ username, password }, system, schoolId);
+				}).then(_ => {
+					// credentials are valid at this point => get or create account
+					return this._getAccount({
+						username,
+						password,
+						systemId,
+						strategy,
+						schoolId
+					}).then(account => {
+						const payload = {
+							accountId: account._id,
+							userId: account.userId
+						};
+						done(null, account, payload);
+					});
+
+				}).catch(err => {
+					done();
+				});
 			});
-
-		}).catch(err => {
-			done();
-		});
 	}
 }
 
