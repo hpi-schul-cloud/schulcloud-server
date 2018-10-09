@@ -34,7 +34,7 @@ module.exports = function (app) {
 						return Promise.all(schools.map(school => {
 							return this.ldapService.getUsers(config, school)
 							.then(data => {
-								return this._createUsersFromLdapData(app, data, school);
+								return this._createUsersFromLdapData(app, data, school, config);
 							});
 						}));
 					});
@@ -62,7 +62,7 @@ module.exports = function (app) {
 			}));
 		}
 
-		_createUserAndAccount(app, idmUser, school) {
+		_createUserAndAccount(app, idmUser, school, config) {
 			let email = idmUser.mail;
 			return app.service('registrationPins').create({ email, verified: true, silent: true })
 			.then(registrationPin => {
@@ -90,7 +90,7 @@ module.exports = function (app) {
 				let accountData = {
 					userId: user._id,
 					username: school.ldapSchoolIdentifier + "/" + idmUser.uid,
-					systemId: school.systemId,
+					systemId: config.systemId,
 					activated: true
 				};
 				//return accountModel.create(accountData);
@@ -116,7 +116,7 @@ module.exports = function (app) {
 			});
 		}
 
-		_createUsersFromLdapData(app, data, school) {
+		_createUsersFromLdapData(app, data, school, config) {
 			return Promise.all(data.map(idmUser => {
 
 				return app.service('users').find({ query: { ldapId: idmUser.entryUUID } })
@@ -126,7 +126,7 @@ module.exports = function (app) {
 							return Promise.resolve(users.data[0]);
 						}
 						if (idmUser.mail == undefined) return Promise.resolve("no email");
-						return this._createUserAndAccount(app, idmUser, school);
+						return this._createUserAndAccount(app, idmUser, school, config);
 					});
 
 			}));
