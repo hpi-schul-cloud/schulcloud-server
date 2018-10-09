@@ -301,7 +301,7 @@ const existId = (hook) => {
 const injectCurrentUserToTopLevel= (hook)=>{
     if(typeof hook.result==='object' && hook.result._id !== undefined){
         const userId    = hook.params.account.userId.toString();
-        const userIdObj = hook.result.userIds.find( user => user.userId == userId );
+        const userIdObj = hook.result.userIds.find( user => (user.userId == userId || user.userId._id == userId) );
         return hook.app.service('roles')
         .get(userIdObj.role)
         .then(role=>{
