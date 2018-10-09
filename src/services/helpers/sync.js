@@ -76,10 +76,10 @@ module.exports = function (app) {
 					ldapId: idmUser.entryUUID
 				};
 				if (idmUser.objectClass.includes("ucsschoolTeacher")) {
-					newUserData.role = "teacher";
+					newUserData.roles = "teacher";
 				}
 				if (idmUser.objectClass.includes("ucsschoolStudent")) {
-					newUserData.role = "student";
+					newUserData.roles = "student";
 				}
 				if (idmUser.objectClass.includes("ucsschoolStaff")) {
 					//toDo
