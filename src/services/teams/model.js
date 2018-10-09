@@ -35,8 +35,8 @@ const timeSchema = new Schema({
 
 const teamUserModel = new Schema({
 	userId: { type: Schema.Types.ObjectId, ref: 'user' },
-	role:   { type: Schema.Types.ObjectId, ref: 'role' },    	//todo: existing team roles not all	
-	roleName:{ type: String }								//todo: only pass roles that have name.substring(0,4)==='team'
+	role:   { type: Schema.Types.ObjectId, ref: 'role' }//,    	//todo: existing team roles not all	
+	//roleName:{ type: String }								//todo: only pass roles that have name.substring(0,4)==='team'
 },{ _id : false });
 
 const teamsModel = mongoose.model('teams', getUserGroupSchema({

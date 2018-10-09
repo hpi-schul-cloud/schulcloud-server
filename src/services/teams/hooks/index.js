@@ -1,14 +1,26 @@
 'use strict';
 
 const auth        = require('feathers-authentication');
-//const hooks       = require('feathers-hooks');
 const errors      = require('feathers-errors');
-const logger      = require('winston');
 const globalHooks = require('../../../hooks');
-const _           = require('lodash');
-const mongoose    = require('mongoose');
-const Schema      = mongoose.Schema;
+const Schema      = require('mongoose').Schema;
 
+
+/**
+ *  @gloabal
+ *  @method get,patch,delete,create but do not work with find
+ */
+const hasTeamPermission=(permsissions,teamId)=>{
+    return (hook)=>{
+        const userId = hook.params.account.userId;
+        const teamId = hook.id||teamId;
+        if(typeof permsissions==='string'){
+            permsissions=[permsissions];
+        };
+
+    }
+}
+exports.hasTeamPermission=hasTeamPermission;    //to use it global 
 
 /**
 *   helper
@@ -32,7 +44,7 @@ const createUserWithRole=(userId,selectedRole)=>{
         throw new errors.BadRequest('Wrong input. (2)');
     }
 
-    return {userId,role,roleName:selectedRole||'teammember'}
+    return {userId,role}    //,roleName:selectedRole||'teammember'
 }
 
 /**
@@ -42,9 +54,8 @@ const extractOne = (res) => {
     if (res.data.length == 1) {
         return res.data[0]
     } else {
-       // logger.error('extractOne() length!=1');
         if(res.data.length===0){
-            throw new errors.NotFound('No team is avaible.');
+            throw new errors.NotFound('The user is not in this team, or no team is avaible.');
         }else{
             throw new errors.BadRequest('Bad intern call. (1)');
         } 
@@ -53,6 +64,7 @@ const extractOne = (res) => {
 
 /**
 *   helper
+*   @requires const Schema = require('mongoose').Schema; 
 */
 const testIfObjectId = (id)=>{
     if(id instanceof Schema.Types.ObjectId){
@@ -68,8 +80,8 @@ const updateUsersForEachClass = (hook) => {
         return hook
     }
 
-    //add current userId
-    let newUserList = [hook.params.account.userId];   
+    
+    let newUserList = [hook.params.account.userId];   // //add current userId?
     const add=(id)=>{
         if( newUserList.includes(id)===false){
             testIfObjectId(id);
@@ -137,6 +149,10 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
         if (method === 'create' && teamId === undefined) {
 
             //set owner
+            if(hook.data.userIds===undefined){
+                hook.data.userIds=[];
+            }
+
             const index = hook.data.userIds.indexOf(userId);
             const value = createUserWithRole(userId,'teamowner');
             if(index==-1){
@@ -145,7 +161,8 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
                 hook.data.userIds[index]=value;     //replace with obj
             } 
 
-            hook.data.features=['isTeam'];          
+            //add team flag
+            hook.data.features=['isTeam'];              
 
             resolve();       //team do not exist
         } else if (method === 'find' && teamId === undefined) {     //!!Abhängigkeit von token und query userId wird nicht geprüft -> to be discuss!
@@ -241,11 +258,14 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
         //map userIds to {userId:teamRoleId} tupel
         if(hook.data.userIds!==undefined && hook.data.userIds.length>0){
              hook.data.userIds=hook.data.userIds.map((userId_or_userObject)=>{
+                 if(userId_or_userObject._bsontype==='ObjectID'){
+                    userId_or_userObject=userId_or_userObject.toString();
+                 }
                  if(typeof userId_or_userObject === 'string'){                      //if userId has no role, it should map to member
                     return createUserWithRole(userId_or_userObject);
                 }else if(typeof userId_or_userObject === 'object'){
                     if(userId_or_userObject.role===undefined){
-                        return createUserWithRole(userId_or_userObject);
+                        return createUserWithRole(userId_or_userObject.userId);
                     }
                     return userId_or_userObject
                 }
@@ -274,6 +294,26 @@ const existId = (hook) => {
 };
 
 /**
+ * @param hook - Add the current user to top level, easy access of it role and permissions.
+ * @after hook
+ * @method patch,get
+ */
+const injectCurrentUserToTopLevel= (hook)=>{
+    if(typeof hook.result==='object' && hook.result._id !== undefined){
+        const userId    = hook.params.account.userId.toString();
+        const userIdObj = hook.result.userIds.find( user => user.userId == userId );
+        return hook.app.service('roles')
+        .get(userIdObj.role)
+        .then(role=>{
+            userIdObj.permissions=role.permissions;
+            userIdObj.name=role.name;
+            hook.result.user=userIdObj;
+            return hook 
+        });  
+    }
+}
+
+/**
  * @param hook - test and update missing data for methodes that contain hook.data
  */
 const testInputData=hook=>{  
@@ -300,34 +340,44 @@ const blockedMethode=(hook)=>{
 
 /**
  * @param hook - clear and map return ressources to related
- * @method remove
+ * @method remove,create
+ * @after hook 
  */
-const filterRemoveResult=(hook)=>{
+const filterRemoveCreateResult=(hook)=>{
     if(typeof hook.result==='object' && hook.result._id !== undefined){
         hook.result={_id:hook.result._id};
     }
     return hook
 }
 
-
 /**
  * @param hook - clear and map return ressources to related
  * @method find
+ * @after hook 
+ * @requires hook.filterMoongoseResult
  */
 const filterFindResult=(hook)=>{
-    if(typeof hook.result==='object' && Array.isArray(hook.result.data) ){
-        hook.result.data.map(team=>{
+    if(Array.isArray(hook.result) ){
+        hook.result=hook.result.map(team=>{
             //return only related
+            return {
+                name       : team.name,
+                _id        : team._id,
+                times      : team.times,
+                description: team.description,
+                userIds    : team.userIds,
+                userId     : team.userId
+            }
         });
     }
     return hook
 }
 
-
 /**
  * @param hook - clear and map return ressources to related
  * @moongose   - only for return ressource from moongose model
  * @ifNotLocal - work only for extern requests
+ * @after hook 
  */
 const filterMoongoseResult = globalHooks.ifNotLocal(hook=>{
     if(typeof hook.result==='object' && Array.isArray(hook.result.data) ){
@@ -336,6 +386,70 @@ const filterMoongoseResult = globalHooks.ifNotLocal(hook=>{
     return hook
 });
 
+/**
+ * @param hook - to inject data that are saved in link services
+ * @requires injectLinkData||updateUsersForEachClass - to execute updateUsersForEachClass if no link must be inject
+ * @example { 
+    "_id" : "yyyy", 
+    "target" : "localhost:3100/teams/0000d186816abba584714c5f", 
+    "createdAt" : ISODate("2018-08-28T10:12:29.131+0000"), 
+    "data" : {
+        "role" : "5bb5c545fb457b1c3c0c7e13", 
+        "teamId" : "5bbb13541fe9ec2d1c462535", 
+        "invitee" : "user@schul-cloud.org", 
+        "inviter" : "0000d224816abba584714c9c"
+    }, 
+    "__v" : NumberInt(0)
+}
+ */
+const injectLinkData=(fallback)=>{
+    return (hook)=>{
+        if(hook.data.shortId && hook.id=='adduser'){
+            return hook.app.service('link').get(hook.data.shortId).then(link=>{
+                hook.id=link.data.teamId;   //inject teamId
+                
+                delete hook.data.shortId;      //clear it from posted data
+                hook.injectLink=link;   //to pass the id for later remove
+                if(hook.data.userIds===undefined){
+                    hook.data.userIds=[];
+                }
+                //link.data.invitee is a email und must search over user services
+                console.log('todo: email / user')
+                hook.data.userIds.push( createUserWithRole(link.data.invitee, link.data.role) );
+                return hook
+            }).catch(err=>{
+                throw new errors.NotFound('This link is not valid.');
+            });
+        }else{
+            return fallback(hook) //to pass it to next hook in list
+        }
+    }
+}
+
+/**
+ * 
+ * @param hook 
+ */
+const removeLink=(hook)=>{
+    if(hook.injectLink!==undefined){
+        return hook.app.service('link').remove(hook.injectLink._id).then(link=>{
+            if(link.data._id!==undefined){
+                return hook
+            }
+        }).catch(err=>{
+            throw new errors.BadRequest('Bad intern call. (4)');
+        });
+    }else{
+        return hook
+    }
+}
+
+const injectLinkInformationForLeaders=(hook)=>{
+    //todo: Take it from link service via find data.teamId
+    console.log('todo: link data ')
+    return hook
+}
+
 //todo: TeamPermissions
 exports.before = {
     all: [auth.hooks.authenticate('jwt'), existId],
@@ -343,7 +457,7 @@ exports.before = {
     get: [restrictToCurrentSchoolAndUser],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
     create: [globalHooks.injectUserId,testInputData,updateUsersForEachClass,restrictToCurrentSchoolAndUser], //inject is needing?
     update: [blockedMethode],
-    patch: [testInputData,updateUsersForEachClass,restrictToCurrentSchoolAndUser],
+    patch: [(injectLinkData)(updateUsersForEachClass),restrictToCurrentSchoolAndUser],
     remove: [restrictToCurrentSchoolAndUser]
 };
 
@@ -352,9 +466,9 @@ exports.before = {
 exports.after = {
     all: [],
     find: [filterMoongoseResult,filterFindResult],                
-    get: [],                                 //see before (?)
-    create: [],
+    get: [injectCurrentUserToTopLevel,injectLinkInformationForLeaders],                                 //see before (?)
+    create: [filterRemoveCreateResult],
     update: [],                             //test schoolId remove
-    patch: [],          //test schoolId remove
-    remove: [filterRemoveResult]
+    patch: [injectCurrentUserToTopLevel,removeLink],          //test schoolId remove
+    remove: [filterRemoveCreateResult]
 };
