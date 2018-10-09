@@ -6,11 +6,15 @@ const errors      = require('feathers-errors');
 const logger      = require('winston');
 const globalHooks = require('../../../hooks');
 const _           = require('lodash');
+const mongoose    = require('mongoose');
+const Schema      = mongoose.Schema;
 
 
-
+/**
+*   helper
+*/
 const createUserWithRole=(userId,selectedRole)=>{
-    const roles={
+    const roles={                                   /*@hardcoded, need update if role services created!  */
         teammember:'5bb5c190fb457b1c3c0c7e0f',
         teamexpert:'5bb5c391fb457b1c3c0c7e10',
         teamleader:'5bb5c49efb457b1c3c0c7e11',
@@ -31,6 +35,9 @@ const createUserWithRole=(userId,selectedRole)=>{
     return {userId,role,roleName:selectedRole||'teammember'}
 }
 
+/**
+*   helper
+*/
 const extractOne = (res) => {
     if (res.data.length == 1) {
         return res.data[0]
@@ -44,109 +51,72 @@ const extractOne = (res) => {
     }
 }
 
-/** !!!todo: update for teams!!! **/
-
 /**
- * adds all students to a team when a class is added to the team
- * @param hook - contains created/patched object and request body
- *//*
-const addWholeClassToTeam = (hook) => {
-    let requestBody = hook.data;
-    let team        = hook.result;
-    if ((requestBody.classIds || []).length > 0) { // just team do have a property "classIds"
-        return Promise.all(requestBody.classIds.map(classId => {
-            return ClassModel.findById(classId).exec().then(c => c.userIds);
-        })).then(studentIds => {
-            // flatten deep arrays and remove duplicates
-            studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
-
-            // add all students of classes to team, if not already added
-            return Promise.all(studentIds.map(s => {
-                if (!_.some(team.userIds, u => JSON.stringify(u) === JSON.stringify(s))) {
-                    return TeamModel.update({ _id: team._id }, { $push: { userIds: s } }).exec();
-                } else {
-                    return {};
-                }
-            })).then(_ => hook);
-        });
-    } else {
-        return hook;
+*   helper
+*/
+const testIfObjectId = (id)=>{
+    if(id instanceof Schema.Types.ObjectId){
+        throw new errors.BadRequest('Wrong input. (5)');
     }
-};
-
-const arrayDiff=(a,b)=>{
-    return a.filter( i=>b.indexOf(i)<0 );
-} */
-
-/** !!!todo: update for teams!!! **/
+}
 
 /**
- * @param hook - contains and request body
+ * @param hook - mapped userIds from class to userIds, clear all double userId inputs
  */
 const updateUsersForEachClass = (hook) => {
     if(hook.data.classIds.length<=0){
         return hook
     }
 
+    //add current userId
+    let newUserList = [hook.params.account.userId];   
+    const add=(id)=>{
+        if( newUserList.includes(id)===false){
+            testIfObjectId(id);
+            newUserList.push(id);
+        }
+    }
+
     return hook.app.service('classes').find({
         query:{$or:hook.data.classIds.map( _id=>{
+                testIfObjectId(_id);
                 return {_id}
             })
         }
     }).then(classes=>{
-        let userIds=[];
-           
+        //add userIds from classes 
         classes.data.forEach( classObj=>{
             classObj.userIds.forEach(_id=>{
-                if( userIds.includes(_id)===false ){
-                    userIds.push(_id);
-                }
+                add(_id)
             });
         });
 
-        hook.data.userIds=userIds;
+        //add userIds from userId list
+        hook.data.userIds.forEach(obj_or_id=>{ 
+            add( (typeof obj_or_id==='object' ? obj_or_id.userId : obj_or_id) );
+        });
+        //update userId list
+        hook.data.userIds=newUserList;
         return hook
+    }).catch(err=>{
+        throw new errors.BadRequest('Wrong input. (6)');
     })
-    /*
-    return TeamModel.findById(teamId).exec().then(team => {
-        if (!team) return hook;
-
-        let removedClasses = _.differenceBy(team.classIds, requestBody.classIds, (v) => JSON.stringify(v));
-        if (removedClasses.length < 1) return hook;
-        return Promise.all(removedClasses.map(classId => {
-            return ClassModel.findById(classId).exec().then(c => (c || []).userIds);
-        })).then(studentIds => {
-            // flatten deep arrays and remove duplicates
-            studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
-
-            // remove all students of classes from team, if they are in team
-            return Promise.all(studentIds.map(s => {
-                if (!_.some(team.userIds, u => JSON.stringify(u) === JSON.stringify(s))) {
-                    return TeamModel.update({ _id: team._id }, { $pull: { userIds: s } }).exec();
-                } else {
-                    return {};
-                }
-            })).then(result => {
-
-                // also remove all students from request body for not reading them in after hook
-                requestBody.userIds = _.differenceBy(requestBody.userIds, studentIds, (v) => JSON.stringify(v));
-                hook.data = requestBody;
-                return hook;
-            });
-        });
-    }); */
 };
 
 
-
+/**
+*   @param hook - main hook for team services
+*   @method all 
+*   @ifNotLocal - work only for extern requests
+**/
 const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
     const teamId = hook.id;
     const method = hook.method;
     const userId = hook.params.account.userId;
 
-    /****************
-     *  get user    *
-     * **************/
+    /********************
+     *  get user data   *
+     * ******************/
     const usersService = hook.app.service('users');
     const waitUser     = usersService.find({
         query: {
@@ -159,9 +129,9 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
         throw new errors.BadRequest('User can not found.',err);
     })
 
-    /****************
-     *  get team    *
-     * **************/
+    /********************
+     *  get team data   *
+     * ******************/
     const teamsService = hook.app.service('teams');
     const waitTeams    = new Promise((resolve, reject) => {
         if (method === 'create' && teamId === undefined) {
@@ -172,7 +142,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             if(index==-1){
                 hook.data.userIds.push(value);      //add owner
             }else{
-                hook.data.userIds[index]=value;     //replace with tuple
+                hook.data.userIds[index]=value;     //replace with obj
             } 
 
             hook.data.features=['isTeam'];          
@@ -289,16 +259,23 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
     })
 });
 
+/**
+ * @param hook - test if id exist and id a valid moongose object id
+ */
 const existId = (hook) => {
     if (['find', 'create'].includes(hook.method)) {
         return Promise.resolve(hook);
     } else if (!hook.id) {
         throw new errors.Forbidden('Operation on this service requires an id!');
     } else {
+        testIfObjectId(hook.id);
         return Promise.resolve(hook);
     }
 };
 
+/**
+ * @param hook - test and update missing data for methodes that contain hook.data
+ */
 const testInputData=hook=>{  
     if(hook.data.userIds===undefined){
         hook.data.userIds=[];
@@ -314,18 +291,45 @@ const testInputData=hook=>{
     return hook
 }
 
+/**
+ * @param hook - block this methode for every request
+ */
 const blockedMethode=(hook)=>{
     throw new errors.MethodNotAllowed('Method is not allowed!');
 }
 
-const filterRemove=(hook)=>{
+/**
+ * @param hook - clear and map return ressources to related
+ * @method remove
+ */
+const filterRemoveResult=(hook)=>{
     if(typeof hook.result==='object' && hook.result._id !== undefined){
         hook.result={_id:hook.result._id};
     }
     return hook
 }
 
-const patchMongoResult = globalHooks.ifNotLocal(hook=>{
+
+/**
+ * @param hook - clear and map return ressources to related
+ * @method find
+ */
+const filterFindResult=(hook)=>{
+    if(typeof hook.result==='object' && Array.isArray(hook.result.data) ){
+        hook.result.data.map(team=>{
+            //return only related
+        });
+    }
+    return hook
+}
+
+
+/**
+ * @param hook - clear and map return ressources to related
+ * @moongose   - only for return ressource from moongose model
+ * @ifNotLocal - work only for extern requests
+ */
+const filterMoongoseResult = globalHooks.ifNotLocal(hook=>{
     if(typeof hook.result==='object' && Array.isArray(hook.result.data) ){
         hook.result=hook.result.data;
     }
@@ -337,7 +341,7 @@ exports.before = {
     all: [auth.hooks.authenticate('jwt'), existId],
     find: [restrictToCurrentSchoolAndUser],
     get: [restrictToCurrentSchoolAndUser],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
-    create: [globalHooks.injectUserId,testInputData,updateUsersForEachClass,restrictToCurrentSchoolAndUser], //inject is needed?
+    create: [globalHooks.injectUserId,testInputData,updateUsersForEachClass,restrictToCurrentSchoolAndUser], //inject is needing?
     update: [blockedMethode],
     patch: [testInputData,updateUsersForEachClass,restrictToCurrentSchoolAndUser],
     remove: [restrictToCurrentSchoolAndUser]
@@ -347,10 +351,10 @@ exports.before = {
 //todo: update moongose 
 exports.after = {
     all: [],
-    find: [patchMongoResult],                
+    find: [filterMoongoseResult,filterFindResult],                
     get: [],                                 //see before (?)
     create: [],
     update: [],                             //test schoolId remove
     patch: [],          //test schoolId remove
-    remove: [filterRemove]
+    remove: [filterRemoveResult]
 };
