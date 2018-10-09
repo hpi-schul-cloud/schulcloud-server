@@ -14,7 +14,6 @@ const user = require('./user');
 const role = require('./role');
 const helpers = require('./helpers');
 const resolve = require('./resolve');
-
 const federalState = require('./federalState');
 const userGroup = require('./user-group');
 const homework = require('./homework');
@@ -23,6 +22,7 @@ const notification = require('./notification');
 const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
+const wopi = require('./wopi');
 const socket = require('./socket');
 const pseudonym = require("./pseudonym");
 const consent = require('./consent');
@@ -58,7 +58,8 @@ module.exports = function () {
     app.configure(releases);
     app.configure(helpdesk);
     app.configure(statistic);
-    app.configure(socket);
+    app.configure(wopi);
     app.configure(pseudonym);
     app.configure(consent);
+    app.configure(socket);
 };
