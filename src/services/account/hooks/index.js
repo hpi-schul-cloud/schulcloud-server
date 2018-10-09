@@ -86,7 +86,7 @@ const validatePassword = (hook) => {
 					// if manager has ADMIN_VIEW (=is admin) and pw-patched user is teacher or student
 							// if superhero
 									// if my accountid == pw-patched accountid (edit own account in user list...)
-			if ((results[0] && results[1]) || (results[2] && (results[1] || results[3])) || results[4] || hook.params.account._id.toString() === hook.id) {
+			if ((results[0] && results[1]) || (results[2] && (results[1] || results[3])) || results[4] || (hook.params.account._id || {}).toString() === hook.id) {
 				return hook;
 			} else {
 				if (password && !password_verification)
