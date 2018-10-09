@@ -9,32 +9,37 @@ module.exports = function (app) {
 		}
 
 		find(params) {
-			return this._syncFromLdap(app)
+			if (params.query.target == "ldap") {
+				return this._syncFromLdap(app)
 				.then(res => {
 					return Promise.resolve({ data: true });
 				})
 				.catch(err => {
 					return Promise.reject(err);
 				});
+			} else {
+				return Promise.reject("target not found");
+			}
+			
 		}
 
 		_syncFromLdap(app) {
 			return app.service('ldapConfigs').find({query: {}})
-				.then(foundConfigs => {
-					return Promise.all(foundConfigs.data.map(config => {
-						return this.ldapService.getSchools(config)
-							.then(data => {
-								return this._createSchoolsFromLdapData(app, data, config);
-							}).then(schools => {
-								return Promise.all(schools.map(school => {
-									return this.ldapService.getUsers(config, school)
-										.then(data => {
-											return this._createUsersFromLdapData(app, data, school);
-										});
-								}));
-							});
-					}));
-				});
+			.then(foundConfigs => {
+				return Promise.all(foundConfigs.data.map(config => {
+					return this.ldapService.getSchools(config)
+						.then(data => {
+							return this._createSchoolsFromLdapData(app, data, config);
+						}).then(schools => {
+							return Promise.all(schools.map(school => {
+								return this.ldapService.getUsers(config, school)
+									.then(data => {
+										return this._createUsersFromLdapData(app, data, school);
+									});
+							}));
+						});
+				}));
+			});
 		}
 
 		_createSchoolsFromLdapData(app, data, config) {
@@ -94,7 +99,7 @@ module.exports = function (app) {
 					let accountData = {
 						userId: user._id,
 						username: school.ldapSchoolIdentifier + "/" + idmUser.uid,
-						systemId: "5bb217cf3505d8796a2aa939" //toDo: dont hardcode
+						systemId: "5bb217cf3505d8796a2aa939"//toDo: dont hardcode
 					};
 					//return accountModel.create(accountData);
 					//-------------------------------------------------------------------
