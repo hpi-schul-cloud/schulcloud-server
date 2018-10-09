@@ -25,7 +25,7 @@ const strategies = {
 
 // This is only for SSO
 const validateCredentials = (hook) => {
-	const {username, password, systemId} = hook.data;
+	const {username, password, systemId, schoolId} = hook.data;
 
 	if(!username) throw new errors.BadRequest('no username specified');
 	if(!password) throw new errors.BadRequest('no password specified');
@@ -43,7 +43,7 @@ const validateCredentials = (hook) => {
 			};
 		})
 		.then(({strategy, system}) => {
-			return strategy.login({username, password}, system);
+			return strategy.login({username, password}, system, schoolId);
 		})
 		.then((client) => {
 			if (client.token) {

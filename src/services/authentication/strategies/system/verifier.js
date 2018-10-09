@@ -12,7 +12,7 @@ class SystemVerifier {
 	}
 
 	// either get an existing account or create a new one #SSO
-	_getAccount ({username, password, systemId, strategy}) {
+	_getAccount ({username, password, systemId, strategy, schoolId}) {
 		return this.app.service('/accounts').find({
 			paginate: false,
 			query: {
@@ -28,24 +28,26 @@ class SystemVerifier {
 					username,
 					password,
 					systemId,
-					strategy
+					strategy,
+					schoolId
 				});
 			}
 		});
 	}
 
 	verify (req, done) {
-		const {username, password, systemId, strategy} = req.body;
+		const {username, password, systemId, strategy, schoolId} = req.body;
 
 		this.app.service('/systems').get(systemId).then(system => {
-			return this.loginStrategy.login({username, password}, system);
+			return this.loginStrategy.login({username, password}, system, schoolId);
 		}).then(_ => {
 			// credentials are valid at this point => get or create account
 			return this._getAccount({
 				username,
 				password,
 				systemId,
-				strategy
+				strategy,
+				schoolId
 			}).then(account => {
 				const payload = {
 					accountId: account._id,

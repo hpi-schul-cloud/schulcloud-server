@@ -7,11 +7,11 @@ module.exports = function () {
 	const RegistrationService = require('./registration')(app);
 	const HashService = require('./hash')(app);
 	const LdapService = require('./ldap')(app);
-	const SyncService = require('./sync')(app);
+	const SyncService = require('./ldapsync')(app);
 
 	app.use('/mails', new MailService());
 	app.use('/registration', new RegistrationService());
 	app.use('/hash', new HashService());
 	app.use('/ldap', new LdapService());
-	app.use('/sync', new SyncService());
+	app.use('/ldapsync', new SyncService());
 };
