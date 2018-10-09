@@ -99,7 +99,8 @@ module.exports = function (app) {
 					let accountData = {
 						userId: user._id,
 						username: school.ldapSchoolIdentifier + "/" + idmUser.uid,
-						systemId: "5bb217cf3505d8796a2aa939"//toDo: dont hardcode
+						systemId: "5bb217cf3505d8796a2aa939", //toDo: dont hardcode
+						activated: true
 					};
 					//return accountModel.create(accountData);
 					//-------------------------------------------------------------------
