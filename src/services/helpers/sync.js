@@ -73,7 +73,7 @@ module.exports = function (app) {
 		_createUserAndAccount(app, idmUser, school) {
 			let email = idmUser.mail;
 			//todo: avoid faking a pin verification process
-			return app.service('registrationPins').create({ "email": email, verified: true })
+			return app.service('registrationPins').create({ email, verified: true, silent: true })
 				.then(registrationPin => {
 					let newUserData = {
 						pin: registrationPin.pin,
