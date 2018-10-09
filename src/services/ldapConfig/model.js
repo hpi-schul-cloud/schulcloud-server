@@ -14,6 +14,7 @@ const ldapConfigSchema = new Schema({
 	rootPath: { type: String, required: true },
 	searchUser: {type: String},
 	searchUserPw: {type: String},
+	systemId: {type: Schema.Types.ObjectId, ref: 'system'},
 	createdAt: { type: Date, 'default': Date.now },
 	updatedAt: { type: Date, 'default': Date.now }
 }, {
