@@ -16,10 +16,9 @@ const hasTeamPermission=(permsissions,teamId)=>{
         const teamId = hook.id||teamId;
         if(typeof permsissions==='string'){
             permsissions=[permsissions];
-        };
-
-    }
-}
+        }
+    };
+};
 exports.hasTeamPermission=hasTeamPermission;    //to use it global
 
 /**
@@ -308,10 +307,10 @@ const injectCurrentUserToTopLevel= (hook)=>{
             userIdObj.permissions=role.permissions;
             userIdObj.name=role.name;
             hook.result.user=userIdObj;
-            return hook
+            return hook;
         });
     }
-}
+};
 
 /**
  * @param hook - test and update missing data for methodes that contain hook.data
