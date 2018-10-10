@@ -416,7 +416,7 @@ const injectDataFromLink=(fallback)=>{
                     hook.data.userIds=[];
                 }
 
-                hook.app.service('users').find({
+                return hook.app.service('users').find({
                     query:{email:link.data.invitee}
                 }).then(users=>{
                     const user=extractOne(users,'Find user by email.');
@@ -429,7 +429,7 @@ const injectDataFromLink=(fallback)=>{
                 throw new errors.NotFound('This link is not valid.',err);
             });
         }else{
-            return fallback ? fallback(hook) : hook;
+            return (typeof fallback==='function' ? fallback(hook) : hook);
         }
     }
 }
