@@ -15,12 +15,24 @@ function createinfoText(user, category, subject, cloud){
 	+ "Deine " + cloud;
 }
 
-function createfeedbackText(user, category, email, schoolName, text){
-	return "User: " + user + "\n"
+function createfeedbackText(user, category, email, schoolName, subject, content){
+	let text = "User: " + user + "\n"
 	+ "E-Mail: " + email + "\n"
 	+ "Schule: " + schoolName + "\n"
-	+ "Bereich ausgewählt: " + category + "\n"
-	+ "User schrieb folgendes: \n" + text;
+	+ "Bereich ausgewählt: " + category + "\n";
+	if (content.desire != ""){
+		text = text + "User schrieb folgendes: \n"
+		+ "Als " + content.role + "\n" 
+        + "möchte ich " + content.desire + ",\n" 
+        + "um " + content.benefit + ".\n" 
+    	+ "Akzeptanzkriterien: " + content.acceptanceCriteria;
+	} else {
+		text = text + "User meldet folgendes: \n"
+		+ "Problem Kurzbeschreibung: " + subject + "\n" +
+		"IST-Zustand: " + content.currentState + "\n" +
+		"SOLL-Zustand: " + content.targetState;
+	}
+	return text;
 }
 
 const problemOrFeedback = hook => {
@@ -91,7 +103,8 @@ const feedback = () => {
 						data.category||"nocategory",
 						data.email||"noemail",
 						data.schoolName||"noschoolname",
-						data.text||"notext")
+						data.subject||"",
+            			data.content)
 				}
 			});
 		}
