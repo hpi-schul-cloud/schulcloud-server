@@ -25,7 +25,7 @@ function createfeedbackText(user, category, email, schoolName, text){
 
 const problemOrFeedback = hook => {
 	if (hook.data.type === "feedback"){
-		hook.result = {};
+		hook.result = {}; //interrupts db interaction
 	}
 	return hook;
 }
