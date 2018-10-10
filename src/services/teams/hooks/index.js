@@ -125,6 +125,10 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
     const method = hook.method;
     const userId = hook.params.account.userId;
 
+    if(teamId!==undefined){
+        testIfObjectId(teamId);
+    }
+
     /********************
      *  get user data   *
      * ******************/
@@ -163,7 +167,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             //add team flag
             hook.data.features=['isTeam'];
 
-            resolve();       //team do not exist
+            resolve();       //team do not exist        //todo: Add hook.data as team information and let go to complet execut with any test
         } else if (method === 'find' && teamId === undefined) {     //!!Abhängigkeit von token und query userId wird nicht geprüft -> to be discuss!
             //return teams
             teamsService.find({
@@ -236,7 +240,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
 
         //add current schoolId to hook
         //todo: maybe schoolId can pass in every case to hook.data.schoolId
-        //todo2: maybe it work better to create test if is already set and rejected, after it set one time
+        //todo: maybe it work better to create test if is already set and rejected, after it set one time
         if (method == "get" || method == "find") {                  //by find and get use query to pass additional data
             if (hook.params.query.schoolId == undefined) {          //should undefined
                 hook.params.query.schoolId = schoolId;
@@ -392,7 +396,6 @@ const filterMoongoseResult = globalHooks.ifNotLocal(hook=>{
 
 /**
  * @param hook - to inject data that are saved in link services
- * @requires injectLinkData - to execute updateUsersForEachClass if no link must be inject
  * @example  {"_id" : "yyyyy", 
     "target" : "localhost:3100/teams/0000d186816abba584714c5f", 
     "createdAt" : ISODate("2018-08-28T10:12:29.131+0000"), 
@@ -456,7 +459,6 @@ const removeLink=(hook)=>{
 
 const injectLinkInformationForLeaders=(hook)=>{
     //todo: Take it from link service via find data.teamId
-    console.log('todo: link data ')
     return hook
 }
 
