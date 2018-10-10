@@ -261,10 +261,10 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
                 }else if(typeof id_or_obj === 'object'){
                     id_or_obj.userId = id_or_obj.userId.toString();
                     if(id_or_obj.role===undefined){        
-                        return createUserWithRole(id_or_obj.userId);
-                    }else{
-                        return id_or_obj
+                        id_or_obj=createUserWithRole(id_or_obj.userId);
                     }
+                    testIfObjectId(id_or_obj.role);
+                    return id_or_obj
                 }
             });
         }
@@ -295,16 +295,23 @@ const existId = (hook) => {
  * @method patch,get
  */
 const injectCurrentUserToTopLevel= (hook)=>{
+    if(hook.injectLink){
+        return hook
+    }
     if(typeof hook.result==='object' && hook.result._id !== undefined){
         const userId    = hook.params.account.userId.toString();
         const userIdObj = hook.result.userIds.find( user => (user.userId == userId || user.userId._id == userId) );
+        
+        testIfObjectId((userIdObj||{}).role);
+
         return hook.app.service('roles')
-        .get(userIdObj.role)
-        .then(role=>{
+        .get(userIdObj.role).then(role=>{
             userIdObj.permissions=role.permissions;
             userIdObj.name=role.name;
             hook.result.user=userIdObj;
             return hook;
+        }).catch(err=>{
+            throw new errors.BadRequest('Bad intern call. (5)',err);
         });
     }
 };
@@ -337,10 +344,10 @@ const blockedMethode=(hook)=>{
 
 /**
  * @param hook - clear and map return ressources to related
- * @method remove,create
+ * @method remove,create,patchOverLink
  * @after hook
  */
-const filterRemoveCreateResult=(hook)=>{
+const filterRemoveCreateLinkResult=(hook)=>{
     if(typeof hook.result==='object' && hook.result._id !== undefined){
         hook.result={_id:hook.result._id};
     }
@@ -385,19 +392,17 @@ const filterMoongoseResult = globalHooks.ifNotLocal(hook=>{
 
 /**
  * @param hook - to inject data that are saved in link services
- * @requires injectLinkData||updateUsersForEachClass - to execute updateUsersForEachClass if no link must be inject
- * @example {
-    "_id" : "yyyy",
-    "target" : "localhost:3100/teams/0000d186816abba584714c5f",
-    "createdAt" : ISODate("2018-08-28T10:12:29.131+0000"),
+ * @requires injectLinkData - to execute updateUsersForEachClass if no link must be inject
+ * @example  {"_id" : "yyyyy", 
+    "target" : "localhost:3100/teams/0000d186816abba584714c5f", 
+    "createdAt" : ISODate("2018-08-28T10:12:29.131+0000"), 
     "data" : {
-        "role" : "5bb5c545fb457b1c3c0c7e13",
-        "teamId" : "5bbb13541fe9ec2d1c462535",
-        "invitee" : "user@schul-cloud.org",
+        "role" : "teamadministrator", 
+        "teamId" : "5bbca16aac074915141a4b75", 
+        "invitee" : "test@schul-cloud.org", 
         "inviter" : "0000d224816abba584714c9c"
-    },
-    "__v" : NumberInt(0)
-}
+    }, 
+    "__v" : NumberInt(0)}
  */
 const injectDataFromLink=(fallback)=>{
     return (hook)=>{
@@ -424,7 +429,7 @@ const injectDataFromLink=(fallback)=>{
                 throw new errors.NotFound('This link is not valid.',err);
             });
         }else{
-            return fallback(hook)
+            return fallback ? fallback(hook) : hook;
         }
     }
 }
@@ -436,11 +441,13 @@ const injectDataFromLink=(fallback)=>{
 const removeLink=(hook)=>{
     if(hook.injectLink!==undefined){
         return hook.app.service('link').remove(hook.injectLink._id).then(link=>{
-            if(link.data._id!==undefined){
-                return hook
+            if(link._id!==undefined){
+                return filterRemoveCreateLinkResult(hook);
+            }else{
+                throw new errors.BadRequest('Link can not removed');
             }
         }).catch(err=>{
-            throw new errors.BadRequest('Bad intern call. (4)');
+            throw new errors.BadRequest('Bad intern call. (4)',err);
         });
     }else{
         return hook
@@ -470,8 +477,8 @@ exports.after = {
     all: [],
     find: [filterFindResult],
     get: [injectCurrentUserToTopLevel,injectLinkInformationForLeaders],                                 //see before (?)
-    create: [filterRemoveCreateResult],
+    create: [filterRemoveCreateLinkResult],
     update: [],                             //test schoolId remove
     patch: [injectCurrentUserToTopLevel,removeLink],          //test schoolId remove
-    remove: [filterRemoveCreateResult]
+    remove: [filterRemoveCreateLinkResult]
 };
