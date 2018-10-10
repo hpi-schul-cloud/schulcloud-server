@@ -91,12 +91,12 @@ exports.before = {
 };
 
 const redirectDic = {
-	u14: '/firstLogin/',
-	u18: '/firstLogin/',
-	ue18: '/firstLogin/',
+	u14: '/firstLogin/U14/',
+	u18: '/firstLogin/14_17/',
+	ue18: '/firstLogin/UE18/',
 	existing: '/firstLogin/existing/',
-	existingGeb: '/firstLogin/',
-	existingEmpl: '/firstLogin/',
+	existingGeb: '/firstLogin/existingGeb14',
+	existingEmpl: '/firstLogin/existingEmployee',
 	normal: '/dashboard/',
 	err: '/firstLogin/consentError'
 };
