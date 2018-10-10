@@ -43,9 +43,10 @@ describe('helpdesk service', function() {
 		assert.ok(helpdeskService);
 	});
 
-	it('POST /helpdesk with valid data', () => {
+	it('POST /helpdesk to admin with valid data', () => {
 
 		let postBody = {
+			type: 'problem',
 			subject: 'Dies ist ein Titel 2',
 			currentState: 'Dies ist der CurrentState',
 			targetState: 'Dies ist der TargetState',
@@ -63,9 +64,10 @@ describe('helpdesk service', function() {
 		);
 	});
 
-	it('POST /helpdesk with invalid data', () => {
+	it('POST /helpdesk to admin without schoolId', () => {
 
 		let postBody = {
+			type: 'problem',
 			subject: 'Dies ist ein Titel 3',
 			currentState: 'Dies ist der CurrentState 2',
 			targetState: 'Dies ist der TargetState 2',
@@ -80,5 +82,22 @@ describe('helpdesk service', function() {
 		);
 	});
 
+
+	it('POST /helpdesk to schoolcloud with problem', () => {
+
+		let postBody = {
+			type: 'feedback',
+			subject: 'Dies ist ein Titel 4',
+			currentState: 'Dies ist der CurrentState 2',
+			targetState: 'Dies ist der TargetState 2',
+			category: 'dashboard'
+		};
+
+		helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
+			.then (result => {
+				expect(result).to.equal({});
+			}
+		);
+	});
 });
 

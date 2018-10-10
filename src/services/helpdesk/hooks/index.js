@@ -10,7 +10,7 @@ function createinfoText(user, category, subject, cloud){
 	+ "User: " + user + "\n"
 	+ "Kategorie: "+ category + "\n"
 	+ "Betreff: " + subject + "\n"
-	+ "Schauen Sie für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der "+ cloud +".\n\n"
+	+ "Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der "+ cloud +".\n\n"
 	+ "Mit freundlichen Grüßen\n"
 	+ "Deine " + cloud;
 }
@@ -20,14 +20,21 @@ function createfeedbackText(user, category, email, schoolName, text){
 	+ "E-Mail: " + email + "\n"
 	+ "Schule: " + schoolName + "\n"
 	+ "Bereich ausgewählt: " + category + "\n"
-	+ "User schrieb folgendes: \n" + text
+	+ "User schrieb folgendes: \n" + text;
+}
+
+const problemOrFeedback = hook => {
+	if (hook.data.type === "feedback"){
+		hook.result = {};
+	}
+	return hook;
 }
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
 	find: [globalHooks.hasPermission('HELPDESK_VIEW')],
 	get: [globalHooks.hasPermission('HELPDESK_VIEW')],
-	create: [globalHooks.hasPermission('HELPDESK_CREATE'), restrictToCurrentSchool],
+	create: [globalHooks.hasPermission('HELPDESK_CREATE'), restrictToCurrentSchool, problemOrFeedback],
 	update: [globalHooks.hasPermission('HELPDESK_EDIT'), restrictToCurrentSchool],
 	patch: [globalHooks.hasPermission('HELPDESK_EDIT'),globalHooks.permitGroupOperation, restrictToCurrentSchool],
 	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation, globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership)]
@@ -48,6 +55,7 @@ const feedback = () => {
 						data.cloud||"Schul-Cloud")
 				}
 			});
+			/* //NOTIFICATION SERVICE IS BEING RENEWED
 			let userservice = hook.app.service('/users');
 			userservice.find({query: {roles: ['helpdesk']}})
 			.then(userdata => {
@@ -60,7 +68,7 @@ const feedback = () => {
 								"body": "",
 								"token": user._id,
 								"priority": "high",
-								"action": `${(req.headers.origin || process.env.HOST)}/administration/helpdesk`,
+								"action": //URL vom client mitschicken, im debug nochmal gucken obs im hook ist`/administration/helpdesk`,
 								"scopeIds": [
 									user._id
 								]
@@ -72,6 +80,7 @@ const feedback = () => {
 			.catch(error => {
 				let e = error;
 			});
+			*/
 		} else { // case: schulcloud feedback
 			globalHooks.sendEmail(hook, {
 				"subject": data.subject||"nosubject",
@@ -98,4 +107,4 @@ exports.after = {
 	update: [],
 	patch: [],
 	remove: []
-};
+}
