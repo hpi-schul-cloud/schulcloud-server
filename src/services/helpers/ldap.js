@@ -132,6 +132,35 @@ module.exports = function (app) {
 			const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${config.rootPath}`;
 			return this.searchCollection(config, searchString, options);
 		}
+
+		//TODO should be called if a user is added or removed from a school group 
+		updateUserGroups(config, user) {
+			//TODO First idea ... currently specification is missing
+			const changes = new ldap.Change({
+				operation: 'add',
+				modification: {
+					groups: ['groupId1', 'groupId2']
+				}
+			});
+
+			return this._getClient(config).then((client) => {
+				return new Promise((resolve, reject) => {
+					client.modify(user.ldapDn, changes, function (err, res) {
+						if (err) {
+							reject(err);
+						}
+						res.on('error', reject);
+						res.on('end', (result) => {
+							if (result.status === 0) {
+								resolve(res);
+							} else {
+								reject('LDAP result code != 0');
+							}
+						});
+					});
+				});
+			});
+		}
 	}
 
 	return LdapService;
