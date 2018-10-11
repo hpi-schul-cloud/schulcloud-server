@@ -65,7 +65,8 @@ module.exports = function (app) {
 			});
 		}
 
-		authorize(config, school, qualifiedUsername, password) {
+		authenticate(system, qualifiedUsername, password) {
+			const config = system.ldapConfig;
 			return this._connect(config, qualifiedUsername, password)
 				.then(() => {
 					const options = {
@@ -133,7 +134,7 @@ module.exports = function (app) {
 			return this.searchCollection(config, searchString, options);
 		}
 
-		//TODO should be called if a user is added or removed from a school group 
+		//TODO should be called if a user is added or removed from a school group
 		updateUserGroups(config, user) {
 			//TODO First idea ... currently specification is missing
 			const changes = new ldap.Change({

@@ -9,7 +9,6 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 	}
 
 	login({ username, password }, system, schoolId) {
-		const test = system;
 		const app = this.app;
 		const ldapService = app.service('ldap');
 
@@ -20,13 +19,7 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 					return app.service('users').get(account.userId);
 				})
 				.then(user => {
-					return app.service('ldapConfigs').get(school.ldapConfig)
-						.then(config => {
-							return ldapService.authorize(config, school, user.ldapDn, password);
-						});
-				})
-				.catch((err) => {
-					return Promise.reject(err);
+					return ldapService.authenticate(system, user.ldapDn, password);
 				});
 			});
 	}
