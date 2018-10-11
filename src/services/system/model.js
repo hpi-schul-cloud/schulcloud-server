@@ -12,11 +12,12 @@ const types = ['moodle', 'itslearning', 'lernsax', 'iserv', 'local', 'ldap'];
 
 const systemSchema = new Schema({
 	type: { type: String, required: true, enum: types },
-	url: {type: String, required: false},
-	alias: {type: String},
-	oaClientId: {type: String}, // just for oauth2-systems
-	oaClientSecret: {type: String}, // just for oauth2-systems
-},{
+	url: { type: String, required: false },
+	alias: { type: String },
+	oaClientId: { type: String }, // just for oauth2-systems
+	oaClientSecret: { type: String }, // just for oauth2-systems
+	ldapConfig: { type: Schema.Types.ObjectId, ref: 'ldapconfig' },
+}, {
 	timestamps: true
 });
 

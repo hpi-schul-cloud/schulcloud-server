@@ -15,7 +15,6 @@ const schoolSchema = new Schema({
 	address: {type: Object},
 	fileStorageType: {type: String, enum: fileStorageTypes},
 	systems: [{type: Schema.Types.ObjectId, ref: 'system'}],
-	ldapConfig: {type: Schema.Types.ObjectId, ref: 'ldapconfig'},
 	ldapSchoolIdentifier: {type: String},
 	federalState: {type: Schema.Types.ObjectId, ref: 'federalstate'},
 	createdAt: {type: Date, 'default': Date.now},
