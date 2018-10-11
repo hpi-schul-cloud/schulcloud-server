@@ -50,13 +50,13 @@ const createUserWithRole=(userId,selectedRole)=>{
 *   helper
 */
 const extractOne = (res,errorMessage) => {
-    if (res.data.length == 1) {
+    if ( (res.data||{}).length == 1) {
         return res.data[0]
     } else {
         if(res.data.length===0){
-            throw new errors.NotFound('The user is not in this team, or no team is avaible.',{errorMessage});
+            throw new errors.NotFound('The user is not in this team, or no team is avaible.',{errorMessage:errorMessage||''});
         }else{
-            throw new errors.BadRequest('Bad intern call. (1)');
+            throw new errors.BadRequest('Bad intern call. (1)',{errorMessage:errorMessage||''});
         }
     }
 }
@@ -219,7 +219,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             return Promise.resolve(hook);
         } */
 
-        if (team !== undefined && (method !== 'create'||methode !== 'patch')) {
+        if (team !== undefined && (method !== 'create'|| methode !== 'patch')) {
             //test if asked school in team
             if(!Array.isArray(team)){
                 team=[team];
@@ -298,7 +298,7 @@ const existId = (hook) => {
  * @after hook
  * @method patch,get
  */
-const injectCurrentUserToTopLevel= (hook)=>{
+const injectCurrentUserToTopLevel=globalHooks.ifNotLocal( (hook)=>{
     if(hook.injectLink){
         return hook
     }
@@ -318,7 +318,7 @@ const injectCurrentUserToTopLevel= (hook)=>{
             throw new errors.BadRequest('Bad intern call. (5)',err);
         });
     }
-};
+});
 
 /**
  * @param hook - test and update missing data for methodes that contain hook.data
@@ -410,24 +410,48 @@ const filterMoongoseResult = globalHooks.ifNotLocal(hook=>{
 const injectDataFromLink=(fallback)=>{
     return (hook)=>{
         if(hook.data.shortId && hook.id=='adduser'){
-            return hook.app.service('link').get(hook.data.shortId).then(link=>{
-                hook.id=link.data.teamId;       //inject teamId
+            const linkService  = hook.app.service('link');
+            const usersService = hook.app.service('users');
+            const teamsService = hook.app.service('teams');
+
+            return linkService.get(hook.data.shortId).then(link=>{
+                const teamId = link.data.teamId;
+                hook.id      = teamId;           //inject teamId
 
                 delete hook.data.shortId;       //clear it from posted data
                 hook.injectLink=link;           //to pass the id for later remove
+               
                 if(hook.data.userIds===undefined){
                     hook.data.userIds=[];
                 }
 
-                return hook.app.service('users').find({
+             
+                let waitUser = usersService.find({
                     query:{email:link.data.invitee}
                 }).then(users=>{
-                    const user=extractOne(users,'Find user by email.');
-                    hook.data.userIds.push( createUserWithRole(user._id, link.data.role) );
-                    return hook
+                    const user = extractOne(users,'Find user by email.');
+                    return createUserWithRole(user._id, link.data.role)
                 }).catch(err=>{
                     throw new errors.NotFound('No user credentials found.',err);
                 });
+
+                let waitTeam = teamsService.get(teamId).then( team=>{
+                    return team.userIds
+                }).catch(err=>{
+                    throw new errors.NotFound('No team found.',err);
+                });
+
+                return Promise.all([waitUser,waitTeam]).then(data=>{
+                    const user      = data[0];
+                    const teamUsers = data[1];
+                      //todo: test if include teamUsers[*].userId <-- user.userId then message already inside 
+
+                    hook.data.userIds = teamUsers.concat(user);
+                    return hook
+                }).catch(err=>{
+                    throw new errors.BadRequest(err);
+                });
+             
             }).catch(err=>{
                 throw new errors.NotFound('This link is not valid.',err);
             });
