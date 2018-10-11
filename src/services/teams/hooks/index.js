@@ -180,9 +180,11 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
                reject( new errors.BadRequest('Bad intern call. (2)',err) );
             });
         } else if (teamId) {
-            const _id=teamId;
+            const _id   = teamId;
+            const query = method==='patch' ? {_id} : {_id,userIds : {$elemMatch:{userId}}};
+
             teamsService.find({                     //match test by teamId and userId
-                query: (method==='patch' ? {_id} : {_id,userIds : {$elemMatch:{userId}}})  //if patch user is not in team, if delete and get user is in. 
+                query: query                        //if patch user is not in team, if delete and get user is in. 
             }).then(teams => {
                 resolve(extractOne(teams,'Find current team.'));
             }).catch(err => {
@@ -219,7 +221,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             return Promise.resolve(hook);
         } */
 
-        if (team !== undefined && (method !== 'create'|| methode !== 'patch')) {
+        if (team !== undefined && (method !== 'create'|| method !== 'patch')) {
             //test if asked school in team
             if(!Array.isArray(team)){
                 team=[team];
