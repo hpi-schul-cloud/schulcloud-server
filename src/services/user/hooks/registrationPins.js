@@ -26,7 +26,7 @@ const generatePin = (hook) => {
 function createinfoText(hook) {
 	let text;
 	let pin = hook.data.pin;
-	if (hook.data.byRole === "parent") {
+	if (hook.data.mailTextForRole === "parent") {
 		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der HPI Schul-Cloud ermöglichen.
 Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen.
 
@@ -35,7 +35,7 @@ PIN: ${pin}
 Mit Freundlichen Grüßen
 Ihr Schul-Cloud Team`;
 
-	} else if (hook.data.byRole === "student" || hook.data.byRole === "employee" || (hook.data.byRole||"").length > 8) {
+	} else if (hook.data.mailTextForRole === "student" || hook.data.mailTextForRole === "employee" || (hook.data.mailTextForRole||"").length > 8) {
 		text = `Vielen Dank, dass du die HPI Schul-Cloud nutzen möchtest.
 Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen.
 
