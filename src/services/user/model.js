@@ -18,6 +18,7 @@ const userSchema = new Schema({
 	birthday: {type: Date},
 	
 	importHash:{type:String},
+	inviteHash:{type:String},
 
 	children: [{type: Schema.Types.ObjectId, ref: 'user'}],
 	parents: [{type: Schema.Types.ObjectId, ref: 'user'}],

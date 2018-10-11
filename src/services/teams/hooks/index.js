@@ -50,13 +50,13 @@ const createUserWithRole=(userId,selectedRole)=>{
 *   helper
 */
 const extractOne = (res,errorMessage) => {
-    if (res.data.length == 1) {
+    if ( (res.data||{}).length == 1) {
         return res.data[0]
     } else {
         if(res.data.length===0){
-            throw new errors.NotFound('The user is not in this team, or no team is avaible.',{errorMessage});
+            throw new errors.NotFound('The user is not in this team, or no team is avaible.',{errorMessage:errorMessage||''});
         }else{
-            throw new errors.BadRequest('Bad intern call. (1)');
+            throw new errors.BadRequest('Bad intern call. (1)',{errorMessage:errorMessage||''});
         }
     }
 }
@@ -125,6 +125,10 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
     const method = hook.method;
     const userId = hook.params.account.userId;
 
+    if(teamId!==undefined){
+        testIfObjectId(teamId);
+    }
+
     /********************
      *  get user data   *
      * ******************/
@@ -163,7 +167,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             //add team flag
             hook.data.features=['isTeam'];
 
-            resolve();       //team do not exist
+            resolve();       //team do not exist        //todo: Add hook.data as team information and let go to complet execut with any test
         } else if (method === 'find' && teamId === undefined) {     //!!Abhängigkeit von token und query userId wird nicht geprüft -> to be discuss!
             //return teams
             teamsService.find({
@@ -176,9 +180,11 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
                reject( new errors.BadRequest('Bad intern call. (2)',err) );
             });
         } else if (teamId) {
-            const _id=teamId;
+            const _id   = teamId;
+            const query = method==='patch' ? {_id} : {_id,userIds : {$elemMatch:{userId}}};
+
             teamsService.find({                     //match test by teamId and userId
-                query: (method==='patch' ? {_id} : {_id,userIds : {$elemMatch:{userId}}})  //if patch user is not in team, if delete and get user is in. 
+                query: query                        //if patch user is not in team, if delete and get user is in. 
             }).then(teams => {
                 resolve(extractOne(teams,'Find current team.'));
             }).catch(err => {
@@ -215,7 +221,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             return Promise.resolve(hook);
         } */
 
-        if (team !== undefined && (method !== 'create'||methode !== 'patch')) {
+        if (team !== undefined && (method !== 'create'|| method !== 'patch')) {
             //test if asked school in team
             if(!Array.isArray(team)){
                 team=[team];
@@ -236,7 +242,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
 
         //add current schoolId to hook
         //todo: maybe schoolId can pass in every case to hook.data.schoolId
-        //todo2: maybe it work better to create test if is already set and rejected, after it set one time
+        //todo: maybe it work better to create test if is already set and rejected, after it set one time
         if (method == "get" || method == "find") {                  //by find and get use query to pass additional data
             if (hook.params.query.schoolId == undefined) {          //should undefined
                 hook.params.query.schoolId = schoolId;
@@ -294,7 +300,7 @@ const existId = (hook) => {
  * @after hook
  * @method patch,get
  */
-const injectCurrentUserToTopLevel= (hook)=>{
+const injectCurrentUserToTopLevel=globalHooks.ifNotLocal( (hook)=>{
     if(hook.injectLink){
         return hook
     }
@@ -314,7 +320,7 @@ const injectCurrentUserToTopLevel= (hook)=>{
             throw new errors.BadRequest('Bad intern call. (5)',err);
         });
     }
-};
+});
 
 /**
  * @param hook - test and update missing data for methodes that contain hook.data
@@ -392,7 +398,6 @@ const filterMoongoseResult = globalHooks.ifNotLocal(hook=>{
 
 /**
  * @param hook - to inject data that are saved in link services
- * @requires injectLinkData - to execute updateUsersForEachClass if no link must be inject
  * @example  {"_id" : "yyyyy", 
     "target" : "localhost:3100/teams/0000d186816abba584714c5f", 
     "createdAt" : ISODate("2018-08-28T10:12:29.131+0000"), 
@@ -407,24 +412,48 @@ const filterMoongoseResult = globalHooks.ifNotLocal(hook=>{
 const injectDataFromLink=(fallback)=>{
     return (hook)=>{
         if(hook.data.shortId && hook.id=='adduser'){
-            return hook.app.service('link').get(hook.data.shortId).then(link=>{
-                hook.id=link.data.teamId;       //inject teamId
+            const linkService  = hook.app.service('link');
+            const usersService = hook.app.service('users');
+            const teamsService = hook.app.service('teams');
+
+            return linkService.get(hook.data.shortId).then(link=>{
+                const teamId = link.data.teamId;
+                hook.id      = teamId;           //inject teamId
 
                 delete hook.data.shortId;       //clear it from posted data
                 hook.injectLink=link;           //to pass the id for later remove
+               
                 if(hook.data.userIds===undefined){
                     hook.data.userIds=[];
                 }
 
-                return hook.app.service('users').find({
+             
+                let waitUser = usersService.find({
                     query:{email:link.data.invitee}
                 }).then(users=>{
-                    const user=extractOne(users,'Find user by email.');
-                    hook.data.userIds.push( createUserWithRole(user._id, link.data.role) );
-                    return hook
+                    const user = extractOne(users,'Find user by email.');
+                    return createUserWithRole(user._id, link.data.role)
                 }).catch(err=>{
                     throw new errors.NotFound('No user credentials found.',err);
                 });
+
+                let waitTeam = teamsService.get(teamId).then( team=>{
+                    return team.userIds
+                }).catch(err=>{
+                    throw new errors.NotFound('No team found.',err);
+                });
+
+                return Promise.all([waitUser,waitTeam]).then(data=>{
+                    const user      = data[0];
+                    const teamUsers = data[1];
+                      //todo: test if include teamUsers[*].userId <-- user.userId then message already inside 
+
+                    hook.data.userIds = teamUsers.concat(user);
+                    return hook
+                }).catch(err=>{
+                    throw new errors.BadRequest(err);
+                });
+             
             }).catch(err=>{
                 throw new errors.NotFound('This link is not valid.',err);
             });
@@ -456,7 +485,6 @@ const removeLink=(hook)=>{
 
 const injectLinkInformationForLeaders=(hook)=>{
     //todo: Take it from link service via find data.teamId
-    console.log('todo: link data ')
     return hook
 }
 
