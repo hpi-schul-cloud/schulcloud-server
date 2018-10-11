@@ -1,6 +1,7 @@
 const errors = require('feathers-errors');
 const _ = require('lodash');
 const CourseModel = require('../../user-group/model').courseModel;
+const TeamModel = require('../../teams/model').teamsModel;
 const LessonModel = require('../../lesson/model');
 const ClassModel = require('../../user-group/model').classModel;
 const FilePermissionModel = require('../model').fileModel;
@@ -60,6 +61,34 @@ class FilePermissionHelper {
 				return CourseModel.find({
 					$and: [
 						{$or: [{userIds: userId}, {teacherIds: userId}]},
+						{_id: contextId}
+					]
+				}).exec().then(res => {
+					// user is not in that course, check if the file is one of a shared lesson
+					if (!res || res.length <= 0) {
+						return LessonModel.find({
+							$and: [
+								{ "contents.content.text": { $regex: decodeURIComponent(filePath), $options: 'i'}},
+								{ "shareToken": { $exists: true }}
+								]
+						}).exec().then(res => {
+							if (!res || res.length <= 0) {
+								return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+							}
+							return Promise.resolve({context: res[0]});
+						});
+					}
+					return Promise.resolve({context: res[0]});
+				});
+			case 'teams':
+				// checks, a) whether the user is student or teacher of the course, b) the course exists
+				return TeamModel.find({
+					$and: [
+						{
+							userIds: {
+								$elemMatch: { userId }
+							}
+						},
 						{_id: contextId}
 					]
 				}).exec().then(res => {
