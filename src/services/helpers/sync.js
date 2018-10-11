@@ -24,17 +24,18 @@ module.exports = function (app) {
 		}
 
 		_syncFromLdap(app) {
-			return app.service('ldapConfigs').find({ query: {} })
-				.then(configs => {
-					return Promise.all(configs.data.map(config => {
+			return app.service('systems').find({ query: { type: 'ldap' } })
+				.then(ldapSystems => {
+					return Promise.all(ldapSystems.data.map(system => {
+						const config = system.ldapConfig;
 						return this.ldapService.getSchools(config)
 							.then(data => {
-								return this._createSchoolsFromLdapData(app, data, config);
+								return this._createSchoolsFromLdapData(app, data, system);
 							}).then(schools => {
 								return Promise.all(schools.map(school => {
 									return this.ldapService.getUsers(config, school)
 										.then(data => {
-											return this._createUsersFromLdapData(app, data, school, config);
+											return this._createUsersFromLdapData(app, data, school, system);
 										});
 								}));
 							});
@@ -42,43 +43,28 @@ module.exports = function (app) {
 				});
 		}
 
-		_getSystemForLdapConfig(config) {
-			return app.service('systems').find({ query: { ldapConfig: config._id } } )
-				.then(systems => {
-					if (systems.total > 0) {
-						return Promise.resolve(systems.data[0]);
-					}
-					return Promise.reject('No system available for given LDAP config');
-				});
-		}
-
-		_createSchoolsFromLdapData(app, data, config) {
+		_createSchoolsFromLdapData(app, data, system) {
 			return Promise.all(data.map(ldapSchool => {
 				return app.service('schools').find({ query: { ldapSchoolIdentifier: ldapSchool.ou } })
 					.then(schools => {
 						if (schools.total != 0) {
 							return Promise.resolve(schools.data[0]);
 						}
-						return this._getSystemForLdapConfig(config)
-						.then(system => {
-							const schoolData = {
-								name: ldapSchool.displayName,
-								systems: [system._id],
-								ldapSchoolIdentifier: ldapSchool.ou,
-								currentYear: "5b7de0021a3a07c20a1c165e", //18/19
-								federalState: "0000b186816abba584714c58" //Niedersachsen
-							};
-							return app.service('schools').create(schoolData);
-						});
+						const schoolData = {
+							name: ldapSchool.displayName,
+							systems: [system._id],
+							ldapSchoolIdentifier: ldapSchool.ou,
+							currentYear: "5b7de0021a3a07c20a1c165e", //18/19
+							federalState: "0000b186816abba584714c58" //Niedersachsen
+						};
+						return app.service('schools').create(schoolData);
 					});
 			}));
 		}
 
-		_createUserAndAccount(app, idmUser, school, config) {
+		_createUserAndAccount(app, idmUser, school, system) {
 			let email = idmUser.mail;
-			return this._getSystemForLdapConfig(config)
-			.then(system => {
-				return app.service('registrationPins').create({ email, verified: true, silent: true })
+			return app.service('registrationPins').create({ email, verified: true, silent: true })
 				.then(registrationPin => {
 					let newUserData = {
 						pin: registrationPin.pin,
@@ -128,10 +114,9 @@ module.exports = function (app) {
 						});
 					//-------------------------------------------------------------------
 				});
-			});
 		}
 
-		_createUsersFromLdapData(app, data, school, config) {
+		_createUsersFromLdapData(app, data, school, system) {
 			return Promise.all(data.map(idmUser => {
 
 				return app.service('users').find({ query: { ldapId: idmUser.entryUUID } })
@@ -141,7 +126,7 @@ module.exports = function (app) {
 							return Promise.resolve(users.data[0]);
 						}
 						if (idmUser.mail == undefined) return Promise.resolve("no email");
-						return this._createUserAndAccount(app, idmUser, school, config);
+						return this._createUserAndAccount(app, idmUser, school, system);
 					});
 
 			}));
