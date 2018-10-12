@@ -11,9 +11,10 @@ describe('helpdesk service', function() {
 
 	const testProblem =
 		{
+			type: 'problem',
 			_id: '5836bb5664582c35df3bc214',
 			subject: 'Dies ist ein Titel',
-			currentTarget: 'Dies ist der CurrentState',
+			currentState: 'Dies ist der CurrentState',
 			targetState: 'Dies ist der TargetState',
 			category: 'dashboard',
 			schoolId: '5836bb5664582c35df3bc000'
@@ -27,7 +28,6 @@ describe('helpdesk service', function() {
 				done();
 			});
 	});
-
 
 	after(function(done) {
 		helpdeskService.remove(testProblem)
@@ -82,8 +82,24 @@ describe('helpdesk service', function() {
 		);
 	});
 
+	it('POST /helpdesk to admin without data', () => {
 
-	it('POST /helpdesk to schoolcloud with problem', () => {
+		let postBody = {
+			type: 'problem',
+			subject: 'Dies ist ein Titel 3',
+			category: 'dashboard',
+			schoolId: '5836bb5664582c35df3bc000'
+		};
+
+		helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
+			.catch(err => {
+				expect(err).to.not.be.undefined;
+				expect(err.code).to.equal(400);
+			}
+		);
+	});
+
+	it('POST /helpdesk to schoolcloud with problem, valid data', () => {
 
 		let postBody = {
 			type: 'feedback',
@@ -96,6 +112,41 @@ describe('helpdesk service', function() {
 		helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
 			.then (result => {
 				expect(result).to.equal({});
+			}
+		);
+	});
+
+	it('POST /helpdesk to schoolcloud with feedback, valid data', () => {
+
+		let postBody = {
+			type: 'feedback',
+			subject: 'Dies ist ein Titel 4',
+			role: 'Meine Rolle',
+			desire: 'Dies ist Desire 1',
+			benefit: 'Dies ist Benefit 1',
+			acceptanceCriteria:'Dies sind acceptanceCriteria',
+			category: 'dashboard'
+		};
+
+		helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
+			.then (result => {
+				expect(result).to.equal({});
+			}
+		);
+	});
+
+	it('POST /helpdesk to schoolcloud without data', () => {
+
+		let postBody = {
+			type: 'feedback',
+			subject: 'Dies ist ein Titel 4',
+			category: 'dashboard'
+		};
+
+		helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
+			.catch(err => {
+				expect(err).to.not.be.undefined;
+				expect(err.code).to.equal(400);
 			}
 		);
 	});

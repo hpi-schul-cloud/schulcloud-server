@@ -5,32 +5,32 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
-function createinfoText(user, category, subject, cloud){
+function createinfoText(user, data){
 	return "Ein neues Problem wurde gemeldet." + "\n"
 	+ "User: " + user + "\n"
-	+ "Kategorie: "+ category + "\n"
-	+ "Betreff: " + subject + "\n"
-	+ "Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der "+ cloud +".\n\n"
+	+ "Kategorie: "+ data.category + "\n"
+	+ "Betreff: " + data.subject + "\n"
+	+ "Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der "+ data.cloud +".\n\n"
 	+ "Mit freundlichen Grüßen\n"
-	+ "Deine " + cloud;
+	+ "Deine " + data.cloud;
 }
 
-function createfeedbackText(user, category, email, schoolName, subject, content){
+function createfeedbackText(user, data){
 	let text = "User: " + user + "\n"
-	+ "E-Mail: " + email + "\n"
-	+ "Schule: " + schoolName + "\n"
-	+ "Bereich ausgewählt: " + category + "\n";
-	if (content.desire != ""){
+	+ "E-Mail: " + data.email + "\n"
+	+ "Schule: " + data.schoolName + "\n"
+	+ "Bereich ausgewählt: " + data.category + "\n";
+	if (data.desire && data.desire != ""){
 		text = text + "User schrieb folgendes: \n"
-		+ "Als " + content.role + "\n" 
-        + "möchte ich " + content.desire + ",\n" 
-        + "um " + content.benefit + ".\n" 
-    	+ "Akzeptanzkriterien: " + content.acceptanceCriteria;
+		+ "Als " + data.role + "\n"
+        + "möchte ich " + data.desire + ",\n"
+		+ "um " + data.benefit + ".\n"
+		+ "Akzeptanzkriterien: " + data.acceptanceCriteria;
 	} else {
 		text = text + "User meldet folgendes: \n"
-		+ "Problem Kurzbeschreibung: " + subject + "\n" +
-		"IST-Zustand: " + content.currentState + "\n" +
-		"SOLL-Zustand: " + content.targetState;
+		+ "Problem Kurzbeschreibung: " + data.subject + "\n"
+		+ "IST-Zustand: " + data.currentState + "\n"
+		+ "SOLL-Zustand: " + data.targetState;
 	}
 	return text;
 }
@@ -40,7 +40,7 @@ const problemOrFeedback = hook => {
 		hook.result = {}; //interrupts db interaction
 	}
 	return hook;
-}
+};
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
@@ -62,9 +62,7 @@ const feedback = () => {
 				"content": {
 					"text": createinfoText(
 						(hook.params.account||{}).username||"nouser",
-						data.category||"nocategory",
-						data.subject||"nosubject",
-						data.cloud||"Schul-Cloud")
+						data)
 				}
 			});
 			/* //NOTIFICATION SERVICE IS BEING RENEWED
@@ -100,17 +98,14 @@ const feedback = () => {
 				"content": {
 					"text": createfeedbackText(
 						(hook.params.account||{}).username||"nouser",
-						data.category||"nocategory",
-						data.email||"noemail",
-						data.schoolName||"noschoolname",
-						data.subject||"",
-            			data.content)
+						data
+					)
 				}
 			});
 		}
 		return Promise.resolve(hook);
-	}
- }
+	};
+ };
 
 exports.after = {
 	all: [],
@@ -120,4 +115,4 @@ exports.after = {
 	update: [],
 	patch: [],
 	remove: []
-}
+};
