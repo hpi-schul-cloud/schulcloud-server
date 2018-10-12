@@ -65,32 +65,7 @@ const feedback = () => {
 						data)
 				}
 			});
-			/* //NOTIFICATION SERVICE IS BEING RENEWED
-			let userservice = hook.app.service('/users');
-			userservice.find({query: {roles: ['helpdesk']}})
-			.then(userdata => {
-				userdata.data.map(user => {
-					if (process.env.NOTIFICATION_SERVICE_ENABLED) {
-						let notificationservice = hook.app.service('/notification/messages');
-						notificationservice.post({
-							json: {
-								"title": "Ein neues Problem wurde gemeldet.",
-								"body": "",
-								"token": user._id,
-								"priority": "high",
-								"action": //URL vom client mitschicken, im debug nochmal gucken obs im hook ist`/administration/helpdesk`,
-								"scopeIds": [
-									user._id
-								]
-							}
-						});
-					}
-				});
-			})
-			.catch(error => {
-				let e = error;
-			});
-			*/
+			//TODO: NOTIFICATION SERVICE
 		} else { // case: schulcloud feedback
 			globalHooks.sendEmail(hook, {
 				"subject": data.subject||"nosubject",

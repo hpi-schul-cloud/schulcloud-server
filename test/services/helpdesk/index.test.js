@@ -28,7 +28,6 @@ describe('helpdesk service', function() {
 				done();
 			});
 	});
-	
 
 	after(function(done) {
 		helpdeskService.remove(testProblem)
