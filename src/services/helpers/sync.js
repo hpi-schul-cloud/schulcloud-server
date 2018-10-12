@@ -48,7 +48,9 @@ module.exports = function (app) {
 				return app.service('schools').find({ query: { ldapSchoolIdentifier: ldapSchool.ou } })
 					.then(schools => {
 						if (schools.total != 0) {
-							return Promise.resolve(schools.data[0]);
+							return app.service('schools').update(
+								{_id: schools.data[0]._id},
+								{$set: {name: ldapSchool.displayName}});
 						}
 						const schoolData = {
 							name: ldapSchool.displayName,
@@ -122,14 +124,47 @@ module.exports = function (app) {
 				return app.service('users').find({ query: { ldapId: idmUser.entryUUID } })
 					.then(users => {
 						if (users.total != 0) {
-							//toDo: check for changes
-							return Promise.resolve(users.data[0]);
+							return this._checkForUserChangesAndUpdate(app, idmUser, users.data[0], school);
 						}
 						if (idmUser.mail == undefined) return Promise.resolve("no email");
 						return this._createUserAndAccount(app, idmUser, school, system);
 					});
 
 			}));
+		}
+
+		_checkForUserChangesAndUpdate(app, idmUser, user, school) {
+			let updateObject = {$set: {}};
+			if(user.firstName != idmUser.givenName) {
+				updateObject.$set['firstName'] = idmUser.givenName;
+			}
+			if(user.lastName != idmUser.sn) {
+				updateObject.$set['lastName'] = idmUser.sn;
+			}
+			//Updating SchoolId will cause an issue. We need to discuss about it
+			if(user.email != idmUser.mail) {
+				updateObject.$set['email'] = idmUser.mail;
+			}
+			if(user.ldapDn != idmUser.dn) {
+				updateObject.$set['ldapDn'] = idmUser.dn;
+			}
+
+			// Role
+			updateObject.$set["roles"] = [];
+			if (idmUser.objectClass.includes("ucsschoolTeacher")) {
+				updateObject.$set["roles"].push("teacher");
+			}
+			if (idmUser.objectClass.includes("ucsschoolStudent")) {
+				updateObject.$set["roles"].push("student");
+			}
+			if (idmUser.objectClass.includes("ucsschoolStaff")) {
+				//ToDo
+			}
+			
+			return app.service('users').update(
+				{_id: user._id},
+				updateObject);
+
 		}
 	}
 
