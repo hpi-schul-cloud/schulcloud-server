@@ -1,14 +1,15 @@
 'use strict';
-const pathUtil = require('path').posix;
-const hooks = require('./hooks');
+const { posix: pathUtil } = require('path');
+const { before, after } = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
 const errors = require('feathers-errors');
 const swaggerDocs = require('./docs/');
 const filePermissionHelper = require('./utils/filePermissionHelper');
-const removeLeadingSlash = require('./utils/filePathHelper').removeLeadingSlash;
-const generateFlatFileName = require('./utils/filePathHelper').generateFileNameSuffix;
-const FileModel = require('./model').fileModel;
-const DirectoryModel = require('./model').directoryModel;
+const {
+	removeLeadingSlash,
+	generateFileNameSuffix: generateFlatFileName } = require('./utils/filePathHelper');
+const FileModel = require('./model');
+const DirectoryModel = FileModel;
 const LessonModel = require('../lesson/model');
 
 const strategies = {
@@ -198,7 +199,7 @@ class SignedUrlService {
 		// converts the real filename to a unique one in flat-storage
 		// if action = getObject, file should exist in proxy db
 		let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({});
-		
+
 		return fileProxyPromise.then(res => {
 			if (!res) return;
 
@@ -209,13 +210,13 @@ class SignedUrlService {
 				let externalSchoolId;
 				if (p.permission === 'shared') externalSchoolId = res.schoolId;
 
-				let header =  {							
+				let header =  {
 					// add meta data for later using
 					"Content-Type": fileType,
 					"x-amz-meta-path": dirName,
 					"x-amz-meta-name": fileName,
 					"x-amz-meta-flat-name": flatFileName,
-					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"				
+					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 				};
 
 				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId, download)
@@ -455,30 +456,18 @@ module.exports = function () {
 	app.use('/fileStorage/copy', new CopyService());
 	app.use('/fileStorage', new FileStorageService());
 
-	// Get our initialize service to that we can bind hooks
-	const fileStorageService = app.service('/fileStorage');
-	const signedUrlService = app.service('/fileStorage/signedUrl');
-	const directoryService = app.service('/fileStorage/directories');
-	const directoryRenameService = app.service('/fileStorage/directories/rename');
-	const fileRenameService = app.service('/fileStorage/rename');
-	const fileTotalSizeService = app.service('/fileStorage/total');
-	const copyService = app.service('/fileStorage/copy');
-
-	// Set up our before hooks
-	fileStorageService.before(hooks.before);
-	signedUrlService.before(hooks.before);
-	directoryService.before(hooks.before);
-	directoryRenameService.before(hooks.before);
-	fileRenameService.before(hooks.before);
-	fileTotalSizeService.before(hooks.before);
-	copyService.before(hooks.before);
-
-	// Set up our after hooks
-	fileStorageService.after(hooks.after);
-	signedUrlService.after(hooks.after);
-	directoryService.after(hooks.after);
-	directoryRenameService.after(hooks.after);
-	fileRenameService.after(hooks.after);
-	fileTotalSizeService.after(hooks.after);
-	copyService.after(hooks.after);
+	[
+		'/fileStorage',
+		'/fileStorage/signedUrl',
+		'/fileStorage/directories',
+		'/fileStorage/directories/rename',
+		'/fileStorage/rename',
+		'/fileStorage/total',
+		'/fileStorage/copy',
+	].forEach(path => {
+		// Get our initialize service to that we can bind hooks
+		const service = app.service(path);
+		service.before(before);
+		service.after(after);
+	});
 };

@@ -1,22 +1,24 @@
 'use strict';
 
-const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
+const { hasPermission, injectUserId } = require('../../../hooks');
 const auth = require('feathers-authentication');
 
 const resolveUserId = (hook) => {
-	hook.params.payload.userId = hook.params.account.userId ? hook.params.account.userId : '';
+	hook.params.payload.userId = hook.params.account.userId || '';
 	return hook;
 };
 
 const resolveStorageType = (hook) => {
-	let userService = hook.app.service("users");
-	return userService.find({query: {
-		_id: hook.params.payload.userId,
+	const { params: { payload } } = hook;
+
+	return hook.app.service('users').find({query: {
+		_id: payload.userId,
 		$populate: ['schoolId']
-	}}).then(res => {
-		hook.params.payload.schoolId = res.data[0].schoolId._id;
-		hook.params.payload.fileStorageType = res.data[0].schoolId.fileStorageType;
+	}})
+	.then(res => {
+		const [{ schoolId: { _id, fileStorageType} },] = res.data;
+		payload.schoolId = _id;
+		payload.fileStorageType = fileStorageType;
 		return hook;
 	});
 };
@@ -24,16 +26,16 @@ const resolveStorageType = (hook) => {
 exports.before = {
 	all: [
 		auth.hooks.authenticate('jwt'),
-		globalHooks.injectUserId,
+		injectUserId,
 		resolveUserId,
 		resolveStorageType
 	],
-	find: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
-	get: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
-	create: [globalHooks.hasPermission('FILESTORAGE_CREATE')],
-	update: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
-	patch: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
-	remove: [globalHooks.hasPermission('FILESTORAGE_REMOVE')]
+	find: [hasPermission('FILESTORAGE_VIEW')],
+	get: [hasPermission('FILESTORAGE_VIEW')],
+	create: [hasPermission('FILESTORAGE_CREATE')],
+	update: [hasPermission('FILESTORAGE_EDIT')],
+	patch: [hasPermission('FILESTORAGE_EDIT')],
+	remove: [hasPermission('FILESTORAGE_REMOVE')]
 };
 
 exports.after = {

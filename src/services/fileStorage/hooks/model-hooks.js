@@ -1,7 +1,6 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const permissions = require('../utils/filePermissionHelper');
 
@@ -11,6 +10,7 @@ const restrictToCurrentUser = hook => {
 	let allowedFiles = [];
 	let queries = hook.params.query;
 	// permissions check for each file
+
 	return Promise.all(files.map(f => {
 		return permissions.checkPermissions(userId, f.key, ['can-write'], false, queries).then(isAllowed => {
 			if (isAllowed) {
