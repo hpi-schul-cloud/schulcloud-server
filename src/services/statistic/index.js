@@ -71,14 +71,9 @@ let promises = [
 		model: userModel.userModel.find({roles: '0000d186816abba584714c99'}).exec()
 	},
 	{
-		name: 'files',
-		promise: fileModel.fileModel.count().exec(),
-		model: fileModel.fileModel.find().exec()
-	},
-	{
-		name: 'directories',
-		promise: fileModel.directoryModel.count().exec(),
-		model: fileModel.directoryModel.find().exec()
+		name: 'files/directories',
+		promise: fileModel.count().exec(),
+		model: fileModel.find().exec()
 	},
 ];
 
