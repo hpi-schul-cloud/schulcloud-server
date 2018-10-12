@@ -87,12 +87,28 @@ describe('user service', function () {
 	});
 
 	it('deletes user correctly', function () {
-		return classesService.find({query: {"name": "Demo-Klasse"}})
+		let classId = undefined;
+		let courseId = undefined;
+
+		classesService.find({query: {"name": "Demo-Klasse"}})
 		.then(classes => {
 			classes.data.map(c => {
 				c.userIds.push(testUserId);
-				userService.remove(testUserId).then(h => {
-					classesService.get(c._id).then(c => chai.expect(c.userIds).to.not.include(testUserId));
+				classId = c._id;
+			});
+			chai.expect(classId).to.not.be.undefined;
+
+			coursesService.find({query: {"name": "Mathe"}})
+			.then(courses => {
+				courses.data.map(c => {
+					c.userIds.push(testUserId);
+					courseId = c._id;
+				});
+				chai.expect(courseId).to.not.be.undefined;
+
+				return userService.remove(testUserId).then(h => {
+					classesService.get(classId).then(c => chai.expect(c.userIds).to.not.include(testUserId));
+					coursesService.get(courseId).then(c => chai.expect(c.userIds).to.not.include(testUserId));
 				});
 			});
 		});
