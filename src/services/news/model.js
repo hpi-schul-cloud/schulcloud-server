@@ -27,7 +27,7 @@ const newsModel = mongoose.model('news', new Schema({
 	targetModel: {
 		type: String,
 		required: true,
-		enum: ['course', 'teams']
+		enum: ['course', 'teams', 'class']
 	}
 }));
 
