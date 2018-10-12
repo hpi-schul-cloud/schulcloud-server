@@ -14,7 +14,21 @@ const newsModel = mongoose.model('news', new Schema({
 
     updaterId: {type: Schema.Types.ObjectId, ref: 'user'},
 	updatedAt: {type: Date},
-    history: [{type: Schema.Types.ObjectId, ref: 'newsArchiv'}]
+	history: [{type: Schema.Types.ObjectId, ref: 'newsArchiv'}],
+
+	target: {
+		type: Schema.Types.ObjectId,
+		required: true,
+		// Instead of a hardcoded model name in `ref`, `refPath` means Mongoose
+		// will look at the `targetModel` property to find the right model.
+		refPath: 'targetModel'
+	},
+
+	targetModel: {
+		type: String,
+		required: true,
+		enum: ['course', 'teams']
+	}
 }));
 
 const newsHistoryModel = mongoose.model('newshistory', new Schema({
@@ -25,7 +39,6 @@ const newsHistoryModel = mongoose.model('newshistory', new Schema({
     creatorId: {type: Schema.Types.ObjectId, ref: 'user'},
 	createdAt: {type: Date, 'default': Date.now},
 	parentId: {type: Schema.Types.ObjectId, ref: 'news'},
-
 }));
 
 
