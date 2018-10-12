@@ -6,16 +6,20 @@ const app = require('../../../src/app');
 const userService = app.service('users');
 const registrationPinService = app.service('registrationPins');
 const classesService = app.service('classes');
+const coursesService = app.service('courses');
 const chai = require('chai');
 const loginHelper = require('../helpers/login');
 const testObjects = require('../helpers/testObjects')(app);
 const promisify = require('es6-promisify');
 const expect = chai.expect;
 
+let testUserId = undefined;
+
 describe('user service', function () {
 	it('registered the users service', () => {
 		assert.ok(userService);
 		assert.ok(classesService);
+		assert.ok(coursesService);
 	});
 
 	it('rejects on group patching', function() {
@@ -75,27 +79,20 @@ describe('user service', function () {
 			}))
 			.then(user => userService.get(user._id))
 			.then(user => {
+				testUserId = user._id;
 				const array = Array.from(user.permissions);
 				chai.expect(array).to.have.lengthOf(3);
 				chai.expect(array).to.include("TEST_BASE", "TEST_BASE_2", "TEST_SUB");
 			});
 	});
 
-	it('delete user correctly', function () {
-		return userService.find({query: {
-			"firstName": "Max",
-			"lastName": "Tester"
-		}})
-		.then(users => {
-			users.data.map(u => {
-				classesService.find({query: {"name": "Demo-Klasse"}})
-				.then(classes => {
-					classes.data.map(c => {
-						c.userIds.push(u._id);
-						userService.remove(u._id).then(h => {
-							classesService.get(c._id).then(c => chai.expect(c.userIds).to.not.include(u._id));
-						});
-					});
+	it('deletes user correctly', function () {
+		return classesService.find({query: {"name": "Demo-Klasse"}})
+		.then(classes => {
+			classes.data.map(c => {
+				c.userIds.push(testUserId);
+				userService.remove(testUserId).then(h => {
+					classesService.get(c._id).then(c => chai.expect(c.userIds).to.not.include(testUserId));
 				});
 			});
 		});
