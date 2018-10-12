@@ -155,7 +155,7 @@ const accessCheck = (consent, app) => {
 
 			if (age < 18) {
 				redirect = redirectDic['u14'];
-				let parentConsent = consent.parentConsents[0] || {};
+				let parentConsent = (consent.parentConsents||[])[0] || {};
 				//check parent consents
 				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent &&
 					parentConsent.thirdPartyConsent && parentConsent.researchConsent)) {
