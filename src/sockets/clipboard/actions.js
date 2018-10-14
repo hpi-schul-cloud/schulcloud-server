@@ -62,4 +62,13 @@ module.exports = (socket) => {
         course.board.media[media.slot] = media.media;
         course.broadcastUpdate('board');
     });
+
+    socket.on("CREATE_GROUP_DESK", ({name}) => {
+        const { course } = socket.meta;
+        course.desks.groups[name] = {
+            media: [],
+            name
+        };
+        course.broadcastUpdate('desks');
+    });
 };
