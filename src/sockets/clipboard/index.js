@@ -5,6 +5,7 @@ const siofu = require("socketio-file-upload");
 const actions = require('./actions');
 const upload = require('./upload');
 const ClipboardModel = require('./clipboard-model');
+const logger = require('winston');
 
 module.exports = function () {
 	const app = this;
@@ -73,9 +74,10 @@ module.exports = function () {
 				course: socket.meta.courseId,
 				version: 1,
 			}, {upsert:true}, function(err, doc){
-				if (err) reject(err);
-				if(doc.state.board) socket.meta.course.board = doc.state.board;
-				if(doc.state.desks) socket.meta.course.desks = doc.state.desks;
+				if (err) return reject(err);
+				if (!doc) return resolve();
+				if(doc.state && doc.state.board) socket.meta.course.board = doc.state.board;
+				if(doc.state && doc.state.desks) socket.meta.course.desks = doc.state.desks;
 				socket.meta._id = doc._id;
 				resolve();
 			});
@@ -124,7 +126,8 @@ module.exports = function () {
 				.then(initUserInCourse(socket))
 				.then(upload(socket))
 				.then(sendFullState(socket))
-				.then(actions(socket));
+				.then(actions(socket))
+				.catch(logger.error);
 		});
 	}));
 };
