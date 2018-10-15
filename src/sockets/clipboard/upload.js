@@ -6,17 +6,19 @@ const logger = require('winston');
 
 module.exports = (socket) => {
     initUploadSocket(socket, (uploadedFile) => {
-        const {user, course} = socket.meta;
+        const {user, course, url} = socket.meta;
         let file = {
             file: path.basename(uploadedFile.pathName),
             name: uploadedFile.name,
             sender: user && user.name,
-            src: 'http://localhost:3030/clipboard/uploads/' + path.basename(uploadedFile.pathName),
+            src: url + '/clipboard/uploads/' + path.basename(uploadedFile.pathName),
             type: fileType(readChunk.sync(uploadedFile.pathName, 0, 4100)),
             id: ++course.lastId,
         };
         if(!uploadedFile.meta.deskType || !uploadedFile.meta.desk) return;
-        course.desks[uploadedFile.meta.deskType][uploadedFile.meta.desk].media.push(file);
+        let desk = course.desks[uploadedFile.meta.deskType][uploadedFile.meta.desk];
+        if(!desk) return;
+        desk.media.push(file);
         course.broadcastUpdate('desks');
     });
 
