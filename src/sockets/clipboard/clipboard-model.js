@@ -17,7 +17,8 @@ const clipboardSchema = new Schema({
 		},
 		desks: {
 			type:mongoose.Schema.Types.Mixed,
-		}
+		},
+		lastId: Number
 	},
 	version: {type: Number, required: true},
 	createdAt: {type: Date, default: Date.now },

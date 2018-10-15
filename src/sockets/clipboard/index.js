@@ -55,7 +55,8 @@ module.exports = function () {
 					}, {
 						state: {
 							board: this.board,
-							desks: this.desks
+							desks: this.desks,
+							lastId: this.lastId
 						}
 					}, function(err){
 						if (err) throw Error(err);
@@ -78,6 +79,7 @@ module.exports = function () {
 				if (!doc) return resolve();
 				if(doc.state && doc.state.board) socket.meta.course.board = doc.state.board;
 				if(doc.state && doc.state.desks) socket.meta.course.desks = doc.state.desks;
+				if(doc.state.lastId) socket.meta.course.lastId = doc.state.lastId;
 				socket.meta._id = doc._id;
 				resolve();
 			});
@@ -100,7 +102,11 @@ module.exports = function () {
 			course.users[user.bucket][user.id] = user;
 			if(!course.desks[user.bucket][user.id]) {
 				course.desks[user.bucket][user.id] = {
-					media: []
+					media: [],
+					board: {
+						layout: '1x1',
+						media: {}
+					}
 				};
 			}
 			course.desks[user.bucket][user.id].name = user.name;

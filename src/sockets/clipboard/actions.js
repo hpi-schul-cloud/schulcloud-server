@@ -12,7 +12,7 @@ module.exports = (socket) => {
         let medium = meta.medium;
         medium.id = ++course.lastId;
         medium.sender = user && user.name;
-        
+        if(!course.desks[meta.deskType][meta.desk]) return;
         course.desks[meta.deskType][meta.desk].media.push(medium);
         course.broadcastUpdate('desks');
     });
@@ -31,42 +31,49 @@ module.exports = (socket) => {
         course.broadcastUpdate('desks');
     });
 
-    socket.on("SET_BOARD_LAYOUT", (layout) => {
+    socket.on("SET_BOARD_LAYOUT", ({desk, deskType, key, maxElements}) => {
         const {user, course} = socket.meta;
-        course.board.layout = layout.key;
-        course.board.maxElements = layout.maxElements;
-        course.board.media = Object.values(course.board.media)
+        const deskObject = course.desks[deskType][desk];
+        if(!deskObject) return;
+        let board = deskObject.board;
+        board.layout = key;
+        board.maxElements = maxElements;
+        board.media = Object.values(board.media)
                                 .filter((media) => !!media)
-                                .slice(0, layout.maxElements || 1)
+                                .slice(0, maxElements || 1)
                                 .reduce((acc, media, i) => {
                                     acc[i] = media;
                                     return acc;
                                 }, {});
-        course.broadcastUpdate('board');
+        course.broadcastUpdate('desks');
     });
 
-    socket.on("SET_MEDIA_ON_BOARD", (media) => {
+    socket.on("SET_MEDIA_ON_BOARD", ({desk, deskType, slot, media}) => {
         const {user, course} = socket.meta;
-        if(!media) return;
-        if(media.slot === undefined) {
-            for(let i = 0; i < course.board.maxElements; i++) {
-                if(!course.board.media[i]) {
-                    media.slot = i;
+        let board = course.desks[deskType][desk].board;
+        if(slot === undefined) {
+            for(let i = 0; i < board.maxElements; i++) {
+                if(!board.media[i]) {
+                    slot = i;
                     break;
                 }
             }
         }
-        if(media.slot === undefined) {
-            media.slot = 0;
+        if(slot === undefined) {
+            slot = 0;
         }
-        course.board.media[media.slot] = media.media;
-        course.broadcastUpdate('board');
+        board.media[slot] = media;
+        course.broadcastUpdate('desks');
     });
 
     socket.on("CREATE_GROUP_DESK", ({name}) => {
         const { course } = socket.meta;
         course.desks.groups[name] = {
             media: [],
+            board: {
+                layout: '1x1',
+                media: {}
+            },
             name
         };
         course.broadcastUpdate('desks');
