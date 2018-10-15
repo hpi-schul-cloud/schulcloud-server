@@ -10,6 +10,7 @@ const checkForToken = (params, app) => {
 	return Promise.resolve(false);
 };
 
+
 module.exports = function (app) {
 
 	class MailService {
