@@ -18,7 +18,6 @@ const newsModel = mongoose.model('news', new Schema({
 
 	target: {
 		type: Schema.Types.ObjectId,
-		required: true,
 		// Instead of a hardcoded model name in `ref`, `refPath` means Mongoose
 		// will look at the `targetModel` property to find the right model.
 		refPath: 'targetModel'
@@ -26,8 +25,7 @@ const newsModel = mongoose.model('news', new Schema({
 
 	targetModel: {
 		type: String,
-		required: true,
-		enum: ['course', 'teams', 'class']
+		enum: ['courses', 'teams', 'class']
 	}
 }));
 
