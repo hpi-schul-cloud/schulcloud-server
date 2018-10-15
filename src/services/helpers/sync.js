@@ -43,6 +43,18 @@ module.exports = function (app) {
 				});
 		}
 
+		_getCurrentYearAndFederalState(app) {
+			return Promise.all([
+				app.service('years').find({ $orderby: { name: -1 } }),
+				app.service('federalStates').find({ query: { abbreviation: 'NI' } })
+			]).then(([years, states]) => {
+				if (years.total == 0 || states.total == 0) {
+					return Promise.reject('Database should contain at least one year and one valid federal state');
+				}
+				return Promise.resolve({ currentYear: years.data[0]._id, federalState: states.data[0]._id });
+			});
+		}
+
 		_createSchoolsFromLdapData(app, data, system) {
 			return Promise.all(data.map(ldapSchool => {
 				return app.service('schools').find({ query: { ldapSchoolIdentifier: ldapSchool.ou } })
@@ -52,14 +64,18 @@ module.exports = function (app) {
 								{_id: schools.data[0]._id},
 								{$set: {name: ldapSchool.displayName}});
 						}
-						const schoolData = {
-							name: ldapSchool.displayName,
-							systems: [system._id],
-							ldapSchoolIdentifier: ldapSchool.ou,
-							currentYear: "5b7de0021a3a07c20a1c165e", //18/19
-							federalState: "0000b186816abba584714c58" //Niedersachsen
-						};
-						return app.service('schools').create(schoolData);
+
+						return this._getCurrentYearAndFederalState(app)
+						.then(({currentYear, federalState}) => {
+							const schoolData = {
+								name: ldapSchool.displayName,
+								systems: [system._id],
+								ldapSchoolIdentifier: ldapSchool.ou,
+								currentYear: currentYear,
+								federalState: federalState
+							};
+							return app.service('schools').create(schoolData);
+						});
 					});
 			}));
 		}
@@ -160,7 +176,7 @@ module.exports = function (app) {
 			if (idmUser.objectClass.includes("ucsschoolStaff")) {
 				//ToDo
 			}
-			
+
 			return app.service('users').update(
 				{_id: user._id},
 				updateObject);
