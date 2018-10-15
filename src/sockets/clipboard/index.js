@@ -4,6 +4,7 @@ const socketio = require('feathers-socketio');
 const siofu = require("socketio-file-upload");
 const actions = require('./actions');
 const upload = require('./upload');
+const ClipboardModel = require('./clipboard-model');
 
 module.exports = function () {
 	const app = this;
@@ -47,10 +48,38 @@ module.exports = function () {
 						return acc;
 					}, {});
 					io.of('clipboard').to(courseId).emit('clipboardStateUpdate', update);
+
+					ClipboardModel.findOneAndUpdate({
+						_id: socket.meta._id
+					}, {
+						state: {
+							board: this.board,
+							desks: this.desks
+						}
+					}, function(err){
+						if (err) throw Error(err);
+					});
 				}
 			};
 			socket.meta.course = courses[courseId];
 		};
+
+		
+		let initModel = (socket) => () => new Promise((resolve, reject) => {
+			let query = {
+				course: socket.meta.courseId
+			};
+			ClipboardModel.findOneAndUpdate(query, {
+				course: socket.meta.courseId,
+				version: 1,
+			}, {upsert:true}, function(err, doc){
+				if (err) reject(err);
+				if(doc.state.board) socket.meta.course.board = doc.state.board;
+				if(doc.state.desks) socket.meta.course.desks = doc.state.desks;
+				socket.meta._id = doc._id;
+				resolve();
+			});
+		});
 		
 		let getUser = (socket) => () => {
 			return app.service('users').get(socket.client.userId).then((result, err) => { 
@@ -90,6 +119,7 @@ module.exports = function () {
 
 			getUser(socket)()
 				.then(initCourse(socket))
+				.then(initModel(socket))
 				.then(joinCourse(socket))
 				.then(initUserInCourse(socket))
 				.then(upload(socket))
