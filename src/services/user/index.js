@@ -5,6 +5,7 @@ const user = require('./model');
 const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const errors = require('feathers-errors');
+const RegistrationService = require('./registration')(this);
 
 const userDataFilter=(user)=>{
 	return {
@@ -69,4 +70,7 @@ module.exports = function () {
 	const registrationPinService = app.service('/registrationPins');
 	registrationPinService.before(registrationPinsHooks.before);
 	registrationPinService.after(registrationPinsHooks.after);
+
+	app.use('/registration', new RegistrationService());
+
 };
