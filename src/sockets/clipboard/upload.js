@@ -6,12 +6,12 @@ const logger = require('winston');
 
 module.exports = (socket) => {
     initUploadSocket(socket, (uploadedFile) => {
-        const {user, course, url} = socket.meta;
+        const {user, course } = socket.meta;
         let file = {
             file: path.basename(uploadedFile.pathName),
             name: uploadedFile.name,
             sender: user && user.name,
-            src: url + '/clipboard/uploads/' + path.basename(uploadedFile.pathName),
+            src: uploadedFile.meta.url + '/clipboard/uploads/' + path.basename(uploadedFile.pathName),
             type: fileType(readChunk.sync(uploadedFile.pathName, 0, 4100)),
             id: ++course.lastId,
         };
