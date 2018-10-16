@@ -1,6 +1,7 @@
 'use strict';
 
 const AWSStrategy = require('./awsS3');
+const errors = require('feathers-errors');
 
 const strategies = {
 	'awsS3': AWSStrategy
