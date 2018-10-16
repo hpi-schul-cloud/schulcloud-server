@@ -95,17 +95,6 @@ exports.before = {
 	remove: [auth.hooks.authenticate('jwt'),]
 };
 
-const redirectDic = {
-	u14: '/firstLogin/U14/',
-	u18: '/firstLogin/14_17/',
-	ue18: '/firstLogin/UE18/',
-	existing: '/firstLogin/existing/',
-	existingGeb: '/firstLogin/existingGeb14',
-	existingEmpl: '/firstLogin/existingEmployee',
-	normal: '/dashboard/',
-	err: '/firstLogin/consentError'
-};
-
 const userHasOneRole = (user, roles) => {
 	if (!(roles instanceof Array)) roles = [roles];
 	let value = false;
@@ -119,7 +108,6 @@ const userHasOneRole = (user, roles) => {
 
 const accessCheck = (consent, app) => {
 	let access = true;
-	let redirect = redirectDic['ue18'];
 	let requiresParentConsent = true;
 	let user;
 
@@ -128,7 +116,6 @@ const accessCheck = (consent, app) => {
 			user = response;
 			if (userHasOneRole(user, ["demoTeacher", "demoStudent"])) {
 				requiresParentConsent = false;
-				redirect = redirectDic['normal'];
 				return Promise.resolve();
 			}
 
@@ -138,55 +125,44 @@ const accessCheck = (consent, app) => {
 					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
 						access = false;
 						requiresParentConsent = false;
-						redirect = redirectDic['existingEmpl'];
 						return Promise.resolve();
 					}
-				redirect = redirectDic['normal'];
 				return Promise.resolve();
 			}
 
 			if (!user.birthday) {
 				access = false;
 				requiresParentConsent = false;
-				redirect = redirectDic['existing'];
 				return Promise.resolve;
 			}
 			let age = user.age;
 
 			if (age < 18) {
-				redirect = redirectDic['u14'];
 				let parentConsent = (consent.parentConsents||[])[0] || {};
 				//check parent consents
 				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent &&
 					parentConsent.thirdPartyConsent && parentConsent.researchConsent)) {
 					access = false;
-					redirect = redirectDic['err'];
 					return Promise.resolve();
 				}
 			}
 			if (age > 13) {
-				redirect = redirectDic['u18'];
 				//check user consents
 				let userConsent = consent.userConsent || {};
 				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
 					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
 					access = false;
 					if ((user.preferences || {}).firstLogin) {
-						redirect = redirectDic['existingGeb'];
 						return Promise.resolve();
 					}
 				}
 			}
 			if (age > 17){
-				redirect = redirectDic['ue18'];
 				requiresParentConsent = false;
-			}
-			if ((user.preferences || {}).firstLogin){
-				redirect = redirectDic['normal'];
 			}
 		})
 		.then(() => {
-			if (redirect == redirectDic['normal'] && !(user.preferences || {}).firstLogin) {
+			if (access == true && !(user.preferences || {}).firstLogin) {
 				let updatedPreferences = user.preferences || {};
 				updatedPreferences.firstLogin = true;
 				return app.service('users').patch(user._id, {preferences: updatedPreferences});
@@ -194,7 +170,6 @@ const accessCheck = (consent, app) => {
 			return;
 		}).then(() => {
 			consent.access = access;
-			consent.redirect = redirect;
 			consent.requiresParentConsent = requiresParentConsent;
 			return consent;
 		})
