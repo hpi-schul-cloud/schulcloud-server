@@ -38,13 +38,7 @@ const firstLogin = async function(data, params, app) {
     let userPromise;
     let consentUpdate = {};
     let consentPromise = Promise.resolve();
-    let user = await app.service('users').get(params.account.userId);
-    
-    if (data["password-1"]) {
-        accountUpdate.password_verification = data.password_verification;
-        accountUpdate.password = data["password-1"];
-        accountPromise = app.service('accounts').patch(accountId, accountUpdate);
-    }
+    let user = await app.service('users').get(params.account.userId);  
 
     if (data.parent_email) {
         await createParent(data, params, user, app)
@@ -93,6 +87,12 @@ const firstLogin = async function(data, params, app) {
         } else {
             consentPromise = app.service('consents').create({userId: user._id, userConsent: consentUpdate});
         }
+    }
+
+    if (data["password-1"]) {
+        accountUpdate.password_verification = data.password_verification;
+        accountUpdate.password = data["password-1"];
+        accountPromise = app.service('accounts').patch(accountId, accountUpdate);
     }
 
     return Promise.all([accountPromise, userPromise, consentPromise])
