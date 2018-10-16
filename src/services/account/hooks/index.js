@@ -148,6 +148,32 @@ const securePatching = (hook) => {
 	return Promise.resolve(hook);
 };
 
+const clearPwHash = hook =>{
+	if(hook.result.password){
+		delete hook.result.password
+	}
+	return hook
+}
+
+/**
+ * @method get
+ * @param {Array of strings} keys
+ * @afterHook
+ * @notLocal
+ */
+const filterToRelated=(keys)=>{
+	return globalHooks.ifNotLocal(hook=>{
+		const newResult={};
+		keys.forEach(key=>{
+			if(hook.result[key]!==undefined){
+				newResult[key]=hook.result[key];
+			}
+		})
+		hook.result=newResult;
+		return hook
+	});
+}
+
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
 	// otherwise we cannot get the accounts required for login
@@ -171,9 +197,9 @@ exports.before = {
 };
 
 exports.after = {
-	all: [],
+	all: [clearPwHash],
 	find: [],
-	get: [],
+	get: [filterToRelated(['_id','username','userId','systemId'])],
 	create: [],
 	update: [],
 	patch: [],
