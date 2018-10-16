@@ -90,25 +90,25 @@ describe('user service', function () {
 		let classId = undefined;
 		let courseId = undefined;
 
-		classesService.find({query: {"name": "Demo-Klasse"}})
+		classesService.find({query: {"name": "Demo-Klasse", $limit: 1}})
 		.then(classes => {
-			classes.data.map(c => {
-				c.userIds.push(testUserId);
-				classId = c._id;
+			classes.data.map(myClass => {
+				myClass.userIds.push(testUserId);
+				classId = myClass._id;
 			});
 			chai.expect(classId).to.not.be.undefined;
 
-			coursesService.find({query: {"name": "Mathe"}})
+			coursesService.find({query: {"name": "Mathe", $limit: 1}})
 			.then(courses => {
-				courses.data.map(c => {
-					c.userIds.push(testUserId);
-					courseId = c._id;
+				courses.data.map(course => {
+					course.userIds.push(testUserId);
+					courseId = course._id;
 				});
 				chai.expect(courseId).to.not.be.undefined;
 
 				return userService.remove(testUserId).then(h => {
-					classesService.get(classId).then(c => chai.expect(c.userIds).to.not.include(testUserId));
-					coursesService.get(courseId).then(c => chai.expect(c.userIds).to.not.include(testUserId));
+					classesService.get(classId).then(myClass => chai.expect(myClass.userIds).to.not.include(testUserId));
+					coursesService.get(courseId).then(course => chai.expect(course.userIds).to.not.include(testUserId));
 				});
 			});
 		});

@@ -71,15 +71,19 @@ const checkUniqueAccount = (hook) => {
 
 const removeStudentFromClasses = (hook) => {
 	const classesService = hook.app.service('/classes');
-	let user = hook;
-	let query = { userIds: {$in: [user.id] } };
+	const userId = hook.id;
+	if (userId === undefined) {
+		return Promise.reject(new errors.BadRequest(`Fehler beim Entfernen des Users aus abhängigen Klassen`));
+	}
+
+	const query = { userIds: userId };
 
 	return classesService.find({ query: query})
 	.then(classes => {
 		return Promise.all(
-			classes.data.map(c => {
-				c.userIds.splice(c.userIds.indexOf(user.id), 1);
-				return classesService.patch(c._id, c);
+			classes.data.map(myClass => {
+				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
+				return classesService.patch(myClass._id, myClass);
 			})
 		).then(_ => hook);
 	});
@@ -87,15 +91,19 @@ const removeStudentFromClasses = (hook) => {
 
 const removeStudentFromCourses = (hook) => {
 	const coursesService = hook.app.service('/courses');
-	let user = hook;
-	let query = { userIds: {$in: [user.id] } };
+	const userId = hook.id;
+	if (userId === undefined) {
+		return Promise.reject(new errors.BadRequest(`Fehler beim Entfernen des Users aus abhängigen Kursen`));
+	}
+
+	const query = { userIds: userId };
 
 	return coursesService.find({ query: query})
 	.then(courses => {
 		return Promise.all(
-			courses.data.map(c => {
-				c.userIds.splice(c.userIds.indexOf(user.id), 1);
-				return coursesService.patch(c._id, c);
+			courses.data.map(course => {
+				course.userIds.splice(course.userIds.indexOf(userId), 1);
+				return coursesService.patch(course._id, course);
 			})
 		).then(_ => hook);
 	});
