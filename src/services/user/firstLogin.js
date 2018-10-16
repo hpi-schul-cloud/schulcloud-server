@@ -74,20 +74,26 @@ const firstLogin = async function(data, params, app) {
     userPromise = app.service('users').patch(user._id, userUpdate);
 
     if (data.privacyConsent || data.thirdPartyConsent || data.termsOfUseConsent || data.researchConsent) {
-        consentUpdate = {
+        consentUpdate.userId = user._id;
+        consentUpdate.userConsent = {
             form: 'digital',
             privacyConsent: data.privacyConsent,
             thirdPartyConsent: data.thirdPartyConsent,
             termsOfUseConsent: data.termsOfUseConsent,
             researchConsent: data.researchConsent
         };
-        if (data.parent_email) {
-            consentUpdate.parentId = user.parents[0];
-            consentPromise = app.service('consents').create({userId: user._id,parentConsents: [consentUpdate]});
-        } else {
-            consentPromise = app.service('consents').create({userId: user._id, userConsent: consentUpdate});
-        }
     }
+    if (data.parent_privacyConsent || data.parent_thirdPartyConsent|| data.parent_termsOfUseConsent || data.parent_researchConsent) {
+        consentUpdate.userId = user._id;
+        consentUpdate.parentConsents = [{
+            form: 'digital',
+            privacyConsent: data.parent_privacyConsent,
+            thirdPartyConsent: data.parent_thirdPartyConsent,
+            termsOfUseConsent: data.parent_termsOfUseConsent,
+            researchConsent: data.parent_researchConsent
+        }];
+    }
+    if (consentUpdate.userId) consentPromise = app.service('consents').create(consentUpdate);
 
     if (data["password-1"]) {
         accountUpdate.password_verification = data.password_verification;
