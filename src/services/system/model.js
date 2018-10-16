@@ -16,7 +16,12 @@ const systemSchema = new Schema({
 	alias: { type: String },
 	oaClientId: { type: String }, // just for oauth2-systems
 	oaClientSecret: { type: String }, // just for oauth2-systems
-	ldapConfig: { type: Schema.Types.ObjectId, ref: 'ldapconfig' },
+	ldapConfig: {
+		url: { type: String },
+		rootPath: { type: String },
+		searchUser: { type: String },
+		searchUserPw: { type: String },
+	},
 }, {
 	timestamps: true
 });

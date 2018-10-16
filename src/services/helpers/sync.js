@@ -24,17 +24,18 @@ module.exports = function (app) {
 		}
 
 		_syncFromLdap(app) {
-			return app.service('ldapConfigs').find({ query: {} })
-				.then(configs => {
-					return Promise.all(configs.data.map(config => {
+			return app.service('systems').find({ query: { type: 'ldap' } })
+				.then(ldapSystems => {
+					return Promise.all(ldapSystems.data.map(system => {
+						const config = system.ldapConfig;
 						return this.ldapService.getSchools(config)
 							.then(data => {
-								return this._createSchoolsFromLdapData(app, data, config);
+								return this._createSchoolsFromLdapData(app, data, system);
 							}).then(schools => {
 								return Promise.all(schools.map(school => {
 									return this.ldapService.getUsers(config, school)
 										.then(data => {
-											return this._createUsersFromLdapData(app, data, school, config);
+											return this._createUsersFromLdapData(app, data, school, system);
 										});
 								}));
 							});
@@ -42,31 +43,36 @@ module.exports = function (app) {
 				});
 		}
 
-		_getSystemForLdapConfig(config) {
-			return app.service('systems').find({ query: { ldapConfig: config._id } } )
-				.then(systems => {
-					if (systems.total > 0) {
-						return Promise.resolve(systems.data[0]);
-					}
-					return Promise.reject('No system available for given LDAP config');
-				});
+		_getCurrentYearAndFederalState(app) {
+			return Promise.all([
+				app.service('years').find({ $orderby: { name: -1 } }),
+				app.service('federalStates').find({ query: { abbreviation: 'NI' } })
+			]).then(([years, states]) => {
+				if (years.total == 0 || states.total == 0) {
+					return Promise.reject('Database should contain at least one year and one valid federal state');
+				}
+				return Promise.resolve({ currentYear: years.data[0]._id, federalState: states.data[0]._id });
+			});
 		}
 
-		_createSchoolsFromLdapData(app, data, config) {
+		_createSchoolsFromLdapData(app, data, system) {
 			return Promise.all(data.map(ldapSchool => {
 				return app.service('schools').find({ query: { ldapSchoolIdentifier: ldapSchool.ou } })
 					.then(schools => {
 						if (schools.total != 0) {
-							return Promise.resolve(schools.data[0]);
+							return app.service('schools').update(
+								{_id: schools.data[0]._id},
+								{$set: {name: ldapSchool.displayName}});
 						}
-						return this._getSystemForLdapConfig(config)
-						.then(system => {
+
+						return this._getCurrentYearAndFederalState(app)
+						.then(({currentYear, federalState}) => {
 							const schoolData = {
 								name: ldapSchool.displayName,
 								systems: [system._id],
 								ldapSchoolIdentifier: ldapSchool.ou,
-								currentYear: "5b7de0021a3a07c20a1c165e", //18/19
-								federalState: "0000b186816abba584714c58" //Niedersachsen
+								currentYear: currentYear,
+								federalState: federalState
 							};
 							return app.service('schools').create(schoolData);
 						});
@@ -74,11 +80,9 @@ module.exports = function (app) {
 			}));
 		}
 
-		_createUserAndAccount(app, idmUser, school, config) {
+		_createUserAndAccount(app, idmUser, school, system) {
 			let email = idmUser.mail;
-			return this._getSystemForLdapConfig(config)
-			.then(system => {
-				return app.service('registrationPins').create({ email, verified: true, silent: true })
+			return app.service('registrationPins').create({ email, verified: true, silent: true })
 				.then(registrationPin => {
 					let newUserData = {
 						pin: registrationPin.pin,
@@ -128,23 +132,55 @@ module.exports = function (app) {
 						});
 					//-------------------------------------------------------------------
 				});
-			});
 		}
 
-		_createUsersFromLdapData(app, data, school, config) {
+		_createUsersFromLdapData(app, data, school, system) {
 			return Promise.all(data.map(idmUser => {
 
 				return app.service('users').find({ query: { ldapId: idmUser.entryUUID } })
 					.then(users => {
 						if (users.total != 0) {
-							//toDo: check for changes
-							return Promise.resolve(users.data[0]);
+							return this._checkForUserChangesAndUpdate(app, idmUser, users.data[0], school);
 						}
 						if (idmUser.mail == undefined) return Promise.resolve("no email");
-						return this._createUserAndAccount(app, idmUser, school, config);
+						return this._createUserAndAccount(app, idmUser, school, system);
 					});
 
 			}));
+		}
+
+		_checkForUserChangesAndUpdate(app, idmUser, user, school) {
+			let updateObject = {$set: {}};
+			if(user.firstName != idmUser.givenName) {
+				updateObject.$set['firstName'] = idmUser.givenName;
+			}
+			if(user.lastName != idmUser.sn) {
+				updateObject.$set['lastName'] = idmUser.sn;
+			}
+			//Updating SchoolId will cause an issue. We need to discuss about it
+			if(user.email != idmUser.mail) {
+				updateObject.$set['email'] = idmUser.mail;
+			}
+			if(user.ldapDn != idmUser.dn) {
+				updateObject.$set['ldapDn'] = idmUser.dn;
+			}
+
+			// Role
+			updateObject.$set["roles"] = [];
+			if (idmUser.objectClass.includes("ucsschoolTeacher")) {
+				updateObject.$set["roles"].push("teacher");
+			}
+			if (idmUser.objectClass.includes("ucsschoolStudent")) {
+				updateObject.$set["roles"].push("student");
+			}
+			if (idmUser.objectClass.includes("ucsschoolStaff")) {
+				//ToDo
+			}
+
+			return app.service('users').update(
+				{_id: user._id},
+				updateObject);
+
 		}
 	}
 

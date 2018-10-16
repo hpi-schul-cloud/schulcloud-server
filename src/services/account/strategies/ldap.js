@@ -19,10 +19,7 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 					return app.service('users').get(account.userId);
 				})
 				.then(user => {
-					return app.service('ldapConfigs').get(system.ldapConfig)
-						.then(config => {
-							return ldapService.authenticate(config, school, user.ldapDn, password);
-						});
+					return ldapService.authenticate(system, user.ldapDn, password);
 				});
 			});
 	}
