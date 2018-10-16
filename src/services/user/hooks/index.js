@@ -72,9 +72,8 @@ const checkUniqueAccount = (hook) => {
 const removeStudentFromClasses = (hook) => {
 	const classesService = hook.app.service('/classes');
 	const userId = hook.id;
-	if (userId === undefined) {
-		return Promise.reject(new errors.BadRequest(`Fehler beim Entfernen des Users aus abhängigen Klassen`));
-	}
+	if (userId === undefined) throw new errors.BadRequest(`Fehler beim Entfernen des Users aus abhängigen Klassen`);
+
 
 	const query = { userIds: userId };
 
@@ -85,16 +84,14 @@ const removeStudentFromClasses = (hook) => {
 				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
 				return classesService.patch(myClass._id, myClass);
 			})
-		).then(_ => hook);
+		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err)});
 	});
 };
 
 const removeStudentFromCourses = (hook) => {
 	const coursesService = hook.app.service('/courses');
 	const userId = hook.id;
-	if (userId === undefined) {
-		return Promise.reject(new errors.BadRequest(`Fehler beim Entfernen des Users aus abhängigen Kursen`));
-	}
+	if (userId === undefined) throw new errors.BadRequest(`Fehler beim Entfernen des Users aus abhängigen Kursen`);
 
 	const query = { userIds: userId };
 
@@ -105,7 +102,7 @@ const removeStudentFromCourses = (hook) => {
 				course.userIds.splice(course.userIds.indexOf(userId), 1);
 				return coursesService.patch(course._id, course);
 			})
-		).then(_ => hook);
+		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err)});
 	});
 };
 
