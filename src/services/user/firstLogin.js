@@ -98,7 +98,7 @@ const firstLogin = async function(data, params, app) {
     if (data["password-1"]) {
         accountUpdate.password_verification = data.password_verification;
         accountUpdate.password = data["password-1"];
-        accountPromise = app.service('accounts').patch(accountId, accountUpdate);
+        accountPromise = app.service('accounts').patch(accountId, accountUpdate, params);
     }
 
     return Promise.all([accountPromise, userPromise, consentPromise])
