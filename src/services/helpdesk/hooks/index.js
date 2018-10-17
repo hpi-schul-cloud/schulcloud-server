@@ -79,8 +79,8 @@ const feedback = () => {
 			});
 		}
 		return Promise.resolve(hook);
-	}
- }
+	};
+ };
 
 exports.after = {
 	all: [],
