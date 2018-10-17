@@ -1,4 +1,2 @@
 config/secrets.json filter=git-crypt diff=git-crypt
 backup/setup/*.secrets.json filter=git-crypt diff=git-crypt
-#git on windows will convert lf to crlf which makes eslint freak out. This keeps it in linux style.
-*.js text eol=lf
