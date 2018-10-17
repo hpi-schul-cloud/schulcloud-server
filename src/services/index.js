@@ -14,7 +14,6 @@ const user = require('./user');
 const role = require('./role');
 const helpers = require('./helpers');
 const resolve = require('./resolve');
-
 const federalState = require('./federalState');
 const userGroup = require('./user-group');
 const homework = require('./homework');
@@ -26,7 +25,6 @@ const statistic = require('./statistic');
 const pseudonym = require("./pseudonym");
 const consent = require('./consent');
 const mongoose = require('mongoose');
-
 const clipboard = require('./clipboard');
 
 module.exports = function () {
@@ -50,7 +48,6 @@ module.exports = function () {
     app.configure(fileStorage);
     app.configure(link);
     app.configure(news);
-
     app.configure(helpers);
     app.configure(homework);
     app.configure(federalState);
@@ -61,6 +58,5 @@ module.exports = function () {
     app.configure(statistic);
     app.configure(pseudonym);
     app.configure(consent);
-
     app.configure(clipboard);
 };

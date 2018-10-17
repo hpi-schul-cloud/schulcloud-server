@@ -50,9 +50,10 @@ app.use(compress())
 
 	.configure(hooks())
 	.configure(rest())
-	.configure(socketio())
 	// auth is setup in /authentication/
 	.configure(services)
+	
+	.configure(socketio())
 	.configure(sockets)
 	.configure(middleware)
 	.hooks(allHooks);
