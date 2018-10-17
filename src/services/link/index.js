@@ -3,7 +3,7 @@
 const service = require('feathers-mongoose');
 const link = require('./link-model');
 const hooks = require('./hooks');
-const hashService = require('../helpers/hash');
+const logger = require('winston');
 
 module.exports = function () {
 	const app = this;
@@ -30,7 +30,10 @@ module.exports = function () {
 						res.redirect(data.target);
 					}
 				})
-				.catch(error => res.status(500).send(error));
+				.catch(err => {
+					logger.warn(err);
+					res.status(500).send(error);
+				});
 		} else {
 			next();
 		}
@@ -50,6 +53,7 @@ module.exports = function () {
 						linkData.hash = generatedHash;
 					});
 				} catch (err) {
+					logger.warn(err);
 					return Promise.reject(new Error(`Fehler beim Generieren des Hashes. ${err}`));
 				}
 			}
@@ -69,6 +73,7 @@ module.exports = function () {
 			await app.service('link').create({target: linkData.link}).then(generatedShortLink => {
 				linkData.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`;
 			}).catch(err => {
+				logger.warn(err);
 				return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
 			});
 			
@@ -105,6 +110,7 @@ module.exports = function () {
 						linkInfo.teamHash = generatedHash;
 					});
 				} catch (err) {
+					logger.warn(err);
 					return Promise.reject(new Error(`Fehler beim Generieren des Hashes. ${err}`));
 				}
 			}
@@ -115,6 +121,7 @@ module.exports = function () {
 			} else if (data.role === 'teamadministrator') {
 				linkInfo.link = `${(data.host || process.env.HOST)}/teams/invite/teamadministrator/to/${linkInfo.teamHash}`;
 			} else {
+				logger.warn('Nicht valide Rolle wurde angegeben, Link konnte nicht generiert werden.');
 				return Promise.reject(new Error('Fehler bei der Rollenangabe.'));
 			}
 			//if (linkInfo.teamHash) linkInfo.link += `?inviteHash=${linkInfo.hash}`;
@@ -135,6 +142,7 @@ module.exports = function () {
 				linkInfo.shortLinkId = generatedShortLink._id;
 				linkInfo.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`;
 			}).catch(err => {
+				logger.warn(err);
 				return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
 			});
 			
