@@ -1,5 +1,3 @@
-'use strict';
-
 const socketio = require('feathers-socketio');
 
 module.exports = function () {
