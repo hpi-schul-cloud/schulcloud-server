@@ -15,6 +15,7 @@ const middleware = require('./middleware');
 const services = require('./services');
 const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
+const handleResponseType = require('./middleware/handleReponseType');
 const setupSwagger = require('./swagger');
 const prettyError = require('pretty-error').start();
 const allHooks = require('./app.hooks');
@@ -43,13 +44,14 @@ app.use(compress())
 	.use('/', serveStatic(app.get('public')))
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({extended: true}))
+	.use(bodyParser.raw({type: () => true, limit: '10mb'}))
 
 	.use(defaultHeaders)
 	.get('/system_info/haproxy', (req, res) => { res.send({ "timestamp":new Date().getTime() });})
 	.get('/ping', (req, res) => { res.send({ "message":"pong","timestamp":new Date().getTime() });})
 
 	.configure(hooks())
-	.configure(rest())
+	.configure(rest(handleResponseType))
 	.configure(socketio())
 
 	// auth is setup in /authentication/

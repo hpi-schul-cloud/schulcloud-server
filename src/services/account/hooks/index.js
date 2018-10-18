@@ -11,6 +11,7 @@ const MoodleLoginStrategy = require('../strategies/moodle');
 const ITSLearningLoginStrategy = require('../strategies/itslearning');
 const IServLoginStrategy = require('../strategies/iserv');
 const LocalLoginStrategy = require('../strategies/local');
+const LdapLoginStrategy = require('../strategies/ldap');
 
 // don't initialize strategies here - otherwise massive overhead
 // TODO: initialize all strategies here once
@@ -18,12 +19,13 @@ const strategies = {
 	moodle: MoodleLoginStrategy,
 	itslearning: ITSLearningLoginStrategy,
 	iserv: IServLoginStrategy,
-	local: LocalLoginStrategy
+	local: LocalLoginStrategy,
+	ldap: LdapLoginStrategy,
 };
 
 // This is only for SSO
 const validateCredentials = (hook) => {
-	const {username, password, systemId} = hook.data;
+	const {username, password, systemId, schoolId} = hook.data;
 
 	if(!username) throw new errors.BadRequest('no username specified');
 	if(!password) throw new errors.BadRequest('no password specified');
@@ -41,7 +43,7 @@ const validateCredentials = (hook) => {
 			};
 		})
 		.then(({strategy, system}) => {
-			return strategy.login({username, password}, system);
+			return strategy.login({username, password}, system, schoolId);
 		})
 		.then((client) => {
 			if (client.token) {
@@ -106,6 +108,16 @@ const checkUnique = (hook) => {
 			if(filtered.length > 0) return Promise.reject(new errors.BadRequest('Der Benutzername ist bereits vergeben!'));
 			return Promise.resolve(hook);
 		});
+};
+
+const removePassword = (hook) => {
+	const {strategy} = hook.data;
+
+	if(strategy == 'ldap')
+	{
+		hook.data.password = '';
+	}
+	return Promise.resolve(hook);
 };
 
 const restrictAccess = (hook) => {
@@ -184,7 +196,8 @@ exports.before = {
 		validateCredentials,
 		trimPassword,
 		local.hooks.hashPassword({ passwordField: 'password' }),
-		checkUnique
+		checkUnique,
+		removePassword
 	],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
