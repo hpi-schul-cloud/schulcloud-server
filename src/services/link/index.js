@@ -30,7 +30,9 @@ module.exports = function () {
 						res.redirect(data.target);
 					}
 				})
-				.catch(error => res.status(500).send(error));
+				.catch( (err)=>{
+					res.status(500).send(err)
+				});
 		} else {
 			next();
 		}
