@@ -1,5 +1,6 @@
 const ldap = require('ldapjs');
 const errors = require('feathers-errors');
+const request = require('request-promise-native');
 
 module.exports = function (app) {
 
@@ -10,7 +11,17 @@ module.exports = function (app) {
 		}
 
 		find(params) {
-
+			return app.service('users').find({
+				query: { firstName: 'Ailbert' }
+			})
+			.then(users => {
+				return this.updateUserGroups({}, users.data[0], [
+					{
+						name: 'schulcloud_test_group',
+						description: 'A test group created by the LDAP service'
+					}
+				]);
+			});
 		}
 
 		_addClient(config, client) {
@@ -134,32 +145,51 @@ module.exports = function (app) {
 			return this.searchCollection(config, searchString, options);
 		}
 
-		//TODO should be called if a user is added or removed from a school group
-		updateUserGroups(config, user) {
-			//TODO First idea ... currently specification is missing
-			const changes = new ldap.Change({
-				operation: 'add',
-				modification: {
-					groups: ['groupId1', 'groupId2']
-				}
-			});
 
-			return this._getClient(config).then((client) => {
-				return new Promise((resolve, reject) => {
-					client.modify(user.ldapDn, changes, function (err, res) {
-						if (err) {
-							reject(err);
-						}
-						res.on('error', reject);
-						res.on('end', (result) => {
-							if (result.status === 0) {
-								resolve(res);
-							} else {
-								reject('LDAP result code != 0');
-							}
-						});
-					});
-				});
+		_generateGroupFile(userUUID, groups) {
+			return new Buffer(JSON.stringify([
+				{
+					"entryUUID": userUUID,
+					"nbc-global-groups": groups
+				}
+			]));
+		}
+
+		_generateGroupUpdateFormData(user, groups) {
+			return {
+				input_file: {
+					value: this._generateGroupFile(user.ldapId, groups),
+					options: {
+						filename: 'test.json',
+						type: 'json',
+						contentType: 'application/json',
+					},
+				},
+				school: '/v1/schools/createglobalgroups/',
+				user_role: 'student',
+				dryrun: 'false',
+			};
+		}
+
+		updateUserGroups(config, user, groups) {
+			const username = process.env.NBC_IMPORTUSER;
+			const password = process.env.NBC_IMPORTPASSWORD;
+			const auth = "Basic " + new Buffer(username + ":" + password).toString("base64");
+			const REQUEST_TIMEOUT = 8000;
+
+			const options = {
+				uri: process.env.NBC_IMPORTURL,
+				method: 'POST',
+				formData: this._generateGroupUpdateFormData(user, groups),
+				headers: {
+					'content-type': 'multipart/form-data',
+					'Authorization' : auth,
+				},
+				json: true,
+				timeout: REQUEST_TIMEOUT
+			};
+			return request(options).then(message => {
+				return message;
 			});
 		}
 	}
