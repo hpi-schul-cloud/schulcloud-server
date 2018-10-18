@@ -221,7 +221,6 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
         const userIds     = hook.data.userIds;
         const isSuperhero = sessionUser.roles.includes('superhero');
 
-
         if (data.length!=3 || sessionUser === undefined || team===undefined || sessionUser.schoolId===undefined) {
             throw new errors.BadRequest('Bad intern call. (3)');
         }
@@ -243,53 +242,40 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
                     throw new errors.Forbidden('You do not have valid permissions to access this.(1)');
                 }
                 if (_team.schoolIds.includes(sessionSchoolId) === false) {
-                    throw new errors.Forbidden('You do not have valid permissions to access this.(2)');
+                   // throw new errors.Forbidden('You do not have valid permissions to access this.(2)');
                 }
              });            
         }
         
-        if( Array.isArray(userIds) &&  userIds.length>0 ){    
-            const schools = hook.data.schoolIds || team.schoolIds; //hook.data.schoolIds can only inject by links or create, patch should not pass it     
+        if( Array.isArray(userIds) &&  userIds.length>0 ){     //hook.data.schoolIds can only inject by links or create, patch should not pass it 
+            const schools = (hook.data.schoolIds || team.schoolIds).map(_id=>{
+                return _id.toString();
+            });   
             //Only users from schools that are related to this team can be passed
-            hook.data.userIds=users.reduce((arr,user)=>{
-                if( schools.includes( user.schoolId.toString() )){
-                    const _id=user._id.toString();
+            const newUsersIds = users.reduce((arr,user)=>{
+                const schoolId = user.schoolId.toString();
+                if( schools.includes( schoolId )){
+                    const _id    = user.userId || user._id.toString();      
                     let teamUser = team.userIds.find( teamUser=> (teamUser.userId||{}).toString()===_id ); //already inside the team
+                    
                     if(teamUser===undefined){
-                        teamUser=hook.data.userIds.find(teamUser=> (teamUser.userId||{}).toString()===_id && teamUser.role) // new with role  todo: if role is string and not objectId then match to role with hook.findRole
+                        teamUser = hook.data.userIds.find(teamUser=> (teamUser.userId||{}).toString()===_id && teamUser.role) // new with role  todo: if role is string and not objectId then match to role with hook.findRole
                     }
+                    
                     if(teamUser===undefined){
                         teamUser = createUserWithRole(hook,_id);                                           // new with id
                     }
-
                     arr.push(teamUser);
                 }
                 return arr
             },[]);
-            if(hook.data.userIds.length<=0){
+
+            if(newUsersIds.length<=0){
                 throw new errors.BadRequest('This request will removed all users for schools in this team. It is blocked. Please use remove to delete this team.');
             }
+
+            hook.data.userIds = newUsersIds;
         }
-
-
-        /*
-        //move to additonal hook?
-        //map userIds to {userId:teamRoleId} tupel
-        if( (hook.data.userIds||{}).length>0 ){
-             hook.data.userIds=hook.data.userIds.map(e=>{
-                 //map object ids to strings
-                if(e._bsontype==='ObjectID' || typeof e === 'string' ){
-                    return createUserWithRole(hook,e.toString());
-                }else if(typeof e === 'object'){
-                    e.userId = e.userId.toString();
-                    if(e.role===undefined){   
-                        e=createUserWithRole(hook,e.userId);
-                    }
-                    testIfObjectId(e.role);
-                    return e
-                }
-            });
-        } */
         //todo: create test if teamname in schoolId/s unique
 
         return hook;
@@ -437,7 +423,7 @@ const injectDataFromLink=(fallback)=>{
                     query:{email:link.data.invitee}
                 }).then(users=>{
                     const user = extractOne(users,'Find user by email.');
-                    return createUserWithRole(hook,user._id, link.data.role)
+                    return [createUserWithRole(hook,user._id, link.data.role),user.schoolId]
                 }).catch(err=>{
                     throw new errors.NotFound('No user credentials found.',err);
                 });
@@ -449,7 +435,8 @@ const injectDataFromLink=(fallback)=>{
                 });
 
                 return Promise.all([waitUser,waitTeam]).then(data=>{
-                    const user          = data[0];
+                    const user          = data[0][0];
+                    const schoolId      = data[0][1];
                     const teamUsers     = data[1].userIds;
                     const teamSchoolIds = data[1].schoolIds;
                    
@@ -459,11 +446,11 @@ const injectDataFromLink=(fallback)=>{
                     } 
 
                     hook.data.userIds = teamUsers.concat(user);
-                    if(teamSchoolIds.includes(user.schoolId)===false){  //if user from new user come into this team
-                        teamSchoolIds.push(user.schoolId);
+
+                    if(teamSchoolIds.includes(schoolId)===false){  //if user from new user come into this team
+                        teamSchoolIds.push(schoolId);
                     }
                     hook.data.schoolIds = teamSchoolIds;
-
                     return hook
                 }).catch(err=>{
                     throw new errors.BadRequest(err);
@@ -582,7 +569,7 @@ exports.before = {
     get:    [ restrictToCurrentSchoolAndUser ],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
     create: [ filterToRelated(keys.data,['data']), globalHooks.injectUserId,testInputData,updateUsersForEachClass,restrictToCurrentSchoolAndUser ], //inject is needing?
     update: [ blockedMethode ],
-    patch:  [ (injectDataFromLink)(updateUsersForEachClass),filterToRelated(keys.data,['data']),restrictToCurrentSchoolAndUser ],
+    patch:  [ (injectDataFromLink)(updateUsersForEachClass),restrictToCurrentSchoolAndUser ], //filterToRelated(keys.data,['data']) 
     remove: [ restrictToCurrentSchoolAndUser ]
 };
 
