@@ -52,11 +52,11 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 	}, 
 	//@override
 	userIds:     [teamUserModel],
-	description: { type: String },
+	description: { type: String, default:''},
 	classIds:    [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
 //	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],  todo: add later
 	ltiToolIds:  [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
-	color:       { type: String, required: true, 'default': '#1DE9B6' },
+	color:       { type: String, required: true, default: '#1DE9B6' },
 	startDate:   { type: Date },
 	untilDate:   { type: Date },
 //	shareToken:  { type: String, unique: true },
