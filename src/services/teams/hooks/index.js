@@ -436,13 +436,14 @@ const injectDataFromLink=(fallback)=>{
 
                 return Promise.all([waitUser,waitTeam]).then(data=>{
                     const user          = data[0][0];
-                    const schoolId      = data[0][1];
+                    const schoolId      = data[0][1].toString();
                     const teamUsers     = data[1].userIds;
-                    const teamSchoolIds = data[1].schoolIds;
+                    const teamSchoolIds = data[1].schoolIds.map(_id=>{
+                        return _id.toString();
+                    });  
                    
-                    //if user already inside
                     if( teamUsers.find(user=>(user.userId||{}).toString() === user._id)!==undefined ){
-                        throw new errors.Conflict(err);
+                        throw new errors.Conflict('User is already inside.');
                     } 
 
                     hook.data.userIds = teamUsers.concat(user);
@@ -551,7 +552,7 @@ const teamRolesToHook = globalHooks.ifNotLocal(hook=>{
 
         return hook
     }).catch(err=>{
-        throw new error.BadRequest('Can not resolve team roles.',err);
+        throw new errors.BadRequest('Can not resolve team roles.',err);
     });
 });
 
