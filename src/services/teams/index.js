@@ -11,7 +11,7 @@ module.exports = function () {
 		Model: teamsModel,
 		paginate: {
 			default: 10,
-			max: 25
+			max: 100
 		},
 		lean: true
 	};

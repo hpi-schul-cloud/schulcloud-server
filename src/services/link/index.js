@@ -32,7 +32,7 @@ module.exports = function () {
 				})
 				.catch(err => {
 					logger.warn(err);
-					res.status(500).send(error);
+					res.status(500).send(err);
 				});
 		} else {
 			next();
