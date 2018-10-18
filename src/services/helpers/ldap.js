@@ -115,8 +115,7 @@ module.exports = function (app) {
 
 		getSchools(config) {
 			const options = {
-				// search for organizational units which do not have the no_school role
-				filter: '(&(univentionObjectType=container/ou)(!(ucsschoolRole=school:ou:no_school)))',
+				filter: config.filters.schools,
 				scope: 'sub',
 				attributes: []
 			};
@@ -126,7 +125,7 @@ module.exports = function (app) {
 
 		getUsers(config, school) {
 			const options = {
-				filter: 'univentionObjectType=users/user',
+				filter: config.filters.users,
 				scope: 'sub',
 				attributes: ["givenName", "sn", "mail", "dn", "entryUUID", "uid", "objectClass", "memberOf"]
 			};
