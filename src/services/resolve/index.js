@@ -20,6 +20,7 @@ class ScopeResolver {
 		const userService = this.app.service('/users');
 		const courseService = this.app.service('/courses');
 		const classService = this.app.service('/classes');
+		const teamService = this.app.service('/teams');
 
 		const response = {
 			links: {
@@ -48,8 +49,9 @@ class ScopeResolver {
 				// find courses and classes where user is student or teacher
 				return Promise.all([
 					courseService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}, headers: {"x-api-key": (params.headers || {})["x-api-key"]}}),
-					classService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}, headers: {"x-api-key": (params.headers || {})["x-api-key"]}})
-				]).then(([courses, classes]) => {
+					classService.find({query: {$or: [{userIds: user._id}, {teacherIds: user._id}]}, headers: {"x-api-key": (params.headers || {})["x-api-key"]}}),
+					teamService.find({query:{$limit:1000, userIds: {$elemMatch:{userId: user._id}} }})
+				]).then(([courses, classes, teams]) => {
 					courses.data = courses.data.map(c => {
 						c.attributes = {
 							scopeType: 'course'
@@ -62,6 +64,18 @@ class ScopeResolver {
 							scopeType: 'class'
 						};
 						return c;
+					});
+
+					 teams.data.forEach(_team => {
+						response.data.push(getDataEntry({
+							type: 'scope',
+							id: _team._id,
+							name: _team.name,
+							authorities:["can-read","can-write","can-send-notifications"],	//todo: only leaders have notification and write permissions
+							attributes: {
+								scopeType: 'team'
+							}
+						}));
 					});
 
 					const scopes = [].concat(courses.data, classes.data);
