@@ -173,11 +173,6 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
     const teamsService = hook.app.service('teams');
     const waitTeams    = new Promise((resolve, reject) => {
         if (method === 'create' && teamId === undefined) {
-            /*
-            if(hook.data.userIds===undefined){
-                hook.data.userIds=[];
-            }
-            */
             const index = hook.data.userIds.indexOf(sessionUserId);
             const value = createUserWithRole(hook,sessionUserId,'teamowner');
             if(index==-1){
@@ -192,8 +187,11 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             resolve(hook.data);       //team do not exist        //todo: Add hook.data as team information and let go to complet execut with any test
         } else if (method === 'find' && teamId === undefined) {     //!!Abhängigkeit von token und query sessionUserId wird nicht geprüft -> to be discuss!
             //return teams
-            const query = {userIds: {$elemMatch:{userId:sessionUserId}}};
-            teamsService.find({query}).then(teams=>{
+            const match = {userIds: {$elemMatch:{userId:sessionUserId.toString() }}}
+            hook.params.query = match;
+            teamsService.find({
+                query:match
+            }).then(teams=>{
                 resolve( teams.data );
             }).catch(err=>{
                 logger.error(err);
