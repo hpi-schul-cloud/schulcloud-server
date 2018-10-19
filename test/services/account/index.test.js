@@ -71,10 +71,26 @@ describe('account service', function () {
 			});
 	});
 
+	/*it('patches username', () => {
+		return accountService.patch("0000d213816abba584714caa", {username: "test" })
+			.then (account => {
+				assert.ok(account);
+			});
+	});*/
+
 	it('not able to access whole find', () => {
 		return accountService.find()
 			.catch(exception => {
 				assert.equal(exception.message, 'Cannot read property \'username\' of undefined');
+			});
+	});
+
+	it('finds account by username', () => {
+		return accountService.find({ query: {username: "admin@schul-cloud.org"}})
+			.then(result => {
+				assert(result.length == 1);
+				assert.equal(result[0].username, "admin@schul-cloud.org");
+				assert.equal(result[0]._id, "0000d213816abba584714caa");
 			});
 	});
 });

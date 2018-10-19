@@ -69,6 +69,20 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
+const updateAccountUsername = (hook) => { //wenn system ID gesetzt ist darf der username nicht geändert werden (steht nicht in db, aber im model)
+	let accountService = hook.app.service('/accounts');
+	const accountId = hook.params.payload.accountId; //wenn admin für schüler ändert im admin helpdesk muss andere accuntId, nämlich die vom schüler! -> hook.id ist userid von schüler
+	const {email} = hook.data;
+	return accountService.patch(accountId, {username: email}, {account: hook.params.account})
+		.then(result => {
+			let res = result;
+			return Promise.resolve(hook);
+		})
+		.catch(error => {
+			return Promise.reject(error);
+		});
+};
+
 const sanitizeData = (hook) => {
 	if ("email" in hook.data) {
 		var regex = RegExp("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
@@ -187,7 +201,8 @@ exports.before = function(app) {
 			globalHooks.hasPermission('USER_EDIT'),
 			globalHooks.permitGroupOperation,
 			sanitizeData,
-			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
+			updateAccountUsername,
 		],
 		remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USER_CREATE'), globalHooks.permitGroupOperation]
 	};
