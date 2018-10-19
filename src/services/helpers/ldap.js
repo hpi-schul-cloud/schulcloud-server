@@ -145,6 +145,16 @@ module.exports = function (app) {
 			return this.searchCollection(config, searchString, options);
 		}
 
+		getClasses(config, school) {
+			const options = {
+				filter: config.filters.classes,
+				scope: 'sub',
+				attributes: []
+			};
+
+			const searchString = `cn=klassen,cn=schueler,cn=groups,ou=${school.ldapSchoolIdentifier},${config.rootPath}`;
+			return this.searchCollection(config, searchString, options);
+		}
 
 		_generateGroupFile(userUUID, groups) {
 			return new Buffer(JSON.stringify([
