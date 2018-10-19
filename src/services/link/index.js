@@ -1,9 +1,9 @@
 'use strict';
-
+const errors = require('feathers-errors');
 const service = require('feathers-mongoose');
 const link = require('./link-model');
 const hooks = require('./hooks');
-const hashService = require('../helpers/hash');
+const logger = require('winston');
 
 module.exports = function () {
 	const app = this;
@@ -97,7 +97,28 @@ module.exports = function () {
 		 *  }
 		 */
 		async create(data, params) {
-			let linkInfo = {};
+			let linkInfo = {}, expertUser = {}, expertSchool = {};
+			
+			// find expert
+			if (data.role === 'teamexpert') {
+				try {
+					await app.service('users').find({
+						query: {
+							email: data.invitee
+						}}).then(users => {
+						if(users.data.length > 1) {
+							logger.warn("Experte: Mehr als 1 Nutzer mit dieser E-Mail gefunden. Abbruch.");
+							throw new errors.BadRequest("Experte: Mehr als 1 Nutzer mit dieser E-Mail gefunden. Abbruch.");
+						}
+						expertUser = users.data[0] || {};
+					});
+				} catch (err) {
+					logger.warn(err);
+					return Promise.reject(new Error(`Fehler beim Generieren des Hashes. ${err}`));
+				}
+			}
+			
+			// team hash
 			if (data.teamId) {
 				data.toHash = data.teamId;
 				try {
@@ -109,15 +130,43 @@ module.exports = function () {
 				}
 			}
 			
-			// base link
+			// invite link
 			if (data.role === 'teamexpert') {
-				linkInfo.link = `${(data.host || process.env.HOST)}/teams/invite/teamexpert/to/${linkInfo.teamHash}`;
+				if (expertUser._id) {
+					linkInfo.link = `${(data.host || process.env.HOST)}/teams/invite/teamexpert/to/${linkInfo.teamHash}`;
+				} else {
+					/* generate expert registration link for a new expert
+						1) search for expert school
+						2) delete patchUserInvite to generate and patch user import hash
+						3) put together /registration/:schoolId/teamexpert/?:importHash&:inviteHash
+					 */
+					try {
+						// TODO: parallel
+						await app.service('schools').find({query: {name: "Expertenschule"}}).then(school => {
+							if(school.data.length <= 0 || school.data.length > 1) {
+								logger.warn("Experte: Keine Schule oder mehr als 1 Schule gefunden.");
+								throw new errors.BadRequest("Experte: Keine Schule oder mehr als 1 Schule gefunden.");
+							}
+							expertSchool = school.data[0];
+						});
+						data.patchUser = data.patchUserInvite;
+						delete data.patchUserInvite;
+						await app.service('hash').create(data).then(generatedHash => {
+							linkInfo.hash = generatedHash;
+						});
+						if (expertSchool._id && linkInfo.teamHash && linkInfo.hash) {
+							linkInfo.link = `${(data.host || process.env.HOST)}/registration/${expertSchool._id}/teamexpert/?importHash=${linkInfo.hash}&inviteHash=${linkInfo.teamHash}`;
+						}
+					} catch (err) {
+						logger.warn(`Fehler beim Generieren des Experten-Links. ${err}`);
+						return Promise.reject(new Error(`Fehler beim Generieren des Experten-Links. ${err}`));
+					}
+				}
 			} else if (data.role === 'teamadministrator') {
 				linkInfo.link = `${(data.host || process.env.HOST)}/teams/invite/teamadministrator/to/${linkInfo.teamHash}`;
 			} else {
 				return Promise.reject(new Error('Fehler bei der Rollenangabe.'));
 			}
-			//if (linkInfo.teamHash) linkInfo.link += `?inviteHash=${linkInfo.hash}`;
 			
 			// remove possible double-slashes in url except the protocol ones
 			linkInfo.link = linkInfo.link.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
