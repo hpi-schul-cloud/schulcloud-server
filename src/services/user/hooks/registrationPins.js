@@ -34,7 +34,7 @@ PIN: ${pin}
 
 Mit Freundlichen Grüßen
 Ihr Schul-Cloud Team`;
-	
+
 	} else if (hook.data.byRole === "student" || hook.data.byRole === "employee" || (hook.data.byRole||"").length > 8) {
 		text = `Vielen Dank, dass du die HPI Schul-Cloud nutzen möchtest.
 Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen.
@@ -59,14 +59,16 @@ const checkAndVerifyPin = hook => {
 };
 
 const mailPin = (hook) => {
-	globalHooks.sendEmail(hook, {
-		"subject": "Schul-Cloud: Registrierung mit PIN verifizieren",
-		"emails": (hook.data||{}).email,
-		"content": {
-			"text": createinfoText(hook)
-			// TODO: implement html mails later
-		}
-	});
+	if (!(hook.data||{}).silent) {
+		globalHooks.sendEmail(hook, {
+			"subject": "Schul-Cloud: Registrierung mit PIN verifizieren",
+			"emails": (hook.data||{}).email,
+			"content": {
+				"text": createinfoText(hook)
+				// TODO: implement html mails later
+			}
+		});
+	}
 	return Promise.resolve(hook);
 };
 
