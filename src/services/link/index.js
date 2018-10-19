@@ -190,6 +190,8 @@ module.exports = function () {
 			await app.service('link').create({target: linkInfo.link, data: linkData}).then(generatedShortLink => {
 				linkInfo.shortLinkId = generatedShortLink._id;
 				linkInfo.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`;
+				// remove possible double-slashes in url except the protocol ones
+				linkInfo.shortLink = linkInfo.shortLink.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
 			}).catch(err => {
 				logger.warn(err);
 				return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
