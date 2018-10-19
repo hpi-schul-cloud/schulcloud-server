@@ -143,7 +143,7 @@ module.exports = function () {
 				} else {
 					/* generate expert registration link for a new expert
 						1) search for expert school
-						2) delete patchUserInvite to generate and patch user import hash
+						2) generate and patch user import hash for registration
 						3) put together /registration/:schoolId/teamexpert/?:importHash&:inviteHash
 					 */
 					try {
@@ -155,8 +155,7 @@ module.exports = function () {
 							}
 							expertSchool = school.data[0];
 						});
-						data.patchUser = data.patchUserInvite;
-						delete data.patchUserInvite;
+						data.patchUser = true;
 						await app.service('hash').create(data).then(generatedHash => {
 							linkInfo.hash = generatedHash;
 						});
