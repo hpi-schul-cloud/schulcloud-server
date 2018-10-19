@@ -48,18 +48,6 @@ module.exports = function (app) {
 								resolve(hash);
 							});
 						}
-						if(data.patchUserInvite===true || data.patchUserInvite==="true"){
-							userModel.findOneAndUpdate(
-								{'email': data.toHash},
-								{
-									'$set': {
-										'inviteHash': hash
-									}
-								}
-							).then(_ => {
-								resolve(hash);
-							});
-						}
 						resolve(hash);
 					});
 				});	
