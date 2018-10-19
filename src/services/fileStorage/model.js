@@ -13,6 +13,7 @@ const Schema = mongoose.Schema;
  * @param parent {File} - parent directory
  * @param owner {User|Course|Team} - owner Object of file
  * @param permissions [Permission] - given permission for this file
+ * @param lockId {ObjectId} - indicates whether a file is locked for editing or not (wopi-related)
  */
 const fileSchema = new Schema({
 	isDirectory: { type: Boolean, default: true },
@@ -40,6 +41,7 @@ const fileSchema = new Schema({
 		required: true,
 		enum: [ 'user', 'course', 'team', 'role' ]
 	},
+	lockId: {type: Schema.Types.ObjectId},
 	createdAt: { type: Date, 'default': Date.now },
 	updatedAt: { type: Date, 'default': Date.now }
 });

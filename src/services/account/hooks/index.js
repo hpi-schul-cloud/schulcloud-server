@@ -11,6 +11,7 @@ const MoodleLoginStrategy = require('../strategies/moodle');
 const ITSLearningLoginStrategy = require('../strategies/itslearning');
 const IServLoginStrategy = require('../strategies/iserv');
 const LocalLoginStrategy = require('../strategies/local');
+const LdapLoginStrategy = require('../strategies/ldap');
 
 // don't initialize strategies here - otherwise massive overhead
 // TODO: initialize all strategies here once
@@ -18,12 +19,13 @@ const strategies = {
 	moodle: MoodleLoginStrategy,
 	itslearning: ITSLearningLoginStrategy,
 	iserv: IServLoginStrategy,
-	local: LocalLoginStrategy
+	local: LocalLoginStrategy,
+	ldap: LdapLoginStrategy,
 };
 
 // This is only for SSO
 const validateCredentials = (hook) => {
-	const {username, password, systemId} = hook.data;
+	const {username, password, systemId, schoolId} = hook.data;
 
 	if(!username) throw new errors.BadRequest('no username specified');
 	if(!password) throw new errors.BadRequest('no password specified');
@@ -41,7 +43,7 @@ const validateCredentials = (hook) => {
 			};
 		})
 		.then(({strategy, system}) => {
-			return strategy.login({username, password}, system);
+			return strategy.login({username, password}, system, schoolId);
 		})
 		.then((client) => {
 			if (client.token) {
@@ -108,6 +110,16 @@ const checkUnique = (hook) => {
 		});
 };
 
+const removePassword = (hook) => {
+	const {strategy} = hook.data;
+
+	if(strategy == 'ldap')
+	{
+		hook.data.password = '';
+	}
+	return Promise.resolve(hook);
+};
+
 const restrictAccess = (hook) => {
 	let queries = hook.params.query;
 
@@ -148,6 +160,32 @@ const securePatching = (hook) => {
 	return Promise.resolve(hook);
 };
 
+const clearPwHash = hook =>{
+	if(hook.result.password){
+		delete hook.result.password
+	}
+	return hook
+}
+
+/**
+ * @method get
+ * @param {Array of strings} keys
+ * @afterHook
+ * @notLocal
+ */
+const filterToRelated=(keys)=>{
+	return globalHooks.ifNotLocal(hook=>{
+		const newResult={};
+		keys.forEach(key=>{
+			if(hook.result[key]!==undefined){
+				newResult[key]=hook.result[key];
+			}
+		})
+		hook.result=newResult;
+		return hook
+	});
+}
+
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
 	// otherwise we cannot get the accounts required for login
@@ -158,7 +196,8 @@ exports.before = {
 		validateCredentials,
 		trimPassword,
 		local.hooks.hashPassword({ passwordField: 'password' }),
-		checkUnique
+		checkUnique,
+		removePassword
 	],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
@@ -171,9 +210,9 @@ exports.before = {
 };
 
 exports.after = {
-	all: [],
+	all: [clearPwHash],
 	find: [],
-	get: [],
+	get: [filterToRelated(['_id','username','userId','systemId'])],
 	create: [],
 	update: [],
 	patch: [],

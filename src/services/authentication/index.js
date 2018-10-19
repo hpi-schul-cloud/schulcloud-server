@@ -77,6 +77,11 @@ module.exports = function() {
 		loginStrategy: require('../account/strategies/iserv')
 	}));
 
+	app.configure(system({
+		name: 'ldap',
+		loginStrategy: require('../account/strategies/ldap')
+	}));
+
 
 	const authenticationService = app.service('authentication');
 
