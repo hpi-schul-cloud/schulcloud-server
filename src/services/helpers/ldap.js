@@ -20,7 +20,7 @@ module.exports = function (app) {
 						name: 'schulcloud_test_group',
 						description: 'A test group created by the LDAP service'
 					}
-				]);
+				], params.query.method || 'create');
 			});
 		}
 
@@ -155,7 +155,7 @@ module.exports = function (app) {
 			]));
 		}
 
-		_generateGroupUpdateFormData(user, groups) {
+		_generateGroupUpdateFormData(user, groups, method='create') {
 			return {
 				input_file: {
 					value: this._generateGroupFile(user.ldapId, groups),
@@ -165,13 +165,13 @@ module.exports = function (app) {
 						contentType: 'application/json',
 					},
 				},
-				school: '/v1/schools/createglobalgroups/',
+				school: `/v1/schools/${method}globalgroups/`,
 				user_role: 'student',
 				dryrun: 'false',
 			};
 		}
 
-		updateUserGroups(config, user, groups) {
+		updateUserGroups(config, user, groups, method='create') {
 			const username = process.env.NBC_IMPORTUSER;
 			const password = process.env.NBC_IMPORTPASSWORD;
 			const auth = "Basic " + new Buffer(username + ":" + password).toString("base64");
@@ -180,7 +180,7 @@ module.exports = function (app) {
 			const options = {
 				uri: process.env.NBC_IMPORTURL,
 				method: 'POST',
-				formData: this._generateGroupUpdateFormData(user, groups),
+				formData: this._generateGroupUpdateFormData(user, groups, method),
 				headers: {
 					'content-type': 'multipart/form-data',
 					'Authorization' : auth,
