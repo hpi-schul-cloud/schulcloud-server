@@ -25,6 +25,7 @@ const systemSchema = new Schema({
 			schools: { type: String },
 			users: { type: String },
 		},
+		provider: { type: String },
 	},
 }, {
 	timestamps: true
