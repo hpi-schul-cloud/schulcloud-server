@@ -34,8 +34,8 @@ const fileSchema = new Schema({
 	}],
 	lockId: {type: Schema.Types.ObjectId},
 	shareToken: {type: String},
-	schoolId: {type: Schema.Types.ObjectId, ref: 'school'},
 	studentCanEdit: {type: Boolean, default: false} ,
+	schoolId: [{type: Schema.Types.ObjectId, ref: 'school'}],
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now}
 });
