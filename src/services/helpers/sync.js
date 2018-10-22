@@ -1,6 +1,35 @@
 const errors = require('feathers-errors');
 const accountModel = require('../account/model');
 
+const populateClassUsers = function(app, ldapClass, currentClass) {
+	let students = [], teachers = [];
+	if (!("uniqueMember" in ldapClass)) {
+		return Promise.resolve();
+	}
+	if (Array.isArray(ldapClass.uniqueMember) == false) {
+		ldapClass.uniqueMember = [ldapClass.uniqueMember];
+	}
+	return Promise.all(ldapClass.uniqueMember.map(ldapUserDn => {
+		return app.service('users').find({query: {ldapDn: ldapUserDn, $populate:['roles']}})
+		.then(user => {
+			if (user.total > 0) {
+				user = user.data[0];
+				user.roles.map(role => {
+					if (role.name == "student") students.push(user._id);
+					if (role.name == "teacher") teachers.push(user._id);
+				});
+			}
+			return Promise.resolve();
+		});
+	})).then(_ => {
+		if (students.length == 0 && teachers.length == 0) return Promise.resolve();
+		return app.service('classes').patch(currentClass._id,{$set: {userIds: students, teacherIds: teachers}});
+	}).catch(err => {
+		return Promise.reject(err);
+	});
+	
+};
+
 module.exports = function (app) {
 
 	class SyncService {
@@ -36,6 +65,10 @@ module.exports = function (app) {
 									return this.ldapService.getUsers(config, school)
 										.then(data => {
 											return this._createUsersFromLdapData(app, data, school, system);
+										}).then(_ => {
+											return this.ldapService.getClasses(config, school);
+										}).then(data => {
+											return this._createClassesFromLdapData(app,data,school);
 										});
 								}));
 							});
@@ -182,6 +215,37 @@ module.exports = function (app) {
 				updateObject);
 
 		}
+
+		_createClassesFromLdapData(app, data, school) {
+			return Promise.all(data.map(ldapClass => {
+				return this._getOrCreateClassFromLdapData(app, ldapClass, school)
+				.then(currentClass => {
+					return populateClassUsers(app, ldapClass, currentClass);
+				});
+			}));
+		}
+
+		_getOrCreateClassFromLdapData(app, data, school) {
+			return app.service('classes').find({query: {ldapDN: data.dn}})
+			.then(res => {
+				if (res.total == 0) {
+					let splittedName = data.cn.split("-");
+					let className = splittedName[splittedName.length-1];
+					let newClass = {
+						name: className,
+						schoolId: school._id,
+						nameFormat: "static",
+						ldapDN: data.dn,
+						year: school.currentYear
+					};
+					return app.service('classes').create(newClass);
+				} else {
+					return res.data[0];
+				}
+			});
+		}
+
+		
 	}
 
 	return SyncService;
