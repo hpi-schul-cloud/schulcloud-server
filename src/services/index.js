@@ -8,6 +8,7 @@ const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
+const analytics = require('./analytics');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
@@ -22,6 +23,8 @@ const notification = require('./notification');
 const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
+const wopi = require('./wopi');
+const socket = require('./socket');
 const pseudonym = require("./pseudonym");
 const consent = require('./consent');
 const mongoose = require('mongoose');
@@ -34,6 +37,7 @@ module.exports = function () {
     mongoose.Promise = global.Promise;
 
     app.configure(authentication);
+    app.configure(analytics);
     app.configure(user);
     app.configure(role);
     app.configure(account);
@@ -59,4 +63,8 @@ module.exports = function () {
     app.configure(pseudonym);
     app.configure(consent);
     app.configure(clipboard);
+    app.configure(wopi);
+    app.configure(pseudonym);
+    app.configure(consent);
+    app.configure(socket);
 };
