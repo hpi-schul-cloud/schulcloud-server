@@ -12,21 +12,7 @@ module.exports = function() {
 		}
 
 		find(params) {
-			return app.service('users').find({
-				query: { firstName: 'Ailbert' }
-			})
-			.then(users => {
-				const config = {provider: 'univention'};
-				const team = {
-					name: 'Friday Beers',
-					_id: '1234567890'
-				};
-				if (params.query.method === 'add') {
-					return this.addUserToTeam(config, users.data[0], team);
-				} else {
-					return this.removeUserFromTeam(config, users.data[0], team);
-				}
-			});
+
 		}
 
 		_addClient(config, client) {
