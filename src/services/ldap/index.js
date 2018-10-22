@@ -2,7 +2,7 @@ const ldap = require('ldapjs');
 const errors = require('feathers-errors');
 const request = require('request-promise-native');
 
-module.exports = function (app) {
+module.exports = function() {
 
 	class LdapService {
 
@@ -194,5 +194,6 @@ module.exports = function (app) {
 		}
 	}
 
-	return LdapService;
+	const app = this;
+	app.use('/ldap', new LdapService());
 };
