@@ -1,9 +1,13 @@
 const ldap = require('ldapjs');
 const errors = require('feathers-errors');
-const request = require('request-promise-native');
 
-module.exports = function (app) {
+const getLDAPStrategy = require('./strategies');
 
+module.exports = function() {
+
+	/**
+	 * A service to communicate with LDAP servers.
+	 */
 	class LdapService {
 
 		constructor() {
@@ -11,23 +15,18 @@ module.exports = function (app) {
 		}
 
 		find(params) {
-			return app.service('users').find({
-				query: { firstName: 'Ailbert' }
-			})
-			.then(users => {
-				return this.updateUserGroups({}, users.data[0], [
-					{
-						name: 'schulcloud_test_group',
-						description: 'A test group created by the LDAP service'
-					}
-				]);
-			});
+
 		}
 
 		_addClient(config, client) {
 			this.clients[config._id] = client;
 		}
 
+		/**
+		 * connect or get a reference to an existing connection
+		 * @param {LdapConfig} config
+		 * @return {LDAPClient}
+		 */
 		_getClient(config) {
 			let client = this.clients[config._id];
 			if (client && client.connected) {
@@ -40,6 +39,15 @@ module.exports = function (app) {
 			}
 		}
 
+		/**
+		 * connect to an LDAP server using a search user in the configured root
+		 * path
+		 * @param {LdapConfig} config
+		 * @param {String} username
+		 * @param {String} password
+		 * @return {Promise} resolves with LDAPClient on successful connection,
+		 * rejects with error otherwise
+		 */
 		_connect(config, username, password) {
 			username = username || `uid=${config.searchUser},cn=users,${config.rootPath}`;
 			password = password || config.searchUserPassword;
@@ -62,6 +70,13 @@ module.exports = function (app) {
 			});
 		}
 
+		/**
+		 * close an established connection to a server identified by an LDAP
+		 * config
+		 * @param {LdapConfig} config
+		 * @return {Promise} resolves if successfully disconnected, otherwise
+		 * rejects with error
+		 */
 		_disconnect(config) {
 			return new Promise((resolve, reject) => {
 				if (! (config && config._id)) {
@@ -76,6 +91,16 @@ module.exports = function (app) {
 			});
 		}
 
+		/**
+		 * authenticate a user via the LDAP server identified by the LDAP config
+		 * asociated with the login system
+		 * @param {System} system
+		 * @param {String} qualifiedUsername - the fully qualified username,
+		 * including root path, ou, dn, etc.
+		 * @param {String} password
+		 * @return {Promise} resolves if successfully logged in, otherwise
+		 * rejects with error
+		 */
 		authenticate(system, qualifiedUsername, password) {
 			const config = system.ldapConfig;
 			return this._connect(config, qualifiedUsername, password)
@@ -90,6 +115,14 @@ module.exports = function (app) {
 				});
 		}
 
+		/**
+		 * returns all LDAP objects matching the given search string and options
+		 * @param {LdapConfig} config
+		 * @param {String} searchString
+		 * @param {Object} options
+		 * @return {Promise[Array[Object]]} resolves with array of objects
+		 * matching the query, rejects with error otherwise
+		 */
 		searchCollection(config, searchString, options) {
 			return this._getClient(config).then((client) => {
 				return new Promise((resolve, reject) => {
@@ -105,15 +138,22 @@ module.exports = function (app) {
 						res.on('end', (result) => {
 							if (result.status === 0) {
 								resolve(objects);
-							} else {
-								reject('LDAP result code != 0');
 							}
+							reject('LDAP result code != 0');
 						});
 					});
 				});
 			});
 		}
 
+		/**
+		 * returns first LDAP object matching the given search string and options
+		 * @param {LdapConfig} config
+		 * @param {String} searchString
+		 * @param {Object} options
+		 * @return {Promise[Object]} resolves with object matching the query,
+		 * rejects with error otherwise
+		 */
 		searchObject(config, searchString, options) {
 			return this.searchCollection(config, searchString, options)
 				.then((objects) => {
@@ -124,6 +164,12 @@ module.exports = function (app) {
 				});
 		}
 
+		/**
+		 * returns all schools on the LDAP server
+		 * @param {LdapConfig} config
+		 * @return {Promise[Array[Object]]} resolves with all school objects or
+		 * rejects with error
+		 */
 		getSchools(config) {
 			const options = {
 				filter: config.filters.schools,
@@ -134,6 +180,13 @@ module.exports = function (app) {
 			return this.searchCollection(config, `${config.rootPath}`, options);
 		}
 
+		/**
+		 * returns all users at a school on the LDAP server
+		 * @param {LdapConfig} config
+		 * @param {School} school
+		 * @return {Promise[Object]} resolves with all user objects or rejects
+		 * with error
+		 */
 		getUsers(config, school) {
 			const options = {
 				filter: config.filters.users,
@@ -166,43 +219,45 @@ module.exports = function (app) {
 		}
 
 		_generateGroupUpdateFormData(user, groups) {
+		/**
+		 * generate an LDAP group object from a team
+		 * @param {Team} team
+		 * @return {LDAPGroup}
+		 */
+		}
+		_teamToGroup(team) {
 			return {
-				input_file: {
-					value: this._generateGroupFile(user.ldapId, groups),
-					options: {
-						filename: 'test.json',
-						type: 'json',
-						contentType: 'application/json',
-					},
-				},
-				school: '/v1/schools/createglobalgroups/',
-				user_role: 'student',
-				dryrun: 'false',
+				name: `schulcloud-${team._id}`,
+				description: team.name
 			};
 		}
 
-		updateUserGroups(config, user, groups) {
-			const username = process.env.NBC_IMPORTUSER;
-			const password = process.env.NBC_IMPORTPASSWORD;
-			const auth = "Basic " + new Buffer(username + ":" + password).toString("base64");
-			const REQUEST_TIMEOUT = 8000;
-
-			const options = {
-				uri: process.env.NBC_IMPORTURL,
-				method: 'POST',
-				formData: this._generateGroupUpdateFormData(user, groups),
-				headers: {
-					'content-type': 'multipart/form-data',
-					'Authorization' : auth,
-				},
-				json: true,
-				timeout: REQUEST_TIMEOUT
-			};
-			return request(options).then(message => {
-				return message;
-			});
+		/**
+		 * add a user to a given team
+		 * @param {LdapConfig} config
+		 * @param {User}
+		 * @param {Team}
+		 * @return {Promise} resolves with undefined value rejects with error
+		 */
+		addUserToTeam(config, user, team) {
+			const group = this._teamToGroup(team);
+			return getLDAPStrategy(config).addUserToGroup(user, group);
 		}
+
+		/**
+		 * remove a user from a given team
+		 * @param {LdapConfig} config
+		 * @param {User}
+		 * @param {Team}
+		 * @return {Promise} resolves with undefined value rejects with error
+		 */
+		removeUserFromTeam(config, user, team) {
+			const group = this._teamToGroup(team);
+			return getLDAPStrategy(config).removeUserFromGroup(user, group);
+		}
+
 	}
 
-	return LdapService;
+	const app = this;
+	app.use('/ldap', new LdapService());
 };
