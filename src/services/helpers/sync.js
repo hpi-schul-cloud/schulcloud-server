@@ -22,6 +22,7 @@ const populateClassUsers = function(app, ldapClass, currentClass) {
 			return Promise.resolve();
 		});
 	})).then(_ => {
+		if (students.length == 0 && teachers.length == 0) return Promise.resolve();
 		return app.service('classes').patch(currentClass._id,{$set: {userIds: students, teacherIds: teachers}});
 	}).catch(err => {
 		return Promise.reject(err);
@@ -225,7 +226,7 @@ module.exports = function (app) {
 		}
 
 		_getOrCreateClassFromLdapData(app, data, school) {
-			return app.service('classes').find({query: {ldapDn: data.dn}})
+			return app.service('classes').find({query: {ldapDN: data.dn}})
 			.then(res => {
 				if (res.total == 0) {
 					let splittedName = data.cn.split("-");
@@ -239,7 +240,7 @@ module.exports = function (app) {
 					};
 					return app.service('classes').create(newClass);
 				} else {
-					return res[0];
+					return res.data[0];
 				}
 			});
 		}
