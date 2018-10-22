@@ -250,10 +250,10 @@
 	"__v": 0
 },
 { 
-    "_id" : ObjectId("5bb5c190fb457b1c3c0c7e0f"), 
+    "_id" : {"$oid": "5bb5c190fb457b1c3c0c7e0f"}, 
     "name" : "teammember", 
-    "updatedAt" : ISODate("2018-10-04T09:00:00.000+0000"), 
-    "createdAt" : ISODate("2018-10-04T09:00:00.000+0000"), 
+    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
+    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
     "roles" : [
 
     ], 
@@ -267,10 +267,10 @@
     "__v" : 0
 },
 { 
-    "_id" : ObjectId("5bb5c391fb457b1c3c0c7e10"), 
+    "_id" : { 		"$oid": "5bb5c391fb457b1c3c0c7e10"}, 
     "name" : "teamexpert", 
-    "updatedAt" : ISODate("2018-10-04T09:00:00.000+0000"), 
-    "createdAt" : ISODate("2018-10-04T09:00:00.000+0000"), 
+    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
+    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
     "roles" : [
 
     ], 
@@ -284,12 +284,12 @@
     "__v" : 0
 },
 { 
-    "_id" : ObjectId("5bb5c49efb457b1c3c0c7e11"), 
+    "_id" : { 		"$oid": "5bb5c49efb457b1c3c0c7e11"}, 
     "name" : "teamleader", 
-    "updatedAt" : ISODate("2018-10-04T09:00:00.000+0000"), 
-    "createdAt" : ISODate("2018-10-04T09:00:00.000+0000"), 
+    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
+    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
     "roles" : [
-        ObjectId("5bb5c190fb457b1c3c0c7e0f")
+        { 		"$oid": "5bb5c190fb457b1c3c0c7e0f"}
     ], 
     "permissions" : [
         "EDIT_ALL_FILES", 
@@ -301,12 +301,12 @@
     "__v" : 0
 },
 { 
-    "_id" : ObjectId("5bb5c545fb457b1c3c0c7e13"), 
+    "_id" : { 		"$oid": "5bb5c545fb457b1c3c0c7e13"}, 
     "name" : "teamadministrator", 
-    "updatedAt" : ISODate("2018-10-04T09:00:00.000+0000"), 
-    "createdAt" : ISODate("2018-10-04T09:00:00.000+0000"), 
+    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
+    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
     "roles" : [
-        ObjectId("5bb5c49efb457b1c3c0c7e11")
+        { 		"$oid": "5bb5c49efb457b1c3c0c7e11"}
     ], 
     "permissions" : [
         "INVITE_EXPERTS", 
@@ -315,14 +315,14 @@
         "RENAME_TEAM"
     ], 
     "__v" : 0
-}
+},
 { 
-    "_id" : ObjectId("5bb5c62bfb457b1c3c0c7e14"), 
+    "_id" : { 		"$oid": "5bb5c62bfb457b1c3c0c7e14"}, 
     "name" : "teamowner", 
-    "updatedAt" : ISODate("2018-10-04T09:00:00.000+0000"), 
-    "createdAt" : ISODate("2018-10-04T09:00:00.000+0000"), 
+    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
+    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
     "roles" : [
-        ObjectId("5bb5c545fb457b1c3c0c7e13")
+        { 		"$oid": "5bb5c545fb457b1c3c0c7e13"}
     ], 
     "permissions" : [
         "DELETE_TEAM"
