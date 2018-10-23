@@ -2,6 +2,10 @@ const request = require('request-promise-native');
 
 const AbstractLDAPStrategy = require('./interface.js');
 
+/**
+ * Univention-specific LDAP functionality
+ * @implements {AbstractLDAPStrategy}
+ */
 class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 	constructor(config) {
         super();
