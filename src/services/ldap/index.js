@@ -183,17 +183,7 @@ module.exports = function() {
 		 * with error
 		 */
 		getUsers(config, school) {
-<<<<<<< HEAD
-			const options = {
-				filter: config.filters.users,
-				scope: 'sub',
-				attributes: ["givenName", "sn", "mailPrimaryAddress", "mail", "dn", "entryUUID", "uid", "objectClass", "memberOf"]
-			};
-
-			const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${config.rootPath}`;
-=======
 			const {searchString, options} = getLDAPStrategy(config).getUsersQuery(school);
->>>>>>> 0aeeec3218be5d1930d58b5201f1572219e5aaf5
 			return this.searchCollection(config, searchString, options);
 		}
 
