@@ -76,13 +76,13 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
     }
 
     _updateUserGroups(user, groups, method='create') {
-        const username = process.env.NBC_IMPORTUSER;
-        const password = process.env.NBC_IMPORTPASSWORD;
+        const username = this.config.importUser || process.env.NBC_IMPORTUSER;
+        const password = this.config.importUserPw || process.env.NBC_IMPORTPASSWORD;
         const auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64');
         const REQUEST_TIMEOUT = 8000;
 
         const options = {
-            uri: process.env.NBC_IMPORTURL,
+            uri: this.config.importUrl || process.env.NBC_IMPORTURL,
             method: 'POST',
             formData: this._generateGroupUpdateFormData(user, groups, method),
             headers: {
