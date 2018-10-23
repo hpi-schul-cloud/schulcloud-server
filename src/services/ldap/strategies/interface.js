@@ -4,6 +4,17 @@ class AbstractLDAPStrategy {
 			throw new TypeError("Cannot construct AbstractLDAPStrategy instances directly.");
 		}
 	}
+    getSchoolsQuery() {
+        throw new TypeError('Method has to be implemented.');
+    }
+
+    getUsersQuery(school) {
+        throw new TypeError('Method has to be implemented.');
+    }
+
+    getClassesQuery(school) {
+        throw new TypeError('Method has to be implemented.');
+    }
 
 	addUserToGroup(user, group) {
 		throw new TypeError("method has to be implemented.");

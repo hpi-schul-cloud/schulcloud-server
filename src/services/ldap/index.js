@@ -171,13 +171,8 @@ module.exports = function() {
 		 * rejects with error
 		 */
 		getSchools(config) {
-			const options = {
-				filter: config.filters.schools,
-				scope: 'sub',
-				attributes: []
-			};
-
-			return this.searchCollection(config, `${config.rootPath}`, options);
+			const {searchString, options} = getLDAPStrategy(config).getSchoolsQuery();
+			return this.searchCollection(config, searchString, options);
 		}
 
 		/**
@@ -188,24 +183,19 @@ module.exports = function() {
 		 * with error
 		 */
 		getUsers(config, school) {
-			const options = {
-				filter: config.filters.users,
-				scope: 'sub',
-				attributes: ["givenName", "sn", "mail", "dn", "entryUUID", "uid", "objectClass", "memberOf"]
-			};
-
-			const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${config.rootPath}`;
+			const {searchString, options} = getLDAPStrategy(config).getUsersQuery(school);
 			return this.searchCollection(config, searchString, options);
 		}
 
+		/**
+		 * returns all classes at a school on the LDAP server
+		 * @param {LdapConfig} config
+		 * @param {School} school
+		 * @return {Promise[Object]} resolves with all class objects or rejects
+		 * with error
+		 */
 		getClasses(config, school) {
-			const options = {
-				filter: config.filters.classes,
-				scope: 'sub',
-				attributes: []
-			};
-
-			const searchString = `cn=klassen,cn=schueler,cn=groups,ou=${school.ldapSchoolIdentifier},${config.rootPath}`;
+			const {searchString, options} = getLDAPStrategy(config).getClassesQuery(school);
 			return this.searchCollection(config, searchString, options);
 		}
 

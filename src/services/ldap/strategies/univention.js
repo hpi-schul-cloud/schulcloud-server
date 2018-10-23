@@ -4,8 +4,39 @@ const AbstractLDAPStrategy = require('./interface.js');
 
 class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 	constructor(config) {
-		super();
-	}
+        super();
+        this.config = config;
+    }
+
+    getSchoolsQuery() {
+        const options = {
+            filter: '(&(univentionObjectType=container/ou)(!(ucsschoolRole=school:ou:no_school)))',
+            scope: 'sub',
+            attributes: []
+        };
+        const searchString = this.config.rootPath;
+        return {searchString, options};
+    }
+
+    getUsersQuery(school) {
+        const options = {
+            filter: 'univentionObjectType=users/user',
+            scope: 'sub',
+            attributes: ['givenName', 'sn', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass', 'memberOf']
+        };
+        const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
+        return {searchString, options};
+    }
+
+    getClassesQuery(school) {
+        const options = {
+            filter: 'univentionObjectType=groups/group',
+            scope: 'sub',
+            attributes: []
+        };
+        const searchString = `cn=klassen,cn=schueler,cn=groups,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
+        return {searchString, options};
+    }
 
     addUserToGroup(user, group) {
 		return this._updateUserGroups(user, [group], 'create');
@@ -18,8 +49,8 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
     _generateGroupFile(userUUID, groups) {
         return new Buffer(JSON.stringify([
             {
-                "entryUUID": userUUID,
-                "nbc-global-groups": groups
+                'entryUUID': userUUID,
+                'nbc-global-groups': groups
             }
         ]));
     }
@@ -43,7 +74,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
     _updateUserGroups(user, groups, method='create') {
         const username = process.env.NBC_IMPORTUSER;
         const password = process.env.NBC_IMPORTPASSWORD;
-        const auth = "Basic " + new Buffer(username + ":" + password).toString("base64");
+        const auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64');
         const REQUEST_TIMEOUT = 8000;
 
         const options = {
