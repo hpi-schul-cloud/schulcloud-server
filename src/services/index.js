@@ -27,6 +27,7 @@ const wopi = require('./wopi');
 const socket = require('./socket');
 const pseudonym = require("./pseudonym");
 const consent = require('./consent');
+const ldap = require('./ldap');
 
 const mongoose = require('mongoose');
 
@@ -64,4 +65,5 @@ module.exports = function () {
     app.configure(pseudonym);
     app.configure(consent);
     app.configure(socket);
+    app.configure(ldap);
 };

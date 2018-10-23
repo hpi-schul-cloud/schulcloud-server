@@ -5,6 +5,7 @@ const user = require('./model');
 const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const errors = require('feathers-errors');
+const firstLoginHooks = require('./hooks/firstLogin');
 
 const userDataFilter=(user)=>{
 	return {
@@ -69,4 +70,14 @@ module.exports = function () {
 	const registrationPinService = app.service('/registrationPins');
 	registrationPinService.before(registrationPinsHooks.before);
 	registrationPinService.after(registrationPinsHooks.after);
+
+	const RegistrationService = require('./registration')(app);
+	app.use('/registration', new RegistrationService());
+	
+	const FirstLoginService = require('./firstLogin')(app);
+	app.use('/firstLogin', new FirstLoginService());
+	const firstLoginService = app.service('firstLogin');
+	firstLoginService.before(firstLoginHooks.before);
+	firstLoginService.after(firstLoginHooks.after);
+
 };

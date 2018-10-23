@@ -41,8 +41,8 @@ const checkUnique = (hook) => {
 			const isLoggedIn= ( hook.params || {} ).account && hook.params.account.userId ? true : false;
 			const isStudent	= user.roles.filter( role => role.name === "student" ).length == 0 ? false : true;
 			const asTask	= ( hook.params._additional || {} ).asTask;
-			
-			if(isLoggedIn || asTask=='student' ){			
+
+			if(isLoggedIn || asTask=='student' ){
 				return Promise.reject(new errors.BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
 			}else if(asTask=='parent' && length==1){
 					userService.update({_id: user._id}, {
@@ -54,7 +54,7 @@ const checkUnique = (hook) => {
 					});
 					return Promise.reject(new errors.BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!", user)); /* to stop the create process, the message are catch and resolve in regestration hook */
 			}
-			
+
 			return Promise.resolve(hook);
 		});
 };
@@ -97,29 +97,29 @@ const checkJwt = () => {
 		} else {
 			return Promise.resolve(hook);
 		}
-	}; 
+	};
 };
 
 const pinIsVerified = hook => {
 	if((hook.params||{}).account && hook.params.account.userId){
 		return (globalHooks.hasPermission('USER_CREATE')).call(this, hook);
-	} else {	
+	} else {
 		const email=(hook.params._additional||{}).parentEmail||hook.data.email;
 		return hook.app.service('/registrationPins').find({query:{email:email , verified: true}})
 		.then(pins => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
 				const age = globalHooks.getAge(hook.data.birthday);
-				
+
 				if (!((hook.data.roles||[]).includes("student") && age < 18)) {
 					hook.app.service('/registrationPins').remove(pins.data[0]._id);
 				}
-				
+
 				return Promise.resolve(hook);
 			}
 			else{
 				return Promise.reject(new errors.BadRequest('Der Pin wurde noch nicht bei der Registrierung eingetragen.'));
 			}
-				
+
 		});
 	}
 };
@@ -172,7 +172,7 @@ exports.before = function(app) {
 			pinIsVerified,
 			sanitizeData,
 			checkUnique,
-			checkUniqueAccount,	
+			checkUniqueAccount,
 			//permissionRoleCreate,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
@@ -180,7 +180,7 @@ exports.before = function(app) {
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
 			sanitizeData,
-			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name')
 		],
 		patch: [
 			auth.hooks.authenticate('jwt'),
