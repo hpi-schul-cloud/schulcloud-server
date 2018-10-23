@@ -209,22 +209,11 @@ module.exports = function() {
 			return this.searchCollection(config, searchString, options);
 		}
 
-		_generateGroupFile(userUUID, groups) {
-			return new Buffer(JSON.stringify([
-				{
-					"entryUUID": userUUID,
-					"nbc-global-groups": groups
-				}
-			]));
-		}
-
-		_generateGroupUpdateFormData(user, groups) {
 		/**
 		 * generate an LDAP group object from a team
 		 * @param {Team} team
 		 * @return {LDAPGroup}
 		 */
-		}
 		_teamToGroup(team) {
 			return {
 				name: `schulcloud-${team._id}`,
