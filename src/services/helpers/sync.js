@@ -114,7 +114,7 @@ module.exports = function (app) {
 		}
 
 		_createUserAndAccount(app, idmUser, school, system) {
-			let email = idmUser.mail;
+			let email = idmUser.mailPrimaryAddress || idmUser.mail;
 			return app.service('registrationPins').create({ email, verified: true, silent: true })
 				.then(registrationPin => {
 					let newUserData = {

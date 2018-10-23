@@ -191,7 +191,7 @@ module.exports = function() {
 			const options = {
 				filter: config.filters.users,
 				scope: 'sub',
-				attributes: ["givenName", "sn", "mail", "dn", "entryUUID", "uid", "objectClass", "memberOf"]
+				attributes: ["givenName", "sn", "mailPrimaryAddress", "mail", "dn", "entryUUID", "uid", "objectClass", "memberOf"]
 			};
 
 			const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${config.rootPath}`;
