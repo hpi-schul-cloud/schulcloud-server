@@ -29,7 +29,16 @@ const createDefaultStorageOptions = (hook) => {
 	const schoolId = hook.result._id;
 	const fileStorageStrategy = getFileStorageStrategy(storageType);
 	return fileStorageStrategy.create(schoolId)
-		.then(() => { return Promise.resolve(hook); });
+		.then(() => {
+			return Promise.resolve(hook);
+		})
+		.catch((err) => {
+			if (err && err.code === 'BucketAlreadyOwnedByYou') {
+				// The bucket already exists
+				return Promise.resolve(hook);
+			}
+			return Promise.reject(err);
+		});
 };
 
 exports.before = {
@@ -47,7 +56,7 @@ exports.after = {
 	find: [],
 	get: [],
 	create: [createDefaultStorageOptions],
-	update: [],
-	patch: [],
+	update: [createDefaultStorageOptions],
+	patch: [createDefaultStorageOptions],
 	remove: []
 };
