@@ -32,21 +32,21 @@ const createUserWithRole=(hook,userId,selectedRole)=>{
     if(selectedRole===undefined){
         role = hook.findRole('name','teammember','_id'); //roles.teammember;
     }else{
-        role = hook.findRole('name',selectedRole,'_id');;
+        role = hook.findRole('name',selectedRole,'_id');
     }
     if(role===undefined || userId===undefined){
         throw new errors.BadRequest('Wrong input. (2)');
     }
 
-    return {userId,role}
-}
+    return {userId,role};
+};
 
 /**
 *   helper  todo:make a promise that return then the error message must not be passed and make debug faster
 */
 const extractOne = (res,errorMessage) => {
     if ( (res.data||{}).length == 1) {
-        return res.data[0]
+        return res.data[0];
     } else {
         if(res.data.length===0){
             throw new errors.NotFound('The user is not in this team, or no team is avaible.',{errorMessage:errorMessage||''});
@@ -54,7 +54,7 @@ const extractOne = (res,errorMessage) => {
             throw new errors.BadRequest('Bad intern call. (1)',{errorMessage:errorMessage||''});
         }
     }
-}
+};
 
 /**
 *   helper
@@ -64,14 +64,14 @@ const testIfObjectId = (id)=>{
     if(id instanceof Schema.Types.ObjectId || id===undefined){
         throw new errors.BadRequest('Wrong input. (5)');
     }
-}
+};
 
 /**
  * @param hook - mapped userIds from class to userIds, clear all double userId inputs
  */
 const updateUsersForEachClass = (hook) => {
     if( (hook.data.classIds||{}).length<=0 ){
-        return hook
+        return hook;
     }
 
     let newUserList = [hook.params.account.userId];   // //add current userId?
@@ -80,21 +80,21 @@ const updateUsersForEachClass = (hook) => {
             testIfObjectId(id);
             newUserList.push(id);
         }
-    }
+    };
     if(hook.data.classIds===undefined || hook.data.classIds.length<=0){
-        return hook
+        return hook;
     }
 
     return hook.app.service('classes').find({
         query:{$or:hook.data.classIds.map( _id=>{
             testIfObjectId(_id);
-            return {_id}
+            return {_id};
         })}
     }).then(classes=>{
         //add userIds from classes
         classes.data.forEach( classObj=>{
             classObj.userIds.forEach(_id=>{
-                add(_id)
+                add(_id);
             });
         });
 
@@ -104,11 +104,11 @@ const updateUsersForEachClass = (hook) => {
         });
         //update userId list
         hook.data.userIds=newUserList;
-        return hook
+        return hook;
     }).catch(err=>{
         logger.warn(err);
         throw new errors.BadRequest('Wrong input. (6)');
-    })
+    });
 };
 
 
@@ -155,11 +155,11 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             query:{
                 $or: userIds.reduce((arr,v)=>{
                     arr.push({_id: (typeof v==='object' && v.userId) ? v.userId : v});
-                    return arr
+                    return arr;
                 },[])
             }
         }).then(users=>{
-            resolve(users.data)
+            resolve(users.data);
         }).catch(err=>{
             logger.warn(err);
             reject( new errors.BadRequest('Can not search users.') );
@@ -187,7 +187,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
             resolve(hook.data);       //team do not exist        //todo: Add hook.data as team information and let go to complet execut with any test
         } else if (method === 'find' && teamId === undefined) {     //!!Abhängigkeit von token und query sessionUserId wird nicht geprüft -> to be discuss!
             //return teams
-            const match = {userIds: {$elemMatch:{userId:sessionUserId.toString() }}}
+            const match = {userIds: {$elemMatch:{userId:sessionUserId.toString() }}};
             hook.params.query = match;
             teamsService.find({
                 query:match
@@ -257,7 +257,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
                     let teamUser = team.userIds.find( teamUser=> (teamUser.userId||{}).toString()===_id ); //already inside the team
                     
                     if(teamUser===undefined){
-                        teamUser = hook.data.userIds.find(teamUser=> (teamUser.userId||{}).toString()===_id && teamUser.role) // new with role  todo: if role is string and not objectId then match to role with hook.findRole
+                        teamUser = hook.data.userIds.find(teamUser=> (teamUser.userId||{}).toString()===_id && teamUser.role); // new with role  todo: if role is string and not objectId then match to role with hook.findRole
                     }
                     
                     if(teamUser===undefined){
@@ -265,7 +265,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
                     }
                     arr.push(teamUser);
                 }
-                return arr
+                return arr;
             },[]);
 
             if(newUsersIds.length<=0){
@@ -277,7 +277,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
         //todo: create test if teamname in schoolId/s unique
 
         return hook;
-    })
+    });
 });
 
 /**
@@ -301,14 +301,14 @@ const existId = (hook) => {
  */
 const addCurrentUser=globalHooks.ifNotLocal( (hook)=>{
     if(hook.injectLink){
-        return hook
+        return hook;
     }
     if(typeof hook.result==='object' && hook.result._id !== undefined){
         const userId    = hook.params.account.userId.toString();
         const user      = Object.assign({},hook.result.userIds.find( user => (user.userId == userId || user.userId._id == userId) )); 
         if(user.role===undefined){
             logger.warn('[teams]','Can not execute addCurrentUser for unknown user. Or user execute a patch with the result that he has left the team.',{userId});
-            return hook
+            return hook;
         }
         testIfObjectId(user.role);
         const role       = hook.findRole('_id',user.role);
@@ -316,7 +316,7 @@ const addCurrentUser=globalHooks.ifNotLocal( (hook)=>{
         user.name        = role.name;
         hook.result.user = user;     
     }
-    return hook
+    return hook;
     
 });
 
@@ -328,16 +328,16 @@ const testInputData=hook=>{
     if(hook.data.userIds===undefined){
         hook.data.userIds=[];
     }else if( !(Array.isArray(hook.data.userIds)) ){
-        throw new errors.BadRequest('Wrong input. (3)')
+        throw new errors.BadRequest('Wrong input. (3)');
     }
 
     if(hook.data.classIds===undefined){
         hook.data.classIds=[];
     }else if( !(Array.isArray(hook.data.classIds)) ){
-        throw new errors.BadRequest('Wrong input. (4)')
+        throw new errors.BadRequest('Wrong input. (4)');
     }
-    return hook
-}
+    return hook;
+};
 
 /**
  * @param hook - block this methode for every request
@@ -345,7 +345,7 @@ const testInputData=hook=>{
 const blockedMethode=(hook)=>{
     logger.warn('[teams]','Method is not allowed!');
     throw new errors.MethodNotAllowed('Method is not allowed!');
-}
+};
 
 /**
  * @param {Array of strings} keys
@@ -359,15 +359,15 @@ const filterToRelated=(keys,path,objectToFilter)=>{
                 return (newObject,key)=>{
                     if(old[key]!==undefined)     //if related key exist
                         newObject[key]=old[key];
-                    return newObject
-            }}
+                    return newObject;
+            };};
             if(Array.isArray(data))
                 return data.map(element=>{
                     return keys.reduce(reducer(element),{}); 
-                })
+                });
             else
                 return keys.reduce(reducer(data),{}); 
-        }
+        };
         const result = objectToFilter||hook;
         let link, linkKey;
         let target = path.length>0 ? path.reduce( (target,key)=>{
@@ -376,14 +376,14 @@ const filterToRelated=(keys,path,objectToFilter)=>{
             const newTarget = target[key];
             link = target;
             linkKey = key;
-            return newTarget
+            return newTarget;
         },result) : result;
 
         link[linkKey] = filter(target);
  
-		return result
+		return result;
 	});
-}
+};
 
 /**
  * @param hook - to inject data that are saved in link services
@@ -421,13 +421,13 @@ const injectDataFromLink=(fallback)=>{
                     query:{email:link.data.invitee}
                 }).then(users=>{
                     const user = extractOne(users,'Find user by email.');
-                    return [createUserWithRole(hook,user._id, link.data.role),user.schoolId]
+                    return [createUserWithRole(hook,user._id, link.data.role),user.schoolId];
                 }).catch(err=>{
                     throw new errors.NotFound('No user credentials found.',err);
                 });
 
                 let waitTeam = teamsService.get(teamId).then( team=>{
-                    return team
+                    return team;
                 }).catch(err=>{
                     throw new errors.NotFound('No team found.',err);
                 });
@@ -450,7 +450,7 @@ const injectDataFromLink=(fallback)=>{
                         teamSchoolIds.push(schoolId);
                     }
                     hook.data.schoolIds = teamSchoolIds;
-                    return hook
+                    return hook;
                 }).catch(err=>{
                     throw new errors.BadRequest(err);
                 });
@@ -461,8 +461,8 @@ const injectDataFromLink=(fallback)=>{
         }else{
             return (typeof fallback==='function' ? fallback(hook) : hook);
         }
-    }
-}
+    };
+};
 
 /**
  * @param hook
@@ -481,17 +481,17 @@ const removeLinkFromDB=(hook)=>{
             throw new errors.BadRequest('Bad intern call. (4)');
         });
     }else{
-        return hook
+        return hook;
     }
-}
+};
 
 /**
  * @param hook
  */
 const injectLinkInformationForLeaders=(hook)=>{
     //todo: Take it from link service via find data.teamId
-    return hook
-}
+    return hook;
+};
 
 
 /**
@@ -523,24 +523,24 @@ const teamRolesToHook = globalHooks.ifNotLocal(hook=>{
             }
             let role = self.teamroles.find(role => role[key].toString()===value.toString());
             if(resultKey){
-                return role[resultKey]
+                return role[resultKey];
             }else if(role){
-                return role
+                return role;
             }else{
-                logger.warn({role,value,resultKey})
+                logger.warn({role,value,resultKey});
                 throw new errors.NotFound('No team role found. (4)');
             }
-        }
+        };
 
         const method = hook.method;
 
         if( method !== 'find' ){
             const resolveInheritance = (role,stack=[])=>{         
                 stack = stack.concat(role.permissions);
-                if(role.roles.length<=0 ) return stack
+                if(role.roles.length<=0 ) return stack;
                 const searchRole  = hook.findRole('_id',role.roles[0]);     //take only first target ...more not exist       
                 return resolveInheritance(searchRole,stack);
-            }
+            };
     
             hook.teamroles.forEach(role=>{
                 const solvedAllPermissions = resolveInheritance(role);
@@ -548,7 +548,7 @@ const teamRolesToHook = globalHooks.ifNotLocal(hook=>{
             });
         }
 
-        return hook
+        return hook;
     }).catch(err=>{
         throw new errors.BadRequest('Can not resolve team roles.',err);
     });
@@ -559,7 +559,7 @@ const keys ={
     resId:  ['_id'],
     query:  ['$populate','$limit'],
     data:   ['name','times','description','userIds','color','features','ltiToolIds','classIds','startDate','untilDate','schoolId']
-}
+};
 
 //todo: TeamPermissions
 exports.before = {

@@ -66,4 +66,4 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 
 module.exports = {
 	teamsModel
-}
+};
