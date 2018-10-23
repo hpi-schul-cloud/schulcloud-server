@@ -21,10 +21,6 @@ const systemSchema = new Schema({
 		rootPath: { type: String },
 		searchUser: { type: String },
 		searchUserPw: { type: String },
-		filters: {
-			schools: { type: String },
-			users: { type: String },
-		},
 		provider: { type: String },
 	},
 }, {
