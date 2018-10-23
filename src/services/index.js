@@ -16,6 +16,7 @@ const helpers = require('./helpers');
 const resolve = require('./resolve');
 const federalState = require('./federalState');
 const userGroup = require('./user-group');
+const teams = require('./teams');
 const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
 const notification = require('./notification');
@@ -44,6 +45,7 @@ module.exports = function () {
     app.configure(school);
     app.configure(resolve);
     app.configure(userGroup);
+    app.configure(teams);
     app.configure(ltiTool);
     app.configure(content);
     app.configure(calendar);

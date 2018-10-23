@@ -20,12 +20,11 @@ const systemSchema = new Schema({
 		url: { type: String },
 		rootPath: { type: String },
 		searchUser: { type: String },
-		searchUserPw: { type: String },
-		filters: {
-			schools: { type: String },
-			users: { type: String },
-		},
+		searchUserPassword: { type: String },
 		provider: { type: String },
+		importUser: { type: String },
+		importUserPassword: { type: String },
+		importUrl: { type: String },
 	},
 }, {
 	timestamps: true

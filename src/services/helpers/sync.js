@@ -27,18 +27,17 @@ const populateClassUsers = function(app, ldapClass, currentClass) {
 	}).catch(err => {
 		return Promise.reject(err);
 	});
-	
+
 };
 
 module.exports = function (app) {
 
 	class SyncService {
-		constructor() {
-			this.ldapService = app.service('ldap');
-		}
+		constructor() {}
 
 		find(params) {
-			if (params.query.target == "ldap") {
+			if (params.query.target == 'ldap') {
+				this.ldapService = app.service('ldap');
 				return this._syncFromLdap(app)
 					.then(res => {
 						return Promise.resolve({ data: true });
@@ -47,7 +46,7 @@ module.exports = function (app) {
 						return Promise.reject(err);
 					});
 			} else {
-				return Promise.reject("target not found");
+				return Promise.reject('target not found');
 			}
 
 		}
@@ -245,7 +244,7 @@ module.exports = function (app) {
 			});
 		}
 
-		
+
 	}
 
 	return SyncService;

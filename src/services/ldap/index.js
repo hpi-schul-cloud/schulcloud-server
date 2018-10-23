@@ -171,13 +171,8 @@ module.exports = function() {
 		 * rejects with error
 		 */
 		getSchools(config) {
-			const options = {
-				filter: config.filters.schools,
-				scope: 'sub',
-				attributes: []
-			};
-
-			return this.searchCollection(config, `${config.rootPath}`, options);
+			const {searchString, options} = getLDAPStrategy(config).getSchoolsQuery();
+			return this.searchCollection(config, searchString, options);
 		}
 
 		/**
@@ -188,6 +183,7 @@ module.exports = function() {
 		 * with error
 		 */
 		getUsers(config, school) {
+<<<<<<< HEAD
 			const options = {
 				filter: config.filters.users,
 				scope: 'sub',
@@ -195,36 +191,29 @@ module.exports = function() {
 			};
 
 			const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${config.rootPath}`;
+=======
+			const {searchString, options} = getLDAPStrategy(config).getUsersQuery(school);
+>>>>>>> 0aeeec3218be5d1930d58b5201f1572219e5aaf5
 			return this.searchCollection(config, searchString, options);
 		}
 
+		/**
+		 * returns all classes at a school on the LDAP server
+		 * @param {LdapConfig} config
+		 * @param {School} school
+		 * @return {Promise[Object]} resolves with all class objects or rejects
+		 * with error
+		 */
 		getClasses(config, school) {
-			const options = {
-				filter: config.filters.classes,
-				scope: 'sub',
-				attributes: []
-			};
-
-			const searchString = `cn=klassen,cn=schueler,cn=groups,ou=${school.ldapSchoolIdentifier},${config.rootPath}`;
+			const {searchString, options} = getLDAPStrategy(config).getClassesQuery(school);
 			return this.searchCollection(config, searchString, options);
 		}
 
-		_generateGroupFile(userUUID, groups) {
-			return new Buffer(JSON.stringify([
-				{
-					"entryUUID": userUUID,
-					"nbc-global-groups": groups
-				}
-			]));
-		}
-
-		_generateGroupUpdateFormData(user, groups) {
 		/**
 		 * generate an LDAP group object from a team
 		 * @param {Team} team
 		 * @return {LDAPGroup}
 		 */
-		}
 		_teamToGroup(team) {
 			return {
 				name: `schulcloud-${team._id}`,
