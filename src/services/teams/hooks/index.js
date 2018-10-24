@@ -95,7 +95,7 @@ const extractOne = (res, errorMessage) => {
             throw new errors.BadRequest('Bad intern call. (1)', { errorMessage: errorMessage || '' });
         }
     }
-}
+};
 
 /**
 *   helper
@@ -105,7 +105,7 @@ const testIfObjectId = (id) => {
     if (id instanceof Schema.Types.ObjectId || id === undefined) {
         throw new errors.BadRequest('Wrong input. (5)');
     }
-}
+};
 
 /**
  * @param hook - mapped userIds from class to userIds, clear all double userId inputs
@@ -151,7 +151,7 @@ const updateUsersForEachClass = (hook) => {
     }).catch(err => {
         logger.warn(err);
         throw new errors.BadRequest('Wrong input. (6)');
-    })
+    });
 };
 
 
@@ -330,7 +330,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
         //todo: create test if teamname in schoolId/s unique
 
         return hook;
-    })
+    });
 });
 
 /**
@@ -389,8 +389,8 @@ const testInputData = hook => {
     } else if (!(Array.isArray(hook.data.classIds))) {
         throw new errors.BadRequest('Wrong input. (4)')
     }
-    return hook
-}
+    return hook;
+};
 
 /**
  * @param hook - block this methode for every request
@@ -398,7 +398,7 @@ const testInputData = hook => {
 const blockedMethode = (hook) => {
     logger.warn('[teams]', 'Method is not allowed!');
     throw new errors.MethodNotAllowed('Method is not allowed!');
-}
+};
 
 /**
  * @param {Array of strings} keys
@@ -516,8 +516,8 @@ const injectDataFromLink = (fallback) => {
         } else {
             return (typeof fallback === 'function' ? fallback(hook) : hook);
         }
-    }
-}
+    };
+};
 
 /**
  * @param hook
@@ -538,15 +538,15 @@ const removeLinkFromDB = (hook) => {
     } else {
         return hook
     }
-}
+};
 
 /**
  * @param hook
  */
 const injectLinkInformationForLeaders = (hook) => {
     //todo: Take it from link service via find data.teamId
-    return hook
-}
+    return hook;
+};
 
 /**
  * @param hook
@@ -617,7 +617,7 @@ const teamRolesToHook = globalHooks.ifNotLocal(hook => {
                 logger.warn({ role, value, resultKey })
                 throw new errors.NotFound('No team role found. (4)');
             }
-        }
+        };
 
         const method = hook.method;
 
