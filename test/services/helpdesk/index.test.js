@@ -11,7 +11,7 @@ describe('helpdesk service', function() {
 
 	const testProblem =
 		{
-			type: 'problem',
+			type: 'contactAdmin',
 			_id: '5836bb5664582c35df3bc214',
 			subject: 'Dies ist ein Titel',
 			currentState: 'Dies ist der CurrentState',
@@ -46,7 +46,7 @@ describe('helpdesk service', function() {
 	it('POST /helpdesk to admin with valid data', () => {
 
 		let postBody = {
-			type: 'problem',
+			type: 'contactAdmin',
 			subject: 'Dies ist ein Titel 2',
 			currentState: 'Dies ist der CurrentState',
 			targetState: 'Dies ist der TargetState',
@@ -67,7 +67,7 @@ describe('helpdesk service', function() {
 	it('POST /helpdesk to admin without schoolId', () => {
 
 		let postBody = {
-			type: 'problem',
+			type: 'contactAdmin',
 			subject: 'Dies ist ein Titel 3',
 			currentState: 'Dies ist der CurrentState 2',
 			targetState: 'Dies ist der TargetState 2',
@@ -85,7 +85,7 @@ describe('helpdesk service', function() {
 	it('POST /helpdesk to admin without data', () => {
 
 		let postBody = {
-			type: 'problem',
+			type: 'contactAdmin',
 			subject: 'Dies ist ein Titel 3',
 			category: 'dashboard',
 			schoolId: '5836bb5664582c35df3bc000'
@@ -102,7 +102,7 @@ describe('helpdesk service', function() {
 	it('POST /helpdesk to schoolcloud with problem, valid data', () => {
 
 		let postBody = {
-			type: 'feedback',
+			type: 'contactHPI',
 			subject: 'Dies ist ein Titel 4',
 			currentState: 'Dies ist der CurrentState 2',
 			targetState: 'Dies ist der TargetState 2',
@@ -119,7 +119,7 @@ describe('helpdesk service', function() {
 	it('POST /helpdesk to schoolcloud with feedback, valid data', () => {
 
 		let postBody = {
-			type: 'feedback',
+			type: 'contactHPI',
 			subject: 'Dies ist ein Titel 4',
 			role: 'Meine Rolle',
 			desire: 'Dies ist Desire 1',
@@ -138,7 +138,7 @@ describe('helpdesk service', function() {
 	it('POST /helpdesk to schoolcloud without data', () => {
 
 		let postBody = {
-			type: 'feedback',
+			type: 'contactHPI',
 			subject: 'Dies ist ein Titel 4',
 			category: 'dashboard'
 		};

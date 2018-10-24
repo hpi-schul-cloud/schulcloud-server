@@ -36,7 +36,7 @@ function createfeedbackText(user, data){
 }
 
 const problemOrFeedback = hook => {
-	if (hook.data.type === "feedback"){
+	if (hook.data.type === "contactHPI"){
 		hook.result = {}; //interrupts db interaction
 	}
 	return hook;
@@ -55,7 +55,7 @@ exports.before = {
 const feedback = () => {
 	return hook=>{
 		const data=hook.data||{};
-		if (data.type === "problem"){ // case: admin
+		if (data.type === "contactAdmin"){
 			globalHooks.sendEmail(hook, {
 				"subject": "Ein Problem wurde gemeldet.",
 				"roles": ["helpdesk", "administrator"],
@@ -66,7 +66,7 @@ const feedback = () => {
 				}
 			});
 			//TODO: NOTIFICATION SERVICE
-		} else { // case: schulcloud feedback
+		} else {
 			globalHooks.sendEmail(hook, {
 				"subject": data.subject||"nosubject",
 				"emails": ["ticketsystem@schul-cloud.org"],
@@ -79,8 +79,8 @@ const feedback = () => {
 			});
 		}
 		return Promise.resolve(hook);
-	}
- }
+	};
+ };
 
 exports.after = {
 	all: [],
