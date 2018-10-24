@@ -53,6 +53,8 @@ const validateCredentials = (hook) => {
 const trimPassword = (hook) => {
 	if (hook.data.password)
 		hook.data.password = hook.data.password.trim();
+	if (hook.data.password_verification)
+		hook.data.password_verification = hook.data.password_verification.trim();
 
 	return hook;
 };
@@ -60,6 +62,14 @@ const trimPassword = (hook) => {
 const validatePassword = (hook) => {
 	let password_verification = hook.data.password_verification;
 	let password = hook.data.password;
+
+	// Check against Pattern which is also used in Frontend
+	const pattern = new RegExp('^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~\']).{8,255}$');
+	let patternResult = pattern.test(password);
+
+	// only check result if also a password was really given
+	if (!patternResult && password)
+		throw new errors.BadRequest('Dein Passwort stimmt mit dem Pattern nicht überein.');
 
 	// in case sso created account skip
 	if (!hook.params.account.userId)
@@ -76,7 +86,7 @@ const validatePassword = (hook) => {
 					// if manager has ADMIN_VIEW (=is admin) and pw-patched user is teacher or student
 							// if superhero
 									// if my accountid == pw-patched accountid (edit own account in user list...)
-			if ((results[0] && results[1]) || (results[2] && (results[1] || results[3])) || results[4] || hook.params.account._id.toString() === hook.id) {
+			if ((results[0] && results[1]) || (results[2] && (results[1] || results[3])) || results[4] || (hook.params.account._id || {}).toString() === hook.id) {
 				return hook;
 			} else {
 				if (password && !password_verification)
