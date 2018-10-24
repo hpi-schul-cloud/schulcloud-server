@@ -49,35 +49,35 @@ const createUserWithRole = (hook, userId, selectedRole) => {
  * @example - _new_ ~ _old_ = [4] => add item
  * @param {all Object(remove:[],add:[])} - List removed and added infos
  */
-const arrayDiff =(oldArray,newArray,key,all)=> {
-    try{
-        if(Array.isArray(oldArray)===false || Array.isArray(newArray)===false){
-            throw new errors.NotAcceptable('Wrong input expect arrays, get oldArray='+Array.isArray(oldArray)+' and newArray='+Array.isArray(newArray) );
+const arrayDiff = (oldArray, newArray, key, all) => {
+    try {
+        if (Array.isArray(oldArray) === false || Array.isArray(newArray) === false) {
+            throw new errors.NotAcceptable('Wrong input expect arrays, get oldArray=' + Array.isArray(oldArray) + ' and newArray=' + Array.isArray(newArray));
         }
-        if(oldArray.length<=0 || newArray<=0){
-            throw new errors.LengthRequired('Wrong input expect arrays.length>0, get oldArray='+oldArray.length+' and newArray='+newArray.length);
+        if (oldArray.length <= 0 || newArray <= 0) {
+            throw new errors.LengthRequired('Wrong input expect arrays.length>0, get oldArray=' + oldArray.length + ' and newArray=' + newArray.length);
         }
 
-        const diff = (a1,a2)=>{
-            if(key===undefined)
-                return a1.filter(x=>!a2.includes(x));
+        const diff = (a1, a2) => {
+            if (key === undefined)
+                return a1.filter(x => !a2.includes(x));
             else
-                return a1.reduce((stack,element)=>{
-                    const v1=element[key];
-                    for(let i=0; i<a2.length;i++){
-                        if(v1===a2[i][key])
+                return a1.reduce((stack, element) => {
+                    const v1 = element[key];
+                    for (let i = 0; i < a2.length; i++) {
+                        if (v1 === a2[i][key])
                             return stack            //if found return without adding
                     }
                     stack.push(element);              //if not found add element from a1
                     return stack
-                },[]);
+                }, []);
         }
 
-        return all===true ? {remove:diff(oldArray,newArray),add:diff(newArray,oldArray)} : diff(oldArray,newArray);
+        return all === true ? { remove: diff(oldArray, newArray), add: diff(newArray, oldArray) } : diff(oldArray, newArray);
     }
-    catch(err){
+    catch (err) {
         logger.warn(err);
-        return all===true ? {remove:[],add:[]} : [];
+        return all === true ? { remove: [], add: [] } : [];
     };
 };
 
@@ -268,7 +268,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
         const sessionSchoolId = sessionUser.schoolId.toString();  //take from user db
 
         //pass it to hook for later use...
-        hook.additionalInfosTeam = {sessionUser,team};
+        hook.additionalInfosTeam = { sessionUser, team };
 
         if (isSuperhero === false) {
             if (method === 'create') {
@@ -422,6 +422,10 @@ const filterToRelated = (keys, path, objectToFilter) => {
             else
                 return keys.reduce(reducer(data), {});
         }
+
+        if (typeof path === 'string')
+            path = path.split('.');
+
         const result = objectToFilter || hook;
         let link, linkKey;
         let target = path.length > 0 ? path.reduce((target, key) => {
@@ -434,7 +438,6 @@ const filterToRelated = (keys, path, objectToFilter) => {
         }, result) : result;
 
         link[linkKey] = filter(target);
-
         return result
     });
 }
@@ -557,23 +560,23 @@ const pushUserChangedEvent = (hook) => {
     //hook.app.service('xxx')
     // arrayDiff()
     //todo: IDM team 
-    if( hook.additionalInfosTeam===undefined){
+    if (hook.additionalInfosTeam === undefined) {
         logger.warn('This hook need additionalInfosTeam.');
         return hook
     }
-    const oldUsers = (hook.additionalInfosTeam.team||{}).userIds;
+    const oldUsers = (hook.additionalInfosTeam.team || {}).userIds;
     const newUsers = hook.additionalInfosTeam.newUsers;
 
-    if(oldUsers===undefined || newUsers===undefined){
-        logger.warn('No user infos.',{oldUsers,newUsers});
+    if (oldUsers === undefined || newUsers === undefined) {
+        logger.warn('No user infos.', { oldUsers, newUsers });
         return hook
     }
 
-    const changes = arrayDiff(oldUsers,newUsers,'userId',true);
-    
-    if(changes.remove.length>0 || changes.add.length>0){
-        hook.additionalInfosTeam.changes=changes;
-        hook.app.emit('teams:after:usersChanged',hook);
+    const changes = arrayDiff(oldUsers, newUsers, 'userId', true);
+
+    if (changes.remove.length > 0 || changes.add.length > 0) {
+        hook.additionalInfosTeam.changes = changes;
+        hook.app.emit('teams:after:usersChanged', hook);
     }
 
     return hook
@@ -650,10 +653,10 @@ const keys = {
 
 //todo: TeamPermissions
 exports.before = {
-    all: [auth.hooks.authenticate('jwt'), existId, filterToRelated(keys.query, ['params', 'query']), teamRolesToHook],
+    all: [auth.hooks.authenticate('jwt'), existId, filterToRelated(keys.query, 'params.query'), teamRolesToHook],
     find: [restrictToCurrentSchoolAndUser],
     get: [restrictToCurrentSchoolAndUser],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
-    create: [filterToRelated(keys.data, ['data']), globalHooks.injectUserId, testInputData, updateUsersForEachClass, restrictToCurrentSchoolAndUser], //inject is needing?
+    create: [filterToRelated(keys.data, 'data'), globalHooks.injectUserId, testInputData, updateUsersForEachClass, restrictToCurrentSchoolAndUser], //inject is needing?
     update: [blockedMethode],
     patch: [(injectDataFromLink)(updateUsersForEachClass), restrictToCurrentSchoolAndUser], //filterToRelated(keys.data,['data']) 
     remove: [restrictToCurrentSchoolAndUser]
@@ -663,10 +666,10 @@ exports.before = {
 //todo: update moongose
 exports.after = {
     all: [],
-    find: [filterToRelated(keys.resFind, ['result', 'data'])], // filterFindResult
+    find: [filterToRelated(keys.resFind, 'result.data')], // filterFindResult
     get: [addCurrentUser, injectLinkInformationForLeaders],                                 //see before (?)
-    create: [filterToRelated(keys.resId, ['result'])],
+    create: [filterToRelated(keys.resId, 'result')],
     update: [],                             //test schoolId remove
-    patch: [addCurrentUser, removeLinkFromDB,pushUserChangedEvent],          //test schoolId remove
-    remove: [filterToRelated(keys.resId, ['result'])]
+    patch: [addCurrentUser, removeLinkFromDB, pushUserChangedEvent],          //test schoolId remove
+    remove: [filterToRelated(keys.resId, 'result')]
 };
