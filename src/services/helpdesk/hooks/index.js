@@ -5,7 +5,7 @@ const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
-function createinfoText(user, data){
+function createInfoText(user, data){
 	return "Ein neues Problem wurde gemeldet." + "\n"
 	+ "User: " + user + "\n"
 	+ "Kategorie: "+ data.category + "\n"
@@ -15,7 +15,7 @@ function createinfoText(user, data){
 	+ "Deine " + data.cloud;
 }
 
-function createfeedbackText(user, data){
+function createFeedbackText(user, data){
 	let text = "User: " + user + "\n"
 	+ "E-Mail: " + data.email + "\n"
 	+ "Schule: " + data.schoolName + "\n"
@@ -35,7 +35,7 @@ function createfeedbackText(user, data){
 	return text;
 }
 
-const problemOrFeedback = hook => {
+const denyDbWriteOnType = hook => {
 	if (hook.data.type === "contactHPI"){
 		hook.result = {}; //interrupts db interaction
 	}
@@ -46,7 +46,7 @@ exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
 	find: [globalHooks.hasPermission('HELPDESK_VIEW')],
 	get: [globalHooks.hasPermission('HELPDESK_VIEW')],
-	create: [globalHooks.hasPermission('HELPDESK_CREATE'), restrictToCurrentSchool, problemOrFeedback],
+	create: [globalHooks.hasPermission('HELPDESK_CREATE'), restrictToCurrentSchool, denyDbWriteOnType],
 	update: [globalHooks.hasPermission('HELPDESK_EDIT'), restrictToCurrentSchool],
 	patch: [globalHooks.hasPermission('HELPDESK_EDIT'),globalHooks.permitGroupOperation, restrictToCurrentSchool],
 	remove: [globalHooks.hasPermission('HELPDESK_CREATE'),globalHooks.permitGroupOperation, globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership)]
@@ -60,7 +60,7 @@ const feedback = () => {
 				"subject": "Ein Problem wurde gemeldet.",
 				"roles": ["helpdesk", "administrator"],
 				"content": {
-					"text": createinfoText(
+					"text": createInfoText(
 						(hook.params.account||{}).username||"nouser",
 						data)
 				}
@@ -71,7 +71,7 @@ const feedback = () => {
 				"subject": data.subject||"nosubject",
 				"emails": ["ticketsystem@schul-cloud.org"],
 				"content": {
-					"text": createfeedbackText(
+					"text": createFeedbackText(
 						(hook.params.account||{}).username||"nouser",
 						data
 					)
