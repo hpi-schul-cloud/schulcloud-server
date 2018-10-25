@@ -71,15 +71,23 @@ const checkUniqueAccount = (hook) => {
 
 const updateAccountUsername = (hook) => { //wenn system ID gesetzt ist darf der username nicht geändert werden (steht nicht in db, aber im model)
 	let accountService = hook.app.service('/accounts');
-	const accountId = hook.params.payload.accountId; //wenn admin für schüler ändert im admin helpdesk muss andere accuntId, nämlich die vom schüler! -> hook.id ist userid von schüler
-	const {email} = hook.data;
-	return accountService.patch(accountId, {username: email}, {account: hook.params.account})
-		.then(result => {
-			let res = result;
-			return Promise.resolve(hook);
-		})
-		.catch(error => {
-			return Promise.reject(error);
+	
+	accountService.find({ query: {userId: hook.id}})
+		.then(result =>{
+			let account = result[0];
+			let accountId = (account._id).toString();
+			if (!account.systemId){
+				const {email} = hook.data;
+				return accountService.patch(accountId, {username: email}, {account: hook.params.account})
+					.then(result => {
+						return Promise.resolve(hook);
+					});
+			} else {
+				hook.result = {};
+				return Promise.resolve(hook);
+			}
+		}).catch(error => {
+			let err = error;
 		});
 };
 
