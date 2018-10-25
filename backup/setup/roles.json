@@ -1,350 +1,428 @@
-[{
-	"_id": {
-		"$oid": "0000d186816abba584714c95"
-	},
-	"name": "user",
-	"roles": [],
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"permissions": [
-		"BASE_VIEW",
-		"DASHBOARD_VIEW",
-		"TOOL_VIEW",
-		"HOMEWORK_CREATE",
-		"PASSWORD_EDIT",
-		"FOLDER_DELETE",
-		"FOLDER_CREATE",
-		"FILE_DELETE",
-		"FILE_CREATE",
-		"FILE_MOVE",
-		"CALENDAR_EVENT_CREATE",
-		"ACCOUNT_EDIT",
-		"CALENDAR_VIEW",
-		"CALENDAR_EDIT",
-		"CALENDAR_CREATE",
-		"FEDERALSTATE_VIEW",
-		"HELPDESK_CREATE",
-		"TOPIC_VIEW",
-		"LINK_CREATE",
-		"TOOL_VIEW",
-		"NEWS_VIEW",
-		"NOTIFICATION_VIEW",
-		"NOTIFICATION_EDIT",
-		"NOTIFICATION_CREATE",
-		"PWRECOVERY_VIEW",
-		"PWRECOVERY_EDIT",
-		"PWRECOVERY_CREATE",
-		"RELEASES_VIEW",
-		"ROLE_VIEW",
-		"USERGROUP_VIEW",
-		"COURSEGROUP_CREATE",
-		"COURSEGROUP_EDIT",
-		"SYSTEM_VIEW",
-		"USER_VIEW",
-		"USER_EDIT",
-		"HOMEWORK_VIEW",
-		"HOMEWORK_EDIT",
-		"HOMEWORK_CREATE",
-		"COMMENTS_VIEW",
-		"COMMENTS_CREATE",
-		"COMMENTS_EDIT",
-		"SUBMISSIONS_VIEW",
-		"SUBMISSIONS_CREATE",
-		"SUBMISSIONS_EDIT",
-		"FILESTORAGE_VIEW",
-		"FILESTORAGE_EDIT",
-		"FILESTORAGE_CREATE",
-		"CONTENT_VIEW",
-		"CONTENT_NON_OER_VIEW",
-		"FILESTORAGE_REMOVE",
-		"TEAM_VIEW", 
-		"TEAM_EDIT",
-        "TEAM_CREATE"
-	],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000d186816abba584714c98"
-	},
-	"name": "teacher",
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"roles": [
-		{
+[
+	{
+		"_id": {
 			"$oid": "0000d186816abba584714c95"
-		}
-	],
-	"permissions": [
-		"ACCOUNT_CREATE",
-		"COURSE_EDIT",
-		"LESSONS_VIEW",
-		"NEWS_CREATE",
-		"NEWS_EDIT",
-		"SCHOOL_NEWS_EDIT",
-		"STUDENT_CREATE",
-		"SUBMISSIONS_SCHOOL_VIEW",
-		"TEACHER_CREATE",
-		"TOOL_CREATE",
-		"TOOL_EDIT",
-		"TOOL_NEW_VIEW",
-		"TOPIC_CREATE",
-		"TOPIC_EDIT",
-		"USER_CREATE",
-		"USERGROUP_CREATE",
-		"USERGROUP_EDIT"
-	],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000d186816abba584714c96"
+		},
+		"name": "user",
+		"roles": [],
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"permissions": [
+			"BASE_VIEW",
+			"DASHBOARD_VIEW",
+			"TOOL_VIEW",
+			"HOMEWORK_CREATE",
+			"PASSWORD_EDIT",
+			"FOLDER_DELETE",
+			"FOLDER_CREATE",
+			"FILE_DELETE",
+			"FILE_CREATE",
+			"FILE_MOVE",
+			"CALENDAR_EVENT_CREATE",
+			"ACCOUNT_EDIT",
+			"CALENDAR_VIEW",
+			"CALENDAR_EDIT",
+			"CALENDAR_CREATE",
+			"FEDERALSTATE_VIEW",
+			"HELPDESK_CREATE",
+			"TOPIC_VIEW",
+			"LINK_CREATE",
+			"TOOL_VIEW",
+			"NEWS_VIEW",
+			"NOTIFICATION_VIEW",
+			"NOTIFICATION_EDIT",
+			"NOTIFICATION_CREATE",
+			"PWRECOVERY_VIEW",
+			"PWRECOVERY_EDIT",
+			"PWRECOVERY_CREATE",
+			"RELEASES_VIEW",
+			"ROLE_VIEW",
+			"USERGROUP_VIEW",
+			"COURSEGROUP_CREATE",
+			"COURSEGROUP_EDIT",
+			"SYSTEM_VIEW",
+			"USER_VIEW",
+			"USER_EDIT",
+			"HOMEWORK_VIEW",
+			"HOMEWORK_EDIT",
+			"HOMEWORK_CREATE",
+			"COMMENTS_VIEW",
+			"COMMENTS_CREATE",
+			"COMMENTS_EDIT",
+			"SUBMISSIONS_VIEW",
+			"SUBMISSIONS_CREATE",
+			"SUBMISSIONS_EDIT",
+			"FILESTORAGE_VIEW",
+			"FILESTORAGE_EDIT",
+			"FILESTORAGE_CREATE",
+			"CONTENT_VIEW",
+			"CONTENT_NON_OER_VIEW",
+			"FILESTORAGE_REMOVE",
+			"TEAM_VIEW",
+			"TEAM_EDIT",
+			"TEAM_CREATE"
+		],
+		"__v": 0
 	},
-	"name": "administrator",
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c95"
-		}
-	],
-	"permissions": [
-		"ACCOUNT_CREATE",
-		"ADMIN_VIEW",
-		"HELPDESK_EDIT",
-		"HELPDESK_VIEW",
-		"SCHOOL_EDIT",
-		"STUDENT_CREATE",
-		"SUBMISSIONS_SCHOOL_VIEW",
-		"SYSTEM_EDIT",
-		"SYSTEM_CREATE",
-		"USER_CREATE",
-		"USERGROUP_CREATE",
-		"USERGROUP_EDIT"
-	],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000d186816abba584714c97"
+	{
+		"_id": {
+			"$oid": "0000d186816abba584714c98"
+		},
+		"name": "teacher",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c95"
+			}
+		],
+		"permissions": [
+			"ACCOUNT_CREATE",
+			"COURSE_EDIT",
+			"LESSONS_VIEW",
+			"NEWS_CREATE",
+			"NEWS_EDIT",
+			"SCHOOL_NEWS_EDIT",
+			"STUDENT_CREATE",
+			"SUBMISSIONS_SCHOOL_VIEW",
+			"TEACHER_CREATE",
+			"TOOL_CREATE",
+			"TOOL_EDIT",
+			"TOOL_NEW_VIEW",
+			"TOPIC_CREATE",
+			"TOPIC_EDIT",
+			"USER_CREATE",
+			"USERGROUP_CREATE",
+			"USERGROUP_EDIT"
+		],
+		"__v": 0
 	},
-	"name": "superhero",
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c95"
-		}
-	],
-	"permissions": [
-		"FEDERALSTATE_CREATE",
-		"FEDERALSTATE_EDIT",
-		"RELEASES_CREATE",
-		"RELEASES_EDIT",
-		"ROLE_CREATE",
-		"ROLE_EDIT",
-		"SCHOOL_CREATE",
-		"SCHOOL_EDIT",
-		"SUBMISSIONS_SCHOOL_VIEW"
-	],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000d186816abba584714c99"
+	{
+		"_id": {
+			"$oid": "0000d186816abba584714c96"
+		},
+		"name": "administrator",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c95"
+			}
+		],
+		"permissions": [
+			"ACCOUNT_CREATE",
+			"ADMIN_VIEW",
+			"HELPDESK_EDIT",
+			"HELPDESK_VIEW",
+			"SCHOOL_EDIT",
+			"STUDENT_CREATE",
+			"SUBMISSIONS_SCHOOL_VIEW",
+			"SYSTEM_EDIT",
+			"SYSTEM_CREATE",
+			"USER_CREATE",
+			"USERGROUP_CREATE",
+			"USERGROUP_EDIT"
+		],
+		"__v": 0
 	},
-	"name": "student",
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c95"
-		}
-	],
-	"permissions": [],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5b45f8d28c8dba65f8871e19"
+	{
+		"_id": {
+			"$oid": "0000d186816abba584714c97"
+		},
+		"name": "superhero",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c95"
+			}
+		],
+		"permissions": [
+			"FEDERALSTATE_CREATE",
+			"FEDERALSTATE_EDIT",
+			"RELEASES_CREATE",
+			"RELEASES_EDIT",
+			"ROLE_CREATE",
+			"ROLE_EDIT",
+			"SCHOOL_CREATE",
+			"SCHOOL_EDIT",
+			"SUBMISSIONS_SCHOOL_VIEW"
+		],
+		"__v": 0
 	},
-	"name": "parent",
-	"updatedAt" : { "$date": "2017-07-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-07-01T00:06:37.148Z" },
-	"roles": [],
-	"permissions": [],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000d186816abba584714d00"
+	{
+		"_id": {
+			"$oid": "0000d186816abba584714c99"
+		},
+		"name": "student",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c95"
+			}
+		],
+		"permissions": [],
+		"__v": 0
 	},
-	"name": "demo",
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"roles": [],
-	"permissions": [
-		"BASE_VIEW",
-		"DASHBOARD_VIEW",
-		"TOOL_VIEW",
-		"CONTENT_VIEW",
-		"HOMEWORK_VIEW",
-		"NEWS_VIEW",
-		"CALENDAR_VIEW",
-		"RELEASES_VIEW",
-		"USERGROUP_VIEW",
-		"TOPIC_VIEW",
-		"SUBMISSIONS_VIEW",
-		"FILESTORAGE_VIEW",
-		"FILESTORAGE_CREATE",
-		"TEAM_VIEW"
-	],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000d186816abba584714d02"
+	{
+		"_id": {
+			"$oid": "5b45f8d28c8dba65f8871e19"
+		},
+		"name": "parent",
+		"updatedAt": {
+			"$date": "2017-07-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-07-01T00:06:37.148Z"
+		},
+		"roles": [],
+		"permissions": [],
+		"__v": 0
 	},
-	"name": "demoStudent",
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"roles": [
-		{
+	{
+		"_id": {
 			"$oid": "0000d186816abba584714d00"
-		}
-	],
-	"permissions": [],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000d186816abba584714d03"
+		},
+		"name": "demo",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"roles": [],
+		"permissions": [
+			"BASE_VIEW",
+			"DASHBOARD_VIEW",
+			"TOOL_VIEW",
+			"CONTENT_VIEW",
+			"HOMEWORK_VIEW",
+			"NEWS_VIEW",
+			"CALENDAR_VIEW",
+			"RELEASES_VIEW",
+			"USERGROUP_VIEW",
+			"TOPIC_VIEW",
+			"SUBMISSIONS_VIEW",
+			"FILESTORAGE_VIEW",
+			"FILESTORAGE_CREATE",
+			"TEAM_VIEW"
+		],
+		"__v": 0
 	},
-	"name": "demoTeacher",
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714d00"
-		}
-	],
-	"permissions": [
-		"LESSONS_VIEW",
-		"SUBMISSIONS_SCHOOL_VIEW",
-		"TOOL_NEW_VIEW"
-	],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000d186816abba584714d01"
+	{
+		"_id": {
+			"$oid": "0000d186816abba584714d02"
+		},
+		"name": "demoStudent",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714d00"
+			}
+		],
+		"permissions": [],
+		"__v": 0
 	},
-	"name": "helpdesk",
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c95"
-		}
-	],
-	"permissions": [
-		"HELPDESK_VIEW",
-		"HELPDESK_EDIT"
-	],
-	"__v": 0
-},
-{ 
-    "_id" : {"$oid":"5bd0066a90a9ee0cb4947a9c"}, 
-    "name" : "expert", 
-    "updatedAt" : { "$date":"2018-10-24T07:00:00.000+0000"}, 
-    "createdAt" : { "$date":"2018-10-24T07:00:00.000+0000"}, 
-    "roles" : [
-        {"$oid":"0000d186816abba584714c95"}
-    ], 
-    "permissions" : [
-
-    ], 
-    "__v" : 0
-},
-{ 
-    "_id" : {"$oid": "5bb5c190fb457b1c3c0c7e0f"}, 
-    "name" : "teammember", 
-    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
-    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
-    "roles" : [
-
-    ], 
-    "permissions" : [
-        "VIEW_ALL_FILES", 
-        "UPLOAD_FILES", 
-        "USE_ROCKETCHAT", 
-        "LEAVE_TEAM", 
-        "USE_LIBREOFFICE"
-    ], 
-    "__v" : 0
-},
-{ 
-    "_id" : { 		"$oid": "5bb5c391fb457b1c3c0c7e10"}, 
-    "name" : "teamexpert", 
-    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
-    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
-    "roles" : [
-
-    ], 
-    "permissions" : [
-        "VIEW_EXPERT_FILES", 
-        "UPLOAD_FILES", 
-        "USE_ROCKETCHAT", 
-        "LEAVE_TEAM", 
-        "USE_LIBREOFFICE"
-    ], 
-    "__v" : 0
-},
-{ 
-    "_id" : { 		"$oid": "5bb5c49efb457b1c3c0c7e11"}, 
-    "name" : "teamleader", 
-    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
-    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
-    "roles" : [
-        { 		"$oid": "5bb5c190fb457b1c3c0c7e0f"}
-    ], 
-    "permissions" : [
-        "EDIT_ALL_FILES", 
-        "ADD_SCHOOL_MEMBERS", 
-        "CREATE_NEWS", 
-        "CREATE_TOPICS_AND_TASKS", 
-        "CHANGE_TEAM_ROLES"
-    ], 
-    "__v" : 0
-},
-{ 
-    "_id" : { 		"$oid": "5bb5c545fb457b1c3c0c7e13"}, 
-    "name" : "teamadministrator", 
-    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
-    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
-    "roles" : [
-        { 		"$oid": "5bb5c49efb457b1c3c0c7e11"}
-    ], 
-    "permissions" : [
-        "INVITE_EXPERTS", 
-        "INVITE_ADMINISTRATORS", 
-        "REMOVE_MEMBERS", 
-        "RENAME_TEAM"
-    ], 
-    "__v" : 0
-},
-{ 
-    "_id" : { 		"$oid": "5bb5c62bfb457b1c3c0c7e14"}, 
-    "name" : "teamowner", 
-    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
-    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
-    "roles" : [
-        { 		"$oid": "5bb5c545fb457b1c3c0c7e13"}
-    ], 
-    "permissions" : [
-        "DELETE_TEAM"
-    ], 
-    "__v" : 0
-}
+	{
+		"_id": {
+			"$oid": "0000d186816abba584714d03"
+		},
+		"name": "demoTeacher",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714d00"
+			}
+		],
+		"permissions": [
+			"LESSONS_VIEW",
+			"SUBMISSIONS_SCHOOL_VIEW",
+			"TOOL_NEW_VIEW"
+		],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "0000d186816abba584714d01"
+		},
+		"name": "helpdesk",
+		"updatedAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c95"
+			}
+		],
+		"permissions": [
+			"HELPDESK_VIEW",
+			"HELPDESK_EDIT"
+		],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5bd0066a90a9ee0cb4947a9c"
+		},
+		"name": "expert",
+		"updatedAt": {
+			"$date": "2018-10-24T07:00:00.000+0000"
+		},
+		"createdAt": {
+			"$date": "2018-10-24T07:00:00.000+0000"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c95"
+			}
+		],
+		"permissions": [],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5bb5c190fb457b1c3c0c7e0f"
+		},
+		"name": "teammember",
+		"updatedAt": {
+			"$date": "2018-10-04T09:00:00.000+0000"
+		},
+		"createdAt": {
+			"$date": "2018-10-04T09:00:00.000+0000"
+		},
+		"roles": [],
+		"permissions": [
+			"VIEW_ALL_FILES",
+			"UPLOAD_FILES",
+			"USE_ROCKETCHAT",
+			"LEAVE_TEAM",
+			"USE_LIBREOFFICE"
+		],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5bb5c391fb457b1c3c0c7e10"
+		},
+		"name": "teamexpert",
+		"updatedAt": {
+			"$date": "2018-10-04T09:00:00.000+0000"
+		},
+		"createdAt": {
+			"$date": "2018-10-04T09:00:00.000+0000"
+		},
+		"roles": [],
+		"permissions": [
+			"VIEW_EXPERT_FILES",
+			"UPLOAD_FILES",
+			"USE_ROCKETCHAT",
+			"LEAVE_TEAM",
+			"USE_LIBREOFFICE"
+		],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5bb5c49efb457b1c3c0c7e11"
+		},
+		"name": "teamleader",
+		"updatedAt": {
+			"$date": "2018-10-04T09:00:00.000+0000"
+		},
+		"createdAt": {
+			"$date": "2018-10-04T09:00:00.000+0000"
+		},
+		"roles": [
+			{
+				"$oid": "5bb5c190fb457b1c3c0c7e0f"
+			}
+		],
+		"permissions": [
+			"EDIT_ALL_FILES",
+			"ADD_SCHOOL_MEMBERS",
+			"CREATE_NEWS",
+			"CREATE_TOPICS_AND_TASKS",
+			"CHANGE_TEAM_ROLES"
+		],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5bb5c545fb457b1c3c0c7e13"
+		},
+		"name": "teamadministrator",
+		"updatedAt": {
+			"$date": "2018-10-04T09:00:00.000+0000"
+		},
+		"createdAt": {
+			"$date": "2018-10-04T09:00:00.000+0000"
+		},
+		"roles": [
+			{
+				"$oid": "5bb5c49efb457b1c3c0c7e11"
+			}
+		],
+		"permissions": [
+			"INVITE_EXPERTS",
+			"INVITE_ADMINISTRATORS",
+			"REMOVE_MEMBERS",
+			"RENAME_TEAM"
+		],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5bb5c62bfb457b1c3c0c7e14"
+		},
+		"name": "teamowner",
+		"updatedAt": {
+			"$date": "2018-10-04T09:00:00.000+0000"
+		},
+		"createdAt": {
+			"$date": "2018-10-04T09:00:00.000+0000"
+		},
+		"roles": [
+			{
+				"$oid": "5bb5c545fb457b1c3c0c7e13"
+			}
+		],
+		"permissions": [
+			"DELETE_TEAM"
+		],
+		"__v": 0
+	}
 ]
-
