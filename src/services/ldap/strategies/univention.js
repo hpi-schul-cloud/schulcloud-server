@@ -34,7 +34,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 
     getClassesQuery(school) {
         const options = {
-            filter: 'univentionObjectType=groups/group',
+            filter: `ucsschoolRole=school_class:school:${school.ldapSchoolIdentifier}`,
             scope: 'sub',
             attributes: []
         };
