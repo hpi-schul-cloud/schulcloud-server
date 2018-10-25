@@ -204,7 +204,9 @@ const populateClassUsers = function(app, ldapClass, currentClass) {
 
 };
 
-module.exports = function (app) {
+module.exports = function () {
+
+	const app = this;
 
 	class SyncService {
 		constructor() {}
@@ -225,5 +227,5 @@ module.exports = function (app) {
 		}
 	}
 
-	return SyncService;
+	app.use('/sync', new SyncService());
 };
