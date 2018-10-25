@@ -40,8 +40,8 @@ const sendEmail = () => {
 			}
 		});
 		return Promise.resolve(hook);
-	};
- };
+	}
+ }
 
 exports.after = {
 	all: [],

@@ -71,13 +71,6 @@ describe('account service', function () {
 			});
 	});
 
-	/*it('patches username', () => {
-		return accountService.patch("0000d213816abba584714caa", {username: "test" })
-			.then (account => {
-				assert.ok(account);
-			});
-	});*/
-
 	it('not able to access whole find', () => {
 		return accountService.find()
 			.catch(exception => {

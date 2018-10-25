@@ -170,10 +170,6 @@ exports.before = {
 	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_CREATE'),globalHooks.permitGroupOperation]
 };
 
-const test = (hook) => {
-	let test  ="test";
-};
-
 exports.after = {
 	all: [],
 	find: [],
