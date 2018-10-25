@@ -93,26 +93,7 @@ const createUserAndAccount = function(app, idmUser, school, system) {
 				systemId: system._id,
 				activated: true
 			};
-			//return accountModel.create(accountData);
-			//-------------------------------------------------------------------
-			//THIS IS FOR DEMO ONLY, AND HAS TO BE REMOVED BEFORE NOVEMBER!!!!!
-			let accountPromise = accountModel.create(accountData);
-			let consentData = {
-				userId: user._id,
-				parentConsents: [{
-					form: "analog",
-					privacyConsent: true,
-					termsOfUseConsent: true,
-					thirdPartyConsent: true,
-					researchConsent: true
-				}]
-			};
-			let consentPromise = app.service('consents').create(consentData);
-			return Promise.all([accountPromise, consentPromise])
-				.then(([account, consent]) => {
-					return Promise.resolve(account);
-				});
-			//-------------------------------------------------------------------
+			return accountModel.create(accountData);
 		});
 };
 
