@@ -760,7 +760,7 @@ exports.before = {
     get: [restrictToCurrentSchoolAndUser],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
     create: [filterToRelated(keys.data, 'data'), globalHooks.injectUserId, testInputData, updateUsersForEachClass, restrictToCurrentSchoolAndUser], //inject is needing?
     update: [blockedMethode],
-    patch: [(injectDataFromLink)(updateUsersForEachClass), restrictToCurrentSchoolAndUser, hasTeamPermission('DELETE_TEAM')], //filterToRelated(keys.data,['data']) 
+    patch: [(injectDataFromLink)(updateUsersForEachClass), restrictToCurrentSchoolAndUser], //filterToRelated(keys.data,['data']) 
     remove: [restrictToCurrentSchoolAndUser, hasTeamPermission('DELETE_TEAM')]
 };
 
