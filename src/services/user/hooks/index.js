@@ -69,7 +69,7 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
-const updateAccountUsername = (hook) => { //wenn system ID gesetzt ist darf der username nicht geändert werden (steht nicht in db, aber im model)
+const updateAccountUsername = (hook) => {
 	let accountService = hook.app.service('/accounts');
 	
 	accountService.find({ query: {userId: hook.id}})
