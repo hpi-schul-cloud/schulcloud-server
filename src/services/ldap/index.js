@@ -303,7 +303,7 @@ module.exports = function() {
 		 * Register methods of the service to listen to events of other services
 		 */
 		_registerEventListeners() {
-			this.app.on('teams:after:usersChanged', (hook) => {
+			app.on('teams:after:usersChanged', (hook) => {
 				const team = ((hook || {}).additionalInfosTeam || {}).team;
 				const changes = ((hook || {}).additionalInfosTeam || {}).changes;
 				if (changes) {
