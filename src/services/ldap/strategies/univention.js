@@ -130,7 +130,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
                     response, status, retries, timeout
                 });
             } else {
-                this._emitStatus('ldap:update_user_groups:success');
+                this._emitStatus('ldap:update_user_groups:timeout');
             }
         }
     }

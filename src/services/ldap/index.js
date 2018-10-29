@@ -204,8 +204,8 @@ module.exports = function() {
 
 		/**
 		 * generate an LDAP group object from a team
-		 * @param {Team} team
-		 * @return {LDAPGroup}
+		 * @param {Team} team a team object
+		 * @return {LDAPGroup} LDAP group object
 		 */
 		_teamToGroup(team) {
 			return {
@@ -246,25 +246,23 @@ module.exports = function() {
 		 * users and their corresponding login systems or rejects with error
 		 */
 		_populateUsersAndSystems(userIds) {
-			return Promise.all(userIds.map(userId => {
-				return this.app.service('users').get(userId);
-			}))
-			.then(users => {
-				return users.map(user => {
-					return this.app.service('accounts').find({
-						query: { userId: user._id }
-					})
-					.then(accounts => {
-						if (accounts.total >= 1) {
-							return Promise.all(accounts.map(account =>
-								this.app.service('systems').get(account.systemId)
-							));
-						}
-						return Promise.reject('No account found for user', user);
-					})
-					.then(systems => {
-						return {user, systems};
-					});
+			return app.service('accounts').find({
+				query: {
+					userId: { $in: userIds },
+					$populate: ['systemId', 'userId']
+				}
+			})
+			.then(accounts => {
+				// the LDAP service should only attempt to change LDAP users
+				return Promise.resolve(accounts.filter(account =>
+					account.systemId &&
+					account.systemId.type === 'ldap' &&
+					account.systemId.ldapConfig
+				));
+			})
+			.then(accounts => {
+				return accounts.map(account => {
+					return { user: account.userId, system: account.systemId };
 				});
 			});
 		}
@@ -281,16 +279,11 @@ module.exports = function() {
 			if (userIds && userIds.length > 0) {
 				this._populateUsersAndSystems(userIds)
 				.then(pairs => {
-					pairs.forEach(({user, systems}) => {
-						systems.forEach(system => {
-							if (system.type === 'ldap' && system.ldapConfig) {
-								// the LDAP service should only listen to changes which involve LDAP users
-								method(system.ldapConfig, user, team)
-									.catch(error => {
-										logger.error(error);
-									});
-							}
-						});
+					pairs.forEach(({user, system}) => {
+						method.apply(this, [system.ldapConfig, user, team])
+							.catch(error => {
+								logger.error(error);
+							});
 					});
 				})
 				.catch(error => {
@@ -307,8 +300,8 @@ module.exports = function() {
 				const team = ((hook || {}).additionalInfosTeam || {}).team;
 				const changes = ((hook || {}).additionalInfosTeam || {}).changes;
 				if (changes) {
-					this._updateTeams(changes.add, team, this.addUserToTeam);
-					this._updateTeams(changes.remove, team, this.removeUserFromTeam);
+					this._updateTeam(changes.add, team, this.addUserToTeam);
+					this._updateTeam(changes.remove, team, this.removeUserFromTeam);
 				}
 			});
 		}
