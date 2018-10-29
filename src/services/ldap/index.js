@@ -1,5 +1,6 @@
 const ldap = require('ldapjs');
 const errors = require('feathers-errors');
+const logger = require('winston');
 
 const getLDAPStrategy = require('./strategies');
 
@@ -13,6 +14,7 @@ module.exports = function() {
 
 		constructor() {
 			this.clients = {};
+			this._registerEventListeners();
 		}
 
 		find(params) {
@@ -215,8 +217,8 @@ module.exports = function() {
 		/**
 		 * add a user to a given team
 		 * @param {LdapConfig} config
-		 * @param {User}
-		 * @param {Team}
+		 * @param {User} user
+		 * @param {Team} team
 		 * @return {Promise} resolves with undefined value or rejects with error
 		 */
 		addUserToTeam(config, user, team) {
@@ -227,13 +229,88 @@ module.exports = function() {
 		/**
 		 * remove a user from a given team
 		 * @param {LdapConfig} config
-		 * @param {User}
-		 * @param {Team}
+		 * @param {User} user
+		 * @param {Team} team
 		 * @return {Promise} resolves with undefined value or rejects with error
 		 */
 		removeUserFromTeam(config, user, team) {
 			const group = this._teamToGroup(team);
 			return getLDAPStrategy(app, config).removeUserFromGroup(user, group);
+		}
+
+		/**
+		 * Populate an array of user ids with the corresponding user object and
+		 * login systems for each id
+		 * @param {userIds} userIds an array of user ids
+		 * @returns {Promise} resolves with an array of pairs {user, systems} of
+		 * users and their corresponding login systems or rejects with error
+		 */
+		_populateUsersAndSystems(userIds) {
+			return Promise.all(userIds.map(userId => {
+				return this.app.service('users').get(userId);
+			}))
+			.then(users => {
+				return users.map(user => {
+					return this.app.service('accounts').find({
+						query: { userId: user._id }
+					})
+					.then(accounts => {
+						if (accounts.total >= 1) {
+							return Promise.all(accounts.map(account =>
+								this.app.service('systems').get(account.systemId)
+							));
+						}
+						return Promise.reject('No account found for user', user);
+					})
+					.then(systems => {
+						return {user, systems};
+					});
+				});
+			});
+		}
+
+		/**
+		 * Update a given team: call `method` with `ldapConfig`, `user`, and
+		 * `team` populated from arguments.
+		 * @param {userIds} userIds an array of user ids
+		 * @param {Team} team a team
+		 * @param {function(config, user, team)} method a function taking LDAP
+		 * config, user object, and team object as arguments
+		 */
+		_updateTeam(userIds, team, method) {
+			if (userIds && userIds.length > 0) {
+				this._populateUsersAndSystems(userIds)
+				.then(pairs => {
+					pairs.forEach(({user, systems}) => {
+						systems.forEach(system => {
+							if (system.type === 'ldap' && system.ldapConfig) {
+								// the LDAP service should only listen to changes which involve LDAP users
+								method(system.ldapConfig, user, team)
+									.catch(error => {
+										logger.error(error);
+									});
+							}
+						});
+					});
+				})
+				.catch(error => {
+					logger.error('LDAP Service: Unable to populate users', error);
+				});
+			}
+		}
+
+		/**
+		 * Register methods of the service to listen to events of other services
+		 */
+		_registerEventListeners() {
+			this.app.on('teams:after:usersChanged', (hook) => {
+				const team = ((hook || {}).additionalInfosTeam || {}).team;
+				const changes = ((hook || {}).additionalInfosTeam || {}).changes;
+				if (changes) {
+					this._updateTeams(changes.add, team, this.addUserToTeam);
+					this._updateTeams(changes.remove, team, this.removeUserFromTeam);
+				}
+			});
 		}
 
 	}
