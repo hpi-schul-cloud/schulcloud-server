@@ -7,9 +7,8 @@ const AbstractLDAPStrategy = require('./interface.js');
  * @implements {AbstractLDAPStrategy}
  */
 class UniventionLDAPStrategy extends AbstractLDAPStrategy {
-	constructor(config) {
-        super();
-        this.config = config;
+	constructor(app, config) {
+        super(app, config);
     }
 
     getSchoolsQuery() {
@@ -76,15 +75,24 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
     }
 
     _updateUserGroups(user, groups, method='create') {
+        const options = this._getRequestOptions({
+            uri: this.config.importUrl || process.env.NBC_IMPORTURL,
+            method: 'POST',
+            formData: this._generateGroupUpdateFormData(user, groups, method),
+        });
+        return request(options).then(response => {
+            this._scheduleResponseCheck(response);
+            return response;
+        });
+    }
+
+    _getRequestOptions(overrides) {
         const username = this.config.importUser || process.env.NBC_IMPORTUSER;
         const password = this.config.importUserPw || process.env.NBC_IMPORTPASSWORD;
         const auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64');
         const REQUEST_TIMEOUT = 8000;
 
         const options = {
-            uri: this.config.importUrl || process.env.NBC_IMPORTURL,
-            method: 'POST',
-            formData: this._generateGroupUpdateFormData(user, groups, method),
             headers: {
                 'content-type': 'multipart/form-data',
                 'Authorization' : auth,
@@ -92,9 +100,39 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
             json: true,
             timeout: REQUEST_TIMEOUT
         };
-        return request(options).then(message => {
-            return message;
-        });
+        return Object.assign(options, overrides);
+    }
+
+    _emitStatus(event, data={}) {
+        this.app.emit(event, data);
+    }
+
+    _scheduleResponseCheck(response, timeout=2000, retries=5) {
+        const status = (response.status || '').toLowerCase();
+        if (status === 'finished') {
+            this._emitStatus('ldap:update_user_groups:success');
+            return;
+        }
+        const abort = status === 'failure' || status === 'aborted';
+        if (retries >= 0 && !abort) {
+            setTimeout(() => {
+                const options = this._getRequestOptions({
+                    uri: response.url,
+                    method: 'GET'
+                });
+                request(options).then(res => {
+                    this._scheduleResponseCheck(res, timeout * 4, retries - 1);
+                });
+            }, timeout);
+        } else {
+            if (abort) {
+                this._emitStatus('ldap:update_user_groups:failed', {
+                    response, status, retries, timeout
+                });
+            } else {
+                this._emitStatus('ldap:update_user_groups:success');
+            }
+        }
     }
 }
 

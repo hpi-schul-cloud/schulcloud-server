@@ -4,6 +4,7 @@ const errors = require('feathers-errors');
 const getLDAPStrategy = require('./strategies');
 
 module.exports = function() {
+	const app = this;
 
 	/**
 	 * A service to communicate with LDAP servers.
@@ -171,7 +172,7 @@ module.exports = function() {
 		 * rejects with error
 		 */
 		getSchools(config) {
-			const {searchString, options} = getLDAPStrategy(config).getSchoolsQuery();
+			const {searchString, options} = getLDAPStrategy(app, config).getSchoolsQuery();
 			return this.searchCollection(config, searchString, options);
 		}
 
@@ -183,7 +184,7 @@ module.exports = function() {
 		 * with error
 		 */
 		getUsers(config, school) {
-			const {searchString, options} = getLDAPStrategy(config).getUsersQuery(school);
+			const {searchString, options} = getLDAPStrategy(app, config).getUsersQuery(school);
 			return this.searchCollection(config, searchString, options);
 		}
 
@@ -195,7 +196,7 @@ module.exports = function() {
 		 * with error
 		 */
 		getClasses(config, school) {
-			const {searchString, options} = getLDAPStrategy(config).getClassesQuery(school);
+			const {searchString, options} = getLDAPStrategy(app, config).getClassesQuery(school);
 			return this.searchCollection(config, searchString, options);
 		}
 
@@ -216,11 +217,11 @@ module.exports = function() {
 		 * @param {LdapConfig} config
 		 * @param {User}
 		 * @param {Team}
-		 * @return {Promise} resolves with undefined value rejects with error
+		 * @return {Promise} resolves with undefined value or rejects with error
 		 */
 		addUserToTeam(config, user, team) {
 			const group = this._teamToGroup(team);
-			return getLDAPStrategy(config).addUserToGroup(user, group);
+			return getLDAPStrategy(app, config).addUserToGroup(user, group);
 		}
 
 		/**
@@ -228,15 +229,14 @@ module.exports = function() {
 		 * @param {LdapConfig} config
 		 * @param {User}
 		 * @param {Team}
-		 * @return {Promise} resolves with undefined value rejects with error
+		 * @return {Promise} resolves with undefined value or rejects with error
 		 */
 		removeUserFromTeam(config, user, team) {
 			const group = this._teamToGroup(team);
-			return getLDAPStrategy(config).removeUserFromGroup(user, group);
+			return getLDAPStrategy(app, config).removeUserFromGroup(user, group);
 		}
 
 	}
 
-	const app = this;
 	app.use('/ldap', new LdapService());
 };

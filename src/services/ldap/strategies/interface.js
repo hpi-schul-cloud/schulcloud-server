@@ -19,13 +19,17 @@ class AbstractLDAPStrategy {
 
     /**
      * @abstract
+     * @param {App} app
      * @param {LDAPConfig} config
      */
-    constructor(config) {
-		if (new.target === AbstractLDAPStrategy) {
+    constructor(app, config) {
+        if (new.target === AbstractLDAPStrategy) {
             throw new TypeError(`Cannot construct AbstractLDAPStrategy
                 instances directly.`);
-		}
+        }
+
+        this.app = app;
+        this.config = config;
     }
 
     /**
