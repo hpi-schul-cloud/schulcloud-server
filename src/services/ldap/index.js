@@ -9,6 +9,10 @@ module.exports = function() {
 
 	/**
 	 * A service to communicate with LDAP servers.
+	 *
+	 * This service bundles common methods. Provider-specific functionality is
+	 * delegated to strategies implementing a common interface (see
+	 * `./strategies/interface.js`).
 	 */
 	class LdapService {
 
@@ -21,14 +25,20 @@ module.exports = function() {
 
 		}
 
+		/**
+		 * Add client to the list of clients. There should be only one client
+		 * for each config necessary.
+		 * @param {ldapConfig} config the ldapConfig
+		 * @param {LDAPClient} client the client
+		 */
 		_addClient(config, client) {
 			this.clients[config._id] = client;
 		}
 
 		/**
-		 * connect or get a reference to an existing connection
-		 * @param {LdapConfig} config
-		 * @return {LDAPClient}
+		 * Connect or get a reference to an existing connection
+		 * @param {LdapConfig} config the ldapConfig
+		 * @return {Promise} resolves with LDAPClient or rejects with error
 		 */
 		_getClient(config) {
 			let client = this.clients[config._id];
@@ -43,11 +53,11 @@ module.exports = function() {
 		}
 
 		/**
-		 * connect to an LDAP server using a search user in the configured root
+		 * Connect to an LDAP server using a search user in the configured root
 		 * path
-		 * @param {LdapConfig} config
-		 * @param {String} username
-		 * @param {String} password
+		 * @param {LdapConfig} config the ldapConfig
+		 * @param {String} username the search user's username
+		 * @param {String} password the search user's password
 		 * @return {Promise} resolves with LDAPClient on successful connection,
 		 * rejects with error otherwise
 		 */
@@ -74,9 +84,9 @@ module.exports = function() {
 		}
 
 		/**
-		 * close an established connection to a server identified by an LDAP
+		 * Close an established connection to a server identified by an LDAP
 		 * config
-		 * @param {LdapConfig} config
+		 * @param {LdapConfig} config the ldapConfig
 		 * @return {Promise} resolves if successfully disconnected, otherwise
 		 * rejects with error
 		 */
@@ -95,14 +105,14 @@ module.exports = function() {
 		}
 
 		/**
-		 * authenticate a user via the LDAP server identified by the LDAP config
+		 * Authenticate a user via the LDAP server identified by the LDAP config
 		 * asociated with the login system
-		 * @param {System} system
-		 * @param {String} qualifiedUsername - the fully qualified username,
+		 * @param {System} system the login system object
+		 * @param {String} qualifiedUsername the fully qualified username,
 		 * including root path, ou, dn, etc.
-		 * @param {String} password
-		 * @return {Promise} resolves if successfully logged in, otherwise
-		 * rejects with error
+		 * @param {String} password the password
+		 * @return {Promise} resolves with LDAP user object if successfully
+		 * logged in, otherwise rejects with error
 		 */
 		authenticate(system, qualifiedUsername, password) {
 			const config = system.ldapConfig;
@@ -113,16 +123,16 @@ module.exports = function() {
 						scope: 'sub',
 						attributes: []
 					};
-					const searchString = `${qualifiedUsername}`;
-					return this.searchObject(config, searchString, options);
+					return this.searchObject(config, qualifiedUsername, options);
 				});
 		}
 
 		/**
-		 * returns all LDAP objects matching the given search string and options
-		 * @param {LdapConfig} config
-		 * @param {String} searchString
-		 * @param {Object} options
+		 * Returns all LDAP objects matching the given search string and options
+		 * @param {LdapConfig} config the ldapConfig
+		 * @param {String} searchString the search string
+		 * @param {Object} options search options (scope, filter, attributes,
+		 * ...), see `http://ldapjs.org/client.html#search` for details
 		 * @return {Promise[Array[Object]]} resolves with array of objects
 		 * matching the query, rejects with error otherwise
 		 */
@@ -150,10 +160,11 @@ module.exports = function() {
 		}
 
 		/**
-		 * returns first LDAP object matching the given search string and options
-		 * @param {LdapConfig} config
-		 * @param {String} searchString
-		 * @param {Object} options
+		 * Returns first LDAP object matching the given search string and options
+		 * @see searchCollection
+		 * @param {LdapConfig} config the ldapConfig
+		 * @param {String} searchString the search string
+		 * @param {Object} options search options
 		 * @return {Promise[Object]} resolves with object matching the query,
 		 * rejects with error otherwise
 		 */
@@ -168,8 +179,8 @@ module.exports = function() {
 		}
 
 		/**
-		 * returns all schools on the LDAP server
-		 * @param {LdapConfig} config
+		 * Returns all schools on the LDAP server
+		 * @param {LdapConfig} config the ldapConfig
 		 * @return {Promise[Array[Object]]} resolves with all school objects or
 		 * rejects with error
 		 */
@@ -179,9 +190,9 @@ module.exports = function() {
 		}
 
 		/**
-		 * returns all users at a school on the LDAP server
-		 * @param {LdapConfig} config
-		 * @param {School} school
+		 * Returns all users at a school on the LDAP server
+		 * @param {LdapConfig} config the ldapConfig
+		 * @param {School} school the school object
 		 * @return {Promise[Object]} resolves with all user objects or rejects
 		 * with error
 		 */
@@ -191,9 +202,9 @@ module.exports = function() {
 		}
 
 		/**
-		 * returns all classes at a school on the LDAP server
-		 * @param {LdapConfig} config
-		 * @param {School} school
+		 * Returns all classes at a school on the LDAP server
+		 * @param {LdapConfig} config the ldapConfig
+		 * @param {School} school the school object
 		 * @return {Promise[Object]} resolves with all class objects or rejects
 		 * with error
 		 */
@@ -203,8 +214,8 @@ module.exports = function() {
 		}
 
 		/**
-		 * generate an LDAP group object from a team
-		 * @param {Team} team a team object
+		 * Generate an LDAP group object from a team
+		 * @param {Team} team the team object
 		 * @return {LDAPGroup} LDAP group object
 		 */
 		_teamToGroup(team) {
@@ -215,11 +226,12 @@ module.exports = function() {
 		}
 
 		/**
-		 * add a user to a given team
-		 * @param {LdapConfig} config
-		 * @param {User} user
-		 * @param {Team} team
+		 * Add a user to a given team
+		 * @param {LdapConfig} config the ldapConfig
+		 * @param {User} user the user object
+		 * @param {Team} team the team object
 		 * @return {Promise} resolves with undefined value or rejects with error
+		 * @see removeUserFromTeam
 		 */
 		addUserToTeam(config, user, team) {
 			const group = this._teamToGroup(team);
@@ -227,11 +239,12 @@ module.exports = function() {
 		}
 
 		/**
-		 * remove a user from a given team
-		 * @param {LdapConfig} config
-		 * @param {User} user
-		 * @param {Team} team
+		 * Remove a user from a given team
+		 * @param {LdapConfig} config the ldapConfig
+		 * @param {User} user the user object
+		 * @param {Team} team the team object
 		 * @return {Promise} resolves with undefined value or rejects with error
+		 * @see addUserToTeam
 		 */
 		removeUserFromTeam(config, user, team) {
 			const group = this._teamToGroup(team);
@@ -242,8 +255,8 @@ module.exports = function() {
 		 * Populate an array of user ids with the corresponding user object and
 		 * login systems for each id
 		 * @param {userIds} userIds an array of user ids
-		 * @returns {Promise} resolves with an array of pairs {user, systems} of
-		 * users and their corresponding login systems or rejects with error
+		 * @returns {Promise} resolves with an array of pairs {user, system} of
+		 * LDAP users and their corresponding login system (contains ldapConfig)
 		 */
 		_populateUsersAndSystems(userIds) {
 			return app.service('accounts').find({
@@ -271,9 +284,11 @@ module.exports = function() {
 		 * Update a given team: call `method` with `ldapConfig`, `user`, and
 		 * `team` populated from arguments.
 		 * @param {userIds} userIds an array of user ids
-		 * @param {Team} team a team
+		 * @param {Team} team a team object
 		 * @param {function(config, user, team)} method a function taking LDAP
 		 * config, user object, and team object as arguments
+		 * @see addUserToTeam
+		 * @see removeUserFromTeam
 		 */
 		_updateTeam(userIds, team, method) {
 			if (userIds && userIds.length > 0) {
@@ -293,17 +308,25 @@ module.exports = function() {
 		}
 
 		/**
+		 * React to event published by the Team service when users are added or
+		 * removed to a team.
+		 * @param {Object} context event context given by the Team service
+		 */
+		_onTeamUsersChanged(context) {
+			const team = ((context || {}).additionalInfosTeam || {}).team;
+			const changes = ((context || {}).additionalInfosTeam || {}).changes;
+			if (changes) {
+				this._updateTeam(changes.add, team, this.addUserToTeam);
+				this._updateTeam(changes.remove, team, this.removeUserFromTeam);
+			}
+		}
+
+		/**
 		 * Register methods of the service to listen to events of other services
+		 * @listens teams:after:usersChanged
 		 */
 		_registerEventListeners() {
-			app.on('teams:after:usersChanged', (hook) => {
-				const team = ((hook || {}).additionalInfosTeam || {}).team;
-				const changes = ((hook || {}).additionalInfosTeam || {}).changes;
-				if (changes) {
-					this._updateTeam(changes.add, team, this.addUserToTeam);
-					this._updateTeam(changes.remove, team, this.removeUserFromTeam);
-				}
-			});
+			app.on('teams:after:usersChanged', this._onTeamUsersChanged);
 		}
 
 	}
