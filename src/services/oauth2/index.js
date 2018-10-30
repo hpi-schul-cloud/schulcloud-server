@@ -23,6 +23,7 @@ module.exports = function() {
 
 	// check Hydra Health
 	const healthApiInstance = new Hydra.HealthApi();
+	//console.log(healthApiInstance.getInstanceStatus());
 	healthApiInstance.isInstanceAlive((error, data, response) => {
 		if (error) {
 			logger.log('warn', 'Hydra got a problem: ' + error);
@@ -44,7 +45,7 @@ module.exports = function() {
 		},
 
 		create (data) {
-			data.scope = data.scope || 'openid,offline';
+			data.scope = data.scope || 'openid offline';
 			data.grant_types = data.grant_types || ['authorization_code' ,'refresh_token'];
 			data.response_types = data.response_types || ['code', 'token', 'id_token'];
 			data.redirect_uris = data.redirect_uris || [];
@@ -56,6 +57,69 @@ module.exports = function() {
 					}
 					else resolve(data);
 				});
+			});
+		},
+
+		remove (id, params) {
+			return new Promise((resolve, reject) => {
+				oAuth2ApiInstance.deleteOAuth2Client(id, (error, data, response) => {
+					if (error) reject(error);
+					else resolve(data);
+				});
+			});
+		}
+	});
+
+	app.use('/oauth2/loginRequest', {
+		get (challenge) {
+			return new Promise((resolve, reject) => {
+				oAuth2ApiInstance.getLoginRequest(challenge, (error, data, response) => {
+					if (error) reject(error);
+					else resolve(data);
+				});
+			});
+		},
+
+		patch (challenge, data, params) {
+			const opts = {
+				body: new Hydra.AcceptLoginRequest()
+			};
+
+			return new Promise((resolve, reject) => {
+				opts.body.subject = data.subject;
+				opts.body.remember = data.remember;
+				opts.body.remember_for = data.remember_for;
+				if (params.query.accept) {
+					oAuth2ApiInstance.acceptLoginRequest(challenge, opts, (error, data, response) => {
+						if (error) reject(error);
+						else resolve(data);
+					});
+				} else if (params.query.reject) {
+					oAuth2ApiInstance.rejectLoginRequest(challenge, opts, (error, data, response) => {
+						if (error) reject(error);
+						else resolve(data);
+					});
+				}
+			});
+		}
+	});
+
+	app.use('/oauth2/consentRequest', {
+		get (challenge) {
+			return new Promise((resolve, reject) => {
+				oAuth2ApiInstance.getConsentRequest(challenge, (error, data, response) => {
+					if (error) reject(error);
+					else resolve(data);
+				});
+			});
+		},
+
+		patch (challenge, data, params) {
+			return new Promise((resolve, reject) => {
+				oAuth2ApiInstance.acceptConsentRequest(challenge, {body: {grantScopes: data.grantScopes}}, (error, data, response) => {
+					if (error) reject(error);
+					else resolve(data);
+				})
 			});
 		}
 	});
