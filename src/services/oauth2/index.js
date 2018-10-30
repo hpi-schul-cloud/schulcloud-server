@@ -1,17 +1,15 @@
-// const hooks = require("./hooks");
-const Hydra = require('ory-hydra-sdk')
-// const OAuth2 = require('simple-oauth2')
-const qs = require('querystring')
+// const hooks = require("./hooks"); // TODO: oauth permissions
+const Hydra = require('ory-hydra-sdk');
 const logger = require('winston');
 
-// const resolver = (resolve, reject) => (error, data, response) => {
-// 	if (error) {
-// 		return reject(error)
-// 	} else if (response.statusCode < 200 || response.statusCode >= 400) {
-// 		return reject(new Error('Consent endpoint gave status code ' + response.statusCode + ', but status code 200 was expected.'))
-// 	}
-// 	resolve(data)
-// }
+const resolver = (resolve, reject) => (error, data, response) => {
+	if (error)
+		reject(error);
+	else if (response.statusCode < 200 || response.statusCode >= 400)
+		reject(new Error('Endpoint gave status code ' + response.statusCode));
+	else
+		resolve(data);
+};
 
 module.exports = function() {
 	const app = this;
@@ -23,7 +21,6 @@ module.exports = function() {
 
 	// check Hydra Health
 	const healthApiInstance = new Hydra.HealthApi();
-	//console.log(healthApiInstance.getInstanceStatus());
 	healthApiInstance.isInstanceAlive((error, data, response) => {
 		if (error) {
 			logger.log('warn', 'Hydra got a problem: ' + error);
@@ -37,35 +34,21 @@ module.exports = function() {
 	app.use('/oauth2/clients', {
 		find (params) {
 			return new Promise((resolve, reject) => {
-				oAuth2ApiInstance.listOAuth2Clients(params, (error, data, response) => {
-					if (error) reject(error);
-					else resolve(data);
-				});
+				oAuth2ApiInstance.listOAuth2Clients(params, resolver(resolve, reject));
 			});
 		},
-
 		create (data) {
 			data.scope = data.scope || 'openid offline';
 			data.grant_types = data.grant_types || ['authorization_code' ,'refresh_token'];
 			data.response_types = data.response_types || ['code', 'token', 'id_token'];
 			data.redirect_uris = data.redirect_uris || [];
 			return new Promise((resolve, reject) => {
-				oAuth2ApiInstance.createOAuth2Client(data, (error, data, response) => {
-					if (error) {
-						if (error.status === 409) resolve(response.text)
-						else reject(error);
-					}
-					else resolve(data);
-				});
+				oAuth2ApiInstance.createOAuth2Client(data, resolver(resolve, reject));
 			});
 		},
-
-		remove (id, params) {
+		remove (id) {
 			return new Promise((resolve, reject) => {
-				oAuth2ApiInstance.deleteOAuth2Client(id, (error, data, response) => {
-					if (error) reject(error);
-					else resolve(data);
-				});
+				oAuth2ApiInstance.deleteOAuth2Client(id, resolver(resolve, reject));
 			});
 		}
 	});
@@ -73,32 +56,15 @@ module.exports = function() {
 	app.use('/oauth2/loginRequest', {
 		get (challenge) {
 			return new Promise((resolve, reject) => {
-				oAuth2ApiInstance.getLoginRequest(challenge, (error, data, response) => {
-					if (error) reject(error);
-					else resolve(data);
-				});
+				oAuth2ApiInstance.getLoginRequest(challenge, resolver(resolve, reject));
 			});
 		},
-
-		patch (challenge, data, params) {
-			const opts = {
-				body: new Hydra.AcceptLoginRequest()
-			};
-
+		patch (challenge, body, params) {
 			return new Promise((resolve, reject) => {
-				opts.body.subject = data.subject;
-				opts.body.remember = data.remember;
-				opts.body.remember_for = data.remember_for;
 				if (params.query.accept) {
-					oAuth2ApiInstance.acceptLoginRequest(challenge, opts, (error, data, response) => {
-						if (error) reject(error);
-						else resolve(data);
-					});
+					oAuth2ApiInstance.acceptLoginRequest(challenge, {body}, resolver(resolve, reject));
 				} else if (params.query.reject) {
-					oAuth2ApiInstance.rejectLoginRequest(challenge, opts, (error, data, response) => {
-						if (error) reject(error);
-						else resolve(data);
-					});
+					oAuth2ApiInstance.rejectLoginRequest(challenge, {body}, resolver(resolve, reject));
 				}
 			});
 		}
@@ -107,19 +73,17 @@ module.exports = function() {
 	app.use('/oauth2/consentRequest', {
 		get (challenge) {
 			return new Promise((resolve, reject) => {
-				oAuth2ApiInstance.getConsentRequest(challenge, (error, data, response) => {
-					if (error) reject(error);
-					else resolve(data);
-				});
+				oAuth2ApiInstance.getConsentRequest(challenge, resolver(resolve, reject));
 			});
 		},
-
-		patch (challenge, data, params) {
+		patch (challenge, body, params) {
 			return new Promise((resolve, reject) => {
-				oAuth2ApiInstance.acceptConsentRequest(challenge, {body: {grantScopes: data.grantScopes}}, (error, data, response) => {
-					if (error) reject(error);
-					else resolve(data);
-				})
+				if (params.query.accept) {
+					oAuth2ApiInstance.acceptConsentRequest(challenge, {body}, resolver(resolve, reject))
+				} else if (params.query.reject) {
+					oAuth2ApiInstance.rejectLoginRequest(challenge, {body}, resolver(resolve, reject));
+				}
+
 			});
 		}
 	});
