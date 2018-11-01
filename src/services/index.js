@@ -27,6 +27,7 @@ const socket = require('./socket');
 const pseudonym = require("./pseudonym");
 const consent = require('./consent');
 const oauth2 = require('./oauth2');
+const roster = require('./roster')
 
 const mongoose = require('mongoose');
 
@@ -63,4 +64,5 @@ module.exports = function () {
     app.configure(pseudonym);
     app.configure(consent);
     app.configure(oauth2);
+	app.configure(roster);
 };

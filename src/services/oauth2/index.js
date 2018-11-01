@@ -1,4 +1,5 @@
-// const hooks = require("./hooks"); // TODO: oauth permissions
+const auth = require('feathers-authentication');
+const hooks = require("./hooks"); // TODO: oauth permissions
 const Hydra = require('ory-hydra-sdk');
 const logger = require('winston');
 
@@ -38,6 +39,7 @@ module.exports = function() {
 			});
 		},
 		create (data) {
+			data.subject_type = 'pairwise';
 			data.scope = data.scope || 'openid offline';
 			data.grant_types = data.grant_types || ['authorization_code' ,'refresh_token'];
 			data.response_types = data.response_types || ['code', 'token', 'id_token'];
@@ -70,6 +72,13 @@ module.exports = function() {
 		}
 	});
 
+	app.service('/oauth2/loginRequest').before({
+		patch: [
+			auth.hooks.authenticate('jwt'),
+			hooks.setSubject
+		]
+	})
+
 	app.use('/oauth2/consentRequest', {
 		get (challenge) {
 			return new Promise((resolve, reject) => {
@@ -84,6 +93,14 @@ module.exports = function() {
 					oAuth2ApiInstance.rejectLoginRequest(challenge, {body}, resolver(resolve, reject));
 				}
 
+			});
+		}
+	});
+
+	app.use('/oauth2/introspect', {
+		create (data) {
+			return new Promise((resolve, reject) => {
+				oAuth2ApiInstance.introspectOAuth2Token(data.token, {scope: 'openid'}, resolver(resolve, reject));
 			});
 		}
 	});
