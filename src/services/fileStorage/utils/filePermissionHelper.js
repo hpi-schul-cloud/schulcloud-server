@@ -18,7 +18,7 @@ const checkPermissions = (permission) => {
 		
 		// return always true for owner of file
 		// or legacy course model
-		if( user === owner || refOwnerModel === 'course' ) {
+		if( user.toString() === owner.toString() || refOwnerModel === 'course' ) {
 			return Promise.resolve();
 		}
 		
