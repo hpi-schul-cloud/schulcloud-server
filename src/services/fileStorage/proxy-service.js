@@ -1,5 +1,4 @@
 'use strict';
-
 const { before, after } = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
 const errors = require('feathers-errors');
@@ -83,9 +82,9 @@ const fileStorageService = {
 	find({ query, payload }) {
 		const { owner, parent } = query;
 		const { userId } = payload;
-
+	
 		return FileModel.find({ owner, parent: parent || { $exists: false }}).exec()
-			.then(files => {
+			.then(files => {				
 				const permissionPromises = files.map(f => {
 					return canRead(userId, f)
 						.then(() => f)
@@ -119,28 +118,23 @@ const fileStorageService = {
 	 * @param id, the file-id in the proxy-db
 	 * @param data, contains fileName, path and destination. Path and destination have to have a slash at the end!
 	 */
-	patch(id, data, params) {
-		let fileName = data.fileName;
-		let path = data.path;
-		let destination = data.destination;
+	async patch(_id, data, params) {
+		const { payload: { userId } } = params;
+		const { parent } = data;
 
-		if (!id || !fileName || !path || !destination) return Promise.reject(new errors.BadRequest('Missing parameters'));
-
-		let userId = params.payload.userId;
-		return checkPermissions(userId, path + fileName)
-			.then(_ => {
-				// check destination permissions
-				return checkPermissions(userId, destination + fileName)
-					.then(_ => {
-						// patch file direction in proxy db
-						return FileModel.update({_id: id,}, {
-							$set: {
-								key: destination + fileName,
-								path: destination
-							}
-						}).exec();
-					});
-			});
+		const { owner, refOwnerModel } = await FileModel.findOne({ _id: parent}).exec();
+		
+		return canWrite(userId, parent)
+			.then(() => {
+				return FileModel.update({ _id }, {
+					$set: { 
+						parent,
+						owner,
+						refOwnerModel
+					}
+				}).exec();				
+			})
+			.catch(() => new errors.Forbidden());
 	},
 };
 
@@ -162,7 +156,7 @@ const signedUrlService = {
 		return parentPromise.then(res => {
 
 			const flatFileName = generateFlatFileName(filename);
-			const permissionPromise = parent ? canCreate(userId, res._id) : Promise.resolve({});
+			const permissionPromise = parent ? canCreate(userId, parent) : Promise.resolve({});
 			
 			return permissionPromise.then(() => {
 
@@ -231,6 +225,31 @@ const directoryService = {
 
 		return FileModel.findOne(props).exec().then(data => data ? Promise.resolve(data) : FileModel.create(props));
 	},
+
+	/**
+	 * @returns {Promise}
+	 * @param query contains the file path
+	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
+	 */
+	find({ query, payload }) {
+		const { parent } = query;
+		const { userId } = payload;
+
+		const params = sanitizeObj({ 
+			isDirectory: true, 
+			parent: parent || { $exists: false } 
+		});		
+
+		return FileModel.find(params).exec()
+			.then(files => {
+				const permissionPromises = files.map(f => {
+					return canRead(userId, f)
+						.then(() => f)
+						.catch(() => undefined);
+				});
+				return Promise.all(permissionPromises);
+			});
+	},	
 
 	/**
 	 * @param id, params
