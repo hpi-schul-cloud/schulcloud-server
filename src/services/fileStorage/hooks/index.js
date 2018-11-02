@@ -7,6 +7,7 @@ const resolveUserId = (hook) => {
 	// local workaround if authentication is disabled
 	hook.params.payload = hook.params.payload || hook.data.userPayload;
 	hook.params.account = hook.params.account || hook.data.account;
+	hook.params.payload.userId = hook.params.account.userId || '';
 	return hook;
 };
 
