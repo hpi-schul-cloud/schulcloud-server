@@ -180,8 +180,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	deleteFile(userId, path) {
-		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
+	deleteFile(userId, filename) {
+		if (!userId || !filename) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return UserModel.userModel.findById(userId).exec()
 			.then(result => {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
@@ -191,7 +191,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					Delete: {
 						Objects: [
 							{
-								Key: removeLeadingSlash(path)
+								Key: filename
 							}
 						],
 						Quiet: true
@@ -201,24 +201,19 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	generateSignedUrl(userId, path, fileType, action, externalSchoolId, download) {
-		if (!userId || !path || !action || (action === 'putObject' && !fileType)) return Promise.reject(new errors.BadRequest('Missing parameters'));
+	generateSignedUrl({userId, flatFileName, fileType}) {
+		if (!userId || !flatFileName || !fileType) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return UserModel.userModel.findById(userId).exec().then(result => {
 			if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
-			let schoolId = externalSchoolId || result.schoolId;
-
-			const awsObject = createAWSObject(schoolId);
+			const awsObject = createAWSObject(result.schoolId);
 			let params = {
 				Bucket: awsObject.bucket,
-				Key: path,
+				Key: flatFileName,
 				Expires: 60
 			};
-
-			if(download) params["ResponseContentDisposition"] = 'attachment';
-			if (action === 'putObject') params.ContentType = fileType;
-
-			return promisify(awsObject.s3.getSignedUrl, awsObject.s3)(action, params);
+						
+			return promisify(awsObject.s3.getSignedUrl, awsObject.s3)('putObject', params);
 		});
 	}
 
