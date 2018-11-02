@@ -1,16 +1,21 @@
 'use strict';
-const { posix: pathUtil } = require('path');
+
 const { before, after } = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
 const errors = require('feathers-errors');
 const swaggerDocs = require('./docs/');
-const filePermissionHelper = require('./utils/filePermissionHelper');
+const {
+	checkPermissions,
+	canWrite,
+	canRead,
+	canCreate,
+	canDelete,
+} = require('./utils/filePermissionHelper');
 const {
 	removeLeadingSlash,
 	generateFileNameSuffix: generateFlatFileName } = require('./utils/filePathHelper');
 const FileModel = require('./model');
-const DirectoryModel = FileModel;
-const LessonModel = require('../lesson/model');
+const { courseModel } = require('../user-group/model');
 
 const strategies = {
 	awsS3: AWSStrategy
@@ -22,126 +27,91 @@ const createCorrectStrategy = (fileStorageType) => {
 	return new strategy();
 };
 
-/** find all files in deleted (virtual) directory with regex (also nested) **/
-const deleteAllFilesInDirectory = (path, fileStorageType, userId) => {
-	return FileModel.find({path: {$regex : "^" + path}}).exec()
-		.then(files => {
-			// delete virtual and referenced real files
-			return Promise.all(
-				files.map(f => {
-					return FileModel.findOne({_id: f._id}).remove().exec()
-						.then(_ => {
-							return createCorrectStrategy(fileStorageType).deleteFile(userId, f.flatFileName);
-						});
-				}));
-		});
-};
-
-/** find all sub directories in deleted (virtual) directory with regex (also nested) **/
-const deleteAllSubDirectories = (path) => {
-	return DirectoryModel.find({path: {$regex : "^" + path}}).exec()
-		.then(directories => {
-			// delete virtual and referenced real files
-			return Promise.all(
-				directories.map(f => {
-					return DirectoryModel.findOne({_id: f._id}).remove().exec();
-				}));
-		});
-};
-
-/** find all objects for given @model in renamed (virtual) directory with regex (also nested) and changes its path and key */
-const relinkAllObjectsInDirectory = (oldPath, newPath, model) => {
-	return model.find({path: {$regex : "^" + oldPath}}).exec()
-	.then(objects => {
-		return Promise.all(
-			objects.map(o => {
-				let oldKey = o.key;
-				// just changed that substring of path which ends on the renamed directory's old path (because of deeper nested files)
-				o.path = newPath + "/" + o.path.substring(oldPath.length + 1);
-				o.key = o.path + o.name;
-				return model.update({_id: o._id}, o).exec().then(_ => {
-					// also relink object (actually files) which are included in lessons
-					return relinkFileInLessons(oldKey, o.key);
-				});
-			}));
-	});
-};
-
-/** modifies the file-link in all corresponding lessons */
-const relinkFileInLessons = (oldPath, newPath) => {
-	return LessonModel.find({"contents.content.text": { $regex: oldPath, $options: 'i'}}).then(lessons => {
-		if (lessons && lessons.length > 0) {
-			return Promise.all(lessons.map(l => {
-				l.contents.map(content => {
-					if (content.component === "text" && content.content.text) {
-							content.content.text = content.content.text.replace(new RegExp(oldPath, "g"), newPath);
-					}
-				});
-
-				return LessonModel.update({_id: l._id}, l).exec();
-			}));
-		}
-		return Promise.resolve({});
-	});
-};
-
-class FileStorageService {
-	constructor() {
-		this.docs = swaggerDocs.fileStorageService;
-	}
+const fileStorageService = {
+	docs: swaggerDocs.fileStorageService,
 
 	/**
-	 * @param data, contains schoolId
+	 * @param data, file data
+	 * @param params, 
 	 * @returns {Promise}
 	 */
-	create(data, params) {
-		return createCorrectStrategy(params.payload.fileStorageType).create(data.schoolId);
-	}
+	async create(data, params) {
+		const { payload: { userId } } = params;
+		const { owner, parent } = data;
+		let isCourse = true;
+
+		if( owner ) {
+			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
+		}
+
+		const props = Object.assign(data, {
+			isDirectory: false,
+			owner: owner || userId,
+			parent,
+			refOwnerModel: owner ? isCourse ? 'course' : 'teams' : 'user',
+			permissions: [{
+				refId: userId,
+				refPermModel: 'user',
+				write: true,
+				read: true,
+				create: true,
+				delete: true,
+			}]
+		});
+
+		// create db entry for new file
+		// check for create permissions on parent
+		if( parent ) {
+			return canCreate(userId, parent)
+				.then(() => {
+					return FileModel.findOne(props).exec().then(data => data ? Promise.resolve(data) : FileModel.create(props));
+				})
+				.catch(() => new errors.Forbidden());
+		}
+
+		return FileModel.findOne(props).exec().then(data => data ? Promise.resolve(data) : FileModel.create(props));
+	},
 
 	/**
 	 * @returns {Promise}
 	 * @param query contains the file path
 	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
 	 */
-	find({query, payload}) {
-		let path = query.path;
-		let userId = payload.userId;
-		return filePermissionHelper.checkPermissions(userId, path)
-			.then(_ => {
-				// find all files and directories for given path
-				let filePromise = FileModel.find({path: path}).exec();
-				let directoryPromise = DirectoryModel.find({path: path}).exec();
+	find({ query, payload }) {
+		const { owner } = query;
+		const { userId } = payload;
 
-				return Promise.all([filePromise, directoryPromise]).then(([files, directories]) => {
-					return {
-						files: files,
-						directories: directories
-					};
+		return FileModel.find({ owner, parent: { $exists: false }}).exec()
+			.then(files => {
+				const permissionPromises = files.map(f => {
+					return canRead(userId, f)
+						.then(() => f)
+						.catch(() => undefined);
 				});
+				return Promise.all(permissionPromises);
 			});
-	}
+	},
 
 	/**
 	 * @param params, contains storageContext and fileName in query
 	 * @returns {Promise}
 	 */
-	remove(id, params) {
-		let path = params.query.path;
-		let userId = params.payload.userId;
-		return filePermissionHelper.checkPermissions(userId, path, ['can-write'])
-			.then(_ => {
-				// find file for path in proxy db, delete it and delete referenced file
-				// todo: maybe refactor search so that I can put the file-proxy-id (@id) instead of the full path
-				return FileModel.findOne({key: path}).exec()
-					.then(file => {
-						if (!file) return [];
-						return FileModel.find({_id: file._id}).remove().exec()
-							.then(_ => {
-								return createCorrectStrategy(params.payload.fileStorageType).deleteFile(userId, file.flatFileName);
-							});
-					});
-			});
-	}
+	remove(id, { query, payload }) {
+		const { userId, fileStorageType } = payload;
+		const { _id } = query;
+		const fileInstance = FileModel.findOne({ _id });
+		
+		return canDelete(userId, _id)
+			.then(() => fileInstance.exec())
+			.then(file => {
+				if( !file ) return Promise.resolve({});
+				console.log(file);
+				
+				return createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName);
+			})
+			.then(() => fileInstance.remove().exec())
+			.catch(() => new errors.Forbidden());
+	},
 
 	/**
 	 * @param id, the file-id in the proxy-db
@@ -155,10 +125,10 @@ class FileStorageService {
 		if (!id || !fileName || !path || !destination) return Promise.reject(new errors.BadRequest('Missing parameters'));
 
 		let userId = params.payload.userId;
-		return filePermissionHelper.checkPermissions(userId, path + fileName)
+		return checkPermissions(userId, path + fileName)
 			.then(_ => {
 				// check destination permissions
-				return filePermissionHelper.checkPermissions(userId, destination + fileName)
+				return checkPermissions(userId, destination + fileName)
 					.then(_ => {
 						// patch file direction in proxy db
 						return FileModel.update({_id: id,}, {
@@ -169,57 +139,40 @@ class FileStorageService {
 						}).exec();
 					});
 			});
-	}
-}
+	},
+};
 
-class SignedUrlService {
-	constructor() {
-		this.docs = swaggerDocs.signedUrlService;
-	}
-
+const signedUrlService = {
+	docs: swaggerDocs.signedUrlService,
 	/**
 	 * @param path where to store the file
 	 * @param fileType MIME type
 	 * @param action the AWS action, e.g. putObject
 	 * @returns {Promise}
 	 */
-	create({path, fileType, action, download}, params) {
+	create({ parent, filename, fileType }, params) {
 
-		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
-		let userId = params.payload.userId;
-		let fileName = encodeURIComponent(pathUtil.basename(path));
-		let dirName = pathUtil.dirname(path);
+		const { payload: { userId } } = params;
+		const strategy = createCorrectStrategy(params.payload.fileStorageType);
 
-		// normalize utf-8 chars
-		path = `${dirName}/${fileName}`;
+		const parentPromise = parent ? FileModel.findOne({ parent, name: filename }).exec() : Promise.resolve({});
 
-		// todo: maybe refactor search so that I can put the file-proxy-id (@id) instead of the full path
+		return parentPromise.then(res => {
 
-		// all files are uploaded to a flat-storage architecture without real folders
-		// converts the real filename to a unique one in flat-storage
-		// if action = getObject, file should exist in proxy db
-		let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({});
-
-		return fileProxyPromise.then(res => {
-			if (!res) return;
-
-			let flatFileName = res.flatFileName || generateFlatFileName(fileName);
-			return filePermissionHelper.checkPermissions(userId, path).then(p => {
-
-				// set external schoolId if file is shared
-				let externalSchoolId;
-				if (p.permission === 'shared') externalSchoolId = res.schoolId;
+			const flatFileName = generateFlatFileName(filename);
+			const permissionPromise = parent ? canCreate(userId, res._id) : Promise.resolve({});
+			
+			return permissionPromise.then(() => {
 
 				let header =  {
 					// add meta data for later using
 					"Content-Type": fileType,
-					"x-amz-meta-path": dirName,
-					"x-amz-meta-name": fileName,
+					"x-amz-meta-name": filename,
 					"x-amz-meta-flat-name": flatFileName,
 					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 				};
 
-				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId, download)
+				return strategy.generateSignedUrl({userId, flatFileName, fileType})
 					.then(res => {
 						return {
 							url: res,
@@ -228,163 +181,127 @@ class SignedUrlService {
 					});
 			});
 		});
-	}
-}
+	},
+};
 
-class DirectoryService {
-	constructor() {
-		this.docs = swaggerDocs.directoryService;
-	}
+const directoryService = {
 
-	/**
-	 * @param data, contains path
-	 * @returns {Promise}
-	 */
-	create(data, params) {
-		let userId = params.payload.userId;
-		let path = data.path;
-		let fileName = pathUtil.basename(path);
-		let dirName = pathUtil.dirname(path) + "/";
-
-		return filePermissionHelper.checkPermissions(userId, path)
-			.then(_ => {
-				// create db entry for new directory
-				return DirectoryModel.create({
-					key: path,
-					name: fileName,
-					path: dirName
-				});
-			});
-	}
+	docs: swaggerDocs.directoryService,
 
 	/**
-	 * @param params, {
-			storageContext,
-			dirName
-		}
+	 * @param { name, owner and parent }, params
 	 * @returns {Promise}
 	 */
-	remove(id, params) {
-		let path = params.query.path;
-		let userId = params.payload.userId;
-		return filePermissionHelper.checkPermissions(userId, path, ['can-write'])
-			.then(_ => {
-				// find directory and delete it
-				return DirectoryModel.findOne({key: path}).exec()
-					.then(directory => {
-						if (!directory) return [];
-						return DirectoryModel.find({_id: directory._id}).remove().exec()
-							.then(_ => {
-								path = directory.key + "/";
-								// delete all files and directories in the deleted directory
-								let filesDeletePromise = deleteAllFilesInDirectory(path, params.payload.fileStorageType, userId);
-								let directoriesDeletePromise = deleteAllSubDirectories(path);
-								return Promise.all([filesDeletePromise, directoriesDeletePromise]);
-							});
-					});
-			});
-	}
-}
+	async create(data, params) {
+		const { payload: { userId } } = params;
+		const { name, owner, parent } = data;
+		let isCourse = true;
 
-class FileRenameService {
-		constructor() {
-			this.docs = swaggerDocs.fileRenameService;
+		if( owner ) {
+			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
 		}
+
+		const props = {
+			isDirectory: true,
+			owner: owner || userId,
+			name,
+			parent,
+			refOwnerModel: owner ? isCourse ? 'course' : 'teams' : 'user',
+			permissions: [{
+				refId: userId,
+				refPermModel: 'user',
+				write: true,
+				read: true,
+				create: true,
+				delete: true,
+			}]
+		};
+
+		// create db entry for new directory
+		// check for create permissions if it is a subdirectory
+		if( parent ) {
+			return canCreate(userId, parent)
+				.then(() => {
+					return FileModel.findOne(props).exec().then(data => data ? Promise.resolve(data) : FileModel.create(props));
+				})
+				.catch(() => new errors.Forbidden());
+		}
+
+		return FileModel.findOne(props).exec().then(data => data ? Promise.resolve(data) : FileModel.create(props));
+	},
+
+	/**
+	 * @param id, params
+	 * @returns {Promise}
+	 */
+	remove(_id, params) {
+		const { payload: { userId } } = params;
+		const fileInstance = FileModel.findOne({ _id });
+
+		return canDelete(userId, _id)
+			.then(() => fileInstance.exec())
+			.then(file => {
+				if( !file ) return Promise.resolve({});
+				return FileModel.find({ parent: _id }).remove().exec();
+			})
+			.then(() => fileInstance.remove().exec())
+			.catch(() => new errors.Forbidden());
+	},
+};
+
+const renameService = {
+
+		docs: swaggerDocs.directoryRenameService,
 
 		/**
-		 * @param data, contains path, newName
+		 * @param data, contains new name
 		 * @returns {Promise}
 		 */
 		create(data, params) {
-			let userId = params.payload.userId;
-			let path = data.path;
-			let newName = data.newName;
+			const { payload: { userId } } = params;
+			const { name, _id } = data;
+			
+			if (!_id || !name) return Promise.reject(new errors.BadRequest('Missing parameters'));
 
-			if (!path || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
-
-			return filePermissionHelper.checkPermissions(userId, path)
-				.then(_ => {
-					// find file and rename it
-					return FileModel.findOne({key: path}).exec()
-					.then(file => {
-						if (!file) return Promise.reject(new errors.NotFound('The given file was not found!'));
-
-						file.name = newName;
-						file.key = file.path + newName;
-
-						return FileModel.update({_id: file._id}, file).exec()
-							.then(_ => {
-								// modify lessons which include the given file
-								return relinkFileInLessons(path, file.key);
-							});
-					});
+			return canWrite(userId, _id)
+				.then(() => FileModel.findOne({ _id }).exec())
+				.then(directory => {
+					if (!directory) return Promise.reject(new errors.NotFound('The given directory/file was not found!'));
+					return FileModel.update({ _id }, { name }).exec();
 				});
 		}
-}
+};
 
-class DirectoryRenameService {
-		constructor() {
-			this.docs = swaggerDocs.directoryRenameService;
-		}
-
-		/**
-		 * @param data, contains path, newName
-		 * @returns {Promise}
-		 */
-		create(data, params) {
-			let userId = params.payload.userId;
-			let path = data.path;
-			let newName = data.newName;
-
-			if (!path || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
-
-			return filePermissionHelper.checkPermissions(userId, path)
-				.then(_ => {
-					// find directory and rename it
-					return DirectoryModel.findOne({key: path}).exec()
-					.then(directory => {
-						if (!directory) return Promise.reject(new errors.NotFound('The given directory was not found!'));
-
-						directory.name = newName;
-						directory.key = directory.path + newName;
-
-						return DirectoryModel.update({_id: directory._id}, directory).exec()
-							.then(_ => {
-								// change paths and keys of all files and directories in the renamed directory
-								let filesRenamePromise = relinkAllObjectsInDirectory(path, directory.key, FileModel);
-								let directoriesRenamePromise = relinkAllObjectsInDirectory(path, directory.key, DirectoryModel);
-								return Promise.all([filesRenamePromise, directoriesRenamePromise]);
-							});
-					});
-				});
-		}
-}
-
-class FileTotalSizeService {
+const fileTotalSizeService = {
 
 	/**
 	 * @returns total file size and amount of files
-	 * @param query currently not needed
 	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
 	 */
-	find({query, payload}) {
-		let sum = 0;
-		return FileModel.find({schoolId: payload.schoolId}).exec()
-			.then(files => {
-				files.map(file => {
-					sum += file.size;
-				});
-
-				return {total: files.length, totalSize: sum};
-		});
+	find({ payload }) {
+		return FileModel.find({owner: payload.schoolId}).exec()
+			.then(files => ({
+				total: files.length, 
+				totalSize: files.reduce((sum, file) => {
+					return sum + file.size;
+				}),
+			}));
 	}
-}
+};
 
-class CopyService {
+const bucketService = {
+	/**
+	 * @param data, contains schoolId
+	 * @returns {Promise}
+	 */
+	create(data, params) {
+		return createCorrectStrategy(params.payload.fileStorageType).create(data.schoolId);
+	},
+};
 
-	constructor() {
-		this.docs = swaggerDocs.copyService;
-	}
+const copyService = {
+
+	docs: swaggerDocs.copyService,
 
 	/**
 	 * @param data, contains oldPath, newPath and externalSchoolId (optional).
@@ -414,8 +331,8 @@ class CopyService {
 						}
 
 						// check permissions for oldPath and newPath
-						let oldPathPromise = filePermissionHelper.checkPermissions(userId, oldPath + fileName);
-						let newPathPromise = filePermissionHelper.checkPermissions(userId, newPath + newFileName);
+						let oldPathPromise = checkPermissions(userId, oldPath + fileName);
+						let newPathPromise = checkPermissions(userId, newPath + newFileName);
 
 						return Promise.all([oldPathPromise, newPathPromise]).then(_ => {
 
@@ -442,23 +359,25 @@ class CopyService {
 					});
 			});
 	}
-}
+};
 
 module.exports = function () {
 	const app = this;
 
 	// Initialize our service with any options it requires
-	app.use('/fileStorage/directories', new DirectoryService());
-	app.use('/fileStorage/directories/rename', new DirectoryRenameService());
-	app.use('/fileStorage/rename', new FileRenameService());
-	app.use('/fileStorage/signedUrl', new SignedUrlService());
-	app.use('/fileStorage/total', new FileTotalSizeService());
-	app.use('/fileStorage/copy', new CopyService());
-	app.use('/fileStorage', new FileStorageService());
+	app.use('/fileStorage/directories', directoryService);
+	app.use('/fileStorage/directories/rename', renameService);
+	app.use('/fileStorage/rename', renameService);
+	app.use('/fileStorage/signedUrl', signedUrlService);
+	app.use('/fileStorage/bucket', bucketService);
+	app.use('/fileStorage/total', fileTotalSizeService);
+	app.use('/fileStorage/copy', copyService);
+	app.use('/fileStorage', fileStorageService);
 
 	[
 		'/fileStorage',
 		'/fileStorage/signedUrl',
+		'/fileStorage/bucket',
 		'/fileStorage/directories',
 		'/fileStorage/directories/rename',
 		'/fileStorage/rename',
