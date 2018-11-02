@@ -1,6 +1,21 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const permissionSchema = new Schema({
+	refId: {
+		type: Schema.Types.ObjectId,
+		refPath: 'refPermModel'
+	},
+	refPermModel: {
+		type: String,
+		enum: ['user', 'role']
+	},
+	write: { type: Boolean, default: true },
+	read: { type: Boolean, default: true },
+	create: { type: Boolean, default: true },
+	delete: { type: Boolean, default: true },
+});
+
 /**
  * handles meta-data for a file
  * @param isDirectory {Boolean} - is this a directory
@@ -16,7 +31,7 @@ const Schema = mongoose.Schema;
  * @param lockId {ObjectId} - indicates whether a file is locked for editing or not (wopi-related)
  */
 const fileSchema = new Schema({
-	isDirectory: { type: Boolean, default: true },
+	isDirectory: { type: Boolean, default: false },
 	name: { type: String },
 	size: { type: Number },
 	type: { type: String },
@@ -27,21 +42,15 @@ const fileSchema = new Schema({
 	owner: {
 		type: Schema.Types.ObjectId,
 		required: true,
-		refPath: 'refModel'
+		refPath: 'refOwnerModel'
 	},
-	permissions: [{
-		refId: {
-			type: Schema.Types.ObjectId,
-			refPath: 'refModel'
-		},
-		canWrite: { type: Boolean, default: true },
-	}],
-	refModel: {
+	refOwnerModel: {
 		type: String,
 		required: true,
-		enum: [ 'user', 'course', 'team', 'role' ]
+		enum: ['user', 'course', 'teams']
 	},
-	lockId: {type: Schema.Types.ObjectId},
+	permissions: [permissionSchema],
+	lockId: { type: Schema.Types.ObjectId, ref: 'user' },
 	createdAt: { type: Date, 'default': Date.now },
 	updatedAt: { type: Date, 'default': Date.now }
 });
