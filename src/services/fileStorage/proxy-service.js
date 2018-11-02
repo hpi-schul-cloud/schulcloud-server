@@ -11,9 +11,7 @@ const {
 	canCreate,
 	canDelete,
 } = require('./utils/filePermissionHelper');
-const {
-	removeLeadingSlash,
-	generateFileNameSuffix: generateFlatFileName } = require('./utils/filePathHelper');
+const { generateFileNameSuffix: generateFlatFileName } = require('./utils/filePathHelper');
 const FileModel = require('./model');
 const { courseModel } = require('../user-group/model');
 
@@ -25,6 +23,11 @@ const createCorrectStrategy = (fileStorageType) => {
 	const strategy = strategies[fileStorageType];
 	if (!strategy) throw new errors.BadRequest("No file storage provided for this school");
 	return new strategy();
+};
+
+const sanitizeObj = obj => {
+	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
+	return obj;
 };
 
 const fileStorageService = {
@@ -44,7 +47,7 @@ const fileStorageService = {
 			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
 		}
 
-		const props = Object.assign(data, {
+		const props = sanitizeObj(Object.assign(data, {
 			isDirectory: false,
 			owner: owner || userId,
 			parent,
@@ -57,7 +60,7 @@ const fileStorageService = {
 				create: true,
 				delete: true,
 			}]
-		});
+		}));
 
 		// create db entry for new file
 		// check for create permissions on parent
@@ -78,10 +81,10 @@ const fileStorageService = {
 	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
 	 */
 	find({ query, payload }) {
-		const { owner } = query;
+		const { owner, parent } = query;
 		const { userId } = payload;
 
-		return FileModel.find({ owner, parent: { $exists: false }}).exec()
+		return FileModel.find({ owner, parent: parent || { $exists: false }}).exec()
 			.then(files => {
 				const permissionPromises = files.map(f => {
 					return canRead(userId, f)
@@ -105,7 +108,6 @@ const fileStorageService = {
 			.then(() => fileInstance.exec())
 			.then(file => {
 				if( !file ) return Promise.resolve({});
-				console.log(file);
 				
 				return createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName);
 			})
@@ -201,7 +203,7 @@ const directoryService = {
 			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
 		}
 
-		const props = {
+		const props = sanitizeObj({
 			isDirectory: true,
 			owner: owner || userId,
 			name,
@@ -215,7 +217,7 @@ const directoryService = {
 				create: true,
 				delete: true,
 			}]
-		};
+		});
 
 		// create db entry for new directory
 		// check for create permissions if it is a subdirectory
