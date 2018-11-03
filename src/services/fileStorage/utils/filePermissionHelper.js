@@ -1,4 +1,5 @@
 const fileModel = require('../model');
+const { userModel } = require('../../user/model');
 
 const getFile = (id) => {
 	return fileModel
@@ -17,11 +18,24 @@ const checkPermissions = (permission) => {
 		} = fileObject;
 		
 		// return always true for owner of file
-		// or legacy course model
-		if( user.toString() === owner.toString() || refOwnerModel === 'course' ) {
+		if( user.toString() === owner.toString() ) {
 			return Promise.resolve();
 		}
 		
+		// or legacy course model
+		if( refOwnerModel === 'course' ) {
+			const userObject = await userModel.findOne({_id: user}).populate('roles').exec();
+			const isStudent = userObject.roles.find(role => role.name === 'student');
+
+			if( isStudent ) {
+				const rolePermissions = permissions.find(perm => perm.refId.toString() === isStudent._id.toString());
+				return Promise[rolePermissions[permission] ? 'resolve' : 'reject']();
+			}
+			else {
+				return Promise.resolve();
+			}
+		}
+
 		const teamMember = fileObject.owner.userIds.find(_ => _.userId.toString() === user.toString());
 		const userPermissions = permissions.find(perm => perm.refId.toString() === user.toString());
 		
@@ -38,7 +52,7 @@ const checkPermissions = (permission) => {
 			}
 
 			const { role } = teamMember;
-			const rolePermissions = permissions.find(perm => perm.refId === role);
+			const rolePermissions = permissions.find(perm => perm.refId.toString() === role.toString());
 
 			return rolePermissions[permission] ? resolve() : reject();
 		});

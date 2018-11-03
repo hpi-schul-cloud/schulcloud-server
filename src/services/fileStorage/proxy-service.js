@@ -1,4 +1,8 @@
 'use strict';
+
+const fs = require('fs');
+const rp = require('request-promise-native');
+
 const { before, after } = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
 const errors = require('feathers-errors');
@@ -10,8 +14,9 @@ const {
 	canCreate,
 	canDelete,
 } = require('./utils/filePermissionHelper');
-const { generateFileNameSuffix: generateFlatFileName } = require('./utils/filePathHelper');
+const { returnFileType, generateFileNameSuffix: generateFlatFileName } = require('./utils/filePathHelper');
 const FileModel = require('./model');
+const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 
 const strategies = {
@@ -39,11 +44,33 @@ const fileStorageService = {
 	 */
 	async create(data, params) {
 		const { payload: { userId } } = params;
-		const { owner, parent } = data;
+		const { owner, parent, studentCanEdit } = data;
+		const permissions = [{
+			refId: userId,
+			refPermModel: 'user',
+			write: true,
+			read: true,
+			create: true,
+			delete: true,
+		}];
+
 		let isCourse = true;
 
 		if( owner ) {
 			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
+		}
+
+		if( isCourse ) {
+			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
+
+			permissions.push({
+				refId: studentRoleId,
+				refPermModel: 'role',
+				write: Boolean(studentCanEdit),
+				read: Boolean(studentCanEdit),
+				create: false,
+				delete: false,
+			});
 		}
 
 		const props = sanitizeObj(Object.assign(data, {
@@ -51,14 +78,7 @@ const fileStorageService = {
 			owner: owner || userId,
 			parent,
 			refOwnerModel: owner ? isCourse ? 'course' : 'teams' : 'user',
-			permissions: [{
-				refId: userId,
-				refPermModel: 'user',
-				write: true,
-				read: true,
-				create: true,
-				delete: true,
-			}]
+			permissions
 		}));
 
 		// create db entry for new file
@@ -382,6 +402,44 @@ const copyService = {
 	}
 };
 
+const newFileService = {
+
+	/**
+	 * @param data, contains path, key, name
+	 * @returns new File
+	 */
+	create(data, params) {
+
+		const {name, owner, parent, studentCanEdit} = data;
+		const fType = name.split('.').pop();
+		const buffer = fs.readFileSync(`src/services/fileStorage/resources/fake.${fType}`);
+		const flatFileName = generateFlatFileName(name);
+
+		return signedUrlService.create({
+			fileType: returnFileType(name),
+			parent,
+			filename: name,
+		}, params)
+		.then(signedUrl => rp({
+				method: 'PUT',
+				uri: signedUrl.url,
+				body: buffer
+		}))
+		.then(() => {
+			return fileStorageService.create({
+				size: buffer.length,
+				storageFileName: flatFileName,
+				type: returnFileType(name),
+				thumbnail: 'https://schulcloud.org/images/login-right.png',
+				name,
+				owner,
+				parent,
+				studentCanEdit
+			}, params);
+		});
+	}
+};
+
 module.exports = function () {
 	const app = this;
 
@@ -393,6 +451,7 @@ module.exports = function () {
 	app.use('/fileStorage/bucket', bucketService);
 	app.use('/fileStorage/total', fileTotalSizeService);
 	app.use('/fileStorage/copy', copyService);
+	app.use('/fileStorage/files/new', newFileService);
 	app.use('/fileStorage', fileStorageService);
 
 	[
@@ -404,6 +463,7 @@ module.exports = function () {
 		'/fileStorage/rename',
 		'/fileStorage/total',
 		'/fileStorage/copy',
+		'/fileStorage/files/new',
 	].forEach(path => {
 		// Get our initialize service to that we can bind hooks
 		const service = app.service(path);
