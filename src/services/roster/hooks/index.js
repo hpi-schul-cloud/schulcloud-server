@@ -24,6 +24,13 @@ module.exports = {
 		}
 	},
 
+	stripIframe: context => {
+		const regEx = /oauth2\/username\/(.*?)"/;
+		let pseudonym = context.params.user;
+		context.params.pseudonym = (pseudonym.includes('iframe') ? pseudonym.match(regEx)[1] : pseudonym);
+		return context
+	},
+
 	injectOriginToolIds: context => {
 		if (!context.params.tokenInfo) throw new Error('Token info is missing in params') // first call isTokenActive
 		const toolService = context.app.service("ltiTools");
@@ -48,7 +55,7 @@ module.exports = {
 		if (!context.result.data) return context
 		if (context.result.data.students
 				.concat(context.result.data.teachers)
-				.find(user => (user.user_id === context.params.tokenInfo.sub))) {
+				.find(user => (user.user_id === context.params.tokenInfo.obfuscated_subject))) {
 			return context
 		}
 		throw new errors.BadRequest("Current user is not part of group")

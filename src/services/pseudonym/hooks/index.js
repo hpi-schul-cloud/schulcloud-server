@@ -61,6 +61,20 @@ const filterValidUsers = context => {
 	});
 };
 
+const populateUsername = context => {
+	if (!context.result.data[0]) return context;
+	return context.app.service('users').get(context.result.data[0].userId)
+		.then(response => {
+			context.result.data[0] = {...context.result.data[0]._doc,
+				user: {
+					firstName: response.firstName,
+					lastName: response.lastName,
+				},
+			};
+			return context
+		});
+}
+
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
 	find: [replaceToolWithOrigin],
@@ -73,7 +87,7 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [createMissingPseudonyms, globalHooks.ifNotLocal(filterValidUsers)],
+	find: [createMissingPseudonyms, globalHooks.ifNotLocal(filterValidUsers), populateUsername],
 	get: [],
 	create: [],
 	update: [],

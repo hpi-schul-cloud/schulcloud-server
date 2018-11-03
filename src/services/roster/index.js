@@ -1,6 +1,7 @@
 'use strict';
 const hooks = require("./hooks");
 const globalHooks = require('../../hooks');
+const oauth2 = require('../oauth2/hooks');
 
 module.exports = function() {
 	const app = this;
@@ -13,15 +14,9 @@ module.exports = function() {
 
 	app.use('/roster/users/:user/metadata', {
 		find(params) {
-			const regEx = /account\/username\/(.*?)"/;
-			let pseudonym = params.user;
-			if (pseudonym.includes('iframe')) {
-				pseudonym = pseudonym.match(regEx)[1];
-			}
-
 			return app.service("pseudonym").find({
 				query: {
-					pseudonym
+					pseudonym: params.pseudonym
 				}
 			}).then(pseudonym => {
 				if (!pseudonym.data[0]) {
@@ -51,15 +46,16 @@ module.exports = function() {
 	app.service('/roster/users/:user/metadata').before({
 		find: [
 			globalHooks.ifNotLocal(hooks.tokenIsActive),
-			hooks.userIsMatching
+			hooks.userIsMatching,
+			hooks.stripIframe,
 		]
 	})
 
-	app.use('/roster/users/:token/groups', {
+	app.use('/roster/users/:user/groups', {
 		find(params) {
 			return app.service("pseudonym").find({
 				query: {
-					token: params.token
+					pseudonym: params.pseudonym
 				}
 			}).then(pseudonym => {
 				if (!pseudonym.data[0]) {
@@ -88,10 +84,11 @@ module.exports = function() {
 		}
 	});
 
-	app.service('/roster/users/:token/groups').before({
+	app.service('/roster/users/:user/groups').before({
 		find: [
 			globalHooks.ifNotLocal(hooks.tokenIsActive),
 			hooks.userIsMatching,
+			hooks.stripIframe,
 			hooks.injectOriginToolIds]
 	})
 
@@ -126,10 +123,10 @@ module.exports = function() {
 				]).then(([users, teachers]) => ({
 					data: {
 						students: users.data.map(user => ({
-							"user_id": user.token
+							"user_id": oauth2.getSubject(user.pseudonym)
 						})),
 						teachers: teachers.data.map(user => ({
-							"user_id": user.token
+							"user_id": oauth2.getSubject(user.pseudonym)
 						}))
 					}
 				}));
