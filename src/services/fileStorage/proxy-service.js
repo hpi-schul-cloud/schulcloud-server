@@ -383,56 +383,59 @@ const copyService = {
 	 * @returns {Promise}
 	 */
 	create(data, params) {
-		let {fileName, oldPath, newPath, externalSchoolId} = data;
-		let userId = params.account.userId;
+		const { file, parent } = data;		
+		const { payload: { userId } } = params;
+		const strategy = createCorrectStrategy(params.payload.fileStorageType);
 
-		if (!oldPath || !fileName || !newPath || !userId) {
+		if ( !file || !parent ) {
 			return Promise.reject(new errors.BadRequest('Missing parameters'));
 		}
 
 		// first check if given file is valid
-		return FileModel.findOne({key: oldPath + fileName}).exec()
-			.then(file => {
+		return FileModel.findOne({ _id: file}).exec()
+			.then(fileObject => {
 				if (!file) throw new errors.NotFound("The file was not found!");
 
 				// check that there's no file on 'newPath', otherwise change name of file
-				return FileModel.findOne({key: newPath + fileName}).exec()
-					.then(newFile => {
-						let newFileName = fileName;
-						if (newFile) {
-							let name = fileName.substring(0, fileName.lastIndexOf('.'));
-							let extension = fileName.split('.').pop();
-							newFileName = `${name}_${Date.now()}.${extension}`;
-						}
+				return Promise.all([
+					FileModel.findOne({parent, name: file.name}).exec(), 
+					fileObject
+				]);
+			})
+			.then(([existingFile, fileObject]) => {
+				const newFile = {
+					parent,
+				};
 
-						// check permissions for oldPath and newPath
-						let oldPathPromise = checkPermissions(userId, oldPath + fileName);
-						let newPathPromise = checkPermissions(userId, newPath + newFileName);
+				if( existingFile ) {
+					const [ext, name] = file.name.split('.').reverse();
+					newFile.name = `${name}_${Date.now()}.${ext}`;
+				}
 
-						return Promise.all([oldPathPromise, newPathPromise]).then(_ => {
+				return Promise.all([
+					newFile, 
+					fileObject, 
+					canRead(userId, file), 
+					canWrite(userId, parent)
+				]);
+			})
+			.then(([newFile, fileObject]) => {
 
-							// copy file on external storage
-							let newFlatFileName = generateFlatFileName(newFileName);
-							return createCorrectStrategy(params.payload.fileStorageType).copyFile(userId, file.flatFileName, newFlatFileName, externalSchoolId).then(_ => {
+				// copy file on external storage
+				newFile.storageFileName = generateFlatFileName(newFile.name);
 
-								// create proxy object from copied;
-								let newFileObject = {
-									key: newPath + newFileName,
-									path: newPath,
-									name: decodeURIComponent(newFileName),
-									type: file.type,
-									size: file.size,
-									flatFileName: newFlatFileName,
-									thumbnail: file.thumbnail,
-									schoolId: file.schoolId,
-									permissions: file.permissions || []
-								};
-
-								return FileModel.create(newFileObject);
-							});
-						});
-					});
-			});
+				return Promise.all([
+					newFile, 
+					fileObject, 
+					strategy.copyFile(userId, fileObject.storageFileName, newFile.storageFileName)
+				]);
+			})
+			.then(([newFile, fileObject]) => {
+				return FileModel.create({
+					...fileObject,
+					...newFile
+				});
+			});;
 	}
 };
 
