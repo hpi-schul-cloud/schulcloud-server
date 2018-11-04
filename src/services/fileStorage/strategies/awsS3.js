@@ -203,6 +203,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	generateSignedUrl({userId, flatFileName, fileType}) {
 		if (!userId || !flatFileName || !fileType) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		
 		return UserModel.userModel.findById(userId).exec().then(result => {
 			if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
@@ -210,12 +211,34 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			let params = {
 				Bucket: awsObject.bucket,
 				Key: flatFileName,
-				Expires: 60
+				Expires: 60,
+				ContentType: fileType
 			};
-						
+									
 			return promisify(awsObject.s3.getSignedUrl, awsObject.s3)('putObject', params);
 		});
 	}
+
+	getSignedUrl({userId, flatFileName, download }) {
+		if ( !userId || !flatFileName ) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		
+		return UserModel.userModel.findById(userId).exec().then(result => {
+			if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+
+			const awsObject = createAWSObject(result.schoolId);
+			const params = {
+				Bucket: awsObject.bucket,
+				Key: flatFileName,
+				Expires: 60
+			};
+
+			if( download ) {
+				params["ResponseContentDisposition"] = 'attachment';
+			}
+
+			return promisify(awsObject.s3.getSignedUrl, awsObject.s3)('getObject', params);
+		});
+	}	
 
 	/**** @DEPRECATED ****/
 	createDirectory(userId, path) {

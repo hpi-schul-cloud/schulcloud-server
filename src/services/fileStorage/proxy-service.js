@@ -208,6 +208,19 @@ const signedUrlService = {
 			});
 		});
 	},
+
+	find({ query, payload }) {
+		const {file, name, download} = query;
+		const { userId } = payload;
+		const strategy = createCorrectStrategy(payload.fileStorageType);
+		
+		return canRead(userId, file)
+			.then(() => strategy.getSignedUrl({userId, flatFileName: name, download }))
+			.then(res => ({
+				url: res,
+			}))
+			.catch(() => new errors.Forbidden());	
+	}
 };
 
 const directoryService = {
