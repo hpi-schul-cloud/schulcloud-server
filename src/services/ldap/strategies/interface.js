@@ -65,6 +65,16 @@ class AbstractLDAPStrategy {
     }
 
     /**
+     * get provider-specific search string and options to find all experts in
+     * the LDAP directory
+     * @abstract
+     * @returns {LDAPQueryOptions} Object containing `searchString` and `options`
+     */
+    getExpertsQuery() {
+        throw new TypeError('Method has to be implemented.');
+    }
+
+    /**
      * provider-specific functionality to add a given user to a given group
      * @abstract
      * @param {User} user the user

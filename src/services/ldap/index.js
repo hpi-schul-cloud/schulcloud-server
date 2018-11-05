@@ -214,6 +214,17 @@ module.exports = function() {
 		}
 
 		/**
+		 * Returns all experts on the LDAP server
+		 * @param {LdapConfig} config the ldapConfig
+		 * @return {Promise[Object]} resolves with all expert objects or rejects
+		 * with error
+		 */
+		getExperts(config) {
+			const {searchString, options} = getLDAPStrategy(app, config).getExpertsQuery();
+			return this.searchCollection(config, searchString, options);
+		}
+
+		/**
 		 * Generate an LDAP group object from a team
 		 * @param {Team} team the team object
 		 * @return {LDAPGroup} LDAP group object

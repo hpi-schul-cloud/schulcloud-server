@@ -61,6 +61,22 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 
     /**
      * @public
+     * @see AbstractLDAPStrategy#getExpertsQuery
+     * @returns {LDAPQueryOptions} LDAP query options
+     * @memberof UniventionLDAPStrategy
+     */
+    getExpertsQuery() {
+        const options = {
+            filter: `ucsschoolRole=staff:school:Experte`,
+            scope: 'sub',
+            attributes: []
+        };
+        const searchString = `cn=mitarbeiter,cn=users,ou=Experte,${this.config.rootPath}`;
+        return {searchString, options};
+    }
+
+    /**
+     * @public
      * @see AbstractLDAPStrategy#addUserToGroup
      * @returns {Promise} resolves with truthy result, or rejects with error
      * @see _updateUserGroups
