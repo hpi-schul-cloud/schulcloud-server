@@ -37,7 +37,7 @@ const teamUserModel = new Schema({
 	userId: { type: Schema.Types.ObjectId, ref: 'user' },
 	role:   { type: Schema.Types.ObjectId, ref: 'role' }//,    	//todo: existing team roles not all	
 	//roleName:{ type: String }								//todo: only pass roles that have name.substring(0,4)==='team'
-},{ _id : false });
+},{ _id : false, timestamps: true });
 
 const teamsModel = mongoose.model('teams', getUserGroupSchema({
 	//@override
@@ -52,6 +52,7 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 	}, 
 	//@override
 	userIds:     [teamUserModel],
+	invitedUserIds: [teamUserModel],
 	description: { type: String, default:''},
 	classIds:    [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
 //	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],  todo: add later
