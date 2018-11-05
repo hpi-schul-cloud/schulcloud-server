@@ -218,7 +218,7 @@ module.exports = function() {
 		 * @param {Team} team the team object
 		 * @return {LDAPGroup} LDAP group object
 		 */
-		_teamToGroup(team) {
+		_teamToGroup(team, role) {
 			return {
 				name: `schulcloud-${team._id}`,
 				description: team.name
@@ -229,12 +229,14 @@ module.exports = function() {
 		 * Add a user to a given team
 		 * @param {LdapConfig} config the ldapConfig
 		 * @param {User} user the user object
+		 * @param {Role} role the user's role
 		 * @param {Team} team the team object
 		 * @return {Promise} resolves with undefined value or rejects with error
 		 * @see removeUserFromTeam
 		 */
-		addUserToTeam(config, user, team) {
-			const group = this._teamToGroup(team);
+		addUserToTeam(config, user, role, team) {
+			let group = this._teamToGroup(team);
+			group = Object.assign(group, {role: role.name});
 			return getLDAPStrategy(app, config).addUserToGroup(user, group);
 		}
 
@@ -242,11 +244,12 @@ module.exports = function() {
 		 * Remove a user from a given team
 		 * @param {LdapConfig} config the ldapConfig
 		 * @param {User} user the user object
+		 * @param {Role} role the user's role
 		 * @param {Team} team the team object
 		 * @return {Promise} resolves with undefined value or rejects with error
 		 * @see addUserToTeam
 		 */
-		removeUserFromTeam(config, user, team) {
+		removeUserFromTeam(config, user, role, team) {
 			const group = this._teamToGroup(team);
 			return getLDAPStrategy(app, config).removeUserFromGroup(user, group);
 		}
@@ -254,11 +257,17 @@ module.exports = function() {
 		/**
 		 * Populate an array of user ids with the corresponding user object and
 		 * login systems for each id
-		 * @param {userIds} userIds an array of user ids
-		 * @returns {Promise} resolves with an array of pairs {user, system} of
-		 * LDAP users and their corresponding login system (contains ldapConfig)
+		 * @param {users} users an array of user ids and team roles
+		 * @returns {Promise} resolves with an array of tuples {user, system,
+		 * role} of LDAP users, their corresponding login system (contains
+		 * ldapConfig), and the team role
 		 */
-		_populateUsersAndSystems(userIds) {
+		_populateUsers(users) {
+			const userIds = users.map(u => u.userId);
+			const roleMap = users.reduce((m, u) => {
+				m[u.userId] = u.role;
+				return m;
+			}, {});
 			return app.service('accounts').find({
 				query: {
 					userId: { $in: userIds },
@@ -275,7 +284,11 @@ module.exports = function() {
 			})
 			.then(accounts => {
 				return accounts.map(account => {
-					return { user: account.userId, system: account.systemId };
+					return {
+						user: account.userId,
+						system: account.systemId,
+						role: roleMap[account.userId._id]
+					};
 				});
 			});
 		}
@@ -283,19 +296,19 @@ module.exports = function() {
 		/**
 		 * Update a given team: call `method` with `ldapConfig`, `user`, and
 		 * `team` populated from arguments.
-		 * @param {userIds} userIds an array of user ids
+		 * @param {users} [users=[]] an array of user ids and associated roles
 		 * @param {Team} team a team object
 		 * @param {function(config, user, team)} method a function taking LDAP
 		 * config, user object, and team object as arguments
 		 * @see addUserToTeam
 		 * @see removeUserFromTeam
 		 */
-		_updateTeam(userIds, team, method) {
-			if (userIds && userIds.length > 0) {
-				this._populateUsersAndSystems(userIds)
+		_updateTeam(users=[], team, method) {
+			if (users && users.length > 0) {
+				this._populateUsers(users)
 				.then(pairs => {
-					pairs.forEach(({user, system}) => {
-						method.apply(this, [system.ldapConfig, user, team])
+					pairs.forEach(({user, system, role}) => {
+						method.apply(this, [system.ldapConfig, user, role, team])
 							.catch(error => {
 								logger.error(error);
 							});
@@ -326,7 +339,7 @@ module.exports = function() {
 		 * @listens teams:after:usersChanged
 		 */
 		_registerEventListeners() {
-			app.on('teams:after:usersChanged', this._onTeamUsersChanged);
+			app.on('teams:after:usersChanged', this._onTeamUsersChanged.bind(this));
 		}
 
 	}
