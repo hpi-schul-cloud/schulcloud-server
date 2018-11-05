@@ -68,11 +68,12 @@ class AbstractLDAPStrategy {
      * provider-specific functionality to add a given user to a given group
      * @abstract
      * @param {User} user the user
+     * @param {Role} role the user's role
      * @param {LDAPGroup} group the LDAP group object
      * @returns {Promise} Promise that resolves on successful addition or
      * rejects otherwise
      */
-	addUserToGroup(user, group) {
+	addUserToGroup(user, role, group) {
 		throw new TypeError('Method has to be implemented.');
     }
 
@@ -81,11 +82,12 @@ class AbstractLDAPStrategy {
      * group
      * @abstract
      * @param {User} user the user
+     * @param {Role} role the user's role
      * @param {LDAPGroup} group the LDAP group object
      * @returns {Promise} Promise that resolves on successful removal or rejects
      * otherwise
      */
-    removeUserFromGroup(user, group) {
+    removeUserFromGroup(user, role, group) {
 		throw new TypeError('Method has to be implemented.');
     }
 }

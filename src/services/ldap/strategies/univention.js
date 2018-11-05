@@ -66,7 +66,8 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @see _updateUserGroups
      * @memberof UniventionLDAPStrategy
      */
-    addUserToGroup(user, group) {
+    addUserToGroup(user, role, group) {
+        group = Object.assign(group, { role: role.name });
 		return this._updateUserGroups(user, [group], 'create');
     }
 
@@ -77,7 +78,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @see _updateUserGroups
      * @memberof UniventionLDAPStrategy
      */
-    removeUserFromGroup(user, group) {
+    removeUserFromGroup(user, role, group) {
 		return this._updateUserGroups(user, [group], 'delete');
     }
 

@@ -236,8 +236,7 @@ module.exports = function() {
 		 */
 		addUserToTeam(config, user, role, team) {
 			let group = this._teamToGroup(team);
-			group = Object.assign(group, {role: role.name});
-			return getLDAPStrategy(app, config).addUserToGroup(user, group);
+			return getLDAPStrategy(app, config).addUserToGroup(user, role, group);
 		}
 
 		/**
@@ -251,7 +250,7 @@ module.exports = function() {
 		 */
 		removeUserFromTeam(config, user, role, team) {
 			const group = this._teamToGroup(team);
-			return getLDAPStrategy(app, config).removeUserFromGroup(user, group);
+			return getLDAPStrategy(app, config).removeUserFromGroup(user, role, group);
 		}
 
 		/**
