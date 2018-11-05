@@ -5,10 +5,100 @@ const errors = require('feathers-errors');
 const globalHooks = require('../../../hooks');
 const Schema = require('mongoose').Schema;
 const logger = require('winston');
+const {set,get} = require('./scope');
 
+/************* to add data to hook ******************/ //todo move it to extra file 
+/*const scope = 'additionalInfosTeam'
+
+const set = (hook, key, value) => {
+    if (hook[scope] === undefined)
+        hook[scope] = {};
+    hook[scope][key] = value;
+}
+
+const get = (hook, key) => {
+    return (hook[scope] || {})[key];
+} */
+/****************************************/
+
+/**
+ * helper - test if roles stack is superhero 
+ * !Work only with $populated roles!
+ */
+const ifSuperhero = (roles) => {
+    let isSuperhero = false;
+    if (Array.isArray(roles) && roles.length > 0) {
+        const type = typeof roles[0];
+        if (type === 'string') {
+            isSuperhero = roles.includes('superhero');      //todo: make no sense at the moment roles includes only the ids of the roles
+        } else if (type === 'object') {
+            if (roles.find(_role => _role.name === 'superhero') !== undefined) {
+                isSuperhero = true;
+            };
+        }
+
+    }
+    return isSuperhero
+}
+
+/**
+ * @helper 
+ * todo: maybe interesst as global hook with replace "additionalInfosTeam" - to payload data
+ */
+const getSessionUser = hook => {
+    return new Promise((resolve, reject) => {
+        /*   if (hook.additionalInfosTeam === undefined) {
+              hook.additionalInfosTeam = {};
+          } */
+        const sessionUserId = hook.params.account.userId.toString();
+        if (get(hook, 'sessionUser') !== undefined) {
+            if (get(hook, 'isSuperhero') === undefined)
+                set(hook, 'isSuperhero', ifSuperhero(sessionUser.roles));
+            resolve(hook.additionalInfosTeam.sessionUser)
+        } else {
+            hook.app.service('users').get(sessionUserId, {
+                query: { $populate: 'roles' }
+            }).then(sessionUser => {
+                set(hook, 'sessionUser', sessionUser);  //to save the infos from request
+                set(hook, 'isSuperhero', ifSuperhero(sessionUser.roles));
+                resolve(sessionUser);
+            }).catch(err => {
+                reject(new errors.NotFound('Can not found user with userId=' + userId, err));
+            })
+        }
+    }).catch(err => {
+        throw new errors.NotFound('User not found.', err);
+    });
+}
 
 /**
 *   helper
+*/
+const getTeam = (hook) => {
+    return new Promise((resolve, reject) => {
+        const team = get(hook, 'team');
+        if (team !== undefined) {
+            resolve(team);
+        } else {
+            const teamId = hook.id || (hook.result||{})._id || hook.teamId;
+            hook.app.service('teams').get(teamId).then(_team => {
+                set(hook, 'team', _team);
+                resolve(_team);
+            }).catch(err => {
+                reject(new errors.NotFound('Can not found team with teamId=' + teamId, err));
+            });
+        }
+    }).catch( err=>{
+        logger.warn(err);
+        throw new errors.NotFound('Can not found this team.');
+    })
+}
+
+/**
+*   helper
+*   @param {hook}
+*   @param {userId }
+*   @param {selectedRole}
 */
 const createUserWithRole = (hook, userId, selectedRole) => {
     let role;
@@ -90,25 +180,6 @@ const testIfObjectId = (id) => {
     }
 };
 
-/**
- * helper - test if roles stack is superhero 
- * !Work only with $populated roles!
- */
-const ifSuperhero = (roles) => {
-    let isSuperhero = false;
-    if (Array.isArray(roles) && roles.length > 0) {
-        const type = typeof roles[0];
-        if (type === 'string') {
-            isSuperhero = roles.includes('superhero');      //todo: make no sense at the moment roles includes only the ids of the roles
-        } else if (type === 'object') {
-            if (roles.find(_role => _role.name === 'superhero') !== undefined) {
-                isSuperhero = true;
-            };
-        }
-
-    }
-    return isSuperhero
-}
 
 /**
  * @param hook - mapped userIds from class to userIds, clear all double userId inputs
@@ -178,22 +249,23 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
     /************************
      *  get current user    *
      * **********************/
-    const usersService = hook.app.service('users');
-    const waitSessionUser = usersService.find({
-        query: {
-            _id: sessionUserId,
-            $populate: 'roles'
-        }
-    }).then(users => {
-        return extractOne(users, 'Find current user.');
-    }).catch(err => {
-        throw new errors.BadRequest('User can not found.', err);
-    });
+    //const waitSessionUser = getSessionUser(hook);
+    /* const usersService = hook.app.service('users');
+     const waitSessionUser = usersService.find({
+         query: {
+             _id: sessionUserId,
+             $populate: 'roles'
+         }
+     }).then(users => {
+         return extractOne(users, 'Find current user.');
+     }).catch(err => {
+         throw new errors.BadRequest('User can not found.', err);
+     }); */
 
     /**********************************
      *  get all users from userIds    *
      * ********************************/
-
+    const usersService = hook.app.service('users');
     const waitUserIds = new Promise((resolve, reject) => {
         if (['create', 'patch'].includes(method) === false) {
             resolve([]);
@@ -257,7 +329,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
     /***************
      *   execute    *
      * **************/
-    return Promise.all([waitSessionUser, waitTeams, waitUserIds]).then(data => {
+    return Promise.all([getSessionUser(hook), waitTeams, waitUserIds]).then(data => {
         //const inputSchoolId = (hook.data||{}).schoolId || (hook.params.query||{}).schoolId;
         const sessionUser = data[0];
         let team = data[1];    //for create it is the team with created data
@@ -559,15 +631,16 @@ const injectLinkInformationForLeaders = (hook) => {
  * @after
  */
 const pushUserChangedEvent = (hook) => {
-    if (hook.additionalInfosTeam === undefined) {
+  /*  if (hook.additionalInfosTeam === undefined) {
         logger.warn('This hook need additionalInfosTeam.');
         return hook
-    }
-    const oldUsers = (hook.additionalInfosTeam.team || {}).userIds;
-    const newUsers = hook.additionalInfosTeam.newUsers;
+    } */
+    const team = getTeam(hook);
+    const oldUsers = team.userIds;
+    const newUsers = get(hook,'newUsers'); //hook.additionalInfosTeam.newUsers;
 
     if (oldUsers === undefined || newUsers === undefined) {
-        logger.warn('No user infos.', { oldUsers, newUsers });
+       // logger.warn('No user infos.', { oldUsers, newUsers });    todo: cheak if undefined valid situation or not
         return hook
     }
 
@@ -650,84 +723,40 @@ const teamRolesToHook = hook => {
     });
 };
 
-
 /**
  *  @gloabal
  *  @method get,patch,delete,create but do not work with find
  */
 const hasTeamPermission = (permsissions, _teamId) => {
     return (hook) => {
-        let isSuperhero = (hook.additionalInfosTeam || {}).isSuperhero;
-        if (isSuperhero) {    //superhero can pass all
+
+        if (get(hook, 'isSuperhero') === true) 
             return hook
-        }
-
-        const userId = hook.params.account.userId.toString();
-        const teamId = _teamId || hook.teamId || hook.id;
-        // const role   = hook.findRole()
-        if (typeof permsissions === 'string') {
+           
+        if (typeof permsissions === 'string')
             permsissions = [permsissions];
-        }
 
-        const userRoleWait = new Promise((resolve, reject) => {
-            const user = (hook.additionalInfosTeam || {}).sessionUser;
-            if (user !== undefined && Array.isArray(user.roles)) {
-                resolve(user.roles)
-            } else {
-                hook.app.service('users').find({
-                    query: {
-                        _id: sessionUserId,
-                        $populate: 'roles'
-                    }
-                }).then(_user => {
-                    resolve((extractOne(_user, 'Find current user for Permissions.')).roles);
-                }).catch(err => {
-                    reject(new errors.NotFound('Can not found user with userId=' + userId, err));
-                })
-            }
-        }).catch(err => {
-            throw new errors.NotFound('User not found.', err);
-        });
-
-        //team not found then search
-        const teamWait = new Promise((resolve, reject) => {
-            const team = (hook.additionalInfosTeam || {}).team;
-            if ((team || {}).userIds) {
-                resolve(team.userIds);
-            } else {
-                hook.app.service('teams').get(teamId).then(_team => {
-                    resolve(team.userIds);
-                }).catch(err => {
-                    reject(new errors.NotFound('Can not found team with teamId=' + teamId, err));
-                });
-            }
-        })
-
-        //team roles not found then search
-
-        const findRoleWait = new Promise((resolve, reject) => {
+        const wait = new Promise((resolve, reject) => {
             if (typeof hook.findRole === 'function') {
                 resolve(hook.findRole);
             } else {
-                hook = teamRolesToHook(hook);
+                teamRolesToHook(hook);
                 resolve(hook.findRole);
             }
         });
 
-        return Promise.all([userRoleWait, findRoleWait, teamWait]).then(([userRoles, findRole, teamUsers]) => {
-            console.log(userRoles);
-            //if superhero
-            isSuperhero = ifSuperhero(userRoles);
-            if (isSuperhero) {
+        return Promise.all([getSessionUser(hook), wait, getTeam(hook)]).then(([sessionUser, findRole, team]) => {
+            if (get(hook, 'isSuperhero') === true)
                 return hook
-            }
 
-            const user = teamUsers.find(_user => _user.userId.toString() === userId);
-            if (user === undefined) {
+            const userId = hook.params.account.userId.toString();
+            const teamId = _teamId || hook.teamId || hook.id;
+            const teamUser = team.userId.find(_user => _user.userId.toString() === userId);
+
+            if (teamUser === undefined)
                 throw new errors.NotFound('Session user is not in this team userId=' + userId + ' teamId=' + teamId);
-            }
-            const teamRoleId = user.role;
-            //test if type object
+
+            const teamRoleId = teamUser.role;
             const userTeamPermissions = findRole('_id', teamRoleId, 'permissions');
 
             permsissions.forEach(_permsission => {
@@ -746,6 +775,22 @@ const hasTeamPermission = (permsissions, _teamId) => {
 };
 exports.hasTeamPermission = hasTeamPermission;    //to use it global
 
+/**
+ * @hook
+ * @requires restrictToCurrentSchoolAndUser - for faster use, otherwise 
+ */
+const changeTestForPermissionRouting = (hook) => {
+    return hook.data ? hook : Promise.resolve(hook)
+        .then(_hook => {
+
+            return _hook
+        }).catch(err => {
+            logger.warn(err);
+            throw new errors.Forbidden('You have not the permission to access this.');
+        })
+
+}
+
 const keys = {
     resFind: ['_id', 'name', 'times', 'description', 'userIds', 'color'],
     resId: ['_id'],
@@ -756,7 +801,7 @@ const keys = {
 //todo: TeamPermissions
 exports.before = {
     all: [auth.hooks.authenticate('jwt'), existId, filterToRelated(keys.query, 'params.query'), globalHooks.ifNotLocal(teamRolesToHook)],
-    find: [restrictToCurrentSchoolAndUser],
+    find: [restrictToCurrentSchoolAndUser, changeTestForPermissionRouting],
     get: [restrictToCurrentSchoolAndUser],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
     create: [filterToRelated(keys.data, 'data'), globalHooks.injectUserId, testInputData, updateUsersForEachClass, restrictToCurrentSchoolAndUser], //inject is needing?
     update: [blockedMethode],
@@ -775,3 +820,23 @@ exports.after = {
     patch: [addCurrentUser, removeLinkFromDB, pushUserChangedEvent],          //test schoolId remove
     remove: [filterToRelated(keys.resId, 'result')]
 };
+
+exports.beforeExtern = {
+    all: [auth.hooks.authenticate('jwt')],
+    find: [], 
+    get: [],                       
+    create: [],
+    update: [],                           
+    patch: [],        
+    remove: []
+}
+
+exports.afterExtern = {
+    all: [],
+    find: [filterToRelated(keys.resFind, 'result.data')], 
+    get: [],                       
+    create: [],
+    update: [],                           
+    patch: [],        
+    remove: []
+}
