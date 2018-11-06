@@ -100,6 +100,19 @@ class AbstractLDAPStrategy {
     removeUserFromGroup(user, role, group) {
 		throw new TypeError('Method has to be implemented.');
     }
+
+    /**
+     * provider-specific functionality to create a new expert user
+     * @abstract
+     * @param {User} user the expert's user object
+     * @param {Account} account the expert's account object
+     * @returns {Promise} Promise that resolves on successful addition or
+     * rejects otherwise
+     */
+    createExpert(user, account) {
+		throw new TypeError('Method has to be implemented.');
+    }
+
 }
 
 module.exports = AbstractLDAPStrategy;

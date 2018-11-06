@@ -129,7 +129,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
             input_file: {
                 value: this._generateGroupFile(user.ldapId, groups),
                 options: {
-                    filename: 'test.json',
+                    filename: 'groups.json',
                     type: 'json',
                     contentType: 'application/json',
                 },
@@ -163,7 +163,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
             formData: this._generateGroupUpdateFormData(user, groups, method),
         });
         return request(options).then(response => {
-            this._scheduleResponseCheck(response);
+            this._scheduleResponseCheck(response, 'ldap:update_user_groups');
             return response;
         });
     }
@@ -213,10 +213,10 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @memberof UniventionLDAPStrategy
      * @private
      */
-    _scheduleResponseCheck(response, timeout=2000, retries=5) {
+    _scheduleResponseCheck(response, action, timeout=2000, retries=5) {
         const status = (response.status || '').toLowerCase();
         if (status === 'finished') {
-            this._emitStatus('ldap:update_user_groups:success');
+            this._emitStatus(action + ':success');
             return;
         }
         const abort = status === 'failure' || status === 'aborted';
@@ -227,18 +227,80 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
                     method: 'GET'
                 });
                 request(options).then(res => {
-                    this._scheduleResponseCheck(res, timeout * 4, retries - 1);
+                    this._scheduleResponseCheck(res, action, timeout * 4, retries - 1);
                 });
             }, timeout);
         } else {
             if (abort) {
-                this._emitStatus('ldap:update_user_groups:failed', {
+                this._emitStatus(action + ':failed', {
                     response, status, retries, timeout
                 });
             } else {
-                this._emitStatus('ldap:update_user_groups:timeout');
+                this._emitStatus(action + ':timeout');
             }
         }
+    }
+
+    /**
+     * Generates a virtual expert file to upload to Univention API
+     * @param {user} user the user object
+     * @param {account} account the account object
+     * @returns {Buffer} Buffer containing JSON-object
+     * @memberof UniventionLDAPStrategy
+     * @private
+     */
+    _generateExpertFileData(user, account) {
+        return new Buffer(JSON.stringify([
+            {
+                'name': account.username,
+                'email': account.email,
+                'firstname': user.firstName,
+                'lastname': user.lastName,
+                'record_uid': user._id
+            }
+        ]));
+    }
+
+    /**
+     * Generates expert form data to be used with the Univention API
+     * @param {User} user the user object
+     * @param {Account} account the account object
+     * @returns {Object} form data object
+     * @memberof UniventionLDAPStrategy
+     * @private
+     */
+    _generateUpdateExpertFormData(user, account) {
+        return {
+            input_file: {
+                value: this._generateExpertFileData(user, account),
+                options: {
+                    filename: 'experts.json',
+                    type: 'json',
+                    contentType: 'application/json',
+                },
+            },
+            school: '/v1/schools/Experte/',
+            user_role: 'staff',
+            dryrun: 'false',
+        };
+    }
+
+    /**
+     * @public
+     * @see AbstractLDAPStrategy#createExpert
+     * @returns {Promise} resolves with truthy result, or rejects with error
+     * @memberof UniventionLDAPStrategy
+     */
+    createExpert(user, account) {
+		const options = this._getRequestOptions({
+            uri: this.config.importUrl || process.env.NBC_IMPORTURL,
+            method: 'POST',
+            formData: this._generateUpdateExpertFormData(user, account),
+        });
+        return request(options).then(response => {
+            this._scheduleResponseCheck(response, 'ldap:create_expert');
+            return response;
+        });
     }
 }
 
