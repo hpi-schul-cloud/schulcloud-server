@@ -435,7 +435,7 @@ const copyService = {
 					...fileObject,
 					...newFile
 				});
-			});;
+			});
 	}
 };
 
