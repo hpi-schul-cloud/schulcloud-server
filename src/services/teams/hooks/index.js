@@ -5,7 +5,7 @@ const errors = require('feathers-errors');
 const globalHooks = require('../../../hooks');
 const Schema = require('mongoose').Schema;
 const logger = require('winston');
-const {set,get} = require('./scope');
+const { set, get } = require('./scope');
 
 /************* to add data to hook ******************/ //todo move it to extra file 
 /*const scope = 'additionalInfosTeam'
@@ -80,7 +80,7 @@ const getTeam = (hook) => {
         if (team !== undefined) {
             resolve(team);
         } else {
-            const teamId = hook.id || (hook.result||{})._id || hook.teamId;
+            const teamId = hook.id || (hook.result || {})._id || hook.teamId;
             hook.app.service('teams').get(teamId).then(_team => {
                 set(hook, 'team', _team);
                 resolve(_team);
@@ -88,11 +88,31 @@ const getTeam = (hook) => {
                 reject(new errors.NotFound('Can not found team with teamId=' + teamId, err));
             });
         }
-    }).catch( err=>{
+    }).catch(err => {
         logger.warn(err);
         throw new errors.NotFound('Can not found this team.');
     })
 }
+
+/**
+* @helper
+*/
+const addDefaultFilePermissions = (hook) => {
+    if (hook.data === undefined || hook.teamroles === undefined)
+        return hook
+
+    hook.data.filePermission = [];
+
+    hook.teamroles.forEach(_role => {
+        const refId = _role.role;
+        const refPermModel = 'role';
+        hook.data.filePermission.push({ refId, refPermModel });
+    });
+
+    return hook
+}
+
+
 
 /**
 *   helper
@@ -304,6 +324,7 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
 
             //add team flag
             hook.data.features = ['isTeam'];
+            addDefaultFilePermissions(hook);
 
             resolve(hook.data);       //team do not exist        //todo: Add hook.data as team information and let go to complet execut with any test
         } else if (method === 'find' && teamId === undefined) {     //!!Abhängigkeit von token und query sessionUserId wird nicht geprüft -> to be discuss!
@@ -470,7 +491,7 @@ const testInputData = hook => {
 /**
  * @param hook - block this methode for every request
  */
-const blockedMethode = (hook) => {
+const blockedMethod = (hook) => {
     logger.warn('[teams]', 'Method is not allowed!');
     throw new errors.MethodNotAllowed('Method is not allowed!');
 };
@@ -617,6 +638,15 @@ const removeLinkFromDB = (hook) => {
         return hook
     }
 };
+/**
+ * @param hook
+ */
+const dataExist = hook =>{
+    if( hook.data === undefined || typeof hook.data !== 'object' ){
+        throw new errors.BadRequest('Wrong input data.');
+    }
+    return hook
+}
 
 /**
  * @param hook
@@ -631,16 +661,16 @@ const injectLinkInformationForLeaders = (hook) => {
  * @after
  */
 const pushUserChangedEvent = (hook) => {
-  /*  if (hook.additionalInfosTeam === undefined) {
-        logger.warn('This hook need additionalInfosTeam.');
-        return hook
-    } */
+    /*  if (hook.additionalInfosTeam === undefined) {
+          logger.warn('This hook need additionalInfosTeam.');
+          return hook
+      } */
     const team = getTeam(hook);
     const oldUsers = team.userIds;
-    const newUsers = get(hook,'newUsers'); //hook.additionalInfosTeam.newUsers;
+    const newUsers = get(hook, 'newUsers'); //hook.additionalInfosTeam.newUsers;
 
     if (oldUsers === undefined || newUsers === undefined) {
-       // logger.warn('No user infos.', { oldUsers, newUsers });    todo: cheak if undefined valid situation or not
+        // logger.warn('No user infos.', { oldUsers, newUsers });    todo: cheak if undefined valid situation or not
         return hook
     }
 
@@ -723,6 +753,7 @@ const teamRolesToHook = hook => {
     });
 };
 
+
 /**
  *  @gloabal
  *  @method get,patch,delete,create but do not work with find
@@ -730,9 +761,9 @@ const teamRolesToHook = hook => {
 const hasTeamPermission = (permsissions, _teamId) => {
     return (hook) => {
 
-        if (get(hook, 'isSuperhero') === true) 
+        if (get(hook, 'isSuperhero') === true)
             return hook
-           
+
         if (typeof permsissions === 'string')
             permsissions = [permsissions];
 
@@ -768,7 +799,7 @@ const hasTeamPermission = (permsissions, _teamId) => {
             return hook
         }).catch(err => {
             logger.warn(err);
-            throw new errors.Forbidden('You have not the permission to access this.');
+            throw new errors.Forbidden('You have not the permission to access this. (2)');
         })
 
     };
@@ -786,7 +817,7 @@ const changeTestForPermissionRouting = (hook) => {
             return _hook
         }).catch(err => {
             logger.warn(err);
-            throw new errors.Forbidden('You have not the permission to access this.');
+            throw new errors.Forbidden('You have not the permission to access this. (1)');
         })
 
 }
@@ -795,8 +826,10 @@ const keys = {
     resFind: ['_id', 'name', 'times', 'description', 'userIds', 'color'],
     resId: ['_id'],
     query: ['$populate', '$limit'],
-    data: ['name', 'times', 'description', 'userIds', 'color', 'features', 'ltiToolIds', 'classIds', 'startDate', 'untilDate', 'schoolId']
+    data: ['filePermission', 'name', 'times', 'description', 'userIds', 'color', 'features', 'ltiToolIds', 'classIds', 'startDate', 'untilDate', 'schoolId']
 }
+
+
 
 //todo: TeamPermissions
 exports.before = {
@@ -804,7 +837,7 @@ exports.before = {
     find: [restrictToCurrentSchoolAndUser, changeTestForPermissionRouting],
     get: [restrictToCurrentSchoolAndUser],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
     create: [filterToRelated(keys.data, 'data'), globalHooks.injectUserId, testInputData, updateUsersForEachClass, restrictToCurrentSchoolAndUser], //inject is needing?
-    update: [blockedMethode],
+    update: [blockedMethod],
     patch: [(injectDataFromLink)(updateUsersForEachClass), restrictToCurrentSchoolAndUser], //filterToRelated(keys.data,['data']) 
     remove: [restrictToCurrentSchoolAndUser, hasTeamPermission('DELETE_TEAM')]
 };
@@ -822,21 +855,21 @@ exports.after = {
 };
 
 exports.beforeExtern = {
-    all: [auth.hooks.authenticate('jwt')],
-    find: [], 
-    get: [],                       
-    create: [],
-    update: [],                           
-    patch: [],        
+    all: [auth.hooks.authenticate('jwt'),existId],
+    find: [],
+    get: [],
+    create: [blockedMethod],
+    update: [blockedMethod],
+    patch: [dataExist,hasTeamPermission(['INVITE_EXPERTS','INVITE_ADMINISTRATORS'])],   //later with switch ..see role names
     remove: []
 }
 
 exports.afterExtern = {
     all: [],
-    find: [filterToRelated(keys.resFind, 'result.data')], 
-    get: [],                       
+    find: [filterToRelated(keys.resFind, 'result.data')],
+    get: [],
     create: [],
-    update: [],                           
-    patch: [],        
+    update: [],
+    patch: [],
     remove: []
 }
