@@ -24,7 +24,7 @@ function createinfoText(hook) {
 	let role = hook.data.mailTextForRole;
 	let pin = hook.data.pin;
 	if (!role || !pin) {
-		logger.error("Role or PIN missing to define mail text.");
+		logger.warn("Role or PIN missing to define mail text.");
 		return "";
 	}
 	if (role === "parent") {
@@ -45,7 +45,7 @@ PIN: ${pin}
 Mit freundlichen Grüßen
 Ihr Schul-Cloud Team`;
 	} else {
-		logger.error("No valid role submitted to define mail text.");
+		logger.warn("No valid role submitted to define mail text.");
 		return "";
 	}
 	return text;
@@ -56,7 +56,6 @@ const checkAndVerifyPin = hook => {
 		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, {verified: true}).then(() => {
 			return Promise.resolve(hook);
 		});
-		//return hook.app.service('registrationPins').update({_id: hook.result.data[0]._id}, {$set: {verified: true}});
 	} else {
 		return Promise.resolve(hook);
 	}
