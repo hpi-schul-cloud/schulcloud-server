@@ -475,8 +475,7 @@ exports.sendEmail = (hook, maildata) => {
 
 			_.uniq(receipients).map(email => {
 				if (!maildata.content.text && !maildata.content.html) {
-					logger.error("(1) No mailcontent (text/html) was given. Don't send a mail.");
-					throw new errors.BadRequest("(1) No mailcontent (text/html) was given. Don't send a mail.");
+					logger.warn("(1) No mailcontent (text/html) was given. Don't send a mail.");
 				} else {
 					mailService.create({
 						email: email,
@@ -487,7 +486,7 @@ exports.sendEmail = (hook, maildata) => {
 							"html": "" // still todo, html template mails
 						}
 					}).catch (err => {
-						logger.error(err);
+						logger.warn(err);
 						throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 					});
 				}
@@ -500,8 +499,7 @@ exports.sendEmail = (hook, maildata) => {
 	}
 	else {
 		if (!maildata.content.text && !maildata.content.html) {
-			logger.error("(2) No mailcontent (text/html) was given. Don't send a mail.");
-			throw new errors.BadRequest("(2) No mailcontent (text/html) was given. Don't send a mail.");
+			logger.warn("(2) No mailcontent (text/html) was given. Don't send a mail.");
 		} else {
 			_.uniq(receipients).map(email=> {
 				mailService.create({
@@ -514,7 +512,7 @@ exports.sendEmail = (hook, maildata) => {
 					}
 				})
 					.catch (err => {
-						logger.error(err);
+						logger.warn(err);
 						throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 					});
 			});
