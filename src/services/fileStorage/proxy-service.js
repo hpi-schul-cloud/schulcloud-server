@@ -477,6 +477,57 @@ const newFileService = {
 	}
 };
 
+const filePermissionService = {
+	async patch(_id, data, params) {
+		const { payload: { userId } } = params;
+		const { role, write, read, create } = data;
+
+		return canWrite(userId, _id)
+			.then(() => Promise.all([
+					FileModel.findOne({ _id }).exec(),
+					RoleModel.findOne({ name: role }).exec()
+				])
+			)
+			.then(([ fileObject, roleObject ]) => {
+				
+				if( !roleObject ){
+					return Promise.reject(new errors.NotFound(`Unknown role ${role}`));
+				}
+
+				if( !fileObject ){
+					return Promise.reject(new errors.NotFound(`File with ID ${_id} not found`));
+				}
+				
+				const { permissions } = fileObject;
+				let permission = permissions.find(perm => perm.refId.toString() === roleObject._id.toString());
+
+				if( !permission ) {
+					permissions.push(sanitizeObj({
+						refId: roleObject._id,
+						refPermModel: 'role',
+						write,
+						read,
+						create,
+						delete: data['delete'],
+					}));
+				}
+				else {
+					permission = Object.assign(permission, sanitizeObj({
+						write,
+						read,
+						create,
+						delete: data['delete'],
+					}));
+				}
+
+				return FileModel.update({ _id }, {
+					$set: { permissions }
+				}).exec();
+			})
+			.catch(() => new errors.Forbidden());
+	}
+};
+
 module.exports = function () {
 	const app = this;
 
@@ -488,6 +539,7 @@ module.exports = function () {
 	app.use('/fileStorage/bucket', bucketService);
 	app.use('/fileStorage/total', fileTotalSizeService);
 	app.use('/fileStorage/copy', copyService);
+	app.use('/fileStorage/permission', filePermissionService);
 	app.use('/fileStorage/files/new', newFileService);
 	app.use('/fileStorage', fileStorageService);
 
@@ -501,6 +553,7 @@ module.exports = function () {
 		'/fileStorage/total',
 		'/fileStorage/copy',
 		'/fileStorage/files/new',
+		'/fileStorage/permission',
 	].forEach(path => {
 		// Get our initialize service to that we can bind hooks
 		const service = app.service(path);
