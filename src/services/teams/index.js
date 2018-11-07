@@ -107,9 +107,9 @@ class Accept {
 	 * @param {*} id 
 	 * @param {*} params 
 	 */
-	get(id,params){
+	get(id, params) {
 		const teamId = id;
-
+		
 	}
 
 	setup(app, path) {
@@ -131,7 +131,7 @@ class Remove {
 	 * @param {*} id 
 	 * @param {*} params 
 	 */
-	remove(id,params){
+	remove(id, params) {
 		const teamId = id;
 	}
 
@@ -159,16 +159,16 @@ module.exports = function () {
 
 	const teamsServices = app.service('/teams');
 	const topLevelServices = {
-		get:app.service('/teams/extern/get'),
-		add:app.service('/teams/extern/add'),
-		accept:app.service('/teams/extern/accept'),
-		remove:app.service('/teams/extern/remove')
+		get: app.service('/teams/extern/get'),
+		add: app.service('/teams/extern/add'),
+		accept: app.service('/teams/extern/accept'),
+		remove: app.service('/teams/extern/remove')
 	};
 
 	teamsServices.before(hooks.before);
 	teamsServices.after(hooks.after);
 
-	Object.values( topLevelServices ).forEach(_service=>{
+	Object.values(topLevelServices).forEach(_service => {
 		_service.before(hooks.beforeExtern);
 		_service.after(hooks.afterExtern);
 	});
