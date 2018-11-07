@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+
+  hydra-postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+
+  hydra-migrate-database:
+    image: oryd/hydra:${HYDRA_VERSION}
+    environment:
+        - DATABASE_URL
+    command: migrate sql $DATABASE_URL
+
+  hydra-host:
+    image: oryd/hydra:${HYDRA_VERSION}
+    ports:
+      - 9000:4444
+      - 9001:4445
+    environment:
+      - SYSTEM_SECRET
+      - DATABASE_URL
+      - OAUTH2_ISSUER_URL
+      - OAUTH2_CONSENT_URL
+      - OAUTH2_LOGIN_URL
+      - HTTPS_ALLOW_TERMINATION_FROM
+      - OIDC_SUBJECT_TYPES_SUPPORTED=pairwise
+      - OIDC_SUBJECT_TYPE_PAIRWISE_SALT
+    depends_on:
+      - hydra-migrate-database
+    restart: on-failure
+    command: serve all ${SERVE_PARAMS}
