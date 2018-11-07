@@ -57,7 +57,10 @@ module.exports = function() {
 			let jwt = undefined;
 			cookies.map(cookie => {
 				if (cookie.includes('jwt')) {
-					jwt = cookie.split('=')[1];
+					cookie = cookie.split('=');
+					if(cookie[0] === 'jwt') {
+						jwt = cookie[1];
+					}
 				}
 			});
 			return jwt;
