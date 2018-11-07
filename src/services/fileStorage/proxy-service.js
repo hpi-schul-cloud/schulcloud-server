@@ -1,7 +1,6 @@
 'use strict';
 const pathUtil = require('path').posix;
 const hooks = require('./hooks');
-const AWSStrategy = require('./strategies/awsS3');
 const errors = require('feathers-errors');
 const swaggerDocs = require('./docs/');
 const filePermissionHelper = require('./utils/filePermissionHelper');
@@ -10,19 +9,10 @@ const generateFlatFileName = require('./utils/filePathHelper').generateFileNameS
 const returnFileType = require('./utils/filePathHelper').returnFileType;
 const FileModel = require('./model').fileModel;
 const DirectoryModel = require('./model').directoryModel;
+const createCorrectStrategy = require('./strategies').createStrategy;
 const LessonModel = require('../lesson/model');
 const rp = require('request-promise-native');
 const fs = require('fs');
-
-const strategies = {
-	awsS3: AWSStrategy
-};
-
-const createCorrectStrategy = (fileStorageType) => {
-	const strategy = strategies[fileStorageType];
-	if (!strategy) throw new errors.BadRequest("No file storage provided for this school");
-	return new strategy();
-};
 
 /** find all files in deleted (virtual) directory with regex (also nested) **/
 const deleteAllFilesInDirectory = (path, fileStorageType, userId) => {
@@ -202,7 +192,7 @@ class SignedUrlService {
 		// converts the real filename to a unique one in flat-storage
 		// if action = getObject, file should exist in proxy db
     let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({flatFileName});
-    
+
 		return fileProxyPromise.then(res => {
 			if (!res) return;
 
@@ -213,13 +203,13 @@ class SignedUrlService {
 				let externalSchoolId;
 				if (p.permission === 'shared') externalSchoolId = res.schoolId;
 
-				let header =  {							
+				let header =  {
 					// add meta data for later using
 					"Content-Type": fileType,
 					"x-amz-meta-path": dirName,
 					"x-amz-meta-name": fileName,
 					"x-amz-meta-flat-name": flatFileName,
-					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"				
+					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 				};
 
 				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId, download)
