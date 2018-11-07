@@ -39,3 +39,6 @@ backup/*
 
 # Visual Studio Code data
 .vscode
+
+#clipboard uploads
+uploads/*
