@@ -41,5 +41,6 @@ const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 module.exports = {
 	schoolModel,
 	yearModel,
-	gradeLevelModel
+	gradeLevelModel,
+	fileStorageTypes
 };

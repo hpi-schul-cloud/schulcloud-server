@@ -474,17 +474,22 @@ exports.sendEmail = (hook, maildata) => {
 			});
 
 			_.uniq(receipients).map(email => {
-				mailService.create({
-					email: email,
-					subject: maildata.subject || "E-Mail von der Schul-Cloud",
-					headers: maildata.headers || {},
-					content: {
-						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
-						"html": ""
-					}
-				}).catch (err => {
-					throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
-				});
+				if (!maildata.content.text && !maildata.content.html) {
+					logger.warn("(1) No mailcontent (text/html) was given. Don't send a mail.");
+				} else {
+					mailService.create({
+						email: email,
+						subject: maildata.subject || "E-Mail von der Schul-Cloud",
+						headers: maildata.headers || {},
+						content: {
+							"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
+							"html": "" // still todo, html template mails
+						}
+					}).catch (err => {
+						logger.warn(err);
+						throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+					});
+				}
 			});
 		return hook;
 		})
@@ -493,20 +498,25 @@ exports.sendEmail = (hook, maildata) => {
 		});
 	}
 	else {
-		_.uniq(receipients).map(email=> {
-			mailService.create({
-				email: email,
-				subject: maildata.subject || "E-Mail von der Schul-Cloud",
-				headers: maildata.headers || {},
-				content: {
-					"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
-					"html": ""
-				}
-			})
-			.catch (err => {
-				throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+		if (!maildata.content.text && !maildata.content.html) {
+			logger.warn("(2) No mailcontent (text/html) was given. Don't send a mail.");
+		} else {
+			_.uniq(receipients).map(email=> {
+				mailService.create({
+					email: email,
+					subject: maildata.subject || "E-Mail von der Schul-Cloud",
+					headers: maildata.headers || {},
+					content: {
+						"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
+						"html": "" // still todo, html template mails
+					}
+				})
+					.catch (err => {
+						logger.warn(err);
+						throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+					});
 			});
-		});
+		}
 		return hook;
 	}
 };

@@ -249,84 +249,84 @@
 	],
 	"__v": 0
 },
-{
-    "_id" : { "$oid": "5bb5c190fb457b1c3c0c7e0f" },
-    "name" : "teammember",
-    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000" },
-    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000" },
+{ 
+    "_id" : {"$oid": "5bb5c190fb457b1c3c0c7e0f"}, 
+    "name" : "teammember", 
+    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
+    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
     "roles" : [
 
-    ],
+    ], 
     "permissions" : [
-        "VIEW_ALL_FILES",
-        "UPLOAD_FILES",
-        "USE_ROCKETCHAT",
-        "LEAVE_TEAM",
+        "VIEW_ALL_FILES", 
+        "UPLOAD_FILES", 
+        "USE_ROCKETCHAT", 
+        "LEAVE_TEAM", 
         "USE_LIBREOFFICE"
-    ],
+    ], 
     "__v" : 0
 },
-{
-    "_id" : { "$oid": "5bb5c391fb457b1c3c0c7e10" },
-    "name" : "teamexpert",
-    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000" },
-    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000" },
+{ 
+    "_id" : { 		"$oid": "5bb5c391fb457b1c3c0c7e10"}, 
+    "name" : "teamexpert", 
+    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
+    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
     "roles" : [
 
-    ],
+    ], 
     "permissions" : [
-        "VIEW_EXPERT_FILES",
-        "UPLOAD_FILES",
-        "USE_ROCKETCHAT",
-        "LEAVE_TEAM",
+        "VIEW_EXPERT_FILES", 
+        "UPLOAD_FILES", 
+        "USE_ROCKETCHAT", 
+        "LEAVE_TEAM", 
         "USE_LIBREOFFICE"
-    ],
+    ], 
     "__v" : 0
 },
-{
-    "_id" : { "$oid": "5bb5c49efb457b1c3c0c7e11" },
-    "name" : "teamleader",
-    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000" },
-    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000" },
+{ 
+    "_id" : { 		"$oid": "5bb5c49efb457b1c3c0c7e11"}, 
+    "name" : "teamleader", 
+    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
+    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
     "roles" : [
-        { "$oid": "5bb5c190fb457b1c3c0c7e0f" }
-    ],
+        { 		"$oid": "5bb5c190fb457b1c3c0c7e0f"}
+    ], 
     "permissions" : [
-        "EDIT_ALL_FILES",
-        "ADD_SCHOOL_MEMBERS",
-        "CREATE_NEWS",
-        "CREATE_TOPICS_AND_TASKS",
+        "EDIT_ALL_FILES", 
+        "ADD_SCHOOL_MEMBERS", 
+        "CREATE_NEWS", 
+        "CREATE_TOPICS_AND_TASKS", 
         "CHANGE_TEAM_ROLES"
-    ],
+    ], 
     "__v" : 0
 },
-{
-    "_id" : { "$oid": "5bb5c545fb457b1c3c0c7e13" },
-    "name" : "teamadministrator",
-    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000" },
-    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000" },
+{ 
+    "_id" : { 		"$oid": "5bb5c545fb457b1c3c0c7e13"}, 
+    "name" : "teamadministrator", 
+    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
+    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
     "roles" : [
-        { "$oid": "5bb5c49efb457b1c3c0c7e11" }
-    ],
+        { 		"$oid": "5bb5c49efb457b1c3c0c7e11"}
+    ], 
     "permissions" : [
-        "INVITE_EXPERTS",
-        "INVITE_ADMINISTRATORS",
-        "REMOVE_MEMBERS",
+        "INVITE_EXPERTS", 
+        "INVITE_ADMINISTRATORS", 
+        "REMOVE_MEMBERS", 
         "RENAME_TEAM"
-    ],
+    ], 
     "__v" : 0
 },
-{
-    "_id" : { "$oid": "5bb5c62bfb457b1c3c0c7e14" },
-    "name" : "teamowner",
-    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000" },
-    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000" },
+{ 
+    "_id" : { 		"$oid": "5bb5c62bfb457b1c3c0c7e14"}, 
+    "name" : "teamowner", 
+    "updatedAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
+    "createdAt" : { "$date": "2018-10-04T09:00:00.000+0000"}, 
     "roles" : [
-        { "$oid": "5bb5c545fb457b1c3c0c7e13"}
-    ],
+        { 		"$oid": "5bb5c545fb457b1c3c0c7e13"}
+    ], 
     "permissions" : [
         "DELETE_TEAM"
-    ],
+    ], 
     "__v" : 0
 }
 ]
