@@ -753,7 +753,7 @@ const teamRolesToHook = hook => {
         throw new errors.BadRequest('Can not resolve team roles.', err);
     });
 };
-
+exports.teamRolesToHook = teamRolesToHook;
 
 /**
  *  @gloabal
@@ -772,8 +772,9 @@ const hasTeamPermission = (permsissions, _teamId) => {
             if (typeof hook.findRole === 'function') {
                 resolve(hook.findRole);
             } else {
-                teamRolesToHook(hook);
-                resolve(hook.findRole);
+                teamRolesToHook(hook).then(_hook => {
+                    resolve(_hook.findRole);
+                });
             }
         });
 
@@ -783,7 +784,7 @@ const hasTeamPermission = (permsissions, _teamId) => {
 
             const userId = hook.params.account.userId.toString();
             const teamId = _teamId || hook.teamId || hook.id;
-            const teamUser = team.userId.find(_user => _user.userId.toString() === userId);
+            const teamUser = team.userIds.find(_user => _user.userId.toString() === userId);
 
             if (teamUser === undefined)
                 throw new errors.NotFound('Session user is not in this team userId=' + userId + ' teamId=' + teamId);
@@ -856,13 +857,13 @@ exports.after = {
 };
 
 exports.beforeExtern = {
-    all: [auth.hooks.authenticate('jwt'), existId],
+    all: [auth.hooks.authenticate('jwt'), existId, teamRolesToHook],
     find: [],
     get: [],
     create: [blockedMethod],
     update: [blockedMethod],
     patch: [dataExist, hasTeamPermission(['INVITE_EXPERTS', 'INVITE_ADMINISTRATORS'])],   //later with switch ..see role names
-    remove: []
+    remove: [blockedMethod]
 };
 
 exports.afterExtern = {

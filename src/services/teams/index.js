@@ -5,6 +5,7 @@ const errors = require('feathers-errors');
 const { teamsModel } = require('./model');
 const hooks = require('./hooks');
 const logger = require('winston');
+//const {teamRolesToHook} = require('./hooks');
 //todo docs require 
 
 class Get {
@@ -19,10 +20,17 @@ class Get {
 	 */
 	find(params) {
 		const teamsService = this.app.service('teams');
-		const userId = (params.account || {}).userId; //if userId is undefined no result is found
-		const restrictedFindMatch = { invitedUserIds: { $elemMatch: { userId } } }
+		const usersService = this.app.service('users');
 
-		return teamsService.find({ query: restrictedFindMatch });
+		const userId = ((params.account || {}).userId || {}).toString();
+		return usersService.get(userId).then(_user => {
+			const email = _user.email;
+			const restrictedFindMatch = { invitedUserIds: { $elemMatch: { email } } };
+			return teamsService.find({ query: restrictedFindMatch });
+		}).catch(err => {
+			logger.warn(err);
+			throw new errors.NotFound('User do not exist.');
+		});
 	}
 
 	setup(app, path) {
@@ -46,11 +54,11 @@ class Add {
 	 * @param {*} params 
 	 */
 	patch(id, data, params) {
-		const teamsService = this.app.service('team');
+		const teamsService = this.app.service('teams');
 		const usersService = this.app.service('users');
 		const email = data.email;
 		const userId = data.userId;
-		const role = data.role;
+		let role = data.role;
 		const teamId = id;
 
 		const errorHandling = err => {
@@ -66,22 +74,25 @@ class Add {
 			return teamsService.get(teamId)
 				.then(_team => {
 					let invitedUserIds = _team.invitedUserIds;
-					invitedUserIds.push({ userId, role });
+					invitedUserIds.push({ email, role });
 
 					return teamsService.patch(teamId, { invitedUserIds }, params)
 						.then(_patchedTeam => {
 							return Promise.resolve('Success!');
 						})
-						.catch(errorHandling)
+						.catch(errorHandling);
 				}).catch(errorHandling);
 		} else if (userId && role) {
 			return usersService.get(userId)
 				.then(_user => {
 					return teamsService.get(teamId).then(_team => {
 						let userIds = _team.userIds;
-						userIds.push({ userId, role });
-						return teamsService.patch(teamId, { userIds }, params).catch(errorHandling);
-					}).catch(errorHandling)
+						return hooks.teamRolesToHook(this).then(_self => {
+							role = _self.findRole('name', role, '_id');
+							userIds.push({ userId, role });
+							return teamsService.patch(teamId, { userIds }, params).catch(errorHandling);
+						}).catch(errorHandling);
+					}).catch(errorHandling);
 				}).catch(errorHandling);
 		} else {
 			throw new errors.BadRequest('Missing input data.');
@@ -109,7 +120,41 @@ class Accept {
 	 */
 	get(id, params) {
 		const teamId = id;
-		
+		const userId = ((params.account || {}).userId || {}).toString();
+		const teamsService = this.app.service('teams');
+		const usersService = this.app.service('users');
+
+		return usersService.get(userId).then(_user => {
+			const email = _user.email;
+			return teamsService.get(teamId).then(_team => {
+				let invitedUserIds = _team.invitedUserIds;
+				let userIds = _team.userIds;
+
+				const invitedUser = invitedUserIds.find(element => element.email === email);
+				if (invitedUser === undefined)
+					throw new errors.NotFound('User is not in this team.');
+
+				return hooks.teamRolesToHook(this).then(_self => {
+					const role = _self.findRole('name', invitedUser.role, '_id');
+					userIds.push({ userId, role });
+
+					invitedUserIds = invitedUserIds.reduce((stack, element) => {
+						if (element.email !== email)
+							stack.push(element);
+						return stack;
+					}, []);
+
+					return teamsService.patch(teamId, { invitedUserIds, userIds }, params).catch(err => {
+						throw new errors.Conflict('Can not patch team with changes.', err);
+					});
+				});
+			}).catch(err => {
+				throw new errors.NotFound('Can not take the team.', err);
+			});
+		}).catch(err => {
+			logger.warn(err);
+			throw new errors.Forbidden('You have not the permission to do this.');
+		});
 	}
 
 	setup(app, path) {
@@ -129,10 +174,29 @@ class Remove {
 	/**
 	 * 
 	 * @param {*} id 
+	 * @param {*} data 
 	 * @param {*} params 
 	 */
-	remove(id, params) {
+	patch(id, data, params) {
 		const teamId = id;
+		const teamsService = this.app.service('teams');
+		const email = data.email;
+
+		return teamsService.get(teamId).then(_team => {
+			let invitedUserIds = _team.invitedUserIds.reduce((stack, element) => {
+				if (element.email !== email)
+					stack.push(element);
+				return stack;
+			}, []);
+
+			return teamsService.patch(teamId, { invitedUserIds }, params).catch(err => {
+				throw new errors.Conflict('Can not patch team with changes.', err);
+			});
+		}).catch(err => {
+			logger.warn(err);
+			throw new errors.NotFound('No team found.');
+		});
+		//remove user from inv list
 	}
 
 	setup(app, path) {
