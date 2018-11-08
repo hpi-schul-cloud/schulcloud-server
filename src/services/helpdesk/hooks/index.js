@@ -17,7 +17,6 @@ function createInfoText(user, data){
 
 function createFeedbackText(user, data){
 	let text = "User: " + user + "\n"
-	+ "E-Mail: " + data.email + "\n"
 	+ "Schule: " + data.schoolName + "\n"
 	+ "Bereich ausgewählt: " + data.category + "\n";
 	if (data.desire && data.desire != ""){
