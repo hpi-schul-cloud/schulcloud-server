@@ -88,7 +88,8 @@ const updateAccountUsername = (hook) => {
 			}
 		}).catch(error => {
 			let err = error;
-		});
+		})
+	};
   
 const removeStudentFromClasses = (hook) => {
 	const classesService = hook.app.service('/classes');
@@ -338,4 +339,4 @@ exports.after = {
 	update: [],
 	patch: [],
 	remove: [removeStudentFromClasses, removeStudentFromCourses]
-}
+};
