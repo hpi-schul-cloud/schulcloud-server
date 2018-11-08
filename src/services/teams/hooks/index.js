@@ -141,50 +141,59 @@ const createUserWithRole = (hook, userId, selectedRole) => {
  * _new_ = [2,3,4] 
  * @example - _old_ ~ _new_ = [1] => remove item
  * @example - _new_ ~ _old_ = [4] => add item
- * @param {all Object(remove:[],add:[])} - List removed and added infos
  */
-const arrayDiff = (oldArray, newArray, key, all) => {
-    try {
-        if (Array.isArray(oldArray) === false || Array.isArray(newArray) === false) {
-            throw new errors.NotAcceptable('Wrong input expect arrays, get oldArray=' + Array.isArray(oldArray) + ' and newArray=' + Array.isArray(newArray));
-        }
-        if (oldArray.length <= 0 || newArray <= 0) {
-            throw new errors.LengthRequired('Wrong input expect arrays.length>0, get oldArray=' + oldArray.length + ' and newArray=' + newArray.length);
-        }
-
-        const diff = (a1, a2) => {
-            if (key === undefined)
-                return a1.filter(x => !a2.includes(x));
-            else
-                return a1.reduce((stack, element) => {
-                    const v1 = element[key];
-                    for (let i = 0; i < a2.length; i++) {
-                        if (v1 === a2[i][key])
-                            return stack;            //if found return without adding
-                    }
-                    stack.push(element);              //if not found add element from a1
-                    return stack;
-                }, []);
-        };
-
-        return all === true ? { remove: diff(oldArray, newArray), add: diff(newArray, oldArray) } : diff(oldArray, newArray);
+const arrayDiff = (oldArray, newArray, key) => {
+    // try {
+    if (Array.isArray(oldArray) === false || Array.isArray(newArray) === false) {
+        throw new errors.NotAcceptable('Wrong input expect arrays, get oldArray=' + Array.isArray(oldArray) + ' and newArray=' + Array.isArray(newArray));
     }
-    catch (err) {
-        logger.warn(err);
-        return all === true ? { remove: [], add: [] } : [];
+    if (oldArray.length <= 0 || newArray.length <= 0) {
+        throw new errors.LengthRequired('Wrong input expect arrays.length>0, get oldArray=' + oldArray.length + ' and newArray=' + newArray.length);
     }
+
+    const diff = (a1, a2) => {
+        if (key === undefined)
+            return a1.filter(x => !a2.includes(x));
+        else
+            return a1.reduce((stack, element) => {
+                const v1 = element[key];
+                for (let i = 0; i < a2.length; i++) {
+                    if (v1 === a2[i][key])
+                        return stack;            //if found return without adding
+                }
+                stack.push(element);              //if not found add element from a1
+                return stack;
+            }, []);
+    };
+
+    return diff(oldArray, newArray);
+    //  }
+    //   catch (err) {
+    //      logger.warn(err);
+    //      return [];
+    //  }
 };
 
+/**
+ * @requires function:arrayDiff
+ * @param {Array} baseArray 
+ * @param {Array} changedArray 
+ * @param {String} [key] - optional for objects in arrays
+ */
+const arrayRemoveAddDiffs = (baseArray, changedArray, key) => {
+    return { remove: arrayDiff(baseArray, changedArray, key), add: arrayDiff(changedArray, baseArray, key) };
+};
 
 /**
 *   helper  todo:make a promise that return then the error message must not be passed and make debug faster
+*   todo: replace errorMessage with return promise and error handling by each point that use it
 */
 const extractOne = (res, errorMessage) => {
     if ((res.data || {}).length == 1) {
         return res.data[0];
     } else {
         if (res.data.length === 0) {
-            throw new errors.NotFound('The user is not in this team, or no team is avaible.', { errorMessage: errorMessage || '' });
+            throw new errors.NotFound('The user is not in this team, or no team is available.', { errorMessage: errorMessage || '' });
         } else {
             throw new errors.BadRequest('Bad intern call. (1)', { errorMessage: errorMessage || '' });
         }
@@ -192,13 +201,16 @@ const extractOne = (res, errorMessage) => {
 };
 
 /**
-*   helper
+*   @helper
 *   @requires const Schema = require('mongoose').Schema;
+*   @return {boolean default=true} - otherwise see @throws
+*   @throws {BadRequest} - If input is no typeof moongose Schema.Types.ObjectId it is throw an error
 */
 const testIfObjectId = (id) => {
     if (id instanceof Schema.Types.ObjectId || id === undefined) {
         throw new errors.BadRequest('Wrong input. (5)');
     }
+    return true;
 };
 
 
@@ -206,7 +218,7 @@ const testIfObjectId = (id) => {
  * @param hook - mapped userIds from class to userIds, clear all double userId inputs
  */
 const updateUsersForEachClass = (hook) => {
-    if ((hook.data.classIds || {}).length <= 0) {
+    if ((hook.data.classIds || {}).length === undefined || hook.data.classIds.length <= 0) {
         return hook;
     }
 
@@ -217,9 +229,6 @@ const updateUsersForEachClass = (hook) => {
             newUserList.push(id);
         }
     };
-    if (hook.data.classIds === undefined || hook.data.classIds.length <= 0) {
-        return hook;
-    }
 
     return hook.app.service('classes').find({
         query: {
@@ -351,15 +360,12 @@ const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
     /***************
      *   execute    *
      * **************/
-    return Promise.all([getSessionUser(hook), waitTeams, waitUserIds]).then(data => {
+    return Promise.all([getSessionUser(hook), waitTeams, waitUserIds]).then(([sessionUser, team, users]) => {
         //const inputSchoolId = (hook.data||{}).schoolId || (hook.params.query||{}).schoolId;
-        const sessionUser = data[0];
-        let team = data[1];    //for create it is the team with created data
-        const users = data[2];
         const userIds = hook.data.userIds;
         const isSuperhero = ifSuperhero(sessionUser.roles);
 
-        if (data.length != 3 || sessionUser === undefined || team === undefined || sessionUser.schoolId === undefined) {
+        if (sessionUser === undefined || team === undefined || sessionUser.schoolId === undefined) {
             throw new errors.BadRequest('Bad intern call. (3)');
         }
         const sessionSchoolId = sessionUser.schoolId.toString();  //take from user db
@@ -587,11 +593,11 @@ const injectDataFromLink = (fallback) => {
                     throw new errors.NotFound('No team found.', err);
                 });
 
-                return Promise.all([waitUser, waitTeam]).then(data => {
-                    const user = data[0][0];
-                    const schoolId = data[0][1].toString();
-                    const teamUsers = data[1].userIds;
-                    const teamSchoolIds = data[1].schoolIds.map(_id => {
+                return Promise.all([waitUser, waitTeam]).then(([_waitUser, _waitTeam]) => {
+                    const user = _waitUser[0];      //todo replace with _waitUser -> [user,schoolId]
+                    const schoolId = _waitUser[1].toString();
+                    const teamUsers = _waitTeam.userIds;
+                    const teamSchoolIds = _waitTeam.schoolIds.map(_id => {
                         return _id.toString();
                     });
 
@@ -675,7 +681,7 @@ const pushUserChangedEvent = (hook) => {
         return hook;
     }
 
-    const changes = arrayDiff(oldUsers, newUsers, 'userId', true);
+    const changes = arrayRemoveAddDiffs(oldUsers, newUsers, 'userId');
 
     if (changes.remove.length > 0 || changes.add.length > 0) {
         hook.additionalInfosTeam.changes = changes;
@@ -756,7 +762,7 @@ const teamRolesToHook = hook => {
 exports.teamRolesToHook = teamRolesToHook;
 
 /**
- *  @gloabal
+ *  @global
  *  @method get,patch,delete,create but do not work with find
  */
 const hasTeamPermission = (permsissions, _teamId) => {
@@ -856,6 +862,26 @@ exports.after = {
     remove: [filterToRelated(keys.resId, 'result')]
 };
 
+const sendInfo = hook => {
+
+    if (hook.data.email === undefined)
+        return hook;
+
+    const teamName = (hook.result || {}).name;
+    const email = hook.data.email;
+    //todo
+    /*
+	globalHooks.sendEmail(hook, {
+		"subject": "Team Einladung",
+		"emails": [email],
+		"content": {
+			"text": 'Sie wurden zu einem Team eingeladen.'
+		}
+    });
+    */
+    return hook;
+};
+
 exports.beforeExtern = {
     all: [auth.hooks.authenticate('jwt'), existId, teamRolesToHook],
     find: [],
@@ -872,6 +898,6 @@ exports.afterExtern = {
     get: [],
     create: [],
     update: [],
-    patch: [],
+    patch: [sendInfo],
     remove: []
 };

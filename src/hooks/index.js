@@ -252,7 +252,7 @@ exports.checkCorrectCourseOrTeamId = async (hook) => {
 		} else {
 			throw new errors.Forbidden("The entered team doesn't belong to you!");
 		}
-	} else if (hook.data.courseGrupId || hook.data.courseId) {
+	} else if (hook.data.courseGroupId || hook.data.courseId) {
 		let courseService = hook.app.service('courses');
 		const courseId = (hook.data.courseId || '').toString() || (hook.id || '').toString();
 		let query = { teacherIds: {$in: [hook.params.account.userId] } };
