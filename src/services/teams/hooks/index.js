@@ -557,6 +557,7 @@ const filterToRelated = (keys, path, objectToFilter) => {
         "inviter" : "0000d224816abba584714c9c"
     }, 
     "__v" : NumberInt(0)}
+    @deprecated 
  */
 const injectDataFromLink = (fallback) => {
     return (hook) => {
@@ -627,6 +628,7 @@ const injectDataFromLink = (fallback) => {
 
 /**
  * @param hook
+ * @deprecated
  */
 const removeLinkFromDB = (hook) => {
     if (hook.injectLink !== undefined) {
@@ -846,7 +848,7 @@ exports.before = {
     get: [restrictToCurrentSchoolAndUser],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
     create: [filterToRelated(keys.data, 'data'), globalHooks.injectUserId, testInputData, updateUsersForEachClass, restrictToCurrentSchoolAndUser], //inject is needing?
     update: [blockedMethod],
-    patch: [(injectDataFromLink)(updateUsersForEachClass), restrictToCurrentSchoolAndUser], //filterToRelated(keys.data,['data']) 
+    patch: [(injectDataFromLink)(updateUsersForEachClass), restrictToCurrentSchoolAndUser], //todo: filterToRelated(keys.data,'data') 
     remove: [restrictToCurrentSchoolAndUser, hasTeamPermission('DELETE_TEAM')]
 };
 
