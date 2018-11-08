@@ -1,10 +1,14 @@
 const errors = require('feathers-errors');
 const accountModel = require('../account/model');
+const logger = require('winston');
 
 const syncFromLdap = function(app) {
+	logger.info('Syncing from LDAP');
 	return app.service('systems').find({ query: { type: 'ldap' } })
 		.then(ldapSystems => {
+			logger.info(`Found ${ldapSystems.total} LDAP configurations.`);
 			return Promise.all(ldapSystems.data.map(system => {
+				logger.info(`Syncing ${system._id}...`);
 				const config = system.ldapConfig;
 				return app.service('ldap').getSchools(config)
 					.then(data => {
@@ -17,9 +21,13 @@ const syncFromLdap = function(app) {
 								}).then(_ => {
 									return app.service('ldap').getClasses(config, school);
 								}).then(data => {
-									return createClassesFromLdapData(app,data,school);
+									return createClassesFromLdapData(app, data, school);
 								});
 						}));
+					})
+					.then(res => {
+						logger.log(`Finished syncing ${system.id}`);
+						return Promise.resolve(res);
 					});
 			}));
 		});
@@ -38,10 +46,14 @@ const getCurrentYearAndFederalState = function(app) {
 };
 
 const createSchoolsFromLdapData = function(app, data, system) {
+	logger.info(`Got ${data.length()} schools from the server`);
+	let newSchools = 0;
+	let updates = 0;
 	return Promise.all(data.map(ldapSchool => {
 		return app.service('schools').find({ query: { ldapSchoolIdentifier: ldapSchool.ou } })
 			.then(schools => {
 				if (schools.total != 0) {
+					updates += 1;
 					return app.service('schools').update(
 						{_id: schools.data[0]._id},
 						{$set: {name: ldapSchool.displayName}});
@@ -56,10 +68,15 @@ const createSchoolsFromLdapData = function(app, data, system) {
 						currentYear: currentYear,
 						federalState: federalState
 					};
+					newSchools += 1;
 					return app.service('schools').create(schoolData);
 				});
 			});
-	}));
+	}))
+	.then((res) => {
+		logger.info(`Created ${newSchools} new schools and updated ${updates} schools`);
+		return Promise.resolve(res);
+	});
 };
 
 const createUserAndAccount = function(app, idmUser, school, system) {
@@ -213,13 +230,7 @@ module.exports = function () {
 
 		find(params) {
 			if (params.query.target == 'ldap') {
-				return syncFromLdap(app)
-					.then(res => {
-						return Promise.resolve({ data: true });
-					})
-					.catch(err => {
-						return Promise.reject(err);
-					});
+				return syncFromLdap(app);
 			} else {
 				return Promise.reject('target not found');
 			}
