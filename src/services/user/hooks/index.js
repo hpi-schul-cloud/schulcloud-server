@@ -4,6 +4,7 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const errors = require('feathers-errors');
+const logger = require('winston');
 
 /**
  *
@@ -69,6 +70,29 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
+const updateAccountUsername = (hook) => {
+	let accountService = hook.app.service('/accounts');
+	
+	accountService.find({ query: {userId: hook.id}})
+		.then(result =>{
+			let account = result[0];
+			let accountId = (account._id).toString();
+			if (!account.systemId){
+				const {email} = hook.data;
+				return accountService.patch(accountId, {username: email}, {account: hook.params.account})
+					.then(result => {
+						return Promise.resolve(hook);
+					});
+			} else {
+				hook.result = {};
+				return Promise.resolve(hook);
+			}
+		}).catch(error => {
+			logger.log(error);
+			return Promise.reject(error);
+		})
+	};
+  
 const removeStudentFromClasses = (hook) => {
 	const classesService = hook.app.service('/classes');
 	const userId = hook.id;
@@ -224,7 +248,8 @@ exports.before = function(app) {
 			globalHooks.hasPermission('USER_EDIT'),
 			globalHooks.permitGroupOperation,
 			sanitizeData,
-			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
+			updateAccountUsername,
 		],
 		remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USER_CREATE'), globalHooks.permitGroupOperation]
 	};

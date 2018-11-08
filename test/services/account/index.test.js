@@ -87,6 +87,15 @@ describe('account service', function () {
 			});
 	});
 
+	it('finds account by username', () => {
+		return accountService.find({ query: {username: "admin@schul-cloud.org"}})
+			.then(result => {
+				assert(result.length == 1);
+				assert.equal(result[0].username, "admin@schul-cloud.org");
+				assert.equal(result[0]._id, "0000d213816abba584714caa");
+			});
+	});
+  
 	it('failed to patch password', () => {
 		return accountService.patch('0000d213816abba584714c0a', { password: '1234'})
 			.catch(exception => {
