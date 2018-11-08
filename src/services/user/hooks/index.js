@@ -89,6 +89,7 @@ const updateAccountUsername = (hook) => {
 			}
 		}).catch(error => {
 			logger.log(error);
+			return Promise.reject(error);
 		})
 	};
   
