@@ -338,4 +338,4 @@ exports.after = {
 	update: [],
 	patch: [],
 	remove: [removeStudentFromClasses, removeStudentFromCourses]
-};
+}
