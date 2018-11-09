@@ -1,13 +1,30 @@
 'use strict';
 
+//const {permissionSchema} = require('../fileStorage/model.js'); todo: if it merged
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+//todo: later take it diretly from fileStorage
+const permissionSchema = new Schema({
+	refId: {
+		type: Schema.Types.ObjectId,
+		refPath: 'refPermModel'
+	},
+	refPermModel: {
+		type: String,
+		enum: ['user', 'role']
+	},
+	write: { type: Boolean, default: true },
+	read: { type: Boolean, default: true },
+	create: { type: Boolean, default: true },
+	delete: { type: Boolean, default: true },
+});
+
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
-		name:      { type: String, required: true },
-		schoolId:  { type: Schema.Types.ObjectId, required: true },
-		userIds:   [{ type: Schema.Types.ObjectId, ref: 'user' }],
+		name: { type: String, required: true },
+		schoolId: { type: Schema.Types.ObjectId, required: true },
+		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 		createdAt: { type: Date, 'default': Date.now },
 		updatedAt: { type: Date, 'default': Date.now }
 	};
@@ -25,19 +42,22 @@ const getUserGroupSchema = (additional = {}) => {
  * room {String} - a specific location for the recurring course lesson, e.g. a room number
  */
 const timeSchema = new Schema({
-	weekday:   { type: Number, min: 0, max: 6, required: true },
+	weekday: { type: Number, min: 0, max: 6, required: true },
 	startTime: { type: Number },
-	duration:  { type: Number },
-	eventId:   { type: String },
-	room:      { type: String }
+	duration: { type: Number },
+	eventId: { type: String },
+	room: { type: String }
 });
 
+const teamInvitedUserModel = new Schema({
+	email: { type: String, required: true },
+	role: { type: String, required: true, enum: ['teamexpert', 'teamadministrator'] }
+}, { _id: false, timestamps: true });
 
 const teamUserModel = new Schema({
-	userId: { type: Schema.Types.ObjectId, ref: 'user' },
-	role:   { type: Schema.Types.ObjectId, ref: 'role' }//,    	//todo: existing team roles not all	
-	//roleName:{ type: String }								//todo: only pass roles that have name.substring(0,4)==='team'
-},{ _id : false });
+	userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+	role: { type: Schema.Types.ObjectId, ref: 'role' },
+}, { _id: false, timestamps: true });
 
 const teamsModel = mongoose.model('teams', getUserGroupSchema({
 	//@override
@@ -49,21 +69,24 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 				return array.length > 0 && array.every((v) => v instanceof Schema.Types.ObjectId);
 			}
 		}*/
-	}, 
+	},
 	//@override
-	userIds:     [teamUserModel],
-	description: { type: String, default:''},
-	classIds:    [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
-//	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],  todo: add later
-	ltiToolIds:  [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
-	color:       { type: String, required: true, default: '#1DE9B6' },
-	startDate:   { type: Date },
-	untilDate:   { type: Date },
-//	shareToken:  { type: String, unique: true },
-	times:       [timeSchema],
-	features:    [{ type: String, enum: ['isTeam'] }]
+	userIds: [teamUserModel],
+	invitedUserIds: [teamInvitedUserModel],
+	description: { type: String, default: '' },
+	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
+	//	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],  todo: add later
+	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
+	color: { type: String, required: true, default: '#1DE9B6' },
+	startDate: { type: Date },
+	untilDate: { type: Date },
+	//	shareToken:  { type: String, unique: true },
+	times: [timeSchema],
+	features: [{ type: String, enum: ['isTeam'] }],
+	filePermission: [permissionSchema]
 }));
 
 module.exports = {
-	teamsModel
-}
+	teamsModel,
+	permissionSchema
+};

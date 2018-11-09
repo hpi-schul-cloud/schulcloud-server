@@ -10,7 +10,9 @@ const filePermissionHelper = require('../utils/filePermissionHelper');
 const removeLeadingSlash = require('../utils/filePathHelper').removeLeadingSlash;
 let awsConfig;
 try {
-	(process.env.NODE_ENV === 'production') ? awsConfig = require("../../../../config/secrets.js").aws : awsConfig = require("../../../../config/secrets.json").aws;
+	(['production', 'local'].includes(process.env.NODE_ENV))
+		? awsConfig = require("../../../../config/secrets.js").aws
+		: awsConfig = require("../../../../config/secrets.json").aws;
 } catch (e) {
 	logger.log('warn', 'The AWS config couldn\'t be read');
 	awsConfig = {};
@@ -209,7 +211,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				Key: path,
 				Expires: 60
 			};
-			
+
 			if(download) params["ResponseContentDisposition"] = 'attachment';
 			if (action === 'putObject') params.ContentType = fileType;
 

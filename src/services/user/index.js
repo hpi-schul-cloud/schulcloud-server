@@ -4,6 +4,7 @@ const service = require('feathers-mongoose');
 const user = require('./model');
 const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
+const publicTeachersHooks = require('./hooks/publicTeachers');
 const errors = require('feathers-errors');
 const firstLoginHooks = require('./hooks/firstLogin');
 
@@ -58,6 +59,21 @@ module.exports = function () {
 	
 	userService.before(hooks.before(app));	// TODO: refactor
 	userService.after(hooks.after);
+
+	/* publicTeachers Service */
+	app.use('/publicTeachers', service({
+		Model: user.userModel,
+		paginate: {
+			default: 25,
+			max: 1000
+		},
+		lean: true
+	}));
+
+	const publicTeachersService = app.service('/publicTeachers');
+	publicTeachersService.before(publicTeachersHooks.before);
+	publicTeachersService.after(publicTeachersHooks.after);
+
 
 	/* registrationPin Service */
 	app.use('/registrationPins', service({
