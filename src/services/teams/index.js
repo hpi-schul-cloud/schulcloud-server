@@ -8,7 +8,7 @@ const logger = require('winston');
 //const {teamRolesToHook} = require('./hooks');
 //todo docs require 
 
-const getUpdatedSchoolIdList = (team, user) => {
+const getUpdatedSchoolIdArray = (team, user) => {
 	let schoolIds = team.schoolIds;
 	const userSchoolId = user.schoolId;
 
@@ -101,7 +101,7 @@ class Add {
 						return hooks.teamRolesToHook(this).then(_self => {
 							role = _self.findRole('name', role, '_id');
 							userIds.push({ userId, role });
-							const schoolIds = getUpdatedSchoolIdList(_team, _user);
+							const schoolIds = getUpdatedSchoolIdArray(_team, _user);
 							return teamsService.patch(teamId, { userIds,schoolIds }, params).catch(errorHandling);
 						}).catch(errorHandling);
 					}).catch(errorHandling);
@@ -156,7 +156,7 @@ class Accept {
 						return stack;
 					}, []);
 
-					const schoolIds = getUpdatedSchoolIdList(_team, _user);
+					const schoolIds = getUpdatedSchoolIdArray(_team, _user);
 
 					return teamsService.patch(teamId, { invitedUserIds, userIds, schoolIds }, params).catch(err => {
 						throw new errors.Conflict('Can not patch team with changes.', err);
