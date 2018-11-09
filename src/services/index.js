@@ -24,11 +24,10 @@ const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
 const wopi = require('./wopi');
-const socket = require('./socket');
 const pseudonym = require("./pseudonym");
 const consent = require('./consent');
-
 const mongoose = require('mongoose');
+const clipboard = require('./clipboard');
 
 module.exports = function () {
     const app = this;
@@ -60,8 +59,10 @@ module.exports = function () {
     app.configure(releases);
     app.configure(helpdesk);
     app.configure(statistic);
+    app.configure(pseudonym);
+    app.configure(consent);
+    app.configure(clipboard);
     app.configure(wopi);
     app.configure(pseudonym);
     app.configure(consent);
-    app.configure(socket);
 };
