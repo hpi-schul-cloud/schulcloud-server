@@ -82,30 +82,57 @@ class Add {
 		}
 
 		if (email && role) {
-			return teamsService.get(teamId)
-				.then(_team => {
+
+			const waitForUser = new Promise((resolve, reject) => {
+				usersService.find({
+					query: { email }
+				}).then(_users => {
+					let user;
+
+					if (_users.data !== undefined && _users.data.length > 0)
+						user = _users.data[0];
+
+					//user do not exist and it must be an teamexpert, all others must have accounts before
+					if (user === undefined && role === 'teamexpert') {
+						//create user
+						//with import hash
+						//with role Expert
+						//take expert school for schoolId "purpose": "expert"
+						//start registration ...see by others
+
+
+					} else {
+						//user already exist
+						//patch team
+						resolve(user);
+					}
+				}).catch(err => {
+					reject(new errors.Conflict('User services not avaible.', err));
+				});
+			});
+
+			return waitForUser.then(_user => {
+				return teamsService.get(teamId).then(_team => {
 					let invitedUserIds = _team.invitedUserIds;
 					invitedUserIds.push({ email, role });
 
-					return teamsService.patch(teamId, { invitedUserIds }, params)
-						.then(_patchedTeam => {
-							return Promise.resolve('Success!');
-						})
-						.catch(errorHandling);
-				}).catch(errorHandling);
-		} else if (userId && role) {
-			return usersService.get(userId)
-				.then(_user => {
-					return teamsService.get(teamId).then(_team => {
-						let userIds = _team.userIds;
-						return hooks.teamRolesToHook(this).then(_self => {
-							role = _self.findRole('name', role, '_id');
-							userIds.push({ userId, role });
-							const schoolIds = getUpdatedSchoolIdArray(_team, _user);
-							return teamsService.patch(teamId, { userIds,schoolIds }, params).catch(errorHandling);
-						}).catch(errorHandling);
+					return teamsService.patch(teamId, { invitedUserIds }, params).then(_patchedTeam => {
+						return Promise.resolve('Success!');
 					}).catch(errorHandling);
 				}).catch(errorHandling);
+			});
+		} else if (userId && role) {
+			return usersService.get(userId).then(_user => {
+				return teamsService.get(teamId).then(_team => {
+					let userIds = _team.userIds;
+					return hooks.teamRolesToHook(this).then(_self => {
+						role = _self.findRole('name', role, '_id');
+						userIds.push({ userId, role });
+						const schoolIds = getUpdatedSchoolIdArray(_team, _user);
+						return teamsService.patch(teamId, { userIds, schoolIds }, params).catch(errorHandling);
+					}).catch(errorHandling);
+				}).catch(errorHandling);
+			}).catch(errorHandling);
 		} else {
 			throw new errors.BadRequest('Missing input data.');
 		}

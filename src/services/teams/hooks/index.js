@@ -264,7 +264,7 @@ const updateUsersForEachClass = (hook) => {
 /**
 *   @param hook - main hook for team services
 *   @method all
-*   @ifNotLocal - work only for extern requests
+*   @ifNotLocal work only for extern requests
 **/
 const restrictToCurrentSchoolAndUser = globalHooks.ifNotLocal(hook => {
     const teamId = hook.id;
