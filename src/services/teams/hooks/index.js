@@ -558,7 +558,7 @@ const filterToRelated = (keys, path, objectToFilter) => {
     }, 
     "__v" : NumberInt(0)}
     @deprecated 
- */
+ */ /*
 const injectDataFromLink = (fallback) => {
     return (hook) => {
         if (hook.data.shortId && hook.id == 'adduser') {
@@ -625,11 +625,11 @@ const injectDataFromLink = (fallback) => {
         }
     };
 };
-
+ */
 /**
  * @param hook
  * @deprecated
- */
+ */ /*
 const removeLinkFromDB = (hook) => {
     if (hook.injectLink !== undefined) {
         return hook.app.service('link').remove(hook.injectLink._id).then(link => {
@@ -646,7 +646,7 @@ const removeLinkFromDB = (hook) => {
     } else {
         return hook;
     }
-};
+}; */
 /**
  * @param hook
  */
@@ -659,11 +659,12 @@ const dataExist = hook => {
 
 /**
  * @param hook
- */
+ * @deprecated
+ *//*
 const injectLinkInformationForLeaders = (hook) => {
     //todo: Take it from link service via find data.teamId
     return hook;
-};
+}; */
 
 /**
  * @param hook
@@ -848,7 +849,7 @@ exports.before = {
     get: [restrictToCurrentSchoolAndUser],                                //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
     create: [filterToRelated(keys.data, 'data'), globalHooks.injectUserId, testInputData, updateUsersForEachClass, restrictToCurrentSchoolAndUser], //inject is needing?
     update: [blockedMethod],
-    patch: [(injectDataFromLink)(updateUsersForEachClass), restrictToCurrentSchoolAndUser], //todo: filterToRelated(keys.data,'data') 
+    patch: [updateUsersForEachClass, restrictToCurrentSchoolAndUser], //todo: filterToRelated(keys.data,'data') 
     remove: [restrictToCurrentSchoolAndUser, hasTeamPermission('DELETE_TEAM')]
 };
 
@@ -857,10 +858,10 @@ exports.before = {
 exports.after = {
     all: [],
     find: [filterToRelated(keys.resFind, 'result.data')], // filterFindResult
-    get: [addCurrentUser, injectLinkInformationForLeaders],                                 //see before (?)
+    get: [addCurrentUser],                                 //see before (?)
     create: [filterToRelated(keys.resId, 'result')],
     update: [],                             //test schoolId remove
-    patch: [addCurrentUser, removeLinkFromDB, pushUserChangedEvent],          //test schoolId remove
+    patch: [addCurrentUser, pushUserChangedEvent],          //test schoolId remove
     remove: [filterToRelated(keys.resId, 'result')]
 };
 
@@ -872,15 +873,18 @@ const sendInfo = hook => {
     const teamName = (hook.result || {}).name;
     const email = hook.data.email;
     //todo
-    /*
-	globalHooks.sendEmail(hook, {
-		"subject": "Team Einladung",
-		"emails": [email],
-		"content": {
-			"text": 'Sie wurden zu einem Team eingeladen.'
-		}
-    });
-    */
+    if(email){
+        /*
+        globalHooks.sendEmail(hook, {
+            "subject": "Team Einladung",
+            "emails": [email],
+            "content": {
+                "text": 'Sie wurden zu einem Team eingeladen.'
+            }
+        });
+        */
+    }
+  
     return hook;
 };
 
