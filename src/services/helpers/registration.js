@@ -4,8 +4,16 @@ const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
+const formatBirthdate1=(datestamp)=>{
+	if( datestamp==undefined )
+		return false;
+	
+	const d = datestamp.split('.');
+	return d[1]+'.'+d[0]+'.'+d[2];
+};
+
 const populateUser = (app, data) => {
-    let oldUser;
+    let oldUser = {};
     let user = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -27,7 +35,7 @@ const populateUser = (app, data) => {
 			if(users.data.length<=0 || users.data.length>1){
 				throw new errors.BadRequest("Kein Nutzer für die eingegebenen Daten gefunden.");
 			}
-			let oldUser=users.data[0];
+			oldUser=users.data[0];
 			Object.keys(oldUser).forEach(key=>{
 				if( oldUser[key]!==null ){
 					user[key]=oldUser[key];
@@ -45,7 +53,7 @@ const populateUser = (app, data) => {
     return Promise.resolve({user, oldUser});
 };
 
-const insertUserToDB = (app,data,user)=>{
+const insertUserToDB = (app,data,user)=> {
 	if(user._id){
         return app.service('users').remove(user._id).then( ()=>{
             return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
@@ -59,15 +67,7 @@ const insertUserToDB = (app,data,user)=>{
 	}
 };
 
-const formatBirthdate1=(datestamp)=>{
-	if( datestamp==undefined ) 
-		return false;
-	
-	const d = datestamp.split('.');
-	return d[1]+'.'+d[0]+'.'+d[2];
-};
-
-const registerStudent = function(data, params, app) {
+const registerUser = function(data, params, app) {
     let parent = null, user = null, oldUser = null, account = null, consent = null, consentPromise = null;
 
     return new Promise(function (resolve, reject) {
@@ -79,15 +79,15 @@ const registerStudent = function(data, params, app) {
         schoolPromise = app.service('schools').find({query: {_id: data.classOrSchoolId}});
         return Promise.all([classPromise, schoolPromise])
             .then(([classes, schools]) => {
-                if (classes.total === 1) {
-                    data.classId = data.classOrSchoolId;
-                    data.schoolId = classes.data[0].schoolId;
-                    return Promise.resolve();
-                }
-                if (schools.total === 1) {
-                    data.schoolId = data.classOrSchoolId;
-                    return Promise.resolve();
-                }
+				if (classes.total === 1) {
+					data.classId = data.classOrSchoolId;
+					data.schoolId = classes.data[0].schoolId;
+					return Promise.resolve();
+				}
+				if (schools.total === 1) {
+					data.schoolId = data.classOrSchoolId;
+					return Promise.resolve();
+				}
                 return Promise.reject("Ungültiger Link");
             });
     }).then(function () {
@@ -253,7 +253,7 @@ module.exports = function (app) {
         }
         
 		create(data, params) {
-			return registerStudent(data, params, app);
+			return registerUser(data, params, app);
 		}
 	}
 
