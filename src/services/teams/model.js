@@ -49,13 +49,13 @@ const timeSchema = new Schema({
 	room: { type: String }
 });
 
-const teamInvitedModel = new Schema({
-	email: { type: String },
-	role: { type: String, enum: ['teamexpert', 'teamadministrator'] }
+const teamInvitedUserModel = new Schema({
+	email: { type: String, required: true },
+	role: { type: String, required: true, enum: ['teamexpert', 'teamadministrator'] }
 }, { _id: false, timestamps: true });
 
 const teamUserModel = new Schema({
-	userId: { type: Schema.Types.ObjectId, ref: 'user' },
+	userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
 	role: { type: Schema.Types.ObjectId, ref: 'role' },
 }, { _id: false, timestamps: true });
 
@@ -72,7 +72,7 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 	},
 	//@override
 	userIds: [teamUserModel],
-	invitedUserIds: [teamInvitedModel],
+	invitedUserIds: [teamInvitedUserModel],
 	description: { type: String, default: '' },
 	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
 	//	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],  todo: add later
