@@ -267,8 +267,8 @@ const handleClassId = (hook) => {
 
 const pushRemoveEvent= hook=>{
 	hook.app.emit('users:after:remove',hook);
-	return hook
-}
+	return hook;
+};
 
 const User = require('../model');
 

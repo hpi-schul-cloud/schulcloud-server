@@ -8,6 +8,16 @@ const logger = require('winston');
 //const {teamRolesToHook} = require('./hooks');
 //todo docs require 
 
+const getUpdatedSchoolIdList = (team, user) => {
+	let schoolIds = team.schoolIds;
+	const userSchoolId = user.schoolId;
+
+	if (schoolIds.includes(userSchoolId) === false)
+		schoolIds.push(userSchoolId);
+
+	return schoolIds;
+};
+
 class Get {
 	constructor(options) {
 		this.options = options || {};
@@ -47,6 +57,7 @@ class Add {
 		this.docs = {};
 		//this.app = options.app;
 	}
+
 	/**
 	 * 
 	 * @param {*} id 
@@ -90,7 +101,8 @@ class Add {
 						return hooks.teamRolesToHook(this).then(_self => {
 							role = _self.findRole('name', role, '_id');
 							userIds.push({ userId, role });
-							return teamsService.patch(teamId, { userIds }, params).catch(errorHandling);
+							const schoolIds = getUpdatedSchoolIdList(_team, _user);
+							return teamsService.patch(teamId, { userIds,schoolIds }, params).catch(errorHandling);
 						}).catch(errorHandling);
 					}).catch(errorHandling);
 				}).catch(errorHandling);
@@ -103,7 +115,7 @@ class Add {
 		this.app = app;
 	}
 }
-
+//todo accept and add user is same => add to function .only modified invitedUserIds is different
 /**
  * Accept the team invite
  */
@@ -144,7 +156,9 @@ class Accept {
 						return stack;
 					}, []);
 
-					return teamsService.patch(teamId, { invitedUserIds, userIds }, params).catch(err => {
+					const schoolIds = getUpdatedSchoolIdList(_team, _user);
+
+					return teamsService.patch(teamId, { invitedUserIds, userIds, schoolIds }, params).catch(err => {
 						throw new errors.Conflict('Can not patch team with changes.', err);
 					});
 				});
