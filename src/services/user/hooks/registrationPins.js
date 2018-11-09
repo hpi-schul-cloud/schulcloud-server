@@ -36,7 +36,7 @@ PIN: ${pin}
 Mit Freundlichen Grüßen
 Ihr Schul-Cloud Team`;
 
-	} else if (role === "student" || role === "employee") {
+	} else if (role === "student" || role === "employee" || role === "expert") {
 		text = `Vielen Dank, dass du die HPI Schul-Cloud nutzen möchtest.
 Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen.
 
