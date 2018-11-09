@@ -4,40 +4,76 @@ const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 
-const registerStudent = function(data, params, app) {
+const populateUser = (app, data) => {
+    let oldUser;
+    let user = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        roles: ["student"],
+        schoolId: data.schoolId,
+    };
 
-    let parent = null, user = null, account = null, consent = null, consentPromise = null, classPromise = null, schoolPromise = null;
-    let pinInput = data["email-pin"];
-    let userMail = data["parent-email"] ? data["parent-email"] : data["student-email"];
-    let passwort = data["initial-password"];
-    let dateArr = data["student-birthdate"].split(".");
+    let formatedBirthday = formatBirthdate1(data.birthDate);
+    if (formatedBirthday) {
+        user.birthday = new Date(formatedBirthday);
+    }
+
+    if (data.classId) user.classId = data.classId;
+    if (data.gender) user.gender = data.gender;
     
-    // wrong birthday object?
-    let userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
-    if (userBirthday instanceof Date && isNaN(userBirthday)) {
-		return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
+    if(data.importHash){
+		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId, $populate: ['roles'] }} ).then(users=>{
+			if(users.data.length<=0 || users.data.length>1){
+				throw new errors.BadRequest("Kein Nutzer für die eingegebenen Daten gefunden.");
+			}
+			let oldUser=users.data[0];
+			Object.keys(oldUser).forEach(key=>{
+				if( oldUser[key]!==null ){
+					user[key]=oldUser[key];
+				}
+            });
+            user.roles = user.roles.map(role => {
+                if (role.name) {
+                    return role.name;
+                }
+            });
+            delete user.importHash;
+            return {user, oldUser};
+        });
+    }
+    return Promise.resolve({user, oldUser});
+};
+
+const insertUserToDB = (app,data,user)=>{
+	if(user._id){
+        return app.service('users').remove(user._id).then( ()=>{
+            return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
+            .catch(err=> {
+                 throw new errors.BadRequest("Fehler beim Updaten der Nutzerdaten.");}
+            );
+        });
+	}else{	
+		return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
+		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Nutzers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");} );
 	}
-	// wrong age?
-	let age = globalHooks.getAge(userBirthday);
-    if (data["parent-email"] && age >= 18) {
-		return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
-	} else if (!data["parent-email"] && age < 18) {
-		return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
-	}
-    // identical emails?
-	if (data["parent-email"] && data["parent-email"] === data["student-email"]) {
-		return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
-	}
+};
+
+const formatBirthdate1=(datestamp)=>{
+	if( datestamp==undefined ) 
+		return false;
 	
-    return app.service('registrationPins').find({
-        query: { "pin": pinInput, "email": userMail, verified:false }
-    }).then(check => {
-        //check pin
-        if (!(check.data && check.data.length>0 && check.data[0].pin === pinInput)) {
-            return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
-        }
-		return Promise.resolve();
+	const d = datestamp.split('.');
+	return d[1]+'.'+d[0]+'.'+d[2];
+};
+
+const registerStudent = function(data, params, app) {
+    let parent = null, user = null, oldUser = null, account = null, consent = null, consentPromise = null;
+
+    return new Promise(function (resolve, reject) {
+        resolve();
     }).then(function () {
+        let classPromise = null, schoolPromise = null;
         //resolve class or school Id
         classPromise = app.service('classes').find({query: {_id: data.classOrSchoolId}});
         schoolPromise = app.service('schools').find({query: {_id: data.classOrSchoolId}});
@@ -54,38 +90,67 @@ const registerStudent = function(data, params, app) {
                 }
                 return Promise.reject("Ungültiger Link");
             });
+    }).then(function () {
+        return populateUser(app, data)
+        .then(response => {
+            user = response.user;
+            oldUser = response.oldUser;
+        });
+    }).then(function () {
+        if ((user.roles||[]).includes("student")) {
+            // wrong birthday object?
+            if (user.birthday instanceof Date && isNaN(user.birthday)) {
+                return Promise.reject(new errors.BadRequest("Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut."));
+            }
+            // wrong age?
+            let age = globalHooks.getAge(user.birthday);
+            if (data.parent_email && age >= 18) {
+                return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 18 Jahre oder älter sein.`));
+            } else if (!data.parent_email && age < 18) {
+                return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
+            }
+        }
+        
+        // identical emails?
+        if (data.parent_email && data.parent_email === data.email) {
+            return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
+        }
+
+        if (data.password_1 && data.passwort_1 !== data.passwort_2) {
+            return new errors.BadRequest("Die Passwörter stimmen nicht überein");
+        } 
+        return Promise.resolve();       
+    }).then(function () {
+        let userMail = data.parent_email || data.student_email || data.email;
+        let pinInput = data.pin;
+        return app.service('registrationPins').find({
+            query: { "pin": pinInput, "email": userMail, verified: false }
+        }).then(check => {
+            //check pin
+            if (!(check.data && check.data.length > 0 && check.data[0].pin === pinInput)) {
+                return Promise.reject("Ungültige Pin, bitte überprüfe die Eingabe.");
+            }
+            return Promise.resolve();
+        });
     }).then(function() {
         //create user
-        user = {
-            firstName: data["student-firstname"],
-            lastName: data["student-secondname"],
-            email: data["student-email"],
-            gender: data["gender"],
-            roles: ["student"],
-            schoolId: data.schoolId,
-            birthday: userBirthday
-        };
-        if (data.classId) user.classId = data.classId;
-        return app.service('users').create(user, { _additional:{parentEmail:data["parent-email"],asTask:'student'} })	//{query:{parentEmail: data["parent-email"]}}
+        return insertUserToDB(app,data,user)
         .then(newUser => {
             user = newUser;
-        })
-        .catch(err =>{
-            return Promise.reject("Fehler beim Erstellen des Schülers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");
         });
     }).then(() => {
-			account = {
-				username: user.email, 
-				password: passwort, 
-				userId: user._id, 
-				activated: true
-			};
-		if( (params.query||{}).sso=='sso' && (params.query||{}).accountId ){
+        account = {
+            username: user.email, 
+            password: data.password_1, 
+            userId: user._id, 
+            activated: true
+        };
+		if( data.sso === 'sso' && data.accountId ){
 
-			let accountId=(params.query||{}).accountId;
-			return app.service('accounts').update({_id: accountId}, {$set: {activated:true,userId: user._id}})
-			.then(account=>{
-				account.username = account.username; // !important for roleback catch
+			let accountId = data.accountId;
+			return app.service('accounts').update({_id: accountId}, {$set: {activated: true, userId: user._id}})
+			.then(accountResponse=>{
+				account = accountResponse;
 			})
 			.catch(err=>{
 				return Promise.reject(new Error("Fehler der Account existiert nicht."));
@@ -94,17 +159,17 @@ const registerStudent = function(data, params, app) {
 			return app.service('accounts').create(account)
 				.then(newAccount => {account = newAccount;})
 				.catch(err => {
-					return Promise.reject(new Error("Fehler beim Erstellen des Schüler-Accounts."));
+					return Promise.reject(new Error("Fehler beim Erstellen des Accounts."));
 				});
 		}
         
     }).then(res => {
         //add parent if necessary    
-        if(data["parent-email"]) {
+        if(data.parent_email) {
             parent = {
-                firstName: data["parent-firstname"],
-                lastName: data["parent-secondname"],
-                email: data["parent-email"],
+                firstName: data.parent_firstName,
+                lastName: data.parent_lastName,
+                email: data.parent_email,
                 children: [user._id],
                 schoolId: data.schoolId,
                 roles: ["parent"]
@@ -118,9 +183,8 @@ const registerStudent = function(data, params, app) {
                 }
             }).then(newParent => {
                 parent = newParent;
-                //add parent to student, because now, we can
-                return userModel.userModel.findByIdAndUpdate(user._id, {$push: {parents: parent._id }});
-                //return userModel.userModel.patch(user._id, {$push: {parents: parent._id }});
+                return userModel.userModel.findByIdAndUpdate(user._id, {parents: [parent._id] }, {new: true}).exec()
+                .then(updatedUser => user = updatedUser);
             }).catch(err => {
                 return Promise.reject("Fehler beim Verknüpfen der Eltern.");
             }) ;
@@ -131,10 +195,10 @@ const registerStudent = function(data, params, app) {
         //store consent
         consent = {
             form: 'digital',
-            privacyConsent: data.Erhebung,
-            thirdPartyConsent: data.Pseudonymisierung,
-            termsOfUseConsent: Boolean(data.Nutzungsbedingungen),
-            researchConsent: data.Forschung
+            privacyConsent: data.privacyConsent,
+            thirdPartyConsent: data.thirdPartyConsent,
+            termsOfUseConsent: data.termsOfUseConsent,
+            researchConsent: data.researchConsent
         };
         if (parent) {
             consent.parentId = parent._id;
@@ -150,11 +214,17 @@ const registerStudent = function(data, params, app) {
                 return Promise.reject(new Error("Fehler beim Speichern der Einverständniserklärung."));
             });
     }).then(function() {
-        return Promise.resolve({user, parent});
+        return Promise.resolve({user, parent, account, consent});
     }).catch(err => {
         let rollbackPromises = [];
         if (user && user._id) {
-            rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: user._id}).exec());
+            rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: user._id}).exec()
+            .then(_ => {
+                if (oldUser) {
+                    return userModel.userModel.create(oldUser);
+                }
+            }));
+                 
         }
         if (parent && parent._id) {
             rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: parent._id}).exec());
@@ -165,14 +235,13 @@ const registerStudent = function(data, params, app) {
         if (consent && consent._id) {
             rollbackPromises.push(consentModel.consentModel.findOneAndRemove({_id: consent._id}).exec());
         }
-        Promise.all(rollbackPromises)
+        return Promise.all(rollbackPromises)
 		.catch(err => {
 			return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator."));
 		})
 		.then(() => {
 			return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung."));
 		});
-		return Promise.reject(new errors.BadRequest((err.error||{}).message || err.message || err || "Fehler bei der Registrierung."));
     });
 };
 

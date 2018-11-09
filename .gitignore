@@ -12,6 +12,8 @@ lib-cov
 
 # Coverage directory used by tools like istanbul
 coverage
+.nyc_output/
+.DS_Store
 
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
@@ -37,3 +39,9 @@ backup/*
 
 # Visual Studio Code data
 .vscode
+
+# local dev secrets
+config/secrets.json
+
+#clipboard uploads
+uploads/*

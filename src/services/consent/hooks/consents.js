@@ -1,7 +1,6 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
 //TODO: after hook for get that checks access.
@@ -69,11 +68,28 @@ const mapInObjectToArray = (hook) => {
 	return hook;
 };
 
+const checkExisting = (hook) => {
+	return hook.app.service("consents").find({query:{userId:hook.data.userId}})
+		.then(consents => {
+			if (consents.data.length > 0) {
+				// merge existing consent with submitted one, submitted data is primary and overwrites databse
+				hook.data = Object.assign(consents.data[0], hook.data);
+				return hook.app.service('consents').remove(consents.data[0]._id).then(() => {
+					return hook;
+				});
+			} else {
+				return hook;
+			}
+		}).catch(err => {
+			return Promise.reject(err);
+		});
+};
+
 exports.before = {
 	all: [],
 	find: [auth.hooks.authenticate('jwt'), globalHooks.ifNotLocal(restrictToUserOrRole), mapInObjectToArray],
 	get: [auth.hooks.authenticate('jwt')],
-	create: [addDates],
+	create: [addDates, checkExisting],
 	update: [auth.hooks.authenticate('jwt'), addDates],
 	patch: [auth.hooks.authenticate('jwt'), addDates],
 	remove: [auth.hooks.authenticate('jwt'),]
@@ -85,17 +101,50 @@ const redirectDic = {
 	ue18: '/firstLogin/UE18/',
 	existing: '/firstLogin/existing/',
 	existingGeb: '/firstLogin/existingGeb14',
+	existingEmpl: '/firstLogin/existingEmployee',
 	normal: '/dashboard/',
-	err: '/consentError'
+	err: '/firstLogin/consentError'
+};
+
+const userHasOneRole = (user, roles) => {
+	if (!(roles instanceof Array)) roles = [roles];
+	let value = false;
+	user.roles.map(role => {
+		if (roles.includes(role.name)) {
+			value = true;
+		}
+	});
+	return value;
 };
 
 const accessCheck = (consent, app) => {
 	let access = true;
 	let redirect = redirectDic['ue18'];
 	let requiresParentConsent = true;
+	let user;
 
-	return app.service('users').get(consent.userId)
-		.then(user => {
+	return app.service('users').get((consent.userId), { query: { $populate: 'roles'}})
+		.then(response => {
+			user = response;
+			if (userHasOneRole(user, ["demoTeacher", "demoStudent"])) {
+				requiresParentConsent = false;
+				redirect = redirectDic['normal'];
+				return Promise.resolve();
+			}
+
+			if (userHasOneRole(user, ["teacher", "administrator"])) {
+				let userConsent = consent.userConsent || {};
+				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
+					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
+						access = false;
+						requiresParentConsent = false;
+						redirect = redirectDic['existingEmpl'];
+						return Promise.resolve();
+					}
+				redirect = redirectDic['normal'];
+				return Promise.resolve();
+			}
+
 			if (!user.birthday) {
 				access = false;
 				requiresParentConsent = false;
@@ -137,10 +186,17 @@ const accessCheck = (consent, app) => {
 			}
 		})
 		.then(() => {
+			if (redirect == redirectDic['normal'] && !(user.preferences || {}).firstLogin) {
+				let updatedPreferences = user.preferences || {};
+				updatedPreferences.firstLogin = true;
+				return app.service('users').patch(user._id, {preferences: updatedPreferences});
+			}
+			return;
+		}).then(() => {
 			consent.access = access;
 			consent.redirect = redirect;
 			consent.requiresParentConsent = requiresParentConsent;
-			return Promise.resolve(consent);
+			return consent;
 		})
 		.catch(err => {
 			return Promise.reject(err);

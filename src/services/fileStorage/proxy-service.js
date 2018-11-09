@@ -7,9 +7,12 @@ const swaggerDocs = require('./docs/');
 const filePermissionHelper = require('./utils/filePermissionHelper');
 const removeLeadingSlash = require('./utils/filePathHelper').removeLeadingSlash;
 const generateFlatFileName = require('./utils/filePathHelper').generateFileNameSuffix;
+const returnFileType = require('./utils/filePathHelper').returnFileType;
 const FileModel = require('./model').fileModel;
 const DirectoryModel = require('./model').directoryModel;
 const LessonModel = require('../lesson/model');
+const rp = require('request-promise-native');
+const fs = require('fs');
 
 const strategies = {
 	awsS3: AWSStrategy
@@ -23,7 +26,7 @@ const createCorrectStrategy = (fileStorageType) => {
 
 /** find all files in deleted (virtual) directory with regex (also nested) **/
 const deleteAllFilesInDirectory = (path, fileStorageType, userId) => {
-	return FileModel.find({path: {$regex : "^" + path}}).exec()
+	return FileModel.find({path: {$regex: "^" + path}}).exec()
 		.then(files => {
 			// delete virtual and referenced real files
 			return Promise.all(
@@ -38,7 +41,7 @@ const deleteAllFilesInDirectory = (path, fileStorageType, userId) => {
 
 /** find all sub directories in deleted (virtual) directory with regex (also nested) **/
 const deleteAllSubDirectories = (path) => {
-	return DirectoryModel.find({path: {$regex : "^" + path}}).exec()
+	return DirectoryModel.find({path: {$regex: "^" + path}}).exec()
 		.then(directories => {
 			// delete virtual and referenced real files
 			return Promise.all(
@@ -50,30 +53,30 @@ const deleteAllSubDirectories = (path) => {
 
 /** find all objects for given @model in renamed (virtual) directory with regex (also nested) and changes its path and key */
 const relinkAllObjectsInDirectory = (oldPath, newPath, model) => {
-	return model.find({path: {$regex : "^" + oldPath}}).exec()
-	.then(objects => {
-		return Promise.all(
-			objects.map(o => {
-				let oldKey = o.key;
-				// just changed that substring of path which ends on the renamed directory's old path (because of deeper nested files)
-				o.path = newPath + "/" + o.path.substring(oldPath.length + 1);
-				o.key = o.path + o.name;
-				return model.update({_id: o._id}, o).exec().then(_ => {
-					// also relink object (actually files) which are included in lessons
-					return relinkFileInLessons(oldKey, o.key);
-				});
-			}));
-	});
+	return model.find({path: {$regex: "^" + oldPath}}).exec()
+		.then(objects => {
+			return Promise.all(
+				objects.map(o => {
+					let oldKey = o.key;
+					// just changed that substring of path which ends on the renamed directory's old path (because of deeper nested files)
+					o.path = newPath + "/" + o.path.substring(oldPath.length + 1);
+					o.key = o.path + o.name;
+					return model.update({_id: o._id}, o).exec().then(_ => {
+						// also relink object (actually files) which are included in lessons
+						return relinkFileInLessons(oldKey, o.key);
+					});
+				}));
+		});
 };
 
 /** modifies the file-link in all corresponding lessons */
 const relinkFileInLessons = (oldPath, newPath) => {
-	return LessonModel.find({"contents.content.text": { $regex: oldPath, $options: 'i'}}).then(lessons => {
+	return LessonModel.find({"contents.content.text": {$regex: oldPath, $options: 'i'}}).then(lessons => {
 		if (lessons && lessons.length > 0) {
 			return Promise.all(lessons.map(l => {
 				l.contents.map(content => {
 					if (content.component === "text" && content.content.text) {
-							content.content.text = content.content.text.replace(new RegExp(oldPath, "g"), newPath);
+						content.content.text = content.content.text.replace(new RegExp(oldPath, "g"), newPath);
 					}
 				});
 
@@ -180,10 +183,11 @@ class SignedUrlService {
 	 * @param path where to store the file
 	 * @param fileType MIME type
 	 * @param action the AWS action, e.g. putObject
+	 * @param flatFileName a pregenerated file name for the flat storage
 	 * @returns {Promise}
 	 */
-	create({path, fileType, action}, params) {
 
+	create({path, fileType, action, download, flatFileName}, params) {
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
 		let fileName = encodeURIComponent(pathUtil.basename(path));
@@ -197,8 +201,8 @@ class SignedUrlService {
 		// all files are uploaded to a flat-storage architecture without real folders
 		// converts the real filename to a unique one in flat-storage
 		// if action = getObject, file should exist in proxy db
-		let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({});
-
+    let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({flatFileName});
+    
 		return fileProxyPromise.then(res => {
 			if (!res) return;
 
@@ -209,18 +213,20 @@ class SignedUrlService {
 				let externalSchoolId;
 				if (p.permission === 'shared') externalSchoolId = res.schoolId;
 
-				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId)
+				let header =  {							
+					// add meta data for later using
+					"Content-Type": fileType,
+					"x-amz-meta-path": dirName,
+					"x-amz-meta-name": fileName,
+					"x-amz-meta-flat-name": flatFileName,
+					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"				
+				};
+
+				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId, download)
 					.then(res => {
 						return {
 							url: res,
-							header: {
-								// add meta data for later using
-								"Content-Type": fileType,
-								"x-amz-meta-path": dirName,
-								"x-amz-meta-name": encodeURIComponent(fileName),
-								"x-amz-meta-flat-name": flatFileName,
-								"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
-							}
+							header: header
 						};
 					});
 			});
@@ -284,25 +290,25 @@ class DirectoryService {
 }
 
 class FileRenameService {
-		constructor() {
-			this.docs = swaggerDocs.fileRenameService;
-		}
+	constructor() {
+		this.docs = swaggerDocs.fileRenameService;
+	}
 
-		/**
-		 * @param data, contains path, newName
-		 * @returns {Promise}
-		 */
-		create(data, params) {
-			let userId = params.payload.userId;
-			let path = data.path;
-			let newName = data.newName;
+	/**
+	 * @param data, contains path, newName
+	 * @returns {Promise}
+	 */
+	create(data, params) {
+		let userId = params.payload.userId;
+		let path = data.path;
+		let newName = data.newName;
 
-			if (!path || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		if (!path || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
 
-			return filePermissionHelper.checkPermissions(userId, path)
-				.then(_ => {
-					// find file and rename it
-					return FileModel.findOne({key: path}).exec()
+		return filePermissionHelper.checkPermissions(userId, path)
+			.then(_ => {
+				// find file and rename it
+				return FileModel.findOne({key: path}).exec()
 					.then(file => {
 						if (!file) return Promise.reject(new errors.NotFound('The given file was not found!'));
 
@@ -315,30 +321,30 @@ class FileRenameService {
 								return relinkFileInLessons(path, file.key);
 							});
 					});
-				});
-		}
+			});
+	}
 }
 
 class DirectoryRenameService {
-		constructor() {
-			this.docs = swaggerDocs.directoryRenameService;
-		}
+	constructor() {
+		this.docs = swaggerDocs.directoryRenameService;
+	}
 
-		/**
-		 * @param data, contains path, newName
-		 * @returns {Promise}
-		 */
-		create(data, params) {
-			let userId = params.payload.userId;
-			let path = data.path;
-			let newName = data.newName;
+	/**
+	 * @param data, contains path, newName
+	 * @returns {Promise}
+	 */
+	create(data, params) {
+		let userId = params.payload.userId;
+		let path = data.path;
+		let newName = data.newName;
 
-			if (!path || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
+		if (!path || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
 
-			return filePermissionHelper.checkPermissions(userId, path)
-				.then(_ => {
-					// find directory and rename it
-					return DirectoryModel.findOne({key: path}).exec()
+		return filePermissionHelper.checkPermissions(userId, path)
+			.then(_ => {
+				// find directory and rename it
+				return DirectoryModel.findOne({key: path}).exec()
 					.then(directory => {
 						if (!directory) return Promise.reject(new errors.NotFound('The given directory was not found!'));
 
@@ -353,8 +359,8 @@ class DirectoryRenameService {
 								return Promise.all([filesRenamePromise, directoriesRenamePromise]);
 							});
 					});
-				});
-		}
+			});
+	}
 }
 
 class FileTotalSizeService {
@@ -373,7 +379,7 @@ class FileTotalSizeService {
 				});
 
 				return {total: files.length, totalSize: sum};
-		});
+			});
 	}
 }
 
@@ -441,10 +447,63 @@ class CopyService {
 	}
 }
 
+class NewFileService {
+	constructor(app) {
+		this.app = app;
+	}
+
+	/**
+	 * @param data, contains path, key, name
+	 * @returns new File
+	 */
+	create(data, params) {
+		const {path, name, key, studentCanEdit, schoolId} = data;
+
+		let signedUrlService = this.app.service('fileStorage/signedUrl');
+		let fType = name.split('.');
+		fType = fType[fType.length - 1];
+		let buffer = fs.readFileSync(`src/services/fileStorage/resources/fake.${fType}`);
+
+		let flatFileName = generateFlatFileName(name);
+
+		return signedUrlService.create({
+			path: key,
+			fileType: returnFileType(name),
+			action: 'putObject',
+			flatFileName: flatFileName,
+			userId: params.account.userId
+		}).then(signedUrl => {
+			let options = {
+				method: 'PUT',
+				uri: signedUrl.url,
+				body: buffer
+			};
+
+			return rp(options).then(_ => {
+				return FileModel.create({
+					path,
+					name,
+					key,
+					size: buffer.length,
+					flatFileName: flatFileName,
+					type: returnFileType(name),
+					thumbnail: 'https://schulcloud.org/images/login-right.png',
+					studentCanEdit,
+					schoolId
+				})
+					.then(_ => {
+						return Promise.resolve();
+					});
+			});
+		});
+	}
+}
+
 module.exports = function () {
 	const app = this;
 
 	// Initialize our service with any options it requires
+	app.use('/fileStorage/files/new', new NewFileService(app));
 	app.use('/fileStorage/directories', new DirectoryService());
 	app.use('/fileStorage/directories/rename', new DirectoryRenameService());
 	app.use('/fileStorage/rename', new FileRenameService());
@@ -461,6 +520,7 @@ module.exports = function () {
 	const fileRenameService = app.service('/fileStorage/rename');
 	const fileTotalSizeService = app.service('/fileStorage/total');
 	const copyService = app.service('/fileStorage/copy');
+	const newFileService = app.service('/fileStorage/files/new');
 
 	// Set up our before hooks
 	fileStorageService.before(hooks.before);
@@ -470,6 +530,7 @@ module.exports = function () {
 	fileRenameService.before(hooks.before);
 	fileTotalSizeService.before(hooks.before);
 	copyService.before(hooks.before);
+	newFileService.before(hooks.before);
 
 	// Set up our after hooks
 	fileStorageService.after(hooks.after);
@@ -479,4 +540,5 @@ module.exports = function () {
 	fileRenameService.after(hooks.after);
 	fileTotalSizeService.after(hooks.after);
 	copyService.after(hooks.after);
+	newFileService.before(hooks.after);
 };

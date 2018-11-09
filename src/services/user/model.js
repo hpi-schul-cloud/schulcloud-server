@@ -16,6 +16,8 @@ const userSchema = new Schema({
 
 	gender: {type: String, enum: gender},
 	birthday: {type: Date},
+	
+	importHash:{type:String},
 
 	children: [{type: Schema.Types.ObjectId, ref: 'user'}],
 	parents: [{type: Schema.Types.ObjectId, ref: 'user'}],

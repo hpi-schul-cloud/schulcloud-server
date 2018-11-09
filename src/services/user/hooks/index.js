@@ -4,6 +4,7 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const errors = require('feathers-errors');
+const logger = require('winston');
 
 /**
  *
@@ -41,8 +42,8 @@ const checkUnique = (hook) => {
 			const isLoggedIn= ( hook.params || {} ).account && hook.params.account.userId ? true : false;
 			const isStudent	= user.roles.filter( role => role.name === "student" ).length == 0 ? false : true;
 			const asTask	= ( hook.params._additional || {} ).asTask;
-			
-			if(isLoggedIn || asTask=='student' ){			
+
+			if(isLoggedIn || asTask=='student' ){
 				return Promise.reject(new errors.BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
 			}else if(asTask=='parent' && length==1){
 					userService.update({_id: user._id}, {
@@ -54,7 +55,7 @@ const checkUnique = (hook) => {
 					});
 					return Promise.reject(new errors.BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!", user)); /* to stop the create process, the message are catch and resolve in regestration hook */
 			}
-			
+
 			return Promise.resolve(hook);
 		});
 };
@@ -69,11 +70,82 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
+const updateAccountUsername = (hook) => {
+	let accountService = hook.app.service('/accounts');
+	
+	accountService.find({ query: {userId: hook.id}})
+		.then(result =>{
+			let account = result[0];
+			let accountId = (account._id).toString();
+			if (!account.systemId){
+				const {email} = hook.data;
+				return accountService.patch(accountId, {username: email}, {account: hook.params.account})
+					.then(result => {
+						return Promise.resolve(hook);
+					});
+			} else {
+				hook.result = {};
+				return Promise.resolve(hook);
+			}
+		}).catch(error => {
+			logger.log(error);
+			return Promise.reject(error);
+		})
+	};
+  
+const removeStudentFromClasses = (hook) => {
+	const classesService = hook.app.service('/classes');
+	const userId = hook.id;
+	if (userId === undefined) throw new errors.BadRequest(`Fehler beim Entfernen des Users aus abhängigen Klassen`);
+
+
+	const query = { userIds: userId };
+
+	return classesService.find({ query: query})
+	.then(classes => {
+		return Promise.all(
+			classes.data.map(myClass => {
+				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
+				return classesService.patch(myClass._id, myClass);
+			})
+		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err)});
+	});
+};
+
+const removeStudentFromCourses = (hook) => {
+	const coursesService = hook.app.service('/courses');
+	const userId = hook.id;
+	if (userId === undefined) throw new errors.BadRequest(`Fehler beim Entfernen des Users aus abhängigen Kursen`);
+
+	const query = { userIds: userId };
+
+	return coursesService.find({ query: query})
+	.then(courses => {
+		return Promise.all(
+			courses.data.map(course => {
+				course.userIds.splice(course.userIds.indexOf(userId), 1);
+				return coursesService.patch(course._id, course);
+			})
+		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err)});
+	});
+};
+
 const sanitizeData = (hook) => {
 	if ("email" in hook.data) {
 		var regex = RegExp("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
 		if (!regex.test(hook.data.email)) {
 			return Promise.reject(new errors.BadRequest('Bitte gib eine valide E-Mail Adresse an!'));
+		}
+	}
+	const idRegExp = RegExp("^[0-9a-fA-F]{24}$");
+	if ("schoolId" in hook.data) {
+		if (!idRegExp.test(hook.data.schoolId)) {
+			return Promise.reject(new errors.BadRequest('invalid Id'));
+		}
+	}
+	if ("classId" in hook.data) {
+		if (!idRegExp.test(hook.data.classId)) {
+			return Promise.reject(new errors.BadRequest('invalid Id'));
 		}
 	}
 	return Promise.resolve(hook);
@@ -86,52 +158,58 @@ const checkJwt = () => {
 		} else {
 			return Promise.resolve(hook);
 		}
-	}; 
+	};
 };
 
 const pinIsVerified = hook => {
 	if((hook.params||{}).account && hook.params.account.userId){
 		return (globalHooks.hasPermission('USER_CREATE')).call(this, hook);
-	} else {	
-		let email=(hook.params._additional||{}).parentEmail||hook.data.email;
+	} else {
+		const email=(hook.params._additional||{}).parentEmail||hook.data.email;
 		return hook.app.service('/registrationPins').find({query:{email:email , verified: true}})
 		.then(pins => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
-				let age = globalHooks.getAge(hook.data.birthday);
-				if (
-					(
-						(hook.data.roles[0]||"") === "student" &&
-						(RegExp("^[0-9a-fA-F]{24}$").test(hook.data.classId) || RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId)) &&
-						age > 18
-					) ||
-					(
-						(hook.data.roles[0]||"") !== "student" &&
-						!hook.data.classId &&
-						RegExp("^[0-9a-fA-F]{24}$").test(hook.data.schoolId) &&
-						!hook.data.birthday
-					)
-				) {
+				const age = globalHooks.getAge(hook.data.birthday);
+
+				if (!((hook.data.roles||[]).includes("student") && age < 18)) {
 					hook.app.service('/registrationPins').remove(pins.data[0]._id);
 				}
-				
+
 				return Promise.resolve(hook);
 			}
 			else{
 				return Promise.reject(new errors.BadRequest('Der Pin wurde noch nicht bei der Registrierung eingetragen.'));
 			}
-				
+
 		});
 	}
 };
 
 // student administrator helpdesk superhero teacher parent
-const permissionRoleCreate = hook =>{
+const permissionRoleCreate = async (hook) =>{
+	if (!hook.params.provider) {
+		//internal call
+		return hook;
+	}
+
 	if( hook.data.length <= 0 ){
 		return Promise.reject(new errors.BadRequest('No input data.'));
 	}
-	const isLoggedIn = ( hook.params || {} ).account && hook.params.account.userId ? true : false;
-	if( isLoggedIn==true  && globalHooks.arrayIncludes(hook.data.roles,['student','teacher'],['parent','administrator','helpdesk','superhero']) ||
-		isLoggedIn==false && globalHooks.arrayIncludes(hook.data.roles,['student','parent'],['teacher','administrator','helpdesk','superhero'])
+
+	let isLoggedIn = false;
+	if(((hook.params||{}).account||{}).userId){
+		isLoggedIn = true;
+		const userService = hook.app.service('/users/');
+		const currentUser = await userService.get(hook.params.account.userId, {query: {$populate: 'roles'}});
+		const userRoles = currentUser.roles.map((role) => {return role.name;});
+		if(userRoles.includes('superhero')){
+			//call from superhero Dashboard
+			return Promise.resolve(hook);
+		}
+	}
+
+	if( isLoggedIn===true  && globalHooks.arrayIncludes((hook.data.roles||[]),['student','teacher'],['parent','administrator','helpdesk','superhero']) ||
+		isLoggedIn===false && globalHooks.arrayIncludes((hook.data.roles||[]),['student','parent'],['teacher','administrator','helpdesk','superhero'])
 	){
 		return Promise.resolve(hook);
 	}else{
@@ -155,8 +233,8 @@ exports.before = function(app) {
 			pinIsVerified,
 			sanitizeData,
 			checkUnique,
-			checkUniqueAccount,	
-			permissionRoleCreate,			
+			checkUniqueAccount,
+			//permissionRoleCreate,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		update: [
@@ -170,7 +248,8 @@ exports.before = function(app) {
 			globalHooks.hasPermission('USER_EDIT'),
 			globalHooks.permitGroupOperation,
 			sanitizeData,
-			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
+			updateAccountUsername,
 		],
 		remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USER_CREATE'), globalHooks.permitGroupOperation]
 	};
@@ -261,5 +340,5 @@ exports.after = {
 	create: [handleClassId],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [removeStudentFromClasses, removeStudentFromCourses]
 };
