@@ -62,7 +62,7 @@ module.exports = function() {
 		 * rejects with error otherwise
 		 */
 		_connect(config, username, password) {
-			username = username || `uid=${config.searchUser},cn=users,${config.rootPath}`;
+			username = username || `${config.searchUserCnUid}=${config.searchUser},${config.searchUserPathAdditions},${config.rootPath}`;
 			password = password || config.searchUserPassword;
 
 			return new Promise((resolve, reject) => {

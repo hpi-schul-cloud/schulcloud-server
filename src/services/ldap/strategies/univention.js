@@ -18,8 +18,12 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @memberof UniventionLDAPStrategy
      */
     getSchoolsQuery() {
+        let ignoredSchools = '';
+        this.config.ignoreSchools.forEach(function(schoolOu){
+            ignoredSchools =  ignoredSchools + `(!(ou=${schoolOu}))`;
+          });
         const options = {
-            filter: '(&(univentionObjectType=container/ou)(!(ucsschoolRole=school:ou:no_school)))',
+            filter: `(&(univentionObjectType=container/ou)(!(ucsschoolRole=school:ou:no_school))${ignoredSchools})`,
             scope: 'sub',
             attributes: []
         };
