@@ -186,7 +186,17 @@ module.exports = function() {
 		 */
 		getSchools(config) {
 			const {searchString, options} = getLDAPStrategy(app, config).getSchoolsQuery();
-			return this.searchCollection(config, searchString, options);
+			if (searchString && options) {
+				return this.searchCollection(config, searchString, options);
+			}
+			else {
+				return new Promise((resolve) => {
+					return resolve([{
+						'displayName' : config.schoolName,
+						'ou' : config.rootPath
+					}]);
+				});
+			}
 		}
 
 		/**
@@ -210,7 +220,14 @@ module.exports = function() {
 		 */
 		getClasses(config, school) {
 			const {searchString, options} = getLDAPStrategy(app, config).getClassesQuery(school);
-			return this.searchCollection(config, searchString, options);
+			if (searchString && options) {
+				return this.searchCollection(config, searchString, options);
+			}
+			else {
+				return new Promise((resolve) => {
+					return resolve([]);
+				});
+			}
 		}
 
 		/**

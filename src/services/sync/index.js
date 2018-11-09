@@ -4,7 +4,7 @@ const logger = require('winston');
 
 const syncFromLdap = function(app) {
 	logger.info('Syncing from LDAP');
-	return app.service('systems').find({ query: { type: 'ldap' } })
+	return app.service('systems').find({ query: { type: 'ldap', name: 'NIGE' } })
 		.then(ldapSystems => {
 			logger.info(`Found ${ldapSystems.total} LDAP configurations.`);
 			return Promise.all(ldapSystems.data.map(system => {
@@ -46,7 +46,7 @@ const getCurrentYearAndFederalState = function(app) {
 };
 
 const createSchoolsFromLdapData = function(app, data, system) {
-	logger.info(`Got ${data.length()} schools from the server`);
+	logger.info(`Got ${data.length} schools from the server`);
 	let newSchools = 0;
 	let updates = 0;
 	return Promise.all(data.map(ldapSchool => {
