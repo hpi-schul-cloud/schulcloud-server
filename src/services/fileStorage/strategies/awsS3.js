@@ -10,11 +10,14 @@ const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
 
-const prodMode = process.env.NODE_ENV === 'production';
+//const prodMode = process.env.NODE_ENV === 'production';
 
 let awsConfig = {};
 try {
-	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
+//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
+	(['production'].includes(process.env.NODE_ENV))
+		? awsConfig = require("../../../../config/secrets.js").aws
+		: awsConfig = require("../../../../config/secrets.json").aws;
 } catch (e) {
 	logger.log('warn', 'The AWS config couldn\'t be read');
 }
