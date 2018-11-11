@@ -17,7 +17,8 @@ module.exports = {
 	},
 
 	userIsMatching: context => {
-		if (context.params.tokenInfo.obfuscated_subject === decodeURIComponent(context.params.user)) {
+		if (context.params.tokenInfo.obfuscated_subject === decodeURIComponent(context.params.user) ||
+			context.params.tokenInfo.sub === context.params.user) {
 			return context
 		} else {
 			throw new errors.BadRequest('No permissions for the user')
@@ -39,6 +40,7 @@ module.exports = {
 				oAuthClientId: context.params.tokenInfo.client_id
 			}
 		}).then(originTools => {
+			context.params.useIframePseudonym = originTools.data[0].useIframePseudonym;
 			return toolService.find({
 				query: {
 					originTool: originTools.data[0]._id
@@ -55,7 +57,8 @@ module.exports = {
 		if (!context.result.data) return context
 		if (context.result.data.students
 				.concat(context.result.data.teachers)
-				.find(user => (user.user_id === context.params.tokenInfo.obfuscated_subject))) {
+				.find(user => (user.user_id === context.params.tokenInfo.obfuscated_subject ||
+				user.user_id === context.params.tokenInfo.sub))) {
 			return context
 		}
 		throw new errors.BadRequest("Current user is not part of group")

@@ -133,10 +133,14 @@ module.exports = function() {
 				]).then(([users, teachers]) => ({
 					data: {
 						students: users.data.map(user => ({
-							"user_id": oauth2.getSubject(user.pseudonym)
+							"user_id": (params.useIframePseudonym
+								? oauth2.getSubject(user.pseudonym)
+								: user.pseudonym)
 						})),
 						teachers: teachers.data.map(user => ({
-							"user_id": oauth2.getSubject(user.pseudonym)
+							"user_id": (params.useIframePseudonym
+								? oauth2.getSubject(user.pseudonym)
+								: user.pseudonym)
 						}))
 					}
 				}));

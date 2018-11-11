@@ -16,7 +16,6 @@ module.exports = function() {
 			return hydra.listOAuth2Clients(params);
 		},
 		create (data) {
-			data.subject_type = 'pairwise';
 			data.scope = data.scope || 'openid offline';
 			data.grant_types = data.grant_types || ['authorization_code' ,'refresh_token'];
 			data.response_types = data.response_types || ['code', 'token', 'id_token'];

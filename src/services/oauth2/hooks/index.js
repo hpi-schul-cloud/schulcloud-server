@@ -16,7 +16,9 @@ module.exports = {
 			}).then(pseudonyms => {
 				const pseudonym = pseudonyms.data[0].pseudonym;
 				hook.data.subject = pseudonym;
-				hook.data.force_subject_identifier = getSubject(pseudonym);
+				if (tools.data[0].useIframePseudonym) {
+					hook.data.force_subject_identifier = getSubject(pseudonym);
+				}
 				return hook
 			})
 		});
