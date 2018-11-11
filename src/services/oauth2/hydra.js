@@ -20,7 +20,12 @@ const handleResponse = (res) => {
 module.exports = (hydraUrl) => {
 
 	function get(flow, challenge) {
-		return fetch(uj(hydraUrl, '/oauth2/auth/requests/' + flow + '/' + challenge)).then(handleResponse);
+		return fetch(uj(hydraUrl, '/oauth2/auth/requests/' + flow + '/' + challenge),
+			{
+				headers: {
+					...mockTlsTermination
+				}
+			}).then(handleResponse);
 	}
 
 	// A little helper that takes type (can be "login" or "consent"), the action (can be "accept" or "reject") and a challenge and returns the response from ORY Hydra.
