@@ -12,7 +12,7 @@ module.exports = function() {
 		}
 	})
 
-	app.use('/roster/users/:user/metadata', {
+	const metadataHandler = {
 		find(params) {
 			return app.service("pseudonym").find({
 				query: {
@@ -41,17 +41,22 @@ module.exports = function() {
 				});
 			});
 		}
-	});
+	}
 
-	app.service('/roster/users/:user/metadata').before({
+	const metadataHooks = {
 		find: [
 			globalHooks.ifNotLocal(hooks.tokenIsActive),
 			hooks.userIsMatching,
 			hooks.stripIframe,
 		]
-	})
+	}
 
-	app.use('/roster/users/:user/groups', {
+	app.use('/roster/users/:user/metadata', metadataHandler);
+	app.service('/roster/users/:user/metadata').before(metadataHooks);
+	app.use('/provider/users/:user/metadata', metadataHandler);
+	app.service('/provider/users/:user/metadata').before(metadataHooks);
+
+	const userGroupsHandler = {
 		find(params) {
 			return app.service("pseudonym").find({
 				query: {
@@ -82,17 +87,22 @@ module.exports = function() {
 				}));
 			});
 		}
-	});
+	};
 
-	app.service('/roster/users/:user/groups').before({
+	const userGroupsHooks = {
 		find: [
 			globalHooks.ifNotLocal(hooks.tokenIsActive),
 			hooks.userIsMatching,
 			hooks.stripIframe,
 			hooks.injectOriginToolIds]
-	})
+	};
 
-	app.use('/roster/groups', {
+	app.use('/roster/users/:user/groups', userGroupsHandler);
+	app.service('/roster/users/:user/groups').before(userGroupsHooks);
+	app.use('/provider/users/:user/groups', userGroupsHandler);
+	app.service('/provider/users/:user/groups').before(userGroupsHooks);
+
+	const groupsHandler = {
 		get(id, params) {
 			const courseService = app.service("courses");
 			return courseService.find({
@@ -132,15 +142,21 @@ module.exports = function() {
 				}));
 			});
 		}
-	});
-
-	app.service('/roster/groups').before({
+	};
+	const groupsHooksBefore = {
 		get: [
 			globalHooks.ifNotLocal(hooks.tokenIsActive),
 			hooks.injectOriginToolIds]
-	})
+	};
 
-	app.service('/roster/groups').after({
+	const groupsHooksAfter = {
 		get: hooks.groupContainsUser
-	})
+	};
+
+	app.use('/roster/groups', groupsHandler);
+	app.service('/roster/groups').before(groupsHooksBefore);
+	app.service('/roster/groups').after(groupsHooksAfter);
+	app.use('/provider/groups', groupsHandler);
+	app.service('/provider/groups').before(groupsHooksBefore);
+	app.service('/provider/groups').after(groupsHooksAfter);
 };
