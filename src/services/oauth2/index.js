@@ -7,9 +7,9 @@ module.exports = function() {
 	const app = this;
 	const hydra = Hydra(app.settings.services.hydra.adminUrl);
 
-	hydra.isInstanceAlive()
-		.then(res => { logger.log('info', 'Hydra status is: ' + res.statusText) })
-		.catch(error => { logger.log('warn', 'Hydra got a problem: ' + error) });
+	// hydra.isInstanceAlive()
+	// 	.then(res => { logger.log('info', 'Hydra status is: ' + res.statusText) })
+	// 	.catch(error => { logger.log('warn', 'Hydra got a problem: ' + error) });
 
 	app.use('/oauth2/clients', {
 		find (params) {

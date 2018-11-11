@@ -76,7 +76,12 @@ module.exports = (hydraUrl) => {
 			}
 		).then(handleResponse),
 		isInstanceAlive: () => fetch(uj(hydraUrl, '/health/alive')),
-		listOAuth2Clients: () => fetch(uj(hydraUrl, '/clients')).then(handleResponse),
+		listOAuth2Clients: () => fetch(uj(hydraUrl, '/clients'),
+			{
+				headers: {
+					...mockTlsTermination
+				}
+			}).then(handleResponse),
 		createOAuth2Client: (data) => fetch(uj(hydraUrl, '/clients'),
 			{
 				method: 'POST',
