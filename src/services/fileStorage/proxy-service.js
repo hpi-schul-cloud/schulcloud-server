@@ -8,7 +8,7 @@ const AWSStrategy = require('./strategies/awsS3');
 const errors = require('feathers-errors');
 const swaggerDocs = require('./docs/');
 const {
-	checkPermissions,
+	//checkPermissions,
 	canWrite,
 	canRead,
 	canCreate,
@@ -209,13 +209,18 @@ const signedUrlService = {
 		});
 	},
 
-	find({ query, payload }) {
-		const {file, name, download} = query;
+	async find({ query, payload }) {
+		const {file, download} = query;
 		const { userId } = payload;
 		const strategy = createCorrectStrategy(payload.fileStorageType);
+		const fileObject = await FileModel.findOne({_id: file}).exec();
+
+		if(!fileObject){
+			throw new errors.NotFound('File seems not to be there.');
+		}
 		
 		return canRead(userId, file)
-			.then(() => strategy.getSignedUrl({userId, flatFileName: name, download }))
+			.then(() => strategy.getSignedUrl({userId, flatFileName: fileObject.storageFileName, download }))
 			.then(res => ({
 				url: res,
 			}))
@@ -260,7 +265,7 @@ const directoryService = {
 		}));
 
 		const props = sanitizeObj(Object.assign(data, {
-			isDirectory: false,
+			isDirectory: true,
 			owner: owner || userId,
 			parent,
 			refOwnerModel: owner ? isCourse ? 'course' : 'teams' : 'user',
@@ -329,20 +334,20 @@ const renameService = {
 		docs: swaggerDocs.directoryRenameService,
 
 		/**
-		 * @param data, contains new name
+		 * @param data, contains newName
 		 * @returns {Promise}
 		 */
 		create(data, params) {
 			const { payload: { userId } } = params;
-			const { name, _id } = data;
-			
-			if (!_id || !name) return Promise.reject(new errors.BadRequest('Missing parameters'));
+			const { newName, _id } = data;
+
+			if (!_id || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
 
 			return canWrite(userId, _id)
 				.then(() => FileModel.findOne({ _id }).exec())
 				.then(directory => {
 					if (!directory) return Promise.reject(new errors.NotFound('The given directory/file was not found!'));
-					return FileModel.update({ _id }, { name }).exec();
+					return FileModel.update({ _id }, { name:newName }).exec();
 				});
 		}
 };
