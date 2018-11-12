@@ -54,6 +54,12 @@ const fileStorageService = {
 			create: true,
 			delete: true,
 		}];
+		const setRefId = (perm) => {
+			if( !perm.refId ) {
+				perm.refId = perm._id;
+			}
+			return perm;
+		};
 
 		let { permissions: sendPermissions } = data;
 		let isCourse = true;
@@ -85,7 +91,7 @@ const fileStorageService = {
 			owner: owner || userId,
 			parent,
 			refOwnerModel: owner ? isCourse ? 'course' : 'teams' : 'user',
-			permissions: [...permissions, ...sendPermissions]
+			permissions: [...permissions, ...sendPermissions].map(setRefId)
 		}));
 
 		// create db entry for new file
@@ -235,7 +241,7 @@ const directoryService = {
 	 */
 	async create(data, params) {
 		const { payload: { userId } } = params;
-		const { name, owner, parent } = data;
+		const { owner, parent } = data;
 		const permissions = [{
 			refId: userId,
 			refPermModel: 'user',
@@ -245,28 +251,31 @@ const directoryService = {
 			delete: true,
 		}];
 
+		const setRefId = (perm) => {
+			if( !perm.refId ) {
+				perm.refId = perm._id;
+			}
+			return perm;
+		};
+
+		let { permissions: sendPermissions } = data;
 		let isCourse = true;
 
 		if( owner ) {
 			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
 		}
 
-		const teamRoles = await RoleModel.find({ name: /team/i }).exec();
-		const teamPermissions = teamRoles.map(role => ({
-			refId: role._id,
-			refPermModel: 'role',
-			write: true,
-			read: true,
-			create: true,
-			delete: true,
-		}));
+		if( !sendPermissions ) {
+			const teamObject = await teamsModel.findOne({ _id: owner }).exec();			
+			sendPermissions = teamObject.filePermission;
+		}	
 
 		const props = sanitizeObj(Object.assign(data, {
 			isDirectory: true,
 			owner: owner || userId,
 			parent,
 			refOwnerModel: owner ? isCourse ? 'course' : 'teams' : 'user',
-			permissions: [...permissions, ...teamPermissions]
+			permissions: [...permissions, ...sendPermissions].map(setRefId)
 		}));
 
 		// create db entry for new directory
