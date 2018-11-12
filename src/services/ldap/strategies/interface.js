@@ -36,9 +36,9 @@ class AbstractLDAPStrategy {
      * get provider-specific search string and options to find all schools in
      * the LDAP directory
      * @abstract
-     * @returns {LDAPQueryOptions} Object containing `searchString` and `options`
+     * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName 
      */
-    getSchoolsQuery() {
+    getSchools() {
         throw new TypeError('Method has to be implemented.');
     }
 
@@ -47,9 +47,10 @@ class AbstractLDAPStrategy {
      * a given school in the LDAP directory
      * @abstract
      * @param {School} school the school
-     * @returns {LDAPQueryOptions} Object containing `searchString` and `options`
+     * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
+     * (Array) roles = ['teacher', 'student']
      */
-    getUsersQuery(school) {
+    getUsers(school) {
         throw new TypeError('Method has to be implemented.');
     }
 
@@ -58,9 +59,9 @@ class AbstractLDAPStrategy {
      * a given school in the LDAP directory
      * @abstract
      * @param {School} school the school
-     * @returns {LDAPQueryOptions} Object containing `searchString` and `options`
+     * @returns {Array} Array of Objects containing className, ldapDn 
      */
-    getClassesQuery(school) {
+    getClasses(school) {
         throw new TypeError('Method has to be implemented.');
     }
 

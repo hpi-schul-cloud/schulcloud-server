@@ -14,43 +14,76 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
     /**
      * @public
      * @see AbstractLDAPStrategy#getSchoolsQuery
-     * @returns {LDAPQueryOptions} LDAP query options
+     * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
      * @memberof iServLDAPStrategy
      */
-    getSchoolsQuery() {
-        //Disable school search
-        const options = '';
-        const searchString = '';
-        return {searchString, options};
+    getSchools() {
+        return Promise.resolve([{
+            displayName: this.config.providerOptions.schoolName,
+            ldapOu: this.config.rootPath
+        }]);
     }
 
     /**
      * @public
-     * @see AbstractLDAPStrategy#getUsersQuery
-     * @returns {LDAPQueryOptions} LDAP query options
+     * @see AbstractLDAPStrategy#getUsers
+     * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
+     * (Array) roles = ['teacher', 'student']
      * @memberof iServLDAPStrategy
      */
-    getUsersQuery(school) {
+    getUsers(school) {
         const options = {
             filter: 'objectClass=person',
             scope: 'sub',
-            attributes: ['givenName', 'sn', 'dn', 'uidNumber', 'uid', 'objectClass']
+            attributes: ['givenName', 'sn', 'dn', 'uuid', 'uid', 'mail', 'objectClass', 'memberOf']
         };
         const searchString = `ou=users,${this.config.rootPath}`;
-        return {searchString, options};
+        return this.app.service('ldap').searchCollection(this.config, searchString, options)
+        .then(data => {
+            const results = [];
+            data.forEach(obj => {
+                const roles = [];
+                if (!Array.isArray(obj.memberOf)) {
+                    obj.memberOf = [obj.memberOf];
+                }
+                if (obj.memberOf.includes(this.config.providerOptions.TeacherMembershipPath)) {
+                    roles.push('teacher');
+                }
+                if (obj.memberOf.includes(this.config.providerOptions.AdminMembershipPath)) {
+                    roles.push('administrator');
+                }
+                if (roles.length === 0) {
+                    const ignoredUser = obj.memberOf.some(item => {
+                        return this.config.providerOptions.IgnoreMembershipPath.includes(item);
+                    });
+                    if (ignoredUser || !obj.mail || !obj.givenName || !obj.sn || !obj.uuid || !obj.uid) {
+                        return;
+                    }
+                    roles.push('student');
+                }
+
+                results.push({
+                    email: obj.mail,
+                    firstName: obj.givenName,
+                    lastName: obj.sn,
+                    role: roles,
+                    ldapDn: obj.dn,
+                    ldapUUID: obj.uuid,
+                    ldapUID: obj.uid
+                });
+            });
+            return results;
+        });
     }
 
     /**
      * @public
-     * @see AbstractLDAPStrategy#getClassesQuery
-     * @returns {LDAPQueryOptions} LDAP query options
+     * @see AbstractLDAPStrategy#getClasses
+     * @returns {Array} Array of Objects containing className, ldapDn
      * @memberof iServLDAPStrategy
      */
-    getClassesQuery(school) {
-        // Disable class search
-        const options = '';
-        const searchString = '';
-        return {searchString, options};
+    getClasses(school) {
+        return [];
     }
 
     /**

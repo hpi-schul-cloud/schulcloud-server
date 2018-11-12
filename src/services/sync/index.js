@@ -50,7 +50,7 @@ const createSchoolsFromLdapData = function(app, data, system) {
 	let newSchools = 0;
 	let updates = 0;
 	return Promise.all(data.map(ldapSchool => {
-		return app.service('schools').find({ query: { ldapSchoolIdentifier: ldapSchool.ou } })
+		return app.service('schools').find({ query: { ldapSchoolIdentifier: ldapSchool.ldapOu } })
 			.then(schools => {
 				if (schools.total != 0) {
 					updates += 1;
@@ -64,7 +64,7 @@ const createSchoolsFromLdapData = function(app, data, system) {
 					const schoolData = {
 						name: ldapSchool.displayName,
 						systems: [system._id],
-						ldapSchoolIdentifier: ldapSchool.ou,
+						ldapSchoolIdentifier: ldapSchool.ldapOu,
 						currentYear: currentYear,
 						federalState: federalState
 					};
@@ -80,33 +80,24 @@ const createSchoolsFromLdapData = function(app, data, system) {
 };
 
 const createUserAndAccount = function(app, idmUser, school, system) {
-	let email = idmUser.mailPrimaryAddress || idmUser.mail;
-	return app.service('registrationPins').create({ email, verified: true, silent: true })
+	return app.service('registrationPins').create({ email: idmUser.email, verified: true, silent: true })
 		.then(registrationPin => {
 			let newUserData = {
 				pin: registrationPin.pin,
-				firstName: idmUser.givenName,
-				lastName: idmUser.sn,
+				firstName: idmUser.firstName,
+				lastName: idmUser.lastName,
 				schoolId: school._id,
-				email: email,
-				ldapDn: idmUser.dn,
-				ldapId: idmUser.entryUUID
+				email: idmUser.email,
+				ldapDn: idmUser.ldapDn,
+				ldapId: idmUser.ldapUUID,
+				roles: idmUser.roles
 			};
-			if (idmUser.objectClass.includes("ucsschoolTeacher")) {
-				newUserData.roles = "teacher";
-			}
-			if (idmUser.objectClass.includes("ucsschoolStudent")) {
-				newUserData.roles = "student";
-			}
-			if (idmUser.objectClass.includes("ucsschoolStaff")) {
-				//toDo
-			}
 
 			return app.service('users').create(newUserData);
 		}).then(user => {
 			let accountData = {
 				userId: user._id,
-				username: school.ldapSchoolIdentifier + "/" + idmUser.uid,
+				username: school.ldapSchoolIdentifier + "/" + idmUser.ldapUID,
 				systemId: system._id,
 				activated: true
 			};
@@ -117,12 +108,12 @@ const createUserAndAccount = function(app, idmUser, school, system) {
 const createUsersFromLdapData = function(app, data, school, system) {
 	return Promise.all(data.map(idmUser => {
 
-		return app.service('users').find({ query: { ldapId: idmUser.entryUUID } })
+		return app.service('users').find({ query: { ldapId: idmUser.ldapUUID } })
 			.then(users => {
 				if (users.total != 0) {
 					return checkForUserChangesAndUpdate(app, idmUser, users.data[0], school);
 				}
-				if (idmUser.mail == undefined) return Promise.resolve("no email");
+				if (idmUser.email == undefined) return Promise.resolve("no email");
 				return createUserAndAccount(app, idmUser, school, system);
 			});
 
@@ -131,36 +122,31 @@ const createUsersFromLdapData = function(app, data, school, system) {
 
 const checkForUserChangesAndUpdate = function(app, idmUser, user, school) {
 	let updateObject = {$set: {}};
-	if(user.firstName != idmUser.givenName) {
-		updateObject.$set['firstName'] = idmUser.givenName;
+	if (user.firstName != idmUser.firstName) {
+		updateObject.$set['firstName'] = idmUser.firstName;
 	}
-	if(user.lastName != idmUser.sn) {
-		updateObject.$set['lastName'] = idmUser.sn;
+	if (user.lastName != idmUser.lastName) {
+		updateObject.$set['lastName'] = idmUser.lastName;
 	}
 	//Updating SchoolId will cause an issue. We need to discuss about it
-	if(user.email != idmUser.mail) {
-		updateObject.$set['email'] = idmUser.mail;
+	if (user.email != idmUser.email) {
+		updateObject.$set['email'] = idmUser.email;
 	}
-	if(user.ldapDn != idmUser.dn) {
-		updateObject.$set['ldapDn'] = idmUser.dn;
+	if (user.ldapDn != idmUser.ldapDn) {
+		updateObject.$set['ldapDn'] = idmUser.ldapDn;
 	}
 
 	// Role
-	updateObject.$set["roles"] = [];
-	if (idmUser.objectClass.includes("ucsschoolTeacher")) {
-		updateObject.$set["roles"].push("teacher");
-	}
-	if (idmUser.objectClass.includes("ucsschoolStudent")) {
-		updateObject.$set["roles"].push("student");
-	}
-	if (idmUser.objectClass.includes("ucsschoolStaff")) {
-		//ToDo
-	}
+	updateObject.$set["roles"] = idmUser.roles;
 
-	return app.service('users').update(
-		{_id: user._id},
-		updateObject);
-
+	return accountModel.update(
+		{userId: user._id},
+		{username: school.ldapSchoolIdentifier + "/" + idmUser.ldapUID}
+	).then(_ => {
+		return app.service('users').update(
+			{_id: user._id},
+			updateObject);
+	});
 };
 
 const createClassesFromLdapData = function(app, data, school) {
