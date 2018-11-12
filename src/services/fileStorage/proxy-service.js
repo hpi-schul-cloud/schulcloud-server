@@ -8,7 +8,6 @@ const AWSStrategy = require('./strategies/awsS3');
 const errors = require('feathers-errors');
 const swaggerDocs = require('./docs/');
 const {
-	//checkPermissions,
 	canWrite,
 	canRead,
 	canCreate,
