@@ -72,7 +72,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
                     email: obj.mailPrimaryAddress || obj.mail,
                     firstName: obj.givenName,
                     lastName: obj.sn,
-                    role: roles,
+                    roles: roles,
                     ldapDn: obj.dn,
                     ldapUUID: obj.entryUUID,
                     ldapUID: obj.uid
@@ -84,7 +84,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
     /**
      * @public
      * @see AbstractLDAPStrategy#getClasses
-     * @returns {Array} Array of Objects containing className, ldapDn 
+     * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
      * @memberof UniventionLDAPStrategy
      */
     getClasses(school) {
@@ -100,7 +100,8 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
                 let splittedName = obj.cn.split("-");
                 return {
                     className: splittedName[splittedName.length-1],
-                    ldapDn: obj.dn
+                    ldapDn: obj.dn,
+                    uniqueMembers: obj.uniqueMember
                 };
             });
         });

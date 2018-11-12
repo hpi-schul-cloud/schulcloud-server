@@ -59,7 +59,7 @@ class AbstractLDAPStrategy {
      * a given school in the LDAP directory
      * @abstract
      * @param {School} school the school
-     * @returns {Array} Array of Objects containing className, ldapDn 
+     * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
      */
     getClasses(school) {
         throw new TypeError('Method has to be implemented.');

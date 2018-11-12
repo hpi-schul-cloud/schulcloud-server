@@ -66,7 +66,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
                     email: obj.mail,
                     firstName: obj.givenName,
                     lastName: obj.sn,
-                    role: roles,
+                    roles: roles,
                     ldapDn: obj.dn,
                     ldapUUID: obj.uuid,
                     ldapUID: obj.uid
@@ -79,7 +79,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
     /**
      * @public
      * @see AbstractLDAPStrategy#getClasses
-     * @returns {Array} Array of Objects containing className, ldapDn
+     * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
      * @memberof iServLDAPStrategy
      */
     getClasses(school) {

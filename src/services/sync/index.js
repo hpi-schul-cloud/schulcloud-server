@@ -4,7 +4,7 @@ const logger = require('winston');
 
 const syncFromLdap = function(app) {
 	logger.info('Syncing from LDAP');
-	return app.service('systems').find({ query: { type: 'ldap', name: 'NIGE' } })
+	return app.service('systems').find({ query: { type: 'ldap' } })
 		.then(ldapSystems => {
 			logger.info(`Found ${ldapSystems.total} LDAP configurations.`);
 			return Promise.all(ldapSystems.data.map(system => {
@@ -159,16 +159,14 @@ const createClassesFromLdapData = function(app, data, school) {
 };
 
 const getOrCreateClassFromLdapData = function(app, data, school) {
-	return app.service('classes').find({query: {ldapDN: data.dn}})
+	return app.service('classes').find({query: {ldapDN: data.ldapDn}})
 	.then(res => {
 		if (res.total == 0) {
-			let splittedName = data.cn.split("-");
-			let className = splittedName[splittedName.length-1];
 			let newClass = {
-				name: className,
+				name: data.className,
 				schoolId: school._id,
 				nameFormat: "static",
-				ldapDN: data.dn,
+				ldapDN: data.ldapDn,
 				year: school.currentYear
 			};
 			return app.service('classes').create(newClass);
@@ -180,13 +178,13 @@ const getOrCreateClassFromLdapData = function(app, data, school) {
 
 const populateClassUsers = function(app, ldapClass, currentClass) {
 	let students = [], teachers = [];
-	if (!("uniqueMember" in ldapClass)) {
+	if (!("uniqueMembers" in ldapClass)) {
 		return Promise.resolve();
 	}
-	if (Array.isArray(ldapClass.uniqueMember) == false) {
-		ldapClass.uniqueMember = [ldapClass.uniqueMember];
+	if (Array.isArray(ldapClass.uniqueMembers) == false) {
+		ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 	}
-	return Promise.all(ldapClass.uniqueMember.map(ldapUserDn => {
+	return Promise.all(ldapClass.uniqueMembers.map(ldapUserDn => {
 		return app.service('users').find({query: {ldapDn: ldapUserDn, $populate:['roles']}})
 		.then(user => {
 			if (user.total > 0) {
