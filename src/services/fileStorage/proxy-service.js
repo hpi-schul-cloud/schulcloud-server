@@ -359,7 +359,7 @@ const fileTotalSizeService = {
 				total: files.length, 
 				totalSize: files.reduce((sum, file) => {
 					return sum + file.size;
-				}),
+				},0),
 			}));
 	}
 };
