@@ -18,6 +18,7 @@ const { returnFileType, generateFileNameSuffix: generateFlatFileName } = require
 const FileModel = require('./model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
+const { teamsModel } = require('../teams/model');
 
 const strategies = {
 	awsS3: AWSStrategy
@@ -54,6 +55,7 @@ const fileStorageService = {
 			delete: true,
 		}];
 
+		let { permissions: sendPermissions } = data;
 		let isCourse = true;
 
 		if( owner ) {
@@ -72,23 +74,18 @@ const fileStorageService = {
 				delete: false,
 			});
 		}
-
-		const teamRoles = await RoleModel.find({ name: /team/i }).exec();
-		const teamPermissions = teamRoles.map(role => ({
-			refId: role._id,
-			refPermModel: 'role',
-			write: true,
-			read: true,
-			create: true,
-			delete: true,
-		}));
+		
+		if( !sendPermissions ) {
+			const teamObject = await teamsModel.findOne({ _id: owner }).exec();			
+			sendPermissions = teamObject.filePermission;
+		}		
 
 		const props = sanitizeObj(Object.assign(data, {
 			isDirectory: false,
 			owner: owner || userId,
 			parent,
 			refOwnerModel: owner ? isCourse ? 'course' : 'teams' : 'user',
-			permissions: [...permissions, ...teamPermissions]
+			permissions: [...permissions, ...sendPermissions]
 		}));
 
 		// create db entry for new file
