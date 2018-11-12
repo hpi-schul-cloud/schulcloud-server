@@ -5,6 +5,7 @@ const errors = require('feathers-errors');
 const { teamsModel } = require('./model');
 const hooks = require('./hooks');
 const logger = require('winston');
+const userModel = require('../user/model').userModel;
 //const {teamRolesToHook} = require('./hooks');
 //todo docs require 
 
@@ -64,14 +65,15 @@ class Add {
 	 * @param {*} data 
 	 * @param {*} params 
 	 */
-	patch(id, data, params) {
+	async patch(id, data, params) {
 		const teamsService = this.app.service('teams');
 		const usersService = this.app.service('users');
-		const linkService = this.app.service('links');
 		const schoolService = this.app.service('schools');
+		const expertLinkService = this.app.service('/expertinvitelink');
 		const email = data.email;
 		const userId = data.userId;
 		let role = data.role;
+		let roleId;
 		const teamId = id;
 		let newUser = {};
 		let expertSchool = {};
@@ -87,7 +89,11 @@ class Add {
 		}
 
 		if (email && role) {
-
+			
+			await hooks.teamRolesToHook(this).then(_self => {
+				roleId = _self.findRole('name', role, '_id');
+			});
+			
 			const waitForUser = new Promise((resolve, reject) => {
 				usersService.find({
 					query: { email }
@@ -100,67 +106,32 @@ class Add {
 					//user do not exist and it must be an teamexpert, all others must have accounts before
 					if (user === undefined && role === 'teamexpert') {
 						try {
-							// create user with expert role
-							await usersService.create({
-								email: email,
-								role: ["expert"]
-							}).then(cUser => {
-								 newUser = cUser;
-							}).catch(err=> {
-								logger.warn(err);
-								throw new errors.BadRequest("Fehler beim Erstellen des Nutzers.");
-							});
-							
-							// generate import hash
-							await app.service('hash').create({
-								toHash: email,
-								safe: true,
-								patchUser: true
-							}).then(generatedHash => {
-								linkInfo.hash = generatedHash;
-							});
-							
 							// get expert school with "purpose": "expert"
 							await schoolService.find({query: {purpose: "expert"}}).then(school => {
 								if(school.data.length <= 0 || school.data.length > 1) {
-									logger.warn("Experte: Keine oder mehr als 1 Schule gefunden.");
-									throw new errors.BadRequest("Experte: Keine oder mehr als 1 Schule gefunden.");
+									return errorHandling('Experte: Keine oder mehr als 1 Schule gefunden.');
 								}
 								expertSchool = school.data[0];
-							}).catch(err => {
-								logger.warn(err);
-							});
+							}).catch(errorHandling);
 							
-							// if all data exists: craft expert registration link
-							if (user._id && expertSchool._id && linkInfo.hash) {
-								// build final link and remove possible double-slashes in url except the protocol ones
-								linkInfo.link = `${(data.host || process.env.HOST)}/registration/${expertSchool._id}/byexpert/?importHash=${linkInfo.hash}`.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
-							} else {
-								logger.warn("Fehler beim Einladen des Experten.");
-								return Promise.reject(new Error("Fehler beim Einladen des Experten."));
-							}
+							// create user with expert role
+							newUser = await userModel.create({
+								email: email,
+								firstName: "Max",
+								lastName: "Mustermann",
+								schoolId: expertSchool._id,
+								roles: [roleId] // expert
+							}).exec();
 							
-							// generate short url
-							await linkService.create({target: linkInfo.link}).then(generatedShortLink => {
-								linkInfo.shortLinkId = generatedShortLink._id;
-								// build final short link and remove possible double-slashes in url except the protocol ones
-								linkInfo.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
-							}).catch(err => {
-								logger.warn(err);
-								return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
-							});
+							console.log(newUser);
 							
-							// send email to expert
-							return api(req).post("/registrationlink/", {
-								json: options
-							}).then(linkData => {
+							// generate invite link
+							expertLinkService.create({email:"test"}).then(linkData => {
+								return linkData;
+							}).catch(errorHandling);
 							
-							}).catch(err => {
-								logger.warn(err);
-							});
 						} catch (err) {
-							logger.warn(`Fehler beim Generieren des Experten-Links. ${err}`);
-							return Promise.reject(new Error(`Fehler beim Generieren des Experten-Links. ${err}`));
+							return errorHandling(`Fehler beim Generieren des Experten-Links. ${err}`);
 						}
 					} else {
 						//user already exist
@@ -168,7 +139,7 @@ class Add {
 						resolve(user);
 					}
 				}).catch(err => {
-					winston.warn(err);
+					logger.warn(err);
 					reject(new errors.Conflict('User services not avaible.', err));
 				});
 			});
