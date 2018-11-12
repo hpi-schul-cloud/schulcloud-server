@@ -26,8 +26,11 @@ const syncFromLdap = function(app) {
 						}));
 					})
 					.then(res => {
-						logger.log(`Finished syncing ${system.id}`);
+						logger.info(`Finished syncing ${system._id}`);
 						return Promise.resolve(res);
+					})
+					.catch(err => {
+						logger.error(err);
 					});
 			}));
 		});
@@ -106,18 +109,22 @@ const createUserAndAccount = function(app, idmUser, school, system) {
 };
 
 const createUsersFromLdapData = function(app, data, school, system) {
+	let usersCreated = 0, usersUpdated = 0;
 	return Promise.all(data.map(idmUser => {
-
 		return app.service('users').find({ query: { ldapId: idmUser.ldapUUID } })
 			.then(users => {
 				if (users.total != 0) {
+					usersUpdated += 1;
 					return checkForUserChangesAndUpdate(app, idmUser, users.data[0], school);
 				}
 				if (idmUser.email == undefined) return Promise.resolve("no email");
+				usersCreated += 1;
 				return createUserAndAccount(app, idmUser, school, system);
 			});
-
-	}));
+	})).then(res => {
+		logger.info(`${school.name}: Created ${usersCreated} users, updated ${usersUpdated} users.`);
+		return Promise.resolve(res);
+	});
 };
 
 const checkForUserChangesAndUpdate = function(app, idmUser, user, school) {
