@@ -10,7 +10,7 @@ module.exports = function () {
 	const options = {
 		Model: schoolModels.schoolModel,
 		paginate: {
-			default: 50,
+			default: 250,
 			max: 250
 		},
 		lean: true

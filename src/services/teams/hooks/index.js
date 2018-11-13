@@ -763,7 +763,7 @@ exports.after = {
 
 function createinfoText(hook) {
 	let text;
-	const newRegistration = ((hook.result.linkData||{}).link||{}).includes("/registration/");
+	const newRegistration = ((hook.result.linkData||{}).link||"").includes("/registration/");
 	if(newRegistration) {
 		text = `Hallo ${hook.data.email}!
 \nDu wurdest von ${hook.params.account.username} eingeladen, dem Team '${hook.additionalInfosTeam.team.name}' der ${process.env.SC_SHORT_TITLE} beizutreten.
