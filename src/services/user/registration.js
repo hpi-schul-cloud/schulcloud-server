@@ -3,6 +3,7 @@ const userModel = require('../user/model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
+const logger = require('winston');
 
 const formatBirthdate1=(datestamp)=>{
 	if( datestamp==undefined )
@@ -37,16 +38,18 @@ const populateUser = (app, data) => {
 			}
 			oldUser=users.data[0];
 			
-            user.roles = user.roles.map(role => {
-                if (role.name) {
-                    return role.name;
-                }
-            });
-			
             // overwrite registration data with DB data if already existing and if not expert
             if (!(user.roles||{}).includes("expert")) {
-				Object.assign(user, oldUser);
+				Object.keys(oldUser).forEach(key => {
+					if( oldUser[key] !== null ){
+						user[key]=oldUser[key];
+					}
+				});
 			}
+			
+            user.roles = user.roles.map(role => {
+				return typeof role==='object' ? role.name : role;
+            });
 			
             delete user.importHash;
             return {user, oldUser};
@@ -60,12 +63,16 @@ const insertUserToDB = (app,data,user)=> {
         return app.service('users').remove(user._id).then( ()=>{
             return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
             .catch(err=> {
-                 throw new errors.BadRequest("Fehler beim Updaten der Nutzerdaten.");}
+                logger.warn(err);
+            	throw new errors.BadRequest("Fehler beim Updaten der Nutzerdaten.");}
             );
         });
 	}else{	
 		return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
-		.catch(err=> {throw new errors.BadRequest("Fehler beim Erstellen des Nutzers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");} );
+		.catch(err=> {
+			logger.warn(err);
+			throw new errors.BadRequest("Fehler beim Erstellen des Nutzers. Eventuell ist die E-Mail-Adresse bereits im System registriert.");
+		});
 	}
 };
 
