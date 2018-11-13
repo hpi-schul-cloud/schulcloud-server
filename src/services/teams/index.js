@@ -5,6 +5,7 @@ const errors = require('feathers-errors');
 const { teamsModel } = require('./model');
 const hooks = require('./hooks');
 const logger = require('winston');
+const userModel = require('../user/model').userModel;
 //const {teamRolesToHook} = require('./hooks');
 //todo docs require 
 
@@ -64,29 +65,41 @@ class Add {
 	 * @param {*} data 
 	 * @param {*} params 
 	 */
-	patch(id, data, params) {
+	async patch(id, data, params) {
 		const teamsService = this.app.service('teams');
 		const usersService = this.app.service('users');
+		const schoolsService = this.app.service('schools');
+		const rolesService = this.app.service('roles');
+		const expertLinkService = this.app.service('/expertinvitelink');
 		const email = data.email;
 		const userId = data.userId;
 		let role = data.role;
+		let roleId;
 		const teamId = id;
-
+		let newUser = {};
+		let expertSchool = {};
+		let expertRole = {};
+		let linkInfo = {};
+		
 		const errorHandling = err => {
 			logger.warn(err);
 			return Promise.resolve('Success!');
 		};
 
 		if (['teamexpert', 'teamadministrator'].includes(role) === false) {
-			return errorHandling('Wrong role is set.');
+			return errorHandling('Experte: Wrong role is set.');
 		}
 
 		if (email && role) {
-
+			
+			await hooks.teamRolesToHook(this).then(_self => {
+				roleId = _self.findRole('name', role, '_id');
+			});
+			
 			const waitForUser = new Promise((resolve, reject) => {
 				usersService.find({
 					query: { email }
-				}).then(_users => {
+				}).then(async _users => {
 					let user;
 
 					if (_users.data !== undefined && _users.data.length > 0)
@@ -94,30 +107,70 @@ class Add {
 
 					//user do not exist and it must be an teamexpert, all others must have accounts before
 					if (user === undefined && role === 'teamexpert') {
-						//create user
-						//with import hash
-						//with role Expert
-						//take expert school for schoolId "purpose": "expert"
-						//start registration ...see by others
-
-
+						try {
+							// get expert school with "purpose": "expert"
+							await schoolsService.find({query: {purpose: "expert"}}).then(school => {
+								if(school.data.length <= 0 || school.data.length > 1) {
+									throw new errors.BadRequest('Experte: Keine oder mehr als 1 Schule gefunden.');
+								}
+								expertSchool = school.data[0];
+							}).catch(err => {
+								throw new errors.BadRequest("Experte: Fehler beim Abfragen der Schule.", err);
+							});
+							
+							await rolesService.find({query: {name: "expert"}}).then(role => {
+								if(role.data.length <= 0 || role.data.length > 1) {
+									throw new errors.BadRequest('Experte: Keine oder mehr als 1 Rolle gefunden.');
+								}
+								expertRole = role.data[0];
+							}).catch(err => {
+								throw new errors.BadRequest("Experte: Fehler beim Abfragen der Rolle.", err);
+							});
+							
+							// create user with expert role
+							await userModel.create({
+								email: email,
+								schoolId: expertSchool._id,
+								roles: [expertRole._id], // expert
+								firstName: "Experte",
+								lastName: "Experte"
+							}, (err, cUser) => {
+								if (err) {
+									throw new errors.BadRequest("Experte: Fehler beim Erstellen des Nutzers.", err);
+								} else {
+									if (cUser.email) {
+										newUser = cUser;
+									}
+								}
+							});
+							
+							// generate invite link
+							expertLinkService.create({esid: expertSchool._id, email: newUser.email}).then(linkData => {
+								resolve(linkData);
+							}).catch(err => {
+								throw new errors.BadRequest("Experte: Fehler beim Erstellen des Einladelinks.", err);
+							});
+							
+						} catch (err) {
+							throw new errors.BadRequest("Experte: Fehler beim Generieren des Experten-Links.", err);
+						}
 					} else {
 						//user already exist
 						//patch team
 						resolve(user);
 					}
 				}).catch(err => {
-					reject(new errors.Conflict('User services not avaible.', err));
+					logger.warn(err);
+					reject(new errors.Conflict('Experte: User services not avaible.', err));
 				});
 			});
 
-			return waitForUser.then(_user => {
+			return waitForUser.then(data => {
 				return teamsService.get(teamId).then(_team => {
 					let invitedUserIds = _team.invitedUserIds;
 					invitedUserIds.push({ email, role });
-
 					return teamsService.patch(teamId, { invitedUserIds }, params).then(_patchedTeam => {
-						return Promise.resolve('Success!');
+						return Promise.resolve({message:'Success!',linkData: data});
 					}).catch(errorHandling);
 				}).catch(errorHandling);
 			});
