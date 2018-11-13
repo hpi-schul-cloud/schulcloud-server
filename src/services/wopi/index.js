@@ -99,18 +99,20 @@ class WopiFilesContentsService {
 	 * retrieves a file`s binary contents
 	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html 
 	 */
-  find({_id, payload, account}) {
+  find({fileId: _id, payload, account}) {
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id }).then(file => {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
-
+			
 			// generate signed Url for fetching file from storage
 			return signedUrlService.find({
-				file: file._id,
-				userPayload: payload,
-				account: account
+				query: {
+					file: file._id,
+				},
+				payload,
+				account
 			}).then(signedUrl => {
 				return rp({
 					uri: signedUrl.url,
@@ -136,9 +138,11 @@ class WopiFilesContentsService {
 
 			// generate signedUrl for updating file to storage
 			return signedUrlService.find({
-				file: file._id,
-				userPayload: payload,
-				account: account
+				query: {
+					file: file._id,
+				},
+				payload,
+				account
 			}).then(signedUrl => {
 				// put binary content directly to file in storage
 				const options = {
