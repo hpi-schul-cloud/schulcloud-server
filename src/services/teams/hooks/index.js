@@ -113,7 +113,7 @@ const extractOne = (mongooseResponse) => {
     if ((mongooseResponse.data || []).length == 1)
         return Promise.resolve(mongooseResponse.data[0]);
     else
-        return Promise.reject(new errors.NotAcceptable('extractOne() length is !== 1', { expectedArrayWithData: res.data }));
+        return Promise.reject(new errors.NotAcceptable('extractOne() length is !== 1', { expectedArrayWithData: mongooseResponse.data }));
 };
 
 /**
