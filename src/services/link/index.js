@@ -108,25 +108,25 @@ module.exports = function () {
 		 */
 		create(data, params) {
 			return new Promise( async (resolve,reject) => {
-				let linkInfo = {}, expertSchool = {}, newUser = {};
-				const email = data.email;
+				let linkInfo = {};
+				const expertSchoolId = data.esid, email = data.email;
 				
 				const hashService = app.service('hash');
-				const linkService = app.service('links');
+				const linkService = app.service('link');
 				
 				// generate import hash
 				await hashService.create({
 					toHash: email,
-					safe: true,
+					save: true,
 					patchUser: true
 				}).then(generatedHash => {
 					linkInfo.hash = generatedHash;
 				}).catch(errorHandling);
 				
 				// if all data exists: craft expert registration link
-				if (newUser._id && expertSchool._id && linkInfo.hash) {
+				if (expertSchoolId && linkInfo.hash) {
 					// build final link and remove possible double-slashes in url except the protocol ones
-					linkInfo.link = `${(data.host || process.env.HOST)}/registration/${expertSchool._id}/byexpert/?importHash=${linkInfo.hash}`.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
+					linkInfo.link = `${(data.host || process.env.HOST)}/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
 				} else {
 					return errorHandling('Nicht alle Daten für den Experten-Link vorhanden.');
 				}

@@ -865,24 +865,43 @@ exports.after = {
     remove: [filterToRelated(keys.resId, 'result')]
 };
 
+function createinfoText(hook) {
+	let text;
+	const newRegistration = hook.result.linkData.link.includes("/registration/");
+	if(newRegistration) {
+		text = `Hallo ${hook.data.email}!
+\nDu wurdest von ${hook.params.account.username} eingeladen, dem Team '${hook.additionalInfosTeam.team.name}' der ${process.env.SC_SHORT_TITLE} beizutreten.
+Da du noch keinen ${process.env.SC_SHORT_TITLE} Account besitzt, folge bitte diesem Link, um die Registrierung abzuschließen und dem Team beizutreten: ${hook.result.linkData.shortLink}
+\nViel Spaß und einen guten Start wünscht dir dein
+${process.env.SC_SHORT_TITLE}-Team`;
+	} else {
+		text = `Hallo ${hook.data.email}!
+\nDu wurdest von ${hook.params.account.username} eingeladen, dem Team '${hook.additionalInfosTeam.team.name}' der ${process.env.SC_SHORT_TITLE} beizutreten.
+Klicke auf diesen Link, um die Einladung anzunehmen: ${hook.result.linkData.shortLink}
+\nViel Spaß und gutes Gelingen wünscht dir dein
+${process.env.SC_SHORT_TITLE}-Team`;
+	}
+	return text;
+}
+
 const sendInfo = hook => {
 
     if (hook.data.email === undefined)
         return hook;
+    
 
     const teamName = (hook.result || {}).name;
     const email = hook.data.email;
+    
     //todo
-    if(email){
-        /*
+    if(email) {
         globalHooks.sendEmail(hook, {
-            "subject": "Team Einladung",
+            "subject": `${process.env.SC_SHORT_TITLE}: Team-Einladung`,
             "emails": [email],
             "content": {
-                "text": 'Sie wurden zu einem Team eingeladen.'
+                "text": createinfoText(hook)
             }
         });
-        */
     }
   
     return hook;
@@ -904,6 +923,6 @@ exports.afterExtern = {
     get: [],
     create: [],
     update: [],
-    patch: [sendInfo],
+    patch: [sendInfo, filterToRelated(keys.message, 'result')],
     remove: []
 };

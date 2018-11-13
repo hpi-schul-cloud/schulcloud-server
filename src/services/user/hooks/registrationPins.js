@@ -21,8 +21,8 @@ const generatePin = (hook) => {
 
 function createinfoText(hook) {
 	let text;
-	let role = hook.data.mailTextForRole;
-	let pin = hook.data.pin;
+	const role = hook.data.mailTextForRole;
+	const pin = hook.data.pin;
 	if (!role || !pin) {
 		logger.warn("Role or PIN missing to define mail text.");
 		return "";

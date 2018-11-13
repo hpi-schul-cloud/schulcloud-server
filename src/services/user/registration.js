@@ -32,20 +32,22 @@ const populateUser = (app, data) => {
     
     if(data.importHash){
 		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId, $populate: ['roles'] }} ).then(users=>{
-			if(users.data.length<=0 || users.data.length>1){
+			if(users.data.length <= 0 || users.data.length > 1) {
 				throw new errors.BadRequest("Kein Nutzer für die eingegebenen Daten gefunden.");
 			}
 			oldUser=users.data[0];
-			Object.keys(oldUser).forEach(key=>{
-				if( oldUser[key]!==null ){
-					user[key]=oldUser[key];
-				}
-            });
+			
             user.roles = user.roles.map(role => {
                 if (role.name) {
                     return role.name;
                 }
             });
+			
+            // overwrite registration data with DB data if already existing and if not expert
+            if (!(user.roles||{}).includes("expert")) {
+				Object.assign(user, oldUser);
+			}
+			
             delete user.importHash;
             return {user, oldUser};
         });
