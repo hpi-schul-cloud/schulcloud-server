@@ -12,7 +12,7 @@ const accountModel = require('../account/model');
 const homeworkModel = require('../homework/model');
 const lessonModel = require('../lesson/model');
 const groupModel = require('../user-group/model');
-const fileModel = require('../fileStorage/model');
+const {FileModel} = require('../fileStorage/model');
 
 let promises = [
 	{
@@ -72,8 +72,8 @@ let promises = [
 	},
 	{
 		name: 'files/directories',
-		promise: fileModel.count().exec(),
-		model: fileModel.find().exec()
+		promise: FileModel.count().exec(),
+		model: FileModel.find().exec()
 	},
 ];
 

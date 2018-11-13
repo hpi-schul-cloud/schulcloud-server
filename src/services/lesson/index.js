@@ -6,7 +6,7 @@ const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
 const _ = require('lodash');
 const errors = require('feathers-errors');
-const FileModel = require('../fileStorage/model').fileModel;
+const {FileModel} = require('../fileStorage/model');
 
 class LessonFilesService {
 
