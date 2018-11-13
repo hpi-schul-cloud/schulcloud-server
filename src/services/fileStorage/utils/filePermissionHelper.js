@@ -1,8 +1,8 @@
-const fileModel = require('../model');
+const {FileModel} = require('../model');
 const { userModel } = require('../../user/model');
 
 const getFile = (id) => {
-	return fileModel
+	return FileModel
 		.findOne({ _id: id })
 		.populate('owner')
 		.exec();
