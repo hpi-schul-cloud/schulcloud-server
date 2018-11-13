@@ -28,6 +28,7 @@ const socket = require('./socket');
 const pseudonym = require("./pseudonym");
 const consent = require('./consent');
 const ldap = require('./ldap');
+const sync = require('./sync');
 
 const mongoose = require('mongoose');
 
@@ -66,4 +67,5 @@ module.exports = function () {
     app.configure(consent);
     app.configure(socket);
     app.configure(ldap);
+    app.configure(sync);
 };

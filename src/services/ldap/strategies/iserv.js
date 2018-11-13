@@ -6,38 +6,22 @@ const AbstractLDAPStrategy = require('./interface.js');
  * Univention-specific LDAP functionality
  * @implements {AbstractLDAPStrategy}
  */
-class UniventionLDAPStrategy extends AbstractLDAPStrategy {
+class iServLDAPStrategy extends AbstractLDAPStrategy {
 	constructor(app, config) {
         super(app, config);
     }
 
     /**
      * @public
-     * @see AbstractLDAPStrategy#getSchools
+     * @see AbstractLDAPStrategy#getSchoolsQuery
      * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      */
     getSchools() {
-        let ignoredSchools = '';
-        this.config.providerOptions.ignoreSchools.forEach(function(schoolOu){
-            ignoredSchools =  ignoredSchools + `(!(ou=${schoolOu}))`;
-          });
-        const options = {
-            filter: `(&(univentionObjectType=container/ou)(!(ucsschoolRole=school:ou:no_school))${ignoredSchools})`,
-            scope: 'sub',
-            attributes: []
-        };
-        const searchString = this.config.rootPath;
-        return this.app.service('ldap').searchCollection(this.config, searchString, options)
-        .then(data => {
-            return data.map(obj => {
-                return {
-                    ldapOu: obj.ou,
-                    displayName: obj.displayName
-                };
-            });
-        });
-
+        return Promise.resolve([{
+            displayName: this.config.providerOptions.schoolName,
+            ldapOu: this.config.rootPath
+        }]);
     }
 
     /**
@@ -45,39 +29,50 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @see AbstractLDAPStrategy#getUsers
      * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
      * (Array) roles = ['teacher', 'student']
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      */
     getUsers(school) {
         const options = {
-            filter: 'univentionObjectType=users/user',
+            filter: 'objectClass=person',
             scope: 'sub',
-            attributes: ['givenName', 'sn','mailPrimaryAdress', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass', 'memberOf']
+            attributes: ['givenName', 'sn', 'dn', 'uuid', 'uid', 'mail', 'objectClass', 'memberOf']
         };
-        const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
+        const searchString = `ou=users,${this.config.rootPath}`;
         return this.app.service('ldap').searchCollection(this.config, searchString, options)
         .then(data => {
-            return data.map(obj => {
-                let roles = [];
-                if (obj.objectClass.includes('ucsschoolTeacher')) {
+            const results = [];
+            data.forEach(obj => {
+                const roles = [];
+                if (!Array.isArray(obj.memberOf)) {
+                    obj.memberOf = [obj.memberOf];
+                }
+                if (obj.memberOf.includes(this.config.providerOptions.TeacherMembershipPath)) {
                     roles.push('teacher');
                 }
-                if (obj.objectClass.includes('ucsschoolStudent')) {
+                if (obj.memberOf.includes(this.config.providerOptions.AdminMembershipPath)) {
+                    roles.push('administrator');
+                }
+                if (roles.length === 0) {
+                    const ignoredUser = obj.memberOf.some(item => {
+                        return this.config.providerOptions.IgnoreMembershipPath.includes(item);
+                    });
+                    if (ignoredUser || !obj.mail || !obj.givenName || !obj.sn || !obj.uuid || !obj.uid) {
+                        return;
+                    }
                     roles.push('student');
                 }
-                if (obj.objectClass.includes('ucsschoolStaff')) {
-                    //toDo
-                }
 
-                return {
-                    email: obj.mailPrimaryAddress || obj.mail,
+                results.push({
+                    email: obj.mail,
                     firstName: obj.givenName,
                     lastName: obj.sn,
                     roles: roles,
                     ldapDn: obj.dn,
-                    ldapUUID: obj.entryUUID,
+                    ldapUUID: obj.uuid,
                     ldapUID: obj.uid
-                };
+                });
             });
+            return results;
         });
     }
 
@@ -85,33 +80,17 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @public
      * @see AbstractLDAPStrategy#getClasses
      * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      */
     getClasses(school) {
-        const options = {
-            filter: `ucsschoolRole=school_class:school:${school.ldapSchoolIdentifier}`,
-            scope: 'sub',
-            attributes: []
-        };
-        const searchString = `cn=klassen,cn=schueler,cn=groups,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
-        return this.app.service('ldap').searchCollection(this.config, searchString, options)
-        .then(data => {
-            return data.map(obj => {
-                let splittedName = obj.cn.split("-");
-                return {
-                    className: splittedName[splittedName.length-1],
-                    ldapDn: obj.dn,
-                    uniqueMembers: obj.uniqueMember
-                };
-            });
-        });
+        return [];
     }
 
     /**
      * @public
      * @see AbstractLDAPStrategy#getExpertsQuery
      * @returns {LDAPQueryOptions} LDAP query options
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      */
     getExpertsQuery() {
         const options = {
@@ -128,7 +107,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @see AbstractLDAPStrategy#addUserToGroup
      * @returns {Promise} resolves with truthy result, or rejects with error
      * @see _updateUserGroups
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      */
     addUserToGroup(user, role, group) {
         group = Object.assign(group, { role: role.name });
@@ -140,7 +119,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @see AbstractLDAPStrategy#removeUserFromGroup
      * @returns {Promise} resolves with truthy result, or rejects with error
      * @see _updateUserGroups
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      */
     removeUserFromGroup(user, role, group) {
 		return this._updateUserGroups(user, [group], 'delete');
@@ -151,7 +130,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @param {String} userUUID the UUID of the user to be altered
      * @param {Array[LDAPGroup]} groups array of LDAP group objects (name, description)
      * @returns {Buffer} Buffer containing JSON-object
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      * @private
      */
     _generateGroupFile(userUUID, groups) {
@@ -169,7 +148,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @param {Array[LDAPGroup]} groups array of LDAP group objects (name, description)
      * @param {String} [method='create'] either 'create' (default) or 'remove'
      * @returns {Object} form data object
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      * @private
      */
     _generateGroupUpdateFormData(user, groups, method='create') {
@@ -201,7 +180,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * `UniventionLDAPStrategy#_scheduleResponseCheck` to check for success or
      * errors.
      * @see _scheduleResponseCheck
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      * @private
      */
     _updateUserGroups(user, groups, method='create') {
@@ -220,7 +199,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * Generate Univention API request options (authentication, headers, etc.)
      * @param {Object} [overrides={}] optional object containing overrides
      * @returns {Object} options to be consumed by API request
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      * @private
      */
     _getRequestOptions(overrides={}) {
@@ -244,7 +223,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * Publish an event on the global event bus
      * @param {String} event event name
      * @param {Object} [data={}] optional data to be published
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      * @private
      */
     _emitStatus(event, data={}) {
@@ -258,7 +237,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * 4 with every retry)
      * @param {number} [retries=5] optional number of retries if no final status
      * is received
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      * @private
      */
     _scheduleResponseCheck(response, action, timeout=2000, retries=5) {
@@ -294,7 +273,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @param {user} user the user object
      * @param {account} account the account object
      * @returns {Buffer} Buffer containing JSON-object
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      * @private
      */
     _generateExpertFileData(user, account) {
@@ -314,7 +293,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @param {User} user the user object
      * @param {Account} account the account object
      * @returns {Object} form data object
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      * @private
      */
     _generateUpdateExpertFormData(user, account) {
@@ -337,7 +316,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @public
      * @see AbstractLDAPStrategy#createExpert
      * @returns {Promise} resolves with truthy result, or rejects with error
-     * @memberof UniventionLDAPStrategy
+     * @memberof iServLDAPStrategy
      */
     createExpert(user, account) {
 		const options = this._getRequestOptions({
@@ -352,4 +331,4 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
     }
 }
 
-module.exports = UniventionLDAPStrategy;
+module.exports = iServLDAPStrategy;
