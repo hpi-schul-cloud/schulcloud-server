@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const FileModel = require('../../fileStorage/model').fileModel;
+const FileModel = require('../../fileStorage/model');
 
 /**
  * Just because the route /wopi/files/:id should trigger different actions for a different 'X-WOPI-Override' header value,
@@ -8,9 +8,9 @@ const FileModel = require('../../fileStorage/model').fileModel;
 
  /** https://wopirest.readthedocs.io/en/latest/files/DeleteFile.html */
  const deleteFile = (file, payload, account, app) => {
-   let fileStorageService = app.service('fileStorage');
+   const fileStorageService = app.service('fileStorage');
    return fileStorageService.remove(null, {
-    query: {path: file.key},
+    query: { _id: file._id },
     payload: payload,
     account: account
   });
@@ -41,9 +41,9 @@ const FileModel = require('../../fileStorage/model').fileModel;
 
  /** https://wopirest.readthedocs.io/en/latest/files/RenameFile.html */
  const renameFile = (file, payload, account, app) => {
-  let fileRenameService = app.service('fileStorage/rename');
+  const fileRenameService = app.service('fileStorage/rename');
   return fileRenameService.create({
-    path: file.key,
+    _id: file._id,
     newName: payload.wopiRequestedName,
     userPayload: payload,
     account: account
