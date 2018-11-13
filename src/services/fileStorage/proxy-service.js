@@ -8,7 +8,6 @@ const AWSStrategy = require('./strategies/awsS3');
 const errors = require('feathers-errors');
 const swaggerDocs = require('./docs/');
 const {
-	checkPermissions,
 	canWrite,
 	canRead,
 	canCreate,
@@ -18,6 +17,7 @@ const { returnFileType, generateFileNameSuffix: generateFlatFileName } = require
 const FileModel = require('./model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
+const { teamsModel } = require('../teams/model');
 
 const strategies = {
 	awsS3: AWSStrategy
@@ -53,7 +53,14 @@ const fileStorageService = {
 			create: true,
 			delete: true,
 		}];
+		const setRefId = (perm) => {
+			if( !perm.refId ) {
+				perm.refId = perm._id;
+			}
+			return perm;
+		};
 
+		let { permissions: sendPermissions } = data;
 		let isCourse = true;
 
 		if( owner ) {
@@ -72,23 +79,18 @@ const fileStorageService = {
 				delete: false,
 			});
 		}
-
-		const teamRoles = await RoleModel.find({ name: /team/i }).exec();
-		const teamPermissions = teamRoles.map(role => ({
-			refId: role._id,
-			refPermModel: 'role',
-			write: true,
-			read: true,
-			create: true,
-			delete: true,
-		}));
+		
+		if( !sendPermissions ) {
+			const teamObject = await teamsModel.findOne({ _id: owner }).exec();			
+			sendPermissions = teamObject.filePermission;
+		}		
 
 		const props = sanitizeObj(Object.assign(data, {
 			isDirectory: false,
 			owner: owner || userId,
 			parent,
 			refOwnerModel: owner ? isCourse ? 'course' : 'teams' : 'user',
-			permissions: [...permissions, ...teamPermissions]
+			permissions: [...permissions, ...sendPermissions].map(setRefId)
 		}));
 
 		// create db entry for new file
@@ -209,13 +211,18 @@ const signedUrlService = {
 		});
 	},
 
-	find({ query, payload }) {
-		const {file, name, download} = query;
+	async find({ query, payload }) {
+		const {file, download} = query;
 		const { userId } = payload;
 		const strategy = createCorrectStrategy(payload.fileStorageType);
+		const fileObject = await FileModel.findOne({_id: file}).exec();
+
+		if(!fileObject){
+			throw new errors.NotFound('File seems not to be there.');
+		}
 		
 		return canRead(userId, file)
-			.then(() => strategy.getSignedUrl({userId, flatFileName: name, download }))
+			.then(() => strategy.getSignedUrl({userId, flatFileName: fileObject.storageFileName, download }))
 			.then(res => ({
 				url: res,
 			}))
@@ -233,7 +240,7 @@ const directoryService = {
 	 */
 	async create(data, params) {
 		const { payload: { userId } } = params;
-		const { name, owner, parent } = data;
+		const { owner, parent } = data;
 		const permissions = [{
 			refId: userId,
 			refPermModel: 'user',
@@ -243,28 +250,31 @@ const directoryService = {
 			delete: true,
 		}];
 
+		const setRefId = (perm) => {
+			if( !perm.refId ) {
+				perm.refId = perm._id;
+			}
+			return perm;
+		};
+
+		let { permissions: sendPermissions } = data;
 		let isCourse = true;
 
 		if( owner ) {
 			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
 		}
 
-		const teamRoles = await RoleModel.find({ name: /team/i }).exec();
-		const teamPermissions = teamRoles.map(role => ({
-			refId: role._id,
-			refPermModel: 'role',
-			write: true,
-			read: true,
-			create: true,
-			delete: true,
-		}));
+		if( !sendPermissions ) {
+			const teamObject = await teamsModel.findOne({ _id: owner }).exec();			
+			sendPermissions = teamObject.filePermission;
+		}	
 
 		const props = sanitizeObj(Object.assign(data, {
-			isDirectory: false,
+			isDirectory: true,
 			owner: owner || userId,
 			parent,
 			refOwnerModel: owner ? isCourse ? 'course' : 'teams' : 'user',
-			permissions: [...permissions, ...teamPermissions]
+			permissions: [...permissions, ...sendPermissions].map(setRefId)
 		}));
 
 		// create db entry for new directory
@@ -329,20 +339,20 @@ const renameService = {
 		docs: swaggerDocs.directoryRenameService,
 
 		/**
-		 * @param data, contains new name
+		 * @param data, contains newName
 		 * @returns {Promise}
 		 */
 		create(data, params) {
 			const { payload: { userId } } = params;
-			const { name, _id } = data;
-			
-			if (!_id || !name) return Promise.reject(new errors.BadRequest('Missing parameters'));
+			const { newName, _id } = data;
+
+			if (!_id || !newName) return Promise.reject(new errors.BadRequest('Missing parameters'));
 
 			return canWrite(userId, _id)
 				.then(() => FileModel.findOne({ _id }).exec())
 				.then(directory => {
 					if (!directory) return Promise.reject(new errors.NotFound('The given directory/file was not found!'));
-					return FileModel.update({ _id }, { name }).exec();
+					return FileModel.update({ _id }, { name:newName }).exec();
 				});
 		}
 };
@@ -359,7 +369,7 @@ const fileTotalSizeService = {
 				total: files.length, 
 				totalSize: files.reduce((sum, file) => {
 					return sum + file.size;
-				}),
+				},0),
 			}));
 	}
 };
