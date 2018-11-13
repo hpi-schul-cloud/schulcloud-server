@@ -95,7 +95,7 @@ const createSchoolsFromLdapData = function(app, data, system) {
 const createUserAndAccount = function(app, idmUser, school, system) {
 	return app.service('registrationPins').create({ email: idmUser.email, verified: true, silent: true })
 		.then(registrationPin => {
-			let newUserData = {
+			return app.service('users').create({
 				pin: registrationPin.pin,
 				firstName: idmUser.firstName,
 				lastName: idmUser.lastName,
@@ -104,23 +104,20 @@ const createUserAndAccount = function(app, idmUser, school, system) {
 				ldapDn: idmUser.ldapDn,
 				ldapId: idmUser.ldapUUID,
 				roles: idmUser.roles
-			};
-
-			return app.service('users').create(newUserData);
+			});
 		}).then(user => {
-			let accountData = {
+			return accountModel.create({
 				userId: user._id,
 				username: school.ldapSchoolIdentifier + "/" + idmUser.ldapUID,
 				systemId: system._id,
 				activated: true
-			};
-			return accountModel.create(accountData);
+			});
 		});
 };
 
 const createUsersFromLdapData = function(app, data, school, system) {
 	logger.info(`[${school.name}] Getting users...`);
-	let usersCreated = 0, usersUpdated = 0;
+	let usersCreated = 0, usersUpdated = 0, userErrors = 0;
 	return Promise.all(data.map(idmUser => {
 		return app.service('users').find({ query: { ldapId: idmUser.ldapUUID } })
 			.then(users => {
@@ -128,12 +125,19 @@ const createUsersFromLdapData = function(app, data, school, system) {
 					usersUpdated += 1;
 					return checkForUserChangesAndUpdate(app, idmUser, users.data[0], school);
 				}
-				if (idmUser.email == undefined) return Promise.resolve("no email");
-				usersCreated += 1;
-				return createUserAndAccount(app, idmUser, school, system);
+				return createUserAndAccount(app, idmUser, school, system)
+					.then(res => {
+						usersCreated += 1;
+						return res;
+					})
+					.catch(err=> {
+						userErrors += 1;
+						logger.error(`[${school.name}] User creation error: `, err);
+						return {};
+					});
 			});
 	})).then(res => {
-		logger.info(`[${school.name}] Created ${usersCreated} users, updated ${usersUpdated} users.`);
+		logger.info(`[${school.name}] Created ${usersCreated} users, updated ${usersUpdated} users. Skipped errors: ${userErrors}.`);
 		return Promise.resolve(res);
 	});
 };
@@ -141,7 +145,7 @@ const createUsersFromLdapData = function(app, data, school, system) {
 const checkForUserChangesAndUpdate = function(app, idmUser, user, school) {
 	let updateObject = {$set: {}};
 	if (user.firstName != idmUser.firstName) {
-		updateObject.$set['firstName'] = idmUser.firstName;
+		updateObject.$set['firstName'] = idmUser.firstName || ' ';
 	}
 	if (user.lastName != idmUser.lastName) {
 		updateObject.$set['lastName'] = idmUser.lastName;
