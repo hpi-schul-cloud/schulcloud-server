@@ -21,7 +21,8 @@ const schoolSchema = new Schema({
 	updatedAt: {type: Date, 'default': Date.now},
 	experimental: {type: Boolean, 'default': false},
 	pilot: {type: Boolean, 'default': false},
-	currentYear: {type: Schema.Types.ObjectId, ref:'year'}
+	currentYear: {type: Schema.Types.ObjectId, ref:'year'},
+	purpose: {type: String}
 },{
 	timestamps: true
 });
