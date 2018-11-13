@@ -8,7 +8,7 @@ const syncFromLdap = function(app) {
 		.then(ldapSystems => {
 			logger.info(`Found ${ldapSystems.total} LDAP configurations.`);
 			return Promise.all(ldapSystems.data.map(system => {
-				logger.info(`Syncing ${system.name} (${system._id})...`);
+				logger.info(`Syncing ${system.alias} (${system._id})...`);
 				const config = system.ldapConfig;
 				return app.service('ldap').getSchools(config)
 					.then(data => {
@@ -26,11 +26,11 @@ const syncFromLdap = function(app) {
 						}));
 					})
 					.then(res => {
-						logger.info(`Finished syncing ${system.name} (${system._id})`);
+						logger.info(`Finished syncing ${system.alias} (${system._id})`);
 						return Promise.resolve();
 					})
 					.catch(err => {
-						logger.info(`Error while syncing ${system.name} (${system._id}): "${err}"`);
+						logger.info(`Error while syncing ${system.alias} (${system._id}): "${err}"`);
 						return Promise.resolve();
 					});
 			}));
