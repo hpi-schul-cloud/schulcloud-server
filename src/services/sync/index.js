@@ -3,6 +3,7 @@ const accountModel = require('../account/model');
 const logger = require('winston');
 
 const syncFromLdap = function(app) {
+	let successfulSystems = 0, erroredSystems = 0;
 	logger.info('Syncing from LDAP');
 	return app.service('systems').find({ query: { type: 'ldap' } })
 		.then(ldapSystems => {
@@ -31,17 +32,19 @@ const syncFromLdap = function(app) {
 						}));
 					})
 					.then(_ => {
+						successfulSystems += 1;
 						logger.info(`Finished syncing ${system.alias} (${system._id})`);
 						return Promise.resolve();
 					})
 					.catch(err => {
-						logger.info(`Error while syncing ${system.alias} (${system._id}): "${err}"`);
+						erroredSystems += 1;
+						logger.error(`Error while syncing ${system.alias} (${system._id}): `, err);
 						return Promise.resolve();
 					});
 			}));
 		})
 		.then(res => {
-			logger.info(`Sync finished.`);
+			logger.info(`Sync finished. Successful system syncs: ${successfulSystems}, Errors: ${erroredSystems}`);
 			return Promise.resolve();
 		});
 };
