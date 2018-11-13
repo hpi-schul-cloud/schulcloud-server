@@ -958,10 +958,10 @@ ${process.env.SC_SHORT_TITLE}-Team`;
 
 const sendInfo = hook => {
 
-    if (hook.data.email === undefined)
+    if (hook.data.email === undefined || (hook.result || {}).linkData === undefined ){
         return hook;
-    
-
+    }
+        
     const teamName = (hook.result || {}).name;
     const email = hook.data.email;
     
