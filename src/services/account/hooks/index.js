@@ -112,9 +112,7 @@ const checkUnique = (hook) => {
 
 const removePassword = (hook) => {
 	const {strategy} = hook.data;
-
-	if(strategy == 'ldap')
-	{
+	if (strategy === 'ldap') {
 		hook.data.password = '';
 	}
 	return Promise.resolve(hook);

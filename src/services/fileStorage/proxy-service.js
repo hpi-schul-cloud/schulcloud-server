@@ -221,8 +221,10 @@ const signedUrlService = {
 			throw new errors.NotFound('File seems not to be there.');
 		}
 
+		const creatorId = fileObject.permissions[0].refId;
+
 		return canRead(userId, file)
-			.then(() => strategy.getSignedUrl({ userId, flatFileName: fileObject.storageFileName, download }))
+			.then(() => strategy.getSignedUrl({ userId: creatorId, flatFileName: fileObject.storageFileName, download}))
 			.then(res => ({
 				url: res,
 			}))
