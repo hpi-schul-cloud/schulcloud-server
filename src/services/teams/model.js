@@ -1,10 +1,11 @@
 'use strict';
 
-//const {permissionSchema} = require('../fileStorage/model.js'); todo: if it merged
+const {permissionSchema} = require('../fileStorage/model');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-//todo: later take it diretly from fileStorage
+//todo: later take it diretly from fileStorage 
+/*
 const permissionSchema = new Schema({
 	refId: {
 		type: Schema.Types.ObjectId,
@@ -19,7 +20,7 @@ const permissionSchema = new Schema({
 	create: { type: Boolean, default: true },
 	delete: { type: Boolean, default: true },
 });
-
+*/
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },

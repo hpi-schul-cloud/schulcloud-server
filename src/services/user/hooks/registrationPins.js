@@ -21,8 +21,8 @@ const generatePin = (hook) => {
 
 function createinfoText(hook) {
 	let text;
-	let role = hook.data.mailTextForRole;
-	let pin = hook.data.pin;
+	const role = hook.data.mailTextForRole;
+	const pin = hook.data.pin;
 	if (!role || !pin) {
 		logger.warn("Role or PIN missing to define mail text.");
 		return "";
@@ -36,7 +36,7 @@ PIN: ${pin}
 Mit Freundlichen Grüßen
 Ihr Schul-Cloud Team`;
 
-	} else if (role === "student" || role === "employee") {
+	} else if (role === "student" || role === "employee" || role === "expert") {
 		text = `Vielen Dank, dass du die HPI Schul-Cloud nutzen möchtest.
 Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen.
 

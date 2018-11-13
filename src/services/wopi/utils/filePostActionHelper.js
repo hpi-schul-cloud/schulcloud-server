@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const FileModel = require('../../fileStorage/model').fileModel;
+const {FileModel} = require('../../fileStorage/model');
 
 /**
  * Just because the route /wopi/files/:id should trigger different actions for a different 'X-WOPI-Override' header value,
