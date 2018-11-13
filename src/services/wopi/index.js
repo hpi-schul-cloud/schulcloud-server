@@ -5,7 +5,7 @@
 const hooks = require('./hooks');
 const errors = require('feathers-errors');
 const rp = require('request-promise-native');
-const FileModel = require('../fileStorage/model');
+const { FileModel } = require('../fileStorage/model');
 const {
 	canWrite,
 	canRead,

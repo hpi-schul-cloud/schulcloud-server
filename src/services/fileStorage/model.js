@@ -14,7 +14,7 @@ const permissionSchema = new Schema({
 	read: { type: Boolean, default: true },
 	create: { type: Boolean, default: true },
 	delete: { type: Boolean, default: true },
-});
+}, { _id: false});
 
 /**
  * handles meta-data for a file
@@ -58,4 +58,7 @@ const fileSchema = new Schema({
 // make file-model searchable
 fileSchema.index({ name: 'text' });
 
-module.exports = mongoose.model('file', fileSchema);
+module.exports = {
+	FileModel: mongoose.model('file', fileSchema),
+	permissionSchema: permissionSchema
+};

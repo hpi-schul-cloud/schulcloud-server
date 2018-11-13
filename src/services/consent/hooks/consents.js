@@ -119,12 +119,12 @@ const accessCheck = (consent, app) => {
 				return Promise.resolve();
 			}
 
-			if (userHasOneRole(user, ["teacher", "administrator"])) {
+			if (userHasOneRole(user, ["teacher", "administrator", "expert"])) {
 				let userConsent = consent.userConsent || {};
+				requiresParentConsent = false;
 				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
 					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
 						access = false;
-						requiresParentConsent = false;
 						return Promise.resolve();
 					}
 				return Promise.resolve();

@@ -1,14 +1,14 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const fileModel = require('./model');
+const {FileModel} = require('./model');
 const hooks = require('./hooks/model-hooks');
 
 module.exports = function () {
 	const app = this;
 
 	const fileOptions = {
-		Model: fileModel,
+		Model: FileModel,
 		paginate: {
 			default: 10000,
 			max: 10000
