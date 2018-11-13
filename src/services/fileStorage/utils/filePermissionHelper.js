@@ -19,7 +19,7 @@ const checkPermissions = (permission) => {
 		
 		// return always true for owner of file
 		if( user.toString() === owner.toString() ) {
-			return Promise.resolve();
+			return Promise.resolve(true);
 		}
 		
 		// or legacy course model
@@ -29,10 +29,10 @@ const checkPermissions = (permission) => {
 
 			if( isStudent ) {
 				const rolePermissions = permissions.find(perm => perm.refId.toString() === isStudent._id.toString());
-				return Promise[rolePermissions[permission] ? 'resolve' : 'reject']();
+				return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
 			}
 			else {
-				return Promise.resolve();
+				return Promise.resolve(true);
 			}
 		}
 
@@ -48,13 +48,13 @@ const checkPermissions = (permission) => {
 		return new Promise((resolve, reject) => {
 
 			if( userPermissions ) {
-				return userPermissions[permission] ? resolve() : reject();
+				return userPermissions[permission] ? resolve(true) : reject();
 			}
 
 			const { role } = teamMember;
 			const rolePermissions = permissions.find(perm => perm.refId.toString() === role.toString());
 
-			return rolePermissions[permission] ? resolve() : reject();
+			return rolePermissions[permission] ? resolve(true) : reject();
 		});
 	};
 };

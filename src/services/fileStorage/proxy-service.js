@@ -85,7 +85,7 @@ const fileStorageService = {
 		if (!sendPermissions && refOwnerModel === 'teams') {
 			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
 			sendPermissions = teamObject.filePermission;
-		}else{
+		} else {
 			sendPermissions = [];
 		}
 
@@ -186,33 +186,29 @@ const signedUrlService = {
 
 		const { payload: { userId } } = params;
 		const strategy = createCorrectStrategy(params.payload.fileStorageType);
+		const flatFileName = generateFlatFileName(filename);
 
 		const parentPromise = parent ? FileModel.findOne({ parent, name: filename }).exec() : Promise.resolve({});
 
-		return parentPromise.then(res => {
-
-			const flatFileName = generateFlatFileName(filename);
-			const permissionPromise = parent ? canCreate(userId, parent) : Promise.resolve({});
-
-			return permissionPromise.then(() => {
-
-				let header = {
+		return parentPromise
+			.then(() => parent ? canCreate(userId, parent) : Promise.resolve({}))
+			.then(() => {
+				return strategy.generateSignedUrl({userId, flatFileName, fileType});
+			})
+			.then(res => {
+				const header =  {
 					// add meta data for later using
 					"Content-Type": fileType,
 					"x-amz-meta-name": filename,
 					"x-amz-meta-flat-name": flatFileName,
 					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 				};
-
-				return strategy.generateSignedUrl({ userId, flatFileName, fileType })
-					.then(res => {
-						return {
-							url: res,
-							header: header
-						};
-					});
-			});
-		});
+				return {
+					url: res,
+					header: header
+				};
+			})
+			.catch(() => new errors.Forbidden());	
 	},
 
 	async find({ query, payload }) {
