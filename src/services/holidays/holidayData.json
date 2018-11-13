@@ -1,0 +1,2082 @@
+[
+	{
+		"start": "2019-01-31T00:00",
+		"end": "2019-02-02T00:00",
+		"year": 2019,
+		"stateCode": "NI",
+		"name": "winterferien",
+		"slug": "winterferien-2019-NI"
+	},
+	{
+		"start": "2019-04-08T00:00",
+		"end": "2019-04-24T00:00",
+		"year": 2019,
+		"stateCode": "NI",
+		"name": "osterferien",
+		"slug": "osterferien-2019-NI"
+	},
+	{
+		"start": "2019-05-31T00:00",
+		"end": "2019-06-01T00:00",
+		"year": 2019,
+		"stateCode": "NI",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2019-NI"
+	},
+	{
+		"start": "2019-07-04T00:00",
+		"end": "2019-08-15T00:00",
+		"year": 2019,
+		"stateCode": "NI",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-NI"
+	},
+	{
+		"start": "2019-10-04T00:00",
+		"end": "2019-10-19T00:00",
+		"year": 2019,
+		"stateCode": "NI",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-NI"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-07T00:00",
+		"year": 2019,
+		"stateCode": "NI",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-NI"
+	},
+	{
+		"start": "2017-02-06T00:00",
+		"end": "2017-02-12T00:00",
+		"year": 2017,
+		"stateCode": "TH",
+		"name": "winterferien",
+		"slug": "winterferien-2017-TH"
+	},
+	{
+		"start": "2017-04-10T00:00",
+		"end": "2017-04-22T00:00",
+		"year": 2017,
+		"stateCode": "TH",
+		"name": "osterferien",
+		"slug": "osterferien-2017-TH"
+	},
+	{
+		"start": "2017-05-26T00:00",
+		"end": "2017-05-27T00:00",
+		"year": 2017,
+		"stateCode": "TH",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-TH"
+	},
+	{
+		"start": "2017-06-26T00:00",
+		"end": "2017-08-10T00:00",
+		"year": 2017,
+		"stateCode": "TH",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-TH"
+	},
+	{
+		"start": "2017-10-02T00:00",
+		"end": "2017-10-15T00:00",
+		"year": 2017,
+		"stateCode": "TH",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-TH"
+	},
+	{
+		"start": "2017-12-22T00:00",
+		"end": "2018-01-06T00:00",
+		"year": 2017,
+		"stateCode": "TH",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-TH"
+	},
+	{
+		"start": "2018-10-29T00:00",
+		"end": "2018-11-03T00:00",
+		"year": 2018,
+		"stateCode": "BW",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-BW"
+	},
+	{
+		"start": "2018-03-26T00:00",
+		"end": "2018-04-07T00:00",
+		"year": 2018,
+		"stateCode": "BW",
+		"name": "osterferien",
+		"slug": "osterferien-2018-BW"
+	},
+	{
+		"start": "2018-05-22T00:00",
+		"end": "2018-06-03T00:00",
+		"year": 2018,
+		"stateCode": "BW",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-BW"
+	},
+	{
+		"start": "2018-07-26T00:00",
+		"end": "2018-09-09T00:00",
+		"year": 2018,
+		"stateCode": "BW",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-BW"
+	},
+	{
+		"start": "2018-12-24T00:00",
+		"end": "2019-01-06T00:00",
+		"year": 2018,
+		"stateCode": "BW",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-BW"
+	},
+	{
+		"start": "2017-01-30T00:00",
+		"end": "2017-02-01T00:00",
+		"year": 2017,
+		"stateCode": "HB",
+		"name": "winterferien",
+		"slug": "winterferien-2017-HB"
+	},
+	{
+		"start": "2017-04-10T00:00",
+		"end": "2017-04-23T00:00",
+		"year": 2017,
+		"stateCode": "HB",
+		"name": "osterferien",
+		"slug": "osterferien-2017-HB"
+	},
+	{
+		"start": "2017-06-06T00:00",
+		"end": "2017-06-07T00:00",
+		"year": 2017,
+		"stateCode": "HB",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-HB"
+	},
+	{
+		"start": "2017-06-22T00:00",
+		"end": "2017-08-03T00:00",
+		"year": 2017,
+		"stateCode": "HB",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-HB"
+	},
+	{
+		"start": "2017-10-14T00:00",
+		"end": "2017-10-31T00:00",
+		"year": 2017,
+		"stateCode": "HB",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-HB"
+	},
+	{
+		"start": "2017-12-23T00:00",
+		"end": "2018-01-07T00:00",
+		"year": 2017,
+		"stateCode": "HB",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-HB"
+	},
+	{
+		"start": "2017-02-13T00:00",
+		"end": "2017-02-25T00:00",
+		"year": 2017,
+		"stateCode": "SN",
+		"name": "winterferien",
+		"slug": "winterferien-2017-SN"
+	},
+	{
+		"start": "2017-04-13T00:00",
+		"end": "2017-04-23T00:00",
+		"year": 2017,
+		"stateCode": "SN",
+		"name": "osterferien",
+		"slug": "osterferien-2017-SN"
+	},
+	{
+		"start": "2017-05-26T00:00",
+		"end": "2017-05-27T00:00",
+		"year": 2017,
+		"stateCode": "SN",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-SN"
+	},
+	{
+		"start": "2017-06-26T00:00",
+		"end": "2017-08-05T00:00",
+		"year": 2017,
+		"stateCode": "SN",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-SN"
+	},
+	{
+		"start": "2017-10-02T00:00",
+		"end": "2017-10-15T00:00",
+		"year": 2017,
+		"stateCode": "SN",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-SN"
+	},
+	{
+		"start": "2017-12-23T00:00",
+		"end": "2018-01-03T00:00",
+		"year": 2017,
+		"stateCode": "SN",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-SN"
+	},
+	{
+		"start": "2017-02-06T00:00",
+		"end": "2017-02-19T00:00",
+		"year": 2017,
+		"stateCode": "MV",
+		"name": "winterferien",
+		"slug": "winterferien-2017-MV"
+	},
+	{
+		"start": "2017-04-10T00:00",
+		"end": "2017-04-20T00:00",
+		"year": 2017,
+		"stateCode": "MV",
+		"name": "osterferien",
+		"slug": "osterferien-2017-MV"
+	},
+	{
+		"start": "2017-06-02T00:00",
+		"end": "2017-06-07T00:00",
+		"year": 2017,
+		"stateCode": "MV",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-MV"
+	},
+	{
+		"start": "2017-07-24T00:00",
+		"end": "2017-09-03T00:00",
+		"year": 2017,
+		"stateCode": "MV",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-MV"
+	},
+	{
+		"start": "2017-10-23T00:00",
+		"end": "2017-10-31T00:00",
+		"year": 2017,
+		"stateCode": "MV",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-MV"
+	},
+	{
+		"start": "2017-12-21T00:00",
+		"end": "2018-01-04T00:00",
+		"year": 2017,
+		"stateCode": "MV",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-MV"
+	},
+	{
+		"start": "2017-02-27T00:00",
+		"end": "2017-03-05T00:00",
+		"year": 2017,
+		"stateCode": "SL",
+		"name": "winterferien",
+		"slug": "winterferien-2017-SL"
+	},
+	{
+		"start": "2017-04-10T00:00",
+		"end": "2017-04-23T00:00",
+		"year": 2017,
+		"stateCode": "SL",
+		"name": "osterferien",
+		"slug": "osterferien-2017-SL"
+	},
+	{
+		"start": "2017-07-03T00:00",
+		"end": "2017-08-15T00:00",
+		"year": 2017,
+		"stateCode": "SL",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-SL"
+	},
+	{
+		"start": "2017-10-02T00:00",
+		"end": "2017-10-15T00:00",
+		"year": 2017,
+		"stateCode": "SL",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-SL"
+	},
+	{
+		"start": "2017-12-21T00:00",
+		"end": "2018-01-06T00:00",
+		"year": 2017,
+		"stateCode": "SL",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-SL"
+	},
+	{
+		"start": "2019-03-04T00:00",
+		"end": "2019-03-09T00:00",
+		"year": 2019,
+		"stateCode": "BY",
+		"name": "winterferien",
+		"slug": "winterferien-2019-BY"
+	},
+	{
+		"start": "2019-04-15T00:00",
+		"end": "2019-04-28T00:00",
+		"year": 2019,
+		"stateCode": "BY",
+		"name": "osterferien",
+		"slug": "osterferien-2019-BY"
+	},
+	{
+		"start": "2019-06-11T00:00",
+		"end": "2019-06-22T00:00",
+		"year": 2019,
+		"stateCode": "BY",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2019-BY"
+	},
+	{
+		"start": "2019-07-29T00:00",
+		"end": "2019-09-10T00:00",
+		"year": 2019,
+		"stateCode": "BY",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-BY"
+	},
+	{
+		"start": "2019-10-28T00:00",
+		"end": "2019-11-01T00:00",
+		"year": 2019,
+		"stateCode": "BY",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-BY"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-05T00:00",
+		"year": 2019,
+		"stateCode": "BY",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-BY"
+	},
+	{
+		"start": "2018-10-01T00:00",
+		"end": "2018-10-13T00:00",
+		"year": 2018,
+		"stateCode": "NI",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-NI"
+	},
+	{
+		"start": "2018-12-24T00:00",
+		"end": "2019-01-05T00:00",
+		"year": 2018,
+		"stateCode": "NI",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-NI"
+	},
+	{
+		"start": "2018-06-28T00:00",
+		"end": "2018-08-09T00:00",
+		"year": 2018,
+		"stateCode": "NI",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-NI"
+	},
+	{
+		"start": "2018-03-19T00:00",
+		"end": "2018-04-04T00:00",
+		"year": 2018,
+		"stateCode": "NI",
+		"name": "osterferien",
+		"slug": "osterferien-2018-NI"
+	},
+	{
+		"start": "2018-04-30T00:00",
+		"end": "2018-05-01T00:00",
+		"year": 2018,
+		"stateCode": "NI",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-NI"
+	},
+	{
+		"start": "2017-04-10T00:00",
+		"end": "2017-04-22T00:00",
+		"year": 2017,
+		"stateCode": "BW",
+		"name": "osterferien",
+		"slug": "osterferien-2017-BW"
+	},
+	{
+		"start": "2017-06-06T00:00",
+		"end": "2017-06-17T00:00",
+		"year": 2017,
+		"stateCode": "BW",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-BW"
+	},
+	{
+		"start": "2017-07-27T00:00",
+		"end": "2017-09-10T00:00",
+		"year": 2017,
+		"stateCode": "BW",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-BW"
+	},
+	{
+		"start": "2017-10-30T00:00",
+		"end": "2017-11-04T00:00",
+		"year": 2017,
+		"stateCode": "BW",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-BW"
+	},
+	{
+		"start": "2017-12-22T00:00",
+		"end": "2018-01-06T00:00",
+		"year": 2017,
+		"stateCode": "BW",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-BW"
+	},
+	{
+		"start": "2019-04-14T00:00",
+		"end": "2019-04-28T00:00",
+		"year": 2019,
+		"stateCode": "HE",
+		"name": "osterferien",
+		"slug": "osterferien-2019-HE"
+	},
+	{
+		"start": "2019-07-01T00:00",
+		"end": "2019-08-10T00:00",
+		"year": 2019,
+		"stateCode": "HE",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-HE"
+	},
+	{
+		"start": "2019-09-30T00:00",
+		"end": "2019-10-13T00:00",
+		"year": 2019,
+		"stateCode": "HE",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-HE"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-12T00:00",
+		"year": 2019,
+		"stateCode": "HE",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-HE"
+	},
+	{
+		"start": "2018-10-01T00:00",
+		"end": "2018-10-14T00:00",
+		"year": 2018,
+		"stateCode": "HB",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-HB"
+	},
+	{
+		"start": "2018-12-24T00:00",
+		"end": "2019-01-05T00:00",
+		"year": 2018,
+		"stateCode": "HB",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-HB"
+	},
+	{
+		"start": "2018-06-28T00:00",
+		"end": "2018-08-09T00:00",
+		"year": 2018,
+		"stateCode": "HB",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-HB"
+	},
+	{
+		"start": "2018-03-19T00:00",
+		"end": "2018-04-04T00:00",
+		"year": 2018,
+		"stateCode": "HB",
+		"name": "osterferien",
+		"slug": "osterferien-2018-HB"
+	},
+	{
+		"start": "2018-02-01T00:00",
+		"end": "2018-02-03T00:00",
+		"year": 2018,
+		"stateCode": "HB",
+		"name": "winterferien",
+		"slug": "winterferien-2018-HB"
+	},
+	{
+		"start": "2018-04-30T00:00",
+		"end": "2018-05-01T00:00",
+		"year": 2018,
+		"stateCode": "HB",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-HB"
+	},
+	{
+		"start": "2018-10-01T00:00",
+		"end": "2018-10-13T00:00",
+		"year": 2018,
+		"stateCode": "ST",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-ST"
+	},
+	{
+		"start": "2018-12-19T00:00",
+		"end": "2019-01-05T00:00",
+		"year": 2018,
+		"stateCode": "ST",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-ST"
+	},
+	{
+		"start": "2018-06-28T00:00",
+		"end": "2018-08-09T00:00",
+		"year": 2018,
+		"stateCode": "ST",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-ST"
+	},
+	{
+		"start": "2018-03-26T00:00",
+		"end": "2018-04-01T00:00",
+		"year": 2018,
+		"stateCode": "ST",
+		"name": "osterferien",
+		"slug": "osterferien-2018-ST"
+	},
+	{
+		"start": "2018-02-05T00:00",
+		"end": "2018-02-10T00:00",
+		"year": 2018,
+		"stateCode": "ST",
+		"name": "winterferien",
+		"slug": "winterferien-2018-ST"
+	},
+	{
+		"start": "2018-05-11T00:00",
+		"end": "2018-05-20T00:00",
+		"year": 2018,
+		"stateCode": "ST",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-ST"
+	},
+	{
+		"start": "2019-02-25T00:00",
+		"end": "2019-03-02T00:00",
+		"year": 2019,
+		"stateCode": "RP",
+		"name": "winterferien",
+		"slug": "winterferien-2019-RP"
+	},
+	{
+		"start": "2019-04-23T00:00",
+		"end": "2019-05-01T00:00",
+		"year": 2019,
+		"stateCode": "RP",
+		"name": "osterferien",
+		"slug": "osterferien-2019-RP"
+	},
+	{
+		"start": "2019-07-01T00:00",
+		"end": "2019-08-10T00:00",
+		"year": 2019,
+		"stateCode": "RP",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-RP"
+	},
+	{
+		"start": "2019-09-30T00:00",
+		"end": "2019-10-12T00:00",
+		"year": 2019,
+		"stateCode": "RP",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-RP"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-07T00:00",
+		"year": 2019,
+		"stateCode": "RP",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-RP"
+	},
+	{
+		"start": "2018-10-01T00:00",
+		"end": "2018-10-14T00:00",
+		"year": 2018,
+		"stateCode": "TH",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-TH"
+	},
+	{
+		"start": "2018-12-21T00:00",
+		"end": "2019-01-05T00:00",
+		"year": 2018,
+		"stateCode": "TH",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-TH"
+	},
+	{
+		"start": "2018-07-02T00:00",
+		"end": "2018-08-12T00:00",
+		"year": 2018,
+		"stateCode": "TH",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-TH"
+	},
+	{
+		"start": "2018-03-26T00:00",
+		"end": "2018-04-08T00:00",
+		"year": 2018,
+		"stateCode": "TH",
+		"name": "osterferien",
+		"slug": "osterferien-2018-TH"
+	},
+	{
+		"start": "2018-02-05T00:00",
+		"end": "2018-02-10T00:00",
+		"year": 2018,
+		"stateCode": "TH",
+		"name": "winterferien",
+		"slug": "winterferien-2018-TH"
+	},
+	{
+		"start": "2018-05-11T00:00",
+		"end": "2018-05-12T00:00",
+		"year": 2018,
+		"stateCode": "TH",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-TH"
+	},
+	{
+		"start": "2018-10-29T00:00",
+		"end": "2018-11-03T00:00",
+		"year": 2018,
+		"stateCode": "BY",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-BY"
+	},
+	{
+		"start": "2018-12-22T00:00",
+		"end": "2019-01-06T00:00",
+		"year": 2018,
+		"stateCode": "BY",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-BY"
+	},
+	{
+		"start": "2018-02-12T00:00",
+		"end": "2018-02-17T00:00",
+		"year": 2018,
+		"stateCode": "BY",
+		"name": "winterferien",
+		"slug": "winterferien-2018-BY"
+	},
+	{
+		"start": "2018-03-26T00:00",
+		"end": "2018-04-07T00:00",
+		"year": 2018,
+		"stateCode": "BY",
+		"name": "osterferien",
+		"slug": "osterferien-2018-BY"
+	},
+	{
+		"start": "2018-05-22T00:00",
+		"end": "2018-06-03T00:00",
+		"year": 2018,
+		"stateCode": "BY",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-BY"
+	},
+	{
+		"start": "2018-07-30T00:00",
+		"end": "2018-09-11T00:00",
+		"year": 2018,
+		"stateCode": "BY",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-BY"
+	},
+	{
+		"start": "2019-02-11T00:00",
+		"end": "2019-02-16T00:00",
+		"year": 2019,
+		"stateCode": "TH",
+		"name": "winterferien",
+		"slug": "winterferien-2019-TH"
+	},
+	{
+		"start": "2019-04-15T00:00",
+		"end": "2019-04-28T00:00",
+		"year": 2019,
+		"stateCode": "TH",
+		"name": "osterferien",
+		"slug": "osterferien-2019-TH"
+	},
+	{
+		"start": "2019-05-31T00:00",
+		"end": "2019-06-01T00:00",
+		"year": 2019,
+		"stateCode": "TH",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2019-TH"
+	},
+	{
+		"start": "2019-07-18T00:00",
+		"end": "2019-08-18T00:00",
+		"year": 2019,
+		"stateCode": "TH",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-TH"
+	},
+	{
+		"start": "2019-10-07T00:00",
+		"end": "2019-10-20T00:00",
+		"year": 2019,
+		"stateCode": "TH",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-TH"
+	},
+	{
+		"start": "2019-12-21T00:00",
+		"end": "2020-01-04T00:00",
+		"year": 2019,
+		"stateCode": "TH",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-TH"
+	},
+	{
+		"start": "2018-10-01T00:00",
+		"end": "2018-10-20T00:00",
+		"year": 2018,
+		"stateCode": "SH",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-SH"
+	},
+	{
+		"start": "2018-12-21T00:00",
+		"end": "2019-01-05T00:00",
+		"year": 2018,
+		"stateCode": "SH",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-SH"
+	},
+	{
+		"start": "2018-07-09T00:00",
+		"end": "2018-08-19T00:00",
+		"year": 2018,
+		"stateCode": "SH",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-SH"
+	},
+	{
+		"start": "2018-03-29T00:00",
+		"end": "2018-04-14T00:00",
+		"year": 2018,
+		"stateCode": "SH",
+		"name": "osterferien",
+		"slug": "osterferien-2018-SH"
+	},
+	{
+		"start": "2018-05-11T00:00",
+		"end": "2018-05-12T00:00",
+		"year": 2018,
+		"stateCode": "SH",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-SH"
+	},
+	{
+		"start": "2018-10-22T00:00",
+		"end": "2018-11-03T00:00",
+		"year": 2018,
+		"stateCode": "BE",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-BE"
+	},
+	{
+		"start": "2018-12-22T00:00",
+		"end": "2019-01-06T00:00",
+		"year": 2018,
+		"stateCode": "BE",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-BE"
+	},
+	{
+		"start": "2018-02-05T00:00",
+		"end": "2018-02-11T00:00",
+		"year": 2018,
+		"stateCode": "BE",
+		"name": "winterferien",
+		"slug": "winterferien-2018-BE"
+	},
+	{
+		"start": "2018-03-26T00:00",
+		"end": "2018-04-07T00:00",
+		"year": 2018,
+		"stateCode": "BE",
+		"name": "osterferien",
+		"slug": "osterferien-2018-BE"
+	},
+	{
+		"start": "2018-04-30T00:00",
+		"end": "2018-05-01T00:00",
+		"year": 2018,
+		"stateCode": "BE",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-BE"
+	},
+	{
+		"start": "2018-07-05T00:00",
+		"end": "2018-08-18T00:00",
+		"year": 2018,
+		"stateCode": "BE",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-BE"
+	},
+	{
+		"start": "2018-10-01T00:00",
+		"end": "2018-10-13T00:00",
+		"year": 2018,
+		"stateCode": "RP",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-RP"
+	},
+	{
+		"start": "2018-12-20T00:00",
+		"end": "2019-01-05T00:00",
+		"year": 2018,
+		"stateCode": "RP",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-RP"
+	},
+	{
+		"start": "2018-06-26T00:00",
+		"end": "2018-08-04T00:00",
+		"year": 2018,
+		"stateCode": "RP",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-RP"
+	},
+	{
+		"start": "2018-03-26T00:00",
+		"end": "2018-04-07T00:00",
+		"year": 2018,
+		"stateCode": "RP",
+		"name": "osterferien",
+		"slug": "osterferien-2018-RP"
+	},
+	{
+		"start": "2018-10-08T00:00",
+		"end": "2018-10-14T00:00",
+		"year": 2018,
+		"stateCode": "MV",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-MV"
+	},
+	{
+		"start": "2018-12-24T00:00",
+		"end": "2019-01-06T00:00",
+		"year": 2018,
+		"stateCode": "MV",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-MV"
+	},
+	{
+		"start": "2018-07-09T00:00",
+		"end": "2018-08-19T00:00",
+		"year": 2018,
+		"stateCode": "MV",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-MV"
+	},
+	{
+		"start": "2018-03-26T00:00",
+		"end": "2018-04-05T00:00",
+		"year": 2018,
+		"stateCode": "MV",
+		"name": "osterferien",
+		"slug": "osterferien-2018-MV"
+	},
+	{
+		"start": "2018-02-05T00:00",
+		"end": "2018-02-17T00:00",
+		"year": 2018,
+		"stateCode": "MV",
+		"name": "winterferien",
+		"slug": "winterferien-2018-MV"
+	},
+	{
+		"start": "2018-05-11T00:00",
+		"end": "2018-05-12T00:00",
+		"year": 2018,
+		"stateCode": "MV",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-MV"
+	},
+	{
+		"start": "2019-02-01T00:00",
+		"end": "2019-02-02T00:00",
+		"year": 2019,
+		"stateCode": "HH",
+		"name": "winterferien",
+		"slug": "winterferien-2019-HH"
+	},
+	{
+		"start": "2019-03-04T00:00",
+		"end": "2019-03-16T00:00",
+		"year": 2019,
+		"stateCode": "HH",
+		"name": "osterferien",
+		"slug": "osterferien-2019-HH"
+	},
+	{
+		"start": "2019-05-13T00:00",
+		"end": "2019-05-18T00:00",
+		"year": 2019,
+		"stateCode": "HH",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2019-HH"
+	},
+	{
+		"start": "2019-06-27T00:00",
+		"end": "2019-08-08T00:00",
+		"year": 2019,
+		"stateCode": "HH",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-HH"
+	},
+	{
+		"start": "2019-10-04T00:00",
+		"end": "2019-10-19T00:00",
+		"year": 2019,
+		"stateCode": "HH",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-HH"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-04T00:00",
+		"year": 2019,
+		"stateCode": "HH",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-HH"
+	},
+	{
+		"start": "2019-04-15T00:00",
+		"end": "2019-04-28T00:00",
+		"year": 2019,
+		"stateCode": "BW",
+		"name": "osterferien",
+		"slug": "osterferien-2019-BW"
+	},
+	{
+		"start": "2019-06-11T00:00",
+		"end": "2019-06-22T00:00",
+		"year": 2019,
+		"stateCode": "BW",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2019-BW"
+	},
+	{
+		"start": "2019-07-29T00:00",
+		"end": "2019-09-11T00:00",
+		"year": 2019,
+		"stateCode": "BW",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-BW"
+	},
+	{
+		"start": "2019-10-28T00:00",
+		"end": "2019-10-31T00:00",
+		"year": 2019,
+		"stateCode": "BW",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-BW"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-05T00:00",
+		"year": 2019,
+		"stateCode": "BW",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-BW"
+	},
+	{
+		"start": "2019-04-04T00:00",
+		"end": "2019-04-19T00:00",
+		"year": 2019,
+		"stateCode": "SH",
+		"name": "osterferien",
+		"slug": "osterferien-2019-SH"
+	},
+	{
+		"start": "2019-05-31T00:00",
+		"end": "2019-06-01T00:00",
+		"year": 2019,
+		"stateCode": "SH",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2019-SH"
+	},
+	{
+		"start": "2019-07-01T00:00",
+		"end": "2019-08-11T00:00",
+		"year": 2019,
+		"stateCode": "SH",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-SH"
+	},
+	{
+		"start": "2019-10-04T00:00",
+		"end": "2019-10-19T00:00",
+		"year": 2019,
+		"stateCode": "SH",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-SH"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-07T00:00",
+		"year": 2019,
+		"stateCode": "SH",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-SH"
+	},
+	{
+		"start": "2017-04-03T00:00",
+		"end": "2017-04-16T00:00",
+		"year": 2017,
+		"stateCode": "HE",
+		"name": "osterferien",
+		"slug": "osterferien-2017-HE"
+	},
+	{
+		"start": "2017-07-03T00:00",
+		"end": "2017-08-12T00:00",
+		"year": 2017,
+		"stateCode": "HE",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-HE"
+	},
+	{
+		"start": "2017-10-09T00:00",
+		"end": "2017-10-22T00:00",
+		"year": 2017,
+		"stateCode": "HE",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-HE"
+	},
+	{
+		"start": "2017-12-24T00:00",
+		"end": "2018-01-14T00:00",
+		"year": 2017,
+		"stateCode": "HE",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-HE"
+	},
+	{
+		"start": "2019-02-11T00:00",
+		"end": "2019-02-16T00:00",
+		"year": 2019,
+		"stateCode": "ST",
+		"name": "winterferien",
+		"slug": "winterferien-2019-ST"
+	},
+	{
+		"start": "2019-04-18T00:00",
+		"end": "2019-05-01T00:00",
+		"year": 2019,
+		"stateCode": "ST",
+		"name": "osterferien",
+		"slug": "osterferien-2019-ST"
+	},
+	{
+		"start": "2019-05-31T00:00",
+		"end": "2019-06-02T00:00",
+		"year": 2019,
+		"stateCode": "ST",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2019-ST"
+	},
+	{
+		"start": "2019-07-04T00:00",
+		"end": "2019-08-15T00:00",
+		"year": 2019,
+		"stateCode": "ST",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-ST"
+	},
+	{
+		"start": "2019-10-04T00:00",
+		"end": "2019-10-12T00:00",
+		"year": 2019,
+		"stateCode": "ST",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-ST"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-05T00:00",
+		"year": 2019,
+		"stateCode": "ST",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-ST"
+	},
+	{
+		"start": "2017-01-30T00:00",
+		"end": "2017-01-31T00:00",
+		"year": 2017,
+		"stateCode": "HH",
+		"name": "winterferien",
+		"slug": "winterferien-2017-HH"
+	},
+	{
+		"start": "2017-03-06T00:00",
+		"end": "2017-03-18T00:00",
+		"year": 2017,
+		"stateCode": "HH",
+		"name": "osterferien",
+		"slug": "osterferien-2017-HH"
+	},
+	{
+		"start": "2017-05-22T00:00",
+		"end": "2017-05-27T00:00",
+		"year": 2017,
+		"stateCode": "HH",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-HH"
+	},
+	{
+		"start": "2017-07-20T00:00",
+		"end": "2017-08-31T00:00",
+		"year": 2017,
+		"stateCode": "HH",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-HH"
+	},
+	{
+		"start": "2017-10-16T00:00",
+		"end": "2017-10-28T00:00",
+		"year": 2017,
+		"stateCode": "HH",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-HH"
+	},
+	{
+		"start": "2017-12-22T00:00",
+		"end": "2018-01-06T00:00",
+		"year": 2017,
+		"stateCode": "HH",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-HH"
+	},
+	{
+		"start": "2019-01-31T00:00",
+		"end": "2019-03-02T00:00",
+		"year": 2019,
+		"stateCode": "HB",
+		"name": "winterferien",
+		"slug": "winterferien-2019-HB"
+	},
+	{
+		"start": "2019-04-06T00:00",
+		"end": "2019-04-24T00:00",
+		"year": 2019,
+		"stateCode": "HB",
+		"name": "osterferien",
+		"slug": "osterferien-2019-HB"
+	},
+	{
+		"start": "2019-05-21T00:00",
+		"end": "2019-05-22T00:00",
+		"year": 2019,
+		"stateCode": "HB",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2019-HB"
+	},
+	{
+		"start": "2019-07-04T00:00",
+		"end": "2019-08-15T00:00",
+		"year": 2019,
+		"stateCode": "HB",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-HB"
+	},
+	{
+		"start": "2019-10-04T00:00",
+		"end": "2019-10-19T00:00",
+		"year": 2019,
+		"stateCode": "HB",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-HB"
+	},
+	{
+		"start": "2019-12-21T00:00",
+		"end": "2020-01-07T00:00",
+		"year": 2019,
+		"stateCode": "HB",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-HB"
+	},
+	{
+		"start": "2017-01-30T00:00",
+		"end": "2017-02-01T00:00",
+		"year": 2017,
+		"stateCode": "NI",
+		"name": "winterferien",
+		"slug": "winterferien-2017-NI"
+	},
+	{
+		"start": "2017-04-10T00:00",
+		"end": "2017-04-23T00:00",
+		"year": 2017,
+		"stateCode": "NI",
+		"name": "osterferien",
+		"slug": "osterferien-2017-NI"
+	},
+	{
+		"start": "2017-06-06T00:00",
+		"end": "2017-06-07T00:00",
+		"year": 2017,
+		"stateCode": "NI",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-NI"
+	},
+	{
+		"start": "2017-06-22T00:00",
+		"end": "2017-08-03T00:00",
+		"year": 2017,
+		"stateCode": "NI",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-NI"
+	},
+	{
+		"start": "2017-10-02T00:00",
+		"end": "2017-10-14T00:00",
+		"year": 2017,
+		"stateCode": "NI",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-NI"
+	},
+	{
+		"start": "2017-12-22T00:00",
+		"end": "2018-01-06T00:00",
+		"year": 2017,
+		"stateCode": "NI",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-NI"
+	},
+	{
+		"start": "2018-10-01T00:00",
+		"end": "2018-10-14T00:00",
+		"year": 2018,
+		"stateCode": "HE",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-HE"
+	},
+	{
+		"start": "2018-12-24T00:00",
+		"end": "2019-01-13T00:00",
+		"year": 2018,
+		"stateCode": "HE",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-HE"
+	},
+	{
+		"start": "2018-06-25T00:00",
+		"end": "2018-08-04T00:00",
+		"year": 2018,
+		"stateCode": "HE",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-HE"
+	},
+	{
+		"start": "2018-03-26T00:00",
+		"end": "2018-04-08T00:00",
+		"year": 2018,
+		"stateCode": "HE",
+		"name": "osterferien",
+		"slug": "osterferien-2018-HE"
+	},
+	{
+		"start": "2018-10-01T00:00",
+		"end": "2018-10-13T00:00",
+		"year": 2018,
+		"stateCode": "HH",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-HH"
+	},
+	{
+		"start": "2018-12-20T00:00",
+		"end": "2019-01-05T00:00",
+		"year": 2018,
+		"stateCode": "HH",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-HH"
+	},
+	{
+		"start": "2018-07-05T00:00",
+		"end": "2018-08-16T00:00",
+		"year": 2018,
+		"stateCode": "HH",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-HH"
+	},
+	{
+		"start": "2018-03-05T00:00",
+		"end": "2018-03-17T00:00",
+		"year": 2018,
+		"stateCode": "HH",
+		"name": "osterferien",
+		"slug": "osterferien-2018-HH"
+	},
+	{
+		"start": "2018-02-02T00:00",
+		"end": "2018-02-03T00:00",
+		"year": 2018,
+		"stateCode": "HH",
+		"name": "winterferien",
+		"slug": "winterferien-2018-HH"
+	},
+	{
+		"start": "2018-05-07T00:00",
+		"end": "2018-05-12T00:00",
+		"year": 2018,
+		"stateCode": "HH",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-HH"
+	},
+	{
+		"start": "2017-01-30T00:00",
+		"end": "2017-02-05T00:00",
+		"year": 2017,
+		"stateCode": "BB",
+		"name": "winterferien",
+		"slug": "winterferien-2017-BB"
+	},
+	{
+		"start": "2017-04-12T00:00",
+		"end": "2017-04-23T00:00",
+		"year": 2017,
+		"stateCode": "BB",
+		"name": "osterferien",
+		"slug": "osterferien-2017-BB"
+	},
+	{
+		"start": "2017-05-26T00:00",
+		"end": "2017-05-27T00:00",
+		"year": 2017,
+		"stateCode": "BB",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-BB"
+	},
+	{
+		"start": "2017-07-20T00:00",
+		"end": "2017-09-02T00:00",
+		"year": 2017,
+		"stateCode": "BB",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-BB"
+	},
+	{
+		"start": "2017-10-23T00:00",
+		"end": "2017-11-05T00:00",
+		"year": 2017,
+		"stateCode": "BB",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-BB"
+	},
+	{
+		"start": "2017-12-21T00:00",
+		"end": "2018-01-03T00:00",
+		"year": 2017,
+		"stateCode": "BB",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-BB"
+	},
+	{
+		"start": "2019-02-18T00:00",
+		"end": "2019-03-03T00:00",
+		"year": 2019,
+		"stateCode": "SN",
+		"name": "winterferien",
+		"slug": "winterferien-2019-SN"
+	},
+	{
+		"start": "2019-04-19T00:00",
+		"end": "2019-04-27T00:00",
+		"year": 2019,
+		"stateCode": "SN",
+		"name": "osterferien",
+		"slug": "osterferien-2019-SN"
+	},
+	{
+		"start": "2019-05-31T00:00",
+		"end": "2019-06-01T00:00",
+		"year": 2019,
+		"stateCode": "SN",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2019-SN"
+	},
+	{
+		"start": "2019-07-08T00:00",
+		"end": "2019-08-17T00:00",
+		"year": 2019,
+		"stateCode": "SN",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-SN"
+	},
+	{
+		"start": "2019-10-14T00:00",
+		"end": "2019-10-26T00:00",
+		"year": 2019,
+		"stateCode": "SN",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-SN"
+	},
+	{
+		"start": "2019-12-21T00:00",
+		"end": "2020-01-04T00:00",
+		"year": 2019,
+		"stateCode": "SN",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-SN"
+	},
+	{
+		"start": "2017-01-30T00:00",
+		"end": "2017-02-05T00:00",
+		"year": 2017,
+		"stateCode": "BE",
+		"name": "winterferien",
+		"slug": "winterferien-2017-BE"
+	},
+	{
+		"start": "2017-04-10T00:00",
+		"end": "2017-04-19T00:00",
+		"year": 2017,
+		"stateCode": "BE",
+		"name": "osterferien",
+		"slug": "osterferien-2017-BE"
+	},
+	{
+		"start": "2017-05-24T00:00",
+		"end": "2017-05-25T00:00",
+		"year": 2017,
+		"stateCode": "BE",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-BE"
+	},
+	{
+		"start": "2017-07-20T00:00",
+		"end": "2017-09-02T00:00",
+		"year": 2017,
+		"stateCode": "BE",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-BE"
+	},
+	{
+		"start": "2017-10-23T00:00",
+		"end": "2017-11-05T00:00",
+		"year": 2017,
+		"stateCode": "BE",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-BE"
+	},
+	{
+		"start": "2017-12-21T00:00",
+		"end": "2018-01-03T00:00",
+		"year": 2017,
+		"stateCode": "BE",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-BE"
+	},
+	{
+		"start": "2018-02-12T00:00",
+		"end": "2018-02-18T00:00",
+		"year": 2018,
+		"stateCode": "SL",
+		"name": "winterferien",
+		"slug": "winterferien-2018-SL"
+	},
+	{
+		"start": "2018-06-25T00:00",
+		"end": "2018-08-04T00:00",
+		"year": 2018,
+		"stateCode": "SL",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-SL"
+	},
+	{
+		"start": "2018-03-26T00:00",
+		"end": "2018-04-07T00:00",
+		"year": 2018,
+		"stateCode": "SL",
+		"name": "osterferien",
+		"slug": "osterferien-2018-SL"
+	},
+	{
+		"start": "2017-04-10T00:00",
+		"end": "2017-04-23T00:00",
+		"year": 2017,
+		"stateCode": "NW",
+		"name": "osterferien",
+		"slug": "osterferien-2017-NW"
+	},
+	{
+		"start": "2017-06-06T00:00",
+		"end": "2017-06-07T00:00",
+		"year": 2017,
+		"stateCode": "NW",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-NW"
+	},
+	{
+		"start": "2017-07-17T00:00",
+		"end": "2017-08-30T00:00",
+		"year": 2017,
+		"stateCode": "NW",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-NW"
+	},
+	{
+		"start": "2017-10-23T00:00",
+		"end": "2017-11-05T00:00",
+		"year": 2017,
+		"stateCode": "NW",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-NW"
+	},
+	{
+		"start": "2017-12-27T00:00",
+		"end": "2018-01-07T00:00",
+		"year": 2017,
+		"stateCode": "NW",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-NW"
+	},
+	{
+		"start": "2019-02-04T00:00",
+		"end": "2019-02-10T00:00",
+		"year": 2019,
+		"stateCode": "BB",
+		"name": "winterferien",
+		"slug": "winterferien-2019-BB"
+	},
+	{
+		"start": "2019-04-15T00:00",
+		"end": "2019-04-27T00:00",
+		"year": 2019,
+		"stateCode": "BB",
+		"name": "osterferien",
+		"slug": "osterferien-2019-BB"
+	},
+	{
+		"start": "2019-06-20T00:00",
+		"end": "2019-08-04T00:00",
+		"year": 2019,
+		"stateCode": "BB",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-BB"
+	},
+	{
+		"start": "2019-10-04T00:00",
+		"end": "2019-10-19T00:00",
+		"year": 2019,
+		"stateCode": "BB",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-BB"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-04T00:00",
+		"year": 2019,
+		"stateCode": "BB",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-BB"
+	},
+	{
+		"start": "2017-02-04T00:00",
+		"end": "2017-02-12T00:00",
+		"year": 2017,
+		"stateCode": "ST",
+		"name": "winterferien",
+		"slug": "winterferien-2017-ST"
+	},
+	{
+		"start": "2017-04-10T00:00",
+		"end": "2017-04-14T00:00",
+		"year": 2017,
+		"stateCode": "ST",
+		"name": "osterferien",
+		"slug": "osterferien-2017-ST"
+	},
+	{
+		"start": "2017-05-26T00:00",
+		"end": "2017-05-27T00:00",
+		"year": 2017,
+		"stateCode": "ST",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-ST"
+	},
+	{
+		"start": "2017-06-26T00:00",
+		"end": "2017-08-10T00:00",
+		"year": 2017,
+		"stateCode": "ST",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-ST"
+	},
+	{
+		"start": "2017-10-02T00:00",
+		"end": "2017-10-14T00:00",
+		"year": 2017,
+		"stateCode": "ST",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-ST"
+	},
+	{
+		"start": "2017-12-21T00:00",
+		"end": "2018-01-04T00:00",
+		"year": 2017,
+		"stateCode": "ST",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-ST"
+	},
+	{
+		"start": "2019-02-04T00:00",
+		"end": "2019-02-10T00:00",
+		"year": 2019,
+		"stateCode": "BE",
+		"name": "winterferien",
+		"slug": "winterferien-2019-BE"
+	},
+	{
+		"start": "2019-04-15T00:00",
+		"end": "2019-04-27T00:00",
+		"year": 2019,
+		"stateCode": "BE",
+		"name": "osterferien",
+		"slug": "osterferien-2019-BE"
+	},
+	{
+		"start": "2019-06-20T00:00",
+		"end": "2019-08-03T00:00",
+		"year": 2019,
+		"stateCode": "BE",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-BE"
+	},
+	{
+		"start": "2019-10-04T00:00",
+		"end": "2019-10-05T00:00",
+		"year": 2019,
+		"stateCode": "BE",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-BE"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-05T00:00",
+		"year": 2019,
+		"stateCode": "BE",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-BE"
+	},
+	{
+		"start": "2019-02-04T00:00",
+		"end": "2019-02-16T00:00",
+		"year": 2019,
+		"stateCode": "MV",
+		"name": "winterferien",
+		"slug": "winterferien-2019-MV"
+	},
+	{
+		"start": "2019-04-15T00:00",
+		"end": "2019-04-25T00:00",
+		"year": 2019,
+		"stateCode": "MV",
+		"name": "osterferien",
+		"slug": "osterferien-2019-MV"
+	},
+	{
+		"start": "2019-05-22T00:00",
+		"end": "2019-05-23T00:00",
+		"year": 2019,
+		"stateCode": "MV",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2019-MV"
+	},
+	{
+		"start": "2019-07-01T00:00",
+		"end": "2019-08-11T00:00",
+		"year": 2019,
+		"stateCode": "MV",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-MV"
+	},
+	{
+		"start": "2019-10-04T00:00",
+		"end": "2019-10-05T00:00",
+		"year": 2019,
+		"stateCode": "MV",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-MV"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-05T00:00",
+		"year": 2019,
+		"stateCode": "MV",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-MV"
+	},
+	{
+		"start": "2017-04-07T00:00",
+		"end": "2017-04-22T00:00",
+		"year": 2017,
+		"stateCode": "SH",
+		"name": "osterferien",
+		"slug": "osterferien-2017-SH"
+	},
+	{
+		"start": "2017-05-26T00:00",
+		"end": "2017-05-27T00:00",
+		"year": 2017,
+		"stateCode": "SH",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-SH"
+	},
+	{
+		"start": "2017-07-24T00:00",
+		"end": "2017-09-03T00:00",
+		"year": 2017,
+		"stateCode": "SH",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-SH"
+	},
+	{
+		"start": "2017-10-16T00:00",
+		"end": "2017-10-28T00:00",
+		"year": 2017,
+		"stateCode": "SH",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-SH"
+	},
+	{
+		"start": "2017-12-21T00:00",
+		"end": "2018-01-07T00:00",
+		"year": 2017,
+		"stateCode": "SH",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-SH"
+	},
+	{
+		"start": "2018-10-15T00:00",
+		"end": "2018-10-28T00:00",
+		"year": 2018,
+		"stateCode": "NW",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-NW"
+	},
+	{
+		"start": "2018-12-21T00:00",
+		"end": "2019-01-05T00:00",
+		"year": 2018,
+		"stateCode": "NW",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-NW"
+	},
+	{
+		"start": "2018-07-16T00:00",
+		"end": "2018-08-29T00:00",
+		"year": 2018,
+		"stateCode": "NW",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-NW"
+	},
+	{
+		"start": "2018-03-26T00:00",
+		"end": "2018-04-08T00:00",
+		"year": 2018,
+		"stateCode": "NW",
+		"name": "osterferien",
+		"slug": "osterferien-2018-NW"
+	},
+	{
+		"start": "2018-05-22T00:00",
+		"end": "2018-05-26T00:00",
+		"year": 2018,
+		"stateCode": "NW",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-NW"
+	},
+	{
+		"start": "2018-10-22T00:00",
+		"end": "2018-11-03T00:00",
+		"year": 2018,
+		"stateCode": "BB",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-BB"
+	},
+	{
+		"start": "2018-12-21T00:00",
+		"end": "2019-01-06T00:00",
+		"year": 2018,
+		"stateCode": "BB",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-BB"
+	},
+	{
+		"start": "2018-02-05T00:00",
+		"end": "2018-02-11T00:00",
+		"year": 2018,
+		"stateCode": "BB",
+		"name": "winterferien",
+		"slug": "winterferien-2018-BB"
+	},
+	{
+		"start": "2018-03-26T00:00",
+		"end": "2018-04-07T00:00",
+		"year": 2018,
+		"stateCode": "BB",
+		"name": "osterferien",
+		"slug": "osterferien-2018-BB"
+	},
+	{
+		"start": "2018-07-05T00:00",
+		"end": "2018-08-19T00:00",
+		"year": 2018,
+		"stateCode": "BB",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-BB"
+	},
+	{
+		"start": "2018-05-11T00:00",
+		"end": "2018-05-12T00:00",
+		"year": 2018,
+		"stateCode": "BB",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-BB"
+	},
+	{
+		"start": "2019-04-15T00:00",
+		"end": "2019-04-28T00:00",
+		"year": 2019,
+		"stateCode": "NW",
+		"name": "osterferien",
+		"slug": "osterferien-2019-NW"
+	},
+	{
+		"start": "2019-05-31T00:00",
+		"end": "2019-06-01T00:00",
+		"year": 2019,
+		"stateCode": "NW",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2019-NW"
+	},
+	{
+		"start": "2019-07-15T00:00",
+		"end": "2019-08-28T00:00",
+		"year": 2019,
+		"stateCode": "NW",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-NW"
+	},
+	{
+		"start": "2019-10-14T00:00",
+		"end": "2019-10-27T00:00",
+		"year": 2019,
+		"stateCode": "NW",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-NW"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-07T00:00",
+		"year": 2019,
+		"stateCode": "NW",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-NW"
+	},
+	{
+		"start": "2017-04-10T00:00",
+		"end": "2017-04-22T00:00",
+		"year": 2017,
+		"stateCode": "RP",
+		"name": "osterferien",
+		"slug": "osterferien-2017-RP"
+	},
+	{
+		"start": "2017-07-03T00:00",
+		"end": "2017-08-12T00:00",
+		"year": 2017,
+		"stateCode": "RP",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-RP"
+	},
+	{
+		"start": "2017-10-02T00:00",
+		"end": "2017-10-14T00:00",
+		"year": 2017,
+		"stateCode": "RP",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-RP"
+	},
+	{
+		"start": "2017-12-22T00:00",
+		"end": "2018-01-10T00:00",
+		"year": 2017,
+		"stateCode": "RP",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-RP"
+	},
+	{
+		"start": "2018-10-08T00:00",
+		"end": "2018-10-21T00:00",
+		"year": 2018,
+		"stateCode": "SN",
+		"name": "herbstferien",
+		"slug": "herbstferien-2018-SN"
+	},
+	{
+		"start": "2018-12-19T00:00",
+		"end": "2019-01-05T00:00",
+		"year": 2018,
+		"stateCode": "SN",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2018-SN"
+	},
+	{
+		"start": "2018-07-02T00:00",
+		"end": "2018-08-11T00:00",
+		"year": 2018,
+		"stateCode": "SN",
+		"name": "sommerferien",
+		"slug": "sommerferien-2018-SN"
+	},
+	{
+		"start": "2018-02-12T00:00",
+		"end": "2018-02-24T00:00",
+		"year": 2018,
+		"stateCode": "SN",
+		"name": "winterferien",
+		"slug": "winterferien-2018-SN"
+	},
+	{
+		"start": "2018-03-29T00:00",
+		"end": "2018-04-07T00:00",
+		"year": 2018,
+		"stateCode": "SN",
+		"name": "osterferien",
+		"slug": "osterferien-2018-SN"
+	},
+	{
+		"start": "2018-05-11T00:00",
+		"end": "2018-05-12T00:00",
+		"year": 2018,
+		"stateCode": "SN",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2018-SN"
+	},
+	{
+		"start": "2019-02-25T00:00",
+		"end": "2019-03-12T00:00",
+		"year": 2019,
+		"stateCode": "SL",
+		"name": "winterferien",
+		"slug": "winterferien-2019-SL"
+	},
+	{
+		"start": "2019-04-17T00:00",
+		"end": "2019-04-27T00:00",
+		"year": 2019,
+		"stateCode": "SL",
+		"name": "osterferien",
+		"slug": "osterferien-2019-SL"
+	},
+	{
+		"start": "2019-07-01T00:00",
+		"end": "2019-08-10T00:00",
+		"year": 2019,
+		"stateCode": "SL",
+		"name": "sommerferien",
+		"slug": "sommerferien-2019-SL"
+	},
+	{
+		"start": "2019-10-07T00:00",
+		"end": "2019-10-19T00:00",
+		"year": 2019,
+		"stateCode": "SL",
+		"name": "herbstferien",
+		"slug": "herbstferien-2019-SL"
+	},
+	{
+		"start": "2019-12-23T00:00",
+		"end": "2020-01-04T00:00",
+		"year": 2019,
+		"stateCode": "SL",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2019-SL"
+	},
+	{
+		"start": "2017-02-27T00:00",
+		"end": "2017-03-04T00:00",
+		"year": 2017,
+		"stateCode": "BY",
+		"name": "winterferien",
+		"slug": "winterferien-2017-BY"
+	},
+	{
+		"start": "2017-04-10T00:00",
+		"end": "2017-04-23T00:00",
+		"year": 2017,
+		"stateCode": "BY",
+		"name": "osterferien",
+		"slug": "osterferien-2017-BY"
+	},
+	{
+		"start": "2017-06-06T00:00",
+		"end": "2017-06-17T00:00",
+		"year": 2017,
+		"stateCode": "BY",
+		"name": "pfingstferien",
+		"slug": "pfingstferien-2017-BY"
+	},
+	{
+		"start": "2017-07-29T00:00",
+		"end": "2017-09-12T00:00",
+		"year": 2017,
+		"stateCode": "BY",
+		"name": "sommerferien",
+		"slug": "sommerferien-2017-BY"
+	},
+	{
+		"start": "2017-10-30T00:00",
+		"end": "2017-11-04T00:00",
+		"year": 2017,
+		"stateCode": "BY",
+		"name": "herbstferien",
+		"slug": "herbstferien-2017-BY"
+	},
+	{
+		"start": "2017-12-23T00:00",
+		"end": "2018-01-06T00:00",
+		"year": 2017,
+		"stateCode": "BY",
+		"name": "weihnachtsferien",
+		"slug": "weihnachtsferien-2017-BY"
+	}
+]
