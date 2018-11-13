@@ -19,13 +19,18 @@ const syncFromLdap = function(app) {
 								.then(data => {
 									return createUsersFromLdapData(app, data, school, system);
 								}).then(_ => {
+									logger.info(`[${school.name}] Getting classes...`);
 									return app.service('ldap').getClasses(config, school);
 								}).then(data => {
+									logger.info(`[${school.name}] Creating classes`);
 									return createClassesFromLdapData(app, data, school);
+								}).then(_ => {
+									logger.info(`[${school.name}] Done.`);
+									return Promise.resolve();
 								});
 						}));
 					})
-					.then(res => {
+					.then(_ => {
 						logger.info(`Finished syncing ${system.alias} (${system._id})`);
 						return Promise.resolve();
 					})
@@ -34,6 +39,10 @@ const syncFromLdap = function(app) {
 						return Promise.resolve();
 					});
 			}));
+		})
+		.then(res => {
+			logger.info(`Sync finished.`);
+			return Promise.resolve();
 		});
 };
 
@@ -110,6 +119,7 @@ const createUserAndAccount = function(app, idmUser, school, system) {
 };
 
 const createUsersFromLdapData = function(app, data, school, system) {
+	logger.info(`[${school.name}] Getting users...`);
 	let usersCreated = 0, usersUpdated = 0;
 	return Promise.all(data.map(idmUser => {
 		return app.service('users').find({ query: { ldapId: idmUser.ldapUUID } })
@@ -123,7 +133,7 @@ const createUsersFromLdapData = function(app, data, school, system) {
 				return createUserAndAccount(app, idmUser, school, system);
 			});
 	})).then(res => {
-		logger.info(`${school.name}: Created ${usersCreated} users, updated ${usersUpdated} users.`);
+		logger.info(`[${school.name}] Created ${usersCreated} users, updated ${usersUpdated} users.`);
 		return Promise.resolve(res);
 	});
 };
@@ -158,12 +168,13 @@ const checkForUserChangesAndUpdate = function(app, idmUser, user, school) {
 };
 
 const createClassesFromLdapData = function(app, data, school) {
-	return Promise.all(data.map(ldapClass => {
+	let res = Promise.all(data.map(ldapClass => {
 		return getOrCreateClassFromLdapData(app, ldapClass, school)
 		.then(currentClass => {
 			return populateClassUsers(app, ldapClass, currentClass);
 		});
 	}));
+	return res;
 };
 
 const getOrCreateClassFromLdapData = function(app, data, school) {
