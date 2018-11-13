@@ -32,7 +32,7 @@ module.exports = function() {
 		 * @param {LDAPClient} client the client
 		 */
 		_addClient(config, client) {
-			this.clients[config._id] = client;
+			this.clients[config.url] = client;
 		}
 
 		/**
@@ -41,7 +41,7 @@ module.exports = function() {
 		 * @return {Promise} resolves with LDAPClient or rejects with error
 		 */
 		_getClient(config) {
-			let client = this.clients[config._id];
+			let client = this.clients[config.url];
 			if (client && client.connected) {
 				return Promise.resolve(client);
 			} else {
