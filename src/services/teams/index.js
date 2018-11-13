@@ -68,7 +68,8 @@ class Add {
 	async patch(id, data, params) {
 		const teamsService = this.app.service('teams');
 		const usersService = this.app.service('users');
-		const schoolService = this.app.service('schools');
+		const schoolsService = this.app.service('schools');
+		const rolesService = this.app.service('roles');
 		const expertLinkService = this.app.service('/expertinvitelink');
 		const email = data.email;
 		const userId = data.userId;
@@ -77,6 +78,7 @@ class Add {
 		const teamId = id;
 		let newUser = {};
 		let expertSchool = {};
+		let expertRole = {};
 		let linkInfo = {};
 		
 		const errorHandling = err => {
@@ -107,7 +109,7 @@ class Add {
 					if (user === undefined && role === 'teamexpert') {
 						try {
 							// get expert school with "purpose": "expert"
-							await schoolService.find({query: {purpose: "expert"}}).then(school => {
+							await schoolsService.find({query: {purpose: "expert"}}).then(school => {
 								if(school.data.length <= 0 || school.data.length > 1) {
 									throw new errors.BadRequest('Experte: Keine oder mehr als 1 Schule gefunden.');
 								}
@@ -116,11 +118,20 @@ class Add {
 								throw new errors.BadRequest("Experte: Fehler beim Abfragen der Schule.", err);
 							});
 							
+							await rolesService.find({query: {name: "expert"}}).then(role => {
+								if(role.data.length <= 0 || role.data.length > 1) {
+									throw new errors.BadRequest('Experte: Keine oder mehr als 1 Rolle gefunden.');
+								}
+								expertRole = role.data[0];
+							}).catch(err => {
+								throw new errors.BadRequest("Experte: Fehler beim Abfragen der Rolle.", err);
+							});
+							
 							// create user with expert role
 							await userModel.create({
 								email: email,
 								schoolId: expertSchool._id,
-								roles: [roleId], // expert
+								roles: [expertRole._id], // expert
 								firstName: "Experte",
 								lastName: "Experte"
 							}, (err, cUser) => {
