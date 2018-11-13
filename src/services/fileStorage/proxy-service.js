@@ -81,8 +81,8 @@ const fileStorageService = {
 		}
 		
 		if( !sendPermissions ) {
-			const teamObject = await teamsModel.findOne({ _id: owner }).exec();			
-			sendPermissions = teamObject.filePermission;
+			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
+			sendPermissions = teamObject ? teamObject.filePermission : [];
 		}		
 
 		const props = sanitizeObj(Object.assign(data, {
@@ -182,17 +182,17 @@ const signedUrlService = {
 
 		const { payload: { userId } } = params;
 		const strategy = createCorrectStrategy(params.payload.fileStorageType);
+		const flatFileName = generateFlatFileName(filename);
 
 		const parentPromise = parent ? FileModel.findOne({ parent, name: filename }).exec() : Promise.resolve({});
 
-		return parentPromise.then(res => {
-
-			const flatFileName = generateFlatFileName(filename);
-			const permissionPromise = parent ? canCreate(userId, parent) : Promise.resolve({});
-			
-			return permissionPromise.then(() => {
-
-				let header =  {
+		return parentPromise
+			.then(() => parent ? canCreate(userId, parent) : Promise.resolve({}))
+			.then(() => {
+				return strategy.generateSignedUrl({userId, flatFileName, fileType});
+			})
+			.then(res => {
+				const header =  {
 					// add meta data for later using
 					"Content-Type": fileType,
 					"x-amz-meta-name": filename,
@@ -200,15 +200,12 @@ const signedUrlService = {
 					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 				};
 
-				return strategy.generateSignedUrl({userId, flatFileName, fileType})
-					.then(res => {
-						return {
-							url: res,
-							header: header
-						};
-					});
-			});
-		});
+				return {
+					url: res,
+					header: header
+				};
+			})
+			.catch(() => new errors.Forbidden());	
 	},
 
 	async find({ query, payload }) {
@@ -220,7 +217,7 @@ const signedUrlService = {
 		if(!fileObject){
 			throw new errors.NotFound('File seems not to be there.');
 		}
-		
+
 		return canRead(userId, file)
 			.then(() => strategy.getSignedUrl({userId, flatFileName: fileObject.storageFileName, download }))
 			.then(res => ({
