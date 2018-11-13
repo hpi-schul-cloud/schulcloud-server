@@ -51,7 +51,7 @@ class WopiFilesInfoService {
 					Version: file['__v'],
 				};
 
-				return canRead(userId, file._id);
+				return canRead(userId, fileId);
 			})
 			.then(() => userService.get(userId))
 			.then((user) => {
@@ -61,7 +61,7 @@ class WopiFilesInfoService {
 					UserFriendlyName: `${user.firstName} ${user.lastName}`,
 				};
 
-				return canWrite().catch(() => undefined);
+				return canWrite(userId, fileId).catch(() => undefined);
 			})
 			.then((canWrite) => {
 
