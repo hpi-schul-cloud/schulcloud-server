@@ -128,7 +128,7 @@ class WopiFilesContentsService {
 	* https://wopirest.readthedocs.io/en/latest/files/PutFile.html
 	*/
 	create(data, {fileId, payload, account, wopiAction}) {
-		if (wopiAction !== 'PUT') throw new errors.BadRequest("Wrong X-WOPI-Override header value!");
+		if (wopiAction !== 'PUT') throw new errors.BadRequest("WopiFilesContentsService: Wrong X-WOPI-Override header value!");
 
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
@@ -137,17 +137,16 @@ class WopiFilesContentsService {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
 
 			// generate signedUrl for updating file to storage
-			return signedUrlService.find({
-				query: {
-					file: file._id,
-				},
-				payload,
-				account
-			}).then(signedUrl => {
+			return signedUrlService.patch(
+				file._id,
+				{},
+				{ payload, account }
+			).then(signedUrl => {
 				// put binary content directly to file in storage
 				const options = {
 					method: 'PUT',
 					uri: signedUrl.url,
+					contentType: file.type,
 					body: data
 				};
 
