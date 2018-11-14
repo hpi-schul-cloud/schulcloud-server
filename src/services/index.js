@@ -17,6 +17,7 @@ const helpers = require('./helpers');
 const resolve = require('./resolve');
 const federalState = require('./federalState');
 const subjectType = require('./subjectType');
+const topicTemplate = require('./topicTemplate');
 const holidays = require('./holidays');
 const userGroup = require('./user-group');
 const homework = require('./homework');
@@ -60,6 +61,7 @@ module.exports = function() {
 	app.configure(homework);
 	app.configure(federalState);
 	app.configure(subjectType);
+	app.configure(topicTemplate);
 	app.configure(holidays);
 	app.configure(passwordRecovery);
 	app.configure(notification);
