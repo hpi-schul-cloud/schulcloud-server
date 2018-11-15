@@ -74,12 +74,10 @@ class Add {
 		const email = data.email;
 		const userId = data.userId;
 		let role = data.role;
-		let roleId;
 		const teamId = id;
 		let newUser = {};
 		let expertSchool = {};
 		let expertRole = {};
-		let linkInfo = {};
 		
 		const errorHandling = err => {
 			logger.warn(err);
@@ -92,41 +90,38 @@ class Add {
 
 		if (email && role) {
 			
-			await hooks.teamRolesToHook(this).then(_self => {
-				roleId = _self.findRole('name', role, '_id');
-			});
-			
 			const waitForUser = new Promise((resolve, reject) => {
 				usersService.find({
 					query: { email }
-				}).then(async _users => {
-					let user;
-
-					if (_users.data !== undefined && _users.data.length > 0)
-						user = _users.data[0];
+				}).then(async dbUser => {
+					let existingUser;
+					
+					if (dbUser.data !== undefined && dbUser.data.length > 0)
+						existingUser = dbUser.data[0];
+					
+					// get expert school with "purpose": "expert" to get id
+					await schoolsService.find({query: {purpose: "expert"}}).then(school => {
+						if(school.data.length <= 0 || school.data.length > 1) {
+							throw new errors.BadRequest('Experte: Keine oder mehr als 1 Schule gefunden.');
+						}
+						expertSchool = school.data[0];
+					}).catch(err => {
+						throw new errors.BadRequest("Experte: Fehler beim Abfragen der Schule.", err);
+					});
+					
+					// get expert role to get id
+					await rolesService.find({query: {name: "expert"}}).then(role => {
+						if(role.data.length <= 0 || role.data.length > 1) {
+							throw new errors.BadRequest('Experte: Keine oder mehr als 1 Rolle gefunden.');
+						}
+						expertRole = role.data[0];
+					}).catch(err => {
+						throw new errors.BadRequest("Experte: Fehler beim Abfragen der Rolle.", err);
+					});
 
 					//user do not exist and it must be an teamexpert, all others must have accounts before
-					if (user === undefined && role === 'teamexpert') {
+					if (existingUser === undefined && role === 'teamexpert') {
 						try {
-							// get expert school with "purpose": "expert"
-							await schoolsService.find({query: {purpose: "expert"}}).then(school => {
-								if(school.data.length <= 0 || school.data.length > 1) {
-									throw new errors.BadRequest('Experte: Keine oder mehr als 1 Schule gefunden.');
-								}
-								expertSchool = school.data[0];
-							}).catch(err => {
-								throw new errors.BadRequest("Experte: Fehler beim Abfragen der Schule.", err);
-							});
-							
-							await rolesService.find({query: {name: "expert"}}).then(role => {
-								if(role.data.length <= 0 || role.data.length > 1) {
-									throw new errors.BadRequest('Experte: Keine oder mehr als 1 Rolle gefunden.');
-								}
-								expertRole = role.data[0];
-							}).catch(err => {
-								throw new errors.BadRequest("Experte: Fehler beim Abfragen der Rolle.", err);
-							});
-							
 							// create user with expert role
 							await userModel.create({
 								email: email,
@@ -157,7 +152,14 @@ class Add {
 					} else {
 						//user already exist
 						//patch team
-						resolve(user);
+						// generate invite link
+						expertLinkService.create({esid: expertSchool._id, email: existingUser.email}).then(linkData => {
+							resolve(linkData);
+						}).catch(err => {
+							throw new errors.BadRequest("Experte: Fehler beim Erstellen des Einladelinks.", err);
+						});
+						
+						resolve(existingUser);
 					}
 				}).catch(err => {
 					logger.warn(err);
