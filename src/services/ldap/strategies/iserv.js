@@ -13,7 +13,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 
     /**
      * @public
-     * @see AbstractLDAPStrategy#getSchoolsQuery
+     * @see AbstractLDAPStrategy#getSchools
      * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
      * @memberof iServLDAPStrategy
      */
