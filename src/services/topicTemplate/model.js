@@ -8,10 +8,10 @@ const topicTemplateSchema = new Schema(
 		userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
 		subjectId: {
 			type: Schema.Types.ObjectId,
-			ref: 'subjectType',
+			ref: 'subjecttype',
 			required: true
 		},
-		gradeLevel: { type: Schema.Types.ObjectId, ref: 'gradeLevel' },
+		gradeLevelId: { type: Schema.Types.ObjectId, ref: 'gradeLevel' },
 		name: { type: String, required: true },
 		numberOfWeeks: { type: String, required: true },
 		unitsPerWeek: { type: String, required: true },
