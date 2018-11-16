@@ -229,7 +229,27 @@ const signedUrlService = {
 				url: res,
 			}))
 			.catch(() => new errors.Forbidden());
-	}
+	},
+
+	async patch(_id, data, params) {
+		const { payload } = params;
+		const { userId } = payload;
+		const strategy = createCorrectStrategy(payload.fileStorageType);
+		const fileObject = await FileModel.findOne({ _id }).exec();
+
+		if (!fileObject) {
+			throw new errors.NotFound('File seems not to be there.');
+		}
+
+		const creatorId = fileObject.permissions[0].refId;
+
+		return canRead(userId, _id)
+			.then(() => strategy.getSignedUrl({ userId: creatorId, flatFileName: fileObject.storageFileName, action: 'putObject'}))
+			.then(res => ({
+				url: res,
+			}))
+			.catch(() => new errors.Forbidden());
+	}	
 };
 
 const directoryService = {
