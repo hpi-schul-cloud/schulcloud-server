@@ -152,14 +152,11 @@ class Add {
 						//user already exist
 						//patch team
 						// generate invite link
-						expertLinkService.create({esid: expertSchool._id, email: existingUser.email}).then(linkData => {
+						expertLinkService.create({esid: expertSchool._id, teamId: teamId}).then(linkData => {
 							resolve(linkData);
 						}).catch(err => {
 							throw new errors.BadRequest("Experte: Fehler beim Erstellen des Einladelinks.", err);
 						});
-						
-						resolve(existingUser);
-						// double resolve?
 					}
 				}).catch(err => {
 					logger.warn(err);
@@ -184,7 +181,9 @@ class Add {
 						role = _self.findRole('name', role, '_id');
 						userIds.push({ userId, role });
 						const schoolIds = getUpdatedSchoolIdArray(_team, _user);
-						return teamsService.patch(teamId, { userIds, schoolIds }, params).catch(errorHandling);
+						return teamsService.patch(teamId, { userIds, schoolIds }, params).then(_patchedTeam => {
+							return Promise.resolve({message:'Success!',linkData: data})
+						}).catch(errorHandling);
 					}).catch(errorHandling);
 				}).catch(errorHandling);
 			}).catch(errorHandling);
