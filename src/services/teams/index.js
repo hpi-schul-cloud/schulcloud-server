@@ -145,7 +145,6 @@ class Add {
 							}).catch(err => {
 								throw new errors.BadRequest("Experte: Fehler beim Erstellen des Einladelinks.", err);
 							});
-							
 						} catch (err) {
 							throw new errors.BadRequest("Experte: Fehler beim Generieren des Experten-Links.", err);
 						}
@@ -160,6 +159,7 @@ class Add {
 						});
 						
 						resolve(existingUser);
+						// double resolve?
 					}
 				}).catch(err => {
 					logger.warn(err);
