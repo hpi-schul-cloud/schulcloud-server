@@ -2,6 +2,11 @@ const errors = require('feathers-errors');
 const Syncer = require('./Syncer');
 const LDAPSchoolSyncer = require('./LDAPSchoolSyncer');
 
+/**
+ * Implements syncing from LDAP servers based on the Syncer interface
+ * @class LDAPSyncer
+ * @implements {Syncer}
+ */
 class LDAPSyncer extends Syncer {
 
 	constructor(app, system) {
@@ -11,6 +16,9 @@ class LDAPSyncer extends Syncer {
 		});
 	}
 
+	/**
+	 * @see {Syncer#steps}
+	 */
 	steps() {
 		return super.steps()
 			.then(() => this.getSchools())

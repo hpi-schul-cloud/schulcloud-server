@@ -3,6 +3,11 @@ const errors = require('feathers-errors');
 const accountModel = require('../../account/model');
 const Syncer = require('./Syncer');
 
+/**
+ * Implements syncing schools from LDAP servers based on the Syncer interface
+ * @class LDAPSyncer
+ * @implements {Syncer}
+ */
 class LDAPSchoolSyncer extends Syncer {
 
 	constructor(app, system, stats, school) {
@@ -18,10 +23,16 @@ class LDAPSchoolSyncer extends Syncer {
 		});
 	}
 
+	/**
+	 * @see {Syncer#prefix}
+	 */
 	prefix() {
 		return `${super.prefix()} | ${this.school.name}`;
 	}
 
+	/**
+	 * @see {Syncer#steps}
+	 */
 	steps() {
 		return super.steps()
 			.then(_ => this.getUserData())

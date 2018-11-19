@@ -25,8 +25,11 @@ const syncSystems = (app, type) => {
 	})
 	.then((stats) => {
 		const aggregated = stats.reduce((agg, cur) => {
-			agg.successful += cur.successful;
-			agg.failed += cur.failed;
+			if (cur.successful) {
+				agg.successful += 1;
+			} else {
+				agg.failed += 1;
+			}
 			return agg;
 		}, { successful: 0, failed: 0 });
 		logger.info(`Sync finished. Successful system syncs: ${aggregated.successful}, Errors: ${aggregated.failed}`);
