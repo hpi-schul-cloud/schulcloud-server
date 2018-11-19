@@ -35,7 +35,7 @@ const {
 
 /**
 *   main hook for team services 
-*   @before hook
+*   @beforeHook
 *   @param {Object::hook} hook 
 *   @method all
 *   @ifNotLocal work only for extern requests
@@ -88,7 +88,7 @@ const teamMainHook = globalHooks.ifNotLocal(hook => {
 
 /**
  * mapped userIds from class to userIds, clear all double userId inputs
- * @before hook
+ * @beforeHook
  * @param {Object::hook} hook 
  * @return {Object::hook} 
  */
@@ -135,7 +135,7 @@ const updateUsersForEachClass = (hook) => {
 
 /**
  * test if id exist and id a valid moongose object id
- * @before hook
+ * @beforeHook
  * @param {Object::hook} hook 
  * @returns {Promise::hook}
  */
@@ -151,12 +151,13 @@ const existId = (hook) => {
 };
 
 /**
- * @param hook - Add the current user to top level, easy access of it role and permissions.
- * @after hook
+ * @afterHook
  * @method patch,get
+ * @param {Object::hook} hook - Add the current user to top level, easy access of it role and permissions.
+ * @returns {Object::hook}
  */
 const addCurrentUser = globalHooks.ifNotLocal((hook) => {
-    if (isObject(hook.result) && hasKey(hook.result, '._id')) {
+    if (isObject(hook.result) && hasKey(hook.result, '_id')) {
         const userId = bsonIdToString(hook.params.account.userId);
         const user = Object.assign({}, hook.result.userIds.find(user => (user.userId == userId || user.userId._id == userId)));
         if (isUndefined(user) || isUndefined(user.role)) {
@@ -174,8 +175,10 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 });
 
 /**
- * @param hook - test and update missing data for methodes that contain hook.data
+ * @beforeHook
+ * @param {Object::hook} - test and update missing data for methodes that contain hook.data
  * @method post
+ * @returns {Object::hook}
  */
 const testInputData = hook => {
     if (isUndefined(hook.data.userIds)) {
@@ -193,7 +196,9 @@ const testInputData = hook => {
 };
 
 /**
- * @param hook - block this methode for every request
+ * @beforeHook
+ * @param {Object::hook} - block this methode for every request
+ * @throws {errors} new errors.MethodNotAllowed('Method is not allowed!');
  */
 const blockedMethod = (hook) => {
     logger.warn('[teams]', 'Method is not allowed!');
@@ -201,11 +206,18 @@ const blockedMethod = (hook) => {
 };
 
 /**
+ * @hook
+ * @ifNotLocal
  * @param {Array of strings} keys
- * @param {Array of strings} path - the object path to filtered data in hook or 
- * @param [{Object}] objectToFilter - is optional otherwise the hook is used
+ * @param {Array::String || StringPath} path - the object path to filtered data in hook or 
+ * @param {Object} [objectToFilter] - is optional otherwise the hook is used
+ * @returns {function::globalHooks.ifNotLocal(hook)}
+ * @example filterToRelated(['_id','userIds'], 'result.data') - in hook.result.data all keys are removed that are not _id, or userIds
  */
 const filterToRelated = (keys, path, objectToFilter) => {
+    if(!Array.isArray(keys))
+        throw new errors.NotAcceptable('Please use an array for keys.');
+
     return globalHooks.ifNotLocal(hook => {
         const filter = (data) => {
             const reducer = (old) => {
@@ -243,7 +255,9 @@ const filterToRelated = (keys, path, objectToFilter) => {
 };
 
 /**
- * @param hook
+ * @hook
+ * @param {Object::hook}
+ * @returns {Object::hook}
  */
 const dataExist = hook => {
     if (isUndefined(hook.data) || !isObject(hook.data)) {
@@ -253,8 +267,9 @@ const dataExist = hook => {
 };
 
 /**
- * @param hook
- * @after
+ * @afterHook
+ * @param {Object::hook}
+ * @returns {Object::hook}
  */
 const pushUserChangedEvent = (hook) => {
     const team = getTeam(hook);
@@ -279,7 +294,11 @@ const pushUserChangedEvent = (hook) => {
 
 
 /**
- * @param hook - Add teamroles to hook.teamroles
+ * Add teamroles to hook.teamroles.
+ * Make avaible that you can use hook.findRole();
+ * @hook
+ * @param {Object::hook}
+ * @returns {Object::hook}
  */
 const teamRolesToHook = hook => {
     return hook.app.service('roles').find({
@@ -292,9 +311,9 @@ const teamRolesToHook = hook => {
         hook.teamroles = roles.data;        //add team roles with permissions to hook   
 
         /**
-         * @param {key as string} - search key
-         * @param {value as object} - search value 
-         * @param {[resultKey as string]} - if only one value of a key should return
+         * @param {String} key
+         * @param {Object||String} value search value 
+         * @param {String} [resultKey] if only one value of a key should return
          * @example hook.findRole('name','teamowner');
          * @example hook.findRole('name','teamleader','permissions'); 
          */
@@ -323,9 +342,7 @@ const teamRolesToHook = hook => {
             }
         };
 
-        const method = hook.method;
-
-        if (method !== 'find') {
+        if (hook.method !== 'find') {
             const resolveInheritance = (role, stack = []) => {
                 stack = stack.concat(role.permissions);
                 if (role.roles.length <= 0) return stack;
@@ -347,9 +364,11 @@ const teamRolesToHook = hook => {
 exports.teamRolesToHook = teamRolesToHook;
 
 /**
- *  @global
- *  @method get,patch,delete,create but do not work with find
- *  @param permsissions
+ * @hook
+ * @method get,patch,delete,create but do not work with find
+ * @param permsissions
+ * @param {String} _teamId
+ * @return {function::function(hook)}
  */
 const hasTeamPermission = (permsissions, _teamId) => {
     return (hook) => {

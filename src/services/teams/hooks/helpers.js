@@ -42,7 +42,7 @@ const ifSuperhero = (roles) => {
 /**
 * @helper 
 * @param {hook} hook 
-* @returns {Object::User}
+* @return {Object::User}
 */
 const getSessionUser = hook => {
     return new Promise((resolve, reject) => {
@@ -72,7 +72,7 @@ const getSessionUser = hook => {
 * @helper
 * @private
 * @param {hook} hook 
-* @returns {Object::hook}
+* @return {Object::hook}
 */
 const addDefaultFilePermissions = (hook) => {
     if (isUndefined(hook.data) || isUndefined(hook.teamroles))
@@ -116,7 +116,7 @@ const updateMissingDataInHookForCreate = (hook, sessionUser) => {
 * @helper
 * @private
 * @param [Object:Valid Moongose Response from find mongooseResponse] 
-* @returns {Promise::res.data[0]}
+* @return {Promise::res.data[0]}
 */
 const extractOne = (mongooseResponse) => {
     if ((mongooseResponse.data || []).length == 1)
@@ -132,7 +132,7 @@ const extractOne = (mongooseResponse) => {
  * Second step if you have all information you must try it with all parameters. 
  * -> Only users that are for this request in the invite list with role=teamexperts
  * @requires hook.data.accept={userId,role}
- * @param {Object::hook} hook 
+ * @param {Object::hook} hook
  * @param {String} teamId 
  * @param {Object::Team} oldTeam 
  * @param {Array::User} users 
@@ -172,8 +172,8 @@ const isAcceptWay = (hook, teamId, oldTeam, users) => {
 /**
 * @helper
 * @requires function::extractOne
-* @param hook hook
-* @returns Promise::Object::team
+* @param {Object::hook} hook
+* @return {Promise::Object::team}
 */
 const getTeam = (hook) => {
     return new Promise((resolve, reject) => {
@@ -226,9 +226,9 @@ const getTeam = (hook) => {
 *   @helper
 *   @private
 *   @requires function::hook.findRole Can added over hook function ->todo name
-*   @param hook hook
-*   @param String userId
-*   @param String selectedRole
+*   @param {Object::hook} hook
+*   @param {String} userId
+*   @param {String} selectedRole
 */
 const createUserWithRole = (hook, userId, selectedRole) => {
     let role;
@@ -251,10 +251,10 @@ const createUserWithRole = (hook, userId, selectedRole) => {
  * _new_ = [2,3,4] 
  * @example - _old_ ~ _new_ = [1] => remove item
  * @example - _new_ ~ _old_ = [4] => add item
- * @param Array oldArray
- * @param Array newArray
- * @param String key
- * @return Array 
+ * @param {Array::*} oldArray
+ * @param {Array::*} newArray
+ * @param {String} key
+ * @return {Array::*} 
  */
 const arrayDiff = (oldArray, newArray, key) => {
     // try {
@@ -283,8 +283,8 @@ const arrayDiff = (oldArray, newArray, key) => {
 /**
  * @helper
  * @requires function:arrayDiff
- * @param {Array} baseArray 
- * @param {Array} changedArray 
+ * @param {Array::*} baseArray 
+ * @param {Array::*} changedArray 
  * @param {String} [key] - optional for objects in arrays
  * @return {Object::{remove:[],add:[]} }
  */
