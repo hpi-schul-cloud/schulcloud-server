@@ -48,7 +48,7 @@ class Syncer {
 	}
 }
 
-class SchoolSyncer extends Syncer {
+class LDAPSchoolSyncer extends Syncer {
 
 	constructor(app, system, stats, school) {
 		super(app, system, stats);
@@ -132,7 +132,7 @@ class LDAPSyncer extends Syncer {
 			.then(() => this.getSchools())
 			.then((schools) => {
 				const jobs = schools.map(school => {
-					const syncer = new SchoolSyncer(this.app, this.system, this.getSchoolStats(school), school);
+					const syncer = new LDAPSchoolSyncer(this.app, this.system, this.getSchoolStats(school), school);
 					return syncer.sync();
 				});
 				return Promise.all(jobs);
