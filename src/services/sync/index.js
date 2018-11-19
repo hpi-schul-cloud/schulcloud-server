@@ -2,51 +2,183 @@ const errors = require('feathers-errors');
 const accountModel = require('../account/model');
 const logger = require('winston');
 
-const syncFromLdap = function(app) {
-	let successfulSystems = 0, erroredSystems = 0;
-	logger.info('Syncing from LDAP');
-	return app.service('systems').find({ query: { type: 'ldap' } })
-		.then(ldapSystems => {
-			logger.info(`Found ${ldapSystems.total} LDAP configurations.`);
-			return Promise.all(ldapSystems.data.map(system => {
-				logger.info(`Syncing ${system.alias} (${system._id})...`);
-				const config = system.ldapConfig;
-				return app.service('ldap').getSchools(config)
-					.then(data => {
-						return createSchoolsFromLdapData(app, data, system);
-					}).then(schools => {
-						return Promise.all(schools.map(school => {
-							return app.service('ldap').getUsers(config, school)
-								.then(data => {
-									return createUsersFromLdapData(app, data, school, system);
-								}).then(_ => {
-									logger.info(`[${school.name}] Getting classes...`);
-									return app.service('ldap').getClasses(config, school);
-								}).then(data => {
-									logger.info(`[${school.name}] Creating classes`);
-									return createClassesFromLdapData(app, data, school);
-								}).then(_ => {
-									logger.info(`[${school.name}] Done.`);
-									return Promise.resolve();
-								});
-						}));
-					})
-					.then(_ => {
-						successfulSystems += 1;
-						logger.info(`Finished syncing ${system.alias} (${system._id})`);
-						return Promise.resolve();
-					})
-					.catch(err => {
-						erroredSystems += 1;
-						logger.error(`Error while syncing ${system.alias} (${system._id}): `, err);
-						return Promise.resolve();
-					});
-			}));
-		})
-		.then(res => {
-			logger.info(`Sync finished. Successful system syncs: ${successfulSystems}, Errors: ${erroredSystems}`);
-			return Promise.resolve();
+class Syncer {
+	constructor(app, system, stats={}) {
+		this.app = app;
+		this.system = system;
+		this.stats = Object.assign(stats, {
+			successful: 0,
+			failed: 0,
 		});
+	}
+
+	prefix() {
+		return `${this.system.alias}`;
+	}
+
+	sync() {
+		this.logInfo('Started syncing');
+		return this.steps()
+		.then(_ => {
+			this.stats.successful += 1;
+			this.logInfo('Finished syncing.');
+			return Promise.resolve(this.stats);
+		})
+		.catch(err => {
+			this.stats.failed += 1;
+			this.logError('Error while syncing', err);
+			return Promise.resolve(this.stats);
+		});
+	}
+
+	steps() {
+		return Promise.resolve();
+	}
+
+	logInfo(message, ...args) {
+		logger.info(`[${this.prefix()}] ${message}`, ...args);
+	}
+
+	logWarning(message, ...args) {
+		logger.warn(`[${this.prefix()}] ${message}`, ...args);
+	}
+
+	logError(message, ...args) {
+		logger.error(`[${this.prefix()}] ${message}`, ...args);
+	}
+}
+
+class SchoolSyncer extends Syncer {
+
+	constructor(app, system, stats, school) {
+		super(app, system, stats);
+		this.school = school;
+		this.stats = Object.assign(this.stats, {
+			name: this.school.name,
+			users: {
+				created: 0,
+				updated: 0,
+				errors: 0,
+			},
+		});
+	}
+
+	prefix() {
+		return `${super.prefix()} | ${this.school.name}`;
+	}
+
+	steps() {
+		return super.steps()
+			.then(_ => this.getUserData())
+			.then(_ => this.getClassData());
+	}
+
+	getUserData() {
+		this.logInfo('Getting users...');
+		return this.app.service('ldap').getUsers(this.system.ldapConfig, this.school)
+			.then(ldapUsers => {
+				return Promise.all(ldapUsers.map(idmUser =>
+					this.createOrUpdateUser(idmUser, this.school)
+				))
+				.then(res => {
+					this.logInfo(`Created ${this.stats.users.created} users, `
+								+ `updated ${this.stats.users.updated} users. `
+								+ `Skipped errors: ${this.stats.users.errors}.`);
+					return Promise.resolve(res);
+				});
+			});
+	}
+
+	getClassData() {
+		this.logInfo('Getting classes...');
+		return this.app.service('ldap').getClasses(this.system.ldapConfig, this.school)
+			.then(data => {
+				this.logInfo('Creating classes');
+				return createClassesFromLdapData(this.app, data, this.school);
+			});
+	}
+
+	createOrUpdateUser(idmUser) {
+		return this.app.service('users').find({ query: { ldapId: idmUser.ldapUUID } })
+			.then(users => {
+				if (users.total != 0) {
+					this.stats.users.updated += 1;
+					return checkForUserChangesAndUpdate(this.app, idmUser, users.data[0], this.school);
+				}
+				return createUserAndAccount(this.app, idmUser, this.school, this.system)
+					.then(res => {
+						this.stats.users.created += 1;
+						return res;
+					})
+					.catch(err=> {
+						this.stats.users.errors += 1;
+						this.logError('User creation error', err);
+						return {};
+					});
+			});
+	}
+}
+class LDAPSyncer extends Syncer {
+
+	constructor(app, system) {
+		super(app, system);
+		this.stats = Object.assign(this.stats, {
+			schools: {},
+		});
+	}
+
+	steps() {
+		return super.steps()
+			.then(() => this.getSchools())
+			.then((schools) => {
+				const jobs = schools.map(school => {
+					const syncer = new SchoolSyncer(this.app, this.system, this.getSchoolStats(school), school);
+					return syncer.sync();
+				});
+				return Promise.all(jobs);
+			});
+	}
+
+	getSchools() {
+		return this.app.service('ldap').getSchools(this.system.ldapConfig)
+			.then(data => {
+				return createSchoolsFromLdapData(this.app, data, this.system);
+			});
+	}
+
+	getSchoolStats(school) {
+		if (! this.stats.schools[school.ldapSchoolIdentifier]) {
+			this.stats.schools[school.ldapSchoolIdentifier] = {};
+		}
+		return this.stats.schools[school.ldapSchoolIdentifier];
+	}
+}
+
+const getSystems = (app, type) => {
+	return app.service('systems').find({ query: { type } })
+		.then(systems => {
+			logger.info(`Found ${systems.total} ${type} configurations.`);
+			return systems.data;
+		});
+};
+
+const syncFromLdap = function(app) {
+	logger.info('Syncing from LDAP');
+	return getSystems(app, 'ldap').then(ldapSystems => {
+		return Promise.all(ldapSystems.map(system => {
+			const syncer = new LDAPSyncer(app, system);
+			return syncer.sync();
+		}));
+	})
+	.then((stats) => {
+		const aggregated = stats.reduce((agg, cur) => {
+			agg.successful += cur.successful;
+			agg.failed += cur.failed;
+			return agg;
+		}, { successful: 0, failed: 0 });
+		logger.info(`Sync finished. Successful system syncs: ${aggregated.successful}, Errors: ${aggregated.failed}`);
+		return Promise.resolve(stats);
+	});
 };
 
 const getCurrentYearAndFederalState = function(app) {
@@ -116,33 +248,6 @@ const createUserAndAccount = function(app, idmUser, school, system) {
 				activated: true
 			});
 		});
-};
-
-const createUsersFromLdapData = function(app, data, school, system) {
-	logger.info(`[${school.name}] Getting users...`);
-	let usersCreated = 0, usersUpdated = 0, userErrors = 0;
-	return Promise.all(data.map(idmUser => {
-		return app.service('users').find({ query: { ldapId: idmUser.ldapUUID } })
-			.then(users => {
-				if (users.total != 0) {
-					usersUpdated += 1;
-					return checkForUserChangesAndUpdate(app, idmUser, users.data[0], school);
-				}
-				return createUserAndAccount(app, idmUser, school, system)
-					.then(res => {
-						usersCreated += 1;
-						return res;
-					})
-					.catch(err=> {
-						userErrors += 1;
-						logger.error(`[${school.name}] User creation error: `, err);
-						return {};
-					});
-			});
-	})).then(res => {
-		logger.info(`[${school.name}] Created ${usersCreated} users, updated ${usersUpdated} users. Skipped errors: ${userErrors}.`);
-		return Promise.resolve(res);
-	});
 };
 
 const checkForUserChangesAndUpdate = function(app, idmUser, user, school) {
