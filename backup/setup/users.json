@@ -45,9 +45,9 @@
 		"$oid": "0000d224816abba584714c9c"
 	},
 	"__v": 0,
-	"firstName": "Ida",
-	"lastName": "Renz",
-	"email" : "ida.renz@schul-cloud.org",
+	"firstName": "Marla",
+	"lastName": "Mathe",
+	"email" : "marla.mathe@schul-cloud.org",
 	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"birthday": { "$date": "2010-01-01T11:25:43.556Z" },
@@ -88,13 +88,13 @@
 	"schoolId" : {
 		"$oid": "0000d186816abba584714c5f"
 	},
-	"firstName" : "Maxim",
-	"lastName" : "Asjoma",
+	"firstName" : "Waldemar",
+	"lastName" : "Wunderlich",
 	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"birthday": { "$date": "1989-01-01T11:25:43.556Z" },
 	"preferences": {"firstLogin": true},
-	"email" : "maxim.asjoma@hpi.de",
+	"email" : "waldemar.wunderlich@schul-cloud.org",
 	"roles" : [
 		{
 			"$oid": "0000d186816abba584714c99"
