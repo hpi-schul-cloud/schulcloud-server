@@ -217,6 +217,20 @@ const permissionRoleCreate = async (hook) =>{
 	}
 };
 
+const securePatching = (hook) => {
+	let userService = hook.service;
+
+	return userService.get(hook.params.account.userId, {query: {$populate: 'roles'}})
+	.then(user => {
+		if (!(user.roles.filter(r => (r.name === 'superhero' || r.name === 'administrator')).length > 0)) {
+			delete hook.data.roles;
+			delete hook.data.schoolId;
+		}
+
+		return Promise.resolve(hook);
+	})
+};
+
 exports.before = function(app) {
 	return {
 		all: [],
@@ -240,12 +254,14 @@ exports.before = function(app) {
 		update: [
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
+			securePatching,
 			sanitizeData,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
 		patch: [
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
+			securePatching,
 			globalHooks.permitGroupOperation,
 			sanitizeData,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
