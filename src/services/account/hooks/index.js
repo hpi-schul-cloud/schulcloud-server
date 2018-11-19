@@ -81,12 +81,8 @@ const validatePassword = (hook) => {
 		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'ADMIN_VIEW'),
 		globalHooks.hasRoleNoHook(hook, hook.id, 'teacher', true),
 		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero')])
-		.then(results => {
-			// if manager has STUDENT_CREATE (=is teacher) and pw-patched user is student
-					// if manager has ADMIN_VIEW (=is admin) and pw-patched user is teacher or student
-							// if superhero
-									// if my accountid == pw-patched accountid (edit own account in user list...)
-			if ((results[0] && results[1]) || (results[2] && (results[1] || results[3])) || results[4]) {
+		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero]) => {
+			if ((hasStudentCreate && isStudent) || (hasAdminView && (isStudent || isTeacher)) || isSuperHero) {
 				return hook;
 			} else {
 				if (password && !password_verification)
