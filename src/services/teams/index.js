@@ -27,8 +27,7 @@ class Get {
 		//this.app = options.app;
 	}
 	/**
-	 * 
-	 * @param {*} params 
+	 * @param {} params 
 	 */
 	find(params) {
 		const teamsService = this.app.service('teams');
