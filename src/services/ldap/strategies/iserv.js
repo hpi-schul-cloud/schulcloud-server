@@ -83,7 +83,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @memberof iServLDAPStrategy
      */
     getClasses(school) {
-        return [];
+        return Promise.resolve([]);
     }
 
     /**
