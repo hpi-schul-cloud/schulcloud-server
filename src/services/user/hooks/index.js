@@ -251,13 +251,7 @@ exports.before = function(app) {
 			//permissionRoleCreate,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
-		update: [
-			auth.hooks.authenticate('jwt'),
-			globalHooks.hasPermission('USER_EDIT'),
-			securePatching,
-			sanitizeData,
-			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
-		],
+		update: [hooks.disable()],
 		patch: [
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
