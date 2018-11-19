@@ -6,12 +6,13 @@ const { teamsModel } = require('./model');
 const hooks = require('./hooks');
 const logger = require('winston');
 const userModel = require('../user/model').userModel;
+const {bsonIdToString} = require('./hooks/collection');
 //const {teamRolesToHook} = require('./hooks');
 //todo docs require 
 
 const getUpdatedSchoolIdArray = (team, user) => {
-	let schoolIds = team.schoolIds;
-	const userSchoolId = user.schoolId;
+	let schoolIds = bsonIdToString(team.schoolIds);
+	const userSchoolId = bsonIdToString(user.schoolId);
 
 	if (schoolIds.includes(userSchoolId) === false)
 		schoolIds.push(userSchoolId);
@@ -111,7 +112,7 @@ class Add {
 							// get expert school with "purpose": "expert"
 							await schoolsService.find({query: {purpose: "expert"}}).then(school => {
 								if(school.data.length <= 0 || school.data.length > 1) {
-									throw new errors.BadRequest('Experte: Keine oder mehr als 1 Schule gefunden.');
+									throw new errors.BadRequest('Experte: Keine oder mehr als 1 Schule gefunden. length='+school.data.length,school.data);
 								}
 								expertSchool = school.data[0];
 							}).catch(err => {
@@ -161,7 +162,7 @@ class Add {
 					}
 				}).catch(err => {
 					logger.warn(err);
-					reject(new errors.Conflict('Experte: User services not avaible.', err));
+					reject(new errors.Conflict('Experte: User services not avaible.'));
 				});
 			});
 
@@ -212,7 +213,7 @@ class Accept {
 	 */
 	get(id, params) {
 		const teamId = id;
-		const userId = ((params.account || {}).userId || {}).toString();
+		const userId = bsonIdToString((params.account || {}).userId);
 		const teamsService = this.app.service('teams');
 		const usersService = this.app.service('users');
 
@@ -237,8 +238,9 @@ class Accept {
 					}, []);
 
 					const schoolIds = getUpdatedSchoolIdArray(_team, _user);
+					const accept = {userId,teamId};
 
-					return teamsService.patch(teamId, { invitedUserIds, userIds, schoolIds }, params).catch(err => {
+					return teamsService.patch(teamId, { invitedUserIds, userIds, schoolIds, accept }, params).catch(err => {
 						throw new errors.Conflict('Can not patch team with changes.', err);
 					});
 				});
