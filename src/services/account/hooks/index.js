@@ -86,7 +86,7 @@ const validatePassword = (hook) => {
 					// if manager has ADMIN_VIEW (=is admin) and pw-patched user is teacher or student
 							// if superhero
 									// if my accountid == pw-patched accountid (edit own account in user list...)
-			if ((results[0] && results[1]) || (results[2] && (results[1] || results[3])) || results[4] || (hook.params.account._id || {}).toString() === hook.id) {
+			if ((results[0] && results[1]) || (results[2] && (results[1] || results[3])) || results[4]) {
 				return hook;
 			} else {
 				if (password && !password_verification)
@@ -155,7 +155,20 @@ const securePatching = (hook) => {
 					return Promise.reject(new errors.Forbidden('Die userId kann nicht geändert werden.'));
 			});
 	}
-	return Promise.resolve(hook);
+	return Promise.all([
+		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
+		globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
+		globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
+		globalHooks.hasRoleNoHook(hook, hook.id, 'student', true)
+	]).then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
+		if (hook.params.account._id != hook.id) {
+			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent)))
+			{
+				return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'))
+			}
+		}
+		return Promise.resolve(hook);
+	})
 };
 
 exports.before = {

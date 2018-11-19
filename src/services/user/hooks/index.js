@@ -218,15 +218,25 @@ const permissionRoleCreate = async (hook) =>{
 };
 
 const securePatching = (hook) => {
-	let userService = hook.service;
-
-	return userService.get(hook.params.account.userId, {query: {$populate: 'roles'}})
-	.then(user => {
-		if (!(user.roles.filter(r => (r.name === 'superhero' || r.name === 'administrator')).length > 0)) {
-			delete hook.data.roles;
+	return Promise.all([
+		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
+		globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
+		globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
+		globalHooks.hasRole(hook, hook.id, 'student')
+	])
+	.then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
+		if (!isSuperHero) {
 			delete hook.data.schoolId;
 		}
-
+		if (!(isSuperHero || isAdmin)) {
+			delete hook.data.roles;
+		}
+		if (hook.params.account.userId != hook.id) {
+			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent)))
+			{
+				return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'))
+			}
+		}
 		return Promise.resolve(hook);
 	})
 };
