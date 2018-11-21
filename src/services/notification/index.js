@@ -121,7 +121,7 @@ class DeviceService {
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/devices/' + id +'?token=' + userId,
+			uri: serviceUrls.notification + '/devices/' + userId + '/token/' + id,
 			method: 'DELETE',
 			json: true,
 			timeout: REQUEST_TIMEOUT
