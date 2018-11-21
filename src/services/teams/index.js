@@ -20,6 +20,16 @@ const getUpdatedSchoolIdArray = (team, user) => {
 	return schoolIds;
 };
 
+/**
+ * It is important to use the params information from original request and defined the request to local.
+ * @param {*} params 
+ */
+const mappedToLocal = (params)=>{
+	if (typeof (params.provider) != 'undefined') 
+		delete params.provider;
+	return params;
+};
+
 class Get {
 	constructor(options) {
 		this.options = options || {};
@@ -66,6 +76,7 @@ class Add {
 	 * @param {*} params 
 	 */
 	async patch(id, data, params) {
+		params = mappedToLocal(params);
 		const teamsService = this.app.service('teams');
 		const usersService = this.app.service('users');
 		const schoolsService = this.app.service('schools');
@@ -78,6 +89,7 @@ class Add {
 		let expertSchool = {};
 		let expertRole = {};
 		let linkParams = {};
+	
 		
 		const errorHandling = err => {
 			logger.warn(err);
@@ -225,6 +237,7 @@ class Accept {
 	 * @param {*} params 
 	 */
 	get(id, params) {
+		params = mappedToLocal(params);
 		const teamId = id;
 		const userId = bsonIdToString((params.account || {}).userId);
 		const teamsService = this.app.service('teams');
@@ -287,6 +300,7 @@ class Remove {
 	 * @param {*} params 
 	 */
 	patch(id, data, params) {
+		params = mappedToLocal(params);
 		const teamId = id;
 		const teamsService = this.app.service('teams');
 		const email = data.email;

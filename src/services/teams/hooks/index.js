@@ -414,7 +414,7 @@ const hasTeamPermission = (permsissions, _teamId) => {
                 }
             });
 
-            return hook;
+            return Promise.resolve(hook);
         }).catch(err => {
             logger.warn(err);
             throw new errors.Forbidden('You have not the permission to access this. (2)');
@@ -444,6 +444,10 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook=>{
             const sessionSchoolId = sessionUser.schoolId;
             const sessionUserId = bsonIdToString(hook.params.account.userId);
             let isLeaveTeam=false, isRemoveOthers=false, isAddingFromOwnSchool=false, isAddingFromOtherSchool=false, hasChangeRole=false;
+            const leaveTeam = hasTeamPermission('LEAVE_TEAM');
+            const removeMembers = hasTeamPermission('REMOVE_MEMBERS');
+            const addSchoolMembers = hasTeamPermission('ADD_SCHOOL_MEMBERS');
+            const changeTeamRoles = hasTeamPermission('CHANGE_TEAM_ROLES');
             
             changes.remove.forEach(_ =>{
                 if( isSameId(_.userId, sessionUserId) )
@@ -467,23 +471,48 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook=>{
                         hasChangeRole=true;
                 }  
             });
-
+            
+          //  try{
+            let wait=[Promise.resolve()];
             if(isAddingFromOtherSchool)
                 throw new errors.Forbidden('Can not adding users from other schools.');
 
-            if (isLeaveTeam)
-                (hasTeamPermission('LEAVE_TEAM'))(hook);
+            if (isLeaveTeam){
+                wait.push(leaveTeam(hook).catch(err=>{
+                    throw new errors.Forbidden('Permission LEAVE_TEAM is missing.');
+                }));
+            }    
+                
+            if (isLeaveTeam){
+                wait.push(leaveTeam(hook).catch(err=>{
+                    throw new errors.Forbidden('Permission LEAVE_TEAM is missing.');
+                }));
+            }
 
-            if(isRemoveOthers)
-                (hasTeamPermission('REMOVE_MEMBERS'))(hook);
+            if(isRemoveOthers){
+                wait.push(removeMembers(hook).catch(err=>{
+                    throw new errors.Forbidden('Permission REMOVE_MEMBERS is missing.');
+                }));
+            }
+                
+            if(isAddingFromOwnSchool){
+                wait.push(addSchoolMembers(hook).catch(err=>{
+                    throw new errors.Forbidden('Permission ADD_SCHOOL_MEMBERS is missing.');
+                }));
+            }
+
+            if(hasChangeRole){
+                wait.push(changeTeamRoles(hook).catch(err=>{
+                    throw new errors.Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
+                }));
+            }  
             
-            if(isAddingFromOwnSchool)
-                (hasTeamPermission('ADD_SCHOOL_MEMBERS'))(hook);
+            return Promise.all(wait).then(_=>{
+                return hook;
+            }).catch(err=>{
+                throw err;
+            });
 
-            if(hasChangeRole)
-                (hasTeamPermission('CHANGE_TEAM_ROLES'))(hook); 
-
-            return hook;
         }).catch(err => {
             logger.warn(err);
             throw new errors.Forbidden('You have not the permission to access this. (4)');
