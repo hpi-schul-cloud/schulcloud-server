@@ -497,43 +497,69 @@ exports.after = {
     remove: [filterToRelated(keys.resId, 'result')]
 };
 
-function createinfoText(hook) {
+function createinfoText(hook, user) {
     let text;
     const newRegistration = ((hook.result.linkData || {}).link || "").includes("/registration/");
-    if (newRegistration) {
-        text = `Hallo ${hook.data.email}!
-\nDu wurdest von ${hook.params.account.username} eingeladen, dem Team '${hook.additionalInfosTeam.team.name}' der ${process.env.SC_SHORT_TITLE} beizutreten.
-Da du noch keinen ${process.env.SC_SHORT_TITLE} Account besitzt, folge bitte diesem Link, um die Registrierung abzuschließen und dem Team beizutreten: ${hook.result.linkData.shortLink}
-\nViel Spaß und einen guten Start wünscht dir dein
-${process.env.SC_SHORT_TITLE}-Team`;
-    } else {
-        text = `Hallo ${hook.data.email}!
-\nDu wurdest von ${hook.params.account.username} eingeladen, dem Team '${hook.additionalInfosTeam.team.name}' der ${process.env.SC_SHORT_TITLE} beizutreten.
-Klicke auf diesen Link, um die Einladung anzunehmen: ${hook.result.linkData.shortLink}
-\nViel Spaß und gutes Gelingen wünscht dir dein
-${process.env.SC_SHORT_TITLE}-Team`;
+    const teamName = ((hook.additionalInfosTeam||{}).team||{}).name || "[Fehler: Teamname]";
+    const cloudTitle = process.env.SC_SHORT_TITLE;
+    const shortLink = (hook.result.linkData || {}).shortLink || "[Fehler: Link]";
+    let invitee = hook.data.email || hook.result.user.email || "[Fehler: Eingeladene]";
+    let inviter = (hook.params.account||{}).username || "[Fehler: Einlader]";
+
+    if ((hook.result.user||{}).firstName && (hook.result.user||{}).firstName !== "Experte") {
+        invitee = hook.result.user.firstName + " " + hook.result.user.lastName;
     }
+    if (user.firstName) {
+        inviter = user.firstName + " " + user.lastName;
+    }
+
+    if (newRegistration) {
+        // expert, new account
+        text = `Hallo ${invitee}!
+\nDu wurdest von ${inviter} eingeladen, dem Team '${teamName}' der ${cloudTitle} beizutreten.
+Da du noch keinen ${cloudTitle} Account besitzt, folge bitte diesem Link, um die Registrierung abzuschließen und dem Team beizutreten: ${shortLink}
+\nViel Spaß und einen guten Start wünscht dir dein
+${cloudTitle}-Team`;
+    } else if (hook.data.email) {
+        // teacher, no accept needed (n21)
+        text = `Hallo ${invitee}!
+\nDu wurdest von ${inviter} zu dem Team '${teamName}' der ${cloudTitle} hinzugefügt.
+Klicke auf diesen Link, um deine Teams aufzurufen: ${shortLink}
+\nViel Spaß und gutes Gelingen wünscht dir dein
+${cloudTitle}-Team`;
+    } else {
+        // teacher, accept needed (invite via email)
+        text = `Hallo ${invitee}!
+\nDu wurdest von ${inviter} eingeladen, dem Team '${teamName}' der ${cloudTitle} beizutreten.
+Klicke auf diesen Link, um die Einladung anzunehmen: ${shortLink}
+\nViel Spaß und gutes Gelingen wünscht dir dein
+${cloudTitle}-Team`;
+    }
+
     return text;
 }
 
 const sendInfo = hook => {
 
-    if (isUndefined(hook.data.email) || isUndefined((hook.result || {}).linkData)) {
+    if ((isUndefined(hook.data.email) && isUndefined(hook.result.user.email)) || isUndefined(hook.result.linkData)) {
         return hook;
     }
+    
+    const email = hook.data.email || (hook.result.user||{}).email;
 
-    const email = hook.data.email;
-    if (isDefined(email)) {
+    return getSessionUser(hook).then(user => {
         globalHooks.sendEmail(hook, {
             "subject": `${process.env.SC_SHORT_TITLE}: Team-Einladung`,
             "emails": [email],
             "content": {
-                "text": createinfoText(hook)
+                "text": createinfoText(hook, user)
             }
         });
-    }
-
-    return hook;
+        return hook;
+    }).catch(err => {
+        logger.warn("Errors on user detection", err);
+        throw new errors.NotAcceptable("Errors on user detection", err);
+    });
 };
 
 exports.beforeExtern = {

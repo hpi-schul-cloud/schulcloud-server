@@ -73,11 +73,11 @@ class Add {
 		const expertLinkService = this.app.service('/expertinvitelink');
 		const email = data.email;
 		const userId = data.userId;
-		let role = data.role;
 		const teamId = id;
-		let newUser = {};
+		let role = data.role;
 		let expertSchool = {};
 		let expertRole = {};
+		let linkParams = {};
 		
 		const errorHandling = err => {
 			logger.warn(err);
@@ -87,106 +87,119 @@ class Add {
 		if (['teamexpert', 'teamadministrator'].includes(role) === false) {
 			return errorHandling('Experte: Wrong role is set.');
 		}
+		
+		const generateLink = async (params) => {
+			try {
+				return await expertLinkService.create(params);
+			} catch (err) {
+				throw new errors.GeneralError("Experte: Fehler beim Erstellen des Einladelinks.", err);
+			}
+		};
+
+		const collectData = async () => {
+			// get expert school with "purpose": "expert" to get id
+			try {
+				const schoolData = await schoolsService.find({query: {purpose: "expert"}});
+
+				if (schoolData.data.length <= 0 || schoolData.data.length > 1) {
+					throw new errors.GeneralError('Experte: Keine oder mehr als 1 Schule gefunden.');
+				}
+
+				expertSchool = schoolData.data[0];
+			} catch (err) {
+				throw new errors.GeneralError("Experte: Fehler beim Abfragen der Schule.", err);				
+			}
+
+			// get expert role to get id
+			try {
+				const roleData = await rolesService.find({query: {name: "expert"}});
+
+				if (roleData.total != 1) {
+					throw new errors.GeneralError('Experte: Keine oder mehr als 1 Rolle gefunden.');
+				}
+
+				expertRole = roleData.data[0];
+			} catch (err) {
+				throw new errors.GeneralError("Experte: Fehler beim Abfragen der Rolle.", err);				
+			}			
+		};
+
+		const waitForUser = async () => {
+			let existingUser, dbUser;
+			try {
+				dbUser = await usersService.find({query: { email }});
+			
+			
+				if (dbUser.data !== undefined && dbUser.data.length > 0)
+					existingUser = dbUser.data[0];
+
+				// not existing user == must be teamexpert -> add user
+				if (existingUser === undefined && role === 'teamexpert') {
+					// create user with expert role
+					const newUser = await userModel.create({
+						email: email,
+						schoolId: expertSchool._id,
+						roles: [expertRole._id], // expert
+						firstName: "Experte",
+						lastName: "Experte"
+					});
+					// prepare data for link generation
+					return {esid: expertSchool._id, email: newUser.email};
+				} else if (role === 'teamexpert') {
+					// existing expert user
+					// prepare data for link generation
+					return {esid: expertSchool._id, teamId: teamId};
+				} else {
+					return {teamId: teamId};
+				}
+			} catch (err) {
+				throw new errors.GeneralError("Experte: Fehler beim Erstellen des Experten.", err);
+			}
+		};
 
 		if (email && role) {
-			
-			const waitForUser = new Promise((resolve, reject) => {
-				usersService.find({
-					query: { email }
-				}).then(async dbUser => {
-					let existingUser;
-					
-					if (dbUser.data !== undefined && dbUser.data.length > 0)
-						existingUser = dbUser.data[0];
-					
-					// get expert school with "purpose": "expert" to get id
-					await schoolsService.find({query: {purpose: "expert"}}).then(school => {
-						if(school.data.length <= 0 || school.data.length > 1) {
-							throw new errors.BadRequest('Experte: Keine oder mehr als 1 Schule gefunden.');
-						}
-						expertSchool = school.data[0];
-					}).catch(err => {
-						throw new errors.BadRequest("Experte: Fehler beim Abfragen der Schule.", err);
-					});
-					
-					// get expert role to get id
-					await rolesService.find({query: {name: "expert"}}).then(role => {
-						if(role.data.length <= 0 || role.data.length > 1) {
-							throw new errors.BadRequest('Experte: Keine oder mehr als 1 Rolle gefunden.');
-						}
-						expertRole = role.data[0];
-					}).catch(err => {
-						throw new errors.BadRequest("Experte: Fehler beim Abfragen der Rolle.", err);
-					});
-
-					//user do not exist and it must be an teamexpert, all others must have accounts before
-					if (existingUser === undefined && role === 'teamexpert') {
-						try {
-							// create user with expert role
-							await userModel.create({
-								email: email,
-								schoolId: expertSchool._id,
-								roles: [expertRole._id], // expert
-								firstName: "Experte",
-								lastName: "Experte"
-							}, (err, cUser) => {
-								if (err) {
-									throw new errors.BadRequest("Experte: Fehler beim Erstellen des Nutzers.", err);
-								} else {
-									if (cUser.email) {
-										newUser = cUser;
-									}
-								}
-							});
-							
-							// generate invite link
-							expertLinkService.create({esid: expertSchool._id, email: newUser.email}).then(linkData => {
-								resolve(linkData);
-							}).catch(err => {
-								throw new errors.BadRequest("Experte: Fehler beim Erstellen des Einladelinks.", err);
-							});
-						} catch (err) {
-							throw new errors.BadRequest("Experte: Fehler beim Generieren des Experten-Links.", err);
-						}
-					} else {
-						//user already exist
-						//patch team
-						// generate invite link
-						expertLinkService.create({esid: expertSchool._id, teamId: teamId}).then(linkData => {
-							resolve(linkData);
-						}).catch(err => {
-							throw new errors.BadRequest("Experte: Fehler beim Erstellen des Einladelinks.", err);
-						});
-					}
-				}).catch(err => {
-					logger.warn(err);
-					reject(new errors.Conflict('Experte: User services not avaible.'));
-				});
-			});
-
-			return waitForUser.then(data => {
-				return teamsService.get(teamId).then(_team => {
-					let invitedUserIds = _team.invitedUserIds;
+			// user invited via email
+			try {
+				await collectData();
+				const linkParams = await waitForUser();
+				const linkData = await generateLink(linkParams);
+				const team = await teamsService.get(teamId);
+				const user = await usersService.find({query:{"email":email}});
+				if (user.total===1) {
+					// user found = existing teacher, invited with mail
+					let invitedUserIds = team.invitedUserIds;
 					invitedUserIds.push({ email, role });
-					return teamsService.patch(teamId, { invitedUserIds }, params).then(_patchedTeam => {
-						return Promise.resolve({message:'Success!',linkData: data});
-					}).catch(errorHandling);
-				}).catch(errorHandling);
-			});
+					await teamsService.patch(teamId, { invitedUserIds }, params);
+					return {message:'Success!', linkData: linkData, user: user.data[0]};
+				} else if (user.total===0) {
+					// user not found = expert invited via mail
+					let invitedUserIds = team.invitedUserIds;
+					invitedUserIds.push({ email, role });
+					await teamsService.patch(teamId, { invitedUserIds }, params);
+					return {message:'Success!', linkData: linkData};
+				} else {
+					errorHandling("Experts: Error on retrieving users or more than 1 user found.");
+				}
+			} catch (err) {
+				errorHandling(err);
+			}
 		} else if (userId && role) {
-			return usersService.get(userId).then(_user => {
-				return teamsService.get(teamId).then(_team => {
-					let userIds = _team.userIds;
-					return hooks.teamRolesToHook(this).then(_self => {
-						role = _self.findRole('name', role, '_id');
-						userIds.push({ userId, role });
-						const schoolIds = getUpdatedSchoolIdArray(_team, _user);
-						return teamsService.patch(teamId, { userIds, schoolIds }, params).then(_patchedTeam => {
-							return Promise.resolve({message:'Success!',linkData: data})
-						}).catch(errorHandling);
-					}).catch(errorHandling);
-				}).catch(errorHandling);
-			}).catch(errorHandling);
+			// user invited via ldap selection
+			try {
+				linkParams = {teamId: teamId};
+				const linkData = await generateLink(linkParams);
+				const user = await usersService.get(userId);
+				const team = await teamsService.get(teamId);
+				let userIds = team.userIds;
+				const teamRoles = await hooks.teamRolesToHook(this);
+				role = await teamRoles.findRole('name', role, '_id');
+				userIds.push({ userId, role });
+				const schoolIds = getUpdatedSchoolIdArray(team, user);
+				await teamsService.patch(teamId, { userIds, schoolIds }, params);
+				return({message:'Success!',linkData: linkData, user: user});
+			} catch (err) {
+				errorHandling(err);
+			}
 		} else {
 			throw new errors.BadRequest('Missing input data.');
 		}
