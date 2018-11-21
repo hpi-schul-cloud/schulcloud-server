@@ -317,6 +317,24 @@ const directoryService = {
 	 * @param query contains the file path
 	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
 	 */
+	get(id) {
+		return FileModel.findById(id)
+			.then(directory => {
+				// TODO: Permission checken
+				// const permissionPromises = files.map(f => {
+				// 	return canRead(userId, f)
+				// 		.then(() => f)
+				// 		.catch(() => undefined);
+				// });
+				return directory;
+			});
+	},
+
+	/**
+	 * @returns {Promise}
+	 * @param query contains the file path
+	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
+	 */
 	find({ query, payload }) {
 		const { parent } = query;
 		const { userId } = payload;
