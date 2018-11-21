@@ -17,11 +17,6 @@ module.exports = function () {
 		lean: true
 	};
 	
-	const errorHandling = err => {
-		logger.warn(err);
-		return Promise.resolve('Success!');
-	};
-	
 	let linkService = service(options);
 	
 	function redirectToTarget(req, res, next) {
@@ -122,7 +117,10 @@ module.exports = function () {
 						patchUser: true
 					}).then(generatedHash => {
 						linkInfo.hash = generatedHash;
-					}).catch(errorHandling);
+					}).catch(err => {
+						logger.warn(err);
+						return Promise.resolve('Success!');
+					});
 				}
 				
 				// build final link and remove possible double-slashes in url except the protocol ones
@@ -133,7 +131,8 @@ module.exports = function () {
 					// team accept link for existing users
 					linkInfo.link = `${(data.host || process.env.HOST)}/teams/invitation/accept/${teamId}`.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
 				} else {
-					return errorHandling('Nicht alle Daten für den Experten-Link vorhanden.');
+					logger.warn("Nicht alle Daten für den Experten-Link vorhanden.");
+					return Promise.resolve('Success!');
 				}
 				
 				// generate short url
@@ -141,7 +140,10 @@ module.exports = function () {
 					linkInfo.shortLinkId = generatedShortLink._id;
 					// build final short link and remove possible double-slashes in url except the protocol ones
 					linkInfo.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
-				}).catch(errorHandling);
+				}).catch(err => {
+					logger.warn("Fehler beim Erstellen des Kurzlinks.");
+					return Promise.resolve('Success!');
+				});
 				
 				resolve(linkInfo);
 			});
