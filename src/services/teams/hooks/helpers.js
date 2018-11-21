@@ -100,7 +100,7 @@ const updateMissingDataInHookForCreate = (hook, sessionUser) => {
     const index = hook.data.userIds.indexOf(userId);
     const selectedRole = 'teamowner';
     const newUser = createUserWithRole(hook, { userId, selectedRole, schoolId });
-    if(index === -1 )
+    if (index === -1)
         hook.data.userIds.push(newUser);
     else
         hook.data.userIds[index] = newUser;
@@ -152,19 +152,19 @@ const isAcceptWay = (hook, teamId, oldTeam, users) => {
             //todo add addingUser role ==== 'expert' test
             if (isUndefined([addingUser, addingTeamUser], 'OR'))
                 return false;
-/*
-            let bool = false;
-            oldTeam.invitedUserIds.map(inv => {
-                if (['teamexpert', 'teamadministrator'].includes(inv.role) &&
-                    addingUser.email === inv.email &&
-                    inv.role === hook.findRole('_id', addingTeamUser.role, 'name')) {
-                    bool = true;
-                }
-            });
-            return bool; */
-            return oldTeam.invitedUserIds.some(invited=>{
+            /*
+                        let bool = false;
+                        oldTeam.invitedUserIds.map(inv => {
+                            if (['teamexpert', 'teamadministrator'].includes(inv.role) &&
+                                addingUser.email === inv.email &&
+                                inv.role === hook.findRole('_id', addingTeamUser.role, 'name')) {
+                                bool = true;
+                            }
+                        });
+                        return bool; */
+            return oldTeam.invitedUserIds.some(invited => {
                 const emailIsSame = addingUser.email === invited.email;
-                const validRole =  ['teamexpert', 'teamadministrator'].includes(invited.role);
+                const validRole = ['teamexpert', 'teamadministrator'].includes(invited.role);
                 const roleOfInvited = invited.role === hook.findRole('_id', addingTeamUser.role, 'name');
                 return emailIsSame && validRole && roleOfInvited;
             });
@@ -236,7 +236,7 @@ const getTeam = (hook) => {
 *   @param {Object::{userId,schoolId, [selectedRole]}}
 */
 const createUserWithRole = (hook, { userId, schoolId, selectedRole }) => {
-    if(isUndefined(hook.findRole))
+    if (isUndefined(hook.findRole))
         throw new errors.NotAcceptable('Please execute teamRolesToHook before.');
 
     let role;
@@ -248,7 +248,7 @@ const createUserWithRole = (hook, { userId, schoolId, selectedRole }) => {
     if (isUndefined([role, userId, schoolId], 'OR'))
         throw new errors.BadRequest('Wrong input. (2)');
 
-    return { userId, role:bsonIdToString(role), schoolId }; //role:bsonIdToString(role) is only for faster reading in debug
+    return { userId, role: bsonIdToString(role), schoolId }; //role:bsonIdToString(role) is only for faster reading in debug
 };
 
 /**
@@ -265,23 +265,21 @@ const createUserWithRole = (hook, { userId, schoolId, selectedRole }) => {
  * @return {Array::*} 
  */
 const arrayDiff = (oldArray, newArray, key) => {
-    if (!isArrayWithElement(oldArray) || !isArrayWithElement(newArray)) {
-        throw new errors.NotAcceptable('Wrong input expect arrays oldArray', { oldArray, newArray });
-    }
+    if (!isArrayWithElement(oldArray) || !isArrayWithElement(newArray))
+        throw new errors.NotAcceptable('Wrong input expect arrays.', { oldArray, newArray });
+
+    let a1BsonId = false;
+    if (isDefined(key) && isObjectIdWithTryToCast(oldArray[0][key]))
+        a1BsonId = true;
+
+    let a2BsonId = false;
+    if (isDefined(key) && isObjectIdWithTryToCast(newArray[0][key]))
+        a2BsonId = true;
 
     const diff = (a1, a2) => {
-        if (key === undefined)
-            return a1.filter(x => !a2.includes(x));
-        else
-            return a1.reduce((stack, element) => {
-                const v1 = element[key];
-                for (let i = 0; i < a2.length; i++) {
-                    if (v1 === a2[i][key])
-                        return stack;            //if found return without adding
-                }
-                stack.push(element);              //if not found add element from a1
-                return stack;
-            }, []);
+        if (isDefined(key))
+            a2 = a2.map(e => a2BsonId ? bsonIdToString(e[key]) : e[key]);
+        return a1.filter(x => !a2.includes(a1BsonId ? bsonIdToString(x[key]) : x[key] || x));
     };
 
     return diff(oldArray, newArray);
@@ -313,11 +311,11 @@ const mappedInputUserIdsToTeamUsers = (hook, teamUsers, oldTeam, sessionSchoolId
     if (!isArray(teamUsers))
         throw new errors.BadRequest('param teamUsers must be an array', teamUsers);
 
-    const getFirstUserByRoleId = (teamUserArray,roleId)=>{
+    const getFirstUserByRoleId = (teamUserArray, roleId) => {
         return teamUserArray.find(_user => isSameId(_user.role, roleId));
     };
     const teamownerRoleId = hook.findRole('name', 'teamowner', '_id');
-    const teamowner = hook.method==='create' ? getFirstUserByRoleId(teamUsers,teamownerRoleId) :  getFirstUserByRoleId(oldTeam.userIds,teamownerRoleId);
+    const teamowner = hook.method === 'create' ? getFirstUserByRoleId(teamUsers, teamownerRoleId) : getFirstUserByRoleId(oldTeam.userIds, teamownerRoleId);
 
     if (isUndefined(teamowner))       //by create no old team exist
         throw new errors.NotAcceptable('No teamowner found for this team.');
@@ -375,7 +373,7 @@ const removeTeamUsers = (teamUsers, userIds) => {
         return list;
     }, []);
     */
-   return teamUsers.filter(user => !userIds.includes(user.userId));
+    return teamUsers.filter(user => !userIds.includes(user.userId));
 };
 
 /**
@@ -447,7 +445,7 @@ const getTeamUsers = (hook, team, users, sessionSchoolId) => {
         return [];
 
     teamUsers = mappedInputUserIdsToTeamUsers(hook, teamUsers, team, sessionSchoolId),
-    teamUsers = teamOwnerRoleExist(hook, teamUsers, team, users);
+        teamUsers = teamOwnerRoleExist(hook, teamUsers, team, users);
     teamUsers = removeDuplicatedTeamUsers(teamUsers);
     teamUsers = removeNotValidUsersBySchoolIds(team.schoolIds, teamUsers, users);
 
