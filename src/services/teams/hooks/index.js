@@ -428,7 +428,6 @@ exports.hasTeamPermission = hasTeamPermission;    //to use it global
  * @hook
  */
 const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook=>{
-    return (hook) => {
         const d = hook.data;
         if (isUndefined(d))
             return hook;
@@ -489,7 +488,6 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook=>{
             logger.warn(err);
             throw new errors.Forbidden('You have not the permission to access this. (4)');
         });
-    };
 });
 
 const keys = {
