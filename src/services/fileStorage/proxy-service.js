@@ -39,7 +39,7 @@ const fileStorageService = {
 
 	/**
 	 * @param data, file data
-	 * @param params, 
+	 * @param params,
 	 * @returns {Promise}
 	 */
 	async create(data, params) {
@@ -208,7 +208,7 @@ const signedUrlService = {
 					header: header
 				};
 			})
-			.catch(() => new errors.Forbidden());	
+			.catch(() => new errors.Forbidden());
 	},
 
 	async find({ query, payload }) {
@@ -249,7 +249,7 @@ const signedUrlService = {
 				url: res,
 			}))
 			.catch(() => new errors.Forbidden());
-	}	
+	}
 };
 
 const directoryService = {
@@ -310,24 +310,6 @@ const directoryService = {
 		}
 
 		return FileModel.findOne(props).exec().then(data => data ? Promise.resolve(data) : FileModel.create(props));
-	},
-
-	/**
-	 * @returns {Promise}
-	 * @param query contains the file path
-	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
-	 */
-	get(id) {
-		return FileModel.findById(id)
-			.then(directory => {
-				// TODO: Permission checken
-				// const permissionPromises = files.map(f => {
-				// 	return canRead(userId, f)
-				// 		.then(() => f)
-				// 		.catch(() => undefined);
-				// });
-				return directory;
-			});
 	},
 
 	/**
