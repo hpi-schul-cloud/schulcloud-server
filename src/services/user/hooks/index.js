@@ -227,11 +227,11 @@ const securePatching = (hook) => {
 	.then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
 		if (!isSuperHero) {
 			delete hook.data.schoolId;
-			delete hook.data.$push.schoolId;
+			delete (hook.data.$push || {}).schoolId;
 		}
 		if (!(isSuperHero || isAdmin)) {
 			delete hook.data.roles;
-			delete hook.data.$push.roles;
+			delete (hook.data.$push || {}).roles;
 		}
 		if (hook.params.account.userId != hook.id) {
 			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent)))
