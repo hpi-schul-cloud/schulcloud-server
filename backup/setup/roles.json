@@ -398,7 +398,8 @@
 			"INVITE_EXPERTS",
 			"INVITE_ADMINISTRATORS",
 			"REMOVE_MEMBERS",
-			"RENAME_TEAM"
+			"RENAME_TEAM",
+			"DEFAULT_FILE_PERMISSIONS"
 		],
 		"__v": 0
 	},
@@ -419,8 +420,7 @@
 			}
 		],
 		"permissions": [
-			"DELETE_TEAM",
-			"DEFAULT_FILE_PERMISSIONS"
+			"DELETE_TEAM"
 		],
 		"__v": 0
 	}
