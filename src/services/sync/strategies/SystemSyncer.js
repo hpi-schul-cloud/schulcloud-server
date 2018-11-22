@@ -8,9 +8,15 @@ const Syncer = require('./Syncer');
  */
 class SystemSyncer extends Syncer {
 
-	constructor(app, system) {
-		super(app);
+	constructor(app, stats, system) {
+		super(app, stats);
 		this.system = system;
+	}
+
+	static getSystems(app, type) {
+		return app.service('systems').find({
+			query: { type }
+		}).then(systems => systems.data);
 	}
 
 	prefix() {

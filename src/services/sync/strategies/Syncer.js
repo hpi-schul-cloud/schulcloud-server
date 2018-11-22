@@ -12,6 +12,29 @@ class Syncer {
 	}
 
 	/**
+	 * Defines to which requests this Syncer will answer
+	 * @abstract
+	 * @static
+	 * @param {String} target the sync target requested by the caller
+	 * @returns {Boolean} true if the syncer accepts the target, false otherwise
+	 */
+	static respondsTo(target) {
+		throw new TypeError('Method has to be implemented.');
+	}
+
+	/**
+	 * Defines how query params are mapped to constructor params
+	 * @abstract
+	 * @static
+	 * @param {Object} params query params object
+	 * @returns {iterableObj} iterable object to be spread as constructor
+	 * arguments or falsy value if the parameters are not valid
+	 */
+	static params(params) {
+		throw new TypeError('Method has to be implemented.');
+	}
+
+	/**
 	 * Defines a set of steps to be executed by this syncer
 	 * @returns {Promise} Promise that resolves after all steps have completed
 	 * or rejects if an error occurred
@@ -46,6 +69,28 @@ class Syncer {
 	 */
 	prefix() {
 		return this.constructor.name;
+	}
+
+	/**
+	 * Aggregates stats of a collection of (nested) sync calls
+	 * @static
+	 * @param {Object | Array} stats stats object or array of stats objects
+	 * @returns stats object {successful, failed} summing up all input stats
+	 */
+	static aggregateStats(stats) {
+		if (Array.isArray(stats)) {
+			return stats.reduce((agg, cur) => {
+				cur = this.aggregateStats(cur);
+				if (cur.successful) {
+					agg.successful += 1;
+				} else {
+					agg.failed += 1;
+				}
+				return agg;
+			}, { successful: 0, failed: 0 });
+		} else {
+			return stats;
+		}
 	}
 
 	logInfo(message, ...args) {

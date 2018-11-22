@@ -3,17 +3,25 @@ const SystemSyncer = require('./SystemSyncer');
 const LDAPSchoolSyncer = require('./LDAPSchoolSyncer');
 
 /**
- * Implements syncing from LDAP servers based on the Syncer interface
+ * Implements syncing from LDAP servers based on the Syncer interface for a
+ * given system / LDAP Config
  * @class LDAPSyncer
  * @implements {Syncer}
  */
 class LDAPSyncer extends SystemSyncer {
 
-	constructor(app, system) {
-		super(app, system);
+	constructor(app, stats, system) {
+		super(app, stats, system);
 		this.stats = Object.assign(this.stats, {
 			schools: {},
 		});
+	}
+
+	/**
+	 * @see {Syncer#respondsTo}
+	 */
+	static respondsTo(target) {
+		return target === 'ldap';
 	}
 
 	/**
@@ -24,7 +32,7 @@ class LDAPSyncer extends SystemSyncer {
 			.then(() => this.getSchools())
 			.then((schools) => {
 				const jobs = schools.map(school => {
-					const syncer = new LDAPSchoolSyncer(this.app, this.system, this.getSchoolStats(school), school);
+					const syncer = new LDAPSchoolSyncer(this.app, this.getSchoolStats(school), this.system, school);
 					return syncer.sync();
 				});
 				return Promise.all(jobs);

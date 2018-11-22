@@ -1,17 +1,17 @@
 const errors = require('feathers-errors');
 
 const accountModel = require('../../account/model');
-const Syncer = require('./Syncer');
+const SystemSyncer = require('./SystemSyncer');
 
 /**
  * Implements syncing schools from LDAP servers based on the Syncer interface
  * @class LDAPSyncer
  * @implements {Syncer}
  */
-class LDAPSchoolSyncer extends Syncer {
+class LDAPSchoolSyncer extends SystemSyncer {
 
-	constructor(app, system, stats, school) {
-		super(app, system, stats);
+	constructor(app, stats, system, school) {
+		super(app, stats, system);
 		this.school = school;
 		this.stats = Object.assign(this.stats, {
 			name: this.school.name,
