@@ -1,17 +1,17 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const topicTemplates = require('./model');
+const topicInstances = require('./model');
 const hooks = require('./hooks');
 
 module.exports = function() {
 	const app = this;
 
-	/* year Service */
+	/* topicInstances Service */
 	app.use(
-		'/topicTemplates',
+		'/topicInstances',
 		service({
-			Model: topicTemplates,
+			Model: topicInstances,
 			paginate: {
 				default: 500,
 				max: 5000
@@ -20,7 +20,7 @@ module.exports = function() {
 		})
 	);
 
-	const topicTemplateService = app.service('/topicTemplates');
-	topicTemplateService.before(hooks.before);
-	topicTemplateService.after(hooks.after);
+	const topicInstancesService = app.service('/topicInstances');
+	topicInstancesService.before(hooks.before);
+	topicInstancesService.after(hooks.after);
 };
