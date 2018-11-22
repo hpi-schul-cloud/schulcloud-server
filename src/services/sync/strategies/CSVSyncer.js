@@ -9,8 +9,8 @@ const Syncer = require('./Syncer');
  */
 class CSVSyncer extends Syncer {
 
-	constructor(app, system, school, roles, csvData) {
-		super(app, system);
+	constructor(app, school, roles, csvData) {
+		super(app);
 		this.school = school;
 		this.roles = roles;
 		this.csvData = csvData;
@@ -32,7 +32,7 @@ class CSVSyncer extends Syncer {
 			delimiter: ','
 		});
 		if (Object.keys(records[0]).length <= 1) {
-			this.logError('Parsing failed: Too few columns in inpu data.');
+			this.logError('Parsing failed: Too few columns in input data.');
 			throw new Error('CSVSyncer: parsing failed');
 		}
 		return Promise.resolve(records);

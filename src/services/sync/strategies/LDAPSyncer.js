@@ -1,5 +1,5 @@
 const errors = require('feathers-errors');
-const Syncer = require('./Syncer');
+const SystemSyncer = require('./SystemSyncer');
 const LDAPSchoolSyncer = require('./LDAPSchoolSyncer');
 
 /**
@@ -7,7 +7,7 @@ const LDAPSchoolSyncer = require('./LDAPSchoolSyncer');
  * @class LDAPSyncer
  * @implements {Syncer}
  */
-class LDAPSyncer extends Syncer {
+class LDAPSyncer extends SystemSyncer {
 
 	constructor(app, system) {
 		super(app, system);
