@@ -38,14 +38,11 @@ const populateUser = (app, data) => {
 			}
 			oldUser=users.data[0];
 			
-			// overwrite registration data with DB data if already existing and if not expert
-			if (!(user.roles||{}).includes("expert")) {
-				Object.keys(oldUser).forEach(key => {
-					if( oldUser[key] !== null ){
-						user[key]=oldUser[key];
-					}
-				});
-			}
+			Object.keys(oldUser).forEach(key => {
+				if(oldUser[key] !== null && key !== "firstName" && key !== "lastName") {
+					user[key]=oldUser[key];
+				}
+			});
 			
 			user.roles = user.roles.map(role => {
 				return typeof role==='object' ? role.name : role;

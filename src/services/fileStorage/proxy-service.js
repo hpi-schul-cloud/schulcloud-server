@@ -39,7 +39,7 @@ const fileStorageService = {
 
 	/**
 	 * @param data, file data
-	 * @param params, 
+	 * @param params,
 	 * @returns {Promise}
 	 */
 	async create(data, params) {
@@ -208,7 +208,7 @@ const signedUrlService = {
 					header: header
 				};
 			})
-			.catch(() => new errors.Forbidden());	
+			.catch(() => new errors.Forbidden());
 	},
 
 	async find({ query, payload }) {
@@ -249,7 +249,7 @@ const signedUrlService = {
 				url: res,
 			}))
 			.catch(() => new errors.Forbidden());
-	}	
+	}
 };
 
 const directoryService = {
