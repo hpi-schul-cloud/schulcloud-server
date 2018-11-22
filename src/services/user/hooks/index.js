@@ -267,7 +267,7 @@ exports.before = function(app) {
 		patch: [
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
-			securePatching,
+			globalHooks.ifNotLocal(securePatching),
 			globalHooks.permitGroupOperation,
 			sanitizeData,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
