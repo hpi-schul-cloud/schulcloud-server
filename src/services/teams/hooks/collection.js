@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
+const errors = require('feathers-errors');
 const Schema = mongoose.Schema;
+
 /**
  * @collection
  */
