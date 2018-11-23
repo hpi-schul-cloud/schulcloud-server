@@ -65,8 +65,8 @@ const teamMainHook = globalHooks.ifNotLocal(hook => {
             // test if session user is in team 
             const isAccept = isAcceptWay(hook, team._id, team, users);
             if(!isAccept){
-                const userExist = team.userIds.some(_user => isSameId(_user.userId, userId));
-                const schoolExist = team.schoolIds.includes(sessionSchoolId);       
+                const userExist = team.userIds.some(_user => isSameId(_user.userId, userId)); 
+                const schoolExist = (bsonIdToString(team.schoolIds)).includes(sessionSchoolId);       
     
                 if (!userExist || !schoolExist)
                     throw new errors.Forbidden('You have not the permission to access this. (1)', { userExist, schoolExist });
