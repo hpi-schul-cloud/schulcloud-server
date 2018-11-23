@@ -436,7 +436,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook=>{
         if (isDefined([d.times, d.color, d.description, d.name, d.startDate, d.untilDate], 'OR'))
             (hasTeamPermission('RENAME_TEAM'))(hook);
 
-        if (isUndefined(hook.data.userIds))
+        if (isUndefined(d.userIds))
             return hook;
 
         return Promise.all([getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook)]).then(([sessionUser, team, users]) => {
