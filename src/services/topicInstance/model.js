@@ -21,8 +21,8 @@ const topicInstanceSchema = new Schema(
 		numberOfWeeks: { type: String, required: true },
 		unitsPerWeek: { type: String, required: true },
 		content: { type: String },
-		lectureUnits: [{ name: String }], // These could be lessons/worksheets/editor instances later on
-		examinations: [{ time: String, type: String, text: String }],
+		lectureUnits: [{ type: String }], // These could be lessons/worksheets/editor instances later on
+		examinations: [{ time: String, examinationType: String, text: String }],
 		material: [{ type: Schema.Types.ObjectId, ref: 'file' }]
 	},
 	{

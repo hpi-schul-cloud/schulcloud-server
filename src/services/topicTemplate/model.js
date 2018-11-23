@@ -16,8 +16,8 @@ const topicTemplateSchema = new Schema(
 		numberOfWeeks: { type: String, required: true },
 		unitsPerWeek: { type: String, required: true },
 		content: { type: String },
-		lectureUnits: [{ name: String }],
-		examinations: [{ time: String, type: String, text: String }],
+		lectureUnits: [{ type: String }],
+		examinations: [{ time: String, examinationType: String, text: String }],
 		material: [{ type: Schema.Types.ObjectId, ref: 'file' }]
 	},
 	{
