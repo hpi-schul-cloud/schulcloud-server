@@ -17,13 +17,35 @@ class CSVSyncer extends Syncer {
 	}
 
 	/**
+	 * @see {Syncer#respondsTo}
+	 */
+	static respondsTo(target) {
+		return target === 'csv';
+	}
+
+	/**
+	 * @see {Syncer#params}
+	 */
+	static params(params, data) {
+		if (params && params.school && params.roles && data) {
+			return [
+				params.school,
+				params.roles,
+				data
+			];
+		}
+		return false;
+	}
+
+	/**
 	 * @see {Syncer#steps}
 	 */
 	steps() {
 		return super.steps()
 			.then(() => this.parseCsvData())
 			.then(records => this.createUserRegistrationLinks(records))
-			.then(linkData => this.createUsers(linkData));
+			.then(linkData => this.createUsers(linkData))
+			.then(_ => this.stats);
 	}
 
 	parseCsvData() {
