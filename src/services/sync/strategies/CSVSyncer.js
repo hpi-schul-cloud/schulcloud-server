@@ -9,11 +9,17 @@ const Syncer = require('./Syncer');
  */
 class CSVSyncer extends Syncer {
 
-	constructor(app, school, roles, csvData) {
-		super(app);
+	constructor(app, stats, school, roles, csvData) {
+		super(app, stats);
 		this.school = school;
 		this.roles = roles;
 		this.csvData = csvData;
+		Object.assign(this.stats, {
+			users: {
+				successful: 0,
+				failed: 0,
+			},
+		});
 	}
 
 	/**
@@ -43,9 +49,9 @@ class CSVSyncer extends Syncer {
 	steps() {
 		return super.steps()
 			.then(() => this.parseCsvData())
-			.then(records => this.createUserRegistrationLinks(records))
-			.then(linkData => this.createUsers(linkData))
-			.then(_ => this.stats);
+			.then(records => this.enrichUserData(records))
+			.then(users => this.createUsers(users))
+			.then(() => this.stats);
 	}
 
 	parseCsvData() {
@@ -60,7 +66,7 @@ class CSVSyncer extends Syncer {
 		return Promise.resolve(records);
 	}
 
-	createUserRegistrationLinks(records) {
+	enrichUserData(records) {
 		const groupData = {
 			schoolId: this.school._id,
 			roles: this.roles,
@@ -78,10 +84,25 @@ class CSVSyncer extends Syncer {
 	}
 
 	generateRegistrationLink(params) {
-		return this.app.service('registrationLink').create(params);
+		return this.app.service('registrationlink').create(params);
 	}
 
-	createUsers(linkData) {
+	createUsers(enrichedUserData) {
+		const jobs = enrichedUserData.map(async data => {
+			let user = data.user;
+			user.importHash = data.linkData.hash;
+			user.shortLink = data.linkData.shortLink;
+			const success = await this.createUser(user);
+			if (success) {
+				this.stats.users.successful += 1;
+			} else {
+				this.stats.users.failed += 1;
+			}
+		});
+		return Promise.all(jobs);
+	}
+
+	createUser() {
 		return Promise.resolve();
 	}
 }
