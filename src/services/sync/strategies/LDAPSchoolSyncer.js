@@ -36,7 +36,8 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	steps() {
 		return super.steps()
 			.then(_ => this.getUserData())
-			.then(_ => this.getClassData());
+			.then(_ => this.getClassData())
+			.then(_ => this.stats);
 	}
 
 	getUserData() {

@@ -11,6 +11,9 @@ class LDAPSystemSyncer extends Syncer {
 
 	constructor(app, stats) {
 		super(app, stats);
+		Object.assign(this.stats, {
+			systems: {},
+		});
 	}
 
 	/**
@@ -32,7 +35,8 @@ class LDAPSystemSyncer extends Syncer {
 			.then(() => this.getSystems())
 			.then(systems => {
 				return Promise.all(systems.map(system => {
-					return new LDAPSyncer(this.app, {}, system).sync();
+					this.stats.systems[system.alias] = {};
+					return new LDAPSyncer(this.app, this.stats.systems[system.alias], system).sync();
 				}));
 			});
 	}

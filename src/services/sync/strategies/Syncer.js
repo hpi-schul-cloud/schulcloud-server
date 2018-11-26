@@ -7,7 +7,7 @@ class Syncer {
 	constructor(app, stats={}) {
 		this.app = app;
 		this.stats = Object.assign(stats, {
-			successful: undefined,
+			success: undefined,
 		});
 	}
 
@@ -51,13 +51,14 @@ class Syncer {
 	sync() {
 		this.logInfo('Started syncing');
 		return this.steps()
-		.then(_ => {
-			this.stats.successful = true;
-			this.logInfo('Finished syncing.');
+		.then(stats => {
+			this.stats.success = true;
+			const aggregated = Syncer.aggregateStats(stats);
+			this.logInfo('Finished syncing', aggregated);
 			return Promise.resolve(this.stats);
 		})
 		.catch(err => {
-			this.stats.successful = false;
+			this.stats.success = false;
 			this.logError('Error while syncing', err);
 			return Promise.resolve(this.stats);
 		});
@@ -81,15 +82,15 @@ class Syncer {
 		if (Array.isArray(stats)) {
 			return stats.reduce((agg, cur) => {
 				cur = this.aggregateStats(cur);
-				if (cur.successful) {
-					agg.successful += 1;
-				} else {
-					agg.failed += 1;
-				}
+				agg.successful += cur.successful;
+				agg.failed += cur.failed;
 				return agg;
 			}, { successful: 0, failed: 0 });
 		} else {
-			return stats;
+			return {
+				successful: stats && stats.success ? 1 : 0,
+				failed: stats && stats.success ? 0 : 1,
+			};
 		}
 	}
 
