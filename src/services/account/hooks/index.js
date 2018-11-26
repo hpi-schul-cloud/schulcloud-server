@@ -140,7 +140,7 @@ const checkExistence = (hook) => {
 		});
 };
 
-const securePatching = (hook) => {
+const protectUserId = (hook) => {
 	const accountService = hook.service;
 	if (hook.data.userId) {
 		return accountService.get(hook.id)
@@ -151,6 +151,9 @@ const securePatching = (hook) => {
 					return Promise.reject(new errors.Forbidden('Die userId kann nicht geändert werden.'));
 			});
 	}
+}
+
+const securePatching = (hook) => {	
 	return Promise.all([
 		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
 		globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
@@ -181,7 +184,8 @@ exports.before = {
 	],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
-			securePatching,
+			globalHooks.ifNotLocal(securePatching),
+			protectUserId,
 			globalHooks.permitGroupOperation,
 			trimPassword,
 			validatePassword,
