@@ -27,10 +27,11 @@ class Syncer {
 	 * @abstract
 	 * @static
 	 * @param {Object} params query params object
+	 * @param {Object} data optional data object for POST/CREATE requests
 	 * @returns {iterableObj} iterable object to be spread as constructor
 	 * arguments or falsy value if the parameters are not valid
 	 */
-	static params(params) {
+	static params(params, data) {
 		throw new TypeError('Method has to be implemented.');
 	}
 

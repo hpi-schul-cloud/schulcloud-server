@@ -18,13 +18,6 @@ class LDAPSyncer extends SystemSyncer {
 	}
 
 	/**
-	 * @see {Syncer#respondsTo}
-	 */
-	static respondsTo(target) {
-		return target === 'ldap';
-	}
-
-	/**
 	 * @see {Syncer#steps}
 	 */
 	steps() {

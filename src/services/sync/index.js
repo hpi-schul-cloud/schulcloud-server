@@ -15,11 +15,19 @@ module.exports = function () {
 		constructor() {}
 
 		find(params) {
+			return this.respond(null, params);
+		}
+
+		create(data, params) {
+			return this.respond(data, params);
+		}
+
+		respond(data, params) {
 			const target = params.query.target;
 			const instances = [];
 			syncers.forEach(syncer => {
 				if (syncer.respondsTo(target)) {
-					const args = syncer.params(params.query);
+					const args = syncer.params(params.query, data);
 					if (args) {
 						instances.push(new syncer(app, {}, ...args));
 					} else {
