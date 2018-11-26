@@ -22,7 +22,7 @@ module.exports = function () {
 			return this.respond(data, params);
 		}
 
-		respond(data, params) {
+		async respond(data, params) {
 			const target = params.query.target;
 			const instances = [];
 			syncers.forEach(syncer => {
@@ -38,12 +38,10 @@ module.exports = function () {
 			if (instances.length === 0) {
 				throw new Error(`No syncer responds to target "${target}"`);
 			} else {
-				return Promise.all(instances.map(instance => instance.sync()))
-				.then((stats) => {
-					const aggregated = Syncer.aggregateStats(stats);
-					logger.info(`Sync finished. Successful: ${aggregated.successful}, Errors: ${aggregated.failed}`);
-					return Promise.resolve(stats);
-				});
+				const stats = await Promise.all(instances.map(instance => instance.sync()));
+				const aggregated = Syncer.aggregateStats(stats);
+				logger.info(`Sync finished. Successful: ${aggregated.successful}, Errors: ${aggregated.failed}`);
+				return Promise.resolve(stats);
 			}
 		}
 	}
