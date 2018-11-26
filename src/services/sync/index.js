@@ -31,7 +31,7 @@ module.exports = function () {
 					if (args) {
 						instances.push(new syncer(app, {}, ...args));
 					} else {
-						throw new Error(`Invalid params for ${syncer.constructor.name}: "${JSON.stringify(params)}"`);
+						throw new Error(`Invalid params for ${syncer.name}: "${JSON.stringify(params)}"`);
 					}
 				}
 			});
