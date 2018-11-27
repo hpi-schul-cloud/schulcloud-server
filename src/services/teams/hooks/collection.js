@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const errors = require('feathers-errors');
 const Schema = mongoose.Schema;
-const errors = require('feathers-errors');
 
 /**
  * If Array use it.

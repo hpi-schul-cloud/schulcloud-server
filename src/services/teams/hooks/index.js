@@ -219,7 +219,7 @@ const blockedMethod = (hook) => {
  */
 const filterToRelated = (keys, path, objectToFilter) => {
     if (!Array.isArray(keys))
-        throw new errors.NotAcceptable('Please use an array for keys.');
+        keys=[keys];
 
     return globalHooks.ifNotLocal(hook => {
         const filter = (data) => {
@@ -691,7 +691,7 @@ exports.beforeAdmin = {
     get: [blockedMethod],
     create: [blockedMethod],
     update: [blockedMethod],
-    patch: [],  
+    patch: [ filterToRelated('userId', 'data')],  
     remove: []
 };
 
