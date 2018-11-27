@@ -58,7 +58,7 @@ const errors = require('feathers-errors');
 
  /** https://wopirest.readthedocs.io/en/latest/files/PutUserInfo.html */
  const putUserInfo = (file, payload, account, app) => {
-	 throw new errors.NotImplemented("This function is currently not implemented!");
+	throw new errors.NotImplemented("This function is currently not implemented!");
  };
 
 
