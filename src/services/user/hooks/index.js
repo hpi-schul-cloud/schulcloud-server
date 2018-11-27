@@ -71,13 +71,22 @@ const checkUniqueAccount = (hook) => {
 };
 
 const updateAccountUsername = (hook) => {
+
+	
+
 	let accountService = hook.app.service('/accounts');
 	
 	accountService.find({ query: {userId: hook.id}})
 		.then(result =>{
+			if (result.length == 0) {
+				return Promise.resolve(hook);
+			}
 			let account = result[0];
 			let accountId = (account._id).toString();
-			if (!account.systemId){
+			if (!account.systemId){				
+				if (!hook.data.email) {
+					return Promise.resolve(hook);
+				}
 				const {email} = hook.data;
 				return accountService.patch(accountId, {username: email}, {account: hook.params.account})
 					.then(result => {
