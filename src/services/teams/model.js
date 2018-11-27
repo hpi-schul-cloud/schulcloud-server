@@ -4,23 +4,6 @@ const {permissionSchema} = require('../fileStorage/model');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-//todo: later take it diretly from fileStorage 
-/*
-const permissionSchema = new Schema({
-	refId: {
-		type: Schema.Types.ObjectId,
-		refPath: 'refPermModel'
-	},
-	refPermModel: {
-		type: String,
-		enum: ['user', 'role']
-	},
-	write: { type: Boolean, default: true },
-	read: { type: Boolean, default: true },
-	create: { type: Boolean, default: true },
-	delete: { type: Boolean, default: true },
-});
-*/
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
@@ -57,21 +40,21 @@ const teamInvitedUserModel = new Schema({
 
 const teamUserModel = new Schema({
 	userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
-	role: { type: Schema.Types.ObjectId, ref: 'role' },
+	role: { type: Schema.Types.ObjectId, ref: 'role', required: true},
+	schoolId: {type: Schema.Types.ObjectId, ref:'school', required: true}
 }, { _id: false, timestamps: true });
 
-const teamsModel = mongoose.model('teams', getUserGroupSchema({
-	//@override
-	schoolIds: {
-		type: Array,
-		required: true/* todo:
-		validate: {
-			validator: function (array) {
-				return array.length > 0 && array.every((v) => v instanceof Schema.Types.ObjectId);
-			}
-		}*/
+const teamsModel = mongoose.model('teams', getUserGroupSchema({	
+	schoolIds:{
+		type: [{type: Schema.Types.ObjectId, ref:'school'}],
+		required: true
 	},
-	//@override
+//	schoolIds:[{type: Schema.Types.ObjectId, required: true, ref:'school'}], //todo: test if required work f
+/*	schoolIds: {
+		type: Array,	//todo: [Schema.Types.ObjectId]
+		required: true 
+	}, */
+	//@override	    
 	userIds: [teamUserModel],
 	invitedUserIds: [teamInvitedUserModel],
 	description: { type: String, default: '' },
