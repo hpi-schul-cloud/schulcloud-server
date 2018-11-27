@@ -22,6 +22,60 @@ const toQueryString = (paramsObject) => {
 		.join('&');
 };
 
+class PushService {
+	constructor(options) {
+		this.options = options || {};
+	}
+
+	create(data, params) {
+
+		const serviceUrls = this.app.get('services') || {};
+		const notification = this.app.get('notification') || {};
+
+		const userId = (params.account ||{}).userId || params.payload.userId;
+		const options = {
+			uri: serviceUrls.notification + '/push/',
+			method: 'POST',
+			headers: {
+				'token': userId
+			},
+			body: Object.assign(data,
+				{ serviceUrl: serviceUrls.notification },
+				{ platformId: notification.platformId }
+			),
+			json: true,
+			timeout: REQUEST_TIMEOUT
+		};
+
+		return request(options).then(response => {
+			return response;
+		});
+	}
+
+	get(id, params) {
+
+		const serviceUrls = this.app.get('services') || {};
+
+		const userId = (params.account ||{}).userId || params.payload.userId;
+		const options = {
+			uri: serviceUrls.notification + '/push/' + id +'?token=' + userId,
+			headers: {
+				'token': userId
+			},
+			json: true,
+			timeout: REQUEST_TIMEOUT
+		};
+
+		return request(options).then(message => {
+			return message;
+		});
+	}
+
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
 class MessageService {
 	constructor(options) {
 		this.options = options || {};
@@ -99,6 +153,7 @@ class DeviceService {
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
+		const notification = this.app.get('notification') || {};
 
 		const options = {
 			uri: serviceUrls.notification + '/devices/',
@@ -106,7 +161,7 @@ class DeviceService {
 			headers: {
 				'token': userId
 			},
-			body: data,
+			body: Object.assign({}, data, { platform: notification.platformId }),
 			json: true,
 			timeout: REQUEST_TIMEOUT
 		};
@@ -204,7 +259,7 @@ class NotificationService {
 			},
 			json: true,
 			timeout: REQUEST_TIMEOUT
-		};
+		}; 
 
 		return request(options).then(message => {
 			return message;
@@ -220,24 +275,28 @@ module.exports = function () {
 	const app = this;
 
 	// Initialize our service with any options it requires
+	app.use('/notification/push', new PushService());
 	app.use('/notification/messages', new MessageService());
 	app.use('/notification/devices', new DeviceService());
 	app.use('/notification/callback', new CallbackService());
 	app.use('/notification', new NotificationService());
 
 	// Get our initialize service to that we can bind hooks
+	const pushService = app.service('/notification/push');
 	const messageService = app.service('/notification/messages');
 	const deviceService = app.service('/notification/devices');
 	const callbackService = app.service('/notification/callback');
 	const notificationService = app.service('/notification');
 
 	// Set up our before hooks
+	pushService.before(hooks.before);
 	messageService.before(hooks.before);
 	deviceService.before(hooks.before);
 	callbackService.before(hooks.before);
 	notificationService.before(hooks.before);
 
 	// Set up our after hooks
+	pushService.after(hooks.after);
 	messageService.after(hooks.after);
 	deviceService.after(hooks.after);
 	callbackService.after(hooks.after);
