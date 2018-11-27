@@ -90,7 +90,7 @@ module.exports = function () {
 			this.docs = {};
 		}
 		
-		/*
+		/**
 		 * Generates short expert invite link
 		 * @param data = object {
 		 *      role: user role = string "teamexpert"/"teamadministrator"

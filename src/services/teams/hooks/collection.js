@@ -1,6 +1,53 @@
 const mongoose = require('mongoose');
 const errors = require('feathers-errors');
 const Schema = mongoose.Schema;
+const errors = require('feathers-errors');
+
+/**
+ * If Array use it.
+ * If Object use Object.keys.
+ * Otherwise create array with one element.
+ * @private
+ * @collection
+ */
+const mapToArray = (e) => {
+    return isArray(e) ? e : isObject(e) ? Object.values(e) : [e];
+};
+
+/**
+ * @private
+ * @collection
+ * @param {Array} array
+ * @param {Function} execute
+ * @param {*} additional Is a value that is pass as second parameter to the executed function.
+ */
+const batch = (array, execute, additional) => {
+    return (mapToArray(array)).map(e => {
+        return execute(e, additional);
+    });
+};
+
+/**
+ * Test if any of the elements in this function are true
+ * @private
+ * @collection
+ * @param {Array::Boolean} arrayOfBools
+ * @return {Boolean}
+ */
+const allTrue = (arrayOfBools) => {
+    return !arrayOfBools.some(b => b === false);
+};
+
+/**
+ * Test if one of the elements in this function are true
+ * @private
+ * @collection
+ * @param {Array::Boolean} arrayOfBools
+ * @return {Boolean}
+ */
+const oneTrue = (arrayOfBools) => {
+    return arrayOfBools.some(b => b === true);
+};
 
 /**
  * @collection
@@ -49,6 +96,7 @@ const hasKey = (e, key) => {
 };
 
 /**
+ * @private
  * @collection
  */
 const isDefined = (e) => {
@@ -56,10 +104,43 @@ const isDefined = (e) => {
 };
 
 /**
+ * @private
+ * @collection
+ */
+const isAllDefined = (e) => {
+    return allTrue(batch(e, isDefined));
+};
+
+/**
+ * @private
+ * @collection
+ */
+const isOneDefined = (e) => {
+    return oneTrue(batch(e, isDefined));
+};
+
+/**
+ * @private
  * @collection
  */
 const isUndefined = (e) => {
     return e === undefined;
+};
+
+/**
+ * @private
+ * @collection
+ */
+const isAllUndefined = (e) => {
+    return allTrue(batch(e, isUndefined));
+};
+
+/**
+ * @private
+ * @collection
+ */
+const isOneUndefined = (e) => {
+    return oneTrue(batch(e, isUndefined));
 };
 
 /**
@@ -70,12 +151,13 @@ const isNull = (e) => {
 };
 
 /**
- * Can be used to test if string is a valid id
+ * Can be also used to test if string is a valid id
  * @collection
+ * @private
  * @param {String} id 
  * @return {String::ObjectId} Return null if can not created
  */
-const createObjectId = (id) => {
+const tryToCastToObjectId = (id) => {
     try {
         return mongoose.Types.ObjectId(id);
     } catch (err) {
@@ -96,17 +178,16 @@ const isObjectId = (id) => {
  * @requires const Schema = require('mongoose').Schema;
  */
 const isObjectIdWithTryToCast = (id) => {
-    return isObjectId(id) || !isNull(createObjectId(id));
+    return isObjectId(id) || !isNull(tryToCastToObjectId(id));
 };
 
 /**
 *   @collection
-*   @return {boolean default=true} - otherwise see @throws
 *   @throws {BadRequest} - If input is no typeof moongose Schema.Types.ObjectId it is throw an error
 */
 const throwErrorIfNotObjectId = (id) => {
     if (isObjectId(id))
-        throw new errors.BadRequest('Wrong input. (5)');
+        throw new errors.BadRequest('Is not instance of Schema.Types.ObjectId.');
 };
 
 /**
@@ -137,16 +218,43 @@ const isSameId = (value1, value2) => {
     return bsonIdToString(value1) === bsonIdToString(value2);
 };
 
+/**
+ * @collection
+ * @param {*} e 
+ * @param {String::'AND'||'OR'} operation 
+ */
+const isDefinedOperation = (e, operation) => {
+    if (operation === 'OR')
+        return isOneDefined(e);
+    else if (operation === 'AND')
+        return isAllDefined(e);
+    else
+        return isDefined(e);
+};
+
+/**
+ * @collection
+ * @param {*} e 
+ * @param {String::'AND'||'OR'} operation AND || OR
+ */
+const isUndefinedOperation = (e, operation) => {
+    if (operation === 'OR')
+        return isOneUndefined(e);
+    else if (operation === 'AND')
+        return isAllUndefined(e);
+    else
+        return isUndefined(e);
+};
+
 module.exports = {
     isArray,
     isArrayWithElement,
     isObject,
     isString,
     hasKey,
-    isDefined,
-    isUndefined,    //todo: rename isNot_Defined
+    isDefined: isDefinedOperation,
+    isUndefined: isUndefinedOperation,
     isNull,
-    createObjectId,
     isObjectId,
     isObjectIdWithTryToCast,
     throwErrorIfNotObjectId,
