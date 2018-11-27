@@ -190,7 +190,7 @@ class SignedUrlService {
 	create({path, fileType, action, download, flatFileName}, params) {
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
-		let fileName = encodeURIComponent(pathUtil.basename(path));
+		let fileName = pathUtil.basename(path);
 		let dirName = pathUtil.dirname(path);
 
 		// normalize utf-8 chars
