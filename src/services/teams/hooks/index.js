@@ -63,6 +63,7 @@ const teamMainHook = globalHooks.ifNotLocal(hook => {
             }
             // test if session user is in team 
             const isAccept = isAcceptWay(hook, team._id, team, users);
+
             if (isUndefined(isAccept)) {
                 const userExist = team.userIds.some(_user => isSameId(_user.userId, userId));
                 const schoolExist = team.schoolIds.includes(sessionSchoolId);

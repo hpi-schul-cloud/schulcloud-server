@@ -5,10 +5,10 @@ const logger = require('winston');
 const syncFromLdap = function(app) {
 	let successfulSystems = 0, erroredSystems = 0;
 	logger.info('Syncing from LDAP');
-	return app.service('systems').find({ query: { type: 'ldap' } })
+	return app.service('systems').find({ query: { type: 'ldap' }, paginate: false })
 		.then(ldapSystems => {
-			logger.info(`Found ${ldapSystems.total} LDAP configurations.`);
-			return Promise.all(ldapSystems.data.map(system => {
+			logger.info(`Found ${ldapSystems.length} LDAP configurations.`);
+			return Promise.all(ldapSystems.map(system => {
 				logger.info(`Syncing ${system.alias} (${system._id})...`);
 				const config = system.ldapConfig;
 				return app.service('ldap').getSchools(config)
