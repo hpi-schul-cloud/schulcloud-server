@@ -71,9 +71,6 @@ const checkUniqueAccount = (hook) => {
 };
 
 const updateAccountUsername = (hook) => {
-
-	
-
 	let accountService = hook.app.service('/accounts');
 	
 	accountService.find({ query: {userId: hook.id}})
@@ -99,7 +96,7 @@ const updateAccountUsername = (hook) => {
 		}).catch(error => {
 			logger.log(error);
 			return Promise.reject(error);
-		})
+		});
 	};
   
 const removeStudentFromClasses = (hook) => {
@@ -117,7 +114,7 @@ const removeStudentFromClasses = (hook) => {
 				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
 				return classesService.patch(myClass._id, myClass);
 			})
-		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err)});
+		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err);});
 	});
 };
 
@@ -135,7 +132,7 @@ const removeStudentFromCourses = (hook) => {
 				course.userIds.splice(course.userIds.indexOf(userId), 1);
 				return coursesService.patch(course._id, course);
 			})
-		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err)});
+		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err);});
 	});
 };
 
@@ -245,11 +242,11 @@ const securePatching = (hook) => {
 		if (hook.params.account.userId != hook.id) {
 			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent)))
 			{
-				return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'))
+				return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'));
 			}
 		}
 		return Promise.resolve(hook);
-	})
+	});
 };
 
 exports.before = function(app) {
