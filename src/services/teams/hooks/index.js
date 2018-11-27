@@ -298,6 +298,7 @@ const pushUserChangedEvent = (hook) => {
 /**
  * Add teamroles to hook.teamroles.
  * Make avaible that you can use hook.findRole();
+ * if you use it without hook object pass {app} as parameter
  * @hook
  * @param {Object::hook}
  * @returns {Object::hook}
@@ -576,7 +577,7 @@ exports.after = {
 
 function createinfoText(hook, user) {
     let text;
-    const newRegistration = ((hook.result.linkData || {}).link || "").includes("/registration/");
+    const newRegistration = ((hook.result.linkData || {}).link || []).includes("/registration/");
     const teamName = ((hook.additionalInfosTeam||{}).team||{}).name || "[Fehler: Teamname]";
     const cloudTitle = process.env.SC_SHORT_TITLE;
     const shortLink = (hook.result.linkData || {}).shortLink || "[Fehler: Link]";
@@ -643,7 +644,6 @@ exports.beforeExtern = {
     all: [
         auth.hooks.authenticate('jwt'),
         existId,
-        teamRolesToHook,
         filterToRelated([], 'params.query')
     ],
     find: [],
@@ -652,6 +652,7 @@ exports.beforeExtern = {
     update: [blockedMethod],
     patch: [
         dataExist,
+        teamRolesToHook,
         hasTeamPermission(['INVITE_EXPERTS', 'INVITE_ADMINISTRATORS']),
         filterToRelated(['userId', 'email', 'role'], 'data')
     ],   //later with switch ..see role names
@@ -665,5 +666,40 @@ exports.afterExtern = {
     create: [],
     update: [],
     patch: [sendInfo, filterToRelated(['message', '_id'], 'result')],
+    remove: []
+};
+
+const isAdmin=hook=>{
+    return getSessionUser(hook).then(sessionUser=>{
+        const roleNames = sessionUser.roles.map(role=>role.name);
+        if(roleNames.includes('administrator'))
+            return hook;
+        else 
+            throw new errors.Forbidden('Only administrators can do this.');
+    });
+};
+
+exports.beforeAdmin = {
+    all: [       
+        auth.hooks.authenticate('jwt'),
+        isAdmin,
+        existId,
+        filterToRelated([], 'params.query')
+    ],
+    find: [],
+    get: [blockedMethod],
+    create: [blockedMethod],
+    update: [blockedMethod],
+    patch: [],  
+    remove: []
+};
+
+exports.afterAdmin = {
+    all: [],
+    find: [],
+    get: [],
+    create: [],
+    update: [],
+    patch: [],  
     remove: []
 };

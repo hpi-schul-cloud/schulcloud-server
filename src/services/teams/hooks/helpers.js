@@ -230,25 +230,32 @@ const getTeam = (hook) => {
 
 /**
 *   @helper
-*   @private
 *   @requires function::hook.findRole Can added over hook function
 *   @param {Object::hook} hook
 *   @param {Object::{userId,schoolId, [selectedRole]}}
 */
-const createUserWithRole = (hook, { userId, schoolId, selectedRole }) => {
+const createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) => {
     if (isUndefined(hook.findRole))
         throw new errors.NotAcceptable('Please execute teamRolesToHook before.');
 
     let role;
-    if (isUndefined(selectedRole))
-        role = hook.findRole('name', 'teammember', '_id'); //roles.teammember;
-    else
-        role = hook.findRole('name', selectedRole, '_id');
+    if (roleIsId === true) {
+        role = selectedRole;
+    } else {
+        if (isUndefined(selectedRole))
+            role = hook.findRole('name', 'teammember', '_id'); //roles.teammember;
+        else
+            role = hook.findRole('name', selectedRole, '_id');
+    }
 
     if (isUndefined([role, userId, schoolId], 'OR'))
         throw new errors.BadRequest('Wrong input. (2)');
 
-    return { userId, role: bsonIdToString(role), schoolId }; //role:bsonIdToString(role) is only for faster reading in debug
+    return {
+        userId: bsonIdToString(userId),
+        role: bsonIdToString(role),
+        schoolId: bsonIdToString(schoolId)
+    }; //convert bson to string is only for faster debug
 };
 
 /**
@@ -305,7 +312,7 @@ const arrayRemoveAddDiffs = (baseArray, changedArray, key) => {
  * @param {Object::hook} hook
  * @param {Array::(stringId||Object::TeamUser||Object::String)} teamUsers 
  * @param {Object::Team}
- * @param {String||BsonId} sessionSchoolId
+ * @param {String||BsonId} schoolId use sessionSchoolId
  */
 const mappedInputUserIdsToTeamUsers = (hook, teamUsers, oldTeam, sessionSchoolId) => {
     if (!isArray(teamUsers))
@@ -321,35 +328,35 @@ const mappedInputUserIdsToTeamUsers = (hook, teamUsers, oldTeam, sessionSchoolId
         throw new errors.NotAcceptable('No teamowner found for this team.');
 
     return teamUsers.map((e) => {
-        let role, userId;
-        //userId
-        if (hasKey(e, 'userId'))
-            userId = bsonIdToString(e.userId);
+        let selectedRole;
+        const userId = hasKey(e, 'userId') ? e.userId : e;
+        const schoolId = hasKey(e, 'schoolId') ? e.schoolId : sessionSchoolId;
 
-        if (isObjectId(e) || isString(e))
-            userId = bsonIdToString(e);
-
-        //teamowner role can not repatched at the moment todo: later test if any other has this role, after map 
-        if (isSameId(teamowner.userId, userId))
-            return { userId, role: teamownerRoleId, schoolId: teamowner.schoolId };
-
-        //roleId
         if (hasKey(e, 'role')) {
             if (isObjectIdWithTryToCast(e.role))
-                role = e.role;
+                selectedRole = e.role;                                      //if bsonId, or stringId
             else
-                role = hook.findRole('name', e.role, '_id');
-        } else
-            role = hook.findRole('name', 'teammember', '_id');
+                selectedRole = hook.findRole('name', e.role, '_id');        //if it is role string
+        } else {
+            selectedRole = hook.findRole('name', 'teammember', '_id');
+        }
 
-        role = bsonIdToString(role);
-
-
-
-        if (isUndefined([userId, role], 'OR'))
-            throw new errors.BadRequest('Can not mapped userIds to teamUsers', { userId, role });
-
-        return { userId, role, sessionSchoolId };
+        //teamowner role can not repatched at the moment todo: later test if any other has this role, after map 
+        if (isSameId(teamowner.userId, userId)) {
+            return createUserWithRole(hook, {
+                userId,
+                selectedRole: teamownerRoleId,
+                schoolId: teamowner.schoolId,
+                roleIsId: true
+            });
+        } else {
+            return createUserWithRole(hook, {
+                userId,
+                selectedRole,
+                schoolId,
+                roleIsId: true
+            });
+        }
     });
 };
 
@@ -490,5 +497,6 @@ module.exports = {
     updateMissingDataInHookForCreate,
     getSessionUser,
     ifSuperhero,
-    isAcceptWay
+    isAcceptWay,
+    createUserWithRole
 };
