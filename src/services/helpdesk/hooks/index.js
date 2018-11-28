@@ -31,6 +31,7 @@ function createFeedbackText(user, data){
 		+ "Problem Kurzbeschreibung: " + data.subject + "\n"
 		+ "IST-Zustand: " + data.currentState + "\n"
 		+ "SOLL-Zustand: " + data.targetState;
+		if(data.notes) text = text + "\n Anmerkungen: " + data.notes;
 	}
 	return text;
 }
