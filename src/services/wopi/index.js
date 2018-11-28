@@ -57,7 +57,8 @@ class WopiFilesInfoService {
 					Size: file.size,
 					Version: file['__v'],
 					UserFriendlyName: `${user.firstName} ${user.lastName}`,
-					UserCanWrite: canWrite
+					UserCanWrite: canWrite,
+					UserCanNotWriteRelative: true
 				}));
 			});
 			});
