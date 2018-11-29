@@ -136,11 +136,13 @@ class AdminOverview {
 		return { ownerExist, isOwnerSchool, schoolId, selectedRole };
 	}
 
+
 	mapped(teams, sessionSchoolId) {
 		return teams.data.map(team => {
 			const mySchool = isSameId(team.schoolId, sessionSchoolId);
 			const otherSchools = team.schoolIds.length > 1;
 			const schoolMembers = this.getMembersBySchool(team, sessionSchoolId);
+			const ownerExist = team.userIds.some(user=>user.role.name==='teamowner');	//role is populated
 
 			return {
 				membersTotal: team.userIds.length,
@@ -150,8 +152,12 @@ class AdminOverview {
 				desciption: team.desciption,
 				mySchool,
 				otherSchools,
+		//		ownerSchool:team.schoolId.name,
+				schools:team.schoolIds.map(school=>school.name),
 				schoolMembers,
-				createdAt: team.createdAt
+				createdAt: team.createdAt,
+				ownerExist
+				//todo ownerExist -> ref role needed
 			};
 		});
 	}
@@ -161,7 +167,8 @@ class AdminOverview {
 			const schoolId = sessionUser.schoolId;
 			return this.app.service('teams').find({
 				query: {
-					userIds: { $elemMatch: { schoolId } }
+					userIds: { $elemMatch: { schoolId } },
+					$populate:[{path: 'userIds.role'},{path: 'userIds.userId'},'schoolIds'] 	//schoolId
 				}
 			}).then(teams => {
 				return this.mapped(teams, schoolId);
@@ -199,13 +206,78 @@ class AdminOverview {
 
 	remove(teamId, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
-			const { ownerExist, isOwnerSchool } = this.getIsOwnerStats(ref, sessionUser, team);
-			if (!ownerExist && isOwnerSchool) {
+			const { isOwnerSchool } = this.getIsOwnerStats(ref, sessionUser, team);
+			if (isOwnerSchool) {
 				return this.app.service('teams').remove(teamId);
 			} else {
 				throw new errors.Forbidden('You have not the permission.');
 			}
 		});
+	}
+
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
+class ContactOwner {
+	constructor(options) {
+		this.options = options || {};
+		this.docs = {};
+	}
+
+	create(data, params) {
+		const app = this.app;
+		const message = data.message;
+		let teamIds = data.teamIds;
+
+		if (isUndefined([teamIds, message], 'OR'))
+			throw new errors.BadRequest('Missing parameter');
+
+		if (!isArray(teamIds))
+			teamIds = [teamIds];
+
+		if (teamIds.length <= 0 || !isString(message))
+			throw new errors.BadRequest('Wrong value.');
+
+		let query = teamIds.map(_id => {
+			return { _id };
+		});
+		query = { $or: query, $populate:[{path: 'userIds.userId'}] };
+
+		return Promise.all([getSessionUser(app,params),hooks.teamRolesToHook(this)]).then(([sessionUser,ref])=>{
+			const schoolId = sessionUser.schoolId;
+			query.schoolIds = schoolId;		//role 
+			const ownerRoleId = ref.findRole('name','teamowner','_id');
+
+			return app.service('teams').find({ query }).then(teams => {
+				teams = teams.data;
+				let success = 0;
+				if (!isArrayWithElement(teams))
+					throw new errors('No team found.');
+
+
+				
+				return {
+					message:'Success!', 
+					send: success, 
+					total:teams.length, 
+					requested:teamIds.length
+				};
+			}).catch(err => {
+				throw err;
+			});
+		}).catch(err => {
+			logger.warn(err);
+			throw new errors.BadRequest('It exists no teams with access rights, to send this message.');
+		});
+		/*
+				Promise.all([getSessionUser(app,params),waitTeams]).then(([sessionUser,teams])=>{
+		
+				}).catch(err=>{
+					logger.warn(err);
+					throw new errors.Forbidden('You have not the permission to do this.');
+				}); */
 	}
 
 	setup(app, path) {
@@ -378,7 +450,7 @@ class Add {
 				const schoolIds = getUpdatedSchoolIdArray(team, user);
 				return patchTeam(this.app, teamId, { userIds, schoolIds }, params).then(_ => {
 					const linkData = {
-						shortLink: process.env.HOST + '/teams' + teamId
+						shortLink: process.env.HOST + '/teams/' + teamId
 					};
 					return ({ message: 'Success!', linkData, user });
 				});
@@ -480,7 +552,7 @@ module.exports = function () {
 	const options = {
 		Model: teamsModel,
 		paginate: {
-			default: 10,
+			default: 2,
 			max: 100
 		},
 		lean: true
