@@ -111,7 +111,8 @@ const run = async (dry) => {
 			'users': 'user',
 			'courses': 'course',
 		};
-		const permissions = [];
+
+		let permissions = [];
 
 		if( refOwnerModel === 'users' ) {
 			permissions.push({
@@ -122,6 +123,17 @@ const run = async (dry) => {
 				create: true,
 				delete: true,
 			});
+		}
+
+		if( doc.permissions && doc.permissions.length ) {
+			permissions = [...permissions, ...doc.permissions.map(perm => ({
+				refId: perm.userId,
+				refPermModel: 'user',
+				write: perm.permissions.indexOf('can-write') > -1,
+				read: perm.permissions.indexOf('can-read') > -1,
+				create: false,
+				delete: false,
+			}))];
 		}
 
 		// Props obsolete in new model
