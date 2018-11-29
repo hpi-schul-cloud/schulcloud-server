@@ -9,11 +9,12 @@ const Syncer = require('./Syncer');
  */
 class CSVSyncer extends Syncer {
 
-	constructor(app, stats, school, roles, csvData) {
+	constructor(app, stats, school, roles, csvData, params) {
 		super(app, stats);
-		this.school = school;
+		this.schoolId = school;
 		this.roles = roles;
 		this.csvData = csvData;
+		this.requestParams = params;
 		Object.assign(this.stats, {
 			users: {
 				successful: 0,
@@ -33,11 +34,13 @@ class CSVSyncer extends Syncer {
 	 * @see {Syncer#params}
 	 */
 	static params(params, data) {
-		if (params && params.school && params.roles && data) {
+		const query = (params || {}).query || {};
+		if (query.school && query.roles && data) {
 			return [
-				params.school,
-				params.roles,
-				data
+				query.school,
+				query.roles,
+				data,
+				params
 			];
 		}
 		return false;
@@ -68,8 +71,9 @@ class CSVSyncer extends Syncer {
 
 	enrichUserData(records) {
 		const groupData = {
-			schoolId: this.school._id,
+			schoolId: this.schoolId,
 			roles: this.roles,
+			sendRegistration: true,
 		};
 		const recordPromises = records.map(async (user) => {
 			user = Object.assign(user, groupData);
@@ -88,22 +92,26 @@ class CSVSyncer extends Syncer {
 	}
 
 	createUsers(enrichedUserData) {
-		const jobs = enrichedUserData.map(async data => {
+		const jobs = enrichedUserData.map(data => {
 			let user = data.user;
 			user.importHash = data.linkData.hash;
 			user.shortLink = data.linkData.shortLink;
-			const success = await this.createUser(user);
-			if (success) {
-				this.stats.users.successful += 1;
-			} else {
-				this.stats.users.failed += 1;
-			}
+			return this.createUser(user)
+				.then(() => {
+					this.stats.users.successful += 1;
+					return Promise.resolve();
+				})
+				.catch(err => {
+					this.logError('Cannot create user', user, JSON.stringify(err));
+					this.stats.users.failed += 1;
+					return Promise.resolve();
+				});
 		});
 		return Promise.all(jobs);
 	}
 
-	createUser() {
-		return Promise.resolve();
+	createUser(user) {
+		return this.app.service('users').create(user, this.requestParams);
 	}
 }
 

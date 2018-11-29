@@ -1,5 +1,6 @@
 const errors = require('feathers-errors');
 const logger = require('winston');
+const auth = require('feathers-authentication');
 
 const Syncer = require('./strategies/Syncer');
 const LDAPSystemSyncer = require('./strategies/LDAPSystemSyncer');
@@ -27,7 +28,7 @@ module.exports = function () {
 			const instances = [];
 			syncers.forEach(syncer => {
 				if (syncer.respondsTo(target)) {
-					const args = syncer.params(params.query, data);
+					const args = syncer.params(params, data);
 					if (args) {
 						instances.push(new syncer(app, {}, ...args));
 					} else {
@@ -47,4 +48,11 @@ module.exports = function () {
 	}
 
 	app.use('/sync', new SyncService());
+
+	const syncService = app.service('/sync');
+	syncService.before({
+		create: [
+			auth.hooks.authenticate('jwt'),
+		],
+	});
 };
