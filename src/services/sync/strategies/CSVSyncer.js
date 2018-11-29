@@ -2,6 +2,8 @@ const errors = require('feathers-errors');
 const parse = require('csv-parse/lib/sync');
 const Syncer = require('./Syncer');
 
+const FAILED_USER = null;
+
 /**
  * Implements importing CSV documents based on the Syncer interface
  * @class CSVSyncer
@@ -17,6 +19,10 @@ class CSVSyncer extends Syncer {
 		this.requestParams = params;
 		Object.assign(this.stats, {
 			users: {
+				successful: 0,
+				failed: 0,
+			},
+			invitations: {
 				successful: 0,
 				failed: 0,
 			},
@@ -54,6 +60,7 @@ class CSVSyncer extends Syncer {
 			.then(() => this.parseCsvData())
 			.then(records => this.enrichUserData(records))
 			.then(users => this.createUsers(users))
+			.then(users => this.sendEmails(users))
 			.then(() => this.stats);
 	}
 
@@ -99,12 +106,12 @@ class CSVSyncer extends Syncer {
 			return this.createUser(user)
 				.then(() => {
 					this.stats.users.successful += 1;
-					return Promise.resolve();
+					return Promise.resolve(user);
 				})
 				.catch(err => {
 					this.logError('Cannot create user', user, JSON.stringify(err));
 					this.stats.users.failed += 1;
-					return Promise.resolve();
+					return Promise.resolve(FAILED_USER);
 				});
 		});
 		return Promise.all(jobs);
@@ -112,6 +119,42 @@ class CSVSyncer extends Syncer {
 
 	createUser(user) {
 		return this.app.service('users').create(user, this.requestParams);
+	}
+
+	sendEmails(users) {
+		const createdUsers = users.filter(user => user !== FAILED_USER);
+		const jobs = createdUsers.map(user => {
+			if (user && user.email && user.schoolId && user.shortLink) {
+				return this.app.service('mails').create({
+					email: user.email,
+					subject: `Einladung für die Nutzung der ${process.env.SC_TITLE}!`,
+					headers: {},
+					content: {
+						text: `Einladung in die ${process.env.SC_TITLE}\n`
+							+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
+							+ `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
+							+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
+							+ user.shortLink + '\n'
+							+ 'Viel Spaß und einen guten Start wünscht dir dein '
+							+ `${process.env.SC_SHORT_TITLE}-Team`
+					}
+				})
+				.then(() => {
+					this.stats.invitations.successful += 1;
+					return Promise.resolve();
+				})
+				.catch(err => {
+					this.stats.invitations.failed += 1;
+					this.logError('Cannot send invitation link to user', err);
+					return Promise.resolve();
+				});
+			} else {
+				this.stats.invitations.failed += 1;
+				this.logError('Invalid user object', user);
+				return Promise.resolve();
+			}
+		});
+		return Promise.all(jobs);
 	}
 }
 
