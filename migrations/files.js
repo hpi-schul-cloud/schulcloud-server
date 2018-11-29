@@ -1,10 +1,19 @@
+/*eslint no-console: 0 */
+const chalk = require('chalk');
+
 const ran = false;
 const name = 'Migrating new file model';
 
 const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 const Schema = mongoose.Schema;
 
 mongoose.connect(process.env.DB_URL || 'mongodb://localhost:27017/schulcloud', {user:process.env.DB_USERNAME, pass:process.env.DB_PASSWORD});
+
+const sanitizeObj = obj => {
+	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
+	return obj;
+};
 
 const permissionTypes = ['can-read', 'can-write'];
 
@@ -79,46 +88,94 @@ const fileSchema = new Schema({
 	updatedAt: { type: Date, 'default': Date.now }
 });
 
-const FileModel = mongoose.model('file', fileSchema);
+const FileModel = mongoose.model('file', fileSchema, 'files');
 
 const run = async (dry) => {
-	const directories = await directoryModel.find({}).exec();
-	const createDirectoriesByPath = (data) => {
-		const { path: [dir, ...rest]} = data;
 
-		if(dir) {
-
-			FileModel.find({
-				owner: data.owner,
-				name: dir
-			}).exec().then(res => {
-				if(!res.length) {
-
-				}
-			});
+	const logGreen = obj => {
+		if( dry ) {
+			console.log(chalk.green(obj));
 		}
-
-		return Promise.resolve(data);
 	};
 
-	directories.forEach(dir => {
-		const [refOwnerModel, owner, ...rest] = dir.key.split('/');
-		const dirs = rest.filter(path => Boolean(path));
-		const { name, updatedAt, createdAt } = dir;
-		const data = {
-			isDirectory: true,
-			refOwnerModel,
-			owner,
-			updatedAt,
-			createdAt,
-			path: rest
+	const convertDocument = doc => {
+		logGreen(`Converting document ${doc.name} with path ${doc.path}`);
+
+		const [refOwnerModel, owner, ] = doc.key.split('/');
+		const refOwnerModelMap = {
+			'users': 'user',
+			'courses': 'course',
 		};
 
-		createDirectoriesByPath(data).then((data) => {
-			console.log(data);
-		});
+		// Props obsolete in new model
+		const nullers = {
+			_id: undefined,
+			__v: undefined,
+			key: undefined,
+			path: undefined,
+			schoolId: undefined,
+			flatFileName: undefined
+		};
 
+		return sanitizeObj({
+			...doc,
+			isDirectory: !doc.type,
+			refOwnerModel: refOwnerModelMap[refOwnerModel] || refOwnerModel,
+			owner,
+			storageFileName: doc.flatFileName,
+			...nullers,
+		});
+	};
+
+	const spawnDocuments = (directories, parent) => {
+		let transformed = directories.map(convertDocument);
+
+		if( parent ) {
+			transformed = transformed.map(doc => ({...doc, parent}));
+		}
+
+		const promises = transformed.map(d => FileModel.create(d));
+
+		return Promise.all(promises);
+	};
+
+	const rootDocument = docs => {
+		const splitPath = docs.path.split('/').filter(chunk => !!chunk);
+		return splitPath.length === 2;
+	};
+
+	const resolveChildren = ({ subset, documents, parent }) => {
+
+		return spawnDocuments(subset, parent).then((result) => {
+
+			const childPromises = subset.map((document, index) => {
+
+				const children = documents.filter(d => d.path.slice(0, -1) === document.key);
+
+				if( children.length ) {
+					return resolveChildren({
+						subset: children,
+						documents,
+						parent: result[index]._id
+					});
+				}
+				return true;
+			});
+
+			return Promise.all(childPromises);
+		});
+	};
+
+	logGreen('Migrating directories');
+
+	const directories = await directoryModel.find({}).lean().exec();
+
+	const rootDocs = directories.filter(rootDocument);
+
+	resolveChildren({subset: rootDocs, documents: directories}).then(() => {
+		logGreen('Finished');
 	});
+
 };
 
 module.exports = {
