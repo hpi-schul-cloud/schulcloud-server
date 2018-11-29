@@ -5,9 +5,11 @@ const ran = false;
 const name = 'Migrating new file model';
 
 const mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
 const Schema = mongoose.Schema;
 
+const RoleModel = require('../src/services/role/model.js');
+
+mongoose.Promise = global.Promise;
 mongoose.connect(process.env.DB_URL || 'mongodb://localhost:27017/schulcloud', {user:process.env.DB_USERNAME, pass:process.env.DB_PASSWORD});
 
 const sanitizeObj = obj => {
@@ -92,6 +94,8 @@ const FileModel = mongoose.model('file', fileSchema, 'files');
 
 const run = async (dry) => {
 
+	const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
+
 	const logGreen = obj => {
 		if( dry ) {
 			console.log(chalk.green(obj));
@@ -102,10 +106,12 @@ const run = async (dry) => {
 		logGreen(`Converting document ${doc.name} with path ${doc.path}`);
 
 		const [refOwnerModel, owner, ] = doc.key.split('/');
+
 		const refOwnerModelMap = {
 			'users': 'user',
 			'courses': 'course',
 		};
+		const permissions = [];
 
 		// Props obsolete in new model
 		const nullers = {
@@ -117,12 +123,24 @@ const run = async (dry) => {
 			flatFileName: undefined
 		};
 
+		if( doc.studentCanEdit ) {
+			permissions.push({
+				refId: studentRoleId,
+				refPermModel: 'role',
+				write: Boolean(doc.studentCanEdit),
+				read: Boolean(doc.studentCanEdit),
+				create: false,
+				delete: false,
+			});
+		}
+
 		return sanitizeObj({
 			...doc,
 			isDirectory: !doc.type,
 			refOwnerModel: refOwnerModelMap[refOwnerModel] || refOwnerModel,
 			owner,
 			storageFileName: doc.flatFileName,
+			permissions,
 			...nullers,
 		});
 	};
