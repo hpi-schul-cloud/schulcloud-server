@@ -378,7 +378,7 @@ class Add {
 				const schoolIds = getUpdatedSchoolIdArray(team, user);
 				return patchTeam(this.app, teamId, { userIds, schoolIds }, params).then(_ => {
 					const linkData = {
-						shortLink: process.env.HOST + '/teams' + teamId
+						shortLink: process.env.HOST + '/teams/' + teamId
 					};
 					return ({ message: 'Success!', linkData, user });
 				});

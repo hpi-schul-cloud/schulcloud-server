@@ -599,9 +599,9 @@ function createinfoText(hook, user) {
 Da du noch keinen ${cloudTitle} Account besitzt, folge bitte diesem Link, um die Registrierung abzuschließen und dem Team beizutreten: ${shortLink}
 \nViel Spaß und einen guten Start wünscht dir dein
 ${cloudTitle}-Team`;
-    } else if (hook.data.email) {
+    } else if (hook.data.userId) {
         // teacher, no accept needed (n21)
-        text = `Hallo ${invitee}!
+        text = `Hallo ${user.firstName} ${user.firstName}!
 \nDu wurdest von ${inviter} zu dem Team '${teamName}' der ${cloudTitle} hinzugefügt.
 Klicke auf diesen Link, um deine Teams aufzurufen: ${shortLink}
 \nViel Spaß und gutes Gelingen wünscht dir dein
