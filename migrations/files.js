@@ -113,6 +113,17 @@ const run = async (dry) => {
 		};
 		const permissions = [];
 
+		if( refOwnerModel === 'users' ) {
+			permissions.push({
+				refId: owner,
+				refPermModel: 'user',
+				write: true,
+				read: true,
+				create: true,
+				delete: true,
+			});
+		}
+
 		// Props obsolete in new model
 		const nullers = {
 			_id: undefined,
