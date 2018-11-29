@@ -1,7 +1,7 @@
 /*eslint no-console: 0 */
 const chalk = require('chalk');
 
-const ran = false;
+const ran = false; // set to true to exclude migration
 const name = 'Migrating new file model';
 
 const mongoose = require('mongoose');
@@ -175,7 +175,7 @@ const run = async (dry) => {
 			transformed = transformed.map(doc => ({...doc, parent}));
 		}
 
-		const promises = transformed.map(d => FileModel.create(d));
+		const promises = transformed.map(d => dry ? d : FileModel.create(d));
 
 		return Promise.all(promises);
 	};
