@@ -166,14 +166,17 @@ const run = async (dry) => {
 		});
 	};
 
-	logGreen('Migrating directories');
+	logGreen('Migrating directories and files');
 
 	const directories = await directoryModel.find({}).lean().exec();
+	const files = await oldfileModel.find({}).lean().exec();
+	const merged = [...directories, ...files];
 
-	const rootDocs = directories.filter(rootDocument);
+	const rootDocs = merged.filter(rootDocument);
 
-	resolveChildren({subset: rootDocs, documents: directories}).then(() => {
+	resolveChildren({subset: rootDocs, documents: merged}).then(() => {
 		logGreen('Finished');
+		process.exit(0);
 	});
 
 };
