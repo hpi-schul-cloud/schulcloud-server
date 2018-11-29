@@ -192,11 +192,7 @@ const run = async (dry) => {
 
 	const rootDocs = merged.filter(rootDocument);
 
-	resolveChildren({subset: rootDocs, documents: merged}).then(() => {
-		logGreen('Finished');
-		process.exit(0);
-	});
-
+	return resolveChildren({subset: rootDocs, documents: merged});
 };
 
 module.exports = {

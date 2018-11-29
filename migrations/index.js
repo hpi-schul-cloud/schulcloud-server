@@ -1,3 +1,4 @@
+/*eslint no-console: 0 */
 const fs = require('fs');
 const dry = process.argv.indexOf('--dry') > -1;
 
@@ -7,6 +8,9 @@ fs.readdirSync(`${__dirname}/`)
 		const {ran, name, run} = require(`./${file}`);
 		if( !ran && run && typeof run === 'function' ) {
 			console.log(`Running Migration "${name}" from file: ${file}`);
-			run(dry);
+			run(dry).then(() => {
+				console.log('Finished');
+				process.exit(0);
+			});
 		}
 	});
