@@ -53,6 +53,8 @@ const validateCredentials = (hook) => {
 const trimPassword = (hook) => {
 	if (hook.data.password)
 		hook.data.password = hook.data.password.trim();
+	if (hook.data.password_verification)
+		hook.data.password_verification = hook.data.password_verification.trim();
 
 	return hook;
 };
@@ -60,6 +62,14 @@ const trimPassword = (hook) => {
 const validatePassword = (hook) => {
 	let password_verification = hook.data.password_verification;
 	let password = hook.data.password;
+
+	// Check against Pattern which is also used in Frontend
+	const pattern = new RegExp('^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~\']).{8,255}$');
+	let patternResult = pattern.test(password);
+
+	// only check result if also a password was really given
+	if (!patternResult && password)
+		throw new errors.BadRequest('Dein Passwort stimmt mit dem Pattern nicht überein.');
 
 	// in case sso created account skip
 	if (!hook.params.account.userId)
@@ -71,12 +81,8 @@ const validatePassword = (hook) => {
 		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'ADMIN_VIEW'),
 		globalHooks.hasRoleNoHook(hook, hook.id, 'teacher', true),
 		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero')])
-		.then(results => {
-			// if manager has STUDENT_CREATE (=is teacher) and pw-patched user is student
-					// if manager has ADMIN_VIEW (=is admin) and pw-patched user is teacher or student
-							// if superhero
-									// if my accountid == pw-patched accountid (edit own account in user list...)
-			if ((results[0] && results[1]) || (results[2] && (results[1] || results[3])) || results[4] || hook.params.account._id.toString() === hook.id) {
+		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero]) => {
+			if ((hasStudentCreate && isStudent) || (hasAdminView && (isStudent || isTeacher)) || isSuperHero) {
 				return hook;
 			} else {
 				if (password && !password_verification)
@@ -134,7 +140,7 @@ const checkExistence = (hook) => {
 		});
 };
 
-const securePatching = (hook) => {
+const protectUserId = (hook) => {
 	const accountService = hook.service;
 	if (hook.data.userId) {
 		return accountService.get(hook.id)
@@ -145,7 +151,23 @@ const securePatching = (hook) => {
 					return Promise.reject(new errors.Forbidden('Die userId kann nicht geändert werden.'));
 			});
 	}
-	return Promise.resolve(hook);
+}
+
+const securePatching = (hook) => {	
+	return Promise.all([
+		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
+		globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
+		globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
+		globalHooks.hasRoleNoHook(hook, hook.id, 'student', true)
+	]).then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
+		if (hook.params.account._id != hook.id) {
+			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent)))
+			{
+				return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'))
+			}
+		}
+		return Promise.resolve(hook);
+	})
 };
 
 exports.before = {
@@ -162,7 +184,8 @@ exports.before = {
 	],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'),
-			securePatching,
+			globalHooks.ifNotLocal(securePatching),
+			protectUserId,
 			globalHooks.permitGroupOperation,
 			trimPassword,
 			validatePassword,

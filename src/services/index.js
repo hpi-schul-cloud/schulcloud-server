@@ -8,13 +8,13 @@ const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
+const analytics = require('./analytics');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
 const role = require('./role');
 const helpers = require('./helpers');
 const resolve = require('./resolve');
-
 const federalState = require('./federalState');
 const userGroup = require('./user-group');
 const homework = require('./homework');
@@ -23,13 +23,14 @@ const notification = require('./notification');
 const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
-const socket = require('./socket');
+const wopi = require('./wopi');
 const pseudonym = require("./pseudonym");
 const consent = require('./consent');
 const oauth2 = require('./oauth2');
-const roster = require('./roster')
+const roster = require('./roster');
 
 const mongoose = require('mongoose');
+const clipboard = require('./clipboard');
 
 module.exports = function () {
     const app = this;
@@ -38,6 +39,7 @@ module.exports = function () {
     mongoose.Promise = global.Promise;
 
     app.configure(authentication);
+    app.configure(analytics);
     app.configure(user);
     app.configure(role);
     app.configure(account);
@@ -60,7 +62,9 @@ module.exports = function () {
     app.configure(releases);
     app.configure(helpdesk);
     app.configure(statistic);
-    app.configure(socket);
+    app.configure(consent);
+    app.configure(clipboard);
+    app.configure(wopi);
     app.configure(pseudonym);
     app.configure(consent);
     app.configure(oauth2);
