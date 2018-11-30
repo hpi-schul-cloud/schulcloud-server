@@ -1,5 +1,6 @@
-const fetch = require('node-fetch')
-const uj = require('url-join')
+const fetch = require('node-fetch');
+const uj = require('url-join');
+const errors = require('feathers-errors');
 
 const mockTlsTermination = {
 	'X-Forwarded-Proto': 'https'
@@ -9,8 +10,8 @@ const handleResponse = (res) => {
 	if (res.status < 200 || res.status > 302) {
 		// This will handle any errors that aren't network related (network related errors are handled automatically)
 		return res.json().then(function (body) {
-			console.error('An error occurred while making a HTTP request: ', body)
-			return Promise.reject(new Error(body.error.message))
+			throw new errors.BadRequest('An error occurred while making a HTTP request: ', body);
+			return Promise.reject(new Error(body.error.message));
 		})
 	}
 
@@ -54,7 +55,7 @@ module.exports = (hydraUrl) => {
 			return put('login', 'accept', challenge, body);
 		},
 		// Rejects a login request.
-		rejectLoginRequest: function (challenge) {
+		rejectLoginRequest: function (challenge, body) {
 			return put('login', 'reject', challenge, body);
 		},
 		// Fetches information on a consent request.
