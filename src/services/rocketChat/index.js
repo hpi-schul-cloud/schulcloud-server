@@ -21,6 +21,7 @@ class RocketChat {
 		this.docs = docs;
     }  
 
+    //todo secret for rocketChat
     create(data,params){
         const userId = data.userId;
         if(userId===undefined)
@@ -35,7 +36,7 @@ class RocketChat {
             const username = ([user.schoolId.name,user.firstName,user.lastName].join('.')).replace(/\s/g,'_');
             const name = [user.firstName,user.lastName].join('.');
 
-            return RocketChatModel.create({userId,pass}).then( (res)=>{
+            return RocketChatModel.create({userId,pass,username}).then( (res)=>{
                 if(res.errors!==undefined)
                     throw new errors.BadRequest('Can not insert into collection.',res.errors);
                 const options = {
@@ -64,8 +65,39 @@ class RocketChat {
         });
     }
 
+    //todo: username nicht onfly generiert 
     get(userId,params){
 
+        return new Promise((resolve,reject)=>{
+            RocketChatModel.findOne({userId},{'username':1, 'pass':1, '_id':0}, (err,login)=>{
+                if(err)
+                    reject(new errors.BadRequest('Can not found user.',err));
+    
+                const options = {
+                    uri: ROCKET_CHAT_URI + '/api/v1/login',
+                    method: 'POST',
+                      //  headers: {
+                       //     'Authorization': process.env.ROCKET_CHAT_SECRET
+                       // },
+                    body: {username:login.username,password:login.pass},
+                    json: true,
+                    timeout: REQUEST_TIMEOUT
+                };  
+    
+                request(options).then(res=>{
+                    const authToken = (res.data||{}).authToken;
+                    if(res.status==="success" && authToken!==undefined)
+                        resolve({authToken});
+                    else
+                        reject(new errors.BadRequest('False response data from rocketChat')); 
+                }).catch(err=>{
+                    reject(new errors.Forbidden('Can not take token from rocketChat.',err));
+                });   
+            });
+        }).catch(err=>{
+            logger.warn(err);
+            throw new errors.Forbidden('Can not create token.');
+        });
     }
 
     patch(userId,data,params){

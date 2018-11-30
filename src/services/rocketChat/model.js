@@ -3,7 +3,8 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'user', required: true, unique: true },
-    pass: { type: String, required: true }
+    pass: { type: String, required: true },
+    username:{ type: String, required: true, unique: true },
 }, { timestamps: true });
 
 const model = mongoose.model('rocketChat', schema);
