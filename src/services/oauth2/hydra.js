@@ -10,7 +10,6 @@ const handleResponse = (res) => {
 	if (res.status < 200 || res.status > 302) {
 		// This will handle any errors that aren't network related (network related errors are handled automatically)
 		return res.json().then(function (body) {
-			throw new errors.BadRequest('An error occurred while making a HTTP request: ', body);
 			return Promise.reject(new Error(body.error.message));
 		})
 	}
