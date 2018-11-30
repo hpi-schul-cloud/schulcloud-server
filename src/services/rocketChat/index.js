@@ -1,15 +1,19 @@
 const request = require('request-promise-native');
-const service = require('feathers-mongoose');
+//const service = require('feathers-mongoose');
 const errors = require('feathers-errors');
 const logger = require('winston');
 
 const RocketChatModel = require('./model');
 const hooks = require('./hooks');
 const docs = require('./docs');
+const {randomPass} = require('./randomPass');
 
 
 const REQUEST_TIMEOUT = 4000; // in ms
 const ROCKET_CHAT_URI = process.env.ROCKET_CHAT;
+
+if(ROCKET_CHAT_URI===undefined)
+    throw new errors.NotImplemented('Please set process.env.ROCKET_CHAT.');
 
 class RocketChat {
 	constructor(options) {
@@ -17,24 +21,23 @@ class RocketChat {
 		this.docs = docs;
     }  
 
-    generatePass(){
-        return '123';
-    }
-
     create(data,params){
         const userId = data.userId;
         if(userId===undefined)
             throw new errors.BadRequest('Missing data value.');
-            
-        return this.app.service('users').get(userId,{$populate:"schoolId"}).then(user=>{
+        
+        const internalParams = {
+            query:{$populate:"schoolId"}
+        };
+        return this.app.service('users').get(userId,internalParams).then(user=>{
             const email = user.email;
-            const pass = this.generatePass();
-            const username = [user.schoolId,user.firstName,user.lastName].join('.');
+            const pass = randomPass();
+            const username = ([user.schoolId.name,user.firstName,user.lastName].join('.')).replace(/\s/g,'_');
             const name = [user.firstName,user.lastName].join('.');
 
-            return RocketChatModel.create({userId,pass}).then( (err,res)=>{
-                if(err)
-                    throw err;
+            return RocketChatModel.create({userId,pass}).then( (res)=>{
+                if(res.errors!==undefined)
+                    throw new errors.BadRequest('Can not insert into collection.',res.errors);
                 const options = {
                     uri: ROCKET_CHAT_URI + '/api/v1/users.register',
                     method: 'POST',
@@ -46,8 +49,13 @@ class RocketChat {
                     timeout: REQUEST_TIMEOUT
                 };   
                
-                return request(options).catch(err=>{
-                    throw err;
+                return request(options).then(res=>{
+                    if(res.success===true && res.user!==undefined)
+                        return res;
+                    else
+                        throw new errors.BadRequest('False response data from rocketChat');
+                }).catch(err=>{
+                    throw new errors.BadRequest('Can not write user informations to rocketChat.',err);
                 });   
             });
         }).catch(err=>{
@@ -80,7 +88,7 @@ module.exports = function () {
 		lean: true
     }; */
     
-    app.use('/rocketChat', service(new RocketChat()));
+    app.use('/rocketChat', new RocketChat());
     
     const rocketChatService = app.service('/rocketChat');
 

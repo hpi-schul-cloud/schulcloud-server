@@ -452,7 +452,7 @@ const getTeamUsers = (hook, team, users, sessionSchoolId) => {
         return [];
 
     teamUsers = mappedInputUserIdsToTeamUsers(hook, teamUsers, team, sessionSchoolId),
-        teamUsers = teamOwnerRoleExist(hook, teamUsers, team, users);
+    teamUsers = teamOwnerRoleExist(hook, teamUsers, team, users);
     teamUsers = removeDuplicatedTeamUsers(teamUsers);
     teamUsers = removeNotValidUsersBySchoolIds(team.schoolIds, teamUsers, users);
 
