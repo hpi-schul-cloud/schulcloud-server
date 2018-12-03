@@ -207,7 +207,7 @@ class CSVSyncer extends Syncer {
 	async getClassObject(klass) {
 		const formats = [
 			{
-				regex: /^\d{1,2}\/.*$/,
+				regex: /^\d{1,2}.*$/,
 				values: async string => {
 					const gradeLevelName = string.match(/^(\d{1,2})/)[1];
 					const gradeLevel = await this.findOrCreateGradeLevel({
@@ -215,7 +215,7 @@ class CSVSyncer extends Syncer {
 					});
 					return {
 						nameFormat: 'gradeLevel+name',
-						name: string.match(/^\d{1,2}\/(.*)$/)[1],
+						name: string.match(/^\d{1,2}(.*)$/)[1],
 						gradeLevel,
 					};
 				},
