@@ -175,6 +175,7 @@ class CSVSyncer extends Syncer {
 			const user = userByEmail[record.email];
 			if (user === undefined) return;
 			const klass = classMapping[record.class];
+			if (klass === undefined) return;
 			klass[collection].push(user._id);
 		});
 
@@ -190,7 +191,7 @@ class CSVSyncer extends Syncer {
 
 	extractClassesToBeCreated(records) {
 		return records.reduce((list, record) => {
-			if (! list.includes(record.class)) {
+			if (record.class !== '' && !list.includes(record.class)) {
 				list.push(record.class);
 			}
 			return list;
