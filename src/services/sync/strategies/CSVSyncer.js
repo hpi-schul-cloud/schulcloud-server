@@ -43,14 +43,14 @@ class CSVSyncer extends Syncer {
 	/**
 	 * @see {Syncer#params}
 	 */
-	static params(params, data) {
+	static params(params, data={}) {
 		const query = (params || {}).query || {};
-		if (query.school && query.role && data) {
+		if (query.school && query.role && data.data) {
 			return [
 				query.school,
 				query.role,
-				data,
-				params
+				data.data,
+				params,
 			];
 		}
 		return false;
@@ -84,18 +84,18 @@ class CSVSyncer extends Syncer {
 	}
 
 	enrichUserData(records) {
-		const groupData = {
-			schoolId: this.schoolId,
-			roles: [this.role],
-			sendRegistration: true,
-		};
 		return Promise.all(records.map(async (user) => {
 			let linkData = await this.generateRegistrationLink({
 				role: this.role,
+				schoolId: this.schoolId,
 				save: true,
 				toHash: user.email
 			});
-			user = Object.assign(user, groupData);
+			user = Object.assign(user, {
+				schoolId: this.schoolId,
+				roles: [this.role],
+				sendRegistration: true,
+			});
 			user.importHash = linkData.hash;
 			user.shortLink = linkData.shortLink;
 			return user;
