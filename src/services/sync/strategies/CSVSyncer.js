@@ -11,10 +11,11 @@ const FAILED_USER = null;
  */
 class CSVSyncer extends Syncer {
 
-	constructor(app, stats={}, school, role='student', csvData, params) {
+	constructor(app, stats={}, school, role='student', sendEmails, csvData, params) {
 		super(app, stats);
 		this.schoolId = school;
 		this.role = role;
+		this.sendEmails = sendEmails;
 		this.csvData = csvData;
 		this.requestParams = params;
 		Object.assign(this.stats, {
@@ -49,6 +50,7 @@ class CSVSyncer extends Syncer {
 			return [
 				query.school,
 				query.role,
+				query.sendEmails === 'true',
 				data.data,
 				params,
 			];
@@ -66,7 +68,7 @@ class CSVSyncer extends Syncer {
 				const users = await this.enrichUserData(records);
 				const userObjects = await this.createUsers(users);
 				await this.createClasses(users, userObjects);
-				await this.sendEmails(users);
+				if (this.sendEmails) await this.emailUsers(users);
 				return this.stats;
 			});
 	}
@@ -125,7 +127,7 @@ class CSVSyncer extends Syncer {
 		return this.app.service('users').create(user, this.requestParams);
 	}
 
-	async sendEmails(users) {
+	async emailUsers(users) {
 		return await Promise.all(users.map(async user => {
 			try {
 				if (user && user.email && user.schoolId && user.shortLink) {
