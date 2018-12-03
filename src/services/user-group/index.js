@@ -6,6 +6,7 @@ const hooks = require('./hooks');
 const courseGroupsHooks = require('./hooks/courseGroups');
 const courseCopyService = require('./course-copy-service');
 const classHooks = require('./hooks/classes');
+const EventMatcher = require('../../events/eventMatcher');
 
 module.exports = function() {
 	const app = this;
@@ -24,6 +25,11 @@ module.exports = function() {
 	const courseService = app.service('/courses');
 	courseService.before(hooks.before);
 	courseService.after(hooks.after);
+
+	courseService.on('created', (message, context) => { EventMatcher.emit('course', 'created',  message, context); });
+	courseService.on('updated', (message, context) => { EventMatcher.emit('course', 'updated', message, context); });
+	courseService.on('patched', (message, context) => { EventMatcher.emit('course', 'patched', message, context); });
+	courseService.on('removed', (message, context) => { EventMatcher.emit('course', 'removed', message, context); });
 
 	/* CourseGroup model */
 	app.use('/courseGroups', service({

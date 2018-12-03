@@ -4,6 +4,7 @@ const service = require('feathers-mongoose');
 const fileModel = require('./model').fileModel;
 const directoryModel = require('./model').directoryModel;
 const hooks = require('./hooks/model-hooks');
+const EventMatcher = require('../../events/eventMatcher');
 
 module.exports = function () {
 	const app = this;
@@ -31,6 +32,12 @@ module.exports = function () {
 	const fileModelService = app.service('files');
 	fileModelService.before(hooks.before);
 	fileModelService.after(hooks.after);
+
+	fileModelService.on('created', (message, context) => { EventMatcher.emit('file','created', message, context); });
+	fileModelService.on('updated', (message, context) => { EventMatcher.emit('file','created', message, context); });
+	fileModelService.on('patched', (message, context) => { EventMatcher.emit('file','patched', message, context); });
+	fileModelService.on('removed', (message, context) => { EventMatcher.emit('file','removed', message, context); });
+
 
 	app.use('/directories', service(directoryOptions));
 	const directoryModelService = app.service('directories');

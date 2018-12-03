@@ -7,6 +7,7 @@ const copyHooks = require('./hooks/copy');
 const _ = require('lodash');
 const errors = require('feathers-errors');
 const FileModel = require('../fileStorage/model').fileModel;
+const EventMatcher = require('../../events/eventMatcher');
 
 class LessonFilesService {
 
@@ -152,6 +153,11 @@ module.exports = function () {
 	const systemService = app.service('/lessons');
 	const lessonFilesService = app.service('/lessons/:lessonId/files/');
 	const lessonCopyService = app.service('/lessons/copy');
+
+	systemService.on('created', (message, context) => { EventMatcher.emit('lesson','created', message, context); });
+	systemService.on('updated', (message, context) => { EventMatcher.emit('lesson','created', message, context); });
+	systemService.on('patched', (message, context) => { EventMatcher.emit('lesson','patched', message, context); });
+	systemService.on('removed', (message, context) => { EventMatcher.emit('lesson','removed', message, context); });
 
 	// Set up our before hooks
 	systemService.before(hooks.before);
