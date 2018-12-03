@@ -174,28 +174,38 @@ class CSVSyncer extends Syncer {
 		records.forEach(record => {
 			const user = userByEmail[record.email];
 			if (user === undefined) return;
-			const klass = classMapping[record.class];
-			if (klass === undefined) return;
-			klass[collection].push(user._id);
+			const classes = this.splitClasses(record.class);
+			classes.forEach(klass => {
+				const classObject = classMapping[klass];
+				if (classObject === undefined) return;
+				classObject[collection].push(user._id);
+			});
 		});
 
 		for (let key of Object.keys(classMapping)) {
-			const klass = classMapping[key];
+			const classObject = classMapping[key];
 			// convert Mongoose array to vanilla JS array to keep the sanitize hook happy:
-			const importIds = klass[collection].map(u => u);
+			const importIds = classObject[collection].map(u => u);
 			const patchData = {};
 			patchData[collection] = importIds;
-			await this.app.service('/classes').patch(klass._id, patchData);
+			await this.app.service('/classes').patch(classObject._id, patchData);
 		}
 	}
 
 	extractClassesToBeCreated(records) {
 		return records.reduce((list, record) => {
-			if (record.class !== '' && !list.includes(record.class)) {
-				list.push(record.class);
+			const classes = this.splitClasses(record.class);
+			for (let klass of classes) {
+				if (klass !== '' && !list.includes(klass)) {
+					list.push(klass);
+				}
 			}
 			return list;
 		}, []);
+	}
+
+	splitClasses(classes) {
+		return classes.split('+');
 	}
 
 	byEmail(users) {
