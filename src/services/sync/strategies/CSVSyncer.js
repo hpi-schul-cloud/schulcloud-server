@@ -158,17 +158,21 @@ class CSVSyncer extends Syncer {
 		const classes = this.extractClassesToBeCreated(records);
 		const userByEmail = this.byEmail(users);
 		const classMapping = await this.buildClassMapping(classes);
+		const collection = this.role === 'teacher' ? 'teacherIds' : 'userIds';
 		records.forEach(record => {
 			const user = userByEmail[record.email];
 			if (user === undefined) return;
 			const klass = classMapping[record.class];
-			klass.userIds.push(user._id);
+			klass[collection].push(user._id);
 		});
+
 		for (let key of Object.keys(classMapping)) {
 			const klass = classMapping[key];
 			// convert Mongoose array to vanilla JS array to keep the sanitize hook happy:
-			const userIds = klass.userIds.map(u => u);
-			await this.app.service('/classes').patch(klass._id, {userIds});
+			const importIds = klass[collection].map(u => u);
+			const patchData = {};
+			patchData[collection] = importIds;
+			await this.app.service('/classes').patch(klass._id, patchData);
 		}
 	}
 
@@ -199,7 +203,7 @@ class CSVSyncer extends Syncer {
 					});
 					return {
 						nameFormat: 'gradeLevel+name',
-						name: string.match(/^(\d{1,2}\/.*)$/)[1],
+						name: string.match(/^\d{1,2}\/(.*)$/)[1],
 						gradeLevel,
 					};
 				},
@@ -233,7 +237,7 @@ class CSVSyncer extends Syncer {
 		if (existing.length === 0) {
 			return await this.app.service('/classes').create(classObject);
 		}
-		return existing.data[0];
+		return existing[0];
 	}
 
 	async findOrCreateGradeLevel(query) {
@@ -259,6 +263,7 @@ class CSVSyncer extends Syncer {
 				this.stats.classes.failed += 1;
 				this.logError('Failed to create class', klass, err);
 			}
+			return Promise.resolve();
 		}));
 		return classMapping;
 	}
