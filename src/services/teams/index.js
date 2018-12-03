@@ -351,15 +351,14 @@ class Add {
 				const linkData = await generateLink(linkParams);
 				const team = await teamsService.get(teamId);
 				const user = await usersService.find({ query: { "email": email } });
+				let invitedUserIds = team.invitedUserIds;
 				if (user.total === 1) {
 					// user found = existing teacher, invited with mail
-					let invitedUserIds = team.invitedUserIds;
 					invitedUserIds.push({ email, role });
 					await teamsService.patch(teamId, { invitedUserIds }, params);
 					return { message: 'Success!', linkData: linkData, user: user.data[0] };
 				} else if (user.total === 0) {
 					// user not found = expert invited via mail
-					let invitedUserIds = team.invitedUserIds;
 					invitedUserIds.push({ email, role });
 					await teamsService.patch(teamId, { invitedUserIds }, params);
 					return { message: 'Success!', linkData: linkData };
@@ -370,21 +369,19 @@ class Add {
 				errorHandling(err);
 			}
 		} else if (userId && role) {
-			// user invited via ldap selection		
-			return getBasic(this, teamId, params, userId).then(([ref, user, team]) => {
+			// user invited via ldap selection
+			try {		
+				const [ref, user, team] = await getBasic(this, teamId, params, userId);
 				const schoolId = user.schoolId;
+				const schoolIds = getUpdatedSchoolIdArray(team, user);
+				const linkData = { shortLink: process.env.HOST + '/teams' + teamId };
 				let userIds = team.userIds;
 				userIds.push(createUserWithRole(ref, { userId, selectedRole: role, schoolId }));
-				const schoolIds = getUpdatedSchoolIdArray(team, user);
-				return patchTeam(this.app, teamId, { userIds, schoolIds }, params).then(_ => {
-					const linkData = {
-						shortLink: process.env.HOST + '/teams' + teamId
-					};
-					return ({ message: 'Success!', linkData, user });
-				});
-			}).catch(err => {
+				await patchTeam(this.app, teamId, { userIds, schoolIds }, params);
+				return ({ message: 'Success!', linkData, user });
+			} catch (err) {
 				errorHandling(err);
-			});
+			}
 		} else {
 			throw new errors.BadRequest('Missing input data.');
 		}
