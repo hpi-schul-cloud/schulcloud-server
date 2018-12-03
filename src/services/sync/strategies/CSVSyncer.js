@@ -67,7 +67,7 @@ class CSVSyncer extends Syncer {
 				const records = this.parseCsvData();
 				const users = await this.enrichUserData(records);
 				const userObjects = await this.createUsers(users);
-				await this.createClasses(users, userObjects);
+				if (this.importClasses) await this.createClasses(users, userObjects);
 				if (this.sendEmails) await this.emailUsers(users);
 				return this.stats;
 			});
@@ -78,9 +78,19 @@ class CSVSyncer extends Syncer {
 			columns: true,
 			delimiter: ','
 		});
-		if (Object.keys(records[0]).length < 4) {
-			this.logError('Parsing failed: Too few columns in input data.');
-			throw new Error('CSVSyncer: parsing failed');
+		if (records.length === 0) {
+			this.logError('Parsing failed: No input data.');
+			throw new Error('No input data');
+		}
+		// validate required params:
+		['firstName', 'lastName', 'email'].forEach(param => {
+			if (!records[0][param]) {
+				throw new Error(`Parsing failed. Expected attribute "${param}"`);
+			}
+		});
+		// validate optional params:
+		if (records[0].class) {
+			this.importClasses = true;
 		}
 		return records;
 	}
