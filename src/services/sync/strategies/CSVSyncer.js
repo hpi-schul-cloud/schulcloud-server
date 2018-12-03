@@ -11,10 +11,10 @@ const FAILED_USER = null;
  */
 class CSVSyncer extends Syncer {
 
-	constructor(app, stats, school, roles, csvData, params) {
+	constructor(app, stats={}, school, role='student', csvData, params) {
 		super(app, stats);
 		this.schoolId = school;
-		this.roles = roles;
+		this.role = role;
 		this.csvData = csvData;
 		this.requestParams = params;
 		Object.assign(this.stats, {
@@ -23,6 +23,10 @@ class CSVSyncer extends Syncer {
 				failed: 0,
 			},
 			invitations: {
+				successful: 0,
+				failed: 0,
+			},
+			classes: {
 				successful: 0,
 				failed: 0,
 			},
@@ -41,10 +45,10 @@ class CSVSyncer extends Syncer {
 	 */
 	static params(params, data) {
 		const query = (params || {}).query || {};
-		if (query.school && query.roles && data) {
+		if (query.school && query.role && data) {
 			return [
 				query.school,
-				query.roles,
+				query.role,
 				data,
 				params
 			];
@@ -57,11 +61,14 @@ class CSVSyncer extends Syncer {
 	 */
 	steps() {
 		return super.steps()
-			.then(() => this.parseCsvData())
-			.then(records => this.enrichUserData(records))
-			.then(users => this.createUsers(users))
-			.then(users => this.sendEmails(users))
-			.then(() => this.stats);
+			.then(async () => {
+				const records = this.parseCsvData();
+				const users = await this.enrichUserData(records);
+				const userObjects = await this.createUsers(users);
+				await this.createClasses(users, userObjects);
+				await this.sendEmails(users);
+				return this.stats;
+			});
 	}
 
 	parseCsvData() {
@@ -69,92 +76,191 @@ class CSVSyncer extends Syncer {
 			columns: true,
 			delimiter: ','
 		});
-		if (Object.keys(records[0]).length <= 1) {
+		if (Object.keys(records[0]).length < 4) {
 			this.logError('Parsing failed: Too few columns in input data.');
 			throw new Error('CSVSyncer: parsing failed');
 		}
-		return Promise.resolve(records);
+		return records;
 	}
 
 	enrichUserData(records) {
 		const groupData = {
 			schoolId: this.schoolId,
-			roles: this.roles,
+			roles: [this.role],
 			sendRegistration: true,
 		};
-		const recordPromises = records.map(async (user) => {
-			user = Object.assign(user, groupData);
+		return Promise.all(records.map(async (user) => {
 			let linkData = await this.generateRegistrationLink({
-				role: this.roles[0],
+				role: this.role,
 				save: true,
 				toHash: user.email
 			});
-			return { user, linkData };
-		});
-		return Promise.all(recordPromises);
+			user = Object.assign(user, groupData);
+			user.importHash = linkData.hash;
+			user.shortLink = linkData.shortLink;
+			return user;
+		}));
 	}
 
 	generateRegistrationLink(params) {
 		return this.app.service('registrationlink').create(params);
 	}
 
-	createUsers(enrichedUserData) {
-		const jobs = enrichedUserData.map(data => {
-			let user = data.user;
-			user.importHash = data.linkData.hash;
-			user.shortLink = data.linkData.shortLink;
-			return this.createUser(user)
-				.then(() => {
-					this.stats.users.successful += 1;
-					return Promise.resolve(user);
-				})
-				.catch(err => {
-					this.logError('Cannot create user', user, JSON.stringify(err));
-					this.stats.users.failed += 1;
-					return Promise.resolve(FAILED_USER);
-				});
-		});
-		return Promise.all(jobs);
+	async createUsers(users) {
+		const createdUsers = await Promise.all(users.map(async user => {
+			try {
+				const userObject = await this.createUser(user, {lean: true});
+				this.stats.users.successful += 1;
+				return userObject;
+			} catch (err) {
+				this.logError('Cannot create user', user, JSON.stringify(err));
+				this.stats.users.failed += 1;
+				return FAILED_USER;
+			}
+		}));
+		return createdUsers.filter(user => user !== FAILED_USER);
 	}
 
 	createUser(user) {
 		return this.app.service('users').create(user, this.requestParams);
 	}
 
-	sendEmails(users) {
-		const createdUsers = users.filter(user => user !== FAILED_USER);
-		const jobs = createdUsers.map(user => {
-			if (user && user.email && user.schoolId && user.shortLink) {
-				return this.app.service('mails').create({
-					email: user.email,
-					subject: `Einladung für die Nutzung der ${process.env.SC_TITLE}!`,
-					headers: {},
-					content: {
-						text: `Einladung in die ${process.env.SC_TITLE}\n`
-							+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
-							+ `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
-							+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
-							+ user.shortLink + '\n'
-							+ 'Viel Spaß und einen guten Start wünscht dir dein '
-							+ `${process.env.SC_SHORT_TITLE}-Team`
-					}
-				})
-				.then(() => {
+	async sendEmails(users) {
+		return await Promise.all(users.map(async user => {
+			try {
+				if (user && user.email && user.schoolId && user.shortLink) {
+					await this.app.service('mails').create({
+						email: user.email,
+						subject: `Einladung für die Nutzung der ${process.env.SC_TITLE}!`,
+						headers: {},
+						content: {
+							text: `Einladung in die ${process.env.SC_TITLE}\n`
+								+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
+								+ `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
+								+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
+								+ user.shortLink + '\n'
+								+ 'Viel Spaß und einen guten Start wünscht dir dein '
+								+ `${process.env.SC_SHORT_TITLE}-Team`
+						}
+					});
 					this.stats.invitations.successful += 1;
-					return Promise.resolve();
-				})
-				.catch(err => {
-					this.stats.invitations.failed += 1;
-					this.logError('Cannot send invitation link to user', err);
-					return Promise.resolve();
-				});
-			} else {
+				} else {
+					throw new Error('Invalid user object');
+				}
+			} catch (err) {
 				this.stats.invitations.failed += 1;
-				this.logError('Invalid user object', user);
-				return Promise.resolve();
+				this.logError('Cannot send invitation link to user', err);
 			}
+		}));
+	}
+
+	async createClasses(records, users) {
+		const classes = this.extractClassesToBeCreated(records);
+		const userByEmail = this.byEmail(users);
+		const classMapping = await this.buildClassMapping(classes);
+		records.forEach(record => {
+			const user = userByEmail[record.email];
+			if (user === undefined) return;
+			const klass = classMapping[record.class];
+			klass.userIds.push(user._id);
 		});
-		return Promise.all(jobs);
+		for (let key of Object.keys(classMapping)) {
+			const klass = classMapping[key];
+			// convert Mongoose array to vanilla JS array to keep the sanitize hook happy:
+			const userIds = klass.userIds.map(u => u);
+			await this.app.service('/classes').patch(klass._id, {userIds});
+		}
+	}
+
+	extractClassesToBeCreated(records) {
+		return records.reduce((list, record) => {
+			if (! list.includes(record.class)) {
+				list.push(record.class);
+			}
+			return list;
+		}, []);
+	}
+
+	byEmail(users) {
+		return users.reduce((dict, user) => {
+			dict[user.email] = user;
+			return dict;
+		}, {});
+	}
+
+	async getClassObject(klass) {
+		const formats = [
+			{
+				regex: /^\d{1,2}\/.*$/,
+				values: async string => {
+					const gradeLevelName = string.match(/^(\d{1,2})/)[1];
+					const gradeLevel = await this.findOrCreateGradeLevel({
+						name: gradeLevelName
+					});
+					return {
+						nameFormat: 'gradeLevel+name',
+						name: string.match(/^(\d{1,2}\/.*)$/)[1],
+						gradeLevel,
+					};
+				},
+			},
+			{
+				regex: /(.*)/,
+				values: string => {
+					return {
+						nameFormat: 'static',
+						name: string,
+					};
+				},
+			},
+		];
+		for (let format of formats) {
+			if (format.regex.test(klass)) {
+				return Object.assign(await format.values(klass), {
+					schoolId: this.schoolId
+				});
+			}
+		}
+		throw new Error('Class name does not match any format:', klass);
+	}
+
+	async findOrCreateClass(classObject) {
+		const existing = await this.app.service('/classes').find({
+			query: classObject,
+			paginate: false,
+			lean: true,
+		});
+		if (existing.length === 0) {
+			return await this.app.service('/classes').create(classObject);
+		}
+		return existing.data[0];
+	}
+
+	async findOrCreateGradeLevel(query) {
+		const existing = await this.app.service('/gradeLevels').find({
+			query,
+			paginate: false,
+			lean: true,
+		});
+		if (existing.length === 0) {
+			return await this.app.service('/gradeLevels').create(query);
+		}
+		return existing[0];
+	}
+
+	async buildClassMapping(classes) {
+		const classMapping = {};
+		await Promise.all(classes.map(async klass => {
+			try {
+				const classObject = await this.getClassObject(klass);
+				classMapping[klass] = await this.findOrCreateClass(classObject);
+				this.stats.classes.successful += 1;
+			} catch (err) {
+				this.stats.classes.failed += 1;
+				this.logError('Failed to create class', klass, err);
+			}
+		}));
+		return classMapping;
 	}
 }
 
