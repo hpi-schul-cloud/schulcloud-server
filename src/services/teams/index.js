@@ -4,6 +4,7 @@ const service = require('feathers-mongoose');
 const errors = require('feathers-errors');
 const { teamsModel } = require('./model');
 const hooks = require('./hooks');
+const globalHooks = require('../../hooks');
 const { createUserWithRole } = require('./hooks/helpers');
 const logger = require('winston');
 const userModel = require('../user/model').userModel;
@@ -136,15 +137,36 @@ class AdminOverview {
 		return { ownerExist, isOwnerSchool, schoolId, selectedRole };
 	}
 
+	getKeys(obj, keys) {
+		return keys.reduce((newObj, key) => {
+			newObj[key] = obj[key];
+			return newObj;
+		}, {});
+	}
 
 	mapped(teams, sessionSchoolId) {
 		return teams.data.map(team => {
 			const mySchool = isSameId(team.schoolId, sessionSchoolId);
 			const otherSchools = team.schoolIds.length > 1;
-			const schoolMembers = this.getMembersBySchool(team, sessionSchoolId);
-			const ownerExist = team.userIds.some(user=>user.role.name==='teamowner');	//role is populated
+			let schoolMembers = this.getMembersBySchool(team, sessionSchoolId);
+			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner');	//role is populated
+
+			schoolMembers = schoolMembers.map(m => {
+				return {
+					role: m.role.name,
+					user: this.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName'])
+				};
+			});
+
+			schoolMembers = schoolMembers.map(m=>{
+				m.user.roles = (m.user.roles||[]).map(role=>{
+					return role.name;
+				});
+				return m;
+			});
 
 			return {
+				//todo ownerExist -> ref role needed
 				membersTotal: team.userIds.length,
 				name: team.name,
 				_id: team._id,
@@ -152,12 +174,11 @@ class AdminOverview {
 				desciption: team.desciption,
 				mySchool,
 				otherSchools,
-		//		ownerSchool:team.schoolId.name,
-				schools:team.schoolIds.map(school=>school.name),
-				schoolMembers,
 				createdAt: team.createdAt,
-				ownerExist
-				//todo ownerExist -> ref role needed
+				ownerExist,
+				//		ownerSchool:team.schoolId.name,
+				schools: team.schoolIds.map(s => this.getKeys(s, ['name', '_id'])),
+				schoolMembers 
 			};
 		});
 	}
@@ -167,8 +188,9 @@ class AdminOverview {
 			const schoolId = sessionUser.schoolId;
 			return this.app.service('teams').find({
 				query: {
-					userIds: { $elemMatch: { schoolId } },
-					$populate:[{path: 'userIds.role'},{path: 'userIds.userId'},'schoolIds'] 	//schoolId
+					schoolIds: schoolId,
+					//userIds: { $elemMatch: { schoolId } },
+					$populate: [{ path: 'userIds.role' }, { path: 'userIds.userId', populate: { path: 'roles' } }, 'schoolIds'] 	//schoolId
 				}
 			}).then(teams => {
 				return this.mapped(teams, schoolId);
@@ -224,8 +246,26 @@ class ContactOwner {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
+
+		if (process.env.SC_SHORT_TITLE === undefined)
+			throw new errors.NotAcceptable('SC_SHORT_TITLE is not defined.');
 	}
 
+	getOwner(team, ownerRoleId) {
+		return team.userIds.find(user => isSameId(user.role, ownerRoleId));
+	}
+
+	formatText(text) {
+		return text;
+	}
+
+	/**
+	 * Over this services method can administrators can send message for school teams.
+	 * It has a batch logic to send the same message to different teams.
+	 * This message contact the owner of this teams over his email.
+	 * @param {Object::{message:String,teamIds:String||Array::String}} data 
+	 * @param {*} params 
+	 */
 	create(data, params) {
 		const app = this.app;
 		const message = data.message;
@@ -243,27 +283,45 @@ class ContactOwner {
 		let query = teamIds.map(_id => {
 			return { _id };
 		});
-		query = { $or: query, $populate:[{path: 'userIds.userId'}] };
+		query = { $or: query, $populate: [{ path: 'userIds.userId' }] };
 
-		return Promise.all([getSessionUser(app,params),hooks.teamRolesToHook(this)]).then(([sessionUser,ref])=>{
+		return Promise.all([getSessionUser(app, params), hooks.teamRolesToHook(this)]).then(([sessionUser, ref]) => {
 			const schoolId = sessionUser.schoolId;
 			query.schoolIds = schoolId;		//role 
-			const ownerRoleId = ref.findRole('name','teamowner','_id');
+			const ownerRoleId = ref.findRole('name', 'teamowner', '_id');
 
 			return app.service('teams').find({ query }).then(teams => {
 				teams = teams.data;
-				let success = 0;
 				if (!isArrayWithElement(teams))
 					throw new errors('No team found.');
 
-
-				
-				return {
-					message:'Success!', 
-					send: success, 
-					total:teams.length, 
-					requested:teamIds.length
+				const subject = `${process.env.SC_SHORT_TITLE}: Team-Anfrage`;
+				const mailService = this.app.service('/mails');
+				const emails = teams.reduce((stack, team) => {
+					const owner = this.getOwner(team, ownerRoleId);
+					if (isDefined(owner.userId.email))
+						stack.push(owner.userId.email);
+					return stack;
+				}, []);
+				const content = {
+					"text": this.formatText(message) || "No alternative mailtext provided. Expected: HTML Template Mail.",
+					"html": ""
 				};
+
+				const waits = emails.map(email => {
+					return mailService.create({ email, subject, content }).then(res => {
+						return res.accepted[0];
+					}).catch(err => {
+						return 'Error: ' + err.message;
+					});
+				});
+
+				return Promise.all(waits).then(values => {
+					return values;
+				}).catch(err => {
+					return err;
+				});
+
 			}).catch(err => {
 				throw err;
 			});
@@ -271,13 +329,6 @@ class ContactOwner {
 			logger.warn(err);
 			throw new errors.BadRequest('It exists no teams with access rights, to send this message.');
 		});
-		/*
-				Promise.all([getSessionUser(app,params),waitTeams]).then(([sessionUser,teams])=>{
-		
-				}).catch(err=>{
-					logger.warn(err);
-					throw new errors.Forbidden('You have not the permission to do this.');
-				}); */
 	}
 
 	setup(app, path) {
@@ -584,4 +635,9 @@ module.exports = function () {
 	const teamsAdmin = app.service('/teams/manage/admin');
 	teamsAdmin.before(hooks.beforeAdmin);
 	teamsAdmin.after(hooks.afterAdmin);
+
+	app.use('/teams/manage/contact', new ContactOwner());
+	const contactOwner = app.service('/teams/manage/contact');
+	contactOwner.before(hooks.beforeContact);
+	contactOwner.after(hooks.afterContact);
 };

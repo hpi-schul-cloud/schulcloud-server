@@ -636,10 +636,12 @@ const sendInfo = hook => {
         });
         return hook;
     }).catch(err => {
-        logger.warn("Errors on user detection", err);
-        throw new errors.NotAcceptable("Errors on user detection", err);
+        logger.warn(err);
+        throw new errors.NotAcceptable("Errors on user detection");
     });
 };
+exports.sendInfo = sendInfo;
+
 
 exports.beforeExtern = {
     all: [
@@ -696,6 +698,31 @@ exports.beforeAdmin = {
 };
 
 exports.afterAdmin = {
+    all: [],
+    find: [],
+    get: [],
+    create: [],
+    update: [],
+    patch: [],  
+    remove: []
+};
+
+exports.beforeContact = {    
+    all: [
+        auth.hooks.authenticate('jwt'),
+        isAdmin,
+        existId,
+        filterToRelated([], 'params.query')
+    ],
+    find: [],
+    get: [],
+    create: [],
+    update: [],
+    patch: [],  
+    remove: []
+};
+
+exports.afterContact = {    
     all: [],
     find: [],
     get: [],
