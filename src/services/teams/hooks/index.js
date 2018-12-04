@@ -706,7 +706,7 @@ exports.afterAdmin = {
     patch: [],  
     remove: []
 };
-
+/*
 exports.beforeContact = {    
     all: [
         auth.hooks.authenticate('jwt'),
@@ -714,10 +714,10 @@ exports.beforeContact = {
         existId,
         filterToRelated([], 'params.query')
     ],
-    find: [],
-    get: [],
+    find: [blockedMethod],
+    get: [blockedMethod],
     create: [],
-    update: [],
+    update: [blockedMethod],
     patch: [],  
     remove: []
 };
@@ -731,3 +731,4 @@ exports.afterContact = {
     patch: [],  
     remove: []
 };
+*/
