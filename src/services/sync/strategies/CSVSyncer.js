@@ -218,15 +218,15 @@ class CSVSyncer extends Syncer {
 	async getClassObject(klass) {
 		const formats = [
 			{
-				regex: /^\d{1,2}.*$/,
+				regex: /^((?:1[0-3])|[1-9])(\D.*)$/,
 				values: async string => {
-					const gradeLevelName = string.match(/^(\d{1,2})/)[1];
-					const gradeLevel = await this.findOrCreateGradeLevel({
+					const gradeLevelName = string.match(/^((?:1[0-3])|[1-9])(\D.*)$/)[1];
+					const gradeLevel = await this.findGradeLevel({
 						name: gradeLevelName
 					});
 					return {
 						nameFormat: 'gradeLevel+name',
-						name: string.match(/^\d{1,2}(.*)$/)[1],
+						name: string.match(/^((?:1[0-3])|[1-9])(\D.*)$/)[2],
 						gradeLevel,
 					};
 				},
@@ -263,16 +263,16 @@ class CSVSyncer extends Syncer {
 		return existing[0];
 	}
 
-	async findOrCreateGradeLevel(query) {
+	async findGradeLevel(query) {
 		const existing = await this.app.service('/gradeLevels').find({
 			query,
 			paginate: false,
 			lean: true,
 		});
-		if (existing.length === 0) {
-			return await this.app.service('/gradeLevels').create(query);
+		if (existing.length >= 0) {
+			return existing[0];
 		}
-		return existing[0];
+		throw new Error('Invalid grade level');
 	}
 
 	async buildClassMapping(classes) {
