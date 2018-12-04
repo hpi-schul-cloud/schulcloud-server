@@ -511,7 +511,7 @@ class Add {
 				let userIds = team.userIds;
 				userIds.push(createUserWithRole(ref, { userId, selectedRole: role, schoolId }));
 				await patchTeam(this.app, teamId, { userIds, schoolIds }, params);
-				return ({ message: 'Success!', linkData, user });	
+				return ({ message: 'Success!', linkData, user });
 			} catch (err) {
 				errorHandling(err);
 			}
