@@ -39,7 +39,7 @@ const fileStorageService = {
 
 	/**
 	 * @param data, file data
-	 * @param params, 
+	 * @param params,
 	 * @returns {Promise}
 	 */
 	async create(data, params) {
@@ -85,7 +85,7 @@ const fileStorageService = {
 		if (!sendPermissions && refOwnerModel === 'teams') {
 			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
 			sendPermissions = teamObject.filePermission;
-		}else{
+		} else {
 			sendPermissions = [];
 		}
 
@@ -186,33 +186,29 @@ const signedUrlService = {
 
 		const { payload: { userId } } = params;
 		const strategy = createCorrectStrategy(params.payload.fileStorageType);
+		const flatFileName = generateFlatFileName(filename);
 
 		const parentPromise = parent ? FileModel.findOne({ parent, name: filename }).exec() : Promise.resolve({});
 
-		return parentPromise.then(res => {
-
-			const flatFileName = generateFlatFileName(filename);
-			const permissionPromise = parent ? canCreate(userId, parent) : Promise.resolve({});
-
-			return permissionPromise.then(() => {
-
-				let header = {
+		return parentPromise
+			.then(() => parent ? canCreate(userId, parent) : Promise.resolve({}))
+			.then(() => {
+				return strategy.generateSignedUrl({userId, flatFileName, fileType});
+			})
+			.then(res => {
+				const header =  {
 					// add meta data for later using
 					"Content-Type": fileType,
 					"x-amz-meta-name": filename,
 					"x-amz-meta-flat-name": flatFileName,
 					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 				};
-
-				return strategy.generateSignedUrl({ userId, flatFileName, fileType })
-					.then(res => {
-						return {
-							url: res,
-							header: header
-						};
-					});
-			});
-		});
+				return {
+					url: res,
+					header: header
+				};
+			})
+			.catch(() => new errors.Forbidden());
 	},
 
 	async find({ query, payload }) {
@@ -225,8 +221,30 @@ const signedUrlService = {
 			throw new errors.NotFound('File seems not to be there.');
 		}
 
+		const creatorId = fileObject.permissions[0].refId;
+
 		return canRead(userId, file)
-			.then(() => strategy.getSignedUrl({ userId, flatFileName: fileObject.storageFileName, download }))
+			.then(() => strategy.getSignedUrl({ userId: creatorId, flatFileName: fileObject.storageFileName, download}))
+			.then(res => ({
+				url: res,
+			}))
+			.catch(() => new errors.Forbidden());
+	},
+
+	async patch(_id, data, params) {
+		const { payload } = params;
+		const { userId } = payload;
+		const strategy = createCorrectStrategy(payload.fileStorageType);
+		const fileObject = await FileModel.findOne({ _id }).exec();
+
+		if (!fileObject) {
+			throw new errors.NotFound('File seems not to be there.');
+		}
+
+		const creatorId = fileObject.permissions[0].refId;
+
+		return canRead(userId, _id)
+			.then(() => strategy.getSignedUrl({ userId: creatorId, flatFileName: fileObject.storageFileName, action: 'putObject'}))
 			.then(res => ({
 				url: res,
 			}))

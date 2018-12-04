@@ -45,7 +45,7 @@ module.exports = function () {
 	const options = {
 		Model: user.userModel,
 		paginate: {
-			default: 25,
+			default: 1000,
 			max: 1000
 		},
 		lean: true
