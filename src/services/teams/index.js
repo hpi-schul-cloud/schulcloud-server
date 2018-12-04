@@ -329,23 +329,7 @@ class AdminOverview {
 		this.app = app;
 	}
 }
-/*
-class ContactOwner {
-	constructor(options) {
-		this.options = options || {};
-		this.docs = {};
 
-		if (process.env.SC_SHORT_TITLE === undefined)
-			throw new errors.NotAcceptable('SC_SHORT_TITLE is not defined.');
-	}
-
-	
-
-	setup(app, path) {
-		this.app = app;
-	}
-}
-*/
 class Get {
 	constructor(options) {
 		this.options = options || {};
@@ -643,8 +627,4 @@ module.exports = function () {
 	teamsAdmin.before(hooks.beforeAdmin);
 	teamsAdmin.after(hooks.afterAdmin);
 
-/*	app.use('/teams/manage/contact', new ContactOwner());
-	const contactOwner = app.service('/teams/manage/contact');
-	contactOwner.before(hooks.beforeContact);
-	contactOwner.after(hooks.afterContact); */
 };

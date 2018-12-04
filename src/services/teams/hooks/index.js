@@ -640,8 +640,23 @@ const sendInfo = hook => {
         throw new errors.NotAcceptable("Errors on user detection");
     });
 };
-exports.sendInfo = sendInfo;
+//exports.sendInfo = sendInfo;
 
+const isTeacherDirectlyImport=hook=>{
+    const userId = hook.data.userId;
+    if(userId){
+        return hook.app.service('users').get(userId,{query:{$populate:'roles'}}).then(user=>{
+            const roleNames = user.roles.map(role=>role.name);
+            if(!roleNames.includes('teacher'))
+                throw "Is no teacher";
+            return hook;
+        }).catch(err=>{
+            logger.warn(err);
+            throw new errors.Forbidden('You have not the permission to do this.');
+        });
+    }
+    return hook;
+};
 
 exports.beforeExtern = {
     all: [
@@ -657,7 +672,8 @@ exports.beforeExtern = {
         dataExist,
         teamRolesToHook,
         hasTeamPermission(['INVITE_EXPERTS', 'INVITE_ADMINISTRATORS']),
-        filterToRelated(['userId', 'email', 'role'], 'data')
+        filterToRelated(['userId', 'email', 'role'], 'data'),
+        isTeacherDirectlyImport
     ],   //later with switch ..see role names
     remove: [blockedMethod]
 };
@@ -691,7 +707,7 @@ exports.beforeAdmin = {
     ],
     find: [],
     get: [blockedMethod],
-    create: [blockedMethod],
+    create: [],
     update: [blockedMethod],
     patch: [ filterToRelated('userId', 'data')],  
     remove: []
@@ -706,29 +722,3 @@ exports.afterAdmin = {
     patch: [],  
     remove: []
 };
-/*
-exports.beforeContact = {    
-    all: [
-        auth.hooks.authenticate('jwt'),
-        isAdmin,
-        existId,
-        filterToRelated([], 'params.query')
-    ],
-    find: [blockedMethod],
-    get: [blockedMethod],
-    create: [],
-    update: [blockedMethod],
-    patch: [],  
-    remove: []
-};
-
-exports.afterContact = {    
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],  
-    remove: []
-};
-*/
