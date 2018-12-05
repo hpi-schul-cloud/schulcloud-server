@@ -48,7 +48,7 @@ class AbstractLDAPStrategy {
      * @abstract
      * @param {School} school the school
      * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
-     * (Array) roles = ['teacher', 'student']
+     * (Array) roles = ['teacher', 'student', 'administrator']
      */
     getUsers(school) {
         throw new TypeError('Method has to be implemented.');

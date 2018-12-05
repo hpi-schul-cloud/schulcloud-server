@@ -1,10 +1,12 @@
 const AbstractLDAPStrategy = require('./interface');
 const UniventionLDAPStrategy = require('./univention');
 const iServLDAPStrategy = require('./iserv');
+const generalLDAPStrategy = require('./general');
 
 const strategies = {
     'univention': UniventionLDAPStrategy,
-    'iserv': iServLDAPStrategy
+    'iserv': iServLDAPStrategy,
+    'general': generalLDAPStrategy
 };
 
 /**

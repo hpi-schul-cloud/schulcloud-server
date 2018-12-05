@@ -44,7 +44,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @public
      * @see AbstractLDAPStrategy#getUsers
      * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
-     * (Array) roles = ['teacher', 'student']
+     * (Array) roles = ['teacher', 'student', 'administrator']
      * @memberof UniventionLDAPStrategy
      */
     getUsers(school) {

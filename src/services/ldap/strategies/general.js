@@ -3,10 +3,10 @@ const request = require('request-promise-native');
 const AbstractLDAPStrategy = require('./interface.js');
 
 /**
- * iServ-specific LDAP functionality
+ * general LDAP functionality
  * @implements {AbstractLDAPStrategy}
  */
-class iServLDAPStrategy extends AbstractLDAPStrategy {
+class generalLDAPStrategy extends AbstractLDAPStrategy {
 	constructor(app, config) {
         super(app, config);
     }
@@ -15,7 +15,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @public
      * @see AbstractLDAPStrategy#getSchoolsQuery
      * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      */
     getSchools() {
         return Promise.resolve([{
@@ -29,13 +29,13 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @see AbstractLDAPStrategy#getUsers
      * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
      * (Array) roles = ['teacher', 'student', 'administrator']
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      */
     getUsers(school) {
         const options = {
             filter: 'objectClass=person',
             scope: 'sub',
-            attributes: ['givenName', 'sn', 'dn', 'uuid', 'uid', 'mail', 'objectClass', 'memberOf']
+            attributes: ['givenName', 'sn', 'dn', 'uuid', 'uid', 'mail', 'role', 'memberOf']
         };
         const searchString = `ou=users,${this.config.rootPath}`;
         return this.app.service('ldap').searchCollection(this.config, searchString, options)
@@ -43,23 +43,17 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
             const results = [];
             data.forEach(obj => {
                 const roles = [];
-                if (!Array.isArray(obj.memberOf)) {
-                    obj.memberOf = [obj.memberOf];
+                if (obj.role == 'ROLE_STUDENT') {
+                    roles.push('student');
                 }
-                if (obj.memberOf.includes(this.config.providerOptions.TeacherMembershipPath)) {
+                if (obj.role == 'ROLE_TEACHER') {
                     roles.push('teacher');
                 }
-                if (obj.memberOf.includes(this.config.providerOptions.AdminMembershipPath)) {
+                if (obj.role == 'ROLE_ADMIN') {
                     roles.push('administrator');
                 }
-                if (roles.length === 0) {
-                    const ignoredUser = obj.memberOf.some(item => {
-                        return this.config.providerOptions.IgnoreMembershipPath.includes(item);
-                    });
-                    if (ignoredUser || !obj.mail || !obj.givenName || !obj.sn || !obj.uuid || !obj.uid) {
-                        return;
-                    }
-                    roles.push('student');
+                if (obj.role == 'ROLE_NO_SC') {
+                    return;
                 }
 
                 results.push({
@@ -80,17 +74,32 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @public
      * @see AbstractLDAPStrategy#getClasses
      * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      */
     getClasses(school) {
-        return [];
+        const options = {
+            filter: 'type=schoolClass',
+            scope: 'sub',
+            attributes: ['dn', 'sn', 'uniqueMember']
+        };
+        const searchString = `ou=groups,${this.config.rootPath}`;
+        return this.app.service('ldap').searchCollection(this.config, searchString, options)
+        .then(data => {
+            return data.map(obj => {
+                return {
+                    className: obj.sn,
+                    ldapDn: obj.dn,
+                    uniqueMembers: obj.uniqueMember
+                };
+            });
+        });
     }
 
     /**
      * @public
      * @see AbstractLDAPStrategy#getExpertsQuery
      * @returns {LDAPQueryOptions} LDAP query options
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      */
     getExpertsQuery() {
         const options = {
@@ -107,7 +116,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @see AbstractLDAPStrategy#addUserToGroup
      * @returns {Promise} resolves with truthy result, or rejects with error
      * @see _updateUserGroups
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      */
     addUserToGroup(user, role, group) {
         group = Object.assign(group, { role: role.name });
@@ -119,7 +128,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @see AbstractLDAPStrategy#removeUserFromGroup
      * @returns {Promise} resolves with truthy result, or rejects with error
      * @see _updateUserGroups
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      */
     removeUserFromGroup(user, role, group) {
 		return this._updateUserGroups(user, [group], 'delete');
@@ -130,7 +139,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @param {String} userUUID the UUID of the user to be altered
      * @param {Array[LDAPGroup]} groups array of LDAP group objects (name, description)
      * @returns {Buffer} Buffer containing JSON-object
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      * @private
      */
     _generateGroupFile(userUUID, groups) {
@@ -148,7 +157,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @param {Array[LDAPGroup]} groups array of LDAP group objects (name, description)
      * @param {String} [method='create'] either 'create' (default) or 'remove'
      * @returns {Object} form data object
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      * @private
      */
     _generateGroupUpdateFormData(user, groups, method='create') {
@@ -168,7 +177,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
     }
 
     /**
-     * Generate and fire Univention API request to add or remove users from
+     * Generate and fire general API request to add or remove users from
      * groups
      * @param {User} user the user object
      * @param {Array[LDAPGroup]} groups array of LDAP group objects (name,
@@ -180,7 +189,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * `UniventionLDAPStrategy#_scheduleResponseCheck` to check for success or
      * errors.
      * @see _scheduleResponseCheck
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      * @private
      */
     _updateUserGroups(user, groups, method='create') {
@@ -196,10 +205,10 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
     }
 
     /**
-     * Generate Univention API request options (authentication, headers, etc.)
+     * Generate general API request options (authentication, headers, etc.)
      * @param {Object} [overrides={}] optional object containing overrides
      * @returns {Object} options to be consumed by API request
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      * @private
      */
     _getRequestOptions(overrides={}) {
@@ -223,7 +232,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * Publish an event on the global event bus
      * @param {String} event event name
      * @param {Object} [data={}] optional data to be published
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      * @private
      */
     _emitStatus(event, data={}) {
@@ -237,7 +246,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * 4 with every retry)
      * @param {number} [retries=5] optional number of retries if no final status
      * is received
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      * @private
      */
     _scheduleResponseCheck(response, action, timeout=2000, retries=5) {
@@ -273,7 +282,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @param {user} user the user object
      * @param {account} account the account object
      * @returns {Buffer} Buffer containing JSON-object
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      * @private
      */
     _generateExpertFileData(user, account) {
@@ -293,7 +302,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @param {User} user the user object
      * @param {Account} account the account object
      * @returns {Object} form data object
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      * @private
      */
     _generateUpdateExpertFormData(user, account) {
@@ -316,7 +325,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @public
      * @see AbstractLDAPStrategy#createExpert
      * @returns {Promise} resolves with truthy result, or rejects with error
-     * @memberof iServLDAPStrategy
+     * @memberof generalLDAPStrategy
      */
     createExpert(user, account) {
 		const options = this._getRequestOptions({
@@ -331,4 +340,4 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
     }
 }
 
-module.exports = iServLDAPStrategy;
+module.exports = generalLDAPStrategy;
