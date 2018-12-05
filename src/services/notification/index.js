@@ -133,10 +133,11 @@ class DeviceService {
 
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
+		const notification = this.app.get('notification') || {};
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/devices/' + userId +'?token=' + userId,
+			uri: serviceUrls.notification + '/devices/' + notification.platformId +'/' + userId,
 			headers: {
 				'token': userId
 			},
