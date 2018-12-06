@@ -329,26 +329,41 @@ const decorateUser = (hook) => {
  * @returns {object} - the hook with the decorated user avatar
  */
 const decorateAvatar = (hook) => {
-	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-	hook.result.data = (hook.result.data || []).map(user => {
-		if (user.firstName && user.lastName){
-			user.avatarInitials = user.firstName.charAt(0) + user.lastName.charAt(0);
-		}else{
-			user.avatarInitials = "?";
-		}
-		//css readable value like "#ff0000" needed
-		const colors = ["#4a4e4d", "#0e9aa7", "#3da4ab", "#f6cd61", "#fe8a71"];
-		if (user.customAvatarBackgroundColor){
-			user.avatarBackgroundColor = user.customAvatarBackgroundColor;
-		}else{
-			// choose colors based on initials 
-			var index = (user.avatarInitials.charCodeAt(0) + user.avatarInitials.charCodeAt(1)) % colors.length;
-			user.avatarBackgroundColor = colors[index];	
-		} 
-		return user;
-	});
+	if (hook.result.total){
+		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
+		(hook.result.data || []).map(user => {
+			user = setAvatarData(user);
+		});
+	}else{
+		//run and find with only one user
+		hook.result = setAvatarData(hook.result);
+	}
+
 	return Promise.resolve(hook);
 };
+
+/**
+ *
+ * @param user {object} - a user
+ * @returns {object} - a user with avatar info
+ */
+const setAvatarData = (user) => {
+	if (user.firstName && user.lastName){
+		user.avatarInitials = user.firstName.charAt(0) + user.lastName.charAt(0);
+	}else{
+		user.avatarInitials = "?";
+	}
+	//css readable value like "#ff0000" needed
+	const colors = ["#4a4e4d", "#0e9aa7", "#3da4ab", "#f6cd61", "#fe8a71"];
+	if (user.customAvatarBackgroundColor){
+		user.avatarBackgroundColor = user.customAvatarBackgroundColor;
+	}else{
+		// choose colors based on initials 
+		var index = (user.avatarInitials.charCodeAt(0) + user.avatarInitials.charCodeAt(1)) % colors.length;
+		user.avatarBackgroundColor = colors[index];	
+	} 
+	return user;
+}
 
 /**
  *
