@@ -326,6 +326,34 @@ const decorateUser = (hook) => {
 /**
  *
  * @param hook {object} - the hook of the server-request
+ * @returns {object} - the hook with the decorated user avatar
+ */
+const decorateAvatar = (hook) => {
+	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
+	hook.result.data = (hook.result.data || []).map(user => {
+		if (user.firstName && user.lastName){
+			user.avatarInitials = user.firstName.charAt(0) + user.lastName.charAt(0);
+		}else{
+			user.avatarInitials = "?";
+		}
+		//css readable value like "#ff0000" needed
+		const colors = ["#4a4e4d", "#0e9aa7", "#3da4ab", "#f6cd61", "#fe8a71"];
+		if (user.customAvatarBackgroundColor){
+			user.avatarBackgroundColor = user.customAvatarBackgroundColor;
+		}else{
+			// choose colors based on initials 
+			var index = (user.avatarInitials.charCodeAt(0) + user.avatarInitials.charCodeAt(1)) % colors.length;
+			user.avatarBackgroundColor = colors[index];	
+		} 
+		user.colorIndex = index;
+		return user;
+	});
+	return Promise.resolve(hook);
+};
+
+/**
+ *
+ * @param hook {object} - the hook of the server-request
  * @returns {object} - the hook with the decorated users
  */
 const decorateUsers = (hook) => {
@@ -359,8 +387,9 @@ const User = require('../model');
 
 exports.after = {
 	all: [],
-	find: [decorateUsers],
+	find: [decorateAvatar, decorateUsers],
 	get: [
+		decorateAvatar,
 		decorateUser,
 		globalHooks.computeProperty(User.userModel, 'getPermissions', 'permissions'),
 		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'}))
