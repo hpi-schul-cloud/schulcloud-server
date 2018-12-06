@@ -345,7 +345,6 @@ const decorateAvatar = (hook) => {
 			var index = (user.avatarInitials.charCodeAt(0) + user.avatarInitials.charCodeAt(1)) % colors.length;
 			user.avatarBackgroundColor = colors[index];	
 		} 
-		user.colorIndex = index;
 		return user;
 	});
 	return Promise.resolve(hook);
