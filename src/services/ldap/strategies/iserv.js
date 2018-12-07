@@ -13,7 +13,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 
     /**
      * @public
-     * @see AbstractLDAPStrategy#getSchoolsQuery
+     * @see AbstractLDAPStrategy#getSchools
      * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
      * @memberof iServLDAPStrategy
      */
@@ -83,7 +83,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @memberof iServLDAPStrategy
      */
     getClasses(school) {
-        return [];
+        return Promise.resolve([]);
     }
 
     /**
