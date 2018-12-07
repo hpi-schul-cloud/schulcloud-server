@@ -5,7 +5,7 @@ const logger = require('winston');
 
 module.exports = function() {
 	const app = this;
-	const hydra = Hydra(app.settings.services.hydra.adminUrl);
+	const hydra = Hydra(app.settings.services.hydra);
 
 	// hydra.isInstanceAlive()
 	// 	.then(res => { logger.log('info', 'Hydra status is: ' + res.statusText) })
