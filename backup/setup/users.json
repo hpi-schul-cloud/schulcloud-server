@@ -82,6 +82,26 @@
 	]
 },
 {
+	"_id": {
+		"$oid": "0000d231816abba584714c9c"
+	},
+	"__v": 0,
+	"firstName": "Super",
+	"lastName": "Hero",
+	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"birthday": { "$date": "1977-01-01T11:25:43.556Z" },
+	"preferences": {"firstLogin": true},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c95"
+		}
+	]
+},
+{
 	"_id" : {
 		"$oid": "58b40278dac20e0645353e3a"
 	},
