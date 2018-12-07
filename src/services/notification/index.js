@@ -10,8 +10,12 @@ const REQUEST_TIMEOUT = 8000; // in ms
  * @param response
  */
 const mapResponseProps = (response) => {
-	response.type = response.data.type;
-	response.id = response.data.id;
+	if(response.data && response.data.type){
+		response.type = response.data.type;
+	}
+	if(response.data && response.data.id){
+		response.id = response.data.id;
+	}
 	return response;
 };
 
@@ -174,10 +178,11 @@ class DeviceService {
 
 	remove(id, params) {
 		const serviceUrls = this.app.get('services') || {};
+		const notification = this.app.get('notification') || {};
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/devices/' + userId + '/token/' + id,
+			uri: serviceUrls.notification + '/devices/' + notification.platformId + '/' + userId + '/' + id,
 			method: 'DELETE',
 			json: true,
 			timeout: REQUEST_TIMEOUT
