@@ -1,7 +1,5 @@
-const auth = require('feathers-authentication');
 const hooks = require("./hooks"); // TODO: oauth permissions
 const Hydra = require('./hydra.js');
-const logger = require('winston');
 
 module.exports = function() {
 	const app = this;
@@ -26,6 +24,7 @@ module.exports = function() {
 			return hydra.deleteOAuth2Client(id);
 		}
 	});
+	app.service('/oauth2/clients').before(hooks.before.clients);
 
 	app.use('/oauth2/loginRequest', {
 		get (challenge) {
@@ -38,13 +37,7 @@ module.exports = function() {
 			);
 		}
 	});
-
-	app.service('/oauth2/loginRequest').before({
-		patch: [
-			auth.hooks.authenticate('jwt'),
-			hooks.setSubject
-		]
-	})
+	app.service('/oauth2/loginRequest').before(hooks.before.loginRequest);
 
 	app.use('/oauth2/consentRequest', {
 		get (challenge) {
@@ -57,10 +50,12 @@ module.exports = function() {
 			);
 		}
 	});
+	app.service('/oauth2/consentRequest').before(hooks.before.consentRequest);
 
 	app.use('/oauth2/introspect', {
 		create (data) {
 			return hydra.introspectOAuth2Token(data.token, 'openid');
 		}
 	});
+	app.service('/oauth2/introspect').before(hooks.before.introspect);
 }
