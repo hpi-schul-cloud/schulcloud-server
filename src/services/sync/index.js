@@ -24,6 +24,9 @@ module.exports = function () {
 		}
 
 		async respond(data, params) {
+			if (! params.query || ! params.query.target) {
+				throw new errors.BadRequest('No target supplied');
+			}
 			const target = params.query.target;
 			const instances = [];
 			syncers.forEach(syncer => {
