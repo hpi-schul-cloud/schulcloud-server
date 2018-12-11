@@ -5,6 +5,7 @@ const logger = require('winston');
 
 const RocketChatModel = require('./model');
 const hooks = require('./hooks');
+const rocketChatAPIHooks = require('./hooks/rocketChatAPI')
 const docs = require('./docs');
 const { randomPass } = require('./randomPass');
 
@@ -71,7 +72,6 @@ class RocketChat {
 
     //todo: username nicht onfly generiert 
     get(userId, params) {
-
         return new Promise((resolve, reject) => {
             RocketChatModel.findOne({ userId }, { 'username': 1, 'pass': 1, '_id': 0 }, (err, login) => {
                 if (err)
@@ -140,6 +140,40 @@ class RocketChat {
     }
 }
 
+class RocketChatAPI {
+    constructor(options) {
+        this.options = options || {};
+        this.docs = docs;
+    }
+    find(params) {
+        return this.get(params.account.userId, params).then(result => {
+            return `<script>
+            window.parent.postMessage({
+              event: 'login-with-token',
+              loginToken: '${ result.authToken }'
+            }, http://dev-rocketchat.schul-cloud.org:3000/home);
+            </script>`;
+        });
+    }
+
+    create(data, params) {
+        return this.get(params.account.userId, params).then(result => {
+            return `<script>
+            window.parent.postMessage({
+              event: 'login-with-token',
+              loginToken: '${ result.authToken }'
+            }, http://dev-rocketchat.schul-cloud.org:3000/home);
+            </script>`;
+        });
+    }
+
+
+
+    setup(app, path) {
+        this.app = app;
+    }
+}
+
 module.exports = function () {
     const app = this;
 	/*const options = {
@@ -152,8 +186,13 @@ module.exports = function () {
     }; */
 
     app.use('/rocketChat', new RocketChat());
+    app.use('/rocketChatAPI', new RocketChatAPI());
 
     const rocketChatService = app.service('/rocketChat');
+    const rocketChatAPIService = app.service('/rocketChatAPI');
+
+    rocketChatAPIService.before(rocketChatAPIHooks.before);
+    rocketChatAPIService.after(rocketChatAPIHooks.after);
 
     rocketChatService.before(hooks.before);
     rocketChatService.after(hooks.after);
