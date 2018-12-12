@@ -52,6 +52,7 @@
 {
 	"_id": { "$oid": "0000d231816abba584714c9c" },
 	"__v": 0,
+	"email" : "superhero@schul-cloud.org",
 	"firstName": "Super",
 	"lastName": "Hero",
 	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
