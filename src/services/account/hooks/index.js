@@ -153,7 +153,7 @@ const protectUserId = (hook) => {
 	}
 }
 
-const securePatching = (hook) => {	
+const securePatching = (hook) => {
 	return Promise.all([
 		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
 		globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),

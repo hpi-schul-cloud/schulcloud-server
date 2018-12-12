@@ -21,6 +21,7 @@ const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
 const notification = require('./notification');
 const releases = require('./releases');
+const timelines = require('./timelines');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
 const wopi = require('./wopi');
@@ -57,6 +58,7 @@ module.exports = function () {
     app.configure(passwordRecovery);
     app.configure(notification);
     app.configure(releases);
+    app.configure(timelines);
     app.configure(helpdesk);
     app.configure(statistic);
     app.configure(pseudonym);
