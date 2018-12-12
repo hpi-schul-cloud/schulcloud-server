@@ -157,17 +157,58 @@ const fileStorageService = {
 	async patch(_id, data, params) {
 		const { payload: { userId } } = params;
 		const { parent } = data;
+		const fileObject = await FileModel.findOne({ _id: parent }).exec();
+		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
+		let owner, refOwnerModel, update = {};
 
-		const { owner, refOwnerModel } = await FileModel.findOne({ _id: parent }).exec();
+		if( fileObject ) {
+			owner = fileObject.owner;
+			refOwnerModel = fileObject.refOwnerModel;
+			update = {
+				parent,
+				owner,
+				refOwnerModel
+			};
+		}
+		else if( parent === userId.toString() ) {
+			owner = userId;
+			refOwnerModel = 'user';
+			update = {
+				owner,
+				refOwnerModel
+			};
+		}
+		else {
+			owner = parent;
+			refOwnerModel = teamObject ? 'teams' : 'course';
+			update = {
+				owner,
+				refOwnerModel
+			};
+		}
 
-		return canWrite(userId, parent)
+		const permissionPromise = () => {
+			if( fileObject ) {
+				return canWrite(userId, parent);
+			}
+
+			if( teamObject ) {
+				return new Promise((resolve, reject) => {
+					const teamMember = teamObject.userIds.find(_ => _.userId.toString() === userId.toString());
+					if(teamMember) {
+						return resolve();
+					}
+					return reject();
+				});
+			}
+
+			return Promise.resolve();
+		};
+
+		return permissionPromise()
 			.then(() => {
 				return FileModel.update({ _id }, {
-					$set: {
-						parent,
-						owner,
-						refOwnerModel
-					}
+					$set: update
 				}).exec();
 			})
 			.catch(() => new errors.Forbidden());
