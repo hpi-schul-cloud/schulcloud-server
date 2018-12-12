@@ -1,7 +1,5 @@
 [{
-	"_id": {
-		"$oid": "0000d213816abba584714c0a"
-	},
+	"_id": { "$oid": "0000d213816abba584714c0a" },
 	"__v": 0,
 	"firstName": "Thorsten",
 	"lastName": "Test",
@@ -10,40 +8,24 @@
 	"birthday": { "$date": "1977-01-01T11:25:43.556Z" },
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"preferences": {"firstLogin": true},
-	"schoolId": {
-		"$oid": "0000d186816abba584714c5f"
-	},
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c96"
-		}
-	]
+	"schoolId": { "$oid": "0000d186816abba584714c5f" },
+	"roles": [ { "$oid": "0000d186816abba584714c96" } ]
 },
 {
-	"_id": {
-		"$oid": "0000d213816abba584714c0b"
-	},
+	"_id": { "$oid": "0000d213816abba584714c0b" },
 	"__v": 0,
-	"firstName": "Jan",
-	"lastName": "Renz",
-	"email": "jan@example.org",
+	"firstName": "Janno",
+	"lastName": "Jura",
+	"email": "janno@example.org",
 	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"birthday": { "$date": "1977-01-01T11:25:43.556Z" },
 	"preferences": {"firstLogin": true},
-	"schoolId": {
-		"$oid": "0000d186816abba584714c5f"
-	},
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c96"
-		}
-	]
+	"schoolId": { "$oid": "0000d186816abba584714c5f" },
+	"roles": [ { "$oid": "0000d186816abba584714c96" } ]
 },
 {
-	"_id": {
-		"$oid": "0000d224816abba584714c9c"
-	},
+	"_id": { "$oid": "0000d224816abba584714c9c" },
 	"__v": 0,
 	"firstName": "Marla",
 	"lastName": "Mathe",
@@ -52,19 +34,11 @@
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"birthday": { "$date": "2010-01-01T11:25:43.556Z" },
 	"preferences": {"firstLogin": true},
-	"schoolId": {
-		"$oid": "0000d186816abba584714c5f"
-	},
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c99"
-		}
-	]
+	"schoolId": { "$oid": "0000d186816abba584714c5f" },
+	"roles": [ { "$oid": "0000d186816abba584714c99" } ]
 },
 {
-	"_id": {
-		"$oid": "0000d231816abba584714c9e"
-	},
+	"_id": { "$oid": "0000d231816abba584714c9e" },
 	"__v": 0,
 	"firstName": "Cord",
 	"lastName": "Carl",
@@ -72,22 +46,12 @@
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"birthday": { "$date": "1977-01-01T11:25:43.556Z" },
 	"preferences": {"firstLogin": true},
-	"schoolId": {
-		"$oid": "0000d186816abba584714c5f"
-	},
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c98"
-		}
-	]
+	"schoolId": { "$oid": "0000d186816abba584714c5f" },
+	"roles": [ { "$oid": "0000d186816abba584714c98" } ]
 },
 {
-	"_id" : {
-		"$oid": "58b40278dac20e0645353e3a"
-	},
-	"schoolId" : {
-		"$oid": "0000d186816abba584714c5f"
-	},
+	"_id" : { "$oid": "58b40278dac20e0645353e3a" },
+	"schoolId" : { "$oid": "0000d186816abba584714c5f" },
 	"firstName" : "Waldemar",
 	"lastName" : "Wunderlich",
 	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
@@ -95,17 +59,11 @@
 	"birthday": { "$date": "1989-01-01T11:25:43.556Z" },
 	"preferences": {"firstLogin": true},
 	"email" : "waldemar.wunderlich@schul-cloud.org",
-	"roles" : [
-		{
-			"$oid": "0000d186816abba584714c99"
-		}
-	],
+	"roles" : [ { "$oid": "0000d186816abba584714c99" } ],
 	"__v" : 0
 },
 {
-	"_id" : {
-		"$oid": "599ec14d8e4e364ec18ff46d"
-	},
+	"_id" : { "$oid": "599ec14d8e4e364ec18ff46d" },
 	"updatedAt" : { "$date": "2017-08-24T12:06:37.148Z" },
 	"createdAt" : { "$date": "2017-08-24T12:06:37.148Z" },
 	"email" : "demo-schueler@schul-cloud.org",
@@ -114,17 +72,11 @@
 	"preferences": {"firstLogin": true},
 	"firstName" : "Fritz",
 	"lastName" : "Schmidt",
-	"roles" : [
-		{
-			"$oid": "0000d186816abba584714d02"
-		}
-	],
+	"roles" : [ { "$oid": "0000d186816abba584714d02" } ],
 	"__v" : 0
 },
 {
-	"_id" : {
-		"$oid": "599ec1688e4e364ec18ff46e"
-		},
+	"_id" : { "$oid": "599ec1688e4e364ec18ff46e" },
 	"updatedAt" : { "$date": "2017-10-26T15:20:37.310Z" },
 	"createdAt" : { "$date": "2017-08-24T12:07:04.416Z" },
 	"email" : "demo-lehrer@schul-cloud.org",
@@ -133,11 +85,8 @@
 	"preferences": {"firstLogin": true},
 	"firstName" : "Erika",
 	"lastName" : "Meier",
-	"roles" : [
-		{ "$oid": "0000d186816abba584714d03" }
-	],
-	"__v" : 0,
-	"gender" : "female"
+	"roles" : [ { "$oid": "0000d186816abba584714d03" } ], 
+	"__v" : 0 
 },
 {
 	"_id" : { "$oid": "59ad4c412b442b7f81810285" },
@@ -149,10 +98,8 @@
 	"preferences": {"firstLogin": true},
 	"firstName" : "Klara",
 	"lastName" : "Fall",
-	"roles" : [
-		{ "$oid": "0000d186816abba584714c98"}
-	],
-	"__v" : 0
+	"roles" : [ { "$oid": "0000d186816abba584714c98"} ], 
+	"__v" : 0 
 },
 {
 	"_id" : { "$oid": "59ae89b71f513506904e1cc9" },
@@ -164,8 +111,6 @@
 	"birthday": { "$date": "2010-09-05T11:25:43.556Z" },
 	"preferences": {"firstLogin": true},
 	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
-	"roles" : [
-		{ "$oid": "0000d186816abba584714c99" }
-	],
-	"__v" : 0
+	"roles" : [ { "$oid": "0000d186816abba584714c99" } ], 
+	"__v" : 0 
 }]
