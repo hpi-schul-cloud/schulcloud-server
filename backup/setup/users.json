@@ -93,7 +93,7 @@
 	"birthday": { "$date": "1977-01-01T11:25:43.556Z" },
 	"preferences": {"firstLogin": true},
 	"schoolId": {
-		"$oid": "0000d186816abba584714c5f"
+		"$oid": "0000d186816abba584714c97"
 	},
 	"roles": [
 		{
