@@ -57,7 +57,8 @@ class WopiFilesInfoService {
 					Size: file.size,
 					Version: file['__v'],
 					UserFriendlyName: `${user.firstName} ${user.lastName}`,
-					UserCanWrite: canWrite
+					UserCanWrite: canWrite,
+					UserCanNotWriteRelative: true
 				}));
 			});
 			});
@@ -93,6 +94,7 @@ class WopiFilesContentsService {
 		// check whether a valid file is requested
 		return FileModel.findOne({_id: fileId}).then(file => {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
+			file.key = decodeURIComponent(file.key);
 
 			// generate signed Url for fetching file from storage
 			return signedUrlService.create({
@@ -127,6 +129,7 @@ class WopiFilesContentsService {
 		// check whether a valid file is requested
 		return FileModel.findOne({_id: fileId}).then(file => {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
+			file.key = decodeURIComponent(file.key);
 
 			// generate signedUrl for updating file to storage
 			return signedUrlService.create({

@@ -69,14 +69,20 @@ module.exports = function() {
 		}
 	};
 
+	const authHeaderExtractor = function(req) {
+		let authHeader = req.headers.authorization;
+		if(!authHeader){ return undefined; }
+		return authHeader.replace("Bearer ", '');
+	}
+
 	const jwtConfig = {
 		name: 'jwt',
 		entity: 'account',
 		service: 'accounts',
 		header: 'Authorization',
 		jwtFromRequest: extractors.fromExtractors([
-			cookieExtractor, 
-			extractors.fromHeader("authorization")
+			cookieExtractor,
+			authHeaderExtractor
 		]),
 		secretOrKey: authenticationSecret
 	};

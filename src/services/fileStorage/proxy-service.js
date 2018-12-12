@@ -459,6 +459,8 @@ class NewFileService {
 	create(data, params) {
 		const {path, name, key, studentCanEdit, schoolId} = data;
 
+		let newKey = `${path}${encodeURIComponent(name)}`;
+
 		let signedUrlService = this.app.service('fileStorage/signedUrl');
 		let fType = name.split('.');
 		fType = fType[fType.length - 1];
@@ -470,7 +472,7 @@ class NewFileService {
 			path: key,
 			fileType: returnFileType(name),
 			action: 'putObject',
-			flatFileName: flatFileName,
+			flatFileName: encodeURIComponent(flatFileName),
 			userId: params.account.userId
 		}).then(signedUrl => {
 			let options = {
@@ -483,9 +485,9 @@ class NewFileService {
 				return FileModel.create({
 					path,
 					name,
-					key,
+					key: newKey,
 					size: buffer.length,
-					flatFileName: flatFileName,
+					flatFileName: encodeURIComponent(flatFileName),
 					type: returnFileType(name),
 					thumbnail: 'https://schulcloud.org/images/login-right.png',
 					studentCanEdit,

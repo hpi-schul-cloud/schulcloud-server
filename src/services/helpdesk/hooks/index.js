@@ -18,6 +18,7 @@ function createInfoText(user, data){
 function createFeedbackText(user, data){
 	let text = "User: " + user + "\n"
 	+ "Schule: " + data.schoolName + "\n"
+	+ "Instanz: " + data.cloud + "\n"
 	+ "Bereich ausgewählt: " + data.category + "\n";
 	if (data.desire && data.desire != ""){
 		text = text + "User schrieb folgendes: \n"
@@ -30,6 +31,7 @@ function createFeedbackText(user, data){
 		+ "Problem Kurzbeschreibung: " + data.subject + "\n"
 		+ "IST-Zustand: " + data.currentState + "\n"
 		+ "SOLL-Zustand: " + data.targetState;
+		if(data.notes) text = text + "\n Anmerkungen: " + data.notes;
 	}
 	return text;
 }

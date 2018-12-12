@@ -36,7 +36,8 @@ class Service {
             cid: data.cid,
             swOffline: data.cd3,
             swEnabled: data.cd4,
-            school: data.cd5
+            school: data.cd5,
+            networkProtocol: data.cd6
         });
         return model.save()
             .then(_ => 'success')

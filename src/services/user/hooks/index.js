@@ -75,9 +75,15 @@ const updateAccountUsername = (hook) => {
 	
 	accountService.find({ query: {userId: hook.id}})
 		.then(result =>{
+			if (result.length == 0) {
+				return Promise.resolve(hook);
+			}
 			let account = result[0];
 			let accountId = (account._id).toString();
-			if (!account.systemId){
+			if (!account.systemId){				
+				if (!hook.data.email) {
+					return Promise.resolve(hook);
+				}
 				const {email} = hook.data;
 				return accountService.patch(accountId, {username: email}, {account: hook.params.account})
 					.then(result => {
@@ -90,7 +96,7 @@ const updateAccountUsername = (hook) => {
 		}).catch(error => {
 			logger.log(error);
 			return Promise.reject(error);
-		})
+		});
 	};
   
 const removeStudentFromClasses = (hook) => {
@@ -108,7 +114,7 @@ const removeStudentFromClasses = (hook) => {
 				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
 				return classesService.patch(myClass._id, myClass);
 			})
-		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err)});
+		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err);});
 	});
 };
 
@@ -126,7 +132,7 @@ const removeStudentFromCourses = (hook) => {
 				course.userIds.splice(course.userIds.indexOf(userId), 1);
 				return coursesService.patch(course._id, course);
 			})
-		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err)});
+		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err);});
 	});
 };
 
@@ -236,11 +242,11 @@ const securePatching = (hook) => {
 		if (hook.params.account.userId != hook.id) {
 			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent)))
 			{
-				return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'))
+				return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'));
 			}
 		}
 		return Promise.resolve(hook);
-	})
+	});
 };
 
 exports.before = function(app) {
@@ -320,6 +326,48 @@ const decorateUser = (hook) => {
 /**
  *
  * @param hook {object} - the hook of the server-request
+ * @returns {object} - the hook with the decorated user avatar
+ */
+const decorateAvatar = (hook) => {
+	if (hook.result.total){
+		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
+		(hook.result.data || []).map(user => {
+			user = setAvatarData(user);
+		});
+	}else{
+		//run and find with only one user
+		hook.result = setAvatarData(hook.result);
+	}
+
+	return Promise.resolve(hook);
+};
+
+/**
+ *
+ * @param user {object} - a user
+ * @returns {object} - a user with avatar info
+ */
+const setAvatarData = (user) => {
+	if (user.firstName && user.lastName){
+		user.avatarInitials = user.firstName.charAt(0) + user.lastName.charAt(0);
+	}else{
+		user.avatarInitials = "?";
+	}
+	//css readable value like "#ff0000" needed
+	const colors = ["#4a4e4d", "#0e9aa7", "#3da4ab", "#f6cd61", "#fe8a71"];
+	if (user.customAvatarBackgroundColor){
+		user.avatarBackgroundColor = user.customAvatarBackgroundColor;
+	}else{
+		// choose colors based on initials 
+		var index = (user.avatarInitials.charCodeAt(0) + user.avatarInitials.charCodeAt(1)) % colors.length;
+		user.avatarBackgroundColor = colors[index];	
+	} 
+	return user;
+}
+
+/**
+ *
+ * @param hook {object} - the hook of the server-request
  * @returns {object} - the hook with the decorated users
  */
 const decorateUsers = (hook) => {
@@ -353,8 +401,9 @@ const User = require('../model');
 
 exports.after = {
 	all: [],
-	find: [decorateUsers],
+	find: [decorateAvatar, decorateUsers],
 	get: [
+		decorateAvatar,
 		decorateUser,
 		globalHooks.computeProperty(User.userModel, 'getPermissions', 'permissions'),
 		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'}))
