@@ -18,7 +18,7 @@ exports.ifNotLocal = function (hookForRemoteRequests) {
 
 exports.forceHookResolve = (forcedHook) => {
 	return (hook) => {
-		forcedHook(hook)
+		return forcedHook(hook)
 		.then((newHook) => {
 			return Promise.resolve(newHook);
 		})
