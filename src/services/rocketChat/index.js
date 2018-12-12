@@ -5,7 +5,6 @@ const logger = require('winston');
 
 const RocketChatModel = require('./model');
 const hooks = require('./hooks');
-const rocketChatAPIHooks = require('./hooks/rocketChatAPI')
 const docs = require('./docs');
 const { randomPass } = require('./randomPass');
 
@@ -35,8 +34,7 @@ class RocketChat {
         };
     }
 
-    //todo secret for rocketChat
-    create(data, params) {
+    createRocketChatAccount(data, params) {
         const userId = data.userId;
         if (userId === undefined)
             throw new errors.BadRequest('Missing data value.');
@@ -70,23 +68,41 @@ class RocketChat {
         });
     }
 
+    //todo secret for rocketChat
+    create(data, params) {
+        return this.createRocketChatAccount(data, params);
+    }
+
+    getOrCreateRocketChatAccount(userId, params) {
+        return RocketChatModel.findOne({ userId })
+        .then(login => {
+            if (!login) {
+                return this.createRocketChatAccount({userId}, params)
+                .then(res => {
+                    return RocketChatModel.findOne({ userId })
+                })
+            } else return Promise.resolve(login);
+        })
+        .then(login => {
+            return Promise.resolve({ username: login.username, password: login.pass });
+        }).catch(err => {
+            logger.warn(err);
+            reject(new errors.BadRequest('could not initialize rocketchat user', err));
+        });
+    }
+
     //todo: username nicht onfly generiert 
     get(userId, params) {
-        return new Promise((resolve, reject) => {
-            RocketChatModel.findOne({ userId }, { 'username': 1, 'pass': 1, '_id': 0 }, (err, login) => {
-                if (err)
-                    reject(new errors.BadRequest('Can not found user.', err));
-
-                const body = { username: login.username, password: login.pass };
-                request(this.getOptions('/api/v1/login', body)).then(res => {
-                    const authToken = (res.data || {}).authToken;
-                    if (res.status === "success" && authToken !== undefined)
-                        resolve({ authToken });
-                    else
-                        reject(new errors.BadRequest('False response data from rocketChat'));
-                }).catch(err => {
-                    reject(new errors.Forbidden('Can not take token from rocketChat.', err));
-                });
+        return this.getOrCreateRocketChatAccount(userId, params)
+        .then(login => {
+            return request(this.getOptions('/api/v1/login', login)).then(res => {
+                const authToken = (res.data || {}).authToken;
+                if (res.status === "success" && authToken !== undefined)
+                    return Promise.resolve({ authToken });
+                else
+                    return Promise.reject(new errors.BadRequest('False response data from rocketChat'));
+            }).catch(err => {
+                return Promise.reject(new errors.Forbidden('Can not take token from rocketChat.', err));
             });
         }).catch(err => {
             logger.warn(err);
