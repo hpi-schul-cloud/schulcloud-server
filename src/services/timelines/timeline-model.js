@@ -11,7 +11,8 @@ const Schema = mongoose.Schema;
 
 const timelineSchema = new Schema({
 	title: {type: String, required: true},
-	sourceUrl: {type: String, required: true},
+	fetchUrl: {type: String, required: true},
+	documentUrl: {type: String, required: true},
 	json: {type: String, required: true}
 });
 

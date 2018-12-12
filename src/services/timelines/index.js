@@ -18,7 +18,7 @@ class TimelineFetchService {
 
 			// fetch new data
 			let options = {
-				uri: timelineData.sourceUrl,
+				uri: timelineData.fetchUrl,
 				headers: {
 					'User-Agent': 'Request-Promise'
 				},
@@ -33,7 +33,7 @@ class TimelineFetchService {
 				);
 
 			}).catch((err) => {
-				throw new Error(`Can't receive data from ${timelineData.sourceUrl}`)
+				throw new Error(`Can't receive data from ${timelineData.fetchUrl}`)
 			});
 		});
 	}
@@ -46,7 +46,7 @@ module.exports = function () {
 		Model: timeline,
 		paginate: {
 			default: 1,
-			max: 1
+			max: 1000
 		},
 		lean: true
 	};
