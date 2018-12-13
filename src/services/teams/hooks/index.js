@@ -635,7 +635,7 @@ exports.before = {
     ], //todo: filterToRelated(keys.data,'data') 
     remove: [
         teamMainHook,
-        hasTeamPermission('DELETE_TEAM_sadasdasda')
+        hasTeamPermission('DELETE_TEAM')
     ]
 };
 
