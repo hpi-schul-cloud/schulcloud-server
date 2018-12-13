@@ -127,7 +127,7 @@ module.exports = function () {
 				if (expertSchoolId && linkInfo.hash) {
 					// expert registration link for new users
 					linkInfo.link = `${(data.host || process.env.HOST)}/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
-				} else if (teamId) {
+				} else if (teamId) {	/** @replaced logic is inside team services now **/
 					// team accept link for existing users
 					linkInfo.link = `${(data.host || process.env.HOST)}/teams/invitation/accept/${teamId}`.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
 				} else {

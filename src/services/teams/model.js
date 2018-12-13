@@ -49,11 +49,6 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 		type: [{type: Schema.Types.ObjectId, ref:'school'}],
 		required: true
 	},
-//	schoolIds:[{type: Schema.Types.ObjectId, required: true, ref:'school'}], //todo: test if required work f
-/*	schoolIds: {
-		type: Array,	//todo: [Schema.Types.ObjectId]
-		required: true 
-	}, */
 	//@override	    
 	userIds: [teamUserModel],
 	invitedUserIds: [teamInvitedUserModel],
@@ -61,7 +56,7 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
 	//	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],  todo: add later
 	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
-	color: { type: String, required: true, default: '#1DE9B6' },
+	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },
 	untilDate: { type: Date },
 	//	shareToken:  { type: String, unique: true },

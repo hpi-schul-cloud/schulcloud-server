@@ -36,13 +36,14 @@ const ifSuperhero = (roles) => {
     }
     return isSuperhero;
 };
+exports.ifSuperhero = ifSuperhero;
 
 /**
 * @helper 
 * @param {hook} hook 
 * @return {Object::User}
 */
-const getSessionUser = hook => {
+exports.getSessionUser = hook => {
     return new Promise((resolve, reject) => {
         const sessionUserId = bsonIdToString(hook.params.account.userId);
         const sessionUser = get(hook, 'sessionUser');
@@ -93,7 +94,7 @@ const addDefaultFilePermissions = (hook) => {
  * @param {Object::User} sessionUser 
  * @return {Object::hook.data} 
  */
-const updateMissingDataInHookForCreate = (hook, sessionUser) => {
+exports.updateMissingDataInHookForCreate = (hook, sessionUser) => {
     const userId = bsonIdToString(sessionUser._id);
     const schoolId = bsonIdToString(sessionUser.schoolId);
 
@@ -174,6 +175,7 @@ const isAcceptWay = (hook, teamId, oldTeam, users) => {
     }
     return false;
 };
+exports.isAcceptWay = isAcceptWay;
 
 /**
 * @helper
@@ -181,7 +183,7 @@ const isAcceptWay = (hook, teamId, oldTeam, users) => {
 * @param {Object::hook} hook
 * @return {Promise::Object::team}
 */
-const getTeam = (hook) => {
+exports.getTeam = (hook) => {
     return new Promise((resolve, reject) => {
         const method = hook.method;
         const teamId = hook.id || (hook.result || {})._id || hook.teamId || get(hook, 'teamId');
@@ -234,7 +236,7 @@ const getTeam = (hook) => {
 *   @param {Object::hook} hook
 *   @param {Object::{userId,schoolId, [selectedRole]}}
 */
-const createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) => {
+const createUserWithRole = exports.createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) => {
     if (isUndefined(hook.findRole))
         throw new errors.NotAcceptable('Please execute teamRolesToHook before.');
 
@@ -257,6 +259,9 @@ const createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) 
         schoolId: bsonIdToString(schoolId)
     }; //convert bson to string is only for faster debug
 };
+
+//exports.createUserWithRole = createUserWithRole;
+
 
 /**
  * return the different between arr1 in relation to arr2 
@@ -300,7 +305,7 @@ const arrayDiff = (oldArray, newArray, key) => {
  * @param {String} [key] - optional for objects in arrays
  * @return {Object::{remove:[],add:[]} }
  */
-const arrayRemoveAddDiffs = (baseArray, changedArray, key) => {
+exports.arrayRemoveAddDiffs = (baseArray, changedArray, key) => {
     return { remove: arrayDiff(baseArray, changedArray, key), add: arrayDiff(changedArray, baseArray, key) };
 };
 
@@ -420,7 +425,7 @@ const teamOwnerRoleExist = (hook, teamUsers, oldTeam, users) => {
  * @param {Array::TeamUser} teamUsers 
  * @return {Array::TeamUser}
  */
-const removeDuplicatedTeamUsers = (teamUsers) => {
+const removeDuplicatedTeamUsers = exports.removeDuplicatedTeamUsers = (teamUsers) => {
     let foundId = [];
     return teamUsers.reduce((stack, _teamUser) => {
         const id = bsonIdToString(_teamUser.userId);
@@ -442,7 +447,7 @@ const removeDuplicatedTeamUsers = (teamUsers) => {
  * @param {String||BsonId} sessionSchoolId
  * @return {Array::TeamUser, default:[]} 
  */
-const getTeamUsers = (hook, team, users, sessionSchoolId) => {
+exports.getTeamUsers = (hook, team, users, sessionSchoolId) => {
     let teamUsers = hook.data.userIds;
 
     if (isObject(teamUsers) || isString(teamUsers))
@@ -452,7 +457,7 @@ const getTeamUsers = (hook, team, users, sessionSchoolId) => {
         return [];
 
     teamUsers = mappedInputUserIdsToTeamUsers(hook, teamUsers, team, sessionSchoolId),
-        teamUsers = teamOwnerRoleExist(hook, teamUsers, team, users);
+    teamUsers = teamOwnerRoleExist(hook, teamUsers, team, users);
     teamUsers = removeDuplicatedTeamUsers(teamUsers);
     teamUsers = removeNotValidUsersBySchoolIds(team.schoolIds, teamUsers, users);
 
@@ -467,7 +472,7 @@ const getTeamUsers = (hook, team, users, sessionSchoolId) => {
  * @method all - but return for no hook.data or !patch || !create an empty array 
  * @return {Array::Object::User default:[]}
  */
-const populateUsersForEachUserIdinHookData = hook => {
+exports.populateUsersForEachUserIdinHookData = hook => {
     return new Promise((resolve, reject) => {
         if (['create', 'patch'].includes(hook.method) && hasKey(hook, 'data') && isArrayWithElement(hook.data.userIds)) {
             hook.app.service('users').find({
@@ -488,7 +493,7 @@ const populateUsersForEachUserIdinHookData = hook => {
         }
     });
 };
-
+/*
 module.exports = {
     populateUsersForEachUserIdinHookData,
     getTeamUsers,
@@ -500,3 +505,4 @@ module.exports = {
     isAcceptWay,
     createUserWithRole
 };
+*/

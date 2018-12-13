@@ -1,0 +1,101 @@
+const errors = require('feathers-errors');
+const logger = require('winston');
+const { teamRolesToHook } = require('./hooks');
+const { isArrayWithElement, isDefined, bsonIdToString } = require('./hooks/collection');
+
+/**
+ * It is important to use the params information from original request and defined the request to local.
+ * @param {*} params 
+ */
+const local = (params) => {
+    //	params.provider=undefined;
+    //return params;
+    if (typeof ((params || {}).provider) != 'undefined')
+        delete params.provider;
+    return params;
+};
+
+/**
+ * 
+ * @param {*} team 
+ * @param {*} user 
+ */
+exports.getUpdatedSchoolIdArray = (team, user) => {
+    let schoolIds = bsonIdToString(team.schoolIds);
+    const userSchoolId = bsonIdToString(user.schoolId);
+
+    if (schoolIds.includes(userSchoolId) === false)
+        schoolIds.push(userSchoolId);
+
+    return schoolIds;
+};
+
+/**
+ * 
+ * @param {*} team 
+ * @param {*} email 
+ */
+exports.removeInvitedUserByEmail = (team, email) => {
+    return team.invitedUserIds.filter(user => user.email !== email);
+};
+
+/**
+ * 
+ * @param {*} app 
+ * @param {*} params 
+ */
+const getSessionUser = exports.getSessionUser = (refClass, params, userId) => {
+    const sesessionUserId = userId || bsonIdToString((params.account || {}).userId);
+
+    return refClass.app.service('users').get(sesessionUserId).catch(err => {
+        logger.warn(err);
+        throw new errors.Forbidden('You have not the permission.');
+    });
+};
+
+/**
+ * 
+ * @param {*} app 
+ * @param {*} teamId 
+ * @param {*} data 
+ * @param {*} params 
+ */
+exports.patchTeam = (refClass, teamId, data, params) => {
+    return refClass.app.service('teams').patch(teamId, data, local(params)).catch(err => {
+        logger.warn(err);
+        throw new errors.BadRequest('Can not patch team.');
+    });
+};
+
+/**
+ * 
+ * @param {*} app 
+ * @param {*} teamId 
+ */
+const getTeam = exports.getTeam = (refClass, teamId) => {		//todo: app to this -> this.app
+    return refClass.app.service('teams').get(teamId).catch(err => {
+        logger.warn(err);
+        throw new errors.Forbidden('You have not the permission.');
+    });
+};
+
+exports.extractOne = (find, key) => {
+    if (find.total !== 1 && isArrayWithElement(find.data))
+        throw 'Can not extract one from find data.';
+    find = isDefined(key) ? find.data[0][key] : find.data[0];
+    return Promise.resolve(find);
+};
+
+/**
+ * The hooks.teamRolesToHook(refClass) is execute one time for refClass, to added. 
+ * To load new data, the docker instance must be restarted.
+ * It loads all team roles and give you a function this.findRole('name', 'teamowner', '_id'); to select it.
+ * @param {*} refClass 
+ * @param {*} teamId 
+ * @param {*} params 
+ */
+exports.getBasic = (refClass, teamId, params, userId) => {
+    return Promise.all([teamRolesToHook(refClass), getSessionUser(refClass, params, userId), getTeam(refClass, teamId)]);
+};
+
+

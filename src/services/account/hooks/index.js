@@ -160,10 +160,10 @@ const securePatching = (hook) => {
 
 const clearPwHash = hook =>{
 	if(hook.result.password){
-		delete hook.result.password
+		delete hook.result.password;
 	}
-	return hook
-}
+	return hook;
+};
 
 /**
  * @method get
@@ -178,11 +178,11 @@ const filterToRelated=(keys)=>{
 			if(hook.result[key]!==undefined){
 				newResult[key]=hook.result[key];
 			}
-		})
+		});
 		hook.result=newResult;
-		return hook
+		return hook;
 	});
-}
+};
 
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')

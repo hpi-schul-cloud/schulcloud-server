@@ -5,6 +5,7 @@ const errors = require('feathers-errors');
 const globalHooks = require('../../../hooks');
 const logger = require('winston');
 const { set, get } = require('./scope');
+const createEmailText = require('./mail-text.js');
 const {
     populateUsersForEachUserIdinHookData,
     getTeamUsers,
@@ -140,7 +141,7 @@ const updateUsersForEachClass = (hook) => {
  * test if id exist and id a valid moongose object id
  * @beforeHook
  * @param {Object::hook} hook 
- * @returns {Promise::hook}
+ * @return {Promise::hook}
  */
 const existId = (hook) => {
     if (['find', 'create'].includes(hook.method)) {
@@ -157,10 +158,10 @@ const existId = (hook) => {
  * @afterHook
  * @method patch,get
  * @param {Object::hook} hook - Add the current user to top level, easy access of it role and permissions.
- * @returns {Object::hook}
+ * @return {Object::hook}
  */
-const addCurrentUser = globalHooks.ifNotLocal((hook) => {
-    if (isObject(hook.result) && hasKey(hook.result, '_id')) {
+const addCurrentUser = hook => {
+    if (hasKey(hook.result, '_id')) {
         const userId = bsonIdToString(hook.params.account.userId);
         const user = Object.assign({}, hook.result.userIds.find(user => (user.userId == userId || user.userId._id == userId)));
         if (isUndefined(user) || isUndefined(user.role)) {
@@ -175,13 +176,13 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
     }
     return hook;
 
-});
+};
 
 /**
  * @beforeHook
  * @param {Object::hook} - test and update missing data for methodes that contain hook.data
  * @method post
- * @returns {Object::hook}
+ * @return {Object::hook}
  */
 const testInputData = hook => {
     if (isUndefined(hook.data.userIds)) {
@@ -214,7 +215,7 @@ const blockedMethod = (hook) => {
  * @param {Array of strings} keys
  * @param {Array::String || StringPath} path - the object path to filtered data in hook or 
  * @param {Object} [objectToFilter] - is optional otherwise the hook is used
- * @returns {function::globalHooks.ifNotLocal(hook)}
+ * @return {function::globalHooks.ifNotLocal(hook)}
  * @example filterToRelated(['_id','userIds'], 'result.data') - in hook.result.data all keys are removed that are not _id, or userIds
  */
 const filterToRelated = (keys, path, objectToFilter) => {
@@ -260,7 +261,7 @@ const filterToRelated = (keys, path, objectToFilter) => {
 /**
  * @hook
  * @param {Object::hook}
- * @returns {Object::hook}
+ * @return {Object::hook}
  */
 const dataExist = hook => {
     if (isUndefined(hook.data) || !isObject(hook.data)) {
@@ -272,7 +273,7 @@ const dataExist = hook => {
 /**
  * @afterHook
  * @param {Object::hook}
- * @returns {Object::hook}
+ * @return {Object::hook}
  */
 const pushUserChangedEvent = (hook) => {
     const team = getTeam(hook);
@@ -294,17 +295,19 @@ const pushUserChangedEvent = (hook) => {
     return hook;
 };
 
-
-
 /**
  * Add teamroles to hook.teamroles.
  * Make avaible that you can use hook.findRole();
  * if you use it without hook object pass {app} as parameter
  * @hook
  * @param {Object::hook}
- * @returns {Object::hook}
+ * @return {Object::hook}
  */
 const teamRolesToHook = hook => {
+    /** execute one time */
+    if(isFunction(hook.findRole) && isDefined(hook.teamroles))  
+        return hook;
+
     return hook.app.service('roles').find({
         query: { name: /team/i }
     }).then(roles => {
@@ -359,7 +362,6 @@ const teamRolesToHook = hook => {
                 role.permissions = solvedAllPermissions;
             });
         }
-
         return hook;
     }).catch(err => {
         throw new errors.BadRequest('Can not resolve team roles.', err);
@@ -373,16 +375,17 @@ exports.teamRolesToHook = teamRolesToHook;
  * @param {Array::String||String} permsissions
  * @param {String} _teamId
  * @return {function::function(hook)}
+ * @ifNotLocal
  */
-const hasTeamPermission = (permsissions, _teamId) => {
-    return (hook) => {
+const hasTeamPermission =  (permsissions, _teamId) => {
+    return globalHooks.ifNotLocal((hook) => {
 
         if (get(hook, 'isSuperhero') === true)
             return hook;
 
         if (isString(permsissions))
             permsissions = [permsissions];
-
+        /*
         const wait = new Promise((resolve, reject) => {
             if (isFunction(hook.findRole)) {
                 resolve(hook.findRole);
@@ -394,9 +397,9 @@ const hasTeamPermission = (permsissions, _teamId) => {
                     reject(new errors.Conflict('Team roles can not assign to hook.'));
                 });
             }
-        });
+        }); */
 
-        return Promise.all([getSessionUser(hook), wait, getTeam(hook)]).then(([sessionUser, findRole, team]) => {
+        return Promise.all([getSessionUser(hook), teamRolesToHook(hook), getTeam(hook)]).then(([sessionUser, ref, team]) => {
             if (get(hook, 'isSuperhero') === true)
                 return hook;
 
@@ -408,7 +411,7 @@ const hasTeamPermission = (permsissions, _teamId) => {
                 throw new errors.NotFound('Session user is not in this team userId=' + userId + ' teamId=' + teamId);
 
             const teamRoleId = teamUser.role;
-            const userTeamPermissions = findRole('_id', teamRoleId, 'permissions');
+            const userTeamPermissions = ref.findRole('_id', teamRoleId, 'permissions');
 
             permsissions.forEach(_permsission => {
                 if (userTeamPermissions.includes(_permsission) === false) {
@@ -422,12 +425,14 @@ const hasTeamPermission = (permsissions, _teamId) => {
             throw new errors.Forbidden('You have not the permission to access this. (2)');
         });
 
-    };
+    });
 };
 exports.hasTeamPermission = hasTeamPermission;    //to use it global
 
 /**
- * @hook
+ * This hook test what is want to change and execute for every changed keys the permission check for it.
+ * @beforeHook
+ * @ifNotLocal
  */
 const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook=>{
         const d = hook.data;
@@ -436,7 +441,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook=>{
 
         //hasTeamPermission throw error if do not have the permission. Superhero is also test.
         if (isDefined([d.times, d.color, d.description, d.name, d.startDate, d.untilDate], 'OR'))
-            (hasTeamPermission('RENAME_TEAM'))(hook);
+            (hasTeamPermission('RENAME_TEAM'))(hook);       //throw error if has not the permission
 
         if (isUndefined(d.userIds))
             return hook;
@@ -521,14 +526,83 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook=>{
         });
 });
 
+const sendInfo = hook => {
+    const email = hook.data.email || (hook.result.user||{}).email;
+
+    if (isUndefined(email) || isUndefined(hook.result.linkData))
+        return hook;
+
+    return getSessionUser(hook).then(user => {
+        globalHooks.sendEmail(hook, {
+            "subject": `${process.env.SC_SHORT_TITLE}: Team-Einladung`,
+            "emails": [email],
+            "content": {
+                "text": createEmailText(hook, user)
+            }
+        });
+        return hook;
+    }).catch(err => {
+        logger.warn(err);
+        throw new errors.NotAcceptable("Errors on user detection");
+    });
+};
+//exports.sendInfo = sendInfo;
+
+/**
+ * Test if data.userId is set. If true it test if the role is teacher. If not throw an error.
+ * @beforeHook
+ */
+const isTeacherDirectlyImport=hook=>{
+    const userId = hook.data.userId;
+    if(userId){
+        return hook.app.service('users').get(userId,{query:{$populate:'roles'}}).then(user=>{
+            const roleNames = user.roles.map(role=>role.name);
+            if(!roleNames.includes('teacher'))
+                throw "Is no teacher";
+            return hook;
+        }).catch(err=>{
+            logger.warn(err);
+            throw new errors.Forbidden('You have not the permission to do this.');
+        });
+    }
+    return hook;
+};
+
+/**
+ * Test if the sessionUser has the role administrator.
+ * If not throw an error.
+ * @beforeHook
+ */
+const isAdmin=hook=>{
+    return getSessionUser(hook).then(sessionUser=>{
+        const roleNames = sessionUser.roles.map(role=>role.name);
+        if(roleNames.includes('administrator'))
+            return hook;
+        else 
+            throw new errors.Forbidden('Only administrators can do this.');
+    });
+};
+
+
+const isUserIsEmpty = hook =>{
+    if(hasKey(hook.result,'userIds') && isDefined(hook.id)){
+        if(!isArrayWithElement(hook.result.userIds)){
+            return hook.app.service('teams').remove(hook.id).then(_=>{
+                hook.result={};
+                return hook;
+            });
+        }
+    }else{
+        return hook;
+    }
+};
+
 const keys = {
     resFind: ['_id', 'name', 'times', 'description', 'userIds', 'color'],
     resId: ['_id'],
     query: ['$populate', '$limit'],
     data: ['filePermission', 'name', 'times', 'description', 'userIds', 'color', 'features', 'ltiToolIds', 'classIds', 'startDate', 'untilDate', 'schoolId']
 };
-
-
 
 //todo: TeamPermissions
 exports.before = {
@@ -538,9 +612,7 @@ exports.before = {
         filterToRelated(keys.query, 'params.query'),
         globalHooks.ifNotLocal(teamRolesToHook)
     ],
-    find: [
-        teamMainHook
-    ],
+    find: [teamMainHook],
     get: [teamMainHook],              //no course restriction becouse circle request in restrictToCurrentSchoolAndUser (?)
     create: [
         filterToRelated(keys.data, 'data'),
@@ -557,7 +629,7 @@ exports.before = {
     ], //todo: filterToRelated(keys.data,'data') 
     remove: [
         teamMainHook,
-        hasTeamPermission('DELETE_TEAM')
+        hasTeamPermission('DELETE_TEAM_sadasdasda')
     ]
 };
 
@@ -570,93 +642,13 @@ exports.after = {
     create: [filterToRelated(keys.resId, 'result')],
     update: [],                             //test schoolId remove
     patch: [
+        isUserIsEmpty,
         addCurrentUser,
         pushUserChangedEvent
     ],          //test schoolId remove
     remove: [filterToRelated(keys.resId, 'result')]
 };
 
-function createinfoText(hook, user) {
-    let text;
-    const newRegistration = ((hook.result.linkData || {}).link || []).includes("/registration/");
-    const teamName = ((hook.additionalInfosTeam||{}).team||{}).name || "[Fehler: Teamname]";
-    const cloudTitle = process.env.SC_SHORT_TITLE;
-    const shortLink = (hook.result.linkData || {}).shortLink || "[Fehler: Link]";
-    let invitee = hook.data.email || hook.result.user.email || "[Fehler: Eingeladene]";
-    let inviter = (hook.params.account||{}).username || "[Fehler: Einlader]";
-
-    if ((hook.result.user||{}).firstName && (hook.result.user||{}).firstName !== "Experte") {
-        invitee = hook.result.user.firstName + " " + hook.result.user.lastName;
-    }
-    if (user.firstName) {
-        inviter = user.firstName + " " + user.lastName;
-    }
-
-    if (newRegistration) {
-        // expert, new account
-        text = `Hallo ${invitee}!
-\nDu wurdest von ${inviter} eingeladen, dem Team '${teamName}' der ${cloudTitle} beizutreten.
-Da du noch keinen ${cloudTitle} Account besitzt, folge bitte diesem Link, um die Registrierung abzuschließen und dem Team beizutreten: ${shortLink}
-\nViel Spaß und einen guten Start wünscht dir dein
-${cloudTitle}-Team`;
-    } else if (hook.data.email) {
-        // teacher, no accept needed (n21)
-        text = `Hallo ${invitee}!
-\nDu wurdest von ${inviter} zu dem Team '${teamName}' der ${cloudTitle} hinzugefügt.
-Klicke auf diesen Link, um deine Teams aufzurufen: ${shortLink}
-\nViel Spaß und gutes Gelingen wünscht dir dein
-${cloudTitle}-Team`;
-    } else {
-        // teacher, accept needed (invite via email)
-        text = `Hallo ${invitee}!
-\nDu wurdest von ${inviter} eingeladen, dem Team '${teamName}' der ${cloudTitle} beizutreten.
-Klicke auf diesen Link, um die Einladung anzunehmen: ${shortLink}
-\nViel Spaß und gutes Gelingen wünscht dir dein
-${cloudTitle}-Team`;
-    }
-
-    return text;
-}
-
-const sendInfo = hook => {
-
-    if ((isUndefined(hook.data.email) && isUndefined(hook.result.user.email)) || isUndefined(hook.result.linkData)) {
-        return hook;
-    }
-    
-    const email = hook.data.email || (hook.result.user||{}).email;
-
-    return getSessionUser(hook).then(user => {
-        globalHooks.sendEmail(hook, {
-            "subject": `${process.env.SC_SHORT_TITLE}: Team-Einladung`,
-            "emails": [email],
-            "content": {
-                "text": createinfoText(hook, user)
-            }
-        });
-        return hook;
-    }).catch(err => {
-        logger.warn(err);
-        throw new errors.NotAcceptable("Errors on user detection");
-    });
-};
-//exports.sendInfo = sendInfo;
-
-const isTeacherDirectlyImport=hook=>{
-    const userId = hook.data.userId;
-    if(userId){
-        return hook.app.service('users').get(userId,{query:{$populate:'roles'}}).then(user=>{
-            const roleNames = user.roles.map(role=>role.name);
-            if(!roleNames.includes('teacher'))
-                throw "Is no teacher";
-            return hook;
-        }).catch(err=>{
-            logger.warn(err);
-            throw new errors.Forbidden('You have not the permission to do this.');
-        });
-    }
-    return hook;
-};
 
 exports.beforeExtern = {
     all: [
@@ -688,16 +680,6 @@ exports.afterExtern = {
     remove: []
 };
 
-const isAdmin=hook=>{
-    return getSessionUser(hook).then(sessionUser=>{
-        const roleNames = sessionUser.roles.map(role=>role.name);
-        if(roleNames.includes('administrator'))
-            return hook;
-        else 
-            throw new errors.Forbidden('Only administrators can do this.');
-    });
-};
-
 exports.beforeAdmin = {
     all: [       
         auth.hooks.authenticate('jwt'),
@@ -709,7 +691,7 @@ exports.beforeAdmin = {
     get: [blockedMethod],
     create: [],
     update: [blockedMethod],
-    patch: [ filterToRelated('userId', 'data')],  
+    patch: [filterToRelated('userId', 'data')],  
     remove: []
 };
 
