@@ -110,24 +110,8 @@ class RocketChat {
         });
     }
 
-    update(userId, data, params) {     //todo maybe patch and test if data is used?
-        return new Promise((resolve, reject) => {
-            RocketChatModel.findOne({ userId }, (err, data) => {
-                if (err !== null)
-                    reject(err);
-
-                if (data === null)    //do not exist       
-                    resolve(this.create({ userId }));
-                else if (typeof data === 'object')
-                    resolve({ message: 'exist' });
-
-            });
-        }).catch(err => {
-            logger.warn(err);
-            throw new errors.BadRequest('Can not execute this task.');
-        });
-    }
-
+    /*
+    requires secret (admin account)
     patch(userId, data, params) {
         return new Promise((resolve, reject) => {
             if (data.username === undefined)
@@ -148,6 +132,7 @@ class RocketChat {
             throw new errors.BadRequest('Can not patch this user');
         });
     }
+    */
 
 
 
