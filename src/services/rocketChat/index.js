@@ -3,7 +3,7 @@ const request = require('request-promise-native');
 const errors = require('feathers-errors');
 const logger = require('winston');
 
-const RocketChatModel = require('./model');
+const rocketChatModels = require('./model');
 const hooks = require('./hooks');
 const docs = require('./docs');
 const { randomPass } = require('./randomPass');
@@ -48,7 +48,7 @@ class RocketChat {
             const username = ([user.schoolId.name, user.firstName, user.lastName].join('.')).replace(/\s/g, '_');
             const name = [user.firstName, user.lastName].join('.');
 
-            return RocketChatModel.create({ userId, pass, username }).then((res) => {
+            return rocketChatModels.userModel.create({ userId, pass, username }).then((res) => {
                 if (res.errors !== undefined)
                     throw new errors.BadRequest('Can not insert into collection.', res.errors);
 
@@ -74,12 +74,12 @@ class RocketChat {
     }
 
     getOrCreateRocketChatAccount(userId, params) {
-        return RocketChatModel.findOne({ userId })
+        return rocketChatModels.userModel.findOne({ userId })
         .then(login => {
             if (!login) {
                 return this.createRocketChatAccount({userId}, params)
                 .then(res => {
-                    return RocketChatModel.findOne({ userId })
+                    return rocketChatModels.userModel.findOne({ userId })
                 })
             } else return Promise.resolve(login);
         })
@@ -134,7 +134,39 @@ class RocketChat {
     }
     */
 
+    setup(app, path) {
+        this.app = app;
+    }
+}
 
+class RocketChatChannel {
+    constructor(options) {
+        this.options = options || {};
+        this.docs = docs;
+    }
+
+    getOptions(shortUri, body, method) {
+        return {
+            uri: ROCKET_CHAT_URI + shortUri,
+            method: method || 'POST',
+            //  headers: {
+            //     'Authorization': process.env.ROCKET_CHAT_SECRET
+            // },
+            body,
+            json: true,
+            timeout: REQUEST_TIMEOUT
+        };
+    }
+
+    //todo secret for rocketChat
+    create(data, params) {
+        return true
+    }
+
+    //todo: username nicht onfly generiert 
+    get(Id, params) {
+        return true
+    }
 
     setup(app, path) {
         this.app = app;
@@ -143,19 +175,24 @@ class RocketChat {
 
 module.exports = function () {
     const app = this;
-	/*const options = {
-		Model: model,
+	const channelOptions = {
+		Model: rocketChatModels.channelModel,
 		paginate: {
 			default: 1,
 			max: 1
 		},
 		lean: true
-    }; */
+    };
 
     app.use('/rocketChat', new RocketChat());
+    app.use('/rocketChat/channel', new RocketChatChannel(channelOptions));
 
     const rocketChatService = app.service('/rocketChat');
+    const rocketChatChannelService = app.service('/rocketChat/channel')
 
     rocketChatService.before(hooks.before);
     rocketChatService.after(hooks.after);
+
+    rocketChatChannelService.before(hooks.before);
+    rocketChatChannelService.after(hooks.after);
 };

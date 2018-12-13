@@ -1,12 +1,19 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const schema = new Schema({
+const userSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'user', required: true, unique: true },
     pass: { type: String, required: true },
     username:{ type: String, required: true, unique: true },
 }, { timestamps: true });
 
-const model = mongoose.model('rocketChat', schema);
+const channelSchema = new Schema({
+    userId: { type: Schema.Types.ObjectId, ref: 'user', required: true, unique: true },
+    pass: { type: String, required: true },
+    username:{ type: String, required: true, unique: true },
+}, { timestamps: true });
 
-module.exports = model;
+const userModel = mongoose.model('rocketChatUser', userSchema);
+const channelModel = mongoose.model('rocketChatChannel', channelSchema);
+
+module.exports = {userModel, channelModel};
