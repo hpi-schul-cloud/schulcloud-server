@@ -355,7 +355,8 @@ class Add {
 			}
 			return { schoolId, isUserCreated, user, team };
 		}).catch(err => {
-			throw new errors.GeneralError("Experte: Fehler beim Erstellen des Experten.", err);
+			logger.warn(err);
+			throw new errors.GeneralError("Experte: Fehler beim Erstellen des Experten.");
 		});
 	}
 

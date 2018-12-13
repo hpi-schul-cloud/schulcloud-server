@@ -155,30 +155,6 @@ const existId = (hook) => {
 };
 
 /**
- * @afterHook
- * @method patch,get
- * @param {Object::hook} hook - Add the current user to top level, easy access of it role and permissions.
- * @return {Object::hook}
- */
-const addCurrentUser = hook => {
-    if (hasKey(hook.result, '_id')) {
-        const userId = bsonIdToString(hook.params.account.userId);
-        const user = Object.assign({}, hook.result.userIds.find(user => (user.userId == userId || user.userId._id == userId)));
-        if (isUndefined(user) || isUndefined(user.role)) {
-            logger.warn('Can not execute addCurrentUser for unknown user. Or user execute a patch with the result that he has left the team.', { userId });
-            return hook;
-        }
-        throwErrorIfNotObjectId(user.role);
-        const role = hook.findRole('_id', user.role);
-        user.permissions = role.permissions;
-        user.name = role.name;
-        hook.result.user = user;
-    }
-    return hook;
-
-};
-
-/**
  * @beforeHook
  * @param {Object::hook} - test and update missing data for methodes that contain hook.data
  * @method post
@@ -549,6 +525,30 @@ const sendInfo = hook => {
 //exports.sendInfo = sendInfo;
 
 /**
+ * @afterHook
+ * @method patch,get
+ * @param {Object::hook} hook - Add the current user to top level, easy access of it role and permissions.
+ * @return {Object::hook}
+ */
+const addCurrentUser = globalHooks.ifNotLocal(hook => {
+    if (hasKey(hook.result, 'userIds')) {
+        const userId = bsonIdToString(hook.params.account.userId);
+        const user = Object.assign({}, hook.result.userIds.find(user => (user.userId == userId || user.userId._id == userId)));
+        if (isUndefined(user) || isUndefined(user.role)) {
+            logger.warn('Can not execute addCurrentUser for unknown user. Or user execute a patch with the result that he has left the team.', { userId });
+            return hook;
+        }
+        throwErrorIfNotObjectId(user.role);
+        const role = hook.findRole('_id', user.role);
+        user.permissions = role.permissions;
+        user.name = role.name;
+        hook.result.user = user;
+    }
+    return hook;
+
+});
+
+/**
  * Test if data.userId is set. If true it test if the role is teacher. If not throw an error.
  * @beforeHook
  */
@@ -583,13 +583,19 @@ const isAdmin=hook=>{
     });
 };
 
-
+/**
+ * 
+ * @afterHook
+ */
 const isUserIsEmpty = hook =>{
     if(hasKey(hook.result,'userIds') && isDefined(hook.id)){
         if(!isArrayWithElement(hook.result.userIds)){
             return hook.app.service('teams').remove(hook.id).then(_=>{
                 hook.result={};
                 return hook;
+            }).catch(err=>{
+                logger.warn(err);
+                throw new errors.Conflict('It want to remove the team with no user, but do not found it.');
             });
         }
     }else{
