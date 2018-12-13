@@ -94,7 +94,8 @@ const fileStorageService = {
 			owner: owner || userId,
 			parent,
 			refOwnerModel,
-			permissions: [...permissions, ...sendPermissions].map(setRefId)
+			permissions: [...permissions, ...sendPermissions].map(setRefId),
+			storageFileName: decodeURIComponent(data.storageFileName)
 		}));
 
 		// create db entry for new file
@@ -240,8 +241,8 @@ const signedUrlService = {
 				const header =  {
 					// add meta data for later using
 					"Content-Type": fileType,
-					"x-amz-meta-name": filename,
-					"x-amz-meta-flat-name": flatFileName,
+					"x-amz-meta-name": encodeURIComponent(filename),
+					"x-amz-meta-flat-name": encodeURIComponent(flatFileName),
 					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 				};
 				return {
