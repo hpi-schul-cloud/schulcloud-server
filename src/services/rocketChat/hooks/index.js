@@ -1,7 +1,7 @@
 const globalHooks = require('../../../hooks');
 const errors = require('feathers-errors');
 const logger = require('winston');
-
+const auth = require('feathers-authentication');
 
 const blockedExtern = globalHooks.ifNotLocal((hook) => {
     logger.warn('Intern use only.');
@@ -10,7 +10,7 @@ const blockedExtern = globalHooks.ifNotLocal((hook) => {
     
 
 exports.before = {
-    all: [],       //todo add if finish blockedExtern
+    all: [auth.hooks.authenticate('jwt')],
     find: [],
     get: [],
     create: [],
