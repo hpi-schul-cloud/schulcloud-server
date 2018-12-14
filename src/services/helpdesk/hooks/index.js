@@ -17,6 +17,7 @@ function createInfoText(user, data){
 
 function createFeedbackText(user, data){
 	let text = "User: " + user + "\n"
+	+ "Browser userAgent: " + data.metadata + "\n"
 	+ "Schule: " + data.schoolName + "\n"
 	+ "Instanz: " + data.cloud + "\n"
 	+ "Bereich ausgewählt: " + data.category + "\n";
