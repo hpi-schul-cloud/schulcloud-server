@@ -25,9 +25,6 @@ class RocketChatUser {
         return {
             uri: ROCKET_CHAT_URI + shortUri,
             method: method || 'POST',
-            //  headers: {
-            //     'Authorization': process.env.ROCKET_CHAT_SECRET
-            // },
             body,
             json: true,
             timeout: REQUEST_TIMEOUT
@@ -103,30 +100,6 @@ class RocketChatUser {
         });
     }
 
-    /*
-    requires secret (admin account)
-    patch(userId, data, params) {
-        return new Promise((resolve, reject) => {
-            if (data.username === undefined)
-                throw new errors.BadRequest('You can only patch username.');
-
-            const update = { $set: { username: data.username, pass: randomPass() } };
-            RocketChat.findOneAndUpdate({ userId }, update, (err, data) => {
-                if (err !== null)
-                    reject(err);
-                if (data === null)
-                    reject({ message: 'user not found' });
-
-                //todo: update rocketChat!
-                resolve(data);
-            });
-        }).catch(err => {
-            logger.warn(err);
-            throw new errors.BadRequest('Can not patch this user');
-        });
-    }
-    */
-
     setup(app, path) {
         this.app = app;
     }
@@ -142,9 +115,6 @@ class RocketChatLogin {
         return {
             uri: ROCKET_CHAT_URI + shortUri,
             method: method || 'POST',
-            //  headers: {
-            //     'Authorization': process.env.ROCKET_CHAT_SECRET
-            // },
             body,
             json: true,
             timeout: REQUEST_TIMEOUT
@@ -184,12 +154,11 @@ class RocketChatChannel {
         return {
             uri: ROCKET_CHAT_URI + shortUri,
             method: method || 'POST',
-            //  headers: {
-            //     'Authorization': process.env.ROCKET_CHAT_SECRET
-            // },
             headers: {
                 'X-Auth-Token': '2_5rp4YRBnJ0q9asWFY-lEqeBalK94DoOwrgpsxYvhd',
                 'X-User-ID': "6NHge4r7Rtb2pwofe"
+                //'X-Auth-Token': process.env.ROCKET_CHAT_ADMIN_TOKEN,
+                //'X-User-ID': process.env.ROCKET_CHAT_ADMIN_ID
             },
             body,
             json: true,
