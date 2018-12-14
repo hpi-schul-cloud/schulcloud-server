@@ -3,6 +3,7 @@
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
+const UAParser = require('ua-parser-js');
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
 function createInfoText(user, data){
@@ -16,8 +17,11 @@ function createInfoText(user, data){
 }
 
 function createFeedbackText(user, data){
+	var ua = UAParser(data.metadata);
+
 	let text = "User: " + user + "\n"
-	+ "Browser userAgent: " + data.metadata + "\n"
+	+ "Browser: " + ua.browser.name + ", version: " + ua.browser.version + "\n"
+	+ "Betriebssystem: " + ua.os.name + ", version: " + ua.os.version + "\n"
 	+ "Schule: " + data.schoolName + "\n"
 	+ "Instanz: " + data.cloud + "\n"
 	+ "Bereich ausgewählt: " + data.category + "\n";
