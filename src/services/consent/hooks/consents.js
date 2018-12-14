@@ -174,6 +174,11 @@ const accessCheck = (consent, app) => {
 			}
 			return;
 		}).then(() => {
+			if (access && !(user.preferences || {}).firstLogin) {
+				access = false;
+			}
+			return;
+		}).then(() => {
 			consent.access = access;
 			consent.requiresParentConsent = requiresParentConsent;
 			return consent;
