@@ -18,10 +18,11 @@ function createInfoText(user, data){
 
 function createFeedbackText(user, data){
 	var ua = UAParser(data.metadata);
-
+	var browser = (ua.browser.version != undefined) ? ua.browser.name + " " + ua.browser.version : ua.browser.name;
+	var os = (ua.os.version != undefined) ? ua.os.name + " " + ua.os.version : ua.os.name;
 	let text = "User: " + user + "\n"
-	+ "Browser: " + ua.browser.name + ", version: " + ua.browser.version + "\n"
-	+ "Betriebssystem: " + ua.os.name + ", version: " + ua.os.version + "\n"
+	+ "Browser: " + browser + "\n"
+	+ "Betriebssystem: " + os + "\n"
 	+ "Schule: " + data.schoolName + "\n"
 	+ "Instanz: " + data.cloud + "\n"
 	+ "Bereich ausgewählt: " + data.category + "\n";
