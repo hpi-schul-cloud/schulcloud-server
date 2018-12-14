@@ -87,7 +87,7 @@ class RocketChatUser {
             return Promise.resolve({ username: login.username, password: login.pass });
         }).catch(err => {
             logger.warn(err);
-            reject(new errors.BadRequest('could not initialize rocketchat user', err));
+            Promise.reject(new errors.BadRequest('could not initialize rocketchat user', err));
         });
     }
 
@@ -234,8 +234,23 @@ class RocketChatChannel {
     }
 
     getOrCreateRocketChatChannel(teamId, params) {
-        
-        return this.createChannel(teamId, params);
+        return rocketChatModels.channelModel.findOne({teamId})
+        .then(channel => {
+            if (!channel) {
+                return this.createChannel(teamId, params).then(() => {
+                    return rocketChatModels.channelModel.findOne({teamId})
+                });
+            } else return Promise.resolve(channel);
+        })
+        .then(channel => {
+            return Promise.resolve({
+                teamId: channel.teamId,
+                channelName: channel.channelName
+            });
+        })
+        .catch(err => {
+            Promise.reject(new errors.BadRequest('error initializing the rocketchat channel', err));
+        })
     }
 
     get(Id, params) {
