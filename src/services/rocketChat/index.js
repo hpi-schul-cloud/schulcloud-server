@@ -152,20 +152,51 @@ class RocketChatChannel {
             //  headers: {
             //     'Authorization': process.env.ROCKET_CHAT_SECRET
             // },
+            headers: {
+                'X-Auth-Token': '2_5rp4YRBnJ0q9asWFY-lEqeBalK94DoOwrgpsxYvhd',
+                'X-User-ID': "6NHge4r7Rtb2pwofe"
+            },
             body,
             json: true,
             timeout: REQUEST_TIMEOUT
         };
     }
 
-    //todo secret for rocketChat
-    create(data, params) {
-        return true
+    createChannel(teamId, params) {
+        if (teamId === undefined)
+            throw new errors.BadRequest('Missing data value.');
+
+        let currentTeam;
+        const internalParams = {
+            query: { $populate: "schoolId" }
+        };
+        return this.app.service('teams').get(teamId, internalParams)
+        .then(team => {
+            currentTeam = team;
+            const channelData = {
+                teamId: currentTeam._id,
+                channelName: currentTeam.name
+            }
+            return rocketChatModels.channelModel.create(channelData);
+        }).then(result => {
+            const body = { name: result.channelName };
+            
+            return request(this.getOptions('/api/v1/groups.create', body))
+        }).then((res) => {
+            if (res.success === true) return res;
+        }).catch(err => {
+            logger.warn(err);
+            throw new errors.BadRequest('Can not create RocketChat Channel');
+        });
+    }
+
+    getOrCreateRocketChatChannel(teamId, params) {
+        return this.createChannel(teamId, params);
     }
 
     //todo: username nicht onfly generiert 
     get(Id, params) {
-        return true
+        return this.getOrCreateRocketChatChannel(Id, params);
     }
 
     setup(app, path) {
@@ -175,17 +206,10 @@ class RocketChatChannel {
 
 module.exports = function () {
     const app = this;
-	const channelOptions = {
-		Model: rocketChatModels.channelModel,
-		paginate: {
-			default: 1,
-			max: 1
-		},
-		lean: true
-    };
 
+    app.use('/rocketChat/channel', new RocketChatChannel());
     app.use('/rocketChat', new RocketChat());
-    app.use('/rocketChat/channel', new RocketChatChannel(channelOptions));
+
 
     const rocketChatService = app.service('/rocketChat');
     const rocketChatChannelService = app.service('/rocketChat/channel')
