@@ -15,7 +15,7 @@ const ROCKET_CHAT_URI = process.env.ROCKET_CHAT;
 if (ROCKET_CHAT_URI === undefined)
     throw new errors.NotImplemented('Please set process.env.ROCKET_CHAT.');
 
-class RocketChat {
+class RocketChatUser {
     constructor(options) {
         this.options = options || {};
         this.docs = docs;
@@ -95,15 +95,8 @@ class RocketChat {
     get(userId, params) {
         return this.getOrCreateRocketChatAccount(userId, params)
         .then(login => {
-            return request(this.getOptions('/api/v1/login', login)).then(res => {
-                const authToken = (res.data || {}).authToken;
-                if (res.status === "success" && authToken !== undefined)
-                    return Promise.resolve({ authToken });
-                else
-                    return Promise.reject(new errors.BadRequest('False response data from rocketChat'));
-            }).catch(err => {
-                return Promise.reject(new errors.Forbidden('Can not take token from rocketChat.', err));
-            });
+            delete login.password;
+            return Promise.resolve(login);
         }).catch(err => {
             logger.warn(err);
             throw new errors.Forbidden('Can not create token.');
@@ -133,6 +126,48 @@ class RocketChat {
         });
     }
     */
+
+    setup(app, path) {
+        this.app = app;
+    }
+}
+
+class RocketChatLogin {
+    constructor(options) {
+        this.options = options || {};
+        this.docs = docs;
+    }
+
+    getOptions(shortUri, body, method) {
+        return {
+            uri: ROCKET_CHAT_URI + shortUri,
+            method: method || 'POST',
+            //  headers: {
+            //     'Authorization': process.env.ROCKET_CHAT_SECRET
+            // },
+            body,
+            json: true,
+            timeout: REQUEST_TIMEOUT
+        };
+    }
+
+    get(userId, params) {
+        return this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params)
+        .then(login => {
+            return request(this.getOptions('/api/v1/login', login)).then(res => {
+                const authToken = (res.data || {}).authToken;
+                if (res.status === "success" && authToken !== undefined)
+                    return Promise.resolve({ authToken });
+                else
+                    return Promise.reject(new errors.BadRequest('False response data from rocketChat'));
+            }).catch(err => {
+                return Promise.reject(new errors.Forbidden('Can not take token from rocketChat.', err));
+            });
+        }).catch(err => {
+            logger.warn(err);
+            throw new errors.Forbidden('Can not create token.');
+        });
+    }
 
     setup(app, path) {
         this.app = app;
@@ -177,11 +212,19 @@ class RocketChatChannel {
                 teamId: currentTeam._id,
                 channelName: currentTeam.name
             }
-            return rocketChatModels.channelModel.create(channelData);
+            return rocketChatModels.channelModel.create(channelData); 
         }).then(result => {
-            const body = { name: result.channelName };
-            
-            return request(this.getOptions('/api/v1/groups.create', body))
+            let userNamePromises = currentTeam.userIds.map(user => {
+                return this.app.service('rocketChat/user').get(user.userId);
+            });
+            return Promise.all(userNamePromises).then(users => {
+                users = users.map(user => { return user.username; });
+                const body = { 
+                    name: result.channelName,
+                    members: users
+                };
+                return request(this.getOptions('/api/v1/groups.create', body))
+            })            
         }).then((res) => {
             if (res.success === true) return res;
         }).catch(err => {
@@ -191,10 +234,10 @@ class RocketChatChannel {
     }
 
     getOrCreateRocketChatChannel(teamId, params) {
+        
         return this.createChannel(teamId, params);
     }
 
-    //todo: username nicht onfly generiert 
     get(Id, params) {
         return this.getOrCreateRocketChatChannel(Id, params);
     }
@@ -208,14 +251,18 @@ module.exports = function () {
     const app = this;
 
     app.use('/rocketChat/channel', new RocketChatChannel());
-    app.use('/rocketChat', new RocketChat());
+    app.use('/rocketChat/user', new RocketChatUser());
+    app.use('/rocketChat/login', new RocketChatLogin());
 
+    const rocketChatUserService = app.service('/rocketChat/user');
+    const rocketChatLoginService = app.service('/rocketChat/login');
+    const rocketChatChannelService = app.service('/rocketChat/channel');
 
-    const rocketChatService = app.service('/rocketChat');
-    const rocketChatChannelService = app.service('/rocketChat/channel')
+    rocketChatUserService.before(hooks.before);
+    rocketChatUserService.after(hooks.after);
 
-    rocketChatService.before(hooks.before);
-    rocketChatService.after(hooks.after);
+    rocketChatLoginService.before(hooks.before);
+    rocketChatLoginService.after(hooks.after);
 
     rocketChatChannelService.before(hooks.before);
     rocketChatChannelService.after(hooks.after);
