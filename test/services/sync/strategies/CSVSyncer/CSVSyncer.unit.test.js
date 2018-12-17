@@ -4,9 +4,9 @@ const chai = require('chai');
 const expect = chai.expect;
 const assert = require('assert');
 
-const app = require('../../../../src/app');
-const Syncer = require('../../../../src/services/sync/strategies/Syncer');
-const CSVSyncer = require('../../../../src/services/sync/strategies/CSVSyncer');
+const app = require('../../../../../src/app');
+const Syncer = require('../../../../../src/services/sync/strategies/Syncer');
+const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
 describe('CSVSyncer', () => {
 	it('works', () => {
