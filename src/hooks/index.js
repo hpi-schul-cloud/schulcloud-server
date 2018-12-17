@@ -7,24 +7,30 @@ const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.
 
 // don't require authentication for internal requests
-exports.ifNotLocal = function (hookForRemoteRequests) {
-	return function (hook) {
-		if (typeof (hook.params.provider) != 'undefined') {	// meaning it's not a local call
-			// Call the specified hook
-			return hookForRemoteRequests.call(this, hook);
+const ifNotLocal = exports.ifNotLocal = (hookForRemoteRequests) => {
+	return (hook) => {
+		if (typeof (hook.params.provider) != 'undefined') {	// meaning it's not a local call		
+			return hookForRemoteRequests.call(this, hook); // Call the specified hook
 		}
 	};
 };
 
+const blockedMethod = exports.blockedMethod = (hook) => {
+	//todo: Superhero can pass it
+	throw new errors.MethodNotAllowed('Method is not allowed!');
+};
+
+exports.blockedExternMethod = ifNotLocal(blockedMethod);
+
 exports.forceHookResolve = (forcedHook) => {
 	return (hook) => {
 		forcedHook(hook)
-		.then(() => {
-			return Promise.resolve(hook);
-		})
-		.catch(() => {
-			return Promise.resolve(hook);
-		});
+			.then(() => {
+				return Promise.resolve(hook);
+			})
+			.catch(() => {
+				return Promise.resolve(hook);
+			});
 	};
 };
 
@@ -55,12 +61,12 @@ exports.isSuperHero = function (options) {
 exports.hasRole = function (hook, userId, roleName) {
 	const userService = hook.app.service('/users/');
 
-	return userService.get((userId || ''), { query: { $populate: 'roles'}})
+	return userService.get((userId || ''), { query: { $populate: 'roles' } })
 		.then(user => {
 			user.roles = Array.from(user.roles);
 
 			return (_.some(user.roles, u => u.name == roleName));
-			});
+		});
 };
 
 exports.hasPermission = function (permissionName) {
@@ -112,13 +118,13 @@ exports.removeResponse = function (excludeOptions) {
 			return hook;
 		}
 
-		if(excludeOptions === undefined){
+		if (excludeOptions === undefined) {
 			excludeOptions = ['get', 'find'];
 		}
-		if(Array.isArray(excludeOptions) && excludeOptions.includes(hook.method)){
+		if (Array.isArray(excludeOptions) && excludeOptions.includes(hook.method)) {
 			return Promise.resolve(hook);
 		}
-		hook.result = {status: 200};
+		hook.result = { status: 200 };
 		return Promise.resolve(hook);
 	};
 };
@@ -241,11 +247,11 @@ exports.checkCorrectCourseId = (hook) => {
 
 	if (hook.data.courseGroupId) {
 		delete hook.data.courseId;
-		query = {$or: [{teacherIds: {$in: [hook.params.account.userId]}}, {userIds: {$in: [hook.params.account.userId]}}]};
+		query = { $or: [{ teacherIds: { $in: [hook.params.account.userId] } }, { userIds: { $in: [hook.params.account.userId] } }] };
 	} else
-		query = { teacherIds: {$in: [hook.params.account.userId] } };
+		query = { teacherIds: { $in: [hook.params.account.userId] } };
 
-	return courseService.find({ query: query})
+	return courseService.find({ query: query })
 		.then(courses => {
 			if (courses.data.some(course => { return course._id.toString() === courseId; }))
 				return hook;
@@ -257,8 +263,8 @@ exports.checkCorrectCourseId = (hook) => {
 exports.injectUserId = (hook) => {
 	if (typeof (hook.params.provider) == 'undefined') {
 		if (hook.data.userId) {
-			hook.params.account = {userId: hook.data.userId};
-			hook.params.payload = {userId: hook.data.userId};
+			hook.params.account = { userId: hook.data.userId };
+			hook.params.payload = { userId: hook.data.userId };
 			delete hook.data.userId;
 		}
 	}
@@ -268,34 +274,34 @@ exports.injectUserId = (hook) => {
 
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
-		return userService.find({
-			query: {
-				_id: hook.params.account.userId,
-				$populate: 'roles'
-			}
-		}).then(res => {
-			let access = false;
-			res.data[0].roles.map(role => {
-				if (role.name === 'superhero')
-					access = true;
-			});
-			if (access)
-				return hook;
-			if (hook.method == "get" || hook.method == "find") {
-				if (hook.params.query.schoolId == undefined) {
-					hook.params.query.schoolId = res.data[0].schoolId;
-				} else if (hook.params.query.schoolId != res.data[0].schoolId) {
-					throw new errors.Forbidden('You do not have valid permissions to access this.');
-				}
-			} else {
-				if (hook.data.schoolId == undefined) {
-					hook.data.schoolId = res.data[0].schoolId.toString();
-				} else if (hook.data.schoolId != res.data[0].schoolId) {
-					throw new errors.Forbidden('You do not have valid permissions to access this.');
-				}
-			}
-
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'superhero')
+				access = true;
+		});
+		if (access)
 			return hook;
+		if (hook.method == "get" || hook.method == "find") {
+			if (hook.params.query.schoolId == undefined) {
+				hook.params.query.schoolId = res.data[0].schoolId;
+			} else if (hook.params.query.schoolId != res.data[0].schoolId) {
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+			}
+		} else {
+			if (hook.data.schoolId == undefined) {
+				hook.data.schoolId = res.data[0].schoolId.toString();
+			} else if (hook.data.schoolId != res.data[0].schoolId) {
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+			}
+		}
+
+		return hook;
 	});
 };
 
@@ -309,7 +315,7 @@ exports.restrictToUsersOwnCourses = hook => {
 	}).then(res => {
 		let access = false;
 		res.data[0].roles.map(role => {
-			if (role.name === 'administrator' || role.name === 'superhero' )
+			if (role.name === 'administrator' || role.name === 'superhero')
 				access = true;
 		});
 		if (access)
@@ -325,7 +331,7 @@ exports.restrictToUsersOwnCourses = hook => {
 				}
 			});
 		} else if (hook.method === "find") {
-			if (typeof(hook.params.query.$or) === 'undefined') {
+			if (typeof (hook.params.query.$or) === 'undefined') {
 				hook.params.query.$or = [
 					{ userIds: res.data[0]._id },
 					{ teacherIds: res.data[0]._id },
@@ -362,7 +368,7 @@ exports.restrictToUsersOwnClasses = hook => {
 				}
 			});
 		} else if (hook.method === "find") {
-			if (typeof(hook.params.query.$or) === 'undefined') {
+			if (typeof (hook.params.query.$or) === 'undefined') {
 				hook.params.query.$or = [
 					{ userIds: res.data[0]._id },
 					{ teacherIds: res.data[0]._id },
@@ -434,66 +440,68 @@ exports.sendEmail = (hook, maildata) => {
 
 	if (roles.length > 0) {
 		promises.push(
-			userService.find({query: {
-				roles: roles,
-				schoolId: hook.data.schoolId,
-				$populate: ['roles'],
-				$limit : 1000
-			}})
+			userService.find({
+				query: {
+					roles: roles,
+					schoolId: hook.data.schoolId,
+					$populate: ['roles'],
+					$limit: 1000
+				}
+			})
 		);
 	}
 
-	if (userIds.length > 0){
-		userIds.map (id => {
+	if (userIds.length > 0) {
+		userIds.map(id => {
 			promises.push(
 				userService.get(id)
 			);
 		});
 	}
 
-	if (emails.length > 0){
+	if (emails.length > 0) {
 		emails.map(email => {
 			let re = /\S+@\S+\.\S+/;
-			if (re.test(email)){
+			if (re.test(email)) {
 				receipients.push(email);
 			}
 		});
 	}
 
-	if(promises.length > 0){
+	if (promises.length > 0) {
 		Promise.all(promises)
-		.then(promise => {
-			promise.map(result => {
-				if (result.data){
-					result.data.map(user => {
-						receipients.push(user.email);
+			.then(promise => {
+				promise.map(result => {
+					if (result.data) {
+						result.data.map(user => {
+							receipients.push(user.email);
 						});
-				} else if (result.email) {
-					receipients.push(result.email);
-				}
-			});
-
-			_.uniq(receipients).map(email => {
-				mailService.create({
-					email: email,
-					subject: maildata.subject || "E-Mail von der Schul-Cloud",
-					headers: maildata.headers || {},
-					content: {
-						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
-						"html": ""
+					} else if (result.email) {
+						receipients.push(result.email);
 					}
-				}).catch (err => {
-					throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 				});
+
+				_.uniq(receipients).map(email => {
+					mailService.create({
+						email: email,
+						subject: maildata.subject || "E-Mail von der Schul-Cloud",
+						headers: maildata.headers || {},
+						content: {
+							"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
+							"html": ""
+						}
+					}).catch(err => {
+						throw new errors.BadRequest((err.error || {}).message || err.message || err || "Unknown mailing error");
+					});
+				});
+				return hook;
+			})
+			.catch(err => {
+				throw new errors.BadRequest((err.error || {}).message || err.message || err || "Unknown mailing error");
 			});
-		return hook;
-		})
-		.catch(err => {
-			throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
-		});
 	}
 	else {
-		_.uniq(receipients).map(email=> {
+		_.uniq(receipients).map(email => {
 			mailService.create({
 				email: email,
 				subject: maildata.subject || "E-Mail von der Schul-Cloud",
@@ -503,16 +511,16 @@ exports.sendEmail = (hook, maildata) => {
 					"html": ""
 				}
 			})
-			.catch (err => {
-				throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
-			});
+				.catch(err => {
+					throw new errors.BadRequest((err.error || {}).message || err.message || err || "Unknown mailing error");
+				});
 		});
 		return hook;
 	}
 };
 
 exports.getAge = function (dateString) {
-	if(dateString==undefined) {
+	if (dateString == undefined) {
 		return undefined;
 	}
 	const today = new Date();
@@ -525,15 +533,15 @@ exports.getAge = function (dateString) {
 	return age;
 };
 
-exports.arrayIncludes = (array, includesList, excludesList) =>{
-	for(let i=0; i < includesList.length; i++){
-		if(array.includes(includesList[i]) === false){
+exports.arrayIncludes = (array, includesList, excludesList) => {
+	for (let i = 0; i < includesList.length; i++) {
+		if (array.includes(includesList[i]) === false) {
 			return false;
 		}
 	}
 
-	for(let i=0; i<excludesList.length; i++){
-		if(array.includes(excludesList[i])){
+	for (let i = 0; i < excludesList.length; i++) {
+		if (array.includes(excludesList[i])) {
 			return false;
 		}
 	}

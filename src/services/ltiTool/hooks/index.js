@@ -1,11 +1,11 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
+//const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 
 exports.before = {
-  all: [auth.hooks.authenticate('jwt')],
+  all: [globalHooks.blockedExternMethod, auth.hooks.authenticate('jwt')],
   find: [globalHooks.hasPermission('TOOL_VIEW')],
   get: [globalHooks.hasPermission('TOOL_VIEW')],
   create: [globalHooks.hasPermission('TOOL_CREATE')],
