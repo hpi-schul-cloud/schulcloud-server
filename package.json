@@ -17,7 +17,7 @@
   },
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
-    "test": "./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run coverage",
+    "test": "./backup.sh -p setup/ -D schulcloud-test -a import && npm run coverage",
     "test-windows": "sh ./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run mocha-windows",
     "test-windows-wo-db": "npm run lint && npm run mocha-windows",
     "backup": "./backup.sh -a -b export",
@@ -88,7 +88,9 @@
     "winston": "^2.3.0"
   },
   "devDependencies": {
-    "eslint": "^3.13.1",
+    "eslint": "^5.10.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-react": "^6.9.0",
     "mocha": "^3.2.0",
     "mockery": "^2.0.0",
