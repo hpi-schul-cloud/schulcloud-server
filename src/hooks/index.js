@@ -20,7 +20,7 @@ const blockedMethod = exports.blockedMethod = (hook) => {
 	throw new errors.MethodNotAllowed('Method is not allowed!');
 };
 
-exports.blockedExternMethod = ifNotLocal(blockedMethod);
+exports.blockedMethodForExtern = ifNotLocal(blockedMethod);
 
 exports.forceHookResolve = (forcedHook) => {
 	return (hook) => {

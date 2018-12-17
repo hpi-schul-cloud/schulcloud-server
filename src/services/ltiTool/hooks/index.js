@@ -5,7 +5,7 @@ const globalHooks = require('../../../hooks');
 const auth = require('feathers-authentication');
 
 exports.before = {
-  all: [globalHooks.blockedExternMethod, auth.hooks.authenticate('jwt')],
+  all: [globalHooks.blockedMethodForExtern, auth.hooks.authenticate('jwt')],
   find: [globalHooks.hasPermission('TOOL_VIEW')],
   get: [globalHooks.hasPermission('TOOL_VIEW')],
   create: [globalHooks.hasPermission('TOOL_CREATE')],
