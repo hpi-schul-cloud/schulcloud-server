@@ -316,7 +316,12 @@ class Add {
 	 * @return {Promise::User}
 	 */
 	async getUsersByEmail(email) {
-		return this.app.service('users').find({ query: { email } }).then(users => {
+		return this.app.service('users').find({
+			query: {
+				email,
+				$populate: [{ path: 'roles' }]
+			}
+		}).then(users => {
 			return extractOne(users);
 		}).catch(err => {
 			throw err;
@@ -324,11 +329,21 @@ class Add {
 	}
 
 	/**
-	 * @param {Object::{email::String, role::String, teamId::String}} opt
+	 * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
+	 * @param {Boolean} isUserCreated default = false
 	 */
-	async generateLink({ esid, email, teamId }, isUserCreated) {
-		if (isUserCreated === false) {
+	async generateLink({ esid, email, teamId, importHash }, isUserCreated = false) {
+		if (isUserCreated === false && isUndefined(importHash))
 			return Promise.resolve({ shortLink: process.env.HOST + '/teams/' + teamId });
+
+		if (isDefined(importHash)) {
+			const regex = new RegExp(importHash);
+			return this.app.service('link').find({ query: { target: regex } }).then(links => {
+				return extractOne(links).then(linkData => {
+					linkData.shortLink = process.env.HOST + '/link/' + linkData._id;
+					return linkData;
+				});
+			});
 		} else {
 			return this.app.service('/expertinvitelink').create({ esid, email }).catch(err => {
 				throw new errors.GeneralError("Experte: Fehler beim Erstellen des Einladelinks.", err);
@@ -353,7 +368,7 @@ class Add {
 				user = await userModel.create(newUser);
 				isUserCreated = true;
 			}
-			return { schoolId, isUserCreated, user, team };
+			return { esid: schoolId, isUserCreated, user, team };
 		}).catch(err => {
 			logger.warn(err);
 			throw new errors.GeneralError("Experte: Fehler beim Erstellen des Experten.");
@@ -362,42 +377,15 @@ class Add {
 
 	/**
 	 * Format the response. 
-	 * @param {Object::{ linkData, user, role }} opt
+	 * @param {Object::{ linkData, user, role, isUserCreated=false}} opt
 	 */
-	response({ linkData, user, role }) {
-		if (isUndefined([linkData, user, role], 'OR'))
+	response(data) {
+		if (isUndefined([data.linkData, data.user, data.role], 'OR'))
 			throw new errors.BadRequest('Can not complete the response');
-		return { message: 'Success!', linkData, user, role };
-	}
 
-	/**
-	 * @param {Object::{user, role}} opt 
-	 * @param {String} teamId 
-	 * @return this.response() formated 
-	 */
-	getExistingInviteLink({ user, role }, teamId) {
-		if (isDefined(user.importHash)) {
-			const regex = new RegExp(user.importHash);
-			return this.app.service('link').find({ query: { target: regex } }).then(links => {
-				return extractOne(links).then(linkData => {
-					return this.response({ linkData, user, role });
-				});
-			});
-		} else {
-			return this.generateLink({ teamId }, false).then(linkData => {
-				return this.response({ linkData, user, role });
-			});
-		}
-	}
-
-	/**
-	 * Test if email already added and user exist.
-	 * @param {Array} invitedUserIds 
-	 * @param {String} email 
-	 * @param {Object::User} user 
-	 */
-	isResendInvitation(invitedUserIds, email, user) {
-		return invitedUserIds.some(teamUser => teamUser.email === email) && isDefined(user);
+		data.message = 'Success!';
+		data.isUserCreated = data.isUserCreated || false;
+		return data;
 	}
 
 	/**
@@ -424,16 +412,21 @@ class Add {
 	 * @return {Promise::{ message: 'Success!', linkData::Object~from this.generateLink(), user::Object::User, role::String }}
 	 */
 	async userImportByEmail({ teamId, email, role }, params) {
-		const { schoolId, isUserCreated, user, team } = await this.createUserAndReturnLinkData({ email, role, teamId });
+		const { esid, isUserCreated, user, team } = await this.createUserAndReturnLinkData({ email, role, teamId });
 		let invitedUserIds = team.invitedUserIds;
-		if (this.isResendInvitation(invitedUserIds, email, user)) {
-			return this.getExistingInviteLink({ user, role }, teamId);
-		} else {
+
+		/*todo:  userIds must be populate in getTeam 
+		if( team.userIds.some(user => user.email === email) )
+			throw new errors.
+
+		*/
+
+		if (!invitedUserIds.some(teamUser => teamUser.email === email))
 			invitedUserIds.push({ email, role });
-			return Promise.all([this.generateLink({ esid: schoolId, email, teamId }, isUserCreated), patchTeam(this, teamId, { invitedUserIds }, params)]).then(([linkData, _]) => {
-				return this.response({ linkData, user, role });
-			});
-		}
+
+		return Promise.all([this.generateLink({ esid, email, teamId, importHash: user.importHash }, isUserCreated), patchTeam(this, teamId, { invitedUserIds }, params)]).then(([linkData, _]) => {
+			return this.response({ linkData, user, role, isUserCreated });
+		});
 	}
 
 	/**
