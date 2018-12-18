@@ -174,4 +174,88 @@ describe('CSVSyncer Integration', () => {
             expect(role.name).to.equal('teacher');
         });
     });
+
+    describe('Scenario 3 - Importing students with classes', () => {
+        let scenarioParams;
+        let scenarioData;
+
+        const SCHOOL_ID = '0000d186816abba584714c5f';
+        const ADMIN_EMAIL = 'foo@bar.baz';
+        const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
+
+        before(async () => {
+            await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
+
+            scenarioParams = {
+                query: {
+                    target: 'csv',
+                    school: SCHOOL_ID,
+                    role: 'student',
+                },
+                headers: {
+                    authorization: `Bearer ${await getAdminToken()}`,
+                },
+                provider: 'rest',
+            };
+            scenarioData = {
+                data: 'firstName,lastName,email,class\n'
+                    + `Turanga,Leela,${STUDENT_EMAILS[0]},\n`
+                    + `Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1a\n`
+                    + `Amy,Wong,${STUDENT_EMAILS[2]},1a\n`
+                    + `Philip J.,Fry,${STUDENT_EMAILS[3]},1b+2b\n`
+                    + `Bender Bending,Rodriguez,${STUDENT_EMAILS[4]},2b+2c\n`,
+            };
+        });
+
+        after(async () => {
+            await deleteUser(ADMIN_EMAIL);
+            await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
+        });
+
+        it('should be accepted for execution', () => {
+            expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.be.false;
+        });
+
+        it('should initialize without errors', () => {
+            const params = CSVSyncer.params(scenarioParams, scenarioData);
+            const instance = new CSVSyncer(app, {}, ...params);
+            expect(instance).to.exist;
+        });
+
+        it('should import five students in different classes', async () => {
+            await app.service('sync').create(scenarioData, scenarioParams);
+
+            const classes = await Promise.all(STUDENT_EMAILS.map(async email => {
+                const [user] = await userModel.find({
+                    email: email,
+                });
+                const [role] = await roleModel.find({
+                    _id: user.roles[0],
+                });
+                expect(role.name).to.equal('student');
+                return app.service('classes').find({
+                    query: { userIds: user._id },
+                    paginate: false,
+                });
+            }));
+
+            expect(classes[0].length).to.equal(0);
+            expect(classes[1].length).to.equal(1);
+            expect(classes[1][0].gradeLevel.name).to.equal('1');
+            expect(classes[1][0].name).to.equal('a');
+            expect(classes[2].length).to.equal(1);
+            expect(classes[2][0].gradeLevel.name).to.equal('1');
+            expect(classes[2][0].name).to.equal('a');
+            expect(classes[3].length).to.equal(2);
+            expect(classes[3][0].gradeLevel.name).to.equal('1');
+            expect(classes[3][0].name).to.equal('b');
+            expect(classes[3][1].gradeLevel.name).to.equal('2');
+            expect(classes[3][1].name).to.equal('b');
+            expect(classes[4].length).to.equal(2);
+            expect(classes[4][0].gradeLevel.name).to.equal('2');
+            expect(classes[4][0].name).to.equal('b');
+            expect(classes[4][1].gradeLevel.name).to.equal('2');
+            expect(classes[4][1].name).to.equal('c');
+        });
+    });
 });
