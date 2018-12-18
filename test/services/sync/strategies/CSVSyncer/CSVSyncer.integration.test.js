@@ -9,7 +9,7 @@ const {userModel} = require('../../../../../src/services/user/model.js');
 
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
-const {setupAdmin, getAdminToken, deleteUser, deleteClass} = require('./helper');
+const {setupAdmin, getAdminToken, deleteUser, createClass, findClass, deleteClass} = require('./helper');
 
 describe('CSVSyncer Integration', () => {
     let server;
@@ -210,7 +210,7 @@ describe('CSVSyncer Integration', () => {
         after(async () => {
             await deleteUser(ADMIN_EMAIL);
             await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
-            await Promise.all([['1', 'a'], ['1', 'b'], ['2', 'b'], ['2', 'c']].map(classname => deleteClass(classname)));
+            await Promise.all([['1', 'a'], ['1', 'b'], ['2', 'b'], ['2', 'c']].map(klass => deleteClass(klass)));
         });
 
         it('should be accepted for execution', () => {
@@ -248,15 +248,7 @@ describe('CSVSyncer Integration', () => {
             expect(classes[2][0].gradeLevel.name).to.equal('1');
             expect(classes[2][0].name).to.equal('a');
             expect(classes[3].length).to.equal(2);
-            expect(classes[3][0].gradeLevel.name).to.equal('1');
-            expect(classes[3][0].name).to.equal('b');
-            expect(classes[3][1].gradeLevel.name).to.equal('2');
-            expect(classes[3][1].name).to.equal('b');
             expect(classes[4].length).to.equal(2);
-            expect(classes[4][0].gradeLevel.name).to.equal('2');
-            expect(classes[4][0].name).to.equal('b');
-            expect(classes[4][1].gradeLevel.name).to.equal('2');
-            expect(classes[4][1].name).to.equal('c');
         });
     });
 });
