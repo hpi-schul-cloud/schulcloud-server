@@ -111,7 +111,7 @@ describe('CSVSyncer Integration', () => {
         });
     });
 
-    describe('Scenario 1 - Importing teachers', () => {
+    describe('Scenario 2 - Importing teachers', () => {
         let scenarioParams;
         let scenarioData;
 
