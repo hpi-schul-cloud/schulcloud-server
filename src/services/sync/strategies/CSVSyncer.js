@@ -89,7 +89,7 @@ class CSVSyncer extends Syncer {
 			}
 		});
 		// validate optional params:
-		if (records[0].class) {
+		if (records[0].class !== undefined) {
 			this.importClasses = true;
 		}
 		return records;
