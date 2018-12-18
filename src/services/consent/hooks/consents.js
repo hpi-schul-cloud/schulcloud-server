@@ -110,12 +110,14 @@ const accessCheck = (consent, app) => {
 	let access = true;
 	let requiresParentConsent = true;
 	let user;
+	let patchFirstlogin = false;
 
 	return app.service('users').get((consent.userId), { query: { $populate: 'roles'}})
 		.then(response => {
 			user = response;
 			if (userHasOneRole(user, ["demoTeacher", "demoStudent"])) {
 				requiresParentConsent = false;
+				patchFirstlogin = true;
 				return Promise.resolve();
 			}
 
@@ -123,10 +125,13 @@ const accessCheck = (consent, app) => {
 				let userConsent = consent.userConsent || {};
 				requiresParentConsent = false;
 				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
-					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
+					userConsent.thirdPartyConsent && userConsent.researchConsent)) 
+				{
 						access = false;
 						return Promise.resolve();
-					}
+				} else {
+					patchFirstlogin = true;
+				}
 				return Promise.resolve();
 			}
 
@@ -162,10 +167,15 @@ const accessCheck = (consent, app) => {
 			}
 		})
 		.then(() => {
-			if (access == true && !(user.preferences || {}).firstLogin) {
+			if (patchFirstlogin == true && !(user.preferences || {}).firstLogin) {
 				let updatedPreferences = user.preferences || {};
 				updatedPreferences.firstLogin = true;
 				return app.service('users').patch(user._id, {preferences: updatedPreferences});
+			}
+			return;
+		}).then(() => {
+			if (access && !(user.preferences || {}).firstLogin) {
+				access = false;
 			}
 			return;
 		}).then(() => {
