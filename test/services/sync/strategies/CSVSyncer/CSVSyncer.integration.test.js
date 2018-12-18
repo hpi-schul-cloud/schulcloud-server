@@ -251,4 +251,102 @@ describe('CSVSyncer Integration', () => {
             expect(classes[4].length).to.equal(2);
         });
     });
+
+    describe('Scenario 4 - Importing teachers into existing classes', () => {
+        let scenarioParams;
+        let scenarioData;
+
+        const SCHOOL_ID = '0000d186816abba584714c5f';
+        const EXISTING_CLASSES = [['1', 'a'], [undefined, 'SG1'], ['12', '/3']];
+        const ADMIN_EMAIL = 'foo@bar.baz';
+        const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
+
+        before(async () => {
+            await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
+            await Promise.all(EXISTING_CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
+
+            scenarioParams = {
+                query: {
+                    target: 'csv',
+                    school: SCHOOL_ID,
+                    role: 'teacher',
+                },
+                headers: {
+                    authorization: `Bearer ${await getAdminToken()}`,
+                },
+                provider: 'rest',
+            };
+            scenarioData = {
+                data: 'firstName,lastName,email,class\n'
+                    + `Jonathan 'Jack',O'Neill,${TEACHER_EMAILS[0]},1a\n`
+                    + `Dr. Samantha 'Sam',Carter,${TEACHER_EMAILS[1]},1a+SG1\n`
+                    + `Daniel,Jackson,${TEACHER_EMAILS[2]},Archeology\n`
+                    + `Teal'c,of Chulak,${TEACHER_EMAILS[3]},SG1\n`
+                    + `George,Hammond,${TEACHER_EMAILS[4]},12/3\n`,
+            };
+        });
+
+        after(async () => {
+            await deleteUser(ADMIN_EMAIL);
+            await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
+            await Promise.all(EXISTING_CLASSES.map(klass => deleteClass(klass)));
+            await deleteClass([undefined, 'Archeology']);
+        });
+
+        it('should be accepted for execution', () => {
+            expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.be.false;
+        });
+
+        it('should initialize without errors', () => {
+            const params = CSVSyncer.params(scenarioParams, scenarioData);
+            const instance = new CSVSyncer(app, {}, ...params);
+            expect(instance).to.exist;
+        });
+
+        it('should import five teachers into three existing classes', async () => {
+            await app.service('sync').create(scenarioData, scenarioParams);
+
+            await Promise.all(TEACHER_EMAILS.map(async email => {
+                const [user] = await userModel.find({
+                    email: email,
+                });
+                const [role] = await roleModel.find({
+                    _id: user.roles[0],
+                });
+                expect(role.name).to.equal('teacher');
+            }));
+
+            const teacherLastNames = async teacher => {
+                const [user] = await app.service('users').find({
+                    query: {
+                        _id: teacher,
+                    },
+                    paginate: false,
+                });
+                return user.lastName;
+            };
+
+            const sg1 = await findClass([undefined, 'SG1']);
+            expect(sg1.teacherIds.length).to.equal(2);
+            const sg1teachers = await Promise.all(sg1.teacherIds.map(teacherLastNames));
+            expect(sg1teachers).to.include('Carter');
+            expect(sg1teachers).to.include('of Chulak');
+
+            const class1a = await findClass(['1', 'a']);
+            expect(class1a.teacherIds.length).to.equal(2);
+            const class1ateachers = await Promise.all(class1a.teacherIds.map(teacherLastNames));
+            expect(class1ateachers).to.include('Carter');
+            expect(class1ateachers).to.include('O\'Neill');
+
+            const archeology = await findClass([undefined, 'Archeology']);
+            expect(archeology.teacherIds.length).to.equal(1);
+            const archeologyteachers = await Promise.all(archeology.teacherIds.map(teacherLastNames));
+            expect(archeologyteachers).to.include('Jackson');
+
+            const class12 = await findClass(['12', '/3']);
+            expect(class12.teacherIds.length).to.equal(1);
+            const class12teachers = await Promise.all(class12.teacherIds.map(teacherLastNames));
+            expect(class12teachers).to.include('Hammond');
+        });
+    });
 });
