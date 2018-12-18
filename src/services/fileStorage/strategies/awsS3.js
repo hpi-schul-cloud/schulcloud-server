@@ -141,6 +141,45 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
+	createIfNotExists(awsObject) {
+
+		return new Promise((resolve, reject) => {
+			const params = {
+				Bucket: awsObject.bucket,
+			};
+			awsObject.s3.headBucket(params, function(err) {
+				if (err && err.statusCode === 404) {
+					logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
+
+					awsObject.s3.createBucket({Bucket: awsObject.bucket}, (err) => {
+
+						if(err) {
+							reject(err);
+						}
+
+						logger.info(`Bucket ${awsObject.bucket} created ... `);
+						awsObject.s3.putBucketCors({
+							Bucket: awsObject.bucket,
+							CORSConfiguration: {
+								CORSRules: awsConfig.cors_rules
+							}},
+							(err) => {
+								if(err) {
+									reject(err);
+								}
+								resolve(awsObject);
+							});
+					});
+
+					return;
+				}
+
+				logger.info(`Bucket ${awsObject.bucket} does exist`);
+				resolve(awsObject);
+			});
+		});
+	}
+
 	/** @DEPRECATED **/
 	getFiles(userId, path) {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
@@ -206,25 +245,30 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	generateSignedUrl({userId, flatFileName, fileType}) {
 		if (!userId || !flatFileName || !fileType) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		
-		return UserModel.userModel.findById(userId).exec().then(result => {
-			if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
-			const awsObject = createAWSObject(result.schoolId);
-			let params = {
-				Bucket: awsObject.bucket,
-				Key: flatFileName,
-				Expires: 60,
-				ContentType: fileType
-			};
-									
-			return promisify(awsObject.s3.getSignedUrl, awsObject.s3)('putObject', params);
-		});
+		return UserModel.userModel.findById(userId).exec()
+			.then(result => {
+				if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
+
+				const awsObject = createAWSObject(result.schoolId);
+				return this.createIfNotExists(awsObject);
+			})
+			.then(awsObject => {
+
+				const params = {
+					Bucket: awsObject.bucket,
+					Key: flatFileName,
+					Expires: 60,
+					ContentType: fileType
+				};
+
+				return promisify(awsObject.s3.getSignedUrl, awsObject.s3)('putObject', params);
+			});
 	}
 
 	getSignedUrl({userId, flatFileName, download, action = 'getObject' }) {
 		if ( !userId || !flatFileName ) return Promise.reject(new errors.BadRequest('Missing parameters'));
-		
+
 		return UserModel.userModel.findById(userId).exec().then(result => {
 			if (!result || !result.schoolId) return Promise.reject(errors.NotFound("User not found"));
 
@@ -241,7 +285,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 			return promisify(awsObject.s3.getSignedUrl, awsObject.s3)(action, params);
 		});
-	}	
+	}
 
 	/**** @DEPRECATED ****/
 	createDirectory(userId, path) {
