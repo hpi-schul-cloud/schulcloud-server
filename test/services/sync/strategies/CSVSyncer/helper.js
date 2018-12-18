@@ -49,5 +49,32 @@ module.exports = {
     deleteUser: async (email='foo@bar.baz') => {
         await userModel.deleteOne({email: email});
         await accountModel.deleteOne({username: email});
+    },
+
+    deleteClass: async ([gradeLevelName, className]) => {
+        const gradeLevels = await app.service('gradeLevels').find({
+            query: {
+                name: gradeLevelName,
+            },
+            paginate: false,
+        });
+        let classObject;
+        if (gradeLevels.length > 0) {
+            [classObject] = await app.service('classes').find({
+                query: {
+                    gradeLevel: gradeLevels[0]._id,
+                    name: className,
+                },
+                paginate: false,
+            });
+        } else {
+            [classObject] = await app.service('classes').find({
+                query: {
+                    name: className,
+                },
+                paginate: false,
+            });
+        }
+        await app.service('classes').remove(classObject._id);
     }
 };

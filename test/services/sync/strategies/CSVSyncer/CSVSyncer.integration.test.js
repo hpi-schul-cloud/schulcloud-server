@@ -9,7 +9,7 @@ const {userModel} = require('../../../../../src/services/user/model.js');
 
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
-const {setupAdmin, getAdminToken, deleteUser} = require('./helper');
+const {setupAdmin, getAdminToken, deleteUser, deleteClass} = require('./helper');
 
 describe('CSVSyncer Integration', () => {
     let server;
@@ -210,6 +210,7 @@ describe('CSVSyncer Integration', () => {
         after(async () => {
             await deleteUser(ADMIN_EMAIL);
             await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
+            await Promise.all([['1', 'a'], ['1', 'b'], ['2', 'b'], ['2', 'c']].map(classname => deleteClass(classname)));
         });
 
         it('should be accepted for execution', () => {
