@@ -99,7 +99,16 @@ describe('CSVSyncer Integration', () => {
         });
 
         it('should import a single student without a class', async () => {
-            await app.service('sync').create(scenarioData, scenarioParams);
+            const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+            expect(stats['success']).to.equal(true);
+            expect(stats['users']['successful']).to.equal(1);
+            expect(stats['users']['failed']).to.equal(0);
+            expect(stats['invitations']['successful']).to.equal(0);
+            expect(stats['invitations']['failed']).to.equal(0);
+            expect(stats['classes']['successful']).to.equal(0);
+            expect(stats['classes']['failed']).to.equal(0);
+
             const users = await userModel.find({
                 email: SCENARIO_EMAIL,
             });
@@ -163,7 +172,16 @@ describe('CSVSyncer Integration', () => {
         });
 
         it('should import three teachers without a class', async () => {
-            await app.service('sync').create(scenarioData, scenarioParams);
+            const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+            expect(stats['success']).to.equal(true);
+            expect(stats['users']['successful']).to.equal(3);
+            expect(stats['users']['failed']).to.equal(0);
+            expect(stats['invitations']['successful']).to.equal(0);
+            expect(stats['invitations']['failed']).to.equal(0);
+            expect(stats['classes']['successful']).to.equal(0);
+            expect(stats['classes']['failed']).to.equal(0);
+
             const users = await userModel.find({
                 email: {$in: TEACHER_EMAILS},
             });
@@ -224,7 +242,15 @@ describe('CSVSyncer Integration', () => {
         });
 
         it('should import five students in different classes', async () => {
-            await app.service('sync').create(scenarioData, scenarioParams);
+            const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+            expect(stats['success']).to.equal(true);
+            expect(stats['users']['successful']).to.equal(5);
+            expect(stats['users']['failed']).to.equal(0);
+            expect(stats['invitations']['successful']).to.equal(0);
+            expect(stats['invitations']['failed']).to.equal(0);
+            expect(stats['classes']['successful']).to.equal(4);
+            expect(stats['classes']['failed']).to.equal(0);
 
             const classes = await Promise.all(STUDENT_EMAILS.map(async email => {
                 const [user] = await userModel.find({
@@ -325,7 +351,15 @@ describe('CSVSyncer Integration', () => {
         });
 
         it('should import five teachers into three existing classes', async () => {
-            await app.service('sync').create(scenarioData, scenarioParams);
+            const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+            expect(stats['success']).to.equal(true);
+            expect(stats['users']['successful']).to.equal(5);
+            expect(stats['users']['failed']).to.equal(0);
+            expect(stats['invitations']['successful']).to.equal(0);
+            expect(stats['invitations']['failed']).to.equal(0);
+            expect(stats['classes']['successful']).to.equal(4);
+            expect(stats['classes']['failed']).to.equal(0);
 
             await Promise.all(TEACHER_EMAILS.map(async email => {
                 const [user] = await userModel.find({
