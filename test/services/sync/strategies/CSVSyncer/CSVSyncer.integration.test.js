@@ -404,4 +404,76 @@ describe('CSVSyncer Integration', () => {
             expect(class12teachers).to.include('Hammond');
         });
     });
+
+    describe.skip('Scenario 5 - Importing teachers and sending invitation emails', () => {
+        let scenarioParams;
+        let scenarioData;
+
+        const SCHOOL_ID = '0000d186816abba584714c5f';
+        const ADMIN_EMAIL = 'foo@bar.baz';
+        const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
+        const CLASSES = [[undefined, 'NSA'], [undefined, 'CIA'], [undefined, 'BuyMore']];
+
+        before(async () => {
+            await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
+            await Promise.all(CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
+
+            scenarioParams = {
+                query: {
+                    target: 'csv',
+                    school: SCHOOL_ID,
+                    role: 'teacher',
+                    sendEmails: 'true',
+                },
+                headers: {
+                    authorization: `Bearer ${await getAdminToken()}`,
+                },
+                provider: 'rest',
+            };
+            scenarioData = {
+                data: 'firstName,lastName,email,class\n'
+                    + `Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n`
+                    + `Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n`
+                    + `Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
+            };
+        });
+
+        after(async () => {
+            await deleteUser(ADMIN_EMAIL);
+            await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
+            await Promise.all(CLASSES.map(klass => deleteClass(klass)));
+        });
+
+        it('should be accepted for execution', () => {
+            expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.be.false;
+        });
+
+        it('should initialize without errors', () => {
+            const params = CSVSyncer.params(scenarioParams, scenarioData);
+            const instance = new CSVSyncer(app, {}, ...params);
+            expect(instance).to.exist;
+        });
+
+        it('should import five teachers into three existing classes', async () => {
+            const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+            expect(stats['success']).to.equal(true);
+            expect(stats['users']['successful']).to.equal(3);
+            expect(stats['users']['failed']).to.equal(0);
+            expect(stats['invitations']['successful']).to.equal(0);
+            expect(stats['invitations']['failed']).to.equal(0);
+            expect(stats['classes']['successful']).to.equal(3);
+            expect(stats['classes']['failed']).to.equal(0);
+
+            await Promise.all(TEACHER_EMAILS.map(async email => {
+                const [user] = await userModel.find({
+                    email: email,
+                });
+                const [role] = await roleModel.find({
+                    _id: user.roles[0],
+                });
+                expect(role.name).to.equal('teacher');
+            }));
+        });
+    });
 });
