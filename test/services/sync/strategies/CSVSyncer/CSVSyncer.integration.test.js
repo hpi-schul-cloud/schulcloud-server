@@ -249,6 +249,27 @@ describe('CSVSyncer Integration', () => {
             expect(classes[2][0].name).to.equal('a');
             expect(classes[3].length).to.equal(2);
             expect(classes[4].length).to.equal(2);
+
+            const studentLastNames = async student => {
+                const [user] = await app.service('users').find({
+                    query: {
+                        _id: student,
+                    },
+                    paginate: false,
+                });
+                return user.lastName;
+            };
+
+            const class1a = await findClass(['1', 'a']);
+            const class1astudents = await Promise.all(class1a.userIds.map(studentLastNames));
+            expect(class1astudents).to.include('Wong');
+            expect(class1astudents).to.include('Zoidberg');
+
+            const class2b = await findClass(['2', 'b']);
+            const class2bstudents = await Promise.all(class2b.userIds.map(studentLastNames));
+            expect(class2bstudents).to.include('Fry');
+            expect(class2bstudents).to.include('Rodriguez');
+
         });
     });
 
