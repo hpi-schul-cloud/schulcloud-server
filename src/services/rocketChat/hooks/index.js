@@ -3,20 +3,42 @@ const errors = require('feathers-errors');
 const logger = require('winston');
 const auth = require('feathers-authentication');
 
-const blockedExtern = globalHooks.ifNotLocal((hook) => {
-    logger.warn('Intern use only.');
-    throw new errors.Forbidden('You have not the permission to execute this services.');
-});
-    
+const { Schema } = require('mongoose');
+
+
+/** todo replace with global hook if merged with master or remove*/
+const blockedMethod = (hook) => {
+    logger.warn('[teams]', 'Method is not allowed!');
+    throw new errors.MethodNotAllowed('Method is not allowed!');
+};
+
+/**
+ * test if id exist and id a valid moongose object id
+ * @beforeHook
+ * @param {Object::hook} hook 
+ * @returns {Promise::hook}
+ */
+const existId = (hook) => {
+    if (['find', 'create'].includes(hook.method)) {
+        return Promise.resolve(hook);
+    } else if (!hook.id) {
+        throw new errors.Forbidden('Operation on this service requires an id!');
+    } else {
+        if (!(hook.id instanceof Schema.Types.ObjectId))
+            throw new errors.BadRequest('It is not a valid id.');
+        return Promise.resolve(hook);
+    }
+};
+
 
 exports.before = {
-    all: [auth.hooks.authenticate('jwt')],
-    find: [],
+    all: [existId, auth.hooks.authenticate('jwt')],
+    find: [blockedMethod],
     get: [],
     create: [],
-    update: [],
-    patch: [],  
-    remove: []
+    update: [blockedMethod],
+    patch: [blockedMethod],
+    remove: [blockedMethod]
 };
 
 exports.after = {
@@ -25,6 +47,6 @@ exports.after = {
     get: [],
     create: [],
     update: [],
-    patch: [],  
+    patch: [],
     remove: []
 };
