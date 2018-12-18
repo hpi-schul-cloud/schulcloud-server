@@ -202,7 +202,7 @@ class SignedUrlService {
 		// converts the real filename to a unique one in flat-storage
 		// if action = getObject, file should exist in proxy db
     let fileProxyPromise = action === 'getObject' ? FileModel.findOne({key: path}).exec() : Promise.resolve({flatFileName});
-    
+
 		return fileProxyPromise.then(res => {
 			if (!res) return;
 
@@ -213,16 +213,16 @@ class SignedUrlService {
 				let externalSchoolId;
 				if (p.permission === 'shared') externalSchoolId = res.schoolId;
 
-				let header =  {							
+				let header =  {
 					// add meta data for later using
 					"Content-Type": fileType,
 					"x-amz-meta-path": dirName,
 					"x-amz-meta-name": fileName,
 					"x-amz-meta-flat-name": flatFileName,
-					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"				
+					"x-amz-meta-thumbnail": "https://schulcloud.org/images/login-right.png"
 				};
 
-				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId, download)
+				return createCorrectStrategy(params.payload.fileStorageType).generateSignedUrl(userId, flatFileName, fileType, action, externalSchoolId, download, fileName)
 					.then(res => {
 						return {
 							url: res,
