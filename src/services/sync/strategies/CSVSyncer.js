@@ -78,7 +78,7 @@ class CSVSyncer extends Syncer {
 			columns: true,
 			delimiter: ','
 		});
-		if (!records || records.length === 0) {
+		if (!Array.isArray(records) || records.length === 0) {
 			this.logError('Parsing failed: No input data.');
 			throw new Error('No input data');
 		}
