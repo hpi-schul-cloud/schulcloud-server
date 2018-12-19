@@ -203,6 +203,8 @@ const decorateConsents = (hook) => {
 	const consentPromises = (hook.result.data || []).map(consent => {
 		return accessCheck(consent, hook.app).then(result => {
 			return result;
+		}).catch(err => {
+			return {};
 		});
 	});
 
