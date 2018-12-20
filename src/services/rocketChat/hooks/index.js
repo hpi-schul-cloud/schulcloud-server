@@ -3,8 +3,6 @@ const errors = require('feathers-errors');
 const logger = require('winston');
 const auth = require('feathers-authentication');
 
-const { Schema } = require('mongoose');
-
 
 /** todo replace with global hook if merged with master or remove*/
 const blockedMethod = (hook) => {
@@ -24,8 +22,7 @@ const existId = (hook) => {
     } else if (!hook.id) {
         throw new errors.Forbidden('Operation on this service requires an id!');
     } else {
-        if (!(hook.id instanceof Schema.Types.ObjectId))
-            throw new errors.BadRequest('It is not a valid id.');
+        //todo test if valid id
         return Promise.resolve(hook);
     }
 };
