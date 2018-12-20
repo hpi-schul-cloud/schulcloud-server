@@ -38,7 +38,7 @@ describe('CSVSyncer', () => {
             }
         });
 
-        it('should require firstNam, lastName, and email', () => {
+        it('should require firstName, lastName, and email', () => {
             const out = new CSVSyncer();
             out.csvData = 'firstName,lastName,Emil\n1,2,3';
             try {
