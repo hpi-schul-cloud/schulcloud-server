@@ -476,4 +476,96 @@ describe('CSVSyncer Integration', () => {
             }));
         });
     });
+
+    describe('Scenario 6 - Éncöding', () => {
+        let scenarioParams;
+        let scenarioData;
+
+        const SCHOOL_ID = '0000d186816abba584714c5f';
+        const EXISTING_CLASSES = [['1', 'a'], ['2', 'b']];
+        const ADMIN_EMAIL = 'foo@bar.baz';
+        const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
+
+        before(async () => {
+            await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
+            await Promise.all(EXISTING_CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
+
+            scenarioParams = {
+                query: {
+                    target: 'csv',
+                    school: SCHOOL_ID,
+                    role: 'student',
+                },
+                headers: {
+                    authorization: `Bearer ${await getAdminToken()}`,
+                },
+                provider: 'rest',
+            };
+            scenarioData = {
+                data: 'firstName,lastName,email,class\n'
+                    + `工藤,新,${STUDENT_EMAILS[0]},1a\n`
+                    + `毛利,蘭,${STUDENT_EMAILS[1]},1a\n`
+                    + `毛利,小五郎,${STUDENT_EMAILS[2]},2b\n`,
+            };
+        });
+
+        after(async () => {
+            await deleteUser(ADMIN_EMAIL);
+            await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
+            await Promise.all(EXISTING_CLASSES.map(klass => deleteClass(klass)));
+        });
+
+        it('should be accepted for execution', () => {
+            expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.be.false;
+        });
+
+        it('should initialize without errors', () => {
+            const params = CSVSyncer.params(scenarioParams, scenarioData);
+            const instance = new CSVSyncer(app, {}, ...params);
+            expect(instance).to.exist;
+        });
+
+        it('should import three exchange students', async () => {
+            const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+            expect(stats['success']).to.equal(true);
+            expect(stats['users']['successful']).to.equal(3);
+            expect(stats['users']['failed']).to.equal(0);
+            expect(stats['invitations']['successful']).to.equal(0);
+            expect(stats['invitations']['failed']).to.equal(0);
+            expect(stats['classes']['successful']).to.equal(2);
+            expect(stats['classes']['failed']).to.equal(0);
+
+            await Promise.all(STUDENT_EMAILS.map(async email => {
+                const [user] = await userModel.find({
+                    email: email,
+                });
+                const [role] = await roleModel.find({
+                    _id: user.roles[0],
+                });
+                expect(role.name).to.equal('student');
+            }));
+
+            const studentLastNames = async student => {
+                const [user] = await app.service('users').find({
+                    query: {
+                        _id: student,
+                    },
+                    paginate: false,
+                });
+                return user.lastName;
+            };
+
+            const class1a = await findClass(['1', 'a']);
+            expect(class1a.userIds.length).to.equal(2);
+            const class1astudents = await Promise.all(class1a.userIds.map(studentLastNames));
+            expect(class1astudents).to.include('新');
+            expect(class1astudents).to.include('蘭');
+
+            const class2b = await findClass(['2', 'b']);
+            expect(class2b.userIds.length).to.equal(1);
+            const class2bstudents = await Promise.all(class2b.userIds.map(studentLastNames));
+            expect(class2bstudents).to.include('小五郎');
+        });
+    });
 });
