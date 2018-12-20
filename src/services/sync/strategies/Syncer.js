@@ -89,8 +89,8 @@ class Syncer {
 			}, { successful: 0, failed: 0 });
 		} else {
 			return {
-				successful: stats && stats.success ? 1 : 0,
-				failed: stats && stats.success ? 0 : 1,
+				successful: stats && stats.success === true ? 1 : 0,
+				failed: stats && stats.success === false ? 1 : 0,
 			};
 		}
 	}

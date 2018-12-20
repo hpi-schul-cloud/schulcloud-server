@@ -78,7 +78,7 @@ class CSVSyncer extends Syncer {
 			columns: true,
 			delimiter: ','
 		});
-		if (records.length === 0) {
+		if (!Array.isArray(records) || records.length === 0) {
 			this.logError('Parsing failed: No input data.');
 			throw new Error('No input data');
 		}
@@ -89,7 +89,7 @@ class CSVSyncer extends Syncer {
 			}
 		});
 		// validate optional params:
-		if (records[0].class) {
+		if (records[0].class !== undefined) {
 			this.importClasses = true;
 		}
 		return records;
@@ -218,15 +218,15 @@ class CSVSyncer extends Syncer {
 	async getClassObject(klass) {
 		const formats = [
 			{
-				regex: /^((?:1[0-3])|[1-9])(\D.*)$/,
+				regex: /^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/,
 				values: async string => {
-					const gradeLevelName = string.match(/^((?:1[0-3])|[1-9])(\D.*)$/)[1];
+					const gradeLevelName = string.match(/^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/)[1];
 					const gradeLevel = await this.findGradeLevel({
 						name: gradeLevelName
 					});
 					return {
 						nameFormat: 'gradeLevel+name',
-						name: string.match(/^((?:1[0-3])|[1-9])(\D.*)$/)[2],
+						name: string.match(/^(?:0)*(?:(?:1[0-3])|[1-9])(\D.*)$/)[1],
 						gradeLevel,
 					};
 				},
