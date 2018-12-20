@@ -2,8 +2,6 @@ const errors = require('feathers-errors');
 const parse = require('csv-parse/lib/sync');
 const Syncer = require('./Syncer');
 
-const FAILED_USER = null;
-
 /**
  * Implements importing CSV documents based on the Syncer interface
  * @class CSVSyncer
@@ -119,18 +117,18 @@ class CSVSyncer extends Syncer {
 	}
 
 	async createUsers(users) {
-		const createdUsers = await Promise.all(users.map(async user => {
+		const createdUsers = [];
+		for (let user of users) {
 			try {
 				const userObject = await this.createUser(user, {lean: true});
+				createdUsers.push(userObject);
 				this.stats.users.successful += 1;
-				return userObject;
 			} catch (err) {
 				this.logError('Cannot create user', user, JSON.stringify(err));
 				this.stats.users.failed += 1;
-				return FAILED_USER;
 			}
-		}));
-		return createdUsers.filter(user => user !== FAILED_USER);
+		}
+		return createdUsers;
 	}
 
 	createUser(user) {
