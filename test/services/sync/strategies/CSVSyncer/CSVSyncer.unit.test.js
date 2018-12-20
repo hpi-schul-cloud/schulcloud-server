@@ -150,5 +150,14 @@ describe('CSVSyncer', () => {
                 }
             }
         });
+
+        it('should trim leading zeros for grade levels', async () => {
+            for (let input of ['02a', '05b', '09c', '012d', '007e', '0000010f']) {
+                const result = await new CSVSyncer(app).getClassObject(input);
+                expect(result.nameFormat).to.equal('gradeLevel+name');
+                expect(result.gradeLevel.name).to.equal(input.match(/^0*(\d+)./)[1]);
+                expect(result.name).to.equal(input.replace(/\d*/, ''));
+            }
+        });
     });
 });
