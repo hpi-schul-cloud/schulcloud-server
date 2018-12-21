@@ -22,7 +22,7 @@ function createFeedbackText(account, data){
 	var os = (ua.os.version != undefined) ? ua.os.name + " " + ua.os.version : ua.os.name;
 	var device = (ua.device.vendor != undefined) ? ua.device.type + ", " + ua.device.vendor : ua.device.type;
 	let text = "User: " + ((account||{}).username||"nouser") + "\n"
-	+ "Schule: " + data.currentSchool.name + "\n"
+	+ "Schule: " + data.schoolName + "\n"
 	+ "Instanz: " + data.cloud + "\n"
 	+ "Bereich ausgewählt: " + data.category + "\n";
 	if (data.desire && data.desire != ""){
