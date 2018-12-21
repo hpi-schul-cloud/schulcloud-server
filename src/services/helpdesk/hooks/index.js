@@ -8,7 +8,7 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 
 function createInfoText(user, data){
 	return "Ein neues Problem wurde gemeldet." + "\n"
-	+ "User: " + user + "\n"
+	+ "User: " + ((account||{}).username||"nouser") + "\n"
 	+ "Kategorie: "+ data.category + "\n"
 	+ "Betreff: " + data.subject + "\n"
 	+ "Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der "+ data.cloud +".\n\n"
@@ -16,14 +16,13 @@ function createInfoText(user, data){
 	+ "Deine " + data.cloud;
 }
 
-function createFeedbackText(user, data){
+function createFeedbackText(account, data){
 	var ua = UAParser(data.metadata);
 	var browser = (ua.browser.version != undefined) ? ua.browser.name + " " + ua.browser.version : ua.browser.name;
 	var os = (ua.os.version != undefined) ? ua.os.name + " " + ua.os.version : ua.os.name;
-	let text = "User: " + user + "\n"
-	+ "Browser: " + browser + "\n"
-	+ "Betriebssystem: " + os + "\n"
-	+ "Schule: " + data.schoolName + "\n"
+	var device = (ua.device.vendor != undefined) ? ua.device.type + ", " + ua.device.vendor : ua.device.type;
+	let text = "User: " + ((account||{}).username||"nouser") + "\n"
+	+ "Schule: " + data.currentSchool.name + "\n"
 	+ "Instanz: " + data.cloud + "\n"
 	+ "Bereich ausgewählt: " + data.category + "\n";
 	if (data.desire && data.desire != ""){
@@ -38,6 +37,15 @@ function createFeedbackText(user, data){
 		+ "IST-Zustand: " + data.currentState + "\n"
 		+ "SOLL-Zustand: " + data.targetState;
 		if(data.notes) text = text + "\n Anmerkungen: " + data.notes;
+		// if the ticket is forwarded in helpdesk by admin, the account object is the admin's object and the rest of this is undefined 
+		text = text + "\n \n \n-------------------------- \n \n"
+		+ "Browser: " + browser + "\n"
+		+ "Betriebssystem: " + os + "\n"
+		+ "Gerät: " + device + "\n"
+		+ "Aktuelle Rolle: " + data.currentRole + "\n \n"
+		+ "Account Object: \n" + JSON.stringify(account) + "\n \n"
+		+ "User Object: \n" + JSON.stringify(data.currentUser) + "\n \n"
+		+ "School Object: \n" + JSON.stringify(data.currentSchool)
 	}
 	return text;
 }
@@ -68,7 +76,7 @@ const feedback = () => {
 				"roles": ["helpdesk", "administrator"],
 				"content": {
 					"text": createInfoText(
-						(hook.params.account||{}).username||"nouser",
+						(hook.params.account||{}),
 						data)
 				}
 			});
@@ -79,7 +87,7 @@ const feedback = () => {
 				"emails": ["ticketsystem@schul-cloud.org"],
 				"content": {
 					"text": createFeedbackText(
-						(hook.params.account||{}).username||"nouser",
+						(hook.params.account||{}),
 						data
 					)
 				}
