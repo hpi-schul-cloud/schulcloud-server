@@ -38,14 +38,17 @@ function createFeedbackText(account, data){
 		+ "SOLL-Zustand: " + data.targetState;
 		if(data.notes) text = text + "\n Anmerkungen: " + data.notes;
 		// if the ticket is forwarded in helpdesk by admin, the account object is the admin's object and the rest of this is undefined 
-		text = text + "\n \n \n-------------------------- \n \n"
-		+ "Browser: " + browser + "\n"
-		+ "Betriebssystem: " + os + "\n"
-		+ "Gerät: " + device + "\n"
-		+ "Aktuelle Rolle: " + data.currentRole + "\n \n"
-		+ "Account Object: \n" + JSON.stringify(account) + "\n \n"
-		+ "User Object: \n" + JSON.stringify(data.currentUser) + "\n \n"
-		+ "School Object: \n" + JSON.stringify(data.currentSchool)
+		// -> only send this information if it's directly commited from user. maybe later store some of that information in the DB
+		if(data.currentUser){
+			text = text + "\n \n \n-------------------------- \n \n"
+			+ "Browser: " + browser + "\n"
+			+ "Betriebssystem: " + os + "\n"
+			+ "Gerät: " + device + "\n"
+			+ "Aktuelle Rolle: " + data.currentRole + "\n \n"
+			+ "Account Object: \n" + JSON.stringify(account) + "\n \n"
+			+ "User Object: \n" + JSON.stringify(data.currentUser) + "\n \n"
+			+ "School Object: \n" + JSON.stringify(data.currentSchool)
+		}
 	}
 	return text;
 }
