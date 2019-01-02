@@ -249,14 +249,21 @@ class DirectoryService {
 		let fileName = pathUtil.basename(path);
 		let dirName = pathUtil.dirname(path) + "/";
 
-		return filePermissionHelper.checkPermissions(userId, path)
-			.then(_ => {
-				// create db entry for new directory
-				return DirectoryModel.create({
-					key: path,
-					name: fileName,
-					path: dirName
-				});
+		return DirectoryModel.find({key: path}).exec()
+			.then(res => {
+				// directory already exists
+				if (res.length > 0)
+					return res[0];
+
+				return filePermissionHelper.checkPermissions(userId, path)
+					.then(_ => {
+						// create db entry for new directory
+						return DirectoryModel.create({
+							key: path,
+							name: fileName,
+							path: dirName
+						});
+					});
 			});
 	}
 
