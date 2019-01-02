@@ -568,4 +568,69 @@ describe('CSVSyncer Integration', () => {
             expect(class2bstudents).to.include('小五郎');
         });
     });
+
+    describe('Scenario 7 - Errors', () => {
+        let scenarioParams;
+        let scenarioData;
+
+        const SCHOOL_ID = '0000d186816abba584714c5f';
+        const ADMIN_EMAIL = 'foo@bar.baz';
+        const TEACHER_EMAILS = [
+            'a@b.de',
+        ];
+
+        before(async () => {
+            await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
+
+            scenarioParams = {
+                query: {
+                    target: 'csv',
+                    school: SCHOOL_ID,
+                    role: 'teacher',
+                },
+                headers: {
+                    authorization: `Bearer ${await getAdminToken()}`,
+                },
+                provider: 'rest',
+            };
+            scenarioData = {
+                data: 'firstName,lastName,email\n'
+                    + `Peter,Pan,${TEACHER_EMAILS[0]}\n`
+                    + `Peter,Lustig,${TEACHER_EMAILS[0]}\n`
+                    + `Test,Testington,${TEACHER_EMAILS[0]}\n`,
+            };
+        });
+
+        after(async () => {
+            await deleteUser(ADMIN_EMAIL);
+            await deleteUser(TEACHER_EMAILS[0]);
+        });
+
+        it('should be accepted for execution', () => {
+            expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.be.false;
+        });
+
+        it('should initialize without errors', () => {
+            const params = CSVSyncer.params(scenarioParams, scenarioData);
+            const instance = new CSVSyncer(app, {}, ...params);
+            expect(instance).to.exist;
+        });
+
+        it('should import one user report two failures', async () => {
+            const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+            expect(stats['success']).to.equal(true);
+            expect(stats['users']['successful']).to.equal(1);
+            expect(stats['users']['failed']).to.equal(2);
+
+            const users = await userModel.find({
+                email: {$in: TEACHER_EMAILS},
+            });
+            expect(users.length).to.equal(1);
+            const [role] = await roleModel.find({
+                _id: users[0].roles[0],
+            });
+            expect(role.name).to.equal('teacher');
+        });
+    });
 });
