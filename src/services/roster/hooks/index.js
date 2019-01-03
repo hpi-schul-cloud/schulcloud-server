@@ -4,7 +4,7 @@ module.exports = {
 
 	tokenIsActive: context => {
 		return context.app.service('/oauth2/introspect')
-			.create({token: context.params.headers.authorization.replace('Bearer ', '')})
+			.create({token: context.params.headers.authorization})
 			.then(introspection => {
 				if (introspection.active) {
 					context.params.tokenInfo = introspection

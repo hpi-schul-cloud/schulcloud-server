@@ -1,4 +1,4 @@
-const hooks = require("./hooks"); // TODO: oauth permissions
+const hooks = require("./hooks");
 const Hydra = require('./hydra.js');
 
 module.exports = function() {
