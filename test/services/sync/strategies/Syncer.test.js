@@ -31,6 +31,18 @@ describe('Syncer interface', () => {
             const result = await mock.sync();
             expect(result.success).to.be.false;
         });
+
+        it('reports faillure if stats contain errors', async () => {
+            const mock = new Syncer();
+            mock.steps = () => {
+                return new Promise((resolve) => {
+                    mock.stats.errors.push(new Error('Do worry about me'));
+                    resolve();
+                });
+            };
+            const result = await mock.sync();
+            expect(result.success).to.be.false;
+        });
     });
 
     describe('aggregateStats method', () => {
