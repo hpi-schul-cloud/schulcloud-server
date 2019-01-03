@@ -633,10 +633,12 @@ describe('CSVSyncer Integration', () => {
             expect(role.name).to.equal('teacher');
 
             expect(stats['errors']).to.include({
+                type: 'user',
                 entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
                 message: `Die E-Mail Adresse ${TEACHER_EMAILS[0]} ist bereits in Verwendung!`,
             });
             expect(stats['errors']).to.include({
+                type: 'user',
                 entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
                 message: `Die E-Mail Adresse ${TEACHER_EMAILS[0]} ist bereits in Verwendung!`,
             });
