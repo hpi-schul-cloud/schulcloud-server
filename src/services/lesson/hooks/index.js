@@ -41,8 +41,8 @@ exports.before = {
 		}
 		return hook;
 	}],
-	find: [globalHooks.hasPermission('TOPIC_VIEW')],
-	get: [globalHooks.hasPermission('TOPIC_VIEW')],
+	find: [globalHooks.hasPermission('TOPIC_VIEW'), globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
+	get: [globalHooks.hasPermission('TOPIC_VIEW'), globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
 	create: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true), globalHooks.injectUserId, globalHooks.checkCorrectCourseId],
 	update: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false)],
 	patch: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false), globalHooks.permitGroupOperation, globalHooks.checkCorrectCourseId],
@@ -51,8 +51,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [],
-	get: [],
+	find: [globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
+	get: [globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
 	create: [checkIfCourseShareable],
 	update: [],
 	patch: [],

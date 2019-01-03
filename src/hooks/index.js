@@ -337,6 +337,63 @@ exports.restrictToUsersOwnCourses = hook => {
 	});
 };
 
+exports.restrictToUsersOwnLessons = hook => {
+	let userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'administrator' || role.name === 'superhero' )
+				access = true;
+		});
+		if (access)
+			return hook;
+
+		// before-hook
+		if (typeof(hook.params.query.$populate) === 'undefined') {
+			hook.params.query.$populate = ['courseId'];
+		} else {
+			hook.params.query.$populate.push('courseId');
+		}
+
+		if (hook.method === "get" && (hook.result||{})._id) {
+			let tempLesson = [hook.result];
+			tempLesson = tempLesson.filter(lesson => {
+				return _.some(lesson.courseId.userIds, u => u.toString() === res.data[0]._id.toString()) ||
+				_.some(lesson.courseId.teacherIds, u => u.toString() === res.data[0]._id.toString()) ||
+				_.some(lesson.courseId.substitutionIds, u => u.toString() === res.data[0]._id.toString())
+			});
+			if (tempLesson.length === 0) {
+				throw new errors.Forbidden(`You don't have access to that lesson.`);
+			}
+			hook.result.courseId = hook.result.courseId._id
+		}
+
+		if (hook.method === "find" && ((hook.result||{}).data||[]).length > 0) {
+			hook.result.data = hook.result.data.filter(lesson => {
+				return _.some(lesson.courseId.userIds, u => u.toString() === res.data[0]._id.toString()) ||
+				_.some(lesson.courseId.teacherIds, u => u.toString() === res.data[0]._id.toString()) ||
+				_.some(lesson.courseId.substitutionIds, u => u.toString() === res.data[0]._id.toString())
+			});
+
+			if (hook.result.data.length === 0) {
+				throw new errors.NotFound(`There are no lessons that you have access to.`);
+			} else {
+				hook.result.total = hook.result.data.length;
+			}
+			hook.result.data.map(lesson => {
+				lesson.courseId = lesson.courseId._id
+			});
+		}
+
+		return hook;
+	});
+};
+
 exports.restrictToUsersOwnClasses = hook => {
 	let userService = hook.app.service('users');
 	return userService.find({
