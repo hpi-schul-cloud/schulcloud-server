@@ -127,6 +127,7 @@ class CSVSyncer extends Syncer {
 				this.logError('Cannot create user', user, JSON.stringify(err));
 				this.stats.users.failed += 1;
 				this.stats.errors.push({
+					type: 'user',
 					entity: `${user.firstName},${user.lastName},${user.email}`,
 					message: err.message,
 				});
@@ -163,6 +164,11 @@ class CSVSyncer extends Syncer {
 				}
 			} catch (err) {
 				this.stats.invitations.failed += 1;
+				this.stats.errors.push({
+					type: 'invitation',
+					entity: user.email,
+					message: err.message,
+				});
 				this.logError('Cannot send invitation link to user', err);
 			}
 		}));
@@ -286,6 +292,11 @@ class CSVSyncer extends Syncer {
 				this.stats.classes.successful += 1;
 			} catch (err) {
 				this.stats.classes.failed += 1;
+				this.stats.errors.push({
+					type: 'class',
+					entity: klass,
+					message: err.message,
+				});
 				this.logError('Failed to create class', klass, err);
 			}
 			return Promise.resolve();
