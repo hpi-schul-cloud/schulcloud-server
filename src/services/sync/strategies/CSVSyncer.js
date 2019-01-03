@@ -126,6 +126,10 @@ class CSVSyncer extends Syncer {
 			} catch (err) {
 				this.logError('Cannot create user', user, JSON.stringify(err));
 				this.stats.users.failed += 1;
+				this.stats.errors.push({
+					entity: user,
+					message: err.message,
+				});
 			}
 		}
 		return createdUsers;

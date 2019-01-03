@@ -569,7 +569,7 @@ describe('CSVSyncer Integration', () => {
         });
     });
 
-    describe('Scenario 7 - Errors', () => {
+    describe('Scenario 7 - Duplicate Email Errors', () => {
         let scenarioParams;
         let scenarioData;
 
@@ -619,7 +619,7 @@ describe('CSVSyncer Integration', () => {
         it('should import one user report two failures', async () => {
             const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
 
-            expect(stats['success']).to.equal(true);
+            expect(stats['success']).to.equal(false);
             expect(stats['users']['successful']).to.equal(1);
             expect(stats['users']['failed']).to.equal(2);
 
@@ -631,6 +631,21 @@ describe('CSVSyncer Integration', () => {
                 _id: users[0].roles[0],
             });
             expect(role.name).to.equal('teacher');
+
+            const errors = stats['errors'].map(err => {
+                return {
+                    entity: `${err.entity.firstName},${err.entity.lastName},${err.entity.email}`,
+                    message: err.message,
+                };
+            });
+            expect(errors).to.include({
+                entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
+                message: `Die E-Mail Adresse ${TEACHER_EMAILS[0]} ist bereits in Verwendung!`,
+            });
+            expect(errors).to.include({
+                entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
+                message: `Die E-Mail Adresse ${TEACHER_EMAILS[0]} ist bereits in Verwendung!`,
+            });
         });
     });
 });
