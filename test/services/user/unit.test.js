@@ -29,7 +29,7 @@ describe('user service', function () {
 		});
 	});
 
-	it('resolves permissions correctly', function () {
+	it('resolves permissions and attributes correctly', function () {
 		const prepareUser = function(userObject) {
 			return registrationPinService.create({"email": userObject.email})
 				.then(registrationPin => {
@@ -80,6 +80,7 @@ describe('user service', function () {
 			.then(user => userService.get(user._id))
 			.then(user => {
 				testUserId = user._id;
+				chai.expect(user.avatarInitials).to.eq('MT');
 				const array = Array.from(user.permissions);
 				chai.expect(array).to.have.lengthOf(3);
 				chai.expect(array).to.include("TEST_BASE", "TEST_BASE_2", "TEST_SUB");

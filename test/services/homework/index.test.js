@@ -115,7 +115,7 @@ describe('homework service', function () {
 			.then(homework => {
 				expect(homework.courseId).to.equal(null);
 				expect(homework.lessonId).to.equal(null);
-				expect(homework.name).to.equal("Aufgabe an Ida (Mathe) - mit Abgabe & Bewertung");
+				expect(homework.name).to.equal("Aufgabe an Marla (Mathe) - mit Abgabe & Bewertung");
 				expect(homework.stats).to.equal(undefined);
 				expect(homework.grade).to.equal(undefined);
 			});
