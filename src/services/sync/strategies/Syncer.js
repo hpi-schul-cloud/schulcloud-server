@@ -48,7 +48,7 @@ class Syncer {
 	/**
 	 * Executes all steps and logs status and stats
 	 * @returns {Promise} Promise resolving with statistics (check
-	 * `stats.successful` for result)
+	 * `stats.success` for result)
 	 */
 	sync() {
 		this.logInfo('Started syncing');
