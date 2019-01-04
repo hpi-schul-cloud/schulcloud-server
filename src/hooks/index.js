@@ -367,7 +367,7 @@ exports.restrictToUsersOwnLessons = hook => {
 			if (hook.method === "get" && (hook.result||{})._id) {
 				let tempLesson = [hook.result];
 				tempLesson = tempLesson.filter(lesson => {
-					return hook.params.query.shareToken === lesson.shareToken ||
+					return (hook.params.query.shareToken||{}) === (lesson.shareToken||{}) ||
 					_.some(lesson.courseId.userIds, u => u.toString() === res.data[0]._id.toString()) ||
 					_.some(lesson.courseId.teacherIds, u => u.toString() === res.data[0]._id.toString()) ||
 					_.some(lesson.courseId.substitutionIds, u => u.toString() === res.data[0]._id.toString())
@@ -380,7 +380,7 @@ exports.restrictToUsersOwnLessons = hook => {
 
 			if (hook.method === "find" && ((hook.result||{}).data||[]).length > 0) {
 				hook.result.data = hook.result.data.filter(lesson => {
-					return hook.params.query.shareToken === lesson.shareToken ||
+					return (hook.params.query.shareToken||{}) === (lesson.shareToken||{}) ||
 					_.some(lesson.courseId.userIds, u => u.toString() === res.data[0]._id.toString()) ||
 					_.some(lesson.courseId.teacherIds, u => u.toString() === res.data[0]._id.toString()) ||
 					_.some(lesson.courseId.substitutionIds, u => u.toString() === res.data[0]._id.toString())
