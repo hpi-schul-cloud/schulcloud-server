@@ -354,42 +354,48 @@ exports.restrictToUsersOwnLessons = hook => {
 			return hook;
 
 		// before-hook
-		if (typeof(hook.params.query.$populate) === 'undefined') {
-			hook.params.query.$populate = ['courseId'];
+		if(hook.type === "before") {
+			let populate = hook.params.query.$populate;
+			if (typeof(populate) === 'undefined') {
+				populate = ['courseId'];
+			} else if (Array.isArray(populate) && !populate.includes("courseId")) {
+				populate.push('courseId');
+			}
+			hook.params.query.$populate = populate;
 		} else {
-			hook.params.query.$populate.push('courseId');
-		}
-
-		if (hook.method === "get" && (hook.result||{})._id) {
-			let tempLesson = [hook.result];
-			tempLesson = tempLesson.filter(lesson => {
-				return _.some(lesson.courseId.userIds, u => u.toString() === res.data[0]._id.toString()) ||
-				_.some(lesson.courseId.teacherIds, u => u.toString() === res.data[0]._id.toString()) ||
-				_.some(lesson.courseId.substitutionIds, u => u.toString() === res.data[0]._id.toString())
-			});
-			if (tempLesson.length === 0) {
-				throw new errors.Forbidden(`You don't have access to that lesson.`);
+			// after-hook
+			if (hook.method === "get" && (hook.result||{})._id) {
+				let tempLesson = [hook.result];
+				tempLesson = tempLesson.filter(lesson => {
+					return hook.params.query.shareToken === lesson.shareToken ||
+					_.some(lesson.courseId.userIds, u => u.toString() === res.data[0]._id.toString()) ||
+					_.some(lesson.courseId.teacherIds, u => u.toString() === res.data[0]._id.toString()) ||
+					_.some(lesson.courseId.substitutionIds, u => u.toString() === res.data[0]._id.toString())
+				});
+				if (tempLesson.length === 0) {
+					throw new errors.Forbidden(`You don't have access to that lesson.`);
+				}
+				hook.result.courseId = hook.result.courseId._id
 			}
-			hook.result.courseId = hook.result.courseId._id
-		}
 
-		if (hook.method === "find" && ((hook.result||{}).data||[]).length > 0) {
-			hook.result.data = hook.result.data.filter(lesson => {
-				return _.some(lesson.courseId.userIds, u => u.toString() === res.data[0]._id.toString()) ||
-				_.some(lesson.courseId.teacherIds, u => u.toString() === res.data[0]._id.toString()) ||
-				_.some(lesson.courseId.substitutionIds, u => u.toString() === res.data[0]._id.toString())
-			});
+			if (hook.method === "find" && ((hook.result||{}).data||[]).length > 0) {
+				hook.result.data = hook.result.data.filter(lesson => {
+					return hook.params.query.shareToken === lesson.shareToken ||
+					_.some(lesson.courseId.userIds, u => u.toString() === res.data[0]._id.toString()) ||
+					_.some(lesson.courseId.teacherIds, u => u.toString() === res.data[0]._id.toString()) ||
+					_.some(lesson.courseId.substitutionIds, u => u.toString() === res.data[0]._id.toString())
+				});
 
-			if (hook.result.data.length === 0) {
-				throw new errors.NotFound(`There are no lessons that you have access to.`);
-			} else {
-				hook.result.total = hook.result.data.length;
+				if (hook.result.data.length === 0) {
+					throw new errors.NotFound(`There are no lessons that you have access to.`);
+				} else {
+					hook.result.total = hook.result.data.length;
+				}
+				hook.result.data.map(lesson => {
+					lesson.courseId = lesson.courseId._id
+				});
 			}
-			hook.result.data.map(lesson => {
-				lesson.courseId = lesson.courseId._id
-			});
 		}
-
 		return hook;
 	});
 };
