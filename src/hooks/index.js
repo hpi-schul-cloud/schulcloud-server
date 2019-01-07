@@ -353,7 +353,7 @@ exports.restrictToUsersOwnLessons = hook => {
 	}).then(userResult => {
 		let access = false;
 		const user = userResult.data[0];
-		user.roles.map(role => {
+		user.roles.forEach(role => {
 			if (role.name === 'administrator' || role.name === 'superhero' )
 				access = true;
 		});
