@@ -71,6 +71,9 @@ class CSVSyncer extends Syncer {
 			});
 	}
 
+	requiredAttributes() {
+		return ['firstName', 'lastName', 'email'];
+	}
 	parseCsvData() {
 		const records = parse(this.csvData, {
 			columns: true,
@@ -80,8 +83,8 @@ class CSVSyncer extends Syncer {
 			this.logError('Parsing failed: No input data.');
 			throw new Error('No input data');
 		}
-		// validate required params:
-		['firstName', 'lastName', 'email'].forEach(param => {
+
+		this.requiredAttributes().forEach(param => {
 			if (!records[0][param]) {
 				throw new Error(`Parsing failed. Expected attribute "${param}"`);
 			}
