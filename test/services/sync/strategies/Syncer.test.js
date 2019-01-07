@@ -32,7 +32,7 @@ describe('Syncer interface', () => {
             expect(result.success).to.be.false;
         });
 
-        it('reports faillure if stats contain errors', async () => {
+        it('reports failure if stats contain errors', async () => {
             const mock = new Syncer();
             mock.steps = () => {
                 return new Promise((resolve) => {
