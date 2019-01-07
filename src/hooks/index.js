@@ -299,6 +299,12 @@ exports.restrictToCurrentSchool = hook => {
 	});
 };
 
+const userIsInThatCourse = (user, course) => {
+	return course.userIds.some(u => u.toString() === user._id.toString()) ||
+	course.teacherIds.some(u => u.toString() === user._id.toString()) ||
+	course.substitutionIds.some(u => u.toString() === user._id.toString());
+};
+
 exports.restrictToUsersOwnCourses = hook => {
 	let userService = hook.app.service('users');
 	return userService.find({
@@ -344,9 +350,10 @@ exports.restrictToUsersOwnLessons = hook => {
 			_id: hook.params.account.userId,
 			$populate: 'roles'
 		}
-	}).then(res => {
+	}).then(userResult => {
 		let access = false;
-		res.data[0].roles.map(role => {
+		const user = userResult.data[0];
+		user.roles.map(role => {
 			if (role.name === 'administrator' || role.name === 'superhero' )
 				access = true;
 		});
@@ -367,10 +374,7 @@ exports.restrictToUsersOwnLessons = hook => {
 			if (hook.method === "get" && (hook.result||{})._id) {
 				let tempLesson = [hook.result];
 				tempLesson = tempLesson.filter(lesson => {
-					return (hook.params.query.shareToken||{}) === (lesson.shareToken||{}) ||
-					_.some(lesson.courseId.userIds, u => u.toString() === res.data[0]._id.toString()) ||
-					_.some(lesson.courseId.teacherIds, u => u.toString() === res.data[0]._id.toString()) ||
-					_.some(lesson.courseId.substitutionIds, u => u.toString() === res.data[0]._id.toString())
+					return userIsInThatCourse(user, lesson.courseId) || (hook.params.query.shareToken||{}) === (lesson.shareToken||{});
 				});
 				if (tempLesson.length === 0) {
 					throw new errors.Forbidden(`You don't have access to that lesson.`);
@@ -380,10 +384,7 @@ exports.restrictToUsersOwnLessons = hook => {
 
 			if (hook.method === "find" && ((hook.result||{}).data||[]).length > 0) {
 				hook.result.data = hook.result.data.filter(lesson => {
-					return (hook.params.query.shareToken||{}) === (lesson.shareToken||{}) ||
-					_.some(lesson.courseId.userIds, u => u.toString() === res.data[0]._id.toString()) ||
-					_.some(lesson.courseId.teacherIds, u => u.toString() === res.data[0]._id.toString()) ||
-					_.some(lesson.courseId.substitutionIds, u => u.toString() === res.data[0]._id.toString())
+					return userIsInThatCourse(user, lesson.courseId) || (hook.params.query.shareToken||{}) === (lesson.shareToken||{});
 				});
 
 				if (hook.result.data.length === 0) {
