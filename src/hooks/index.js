@@ -344,7 +344,7 @@ exports.restrictToUsersOwnCourses = hook => {
 };
 
 exports.restrictToUsersOwnLessons = hook => {
-	let userService = hook.app.service('users');
+	const userService = hook.app.service('users');
 	return userService.find({
 		query: {
 			_id: hook.params.account.userId,
@@ -354,46 +354,49 @@ exports.restrictToUsersOwnLessons = hook => {
 		let access = false;
 		const user = userResult.data[0];
 		user.roles.forEach(role => {
-			if (role.name === 'administrator' || role.name === 'superhero' )
+			if (role.name === 'administrator' || role.name === 'superhero') {
 				access = true;
+			}
 		});
-		if (access)
+		if (access) {
 			return hook;
-
+		}
 		// before-hook
-		if(hook.type === "before") {
+		if (hook.type === 'before') {
 			let populate = hook.params.query.$populate;
-			if (typeof(populate) === 'undefined') {
+			if (typeof (populate) === 'undefined') {
 				populate = ['courseId'];
-			} else if (Array.isArray(populate) && !populate.includes("courseId")) {
+			} else if (Array.isArray(populate) && !populate.includes('courseId')) {
 				populate.push('courseId');
 			}
 			hook.params.query.$populate = populate;
 		} else {
 			// after-hook
-			if (hook.method === "get" && (hook.result||{})._id) {
+			if (hook.method === 'get' && (hook.result || {})._id) {
 				let tempLesson = [hook.result];
 				tempLesson = tempLesson.filter(lesson => {
-					return userIsInThatCourse(user, lesson.courseId) || (hook.params.query.shareToken||{}) === (lesson.shareToken||{});
+					return userIsInThatCourse(user, lesson.courseId) 
+					|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
 				});
 				if (tempLesson.length === 0) {
-					throw new errors.Forbidden(`You don't have access to that lesson.`);
+					throw new errors.Forbidden("You don't have access to that lesson.");
 				}
-				hook.result.courseId = hook.result.courseId._id
+				hook.result.courseId = hook.result.courseId._id;
 			}
 
-			if (hook.method === "find" && ((hook.result||{}).data||[]).length > 0) {
+			if (hook.method === 'find' && ((hook.result || {}).data || []).length > 0) {
 				hook.result.data = hook.result.data.filter(lesson => {
-					return userIsInThatCourse(user, lesson.courseId) || (hook.params.query.shareToken||{}) === (lesson.shareToken||{});
+					return userIsInThatCourse(user, lesson.courseId) 
+					|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
 				});
 
 				if (hook.result.data.length === 0) {
-					throw new errors.NotFound(`There are no lessons that you have access to.`);
+					throw new errors.NotFound('There are no lessons that you have access to.');
 				} else {
 					hook.result.total = hook.result.data.length;
 				}
-				hook.result.data.map(lesson => {
-					lesson.courseId = lesson.courseId._id
+				hook.result.data.forEach(lesson => {
+					lesson.courseId = lesson.courseId._id;
 				});
 			}
 		}
