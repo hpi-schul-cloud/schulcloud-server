@@ -6,7 +6,7 @@ const auth = require('feathers-authentication');
 
 /** todo replace with global hook if merged with master or remove*/
 const blockedMethod = (hook) => {
-    logger.warn('[teams]', 'Method is not allowed!');
+    logger.warn('[rocketChat]', 'Method is not allowed!');
     throw new errors.MethodNotAllowed('Method is not allowed!');
 };
 
