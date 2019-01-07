@@ -74,18 +74,49 @@ class CSVSyncer extends Syncer {
 	requiredAttributes() {
 		return ['firstName', 'lastName', 'email'];
 	}
+
 	parseCsvData() {
-		const records = parse(this.csvData, {
-			columns: true,
-			delimiter: ','
-		});
+		let records = [];
+		try {
+			records = parse(this.csvData, {
+				columns: true,
+				delimiter: ','
+			});
+		} catch (error) {
+			if (error.message && error.message.match(/Invalid Record Length/)) {
+				const line = error.message.match(/on line (\d+)/)[1];
+				this.stats.errors.push({
+					type: 'file',
+					entity: 'Eingabedatei fehlerhaft',
+					message: `Syntaxfehler in Zeile ${line}`,
+				});
+			} else {
+				this.stats.errors.push({
+					type: 'file',
+					entity: 'Eingabedatei fehlerhaft',
+					message: 'Datei ist nicht im korrekten Format',
+				});
+			}
+			throw error;
+		}
+
 		if (!Array.isArray(records) || records.length === 0) {
 			this.logError('Parsing failed: No input data.');
+			this.stats.errors.push({
+				type: 'file',
+				entity: 'Eingabedatei fehlerhaft',
+				message: 'Datei enthält keine Daten',
+			});
 			throw new Error('No input data');
 		}
 
 		this.requiredAttributes().forEach(param => {
 			if (!records[0][param]) {
+				this.stats.errors.push({
+					type: 'file',
+					entity: 'Eingabedatei fehlerhaft',
+					message: `benötigtes Attribut "${param}" nicht gefunden`,
+				});
 				throw new Error(`Parsing failed. Expected attribute "${param}"`);
 			}
 		});
