@@ -201,7 +201,7 @@ class CSVSyncer extends Syncer {
 				this.stats.errors.push({
 					type: 'invitation',
 					entity: user.email,
-					message: err.message,
+					message: 'Die automatische Einladungs-E-Mail konnte nicht gesendet werden. Bitte manuell einladen.',
 				});
 				this.logError('Cannot send invitation link to user', err);
 			}
