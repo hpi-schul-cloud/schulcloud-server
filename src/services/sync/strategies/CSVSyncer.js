@@ -164,11 +164,20 @@ class CSVSyncer extends Syncer {
 			} catch (err) {
 				this.logError('Cannot create user', user, JSON.stringify(err));
 				this.stats.users.failed += 1;
-				this.stats.errors.push({
-					type: 'user',
-					entity: `${user.firstName},${user.lastName},${user.email}`,
-					message: err.message,
-				});
+				if (err.message.startsWith('user validation failed')) {
+					this.stats.errors.push({
+						type: 'user',
+						entity: `${user.firstName},${user.lastName},${user.email}`,
+						message: `Ungültiger Wert in Spalte "${err.message.match(/Path `(.+)` is required/)[1]}"`,
+					});
+				}
+				if (err.message.startsWith('Die E-Mail Adresse')) {
+					this.stats.errors.push({
+						type: 'user',
+						entity: `${user.firstName},${user.lastName},${user.email}`,
+						message: err.message,
+					});
+				}
 			}
 		}
 		return createdUsers;
