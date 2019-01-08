@@ -9,6 +9,10 @@ const { ObjectId } = require('mongoose').Types;
 
 
 const PASSWORD = process.env.TEST_PW;
+const REQUEST_PARAMS = {
+    headers: {'content-type': 'application/json'},
+    provider: 'rest',
+};
 
 //let account;
 //let user;
@@ -18,12 +22,10 @@ const login = (userId) => {
         strategy: 'local',
         username: userId + '@schul-cloud.org',
         password: PASSWORD,
-    }, {
-            headers: {
-                'content-type': 'application/json',
-            },
-            provider: 'rest',
-        });
+    },REQUEST_PARAMS).then(result=>{
+        
+        return result;
+    });
 };
 
 const createUser = async (userId, roleName = 'student', schoolId = '0000d186816abba584714c5f') => {
@@ -67,7 +69,8 @@ const setupUser = async (roleName, schoolId) => {
 
 };
 
-const deleteUser = async (email = 'foo@bar.baz') => {
+const deleteUser = async (userId) => {
+    const email = userId + '@schul-cloud.org';
     await userModel.deleteOne({ email });     //todo: add error handling if not exist
     await accountModel.deleteOne({ username: email });
 };
