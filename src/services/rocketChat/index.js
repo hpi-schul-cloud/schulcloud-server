@@ -252,6 +252,10 @@ class RocketChatChannel {
             this.removeUsersFromChannel(removedUsers, team._id);
         }
     }
+
+    setup(app, path) {
+        this.app = app;
+    }
 }
 
 module.exports = function () {
