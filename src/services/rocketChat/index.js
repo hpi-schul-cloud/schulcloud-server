@@ -7,7 +7,7 @@ const hooks = require('./hooks');
 const docs = require('./docs');
 const { randomPass } = require('./randomPass');
 
-const BadRequest = errors.BadRequest, Forbidden = errors.Forbidden, warn = logger.warn, Resolve = Promise.resolve, Reject = Promise.reject, All = Promise.all;
+const B = errors.BadRequest, F = errors.Forbidden, w = logger.warn, Resolve = Promise.resolve, Reject = Promise.reject, All = Promise.all;
 
 const getEnv = (name) => {
     const env = process.env[name];
@@ -64,8 +64,8 @@ class RocketChatUser {
         const name = [user.firstName, user.lastName].join('.');
         const userId = user._id;
         return {
-            rc: { email, pass, username, name },    //rocketChat endpoint data
-            sc: { userId, username, pass }          //schul-cloud model data
+            rc: { email, pass, username, name },    //rocketChat endpoint
+            sc: { userId, username, pass }          //schul-cloud model
         };
     }
 
@@ -78,54 +78,45 @@ class RocketChatUser {
 
             return UserModel.create(sc).then((res) => {
                 if (res.errors !== undefined)
-                    throw new BadRequest('Can not insert into collection.', res.errors);
+                    throw new B('Can not insert into collection.', res.errors);
 
                 return req(RC.register, rc).then(res => {
                     if (res.success === true && res.user !== undefined)
                         return res;
                     else
-                        throw new BadRequest('False response data from rocketChat');
+                        throw new B('False response data from rocketChat');
                 });/*.catch(err=>{
                    throw err;
                 }); */
             });
         }).catch(err => {
-            warn(err);
-            throw new BadRequest('Can not create RocketChat Account');
+            w(err);
+            throw new B('Can not create RocketChat Account');
         });
     }
 
     //todo secret for rocketChat
     create({ userId }, params) {
         if (userId === undefined)
-            throw new BadRequest('Missing data value.');
+            throw new B('Missing data value.');
         return this.createRocketChatAccount(userId);
     }
 
     getOrCreateRocketChatAccount(userId) {
         return UserModel.findOne({ userId })
-            .then( async (login) => {
+            .then(login => {
                 if (!login) {
-                    login = await this.createRocketChatAccount(userId)
-                        .then(_ => UserModel.findOne({ userId }));
-                }
+                    return this.createRocketChatAccount(userId).then(res => {   //todo response from createRocketChatAccount should the user Object.
+                        return UserModel.findOne({ userId });
+                    });
+                } else return Resolve(login);
+            })
+            .then(login => {
                 return Resolve({ username: login.username, password: login.pass });
             }).catch(err => {
-                warn(err);
-                return Reject(new BadRequest('could not initialize rocketchat user'));
+                w(err);
+                return Reject(new B('could not initialize rocketchat user'));
             });
-        /* .then(login => {
-             if (!login) {
-                 return this.createRocketChatAccount(userId).then(res => {   //todo response from createRocketChatAccount should the user Object.
-                     return UserModel.findOne({ userId });                   //todo await and login = this.createRocketChat -> one return Resolve({ username, password})
-                 
-             } else return Resolve(login);
-         })
-         .then(login => Resolve({ username: login.username, password: login.pass })) 
-         .catch(err => {
-             warn(err);
-             return Reject(new BadRequest('could not initialize rocketchat user'));
-         }); */
     }
 
     //todo: username nicht onfly generiert 
@@ -135,8 +126,8 @@ class RocketChatUser {
                 delete login.password; /*** important ***/
                 return Resolve(login);
             }).catch(err => {
-                warn(err);
-                throw new Forbidden('Can not create token.');
+                w(err);
+                throw new F('Can not create token.');
             });
     }
 
@@ -159,11 +150,13 @@ class RocketChatLogin {
                     if (res.status === "success" && authToken !== undefined)
                         return Resolve({ authToken });
                     else
-                        return Reject(new BadRequest('False response data from rocketChat'));    //todo why reject ..the last catc do not return a Reject
-                }); //.catch(err => Reject(new Forbidden('Can not take token from rocketChat.', err)));
+                        return Reject(new B('False response data from rocketChat'));
+                }).catch(err => {
+                    return Reject(new F('Can not take token from rocketChat.', err));
+                });
             }).catch(err => {
-                warn(err);
-                throw new Forbidden('Can not create token.');
+                w(err);
+                throw new F('Can not create token.');
             });
     }
 
@@ -200,8 +193,8 @@ class RocketChatChannel {
             }).then((res) => {
                 if (res.success === true) return res;
             }).catch(err => {
-                warn(err);
-                throw new BadRequest('Can not create RocketChat Channel');
+                w(err);
+                throw new B('Can not create RocketChat Channel');
             });
     }
 
@@ -214,8 +207,12 @@ class RocketChatChannel {
                     });
                 } else return Resolve(channel);
             })
-            .then(({ teamId, channelName }) => Resolve({ teamId, channelName }))
-            .catch(err => Reject(new BadRequest('error initializing the rocketchat channel', err)));
+            .then(({ teamId, channelName }) => {
+                return Resolve({ teamId, channelName });
+            })
+            .catch(err => {
+                Reject(new B('error initializing the rocketchat channel', err));
+            });
     }
 
     get(id, params) {
