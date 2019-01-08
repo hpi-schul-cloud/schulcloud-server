@@ -719,7 +719,7 @@ describe('CSVSyncer Integration', () => {
         });
     });
 
-    describe.only('Scenario 9 - No Emails should be sent for failing users', () => {
+    describe('Scenario 9 - No Emails should be sent for failing users', () => {
         let scenarioParams;
         let scenarioData;
 
