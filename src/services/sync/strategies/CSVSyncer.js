@@ -1,4 +1,3 @@
-const errors = require('feathers-errors');
 const parse = require('csv-parse/lib/sync');
 const Syncer = require('./Syncer');
 
@@ -9,7 +8,7 @@ const Syncer = require('./Syncer');
  */
 class CSVSyncer extends Syncer {
 
-	constructor(app, stats={}, school, role='student', sendEmails, csvData, params) {
+	constructor(app, stats = {}, school, role = 'student', sendEmails, csvData, params) {
 		super(app, stats);
 		this.schoolId = school;
 		this.role = role;
@@ -42,7 +41,7 @@ class CSVSyncer extends Syncer {
 	/**
 	 * @see {Syncer#params}
 	 */
-	static params(params, data={}) {
+	static params(params, data = {}) {
 		const query = (params || {}).query || {};
 		if (query.school && query.role && data.data) {
 			return [
@@ -74,7 +73,7 @@ class CSVSyncer extends Syncer {
 			});
 	}
 
-	requiredAttributes() {
+	static requiredAttributes() {
 		return ['firstName', 'lastName', 'email'];
 	}
 
@@ -83,7 +82,7 @@ class CSVSyncer extends Syncer {
 		try {
 			records = parse(this.csvData, {
 				columns: true,
-				delimiter: ','
+				delimiter: ',',
 			});
 		} catch (error) {
 			if (error.message && error.message.match(/Invalid Record Length/)) {
@@ -113,7 +112,7 @@ class CSVSyncer extends Syncer {
 			throw new Error('No input data');
 		}
 
-		this.requiredAttributes().forEach(param => {
+		CSVSyncer.requiredAttributes().forEach((param) => {
 			if (!records[0][param]) {
 				this.stats.errors.push({
 					type: 'file',
@@ -132,20 +131,20 @@ class CSVSyncer extends Syncer {
 
 	enrichUserData(records) {
 		return Promise.all(records.map(async (user) => {
-			let linkData = await this.generateRegistrationLink({
+			const linkData = await this.generateRegistrationLink({
 				role: this.role,
 				schoolId: this.schoolId,
 				save: true,
-				toHash: user.email
+				toHash: user.email,
 			});
-			user = Object.assign(user, {
+			const enrichedUser = Object.assign(user, {
 				schoolId: this.schoolId,
 				roles: [this.role],
 				sendRegistration: true,
 			});
-			user.importHash = linkData.hash;
-			user.shortLink = linkData.shortLink;
-			return user;
+			enrichedUser.importHash = linkData.hash;
+			enrichedUser.shortLink = linkData.shortLink;
+			return enrichedUser;
 		}));
 	}
 
