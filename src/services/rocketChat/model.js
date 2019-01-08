@@ -8,7 +8,7 @@ const userSchema = new Schema({
 }, { timestamps: true });
 
 const channelSchema = new Schema({
-    teamId: { type: Schema.Types.ObjectId, ref: 'team', required: true, unique: true },
+    teamId: { type: Schema.Types.ObjectId, ref: 'team', required: true, unique: true }, //toDo: make flexible reference, example see fileStorage
     channelName: {type: String, required: true}
 }, { timestamps: true });
 

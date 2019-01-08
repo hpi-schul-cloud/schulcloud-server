@@ -222,12 +222,35 @@ class RocketChatChannel {
         })
     }
 
+    addUsersToChannel(userIds, teamId) {
+        userNamePromises = userIds.map(userId => { //toDo: refactor to a function that returns multiple
+            this.app.service('rocketChat/user').get(user.userId);
+        })
+        channelPromise = this.app.service('rocketChat/channel').get(teamId);
+
+        return Promise.resolve();
+    }
+
+    removeUsersFromChannel(userIds, teamId) {
+        return Promise.resolve
+    }
+
     get(Id, params) {
         return this.getOrCreateRocketChatChannel(Id, params);
     }
 
-    setup(app, path) {
-        this.app = app;
+    _onTeamUsersChanged(context) {
+        const team = ((context || {}).additionalInfosTeam || {}).team;
+        additionalUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).add
+        removedUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).add
+
+        additionalUsers = additionalUsers.map(user => {return user.userId})
+        removedUsers = additionalUsers.map(user => {return user.userId})
+
+        if (changes) {
+            this.addUsersToChannel(additionalUsers, team._id);
+            this.removeUsersFromChannel(removedUsers, team._id);
+        }
     }
 }
 
@@ -250,4 +273,6 @@ module.exports = function () {
 
     rocketChatChannelService.before(hooks.before);
     rocketChatChannelService.after(hooks.after);
+
+    app.on('teams:after:usersChanged', rocketChatChannelService._onTeamUsersChanged)
 };
