@@ -274,8 +274,8 @@ const dataExist = hook => {
  * @param {Object::hook}
  * @returns {Object::hook}
  */
-const pushUserChangedEvent = (hook) => {
-    const team = getTeam(hook);
+const pushUserChangedEvent = async (hook) => {
+    const team = await getTeam(hook);
     const oldUsers = team.userIds;
     const newUsers = get(hook, 'newUsers'); //hook.additionalInfosTeam.newUsers;
 
