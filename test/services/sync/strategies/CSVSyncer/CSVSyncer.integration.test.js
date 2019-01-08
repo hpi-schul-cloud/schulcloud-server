@@ -6,10 +6,11 @@ const expect = chai.expect;
 const app = require('../../../../../src/app');
 const roleModel = require('../../../../../src/services/role/model.js');
 const {userModel} = require('../../../../../src/services/user/model.js');
+const MailService = require('../../../../../src/services/helpers/service.js');
 
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
-const {setupAdmin, getAdminToken, deleteUser, createClass, findClass, deleteClass} = require('./helper');
+const {setupAdmin, getAdminToken, deleteUser, createClass, findClass, deleteClass, MockEmailService} = require('./helper');
 
 describe('CSVSyncer Integration', () => {
     let server;
@@ -405,7 +406,7 @@ describe('CSVSyncer Integration', () => {
         });
     });
 
-    describe.skip('Scenario 5 - Importing teachers and sending invitation emails', () => {
+    describe('Scenario 5 - Importing teachers and sending invitation emails', () => {
         let scenarioParams;
         let scenarioData;
 
@@ -442,6 +443,7 @@ describe('CSVSyncer Integration', () => {
             await deleteUser(ADMIN_EMAIL);
             await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
             await Promise.all(CLASSES.map(klass => deleteClass(klass)));
+            app.use('/mails', new MailService());
         });
 
         it('should be accepted for execution', () => {
@@ -455,15 +457,22 @@ describe('CSVSyncer Integration', () => {
         });
 
         it('should import five teachers into three existing classes', async () => {
+            const emails = [];
+            app.use('/mails', new MockEmailService((email) => {emails.push(email);}));
+
             const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
 
             expect(stats['success']).to.equal(true);
             expect(stats['users']['successful']).to.equal(3);
             expect(stats['users']['failed']).to.equal(0);
-            expect(stats['invitations']['successful']).to.equal(0);
+            expect(stats['invitations']['successful']).to.equal(3);
             expect(stats['invitations']['failed']).to.equal(0);
             expect(stats['classes']['successful']).to.equal(3);
             expect(stats['classes']['failed']).to.equal(0);
+
+            expect(emails.length).to.equal(3);
+            expect(emails[0].subject).to.equal(`Einladung für die Nutzung der ${process.env.SC_TITLE}!`);
+            expect(emails[0].content.text).to.include('Hallo Chuck Bartowski!');
 
             await Promise.all(TEACHER_EMAILS.map(async email => {
                 const [user] = await userModel.find({
@@ -645,7 +654,7 @@ describe('CSVSyncer Integration', () => {
         });
     });
 
-    describe.skip('Scenario 8 - Email errors', () => {
+    describe('Scenario 8 - Email errors', () => {
         let scenarioParams;
         let scenarioData;
 
@@ -682,6 +691,7 @@ describe('CSVSyncer Integration', () => {
             await deleteUser(ADMIN_EMAIL);
             await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
             await Promise.all(CLASSES.map(klass => deleteClass(klass)));
+            app.use('/mails', new MailService());
         });
 
         it('should be accepted for execution', () => {
@@ -695,8 +705,11 @@ describe('CSVSyncer Integration', () => {
         });
 
         it('should not be able to send emails', async () => {
+            const emails = [];
+            app.use('/mails', new MockEmailService((email) => {throw new Error('Some Email error...');}));
+
             const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
-            require('winston').warn(stats);
+
             expect(stats['success']).to.equal(false);
             expect(stats['users']['successful']).to.equal(3);
             expect(stats['users']['failed']).to.equal(0);

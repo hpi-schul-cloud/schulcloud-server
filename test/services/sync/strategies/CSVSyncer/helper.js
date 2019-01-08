@@ -109,6 +109,17 @@ const deleteClass = async ([gradeLevelName, className]) => {
     await app.service('classes').remove(classObject._id);
 };
 
+class MockEmailService {
+    constructor(eventHandler) {
+        this.eventHandler = eventHandler;
+    }
+
+    create({headers, email, subject, content}, params) {
+        this.eventHandler({subject, content});
+        return Promise.resolve();
+    }
+}
+
 module.exports = {
     setupAdmin,
     getAdminToken,
@@ -116,4 +127,5 @@ module.exports = {
     createClass,
     findClass,
     deleteClass,
+    MockEmailService,
 };
