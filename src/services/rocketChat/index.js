@@ -2,12 +2,10 @@ const request = require('request-promise-native');
 const errors = require('feathers-errors');
 
 const logger = require('../../logger');
-const { UserModel, ChannelModel } = require('./model');
+const rocketChatModels = require('./model');
 const hooks = require('./hooks');
 const docs = require('./docs');
 const { randomPass } = require('./randomPass');
-
-const B = errors.BadRequest, F = errors.Forbidden, w = logger.warn, Resolve = Promise.resolve, Reject = Promise.reject, All = Promise.all;
 
 const getEnv = (name) => {
     const env = process.env[name];
@@ -21,15 +19,6 @@ const ROCKET_CHAT_URI = getEnv('ROCKET_CHAT');
 const HEADERS = {
     'X-Auth-Token': getEnv('ROCKET_CHAT_ADMIN_TOKEN'),
     'X-User-ID': getEnv('ROCKET_CHAT_ADMIN_ID')
-};
-
-/**
- * used RocketChat Endpoints 
- */
-const RC = {
-    'register': '/api/v1/users.register',
-    'login': '/api/v1/login',
-    'create': '/api/v1/groups.create'
 };
 
 const getReqOptions = (shortUri, body, auth = false, method) => {
@@ -47,87 +36,76 @@ const getReqOptions = (shortUri, body, auth = false, method) => {
     return opt;
 };
 
-const req = (uri, body, auth = false) => {
-    return request(getReqOptions(uri, body, auth));
-};
-
 class RocketChatUser {
     constructor(options) {
         this.options = options || {};
         this.docs = docs;
     }
 
-    newAccountData(user) {
-        const pass = randomPass();
-        const username = ([user.schoolId.name, user.firstName, user.lastName].join('.')).replace(/\s/g, '_');
-        const email = user.email;
-        const name = [user.firstName, user.lastName].join('.');
-        const userId = user._id;
-        return {
-            rc: { email, pass, username, name },    //rocketChat endpoint
-            sc: { userId, username, pass }          //schul-cloud model
-        };
-    }
-
-    createRocketChatAccount(userId) {
+    createRocketChatAccount(userId, params) {
         const internalParams = {
             query: { $populate: "schoolId" }
         };
         return this.app.service('users').get(userId, internalParams).then(user => {
-            const { rc, sc } = this.newAccountData(user);
+            const email = user.email;
+            const pass = randomPass();
+            const username = ([user.schoolId.name, user.firstName, user.lastName].join('.')).replace(/\s/g, '_');
+            const name = [user.firstName, user.lastName].join('.');
 
-            return UserModel.create(sc).then((res) => {
+            return rocketChatModels.userModel.create({ userId, pass, username }).then((res) => {
                 if (res.errors !== undefined)
-                    throw new B('Can not insert into collection.', res.errors);
+                    throw new errors.BadRequest('Can not insert into collection.', res.errors);
 
-                return req(RC.register, rc).then(res => {
+                const body = { email, pass, username, name };
+                return request(getReqOptions('/api/v1/users.register', body)).then(res => {
                     if (res.success === true && res.user !== undefined)
                         return res;
                     else
-                        throw new B('False response data from rocketChat');
-                });/*.catch(err=>{
-                   throw err;
-                }); */
+                        throw new errors.BadRequest('False response data from rocketChat');
+                }).catch(err => {
+                    throw new errors.BadRequest('Can not write user informations to rocketChat.', err);
+                });
             });
         }).catch(err => {
-            w(err);
-            throw new B('Can not create RocketChat Account');
+            logger.warn(err);
+            throw new errors.BadRequest('Can not create RocketChat Account');
         });
     }
 
     //todo secret for rocketChat
     create({ userId }, params) {
         if (userId === undefined)
-            throw new B('Missing data value.');
-        return this.createRocketChatAccount(userId);
+            throw new errors.BadRequest('Missing data value.');
+        return this.createRocketChatAccount(userId, params);
     }
 
-    getOrCreateRocketChatAccount(userId) {
-        return UserModel.findOne({ userId })
+    getOrCreateRocketChatAccount(userId, params) {
+        return rocketChatModels.userModel.findOne({ userId })
             .then(login => {
                 if (!login) {
-                    return this.createRocketChatAccount(userId).then(res => {   //todo response from createRocketChatAccount should the user Object.
-                        return UserModel.findOne({ userId });
-                    });
-                } else return Resolve(login);
+                    return this.createRocketChatAccount(userId, params)
+                        .then(res => {
+                            return rocketChatModels.userModel.findOne({ userId });
+                        });
+                } else return Promise.resolve(login);
             })
             .then(login => {
-                return Resolve({ username: login.username, password: login.pass });
+                return Promise.resolve({ username: login.username, password: login.pass });
             }).catch(err => {
-                w(err);
-                return Reject(new B('could not initialize rocketchat user'));
+                logger.warn(err);
+                Promise.reject(new errors.BadRequest('could not initialize rocketchat user', err));
             });
     }
 
     //todo: username nicht onfly generiert 
     get(userId, params) {
-        return this.getOrCreateRocketChatAccount(userId)
+        return this.getOrCreateRocketChatAccount(userId, params)
             .then(login => {
-                delete login.password; /*** important ***/
-                return Resolve(login);
+                delete login.password;
+                return Promise.resolve(login);
             }).catch(err => {
-                w(err);
-                throw new F('Can not create token.');
+                logger.warn(err);
+                throw new errors.Forbidden('Can not create token.');
             });
     }
 
@@ -143,20 +121,20 @@ class RocketChatLogin {
     }
 
     get(userId, params) {
-        return this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId)
+        return this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params)
             .then(login => {
-                return req(RC.login, login).then(res => {
+                return request(getReqOptions('/api/v1/login', login)).then(res => {
                     const authToken = (res.data || {}).authToken;
                     if (res.status === "success" && authToken !== undefined)
-                        return Resolve({ authToken });
+                        return Promise.resolve({ authToken });
                     else
-                        return Reject(new B('False response data from rocketChat'));
+                        return Promise.reject(new errors.BadRequest('False response data from rocketChat'));
                 }).catch(err => {
-                    return Reject(new F('Can not take token from rocketChat.', err));
+                    return Promise.reject(new errors.Forbidden('Can not take token from rocketChat.', err));
                 });
             }).catch(err => {
-                w(err);
-                throw new F('Can not create token.');
+                logger.warn(err);
+                throw new errors.Forbidden('Can not create token.');
             });
     }
 
@@ -171,52 +149,64 @@ class RocketChatChannel {
         this.docs = docs;
     }
 
-    createChannel(id) {
-        return this.app.service('teams').get(id) //internalParams removed ..i think it is no need to populate
+    createChannel(id, params) {
+        //if (id === undefined)
+        //     throw new errors.BadRequest('Missing data value.');
+
+        let currentTeam;
+        const internalParams = {
+            query: { $populate: "schoolId" }
+        };
+        return this.app.service('teams').get(id, internalParams)
             .then(team => {
+                currentTeam = team;
                 const channelData = {
-                    teamId: team._id,
-                    channelName: team.name
+                    teamId: currentTeam._id,
+                    channelName: currentTeam.name
                 };
-                return ChannelModel.create(channelData)
-                    .then(({ name }) => {
-                        return [name, team.userIds];
-                    });
-            }).then(([name, teamUsers]) => {
-                let userNamePromises = teamUsers.map(user => {    //todo: in operation or ...to reduce the requests over find method
+                return rocketChatModels.channelModel.create(channelData);
+            }).then(result => {
+                let userNamePromises = currentTeam.userIds.map(user => {
                     return this.app.service('rocketChat/user').get(user.userId);
                 });
-                return All(userNamePromises).then(users => {
-                    const members = users.map(user => user.username);
-                    return req(RC.create, { name, members }, true);
+                return Promise.all(userNamePromises).then(users => {
+                    users = users.map(user => { return user.username; });
+                    const body = {
+                        name: result.channelName,
+                        members: users
+                    };
+                    return request(getReqOptions('/api/v1/groups.create', body, true));
                 });
             }).then((res) => {
                 if (res.success === true) return res;
             }).catch(err => {
-                w(err);
-                throw new B('Can not create RocketChat Channel');
+                logger.warn(err);
+                throw new errors.BadRequest('Can not create RocketChat Channel');
             });
     }
 
-    getOrCreateRocketChatChannel(id) {
-        return ChannelModel.findOne({ id })
+    getOrCreateRocketChatChannel(id, params) {
+        return rocketChatModels.channelModel.findOne({ id })
             .then(channel => {
                 if (!channel) {
-                    return this.createChannel(id).then(() => {
-                        return ChannelModel.findOne({ id });
+                    return this.createChannel(id, params).then(() => {
+                        return rocketChatModels.channelModel.findOne({ id });
                     });
-                } else return Resolve(channel);
+                } else return Promise.resolve(channel);
             })
-            .then(({ teamId, channelName }) => {
-                return Resolve({ teamId, channelName });
+            .then(channel => {
+                return Promise.resolve({
+                    teamId: channel.teamId,
+                    channelName: channel.channelName
+                });
             })
             .catch(err => {
-                Reject(new B('error initializing the rocketchat channel', err));
+                Promise.reject(new errors.BadRequest('error initializing the rocketchat channel', err));
             });
     }
 
     get(id, params) {
-        return this.getOrCreateRocketChatChannel(id);
+        return this.getOrCreateRocketChatChannel(id, params);
     }
 
     setup(app, path) {

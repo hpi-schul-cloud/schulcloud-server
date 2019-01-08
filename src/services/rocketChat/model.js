@@ -12,7 +12,7 @@ const channelSchema = new Schema({
     channelName: {type: String, required: true}
 }, { timestamps: true });
 
-const UserModel = mongoose.model('rocketChatUser', userSchema);
-const ChannelModel = mongoose.model('rocketChatChannel', channelSchema);
+const userModel = mongoose.model('rocketChatUser', userSchema);
+const channelModel = mongoose.model('rocketChatChannel', channelSchema);
 
-module.exports = {UserModel, ChannelModel};
+module.exports = {userModel, channelModel};
