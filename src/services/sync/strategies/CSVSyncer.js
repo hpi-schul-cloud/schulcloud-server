@@ -66,7 +66,10 @@ class CSVSyncer extends Syncer {
 				const users = await this.enrichUserData(records);
 				const userObjects = await this.createUsers(users);
 				if (this.importClasses) await this.createClasses(users, userObjects);
-				if (this.sendEmails) await this.emailUsers(users);
+				if (this.sendEmails) {
+					const createdUsers = users.filter(u => u.created);
+					await this.emailUsers(createdUsers);
+				}
 				return this.stats;
 			});
 	}
@@ -154,7 +157,8 @@ class CSVSyncer extends Syncer {
 		const createdUsers = [];
 		for (let user of users) {
 			try {
-				const userObject = await this.createUser(user, {lean: true});
+				const userObject = await this.createUser(user);
+				user.created = true;
 				createdUsers.push(userObject);
 				this.stats.users.successful += 1;
 			} catch (err) {

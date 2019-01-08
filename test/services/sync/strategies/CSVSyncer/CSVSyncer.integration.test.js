@@ -705,7 +705,6 @@ describe('CSVSyncer Integration', () => {
         });
 
         it('should not be able to send emails', async () => {
-            const emails = [];
             app.use('/mails', new MockEmailService((email) => {throw new Error('Some Email error...');}));
 
             const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
@@ -717,6 +716,82 @@ describe('CSVSyncer Integration', () => {
             expect(stats['invitations']['failed']).to.equal(3);
 
             expect(stats['errors'].filter(e => e.type === 'invitation').length).to.equal(3);
+        });
+    });
+
+    describe.only('Scenario 9 - No Emails should be sent for failing users', () => {
+        let scenarioParams;
+        let scenarioData;
+
+        const SCHOOL_ID = '0000d186816abba584714c5f';
+        const ADMIN_EMAIL = 'foo@bar.baz';
+        const TEACHER_EMAILS = [
+            'a@b.de',
+        ];
+
+        before(async () => {
+            await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
+
+            scenarioParams = {
+                query: {
+                    target: 'csv',
+                    school: SCHOOL_ID,
+                    role: 'teacher',
+                    sendEmails: 'true',
+                },
+                headers: {
+                    authorization: `Bearer ${await getAdminToken()}`,
+                },
+                provider: 'rest',
+            };
+            scenarioData = {
+                data: 'firstName,lastName,email\n'
+                    + `Peter,Pan,${TEACHER_EMAILS[0]}\n`
+                    + `Peter,Lustig,${TEACHER_EMAILS[0]}\n`
+                    + `Test,Testington,${TEACHER_EMAILS[0]}\n`,
+            };
+        });
+
+        after(async () => {
+            await deleteUser(ADMIN_EMAIL);
+            await deleteUser(TEACHER_EMAILS[0]);
+            app.use('/mails', new MailService());
+        });
+
+        it('should be accepted for execution', () => {
+            expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.be.false;
+        });
+
+        it('should initialize without errors', () => {
+            const params = CSVSyncer.params(scenarioParams, scenarioData);
+            const instance = new CSVSyncer(app, {}, ...params);
+            expect(instance).to.exist;
+        });
+
+        it('should import one user report two failures', async () => {
+            const emails = [];
+            app.use('/mails', new MockEmailService((email) => {emails.push(email);}));
+
+            const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+            expect(stats['success']).to.equal(false);
+            expect(stats['users']['successful']).to.equal(1);
+            expect(stats['users']['failed']).to.equal(2);
+
+            expect(stats['errors']).to.include({
+                type: 'user',
+                entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
+                message: `Die E-Mail Adresse ${TEACHER_EMAILS[0]} ist bereits in Verwendung!`,
+            });
+            expect(stats['errors']).to.include({
+                type: 'user',
+                entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
+                message: `Die E-Mail Adresse ${TEACHER_EMAILS[0]} ist bereits in Verwendung!`,
+            });
+
+            // only one email should ever be sent, as the second and third user are never created in the first place
+            expect(emails.length).to.equal(1);
+            expect(stats['errors'].filter(e => e.type === 'invitation').length).to.equal(0);
         });
     });
 });
