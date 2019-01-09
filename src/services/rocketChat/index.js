@@ -100,6 +100,25 @@ class RocketChatUser {
         });
     }
 
+    find(params) {
+        //toDo: optimize to generate less requests
+        if (!Array.isArray(params.userIds || {})) {
+            return Promise.reject("requires an array of userIds")
+        }
+        return Promise.all(params.userIds.map(userId => {
+            return this.getOrCreateRocketChatAccount(userId)
+        }))
+        .then(accounts => {
+            result = accounts.map(accounts => {
+                return accounts.username;
+            })
+            return Promise.resolve(result)
+        })
+        .catch(err => {
+            throw new errors.BadRequest(err)
+        })
+    }
+
     setup(app, path) {
         this.app = app;
     }
