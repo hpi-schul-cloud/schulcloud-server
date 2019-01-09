@@ -31,7 +31,7 @@ const me = require('./me');
 
 module.exports = function() {
 	const app = this;
-	/** process.env.DB_URL || app.get('mongodb') */
+
 	mongoose.connect(process.env.DB_URL || app.get('mongodb'), { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD }); 
 	mongoose.Promise = global.Promise;
 

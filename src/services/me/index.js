@@ -33,8 +33,6 @@ class Service {
 module.exports = function () {
 	const app = this;
 
-	/** todo: should only avaible for intern micro-services,
-	 * maybe over localhost or ip filter > use express or hook information for resolve this */
 	app.use('/me', new Service());
 
 	const me = app.service('/me');
