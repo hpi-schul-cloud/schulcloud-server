@@ -10,11 +10,11 @@ describe('Unit Test | teams', () => {
     let server;
 
     before(done => {
-        server = app.listen(0, done);
+       server = app.listen(0, done);
     });
 
     after(done => {
-        server.close(done);
+       server.close(done);
     });
 
     describe('Create User', () => {
