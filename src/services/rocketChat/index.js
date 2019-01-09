@@ -31,8 +31,12 @@ class RocketChatUser {
         };
     }
 
-    createRocketChatAccount(data, params) {
-        const userId = data.userId;
+    /**
+     * 
+     * @param {object} data 
+     * @param {*} params 
+     */
+    createRocketChatAccount(userId) {
         if (userId === undefined)
             throw new errors.BadRequest('Missing data value.');
 
@@ -65,16 +69,16 @@ class RocketChatUser {
         });
     }
 
-    //todo secret for rocketChat
-    create(data, params) {
-        return this.createRocketChatAccount(data, params);
-    }
-
-    getOrCreateRocketChatAccount(userId, params) {
+    /**
+     * returns the account data for an rocketChat account, matching a given schulcloud user ID.
+     * If no matching rocketChat account exists yet, it is created
+     * @param {*} userId id of a user in the schulcloud
+     */
+    getOrCreateRocketChatAccount(userId) {
         return rocketChatModels.userModel.findOne({ userId })
         .then(login => {
             if (!login) {
-                return this.createRocketChatAccount({userId}, params)
+                return this.createRocketChatAccount(userId)
                 .then(res => {
                     return rocketChatModels.userModel.findOne({ userId })
                 })
@@ -88,9 +92,13 @@ class RocketChatUser {
         });
     }
 
-    //todo: username nicht onfly generiert 
+    /**
+     * returns rocketChat specific data to a given schulcloud user id
+     * @param {*} userId Id of a user in the schulcloud
+     * @param {} params 
+     */
     get(userId, params) {
-        return this.getOrCreateRocketChatAccount(userId, params)
+        return this.getOrCreateRocketChatAccount(userId)
         .then(login => {
             delete login.password;
             return Promise.resolve(login);
@@ -100,6 +108,10 @@ class RocketChatUser {
         });
     }
 
+    /**
+     * returns the rocketChat usernames for an array of schulcloud userIds
+     * @param {object} params an object containing an array `userIds`
+     */
     find({userIds}) {
         //toDo: optimize to generate less requests
         if (!Array.isArray(userIds || {})) {
@@ -140,6 +152,11 @@ class RocketChatLogin {
         };
     }
 
+    /**
+     * Logs in a user given by his Id
+     * @param {*} userId Id of a user in the schulcloud
+     * @param {*} params 
+     */
     get(userId, params) {
         return this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params)
         .then(login => {
@@ -272,8 +289,13 @@ class RocketChatChannel {
         return Promise.all(kickPromises);
     }
 
-    get(Id, params) {
-        return this.getOrCreateRocketChatChannel(Id, params);
+    /**
+     * returns an existing or new rocketChat channel for a given Team ID
+     * @param {*} teamId Id of a Team in the schulcloud
+     * @param {*} params 
+     */
+    get(teamId, params) {
+        return this.getOrCreateRocketChatChannel(teamId, params);
     }
 
     _onTeamUsersChanged(context) {
@@ -288,10 +310,19 @@ class RocketChatChannel {
         if (removedUsers.length > 0) this.removeUsersFromChannel(removedUsers, team._id);
     }
 
+    /**
+     * React to event published by the Team service when users are added or
+     * removed to a team.
+     * @param {Object} context event context given by the Team service
+     */
     _registerEventListeners() {
         this.app.on('teams:after:usersChanged', this._onTeamUsersChanged.bind(this));
     }
 
+    /**
+     * Register methods of the service to listen to events of other services
+     * @listens teams:after:usersChanged
+     */
     setup(app, path) {
         this.app = app;
         this._registerEventListeners();
@@ -317,6 +348,4 @@ module.exports = function () {
 
     rocketChatChannelService.before(hooks.before);
     rocketChatChannelService.after(hooks.after);
-
-    //app.on('teams:after:usersChanged', rocketChatChannelService._onTeamUsersChanged)
 };
