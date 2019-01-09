@@ -215,8 +215,7 @@ class RocketChatChannel {
         }).then(result => {
             const channelData = {
                 teamId: currentTeam._id,
-                channelName: currentTeam.name,
-                externalId: result.group._id
+                channelName: currentTeam.name
             }
             return rocketChatModels.channelModel.create(channelData);            
         }).catch(err => {
