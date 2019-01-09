@@ -100,16 +100,16 @@ class RocketChatUser {
         });
     }
 
-    find(params) {
+    find({userIds}) {
         //toDo: optimize to generate less requests
-        if (!Array.isArray(params.userIds || {})) {
+        if (!Array.isArray(userIds || {})) {
             return Promise.reject("requires an array of userIds")
         }
-        return Promise.all(params.userIds.map(userId => {
+        return Promise.all(userIds.map(userId => {
             return this.getOrCreateRocketChatAccount(userId)
         }))
         .then(accounts => {
-            result = accounts.map(accounts => {
+            let result = accounts.map(accounts => {
                 return accounts.username;
             })
             return Promise.resolve(result)
@@ -245,17 +245,32 @@ class RocketChatChannel {
         })
     }
 
-    addUsersToChannel(userIds, teamId) {
-        userNamePromises = userIds.map(userId => { //toDo: refactor to a function that returns multiple
-            this.app.service('rocketChat/user').get(user.userId);
-        })
-        channelPromise = this.app.service('rocketChat/channel').get(teamId);
+    async addUsersToChannel(userIds, teamId) {
+        const rcUserNames = await this.app.service('/rocketChat/user').find({userIds});
+        const channel = await this.app.service('/rocketChat/channel').get(teamId);
 
-        return Promise.resolve();
+        let invitationPromises = rcUserNames.map(userName => {
+            let body = {
+                roomName: channel.channelName,
+                username: userName
+            }
+            return request(this.getOptions('/api/v1/groups.invite', body)).catch(err => { logger.warn(err) })
+        })
+        return Promise.all(invitationPromises);
     }
 
-    removeUsersFromChannel(userIds, teamId) {
-        return Promise.resolve
+    async removeUsersFromChannel(userIds, teamId) {
+        const rcUserNames = await this.app.service('/rocketChat/user').find({userIds});
+        const channel = await this.app.service('/rocketChat/channel').get(teamId);
+
+        let kickPromises = rcUserNames.map(userName => {
+            let body = {
+                roomName: channel.channelName,
+                username: userName
+            }
+            return request(this.getOptions('/api/v1/groups.kick', body)).catch(err => { logger.warn(err) })
+        })
+        return Promise.all(kickPromises);
     }
 
     get(Id, params) {
@@ -264,20 +279,23 @@ class RocketChatChannel {
 
     _onTeamUsersChanged(context) {
         const team = ((context || {}).additionalInfosTeam || {}).team;
-        additionalUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).add
-        removedUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).add
+        let additionalUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).add
+        let removedUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).remove
 
         additionalUsers = additionalUsers.map(user => {return user.userId})
-        removedUsers = additionalUsers.map(user => {return user.userId})
+        removedUsers = removedUsers.map(user => {return user.userId})
 
-        if (changes) {
-            this.addUsersToChannel(additionalUsers, team._id);
-            this.removeUsersFromChannel(removedUsers, team._id);
-        }
+        if (additionalUsers.length > 0) this.addUsersToChannel(additionalUsers, team._id);
+        if (removedUsers.length > 0) this.removeUsersFromChannel(removedUsers, team._id);
+    }
+
+    _registerEventListeners() {
+        this.app.on('teams:after:usersChanged', this._onTeamUsersChanged.bind(this));
     }
 
     setup(app, path) {
         this.app = app;
+        this._registerEventListeners();
     }
 }
 
@@ -301,5 +319,5 @@ module.exports = function () {
     rocketChatChannelService.before(hooks.before);
     rocketChatChannelService.after(hooks.after);
 
-    app.on('teams:after:usersChanged', rocketChatChannelService._onTeamUsersChanged)
+    //app.on('teams:after:usersChanged', rocketChatChannelService._onTeamUsersChanged)
 };
