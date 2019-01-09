@@ -177,25 +177,29 @@ class RocketChatChannel {
         return this.app.service('teams').get(teamId, internalParams)
         .then(team => {
             currentTeam = team;
-            const channelData = {
-                teamId: currentTeam._id,
-                channelName: currentTeam.name
-            }
-            return rocketChatModels.channelModel.create(channelData); 
-        }).then(result => {
             let userNamePromises = currentTeam.userIds.map(user => {
                 return this.app.service('rocketChat/user').get(user.userId);
             });
+
             return Promise.all(userNamePromises).then(users => {
                 users = users.map(user => { return user.username; });
                 const body = { 
-                    name: result.channelName,
+                    name: currentTeam.name,
                     members: users
                 };
                 return request(this.getOptions('/api/v1/groups.create', body))
-            })            
-        }).then((res) => {
-            if (res.success === true) return res;
+                .then(res => {
+                    if (res.success === true) return res;
+                    else return Promise.reject("bad answer on group creation")
+                })
+            })
+        }).then(result => {
+            const channelData = {
+                teamId: currentTeam._id,
+                channelName: currentTeam.name,
+                externalId: result.group._id
+            }
+            return rocketChatModels.channelModel.create(channelData);            
         }).catch(err => {
             logger.warn(err);
             throw new errors.BadRequest('Can not create RocketChat Channel');
