@@ -31,6 +31,22 @@ class RocketChatUser {
         };
     }
 
+    getAdministratorOptions(shortUri, body, method) {
+        return {
+            uri: ROCKET_CHAT_URI + shortUri,
+            method: method || 'POST',
+            headers: {
+                'X-Auth-Token': '2_5rp4YRBnJ0q9asWFY-lEqeBalK94DoOwrgpsxYvhd',
+                'X-User-ID': "6NHge4r7Rtb2pwofe"
+                //'X-Auth-Token': process.env.ROCKET_CHAT_ADMIN_TOKEN,
+                //'X-User-ID': process.env.ROCKET_CHAT_ADMIN_ID
+            },
+            body,
+            json: true,
+            timeout: REQUEST_TIMEOUT
+        };
+    }
+
     /**
      * 
      * @param {object} data 
@@ -93,6 +109,33 @@ class RocketChatUser {
     }
 
     /**
+     * react to a user being deleted
+     * @param {*} context 
+     */
+    _onUserRemoved(context) {
+        this.deleteUser(context._id);
+    }
+
+    /**
+     * removes the rocketChat user belonging to the schulcloud user given by Id
+     * @param {*} userId Id of a team in the schulcloud
+     */
+    deleteUser(userId) {
+        return rocketChatModels.userModel.findOne({userId})
+        .then(async user => {
+            if (user) {
+                let res = await request(this.getAdministratorOptions('/api/v1/users.delete', {username: user.username}));
+                console.log(res);
+                await rocketChatModels.userModel.deleteOne({_id: user._id});
+            }
+            return Promise.resolve();
+        })
+        .catch(err => {
+            logger.warn(err);
+        })
+    }
+
+    /**
      * returns rocketChat specific data to a given schulcloud user id
      * @param {*} userId Id of a user in the schulcloud
      * @param {} params 
@@ -131,8 +174,17 @@ class RocketChatUser {
         })
     }
 
+    /**
+     * Register methods of the service to listen to events of other services
+     * @listens users:removed
+     */
+    _registerEventListeners() {
+        this.app.service('users').on('removed', this._onUserRemoved.bind(this));
+    }
+
     setup(app, path) {
         this.app = app;
+        this._registerEventListeners();
     }
 }
 
