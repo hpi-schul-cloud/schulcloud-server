@@ -1,13 +1,11 @@
-
-const SRC = '../../../src/';
-const rolesModel = require(SRC + 'services/role/model.js');
-const { userModel } = require(SRC + 'services/user/model.js');
-const accountModel = require(SRC + 'services/account/model.js');
+const rolesModel = require('../../../src/services/role/model.js');
+const { userModel } = require('../../../src/services/user/model.js');
+const accountModel = require('../../../src/services/account/model.js');
 //const app = require(SRC + 'app');
 const { BadRequest } = require('feathers-errors');
 const { ObjectId } = require('mongoose').Types;
-const app = require(SRC+'app');
-//const {warn, info} = require(SRC+'logger/index.js');
+const app = require('../../../src/app');
+//const {warn, info} = require('../../../src/logger/index.js');
 
 const PASSWORD = process.env.TEST_PW.trim(); 	
 const PASSWORD_HASH = process.env.TEST_HASH.trim(); 
@@ -22,21 +20,26 @@ const getToken = ({userId}) => {
         strategy: 'local',
         username: userId + '@schul-cloud.org',
         password: PASSWORD,
-    },REQUEST_PARAMS).then(result=>{
-        return result.accessToken;
-    }).catch(err=>{
+    },REQUEST_PARAMS)
+    .then(result=>result.accessToken)
+    .catch(err=>{
        throw err;
     });
 };
 
+const getRoleByKey = (key,value) =>{
+    return rolesModel.find({
+        [key]: value
+    })
+    .then(([role])=>role);
+};
+
 const createUser = async (userId, roleName = 'student', schoolId = '0000d186816abba584714c5f') => {
 
-    if (!['student', 'teacher', 'parent', 'administrator'].includes(roleName)) //superhero is not added 
+    if (!['expert', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) 
         throw BadRequest('You want to test a not related role .' + roleName);  
 
-    const [role] = await rolesModel.find({
-        name: roleName
-    });
+    const role = await getRoleByKey('name',roleName);
 
     return userModel.create({
         _id: userId,
@@ -69,6 +72,9 @@ const setupUser = async (roleName, schoolId) => {
 };
 
 const deleteUser = async (userId) => {
+    if(typeof userId === 'object' && userId.userId!==undefined)
+        userId=userId.userId;
+        
     const email = userId + '@schul-cloud.org';
     await userModel.deleteOne({ email });     //todo: add error handling if not exist
     await accountModel.deleteOne({ username: email });
@@ -88,6 +94,7 @@ class MockEmailService {
 module.exports = {
     setupUser,
     getToken,
+    getRoleByKey,
     deleteUser,
     MockEmailService,
 };
