@@ -290,6 +290,24 @@ class RocketChatChannel {
     }
 
     /**
+     * removes the channel belonging to the team given by Id
+     * @param {*} teamId Id of a team in the schulcloud
+     */
+    deleteChannel(teamId) {
+        return rocketChatModels.channelModel.findOne({teamId})
+        .then(async channel => {
+            if (channel) {
+                await request(this.getOptions('/api/v1/groups.delete', {roomName: channel.channelName}));
+                await rocketChatModels.channelModel.deleteOne({_id: channel._id});
+            }
+            return Promise.resolve();
+        })
+        .catch(err => {
+            logger.warn(err);
+        })
+    }
+
+    /**
      * returns an existing or new rocketChat channel for a given Team ID
      * @param {*} teamId Id of a Team in the schulcloud
      * @param {*} params 
@@ -298,6 +316,11 @@ class RocketChatChannel {
         return this.getOrCreateRocketChatChannel(teamId, params);
     }
 
+    /**
+     * React to event published by the Team service when users are added or
+     * removed to a team.
+     * @param {Object} context event context given by the Team service
+     */
     _onTeamUsersChanged(context) {
         const team = ((context || {}).additionalInfosTeam || {}).team;
         let additionalUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).add
@@ -311,18 +334,24 @@ class RocketChatChannel {
     }
 
     /**
-     * React to event published by the Team service when users are added or
-     * removed to a team.
-     * @param {Object} context event context given by the Team service
+     * react to a team being deleted
+     * @param {*} context 
      */
-    _registerEventListeners() {
-        this.app.on('teams:after:usersChanged', this._onTeamUsersChanged.bind(this));
+    _onRemoved(context) {
+        this.deleteChannel(context._id);
     }
 
     /**
      * Register methods of the service to listen to events of other services
      * @listens teams:after:usersChanged
+     * @listens teams:removed
      */
+    _registerEventListeners() {
+        this.app.on('teams:after:usersChanged', this._onTeamUsersChanged.bind(this)); //use hook to get app
+        this.app.service('teams').on('removed', this._onRemoved.bind(this));
+    }
+
+    
     setup(app, path) {
         this.app = app;
         this._registerEventListeners();
