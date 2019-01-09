@@ -14,7 +14,12 @@ class Service {
 	 */
 	find(params) {
 		const userId = params.account.userId;
-		return this.app.service('/users').get(userId).catch(err=>{
+		const userServiceParams = {
+			query: {
+				$populate: ['roles']
+			}
+		};
+		return this.app.service('/users').get(userId, userServiceParams).catch(err => {
 			logger.warn(err);
 			throw new Forbidden('Your access token is not valid.');
 		})
