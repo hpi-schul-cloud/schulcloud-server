@@ -36,10 +36,10 @@ class RocketChatUser {
             uri: ROCKET_CHAT_URI + shortUri,
             method: method || 'POST',
             headers: {
-                'X-Auth-Token': '2_5rp4YRBnJ0q9asWFY-lEqeBalK94DoOwrgpsxYvhd',
-                'X-User-ID': "6NHge4r7Rtb2pwofe"
-                //'X-Auth-Token': process.env.ROCKET_CHAT_ADMIN_TOKEN,
-                //'X-User-ID': process.env.ROCKET_CHAT_ADMIN_ID
+                //'X-Auth-Token': '2_5rp4YRBnJ0q9asWFY-lEqeBalK94DoOwrgpsxYvhd',
+                //'X-User-ID': "6NHge4r7Rtb2pwofe"
+                'X-Auth-Token': process.env.ROCKET_CHAT_ADMIN_TOKEN,
+                'X-User-ID': process.env.ROCKET_CHAT_ADMIN_ID
             },
             body,
             json: true,
@@ -243,10 +243,10 @@ class RocketChatChannel {
             uri: ROCKET_CHAT_URI + shortUri,
             method: method || 'POST',
             headers: {
-                'X-Auth-Token': '2_5rp4YRBnJ0q9asWFY-lEqeBalK94DoOwrgpsxYvhd',
-                'X-User-ID': "6NHge4r7Rtb2pwofe"
-                //'X-Auth-Token': process.env.ROCKET_CHAT_ADMIN_TOKEN,
-                //'X-User-ID': process.env.ROCKET_CHAT_ADMIN_ID
+                //'X-Auth-Token': '2_5rp4YRBnJ0q9asWFY-lEqeBalK94DoOwrgpsxYvhd',
+                //'X-User-ID': "6NHge4r7Rtb2pwofe"
+                'X-Auth-Token': process.env.ROCKET_CHAT_ADMIN_TOKEN,
+                'X-User-ID': process.env.ROCKET_CHAT_ADMIN_ID
             },
             body,
             json: true,
