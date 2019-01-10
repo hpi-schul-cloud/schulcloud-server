@@ -7,7 +7,6 @@ const Syncer = require('./Syncer');
  * @implements {Syncer}
  */
 class CSVSyncer extends Syncer {
-
 	constructor(app, stats = {}, school, role = 'student', sendEmails, csvData, params) {
 		super(app, stats);
 		this.schoolId = school;
@@ -154,7 +153,7 @@ class CSVSyncer extends Syncer {
 
 	async createUsers(users) {
 		const createdUsers = [];
-		for (let user of users) {
+		for (const user of users) {
 			try {
 				const userObject = await this.createUser(user);
 				user.created = true;
@@ -186,8 +185,8 @@ class CSVSyncer extends Syncer {
 		return this.app.service('users').create(user, this.requestParams);
 	}
 
-	async emailUsers(users) {
-		return await Promise.all(users.map(async user => {
+	emailUsers(users) {
+		return Promise.all(users.map(async (user) => {
 			try {
 				if (user && user.email && user.schoolId && user.shortLink) {
 					await this.app.service('mails').create({
@@ -201,8 +200,8 @@ class CSVSyncer extends Syncer {
 								+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
 								+ user.shortLink + '\n'
 								+ 'Viel Spaß und einen guten Start wünscht dir dein '
-								+ `${process.env.SC_SHORT_TITLE}-Team`
-						}
+								+ `${process.env.SC_SHORT_TITLE}-Team`,
+						},
 					});
 					this.stats.invitations.successful += 1;
 				} else {
@@ -221,62 +220,59 @@ class CSVSyncer extends Syncer {
 	}
 
 	async createClasses(records, users) {
-		const classes = this.extractClassesToBeCreated(records);
-		const userByEmail = this.byEmail(users);
+		const byEmail = collection => collection.reduce((dict, item) => {
+			dict[item.email] = item;
+			return dict;
+		}, {});
+		const classes = CSVSyncer.extractClassesToBeCreated(records);
+		const userByEmail = byEmail(users);
 		const classMapping = await this.buildClassMapping(classes);
 		const collection = this.role === 'teacher' ? 'teacherIds' : 'userIds';
-		records.forEach(record => {
+		records.forEach((record) => {
 			const user = userByEmail[record.email];
 			if (user === undefined) return;
-			const classes = this.splitClasses(record.class);
-			classes.forEach(klass => {
+			const splitClasses = CSVSyncer.splitClasses(record.class);
+			splitClasses.forEach((klass) => {
 				const classObject = classMapping[klass];
 				if (classObject === undefined) return;
 				classObject[collection].push(user._id);
 			});
 		});
 
-		for (let key of Object.keys(classMapping)) {
+		Object.keys(classMapping).forEach(async (key) => {
 			const classObject = classMapping[key];
 			// convert Mongoose array to vanilla JS array to keep the sanitize hook happy:
 			const importIds = classObject[collection].map(u => u);
 			const patchData = {};
 			patchData[collection] = importIds;
 			await this.app.service('/classes').patch(classObject._id, patchData);
-		}
+		});
 	}
 
-	extractClassesToBeCreated(records) {
+	static extractClassesToBeCreated(records) {
 		return records.reduce((list, record) => {
-			const classes = this.splitClasses(record.class);
-			for (let klass of classes) {
+			const classes = CSVSyncer.splitClasses(record.class);
+			classes.forEach((klass) => {
 				if (klass !== '' && !list.includes(klass)) {
 					list.push(klass);
 				}
-			}
+			});
 			return list;
 		}, []);
 	}
 
-	splitClasses(classes) {
+	static splitClasses(classes) {
 		return classes.split('+');
-	}
-
-	byEmail(users) {
-		return users.reduce((dict, user) => {
-			dict[user.email] = user;
-			return dict;
-		}, {});
 	}
 
 	async getClassObject(klass) {
 		const formats = [
 			{
 				regex: /^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/,
-				values: async string => {
+				values: async (string) => {
 					const gradeLevelName = string.match(/^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/)[1];
 					const gradeLevel = await this.findGradeLevel({
-						name: gradeLevelName
+						name: gradeLevelName,
 					});
 					return {
 						nameFormat: 'gradeLevel+name',
@@ -287,20 +283,17 @@ class CSVSyncer extends Syncer {
 			},
 			{
 				regex: /(.*)/,
-				values: string => {
-					return {
-						nameFormat: 'static',
-						name: string,
-					};
-				},
+				values: string => ({
+					nameFormat: 'static',
+					name: string,
+				}),
 			},
 		];
-		for (let format of formats) {
-			if (format.regex.test(klass)) {
-				return Object.assign(await format.values(klass), {
-					schoolId: this.schoolId
-				});
-			}
+		const classNameFormat = formats.find(format => format.regex.test(klass));
+		if (classNameFormat !== undefined) {
+			return Object.assign(await classNameFormat.values(klass), {
+				schoolId: this.schoolId,
+			});
 		}
 		throw new Error('Class name does not match any format:', klass);
 	}
@@ -312,7 +305,7 @@ class CSVSyncer extends Syncer {
 			lean: true,
 		});
 		if (existing.length === 0) {
-			return await this.app.service('/classes').create(classObject);
+			return this.app.service('/classes').create(classObject);
 		}
 		return existing[0];
 	}
@@ -331,7 +324,7 @@ class CSVSyncer extends Syncer {
 
 	async buildClassMapping(classes) {
 		const classMapping = {};
-		await Promise.all(classes.map(async klass => {
+		await Promise.all(classes.map(async (klass) => {
 			try {
 				const classObject = await this.getClassObject(klass);
 				classMapping[klass] = await this.findOrCreateClass(classObject);
