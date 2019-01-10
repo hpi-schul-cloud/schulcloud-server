@@ -21,6 +21,7 @@ const isObject = (obj) => {
 	throw BadRequest('Must be an object.');	
 };
 
+
 const patchParams = (params) => {
 	if (params.provider === undefined)
 		params.provider = 'rest';
@@ -40,7 +41,10 @@ function isHookObject(hookObject) {
 	return (typeof hookObject === 'undefined' ? 'undefined' : _typeof(hookObject)) === 'object' && typeof hookObject.method === 'string' && typeof hookObject.type === 'string';
 }
 
-
+//todo: add path
+//todo: add hook
+//todo: add service (?)
+//todo: add missing params : query:Object , authenticated:true  ...etc..
 const createHook = (opt={}) => {
 	let type=isType(opt.type || 'before'), 
 		method=isMethod(opt.method || 'get'), 
