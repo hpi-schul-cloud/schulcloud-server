@@ -840,4 +840,206 @@ describe('CSVSyncer Integration', () => {
 			expect(users.length).to.equal(0);
 		});
 	});
+
+	describe('Scenario 11 - Importing the same data twice', () => {
+		let scenarioParams;
+		let scenarioData;
+
+		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const ADMIN_EMAIL = 'foo@bar.baz';
+		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
+
+		before(async () => {
+			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
+
+			scenarioParams = {
+				query: {
+					target: 'csv',
+					school: SCHOOL_ID,
+					role: 'teacher',
+				},
+				headers: {
+					authorization: `Bearer ${await getAdminToken()}`,
+				},
+				provider: 'rest',
+			};
+			scenarioData = {
+				data: 'firstName,lastName,email,class\n'
+					+ `Dr. Temperance,Brennan,${TEACHER_EMAILS[0]},Jeffersonian Institute\n`
+					+ `Seeley,Booth,${TEACHER_EMAILS[1]},FBI\n`
+					+ `Lance,Sweets,${TEACHER_EMAILS[2]},FBI\n`
+					+ `Camille,Saroyan,${TEACHER_EMAILS[3]},Jeffersonian Institute\n`
+					+ `Zack,Addy,${TEACHER_EMAILS[4]},\n`,
+			};
+		});
+
+		after(async () => {
+			await deleteUser(ADMIN_EMAIL);
+			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
+			await deleteClass([undefined, 'Jeffersonian Institute']);
+			await deleteClass([undefined, 'FBI']);
+		});
+
+		it('should be accepted for execution', () => {
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+		});
+
+		it('should initialize without errors', () => {
+			const params = CSVSyncer.params(scenarioParams, scenarioData);
+			const instance = new CSVSyncer(app, {}, ...params);
+			expect(instance).to.not.equal(undefined);
+		});
+
+		it('should import five teachers into three existing classes', async () => {
+			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+			expect(stats.success).to.equal(true);
+			expect(stats.users.successful).to.equal(5);
+			expect(stats.users.failed).to.equal(0);
+			expect(stats.invitations.successful).to.equal(0);
+			expect(stats.invitations.failed).to.equal(0);
+			expect(stats.classes.successful).to.equal(2);
+			expect(stats.classes.failed).to.equal(0);
+
+			await Promise.all(TEACHER_EMAILS.map(async (email) => {
+				const [user] = await userModel.find({ email });
+				const [role] = await roleModel.find({ _id: user.roles[0] });
+				expect(role.name).to.equal('teacher');
+			}));
+
+			// Now import the same data again:
+			const [stats2] = await app.service('sync').create(scenarioData, scenarioParams);
+
+			expect(stats2.success).to.equal(false);
+			expect(stats2.users.successful).to.equal(0);
+			expect(stats2.users.failed).to.equal(5);
+			expect(stats2.invitations.successful).to.equal(0);
+			expect(stats2.invitations.failed).to.equal(0);
+			expect(stats2.classes.successful).to.equal(2);
+			expect(stats2.classes.failed).to.equal(0);
+
+			const teacherLastNames = async (teacher) => {
+				const [user] = await app.service('users').find({
+					query: { _id: teacher },
+					paginate: false,
+				});
+				return user.lastName;
+			};
+
+			const fbi = await findClass([undefined, 'FBI']);
+			expect(fbi.teacherIds.length).to.equal(2);
+			const fbiteachers = await Promise.all(fbi.teacherIds.map(teacherLastNames));
+			expect(fbiteachers).to.include('Booth');
+			expect(fbiteachers).to.include('Sweets');
+
+			const ji = await findClass([undefined, 'Jeffersonian Institute']);
+			expect(ji.teacherIds.length).to.equal(2);
+			const jiteachers = await Promise.all(ji.teacherIds.map(teacherLastNames));
+			expect(jiteachers).to.include('Brennan');
+			expect(jiteachers).to.include('Saroyan');
+		});
+	});
+
+	describe('Scenario 12 - Importing again does not update data or classes', () => {
+		let scenarioParams;
+		let scenarioData1;
+		let scenarioData2;
+
+		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const ADMIN_EMAIL = 'foo@bar.baz';
+		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de'];
+
+		before(async () => {
+			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
+
+			scenarioParams = {
+				query: {
+					target: 'csv',
+					school: SCHOOL_ID,
+					role: 'teacher',
+				},
+				headers: {
+					authorization: `Bearer ${await getAdminToken()}`,
+				},
+				provider: 'rest',
+			};
+			scenarioData1 = {
+				data: 'firstName,lastName,email,class\n'
+					+ `Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n`
+					+ `Lewis,Nixon,${TEACHER_EMAILS[1]},Easy Company\n`
+					+ `Carwood,Lipton,${TEACHER_EMAILS[2]},Easy Company\n`,
+			};
+			scenarioData2 = {
+				data: 'firstName,lastName,email,class\n'
+					+ `Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n`
+					+ `LeW1s,Nixx0n,${TEACHER_EMAILS[1]},Best Company\n`
+					+ `Donald,Malarkey,${TEACHER_EMAILS[3]},Easy Company\n`,
+			};
+		});
+
+		after(async () => {
+			await deleteUser(ADMIN_EMAIL);
+			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
+			await deleteClass([undefined, 'Easy Company']);
+			await deleteClass([undefined, 'Best Company']);
+		});
+
+		it('should be accepted for execution', () => {
+			expect(CSVSyncer.params(scenarioParams, scenarioData1)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData2)).to.not.equal(false);
+		});
+
+		it('should initialize without errors', () => {
+			let params = CSVSyncer.params(scenarioParams, scenarioData1);
+			let instance = new CSVSyncer(app, {}, ...params);
+			expect(instance).to.not.equal(undefined);
+
+			params = CSVSyncer.params(scenarioParams, scenarioData2);
+			instance = new CSVSyncer(app, {}, ...params);
+			expect(instance).to.not.equal(undefined);
+		});
+
+		it('should import five teachers into three existing classes', async () => {
+			const [stats] = await app.service('sync').create(scenarioData1, scenarioParams);
+
+			expect(stats.success).to.equal(true);
+			expect(stats.users.successful).to.equal(3);
+			expect(stats.users.failed).to.equal(0);
+			expect(stats.invitations.successful).to.equal(0);
+			expect(stats.invitations.failed).to.equal(0);
+			expect(stats.classes.successful).to.equal(1);
+			expect(stats.classes.failed).to.equal(0);
+
+			// Now import the second data set:
+			const [stats2] = await app.service('sync').create(scenarioData2, scenarioParams);
+
+			expect(stats2.success).to.equal(false);
+			expect(stats2.users.successful).to.equal(1);
+			expect(stats2.users.failed).to.equal(2);
+			expect(stats2.invitations.successful).to.equal(0);
+			expect(stats2.invitations.failed).to.equal(0);
+			expect(stats2.classes.successful).to.equal(2);
+			expect(stats2.classes.failed).to.equal(0);
+
+			const teacherLastNames = async (teacher) => {
+				const [user] = await app.service('users').find({
+					query: { _id: teacher },
+					paginate: false,
+				});
+				return user.lastName;
+			};
+
+			const fbi = await findClass([undefined, 'Easy Company']);
+			expect(fbi.teacherIds.length).to.equal(4);
+			const fbiteachers = await Promise.all(fbi.teacherIds.map(teacherLastNames));
+			expect(fbiteachers).to.include('Winters');
+			expect(fbiteachers).to.include('Nixon');
+			expect(fbiteachers).to.include('Lipton');
+			expect(fbiteachers).to.include('Malarkey');
+
+			const ji = await findClass([undefined, 'Best Company']);
+			expect(ji).to.not.equal(undefined);
+			expect(ji.teacherIds.length).to.equal(0);
+		});
+	});
 });
