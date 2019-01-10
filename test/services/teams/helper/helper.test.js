@@ -1,14 +1,15 @@
-const rolesModel = require('../../../src/services/role/model.js');
-const { userModel } = require('../../../src/services/user/model.js');
-const accountModel = require('../../../src/services/account/model.js');
+const rolesModel = require('../../../../src/services/role/model.js');
+const { userModel } = require('../../../../src/services/user/model.js');
+const accountModel = require('../../../../src/services/account/model.js');
 //const app = require(SRC + 'app');
 const { BadRequest } = require('feathers-errors');
 const { ObjectId } = require('mongoose').Types;
-const app = require('../../../src/app');
+const app = require('../../../../src/app');
 //const {warn, info} = require('../../../src/logger/index.js');
 
 const PASSWORD = process.env.TEST_PW.trim(); 	
 const PASSWORD_HASH = process.env.TEST_HASH.trim(); 
+const AT = '@schul-cloud.org';
 
 const REQUEST_PARAMS = {
     headers: {'content-type': 'application/json'},
@@ -18,7 +19,7 @@ const REQUEST_PARAMS = {
 const getToken = ({userId}) => {
     return app.service('authentication').create({
         strategy: 'local',
-        username: userId + '@schul-cloud.org',
+        username: userId + AT,
         password: PASSWORD,
     },REQUEST_PARAMS)
     .then(result=>result.accessToken)
@@ -43,7 +44,7 @@ const createUser = async (userId, roleName = 'student', schoolId = '0000d186816a
 
     return userModel.create({
         _id: userId,
-        email: userId + '@schul-cloud.org',
+        email: userId + AT,
         schoolId,
         firstName: userId,
         lastName: 'GerneratedTestUser',
@@ -55,7 +56,7 @@ const createUser = async (userId, roleName = 'student', schoolId = '0000d186816a
 
 const createAccount = async (userId) => {
     return accountModel.create({
-        username: userId + '@schul-cloud.org',
+        username: userId + AT,
         password: PASSWORD_HASH,
         userId,
         activated: true,
@@ -75,7 +76,7 @@ const deleteUser = async (userId) => {
     if(typeof userId === 'object' && userId.userId!==undefined)
         userId=userId.userId;
         
-    const email = userId + '@schul-cloud.org';
+    const email = userId + AT;
     await userModel.deleteOne({ email });     //todo: add error handling if not exist
     await accountModel.deleteOne({ username: email });
 };

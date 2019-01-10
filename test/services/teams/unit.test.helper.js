@@ -4,10 +4,12 @@ const chai = require('chai');
 const expect = chai.expect;
 
 const app = require('../../../src/app');
-const { ifSuperhero } = require('../../../src/services/teams/hooks/helpers');
-const { setupUser, deleteUser, getRoleByKey, MockEmailService } = require('./helper');
+const { ifSuperhero, getSessionUser } = require('../../../src/services/teams/hooks/helpers');
+const { setupUser, deleteUser, getRoleByKey, MockEmailService } = require('./helper/helper.test');
+const { h1, h2, h3 } = require('./helper/helper.format');
+const { createHook, createHookStack } = require('./helper/helper.hook');
 
-describe('\n\nteams | helper functions', () => {
+describe(h1('teams | helper functions'), () => {
     let server,
         student, student2, teacher, administrator, expert, superhero;
 
@@ -40,7 +42,7 @@ describe('\n\nteams | helper functions', () => {
         await server.close();
     });
 
-    describe('\ntest ifSuperhero', async () => {
+    describe(h2('ifSuperhero'), async () => {
         let superheroRoles, otherRoles;
         before(async () => {
             [superheroRoles, otherRoles] = await Promise.all([
@@ -49,20 +51,36 @@ describe('\n\nteams | helper functions', () => {
             ]);
         });
 
-        it('test superhero', () => {
+        it(h3('superhero'), () => {
             expect(ifSuperhero([superheroRoles])).to.equal(true);
         });
 
-        it('test other roles', () => {
+        it(h3('other roles'), () => {
             expect(ifSuperhero([otherRoles])).to.equal(false);
         });
 
-        it('test mixed roles with superhero', () => {
+        it(h3('mixed roles with superhero'), () => {
             expect(ifSuperhero([otherRoles, superheroRoles])).to.equal(true);
         });
 
-        it('test mixed roles without superhero', () => {
+        it(h3('mixed roles without superhero'), () => {
             expect(ifSuperhero([otherRoles, superheroRoles])).to.equal(true);
         });
     });
+
+    describe(h2('getSessionUser'), async () => {
+        let hooks;
+        before(()=>{
+            hooks = createHookStack({
+                data:{},
+                result:{}
+            });
+        });
+        
+        it(h3('try'),()=>{
+            console.log(hooks);
+            
+        });
+    });
+    
 });
