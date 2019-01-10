@@ -58,4 +58,11 @@ module.exports = function() {
 		}
 	});
 	app.service('/oauth2/introspect').before(hooks.before.introspect);
+
+	app.use('/oauth2/auth/sessions/consent', {
+		get (user) {
+			return hydra.listConsentSessions(user);
+		}
+	});
+	app.service('/oauth2/auth/sessions/consent').before(hooks.before.consentSessions);
 }

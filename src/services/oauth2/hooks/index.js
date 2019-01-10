@@ -20,9 +20,11 @@ const setSubject = hook => {
 			}
 		}).then(pseudonyms => {
 			const pseudonym = pseudonyms.data[0].pseudonym;
-			hook.data.subject = pseudonym;
+			hook.data.subject = hook.params.account.userId;
 			if (tools.data[0].useIframePseudonym) {
 				hook.data.force_subject_identifier = iframeSubject(pseudonym, hook.app.settings.services.web);
+			} else {
+				hook.data.force_subject_identifier = pseudonym;
 			}
 			return hook
 		})
@@ -44,22 +46,12 @@ const injectConsentRequest = hook => {
 }
 
 const validateSubject = hook => {
-	return hook.app.service('ltiTools').find({
-		query: {
-			oAuthClientId: hook.params.consentRequest.client.client_id
-		}
-	}).then(tools => {
-		return hook.app.service('pseudonym').find({
-			query: {
-				toolId: tools.data[0]._id,
-				userId: hook.params.account.userId
-			}
-		}).then(pseudonyms => {
-			const pseudonym = pseudonyms.data[0].pseudonym;
-			if (hook.params.consentRequest.subject === pseudonym) return hook
-			throw new errors.Forbidden("You want to patch another user's consent");
-		})
-	});
+	if (hook.params.consentRequest.subject === hook.params.account.userId) return hook
+	throw new errors.Forbidden("You want to patch another user's consent");
+}
+
+const validateUser = hook => { // TODO: implement
+	return hook
 }
 
 exports.before = {
@@ -75,5 +67,9 @@ exports.before = {
 	},
 	introspect: {
 		create: [globalHooks.ifNotLocal(_ => {throw new errors.MethodNotAllowed();})],
+	},
+	consentSessions: {
+		all: [auth.hooks.authenticate('jwt')],
+		get: [validateUser]
 	}
 };
