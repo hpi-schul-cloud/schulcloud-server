@@ -168,8 +168,7 @@ class CSVSyncer extends Syncer {
 						entity: `${user.firstName},${user.lastName},${user.email}`,
 						message: `Ungültiger Wert in Spalte "${err.message.match(/Path `(.+)` is required/)[1]}"`,
 					});
-				}
-				if (err.message.startsWith('Die E-Mail Adresse')) {
+				} else {
 					this.stats.errors.push({
 						type: 'user',
 						entity: `${user.firstName},${user.lastName},${user.email}`,

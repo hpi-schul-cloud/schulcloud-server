@@ -782,4 +782,62 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.errors.filter(e => e.type === 'invitation').length).to.equal(0);
 		});
 	});
+
+	describe('Scenario 10 - Reject invalid email format', () => {
+		let scenarioParams;
+		let scenarioData;
+
+		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const ADMIN_EMAIL = 'foo@bar.baz';
+		const SCENARIO_EMAIL = 'peterpan.de';
+
+		before(async () => {
+			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
+
+			scenarioParams = {
+				query: {
+					target: 'csv',
+					school: SCHOOL_ID,
+					role: 'student',
+				},
+				headers: {
+					authorization: `Bearer ${await getAdminToken()}`,
+				},
+				provider: 'rest',
+			};
+			scenarioData = {
+				data: `firstName,lastName,email\nPeter,Pan,${SCENARIO_EMAIL}`,
+			};
+		});
+
+		after(async () => {
+			await deleteUser(ADMIN_EMAIL);
+			await deleteUser(SCENARIO_EMAIL);
+		});
+
+		it('should be accepted for execution', () => {
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+		});
+
+		it('should initialize without errors', () => {
+			const params = CSVSyncer.params(scenarioParams, scenarioData);
+			const instance = new CSVSyncer(app, {}, ...params);
+			expect(instance).to.not.equal(undefined);
+		});
+
+		it('should import a single student without a class', async () => {
+			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+			expect(stats.success).to.equal(false);
+			expect(stats.users.successful).to.equal(0);
+			expect(stats.users.failed).to.equal(1);
+			expect(stats.invitations.successful).to.equal(0);
+			expect(stats.invitations.failed).to.equal(0);
+			expect(stats.classes.successful).to.equal(0);
+			expect(stats.classes.failed).to.equal(0);
+
+			const users = await userModel.find({ email: SCENARIO_EMAIL });
+			expect(users.length).to.equal(0);
+		});
+	});
 });
