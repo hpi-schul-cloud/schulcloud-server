@@ -4,7 +4,7 @@ const errors = require('feathers-errors');
 const logger = require('winston');
 
 const rocketChatModels = require('./model');
-const hooks = require('./hooks');
+const {rocketChatUserHooks, rocketChatLoginHooks, rocketChatChannelHooks} = require('./hooks');
 const docs = require('./docs');
 const { randomPass } = require('./randomPass');
 
@@ -421,12 +421,12 @@ module.exports = function () {
     const rocketChatLoginService = app.service('/rocketChat/login');
     const rocketChatChannelService = app.service('/rocketChat/channel');
 
-    rocketChatUserService.before(hooks.before);
-    rocketChatUserService.after(hooks.after);
+    rocketChatUserService.before(rocketChatUserHooks.before);
+    rocketChatUserService.after(rocketChatUserHooks.after);
 
-    rocketChatLoginService.before(hooks.before);
-    rocketChatLoginService.after(hooks.after);
+    rocketChatLoginService.before(rocketChatLoginHooks.before);
+    rocketChatLoginService.after(rocketChatLoginHooks.after);
 
-    rocketChatChannelService.before(hooks.before);
-    rocketChatChannelService.after(hooks.after);
+    rocketChatChannelService.before(rocketChatChannelHooks.before);
+    rocketChatChannelService.after(rocketChatChannelHooks.after);
 };
