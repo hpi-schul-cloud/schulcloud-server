@@ -55,10 +55,8 @@ module.exports = {
 
 	groupContainsUser: context => {
 		if (!context.result.data) return context
-		if (context.result.data.students
-				.concat(context.result.data.teachers)
-				.find(user => (user.user_id === context.params.tokenInfo.obfuscated_subject ||
-				user.user_id === context.params.tokenInfo.sub))) {
+		const users = context.result.data.students.concat(context.result.data.teachers)
+		if (users.find(user => user.user_id === context.params.tokenInfo.obfuscated_subject)) {
 			return context
 		}
 		throw new errors.BadRequest("Current user is not part of group")

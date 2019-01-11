@@ -19,7 +19,7 @@ module.exports = function() {
 					pseudonym: params.pseudonym
 				}
 			}).then(pseudonym => {
-				if (!pseudonym.data[0]) {
+				if (!pseudonym.total) {
 					return { errors: {"description": "User not found by token"}};
 				}
 				const userId = (pseudonym.data[0].userId);
