@@ -47,6 +47,18 @@ class RocketChatUser {
         };
     }
 
+    generateUserName(user) {
+        //toDo: implementation with bound execution time.
+        let userName = user.firstName + "." + user.lastName + "." + randomSuffix();
+        //toDo: check availibility in rocketChat as well.
+        return rocketChatModels.userModel.findOne({username: userName})
+        .then(result => {
+            if (!result) {
+                return Promise.resolve(userName)
+            } else return this.generateUserName(user)
+        })
+    }
+
     /**
      * creates an account, should be called by getOrCreateRocketChatAccount
      * @param {object} data
@@ -58,11 +70,11 @@ class RocketChatUser {
         const internalParams = {
             query: { $populate: "schoolId" }
         };
-        return this.app.service('users').get(userId, internalParams).then(user => {
+        return this.app.service('users').get(userId, internalParams).then(async user => {
             const email = user.email;
             const pass = randomPass();
-            const username = ([user.schoolId.name, user.firstName, user.lastName].join('.')).replace(/\s/g, '_');
-            const name = [user.firstName, user.lastName].join('.');
+            const username = await this.generateUserName(user);
+            const name = [user.firstName, user.lastName].join(' ');
 
             return rocketChatModels.userModel.create({ userId, pass, username }).then((res) => {
                 if (res.errors !== undefined)
@@ -261,7 +273,7 @@ class RocketChatChannel {
         .then(result => {
             if (!result) {
                 return Promise.resolve(channelName)
-            } else return generateChannelName(team)
+            } else return this.generateChannelName(team)
         })
     }
 
