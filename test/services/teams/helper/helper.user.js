@@ -80,7 +80,7 @@ const deleteUser = async (userId) => {
     await userModel.deleteOne({ email });     //todo: add error handling if not exist
     await accountModel.deleteOne({ username: email });
 };
-
+/*
 class MockEmailService {
     constructor(eventHandler) {
         this.eventHandler = eventHandler;
@@ -91,11 +91,11 @@ class MockEmailService {
         return Promise.resolve();
     }
 }
-
+*/
 module.exports = {
     setupUser,
     getToken,
     getRoleByKey,
     deleteUser,
-    MockEmailService,
+   // MockEmailService,
 };

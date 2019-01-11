@@ -5,8 +5,9 @@ const expect = chai.expect;
 
 const app = require('../../../src/app');
 const { ifSuperhero, getSessionUser } = require('../../../src/services/teams/hooks/helpers');
-const { setupUser, deleteUser, getRoleByKey, MockEmailService } = require('./helper/helper.test');
+const { setupUser, deleteUser, getRoleByKey, MockEmailService } = require('./helper/helper.user');
 const { h1, h2, h3 } = require('./helper/helper.format');
+const { isPromise } = require('./helper/helper.main');
 const { createHook, createHookStack } = require('./helper/helper.hook');
 
 describe(h1('teams | helper functions'), () => {
@@ -69,17 +70,28 @@ describe(h1('teams | helper functions'), () => {
     });
 
     describe(h2('getSessionUser'), async () => {
-        let hooks;
+        let hooks, superheroHook;
         before(()=>{
-            hooks = createHookStack({
+            hooks = createHookStack(app,{
                 data:{},
-                result:{}
+                result:{},
+                account:student.account
+            });
+
+            superheroHook = createHook({
+                account:superhero.account
             });
         });
-        
-        it(h3('try'),()=>{
-            console.log(hooks);
-            
+
+        it(h3('return is promise'),()=>{
+            const expectedPromise = getSessionUser(hooks.before.get);
+            expect(isPromise(expectedPromise)).to.equal(true);     
+        });
+
+        it(h3('save user into hook'),async()=>{
+            let tempHook = Object.assign({},hooks.before.get);
+            await getSessionUser(tempHook);
+            expect(tempHook.additionalInfosTeam.sessionUser).to.deep.equal(student.user);       //todo load from scope file export
         });
     });
     
