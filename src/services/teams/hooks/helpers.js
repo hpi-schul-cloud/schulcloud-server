@@ -1,4 +1,4 @@
-const errors = require('feathers-errors');
+const {NotFound, NotImplemented, NotAcceptable, BadRequest} = require('feathers-errors');
 const logger = require('winston');
 const { set, get } = require('./scope');
 const {
@@ -59,11 +59,11 @@ exports.getSessionUser = hook => {
                 set(hook, 'isSuperhero', ifSuperhero(sessionUser.roles));
                 resolve(sessionUser);
             }).catch(err => {
-                reject(new errors.NotFound('Can not find user with userId=' + sessionUserId, err));
+                reject(new NotFound('Can not find user with userId=' + sessionUserId, err));
             });
         }
     }).catch(err => {
-        throw new errors.NotFound('User not found.', err);
+        throw new NotFound('User not found.', err);
     });
 };
 
@@ -209,7 +209,7 @@ exports.getTeam = (hook) => {
                     reject(err);
                 });
             }).catch(err => {
-                reject(new errors.NotFound('Can not found team with teamId=' + teamId, err));
+                reject(new NotFound('Can not found team with teamId=' + teamId, err));
             });
         } else if (method === 'find') {
             teamsService.find({
@@ -217,14 +217,14 @@ exports.getTeam = (hook) => {
             }).then(_teams => {
                 resolveIt(_teams.data);
             }).catch(err => {
-                reject(new errors.NotFound('Can not found team for user with userId=' + sessionUserId, err));
+                reject(new NotFound('Can not found team for user with userId=' + sessionUserId, err));
             });
         } else {
-            throw new errors.NotImplemented('It should not run into this case.');
+            throw new NotImplemented('It should not run into this case.');
         }
     }).catch(err => {
         logger.warn(err);
-        throw new errors.NotFound('Can not found this team.');
+        throw new NotFound('Can not found this team.');
     });
 };
 
@@ -238,7 +238,7 @@ exports.getTeam = (hook) => {
 */
 const createUserWithRole = exports.createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) => {
     if (isUndefined(hook.findRole))
-        throw new errors.NotAcceptable('Please execute teamRolesToHook before.');
+        throw new NotAcceptable('Please execute teamRolesToHook before.');
 
     let role;
     if (roleIsId === true) {
@@ -251,7 +251,7 @@ const createUserWithRole = exports.createUserWithRole = (hook, { userId, schoolI
     }
 
     if (isUndefined([role, userId, schoolId], 'OR'))
-        throw new errors.BadRequest('Wrong input. (2)');
+        throw new BadRequest('Wrong input. (2)');
 
     return {
         userId: bsonIdToString(userId),
@@ -278,7 +278,7 @@ const createUserWithRole = exports.createUserWithRole = (hook, { userId, schoolI
  */
 const arrayDiff = (oldArray, newArray, key) => {
     if (!isArrayWithElement(oldArray) || !isArrayWithElement(newArray))
-        throw new errors.NotAcceptable('Wrong input expect arrays.', { oldArray, newArray });
+        throw new NotAcceptable('Wrong input expect arrays.', { oldArray, newArray });
 
     let a1BsonId = false;
     if (isDefined(key) && isObjectIdWithTryToCast(oldArray[0][key]))
@@ -321,7 +321,7 @@ exports.arrayRemoveAddDiffs = (baseArray, changedArray, key) => {
  */
 const mappedInputUserIdsToTeamUsers = (hook, teamUsers, oldTeam, sessionSchoolId) => {
     if (!isArray(teamUsers))
-        throw new errors.BadRequest('param teamUsers must be an array', teamUsers);
+        throw new BadRequest('param teamUsers must be an array', teamUsers);
 
     const getFirstUserByRoleId = (teamUserArray, roleId) => {
         return teamUserArray.find(_user => isSameId(_user.role, roleId));
@@ -330,7 +330,7 @@ const mappedInputUserIdsToTeamUsers = (hook, teamUsers, oldTeam, sessionSchoolId
     const teamowner = hook.method === 'create' ? getFirstUserByRoleId(teamUsers, teamownerRoleId) : getFirstUserByRoleId(oldTeam.userIds, teamownerRoleId);
 
     if (isUndefined(teamowner))       //by create no old team exist
-        throw new errors.NotAcceptable('No teamowner found for this team.');
+        throw new NotAcceptable('No teamowner found for this team.');
 
     return teamUsers.map((e) => {
         let selectedRole;
@@ -486,7 +486,7 @@ exports.populateUsersForEachUserIdinHookData = hook => {
                 resolve(users.data);
             }).catch(err => {
                 logger.warn(err);
-                reject(new errors.BadRequest('Can not search users.'));
+                reject(new BadRequest('Can not search users.'));
             });
         } else {
             resolve([]);
