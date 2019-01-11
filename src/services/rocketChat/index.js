@@ -3,10 +3,10 @@ const request = require('request-promise-native');
 const errors = require('feathers-errors');
 const logger = require('winston');
 
-const rocketChatModels = require('./model');
+const rocketChatModels = require('./model'); //toDo: deconstruct
 const {rocketChatUserHooks, rocketChatLoginHooks, rocketChatChannelHooks} = require('./hooks');
 const docs = require('./docs');
-const { randomPass } = require('./randomPass');
+const { randomPass, randomSuffix } = require('./randomPass');
 
 
 const REQUEST_TIMEOUT = 4000; // in ms
@@ -48,9 +48,8 @@ class RocketChatUser {
     }
 
     /**
-     * 
-     * @param {object} data 
-     * @param {*} params 
+     * creates an account, should be called by getOrCreateRocketChatAccount
+     * @param {object} data
      */
     createRocketChatAccount(userId) {
         if (userId === undefined)
@@ -254,6 +253,18 @@ class RocketChatChannel {
         };
     }
 
+    generateChannelName(team) {
+        //toDo: implementation with bound execution time.
+        let channelName = team.name + "." + randomSuffix();
+        //toDo: check availibility in rocketChat as well.
+        return rocketChatModels.channelModel.findOne({channelName: channelName})
+        .then(result => {
+            if (!result) {
+                return Promise.resolve(channelName)
+            } else return generateChannelName(team)
+        })
+    }
+
     createChannel(teamId, params) {
         if (teamId === undefined)
             throw new errors.BadRequest('Missing data value.');
@@ -269,10 +280,11 @@ class RocketChatChannel {
                 return this.app.service('rocketChat/user').get(user.userId);
             });
 
-            return Promise.all(userNamePromises).then(users => {
+            return Promise.all(userNamePromises).then(async users => {
                 users = users.map(user => { return user.username; });
+                let channelName = await this.generateChannelName(currentTeam);
                 const body = { 
-                    name: currentTeam.name,
+                    name: channelName,
                     members: users
                 };
                 return request(this.getOptions('/api/v1/groups.create', body))
@@ -284,7 +296,7 @@ class RocketChatChannel {
         }).then(result => {
             const channelData = {
                 teamId: currentTeam._id,
-                channelName: currentTeam.name
+                channelName: result.group.name
             }
             return rocketChatModels.channelModel.create(channelData);            
         }).catch(err => {
