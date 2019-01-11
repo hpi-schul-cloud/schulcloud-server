@@ -62,6 +62,9 @@ module.exports = function() {
 	app.use('/oauth2/auth/sessions/consent', {
 		get (user) {
 			return hydra.listConsentSessions(user);
+		},
+		remove (user, params) {
+			return hydra.revokeConsentSession(user, params.query.client);
 		}
 	});
 	app.service('/oauth2/auth/sessions/consent').before(hooks.before.consentSessions);

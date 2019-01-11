@@ -46,12 +46,13 @@ const injectConsentRequest = hook => {
 }
 
 const validateSubject = hook => {
-	if (hook.params.consentRequest.subject === hook.params.account.userId) return hook
+	if (hook.params.consentRequest.subject === hook.params.account.userId.toString()) return hook
 	throw new errors.Forbidden("You want to patch another user's consent");
 }
 
-const validateUser = hook => { // TODO: implement
-	return hook
+const managesOwnConsents = hook => {
+	if (hook.id === hook.params.account.userId.toString()) return hook
+	throw new errors.Forbidden("You want to manage another user's consents");
 }
 
 exports.before = {
@@ -69,7 +70,6 @@ exports.before = {
 		create: [globalHooks.ifNotLocal(_ => {throw new errors.MethodNotAllowed();})],
 	},
 	consentSessions: {
-		all: [auth.hooks.authenticate('jwt')],
-		get: [validateUser]
+		all: [auth.hooks.authenticate('jwt'), managesOwnConsents],
 	}
 };
