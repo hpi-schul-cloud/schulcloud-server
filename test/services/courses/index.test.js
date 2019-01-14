@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require('assert');
 const app = require('../../../src/app');
 
@@ -19,7 +21,7 @@ const testCourse = {
 	userIds: [],
 	classIds: [],
 	teacherIds: [],
-	ltiToolIds: [],
+	ltiToolIds: []
 };
 
 let courseId;
