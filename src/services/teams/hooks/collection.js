@@ -153,7 +153,7 @@ const isNull = (e) => {
  * Can be also used to test if string is a valid id
  * @collection
  * @private
- * @param {String} id 
+ * @param {String} id
  * @return {String::ObjectId} Return null if can not created
  */
 const tryToCastToObjectId = (id) => {
@@ -192,7 +192,7 @@ const throwErrorIfNotObjectId = (id) => {
 /**
  * Convert bsonId(s) to stringId(s),
  * @collection
- * @param {Array::(bson||string) || (bson||sring)} input 
+ * @param {Array::(bson||string) || (bson||sring)} input
  * @returns {Array::String::Id || String::Id}
  */
 const bsonIdToString = (input) => {
@@ -210,8 +210,8 @@ const bsonIdToString = (input) => {
 /**
  * Convert bsonIds to strings and test if itput is the same
  * @collection
- * @param {StringId||BsonId} value1 
- * @param {StringId||BsonId} value2 
+ * @param {StringId||BsonId} value1
+ * @param {StringId||BsonId} value2
  */
 const isSameId = (value1, value2) => {
     return bsonIdToString(value1) === bsonIdToString(value2);
@@ -219,8 +219,8 @@ const isSameId = (value1, value2) => {
 
 /**
  * @collection
- * @param {*} e 
- * @param {String::'AND'||'OR'} operation 
+ * @param {*} e
+ * @param {String::'AND'||'OR'} operation
  */
 const isDefinedOperation = (e, operation) => {
     if (operation === 'OR')
@@ -233,7 +233,7 @@ const isDefinedOperation = (e, operation) => {
 
 /**
  * @collection
- * @param {*} e 
+ * @param {*} e
  * @param {String::'AND'||'OR'} operation AND || OR
  */
 const isUndefinedOperation = (e, operation) => {
