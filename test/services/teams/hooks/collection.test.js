@@ -121,6 +121,14 @@ describe('collection helpers', () => {
 			expect(isDefined(false)).to.equal(true);
 			expect(isDefined({})).to.equal(true);
 		});
+
+		it('should work for lists of values', () => {
+			expect(isDefined([1, 2], 'AND')).to.equal(true);
+			expect(isDefined([3, 4], 'OR')).to.equal(true);
+			expect(isDefined([undefined, 4], 'AND')).to.equal(false);
+			expect(isDefined([undefined, 5], 'OR')).to.equal(true);
+			expect(isDefined([void 0, void 0], 'OR')).to.equal(false);
+		});
 	});
 
 	describe('isUndefined', () => {
@@ -132,6 +140,14 @@ describe('collection helpers', () => {
 			expect(isUndefined(true)).to.equal(false);
 			expect(isUndefined(false)).to.equal(false);
 			expect(isUndefined({})).to.equal(false);
+		});
+
+		it('should work for lists of values', () => {
+			expect(isUndefined([1, 2], 'AND')).to.equal(false);
+			expect(isUndefined([3, 4], 'OR')).to.equal(false);
+			expect(isUndefined([undefined, 4], 'AND')).to.equal(false);
+			expect(isUndefined([undefined, 5], 'OR')).to.equal(true);
+			expect(isUndefined([void 0, void 0], 'OR')).to.equal(true);
 		});
 	});
 
