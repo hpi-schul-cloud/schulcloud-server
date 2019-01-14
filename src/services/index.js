@@ -67,7 +67,6 @@ module.exports = function() {
     app.configure(wopi);
     app.configure(pseudonym);
 	app.configure(me);
-    app.configure(consent);
     app.configure(oauth2);
     app.configure(roster);
 };
