@@ -1,4 +1,4 @@
-'use strict';
+const mongoose = require('mongoose');
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
@@ -24,18 +24,19 @@ const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
 const wopi = require('./wopi');
-const pseudonym = require("./pseudonym");
+const pseudonym = require('./pseudonym');
 const consent = require('./consent');
 const oauth2 = require('./oauth2');
 const roster = require('./roster');
 const mongoose = require('mongoose');
 const clipboard = require('./clipboard');
+const me = require('./me');
 
-module.exports = function () {
-    const app = this;
+module.exports = function() {
+	const app = this;
 
-    mongoose.connect(process.env.DB_URL || app.get('mongodb'), {user:process.env.DB_USERNAME, pass:process.env.DB_PASSWORD});
-    mongoose.Promise = global.Promise;
+	mongoose.connect(process.env.DB_URL || app.get('mongodb'), { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
+	mongoose.Promise = global.Promise;
 
     app.configure(authentication);
     app.configure(analytics);
@@ -65,6 +66,7 @@ module.exports = function () {
     app.configure(clipboard);
     app.configure(wopi);
     app.configure(pseudonym);
+	app.configure(me);
     app.configure(consent);
     app.configure(oauth2);
     app.configure(roster);
