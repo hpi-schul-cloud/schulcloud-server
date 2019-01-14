@@ -304,38 +304,41 @@ const userIsInThatCourse = (user, course, isCourse) => {
 		return course.userIds.some(u => u.toString() === user._id.toString())
 			|| course.teacherIds.some(u => u.toString() === user._id.toString())
 			|| (course.substitutionIds || []).some(u => u.toString() === user._id.toString());
-	} else {
-		return course.userIds.some(u => u.toString() === user._id.toString())
-			|| user.roles.some(role => role.name === 'teacher');
 	}
+
+	return course.userIds.some(u => u.toString() === user._id.toString())
+		|| user.roles.some(role => role.name === 'teacher');
 };
 
-exports.restrictToUsersOwnCourses = hook => {
+exports.restrictToUsersOwnCourses = (hook) => {
 	let userService = hook.app.service('users');
 	return userService.find({
 		query: {
 			_id: hook.params.account.userId,
 			$populate: 'roles'
 		}
-	}).then(res => {
+	}).then((res) => {
 		let access = false;
-		res.data[0].roles.map(role => {
-			if (role.name === 'administrator' || role.name === 'superhero' )
+		res.data[0].roles.map((role) => {
+			if (role.name === 'administrator' || role.name === 'superhero' ) {
 				access = true;
+			}
 		});
-		if (access)
+		if (access) {
 			return hook;
+		}
 
 		if (hook.method === "get") {
 			let courseService = hook.app.service('courses');
-			return courseService.get(hook.id).then(course => {
+			return courseService.get(hook.id).then((course) => {
 				if (!(_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
 					!(_.some(course.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
 					!(_.some(course.substitutionIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
 					throw new errors.Forbidden('You are not in that course.');
 				}
 			});
-		} else if (hook.method === "find") {
+		} 
+		if (hook.method === "find") {
 			if (typeof(hook.params.query.$or) === 'undefined') {
 				hook.params.query.$or = [
 					{ userIds: res.data[0]._id },
@@ -348,17 +351,17 @@ exports.restrictToUsersOwnCourses = hook => {
 	});
 };
 
-exports.restrictToUsersOwnLessons = hook => {
+exports.restrictToUsersOwnLessons = (hook) => {
 	const userService = hook.app.service('users');
 	return userService.find({
 		query: {
 			_id: hook.params.account.userId,
 			$populate: 'roles'
 		}
-	}).then(userResult => {
+	}).then((userResult) => {
 		let access = false;
 		const user = userResult.data[0];
-		user.roles.forEach(role => {
+		user.roles.forEach((role) => {
 			if (role.name === 'administrator' || role.name === 'superhero') {
 				access = true;
 			}
@@ -381,27 +384,28 @@ exports.restrictToUsersOwnLessons = hook => {
 			if (hook.method === 'get' && (hook.result || {})._id) {
 				let tempLesson = [hook.result];
 				tempLesson = tempLesson.filter((lesson) => {
-					if ('courseGroupId' in lesson)
+					if ('courseGroupId' in lesson) {
 						return userIsInThatCourse(user, lesson.courseGroupId, false);
-					else
-						return userIsInThatCourse(user, lesson.courseId, true)
+					}
+					return userIsInThatCourse(user, lesson.courseId, true)
 						|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
 				});
 				if (tempLesson.length === 0) {
 					throw new errors.Forbidden("You don't have access to that lesson.");
 				}
-				if ('courseGroupId' in hook.result)
+				if ('courseGroupId' in hook.result) {
 					hook.result.courseGroupId = hook.result.courseGroupId._id;
-				else
+				} else {
 					hook.result.courseId = hook.result.courseId._id;
+				}
 			}
 
 			if (hook.method === 'find' && ((hook.result || {}).data || []).length > 0) {
 				hook.result.data = hook.result.data.filter((lesson) => {
-					if ('courseGroupId' in lesson)
+					if ('courseGroupId' in lesson) {
 						return userIsInThatCourse(user, lesson.courseGroupId, false);
-					else
-						return userIsInThatCourse(user, lesson.courseId, true)
+					}
+					return userIsInThatCourse(user, lesson.courseId, true)
 						|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
 				});
 
@@ -411,10 +415,11 @@ exports.restrictToUsersOwnLessons = hook => {
 					hook.result.total = hook.result.data.length;
 				}
 				hook.result.data.forEach((lesson) => {
-					if ('courseGroupId' in lesson)
+					if ('courseGroupId' in lesson) {
 						lesson.courseGroupId = lesson.courseGroupId._id;
-					else
+					} else {
 						lesson.courseId = lesson.courseId._id;
+					}
 				});
 			}
 		}
