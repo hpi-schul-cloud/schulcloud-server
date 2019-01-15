@@ -7,10 +7,8 @@ const auth = require('feathers-authentication');
 const pinModel = require('../../user/model').registrationPinModel;
 
 const removeOldPins = (hook) => {
-	return pinModel.deleteMany({email:hook.data.email})
-		.then(pins => {
-			return Promise.resolve(hook);
-		});
+	return pinModel.deleteMany({email: hook.data.email })
+		.then(() => Promise.resolve(hook));
 };
 
 const generatePin = (hook) => {
@@ -22,69 +20,66 @@ const generatePin = (hook) => {
 function createinfoText(hook) {
 	let text;
 	const role = hook.data.mailTextForRole;
-	const pin = hook.data.pin;
+	const { pin } = hook.data;
 	if (!role || !pin) {
-		logger.warn("Role or PIN missing to define mail text.");
-		return "";
+		logger.warn('Role or PIN missing to define mail text.');
+		return '';
 	}
-	if (role === "parent") {
-		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der HPI Schul-Cloud ermöglichen.
+	if (role === 'parent') {
+		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der ${process.env.SC_SHORT_TITLE} ermöglichen.
 Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen.
 
 PIN: ${pin}
 
 Mit Freundlichen Grüßen
-Ihr Schul-Cloud Team`;
+Ihr ${process.env.SC_SHORT_TITLE} Team`;
 
-	} else if (role === "student" || role === "employee" || role === "expert") {
-		text = `Vielen Dank, dass du die HPI Schul-Cloud nutzen möchtest.
+	} else if (role === 'student' || role === 'employee' || role === 'expert') {
+		text = `Vielen Dank, dass du die ${process.env.SC_SHORT_TITLE} nutzen möchtest.
 Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen.
 
 PIN: ${pin}
 
 Mit freundlichen Grüßen
-Ihr Schul-Cloud Team`;
+Ihr ${process.env.SC_SHORT_TITLE} Team`;
 	} else {
-		logger.warn("No valid role submitted to define mail text.");
-		return "";
+		logger.warn('No valid role submitted to define mail text.');
+		return '';
 	}
 	return text;
 }
 
-const checkAndVerifyPin = hook => {
-	if(hook.result.data.length === 1 && hook.result.data[0].verified===false) {
-		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, {verified: true}).then(() => {
-			return Promise.resolve(hook);
-		});
-	} else {
-		return Promise.resolve(hook);
+const checkAndVerifyPin = (hook) => {
+	if (hook.result.data.length === 1 && hook.result.data[0].verified === false) {
+		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, { verified: true }).then(() => Promise.resolve(hook));
 	}
+	return Promise.resolve(hook);
 };
 
 const mailPin = (hook) => {
-	if (!(hook.data||{}).silent) {
+	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
-			"subject": "Schul-Cloud: Registrierung mit PIN verifizieren",
-			"emails": (hook.data||{}).email,
-			"content": {
-				"text": createinfoText(hook)
+			subject: `${process.env.SC_SHORT_TITLE}: Registrierung mit PIN verifizieren`,
+			emails: (hook.data || {}).email,
+			content: {
+				text: createinfoText(hook),
 				// TODO: implement html mails later
-			}
+			},
 		});
 	}
 	return Promise.resolve(hook);
 };
 
 const returnPinOnlyToSuperHero = async (hook) => {
-	if (process.env.NODE_ENV === 'test'){
+	if (process.env.NODE_ENV === 'test') {
 		return Promise.resolve(hook);
 	}
 
-	if(((hook.params||{}).account||{}).userId){
+	if (((hook.params || {}).account || {}).userId) {
 		const userService = hook.app.service('/users/');
-		const currentUser = await userService.get(hook.params.account.userId, {query: {$populate: 'roles'}});
-		const userRoles = currentUser.roles.map((role) => {return role.name;});
-		if(userRoles.includes('superhero')){
+		const currentUser = await userService.get(hook.params.account.userId, { query: { $populate: 'roles' } });
+		const userRoles = currentUser.roles.map((role) => { return role.name; });
+		if (userRoles.includes('superhero')) {
 			return Promise.resolve(hook);
 		}
 	}
