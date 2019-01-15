@@ -167,10 +167,13 @@ describe('collection helpers', () => {
 		it('should return true for MongoDB ObjectIds', () => {
 			const oid = new ObjectId();
 			expect(isObjectId(oid)).to.equal(true);
-			expect(isObjectId(oid.toString())).to.equal(false);
 		});
 
 		it('should return false for other types', () => {
+			const oid = new ObjectId();
+			expect(isObjectId(oid.toString())).to.equal(false);
+			expect(isObjectId('5c3da7980ba3be0a64f1d38c')).to.equal(false);
+			expect(isObjectId({_bsontype:'ObjectID'})).to.equal(false);
 			expect(isObjectId(123)).to.equal(false);
 			expect(isObjectId('123')).to.equal(false);
 			expect(isObjectId(() => {})).to.equal(false);
@@ -187,6 +190,8 @@ describe('collection helpers', () => {
 
 		it('should return false for other types', () => {
 			expect(isObjectIdWithTryToCast(123)).to.equal(false);
+			expect(isObjectIdWithTryToCast('5c3da7980ba3be0a64f1d38ca')).to.equal(false);
+			expect(isObjectIdWithTryToCast({_bsontype:'ObjectID'})).to.equal(false);
 			expect(isObjectIdWithTryToCast('123')).to.equal(false);
 			expect(isObjectIdWithTryToCast(() => {})).to.equal(false);
 			expect(isObjectIdWithTryToCast([])).to.equal(false);

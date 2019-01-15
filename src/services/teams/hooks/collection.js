@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-const errors = require('feathers-errors');
+const {BadRequest} = require('feathers-errors');
 const Schema = mongoose.Schema;
+const { ObjectId } = require('mongoose').Types;
 
 /**
  * If Array use it.
@@ -158,7 +159,7 @@ const isNull = (e) => {
  */
 const tryToCastToObjectId = (id) => {
     try {
-        return mongoose.Types.ObjectId(id);
+        return ObjectId(id);
     } catch (err) {
         return null;
     }
@@ -169,7 +170,7 @@ const tryToCastToObjectId = (id) => {
  * @requires const Schema = require('mongoose').Schema;
  */
 const isObjectId = (id) => {
-    return id instanceof Schema.Types.ObjectId && id !== undefined;
+    return id instanceof ObjectId && id !== undefined;
 };
 
 /**
@@ -177,7 +178,7 @@ const isObjectId = (id) => {
  * @requires const Schema = require('mongoose').Schema;
  */
 const isObjectIdWithTryToCast = (id) => {
-    return isObjectId(id) || !isNull(tryToCastToObjectId(id));
+    return isObjectId(id) || !isNull(tryToCastToObjectId(id.toString()));
 };
 
 /**
@@ -185,8 +186,8 @@ const isObjectIdWithTryToCast = (id) => {
 *   @throws {BadRequest} - If input is no typeof moongose Schema.Types.ObjectId it is throw an error
 */
 const throwErrorIfNotObjectId = (id) => {
-    if (isObjectId(id))
-        throw new errors.BadRequest('Is not instance of Schema.Types.ObjectId.');
+    if (!isObjectId(id))
+        throw new BadRequest('Is not instance of Schema.Types.ObjectId.');
 };
 
 /**
