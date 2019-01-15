@@ -51,16 +51,20 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 				const results = [];
 				data.forEach((obj) => {
 					const roles = [];
-					if (obj[this.config.providerOptions.userAttributeNameMapping.role] === 'ROLE_STUDENT') {
+					if (obj[this.config.providerOptions.userAttributeNameMapping.role]
+						=== this.config.providerOptions.roleAttributeNameMapping.roleStudent) {
 						roles.push('student');
 					}
-					if (obj[this.config.providerOptions.userAttributeNameMapping.role] === 'ROLE_TEACHER') {
+					if (obj[this.config.providerOptions.userAttributeNameMapping.role]
+						=== this.config.providerOptions.roleAttributeNameMapping.roleTeacher) {
 						roles.push('teacher');
 					}
-					if (obj[this.config.providerOptions.userAttributeNameMapping.role] === 'ROLE_ADMIN') {
+					if (obj[this.config.providerOptions.userAttributeNameMapping.role]
+						=== this.config.providerOptions.roleAttributeNameMapping.roleAdmin) {
 						roles.push('administrator');
 					}
-					if (obj[this.config.providerOptions.userAttributeNameMapping.role] === 'ROLE_NO_SC') {
+					if (obj[this.config.providerOptions.userAttributeNameMapping.role]
+						=== this.config.providerOptions.roleAttributeNameMapping.roleNoSc) {
 						return;
 					}
 
