@@ -1,6 +1,8 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const { BadRequest } = require('feathers-errors');
+const { setupUser, deleteUser } = require('../helper/helper.user');
+const app = require('../../../../src/app');
 const { ifSuperhero, getSessionUser, updateMissingDataInHookForCreate,
 	isAcceptWay, getTeam, arrayRemoveAddDiffs, getTeamUsers,
 	populateUsersForEachUserIdinHookData } = require('../../../../src/services/teams/hooks/helpers.js');
@@ -86,6 +88,143 @@ describe('hook helpers', () => {
 				remove: [{ _id: id2 }],
 			};
 			expect(arrayRemoveAddDiffs(original, changed, '_id')).to.deep.equal(expected);
+		});
+	});
+
+	describe('populateUsersForEachUserIdinHookData', () => {
+		let server;
+
+		before((done) => {
+			server = app.listen(0, done);
+		});
+
+		after((done) => {
+			server.close(done);
+		});
+
+		it('should not break for request methods != CREATE, PATCH', async () => {
+			const hook = { method: 'delete' };
+			expect(await populateUsersForEachUserIdinHookData(hook)).to.deep.equal([]);
+			expect(() => populateUsersForEachUserIdinHookData(hook)).to.not.throw();
+		});
+
+		it('should fail for empty request bodies', async () => {
+			const hook = { method: 'patch', data: [] };
+			expect(await populateUsersForEachUserIdinHookData(hook)).to.deep.equal([]);
+			expect(() => populateUsersForEachUserIdinHookData(hook)).to.not.throw();
+		});
+
+		it('should populate userIds in the request data', async () => {
+			await Promise.all(['create', 'patch'].map(async (method) => {
+				const { userId, user } = await setupUser();
+				expect(userId).to.not.equal(undefined);
+				const hook = {
+					app,
+					method: method,
+					data: {
+						userIds: [
+							userId,
+						],
+					},
+				};
+				const result = await populateUsersForEachUserIdinHookData(hook);
+				expect(result[0]._id.toString()).to.equal(user._id.toString());
+				expect(result[0].firstName).to.equal(user.firstName);
+				await deleteUser(userId);
+			}));
+		});
+
+		it('should fail for invalid userIds', async () => {
+			const { userId } = await setupUser();
+			expect(userId).to.not.equal(undefined);
+			const hook = {
+				app,
+				method: 'create',
+				data: {
+					userIds: [
+						userId,
+						'123456',
+					],
+				},
+			};
+
+			await new Promise((resolve, reject) => {
+				populateUsersForEachUserIdinHookData(hook)
+					.then(() => {
+						reject(new Error('This call should fail because of an invalid userId'));
+					})
+					.catch((err) => {
+						expect(err instanceof BadRequest).to.equal(true);
+						resolve();
+					});
+			});
+
+			await deleteUser(userId);
+		});
+
+		it('should resolve duplicate IDs only once', async () => {
+			await Promise.all(['create', 'patch'].map(async (method) => {
+				const { userId, user } = await setupUser();
+				expect(userId).to.not.equal(undefined);
+				const hook = {
+					app,
+					method: method,
+					data: {
+						userIds: [
+							userId,
+							userId,
+							userId,
+							userId,
+						],
+					},
+				};
+				const result = await populateUsersForEachUserIdinHookData(hook);
+				expect(result.length).to.equal(1);
+				expect(result[0]._id.toString()).to.equal(user._id.toString());
+				expect(result[0].firstName).to.equal(user.firstName);
+				await deleteUser(userId);
+			}));
+		});
+
+		it('should work for multiple userIds', async () => {
+			await Promise.all(['create', 'patch'].map(async (method) => {
+				const { userId: userId1, user: user1 } = await setupUser();
+				const { userId: userId2, user: user2 } = await setupUser();
+				const { userId: userId3, user: user3 } = await setupUser();
+				const { userId: userId4, user: user4 } = await setupUser();
+
+				const hook = {
+					app,
+					method: method,
+					data: {
+						userIds: [
+							userId1,
+							userId2,
+							userId3,
+							userId4,
+						],
+					},
+				};
+				const result = await populateUsersForEachUserIdinHookData(hook);
+				expect(result.length).to.equal(4);
+
+				expect(result[0]._id.toString()).to.equal(user1._id.toString());
+				expect(result[0].firstName).to.equal(user1.firstName);
+
+				expect(result[1]._id.toString()).to.equal(user2._id.toString());
+				expect(result[1].firstName).to.equal(user2.firstName);
+
+				expect(result[2]._id.toString()).to.equal(user3._id.toString());
+				expect(result[2].firstName).to.equal(user3.firstName);
+
+				expect(result[3]._id.toString()).to.equal(user4._id.toString());
+				expect(result[3].firstName).to.equal(user4.firstName);
+
+				await deleteUser(userId1);
+				await deleteUser(userId2);
+				await deleteUser(userId3);
+				await deleteUser(userId4);
+			}));
 		});
 	});
 });

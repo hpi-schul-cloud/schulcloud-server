@@ -7,8 +7,8 @@ const { ObjectId } = require('mongoose').Types;
 const app = require('../../../../src/app');
 //const {warn, info} = require('../../../src/logger/index.js');
 
-const PASSWORD = process.env.TEST_PW.trim(); 	
-const PASSWORD_HASH = process.env.TEST_HASH.trim(); 
+const PASSWORD = process.env.TEST_PW.trim();
+const PASSWORD_HASH = process.env.TEST_HASH.trim();
 const AT = '@schul-cloud.org';
 
 const REQUEST_PARAMS = {
@@ -16,16 +16,13 @@ const REQUEST_PARAMS = {
     provider: 'rest',
 };
 
-const getToken = ({userId}) => {
-    return app.service('authentication').create({
+const getToken = async ({userId}) => {
+    const result = app.service('authentication').create({
         strategy: 'local',
         username: userId + AT,
         password: PASSWORD,
-    },REQUEST_PARAMS)
-    .then(result=>result.accessToken)
-    .catch(err=>{
-       throw err;
-    });
+    }, REQUEST_PARAMS);
+    return result.accessToken;
 };
 
 const getRoleByKey = (key,value) =>{
@@ -37,24 +34,24 @@ const getRoleByKey = (key,value) =>{
 
 const createUser = async (userId, roleName = 'student', schoolId = '0000d186816abba584714c5f') => {
 
-    if (!['expert', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) 
-        throw BadRequest('You want to test a not related role .' + roleName);  
+    if (!['expert', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName))
+        throw BadRequest('You want to test a not related role .' + roleName);
 
-    const role = await getRoleByKey('name',roleName);
+    const role = await getRoleByKey('name', roleName);
 
     return userModel.create({
         _id: userId,
         email: userId + AT,
         schoolId,
         firstName: userId,
-        lastName: 'GerneratedTestUser',
+        lastName: 'GeneratedTestUser',
         roles: [
             role._id,
         ],
     });
 };
 
-const createAccount = async (userId) => {
+const createAccount = (userId) => {
     return accountModel.create({
         username: userId + AT,
         password: PASSWORD_HASH,
@@ -64,18 +61,17 @@ const createAccount = async (userId) => {
 };
 
 const setupUser = async (roleName, schoolId) => {
-    const userId = ObjectId();
-
-    return Promise.all([createUser(userId, roleName, schoolId), createAccount(userId)]).then(async ([user, account]) => {
-        const accessToken = await getToken(account);
-        return { userId, account, user, accessToken };
-    });
+    const userId = new ObjectId();
+    const user = await createUser(userId, roleName, schoolId);
+    const account = await createAccount(user._id);
+    const accessToken = await getToken(account);
+    return { userId: user._id, account, user, accessToken };
 };
 
 const deleteUser = async (userId) => {
     if(typeof userId === 'object' && userId.userId!==undefined)
         userId=userId.userId;
-        
+
     const email = userId + AT;
     await userModel.deleteOne({ email });     //todo: add error handling if not exist
     await accountModel.deleteOne({ username: email });
