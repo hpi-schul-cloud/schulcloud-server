@@ -51,6 +51,27 @@ rocketChatLoginHooks= {
     }
 }
 
+rocketChatLogoutHooks= {
+    before: {
+        all: [auth.hooks.authenticate('jwt')],
+        find: [hooks.disable()],
+        get: [],
+        create: [hooks.disable()],
+        update: [hooks.disable()],
+        patch: [hooks.disable()],  
+        remove: [hooks.disable()]
+    },
+    after: {
+        all: [],
+        find: [],
+        get: [],
+        create: [],
+        update: [],
+        patch: [],  
+        remove: []
+    }
+}
+
 rocketChatChannelHooks= {
     before: {
         all: [auth.hooks.authenticate('jwt')],
@@ -72,4 +93,4 @@ rocketChatChannelHooks= {
     }
 }
 
-module.exports = {rocketChatUserHooks, rocketChatLoginHooks, rocketChatChannelHooks};
+module.exports = {rocketChatUserHooks, rocketChatLoginHooks, rocketChatLogoutHooks, rocketChatChannelHooks};

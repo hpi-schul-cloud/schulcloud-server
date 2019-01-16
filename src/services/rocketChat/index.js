@@ -4,7 +4,7 @@ const errors = require('feathers-errors');
 const logger = require('winston');
 
 const rocketChatModels = require('./model'); //toDo: deconstruct
-const {rocketChatUserHooks, rocketChatLoginHooks, rocketChatChannelHooks} = require('./hooks');
+const {rocketChatUserHooks, rocketChatLoginHooks, rocketChatLogoutHooks, rocketChatChannelHooks} = require('./hooks');
 const docs = require('./docs');
 const { randomPass, randomSuffix } = require('./randomPass');
 
@@ -76,20 +76,18 @@ class RocketChatUser {
             const username = await this.generateUserName(user);
             const name = [user.firstName, user.lastName].join(' ');
 
-            return rocketChatModels.userModel.create({ userId, pass, username }).then((res) => {
-                if (res.errors !== undefined)
-                    throw new errors.BadRequest('Can not insert into collection.', res.errors);
-
-                const body = { email, pass, username, name };
+            const body = { email, pass, username, name };
                 return request(this.getOptions('/api/v1/users.register', body)).then(res => {
                     if (res.success === true && res.user !== undefined)
                         return res;
                     else
                         throw new errors.BadRequest('False response data from rocketChat');
+                }).then(result => {
+                    let rcId = result.user._id
+                    return rocketChatModels.userModel.create({ userId, pass, username, rcId })
                 }).catch(err => {
                     throw new errors.BadRequest('Can not write user informations to rocketChat.', err);
                 });
-            });
         }).catch(err => {
             logger.warn(err);
             throw new errors.BadRequest('Can not create RocketChat Account');
@@ -112,7 +110,7 @@ class RocketChatUser {
             } else return Promise.resolve(login);
         })
         .then(login => {
-            return Promise.resolve({ username: login.username, password: login.pass });
+            return Promise.resolve({ username: login.username, password: login.pass, authToken: login.authToken, rcId: login.rcId });
         }).catch(err => {
             logger.warn(err);
             Promise.reject(new errors.BadRequest('could not initialize rocketchat user', err));
@@ -221,13 +219,23 @@ class RocketChatLogin {
      * @param {*} params 
      */
     get(userId, params) {
+        //rewrite as async
+        if (userId != params.account.userId) {
+            return Promise.reject(new errors.Forbidden("you may only log into your own rocketChat account"))
+        }
         return this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params)
-        .then(login => {
-            return request(this.getOptions('/api/v1/login', login)).then(res => {
+        .then(rcAccount => {
+            //toDo: dont log in twice
+            const login = {
+                user: rcAccount.username,
+                password: rcAccount.password
+            }
+            return request(this.getOptions('/api/v1/login', login)).then(async res => {
                 const authToken = (res.data || {}).authToken;
-                if (res.status === "success" && authToken !== undefined)
+                if (res.status === "success" && authToken !== undefined) {
+                    await rocketChatModels.userModel.update({username: rcAccount.username}, {authToken})
                     return Promise.resolve({ authToken });
-                else
+                } else
                     return Promise.reject(new errors.BadRequest('False response data from rocketChat'));
             }).catch(err => {
                 return Promise.reject(new errors.Forbidden('Can not take token from rocketChat.', err));
@@ -240,6 +248,69 @@ class RocketChatLogin {
 
     setup(app, path) {
         this.app = app;
+    }
+}
+
+class RocketChatLogout {
+    constructor(options) {
+        this.options = options || {};
+        this.docs = docs;
+    }
+
+    getOptions(shortUri, headers, method) {
+        return {
+            uri: ROCKET_CHAT_URI + shortUri,
+            method: method || 'POST',
+            headers: {
+                'X-Auth-Token': headers.authToken,
+                'X-User-ID': headers.userId
+            },
+            json: true,
+            timeout: REQUEST_TIMEOUT
+        };
+    }
+
+    /**
+     * logs a user given by his schulcloud id out of rocketChat
+     * @param {*} userId 
+     * @param {*} params 
+     */
+    async get(userId, params) {
+        try{
+            let rcUser = await this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params);
+            if (rcUser.authToken && rcUser.authToken != "") {
+                const headers = {
+                    authToken: rcUser.authToken,
+                    userId: rcUser.rcId
+                }
+                await rocketChatModels.userModel.update({username: rcUser.username}, {authToken: ""});
+                await request(this.getOptions('/api/v1/logout', headers))
+                return ("success")
+            }
+        } catch(error) {
+            throw errors.BadRequest("could not log out user")
+        }
+    }
+
+    /**
+     * react to a user logging out
+     * @param {*} context 
+     */
+    _onAuthenticationRemoved(context) {
+        this.get(context.userId);
+    }
+
+    /**
+     * Register methods of the service to listen to events of other services
+     * @listens authentication:removed
+     */
+    _registerEventListeners() {
+        this.app.service('authentication').on('removed', this._onAuthenticationRemoved.bind(this));
+    }
+    
+    setup(app, path) {
+        this.app = app;     
+        this._registerEventListeners();
     }
 }
 
@@ -440,9 +511,11 @@ module.exports = function () {
     app.use('/rocketChat/channel', new RocketChatChannel());
     app.use('/rocketChat/user', new RocketChatUser());
     app.use('/rocketChat/login', new RocketChatLogin());
+    app.use('/rocketChat/logout', new RocketChatLogout());
 
     const rocketChatUserService = app.service('/rocketChat/user');
     const rocketChatLoginService = app.service('/rocketChat/login');
+    const rocketChatLogoutService = app.service('rocketChat/logout')
     const rocketChatChannelService = app.service('/rocketChat/channel');
 
     rocketChatUserService.before(rocketChatUserHooks.before);
@@ -450,6 +523,9 @@ module.exports = function () {
 
     rocketChatLoginService.before(rocketChatLoginHooks.before);
     rocketChatLoginService.after(rocketChatLoginHooks.after);
+
+    rocketChatLogoutService.before(rocketChatLogoutHooks.before);
+    rocketChatLogoutService.after(rocketChatLogoutHooks.after);
 
     rocketChatChannelService.before(rocketChatChannelHooks.before);
     rocketChatChannelService.after(rocketChatChannelHooks.after);
