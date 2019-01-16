@@ -8,6 +8,16 @@ const { ifSuperhero, getSessionUser, updateMissingDataInHookForCreate,
 	populateUsersForEachUserIdinHookData } = require('../../../../src/services/teams/hooks/helpers.js');
 
 describe('hook helpers', () => {
+	let server;
+
+	before((done) => {
+		server = app.listen(0, done);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+	
 	describe('ifSuperhero', () => {
 		it('should return true if one of the given roles is superhero', () => {
 			const roles = [
@@ -92,16 +102,6 @@ describe('hook helpers', () => {
 	});
 
 	describe('populateUsersForEachUserIdinHookData', () => {
-		let server;
-
-		before((done) => {
-			server = app.listen(0, done);
-		});
-
-		after((done) => {
-			server.close(done);
-		});
-
 		it('should not break for request methods != CREATE, PATCH', async () => {
 			const hook = { method: 'delete' };
 			expect(await populateUsersForEachUserIdinHookData(hook)).to.deep.equal([]);
