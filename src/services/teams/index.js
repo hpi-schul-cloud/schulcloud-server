@@ -1,10 +1,10 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const errors = require('feathers-errors');
-const logger = require('winston');
-//const globalHooks = require('../../hooks');
 const hooks = require('./hooks');
+const {BadRequest, NotAcceptable, Forbidden, GeneralError, NotFound} = require('feathers-errors');
+const {warn} = require('../../logger/index');
+//const globalHooks = require('../../hooks');
 const { teamsModel } = require('./model');
 const { userModel } = require('../user/model');
 const H = require('./hooks/helpers');
@@ -35,7 +35,7 @@ class AdminOverview {
 		this.docs = {};
 
 		if (process.env.SC_SHORT_TITLE === undefined)
-			throw new errors.NotAcceptable('SC_SHORT_TITLE is not defined.');
+			throw new NotAcceptable('SC_SHORT_TITLE is not defined.');
 	}
 
 	testIfUserByRoleExist(team, roleId) {
@@ -116,7 +116,7 @@ class AdminOverview {
 			}).then(teams => {
 				return this.mapped(teams, schoolId);
 			}).catch(err => {
-				throw new errors.BadRequest('Can not execute team find.', err);
+				throw new BadRequest('Can not execute team find.', err);
 			});
 		});
 	}
@@ -142,7 +142,7 @@ class AdminOverview {
 				userIds = this.removeMemberBySchool(team, schoolId);
 				patchTeam(this, teamId, { userIds }, params);
 			} else {
-				throw new errors.BadRequest('Wrong inputs.');
+				throw new BadRequest('Wrong inputs.');
 			}
 		});
 	}
@@ -158,7 +158,7 @@ class AdminOverview {
 			if (isOwnerSchool) {
 				return this.app.service('teams').remove(teamId);
 			} else {
-				throw new errors.Forbidden('You have not the permission.');
+				throw new Forbidden('You have not the permission.');
 			}
 		});
 	}
@@ -198,20 +198,20 @@ class AdminOverview {
 		//	let teamIds = data.teamIds;
 
 		if (isUndefined([teamIds, message], 'OR'))
-			throw new errors.BadRequest('Missing parameter');
+			throw new BadRequest('Missing parameter');
 
 		if (!isArray(teamIds))
 			teamIds = [teamIds];
 
 		if (teamIds.length <= 0 || !isString(message))
-			throw new errors.BadRequest('Wrong value.');
+			throw new BadRequest('Wrong value.');
 
 
 		return Promise.all([getSessionUser(this, params), hooks.teamRolesToHook(this)]).then(([{ schoolId }, ref]) => {
 			return this.app.service('teams').find((this.getRestrictedQuery(teamIds, schoolId))).then(teams => {
 				teams = teams.data;
 				if (!isArrayWithElement(teams))
-					throw new errors('No team found.');
+					throw new NotFound('No team found.');
 
 				const subject = `${process.env.SC_SHORT_TITLE}: Team-Anfrage`;
 				const mailService = this.app.service('/mails');
@@ -245,8 +245,8 @@ class AdminOverview {
 				throw err;
 			});
 		}).catch(err => {
-			logger.warn(err);
-			throw new errors.BadRequest('It exists no teams with access rights, to send this message.');
+			warn(err);
+			throw new BadRequest('It exists no teams with access rights, to send this message.');
 		});
 	}
 
@@ -286,36 +286,39 @@ class Add {
 	}
 
 	/**
+	 * @private
 	 * @return {Promise::bsonId||stringId} Expert school id.
 	 */
-	getExpertSchoolId() {
+	_getExpertSchoolId() {
 		return this.app.service('schools').find({ query: { purpose: "expert" } }).then(schools => {
 			return extractOne(schools, '_id').then(id => {
 				return bsonIdToString(id);
 			});
 		}).catch(err => {
-			throw new errors.GeneralError("Experte: Fehler beim Abfragen der Schule.", err);
+			throw new GeneralError("Experte: Fehler beim Abfragen der Schule.", err);
 		});
 	}
 
 	/**
+	 * @private
 	 * @return {Promise::bsonId||stringId} Expert role id.
 	 */
-	getExpertRoleId() {
+	_getExpertRoleId() {
 		return this.app.service('roles').find({ query: { name: "expert" } }).then(roles => {
 			return extractOne(roles, '_id').then(id => {
 				return bsonIdToString(id);
 			});
 		}).catch(err => {
-			throw new errors.GeneralError("Experte: Fehler beim Abfragen der Rolle.", err);
+			throw new GeneralError("Experte: Fehler beim Abfragen der Rolle.", err);
 		});
 	}
 
 	/**
+	 * @private
 	 * @param {String} email 
 	 * @return {Promise::User}
 	 */
-	async getUsersByEmail(email) {
+	async _getUsersByEmail(email) {
 		return this.app.service('users').find({
 			query: {
 				email,
@@ -332,7 +335,7 @@ class Add {
 	 * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
 	 * @param {Boolean} isUserCreated default = false
 	 */
-	async generateLink({ esid, email, teamId, importHash }, isUserCreated = false) {
+	async _generateLink({ esid, email, teamId, importHash }, isUserCreated = false) {
 		if (isUserCreated === false && isUndefined(importHash))
 			return Promise.resolve({ shortLink: process.env.HOST + '/teams/' + teamId });
 
@@ -346,20 +349,21 @@ class Add {
 			});
 		} else {
 			return this.app.service('/expertinvitelink').create({ esid, email }).catch(err => {
-				throw new errors.GeneralError("Experte: Fehler beim Erstellen des Einladelinks.", err);
+				throw new GeneralError("Experte: Fehler beim Erstellen des Einladelinks.", err);
 			});
 		}
 	}
 
 	/**
+	 * @private
 	 * @param {Object::{email::String, role::String, teamId::String}} opt
 	 * @return {Object::{ schoolId::String, isUserCreated::Boolean, user::Object::User, team::Object::Team }}
 	 */
-	async createUserAndReturnLinkData({ email, role, teamId }) {
+	async _createUserAndReturnLinkData({ email, role, teamId }) {
 		return Promise.all([
-			this.getUsersByEmail(email),
-			this.getExpertSchoolId(),
-			this.getExpertRoleId(),
+			this._getUsersByEmail(email),
+			this._getExpertSchoolId(),
+			this._getExpertRoleId(),
 			getTeam(this, teamId)
 		]).then(async ([user, schoolId, expertRoleId, team]) => {
 			let isUserCreated = false;
@@ -370,18 +374,19 @@ class Add {
 			}
 			return { esid: schoolId, isUserCreated, user, team };
 		}).catch(err => {
-			logger.warn(err);
-			throw new errors.GeneralError("Experte: Fehler beim Erstellen des Experten.");
+			warn(err);
+			throw new GeneralError("Experte: Fehler beim Erstellen des Experten.");
 		});
 	}
 
 	/**
 	 * Format the response. 
+	 * @private
 	 * @param {Object::{ linkData, user, role, isUserCreated=false}} opt
 	 */
-	response(data) {
+	_response(data) {
 		if (isUndefined([data.linkData, data.user, data.role], 'OR'))
-			throw new errors.BadRequest('Can not complete the response');
+			throw new BadRequest('Can not complete the response');
 
 		data.message = 'Success!';
 		data.isUserCreated = data.isUserCreated || false;
@@ -391,9 +396,9 @@ class Add {
 	/**
 	 * @param {Object::{email::String, role::String, teamId::String}} opt
 	 * @param {Object::params} params The request params.
-	 * @return {Promise::{ message: 'Success!', linkData::Object~from this.generateLink(), user::Object::User, role::String }}
+	 * @return {Promise::{ message: 'Success!', linkData::Object~from this._generateLink(), user::Object::User, role::String }}
 	 */
-	async userImportById({ teamId, userId, role }, params) {
+	async _userImportById({ teamId, userId, role }, params) {
 		const [ref, user, team] = await getBasic(this, teamId, params, userId);
 		const schoolId = user.schoolId;
 		const schoolIds = getUpdatedSchoolIdArray(team, user);
@@ -401,31 +406,31 @@ class Add {
 		userIds.push(H.createUserWithRole(ref, { userId, selectedRole: role, schoolId }));
 		userIds = H.removeDuplicatedTeamUsers(userIds);
 
-		return Promise.all([this.generateLink({ teamId }, false), patchTeam(this, teamId, { userIds, schoolIds }, params)]).then(([linkData, _]) => {
-			return this.response({ linkData, user, role });
+		return Promise.all([this._generateLink({ teamId }, false), patchTeam(this, teamId, { userIds, schoolIds }, params)]).then(([linkData, _]) => {
+			return this._response({ linkData, user, role });
 		});
 	}
 
 	/**
 	 * @param {Object::{email::String, role::String, teamId::String}} opt
 	 * @param {Object::params} params The request params.
-	 * @return {Promise::{ message: 'Success!', linkData::Object~from this.generateLink(), user::Object::User, role::String }}
+	 * @return {Promise::{ message: 'Success!', linkData::Object~from this._generateLink(), user::Object::User, role::String }}
 	 */
-	async userImportByEmail({ teamId, email, role }, params) {
-		const { esid, isUserCreated, user, team } = await this.createUserAndReturnLinkData({ email, role, teamId });
+	async _userImportByEmail({ teamId, email, role }, params) {
+		const { esid, isUserCreated, user, team } = await this._createUserAndReturnLinkData({ email, role, teamId });
 		let invitedUserIds = team.invitedUserIds;
 
 		/*todo:  userIds must be populate in getTeam 
 		if( team.userIds.some(user => user.email === email) )
-			throw new errors.
+			
 
 		*/
 
 		if (!invitedUserIds.some(teamUser => teamUser.email === email))
 			invitedUserIds.push({ email, role });
 
-		return Promise.all([this.generateLink({ esid, email, teamId, importHash: user.importHash }, isUserCreated), patchTeam(this, teamId, { invitedUserIds }, params)]).then(([linkData, _]) => {
-			return this.response({ linkData, user, role, isUserCreated });
+		return Promise.all([this._generateLink({ esid, email, teamId, importHash: user.importHash }, isUserCreated), patchTeam(this, teamId, { invitedUserIds }, params)]).then(([linkData, _]) => {
+			return this._response({ linkData, user, role, isUserCreated });
 		});
 	}
 
@@ -440,14 +445,14 @@ class Add {
 				throw 'Experte: Wrong role is set.';
 
 			if (email && role)
-				return this.userImportByEmail({ email, role, teamId }, params);
+				return this._userImportByEmail({ email, role, teamId }, params);
 			else if (userId && role)
-				return this.userImportById({ teamId, userId, role }, params);
+				return this._userImportById({ teamId, userId, role }, params);
 			else
-				throw new errors.BadRequest('Missing input data.');
+				throw new BadRequest('Missing input data.');
 
 		} catch (err) {
-			logger.warn(err);
+			warn(err);
 			return Promise.resolve('Success!');
 		}
 	}
@@ -482,7 +487,7 @@ class Accept {
 
 			const invitedUser = this.findInvitedUserByEmail(team, email);
 			if (isUndefined(invitedUser))
-				throw new errors.NotFound('User is not in this team.');
+				throw new NotFound('User is not in this team.');
 
 			const role = ref.findRole('name', invitedUser.role, '_id');
 			userIds.push({ userId, role });
@@ -518,7 +523,7 @@ class Remove {
 	 */
 	patch(teamId, { email }, params) {
 		if (isUndefined(email))
-			throw new errors.BadRequest('Missing parameter.');
+			throw new BadRequest('Missing parameter.');
 
 		return getTeam(this, teamId).then(team => {
 			let invitedUserIds = removeInvitedUserByEmail(team, email);
