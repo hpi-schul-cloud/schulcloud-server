@@ -1,5 +1,5 @@
-const errors = require('feathers-errors');
-const logger = require('winston');
+const {Forbidden, BadRequest} = require('feathers-errors');
+const {warn} = require('../../logger/index');
 const { teamRolesToHook } = require('./hooks');
 const { isArrayWithElement, isDefined, bsonIdToString } = require('./hooks/collection');
 
@@ -48,8 +48,8 @@ const getSessionUser = exports.getSessionUser = (refClass, params, userId) => {
     const sesessionUserId = userId || bsonIdToString((params.account || {}).userId);
 
     return refClass.app.service('users').get(sesessionUserId).catch(err => {
-        logger.warn(err);
-        throw new errors.Forbidden('You have not the permission.');
+        warn(err);
+        throw new Forbidden('You have not the permission.');
     });
 };
 
@@ -62,8 +62,8 @@ const getSessionUser = exports.getSessionUser = (refClass, params, userId) => {
  */
 exports.patchTeam = (refClass, teamId, data, params) => {
     return refClass.app.service('teams').patch(teamId, data, local(params)).catch(err => {
-        logger.warn(err);
-        throw new errors.BadRequest('Can not patch team.');
+        warn(err);
+        throw new BadRequest('Can not patch team.');
     });
 };
 
@@ -73,9 +73,12 @@ exports.patchTeam = (refClass, teamId, data, params) => {
  * @param {*} teamId 
  */
 const getTeam = exports.getTeam = (refClass, teamId) => {		//todo: app to this -> this.app
-    return refClass.app.service('teams').get(teamId).catch(err => {
-        logger.warn(err);
-        throw new errors.Forbidden('You have not the permission.');
+    const populateParams = {
+        query: {$populate: [{ path: 'roles' }]}
+    };
+    return refClass.app.service('teams').get(teamId, populateParams).catch(err => {
+        warn(err);
+        throw new Forbidden('You have not the permission.');
     });
 };
 
