@@ -183,10 +183,10 @@ const isObjectIdWithTryToCast = (id) => {
 
 /**
 *   @collection
-*   @throws {BadRequest} - If input is no typeof moongose Schema.Types.ObjectId it is throw an error
+*   @throws {BadRequest} - If input is no typeof moongose Schema.Types.ObjectId or a String that can cast to this schema, it is throw an error
 */
 const throwErrorIfNotObjectId = (id) => {
-    if (!isObjectId(id))
+    if (!isObjectIdWithTryToCast(id))
         throw new BadRequest('Is not instance of Schema.Types.ObjectId.');
 };
 
