@@ -203,16 +203,25 @@ exports.before = {
 		trimPassword,
 		local.hooks.hashPassword({ passwordField: 'password' }),
 		checkUnique,
-		removePassword
+		removePassword,
 	],
-	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
-	patch: [auth.hooks.authenticate('jwt'),
-			securePatching,
-			globalHooks.permitGroupOperation,
-			trimPassword,
-			validatePassword,
-			local.hooks.hashPassword({ passwordField: 'password' })],
-	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_CREATE'),globalHooks.permitGroupOperation]
+	update: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('ACCOUNT_EDIT'),
+	],
+	patch: [
+		auth.hooks.authenticate('jwt'),
+		securePatching,
+		globalHooks.permitGroupOperation,
+		trimPassword,
+		validatePassword,
+		local.hooks.hashPassword({ passwordField: 'password' }),
+	],
+	remove: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('ACCOUNT_CREATE'),
+		globalHooks.permitGroupOperation,
+	],
 };
 
 exports.after = {
