@@ -11,7 +11,4 @@ const logger = new winston.Logger({
     exitOnError: false
 }); 
 
-module.exports = {
-    warn: logger.warn,
-    info: logger.info,
-};
+module.exports = logger;

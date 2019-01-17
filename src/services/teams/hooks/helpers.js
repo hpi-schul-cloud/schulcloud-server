@@ -236,7 +236,7 @@ exports.getTeam = (hook) => {
 *   @param {Object::hook} hook
 *   @param {Object::{userId,schoolId, [selectedRole]}}
 */
-const createUserWithRole = exports.createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) => {
+const createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) => {
     if (isUndefined(hook.findRole))
         throw new NotAcceptable('Please execute teamRolesToHook before.');
 
@@ -259,8 +259,7 @@ const createUserWithRole = exports.createUserWithRole = (hook, { userId, schoolI
         schoolId: bsonIdToString(schoolId)
     }; //convert bson to string is only for faster debug
 };
-
-//exports.createUserWithRole = createUserWithRole;
+exports.createUserWithRole = createUserWithRole;
 
 
 /**
@@ -422,20 +421,25 @@ const teamOwnerRoleExist = (hook, teamUsers, oldTeam, users) => {
 
 /**
  * Remove duplicated users. It test it over key>userId. Role of first found are used.
- * @param {Array::TeamUser} teamUsers 
+ * @param {Array::TeamUser} teamUsers work also with populated userId=>User
  * @return {Array::TeamUser}
  */
-const removeDuplicatedTeamUsers = exports.removeDuplicatedTeamUsers = (teamUsers) => {
+const removeDuplicatedTeamUsers = (teamUsers) => {
+    if(!isArrayWithElement(teamUsers))
+        return [];
+
     let foundId = [];
-    return teamUsers.reduce((stack, _teamUser) => {
-        const id = bsonIdToString(_teamUser.userId);
+    return teamUsers.reduce((stack, _teamUser)=>{
+        let id = isDefined(_teamUser.userId._id) ? _teamUser.userId._id : _teamUser.userId;
+        id = bsonIdToString(id);
         if (foundId.includes(id) === false) {
             stack.push(_teamUser);
             foundId.push(id);
         }
         return stack;
-    }, []);
+    },[]);
 };
+exports.removeDuplicatedTeamUsers = removeDuplicatedTeamUsers;
 
 
 /**

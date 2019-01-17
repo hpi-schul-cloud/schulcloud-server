@@ -335,6 +335,7 @@ class Add {
 	}
 
 	/**
+	 * @private
 	 * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
 	 * @param {Boolean} isUserCreated default = false
 	 */
@@ -350,13 +351,6 @@ class Add {
 				linkData.shortLink = process.env.HOST + '/link/' + linkData._id;
 				return linkData;
 			});
-			
-		/*	return service('link').find({ query: { target: regex } }).then(links => {
-				return extractOne(links).then(linkData => {
-					linkData.shortLink = process.env.HOST + '/link/' + linkData._id;
-					return linkData;
-				});
-			}); */
 		} else {
 			return app.service('/expertinvitelink').create({ esid, email }).catch(err => {
 				throw new GeneralError("Experte: Fehler beim Erstellen des Einladelinks.", err);
@@ -365,11 +359,12 @@ class Add {
 	}
 
 	/**
+	 * Use for email invites 
 	 * @private
 	 * @param {Object::{email::String, role::String, teamId::String}} opt
 	 * @return {Object::{ schoolId::String, isUserCreated::Boolean, user::Object::User, team::Object::Team }}
 	 */
-	async _createUserAndReturnLinkData({ email, role, teamId }) {
+	async _collectUserAndLinkData({ email, role, teamId }) {
 		return Promise.all([
 			this._getUsersByEmail(email),
 			this._getExpertSchoolId(),
@@ -387,21 +382,22 @@ class Add {
 				userRoleName = role;
 			} else {
 				const teamUser = team.invitedUserIds.find(invited => invited.email === email);
-				userRoleName = teamUser.role;
+				userRoleName = (teamUser||{}).role || role;
 			}
 
 			//if role teamadmin by import from teacher over email and no user exist, the user is undefined
-			if(isUndefined(user)){
+			if(isUndefined(user))
 				throw new BadRequest('User must exist.');
-			}
+
+			if(isUndefined(userRoleName))
+				throw new BadRequest('For this case the team role for user must be set.');
 
 			return { esid: schoolId, 
 					isUserCreated, 
 					user, 
-				//	team, 
+					team, 
 					userRoleName, 
 					importHash:user.importHash, 	
-					invitedUserIds:team.invitedUserIds, 
 			};
 		}).catch(err => {
 			warn(err);
@@ -447,6 +443,22 @@ class Add {
 
 	/**
 	 * @private
+	 * @param {Obejct::team} team 
+	 * @throws if user already inside this team
+	 */
+	_throwErrorIfUserExistByEmail(team,email){
+		console.log('todo:',team.userIds);
+		/*todo:  userIds.userId must be populate in getTeam 
+		search if user already exist
+		if( team.userIds.some(teamUser => teamUser.userId.email === email) )
+			
+
+		*/
+	}
+
+	/**
+	 * The schoolIds for new added users will not updated inside this step. It will manage if the user accpet the invite.
+	 * @private
 	 * @param {Object::{email::String, role::String, teamId::String}} opt
 	 * @param {Object::params} params The request params.
 	 * @return {Promise::{ message: 'Success!', linkData::Object~from this._generateLink(), user::Object::User, role::String }}
@@ -455,21 +467,16 @@ class Add {
 		const { esid, 
 				isUserCreated, 
 				user, 
-			//	team, 
+				team, 
 				userRoleName, 
 				importHash,
-				invitedUserIds,
-			} = await this._createUserAndReturnLinkData({ email, role, teamId });
+			} = await this._collectUserAndLinkData({ email, role, teamId });
+		const invitedUserIds = team.invitedUserIds;
 		role = userRoleName; /**@override**/ //is important if user already in invited users exist and the role is take from team
 
-		/*todo:  userIds.userId must be populate in getTeam 
-		search if user already exist
-		if( team.userIds.some(teamUser => teamUser.userId.email === email) )
-			
+		this._throwErrorIfUserExistByEmail(team,email);
 
-		*/
-
-		//if not in invite list
+		//if not already in invite list
 		if (!invitedUserIds.some(teamUser => teamUser.email === email))
 			invitedUserIds.push({ email, role });
 

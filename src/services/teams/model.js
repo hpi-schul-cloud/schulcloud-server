@@ -33,16 +33,20 @@ const timeSchema = new Schema({
 	room: { type: String }
 });
 
-const teamInvitedUserModel = new Schema({
+const teamInvitedUserSchema = new Schema({
 	email: { type: String, required: true },
 	role: { type: String, required: true, enum: ['teamexpert', 'teamadministrator'] }
 }, { _id: false, timestamps: true });
 
-const teamUserModel = new Schema({
+const teamInvitedUserModel = mongoose.model('_teamInvitedUserSchema',teamInvitedUserSchema);
+
+const teamUserSchema = new Schema({
 	userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
 	role: { type: Schema.Types.ObjectId, ref: 'role', required: true},
 	schoolId: {type: Schema.Types.ObjectId, ref:'school', required: true}
 }, { _id: false, timestamps: true });
+
+const teamUserModel = mongoose.model('_teamUserSchema',teamUserSchema);
 
 const teamsModel = mongoose.model('teams', getUserGroupSchema({	
 	schoolIds:{
@@ -50,8 +54,8 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 		required: true
 	},
 	//@override	    
-	userIds: [teamUserModel],
-	invitedUserIds: [teamInvitedUserModel],
+	userIds: [teamUserSchema],
+	invitedUserIds: [teamInvitedUserSchema],
 	description: { type: String, default: '' },
 	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
 	//	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],  todo: add later
@@ -67,5 +71,7 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 
 module.exports = {
 	teamsModel,
-	permissionSchema
+	permissionSchema,
+	teamInvitedUserModel,
+	teamUserModel,
 };
