@@ -23,6 +23,13 @@ const strategies = {
 	ldap: LdapLoginStrategy,
 };
 
+const sanitizeUsername = (hook) => {
+	if (hook.data.username) {
+		hook.data.username = hook.data.username.trim().toLowerCase();
+	}
+	return hook;
+};
+
 // This is only for SSO
 const validateCredentials = (hook) => {
 	const {username, password, systemId, schoolId} = hook.data;
@@ -190,6 +197,7 @@ exports.before = {
 	find: [restrictAccess],
 	get: [],
 	create: [
+		sanitizeUsername,
 		checkExistence,
 		validateCredentials,
 		trimPassword,
