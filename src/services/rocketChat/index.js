@@ -303,7 +303,7 @@ class RocketChatChannel {
 
     generateChannelName(team) {
         //toDo: implementation with bound execution time.
-        let channelName = team.name + "." + randomSuffix();
+        let channelName = team.name.replace(' ', '-') + "." + randomSuffix();
         //toDo: check availibility in rocketChat as well.
         return rocketChatModels.channelModel.findOne({channelName: channelName})
         .then(result => {
