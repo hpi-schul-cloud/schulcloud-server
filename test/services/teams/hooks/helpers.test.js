@@ -3,9 +3,19 @@ const { ObjectId } = require('mongoose').Types;
 const { BadRequest } = require('feathers-errors');
 const { setupUser, deleteUser } = require('../helper/helper.user');
 const app = require('../../../../src/app');
-const { ifSuperhero, getSessionUser, updateMissingDataInHookForCreate,
-	isAcceptWay, getTeam, arrayRemoveAddDiffs, getTeamUsers,
-	populateUsersForEachUserIdinHookData } = require('../../../../src/services/teams/hooks/helpers.js');
+const {
+	ifSuperhero,
+	getSessionUser,
+	updateMissingDataInHookForCreate,
+	isAcceptWay,
+	getTeam,
+	arrayRemoveAddDiffs,
+	getTeamUsers,
+	populateUsersForEachUserIdinHookData,
+	removeDuplicatedTeamUsers,
+} = require('../../../../src/services/teams/hooks/helpers.js');
+
+const { teamInvitedUserModel, teamUserModel } = require('../../../../src/services/teams/model');
 
 describe('hook helpers', () => {
 	let server;
@@ -17,7 +27,7 @@ describe('hook helpers', () => {
 	after((done) => {
 		server.close(done);
 	});
-	
+
 	describe('ifSuperhero', () => {
 		it('should return true if one of the given roles is superhero', () => {
 			const roles = [
@@ -40,28 +50,75 @@ describe('hook helpers', () => {
 		});
 	});
 
+	describe('removeDuplicatedTeamUsers', () => {
+		let userList = [], populatedUserList;
+		before(() => {
+			let schoolId = ObjectId();
+			let role = ObjectId();
+			let data = [
+				{ schoolId, role, userId: ObjectId() },
+				{ schoolId, role, userId: ObjectId() },
+				{ schoolId, role, userId: ObjectId() }
+			];
+			userList.push((new teamUserModel(data[0]))._doc);
+			userList.push((new teamUserModel(data[1]))._doc);
+			userList.push((new teamUserModel(data[2]))._doc);
+
+			populatedUserList = userList.slice();
+			//fake populate 
+			populatedUserList[0].userId = { '_id': data[0].userId };
+			populatedUserList[1].userId = { '_id': data[1].userId };
+			populatedUserList[2].userId = { '_id': data[2].userId };
+		});
+
+		it('should work for empty array', () => {
+			expect((removeDuplicatedTeamUsers([])).length).to.equal(0);
+		});
+
+		it('should work for basic model', () => {
+			expect(removeDuplicatedTeamUsers(userList)).to.be.an('array').with.lengthOf(3);
+			expect(removeDuplicatedTeamUsers(userList.concat(userList))).to.be.an('array').with.lengthOf(3);
+		});
+
+		it('should work for *populated* userIds', () => {
+			expect(removeDuplicatedTeamUsers(populatedUserList)).to.be.an('array').with.lengthOf(3);
+			expect(removeDuplicatedTeamUsers(populatedUserList.concat(populatedUserList))).to.be.an('array').with.lengthOf(3);
+		});
+
+		it('should work for mixed *populated* and NOT *populated* userIds', () => {
+			expect(removeDuplicatedTeamUsers(userList.concat(populatedUserList))).to.be.an('array').with.lengthOf(3);
+		});
+
+		it('should get empty array for wrong input types', () => {
+			expect(removeDuplicatedTeamUsers({})).to.be.an('array').that.is.empty;
+			expect(removeDuplicatedTeamUsers('')).to.be.an('array').that.is.empty;
+			expect(removeDuplicatedTeamUsers(true)).to.be.an('array').that.is.empty;
+			expect(removeDuplicatedTeamUsers(false)).to.be.an('array').that.is.empty;
+		});
+	});
+
 	describe('arrayRemoveAddDiffs', () => {
 		it.skip('should work for empty arrays', () => {
-			expect(arrayRemoveAddDiffs([], [])).to.equal({add: [], remove: []});
+			expect(arrayRemoveAddDiffs([], [])).to.equal({ add: [], remove: [] });
 		});
 
 		it('should work for plain arrays', () => {
-			expect(arrayRemoveAddDiffs([1], [2])).to.deep.equal({add: [2], remove: [1]});
-			expect(arrayRemoveAddDiffs([1, 2, 3], [2, 4])).to.deep.equal({add: [4], remove: [1, 3]});
-			expect(arrayRemoveAddDiffs(['foo', 'bar'], ['foo', 'baz', 'bar'])).to.deep.equal({add: ['baz'], remove: []});
-			expect(arrayRemoveAddDiffs(['foo', 'bar'], ['bar'])).to.deep.equal({add: [], remove: ['foo']});
+			expect(arrayRemoveAddDiffs([1], [2])).to.deep.equal({ add: [2], remove: [1] });
+			expect(arrayRemoveAddDiffs([1, 2, 3], [2, 4])).to.deep.equal({ add: [4], remove: [1, 3] });
+			expect(arrayRemoveAddDiffs(['foo', 'bar'], ['foo', 'baz', 'bar'])).to.deep.equal({ add: ['baz'], remove: [] });
+			expect(arrayRemoveAddDiffs(['foo', 'bar'], ['bar'])).to.deep.equal({ add: [], remove: ['foo'] });
 		});
 
 		it('should ignore duplicate values', () => {
-			expect(arrayRemoveAddDiffs([1, 1, 2], [1, 2])).to.deep.equal({add: [], remove: []});
-			expect(arrayRemoveAddDiffs([1, 1, 2], [1, 1, 1, 1, 3])).to.deep.equal({add: [3], remove: [2]});
+			expect(arrayRemoveAddDiffs([1, 1, 2], [1, 2])).to.deep.equal({ add: [], remove: [] });
+			expect(arrayRemoveAddDiffs([1, 1, 2], [1, 1, 1, 1, 3])).to.deep.equal({ add: [3], remove: [2] });
 		});
 
 		it('should work on huge arrays', () => {
 			const arr = new Array(Math.pow(2, 15)).fill(1);
 			const arr2 = Array.from(arr);
 			arr2.push(2);
-			expect(arrayRemoveAddDiffs(arr, arr2)).to.deep.equal({add: [2], remove: []});
+			expect(arrayRemoveAddDiffs(arr, arr2)).to.deep.equal({ add: [2], remove: [] });
 		});
 
 		it('should use a provided key to compare elements', () => {
