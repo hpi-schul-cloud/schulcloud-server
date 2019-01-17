@@ -15,36 +15,41 @@ const ROCKET_CHAT_URI = process.env.ROCKET_CHAT;
 if (ROCKET_CHAT_URI === undefined)
     throw new errors.NotImplemented('Please set process.env.ROCKET_CHAT.');
 
+/**
+ * create a valid options object to call a rocketChat request.
+ * @param {String} shortUri Uri of the Rocket.Chat endpoint. Example: '/api/v1/users.register'
+ * @param {Object} body Body of the request, as required by the rocket.chat API
+ * @param {Boolean} asAdmin If true, request will be sent with admin privileges, and auth field will be ignored.
+ * @param {Object} auth optional, object of the form {authToken, userId}.
+ * @param {String} method the REST method to be called. Example: 'POST'.
+ */
+const getRequestOptions = function(shortUri, body, asAdmin, auth, method) {
+    let headers = undefined
+    if (asAdmin) {
+        headers = {
+            'X-Auth-Token': process.env.ROCKET_CHAT_ADMIN_TOKEN,
+            'X-User-ID': process.env.ROCKET_CHAT_ADMIN_ID
+        }
+    } else if (auth) {
+        headers = {
+            'X-Auth-Token': auth.authToken,
+            'X-User-ID': auth.userId
+        }
+    }
+    return {
+        uri: ROCKET_CHAT_URI + shortUri,
+        method: method || 'POST',
+        body,
+        headers: headers,
+        json: true,
+        timeout: REQUEST_TIMEOUT
+    }
+};
+
 class RocketChatUser {
     constructor(options) {
         this.options = options || {};
         this.docs = docs;
-    }
-
-    getOptions(shortUri, body, method) {
-        return {
-            uri: ROCKET_CHAT_URI + shortUri,
-            method: method || 'POST',
-            body,
-            json: true,
-            timeout: REQUEST_TIMEOUT
-        };
-    }
-
-    getAdministratorOptions(shortUri, body, method) {
-        return {
-            uri: ROCKET_CHAT_URI + shortUri,
-            method: method || 'POST',
-            headers: {
-                //'X-Auth-Token': '2_5rp4YRBnJ0q9asWFY-lEqeBalK94DoOwrgpsxYvhd',
-                //'X-User-ID': "6NHge4r7Rtb2pwofe"
-                'X-Auth-Token': process.env.ROCKET_CHAT_ADMIN_TOKEN,
-                'X-User-ID': process.env.ROCKET_CHAT_ADMIN_ID
-            },
-            body,
-            json: true,
-            timeout: REQUEST_TIMEOUT
-        };
     }
 
     generateUserName(user) {
@@ -77,7 +82,7 @@ class RocketChatUser {
             const name = [user.firstName, user.lastName].join(' ');
 
             const body = { email, pass, username, name };
-                return request(this.getOptions('/api/v1/users.register', body)).then(res => {
+                return request(getRequestOptions('/api/v1/users.register', body)).then(res => {
                     if (res.success === true && res.user !== undefined)
                         return res;
                     else
@@ -133,7 +138,7 @@ class RocketChatUser {
         return rocketChatModels.userModel.findOne({userId})
         .then(async user => {
             if (user) {
-                let res = await request(this.getAdministratorOptions('/api/v1/users.delete', {username: user.username}));
+                let res = await request(getRequestOptions('/api/v1/users.delete', {username: user.username}, true));
                 console.log(res);
                 await rocketChatModels.userModel.deleteOne({_id: user._id});
             }
@@ -202,17 +207,6 @@ class RocketChatLogin {
         this.options = options || {};
         this.docs = docs;
     }
-
-    getOptions(shortUri, body, method) {
-        return {
-            uri: ROCKET_CHAT_URI + shortUri,
-            method: method || 'POST',
-            body,
-            json: true,
-            timeout: REQUEST_TIMEOUT
-        };
-    }
-
     /**
      * Logs in a user given by his Id
      * @param {*} userId Id of a user in the schulcloud
@@ -230,7 +224,7 @@ class RocketChatLogin {
                 user: rcAccount.username,
                 password: rcAccount.password
             }
-            return request(this.getOptions('/api/v1/login', login)).then(async res => {
+            return request(getRequestOptions('/api/v1/login', login)).then(async res => {
                 const authToken = (res.data || {}).authToken;
                 if (res.status === "success" && authToken !== undefined) {
                     await rocketChatModels.userModel.update({username: rcAccount.username}, {authToken})
@@ -257,19 +251,6 @@ class RocketChatLogout {
         this.docs = docs;
     }
 
-    getOptions(shortUri, headers, method) {
-        return {
-            uri: ROCKET_CHAT_URI + shortUri,
-            method: method || 'POST',
-            headers: {
-                'X-Auth-Token': headers.authToken,
-                'X-User-ID': headers.userId
-            },
-            json: true,
-            timeout: REQUEST_TIMEOUT
-        };
-    }
-
     /**
      * logs a user given by his schulcloud id out of rocketChat
      * @param {*} userId 
@@ -284,7 +265,7 @@ class RocketChatLogout {
                     userId: rcUser.rcId
                 }
                 await rocketChatModels.userModel.update({username: rcUser.username}, {authToken: ""});
-                await request(this.getOptions('/api/v1/logout', headers))
+                await request(getRequestOptions('/api/v1/logout', {}, false, headers))
                 return ("success")
             }
         } catch(error) {
@@ -318,22 +299,6 @@ class RocketChatChannel {
     constructor(options) {
         this.options = options || {};
         this.docs = docs;
-    }
-
-    getOptions(shortUri, body, method) {
-        return {
-            uri: ROCKET_CHAT_URI + shortUri,
-            method: method || 'POST',
-            headers: {
-                //'X-Auth-Token': '2_5rp4YRBnJ0q9asWFY-lEqeBalK94DoOwrgpsxYvhd',
-                //'X-User-ID': "6NHge4r7Rtb2pwofe"
-                'X-Auth-Token': process.env.ROCKET_CHAT_ADMIN_TOKEN,
-                'X-User-ID': process.env.ROCKET_CHAT_ADMIN_ID
-            },
-            body,
-            json: true,
-            timeout: REQUEST_TIMEOUT
-        };
     }
 
     generateChannelName(team) {
@@ -370,7 +335,7 @@ class RocketChatChannel {
                     name: channelName,
                     members: users
                 };
-                return request(this.getOptions('/api/v1/groups.create', body))
+                return request(getRequestOptions('/api/v1/groups.create', body, true))
                 .then(res => {
                     if (res.success === true) return res;
                     else return Promise.reject("bad answer on group creation")
@@ -417,7 +382,7 @@ class RocketChatChannel {
                 roomName: channel.channelName,
                 username: userName
             }
-            return request(this.getOptions('/api/v1/groups.invite', body)).catch(err => { logger.warn(err) })
+            return request(getRequestOptions('/api/v1/groups.invite', body, true)).catch(err => { logger.warn(err) })
         })
         return Promise.all(invitationPromises);
     }
@@ -431,7 +396,7 @@ class RocketChatChannel {
                 roomName: channel.channelName,
                 username: userName
             }
-            return request(this.getOptions('/api/v1/groups.kick', body)).catch(err => { logger.warn(err) })
+            return request(getRequestOptions('/api/v1/groups.kick', body, true)).catch(err => { logger.warn(err) })
         })
         return Promise.all(kickPromises);
     }
@@ -444,7 +409,7 @@ class RocketChatChannel {
         return rocketChatModels.channelModel.findOne({teamId})
         .then(async channel => {
             if (channel) {
-                await request(this.getOptions('/api/v1/groups.delete', {roomName: channel.channelName}));
+                await request(getRequestOptions('/api/v1/groups.delete', {roomName: channel.channelName}, true));
                 await rocketChatModels.channelModel.deleteOne({_id: channel._id});
             }
             return Promise.resolve();
