@@ -44,7 +44,7 @@ exports.removeInvitedUserByEmail = (team, email) => {
  * @param {*} app 
  * @param {*} params 
  */
-const getSessionUser = exports.getSessionUser = (refClass, params, userId) => {
+const getSessionUser = (refClass, params, userId) => {
     const sesessionUserId = userId || bsonIdToString((params.account || {}).userId);
 
     return refClass.app.service('users').get(sesessionUserId).catch(err => {
@@ -52,6 +52,7 @@ const getSessionUser = exports.getSessionUser = (refClass, params, userId) => {
         throw new Forbidden('You have not the permission.');
     });
 };
+exports.getSessionUser = getSessionUser;
 
 /**
  * 
@@ -72,15 +73,16 @@ exports.patchTeam = (refClass, teamId, data, params) => {
  * @param {*} app 
  * @param {*} teamId 
  */
-const getTeam = exports.getTeam = (refClass, teamId) => {		//todo: app to this -> this.app
+const getTeam = (refClass, teamId) => {		//todo: app to this -> this.app
     const populateParams = {
-        query: {$populate: [{ path: 'roles' }]}
+        query: {$populate: [{ path: 'roles' }, {path: 'userIds.userId'}]}
     };
     return refClass.app.service('teams').get(teamId, populateParams).catch(err => {
         warn(err);
         throw new Forbidden('You have not the permission.');
     });
 };
+exports.getTeam = getTeam;
 
 exports.extractOne = (find, key) => {
     if (find.total !== 1 && isArrayWithElement(find.data))

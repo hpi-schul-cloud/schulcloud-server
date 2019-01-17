@@ -442,18 +442,24 @@ class Add {
 	}
 
 	/**
+	 * 
 	 * @private
-	 * @param {Obejct::team} team 
+	 * @param {Obejct::team.userIds} {userIds} The userIds *must* be *popluated*  
 	 * @throws if user already inside this team
 	 */
-	_throwErrorIfUserExistByEmail(team,email){
-		console.log('todo:',team.userIds);
-		/*todo:  userIds.userId must be populate in getTeam 
-		search if user already exist
-		if( team.userIds.some(teamUser => teamUser.userId.email === email) )
-			
+	_throwErrorIfUserExistByEmail({userIds},email){
+		if(!isArray(userIds))
+			throw new BadRequest('Wrong input.');
+		if(userIds.length===0)
+			return true;
 
-		*/
+		if(isUndefined(userIds[0].userId.email))
+			throw new BadRequest('UserIds must be populated.');
+
+		if( userIds.some(user => user.userId.email === email) )
+			throw new BadRequest('User already inside the team.');
+		
+		return true;
 	}
 
 	/**
