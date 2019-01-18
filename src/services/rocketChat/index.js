@@ -145,7 +145,6 @@ class RocketChatUser {
         .then(async user => {
             if (user) {
                 let res = await request(getRequestOptions('/api/v1/users.delete', {username: user.username}, true));
-                console.log(res);
                 await rocketChatModels.userModel.deleteOne({_id: user._id});
             }
             return Promise.resolve();
