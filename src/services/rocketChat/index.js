@@ -11,6 +11,8 @@ const { randomPass, randomSuffix } = require('./randomPass');
 
 const REQUEST_TIMEOUT = 4000; // in ms
 const ROCKET_CHAT_URI = process.env.ROCKET_CHAT;
+const ROCKET_CHAT_ADMIN_TOKEN = process.env.ROCKET_CHAT_ADMIN_TOKEN;
+const ROCKET_CHAT_ADMIN_ID = process.env.ROCKET_CHAT_ADMIN_ID;
 
 if (ROCKET_CHAT_URI === undefined)
     logger.warn("please set the environment variable ROCKET_CHAT_URI");
@@ -31,8 +33,8 @@ const getRequestOptions = function(shortUri, body, asAdmin, auth, method) {
     let headers = undefined
     if (asAdmin) {
         headers = {
-            'X-Auth-Token': process.env.ROCKET_CHAT_ADMIN_TOKEN,
-            'X-User-ID': process.env.ROCKET_CHAT_ADMIN_ID
+            'X-Auth-Token': ROCKET_CHAT_ADMIN_TOKEN,
+            'X-User-ID': ROCKET_CHAT_ADMIN_ID
         }
     } else if (auth) {
         headers = {
