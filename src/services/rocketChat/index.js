@@ -1,5 +1,4 @@
 const request = require('request-promise-native');
-//const service = require('feathers-mongoose');
 const errors = require('feathers-errors');
 const logger = require('winston');
 
@@ -52,6 +51,11 @@ const getRequestOptions = function(shortUri, body, asAdmin, auth, method) {
     }
 };
 
+/**
+ * service that maps schulcloud users to rocketChat users.
+ * 
+ * Other services should only get (or find) users they need, creation and deletion of RC users is handled automatically by the service.
+ */
 class RocketChatUser {
     constructor(options) {
         this.options = options || {};
@@ -306,6 +310,11 @@ class RocketChatLogout {
     }
 }
 
+/**
+ * Service that maps schulcloud teams to rocketChat groups.
+ * 
+ * Other services should only get groups by the id of the corresponding team, creation and deletion of RC groups is handled automatically by the service.
+ */
 class RocketChatChannel {
     constructor(options) {
         this.options = options || {};
