@@ -1,7 +1,7 @@
 'use strict';
 
 const auth = require('feathers-authentication');
-const errors = require('feathers-errors');
+const {Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable} = require('feathers-errors');
 const globalHooks = require('../../../hooks');
 const logger = require('winston');
 const { set, get } = require('./scope');
@@ -49,7 +49,7 @@ const teamMainHook = globalHooks.ifNotLocal(hook => {
         const method = hook.method;
 
         if (isUndefined([sessionUser, team, sessionUser.schoolId],'OR'))
-            throw new errors.BadRequest('Bad intern call. (3)');
+            throw new BadRequest('Bad intern call. (3)');
 
         const sessionSchoolId = bsonIdToString(sessionUser.schoolId);
 
@@ -70,7 +70,7 @@ const teamMainHook = globalHooks.ifNotLocal(hook => {
                 const schoolExist = team.schoolIds.includes(sessionSchoolId);
 
                 if (isUndefined([userExist, schoolExist],'OR'))
-                    throw new errors.Forbidden('You have not the permission to access this. (1)', { userExist, schoolExist });
+                    throw new Forbidden('You have not the permission to access this. (1)', { userExist, schoolExist });
             }
         }
         let teamUsers;
@@ -86,7 +86,7 @@ const teamMainHook = globalHooks.ifNotLocal(hook => {
         return hook;
     }).catch(err => {
         logger.warn(err);
-        throw new errors.BadRequest('Bad response.');
+        throw new BadRequest('Bad response.');
     });
 });
 
@@ -133,7 +133,7 @@ const updateUsersForEachClass = (hook) => {
         return hook;
     }).catch(err => {
         logger.warn(err);
-        throw new errors.BadRequest('Wrong input. (6)');
+        throw new BadRequest('Wrong input. (6)');
     });
 };
 
@@ -147,7 +147,7 @@ const existId = (hook) => {
     if (['find', 'create'].includes(hook.method)) {
         return Promise.resolve(hook);
     } else if (!hook.id) {
-        throw new errors.Forbidden('Operation on this service requires an id!');
+        throw new Forbidden('Operation on this service requires an id!');
     } else {
         throwErrorIfNotObjectId(hook.id);
         return Promise.resolve(hook);
@@ -164,13 +164,13 @@ const testInputData = hook => {
     if (isUndefined(hook.data.userIds)) {
         hook.data.userIds = [];
     } else if (!isArray(hook.data.userIds)) {
-        throw new errors.BadRequest('Wrong input. (3)');
+        throw new BadRequest('Wrong input. (3)');
     }
 
     if (isUndefined(hook.data.classIds)) {
         hook.data.classIds = [];
     } else if (!isArray(hook.data.classIds)) {
-        throw new errors.BadRequest('Wrong input. (4)');
+        throw new BadRequest('Wrong input. (4)');
     }
     return hook;
 };
@@ -182,7 +182,7 @@ const testInputData = hook => {
  */
 const blockedMethod = (hook) => {
     logger.warn('[teams]', 'Method is not allowed!');
-    throw new errors.MethodNotAllowed('Method is not allowed!');
+    throw new MethodNotAllowed('Method is not allowed!');
 };
 
 /**
@@ -222,7 +222,7 @@ const filterToRelated = (keys, path, objectToFilter) => {
         let link, linkKey;
         let target = path.length > 0 ? path.reduce((target, key) => {
             if (target[key] === undefined)
-                throw new errors.NotImplemented('The path do not exist.');
+                throw new NotImplemented('The path do not exist.');
             const newTarget = target[key];
             link = target;
             linkKey = key;
@@ -241,7 +241,7 @@ const filterToRelated = (keys, path, objectToFilter) => {
  */
 const dataExist = hook => {
     if (isUndefined(hook.data) || !isObject(hook.data)) {
-        throw new errors.BadRequest('Wrong input data.');
+        throw new BadRequest('Wrong input data.');
     }
     return hook;
 };
@@ -288,7 +288,7 @@ const teamRolesToHook = hook => {
         query: { name: /team/i }
     }).then(roles => {
         if (roles.data.length <= 0) {
-            throw new errors.NotFound('No team role found. (1)');
+            throw new NotFound('No team role found. (1)');
         }
 
         hook.teamroles = roles.data;        //add team roles with permissions to hook   
@@ -304,12 +304,12 @@ const teamRolesToHook = hook => {
             const self = hook;
 
             if (isUndefined(self.teamroles)) {
-                throw new errors.NotFound('No team role found. (2)');
+                throw new NotFound('No team role found. (2)');
             }
 
             if (isUndefined(key) || isUndefined(value)) {
                 logger.warn('Bad input for findRole: ', { key, value });
-                throw new errors.NotFound('No team role found. (3)');
+                throw new NotFound('No team role found. (3)');
             }
             if (isObject(value) && value._id) {      //is already a role ..for example if request use $populate
                 value = value[key];
@@ -321,7 +321,7 @@ const teamRolesToHook = hook => {
                 return role;
             } else {
                 logger.warn({ role, value, resultKey });
-                throw new errors.NotFound('No team role found. (4)');
+                throw new NotFound('No team role found. (4)');
             }
         };
 
@@ -340,7 +340,7 @@ const teamRolesToHook = hook => {
         }
         return hook;
     }).catch(err => {
-        throw new errors.BadRequest('Can not resolve team roles.', err);
+        throw new BadRequest('Can not resolve team roles.', err);
     });
 };
 exports.teamRolesToHook = teamRolesToHook;
@@ -361,19 +361,6 @@ const hasTeamPermission =  (permsissions, _teamId) => {
 
         if (isString(permsissions))
             permsissions = [permsissions];
-        /*
-        const wait = new Promise((resolve, reject) => {
-            if (isFunction(hook.findRole)) {
-                resolve(hook.findRole);
-            } else {
-                teamRolesToHook(hook).then(_hook => {
-                    resolve(_hook.findRole);
-                }).catch(err => {
-                    logger.warn(err);
-                    reject(new errors.Conflict('Team roles can not assign to hook.'));
-                });
-            }
-        }); */
 
         return Promise.all([getSessionUser(hook), teamRolesToHook(hook), getTeam(hook)]).then(([sessionUser, ref, team]) => {
             if (get(hook, 'isSuperhero') === true)
@@ -384,21 +371,21 @@ const hasTeamPermission =  (permsissions, _teamId) => {
             const teamUser = team.userIds.find(_user => isSameId(_user.userId, userId));
 
             if (isUndefined(teamUser))
-                throw new errors.NotFound('Session user is not in this team userId=' + userId + ' teamId=' + teamId);
+                throw new NotFound('Session user is not in this team userId=' + userId + ' teamId=' + teamId);
 
             const teamRoleId = teamUser.role;
             const userTeamPermissions = ref.findRole('_id', teamRoleId, 'permissions');
 
             permsissions.forEach(_permsission => {
                 if (userTeamPermissions.includes(_permsission) === false) {
-                    throw new errors.Forbidden('No permission=' + _permsission + ' found!');
+                    throw new Forbidden('No permission=' + _permsission + ' found!');
                 }
             });
 
             return Promise.resolve(hook);
         }).catch(err => {
             logger.warn(err);
-            throw new errors.Forbidden('You have not the permission to access this. (2)');
+            throw new Forbidden('You have not the permission to access this. (2)');
         });
 
     });
@@ -458,35 +445,35 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook=>{
           //  try{
             let wait=[Promise.resolve()];
             if(isAddingFromOtherSchool)
-                throw new errors.Forbidden('Can not adding users from other schools.');
+                throw new Forbidden('Can not adding users from other schools.');
 
             if (isLeaveTeam){
                 wait.push(leaveTeam(hook).catch(err=>{
-                    throw new errors.Forbidden('Permission LEAVE_TEAM is missing.');
+                    throw new Forbidden('Permission LEAVE_TEAM is missing.');
                 }));
             }    
                 
             if (isLeaveTeam){
                 wait.push(leaveTeam(hook).catch(err=>{
-                    throw new errors.Forbidden('Permission LEAVE_TEAM is missing.');
+                    throw new Forbidden('Permission LEAVE_TEAM is missing.');
                 }));
             }
 
             if(isRemoveOthers){
                 wait.push(removeMembers(hook).catch(err=>{
-                    throw new errors.Forbidden('Permission REMOVE_MEMBERS is missing.');
+                    throw new Forbidden('Permission REMOVE_MEMBERS is missing.');
                 }));
             }
                 
             if(isAddingFromOwnSchool){
                 wait.push(addSchoolMembers(hook).catch(err=>{
-                    throw new errors.Forbidden('Permission ADD_SCHOOL_MEMBERS is missing.');
+                    throw new Forbidden('Permission ADD_SCHOOL_MEMBERS is missing.');
                 }));
             }
 
             if(hasChangeRole){
                 wait.push(changeTeamRoles(hook).catch(err=>{
-                    throw new errors.Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
+                    throw new Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
                 }));
             }  
             
@@ -498,7 +485,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook=>{
 
         }).catch(err => {
             logger.warn(err);
-            throw new errors.Forbidden('You have not the permission to access this. (4)');
+            throw new Forbidden('You have not the permission to access this. (4)');
         });
 });
 
@@ -519,7 +506,7 @@ const sendInfo = hook => {
         return hook;
     }).catch(err => {
         logger.warn(err);
-        throw new errors.NotAcceptable("Errors on user detection");
+        throw new NotAcceptable("Errors on user detection");
     });
 };
 //exports.sendInfo = sendInfo;
@@ -563,7 +550,7 @@ const isTeacherDirectlyImport=hook=>{
             return hook;
         }).catch(err=>{
             logger.warn(err);
-            throw new errors.Forbidden('You have not the permission to do this.');
+            throw new Forbidden('You have not the permission to do this.');
         });
     }
     return hook;
@@ -580,7 +567,7 @@ const isAdmin=hook=>{
         if(roleNames.includes('administrator'))
             return hook;
         else 
-            throw new errors.Forbidden('Only administrators can do this.');
+            throw new Forbidden('Only administrators can do this.');
     });
 };
 
@@ -596,7 +583,7 @@ const isUserIsEmpty = hook =>{
                 return hook;
             }).catch(err=>{
                 logger.warn(err);
-                throw new errors.Conflict('It want to remove the team with no user, but do not found it.');
+                throw new Conflict('It want to remove the team with no user, but do not found it.');
             });
         }
     }else{
