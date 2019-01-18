@@ -5,10 +5,10 @@ const accountModel = require('../../../../src/services/account/model.js');
 const { BadRequest } = require('feathers-errors');
 const { ObjectId } = require('mongoose').Types;
 const app = require('../../../../src/app');
-//const {warn, info} = require('../../../src/logger/index.js');
+const {warn} = require('../../../../src/logger/index');
 
-const PASSWORD = process.env.TEST_PW.trim();
-const PASSWORD_HASH = process.env.TEST_HASH.trim();
+const PASSWORD = process.env.TEST_PW ? process.env.TEST_PW.trim() : warn('process.env.TEST_PW is not defined');
+const PASSWORD_HASH = process.env.TEST_HASH ? process.env.TEST_HASH.trim() : warn('process.env.TEST_HASH is not defined');
 const AT = '@schul-cloud.org';
 
 const REQUEST_PARAMS = {

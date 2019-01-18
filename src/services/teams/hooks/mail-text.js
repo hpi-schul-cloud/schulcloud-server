@@ -35,25 +35,39 @@ const isNewRegistration = (linkData, user) => {
     return link.includes('/byexpert/?importHash=' + (user.importHash || linkData.hash));
 };
 
+const getName = (user = {}) => {
+    return user.firstName + ' ' + user.lastName;
+};
+
+const getEmail = ({ email, user, usernameInviter }) => {
+    return email || (user || {}).email || usernameInviter || err('Eingeladener');
+};
+
+const getTeamName = (team) => {
+    return team.name || err('Teamname');
+};
+
+const getShortLink = (linkData = {}) => {
+    return linkData.shortLink || err('Link');
+};
+
+
+
 module.exports = (hook, inviter) => {
-    const linkData = hook.result.linkData || {};
-    const user = hook.result.user || {};
-    const data = hook.data;
+    const { isResend, isUserCreated, email, linkData, user } = hook.result || {};
     const team = (hook.additionalInfosTeam || {}).team || {};
-    const username = (hook.params.account || {}).username;
+    const usernameInviter = (hook.params.account || {}).username;
 
     let opt = {
-        teamName: team.name || err('Teamname'),
-        shortLink: linkData.shortLink || err('Link'),
-        invitee: data.role === 'teamexpert' || data.isResend === true ?
-            data.email || user.email || err('Eingeladener') :
-            user.firstName + ' ' + user.lastName,
-        inviter: inviter.firstName === undefined ? username || err('Eingeladener') : inviter.firstName + ' ' + inviter.lastName
+        teamName: getTeamName(team),
+        shortLink: getShortLink(linkData),
+        invitee: isUserCreated || isResend ? getEmail({ email, user }) : getName(user), //todo discuss maybe better to make it clear with email invite use email
+        inviter: inviter.firstName === undefined ? getEmail({ usernameInviter }) : getName(inviter)
     };
 
     if (isNewRegistration(linkData, user))
         return inviteWithRegistration(opt); // expert, new account
-    else if (data.email !== undefined)      // is email invite 
+    else if (email !== undefined)           // is email invite 
         return addedToTeam(opt);            // teacher, accept needed (invite via email) 
     else
         return inviteWithEmail(opt);        // teacher, no accept needed (n21)

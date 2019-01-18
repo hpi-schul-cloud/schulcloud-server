@@ -410,25 +410,21 @@ class Add {
 	/**
 	 * Format the response. 
 	 * @private
-	 * @param {Object} ref Is the referenz to the requested data object
-	 * @param {Object} opt { linkData, user, role, isUserCreated=false, data.isResend=false}
+	 * @param {Object} opt
 	 * @param {Object} opt.linkData 
 	 * @param {Object} opt.user 
-	 * @param {Object} opt.role
-	 * @param {Object} opt.isUserCreated
-	 * @param {Object} opt.isResend
+	 * @param {Object} [opt.isUserCreated = false]
+	 * @param {Object} [opt.isResend = false]
+	 * @param {Object} [opt.email]
 	 */
-	_response(ref, {linkData,user,role,isUserCreated,isResend}) {
-		if (isUndefined([linkData, user, role, ref], 'OR'))
+	_response(opt) {
+		if (isUndefined([opt.linkData, opt.user], 'OR'))
 			throw new BadRequest('Can not complete the response');
 		
-		ref.role = role;
-		ref.user = user;
-		ref.linkData = linkData;
-		ref.message = 'Success!';
-		ref.isUserCreated = isUserCreated || false;
-		ref.isResend = isResend || false;
-		return ref;
+		opt.message = 'Success!';
+		opt.isUserCreated = opt.isUserCreated || false;
+		opt.isResend = opt.isResend ||  false;
+		return opt;
 	}
 
 	/**
@@ -437,8 +433,8 @@ class Add {
 	 * @param {Object::params} params The request params.
 	 * @return {Promise::{ message: 'Success!', linkData::Object~from this._generateLink(), user::Object::User, role::String }}
 	 */
-	async _userImportById(teamId, data, params) {
-		const { userId, role } = data;
+	async _userImportById(teamId, { userId, role }, params) {
+	//	const { userId, role } = data;
 		const [ref, user, team] = await getBasic(this, teamId, params, userId);
 		const schoolId = user.schoolId;
 		const schoolIds = getUpdatedSchoolIdArray(team, user);
@@ -450,7 +446,7 @@ class Add {
 			this._generateLink({ teamId }, false), 
 			patchTeam(this, teamId, { userIds, schoolIds }, params),
 		]).then(([linkData, _]) => {
-			return this._response(data, { linkData, user, role });
+			return this._response({ linkData, user });
 		});
 	}
 
@@ -482,8 +478,8 @@ class Add {
 	 * @param {Object::params} params The request params.
 	 * @return {Promise::{ message: 'Success!', linkData::Object~from this._generateLink(), user::Object::User, role::String }}
 	 */
-	async _userImportByEmail(teamId, data, params) {
-		let { email, role } = data;
+	async _userImportByEmail(teamId, { email, role }, params) {
+		//let { email, role } = data;
 		const { esid, 
 				isUserCreated, 
 				isResend,
@@ -505,7 +501,7 @@ class Add {
 			this._generateLink({ esid, email, teamId, importHash }, isUserCreated), 
 			patchTeam(this, teamId, { invitedUserIds }, params),
 		]).then(([linkData, _]) => {
-			return this._response(data, { linkData, user, role, isUserCreated, isResend });
+			return this._response({ linkData, user, isUserCreated, isResend, email });
 		});
 	}
 
