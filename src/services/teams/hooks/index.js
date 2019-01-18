@@ -251,8 +251,8 @@ const dataExist = hook => {
  * @param {Object::hook}
  * @return {Object::hook}
  */
-const pushUserChangedEvent = (hook) => {
-    const team = getTeam(hook);
+const pushUserChangedEvent = async (hook) => {
+    const team = await getTeam(hook);
     const oldUsers = team.userIds;
     const newUsers = get(hook, 'newUsers'); //hook.additionalInfosTeam.newUsers;
 
@@ -642,7 +642,6 @@ exports.after = {
     ],          //test schoolId remove
     remove: [filterToRelated(keys.resId, 'result')]
 };
-
 
 exports.beforeExtern = {
     all: [
