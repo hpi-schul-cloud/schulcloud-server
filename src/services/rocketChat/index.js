@@ -13,7 +13,11 @@ const REQUEST_TIMEOUT = 4000; // in ms
 const ROCKET_CHAT_URI = process.env.ROCKET_CHAT;
 
 if (ROCKET_CHAT_URI === undefined)
-    throw new errors.NotImplemented('Please set process.env.ROCKET_CHAT.');
+    logger.warn("please set the environment variable ROCKET_CHAT_URI");
+if (ROCKET_CHAT_ADMIN_TOKEN === undefined)
+    logger.warn("please set the environment variable ROCKET_CHAT_ADMIN_TOKEN");
+if (ROCKET_CHAT_ADMIN_ID === undefined)
+    logger.warn("please set the environment variable ROCKET_CHAT_ADMIN_ID");
 
 /**
  * create a valid options object to call a rocketChat request.
