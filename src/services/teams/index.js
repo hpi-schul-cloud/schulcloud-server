@@ -1,119 +1,44 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const errors = require('feathers-errors');
-const { teamsModel } = require('./model');
 const hooks = require('./hooks');
-const { createUserWithRole } = require('./hooks/helpers');
-const logger = require('winston');
-const userModel = require('../user/model').userModel;
+const { BadRequest, NotAcceptable, Forbidden, GeneralError, NotFound } = require('feathers-errors');
+const { warn } = require('../../logger/index');
+//const globalHooks = require('../../hooks');
+const { teamsModel } = require('./model');
+const { userModel } = require('../user/model');
+const {
+	createUserWithRole,
+	removeDuplicatedTeamUsers,
+} = require('./hooks/helpers');
+const {
+	getBasic,
+	extractOne,
+	getTeam,
+	patchTeam,
+	getSessionUser,
+	removeInvitedUserByEmail,
+	getUpdatedSchoolIdArray,
+} = require('./helpers');
 const {
 	isArray,
 	isArrayWithElement,
-	isObject,
 	isString,
-	hasKey,
 	isDefined,
 	isUndefined,
-	isNull,
-	isObjectId,
-	isObjectIdWithTryToCast,
-	throwErrorIfNotObjectId,
 	bsonIdToString,
 	isSameId,
-	isFunction
 } = require('./hooks/collection');
 //const {teamRolesToHook} = require('./hooks');
 //todo docs require 
-
-/**
- * 
- * @param {*} team 
- * @param {*} user 
- */
-const getUpdatedSchoolIdArray = (team, user) => {
-	let schoolIds = bsonIdToString(team.schoolIds);
-	const userSchoolId = bsonIdToString(user.schoolId);
-
-	if (schoolIds.includes(userSchoolId) === false)
-		schoolIds.push(userSchoolId);
-
-	return schoolIds;
-};
-
-/**
- * 
- * @param {*} team 
- * @param {*} email 
- */
-const removeInvitedUserByEmail = (team, email) => {
-	return team.invitedUserIds.filter(user => user.email !== email);
-};
-
-/**
- * 
- * @param {*} app 
- * @param {*} params 
- */
-const getSessionUser = (app, params, userId) => {
-	const sesessionUserId = userId || bsonIdToString((params.account || {}).userId);
-
-	return app.service('users').get(sesessionUserId).catch(err => {
-		logger.warn(err);
-		throw new errors.Forbidden('You have not the permission.');
-	});
-};
-
-/**
- * 
- * @param {*} app 
- * @param {*} teamId 
- * @param {*} data 
- * @param {*} params 
- */
-const patchTeam = (app, teamId, data, params) => {
-	return app.service('teams').patch(teamId, data, local(params)).catch(err => {
-		logger.warn(err);
-		throw new errors.BadRequest('Can not patch team.');
-	});
-};
-
-/**
- * 
- * @param {*} app 
- * @param {*} teamId 
- */
-const getTeam = (app, teamId) => {
-	return app.service('teams').get(teamId).catch(err => {
-		logger.warn(err);
-		throw new errors.Forbidden('You have not the permission.');
-	});
-};
-
-/**
- * 
- * @param {*} refClass 
- * @param {*} teamId 
- * @param {*} params 
- */
-const getBasic = (refClass, teamId, params, userId) => {
-	return Promise.all([hooks.teamRolesToHook(refClass), getSessionUser(refClass.app, params, userId), getTeam(refClass.app, teamId)]);
-};
-
-/**
- * It is important to use the params information from original request and defined the request to local.
- * @param {*} params 
- */
-const local = (params) => {
-	if (typeof (params.provider) != 'undefined')
-		delete params.provider;
-	return params;
-};
 
 class AdminOverview {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
+
+		if (process.env.SC_SHORT_TITLE === undefined)
+			throw new NotAcceptable('SC_SHORT_TITLE is not defined.');
 	}
 
 	testIfUserByRoleExist(team, roleId) {
@@ -136,13 +61,36 @@ class AdminOverview {
 		return { ownerExist, isOwnerSchool, schoolId, selectedRole };
 	}
 
+	getKeys(obj, keys) {
+		return keys.reduce((newObj, key) => {
+			newObj[key] = obj[key];
+			return newObj;
+		}, {});
+	}
+
 	mapped(teams, sessionSchoolId) {
 		return teams.data.map(team => {
 			const mySchool = isSameId(team.schoolId, sessionSchoolId);
 			const otherSchools = team.schoolIds.length > 1;
-			const schoolMembers = this.getMembersBySchool(team, sessionSchoolId);
+			let schoolMembers = this.getMembersBySchool(team, sessionSchoolId);
+			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner');	//role is populated
+
+			schoolMembers = schoolMembers.map(m => {
+				return {
+					role: m.role.name,
+					user: this.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName'])
+				};
+			});
+
+			schoolMembers = schoolMembers.map(m => {
+				m.user.roles = (m.user.roles || []).map(role => {
+					return role.name;
+				});
+				return m;
+			});
 
 			return {
+				//todo ownerExist -> ref role needed
 				membersTotal: team.userIds.length,
 				name: team.name,
 				_id: team._id,
@@ -150,23 +98,28 @@ class AdminOverview {
 				desciption: team.desciption,
 				mySchool,
 				otherSchools,
+				createdAt: team.createdAt,
+				ownerExist,
+				//		ownerSchool:team.schoolId.name,
+				schools: team.schoolIds.map(s => this.getKeys(s, ['name', '_id'])),
 				schoolMembers,
-				createdAt: team.createdAt
 			};
 		});
 	}
 
 	find(params) {
-		return getSessionUser(this.app, params).then(sessionUser => {
+		return getSessionUser(this, params).then(sessionUser => {
 			const schoolId = sessionUser.schoolId;
 			return this.app.service('teams').find({
 				query: {
-					userIds: { $elemMatch: { schoolId } }
+					schoolIds: schoolId,
+					//userIds: { $elemMatch: { schoolId } },
+					$populate: [{ path: 'userIds.role' }, { path: 'userIds.userId', populate: { path: 'roles' } }, 'schoolIds'] 	//schoolId
 				}
 			}).then(teams => {
 				return this.mapped(teams, schoolId);
 			}).catch(err => {
-				throw new errors.BadRequest('Can not execute team find.', err);
+				throw new BadRequest('Can not execute team find.', err);
 			});
 		});
 	}
@@ -174,37 +127,129 @@ class AdminOverview {
 	/**
 	 * If team is create at this school and owner if not exist, 
 	 * the school admin can set a new owner for this team.
-	 * If school is created from other school, it remove all users from own school.
+	 * If school is created from other school and *userId is not set*, it remove all users from own school.
 	 * @param {String} teamId 
 	 * @param {Object} data data.userId 
 	 * @param {Object} params 
 	 */
-	patch(teamId, data, params) {
+	patch(teamId, { userId }, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
 			const { ownerExist, isOwnerSchool, selectedRole, schoolId } = this.getIsOwnerStats(ref, sessionUser, team);
-			const userId = data.userId;
+			//const userId = data.userId;
 			let userIds = team.userIds;
 
 			if (!ownerExist && isOwnerSchool && isDefined(userId)) {
 				userIds.push(createUserWithRole(ref, { userId, schoolId, selectedRole }));
-				return patchTeam(this.app, teamId, { userIds }, params);
+				return patchTeam(this, teamId, { userIds }, params);
 			} else if (!isOwnerSchool && isUndefined(userId)) {
 				userIds = this.removeMemberBySchool(team, schoolId);
-				patchTeam(this.app, teamId, { userIds }, params);
+				patchTeam(this, teamId, { userIds }, params);
 			} else {
-				throw new errors.BadRequest('Wrong inputs.');
+				throw new BadRequest('Wrong inputs.');
 			}
 		});
 	}
 
+	/**
+	 * If team is created at own school, it remove it.
+	 * @param {*} teamId 
+	 * @param {*} params 
+	 */
 	remove(teamId, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
-			const { ownerExist, isOwnerSchool } = this.getIsOwnerStats(ref, sessionUser, team);
-			if (!ownerExist && isOwnerSchool) {
+			const { isOwnerSchool } = this.getIsOwnerStats(ref, sessionUser, team);
+			if (isOwnerSchool) {
 				return this.app.service('teams').remove(teamId);
 			} else {
-				throw new errors.Forbidden('You have not the permission.');
+				throw new Forbidden('You have not the permission.');
 			}
+		});
+	}
+
+
+	/**********************
+	 * Contact Owner part *
+	 **********************/
+
+	getOwner(team, ownerRoleId) {
+		return team.userIds.find(user => isSameId(user.role, ownerRoleId));
+	}
+
+	formatText(text) {
+		//todo
+		return text;
+	}
+
+	getRestrictedQuery(teamIds, schoolId) {
+		let query = teamIds.map(_id => {
+			return { _id };
+		});
+		query = { $or: query, $populate: [{ path: 'userIds.userId' }] };
+		query.schoolIds = schoolId;
+		return { query };
+	}
+
+	/**
+	 * Over this services method can administrators can send message for school teams.
+	 * It has a batch logic to send the same message to different teams.
+	 * This message contact the owner of this teams over his email.
+	 * @param {Object::{message:String,teamIds:String||Array::String}} data 
+	 * @param {*} params 
+	 */
+	create({ message, teamIds }, params) {
+		//	const message = data.message;
+		//	let teamIds = data.teamIds;
+
+		if (isUndefined([teamIds, message], 'OR'))
+			throw new BadRequest('Missing parameter');
+
+		if (!isArray(teamIds))
+			teamIds = [teamIds];
+
+		if (teamIds.length <= 0 || !isString(message))
+			throw new BadRequest('Wrong value.');
+
+
+		return Promise.all([getSessionUser(this, params), hooks.teamRolesToHook(this)]).then(([{ schoolId }, ref]) => {
+			return this.app.service('teams').find((this.getRestrictedQuery(teamIds, schoolId))).then(teams => {
+				teams = teams.data;
+				if (!isArrayWithElement(teams))
+					throw new NotFound('No team found.');
+
+				const subject = `${process.env.SC_SHORT_TITLE}: Team-Anfrage`;
+				const mailService = this.app.service('/mails');
+				const ownerRoleId = ref.findRole('name', 'teamowner', '_id');
+				const emails = teams.reduce((stack, team) => {
+					const owner = this.getOwner(team, ownerRoleId);
+					if (isDefined(owner.userId.email))
+						stack.push(owner.userId.email);
+					return stack;
+				}, []);
+				const content = {
+					"text": this.formatText(message) || "No alternative mailtext provided. Expected: HTML Template Mail.",
+					"html": ""
+				};
+
+				const waits = emails.map(email => {
+					return mailService.create({ email, subject, content }).then(res => {
+						return res.accepted[0];
+					}).catch(err => {
+						return 'Error: ' + err.message;
+					});
+				});
+
+				return Promise.all(waits).then(values => {
+					return values;
+				}).catch(err => {
+					return err;
+				});
+
+			}).catch(err => {
+				throw err;
+			});
+		}).catch(err => {
+			warn(err);
+			throw new BadRequest('It exists no teams with access rights, to send this message.');
 		});
 	}
 
@@ -222,7 +267,7 @@ class Get {
 	 * @param {} params 
 	 */
 	find(params) {
-		return getSessionUser(this.app, params).then(sessionUser => {
+		return getSessionUser(this, params).then(sessionUser => {
 			const email = sessionUser.email;
 			const restrictedFindMatch = { invitedUserIds: { $elemMatch: { email } } };
 			return this.app.service('teams').find({ query: restrictedFindMatch });
@@ -244,149 +289,231 @@ class Add {
 	}
 
 	/**
-	 * 
-	 * @param {*} id 
-	 * @param {*} data 
-	 * @param {*} params 
+	 * @private
+	 * @return {Promise::bsonId||stringId} Expert school id.
 	 */
-	async patch(id, data, params) {
-		params = local(params);
-		const teamsService = this.app.service('teams');
-		const usersService = this.app.service('users');
-		const schoolsService = this.app.service('schools');
-		const rolesService = this.app.service('roles');
-		const expertLinkService = this.app.service('/expertinvitelink');
-		const email = data.email;
-		const userId = data.userId;
-		const teamId = id;
-		let role = data.role;
-		let expertSchool = {};
-		let expertRole = {};
-		let linkParams = {};
+	_getExpertSchoolId() {
+		return this.app.service('schools').find({ query: { purpose: "expert" } }).then(schools => {
+			return extractOne(schools, '_id').then(id => {
+				return bsonIdToString(id);
+			});
+		}).catch(err => {
+			throw new GeneralError("Experte: Fehler beim Abfragen der Schule.", err);
+		});
+	}
 
+	/**
+	 * @private
+	 * @return {Promise::bsonId||stringId} Expert role id.
+	 */
+	_getExpertRoleId() {
+		return this.app.service('roles').find({ query: { name: "expert" } }).then(roles => {
+			return extractOne(roles, '_id').then(id => {
+				return bsonIdToString(id);
+			});
+		}).catch(err => {
+			throw new GeneralError("Experte: Fehler beim Abfragen der Rolle.", err);
+		});
+	}
 
-		const errorHandling = err => {
-			logger.warn(err);
-			return Promise.resolve('Success!');
-		};
-
-		if (['teamexpert', 'teamadministrator'].includes(role) === false) {
-			return errorHandling('Experte: Wrong role is set.');
-		}
-
-		const generateLink = async (params) => {
-			try {
-				return await expertLinkService.create(params);
-			} catch (err) {
-				throw new errors.GeneralError("Experte: Fehler beim Erstellen des Einladelinks.", err);
+	/**
+	 * @private
+	 * @param {String} email 
+	 * @return {Promise::User}
+	 */
+	async _getUsersByEmail(email) {
+		return this.app.service('users').find({
+			query: {
+				email,
+				$populate: [{ path: 'roles' }]
 			}
-		};
+		}).then(users => {
+			return extractOne(users);
+		}).catch(err => {
+			throw err;
+		});
+	}
 
-		const collectData = async () => {
-			// get expert school with "purpose": "expert" to get id
-			try {
-				const schoolData = await schoolsService.find({ query: { purpose: "expert" } });
+	/**
+	 * @private
+	 * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
+	 * @param {Boolean} isUserCreated default = false
+	 */
+	async _generateLink({ esid, email, teamId, importHash }, isUserCreated = false) {
+		if (isUserCreated === false && isUndefined(importHash))
+			return Promise.resolve({ shortLink: process.env.HOST + '/teams/' + teamId });
 
-				if (schoolData.data.length <= 0 || schoolData.data.length > 1) {
-					throw new errors.GeneralError('Experte: Keine oder mehr als 1 Schule gefunden.');
-				}
-
-				expertSchool = schoolData.data[0];
-			} catch (err) {
-				throw new errors.GeneralError("Experte: Fehler beim Abfragen der Schule.", err);
-			}
-
-			// get expert role to get id
-			try {
-				const roleData = await rolesService.find({ query: { name: "expert" } });
-
-				if (roleData.total != 1) {
-					throw new errors.GeneralError('Experte: Keine oder mehr als 1 Rolle gefunden.');
-				}
-
-				expertRole = roleData.data[0];
-			} catch (err) {
-				throw new errors.GeneralError("Experte: Fehler beim Abfragen der Rolle.", err);
-			}
-		};
-
-		const waitForUser = async () => {
-			let existingUser, dbUser;
-			try {
-				dbUser = await usersService.find({ query: { email } });
-
-
-				if (dbUser.data !== undefined && dbUser.data.length > 0)
-					existingUser = dbUser.data[0];
-
-				// not existing user == must be teamexpert -> add user
-				if (existingUser === undefined && role === 'teamexpert') {
-					// create user with expert role
-					const newUser = await userModel.create({
-						email: email,
-						schoolId: expertSchool._id,
-						roles: [expertRole._id], // expert
-						firstName: "Experte",
-						lastName: "Experte"
-					});
-					// prepare data for link generation
-					return { esid: expertSchool._id, email: newUser.email };
-				} else if (role === 'teamexpert') {
-					// existing expert user
-					// prepare data for link generation
-					return { esid: expertSchool._id, teamId: teamId };
-				} else {
-					return { teamId: teamId };
-				}
-			} catch (err) {
-				throw new errors.GeneralError("Experte: Fehler beim Erstellen des Experten.", err);
-			}
-		};
-
-		if (email && role) {
-			// user invited via email
-			try {
-				await collectData();
-				const linkParams = await waitForUser();
-				const linkData = await generateLink(linkParams);
-				const team = await teamsService.get(teamId);
-				const user = await usersService.find({ query: { "email": email } });
-				if (user.total === 1) {
-					// user found = existing teacher, invited with mail
-					let invitedUserIds = team.invitedUserIds;
-					invitedUserIds.push({ email, role });
-					await teamsService.patch(teamId, { invitedUserIds }, params);
-					return { message: 'Success!', linkData: linkData, user: user.data[0] };
-				} else if (user.total === 0) {
-					// user not found = expert invited via mail
-					let invitedUserIds = team.invitedUserIds;
-					invitedUserIds.push({ email, role });
-					await teamsService.patch(teamId, { invitedUserIds }, params);
-					return { message: 'Success!', linkData: linkData };
-				} else {
-					errorHandling("Experts: Error on retrieving users or more than 1 user found.");
-				}
-			} catch (err) {
-				errorHandling(err);
-			}
-		} else if (userId && role) {
-			// user invited via ldap selection		
-			return getBasic(this, teamId, params, userId).then(([ref, user, team]) => {
-				const schoolId = user.schoolId;
-				let userIds = team.userIds;
-				userIds.push(createUserWithRole(ref, { userId, selectedRole: role, schoolId }));
-				const schoolIds = getUpdatedSchoolIdArray(team, user);
-				return patchTeam(this.app, teamId, { userIds, schoolIds }, params).then(_ => {
-					const linkData = {
-						shortLink: process.env.HOST + '/teams/' + teamId
-					};
-					return ({ message: 'Success!', linkData, user });
-				});
-			}).catch(err => {
-				errorHandling(err);
+		const app = this.app;
+		if (isDefined(importHash)) {
+			const regex = new RegExp(importHash);
+			const links = await app.service('link').find({ query: { target: regex } });
+			return extractOne(links).then(linkData=>{
+				linkData.shortLink = process.env.HOST + '/link/' + linkData._id;
+				return linkData;
 			});
 		} else {
-			throw new errors.BadRequest('Missing input data.');
+			return app.service('/expertinvitelink').create({ esid, email }).catch(err => {
+				throw new GeneralError("Experte: Fehler beim Erstellen des Einladelinks.", err);
+			});
+		}
+	}
+
+	/**
+	 * Use for email invites 
+	 * @private
+	 * @param {Object::{email::String, role::String, teamId::String}} opt
+	 * @return {Object::{ schoolId::String, isUserCreated::Boolean, user::Object::User, team::Object::Team }}
+	 */
+	async _collectUserAndLinkData({ email, role, teamId }) {
+		return Promise.all([
+			this._getUsersByEmail(email),
+			this._getExpertSchoolId(),
+			this._getExpertRoleId(),
+			getTeam(this, teamId)
+		]).then(async ([user, schoolId, expertRoleId, team]) => {
+			let isUserCreated = false, userRoleName;
+			if (isUndefined(user) && role === 'teamexpert') {
+				const newUser = { email, schoolId, roles: [expertRoleId], firstName: "Experte", lastName: "Experte" };
+				user = await userModel.create(newUser);
+				isUserCreated = true;
+			}
+
+			if (isUserCreated || isDefined(role)) {
+				userRoleName = role;
+			} else {
+				const teamUser = team.invitedUserIds.find(invited => invited.email === email);
+				userRoleName = (teamUser||{}).role || role;
+			}
+
+			//if role teamadmin by import from teacher over email and no user exist, the user is undefined
+			if(isUndefined(user))
+				throw new BadRequest('User must exist.');
+
+			if(isUndefined(userRoleName))
+				throw new BadRequest('For this case the team role for user must be set.');
+
+			return { esid: schoolId, 
+					isUserCreated, 
+					user, 
+					team, 
+					userRoleName, 
+					importHash:user.importHash, 	
+			};
+		}).catch(err => {
+			warn(err);
+			throw new BadRequest('Can not resolve the user information.');
+		});
+	}
+
+	/**
+	 * Format the response. 
+	 * @private
+	 * @param {Object::{ linkData, user, role, isUserCreated=false}} opt
+	 */
+	_response(data) {
+		if (isUndefined([data.linkData, data.user, data.role], 'OR'))
+			throw new BadRequest('Can not complete the response');
+
+		data.message = 'Success!';
+		data.isUserCreated = data.isUserCreated || false;
+		return data;
+	}
+
+	/**
+	 * @private
+	 * @param {Object::{email::String, role::String, teamId::String}} opt
+	 * @param {Object::params} params The request params.
+	 * @return {Promise::{ message: 'Success!', linkData::Object~from this._generateLink(), user::Object::User, role::String }}
+	 */
+	async _userImportById({ teamId, userId, role }, params) {
+		const [ref, user, team] = await getBasic(this, teamId, params, userId);
+		const schoolId = user.schoolId;
+		const schoolIds = getUpdatedSchoolIdArray(team, user);
+		let userIds = team.userIds;
+		userIds.push(createUserWithRole(ref, { userId, selectedRole: role, schoolId }));
+		userIds = removeDuplicatedTeamUsers(userIds);
+
+		return Promise.all([
+			this._generateLink({ teamId }, false), 
+			patchTeam(this, teamId, { userIds, schoolIds }, params),
+		]).then(([linkData, _]) => {
+			return this._response({ linkData, user, role });
+		});
+	}
+
+	/**
+	 * 
+	 * @private
+	 * @param {Obejct::team.userIds} {userIds} The userIds *must* be *popluated*  
+	 * @throws if user already inside this team
+	 */
+	_throwErrorIfUserExistByEmail({userIds},email){
+		if(!isArray(userIds))
+			throw new BadRequest('Wrong input.');
+		if(userIds.length===0)
+			return true;
+
+		if(isUndefined(userIds[0].userId.email))
+			throw new BadRequest('UserIds must be populated.');
+
+		if( userIds.some(user => user.userId.email === email) )
+			throw new BadRequest('User already inside the team.');
+		
+		return true;
+	}
+
+	/**
+	 * The schoolIds for new added users will not updated inside this step. It will manage if the user accpet the invite.
+	 * @private
+	 * @param {Object::{email::String, role::String, teamId::String}} opt
+	 * @param {Object::params} params The request params.
+	 * @return {Promise::{ message: 'Success!', linkData::Object~from this._generateLink(), user::Object::User, role::String }}
+	 */
+	async _userImportByEmail({ teamId, email, role }, params) {
+		const { esid, 
+				isUserCreated, 
+				user, 
+				team, 
+				userRoleName, 
+				importHash,
+			} = await this._collectUserAndLinkData({ email, role, teamId });
+		const invitedUserIds = team.invitedUserIds;
+		role = userRoleName; /**@override**/ //is important if user already in invited users exist and the role is take from team
+
+		this._throwErrorIfUserExistByEmail(team,email);
+
+		//if not already in invite list
+		if (!invitedUserIds.some(teamUser => teamUser.email === email))
+			invitedUserIds.push({ email, role });
+
+		return Promise.all([
+			this._generateLink({ esid, email, teamId, importHash }, isUserCreated), 
+			patchTeam(this, teamId, { invitedUserIds }, params),
+		]).then(([linkData, _]) => {
+			return this._response({ linkData, user, role, isUserCreated });
+		});
+	}
+
+	/**
+	 * @param {String} teamId 
+	 * @param {Object::{email::String, userId::String, role::String}} data 
+	 * @param {Object::params} params The request params.
+	 */
+	patch(teamId, { email, userId, role }, params) {
+		try {
+			if (isDefined(role) && ['teamexpert', 'teamadministrator'].includes(role) === false)
+				throw new BadRequest('Wrong role is set.');
+
+			if (email)
+				return this._userImportByEmail({ email, role, teamId }, params);
+			else if (userId && role)
+				return this._userImportById({ teamId, userId, role }, params);
+			else
+				throw new BadRequest('Missing input data.');
+
+		} catch (err) {
+			warn(err);
+			return Promise.resolve('Success!');
 		}
 	}
 
@@ -394,7 +521,6 @@ class Add {
 		this.app = app;
 	}
 }
-//todo accept and add user is same => add to function .only modified invitedUserIds is different
 /**
  * Accept the team invite
  */
@@ -409,7 +535,6 @@ class Accept {
 		return team.invitedUserIds.find(element => element.email === email);
 	}
 	/**
-	 * 
 	 * @param {*} id 
 	 * @param {*} params 
 	 */
@@ -422,7 +547,7 @@ class Accept {
 
 			const invitedUser = this.findInvitedUserByEmail(team, email);
 			if (isUndefined(invitedUser))
-				throw new errors.NotFound('User is not in this team.');
+				throw new NotFound('User is not in this team.');
 
 			const role = ref.findRole('name', invitedUser.role, '_id');
 			userIds.push({ userId, role });
@@ -432,7 +557,7 @@ class Accept {
 			const schoolIds = getUpdatedSchoolIdArray(team, sessionUser);
 			const accept = { userId, teamId };
 
-			return patchTeam(this.app, teamId, { invitedUserIds, userIds, schoolIds, accept }, params);
+			return patchTeam(this, teamId, { invitedUserIds, userIds, schoolIds, accept }, params);
 		});
 	}
 
@@ -452,21 +577,17 @@ class Remove {
 	}
 
 	/**
-	 * 
 	 * @param {*} id 
 	 * @param {*} data 
 	 * @param {*} params 
 	 */
-	patch(teamId, data, params) {
-		const email = data.email;
-		const app = this.app;
-
+	patch(teamId, { email }, params) {
 		if (isUndefined(email))
-			throw new errors.BadRequest('Missing parameter.');
+			throw new BadRequest('Missing parameter.');
 
-		return getTeam(app, teamId).then(team => {
+		return getTeam(this, teamId).then(team => {
 			let invitedUserIds = removeInvitedUserByEmail(team, email);
-			return patchTeam(app, teamId, { invitedUserIds }, params);
+			return patchTeam(this, teamId, { invitedUserIds }, params);
 		});
 	}
 
@@ -480,7 +601,7 @@ module.exports = function () {
 	const options = {
 		Model: teamsModel,
 		paginate: {
-			default: 10,
+			default: 2,
 			max: 100
 		},
 		lean: true

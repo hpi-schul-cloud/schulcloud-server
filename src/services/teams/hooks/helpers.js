@@ -1,4 +1,4 @@
-const errors = require('feathers-errors');
+const {NotFound, NotImplemented, NotAcceptable, BadRequest} = require('feathers-errors');
 const logger = require('winston');
 const { set, get } = require('./scope');
 const {
@@ -36,13 +36,14 @@ const ifSuperhero = (roles) => {
     }
     return isSuperhero;
 };
+exports.ifSuperhero = ifSuperhero;
 
 /**
 * @helper 
 * @param {hook} hook 
 * @return {Object::User}
 */
-const getSessionUser = hook => {
+exports.getSessionUser = hook => {
     return new Promise((resolve, reject) => {
         const sessionUserId = bsonIdToString(hook.params.account.userId);
         const sessionUser = get(hook, 'sessionUser');
@@ -58,11 +59,11 @@ const getSessionUser = hook => {
                 set(hook, 'isSuperhero', ifSuperhero(sessionUser.roles));
                 resolve(sessionUser);
             }).catch(err => {
-                reject(new errors.NotFound('Can not find user with userId=' + sessionUserId, err));
+                reject(new NotFound('Can not find user with userId=' + sessionUserId, err));
             });
         }
     }).catch(err => {
-        throw new errors.NotFound('User not found.', err);
+        throw new NotFound('User not found.', err);
     });
 };
 
@@ -93,7 +94,7 @@ const addDefaultFilePermissions = (hook) => {
  * @param {Object::User} sessionUser 
  * @return {Object::hook.data} 
  */
-const updateMissingDataInHookForCreate = (hook, sessionUser) => {
+exports.updateMissingDataInHookForCreate = (hook, sessionUser) => {
     const userId = bsonIdToString(sessionUser._id);
     const schoolId = bsonIdToString(sessionUser.schoolId);
 
@@ -174,6 +175,7 @@ const isAcceptWay = (hook, teamId, oldTeam, users) => {
     }
     return false;
 };
+exports.isAcceptWay = isAcceptWay;
 
 /**
 * @helper
@@ -181,7 +183,7 @@ const isAcceptWay = (hook, teamId, oldTeam, users) => {
 * @param {Object::hook} hook
 * @return {Promise::Object::team}
 */
-const getTeam = (hook) => {
+exports.getTeam = (hook) => {
     return new Promise((resolve, reject) => {
         const method = hook.method;
         const teamId = hook.id || (hook.result || {})._id || hook.teamId || get(hook, 'teamId');
@@ -207,7 +209,7 @@ const getTeam = (hook) => {
                     reject(err);
                 });
             }).catch(err => {
-                reject(new errors.NotFound('Can not found team with teamId=' + teamId, err));
+                reject(new NotFound('Can not found team with teamId=' + teamId, err));
             });
         } else if (method === 'find') {
             teamsService.find({
@@ -215,14 +217,14 @@ const getTeam = (hook) => {
             }).then(_teams => {
                 resolveIt(_teams.data);
             }).catch(err => {
-                reject(new errors.NotFound('Can not found team for user with userId=' + sessionUserId, err));
+                reject(new NotFound('Can not found team for user with userId=' + sessionUserId, err));
             });
         } else {
-            throw new errors.NotImplemented('It should not run into this case.');
+            throw new NotImplemented('It should not run into this case.');
         }
     }).catch(err => {
         logger.warn(err);
-        throw new errors.NotFound('Can not found this team.');
+        throw new NotFound('Can not found this team.');
     });
 };
 
@@ -236,7 +238,7 @@ const getTeam = (hook) => {
 */
 const createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) => {
     if (isUndefined(hook.findRole))
-        throw new errors.NotAcceptable('Please execute teamRolesToHook before.');
+        throw new NotAcceptable('Please execute teamRolesToHook before.');
 
     let role;
     if (roleIsId === true) {
@@ -249,7 +251,7 @@ const createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) 
     }
 
     if (isUndefined([role, userId, schoolId], 'OR'))
-        throw new errors.BadRequest('Wrong input. (2)');
+        throw new BadRequest('Wrong input. (2)');
 
     return {
         userId: bsonIdToString(userId),
@@ -257,6 +259,8 @@ const createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) 
         schoolId: bsonIdToString(schoolId)
     }; //convert bson to string is only for faster debug
 };
+exports.createUserWithRole = createUserWithRole;
+
 
 /**
  * return the different between arr1 in relation to arr2 
@@ -273,7 +277,7 @@ const createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) 
  */
 const arrayDiff = (oldArray, newArray, key) => {
     if (!isArrayWithElement(oldArray) || !isArrayWithElement(newArray))
-        throw new errors.NotAcceptable('Wrong input expect arrays.', { oldArray, newArray });
+        throw new NotAcceptable('Wrong input expect arrays.', { oldArray, newArray });
 
     let a1BsonId = false;
     if (isDefined(key) && isObjectIdWithTryToCast(oldArray[0][key]))
@@ -300,7 +304,7 @@ const arrayDiff = (oldArray, newArray, key) => {
  * @param {String} [key] - optional for objects in arrays
  * @return {Object::{remove:[],add:[]} }
  */
-const arrayRemoveAddDiffs = (baseArray, changedArray, key) => {
+exports.arrayRemoveAddDiffs = (baseArray, changedArray, key) => {
     return { remove: arrayDiff(baseArray, changedArray, key), add: arrayDiff(changedArray, baseArray, key) };
 };
 
@@ -316,7 +320,7 @@ const arrayRemoveAddDiffs = (baseArray, changedArray, key) => {
  */
 const mappedInputUserIdsToTeamUsers = (hook, teamUsers, oldTeam, sessionSchoolId) => {
     if (!isArray(teamUsers))
-        throw new errors.BadRequest('param teamUsers must be an array', teamUsers);
+        throw new BadRequest('param teamUsers must be an array', teamUsers);
 
     const getFirstUserByRoleId = (teamUserArray, roleId) => {
         return teamUserArray.find(_user => isSameId(_user.role, roleId));
@@ -325,7 +329,7 @@ const mappedInputUserIdsToTeamUsers = (hook, teamUsers, oldTeam, sessionSchoolId
     const teamowner = hook.method === 'create' ? getFirstUserByRoleId(teamUsers, teamownerRoleId) : getFirstUserByRoleId(oldTeam.userIds, teamownerRoleId);
 
     if (isUndefined(teamowner))       //by create no old team exist
-        throw new errors.NotAcceptable('No teamowner found for this team.');
+        throw new NotAcceptable('No teamowner found for this team.');
 
     return teamUsers.map((e) => {
         let selectedRole;
@@ -417,20 +421,25 @@ const teamOwnerRoleExist = (hook, teamUsers, oldTeam, users) => {
 
 /**
  * Remove duplicated users. It test it over key>userId. Role of first found are used.
- * @param {Array::TeamUser} teamUsers 
+ * @param {Array::TeamUser} teamUsers work also with populated userId=>User
  * @return {Array::TeamUser}
  */
 const removeDuplicatedTeamUsers = (teamUsers) => {
+    if(!isArrayWithElement(teamUsers))
+        return [];
+
     let foundId = [];
-    return teamUsers.reduce((stack, _teamUser) => {
-        const id = bsonIdToString(_teamUser.userId);
+    return teamUsers.reduce((stack, _teamUser)=>{
+        let id = isDefined(_teamUser.userId._id) ? _teamUser.userId._id : _teamUser.userId;
+        id = bsonIdToString(id);
         if (foundId.includes(id) === false) {
             stack.push(_teamUser);
             foundId.push(id);
         }
         return stack;
-    }, []);
+    },[]);
 };
+exports.removeDuplicatedTeamUsers = removeDuplicatedTeamUsers;
 
 
 /**
@@ -442,7 +451,7 @@ const removeDuplicatedTeamUsers = (teamUsers) => {
  * @param {String||BsonId} sessionSchoolId
  * @return {Array::TeamUser, default:[]} 
  */
-const getTeamUsers = (hook, team, users, sessionSchoolId) => {
+exports.getTeamUsers = (hook, team, users, sessionSchoolId) => {
     let teamUsers = hook.data.userIds;
 
     if (isObject(teamUsers) || isString(teamUsers))
@@ -467,7 +476,7 @@ const getTeamUsers = (hook, team, users, sessionSchoolId) => {
  * @method all - but return for no hook.data or !patch || !create an empty array 
  * @return {Array::Object::User default:[]}
  */
-const populateUsersForEachUserIdinHookData = hook => {
+exports.populateUsersForEachUserIdinHookData = hook => {
     return new Promise((resolve, reject) => {
         if (['create', 'patch'].includes(hook.method) && hasKey(hook, 'data') && isArrayWithElement(hook.data.userIds)) {
             hook.app.service('users').find({
@@ -481,14 +490,14 @@ const populateUsersForEachUserIdinHookData = hook => {
                 resolve(users.data);
             }).catch(err => {
                 logger.warn(err);
-                reject(new errors.BadRequest('Can not search users.'));
+                reject(new BadRequest('Can not search users.'));
             });
         } else {
             resolve([]);
         }
     });
 };
-
+/*
 module.exports = {
     populateUsersForEachUserIdinHookData,
     getTeamUsers,
@@ -500,3 +509,4 @@ module.exports = {
     isAcceptWay,
     createUserWithRole
 };
+*/

@@ -511,7 +511,7 @@ exports.sendEmail = (hook, maildata) => {
 					});
 				}
 			});
-		return hook;
+			return hook;
 		})
 		.catch(err => {
 			throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
@@ -530,11 +530,10 @@ exports.sendEmail = (hook, maildata) => {
 						"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
 						"html": "" // still todo, html template mails
 					}
-				})
-					.catch (err => {
-						logger.warn(err);
-						throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
-					});
+				}).catch (err => {
+					logger.warn(err);
+					throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+				});
 			});
 		}
 		return hook;
