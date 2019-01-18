@@ -1,4 +1,7 @@
-const errors = require('feathers-errors');
+const { warn } = require('../../../logger/index');
+
+if (process.env.SC_SHORT_TITLE === undefined)
+    warn('process.env.SC_SHORT_TITLE is not defined');
 
 const cloudTitle = process.env.SC_SHORT_TITLE;
 
@@ -42,8 +45,10 @@ module.exports = (hook, inviter) => {
     let opt = {
         teamName: team.name || err('Teamname'),
         shortLink: linkData.shortLink || err('Link'),
-        invitee: data.role === 'teamexpert' ? data.email || user.email || err('Eingelader') : user.firstName + ' ' + user.lastName,
-        inviter: inviter.firstName === undefined ? username || err('Einlader') : inviter.firstName + ' ' + inviter.lastName
+        invitee: data.role === 'teamexpert' || data.isResend === true ?
+            data.email || user.email || err('Eingeladener') :
+            user.firstName + ' ' + user.lastName,
+        inviter: inviter.firstName === undefined ? username || err('Eingeladener') : inviter.firstName + ' ' + inviter.lastName
     };
 
     if (isNewRegistration(linkData, user))
