@@ -36,9 +36,6 @@ class AdminOverview {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
-
-		if (process.env.SC_SHORT_TITLE === undefined)
-			throw new NotAcceptable('SC_SHORT_TITLE is not defined.');
 	}
 
 	testIfUserByRoleExist(team, roleId) {

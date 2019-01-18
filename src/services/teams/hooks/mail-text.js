@@ -1,8 +1,5 @@
 const errors = require('feathers-errors');
 
-if (process.env.SC_SHORT_TITLE === undefined)
-    throw new errors.NotImplemented('process.env.SC_SHORT_TITLE is not definid');
-
 const cloudTitle = process.env.SC_SHORT_TITLE;
 
 const close = `\n\nViel Spaß und einen guten Start wünscht dir dein
