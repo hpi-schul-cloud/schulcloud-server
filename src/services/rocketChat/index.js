@@ -212,33 +212,39 @@ class RocketChatLogin {
         this.options = options || {};
         this.docs = docs;
     }
+
     /**
      * Logs in a user given by his Id
      * @param {*} userId Id of a user in the schulcloud
      * @param {*} params 
      */
     get(userId, params) {
-        //rewrite as async
         if (userId != params.account.userId) {
             return Promise.reject(new errors.Forbidden("you may only log into your own rocketChat account"))
         }
         return this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params)
-        .then(rcAccount => {
-            //toDo: dont log in twice
+        .then(async rcAccount => {
+            let authToken = rcAccount.authToken;
+            if (authToken != "") {
+                try {
+                    let res = await request(getRequestOptions('/api/v1/me', {}, false, {authToken, userId: rcAccount.rcId}, 'GET'));
+                    if (res.success) return {authToken};
+                } catch(err) {
+                    authToken = ""
+                }      
+            }
+
             const login = {
                 user: rcAccount.username,
                 password: rcAccount.password
             }
-            return request(getRequestOptions('/api/v1/login', login)).then(async res => {
-                const authToken = (res.data || {}).authToken;
-                if (res.status === "success" && authToken !== undefined) {
-                    await rocketChatModels.userModel.update({username: rcAccount.username}, {authToken})
-                    return Promise.resolve({ authToken });
-                } else
-                    return Promise.reject(new errors.BadRequest('False response data from rocketChat'));
-            }).catch(err => {
-                return Promise.reject(new errors.Forbidden('Can not take token from rocketChat.', err));
-            });
+            let loginResponse = await request(getRequestOptions('/api/v1/login', login))
+            authToken = (loginResponse.data || {}).authToken;
+            if (loginResponse.status === "success" && authToken !== undefined) {
+                await rocketChatModels.userModel.update({username: rcAccount.username}, {authToken})
+                return Promise.resolve({ authToken });
+            } else
+                return Promise.reject(new errors.BadRequest('False response data from rocketChat'));
         }).catch(err => {
             logger.warn(err);
             throw new errors.Forbidden('Can not create token.');
