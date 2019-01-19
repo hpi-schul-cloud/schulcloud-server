@@ -24,7 +24,7 @@ const strategies = {
 };
 
 const sanitizeUsername = (hook) => {
-	if (hook.data.username) {
+	if (hook.data && hook.data.username) {
 		hook.data.username = hook.data.username.trim().toLowerCase();
 	}
 	return hook;
