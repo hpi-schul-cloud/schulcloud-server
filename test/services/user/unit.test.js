@@ -22,19 +22,8 @@ describe('user service', function () {
 			chai.expect(err.message).to.equal('Operation on this service requires an id!');
 		});
 	});
-	
-	it('resolves permissions correctly', function () {
-		const prepareUser = function(userObject) {
-			return registrationPinService.create({"email": userObject.email})
-				.then(registrationPin => {
-					return registrationPinService.find({
-						query: { "pin": registrationPin.pin, "email": registrationPin.email, verified: false }
-					});
-				}).then(_ => {
-					return userService.create(userObject);
-				});
-		};
 
+	it('resolves permissions correctly', function () {
 		function create_test_base() {
 			return app.service('roles')
 				.create({
@@ -60,7 +49,7 @@ describe('user service', function () {
 
 		return create_test_base()
 			.then(test_base => create_test_subrole(test_base))
-			.then(test_subrole => prepareUser({
+			.then(test_subrole => testObjects.createTestUser({
 				"id": "0000d231816abba584714d01",
 				"accounts": [],
 				"schoolId": "0000d186816abba584714c5f",
@@ -77,6 +66,29 @@ describe('user service', function () {
 				chai.expect(array).to.have.lengthOf(3);
 				chai.expect(array).to.include("TEST_BASE", "TEST_BASE_2", "TEST_SUB");
 			});
+	});
+
+	describe('uniqueness check', () => {
+		it('should reject new users with mixed-case variants of existing usernames', async () => {
+			await testObjects.createTestUser({ email: 'existing@account.de' });
+			const newUser = {
+				firstName: 'Test',
+				lastName: 'Testington',
+				email: 'ExistinG@aCCount.de',
+				schoolId: '0000d186816abba584714c5f',
+			};
+
+			await new Promise((resolve, reject) => {
+				testObjects.createTestUser(newUser)
+					.then(() => {
+						reject(new Error('This call should fail because of an already existing user with the same email'));
+					})
+					.catch((err) => {
+						expect(err.message).to.equal('Ein Account mit dieser E-Mail Adresse ExistinG@aCCount.de existiert bereits!');
+						resolve();
+					});
+			});
+		});
 	});
 
 	after(testObjects.cleanup);
