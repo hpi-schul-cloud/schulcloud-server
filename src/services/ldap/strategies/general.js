@@ -32,50 +32,79 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
      * @memberof GeneralLDAPStrategy
      */
 	getUsers(school) {
+		const {
+			userAttributeNameMapping,
+			userPathAdditions,
+			roleType,
+			roleAttributeNameMapping,
+		} = this.config.providerOptions;
+
 		const options = {
 			filter: 'objectClass=person',
 			scope: 'sub',
 			attributes: [
-				this.config.providerOptions.userAttributeNameMapping.givenName,
-				this.config.providerOptions.userAttributeNameMapping.sn,
-				this.config.providerOptions.userAttributeNameMapping.dn,
-				this.config.providerOptions.userAttributeNameMapping.uuid,
-				this.config.providerOptions.userAttributeNameMapping.uid,
-				this.config.providerOptions.userAttributeNameMapping.mail,
-				this.config.providerOptions.userAttributeNameMapping.role,
+				userAttributeNameMapping.givenName,
+				userAttributeNameMapping.sn,
+				userAttributeNameMapping.dn,
+				userAttributeNameMapping.uuid,
+				userAttributeNameMapping.uid,
+				userAttributeNameMapping.mail,
+				(roleType === 'group') ? 'memberOf' : userAttributeNameMapping.role,
 			],
 		};
-		const searchString = `${this.config.providerOptions.userPathAdditions},${this.config.rootPath}`;
+		const searchString = `${userPathAdditions},${this.config.rootPath}`;
 		return this.app.service('ldap').searchCollection(this.config, searchString, options)
 			.then((data) => {
 				const results = [];
 				data.forEach((obj) => {
 					const roles = [];
-					if (obj[this.config.providerOptions.userAttributeNameMapping.role]
-						=== this.config.providerOptions.roleAttributeNameMapping.roleStudent) {
-						roles.push('student');
+					if (roleType === 'group') {
+						if (!Array.isArray(obj.memberOf)) {
+							obj.memberOf = [obj.memberOf];
+						}
+						if (obj.memberOf.includes(roleAttributeNameMapping.roleStudent)) {
+							roles.push('student');
+						}
+						if (obj.memberOf.includes(roleAttributeNameMapping.roleTeacher)) {
+							roles.push('teacher');
+						}
+						if (obj.memberOf.includes(roleAttributeNameMapping.roleAdmin)) {
+							roles.push('administrator');
+						}
+						if (obj.memberOf.includes(roleAttributeNameMapping.roleNoSc)) {
+							return;
+						}
+					} else {
+						if (obj[userAttributeNameMapping.role]
+							=== roleAttributeNameMapping.roleStudent) {
+							roles.push('student');
+						}
+						if (obj[userAttributeNameMapping.role]
+							=== roleAttributeNameMapping.roleTeacher) {
+							roles.push('teacher');
+						}
+						if (obj[userAttributeNameMapping.role]
+							=== roleAttributeNameMapping.roleAdmin) {
+							roles.push('administrator');
+						}
+						if (obj[userAttributeNameMapping.role]
+							=== roleAttributeNameMapping.roleNoSc) {
+							return;
+						}
 					}
-					if (obj[this.config.providerOptions.userAttributeNameMapping.role]
-						=== this.config.providerOptions.roleAttributeNameMapping.roleTeacher) {
-						roles.push('teacher');
-					}
-					if (obj[this.config.providerOptions.userAttributeNameMapping.role]
-						=== this.config.providerOptions.roleAttributeNameMapping.roleAdmin) {
-						roles.push('administrator');
-					}
-					if (obj[this.config.providerOptions.userAttributeNameMapping.role]
-						=== this.config.providerOptions.roleAttributeNameMapping.roleNoSc) {
+
+					if (roles.length === 0) {
 						return;
 					}
 
 					results.push({
-						email: obj[this.config.providerOptions.userAttributeNameMapping.mail],
-						firstName: obj[this.config.providerOptions.userAttributeNameMapping.givenName],
-						lastName: obj[this.config.providerOptions.userAttributeNameMapping.sn],
+						email: obj[userAttributeNameMapping.mail],
+						firstName: obj[userAttributeNameMapping.givenName],
+						lastName: obj[userAttributeNameMapping.sn],
 						roles,
-						ldapDn: obj[this.config.providerOptions.userAttributeNameMapping.dn],
-						ldapUUID: obj[this.config.providerOptions.userAttributeNameMapping.uuid],
-						ldapUID: obj[this.config.providerOptions.userAttributeNameMapping.uid],
+						ldapDn: obj[userAttributeNameMapping.dn],
+						ldapUUID: obj[userAttributeNameMapping.uuid],
+						ldapUID: obj[userAttributeNameMapping.uid],
 					});
 				});
 				return results;
@@ -89,23 +118,29 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
      * @memberof GeneralLDAPStrategy
      */
 	getClasses(school) {
+
+		const {
+			classAttributeNameMapping,
+			groupPathAdditions,
+		} = this.config.providerOptions;
+
 		const options = {
-			filter: `${this.config.providerOptions.classAttributeNameMapping.description}=*`,
+			filter: `${classAttributeNameMapping.description}=*`,
 			scope: 'sub',
 			attributes: [
-				this.config.providerOptions.classAttributeNameMapping.dn,
-				this.config.providerOptions.classAttributeNameMapping.description,
-				this.config.providerOptions.classAttributeNameMapping.uniqueMember,
+				classAttributeNameMapping.dn,
+				classAttributeNameMapping.description,
+				classAttributeNameMapping.uniqueMember,
 			],
 		};
-		const searchString = `${this.config.providerOptions.groupPathAdditions},${this.config.rootPath}`;
+		const searchString = `${groupPathAdditions},${this.config.rootPath}`;
 		return this.app.service('ldap').searchCollection(this.config, searchString, options)
 			.then((data) => {
 				return data.map((obj) => {
 					return {
-						className: obj[this.config.providerOptions.classAttributeNameMapping.description],
-						ldapDn: obj[this.config.providerOptions.classAttributeNameMapping.dn],
-						uniqueMembers: obj[this.config.providerOptions.classAttributeNameMapping.uniqueMember],
+						className: obj[classAttributeNameMapping.description],
+						ldapDn: obj[classAttributeNameMapping.dn],
+						uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
 					};
 				});
 			});
