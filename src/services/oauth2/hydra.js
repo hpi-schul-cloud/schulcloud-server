@@ -97,7 +97,10 @@ module.exports = (hydraUrl) => {
 			}
 		}),
 		listConsentSessions: (user) => request({
-			uri: uj(hydraUrl, `/oauth2/auth/sessions/consent/${user}`)
+			uri: uj(hydraUrl, `/oauth2/auth/sessions/consent/${user}`),
+			headers: {
+				...mockTlsTermination
+			}
 		}),
 		revokeConsentSession: (user, client) => request({
 			uri: uj(hydraUrl, `/oauth2/auth/sessions/consent/${user}/${client}`),
