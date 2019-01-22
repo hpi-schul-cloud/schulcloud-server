@@ -28,7 +28,6 @@ const pseudonym = require('./pseudonym');
 const consent = require('./consent');
 const oauth2 = require('./oauth2');
 const roster = require('./roster');
-const mongoose = require('mongoose');
 const clipboard = require('./clipboard');
 const me = require('./me');
 
