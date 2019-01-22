@@ -98,8 +98,8 @@ describe('hook helpers', () => {
 	});
 
 	describe('arrayRemoveAddDiffs', () => {
-		it.skip('should work for empty arrays', () => {
-			expect(arrayRemoveAddDiffs([], [])).to.equal({ add: [], remove: [] });
+		it('should work for empty arrays', () => {
+			expect(arrayRemoveAddDiffs([], [])).to.deep.equal({add: [], remove: []});
 		});
 
 		it('should work for plain arrays', () => {

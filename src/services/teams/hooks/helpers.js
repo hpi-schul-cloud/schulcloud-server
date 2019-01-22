@@ -19,8 +19,8 @@ const {
 } = require('./collection');
 
 /**
-* Test if roles stack is superhero. 
-* @helper 
+* Test if roles stack is superhero.
+* @helper
 * @requires {$populated roles}
 */
 const ifSuperhero = (roles) => {
@@ -39,8 +39,8 @@ const ifSuperhero = (roles) => {
 exports.ifSuperhero = ifSuperhero;
 
 /**
-* @helper 
-* @param {hook} hook 
+* @helper
+* @param {hook} hook
 * @return {Object::User}
 */
 exports.getSessionUser = hook => {
@@ -70,7 +70,7 @@ exports.getSessionUser = hook => {
 /**
 * @helper
 * @private
-* @param {hook} hook 
+* @param {hook} hook
 * @return {Object::hook}
 */
 const addDefaultFilePermissions = (hook) => {
@@ -90,9 +90,9 @@ const addDefaultFilePermissions = (hook) => {
 
 /**
  * @helper
- * @param {hook} hook 
- * @param {Object::User} sessionUser 
- * @return {Object::hook.data} 
+ * @param {hook} hook
+ * @param {Object::User} sessionUser
+ * @return {Object::hook.data}
  */
 exports.updateMissingDataInHookForCreate = (hook, sessionUser) => {
     const userId = bsonIdToString(sessionUser._id);
@@ -118,7 +118,7 @@ exports.updateMissingDataInHookForCreate = (hook, sessionUser) => {
 /**
 * @helper
 * @private
-* @param [Object:Valid Moongose Response from find mongooseResponse] 
+* @param [Object:Valid Moongose Response from find mongooseResponse]
 * @return {Promise::res.data[0]}
 */
 const extractOne = (mongooseResponse) => {
@@ -132,13 +132,13 @@ const extractOne = (mongooseResponse) => {
 /**
  * A function to test if user is valid to pass it.
  * First step for soft test without all information you can try with hook, teamId.
- * Second step if you have all information you must try it with all parameters. 
+ * Second step if you have all information you must try it with all parameters.
  * -> Only users that are for this request in the invite list with role=teamexperts
  * @requires hook.data.accept={userId,role}
  * @param {Object::hook} hook
- * @param {String} teamId 
- * @param {Object::Team} oldTeam 
- * @param {Array::User} users 
+ * @param {String} teamId
+ * @param {Object::Team} oldTeam
+ * @param {Array::User} users
  * @return {boolen} - True if user can pass it.
  */
 const isAcceptWay = (hook, teamId, oldTeam, users) => {
@@ -192,7 +192,7 @@ exports.getTeam = (hook) => {
         const teamsService = hook.app.service('teams');
 
         const resolveIt = data => {
-            set(hook, 'team', data);    //set it for later use 
+            set(hook, 'team', data);    //set it for later use
             resolve(data);
         };
 
@@ -263,34 +263,27 @@ exports.createUserWithRole = createUserWithRole;
 
 
 /**
- * return the different between arr1 in relation to arr2 
- * @helper 
+ * return the different between arr1 in relation to arr2
+ * @helper
  * @private
- * _old_ = [1,2,3] 
- * _new_ = [2,3,4] 
+ * _old_ = [1,2,3]
+ * _new_ = [2,3,4]
  * @example - _old_ ~ _new_ = [1] => remove item
  * @example - _new_ ~ _old_ = [4] => add item
  * @param {Array::*} oldArray
  * @param {Array::*} newArray
  * @param {String} key
- * @return {Array::*} 
+ * @return {Array::*}
  */
 const arrayDiff = (oldArray, newArray, key) => {
-    if (!isArrayWithElement(oldArray) || !isArrayWithElement(newArray))
+    if (!isArray(oldArray) || !isArray(newArray)) {
         throw new NotAcceptable('Wrong input expect arrays.', { oldArray, newArray });
-
-    let a1BsonId = false;
-    if (isDefined(key) && isObjectIdWithTryToCast(oldArray[0][key]))
-        a1BsonId = true;
-
-    let a2BsonId = false;
-    if (isDefined(key) && isObjectIdWithTryToCast(newArray[0][key]))
-        a2BsonId = true;
+    }
 
     const diff = (a1, a2) => {
         if (isDefined(key))
-            a2 = a2.map(e => a2BsonId ? bsonIdToString(e[key]) : e[key]);
-        return a1.filter(x => !a2.includes(a1BsonId ? bsonIdToString(x[key]) : x[key] || x));
+            a2 = a2.map(e => isObjectIdWithTryToCast(e) ? bsonIdToString(e[key]) : e[key]);
+        return a1.filter(x => !a2.includes(isObjectIdWithTryToCast(x) ? bsonIdToString(x[key]) : x[key] || x));
     };
 
     return diff(oldArray, newArray);
@@ -299,8 +292,8 @@ const arrayDiff = (oldArray, newArray, key) => {
 /**
  * @helper
  * @requires function:arrayDiff
- * @param {Array::*} baseArray 
- * @param {Array::*} changedArray 
+ * @param {Array::*} baseArray
+ * @param {Array::*} changedArray
  * @param {String} [key] - optional for objects in arrays
  * @return {Object::{remove:[],add:[]} }
  */
@@ -310,11 +303,11 @@ exports.arrayRemoveAddDiffs = (baseArray, changedArray, key) => {
 
 // todo: use createUserWithRole to set new users
 /**
- * @helper 
+ * @helper
  * @private
  * @requires function::createUserWithRole
  * @param {Object::hook} hook
- * @param {Array::(stringId||Object::TeamUser||Object::String)} teamUsers 
+ * @param {Array::(stringId||Object::TeamUser||Object::String)} teamUsers
  * @param {Object::Team}
  * @param {String||BsonId} schoolId use sessionSchoolId
  */
@@ -345,7 +338,7 @@ const mappedInputUserIdsToTeamUsers = (hook, teamUsers, oldTeam, sessionSchoolId
             selectedRole = hook.findRole('name', 'teammember', '_id');
         }
 
-        //teamowner role can not repatched at the moment todo: later test if any other has this role, after map 
+        //teamowner role can not repatched at the moment todo: later test if any other has this role, after map
         if (isSameId(teamowner.userId, userId)) {
             return createUserWithRole(hook, {
                 userId,
@@ -367,8 +360,8 @@ const mappedInputUserIdsToTeamUsers = (hook, teamUsers, oldTeam, sessionSchoolId
 /**
  * @helper
  * @private
- * @param {Array::teamUser} teamUsers 
- * @param {Array||String} userIds 
+ * @param {Array::teamUser} teamUsers
+ * @param {Array||String} userIds
  * @return {Array::teamUser}
  */
 const removeTeamUsers = (teamUsers, userIds) => {
@@ -392,9 +385,9 @@ const removeTeamUsers = (teamUsers, userIds) => {
  * @helper
  * @private
  * @requires function::removeTeamUsers
- * @param {Array::String::ObjectId::schools} schoolIds 
- * @param {Array::TeamUser} teamUsers 
- * @param {Array::User} users 
+ * @param {Array::String::ObjectId::schools} schoolIds
+ * @param {Array::TeamUser} teamUsers
+ * @param {Array::User} users
  * @return {Array::TeamUser}
  */
 const removeNotValidUsersBySchoolIds = (schoolIds, teamUsers, users) => {
@@ -413,8 +406,8 @@ const removeNotValidUsersBySchoolIds = (schoolIds, teamUsers, users) => {
 const teamOwnerRoleExist = (hook, teamUsers, oldTeam, users) => {
     //todo later
     // const teamownerRoleId = hook.findRole('name', 'teamowner', '_id');
-    // remove logic in mappedInputUserIdsToTeamUsers for owner 
-    // test if any of this users has the role teamowner 
+    // remove logic in mappedInputUserIdsToTeamUsers for owner
+    // test if any of this users has the role teamowner
     // teamowner must have the userRole teacher!
     return teamUsers;
 };
@@ -446,10 +439,10 @@ exports.removeDuplicatedTeamUsers = removeDuplicatedTeamUsers;
  * @helper
  * @requires function::mappedInputUserIdsToTeamUsers
  * @requires function::removeNotValidUsersBySchoolIds
- * @param {Object::hook} hook 
- * @param {Array::Object::User} users 
+ * @param {Object::hook} hook
+ * @param {Array::Object::User} users
  * @param {String||BsonId} sessionSchoolId
- * @return {Array::TeamUser, default:[]} 
+ * @return {Array::TeamUser, default:[]}
  */
 exports.getTeamUsers = (hook, team, users, sessionSchoolId) => {
     let teamUsers = hook.data.userIds;
@@ -473,7 +466,7 @@ exports.getTeamUsers = (hook, team, users, sessionSchoolId) => {
 /**
  * @helper
  * @param {Object::hook} hook
- * @method all - but return for no hook.data or !patch || !create an empty array 
+ * @method all - but return for no hook.data or !patch || !create an empty array
  * @return {Array::Object::User default:[]}
  */
 exports.populateUsersForEachUserIdinHookData = hook => {
