@@ -84,7 +84,7 @@ describe('user service', function () {
 						reject(new Error('This call should fail because of an already existing user with the same email'));
 					})
 					.catch((err) => {
-						expect(err.message).to.equal('Ein Account mit dieser E-Mail Adresse ExistinG@aCCount.de existiert bereits!');
+						expect(err.message).to.equal('Die E-Mail Adresse ExistinG@aCCount.de ist bereits in Verwendung!');
 						resolve();
 					});
 			});

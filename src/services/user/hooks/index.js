@@ -26,13 +26,13 @@ const checkUnique = (hook) => {
 	if (email === undefined) {
 		return Promise.reject(new errors.BadRequest(`Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.`));
 	}
-	return userService.find({ query: {email: email.toLowerCase(), $populate: ["roles"]}})
+	return userService.find({ query: {email: email.toLowerCase()} })
 		.then(result => {
 			const length = result.data.length;
-			if (length === undefined || length > 2){
+			if (length === undefined || length >= 2){
 				return Promise.reject(new errors.BadRequest('Fehler beim Prüfen der Datenbankinformationen.'));
 			}
-			if (length <= 0){
+			if (length === 0){
 				return Promise.resolve(hook);
 			}
 
@@ -41,12 +41,12 @@ const checkUnique = (hook) => {
 			const isLoggedIn = (hook.params || {}).account && hook.params.account.userId ? true : false;
 			const asTask = (hook.params._additional || {}).asTask;
 
-			if (isLoggedIn || asTask === 'student') {
+			if (isLoggedIn || asTask === undefined || asTask === 'student') {
 				return Promise.reject(new errors.BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
-			}else if(asTask=='parent' && length==1){
-					userService.update({_id: user._id}, {
+			} else if (asTask === 'parent') {
+					userService.update({ _id: user._id }, {
 						$set: {
-							children: (user.children||[]).concat(input.children),
+							children: (user.children || []).concat(input.children),
 							firstName: input.firstName,
 							lastName: input.lastName
 						}
