@@ -9,8 +9,6 @@ const EventMatcher = {
 
     emit: function (model, action, message, context) {
 
-        console.log('Event to handle:', model, action, message, context);
-
         // handle events on course
         if (model === 'course' && message && message._id) {
             if (action === 'removed') {
