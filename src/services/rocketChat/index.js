@@ -9,7 +9,7 @@ const { randomPass, randomSuffix } = require('./randomPass');
 
 
 const REQUEST_TIMEOUT = 4000; // in ms
-const ROCKET_CHAT_URI = process.env.ROCKET_CHAT;
+const ROCKET_CHAT_URI = process.env.ROCKET_CHAT_URI;
 const ROCKET_CHAT_ADMIN_TOKEN = process.env.ROCKET_CHAT_ADMIN_TOKEN;
 const ROCKET_CHAT_ADMIN_ID = process.env.ROCKET_CHAT_ADMIN_ID;
 
