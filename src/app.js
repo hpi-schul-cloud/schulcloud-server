@@ -18,6 +18,7 @@ const defaultHeaders = require('./middleware/defaultHeaders');
 const setupSwagger = require('./swagger');
 const prettyError = require('pretty-error').start();
 const allHooks = require('./app.hooks');
+const notification = require('./events/notificationListener');
 
 require('console-stamp')(console);
 require('console-stamp')(winston );
@@ -57,6 +58,8 @@ app.use(compress())
 	.configure(services)
 	.configure(middleware)
 	.hooks(allHooks);
+
+notification.register(app);
 
 winston.cli();	// optimize for cli, like using colors
 winston.level = 'debug';

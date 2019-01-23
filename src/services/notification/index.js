@@ -203,16 +203,15 @@ class CallbackService {
 		this.options = options || {};
 	}
 
+	// todo remove auth
 	create(data, params) {
 
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account || {}).userId || params.payload.userId;
-
 		const options = {
 			uri: serviceUrls.notification + '/messages/' + data.messageId + '/seen',
 			method: 'POST',
-			body: { userId },
+			body: data,
 			json: true,
 			timeout: REQUEST_TIMEOUT
 		};

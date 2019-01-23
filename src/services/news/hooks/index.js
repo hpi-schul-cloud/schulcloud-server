@@ -6,6 +6,7 @@ const auth = require('feathers-authentication');
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const newsModel = require('../model').newsModel;
 const newsHistoryModel = require('../model').newsHistoryModel;
+const userModel = require('../../user/model').userModel;
 const logger = require('winston');
 
 const deleteNewsHistory = hook => {
@@ -16,6 +17,10 @@ const deleteNewsHistory = hook => {
 					.catch(err => logger.log('error', err));
 			}
 		});
+};
+
+const notifyUsers = hook => {
+	hook.app.emit('news:added', hook);
 };
 
 exports.before = {
@@ -32,7 +37,7 @@ exports.after = {
 	all: [],
 	find: [],
 	get: [],
-	create: [],
+	create: [notifyUsers],
 	update: [],
 	patch: [],
 	remove: []
