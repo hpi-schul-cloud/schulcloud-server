@@ -84,7 +84,7 @@
     "socketio-file-upload": "^0.7.0",
     "universal-analytics": "^0.4.17",
     "uuid": "^3.3.2",
-    "winston": "^2.3.0"
+    "winston": "^2.4.0"
   },
   "devDependencies": {
     "eslint": "^5.10.0",

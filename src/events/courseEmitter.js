@@ -9,17 +9,6 @@ const REQUEST_TIMEOUT = 8000;
 
 const winston = require('winston');
 
-const logger = winston.createLogger({
-    transports: [
-        new winston.transports.Console({
-            format: winston.format.combine(
-                winston.format.colorize(),
-                winston.format.simple()
-            )
-        })
-    ]
-});
-
 function sendCourseUpdatedPushMessage(course, receivers, tag) {
 
     if (!receivers) return Promise.reject('receivers missing!');
@@ -62,7 +51,7 @@ function sendCourseUpdatedPushMessage(course, receivers, tag) {
 }
 
 courseEmitter.on('updated', (courseId) => {
-    logger.info('course updated event...', courseId);
+    winston.info('course updated event...', courseId);
 
     return courseModel.findById(courseId).then(course => {
         if (!course) return Promise.reject('courseId not found');
@@ -73,12 +62,12 @@ courseEmitter.on('updated', (courseId) => {
 
         // todo send post message
         return sendCourseUpdatedPushMessage(course, [...userIds], 'course-data-updated');
-    }).catch(err => logger.info(err));
+    }).catch(err => winston.info(err));
 
 });
 
 courseEmitter.on('removed', (course) => {
-    logger.info('course removed event...', course);
+    winston.info('course removed event...', course);
 
     let userIds = new Set();
     course.teacherIds.forEach(id => userIds.add(id));
