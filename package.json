@@ -81,7 +81,9 @@
     "request-promise-native": "^1.0.3",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
+    "socketio": "^1.0.0",
     "socketio-file-upload": "^0.7.0",
+    "strip-js": "^1.2.0",
     "universal-analytics": "^0.4.17",
     "uuid": "^3.3.2",
     "winston": "^2.4.0"
