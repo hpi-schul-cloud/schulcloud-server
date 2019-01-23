@@ -59,13 +59,13 @@ module.exports = function () {
     app.use('/analytics', new Service());
 
     // Get our initialize service to that we can bind hooks
-    const contentService = app.service('/analytics');
+    const service = app.service('/analytics');
 
     // Set up our before hooks
-    contentService.before(hooks.before);
+    service.before(hooks.before);
 
     // Set up our after hooks
-    contentService.after(hooks.after);
+    service.after(hooks.after);
 };
 
 module.exports.Service = Service;
