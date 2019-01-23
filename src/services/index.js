@@ -29,6 +29,7 @@ const pseudonym = require("./pseudonym");
 const consent = require('./consent');
 const ldap = require('./ldap');
 const sync = require('./sync');
+const rocketChat = require('./rocketChat');
 
 const mongoose = require('mongoose');
 
@@ -68,4 +69,5 @@ module.exports = function () {
     app.configure(socket);
     app.configure(ldap);
     app.configure(sync);
+    app.configure(rocketChat);
 };
