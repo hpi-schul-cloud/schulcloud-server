@@ -299,38 +299,128 @@ exports.restrictToCurrentSchool = hook => {
 	});
 };
 
-exports.restrictToUsersOwnCourses = hook => {
+const userIsInThatCourse = (user, course, isCourse) => {
+	if (isCourse) {
+		return course.userIds.some(u => u.toString() === user._id.toString())
+			|| course.teacherIds.some(u => u.toString() === user._id.toString())
+			|| (course.substitutionIds || []).some(u => u.toString() === user._id.toString());
+	}
+
+	return course.userIds.some(u => u.toString() === user._id.toString())
+		|| user.roles.some(role => role.name === 'teacher');
+};
+
+exports.restrictToUsersOwnCourses = (hook) => {
 	let userService = hook.app.service('users');
 	return userService.find({
 		query: {
 			_id: hook.params.account.userId,
 			$populate: 'roles'
 		}
-	}).then(res => {
+	}).then((res) => {
 		let access = false;
-		res.data[0].roles.map(role => {
-			if (role.name === 'administrator' || role.name === 'superhero' )
+		res.data[0].roles.map((role) => {
+			if (role.name === 'administrator' || role.name === 'superhero' ) {
 				access = true;
+			}
 		});
-		if (access)
+		if (access) {
 			return hook;
+		}
 
 		if (hook.method === "get") {
 			let courseService = hook.app.service('courses');
-			return courseService.get(hook.id).then(course => {
+			return courseService.get(hook.id).then((course) => {
 				if (!(_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
 					!(_.some(course.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
 					!(_.some(course.substitutionIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
 					throw new errors.Forbidden('You are not in that course.');
 				}
 			});
-		} else if (hook.method === "find") {
+		} 
+		if (hook.method === "find") {
 			if (typeof(hook.params.query.$or) === 'undefined') {
 				hook.params.query.$or = [
 					{ userIds: res.data[0]._id },
 					{ teacherIds: res.data[0]._id },
 					{ substitutionIds: res.data[0]._id }
 				];
+			}
+		}
+		return hook;
+	});
+};
+
+exports.restrictToUsersOwnLessons = (hook) => {
+	const userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then((userResult) => {
+		let access = false;
+		const user = userResult.data[0];
+		user.roles.forEach((role) => {
+			if (role.name === 'administrator' || role.name === 'superhero') {
+				access = true;
+			}
+		});
+		if (access) {
+			return hook;
+		}
+		// before-hook
+		if (hook.type === 'before') {
+			let populate = hook.params.query.$populate;
+			if (typeof (populate) === 'undefined') {
+				populate = ['courseId', 'courseGroupId'];
+			} else if (Array.isArray(populate) && !populate.includes('courseId')) {
+				populate.push('courseId');
+				populate.push('courseGroupId');
+			}
+			hook.params.query.$populate = populate;
+		} else {
+			// after-hook
+			if (hook.method === 'get' && (hook.result || {})._id) {
+				let tempLesson = [hook.result];
+				tempLesson = tempLesson.filter((lesson) => {
+					if ('courseGroupId' in lesson) {
+						return userIsInThatCourse(user, lesson.courseGroupId, false);
+					}
+					return userIsInThatCourse(user, lesson.courseId, true)
+						|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
+				});
+				if (tempLesson.length === 0) {
+					throw new errors.Forbidden("You don't have access to that lesson.");
+				}
+				if ('courseGroupId' in hook.result) {
+					hook.result.courseGroupId = hook.result.courseGroupId._id;
+				} else {
+					hook.result.courseId = hook.result.courseId._id;
+				}
+			}
+
+			if (hook.method === 'find' && ((hook.result || {}).data || []).length > 0) {
+				hook.result.data = hook.result.data.filter((lesson) => {
+					if ('courseGroupId' in lesson) {
+						return userIsInThatCourse(user, lesson.courseGroupId, false);
+					}
+					return userIsInThatCourse(user, lesson.courseId, true)
+						|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
+				});
+
+				if (hook.result.data.length === 0) {
+					throw new errors.NotFound('There are no lessons that you have access to.');
+				} else {
+					hook.result.total = hook.result.data.length;
+				}
+				hook.result.data.forEach((lesson) => {
+					if ('courseGroupId' in lesson) {
+						lesson.courseGroupId = lesson.courseGroupId._id;
+					} else {
+						lesson.courseId = lesson.courseId._id;
+					}
+				});
 			}
 		}
 		return hook;

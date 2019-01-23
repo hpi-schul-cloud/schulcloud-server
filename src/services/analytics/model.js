@@ -26,7 +26,8 @@ const AnalyticsSchema = new Schema({
 
     swEnabled: { type: Boolean, 'default': false },
     swOffline: { type: Boolean, 'default': false },
-    school: { type: String, required: false }
+    school: { type: String, required: false },
+    networkProtocol: { type: String, required: false }
 
 });
 

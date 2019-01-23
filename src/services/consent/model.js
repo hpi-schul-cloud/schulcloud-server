@@ -11,7 +11,7 @@ const Schema = mongoose.Schema;
 const consentForm = ['analog', 'digital'];
 
 const consentSchema = new Schema({
-	userId: {type: Schema.Types.ObjectId, ref: 'user', required: true},
+	userId: {type: Schema.Types.ObjectId, ref: 'user', required: true, index: true},
 	userConsent: {
 		form: {type: String, enum: consentForm},
 		dateOfPrivacyConsent: {type: Date},
