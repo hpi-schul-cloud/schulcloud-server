@@ -228,7 +228,7 @@ class CSVSyncer extends Syncer {
 		const classMapping = await this.buildClassMapping(classes);
 		const collection = this.role === 'teacher' ? 'teacherIds' : 'userIds';
 		records.forEach((record) => {
-			const user = userByEmail[record.email];
+			const user = userByEmail[record.email.toLowerCase()];
 			if (user === undefined) return;
 			const splitClasses = CSVSyncer.splitClasses(record.class);
 			splitClasses.forEach((klass) => {
