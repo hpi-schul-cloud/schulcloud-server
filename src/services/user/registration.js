@@ -8,13 +8,13 @@ const logger = require('winston');
 const formatBirthdate1=(datestamp)=>{
 	if( datestamp==undefined )
 		return false;
-	
+
 	const d = datestamp.split('.');
 	return d[1]+'.'+d[0]+'.'+d[2];
 };
 
 const populateUser = (app, data) => {
-	let oldUser = {};
+	let oldUser;
 	let user = {
 		firstName: data.firstName,
 		lastName: data.lastName,
@@ -30,24 +30,24 @@ const populateUser = (app, data) => {
 
 	if (data.classId) user.classId = data.classId;
 	if (data.gender) user.gender = data.gender;
-	
+
 	if(data.importHash){
 		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId, $populate: ['roles'] }} ).then(users=>{
 			if(users.data.length <= 0 || users.data.length > 1) {
 				throw new errors.BadRequest("Kein Nutzer für die eingegebenen Daten gefunden.");
 			}
 			oldUser=users.data[0];
-			
+
 			Object.keys(oldUser).forEach(key => {
 				if(oldUser[key] !== null && key !== "firstName" && key !== "lastName") {
 					user[key]=oldUser[key];
 				}
 			});
-			
+
 			user.roles = user.roles.map(role => {
 				return typeof role==='object' ? role.name : role;
 			});
-			
+
 			delete user.importHash;
 			return {user, oldUser};
 		});
@@ -64,7 +64,7 @@ const insertUserToDB = (app,data,user)=> {
 				throw new errors.BadRequest("Fehler beim Updaten der Nutzerdaten.");}
 			);
 		});
-	}else{	
+	}else{
 		return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
 		.catch(err=> {
 			logger.warn(err);
@@ -116,7 +116,7 @@ const registerUser = function(data, params, app) {
 				return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 18 Jahre sein.`));
 			}
 		}
-		
+
 		// identical emails?
 		if (data.parent_email && data.parent_email === data.email) {
 			return Promise.reject(new errors.BadRequest("Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an."));
@@ -168,7 +168,7 @@ const registerUser = function(data, params, app) {
 					return Promise.reject(new Error("Fehler beim Erstellen des Accounts."));
 				});
 		}
-		
+
 	}).then(res => {
 		//add parent if necessary
 		if(data.parent_email) {
@@ -230,7 +230,7 @@ const registerUser = function(data, params, app) {
 					return userModel.userModel.create(oldUser);
 				}
 			}));
-			
+
 		}
 		if (parent && parent._id) {
 			rollbackPromises.push(userModel.userModel.findOneAndRemove({_id: parent._id}).exec());
@@ -257,7 +257,7 @@ module.exports = function (app) {
 		constructor() {
 
 		}
-		
+
 		create(data, params) {
 			return registerUser(data, params, app);
 		}
