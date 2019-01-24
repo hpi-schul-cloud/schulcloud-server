@@ -15,19 +15,17 @@ const checkIfCourseGroupLesson = (permission1, permission2, isCreating, hook) =>
 
 // add a shareToken to a lesson if course has a shareToken
 const checkIfCourseShareable = (hook) => {
+	if ('courseGroupId' in hook.result) return hook;
 	const courseId = hook.result.courseId;
 	const courseService = hook.app.service('courses');
 	const lessonsService = hook.app.service('lessons');
 
 	return courseService.get(courseId)
-		.then(course => {
-			if (!course.shareToken)
-				return hook;
+		.then((course) => {
+			if (!course.shareToken) return hook;
 
 			return lesson.findByIdAndUpdate(hook.result._id, { shareToken: nanoid(12) })
-				.then(lesson => {
-					return hook;
-				});
+				.then(lesson => hook);
 		});
 };
 

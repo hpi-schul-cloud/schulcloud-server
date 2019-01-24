@@ -174,6 +174,39 @@ class FileStorageService {
 	}
 }
 
+const fileBlacklist = [
+	/[dD]esktop.ini/,
+	/ehthumbs_vista.db/,
+	/ehthumbs.db/,
+	/Thumbs.db/,
+	/.com.apple.timemachine.donotpresent/,
+	/.VolumeIcon.icns/,
+	/.Trashes/,
+	/.TemporaryItems/,
+	/.Spotlight-V100/,
+	/.fseventsd/,
+	/.DocumentRevisions-V100/,
+	/.LSOverride/,
+	/.AppleDouble/,
+	/.DS_Store/,
+	/\w\*/,
+	/\w.lnk/,
+	/\w.msp/,
+	/\w.msm/,
+	/\w.msix/,
+	/\w.cab/,
+	/\w.msi/,
+	/\w.stackdump/,
+	/.nfs\w/,
+	/.Trash-\w/,
+	/.fuse_hidden\w/,
+	/._w/
+];
+
+const fileRegexCheck = (fileName) => {
+	return fileBlacklist.some(rx => rx.test(fileName));
+};
+
 class SignedUrlService {
 	constructor() {
 		this.docs = swaggerDocs.signedUrlService;
@@ -190,8 +223,12 @@ class SignedUrlService {
 	create({path, fileType, action, download, flatFileName}, params) {
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
-		let fileName = encodeURIComponent(pathUtil.basename(path));
+		let realFileName = pathUtil.basename(path);
+		let fileName = encodeURIComponent(realFileName);
 		let dirName = pathUtil.dirname(path);
+
+		if (fileRegexCheck(realFileName))
+			throw new errors.BadRequest(`Die Datei '${realFileName}' ist nicht erlaubt!`);
 
 		// normalize utf-8 chars
 		path = `${dirName}/${fileName}`;
