@@ -29,7 +29,6 @@ describe('helpdesk service', function() {
 			});
 	});
 
-
 	after(function(done) {
 		helpdeskService.remove(testProblem)
 			.then(result => {

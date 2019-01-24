@@ -33,6 +33,19 @@ const checkIfCourseShareable = (hook) => {
 	} else {
 		return hook;
 	}
+	/* MERGE MASTER N/21 - comment is master. CHeck if side effects for course groups occur
+	if ('courseGroupId' in hook.result) return hook;
+	const courseId = hook.result.courseId;
+	const courseService = hook.app.service('courses');
+	const lessonsService = hook.app.service('lessons');
+
+	return courseService.get(courseId)
+		.then((course) => {
+			if (!course.shareToken) return hook;
+
+			return lesson.findByIdAndUpdate(hook.result._id, { shareToken: nanoid(12) })
+				.then(lesson => hook);
+		});*/
 };
 
 exports.before = {
@@ -45,8 +58,8 @@ exports.before = {
 		}
 		return hook;
 	}],
-	find: [globalHooks.hasPermission('TOPIC_VIEW')],
-	get: [globalHooks.hasPermission('TOPIC_VIEW')],
+	find: [globalHooks.hasPermission('TOPIC_VIEW'), globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
+	get: [globalHooks.hasPermission('TOPIC_VIEW'), globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
 	create: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true), globalHooks.injectUserId, globalHooks.checkCorrectCourseOrTeamId],
 	update: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false)],
 	patch: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false), globalHooks.permitGroupOperation, globalHooks.checkCorrectCourseOrTeamId],
@@ -55,8 +68,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [],
-	get: [],
+	find: [globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
+	get: [globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
 	create: [checkIfCourseShareable],
 	update: [],
 	patch: [],

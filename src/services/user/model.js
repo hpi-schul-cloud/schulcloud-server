@@ -27,7 +27,10 @@ const userSchema = new Schema({
 	discoverable: {type: Boolean, default: false},
 
 	ldapDn: {type:String},
-	ldapId: {type:String}
+	ldapId: {type:String},
+	
+	customAvatarBackgroundColor: {type:String},
+	avatarSettings: {type:Object},
 },{
 	timestamps: true
 });

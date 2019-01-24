@@ -12,6 +12,7 @@ const rest = require('feathers-rest');
 const bodyParser = require('body-parser');
 const socketio = require('feathers-socketio');
 const middleware = require('./middleware');
+const sockets = require('./sockets');
 const services = require('./services');
 const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
@@ -58,8 +59,10 @@ app.use(compress())
 	.configure(socketio())
 
 	// auth is setup in /authentication/
-
 	.configure(services)
+	
+	.configure(socketio())
+	.configure(sockets)
 	.configure(middleware)
 	.hooks(allHooks);
 

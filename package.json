@@ -2,14 +2,16 @@
   "name": "schulcloud-server",
   "description": "",
   "version": "0.12.0",
-  "homepage": "",
+  "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
     "feathers"
   ],
   "license": "GPL",
   "repository": {},
-  "author": {},
+  "author": {
+    "name": "Schul-Cloud Team"
+  },
   "contributors": [],
   "bugs": {},
   "engines": {
@@ -17,20 +19,16 @@
   },
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
-    "test": "./backup.sh -p setup/ -D schulcloud-test -a import && npm run coverage",
-    "test-windows": "sh ./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run mocha-windows",
-    "test-windows-wo-db": "npm run lint && npm run mocha-windows",
+    "seed": "./backup.sh -p setup/ -D schulcloud-test -a import",
+    "test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
     "backup": "./backup.sh -a -b export",
     "setup": "./backup.sh -p setup/ -a import",
     "start": "node src/",
     "startd": "nodemon src/",
     "debug": "nodemon --inspect=5959 src/",
-    "coverage": "NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha -- -- test/**/*.test.js",
-    "coverage-windows": "set NODE_ENV=test&&nyc --reporter=text-summary node_modules/.bin/_mocha -- -- test/**/*.test.js",
-    "mocha": "NODE_ENV=test mocha test/ --recursive",
-    "mocha-windows": "set NODE_ENV=test&& mocha test/ --recursive",
-    "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
-    "mocha-test-specific-windows": "set NODE_ENV=test&& mocha test/app.hooks.test.js"
+    "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha -- -- test/**/*.test.js",
+    "mocha": "cross-env NODE_ENV=test mocha test/ --recursive",
+    "mocha-inspect": "cross-env NODE_ENV=test mocha --debug-brk --inspect test/ --recursive"
   },
   "dependencies": {
     "aws-sdk": "^2.306.0",
@@ -58,8 +56,9 @@
     "feathers-hooks": "^1.7.1",
     "feathers-mongoose": "^3.6.2",
     "feathers-rest": "^1.6.0",
-    "feathers-socketio": "^1.4.2",
+    "feathers-socketio": "^2.0.1",
     "feathers-swagger": "^0.3.2",
+    "file-type": "^9.0.0",
     "freeport": "^1.0.5",
     "jwt-decode": "^2.2.0",
     "ldapjs": "git+https://git@github.com/Blizzard/node-ldapjs.git",
@@ -78,13 +77,19 @@
     "pretty-error": "^2.0.3",
     "querystring": "^0.2.0",
     "randexp": "^0.4.6",
+    "read-chunk": "^3.0.0",
     "request-promise-native": "^1.0.3",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
+    "socketio": "^1.0.0",
+    "socketio-file-upload": "^0.6.2",
+    "strip-js": "^1.0.6",
+    "universal-analytics": "^0.4.17",
     "uuid": "^3.3.2",
     "winston": "^2.3.0"
   },
   "devDependencies": {
+    "cross-env": "^5.2.0",
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",

@@ -22,7 +22,8 @@ const schoolSchema = new Schema({
 	experimental: {type: Boolean, 'default': false},
 	pilot: {type: Boolean, 'default': false},
 	currentYear: {type: Schema.Types.ObjectId, ref:'year'},
-	purpose: {type: String}
+	purpose: {type: String},
+	logo_dataUrl: {type: String},
 },{
 	timestamps: true
 });

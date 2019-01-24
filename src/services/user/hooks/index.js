@@ -4,6 +4,7 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const errors = require('feathers-errors');
+const logger = require('winston');
 
 /**
  *
@@ -67,6 +68,72 @@ const checkUniqueAccount = (hook) => {
 			if(result.length > 0) return Promise.reject(new errors.BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`));
 			return Promise.resolve(hook);
 		});
+};
+
+const updateAccountUsername = (hook) => {
+	let accountService = hook.app.service('/accounts');
+	
+	accountService.find({ query: {userId: hook.id}})
+		.then(result =>{
+			if (result.length == 0) {
+				return Promise.resolve(hook);
+			}
+			let account = result[0];
+			let accountId = (account._id).toString();
+			if (!account.systemId){				
+				if (!hook.data.email) {
+					return Promise.resolve(hook);
+				}
+				const {email} = hook.data;
+				return accountService.patch(accountId, {username: email}, {account: hook.params.account})
+					.then(result => {
+						return Promise.resolve(hook);
+					});
+			} else {
+				hook.result = {};
+				return Promise.resolve(hook);
+			}
+		}).catch(error => {
+			logger.log(error);
+			return Promise.reject(error);
+		});
+	};
+  
+const removeStudentFromClasses = (hook) => {
+	const classesService = hook.app.service('/classes');
+	const userId = hook.id;
+	if (userId === undefined) throw new errors.BadRequest(`Fehler beim Entfernen des Users aus abhängigen Klassen`);
+
+
+	const query = { userIds: userId };
+
+	return classesService.find({ query: query})
+	.then(classes => {
+		return Promise.all(
+			classes.data.map(myClass => {
+				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
+				return classesService.patch(myClass._id, myClass);
+			})
+		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err);});
+	});
+};
+
+const removeStudentFromCourses = (hook) => {
+	const coursesService = hook.app.service('/courses');
+	const userId = hook.id;
+	if (userId === undefined) throw new errors.BadRequest(`Fehler beim Entfernen des Users aus abhängigen Kursen`);
+
+	const query = { userIds: userId };
+
+	return coursesService.find({ query: query})
+	.then(courses => {
+		return Promise.all(
+			courses.data.map(course => {
+				course.userIds.splice(course.userIds.indexOf(userId), 1);
+				return coursesService.patch(course._id, course);
+			})
+		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err);});
+	});
 };
 
 const sanitizeData = (hook) => {
@@ -156,6 +223,32 @@ const permissionRoleCreate = async (hook) =>{
 	}
 };
 
+const securePatching = (hook) => {
+	return Promise.all([
+		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
+		globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
+		globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
+		globalHooks.hasRole(hook, hook.id, 'student')
+	])
+	.then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
+		if (!isSuperHero) {
+			delete hook.data.schoolId;
+			delete (hook.data.$push || {}).schoolId;
+		}
+		if (!(isSuperHero || isAdmin)) {
+			delete hook.data.roles;
+			delete (hook.data.$push || {}).roles;
+		}
+		if (hook.params.account.userId != hook.id) {
+			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent)))
+			{
+				return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'));
+			}
+		}
+		return Promise.resolve(hook);
+	});
+};
+
 exports.before = function(app) {
 	return {
 		all: [],
@@ -179,15 +272,18 @@ exports.before = function(app) {
 		update: [
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
+			//TODO only local for LDAP
 			sanitizeData,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name')
 		],
 		patch: [
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
+			globalHooks.ifNotLocal(securePatching),
 			globalHooks.permitGroupOperation,
 			sanitizeData,
-			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
+			updateAccountUsername,
 		],
 		remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USER_CREATE'), globalHooks.permitGroupOperation]
 	};
@@ -236,6 +332,48 @@ const decorateUser = (hook) => {
 /**
  *
  * @param hook {object} - the hook of the server-request
+ * @returns {object} - the hook with the decorated user avatar
+ */
+const decorateAvatar = (hook) => {
+	if (hook.result.total){
+		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
+		(hook.result.data || []).map(user => {
+			user = setAvatarData(user);
+		});
+	}else{
+		//run and find with only one user
+		hook.result = setAvatarData(hook.result);
+	}
+
+	return Promise.resolve(hook);
+};
+
+/**
+ *
+ * @param user {object} - a user
+ * @returns {object} - a user with avatar info
+ */
+const setAvatarData = (user) => {
+	if (user.firstName && user.lastName){
+		user.avatarInitials = user.firstName.charAt(0) + user.lastName.charAt(0);
+	}else{
+		user.avatarInitials = "?";
+	}
+	//css readable value like "#ff0000" needed
+	const colors = ["#4a4e4d", "#0e9aa7", "#3da4ab", "#f6cd61", "#fe8a71"];
+	if (user.customAvatarBackgroundColor){
+		user.avatarBackgroundColor = user.customAvatarBackgroundColor;
+	}else{
+		// choose colors based on initials 
+		var index = (user.avatarInitials.charCodeAt(0) + user.avatarInitials.charCodeAt(1)) % colors.length;
+		user.avatarBackgroundColor = colors[index];	
+	} 
+	return user;
+}
+
+/**
+ *
+ * @param hook {object} - the hook of the server-request
  * @returns {object} - the hook with the decorated users
  */
 const decorateUsers = (hook) => {
@@ -274,8 +412,9 @@ const User = require('../model');
 
 exports.after = {
 	all: [],
-	find: [decorateUsers],
+	find: [decorateAvatar, decorateUsers],
 	get: [
+		decorateAvatar,
 		decorateUser,
 		globalHooks.computeProperty(User.userModel, 'getPermissions', 'permissions'),
 		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'}))
@@ -283,5 +422,9 @@ exports.after = {
 	create: [handleClassId],
 	update: [],
 	patch: [],
-	remove: [pushRemoveEvent]
+	remove: [
+		pushRemoveEvent, 
+		removeStudentFromClasses,
+		removeStudentFromCourses,
+	],
 };

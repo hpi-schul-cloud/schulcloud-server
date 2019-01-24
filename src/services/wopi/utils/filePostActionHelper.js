@@ -50,6 +50,16 @@ const { FileModel } = require('../../fileStorage/model');
   });
  };
 
+ /** https://wopirest.readthedocs.io/en/latest/files/GetShareUrl.html */
+ const shareUrl = (file, payload, account, app) => {
+	throw new errors.NotImplemented("This function is currently not implemented!");
+ };
+
+ /** https://wopirest.readthedocs.io/en/latest/files/PutUserInfo.html */
+ const putUserInfo = (file, payload, account, app) => {
+	throw new errors.NotImplemented("This function is currently not implemented!");
+ };
+
 
  const actionHeaderMap = {
    'DELETE': deleteFile,
@@ -57,7 +67,9 @@ const { FileModel } = require('../../fileStorage/model');
    'GET_LOCK': getLock,
    'UNLOCK': unlock,
    'REFRESH_LOCK': lock,
-   'RENAME_FILE': renameFile
+   'RENAME_FILE': renameFile,
+   'GET_SHARE_URL': shareUrl,
+   'PUT_USER_INFO': putUserInfo
  };
 
  module.exports = header => {

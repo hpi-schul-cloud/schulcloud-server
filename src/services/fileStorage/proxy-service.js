@@ -490,11 +490,10 @@ const copyService = {
 					newFile,
 					fileObject,
 					canRead(userId, file),
-					canWrite(userId, parent)
+					canWrite(userId, parent),
 				]);
 			})
 			.then(([newFile, fileObject]) => {
-
 				// copy file on external storage
 				newFile.storageFileName = generateFlatFileName(newFile.name);
 
@@ -507,7 +506,7 @@ const copyService = {
 			.then(([newFile, fileObject]) => {
 				return FileModel.create({
 					...fileObject,
-					...newFile
+					...newFile,
 				});
 			});
 	}
@@ -554,14 +553,18 @@ const newFileService = {
 const filePermissionService = {
 	async patch(_id, data, params) {
 		const { payload: { userId } } = params;
-		const { role, write, read, create } = data;
+		const {
+			role,
+			write,
+			read,
+			create,
+		} = data;
 
 		return canWrite(userId, _id)
 			.then(() => Promise.all([
 				FileModel.findOne({ _id }).exec(),
-				RoleModel.findOne({ name: role }).exec()
-			])
-			)
+				RoleModel.findOne({ name: role }).exec(),
+			]))
 			.then(([fileObject, roleObject]) => {
 
 				if (!roleObject) {
@@ -628,7 +631,7 @@ module.exports = function () {
 		'/fileStorage/copy',
 		'/fileStorage/files/new',
 		'/fileStorage/permission',
-	].forEach(path => {
+	].forEach((path) => {
 		// Get our initialize service to that we can bind hooks
 		const service = app.service(path);
 		service.before(before);
