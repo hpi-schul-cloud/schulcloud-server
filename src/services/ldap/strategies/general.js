@@ -121,29 +121,31 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 
 		const {
 			classAttributeNameMapping,
-			groupPathAdditions,
+			classPathAdditions,
 		} = this.config.providerOptions;
 
-		const options = {
-			filter: `${classAttributeNameMapping.description}=*`,
-			scope: 'sub',
-			attributes: [
-				classAttributeNameMapping.dn,
-				classAttributeNameMapping.description,
-				classAttributeNameMapping.uniqueMember,
-			],
-		};
-		const searchString = `${groupPathAdditions},${this.config.rootPath}`;
-		return this.app.service('ldap').searchCollection(this.config, searchString, options)
-			.then((data) => {
-				return data.map((obj) => {
-					return {
-						className: obj[classAttributeNameMapping.description],
-						ldapDn: obj[classAttributeNameMapping.dn],
-						uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
-					};
+		if (classPathAdditions !== '') {
+			const options = {
+				filter: `${classAttributeNameMapping.description}=*`,
+				scope: 'sub',
+				attributes: [
+					classAttributeNameMapping.dn,
+					classAttributeNameMapping.description,
+					classAttributeNameMapping.uniqueMember,
+				],
+			};
+			const searchString = `${classPathAdditions},${this.config.rootPath}`;
+			return this.app.service('ldap').searchCollection(this.config, searchString, options)
+				.then((data) => {
+					return data.map((obj) => {
+						return {
+							className: obj[classAttributeNameMapping.description],
+							ldapDn: obj[classAttributeNameMapping.dn],
+							uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
+						};
+					});
 				});
-			});
+		}
 	}
 }
 
