@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const { BadRequest } = require('feathers-errors');
+const { BadRequest, NotFound } = require('feathers-errors');
 const { setupUser, deleteUser } = require('../helper/helper.user');
 const app = require('../../../../src/app');
 const {
@@ -98,8 +98,8 @@ describe('hook helpers', () => {
 	});
 
 	describe('arrayRemoveAddDiffs', () => {
-		it.skip('should work for empty arrays', () => {
-			expect(arrayRemoveAddDiffs([], [])).to.equal({ add: [], remove: [] });
+		it('should work for empty arrays', () => {
+			expect(arrayRemoveAddDiffs([], [])).to.deep.equal({add: [], remove: []});
 		});
 
 		it('should work for plain arrays', () => {
@@ -283,5 +283,92 @@ describe('hook helpers', () => {
 				await deleteUser(userId4);
 			}));
 		});
+	});
+
+	describe('getSessionUser', () => {
+		it('should fail for invalid sessionUser data', () => {
+			const hook = {
+				params: {
+					account: {
+						userId: 'foobar',
+					},
+				},
+			};
+			return getSessionUser(hook)
+				.then(() => {
+					throw new Error('This should not happen due to an invalid sessionUser object');
+				})
+				.catch((err) => {
+					expect(err instanceof NotFound).to.equal(true);
+					expect(err.message).to.equal('User not found.');
+				});
+		});
+
+		it('should return the sessionUser if it is defined in the hook context', () => {
+			const hook = {
+				params: {
+					account: {
+						userId: undefined,
+					},
+				},
+				additionalInfosTeam: {
+					sessionUser: {
+						aaaaa: '#*783dhshad7mad37',
+					},
+				},
+			};
+			return getSessionUser(hook)
+				.then((sessionUser) => {
+					expect(sessionUser).to.deep.equal(hook.additionalInfosTeam.sessionUser);
+					expect(hook.additionalInfosTeam.isSuperhero).to.equal(false);
+				});
+		});
+
+		it('should should set isSuperhero flag according to sessionUser roles', () => {
+			const hook = {
+				params: {
+					account: {
+						userId: undefined,
+					},
+				},
+				additionalInfosTeam: {
+					sessionUser: {
+						roles: [
+							{ name: 'teacher' },
+							{ name: 'superhero' },
+						],
+					},
+				},
+			};
+			return getSessionUser(hook)
+				.then((sessionUser) => {
+					expect(sessionUser).to.deep.equal(hook.additionalInfosTeam.sessionUser);
+					expect(hook.additionalInfosTeam.isSuperhero).to.equal(true);
+				});
+		});
+
+		it('should populate the sessionUser if an account id is set', async () => {
+			const { user } = await setupUser('superhero');
+			const hook = {
+				app,
+				params: {
+					account: {
+						userId: user._id,
+					},
+				},
+				additionalInfosTeam: {},
+			};
+
+			await getSessionUser(hook)
+				.then((sessionUser) => {
+					expect(sessionUser._id).to.deep.equal(user._id);
+					expect(sessionUser.firstName).to.deep.equal(user.firstName);
+					expect(sessionUser.lastName).to.deep.equal(user.lastName);
+					expect(hook.additionalInfosTeam.isSuperhero).to.equal(true);
+				});
+
+			await deleteUser(user._id);
+		});
+
 	});
 });
