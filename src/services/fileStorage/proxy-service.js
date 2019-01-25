@@ -189,18 +189,18 @@ const fileBlacklist = [
 	/^\.LSOverride$/,
 	/^\.AppleDouble$/,
 	/^\.DS_Store$/,
-	/^\w*\*$/,
-	/^\w*\.lnk$/,
-	/^\w*\.msp$/,
-	/^\w*\.msm$/,
-	/^\w*\.msix$/,
-	/^\w*\.cab$/,
-	/^\w*\.msi$/,
-	/^\w*\.stackdump$/,
-	/^\.nfs\w*$/,
-	/^\.Trash-\w*$/,
-	/^\.fuse_hidden\w*$/,
-	/^\.\w*$/
+	/^.*\*$/,
+	/^.*\.lnk$/,
+	/^.*\.msp$/,
+	/^.*\.msm$/,
+	/^.*\.msi$/,
+	/^.*\.cab$/,
+	/^.*\.msi$/,
+	/^.*\.stackdump$/,
+	/^\.nfs.*$/,
+	/^\.Trash-.*$/,
+	/^\.fuse_hidden.*$/,
+	/^\..*$/
 ];
 
 const regexCheck = (fileName, list) => {
@@ -278,8 +278,8 @@ class SignedUrlService {
 const folderBlacklist = [
 	/^[a-zA-Z]{1}_drive$/,
 	/^Windows$/,
-	/^\$\w*$/,
-	/^\.\w*$/,
+	/^\$.*$/,
+	/^\..*$/,
 	/^Temporary Items$/,
 	/^Network Trash Folder$/,
 	/^ *$/
