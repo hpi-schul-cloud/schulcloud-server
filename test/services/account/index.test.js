@@ -5,6 +5,8 @@ const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 
 const app = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(app);
+
 const accountService = app.service('/accounts');
 const userService = app.service('/users');
 const registrationPinsService = app.service('/registrationPins');
@@ -14,22 +16,26 @@ let accountId = undefined;
 let passwordHash = undefined;
 const accountPw = 'ca4t9fsfr3dsd';
 
-describe('account service', function () {
+describe('Account Service', () => {
+	after(() => {
+		return testObjects.cleanup();
+	});
+
 	it('registered the accounts service', () => {
 		assert.ok(app.service('accounts'));
 	});
 
-	describe('Account creation', () => {
+	describe('CREATE route', () => {
 		it('should work', async () => {
-			let userObject = {
-				firstName: "Max",
-				lastName: "Mustermann",
-				email: "max" + Date.now() + "@mustermann.de",
-				schoolId: "584ad186816abba584714c94"
+			const userObject = {
+				firstName: 'Max',
+				lastName: 'Mustermann',
+				email: `max${Date.now()}@mustermann.de`,
+				schoolId: '584ad186816abba584714c94',
 			};
 
 			const registrationPin = await registrationPinsService.create({
-				email: userObject.email
+				email: userObject.email,
 			});
 			// verify registration pin:
 			await registrationPinsService.find({
@@ -42,10 +48,10 @@ describe('account service', function () {
 			const user = await userService.create(userObject);
 			assert.equal(user.lastName, userObject.lastName);
 
-			let accountObject = {
-				username: "max" + Date.now() + "@mHuEsLtIeXrmann.de",
-				password: "ca4t9fsfr3dsd",
-				userId: user._id
+			const accountObject = {
+				username: `max${Date.now()}@mHuEsLtIeXrmann.de`,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
 			};
 
 			const account = await accountService.create(accountObject);
@@ -58,8 +64,8 @@ describe('account service', function () {
 
 		it('should fail if the account already exists', async () => {
 			const accountDetails = {
-				username: "max" + Date.now() + "@mHuEsLtIeXrmann.de",
-				password: "ca4t9fsfr3dsd",
+				username: `max${Date.now()}@mHuEsLtIeXrmann.de`,
+				password: 'ca4t9fsfr3dsd',
 				userId: new ObjectId(),
 
 			};
@@ -110,7 +116,7 @@ describe('account service', function () {
 		});
 
 		it('should convert the username to lowercase and trim whitespace', async () => {
-			let accountDetails = {
+			const accountDetails = {
 				username: '  EXISTING@account.DE ',
 				password: 'ca4t9fsfr3dsd',
 				userId: new ObjectId(),
@@ -136,55 +142,140 @@ describe('account service', function () {
 		});
 	});
 
-	it('fail to patch userId', () => {
-		return accountService.patch("0000d213816abba584714caa", { userId: "0000d186816abba584714c5e" })
-			.catch(exception => {
+	describe('PATCH route', () => {
+		it('should not override userIds', async () => {
+			const accountDetails = {
+				username: 'some@user.de',
+				password: 'ca4t9fsfr3dsd',
+				userId: new ObjectId(),
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				await accountService.patch(account._id, { userId: new ObjectId() });
+				throw new Error('This should not happen.');
+			} catch (exception) {
 				assert.equal(exception.message, 'Die userId kann nicht geändert werden.');
 				assert.equal(exception.code, 403);
-			});
-	});
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
 
-	it('not able to access whole find', () => {
-		return accountService.find()
-			.catch(exception => {
-				assert.equal(exception.message, 'Cannot read property \'username\' of undefined');
-			});
-	});
-
-	it('finds account by username', () => {
-		return accountService.find({ query: {username: "admin@schul-cloud.org"}})
-			.then(result => {
-				assert(result.length == 1);
-				assert.equal(result[0].username, "admin@schul-cloud.org");
-				assert.equal(result[0]._id, "0000d213816abba584714caa");
-			});
-	});
-
-	it('failed to patch password', () => {
-		return accountService.patch('0000d213816abba584714c0a', { password: '1234'})
-			.catch(exception => {
+		it('should fail to patch the password if it does not meet requirements', async () => {
+			const accountDetails = {
+				username: 'some@user.de',
+				password: 'ca4t9fsfr3dsd',
+				userId: new ObjectId(),
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				await accountService.patch('0000d213816abba584714c0a', { password: '1234'});
+				throw new Error('This should not happen.');
+			} catch (exception) {
 				assert.equal(exception.message, 'Dein Passwort stimmt mit dem Pattern nicht überein.');
-			});
-	});
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
 
-	it('hash and verification mismatch', () => {
-		return accountService.patch(accountId, { password: 'Schul&Cluedo76 ', password_verification: accountPw}, { account: {userId: '0000d213816abba584714c0b', password: '$2a$10$CHN6Qs2Igbn.s4BengUOfu9.0qVuy0uyTrzDDJszw9e1lBZwUFqeq' }})
-			.catch(exception => {
+		it('should fail on verification mismatch', async () => {
+			const user = await testObjects.createTestUser();
+			const accountDetails = {
+				username: 'some@user.de',
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				await accountService.patch(account._id, {
+					password: 'Schul&Cluedo76 ',
+					password_verification: accountDetails.password,
+				}, {
+					account: {
+						userId: user._id,
+						password: '$2a$10$CHN6Qs2Igbn.s4BengUOfu9.0qVuy0uyTrzDDJszw9e1lBZwUFqeq',
+					}
+				});
+				throw new Error('This should not happen.');
+			} catch (exception) {
 				assert.equal(exception.message, 'Dein Passwort ist nicht korrekt!');
-			});
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
+
+		it('should be able to patch the password if verification is correct', async () => {
+			const user = await testObjects.createTestUser();
+			const password = 'ca4t9fsfr3dsd';
+			const accountDetails = {
+				username: user.email,
+				password,
+				userId: user._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				const result = await accountService.patch(account._id, {
+					password: '123SchulCloud$',
+					password_verification: password,
+				}, {
+					account: {
+						userId: accountDetails.userId,
+						password: account.password,
+					},
+				});
+				expect(account.password).to.not.equal(result.password);
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
+
+		it('should successfully patch activated to true', async () => {
+			const user = await testObjects.createTestUser();
+			const accountDetails = {
+				username: user.email,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				const result = await accountService.patch(account._id, {
+					activated: true,
+				}, {
+					account: {
+						userId: account.userId,
+					},
+				});
+				assert.equal(result.activated, true);
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
 	});
 
-	it('successfully patch password', () => {
-		return accountService.patch(accountId, { password: 'Schul&Cluedo76 ', password_verification: accountPw}, { account: {userId: userId, password: passwordHash }})
-			.then(account => {
-				assert.notEqual(account.password, passwordHash);
-			});
-	});
+	describe('FIND route', () => {
+		it('should not be able to find all accounts via empty query', () => {
+			return accountService.find()
+				.catch((exception) => {
+					assert.equal(exception.message, 'Cannot read property \'username\' of undefined');
+				});
+		});
 
-	it('successfully patch activated true', () => {
-		return accountService.patch(accountId, {activated: true}, { account: {userId: userId }})
-			.then(account => {
-				assert.equal(account.activated, true);
-			});
+		it('should find accounts by username', async () => {
+			const username = 'adam.admin@schul-cloud.org';
+			const accountDetails = {
+				username: username,
+				password: 'ca4t9fsfr3dsd',
+				userId: new ObjectId(),
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				const result = await accountService.find({ query: { username } });
+				expect(result.length).to.equal(1);
+				expect(result[0].username).to.equal(username);
+				expect(result[0]._id).to.deep.equal(account._id);
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
 	});
 });
