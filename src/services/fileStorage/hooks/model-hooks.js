@@ -41,11 +41,16 @@ const restrictToCurrentUser = hook => {
 	});
 };
 
+const replaceAnd = (hook) => {
+	hook.data.name = hook.data.name.replace(/&amp;/g, '&');
+	return hook;
+};
+
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
 	find: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
 	get: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
-	create: [globalHooks.hasPermission('FILESTORAGE_CREATE')],
+	create: [globalHooks.hasPermission('FILESTORAGE_CREATE'), replaceAnd],
 	update: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
 	patch: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
 	remove: [globalHooks.hasPermission('FILESTORAGE_REMOVE')]

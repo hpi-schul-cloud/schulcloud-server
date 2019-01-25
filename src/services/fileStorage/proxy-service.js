@@ -175,36 +175,36 @@ class FileStorageService {
 }
 
 const fileBlacklist = [
-	/[dD]esktop.ini/,
-	/ehthumbs_vista.db/,
-	/ehthumbs.db/,
-	/Thumbs.db/,
-	/.com.apple.timemachine.donotpresent/,
-	/.VolumeIcon.icns/,
-	/.Trashes/,
-	/.TemporaryItems/,
-	/.Spotlight-V100/,
-	/.fseventsd/,
-	/.DocumentRevisions-V100/,
-	/.LSOverride/,
-	/.AppleDouble/,
-	/.DS_Store/,
-	/\w\*/,
-	/\w.lnk/,
-	/\w.msp/,
-	/\w.msm/,
-	/\w.msix/,
-	/\w.cab/,
-	/\w.msi/,
-	/\w.stackdump/,
-	/.nfs\w/,
-	/.Trash-\w/,
-	/.fuse_hidden\w/,
-	/._w/
+	/^[dD]esktop\.ini$/,
+	/^ehthumbs_vista\.db$/,
+	/^ehthumbs\.db$/,
+	/^Thumbs\.db$/,
+	/^\.com\.apple\.timemachine\.donotpresent$/,
+	/^\.VolumeIcon\.icns$/,
+	/^\.Trashes$/,
+	/^\.TemporaryItems$/,
+	/^\.Spotlight-V100$/,
+	/^\.fseventsd$/,
+	/^\.DocumentRevisions-V100$/,
+	/^\.LSOverride$/,
+	/^\.AppleDouble$/,
+	/^\.DS_Store$/,
+	/^\w*\*$/,
+	/^\w*\.lnk$/,
+	/^\w*\.msp$/,
+	/^\w*\.msm$/,
+	/^\w*\.msix$/,
+	/^\w*\.cab$/,
+	/^\w*\.msi$/,
+	/^\w*\.stackdump$/,
+	/^\.nfs\w*$/,
+	/^\.Trash-\w*$/,
+	/^\.fuse_hidden\w*$/,
+	/^\.\w*$/
 ];
 
-const fileRegexCheck = (fileName) => {
-	return fileBlacklist.some(rx => rx.test(fileName));
+const regexCheck = (fileName, list) => {
+	return list.some(rx => rx.test(fileName));
 };
 
 class SignedUrlService {
@@ -224,10 +224,14 @@ class SignedUrlService {
 		path = removeLeadingSlash(pathUtil.normalize(path)); // remove leading and double slashes
 		let userId = params.payload.userId;
 		let realFileName = pathUtil.basename(path);
+
+		if (realFileName.includes('&amp;'))
+			realFileName = realFileName.replace(/&amp;/g, '&');
+
 		let fileName = encodeURIComponent(realFileName);
 		let dirName = pathUtil.dirname(path);
 
-		if (fileRegexCheck(realFileName))
+		if (regexCheck(realFileName, fileBlacklist))
 			throw new errors.BadRequest(`Die Datei '${realFileName}' ist nicht erlaubt!`);
 
 		// normalize utf-8 chars
@@ -271,6 +275,16 @@ class SignedUrlService {
 	}
 }
 
+const folderBlacklist = [
+	/^[a-zA-Z]{1}_drive$/,
+	/^Windows$/,
+	/^\$\w*$/,
+	/^\.\w*$/,
+	/^Temporary Items$/,
+	/^Network Trash Folder$/,
+	/^ *$/
+];
+
 class DirectoryService {
 	constructor() {
 		this.docs = swaggerDocs.directoryService;
@@ -285,6 +299,9 @@ class DirectoryService {
 		let path = data.path;
 		let fileName = pathUtil.basename(path);
 		let dirName = pathUtil.dirname(path) + "/";
+
+		if (regexCheck(fileName, folderBlacklist))
+			throw new errors.BadRequest(`Die Datei '${fileName}' ist nicht erlaubt!`);
 
 		return filePermissionHelper.checkPermissions(userId, path)
 			.then(_ => {
