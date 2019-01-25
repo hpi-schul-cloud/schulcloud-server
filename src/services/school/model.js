@@ -22,10 +22,15 @@ const schoolSchema = new Schema({
 	pilot: {type: Boolean, 'default': false},
 	currentYear: {type: Schema.Types.ObjectId, ref:'year'},
 	logo_dataUrl: {type: String},
-	feeds: {type: [String]}
+	feeds: [new Schema({
+		source: { type: String, required: true },
+		tag: { type: String, required: true }
+	})]
 },{
 	timestamps: true
 });
+
+
 
 const yearSchema = new Schema({
 	name: {type: String, required: true}
