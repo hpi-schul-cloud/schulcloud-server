@@ -208,9 +208,11 @@ exports.before = {
 	update: [
 		auth.hooks.authenticate('jwt'),
 		globalHooks.hasPermission('ACCOUNT_EDIT'),
+		sanitizeUsername,
 	],
 	patch: [
 		auth.hooks.authenticate('jwt'),
+		sanitizeUsername,
 		securePatching,
 		globalHooks.permitGroupOperation,
 		trimPassword,
