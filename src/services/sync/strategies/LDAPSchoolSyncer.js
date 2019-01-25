@@ -172,7 +172,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 		if (!("uniqueMembers" in ldapClass)) {
 			return Promise.resolve();
 		}
-		if (Array.isArray(ldapClass.uniqueMembers) == false) {
+		if (Array.isArray(ldapClass.uniqueMembers) === false) {
 			ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 		}
 		return Promise.all(ldapClass.uniqueMembers.map(ldapUserDn => {

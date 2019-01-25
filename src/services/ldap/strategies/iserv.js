@@ -3,7 +3,7 @@ const request = require('request-promise-native');
 const AbstractLDAPStrategy = require('./interface.js');
 
 /**
- * Univention-specific LDAP functionality
+ * iServ-specific LDAP functionality
  * @implements {AbstractLDAPStrategy}
  */
 class iServLDAPStrategy extends AbstractLDAPStrategy {
@@ -28,7 +28,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @public
      * @see AbstractLDAPStrategy#getUsers
      * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
-     * (Array) roles = ['teacher', 'student']
+     * (Array) roles = ['teacher', 'student', 'administrator']
      * @memberof iServLDAPStrategy
      */
     getUsers(school) {
