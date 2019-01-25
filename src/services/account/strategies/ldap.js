@@ -11,10 +11,11 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 	login({ username, password }, system, schoolId) {
 		const app = this.app;
 		const ldapService = app.service('ldap');
+		const lowerUsername = username.toLowerCase();
 
 		return app.service('schools').get(schoolId)
 			.then(school => {
-				return app.service('accounts').find({ query: {username: username }})
+				return app.service('accounts').find({ query: {username: lowerUsername }})
 				.then(([account]) => {
 					return app.service('users').get(account.userId);
 				})

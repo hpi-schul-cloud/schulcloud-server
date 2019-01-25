@@ -117,13 +117,11 @@ module.exports = function() {
 		authenticate(system, qualifiedUsername, password) {
 			const config = system.ldapConfig;
 			return this._connect(config, qualifiedUsername, password)
-				.then(() => {
-					const options = {
-						filter: null,
-						scope: 'sub',
-						attributes: []
-					};
-					return this.searchObject(config, qualifiedUsername, options);
+				.then((connection) => {
+					if (connection.connected) {
+						return Promise.resolve(true);
+					}
+					return Promise.reject('User could not authenticate');
 				});
 		}
 
