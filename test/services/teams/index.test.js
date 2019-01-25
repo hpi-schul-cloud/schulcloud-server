@@ -33,6 +33,7 @@ describe('Test top level team services endpoints.', () => {
 		after(()=>{
 			//remove user
 			//remove team
+			//remove school
 		});
 
 		it.skip('should accept emails & role', async ()=>{
