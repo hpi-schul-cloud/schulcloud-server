@@ -23,6 +23,13 @@ const strategies = {
 	ldap: LdapLoginStrategy,
 };
 
+const sanitizeUsername = (hook) => {
+	if (hook.data && hook.data.username) {
+		hook.data.username = hook.data.username.trim().toLowerCase();
+	}
+	return hook;
+};
+
 // This is only for SSO
 const validateCredentials = (hook) => {
 	const {username, password, systemId, schoolId} = hook.data;
@@ -212,22 +219,33 @@ exports.before = {
 	find: [restrictAccess],
 	get: [],
 	create: [
+		sanitizeUsername,
 		checkExistence,
 		validateCredentials,
 		trimPassword,
 		local.hooks.hashPassword({ passwordField: 'password' }),
 		checkUnique,
-		removePassword
+		removePassword,
 	],
-	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_EDIT')],
-	patch: [auth.hooks.authenticate('jwt'),
-			globalHooks.ifNotLocal(securePatching),
-			protectUserId,
-			globalHooks.permitGroupOperation,
-			trimPassword,
-			validatePassword,
-			local.hooks.hashPassword({ passwordField: 'password' })],
-	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('ACCOUNT_CREATE'),globalHooks.permitGroupOperation]
+	update: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('ACCOUNT_EDIT'),
+		sanitizeUsername,
+	],
+	patch: [
+		auth.hooks.authenticate('jwt'),
+		sanitizeUsername,
+		securePatching,
+		globalHooks.permitGroupOperation,
+		trimPassword,
+		validatePassword,
+		local.hooks.hashPassword({ passwordField: 'password' }),
+	],
+	remove: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('ACCOUNT_CREATE'),
+		globalHooks.permitGroupOperation,
+	],
 };
 
 exports.after = {

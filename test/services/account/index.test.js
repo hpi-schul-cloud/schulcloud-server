@@ -1,6 +1,9 @@
 'use strict';
 
 const assert = require('assert');
+const { expect } = require('chai');
+const { ObjectId } = require('mongoose').Types;
+
 const app = require('../../../src/app');
 const accountService = app.service('/accounts');
 const userService = app.service('/users');
@@ -16,60 +19,121 @@ describe('account service', function () {
 		assert.ok(app.service('accounts'));
 	});
 
-	it('the account already exists', () => {
-		let accountObject = {
-			username: "max" + Date.now() + "@mHuEsLtIeXrmann.de",
-			password: accountPw,
-			userId: "0000d213816abba584714c0a",
-			
-		};
+	describe('Account creation', () => {
+		it('should work', async () => {
+			let userObject = {
+				firstName: "Max",
+				lastName: "Mustermann",
+				email: "max" + Date.now() + "@mustermann.de",
+				schoolId: "584ad186816abba584714c94"
+			};
 
-		return accountService.create(accountObject)
-			.catch(exception => {
-				assert.equal(exception.message, 'Der Account existiert bereits!');
+			const registrationPin = await registrationPinsService.create({
+				email: userObject.email
 			});
-	});
+			// verify registration pin:
+			await registrationPinsService.find({
+				query: {
+					pin: registrationPin.pin,
+					email: registrationPin.email,
+					verified: false,
+				},
+			});
+			const user = await userService.create(userObject);
+			assert.equal(user.lastName, userObject.lastName);
 
-	it('create an account', () => {
-		const prepareUser = function(userObject) {
-			return registrationPinsService.create({"email": userObject.email})
-				.then(registrationPin => {
-					return registrationPinsService.find({
-						query: { "pin": registrationPin.pin, "email": registrationPin.email, verified: false }
-					});
-				}).then(_ => {
-					return userService.create(userObject);
+			let accountObject = {
+				username: "max" + Date.now() + "@mHuEsLtIeXrmann.de",
+				password: "ca4t9fsfr3dsd",
+				userId: user._id
+			};
+
+			const account = await accountService.create(accountObject);
+			expect(account).to.not.equal(undefined);
+			expect(account.username).to.equal(accountObject.username.toLowerCase());
+
+			await accountService.remove(account._id);
+			await userService.remove(user._id);
+		});
+
+		it('should fail if the account already exists', async () => {
+			const accountDetails = {
+				username: "max" + Date.now() + "@mHuEsLtIeXrmann.de",
+				password: "ca4t9fsfr3dsd",
+				userId: new ObjectId(),
+
+			};
+			const account = await accountService.create(accountDetails);
+
+			try {
+				await new Promise((resolve, reject) => {
+					accountService.create(accountDetails)
+						.then(() => {
+							reject(new Error('This call should fail because the user already exists'));
+						})
+						.catch((err) => {
+							expect(err.message).to.equal('Der Account existiert bereits!');
+							resolve();
+						});
 				});
-		};
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
 
-		let userObject = {
-			firstName: "Max",
-			lastName: "Mustermann",
-			email: "max" + Date.now() + "@mustermann.de",
-			schoolId: "584ad186816abba584714c94"
-		};
+		it('should fail for mixed-case variants of existing accounts', async () => {
+			const existingAccountDetails = {
+				username: 'existing@account.de',
+				password: 'ca4t9fsfr3dsd',
+				userId: new ObjectId(),
+			};
+			const existingAccount = await accountService.create(existingAccountDetails);
 
-		return prepareUser(userObject)
-			.then(user => {		
-				let accountObject = {
-					username: "max" + Date.now() + "@mHuEsLtIeXrmann.de",
-					password: accountPw,
-					userId: user._id
-				};
+			const newAccount = {
+				username: 'ExistIng@aCcount.de',
+				password: 'po4t9fstr3gal',
+				userId: new ObjectId(),
+			};
 
-				userId = user._id;
-
-				assert.equal(user.lastName, userObject.lastName);
-
-				return accountService.create(accountObject)
-					.then(account => {
-						accountId = account._id;
-						passwordHash = account.password;
-						assert.ok(account);
-						assert.equal(account.username, accountObject.username.toLowerCase());
+			await new Promise((resolve, reject) => {
+				accountService.create(newAccount)
+					.then(() => {
+						reject(new Error('This call should fail because of an already existing user with the same username'));
+					})
+					.catch((err) => {
+						expect(err.message).to.equal('Der Benutzername ist bereits vergeben!');
+						resolve();
 					});
 			});
 
+			await accountService.remove(existingAccount._id);
+		});
+
+		it('should convert the username to lowercase and trim whitespace', async () => {
+			let accountDetails = {
+				username: '  EXISTING@account.DE ',
+				password: 'ca4t9fsfr3dsd',
+				userId: new ObjectId(),
+			};
+			const account = await accountService.create(accountDetails);
+			expect(account.username).to.equal(accountDetails.username.trim().toLowerCase());
+
+			try {
+				await new Promise((resolve, reject) => {
+					accountDetails.userId = new ObjectId();
+					accountService.create(accountDetails)
+						.then(() => {
+							reject(new Error('This call should fail because the user already exists'));
+						})
+						.catch((err) => {
+							expect(err.message).to.equal('Der Benutzername ist bereits vergeben!');
+							resolve();
+						});
+				});
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
 	});
 
 	it('fail to patch userId', () => {

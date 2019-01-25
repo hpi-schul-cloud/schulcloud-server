@@ -219,8 +219,9 @@ class CSVSyncer extends Syncer {
 	}
 
 	async createClasses(records, users) {
+		const sanitize = (email = '') => email.toLowerCase().trim();
 		const byEmail = collection => collection.reduce((dict, item) => {
-			dict[item.email] = item;
+			dict[sanitize(item.email)] = item;
 			return dict;
 		}, {});
 		const classes = CSVSyncer.extractClassesToBeCreated(records);
@@ -228,7 +229,7 @@ class CSVSyncer extends Syncer {
 		const classMapping = await this.buildClassMapping(classes);
 		const collection = this.role === 'teacher' ? 'teacherIds' : 'userIds';
 		records.forEach((record) => {
-			const user = userByEmail[record.email];
+			const user = userByEmail[sanitize(record.email)];
 			if (user === undefined) return;
 			const splitClasses = CSVSyncer.splitClasses(record.class);
 			splitClasses.forEach((klass) => {
