@@ -8,6 +8,7 @@ class Syncer {
 		this.app = app;
 		this.stats = Object.assign(stats, {
 			success: undefined,
+			errors: [],
 		});
 	}
 
@@ -47,13 +48,13 @@ class Syncer {
 	/**
 	 * Executes all steps and logs status and stats
 	 * @returns {Promise} Promise resolving with statistics (check
-	 * `stats.successful` for result)
+	 * `stats.success` for result)
 	 */
 	sync() {
 		this.logInfo('Started syncing');
 		return this.steps()
 		.then(stats => {
-			this.stats.success = true;
+			this.stats.success = this.stats.errors.length === 0;
 			const aggregated = Syncer.aggregateStats(stats);
 			this.logInfo('Finished syncing', aggregated);
 			return Promise.resolve(this.stats);

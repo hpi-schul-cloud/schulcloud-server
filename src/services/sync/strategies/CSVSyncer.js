@@ -1,4 +1,3 @@
-const errors = require('feathers-errors');
 const parse = require('csv-parse/lib/sync');
 const Syncer = require('./Syncer');
 
@@ -8,8 +7,7 @@ const Syncer = require('./Syncer');
  * @implements {Syncer}
  */
 class CSVSyncer extends Syncer {
-
-	constructor(app, stats={}, school, role='student', sendEmails, csvData, params) {
+	constructor(app, stats = {}, school, role = 'student', sendEmails, csvData, params) {
 		super(app, stats);
 		this.schoolId = school;
 		this.role = role;
@@ -42,7 +40,7 @@ class CSVSyncer extends Syncer {
 	/**
 	 * @see {Syncer#params}
 	 */
-	static params(params, data={}) {
+	static params(params, data = {}) {
 		const query = (params || {}).query || {};
 		if (query.school && query.role && data.data) {
 			return [
@@ -66,23 +64,60 @@ class CSVSyncer extends Syncer {
 				const users = await this.enrichUserData(records);
 				const userObjects = await this.createUsers(users);
 				if (this.importClasses) await this.createClasses(users, userObjects);
-				if (this.sendEmails) await this.emailUsers(users);
+				if (this.sendEmails) {
+					const createdUsers = users.filter(u => u.created);
+					await this.emailUsers(createdUsers);
+				}
 				return this.stats;
 			});
 	}
 
+	static requiredAttributes() {
+		return ['firstName', 'lastName', 'email'];
+	}
+
 	parseCsvData() {
-		const records = parse(this.csvData, {
-			columns: true,
-			delimiter: ','
-		});
+		let records = [];
+		try {
+			records = parse(this.csvData, {
+				columns: true,
+				delimiter: ',',
+			});
+		} catch (error) {
+			if (error.message && error.message.match(/Invalid Record Length/)) {
+				const line = error.message.match(/on line (\d+)/)[1];
+				this.stats.errors.push({
+					type: 'file',
+					entity: 'Eingabedatei fehlerhaft',
+					message: `Syntaxfehler in Zeile ${line}`,
+				});
+			} else {
+				this.stats.errors.push({
+					type: 'file',
+					entity: 'Eingabedatei fehlerhaft',
+					message: 'Datei ist nicht im korrekten Format',
+				});
+			}
+			throw error;
+		}
+
 		if (!Array.isArray(records) || records.length === 0) {
 			this.logError('Parsing failed: No input data.');
+			this.stats.errors.push({
+				type: 'file',
+				entity: 'Eingabedatei fehlerhaft',
+				message: 'Datei enthält keine Daten',
+			});
 			throw new Error('No input data');
 		}
-		// validate required params:
-		['firstName', 'lastName', 'email'].forEach(param => {
+
+		CSVSyncer.requiredAttributes().forEach((param) => {
 			if (!records[0][param]) {
+				this.stats.errors.push({
+					type: 'file',
+					entity: 'Eingabedatei fehlerhaft',
+					message: `benötigtes Attribut "${param}" nicht gefunden`,
+				});
 				throw new Error(`Parsing failed. Expected attribute "${param}"`);
 			}
 		});
@@ -95,20 +130,20 @@ class CSVSyncer extends Syncer {
 
 	enrichUserData(records) {
 		return Promise.all(records.map(async (user) => {
-			let linkData = await this.generateRegistrationLink({
+			const linkData = await this.generateRegistrationLink({
 				role: this.role,
 				schoolId: this.schoolId,
 				save: true,
-				toHash: user.email
+				toHash: user.email,
 			});
-			user = Object.assign(user, {
+			const enrichedUser = Object.assign(user, {
 				schoolId: this.schoolId,
 				roles: [this.role],
 				sendRegistration: true,
 			});
-			user.importHash = linkData.hash;
-			user.shortLink = linkData.shortLink;
-			return user;
+			enrichedUser.importHash = linkData.hash;
+			enrichedUser.shortLink = linkData.shortLink;
+			return enrichedUser;
 		}));
 	}
 
@@ -118,14 +153,28 @@ class CSVSyncer extends Syncer {
 
 	async createUsers(users) {
 		const createdUsers = [];
-		for (let user of users) {
+		for (const user of users) {
 			try {
-				const userObject = await this.createUser(user, {lean: true});
+				const userObject = await this.createUser(user);
+				user.created = true;
 				createdUsers.push(userObject);
 				this.stats.users.successful += 1;
 			} catch (err) {
 				this.logError('Cannot create user', user, JSON.stringify(err));
 				this.stats.users.failed += 1;
+				if (err.message.startsWith('user validation failed')) {
+					this.stats.errors.push({
+						type: 'user',
+						entity: `${user.firstName},${user.lastName},${user.email}`,
+						message: `Ungültiger Wert in Spalte "${err.message.match(/Path `(.+)` is required/)[1]}"`,
+					});
+				} else {
+					this.stats.errors.push({
+						type: 'user',
+						entity: `${user.firstName},${user.lastName},${user.email}`,
+						message: err.message,
+					});
+				}
 			}
 		}
 		return createdUsers;
@@ -135,8 +184,8 @@ class CSVSyncer extends Syncer {
 		return this.app.service('users').create(user, this.requestParams);
 	}
 
-	async emailUsers(users) {
-		return await Promise.all(users.map(async user => {
+	emailUsers(users) {
+		return Promise.all(users.map(async (user) => {
 			try {
 				if (user && user.email && user.schoolId && user.shortLink) {
 					await this.app.service('mails').create({
@@ -150,8 +199,8 @@ class CSVSyncer extends Syncer {
 								+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
 								+ user.shortLink + '\n'
 								+ 'Viel Spaß und einen guten Start wünscht dir dein '
-								+ `${process.env.SC_SHORT_TITLE}-Team`
-						}
+								+ `${process.env.SC_SHORT_TITLE}-Team`,
+						},
 					});
 					this.stats.invitations.successful += 1;
 				} else {
@@ -159,68 +208,71 @@ class CSVSyncer extends Syncer {
 				}
 			} catch (err) {
 				this.stats.invitations.failed += 1;
+				this.stats.errors.push({
+					type: 'invitation',
+					entity: user.email,
+					message: 'Die automatische Einladungs-E-Mail konnte nicht gesendet werden. Bitte manuell einladen.',
+				});
 				this.logError('Cannot send invitation link to user', err);
 			}
 		}));
 	}
 
 	async createClasses(records, users) {
-		const classes = this.extractClassesToBeCreated(records);
-		const userByEmail = this.byEmail(users);
+		const sanitize = (email = '') => email.toLowerCase().trim();
+		const byEmail = collection => collection.reduce((dict, item) => {
+			dict[sanitize(item.email)] = item;
+			return dict;
+		}, {});
+		const classes = CSVSyncer.extractClassesToBeCreated(records);
+		const userByEmail = byEmail(users);
 		const classMapping = await this.buildClassMapping(classes);
 		const collection = this.role === 'teacher' ? 'teacherIds' : 'userIds';
-		records.forEach(record => {
-			const user = userByEmail[record.email];
+		records.forEach((record) => {
+			const user = userByEmail[sanitize(record.email)];
 			if (user === undefined) return;
-			const classes = this.splitClasses(record.class);
-			classes.forEach(klass => {
+			const splitClasses = CSVSyncer.splitClasses(record.class);
+			splitClasses.forEach((klass) => {
 				const classObject = classMapping[klass];
 				if (classObject === undefined) return;
 				classObject[collection].push(user._id);
 			});
 		});
 
-		for (let key of Object.keys(classMapping)) {
+		Object.keys(classMapping).forEach(async (key) => {
 			const classObject = classMapping[key];
 			// convert Mongoose array to vanilla JS array to keep the sanitize hook happy:
 			const importIds = classObject[collection].map(u => u);
 			const patchData = {};
 			patchData[collection] = importIds;
 			await this.app.service('/classes').patch(classObject._id, patchData);
-		}
+		});
 	}
 
-	extractClassesToBeCreated(records) {
+	static extractClassesToBeCreated(records) {
 		return records.reduce((list, record) => {
-			const classes = this.splitClasses(record.class);
-			for (let klass of classes) {
+			const classes = CSVSyncer.splitClasses(record.class);
+			classes.forEach((klass) => {
 				if (klass !== '' && !list.includes(klass)) {
 					list.push(klass);
 				}
-			}
+			});
 			return list;
 		}, []);
 	}
 
-	splitClasses(classes) {
+	static splitClasses(classes) {
 		return classes.split('+');
-	}
-
-	byEmail(users) {
-		return users.reduce((dict, user) => {
-			dict[user.email] = user;
-			return dict;
-		}, {});
 	}
 
 	async getClassObject(klass) {
 		const formats = [
 			{
 				regex: /^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/,
-				values: async string => {
+				values: async (string) => {
 					const gradeLevelName = string.match(/^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/)[1];
 					const gradeLevel = await this.findGradeLevel({
-						name: gradeLevelName
+						name: gradeLevelName,
 					});
 					return {
 						nameFormat: 'gradeLevel+name',
@@ -231,20 +283,17 @@ class CSVSyncer extends Syncer {
 			},
 			{
 				regex: /(.*)/,
-				values: string => {
-					return {
-						nameFormat: 'static',
-						name: string,
-					};
-				},
+				values: string => ({
+					nameFormat: 'static',
+					name: string,
+				}),
 			},
 		];
-		for (let format of formats) {
-			if (format.regex.test(klass)) {
-				return Object.assign(await format.values(klass), {
-					schoolId: this.schoolId
-				});
-			}
+		const classNameFormat = formats.find(format => format.regex.test(klass));
+		if (classNameFormat !== undefined) {
+			return Object.assign(await classNameFormat.values(klass), {
+				schoolId: this.schoolId,
+			});
 		}
 		throw new Error('Class name does not match any format:', klass);
 	}
@@ -256,7 +305,7 @@ class CSVSyncer extends Syncer {
 			lean: true,
 		});
 		if (existing.length === 0) {
-			return await this.app.service('/classes').create(classObject);
+			return this.app.service('/classes').create(classObject);
 		}
 		return existing[0];
 	}
@@ -275,13 +324,18 @@ class CSVSyncer extends Syncer {
 
 	async buildClassMapping(classes) {
 		const classMapping = {};
-		await Promise.all(classes.map(async klass => {
+		await Promise.all(classes.map(async (klass) => {
 			try {
 				const classObject = await this.getClassObject(klass);
 				classMapping[klass] = await this.findOrCreateClass(classObject);
 				this.stats.classes.successful += 1;
 			} catch (err) {
 				this.stats.classes.failed += 1;
+				this.stats.errors.push({
+					type: 'class',
+					entity: klass,
+					message: err.message,
+				});
 				this.logError('Failed to create class', klass, err);
 			}
 			return Promise.resolve();
