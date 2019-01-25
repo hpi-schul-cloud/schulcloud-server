@@ -170,7 +170,7 @@ const protectUserId = (hook) => {
 	}
 }
 
-const securePatching = (hook) => {	
+const securePatching = (hook) => {
 	return Promise.all([
 		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
 		globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
@@ -235,7 +235,8 @@ exports.before = {
 	patch: [
 		auth.hooks.authenticate('jwt'),
 		sanitizeUsername,
-		securePatching,
+		globalHooks.ifNotLocal(securePatching),
+		protectUserId,
 		globalHooks.permitGroupOperation,
 		trimPassword,
 		validatePassword,
