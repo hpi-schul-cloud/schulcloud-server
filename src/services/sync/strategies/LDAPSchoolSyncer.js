@@ -103,7 +103,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 			}).then(user => {
 				return accountModel.create({
 					userId: user._id,
-					username: this.school.ldapSchoolIdentifier + "/" + idmUser.ldapUID,
+					username: (this.school.ldapSchoolIdentifier + "/" + idmUser.ldapUID).toLowerCase(),
 					systemId: this.system._id,
 					activated: true
 				});
@@ -131,7 +131,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 
 		return accountModel.update(
 			{userId: user._id},
-			{username: this.school.ldapSchoolIdentifier + "/" + idmUser.ldapUID}
+			{username: (this.school.ldapSchoolIdentifier + "/" + idmUser.ldapUID).toLowerCase()}
 		).then(_ => {
 			return this.app.service('users').update(
 				{_id: user._id},

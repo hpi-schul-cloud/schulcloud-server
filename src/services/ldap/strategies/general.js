@@ -52,8 +52,11 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 				(roleType === 'group') ? 'memberOf' : userAttributeNameMapping.role,
 			],
 		};
+
+		const rawAttributes = [userAttributeNameMapping.uuid];
+
 		const searchString = `${userPathAdditions},${this.config.rootPath}`;
-		return this.app.service('ldap').searchCollection(this.config, searchString, options)
+		return this.app.service('ldap').searchCollection(this.config, searchString, options, rawAttributes)
 			.then((data) => {
 				const results = [];
 				data.forEach((obj) => {
