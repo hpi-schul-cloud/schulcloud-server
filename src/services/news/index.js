@@ -1,10 +1,10 @@
 'use strict';
 
 const service = require('feathers-mongoose');
-const {newsModel, newsHistoryModel} = require('./model');
+const { newsModel, newsHistoryModel } = require('./model');
 const hooks = require('./hooks');
 
-module.exports = function() {
+module.exports = function news() {
 	const app = this;
 
 	app.use('/news', service({
@@ -17,8 +17,8 @@ module.exports = function() {
 	const NewsService = app.service('/news');
 	NewsService.before(hooks.before);
 	NewsService.after(hooks.after);
-    
-    app.use('/newshistory', service({
+
+	app.use('/newshistory', service({
 		Model: newsHistoryModel
 	}));
 	const NewsHistoryService = app.service('/newshistory');
