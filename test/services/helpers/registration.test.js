@@ -21,7 +21,6 @@ describe('registration service', () => {
 					pin: registrationPin.pin,
 					password_1: 'Test123!',
 					password_2: 'Test123!',
-					gender: 'male',
 					birthDate: '15.10.1999',
 					email,
 					firstName: 'Max',
@@ -49,7 +48,6 @@ describe('registration service', () => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
 					pin: registrationPin.pin,
-					gender: 'male',
 					password_1: 'Test123!',
 					password_2: 'Test123!',
 					birthDate: '15.10.2014',
@@ -87,7 +85,6 @@ describe('registration service', () => {
 				return registrationService.create({
 					classOrSchoolId: '0000d186816abba584714c5f',
 					pin: String(pin),
-					gender: 'male',
 					birthDate: '15.10.1999',
 					email,
 					firstName: 'Max',
@@ -117,7 +114,6 @@ describe('registration service', () => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
 					pin: registrationPin.pin,
-					gender: 'male',
 					birthDate: '15.10.1999',
 					email,
 					firstName: 'Max',

@@ -29,7 +29,6 @@ const populateUser = (app, data) => {
 	}
 
 	if (data.classId) user.classId = data.classId;
-	if (data.gender) user.gender = data.gender;
 
 	if(data.importHash){
 		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId, $populate: ['roles'] }} ).then(users=>{
