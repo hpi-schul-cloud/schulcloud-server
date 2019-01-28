@@ -38,7 +38,9 @@ module.exports = function (app) {
 		firstName = 'Max',
 		lastName = 'Mustermann',
 		email = 'max' + Date.now() + '@mustermann.de',
-		schoolId = '584ad186816abba584714c94'
+		schoolId = '584ad186816abba584714c94',
+		accounts = [],
+		roles = [],
 	} = {}) {
 		return registrationPinsService.create({"email": email})
 				.then(registrationPin => {
@@ -47,14 +49,15 @@ module.exports = function (app) {
 					});
 				}).then(_ => {
 					return userService.create({
-						// required fields for user
 						firstName,
 						lastName,
 						email,
-						schoolId
+						schoolId,
+						accounts,
+						roles,
 					});
 				})
-		
+
 			.then(user => {
 				createdUserIds.push(user.id);
 				return user;
