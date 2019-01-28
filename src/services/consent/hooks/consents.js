@@ -7,7 +7,7 @@ const auth = require('feathers-authentication');
 //TODO: rethink security, due to no schoolId we can't restrict anything.
 
 const restrictToUserOrRole = (hook) => {
-	let userService = hook.app.service("users");
+	let userService = hook.app.service('users');
 	return userService.find({
 		query: {
 			_id: hook.params.account.userId,
@@ -30,46 +30,40 @@ const restrictToUserOrRole = (hook) => {
 
 const addDates = (hook) => {
 	if (hook.data.parentConsents) {
-		let parentConsent = hook.data.parentConsents[0];
-		if ("privacyConsent" in parentConsent) {
+		const parentConsent = hook.data.parentConsents[0];
+		if ('privacyConsent' in parentConsent) {
 			parentConsent.dateOfPrivacyConsent = Date.now();
 		}
-		if ("researchConsent" in parentConsent) {
-			parentConsent.dateOfResearchConsent = Date.now();
-		}
-		if ("termsOfUseConsent" in parentConsent) {
+		if ('termsOfUseConsent' in parentConsent) {
 			parentConsent.dateOfTermsOfUseConsent = Date.now();
 		}
-		if ("thirdPartyConsent" in parentConsent) {
+		if ('thirdPartyConsent' in parentConsent) {
 			parentConsent.dateOfThirdPartyConsent = Date.now();
 		}
 	}
 	if (hook.data.userConsent) {
-		let userConsent = hook.data.userConsent;
-		if ("privacyConsent" in userConsent) {
+		const { userConsent } = hook.data;
+		if ('privacyConsent' in userConsent) {
 			userConsent.dateOfPrivacyConsent = Date.now();
 		}
-		if ("researchConsent" in userConsent) {
-			userConsent.dateOfResearchConsent = Date.now();
-		}
-		if ("termsOfUseConsent" in userConsent) {
+		if ('termsOfUseConsent' in userConsent) {
 			userConsent.dateOfTermsOfUseConsent = Date.now();
 		}
-		if ("thirdPartyConsent" in userConsent) {
+		if ('thirdPartyConsent' in userConsent) {
 			userConsent.dateOfThirdPartyConsent = Date.now();
 		}
 	}
 };
 
 const mapInObjectToArray = (hook) => {
-	if(((hook.params.query||{}).userId||{})["$in"] && !Array.isArray(((hook.params.query||{}).userId||{})["$in"])){
-		hook.params.query.userId["$in"] = Object.values(hook.params.query.userId["$in"]);
+	if(((hook.params.query||{}).userId||{})['$in'] && !Array.isArray(((hook.params.query||{}).userId||{})['$in'])){
+		hook.params.query.userId['$in'] = Object.values(hook.params.query.userId['$in']);
 	}
 	return hook;
 };
 
 const checkExisting = (hook) => {
-	return hook.app.service("consents").find({query:{userId:hook.data.userId}})
+	return hook.app.service('consents').find({query:{userId:hook.data.userId}})
 		.then(consents => {
 			if (consents.data.length > 0) {
 				// merge existing consent with submitted one, submitted data is primary and overwrites databse
@@ -98,7 +92,7 @@ exports.before = {
 const userHasOneRole = (user, roles) => {
 	if (!(roles instanceof Array)) roles = [roles];
 	let value = false;
-	user.roles.map(role => {
+	user.roles.forEach((role) => {
 		if (roles.includes(role.name)) {
 			value = true;
 		}
@@ -113,22 +107,20 @@ const accessCheck = (consent, app) => {
 	let patchFirstlogin = false;
 
 	return app.service('users').get((consent.userId), { query: { $populate: 'roles'}})
-		.then(response => {
+		.then((response) => {
 			user = response;
-			if (userHasOneRole(user, ["demoTeacher", "demoStudent"])) {
+			if (userHasOneRole(user, ['demoTeacher', 'demoStudent'])) {
 				requiresParentConsent = false;
 				patchFirstlogin = true;
 				return Promise.resolve();
 			}
 
-			if (userHasOneRole(user, ["teacher", "administrator", "expert"])) {
+			if (userHasOneRole(user, ['teacher', 'administrator', 'expert'])) {
 				let userConsent = consent.userConsent || {};
 				requiresParentConsent = false;
-				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
-					userConsent.thirdPartyConsent && userConsent.researchConsent)) 
-				{
-						access = false;
-						return Promise.resolve();
+				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent && userConsent.thirdPartyConsent)) {
+					access = false;
+					return Promise.resolve();
 				} else {
 					patchFirstlogin = true;
 				}
@@ -140,29 +132,27 @@ const accessCheck = (consent, app) => {
 				requiresParentConsent = false;
 				return Promise.resolve;
 			}
-			let age = user.age;
+			const { age } = user;
 
 			if (age < 18) {
-				let parentConsent = (consent.parentConsents||[])[0] || {};
-				//check parent consents
-				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent &&
-					parentConsent.thirdPartyConsent && parentConsent.researchConsent)) {
+				const parentConsent = (consent.parentConsents || [])[0] || {};
+				// check parent consents
+				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent && parentConsent.thirdPartyConsent)) {
 					access = false;
 					return Promise.resolve();
 				}
 			}
 			if (age > 13) {
-				//check user consents
-				let userConsent = consent.userConsent || {};
-				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent &&
-					userConsent.thirdPartyConsent && userConsent.researchConsent)) {
+				// check user consents
+				const userConsent = consent.userConsent || {};
+				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent && userConsent.thirdPartyConsent)) {
 					access = false;
 					if ((user.preferences || {}).firstLogin) {
 						return Promise.resolve();
 					}
 				}
 			}
-			if (age > 17){
+			if (age > 17) {
 				requiresParentConsent = false;
 			}
 		})

@@ -26,7 +26,6 @@ describe('registration service', () => {
 					firstName: 'Max',
 					lastName: 'Mustermann',
 					privacyConsent: true,
-					researchConsent: true,
 					thirdPartyConsent: true,
 					termsOfUseConsent: true,
 				};
@@ -55,7 +54,6 @@ describe('registration service', () => {
 					firstName: 'Max',
 					lastName: 'Mustermann',
 					privacyConsent: true,
-					researchConsent: true,
 					thirdPartyConsent: true,
 					termsOfUseConsent: true,
 					parent_email: email,
@@ -119,7 +117,6 @@ describe('registration service', () => {
 					firstName: 'Max',
 					lastName: 'Mustermann',
 					privacyConsent: true,
-					researchConsent: true,
 					thirdPartyConsent: true,
 					termsOfUseConsent: true,
 				};
@@ -170,7 +167,6 @@ describe('registration service', () => {
 					importHash: hash,
 					userId: user._id,
 					privacyConsent: true,
-					researchConsent: true,
 					thirdPartyConsent: true,
 					termsOfUseConsent: true,
 				};

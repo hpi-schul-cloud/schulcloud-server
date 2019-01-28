@@ -203,7 +203,6 @@ const registerUser = function(data, params, app) {
 			privacyConsent: data.privacyConsent,
 			thirdPartyConsent: data.thirdPartyConsent,
 			termsOfUseConsent: data.termsOfUseConsent,
-			researchConsent: data.researchConsent
 		};
 		if (parent) {
 			consent.parentId = parent._id;
