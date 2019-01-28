@@ -301,7 +301,7 @@ class DirectoryService {
 		let dirName = pathUtil.dirname(path) + "/";
 
 		if (regexCheck(fileName, folderBlacklist))
-			throw new errors.BadRequest(`Die Datei '${fileName}' ist nicht erlaubt!`);
+			throw new errors.BadRequest(`Der Ordner '${fileName}' ist nicht erlaubt!`);
 
 		return filePermissionHelper.checkPermissions(userId, path)
 			.then(_ => {

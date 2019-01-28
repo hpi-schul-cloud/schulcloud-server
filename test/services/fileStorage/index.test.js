@@ -6,6 +6,7 @@ const mockAws = require('./aws/s3.mock');
 const mockery = require('mockery');
 const chai = require('chai');
 const signedUrlService = app.service('/fileStorage/signedUrl');
+const directoryService = app.service('/fileStorage/directories');
 
 describe('fileStorage service', function () {
 
@@ -64,7 +65,7 @@ describe('fileStorage service', function () {
 
 	it('should not allow any of these files', () => {
 
-		let fileNames = ['desktop.ini', 'Desktop.ini', 'Thumbs.db', 'schul-cloud.msi', '.DS_Store', 'tempFile*']
+		let fileNames = ['desktop.ini', 'Desktop.ini', 'Thumbs.db', 'schul-cloud.msi', '.DS_Store', 'tempFile*', 'ehthumbs.db', 'test.stackdump', '.TemporaryItems', '.fuse_hiddenfile'];
 
 		let promises = [];
 
@@ -78,6 +79,28 @@ describe('fileStorage service', function () {
 					chai.expect(err.code).to.equal(400);
 					chai.expect(err.message).to.equal(`Die Datei '${name}' ist nicht erlaubt!`);
 				})
+			);
+		});
+
+		return Promise.all(promises);
+	});
+
+	it('should not allow any of these folders', () => {
+
+		let folderNames = [];
+
+		let promises = ['C_drive', 'Windows', '.3T', '$WINDOWSBD', ' ', 'k_drive', 'Temporary Items'];
+
+		folderNames.forEach(name => {
+			promises.push(directoryService.create({ path: `users/0000d213816abba584714c0a/${name}`}, {
+					payload: {userId: '0000d213816abba584714c0a'},
+					account: { userId: '0000d213816abba584714c0a'}
+				})
+					.catch(err => {
+						chai.expect(err.name).to.equal('BadRequest');
+						chai.expect(err.code).to.equal(400);
+						chai.expect(err.message).to.equal(`Der Ordner '${name}' ist nicht erlaubt!`);
+					})
 			);
 		});
 
