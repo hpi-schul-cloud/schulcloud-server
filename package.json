@@ -75,6 +75,7 @@
     "randexp": "^0.4.6",
     "read-chunk": "^3.0.0",
     "request-promise-native": "^1.0.3",
+    "rss-parser": "^3.6.2",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
     "socketio": "^1.0.0",
