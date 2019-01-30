@@ -1,10 +1,12 @@
 const AbstractLDAPStrategy = require('./interface');
 const UniventionLDAPStrategy = require('./univention');
 const iServLDAPStrategy = require('./iserv');
+const GeneralLDAPStrategy = require('./general');
 
 const strategies = {
-    'univention': UniventionLDAPStrategy,
-    'iserv': iServLDAPStrategy
+	univention: UniventionLDAPStrategy,
+	iserv: iServLDAPStrategy,
+	general: GeneralLDAPStrategy,
 };
 
 /**
@@ -17,10 +19,10 @@ const strategies = {
  * strategy implemented for the referenced provider
  */
 module.exports = function (app, config) {
-    if (config && config.provider && strategies[config.provider]) {
-        const LDAPStrategy = strategies[config.provider];
-        return new LDAPStrategy(app, config);
-    } else {
-        throw new Error('Invalid configuration object');
-    }
+	if (config && config.provider && strategies[config.provider]) {
+		const LDAPStrategy = strategies[config.provider];
+		return new LDAPStrategy(app, config);
+	} else {
+		throw new Error('Invalid configuration object');
+	}
 };

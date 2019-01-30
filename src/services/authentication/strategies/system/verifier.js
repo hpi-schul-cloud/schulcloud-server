@@ -57,7 +57,7 @@ class SystemVerifier {
 				}).then(_ => {
 					// credentials are valid at this point => get or create account
 					return this._getAccount({
-						username,
+						username: username.toLowerCase(),
 						password,
 						systemId,
 						strategy,
