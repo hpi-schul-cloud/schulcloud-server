@@ -226,6 +226,37 @@ const signedUrlService = {
 	 */
 	create({ parent, filename, fileType }, params) {
 
+		 const fileRegexCheck = (fileName) => {
+			return [
+				/[dD]esktop.ini/,
+				/ehthumbs_vista.db/,
+				/ehthumbs.db/,
+				/Thumbs.db/,
+				/.com.apple.timemachine.donotpresent/,
+				/.VolumeIcon.icns/,
+				/.Trashes/,
+				/.TemporaryItems/,
+				/.Spotlight-V100/,
+				/.fseventsd/,
+				/.DocumentRevisions-V100/,
+				/.LSOverride/,
+				/.AppleDouble/,
+				/.DS_Store/,
+				/\w\*/,
+				/\w.lnk/,
+				/\w.msp/,
+				/\w.msm/,
+				/\w.msix/,
+				/\w.cab/,
+				/\w.msi/,
+				/\w.stackdump/,
+				/.nfs\w/,
+				/.Trash-\w/,
+				/.fuse_hidden\w/,
+				/._w/
+			].some(rx => rx.test(fileName));
+		};
+
 		const { payload: { userId } } = params;
 		const strategy = createCorrectStrategy(params.payload.fileStorageType);
 		const flatFileName = generateFlatFileName(filename);
@@ -235,6 +266,11 @@ const signedUrlService = {
 		return parentPromise
 			.then(() => parent ? canCreate(userId, parent) : Promise.resolve({}))
 			.then(() => {
+
+				if (fileRegexCheck(flatFileName)) {
+					throw new errors.BadRequest(`Die Datei '${flatFileName}' ist nicht erlaubt!`);
+				}
+
 				return strategy.generateSignedUrl({userId, flatFileName, fileType});
 			})
 			.then(res => {
