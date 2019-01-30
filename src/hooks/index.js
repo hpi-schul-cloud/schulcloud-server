@@ -12,6 +12,8 @@ exports.ifNotLocal = function (hookForRemoteRequests) {
 		if (typeof (hook.params.provider) != 'undefined') {	// meaning it's not a local call
 			// Call the specified hook
 			return hookForRemoteRequests.call(this, hook);
+		}else{
+			return hook;
 		}
 	};
 };

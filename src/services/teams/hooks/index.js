@@ -233,6 +233,7 @@ const filterToRelated = (keys, path, objectToFilter) => {
 		return result;
 	});
 };
+exports.filterToRelated = filterToRelated;
 
 /**
  * @hook
