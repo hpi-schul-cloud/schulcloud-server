@@ -650,7 +650,7 @@ module.exports = function () {
 	const options = {
 		Model: teamsModel,
 		paginate: {
-			default: 2,
+			default: 50,
 			max: 100,
 		},
 		lean: true,

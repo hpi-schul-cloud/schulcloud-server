@@ -83,10 +83,38 @@ describe('Team service hook tests.', () => {
 		it('should pass local request without changes', () => {
 			const filterToRelatedInstance = filterToRelated(['key1','key2'],'result');
 			const testHook = getDeepCopy();
-			delete testHook.params.provider; //set to local request
+			delete testHook.params.provider; // set to local request
 			const output = filterToRelatedInstance(testHook);
 			let outputExpected = getDeepCopy();
 			expect(output).to.deep.equal(outputExpected);
+		});
+
+		it('should NOT pass local request without changes if it is disabled', () => {
+			const filterToRelatedInstance = filterToRelated(['key1','key2'],'result', false);
+			const testHook = getDeepCopy();
+			delete testHook.params.provider; // set to local request
+			const output = filterToRelatedInstance(testHook);
+			let outputExpected = getDeepCopy();
+			delete outputExpected.result.key3;
+			expect(output).to.deep.equal(outputExpected);
+		});
+
+		it('should try an error becouse result is not updated', () => {
+			const filterToRelatedInstance = filterToRelated(['key1','key2'],'result');
+			const testHook = getDeepCopy();
+			delete testHook.params.provider; // set to local request
+			const output = filterToRelatedInstance(testHook);
+			let outputExpected = getDeepCopy();
+			delete outputExpected.result.key3;
+			try{
+				expect(output).to.equal(outputExpected);
+			} catch(e){
+				expect(e).to.have.all.keys(['message', 'showDiff', 'actual', 'expected']);
+			}
+		});
+
+		it.skip('should work for path as array', ()=>{
+			// todo
 		});
 		
 	});

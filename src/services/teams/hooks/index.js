@@ -1,7 +1,7 @@
 'use strict';
 
 const auth = require('feathers-authentication');
-const {Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable} = require('feathers-errors');
+const { Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable } = require('feathers-errors');
 const globalHooks = require('../../../hooks');
 const logger = require('winston');
 const { set, get } = require('./scope');
@@ -48,7 +48,7 @@ const teamMainHook = globalHooks.ifNotLocal(hook => {
 		const isSuperhero = ifSuperhero(sessionUser.roles);
 		const method = hook.method;
 
-		if (isUndefined([sessionUser, team, sessionUser.schoolId],'OR'))
+		if (isUndefined([sessionUser, team, sessionUser.schoolId], 'OR'))
 			throw new BadRequest('Bad intern call. (3)');
 
 		const sessionSchoolId = bsonIdToString(sessionUser.schoolId);
@@ -69,7 +69,7 @@ const teamMainHook = globalHooks.ifNotLocal(hook => {
 				const userExist = team.userIds.some(_user => isSameId(_user.userId, userId));
 				const schoolExist = team.schoolIds.includes(sessionSchoolId);
 
-				if (isUndefined([userExist, schoolExist],'OR'))
+				if (isUndefined([userExist, schoolExist], 'OR'))
 					throw new Forbidden('You have not the permission to access this. (1)', { userExist, schoolExist });
 			}
 		}
@@ -190,15 +190,16 @@ const blockedMethod = (hook) => {
  * @ifNotLocal
  * @param {Array of strings} keys
  * @param {Array::String || StringPath} path - the object path to filtered data in hook or 
+ * @param {Boolean} [_ifNotLocal=true] - pass all input to the ifNotLocal hook
  * @param {Object} [objectToFilter] - is optional otherwise the hook is used
  * @return {function::globalHooks.ifNotLocal(hook)}
  * @example filterToRelated(['_id','userIds'], 'result.data') - in hook.result.data all keys are removed that are not _id, or userIds
  */
-const filterToRelated = (keys, path, objectToFilter) => {
+const filterToRelated = (keys, path, _ifNotLocal = true, objectToFilter) => {
 	if (!Array.isArray(keys))
-		keys=[keys];
+		keys = [keys];
 
-	return globalHooks.ifNotLocal(hook => {
+	const execute = (hook) => {
 		const filter = (data) => {
 			const reducer = (old) => {
 				return (newObject, key) => {
@@ -231,7 +232,16 @@ const filterToRelated = (keys, path, objectToFilter) => {
 
 		link[linkKey] = filter(target);
 		return result;
-	});
+	};
+
+	let resHook;
+	if (_ifNotLocal === true) {
+		resHook = globalHooks.ifNotLocal(execute);
+	} else {
+		resHook = execute
+	}
+
+	return resHook;
 };
 exports.filterToRelated = filterToRelated;
 
@@ -282,7 +292,7 @@ const pushUserChangedEvent = async (hook) => {
  */
 const teamRolesToHook = hook => {
 	/** execute one time */
-	if(isFunction(hook.findRole) && isDefined(hook.teamroles))  
+	if (isFunction(hook.findRole) && isDefined(hook.teamroles))
 		return hook;
 
 	return hook.app.service('roles').find({
@@ -354,7 +364,7 @@ exports.teamRolesToHook = teamRolesToHook;
  * @return {function::function(hook)}
  * @ifNotLocal
  */
-const hasTeamPermission =  (permsissions, _teamId) => {
+const hasTeamPermission = (permsissions, _teamId) => {
 	return globalHooks.ifNotLocal((hook) => {
 
 		if (get(hook, 'isSuperhero') === true)
@@ -398,100 +408,100 @@ exports.hasTeamPermission = hasTeamPermission;    //to use it global
  * @beforeHook
  * @ifNotLocal
  */
-const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook=>{
-		const d = hook.data;
-		if (isUndefined(d))
-			return hook;
+const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook => {
+	const d = hook.data;
+	if (isUndefined(d))
+		return hook;
 
-		//hasTeamPermission throw error if do not have the permission. Superhero is also test.
-		if (isDefined([d.times, d.color, d.description, d.name, d.startDate, d.untilDate], 'OR'))
-			(hasTeamPermission('RENAME_TEAM'))(hook);       //throw error if has not the permission
+	//hasTeamPermission throw error if do not have the permission. Superhero is also test.
+	if (isDefined([d.times, d.color, d.description, d.name, d.startDate, d.untilDate], 'OR'))
+		(hasTeamPermission('RENAME_TEAM'))(hook);       //throw error if has not the permission
 
-		if (isUndefined(d.userIds))
-			return hook;
+	if (isUndefined(d.userIds))
+		return hook;
 
-		return Promise.all([getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook)]).then(([sessionUser, team, users]) => {
-			const changes = arrayRemoveAddDiffs(team.userIds, hook.data.userIds, 'userId'); //remove add
-			const sessionSchoolId = sessionUser.schoolId;
-			const sessionUserId = bsonIdToString(hook.params.account.userId);
-			let isLeaveTeam=false, isRemoveOthers=false, isAddingFromOwnSchool=false, isAddingFromOtherSchool=false, hasChangeRole=false;
-			const leaveTeam = hasTeamPermission('LEAVE_TEAM');
-			const removeMembers = hasTeamPermission('REMOVE_MEMBERS');
-			const addSchoolMembers = hasTeamPermission('ADD_SCHOOL_MEMBERS');
-			const changeTeamRoles = hasTeamPermission('CHANGE_TEAM_ROLES');
-			
-			changes.remove.forEach(_ =>{
-				if( isSameId(_.userId, sessionUserId) )
-					isLeaveTeam=true;
-				else
-					isRemoveOthers=true;
-			});
+	return Promise.all([getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook)]).then(([sessionUser, team, users]) => {
+		const changes = arrayRemoveAddDiffs(team.userIds, hook.data.userIds, 'userId'); //remove add
+		const sessionSchoolId = sessionUser.schoolId;
+		const sessionUserId = bsonIdToString(hook.params.account.userId);
+		let isLeaveTeam = false, isRemoveOthers = false, isAddingFromOwnSchool = false, isAddingFromOtherSchool = false, hasChangeRole = false;
+		const leaveTeam = hasTeamPermission('LEAVE_TEAM');
+		const removeMembers = hasTeamPermission('REMOVE_MEMBERS');
+		const addSchoolMembers = hasTeamPermission('ADD_SCHOOL_MEMBERS');
+		const changeTeamRoles = hasTeamPermission('CHANGE_TEAM_ROLES');
 
-			changes.add.forEach((_)=>{
-				const user=users.find(user=>isSameId(_.userId, user._id));
-				if(isSameId(user.schoolId,sessionSchoolId))
-					isAddingFromOwnSchool=true;
-				else
-					isAddingFromOtherSchool=true;
-			});
-
-			hook.data.userIds.forEach((_)=>{
-				const teamUser=team.userIds.find(teamUser=>isSameId(_.userId, teamUser.userId));
-				if(isDefined(teamUser)){
-					if(isDefined(_.role) && !isSameId(teamUser.role,_.role))
-						hasChangeRole=true;
-				}  
-			});
-			
-		  //  try{
-			let wait=[Promise.resolve()];
-			if(isAddingFromOtherSchool)
-				throw new Forbidden('Can not adding users from other schools.');
-
-			if (isLeaveTeam){
-				wait.push(leaveTeam(hook).catch((err)=>{
-					throw new Forbidden('Permission LEAVE_TEAM is missing.');
-				}));
-			}    
-				
-			if (isLeaveTeam){
-				wait.push(leaveTeam(hook).catch((err)=>{
-					throw new Forbidden('Permission LEAVE_TEAM is missing.');
-				}));
-			}
-
-			if(isRemoveOthers){
-				wait.push(removeMembers(hook).catch((err)=>{
-					throw new Forbidden('Permission REMOVE_MEMBERS is missing.');
-				}));
-			}
-				
-			if(isAddingFromOwnSchool){
-				wait.push(addSchoolMembers(hook).catch((err)=>{
-					throw new Forbidden('Permission ADD_SCHOOL_MEMBERS is missing.');
-				}));
-			}
-
-			if(hasChangeRole){
-				wait.push(changeTeamRoles(hook).catch((err)=>{
-					throw new Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
-				}));
-			}  
-			
-			return Promise.all(wait).then(_=>{
-				return hook;
-			}).catch(err=>{
-				throw err;
-			});
-
-		}).catch(err => {
-			logger.warn(err);
-			throw new Forbidden('You have not the permission to access this. (4)');
+		changes.remove.forEach(_ => {
+			if (isSameId(_.userId, sessionUserId))
+				isLeaveTeam = true;
+			else
+				isRemoveOthers = true;
 		});
+
+		changes.add.forEach((_) => {
+			const user = users.find(user => isSameId(_.userId, user._id));
+			if (isSameId(user.schoolId, sessionSchoolId))
+				isAddingFromOwnSchool = true;
+			else
+				isAddingFromOtherSchool = true;
+		});
+
+		hook.data.userIds.forEach((_) => {
+			const teamUser = team.userIds.find(teamUser => isSameId(_.userId, teamUser.userId));
+			if (isDefined(teamUser)) {
+				if (isDefined(_.role) && !isSameId(teamUser.role, _.role))
+					hasChangeRole = true;
+			}
+		});
+
+		//  try{
+		let wait = [Promise.resolve()];
+		if (isAddingFromOtherSchool)
+			throw new Forbidden('Can not adding users from other schools.');
+
+		if (isLeaveTeam) {
+			wait.push(leaveTeam(hook).catch((err) => {
+				throw new Forbidden('Permission LEAVE_TEAM is missing.');
+			}));
+		}
+
+		if (isLeaveTeam) {
+			wait.push(leaveTeam(hook).catch((err) => {
+				throw new Forbidden('Permission LEAVE_TEAM is missing.');
+			}));
+		}
+
+		if (isRemoveOthers) {
+			wait.push(removeMembers(hook).catch((err) => {
+				throw new Forbidden('Permission REMOVE_MEMBERS is missing.');
+			}));
+		}
+
+		if (isAddingFromOwnSchool) {
+			wait.push(addSchoolMembers(hook).catch((err) => {
+				throw new Forbidden('Permission ADD_SCHOOL_MEMBERS is missing.');
+			}));
+		}
+
+		if (hasChangeRole) {
+			wait.push(changeTeamRoles(hook).catch((err) => {
+				throw new Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
+			}));
+		}
+
+		return Promise.all(wait).then(_ => {
+			return hook;
+		}).catch(err => {
+			throw err;
+		});
+
+	}).catch(err => {
+		logger.warn(err);
+		throw new Forbidden('You have not the permission to access this. (4)');
+	});
 });
 
 const sendInfo = hook => {
-	const email = hook.data.email || (hook.result.user||{}).email;
+	const email = hook.data.email || (hook.result.user || {}).email;
 
 	if (isUndefined(email) || isUndefined(hook.result.linkData))
 		return hook;
@@ -526,7 +536,7 @@ const addCurrentUser = globalHooks.ifNotLocal(hook => {
 			logger.warn('Can not execute addCurrentUser for unknown user. Or user execute a patch with the result that he has left the team.', { userId });
 			return hook;
 		}
-		const roleId = (user.role||{})._id || user.role; //first populated, second only id;
+		const roleId = (user.role || {})._id || user.role; //first populated, second only id;
 		throwErrorIfNotObjectId(roleId);
 		const role = hook.findRole('_id', roleId);
 		user.permissions = role.permissions;
@@ -541,15 +551,15 @@ const addCurrentUser = globalHooks.ifNotLocal(hook => {
  * Test if data.userId is set. If true it test if the role is teacher. If not throw an error.
  * @beforeHook
  */
-const isTeacherDirectlyImport=hook=>{
+const isTeacherDirectlyImport = hook => {
 	const userId = hook.data.userId;
-	if(userId){
-		return hook.app.service('users').get(userId,{query:{$populate:'roles'}}).then(user=>{
-			const roleNames = user.roles.map(role=>role.name);
-			if(!roleNames.includes('teacher'))
+	if (userId) {
+		return hook.app.service('users').get(userId, { query: { $populate: 'roles' } }).then(user => {
+			const roleNames = user.roles.map(role => role.name);
+			if (!roleNames.includes('teacher'))
 				throw "Is no teacher";
 			return hook;
-		}).catch(err=>{
+		}).catch(err => {
 			logger.warn(err);
 			throw new Forbidden('You have not the permission to do this.');
 		});
@@ -562,12 +572,12 @@ const isTeacherDirectlyImport=hook=>{
  * If not throw an error.
  * @beforeHook
  */
-const isAdmin=hook=>{
-	return getSessionUser(hook).then(sessionUser=>{
-		const roleNames = sessionUser.roles.map(role=>role.name);
-		if(roleNames.includes('administrator'))
+const isAdmin = hook => {
+	return getSessionUser(hook).then(sessionUser => {
+		const roleNames = sessionUser.roles.map(role => role.name);
+		if (roleNames.includes('administrator'))
 			return hook;
-		else 
+		else
 			throw new Forbidden('Only administrators can do this.');
 	});
 };
@@ -576,18 +586,18 @@ const isAdmin=hook=>{
  * 
  * @afterHook
  */
-const isUserIsEmpty = hook =>{
-	if(hasKey(hook.result,'userIds') && isDefined(hook.id)){
-		if(!isArrayWithElement(hook.result.userIds)){
-			return hook.app.service('teams').remove(hook.id).then(_=>{
-				hook.result={};
+const isUserIsEmpty = hook => {
+	if (hasKey(hook.result, 'userIds') && isDefined(hook.id)) {
+		if (!isArrayWithElement(hook.result.userIds)) {
+			return hook.app.service('teams').remove(hook.id).then(_ => {
+				hook.result = {};
 				return hook;
-			}).catch(err=>{
+			}).catch(err => {
 				logger.warn(err);
 				throw new Conflict('It want to remove the team with no user, but do not found it.');
 			});
 		}
-	}else{
+	} else {
 		return hook;
 	}
 };
@@ -670,12 +680,12 @@ exports.afterExtern = {
 	get: [],
 	create: [],
 	update: [],
-	patch: [sendInfo, filterToRelated(['message', '_id'], 'result')],
+	patch: [sendInfo, filterToRelated(['message', '_id'], 'result', false)],
 	remove: []
 };
 
 exports.beforeAdmin = {
-	all: [       
+	all: [
 		auth.hooks.authenticate('jwt'),
 		isAdmin,
 		existId,
@@ -685,7 +695,7 @@ exports.beforeAdmin = {
 	get: [blockedMethod],
 	create: [],
 	update: [blockedMethod],
-	patch: [filterToRelated('userId', 'data')],  
+	patch: [filterToRelated('userId', 'data')],
 	remove: []
 };
 
@@ -695,6 +705,6 @@ exports.afterAdmin = {
 	get: [],
 	create: [],
 	update: [],
-	patch: [],  
+	patch: [],
 	remove: []
 };
