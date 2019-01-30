@@ -64,7 +64,7 @@ class RocketChatUser {
 
     generateUserName(user) {
         //toDo: implementation with bound execution time.
-        let userName = user.firstName + "." + user.lastName + "." + randomSuffix();
+        let userName = user.firstName.replace(' ', '-') + "." + user.lastName.replace(' ', '-') + "." + randomSuffix();
         //toDo: check availibility in rocketChat as well.
         return rocketChatModels.userModel.findOne({username: userName})
         .then(result => {
