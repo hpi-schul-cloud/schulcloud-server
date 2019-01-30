@@ -20,7 +20,7 @@ Klicke auf diesen Link, um die Einladung anzunehmen: ${shortLink}${close}`;
 
 const isNewRegistration = (linkData, user) => {
 	const link = linkData.link || linkData.target || '';
-	return link.includes('/byexpert/?importHash=' + (user.importHash || linkData.hash));
+	return link.includes('?importHash=' + (user.importHash || linkData.hash));
 };
 
 const err = (str) => `[Fehler: ${str}]`;
@@ -39,7 +39,7 @@ module.exports = (hook, inviter) => {
 	const opt = {
 		teamName: getTeamName(team),
 		shortLink: getShortLink(linkData),
-		invitee: isUserCreated || isResend ? getEmail({ email, user }) : getName(user), 
+		invitee: isUserCreated || isResend ? getEmail({ email, user }) : getName(user),
 		inviter: inviter.firstName === undefined ? getEmail({ usernameInviter }) : getName(inviter),
 	};
 	// todo discuss invitee maybe better to make it clear with email invite use email

@@ -280,10 +280,20 @@ const arrayDiff = (oldArray, newArray, key) => {
         throw new NotAcceptable('Wrong input expect arrays.', { oldArray, newArray });
     }
 
+    const getV = (e)=>{
+        let res = e;
+        if (isDefined(key)){                //if key is set, take it
+            res = res[key];
+        }
+        if(isObjectIdWithTryToCast(res)){   //only cast to string if bsonId
+            res = bsonIdToString(res);
+        }
+        return res;
+    }
+
     const diff = (a1, a2) => {
-        if (isDefined(key))
-            a2 = a2.map(e => isObjectIdWithTryToCast(e) ? bsonIdToString(e[key]) : e[key]);
-        return a1.filter(x => !a2.includes(isObjectIdWithTryToCast(x) ? bsonIdToString(x[key]) : x[key] || x));
+        a2 = a2.map(e => getV(e));        
+        return a1.filter(x => !a2.includes(getV(x))); // save element from a1 if it is not in a2
     };
 
     return diff(oldArray, newArray);
