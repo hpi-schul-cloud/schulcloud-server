@@ -23,6 +23,11 @@ const lowerCaseUsername = (hook) => {
 	return hook;
 };
 
+const populateResult = (hook) => {
+	hook.result.userId = hook.params.account.userId // required by event listeners
+	return hook;
+}
+
 exports.before = {
 	create: [
 		lowerCaseUsername,
@@ -36,5 +41,5 @@ exports.before = {
 
 exports.after = {
 	create: [],
-	remove: []
+	remove: [populateResult]
 };
