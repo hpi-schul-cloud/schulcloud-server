@@ -20,16 +20,19 @@ const newsModel = mongoose.model('news', new Schema({
 		default: 'internal',
 		enum: ['internal', 'rss'],
 	},
+	sourceDescription: {
+		type: String,
+	},
 	target: {
 		type: Schema.Types.ObjectId,
 		// Instead of a hardcoded model name in `ref`, `refPath` means Mongoose
 		// will look at the `targetModel` property to find the right model.
-		refPath: 'targetModel'
+		refPath: 'targetModel',
 	},
 	targetModel: {
 		type: String,
-		enum: ['courses', 'teams', 'class']
-	}
+		enum: ['courses', 'teams', 'class'],
+	},
 }));
 
 const newsHistoryModel = mongoose.model('newshistory', new Schema({
@@ -37,20 +40,13 @@ const newsHistoryModel = mongoose.model('newshistory', new Schema({
 	content: { type: String, required: true },
 	displayAt: { type: Date, 'default': Date.now },
 
-<<<<<<< HEAD
 	creatorId: { type: Schema.Types.ObjectId, ref: 'user' },
 	createdAt: { type: Date, 'default': Date.now },
 	parentId: { type: Schema.Types.ObjectId, ref: 'news' },
-
-=======
-    creatorId: {type: Schema.Types.ObjectId, ref: 'user'},
-	createdAt: {type: Date, 'default': Date.now},
-	parentId: {type: Schema.Types.ObjectId, ref: 'news'},
->>>>>>> merge
 }));
 
 
 module.exports = {
 	newsModel,
-	newsHistoryModel
+	newsHistoryModel,
 };

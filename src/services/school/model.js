@@ -6,9 +6,21 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
+const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
+
+const rssFeedSchema = new Schema({
+	url: {
+		type: String,
+		required: true,
+		unique: true,
+	},
+	description: {
+		type: String,
+		default: '',
+	},
+});
 
 const schoolSchema = new Schema({
 	name: { type: String, required: true },
@@ -24,17 +36,17 @@ const schoolSchema = new Schema({
 	currentYear: { type: Schema.Types.ObjectId, ref: 'year' },
 	logo_dataUrl: { type: String },
 	purpose: { type: String },
-	rssFeeds: [{ type: String }],
+	rssFeeds: [{ type: rssFeedSchema }],
 }, {
 		timestamps: true,
 	});
 
 const yearSchema = new Schema({
-	name: { type: String, required: true }
+	name: { type: String, required: true },
 });
 
 const gradeLevelSchema = new Schema({
-	name: { type: String, required: true }
+	name: { type: String, required: true },
 });
 
 const schoolModel = mongoose.model('school', schoolSchema);
