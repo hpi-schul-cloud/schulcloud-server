@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-const errors = require('feathers-errors');
+const {BadRequest} = require('feathers-errors');
 const Schema = mongoose.Schema;
+const { ObjectId } = require('mongoose').Types;
 
 /**
  * If Array use it.
@@ -153,12 +154,12 @@ const isNull = (e) => {
  * Can be also used to test if string is a valid id
  * @collection
  * @private
- * @param {String} id 
+ * @param {String} id
  * @return {String::ObjectId} Return null if can not created
  */
 const tryToCastToObjectId = (id) => {
     try {
-        return mongoose.Types.ObjectId(id);
+        return ObjectId(id);
     } catch (err) {
         return null;
     }
@@ -169,7 +170,7 @@ const tryToCastToObjectId = (id) => {
  * @requires const Schema = require('mongoose').Schema;
  */
 const isObjectId = (id) => {
-    return id instanceof Schema.Types.ObjectId && id !== undefined;
+    return id instanceof ObjectId && id !== undefined;
 };
 
 /**
@@ -177,22 +178,22 @@ const isObjectId = (id) => {
  * @requires const Schema = require('mongoose').Schema;
  */
 const isObjectIdWithTryToCast = (id) => {
-    return isObjectId(id) || !isNull(tryToCastToObjectId(id));
+    return isObjectId(id) || !isNull(tryToCastToObjectId(id.toString()));
 };
 
 /**
 *   @collection
-*   @throws {BadRequest} - If input is no typeof moongose Schema.Types.ObjectId it is throw an error
+*   @throws {BadRequest} - If input is no typeof moongose Schema.Types.ObjectId or a String that can cast to this schema, it is throw an error
 */
 const throwErrorIfNotObjectId = (id) => {
-    if (isObjectId(id))
-        throw new errors.BadRequest('Is not instance of Schema.Types.ObjectId.');
+    if (!isObjectIdWithTryToCast(id))
+        throw new BadRequest('Is not instance of Schema.Types.ObjectId.');
 };
 
 /**
  * Convert bsonId(s) to stringId(s),
  * @collection
- * @param {Array::(bson||string) || (bson||sring)} input 
+ * @param {Array::(bson||string) || (bson||sring)} input
  * @returns {Array::String::Id || String::Id}
  */
 const bsonIdToString = (input) => {
@@ -210,8 +211,8 @@ const bsonIdToString = (input) => {
 /**
  * Convert bsonIds to strings and test if itput is the same
  * @collection
- * @param {StringId||BsonId} value1 
- * @param {StringId||BsonId} value2 
+ * @param {StringId||BsonId} value1
+ * @param {StringId||BsonId} value2
  */
 const isSameId = (value1, value2) => {
     return bsonIdToString(value1) === bsonIdToString(value2);
@@ -219,8 +220,8 @@ const isSameId = (value1, value2) => {
 
 /**
  * @collection
- * @param {*} e 
- * @param {String::'AND'||'OR'} operation 
+ * @param {*} e
+ * @param {String::'AND'||'OR'} operation
  */
 const isDefinedOperation = (e, operation) => {
     if (operation === 'OR')
@@ -233,7 +234,7 @@ const isDefinedOperation = (e, operation) => {
 
 /**
  * @collection
- * @param {*} e 
+ * @param {*} e
  * @param {String::'AND'||'OR'} operation AND || OR
  */
 const isUndefinedOperation = (e, operation) => {

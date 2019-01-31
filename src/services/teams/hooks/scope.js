@@ -1,4 +1,5 @@
 let scope = 'additionalInfosTeam'
+exports.scope = scope;
 
 exports.set = (hook, key, value) => {
     if (hook[scope] === undefined)
