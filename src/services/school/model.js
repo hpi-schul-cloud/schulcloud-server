@@ -11,27 +11,28 @@ const Schema = mongoose.Schema;
 const fileStorageTypes = ['awsS3'];
 
 const schoolSchema = new Schema({
-	name: {type: String, required: true},
-	address: {type: Object},
-	fileStorageType: {type: String, enum: fileStorageTypes},
-	systems: [{type: Schema.Types.ObjectId, ref: 'system'}],
-	federalState: {type: Schema.Types.ObjectId, ref: 'federalstate'},
-	createdAt: {type: Date, 'default': Date.now},
-	updatedAt: {type: Date, 'default': Date.now},
-	experimental: {type: Boolean, 'default': false},
-	pilot: {type: Boolean, 'default': false},
-	currentYear: {type: Schema.Types.ObjectId, ref:'year'},
-	logo_dataUrl: {type: String}
-},{
-	timestamps: true
-});
+	name: { type: String, required: true },
+	address: { type: Object },
+	fileStorageType: { type: String, enum: fileStorageTypes },
+	systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
+	federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
+	createdAt: { type: Date, 'default': Date.now },
+	updatedAt: { type: Date, 'default': Date.now },
+	experimental: { type: Boolean, 'default': false },
+	pilot: { type: Boolean, 'default': false },
+	currentYear: { type: Schema.Types.ObjectId, ref: 'year' },
+	logo_dataUrl: { type: String },
+	rssFeeds: [{ type: String }],
+}, {
+		timestamps: true,
+	});
 
 const yearSchema = new Schema({
-	name: {type: String, required: true}
+	name: { type: String, required: true }
 });
 
 const gradeLevelSchema = new Schema({
-	name: {type: String, required: true}
+	name: { type: String, required: true }
 });
 
 const schoolModel = mongoose.model('school', schoolSchema);
@@ -41,5 +42,5 @@ const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 module.exports = {
 	schoolModel,
 	yearModel,
-	gradeLevelModel
+	gradeLevelModel,
 };
