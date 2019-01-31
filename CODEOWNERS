@@ -4,4 +4,4 @@
 
 CODEOWNERS              @schul-cloud/data-protection
 *model.js               @schul-cloud/data-protection
-backup/setup/*.json     @schul-cloud/data-protection
+/backup/setup/*.json    @schul-cloud/data-protection
