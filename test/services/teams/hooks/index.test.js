@@ -106,11 +106,7 @@ describe('Team service hook tests.', () => {
 			const output = filterToRelatedInstance(testHook);
 			let outputExpected = getDeepCopy();
 			delete outputExpected.result.key3;
-			try{
-				expect(output).to.equal(outputExpected);
-			} catch(e){
-				expect(e).to.have.all.keys(['message', 'showDiff', 'actual', 'expected']);
-			}
+			expect(output).to.not.deep.equal(outputExpected);
 		});
 
 		it.skip('should work for path as array', ()=>{
