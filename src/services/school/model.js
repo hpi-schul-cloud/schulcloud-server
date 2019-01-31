@@ -17,11 +17,13 @@ const schoolSchema = new Schema({
 	systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
 	federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
 	createdAt: { type: Date, 'default': Date.now },
+	ldapSchoolIdentifier: { type: String },
 	updatedAt: { type: Date, 'default': Date.now },
 	experimental: { type: Boolean, 'default': false },
 	pilot: { type: Boolean, 'default': false },
 	currentYear: { type: Schema.Types.ObjectId, ref: 'year' },
 	logo_dataUrl: { type: String },
+	purpose: { type: String },
 	rssFeeds: [{ type: String }],
 }, {
 		timestamps: true,
@@ -43,4 +45,5 @@ module.exports = {
 	schoolModel,
 	yearModel,
 	gradeLevelModel,
+	fileStorageTypes,
 };

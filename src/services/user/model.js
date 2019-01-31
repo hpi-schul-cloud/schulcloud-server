@@ -16,16 +16,21 @@ const userSchema = new Schema({
 
 	gender: {type: String, enum: gender},
 	birthday: {type: Date},
-	
+
 	importHash:{type:String},
+	inviteHash:{type:String},
 
 	children: [{type: Schema.Types.ObjectId, ref: 'user'}],
 	parents: [{type: Schema.Types.ObjectId, ref: 'user'}],
 
+	preferences: {type: Object}, // blackbox for frontend stuff like "cookies accepted"
+	discoverable: {type: Boolean, default: false},
+
+	ldapDn: {type:String},
+	ldapId: {type:String},
+	
 	customAvatarBackgroundColor: {type:String},
 	avatarSettings: {type:Object},
-	
-	preferences: {type: Object} // blackbox for frontend stuff like "cookies accepted"
 },{
 	timestamps: true
 });
