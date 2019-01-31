@@ -51,6 +51,11 @@ const getRequestOptions = function(shortUri, body, asAdmin, auth, method) {
     }
 };
 
+const makeStringRCConform = function(input) {
+    var dict = {"ä":"ae","Ä":"Ae","ö":"oe","Ö":"Oe","ü":"ue","Ü":"Ue"," ":"-"}
+    return input.replace(/[äÄöÖüÜ ]/g, (match)=>{return dict[match]})
+}
+
 /**
  * service that maps schulcloud users to rocketChat users.
  * 
@@ -64,7 +69,7 @@ class RocketChatUser {
 
     generateUserName(user) {
         //toDo: implementation with bound execution time.
-        let userName = user.firstName.replace(' ', '-') + "." + user.lastName.replace(' ', '-') + "." + randomSuffix();
+        let userName = makeStringRCConform(user.firstName + "." + user.lastName + "." + randomSuffix());
         //toDo: check availibility in rocketChat as well.
         return rocketChatModels.userModel.findOne({username: userName})
         .then(result => {
@@ -323,7 +328,7 @@ class RocketChatChannel {
 
     generateChannelName(team) {
         //toDo: implementation with bound execution time.
-        let channelName = team.name.replace(' ', '-') + "." + randomSuffix();
+        let channelName = makeStringRCConform(team.name + "." + randomSuffix());
         //toDo: check availibility in rocketChat as well.
         return rocketChatModels.channelModel.findOne({channelName: channelName})
         .then(result => {
