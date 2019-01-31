@@ -454,15 +454,9 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(hook => {
 		});
 
 		//  try{
-		let wait = [Promise.resolve()];
+		let wait = [];
 		if (isAddingFromOtherSchool)
 			throw new Forbidden('Can not adding users from other schools.');
-
-		if (isLeaveTeam) {
-			wait.push(leaveTeam(hook).catch((err) => {
-				throw new Forbidden('Permission LEAVE_TEAM is missing.');
-			}));
-		}
 
 		if (isLeaveTeam) {
 			wait.push(leaveTeam(hook).catch((err) => {
@@ -551,7 +545,7 @@ const addCurrentUser = globalHooks.ifNotLocal(hook => {
  * Test if data.userId is set. If true it test if the role is teacher. If not throw an error.
  * @beforeHook
  */
-const isTeacherDirectlyImport = hook => {
+const isTeacherDirectlyImport = (hook) => {
 	const userId = hook.data.userId;
 	if (userId) {
 		return hook.app.service('users').get(userId, { query: { $populate: 'roles' } }).then(user => {
