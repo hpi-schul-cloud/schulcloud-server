@@ -34,6 +34,37 @@ const sanitizeObj = obj => {
 	return obj;
 };
 
+const fileRegexCheck = (fileName) => {
+	return [
+		/[dD]esktop.ini/,
+		/ehthumbs_vista.db/,
+		/ehthumbs.db/,
+		/Thumbs.db/,
+		/.com.apple.timemachine.donotpresent/,
+		/.VolumeIcon.icns/,
+		/.Trashes/,
+		/.TemporaryItems/,
+		/.Spotlight-V100/,
+		/.fseventsd/,
+		/.DocumentRevisions-V100/,
+		/.LSOverride/,
+		/.AppleDouble/,
+		/.DS_Store/,
+		/\w\*/,
+		/\w.lnk/,
+		/\w.msp/,
+		/\w.msm/,
+		/\w.msix/,
+		/\w.cab/,
+		/\w.msi/,
+		/\w.stackdump/,
+		/.nfs\w/,
+		/.Trash-\w/,
+		/.fuse_hidden\w/,
+		/._w/
+	].some(rx => rx.test(fileName));
+};
+
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
 
@@ -226,37 +257,6 @@ const signedUrlService = {
 	 */
 	create({ parent, filename, fileType }, params) {
 
-		 const fileRegexCheck = (fileName) => {
-			return [
-				/[dD]esktop.ini/,
-				/ehthumbs_vista.db/,
-				/ehthumbs.db/,
-				/Thumbs.db/,
-				/.com.apple.timemachine.donotpresent/,
-				/.VolumeIcon.icns/,
-				/.Trashes/,
-				/.TemporaryItems/,
-				/.Spotlight-V100/,
-				/.fseventsd/,
-				/.DocumentRevisions-V100/,
-				/.LSOverride/,
-				/.AppleDouble/,
-				/.DS_Store/,
-				/\w\*/,
-				/\w.lnk/,
-				/\w.msp/,
-				/\w.msm/,
-				/\w.msix/,
-				/\w.cab/,
-				/\w.msi/,
-				/\w.stackdump/,
-				/.nfs\w/,
-				/.Trash-\w/,
-				/.fuse_hidden\w/,
-				/._w/
-			].some(rx => rx.test(fileName));
-		};
-
 		const { payload: { userId } } = params;
 		const strategy = createCorrectStrategy(params.payload.fileStorageType);
 		const flatFileName = generateFlatFileName(filename);
@@ -357,6 +357,19 @@ const directoryService = {
 			return perm;
 		};
 
+		const directoryExists = () => {
+			return FileModel.findOne({
+				owner,
+				parent,
+				isDirectory: true,
+				name: data.name,
+			}).exec();
+		};
+
+		if (fileRegexCheck(data.name)) {
+			throw new errors.BadRequest(`Die Datei '${data.name}' ist nicht erlaubt!`);
+		}
+
 		let { permissions: sendPermissions } = data;
 		let isCourse = true;
 
@@ -379,15 +392,16 @@ const directoryService = {
 
 		// create db entry for new directory
 		// check for create permissions if it is a subdirectory
+
 		if (parent) {
 			return canCreate(userId, parent)
 				.then(() => {
-					return FileModel.findOne(props).exec().then(data => data ? Promise.resolve(data) : FileModel.create(props));
+					return directoryExists().then(data => data ? Promise.resolve(data) : FileModel.create(props));
 				})
 				.catch(() => new errors.Forbidden());
 		}
 
-		return FileModel.findOne(props).exec().then(data => data ? Promise.resolve(data) : FileModel.create(props));
+		return directoryExists().then(data => data ? Promise.resolve(data) : FileModel.create(props));
 	},
 
 	/**
