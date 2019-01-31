@@ -34,10 +34,10 @@ describe('fileStorage service', function () {
 		assert.ok(app.service('files'));
 	});
 
-	/* @deprecated by new model 
+	/* @deprecated by new model
 	it('registered the directoryModel service', () => {
 		assert.ok(app.service('directories'));
-	}); 
+	});
 	*/
 
 	it ('registered the directory rename service', () => {
@@ -66,23 +66,20 @@ describe('fileStorage service', function () {
 
 	it('should not allow any of these files', () => {
 
-		let fileNames = ['desktop.ini', 'Desktop.ini', 'Thumbs.db', 'schul-cloud.msi', '.DS_Store', 'tempFile*']
+		const fileNames = ['desktop.ini', 'Desktop.ini', 'Thumbs.db', 'schul-cloud.msi', '.DS_Store', 'tempFile*'];
 
-		let promises = [];
-
-		fileNames.forEach(name => {
-			promises.push(signedUrlService.create({ path: `users/0000d213816abba584714c0a/${name}`}, {
-				payload: {userId: '0000d213816abba584714c0a'},
-				account: { userId: '0000d213816abba584714c0a'}
-			})
+		const promises = fileNames.map((filename) => {
+			return signedUrlService.create({ filename, fileType: 'text/html' },{
+					payload: { userId: '0000d213816abba584714c0a'},
+					account: { userId: '0000d213816abba584714c0a'}
+				})
 				.catch(err => {
 					chai.expect(err.name).to.equal('BadRequest');
 					chai.expect(err.code).to.equal(400);
 					chai.expect(err.message).to.equal(`Die Datei '${name}' ist nicht erlaubt!`);
-				})
-			);
+				});
 		});
 
 		return Promise.all(promises);
-	});
+   });
 });
