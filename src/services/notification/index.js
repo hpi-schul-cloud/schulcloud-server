@@ -2,6 +2,7 @@
 
 const request = require('request-promise-native');
 const hooks = require('./hooks/index');
+const { userModel } = require('../user/model');
 
 const REQUEST_TIMEOUT = 8000; // in ms
 
@@ -26,17 +27,39 @@ const toQueryString = (paramsObject) => {
 		.join('&');
 };
 
+const resolveReceivers = (userIds) => {
+	return Promise.all(userIds.map(userId =>{
+		let receiver = {
+			_id: userId
+		};
+		return userModel.findById(userId).then(user=>{
+			if(user){
+				receiver.payload = {
+					name: `${user.firstName} ${user.lastName}`
+				};
+				receiver.mail = user.email;
+				receiver.language = 'de';
+				return Promise.resolve(receiver);
+			} 
+			return Promise.reject('user not found');
+		});
+	}));
+};
+
 class PushService {
 	constructor(options) {
 		this.options = options || {};
 	}
 
-	create(data, params) {
+	async create(data, params) {
 
 		const serviceUrls = this.app.get('services') || {};
 		const notification = this.app.get('notification') || {};
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
+
+		data.receivers = await resolveReceivers(data.receivers);
+
 		const options = {
 			uri: serviceUrls.notification + '/push/',
 			method: 'POST',
@@ -45,7 +68,7 @@ class PushService {
 			},
 			body: Object.assign(data,
 				{ serviceUrl: serviceUrls.notification },
-				{ platformId: notification.platformId }
+				{ platform: notification.platform }
 			),
 			json: true,
 			timeout: REQUEST_TIMEOUT
@@ -141,7 +164,7 @@ class DeviceService {
 
 		const userId = (params.account ||{}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/devices/' + notification.platformId +'/' + userId,
+			uri: serviceUrls.notification + '/devices/' + notification.platform +'/' + userId,
 			headers: {
 				'token': userId
 			},
@@ -166,7 +189,7 @@ class DeviceService {
 			headers: {
 				'token': userId
 			},
-			body: Object.assign({}, data, { platform: notification.platformId }),
+			body: Object.assign({}, data, { platform: notification.platform }),
 			json: true,
 			timeout: REQUEST_TIMEOUT
 		};

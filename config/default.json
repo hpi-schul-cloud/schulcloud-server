@@ -12,6 +12,6 @@
 		"notification": "http://localhost:3031"
 	},
 	"notification": {
-		"platformId": "testplatform"
+		"platform": "testplatform"
 	}
 }
