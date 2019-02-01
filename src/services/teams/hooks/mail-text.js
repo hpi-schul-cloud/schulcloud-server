@@ -20,11 +20,11 @@ Klicke auf diesen Link, um die Einladung anzunehmen: ${shortLink}${close}`;
 
 const isNewRegistration = (linkData, user) => {
 	const link = linkData.link || linkData.target || '';
-	return link.includes('?importHash=' + (user.importHash || linkData.hash));
+	return link.includes(`?importHash=${user.importHash || linkData.hash}`);
 };
 
 const err = (str) => `[Fehler: ${str}]`;
-const getName = (user = {}) => user.firstName + ' ' + user.lastName;
+const getName = (user = {}) => `${user.firstName  } ${user.lastName}`;
 const getEmail = ({ email, user, usernameInviter }) => email || (user || {}).email || usernameInviter || err('Eingeladener');
 const getTeamName = (team) => team.name || err('Teamname');
 const getShortLink = (linkData = {}) => linkData.shortLink || err('Link');

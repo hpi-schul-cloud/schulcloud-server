@@ -1,4 +1,3 @@
-'use strict';
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
