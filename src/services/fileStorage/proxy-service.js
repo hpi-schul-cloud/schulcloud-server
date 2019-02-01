@@ -379,7 +379,7 @@ const directoryService = {
 
 		if (!sendPermissions) {
 			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
-			sendPermissions = teamObject.filePermission;
+			sendPermissions = teamObject ? teamObject.filePermission : [];
 		}
 
 		const props = sanitizeObj(Object.assign(data, {
