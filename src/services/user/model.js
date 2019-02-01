@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const gender = ['male', 'female', 'other', 'noinfo', null];
+const gender = ['male', 'female', 'other', 'noinfo', 'mutant', null];
 
 const userSchema = new Schema({
 	roles: [{type: Schema.Types.ObjectId, ref: 'role'}],
@@ -15,6 +15,8 @@ const userSchema = new Schema({
 	lastName: {type: String, required: true},
 
 	gender: {type: String, enum: gender},
+	newAttr: {type: Object},
+
 	birthday: {type: Date},
 	
 	importHash:{type:String},
