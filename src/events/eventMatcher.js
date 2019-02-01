@@ -1,10 +1,13 @@
 const courseEmitter = require('./courseEmitter');
 
+
+// todo launch here for events using functions like
+// this.app.service('users').on('removed', this._onUserRemoved.bind(this));
+
+
 const EventMatcher = {
 
     emit: function (model, action, message, context) {
-
-        console.log('Event to handle:', model, action, message, context);
 
         // handle events on course
         if (model === 'course' && message && message._id) {

@@ -9,6 +9,10 @@
 	"services": {
 		"calendar": "CALENDAR_URI",
 		"content": "CONTENT_URI",
-		"notification": "NOTIFICATION_URI"
+		"notification": "NOTIFICATION_URI",
+		"client": "CLIENT_URI"
+	},
+	"notification": {
+		"platform": "schul-cloud"
 	}
 }
