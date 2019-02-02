@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const config = require('../../config/default.json'); // TODO change for production
+const config = process.env.NODE_ENV === 'test'
+	? require('../../config/test.json')
+	: require('../../config/default.json'); // TODO add production
 
 async function setup() {
 	await mongoose.connect(
@@ -8,4 +10,8 @@ async function setup() {
 	);
 }
 
-module.exports = { setup };
+async function cleanup() {
+	return mongoose.connection.close();
+}
+
+module.exports = { setup, cleanup };

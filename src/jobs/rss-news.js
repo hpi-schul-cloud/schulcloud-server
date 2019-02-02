@@ -1,5 +1,5 @@
 const Parser = require('rss-parser');
-const { setup } = require('./utils');
+const { setup, cleanup } = require('./utils');
 const { schoolModel } = require('../services/school/model');
 const { newsModel } = require('../services/news/model');
 
@@ -15,13 +15,13 @@ async function run() {
 	await setup();
 
 	const cursor = schoolModel.find({}).cursor();
-	let school;
-	do {
-		school = await cursor.next();
+	let school = await cursor.next();
+	while (school) {
 		await processSchool(school);
+		school = await cursor.next();
 	}
-	while (school);
 
+	await cleanup();
 	process.exit(0);
 }
 
