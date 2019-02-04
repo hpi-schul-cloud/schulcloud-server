@@ -112,9 +112,9 @@ if [ -n "$PASSWORD" ]; then
 fi
 
 STYLE=""
-if [ -n "$JSON_ARRAY" ]; then
-    STYLE="--jsonArray "
-fi
+#if [ -n "$JSON_ARRAY" ]; then
+#    STYLE="--jsonArray "
+#fi
 
 if [ -n "$PRETTY_PRINT" ]; then
     STYLE="$STYLE --pretty "
@@ -146,11 +146,10 @@ elif [ "$ACTION" = "import" ]; then
 	pushd $BACKUP_PATH >/dev/null
 
 	for path in *.json; do
-		# auf array pru:fen
+		# auf array pru:fen und Parameter dazu
 		STR=$( head -n1 $path )
-		if [[ ${STR:0:1} != "[" ]] ; then
-			ARRAYSTR="--jsonArray"
-			STYLE=${STYLE//$ARRAYSTR/}
+		if [[ ${STR:0:1} == "[" ]] ; then
+			STYLE="$STYLE --jsonArray"
 		fi
 		echo "STYLE $STYLE"
 
