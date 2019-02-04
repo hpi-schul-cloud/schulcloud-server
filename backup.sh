@@ -149,9 +149,8 @@ elif [ "$ACTION" = "import" ]; then
 		# auf array pru:fen und Parameter dazu
 		STR=$( head -n1 $path )
 		if [[ ${STR:0:1} == "[" ]] ; then
-			STYLE="$STYLE --jsonArray"
+			ARRAY="--jsonArray"
 		fi
-		echo "STYLE $STYLE"
 
 		if [[ $path == *".secrets."* ]]
 		then
@@ -163,9 +162,9 @@ elif [ "$ACTION" = "import" ]; then
 
 		if [ "$PASSWORD" == "" ];
 		then
-			mongoimport --host $HOST --db $DB --collection $collection $path $STYLE --drop
+			mongoimport --host $HOST --db $DB --collection $collection $path $STYLE $ARRAY --drop
 		else
-			mongoimport --host $HOST $CREDENTIALS --db $DB --collection $collection $path $STYLE --drop
+			mongoimport --host $HOST $CREDENTIALS --db $DB --collection $collection $path $STYLE $ARRAY --drop
 		fi
 	done
 
