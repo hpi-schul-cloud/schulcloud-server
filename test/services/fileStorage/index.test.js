@@ -87,9 +87,9 @@ describe('fileStorage service', function () {
 
 	it('should not allow any of these folders', () => {
 
-		let folderNames = [];
+		let folderNames = ['C_drive', 'Windows', '.3T', '$WINDOWSBD', ' ', 'k_drive', 'Temporary Items'];
 
-		let promises = ['C_drive', 'Windows', '.3T', '$WINDOWSBD', ' ', 'k_drive', 'Temporary Items'];
+		let promises = [];
 
 		folderNames.forEach(name => {
 			promises.push(directoryService.create({ path: `users/0000d213816abba584714c0a/${name}`}, {
