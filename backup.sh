@@ -152,6 +152,7 @@ elif [ "$ACTION" = "import" ]; then
 			ARRAYSTR="--jsonArray"
 			STYLE=${STYLE//$ARRAYSTR/}
 		fi
+		echo "STYLE $STYLE"
 
 		if [[ $path == *".secrets."* ]]
 		then
@@ -163,9 +164,9 @@ elif [ "$ACTION" = "import" ]; then
 
 		if [ "$PASSWORD" == "" ];
 		then
-			mongoimport --host $HOST --db $DB $jsonArray --collection $collection $path $STYLE --drop
+			mongoimport --host $HOST --db $DB --collection $collection $path $STYLE --drop
 		else
-			mongoimport --host $HOST $CREDENTIALS --db $DB $jsonArray --collection $collection $path $STYLE --drop
+			mongoimport --host $HOST $CREDENTIALS --db $DB --collection $collection $path $STYLE --drop
 		fi
 	done
 
