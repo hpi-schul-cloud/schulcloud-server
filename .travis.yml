@@ -10,7 +10,8 @@ services:
 
 env:
   global:
-    - GIT_SHA=$(git rev-parse HEAD)
+    - GIT_SHA=$(git rev-parse HEAD
+    - ROCKET_CHAT_URI=http://localhost:5000
 cache:
   directories:
   - node_modules
