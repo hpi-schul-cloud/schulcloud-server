@@ -150,6 +150,8 @@ elif [ "$ACTION" = "import" ]; then
 		STR=$( head -n1 $path )
 		if [[ ${STR:0:1} == "[" ]] ; then
 			ARRAY="--jsonArray"
+		else
+			ARRAY=""
 		fi
 
 		if [[ $path == *".secrets."* ]]

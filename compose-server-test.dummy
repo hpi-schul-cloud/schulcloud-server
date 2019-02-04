@@ -10,7 +10,7 @@ services:
     deploy:
       replicas: 1
       restart_policy:
-        condition: on-failure
+        condition: always
     ports:
       - "27017"
     volumes:
@@ -19,11 +19,11 @@ services:
 
   ###
   server:
-    image: schulcloud/schulcloud-server:$TRAVIS_BRANCH
+    image: schulcloud/schulcloud-server:$DOCKERTAG
     deploy:
       replicas: 1
       restart_policy:
-        condition: on-failure
+        condition: always
     depends_on:
       - server-mongodb
     environment:
