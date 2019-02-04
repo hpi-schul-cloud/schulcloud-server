@@ -148,10 +148,9 @@ elif [ "$ACTION" = "import" ]; then
 	for path in *.json; do
 		# auf array pru:fen
 		STR=$( head -n1 $path )
-		if [[ ${STR:0:1} == "[" ]] ; then
-			jsonArray="--jsonArray"
-		elif [[ ${STR:0:1} == "{" ]] ; then
-			jsonArray=""
+		if [[ ${STR:0:1} != "[" ]] ; then
+			ARRAYSTR="--jsonArray"
+			STYLE={STYLE//$ARRAYSTR/}
 		fi
 
 		if [[ $path == *".secrets."* ]]
