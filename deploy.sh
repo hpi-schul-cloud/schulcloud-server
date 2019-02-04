@@ -14,6 +14,9 @@ export DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" )
 # build containers
 docker build -t schulcloud/schulcloud-server:$DOCKERTAG -t schulcloud/schulcloud-server:$GIT_SHA .
 
+# Log in to the docker CLI
+echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
 # take those images and push them up to docker hub
 docker push schulcloud/schulcloud-server:$DOCKERTAG
 docker push schulcloud/schulcloud-server:$GIT_SHA
@@ -22,7 +25,7 @@ docker push schulcloud/schulcloud-server:$GIT_SHA
 eval "echo \"$( cat compose-server-test.dummy )\"" > docker-compose-server.yml
 
 # copy config-file to server and execute mit travis_rsa
-scp -i travis_rsa docker-compose-server.yml linux@test.schul-cloud.org:~
+scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa docker-compose-server.yml linux@test.schul-cloud.org:~
 
 
 exit 0
