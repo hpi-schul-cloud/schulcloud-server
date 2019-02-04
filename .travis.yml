@@ -11,6 +11,7 @@ services:
 env:
   global:
     - GIT_SHA=$( git rev-parse HEAD )
+    - DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" )
     - ROCKET_CHAT_URI=http://localhost:5000
 cache:
   directories:
@@ -20,9 +21,14 @@ before_install:
 script:
 - npm test
 #- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-#after_success:
+
+after_success:
 #- bash <(curl -s https://codecov.io/bash)
 #- bash <(curl -X POST --data "apiKey=$apiKey&branch=$BRANCH" http://$url/update)
+
+after_success:
+  # because Skipping a deployment with the script provider because the current build is a pull request.
+  - bash ./deploy.sh
 
 deploy:
   provider: script
