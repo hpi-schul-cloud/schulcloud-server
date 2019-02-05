@@ -22,33 +22,32 @@ const mapRoleFilterQuery = (hook) => {
 };
 
 const checkUnique = (hook) => {
-	let userService = hook.service;
-	const {email} = hook.data;
+	const userService = hook.service;
+	const { email } = hook.data;
 	if (email === undefined) {
 		return Promise.reject(new errors.BadRequest(`Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.`));
 	}
-	return userService.find({ query: {email: email, $populate: ["roles"]}})
+	return userService.find({ query: {email: email.toLowerCase()} })
 		.then(result => {
 			const length = result.data.length;
-			if( length==undefined || length>2 ){
-				return Promise.reject(new errors.BadRequest('Fehler beim prüfen der Datenbank informationen.'));
+			if (length === undefined || length >= 2){
+				return Promise.reject(new errors.BadRequest('Fehler beim Prüfen der Datenbankinformationen.'));
 			}
-			if(length<=0){
+			if (length === 0){
 				return Promise.resolve(hook);
 			}
 
-			const user 		= typeof result.data[0] == 'object' ? result.data[0] : {};
-			const input		= typeof hook.data == 'object' ? hook.data : {};
-			const isLoggedIn= ( hook.params || {} ).account && hook.params.account.userId ? true : false;
-			const isStudent	= user.roles.filter( role => role.name === "student" ).length == 0 ? false : true;
-			const asTask	= ( hook.params._additional || {} ).asTask;
+			const user = typeof result.data[0] == 'object' ? result.data[0] : {};
+			const input	= typeof hook.data == 'object' ? hook.data : {};
+			const isLoggedIn = (hook.params || {}).account && hook.params.account.userId ? true : false;
+			const asTask = (hook.params._additional || {}).asTask;
 
-			if(isLoggedIn || asTask=='student' ){
+			if (isLoggedIn || asTask === undefined || asTask === 'student') {
 				return Promise.reject(new errors.BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
-			}else if(asTask=='parent' && length==1){
-					userService.update({_id: user._id}, {
+			} else if (asTask === 'parent') {
+					userService.update({ _id: user._id }, {
 						$set: {
-							children: (user.children||[]).concat(input.children),
+							children: (user.children || []).concat(input.children),
 							firstName: input.firstName,
 							lastName: input.lastName
 						}
@@ -62,8 +61,8 @@ const checkUnique = (hook) => {
 
 const checkUniqueAccount = (hook) => {
 	let accountService = hook.app.service('/accounts');
-	const {email} = hook.data;
-	return accountService.find({ query: {username: email, $populate: ["roles"]}})
+	const { email } = hook.data;
+	return accountService.find({ query: {username: email.toLowerCase()}})
 		.then(result => {
 			if(result.length > 0) return Promise.reject(new errors.BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`));
 			return Promise.resolve(hook);
@@ -269,7 +268,13 @@ exports.before = function(app) {
 			//permissionRoleCreate,
 			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 		],
-		update: [hooks.disable()],
+		update: [
+			auth.hooks.authenticate('jwt'),
+			globalHooks.hasPermission('USER_EDIT'),
+			//TODO only local for LDAP
+			sanitizeData,
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name')
+		],
 		patch: [
 			auth.hooks.authenticate('jwt'),
 			globalHooks.hasPermission('USER_EDIT'),
@@ -326,6 +331,48 @@ const decorateUser = (hook) => {
 /**
  *
  * @param hook {object} - the hook of the server-request
+ * @returns {object} - the hook with the decorated user avatar
+ */
+const decorateAvatar = (hook) => {
+	if (hook.result.total){
+		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
+		(hook.result.data || []).map(user => {
+			user = setAvatarData(user);
+		});
+	}else{
+		//run and find with only one user
+		hook.result = setAvatarData(hook.result);
+	}
+
+	return Promise.resolve(hook);
+};
+
+/**
+ *
+ * @param user {object} - a user
+ * @returns {object} - a user with avatar info
+ */
+const setAvatarData = (user) => {
+	if (user.firstName && user.lastName){
+		user.avatarInitials = user.firstName.charAt(0) + user.lastName.charAt(0);
+	}else{
+		user.avatarInitials = "?";
+	}
+	//css readable value like "#ff0000" needed
+	const colors = ["#4a4e4d", "#0e9aa7", "#3da4ab", "#f6cd61", "#fe8a71"];
+	if (user.customAvatarBackgroundColor){
+		user.avatarBackgroundColor = user.customAvatarBackgroundColor;
+	}else{
+		// choose colors based on initials 
+		var index = (user.avatarInitials.charCodeAt(0) + user.avatarInitials.charCodeAt(1)) % colors.length;
+		user.avatarBackgroundColor = colors[index];	
+	} 
+	return user;
+}
+
+/**
+ *
+ * @param hook {object} - the hook of the server-request
  * @returns {object} - the hook with the decorated users
  */
 const decorateUsers = (hook) => {
@@ -355,12 +402,18 @@ const handleClassId = (hook) => {
 	}
 };
 
+const pushRemoveEvent= hook=>{
+	hook.app.emit('users:after:remove',hook);
+	return hook;
+};
+
 const User = require('../model');
 
 exports.after = {
 	all: [],
-	find: [decorateUsers],
+	find: [decorateAvatar, decorateUsers],
 	get: [
+		decorateAvatar,
 		decorateUser,
 		globalHooks.computeProperty(User.userModel, 'getPermissions', 'permissions'),
 		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'}))
@@ -368,5 +421,9 @@ exports.after = {
 	create: [handleClassId],
 	update: [],
 	patch: [],
-	remove: [removeStudentFromClasses, removeStudentFromCourses]
+	remove: [
+		pushRemoveEvent, 
+		removeStudentFromClasses,
+		removeStudentFromCourses,
+	],
 };

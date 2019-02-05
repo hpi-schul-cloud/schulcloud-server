@@ -7,12 +7,12 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 
 function createInfoText(user, data){
 	return "Ein neues Problem wurde gemeldet." + "\n"
-	+ "User: " + user + "\n"
-	+ "Kategorie: "+ data.category + "\n"
-	+ "Betreff: " + data.subject + "\n"
-	+ "Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der "+ data.cloud +".\n\n"
-	+ "Mit freundlichen Grüßen\n"
-	+ "Deine " + data.cloud;
+		+ "User: " + user + "\n"
+		+ "Kategorie: "+ data.category + "\n"
+		+ "Betreff: " + data.subject + "\n"
+		+ "Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der "+ data.cloud +".\n\n"
+		+ "Mit freundlichen Grüßen\n"
+		+ "Deine " + data.cloud;
 }
 
 function createFeedbackText(user, data){
@@ -81,7 +81,7 @@ const feedback = () => {
 		}
 		return Promise.resolve(hook);
 	};
- };
+};
 
 exports.after = {
 	all: [],

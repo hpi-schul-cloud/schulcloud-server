@@ -15,13 +15,15 @@ const schoolSchema = new Schema({
 	address: {type: Object},
 	fileStorageType: {type: String, enum: fileStorageTypes},
 	systems: [{type: Schema.Types.ObjectId, ref: 'system'}],
+	ldapSchoolIdentifier: {type: String},
 	federalState: {type: Schema.Types.ObjectId, ref: 'federalstate'},
 	createdAt: {type: Date, 'default': Date.now},
 	updatedAt: {type: Date, 'default': Date.now},
 	experimental: {type: Boolean, 'default': false},
 	pilot: {type: Boolean, 'default': false},
 	currentYear: {type: Schema.Types.ObjectId, ref:'year'},
-	logo_dataUrl: {type: String}
+	purpose: {type: String},
+	logo_dataUrl: {type: String},
 },{
 	timestamps: true
 });
@@ -41,5 +43,6 @@ const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 module.exports = {
 	schoolModel,
 	yearModel,
-	gradeLevelModel
+	gradeLevelModel,
+	fileStorageTypes
 };

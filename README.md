@@ -1,8 +1,8 @@
 # Schul-Cloud Server
 Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com/)
 
-Dev: ![Travis Status](https://travis-ci.org/schul-cloud/schulcloud-server.svg?branch=master)
-Production: ![Travis Status](https://travis-ci.org/schul-cloud/schulcloud-server.svg?branch=production)
+Dev: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg?branch=master)](https://travis-ci.com/schul-cloud/schulcloud-server)
+Production: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg?branch=production)](https://travis-ci.com/schul-cloud/schulcloud-server)
 
 [![Code Coverage](https://img.shields.io/codecov/c/github/schul-cloud/schulcloud-server/master.svg)](https://codecov.io/github/schulcloud/schulcloud-server?branch=master)
 [![Version](https://img.shields.io/github/release/schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/schulcloud-server/releases)
