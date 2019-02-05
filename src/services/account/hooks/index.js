@@ -91,7 +91,12 @@ const validatePassword = (hook) => {
 		globalHooks.hasRoleNoHook(hook, hook.id, 'teacher', true),
 		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero')])
 		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero]) => {
-			if ((hasStudentCreate && isStudent) || (hasAdminView && (isStudent || isTeacher)) || isSuperHero) {
+			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
+			if (
+				(hasStudentCreate && isStudent)
+				|| (hasAdminView && (isStudent || isTeacher))
+				|| isSuperHero
+				|| editsOwnAccount) {
 				return hook;
 			} else {
 				if (password && !password_verification)
