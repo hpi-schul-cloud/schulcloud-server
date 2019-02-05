@@ -223,10 +223,6 @@ class RocketChatLogin {
 		this.docs = docs;
 	}
 
-	getAuthToken(rcAccount) {
-		
-	}
-
 	/**
 	 * Logs in a user given by his Id
 	 * @param {*} userId Id of a user in the schulcloud
