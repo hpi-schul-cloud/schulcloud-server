@@ -34,10 +34,14 @@ async function processSchool(school) {
 		try {
 			const checkedNews = await handleFeed(dbFeed, school._id);
 			allCheckedNews = allCheckedNews.concat(checkedNews)
+			dbFeed.status = 'success';
 		} catch (err) {
 			console.error(`Could not handle feed ${dbFeed.url} (${dbFeed._id}) for school ${school._id}`, err);
+			dbFeed.status = 'error';
 		}
 	}
+
+	await school.save();
 
 	await newsModel.deleteMany({ _id: { $nin: allCheckedNews }, source: 'rss', schoolId: school._id });
 }

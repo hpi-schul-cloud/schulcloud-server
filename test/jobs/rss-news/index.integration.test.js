@@ -1,7 +1,6 @@
 const chai = require('chai');
 const path = require('path');
 const Parser = require('rss-parser');
-const mongoose = require('mongoose');
 const { exec } = require('child_process');
 const { schoolModel } = require('../../../src/services/school/model');
 const { newsModel } = require('../../../src/services/news/model');
@@ -31,16 +30,37 @@ describe('RSS Feed Crawler Integration', () => {
 
 	beforeEach(runWorker);
 
-	after(async () => {
-		mongoose.connection.close();
-	});
-
 	it('should create new news items based on schools rss feeds', async () => {
 		dbRSSNews = (await newsModel.findOne({ source: 'rss' })).toObject();
 		expect(dbRSSNews).to.exist;
 		expect(dbRSSNews.sourceDescription).to.equal(sampleRSSFeed.description);
 		expect(dbRSSNews.source).to.equal('rss');
 		expect(dbRSSNews.externalId).to.exist;
+	});
+
+	it('should set rssFeed status to success', async () => {
+		const school = (await schoolModel.findById(sampleSchool._id)).toObject();
+
+		const successRSSFeed = school.rssFeeds.find(el => el.url === sampleRSSFeed.url);
+		expect(successRSSFeed.status).to.equal('success');
+	});
+
+	describe('Invalid RSS Feeds', async () => {
+		const invalidFeed = {
+			url: 'blob',
+			description: 'blub',
+		};
+
+		before(async () => {
+			await schoolModel.findByIdAndUpdate(sampleSchool._id, { $push: { rssFeeds: invalidFeed } });
+		});
+
+		it('should set rssFeed status to error for invalid urls', async () => {
+			const school = (await schoolModel.findById(sampleSchool._id)).toObject();
+
+			const errorRSSFeed = school.rssFeeds.find(el => el.url === invalidFeed.url);
+			expect(errorRSSFeed.status).to.equal('error');
+		});
 	});
 
 	describe('Override changed news', () => {

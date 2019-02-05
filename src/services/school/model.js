@@ -20,6 +20,11 @@ const rssFeedSchema = new Schema({
 		type: String,
 		default: '',
 	},
+	status: {
+		type: String,
+		default: 'pending',
+		enum: ['pending', 'success', 'error'],
+	},
 });
 
 const schoolSchema = new Schema({
