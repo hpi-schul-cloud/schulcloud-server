@@ -118,6 +118,7 @@ const validatePassword = (hook) => {
 					});
 				});
 			}
+			return hook;
 		});
 };
 
