@@ -1,5 +1,5 @@
 ---
-version: \"3\"
+version: \"3.7\"
 
 services:
 
@@ -15,7 +15,7 @@ services:
       - \"27017\"
     volumes:
       - data-server-mongodb:/data/db
-    restart: always
+    restart: any
 
   ###
   server:
@@ -23,7 +23,7 @@ services:
     deploy:
       replicas: 1
       restart_policy:
-        condition: always
+        condition: any
     depends_on:
       - server-mongodb
     environment:
