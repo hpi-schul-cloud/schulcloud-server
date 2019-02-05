@@ -1,5 +1,5 @@
 ---
-version: "3"
+version: \"3\"
 
 services:
 
@@ -12,7 +12,7 @@ services:
       restart_policy:
         condition: always
     ports:
-      - "27017"
+      - \"27017\"
     volumes:
       - data-server-mongodb:/data/db
     restart: always
@@ -53,7 +53,7 @@ services:
       - ROCKET_CHAT_ADMIN_TOKEN=$ROCKET_CHAT_ADMIN_TOKEN
       - ROCKET_CHAT_ADMIN_ID=$ROCKET_CHAT_ADMIN_ID
     ports:
-      - "3030:3030"
+      - \"3030:3030\"
     restart: always
 
 volumes:
