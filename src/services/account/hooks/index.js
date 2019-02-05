@@ -36,25 +36,24 @@ const validateCredentials = (hook) => {
 	if (!username) throw new errors.BadRequest('no username specified');
 	if (!password) throw new errors.BadRequest('no password specified');
 
-	if (!systemId) return;
+	if (!systemId) return hook;
 
 	const { app } = hook;
 	const systemService = app.service('/systems');
 	return systemService.get(systemId)
-		.then(system => {
-			const strategy = strategies[system.type];
+		.then((system) => {
+			const Strategy = strategies[system.type];
 			return {
-				strategy: new strategy(app),
-				system
+				strategy: new Strategy(app),
+				system,
 			};
 		})
-		.then(({strategy, system}) => {
-			return strategy.login({username, password}, system, schoolId);
-		})
+		.then(({ strategy, system }) => strategy.login({ username, password }, system, schoolId))
 		.then((client) => {
 			if (client.token) {
 				hook.data.token = client.token;
 			}
+			return hook;
 		});
 };
 
@@ -179,23 +178,22 @@ const protectUserId = (hook) => {
 				} return Promise.reject(new errors.Forbidden('Die userId kann nicht geändert werden.'));
 			});
 	}
+	return hook;
 };
 
-const securePatching = (hook) => {
-	return Promise.all([
-		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
-		globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
-		globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
-		globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
-	]).then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
-		if (hook.params.account._id !== hook.id) {
-			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent))) {
-				return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'))
-			}
+const securePatching = hook => Promise.all([
+	globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
+	globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
+	globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
+	globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
+]).then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
+	if (hook.params.account._id !== hook.id) {
+		if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent))) {
+			return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'))
 		}
-		return Promise.resolve(hook);
-	});
-};
+	}
+	return Promise.resolve(hook);
+});
 
 const clearPwHash = (hook) => {
 	if (hook.result.password) {
