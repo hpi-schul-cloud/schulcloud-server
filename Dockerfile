@@ -2,10 +2,11 @@
 FROM node:8.15-alpine
 
 WORKDIR /schulcloud-server
-COPY . .
 # RSS-Cron starten
-RUN crontab ./crontab && crond
 RUN apk update && apk upgrade && apk add --no-cache git make python
-RUN npm install
+COPY ./package.json .
+RUN npm install --only=production
+COPY . .
 
+ENTRYPOINT crontab ./crontab && crond
 CMD npm start
