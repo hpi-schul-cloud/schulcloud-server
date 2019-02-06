@@ -682,4 +682,6 @@ module.exports = function () {
 	const teamsAdmin = app.service('/teams/manage/admin');
 	teamsAdmin.before(hooks.beforeAdmin);
 	teamsAdmin.after(hooks.afterAdmin);
-};
+}
+
+//module.exports = config;
