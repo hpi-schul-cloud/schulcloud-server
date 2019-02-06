@@ -1,7 +1,8 @@
-'use strict';
+
 
 const request = require('request-promise-native');
 const hooks = require('./hooks/index');
+const { createReceiver, send } = require('../../events/notificationSender');
 
 const REQUEST_TIMEOUT = 8000; // in ms
 
@@ -19,12 +20,10 @@ const mapResponseProps = (response) => {
 	return response;
 };
 
-const toQueryString = (paramsObject) => {
-	return Object
-		.keys(paramsObject)
-		.map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-		.join('&');
-};
+const toQueryString = paramsObject => Object
+	.keys(paramsObject)
+	.map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
+	.join('&');
 
 class PushService {
 	constructor(options) {
@@ -32,47 +31,24 @@ class PushService {
 	}
 
 	create(data, params) {
-
 		const serviceUrls = this.app.get('services') || {};
-		const notification = this.app.get('notification') || {};
-
-		const userId = (params.account || {}).userId || params.payload.userId;
-		const options = {
-			uri: serviceUrls.notification + '/push/',
-			method: 'POST',
-			headers: {
-				'token': userId
-			},
-			body: Object.assign(data,
-				{ serviceUrl: serviceUrls.notification },
-				{ platformId: notification.platformId }
-			),
-			json: true,
-			timeout: REQUEST_TIMEOUT
-		};
-
-		return request(options).then(response => {
-			return response;
-		});
+		return send(data.template, data.payload, data.users);
 	}
 
 	get(id, params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/push/' + id + '?token=' + userId,
+			uri: `${serviceUrls.notification}/push/${id}?token=${userId}`,
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => {
-			return message;
-		});
+		return request(options).then(message => message);
 	}
 
 	setup(app, path) {
@@ -86,43 +62,37 @@ class MessageService {
 	}
 
 	create(data, params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/messages/',
+			uri: `${serviceUrls.notification}/messages/`,
 			method: 'POST',
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			body: Object.assign(data, { serviceUrl: serviceUrls.notification }),
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(response => {
-			return response;
-		});
+		return request(options).then(response => response);
 	}
 
 	get(id, params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/messages/' + id + '?token=' + userId,
+			uri: `${serviceUrls.notification}/messages/${id}?token=${userId}`,
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => {
-			return message;
-		});
+		return request(options).then(message => message);
 	}
 
 	setup(app, path) {
@@ -141,39 +111,31 @@ class DeviceService {
 
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/devices/' + notification.platformId + '/' + userId,
+			uri: `${serviceUrls.notification}/devices/${notification.platform}/${userId}`,
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(devices => {
-			return devices;
-		});
+		return request(options).then(devices => devices);
 	}
 
-	create(data, params) {
+	create(data) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account || {}).userId || params.payload.userId;
 		const notification = this.app.get('notification') || {};
 
 		const options = {
-			uri: serviceUrls.notification + '/devices/',
+			uri: `${serviceUrls.notification}/devices/`,
 			method: 'POST',
-			headers: {
-				'token': userId
-			},
-			body: Object.assign({}, data, { platform: notification.platformId }),
+			body: Object.assign({}, data, { platform: notification.platform }),
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(response => {
-			return mapResponseProps(response);
-		});
+		return request(options).then(response => mapResponseProps(response));
 	}
 
 	remove(id, params) {
@@ -182,15 +144,13 @@ class DeviceService {
 
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/devices/' + notification.platformId + '/' + userId + '/' + id,
+			uri: `${serviceUrls.notification}/devices/${notification.platform}/${userId}/${id}`,
 			method: 'DELETE',
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => {
-			return message;
-		});
+		return request(options).then(message => message);
 	}
 
 	setup(app, path) {
@@ -205,20 +165,17 @@ class CallbackService {
 
 	// todo remove auth
 	create(data, params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
 		const options = {
-			uri: serviceUrls.notification + '/messages/' + data.messageId + '/seen',
+			uri: `${serviceUrls.notification}/messages/${data.messageId}/seen`,
 			method: 'POST',
 			body: data,
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(response => {
-			return response;
-		});
+		return request(options).then(response => response);
 	}
 
 	setup(app, path) {
@@ -236,37 +193,33 @@ class NotificationService {
 
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/notifications/' + id,
+			uri: `${serviceUrls.notification}/notifications/${id}`,
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => {
-			return message;
-		});
+		return request(options).then(message => message);
 	}
 
 	find(params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.account || {}).userId || params.payload.userId;
 
 		const options = {
-			uri: serviceUrls.notification + '/notifications/' + '?user=' + userId + '&' + toQueryString(params.query),
+			uri: `${serviceUrls.notification}/notifications/`
+				+ `?user=${userId}&${toQueryString(params.query)}`,
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => {
-			return message;
-		});
+		return request(options).then(message => message);
 	}
 
 	setup(app, path) {
