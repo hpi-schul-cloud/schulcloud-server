@@ -122,23 +122,27 @@ class RocketChatUser {
 	 * If no matching rocketChat account exists yet, it is created
 	 * @param {*} userId id of a user in the schulcloud
 	 */
-	getOrCreateRocketChatAccount(userId) {
-		return rocketChatModels.userModel.findOne({ userId })
-			.then((login) => {
-				if (!login) {
-					return this.createRocketChatAccount(userId)
-						.then(rocketChatModels.userModel.findOne({ userId }));
-				} return Promise.resolve(login);
-			})
-			.then(login => Promise.resolve({
-				username: login.username,
-				password: login.pass,
-				authToken: login.authToken,
-				rcId: login.rcId,
-			})).catch((err) => {
-				logger.warn(err);
-				Promise.reject(new errors.BadRequest('could not initialize rocketchat user', err));
-			});
+	async getOrCreateRocketChatAccount(userId) {
+		try {
+			const scUser = await this.app.service('users').get(userId, { query: { $populate: 'schoolId' } });
+			if (!(scUser.schoolId.features || []).includes('rocketChat')) {
+				throw errors.BadRequest('this users school does not support rocket.chat');
+			}
+			let rcUser = await rocketChatModels.userModel.findOne({ userId });
+			if (!rcUser) {
+				rcUser = await this.createRocketChatAccount(userId)
+					.then(rocketChatModels.userModel.findOne({ userId }));
+			}
+			return {
+				username: rcUser.username,
+				password: rcUser.pass,
+				authToken: rcUser.authToken,
+				rcId: rcUser.rcId,
+			};
+		} catch (err) {
+			logger.warn(err);
+			return new errors.BadRequest('could not initialize rocketchat user', err);
+		}
 	}
 
 	/**
@@ -348,8 +352,8 @@ class RocketChatChannel {
 		return this.app.service('teams').get(teamId, internalParams)
 			.then((team) => {
 				currentTeam = team;
-				const userNamePromises = currentTeam.userIds.map(user => this.app.service('rocketChat/user').get(user.userId));
-
+				const userNamePromises = currentTeam.userIds.map(user => this.app.service('rocketChat/user').get(user.userId)
+					.catch(Promise.resolve));
 				return Promise.all(userNamePromises).then(async (users) => {
 					const userNames = users.map(user => user.username);
 					const channelName = await this.generateChannelName(currentTeam);
@@ -376,21 +380,25 @@ class RocketChatChannel {
 			});
 	}
 
-	getOrCreateRocketChatChannel(teamId, params) {
-		return rocketChatModels.channelModel.findOne({ teamId })
-			.then((channel) => {
-				if (!channel) {
-					return this.createChannel(teamId, params)
-						.then(() => rocketChatModels.channelModel.findOne({ teamId }));
-				} return Promise.resolve(channel);
-			})
-			.then(channel => Promise.resolve({
+	async getOrCreateRocketChatChannel(teamId, params) {
+		try {
+			const team = await this.app.service('teams').get(teamId);
+			if (!team.features.includes('rocketChat')) {
+				throw errors.BadRequest('rocket.chat is disabled for this team');
+			}
+			let channel = await rocketChatModels.channelModel.findOne({ teamId });
+			if (!channel) {
+				channel = await this.createChannel(teamId, params)
+					.then(() => rocketChatModels.channelModel.findOne({ teamId }));
+			}
+			return {
 				teamId: channel.teamId,
 				channelName: channel.channelName,
-			}))
-			.catch((err) => {
-				Promise.reject(new errors.BadRequest('error initializing the rocketchat channel', err));
-			});
+			};
+		} catch (err) {
+			logger.warn(err);
+			return new errors.BadRequest('error initializing the rocketchat channel', err);
+		}
 	}
 
 	async addUsersToChannel(userIds, teamId) {
