@@ -1,7 +1,5 @@
-'use strict';
-
 const service = require('feathers-mongoose');
-const {FileModel} = require('./model');
+const { FileModel } = require('./model');
 const hooks = require('./hooks/model-hooks');
 
 module.exports = function () {
@@ -13,7 +11,7 @@ module.exports = function () {
 			default: 10000,
 			max: 10000
 		},
-		lean: true
+		lean: true,
 	};
 
 	// Initialize our service with any options it requires
