@@ -335,7 +335,7 @@ const teamRolesToHook = (hook) => {
 			if (isObject(value) && value._id) {
 				value = value[key];
 			}
-			let role = self.teamroles.find((role) => role[key].toString() === value.toString());
+			let role = self.teamroles.find(teamroles => teamroles[key].toString() === value.toString());
 			let out;
 			if (role && resultKey) {
 				out = role[resultKey];

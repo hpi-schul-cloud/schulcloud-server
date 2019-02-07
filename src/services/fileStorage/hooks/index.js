@@ -1,7 +1,5 @@
-'use strict';
-
-const { hasPermission, injectUserId } = require('../../../hooks');
 const auth = require('feathers-authentication');
+const { hasPermission, injectUserId } = require('../../../hooks');
 
 const resolveUserId = (hook) => {
 	// local workaround if authentication is disabled
@@ -14,12 +12,13 @@ const resolveUserId = (hook) => {
 const resolveStorageType = (hook) => {
 	const { params: { payload } } = hook;
 
-	return hook.app.service('users').find({query: {
-		_id: payload.userId,
-		$populate: ['schoolId']
-	}})
-	.then(res => {
-		const [{ schoolId: { _id, fileStorageType} },] = res.data;
+	return hook.app.service('users').find({
+		query: {
+			_id: payload.userId,
+			$populate: ['schoolId'],
+		},
+	}).then((res) => {
+		const [{ schoolId: { _id, fileStorageType } }] = res.data;
 		payload.schoolId = _id;
 		payload.fileStorageType = fileStorageType;
 		return hook;
@@ -31,14 +30,14 @@ exports.before = {
 		auth.hooks.authenticate('jwt'),
 		injectUserId,
 		resolveUserId,
-		resolveStorageType
+		resolveStorageType,
 	],
 	find: [hasPermission('FILESTORAGE_VIEW')],
 	get: [hasPermission('FILESTORAGE_VIEW')],
 	create: [hasPermission('FILESTORAGE_CREATE')],
 	update: [hasPermission('FILESTORAGE_EDIT')],
 	patch: [hasPermission('FILESTORAGE_EDIT')],
-	remove: [hasPermission('FILESTORAGE_REMOVE')]
+	remove: [hasPermission('FILESTORAGE_REMOVE')],
 };
 
 exports.after = {
@@ -48,5 +47,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };
