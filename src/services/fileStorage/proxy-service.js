@@ -631,15 +631,14 @@ const filePermissionService = {
 						write,
 						read,
 						create,
-						delete: data['delete'],
+						delete: data.delete,
 					}));
-				}
-				else {
+				} else {
 					permission = Object.assign(permission, sanitizeObj({
 						write,
 						read,
 						create,
-						delete: data['delete'],
+						delete: data.delete,
 					}));
 				}
 
