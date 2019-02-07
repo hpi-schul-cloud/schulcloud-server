@@ -16,7 +16,7 @@ const addMedia = socket => (meta) => {
 };
 
 const deleteMedia = socket => (id) => {
-	const { user, course } = socket.meta;
+	const { course } = socket.meta;
 	Object.keys(course.desks).forEach((deskType) => {
 		if (!course.desks[deskType]) return;
 		Object.keys(course.desks[deskType]).forEach((desk) => {
@@ -30,7 +30,7 @@ const deleteMedia = socket => (id) => {
 };
 
 const setBoardLayout = socket => ({ desk, deskType, key, maxElements }) => {
-	const { user, course } = socket.meta;
+	const { course } = socket.meta;
 	const deskObject = course.desks[deskType][desk];
 	if (!deskObject) return;
 	const { board } = deskObject;
@@ -47,7 +47,7 @@ const setBoardLayout = socket => ({ desk, deskType, key, maxElements }) => {
 };
 
 const setMediaOnBoard = socket => ({ desk, deskType, slot, media }) => {
-	const { user, course } = socket.meta;
+	const { course } = socket.meta;
 	let { board } = course.desks[deskType][desk];
 	if (slot === undefined) {
 		for (let i = 0; i < board.maxElements; i++) {
