@@ -32,35 +32,6 @@ const sanitizeObj = (obj) => {
 	return obj;
 };
 
-const fileRegexCheck = fileName => [
-	/[dD]esktop.ini/,
-	/ehthumbs_vista.db/,
-	/ehthumbs.db/,
-	/Thumbs.db/,
-	/.com.apple.timemachine.donotpresent/,
-	/.VolumeIcon.icns/,
-	/.Trashes/,
-	/.TemporaryItems/,
-	/.Spotlight-V100/,
-	/.fseventsd/,
-	/.DocumentRevisions-V100/,
-	/.LSOverride/,
-	/.AppleDouble/,
-	/.DS_Store/,
-	/\w\*/,
-	/\w.lnk/,
-	/\w.msp/,
-	/\w.msm/,
-	/\w.msix/,
-	/\w.cab/,
-	/\w.msi/,
-	/\w.stackdump/,
-	/.nfs\w/,
-	/.Trash-\w/,
-	/.fuse_hidden\w/,
-	/._w/,
-].some(rx => rx.test(fileName));
-
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
 
@@ -261,6 +232,35 @@ const signedUrlService = {
 			? FileModel.findOne({ parent, name: filename }).exec()
 			: Promise.resolve({});
 
+		const fileRegexCheck = fileName => [
+			/^[dD]esktop\.ini$/,
+			/^ehthumbs_vista\.db$/,
+			/^ehthumbs\.db$/,
+			/^Thumbs\.db$/,
+			/^\.com\.apple\.timemachine\.donotpresent$/,
+			/^\.VolumeIcon\.icns$/,
+			/^\.Trashes$/,
+			/^\.TemporaryItems$/,
+			/^\.Spotlight-V100$/,
+			/^\.fseventsd$/,
+			/^\.DocumentRevisions-V100$/,
+			/^\.LSOverride$/,
+			/^\.AppleDouble$/,
+			/^\.DS_Store$/,
+			/^.*\*$/,
+			/^.*\.lnk$/,
+			/^.*\.msp$/,
+			/^.*\.msm$/,
+			/^.*\.msi$/,
+			/^.*\.cab$/,
+			/^.*\.msi$/,
+			/^.*\.stackdump$/,
+			/^\.nfs.*$/,
+			/^\.Trash-.*$/,
+			/^\.fuse_hidden.*$/,
+			/^\..*$/,
+		].some(rx => rx.test(fileName));
+
 		return parentPromise
 			.then(() => {
 				return parent ? canCreate(userId, parent) : Promise.resolve({});
@@ -365,8 +365,18 @@ const directoryService = {
 			name: data.name,
 		}).exec();
 
-		if (fileRegexCheck(data.name)) {
-			throw new BadRequest(`Die Datei '${data.name}' ist nicht erlaubt!`);
+		const folderRegexCheck = fileName => [
+			/^[a-zA-Z]{1}_drive$/,
+			/^Windows$/,
+			/^\$.*$/,
+			/^\..*$/,
+			/^Temporary Items$/,
+			/^Network Trash Folder$/,
+			/^ *$/,
+		].some(rx => rx.test(fileName));
+
+		if (folderRegexCheck(data.name)) {
+			throw new BadRequest(`Der Ordner '${data.name}' ist nicht erlaubt!`);
 		}
 
 		let { permissions: sendPermissions } = data;
