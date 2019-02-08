@@ -433,8 +433,9 @@ const directoryService = {
 	 * @param id, params
 	 * @returns {Promise}
 	 */
-	remove(_id, params) {
-		const { payload: { userId } } = params;
+	remove(_, { query, payload }) {
+		const { userId } = payload;
+		const { _id } = query;
 		const fileInstance = FileModel.findOne({ _id });
 
 		return canDelete(userId, _id)
