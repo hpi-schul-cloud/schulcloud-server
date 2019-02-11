@@ -17,6 +17,7 @@ const helpers = require('./helpers');
 const resolve = require('./resolve');
 const federalState = require('./federalState');
 const userGroup = require('./user-group');
+const teams = require('./teams');
 const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
 const notification = require('./notification');
@@ -26,13 +27,16 @@ const statistic = require('./statistic');
 const wopi = require('./wopi');
 const pseudonym = require('./pseudonym');
 const consent = require('./consent');
+const ldap = require('./ldap');
+const sync = require('./sync');
+const rocketChat = require('./rocketChat');
 const clipboard = require('./clipboard');
 const me = require('./me');
 
-module.exports = function() {
+module.exports = function () {
 	const app = this;
 
-	mongoose.connect(process.env.DB_URL || app.get('mongodb'), { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD }); 
+	mongoose.connect(process.env.DB_URL || app.get('mongodb'), { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
 	mongoose.Promise = global.Promise;
 
 	app.configure(authentication);
@@ -44,6 +48,7 @@ module.exports = function() {
 	app.configure(school);
 	app.configure(resolve);
 	app.configure(userGroup);
+	app.configure(teams);
 	app.configure(ltiTool);
 	app.configure(content);
 	app.configure(calendar);
@@ -59,10 +64,12 @@ module.exports = function() {
 	app.configure(releases);
 	app.configure(helpdesk);
 	app.configure(statistic);
+	app.configure(wopi);
 	app.configure(pseudonym);
 	app.configure(consent);
 	app.configure(clipboard);
-	app.configure(wopi);
-	app.configure(pseudonym);
+	app.configure(ldap);
+	app.configure(sync);
 	app.configure(me);
+	app.configure(rocketChat);
 };
