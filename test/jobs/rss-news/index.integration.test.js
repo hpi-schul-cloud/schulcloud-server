@@ -2,8 +2,10 @@ const chai = require('chai');
 const path = require('path');
 const Parser = require('rss-parser');
 const { exec } = require('child_process');
-const { schoolModel } = require('../../../src/services/school/model');
-const { newsModel } = require('../../../src/services/news/model');
+//const { schoolModel } = require('../../../src/services/school/model');
+const { schoolModel } = require('/home/travis/build/schul-cloud/schulcloud-serversrc/services/school/model');
+//const { newsModel } = require('../../../src/services/news/model');
+const { newsModel } = require('/home/travis/build/schul-cloud/schulcloud-server/src/services/news/model');
 
 const parser = new Parser();
 
