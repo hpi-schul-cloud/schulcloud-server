@@ -1,10 +1,11 @@
 
 
 const request = require('request-promise-native');
-const hooks = require('./hooks/index');
+const { hooks, callbackHooks } = require('./hooks/index');
+
 const { createReceiver, send } = require('../../events/notificationSender');
 
-const REQUEST_TIMEOUT = 8000; // in ms
+const DEFAULT_REDIRECT = 'https://schul-cloud.org';
 
 /**
  * maps jsonapi properties of a response to fit anything but jsonapi
@@ -45,7 +46,6 @@ class PushService {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
 		};
 
 		return request(options).then(message => message);
@@ -62,41 +62,46 @@ class MessageService {
 	}
 
 	create(data, params) {
-		const serviceUrls = this.app.get('services') || {};
-
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.notification}/messages/`,
+			uri: `${this.serviceUrls.notification}/messages/`,
 			method: 'POST',
 			headers: {
 				token: userId,
 			},
-			body: Object.assign(data, { serviceUrl: serviceUrls.notification }),
+			body: Object.assign(data, { serviceUrl: this.serviceUrls.notification }),
 			json: true,
-			timeout: REQUEST_TIMEOUT,
 		};
 
 		return request(options).then(response => response);
 	}
 
 	get(id, params) {
-		const serviceUrls = this.app.get('services') || {};
-
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.notification}/messages/${id}?token=${userId}`,
+			uri: `${this.serviceUrls.notification}/messages/${id}?token=${userId}`,
 			headers: {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
 		};
 
 		return request(options).then(message => message);
 	}
 
+	remove(id, params) {
+		const userId = (params.account || {}).userId || params.payload.userId;
+		const options = {
+			uri: `${this.serviceUrls.notification}/messages/${id}/remove/${userId}`,
+			method: 'POST',
+			json: true,
+		};
+		return request(options).then(response => response);
+	}
+
 	setup(app, path) {
 		this.app = app;
+		this.serviceUrls = this.app.get('services') || {};
 	}
 }
 
@@ -116,7 +121,6 @@ class DeviceService {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
 		};
 
 		return request(options).then(devices => devices);
@@ -132,7 +136,6 @@ class DeviceService {
 			method: 'POST',
 			body: Object.assign({}, data, { platform: notification.platform }),
 			json: true,
-			timeout: REQUEST_TIMEOUT,
 		};
 
 		return request(options).then(response => mapResponseProps(response));
@@ -163,6 +166,22 @@ class CallbackService {
 		this.options = options || {};
 	}
 
+	get(id, params) {
+		const serviceUrls = this.app.get('services') || {};
+		const data = {
+			receiverId: params.query.receiverId,
+			redirect: params.query.redirect || null,
+		};
+		const options = {
+			uri: `${serviceUrls.notification}/messages/${id}/seen`,
+			method: 'POST',
+			body: data,
+			json: true,
+		};
+
+		return request(options).then(response => response);
+	}
+
 	// todo remove auth
 	create(data, params) {
 		const serviceUrls = this.app.get('services') || {};
@@ -172,7 +191,6 @@ class CallbackService {
 			method: 'POST',
 			body: data,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
 		};
 
 		return request(options).then(response => response);
@@ -198,7 +216,6 @@ class NotificationService {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
 		};
 
 		return request(options).then(message => message);
@@ -216,7 +233,6 @@ class NotificationService {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
 		};
 
 		return request(options).then(message => message);
@@ -227,6 +243,12 @@ class NotificationService {
 	}
 }
 
+function redirect(req, res, next) {
+	if (req.query && req.query.redirect) {
+		return res.redirect(301, req.query.redirect);
+	}
+}
+
 module.exports = function () {
 	const app = this;
 
@@ -234,7 +256,7 @@ module.exports = function () {
 	app.use('/notification/push', new PushService());
 	app.use('/notification/messages', new MessageService());
 	app.use('/notification/devices', new DeviceService());
-	app.use('/notification/callback', new CallbackService());
+	app.use('/notification/callback', new CallbackService(), redirect);
 	app.use('/notification', new NotificationService());
 
 	// Get our initialize service to that we can bind hooks
@@ -248,7 +270,7 @@ module.exports = function () {
 	pushService.before(hooks.before);
 	messageService.before(hooks.before);
 	deviceService.before(hooks.before);
-	callbackService.before(hooks.before);
+	callbackService.before(callbackHooks.before);
 	notificationService.before(hooks.before);
 
 	// Set up our after hooks
