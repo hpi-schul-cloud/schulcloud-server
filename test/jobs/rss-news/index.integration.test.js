@@ -1,8 +1,10 @@
+/* eslint-disable */
 const chai = require('chai');
 const path = require('path');
 const { exec } = require('child_process');
 const { schoolModel } = require('../../../src/services/school/model');
 const { newsModel } = require('../../../src/services/news/model');
+
 
 const { expect } = chai;
 
@@ -37,7 +39,8 @@ function sampleWorker() {
 	})
 }
 
-describe('RSS Feed Crawler Integration', () => {
+describe('RSS Feed Crawler Integration', function () {
+	this.timeout(10000)
 	let sampleSchool;
 	let dbRSSNews;
 	const sampleRSSFeed = {
@@ -45,7 +48,7 @@ describe('RSS Feed Crawler Integration', () => {
 		description: 'netz-21',
 	};
 
-	before(async () => {
+	before(async function () {
 		await sampleWorker();
 
 		sampleSchool = (await schoolModel.findOneAndUpdate(
@@ -54,9 +57,9 @@ describe('RSS Feed Crawler Integration', () => {
 			{ new: true },
 		)).toObject();
 
-	}).timeout(10000);
+	});
 
-	beforeEach(runWorker).timeout(10000);
+	beforeEach(runWorker);
 
 	it('should create new news items based on schools rss feeds', async () => {
 		dbRSSNews = (await newsModel.findOne({ source: 'rss' })).toObject();
