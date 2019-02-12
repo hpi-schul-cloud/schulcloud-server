@@ -20,7 +20,7 @@ describe.skip('RSS Feed Crawler Integration', () => {
 
 	before(async () => {
 
-		const child = exec('node --version')
+		const child = exec('node --version');
 
 		child.stdout.on('data', function (data) {
 			console.log(data.toString());
