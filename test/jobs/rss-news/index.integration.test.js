@@ -38,6 +38,7 @@ function sampleWorker() {
 }
 
 describe('RSS Feed Crawler Integration', () => {
+	this.timeout(10000);
 	let sampleSchool;
 	let sampleRSSContent;
 	let dbRSSNews;
@@ -47,7 +48,6 @@ describe('RSS Feed Crawler Integration', () => {
 	};
 
 	before(async () => {
-		this.timeout(10000);
 		await sampleWorker();
 
 		sampleSchool = (await schoolModel.findOneAndUpdate(
@@ -58,10 +58,7 @@ describe('RSS Feed Crawler Integration', () => {
 
 	});
 
-	beforeEach(async () => {
-		this.timeout(10000);
-		await runWorker();
-	});
+	beforeEach(runWorker);
 
 	it('should create new news items based on schools rss feeds', async () => {
 		dbRSSNews = (await newsModel.findOne({ source: 'rss' })).toObject();
