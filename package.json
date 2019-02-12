@@ -31,6 +31,7 @@
     "mocha-inspect": "cross-env NODE_ENV=test mocha --debug-brk --inspect test/ --recursive"
   },
   "dependencies": {
+    "apollo-server-express": "^2.3.3",
     "aws-sdk": "^2.306.0",
     "bcryptjs": "latest",
     "body-parser": "^1.15.2",
@@ -60,6 +61,8 @@
     "feathers-swagger": "^0.3.2",
     "file-type": "^9.0.0",
     "freeport": "^1.0.5",
+    "graphql": "^14.1.1",
+    "graphql-import": "^0.7.1",
     "jwt-decode": "^2.2.0",
     "ldapjs": "git+https://git@github.com/Blizzard/node-ldapjs.git",
     "lodash": "^4.17.4",
