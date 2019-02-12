@@ -95,6 +95,7 @@ const FileModel = mongoose.model('file', fileSchema, 'files');
 const run = async (dry) => {
 
 	const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
+	const { _id: teacherRoleId } = await RoleModel.findOne({ name: 'teacher' }).exec();
 
 	const logGreen = obj => {
 		if( dry ) {
@@ -102,7 +103,7 @@ const run = async (dry) => {
 		}
 	};
 
-	const convertDocument = doc => {
+	const convertDocument = (doc) => {
 		logGreen(`Converting document ${doc.name} with path ${doc.path}`);
 
 		const [refOwnerModel, owner, ] = doc.key.split('/');
@@ -124,9 +125,6 @@ const run = async (dry) => {
 				delete: true,
 			});
 		} else if (refOwnerModel === 'courses') {
-			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
-			const { _id: teacherRoleId } = await RoleModel.findOne({ name: 'teacher' }).exec();
-
 			permissions.push({
 				refId: studentRoleId,
 				refPermModel: 'role',
