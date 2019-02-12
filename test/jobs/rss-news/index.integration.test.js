@@ -19,6 +19,24 @@ function runWorker() {
 	});
 }
 
+function sampleWorker() {
+	return new Promise((resolve, reject) => {
+		const child = exec('node --version');
+
+		child.stdout.on('data', function (data) {
+			console.log(data.toString());
+		});
+
+		child.stderr.on('data', function (data) {
+			console.log(data.toString());
+		});
+
+		child.on('exit', () => {
+			resolve();
+		});
+	})
+}
+
 describe('RSS Feed Crawler Integration', () => {
 	let sampleSchool;
 	let sampleRSSContent;
@@ -29,16 +47,8 @@ describe('RSS Feed Crawler Integration', () => {
 	};
 
 	before(async () => {
-		this.timeout(10000)
-		const child = exec('node --version');
-
-		child.stdout.on('data', function (data) {
-			console.log(data.toString());
-		});
-
-		child.stderr.on('data', function (data) {
-			console.log(data.toString());
-		});
+		this.timeout(10000);
+		await sampleWorker();
 
 		sampleSchool = (await schoolModel.findOneAndUpdate(
 			{},
