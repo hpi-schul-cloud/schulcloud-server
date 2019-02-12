@@ -19,6 +19,17 @@ describe.skip('RSS Feed Crawler Integration', () => {
 	};
 
 	before(async () => {
+
+		const child = exec('node --version')
+
+		child.stdout.on('data', function (data) {
+			console.log(data.toString());
+		});
+
+		child.stderr.on('data', function (data) {
+			console.log(data.toString());
+		});
+
 		sampleSchool = (await schoolModel.findOneAndUpdate(
 			{},
 			{ $set: { rssFeeds: [sampleRSSFeed] } },
