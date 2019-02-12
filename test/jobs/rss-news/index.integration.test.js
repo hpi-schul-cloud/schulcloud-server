@@ -1,13 +1,23 @@
 const chai = require('chai');
 const path = require('path');
-const Parser = require('rss-parser');
 const { exec } = require('child_process');
 const { schoolModel } = require('../../../src/services/school/model');
 const { newsModel } = require('../../../src/services/news/model');
 
-const parser = new Parser();
-
 const { expect } = chai;
+
+function runWorker() {
+	return new Promise((resolve) => {
+		const child = exec(
+			`node ${path.join(__dirname, '../../../src/jobs/rss-news.js')}`,
+			{ env: { ...process.env } },
+		);
+
+		child.on('exit', () => {
+			resolve();
+		});
+	});
+}
 
 describe('RSS Feed Crawler Integration', () => {
 	let sampleSchool;
@@ -19,7 +29,7 @@ describe('RSS Feed Crawler Integration', () => {
 	};
 
 	before(async () => {
-
+		this.timeout(10000)
 		const child = exec('node --version');
 
 		child.stdout.on('data', function (data) {
@@ -36,10 +46,12 @@ describe('RSS Feed Crawler Integration', () => {
 			{ new: true },
 		)).toObject();
 
-		sampleRSSContent = await parser.parseURL(sampleRSSFeed.url);
 	});
 
-	beforeEach(runWorker);
+	beforeEach(async () => {
+		this.timeout(10000);
+		await runWorker();
+	});
 
 	it('should create new news items based on schools rss feeds', async () => {
 		dbRSSNews = (await newsModel.findOne({ source: 'rss' })).toObject();
@@ -119,16 +131,3 @@ describe('RSS Feed Crawler Integration', () => {
 		});
 	});
 });
-
-function runWorker() {
-	return new Promise((resolve) => {
-		const child = exec(
-			`node ${path.join(__dirname, '../../../src/jobs/rss-news.js')}`,
-			{ env: { NODE_ENV: 'test' } },
-		);
-
-		child.on('exit', () => {
-			resolve();
-		});
-	});
-}
