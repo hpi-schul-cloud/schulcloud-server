@@ -38,9 +38,7 @@ function sampleWorker() {
 }
 
 describe('RSS Feed Crawler Integration', () => {
-	this.timeout(10000);
 	let sampleSchool;
-	let sampleRSSContent;
 	let dbRSSNews;
 	const sampleRSSFeed = {
 		url: 'https://netz-21.de/iserv/public/news/rss/Bildungscloud',
@@ -56,9 +54,9 @@ describe('RSS Feed Crawler Integration', () => {
 			{ new: true },
 		)).toObject();
 
-	});
+	}).timeout(10000);
 
-	beforeEach(runWorker);
+	beforeEach(runWorker).timeout(10000);
 
 	it('should create new news items based on schools rss feeds', async () => {
 		dbRSSNews = (await newsModel.findOne({ source: 'rss' })).toObject();
