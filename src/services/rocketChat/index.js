@@ -290,8 +290,8 @@ class RocketChatLogout {
 				};
 				await rocketChatModels.userModel.update({ username: rcUser.username }, { authToken: '' });
 				await request(getRequestOptions('/api/v1/logout', {}, false, headers));
-				return ('success');
 			}
+			return ('success');
 		} catch (error) {
 			throw errors.BadRequest('could not log out user');
 		}
@@ -447,6 +447,22 @@ class RocketChatChannel {
 			});
 	}
 
+	static async archiveChannel(teamId) {
+		const channel = await rocketChatModels.channelModel.findOne({ teamId });
+		if (channel) {
+			await request(getRequestOptions('/api/v1/groups.archive', { roomName: channel.channelName }, true));
+		}
+		return Promise.resolve();
+	}
+
+	static async unarchiveChannel(teamId) {
+		const channel = await rocketChatModels.channelModel.findOne({ teamId });
+		if (channel) {
+			await request(getRequestOptions('/api/v1/groups.unarchive', { roomName: channel.channelName }, true));
+		}
+		return Promise.resolve();
+	}
+
 	/**
 	 * returns an existing or new rocketChat channel for a given Team ID
 	 * @param {*} teamId Id of a Team in the schulcloud
@@ -454,6 +470,14 @@ class RocketChatChannel {
 	 */
 	get(teamId, params) {
 		return this.getOrCreateRocketChatChannel(teamId, params);
+	}
+
+	static _onTeamPatched(context) {
+		if (context.features.includes('rocketChat')) {
+			RocketChatChannel.archiveChannel(context._id);
+		} else {
+			RocketChatChannel.unarchiveChannel(context._id);
+		}
 	}
 
 	/**
@@ -489,6 +513,7 @@ class RocketChatChannel {
 	_registerEventListeners() {
 		this.app.on('teams:after:usersChanged', this._onTeamUsersChanged.bind(this)); // use hook to get app
 		this.app.service('teams').on('removed', RocketChatChannel._onRemoved.bind(this));
+		this.app.service('teams').on('patched', RocketChatChannel._onTeamPatched.bind(this));
 	}
 
 
@@ -498,7 +523,7 @@ class RocketChatChannel {
 	}
 }
 
-module.exports = function() {
+module.exports = function Setup() {
 	const app = this;
 
 	app.use('/rocketChat/channel', new RocketChatChannel());
