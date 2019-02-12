@@ -9,7 +9,7 @@ const parser = new Parser();
 
 const { expect } = chai;
 
-describe.skip('RSS Feed Crawler Integration', () => {
+describe('RSS Feed Crawler Integration', () => {
 	let sampleSchool;
 	let sampleRSSContent;
 	let dbRSSNews;
