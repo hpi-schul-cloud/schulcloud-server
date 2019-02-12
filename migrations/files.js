@@ -102,7 +102,7 @@ const run = async (dry) => {
 		}
 	};
 
-	const convertDocument = doc => {
+	const convertDocument = async (doc) => {
 		logGreen(`Converting document ${doc.name} with path ${doc.path}`);
 
 		const [refOwnerModel, owner, ] = doc.key.split('/');
