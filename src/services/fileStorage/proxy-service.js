@@ -298,11 +298,11 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const creatorId = fileObject.permissions[0].refId;
+		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
 		return canRead(userId, file)
 			.then(() => strategy.getSignedUrl(
-				{ userId: creatorId, flatFileName: fileObject.storageFileName, download }
+				{ userId: creatorId, flatFileName: fileObject.storageFileName, download },
 			))
 			.then(res => ({
 				url: res,
@@ -320,7 +320,7 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const creatorId = fileObject.permissions[0].refId;
+		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
 		return canRead(userId, _id)
 			.then(() => strategy.getSignedUrl({ userId: creatorId, flatFileName: fileObject.storageFileName, action: 'putObject' }))
