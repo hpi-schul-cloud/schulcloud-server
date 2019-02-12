@@ -72,7 +72,7 @@ const fileStorageService = {
 				refId: studentRoleId,
 				refPermModel: 'role',
 				write: Boolean(studentCanEdit),
-				read: Boolean(studentCanEdit),
+				read: true, // students can always read course files
 				create: false,
 				delete: false,
 			});
