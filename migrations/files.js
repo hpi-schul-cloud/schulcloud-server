@@ -123,6 +123,26 @@ const run = async (dry) => {
 				create: true,
 				delete: true,
 			});
+		} else if (refOwnerModel === 'courses') {
+			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
+			const { _id: teacherRoleId } = await RoleModel.findOne({ name: 'teacher' }).exec();
+
+			permissions.push({
+				refId: studentRoleId,
+				refPermModel: 'role',
+				write: doc.studentCanEdit,
+				read: true,
+				create: false,
+				delete: false,
+			});
+			permissions.push({
+				refId: teacherRoleId,
+				refPermModel: 'role',
+				write: true,
+				read: true,
+				create: true,
+				delete: true,
+			});
 		}
 
 		if( doc.permissions && doc.permissions.length ) {
@@ -145,17 +165,6 @@ const run = async (dry) => {
 			schoolId: undefined,
 			flatFileName: undefined
 		};
-
-		if( doc.studentCanEdit ) {
-			permissions.push({
-				refId: studentRoleId,
-				refPermModel: 'role',
-				write: Boolean(doc.studentCanEdit),
-				read: Boolean(doc.studentCanEdit),
-				create: false,
-				delete: false,
-			});
-		}
 
 		return sanitizeObj({
 			...doc,
