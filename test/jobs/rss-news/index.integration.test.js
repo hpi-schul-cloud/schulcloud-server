@@ -21,24 +21,6 @@ function runWorker() {
 	});
 }
 
-function sampleWorker() {
-	return new Promise((resolve, reject) => {
-		const child = exec('node --version');
-
-		child.stdout.on('data', function (data) {
-			console.log(data.toString());
-		});
-
-		child.stderr.on('data', function (data) {
-			console.log(data.toString());
-		});
-
-		child.on('exit', () => {
-			resolve();
-		});
-	})
-}
-
 describe('RSS Feed Crawler Integration', function () {
 	this.timeout(10000)
 	let sampleSchool;
@@ -49,8 +31,6 @@ describe('RSS Feed Crawler Integration', function () {
 	};
 
 	before(async function () {
-		await sampleWorker();
-
 		sampleSchool = (await schoolModel.findOneAndUpdate(
 			{},
 			{ $set: { rssFeeds: [sampleRSSFeed] } },
