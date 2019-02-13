@@ -5,9 +5,7 @@ WORKDIR /schulcloud-server
 # RSS-Cron starten
 RUN apk update && apk upgrade && apk add --no-cache git make python
 COPY ./package.json .
-RUN npm install 
-#--only=production
+RUN npm install --only=production
 COPY . .
 
-#ENTRYPOINT crontab ./crontab && crond
-CMD npm start
+CMD ["sh", "./startscript.sh"]
