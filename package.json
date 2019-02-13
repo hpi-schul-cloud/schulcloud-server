@@ -63,6 +63,7 @@
     "freeport": "^1.0.5",
     "graphql": "^14.1.1",
     "graphql-import": "^0.7.1",
+    "jsonwebtoken": "^8.4.0",
     "jwt-decode": "^2.2.0",
     "ldapjs": "git+https://git@github.com/Blizzard/node-ldapjs.git",
     "lodash": "^4.17.4",
