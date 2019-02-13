@@ -89,6 +89,7 @@
     "socketio": "^1.0.0",
     "socketio-file-upload": "^0.6.2",
     "strip-js": "^1.0.6",
+    "subscriptions-transport-ws": "^0.9.15",
     "universal-analytics": "^0.4.17",
     "uuid": "^3.3.2",
     "winston": "^2.3.0"

@@ -1,9 +1,0 @@
-scalar Json
-
-type Query {
-	"A simple hello world query"
-	hello(firstpart:String): String
-	useService(id:String) : Json
-	model(id:String) : Json
-	req(id:String) : Json
-}
