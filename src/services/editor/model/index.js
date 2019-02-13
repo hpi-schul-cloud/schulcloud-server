@@ -1,12 +1,12 @@
-const { merge } = require("lodash");
-const { lessonsTypeDefs, lessonsResolvers } = require("./resolvers/lessons.js");
-const { groupsTypeDefs, groupsResolvers } = require("./resolvers/groups.js");
-const { stepsTypeDefs, stepsResolvers } = require("./resolvers/steps.js");
+const { merge } = require('lodash');
+const { lessonsTypeDefs, lessonsResolvers } = require('./resolvers/lessons.js');
+const { groupsTypeDefs, groupsResolvers } = require('./resolvers/groups.js');
+const { stepsTypeDefs, stepsResolvers } = require('./resolvers/steps.js').default;
 const {
 	documentsTypeDefs,
 	documentsResolvers,
-} = require("./resolvers/documents.js");
-const { baseTypeDefs } = require("./resolvers/base.js");
+} = require('./resolvers/documents.js');
+const { baseTypeDefs } = require('./resolvers/base.js');
 
 const resolvers = merge(
 	{},

@@ -1,15 +1,15 @@
-/* 
+/*
 TODO:
- - put pubsub in context 
+ - put pubsub in context
     import { PubSub } from 'graphql-subscriptions';
 
     export const pubsub = new PubSub();
 
  - jwt check, provide current user
 
- - import relevant models here and share them via context 
+ - import relevant models here and share them via context
 */
-
+/*
 const options = userId => {
 	return {
 		uri: `http://localhost:3030/users/${userId}`,
@@ -22,8 +22,8 @@ const options = userId => {
 		//	body: {"data": [{"type": "event"}]},
 	};
 };
-
-function createContext() {
+*/
+function createContext(app) {
 	return ({ req }) => {
 		return;
 		// get the user token from the headers

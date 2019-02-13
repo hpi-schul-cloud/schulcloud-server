@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "apollo-server-express": "^2.3.3",
+	"apollo-server-core": "^2.4.0",
     "aws-sdk": "^2.306.0",
     "bcryptjs": "latest",
     "body-parser": "^1.15.2",
