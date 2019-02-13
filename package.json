@@ -28,7 +28,9 @@
     "debug": "nodemon --inspect=5959 src/",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha -- -- test/**/*.test.js",
     "mocha": "cross-env NODE_ENV=test mocha test/ --recursive",
-    "mocha-inspect": "cross-env NODE_ENV=test mocha --debug-brk --inspect test/ --recursive"
+    "mocha-inspect": "cross-env NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
+    "migrations": "cross-env NODE_ENV=migration node migrations/",
+    "migrations-dry": "cross-env NODE_ENV=migration node migrations/ --dry"
   },
   "dependencies": {
     "aws-sdk": "^2.306.0",
@@ -41,6 +43,7 @@
     "compression": "^1.6.2",
     "console-stamp": "^0.2.5",
     "cors": "^2.8.1",
+    "cross-env": "^5.2.0",
     "crypto-js": "^3.1.9-1",
     "csv-parse": "^4.0.1",
     "ejs": "^2.5.5",
@@ -79,6 +82,7 @@
     "randexp": "^0.4.6",
     "read-chunk": "^3.0.0",
     "request-promise-native": "^1.0.3",
+    "rss-parser": "^3.6.2",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
     "socketio": "^1.0.0",
@@ -89,7 +93,6 @@
     "winston": "^2.3.0"
   },
   "devDependencies": {
-    "cross-env": "^5.2.0",
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",

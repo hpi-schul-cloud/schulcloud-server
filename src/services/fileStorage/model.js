@@ -1,20 +1,21 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const permissionSchema = new Schema({
 	refId: {
 		type: Schema.Types.ObjectId,
-		refPath: 'refPermModel'
+		refPath: 'refPermModel',
 	},
 	refPermModel: {
 		type: String,
-		enum: ['user', 'role']
+		enum: ['user', 'role'],
 	},
 	write: { type: Boolean, default: true },
 	read: { type: Boolean, default: true },
 	create: { type: Boolean, default: true },
 	delete: { type: Boolean, default: true },
-}, { _id: false});
+}, { _id: false });
 
 /**
  * handles meta-data for a file
@@ -42,17 +43,17 @@ const fileSchema = new Schema({
 	owner: {
 		type: Schema.Types.ObjectId,
 		required: true,
-		refPath: 'refOwnerModel'
+		refPath: 'refOwnerModel',
 	},
 	refOwnerModel: {
 		type: String,
 		required: true,
-		enum: ['user', 'course', 'teams']
+		enum: ['user', 'course', 'teams'],
 	},
 	permissions: [permissionSchema],
 	lockId: { type: Schema.Types.ObjectId, ref: 'user' },
-	createdAt: { type: Date, 'default': Date.now },
-	updatedAt: { type: Date, 'default': Date.now }
+	createdAt: { type: Date, default: Date.now },
+	updatedAt: { type: Date, default: Date.now },
 });
 
 // make file-model searchable
@@ -60,5 +61,5 @@ fileSchema.index({ name: 'text' });
 
 module.exports = {
 	FileModel: mongoose.model('file', fileSchema),
-	permissionSchema: permissionSchema
+	permissionSchema,
 };

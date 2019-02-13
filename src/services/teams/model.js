@@ -1,5 +1,3 @@
-'use strict';
-
 const mongoose = require('mongoose');
 const { permissionSchema } = require('../fileStorage/model');
 
@@ -22,7 +20,8 @@ const getUserGroupSchema = (additional = {}) => {
 /**
  * duration {Number} - the duration of a course lesson
  * startTime {Number] - the start time of a course lesson as milliseconds
- * weekday {Number} - from 0 to 6, the weekday the course take place (e.g. 0 = monday, 1 = tuesday ... )
+ * weekday {Number} - from 0 to 6, the weekday the course take place
+ *		(e.g. 0 = monday, 1 = tuesday ... )
  * eventId {String} - id of the event in the external calendar-service
  * room {String} - a specific location for the recurring course lesson, e.g. a room number
  */
@@ -38,7 +37,7 @@ const timeSchema = new Schema({
 
 const teamInvitedUserSchema = new Schema({
 	email: { type: String, required: true },
-	role: { type: String, required: true, enum: ['teamexpert', 'teamadministrator'] }
+	role: { type: String, required: true, enum: ['teamexpert', 'teamadministrator'] },
 }, { _id: false, timestamps: true });
 
 const teamInvitedUserModel = mongoose.model('_teamInvitedUserSchema', teamInvitedUserSchema);
@@ -61,7 +60,9 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 	invitedUserIds: [teamInvitedUserSchema],
 	description: { type: String, default: '' },
 	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
-	// substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],  todo: add later
+
+	// substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
+	// todo: add later
 	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
 	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },

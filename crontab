@@ -1,0 +1,2 @@
+# fu:r RSS
+0	*	*	*	* 	/usr/local/bin/node ./src/jobs/rss-news.js  >> /dev/stdout 2>&1

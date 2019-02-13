@@ -1,17 +1,14 @@
-'use strict';
-
-const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-const newsModel = require('../model').newsModel;
-const newsHistoryModel = require('../model').newsHistoryModel;
 const logger = require('winston');
+const globalHooks = require('../../../hooks');
+const { newsModel, newsHistoryModel } = require('../model');
 
-const deleteNewsHistory = hook => {
+const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
+
+const deleteNewsHistory = (hook) => {
 	newsModel.findOne({ _id: hook.id })
-		.then(news => {
-			for(let i = 0; i < news.history.length; i++) {
+		.then((news) => {
+			for (let i = 0; i < news.history.length; i++) {
 				newsHistoryModel.findOneAndRemove({ _id: news.history[i] })
 					.catch(err => logger.log('error', err));
 			}
@@ -44,8 +41,8 @@ exports.before = {
 	get: [globalHooks.hasPermission('NEWS_VIEW')],
 	create: [globalHooks.hasPermission('NEWS_CREATE')],
 	update: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool],
-	patch: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool,globalHooks.permitGroupOperation],
-	remove: [globalHooks.hasPermission('NEWS_CREATE'), restrictToCurrentSchool,globalHooks.permitGroupOperation,deleteNewsHistory, globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership)]
+	patch: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('NEWS_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation, deleteNewsHistory, globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership)]
 };
 
 exports.after = {
@@ -55,5 +52,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

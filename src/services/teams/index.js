@@ -93,7 +93,7 @@ class AdminOverview {
 			});
 
 			schoolMembers = schoolMembers.map((m) => {
-				m.user.roles = (m.user.roles || []).map((role) => role.name);
+				m.user.roles = (m.user.roles || []).map(role => role.name);
 				return m;
 			});
 
@@ -125,7 +125,7 @@ class AdminOverview {
 					$populate: [{ path: 'userIds.role' }, { path: 'userIds.userId', populate: { path: 'roles' } }, 'schoolIds'], 	// schoolId
 				},
 			})
-				.then((teams) => AdminOverview.mapped(teams, schoolId))
+				.then(teams => AdminOverview.mapped(teams, schoolId))
 				.catch((err) => {
 					throw new BadRequest('Can not execute team find.', err);
 				});
@@ -153,14 +153,14 @@ class AdminOverview {
 			let { userIds } = team;
 
 			if (!ownerExist && isOwnerSchool && isDefined(userId)) {
-				userIds.push(createUserWithRole(ref, { userId, schoolId, selectedRole }));
-				return patchTeam(this, teamId, { userIds }, params);
+				userIds.push(createUserWithRole(ref, { userId, schoolId, selectedRole }));			
 			} else if (!isOwnerSchool && isUndefined(userId)) {
 				userIds = AdminOverview.removeMemberBySchool(team, schoolId);
-				patchTeam(this, teamId, { userIds }, params);
 			} else {
 				throw new BadRequest('Wrong inputs.');
 			}
+
+			return patchTeam(this, teamId, { userIds }, params);
 		});
 	}
 
@@ -172,18 +172,17 @@ class AdminOverview {
 	remove(teamId, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
 			const { isOwnerSchool } = AdminOverview.getIsOwnerStats(ref, sessionUser, team);
-			if (isOwnerSchool) {
-				return this.app.service('teams').remove(teamId);
-			} else {
+			if (isUndefined(isOwnerSchool)) {
 				throw new Forbidden('You have not the permission.');
 			}
+			return this.app.service('teams').remove(teamId);
 		});
 	}
 
 
-	/*********************
-	* Contact Owner part *
-	**********************/
+	/**
+	* Contact Owner part
+	*/
 
 	static getOwner(team, ownerRoleId) {
 		return team.userIds.find(user => isSameId(user.role, ownerRoleId));
@@ -224,7 +223,9 @@ class AdminOverview {
 			throw new BadRequest('Wrong value.');
 		}
 
-		return Promise.all([getSessionUser(this, params), hooks.teamRolesToHook(this)]).then(([{ schoolId }, ref]) => {
+		return Promise.all(
+			[getSessionUser(this, params), hooks.teamRolesToHook(this)]
+		).then(([{ schoolId }, ref]) => {
 			return this.app.service('teams').find((this.getRestrictedQuery(teamIds, schoolId))).then((teams) => {
 				teams = teams.data;
 				if (!isArrayWithElement(teams)) {
@@ -248,13 +249,13 @@ class AdminOverview {
 
 				const waits = emails.map((email) => {
 					return mailService.create({ email, subject, content })
-						.then((res) =>  res.accepted[0])
-						.catch((err) => 'Error: ' + err.message);
+						.then(res =>  res.accepted[0])
+						.catch(err => `Error: ${err.message}`);
 				});
 
 				return Promise.all(waits)
-					.then((values) => values)
-					.catch((err) => err);
+					.then(values => values)
+					.catch(err => err);
 
 			}).catch(err => {
 				throw err;
@@ -341,7 +342,7 @@ class Add {
 				$populate: [{ path: 'roles' }],
 			},
 		})
-			.then((users) => extractOne(users))
+			.then(users => extractOne(users))
 			.catch((err) => {
 				throw err;
 			});
@@ -354,23 +355,24 @@ class Add {
 	 */
 	async _generateLink({ esid, email, teamId, importHash }, isUserCreated = false) {
 		if (isUserCreated === false && isUndefined(importHash)) {
-			return Promise.resolve({ shortLink: process.env.HOST + '/teams/' + teamId });
+			return Promise.resolve({ shortLink: `${process.env.HOST}/teams/${teamId}` });
 		}
 		const { app } = this;
 		if (isDefined(importHash)) {
 			const regex = new RegExp(importHash);
 			const links = await app.service('link').find({ query: { target: regex } });
 			return extractOne(links).then((linkData) => {
-				linkData.shortLink = process.env.HOST + '/link/' + linkData._id;
+				linkData.shortLink = `${process.env.HOST}/link/${linkData._id}`;
 				return linkData;
 			});
-		} else {
-			return app.service('/expertinvitelink')
+		}
+
+		return app.service('/expertinvitelink')
 			.create({ esid, email })
 			.catch((err) => {
-				throw new GeneralError("Experte: Fehler beim Erstellen des Einladelinks.", err);
+				throw new GeneralError('Experte: Fehler beim Erstellen des Einladelinks.', err);
 			});
-		}
+
 	}
 
 	/**
@@ -410,7 +412,8 @@ class Add {
 				userRoleName = (teamUser || {}).role || role;
 			}
 
-			// if role teamadmin by import from teacher over email and no user exist, the user is undefined
+			// if role teamadmin by import from teacher over email and
+			// no user exist, the user is undefined
 			if (isUndefined(user)) {
 				throw new BadRequest('User must exist.');
 			}
@@ -548,15 +551,15 @@ class Add {
 			if (isDefined(data.role) && ['teamexpert', 'teamadministrator'].includes(data.role) === false) {
 				throw new BadRequest('Wrong role is set.');
 			}
+			let out;
 			if (data.email) {
-				return this._userImportByEmail(teamId, data, params);
-			}
-			else if (data.userId && data.role) {
-				return this._userImportById(teamId, data, params);
-			}
-			else{
+				out = this._userImportByEmail(teamId, data, params);
+			} else if (data.userId && data.role) {
+				out = this._userImportById(teamId, data, params);
+			} else {
 				throw new BadRequest('Missing input data.');
 			}
+			return out;
 		} catch (err) {
 			warn(err);
 			return Promise.resolve('Success!');
