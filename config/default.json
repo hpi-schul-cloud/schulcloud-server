@@ -13,6 +13,9 @@
 		"client": "http://localhost:3100"
 	},
 	"notification": {
-		"platform": "schul-cloud"
+		"platform": "schul-cloud",
+		"firebaseOptions": {
+			"messagingSenderId": "693501688706"
+		}
 	}
 }

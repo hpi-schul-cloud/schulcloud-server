@@ -150,7 +150,6 @@ class DeviceService {
 			uri: `${serviceUrls.notification}/devices/${notification.platform}/${userId}/${id}`,
 			method: 'DELETE',
 			json: true,
-			timeout: REQUEST_TIMEOUT,
 		};
 
 		return request(options).then(message => message);
@@ -243,6 +242,24 @@ class NotificationService {
 	}
 }
 
+class ConfigurationService {
+	constructor(options) {
+		this.options = options || {};
+	}
+
+	get(id, params) {
+		let options = {};
+		if (id === 'firebaseOptions') {
+			options = this.app.get('notification').firebaseOptions || {};
+		}
+		return Promise.resolve(options);
+	}
+
+	setup(app, path) {
+		this.app = app;
+	}
+}
+
 function redirect(req, res, next) {
 	if (req.query && req.query.redirect) {
 		return res.redirect(301, req.query.redirect);
@@ -256,6 +273,7 @@ module.exports = function () {
 	app.use('/notification/push', new PushService());
 	app.use('/notification/messages', new MessageService());
 	app.use('/notification/devices', new DeviceService());
+	app.use('/notification/configuration', new ConfigurationService());
 	app.use('/notification/callback', new CallbackService(), redirect);
 	app.use('/notification', new NotificationService());
 
@@ -263,6 +281,7 @@ module.exports = function () {
 	const pushService = app.service('/notification/push');
 	const messageService = app.service('/notification/messages');
 	const deviceService = app.service('/notification/devices');
+	const configurationService = app.service('/notification/configuration');
 	const callbackService = app.service('/notification/callback');
 	const notificationService = app.service('/notification');
 
@@ -270,6 +289,7 @@ module.exports = function () {
 	pushService.before(hooks.before);
 	messageService.before(hooks.before);
 	deviceService.before(hooks.before);
+	// configurationService.before(hooks.before);
 	callbackService.before(callbackHooks.before);
 	notificationService.before(hooks.before);
 
@@ -277,6 +297,7 @@ module.exports = function () {
 	pushService.after(hooks.after);
 	messageService.after(hooks.after);
 	deviceService.after(hooks.after);
+	configurationService.after(hooks.after);
 	callbackService.after(hooks.after);
 	notificationService.after(hooks.after);
 };
