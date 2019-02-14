@@ -8,7 +8,6 @@ const { submissionModel } = require('../src/services/homework/model.js');
 const { FileModel } = require('../src/services/fileStorage/model.js');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.DB_URL || 'mongodb://localhost:27017/schulcloud', { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
@@ -68,6 +67,8 @@ const oldFileSchema = new Schema({
 });
 
 const run = async (dry) => {
+	mongoose.connect(process.env.DB_URL || 'mongodb://localhost:27017/schulcloud', { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
+
 	const oldfileModel = mongoose.model('oldfile', oldFileSchema, '_files');
 	const submissionWithFiles = await submissionModel
 		.find({ fileIds: { $exists: true, $not: { $size: 0 } } });
