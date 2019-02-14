@@ -1,4 +1,3 @@
-'use strict';
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
@@ -9,8 +8,10 @@ const KeysModel = require('../services/keys/model');
 // don't require authentication for internal requests
 exports.ifNotLocal = function (hookForRemoteRequests) {
 	return function (hook) {
-		if (typeof (hook.params.provider) != 'undefined') {	// meaning it's not a local call
-			// Call the specified hook
+		// meaning it's a local call and pass it without execute hookForRemoteRequests
+		if(typeof (hook.params.provider) == 'undefined'){ 
+			return hook;
+		}else{
 			return hookForRemoteRequests.call(this, hook);
 		}
 	};
@@ -601,7 +602,7 @@ exports.sendEmail = (hook, maildata) => {
 					});
 				}
 			});
-		return hook;
+			return hook;
 		})
 		.catch(err => {
 			throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
@@ -620,11 +621,10 @@ exports.sendEmail = (hook, maildata) => {
 						"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
 						"html": "" // still todo, html template mails
 					}
-				})
-					.catch (err => {
-						logger.warn(err);
-						throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
-					});
+				}).catch (err => {
+					logger.warn(err);
+					throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+				});
 			});
 		}
 		return hook;

@@ -30,7 +30,7 @@ class WopiFilesInfoService {
 	find({fileId, account}) {
 		const { userId } = account;
 		const userService = this.app.service('users');
-		
+
 		// property descriptions: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#required-response-properties
 		let capabilities = {
 			OwnerId: userId, // if an user passes the permission check, it's valid to handle it as file-owner
@@ -68,6 +68,7 @@ class WopiFilesInfoService {
 				capabilities = {
 					...capabilities,
 					UserCanWrite: Boolean(canWrite),
+					UserCanNotWriteRelative: true
 				};
 
 				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), capabilities));
@@ -94,10 +95,10 @@ class WopiFilesContentsService {
 		this.app = app;
 		this.docs = docs.wopiFilesContentsService;
 	}
-	
+
 	/**
 	 * retrieves a file`s binary contents
-	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html 
+	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html
 	 */
   find({fileId: _id, payload, account}) {
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
@@ -105,7 +106,7 @@ class WopiFilesContentsService {
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id }).then(file => {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
-			
+
 			// generate signed Url for fetching file from storage
 			return signedUrlService.find({
 				query: {

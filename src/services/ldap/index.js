@@ -117,13 +117,11 @@ module.exports = function() {
 		authenticate(system, qualifiedUsername, password) {
 			const config = system.ldapConfig;
 			return this._connect(config, qualifiedUsername, password)
-				.then(() => {
-					const options = {
-						filter: null,
-						scope: 'sub',
-						attributes: []
-					};
-					return this.searchObject(config, qualifiedUsername, options);
+				.then((connection) => {
+					if (connection.connected) {
+						return Promise.resolve(true);
+					}
+					return Promise.reject('User could not authenticate');
 				});
 		}
 
@@ -136,7 +134,7 @@ module.exports = function() {
 		 * @return {Promise[Array[Object]]} resolves with array of objects
 		 * matching the query, rejects with error otherwise
 		 */
-		searchCollection(config, searchString, options) {
+		searchCollection(config, searchString, options, rawAttributes = []) {
 			return this._getClient(config).then((client) => {
 				return new Promise((resolve, reject) => {
 					let objects = [];
@@ -146,7 +144,11 @@ module.exports = function() {
 						}
 						res.on('error', reject);
 						res.on('searchEntry', (entry) => {
-							objects.push(entry.object);
+							let result = entry.object;
+							rawAttributes.forEach(element => {
+								result[element] = entry.raw[element].toString('base64');
+							});
+							objects.push(result);
 						});
 						res.on('end', (result) => {
 							if (result.status === 0) {

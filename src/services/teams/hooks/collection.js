@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const errors = require('feathers-errors');
-const Schema = mongoose.Schema;
+const { BadRequest } = require('feathers-errors');
+const { ObjectId } = require('mongoose').Types;
+
 
 /**
  * If Array use it.
@@ -10,7 +10,7 @@ const Schema = mongoose.Schema;
  * @collection
  */
 const mapToArray = (e) => {
-    return isArray(e) ? e : isObject(e) ? Object.values(e) : [e];
+	return isArray(e) ? e : isObject(e) ? Object.values(e) : [e];
 };
 
 /**
@@ -21,9 +21,9 @@ const mapToArray = (e) => {
  * @param {*} additional Is a value that is pass as second parameter to the executed function.
  */
 const batch = (array, execute, additional) => {
-    return (mapToArray(array)).map(e => {
-        return execute(e, additional);
-    });
+	return (mapToArray(array)).map((e) => {
+		return execute(e, additional);
+	});
 };
 
 /**
@@ -34,7 +34,7 @@ const batch = (array, execute, additional) => {
  * @return {Boolean}
  */
 const allTrue = (arrayOfBools) => {
-    return !arrayOfBools.some(b => b === false);
+	return !arrayOfBools.some(b => b === false);
 };
 
 /**
@@ -45,53 +45,53 @@ const allTrue = (arrayOfBools) => {
  * @return {Boolean}
  */
 const oneTrue = (arrayOfBools) => {
-    return arrayOfBools.some(b => b === true);
+	return arrayOfBools.some(b => b === true);
 };
 
 /**
  * @collection
  */
 const isArray = (array) => {
-    return Array.isArray(array);
+	return Array.isArray(array);
 };
 
 /**
  * @collection
  */
 const isArrayWithElement = (array) => {
-    try {
-        return isArray(array) && array.length > 0;
-    } catch (err) {
-        return false;
-    }
+	try {
+		return isArray(array) && array.length > 0;
+	} catch (err) {
+		return false;
+	}
 };
 
 /**
  * @collection
  */
 const isObject = (e) => {
-    return typeof e === 'object' && !isArray(e);
+	return typeof e === 'object' && !isArray(e);
 };
 
 /**
  * @collection
  */
 const isString = (e) => {
-    return typeof e === 'string';
+	return typeof e === 'string';
 };
 
 /**
  * @collection
  */
 const isFunction = (e) => {
-    return typeof e === 'function';
+	return typeof e === 'function';
 };
 
 /**
  * @collection
  */
 const hasKey = (e, key) => {
-    return isObject(e) && e[key] !== undefined;
+	return isObject(e) && e[key] !== undefined;
 };
 
 /**
@@ -99,7 +99,7 @@ const hasKey = (e, key) => {
  * @collection
  */
 const isDefined = (e) => {
-    return e !== undefined;
+	return e !== undefined;
 };
 
 /**
@@ -107,7 +107,7 @@ const isDefined = (e) => {
  * @collection
  */
 const isAllDefined = (e) => {
-    return allTrue(batch(e, isDefined));
+	return allTrue(batch(e, isDefined));
 };
 
 /**
@@ -115,7 +115,7 @@ const isAllDefined = (e) => {
  * @collection
  */
 const isOneDefined = (e) => {
-    return oneTrue(batch(e, isDefined));
+	return oneTrue(batch(e, isDefined));
 };
 
 /**
@@ -123,7 +123,7 @@ const isOneDefined = (e) => {
  * @collection
  */
 const isUndefined = (e) => {
-    return e === undefined;
+	return e === undefined;
 };
 
 /**
@@ -131,7 +131,7 @@ const isUndefined = (e) => {
  * @collection
  */
 const isAllUndefined = (e) => {
-    return allTrue(batch(e, isUndefined));
+	return allTrue(batch(e, isUndefined));
 };
 
 /**
@@ -139,29 +139,29 @@ const isAllUndefined = (e) => {
  * @collection
  */
 const isOneUndefined = (e) => {
-    return oneTrue(batch(e, isUndefined));
+	return oneTrue(batch(e, isUndefined));
 };
 
 /**
  * @collection
  */
 const isNull = (e) => {
-    return e === null;
+	return e === null;
 };
 
 /**
  * Can be also used to test if string is a valid id
  * @collection
  * @private
- * @param {String} id 
+ * @param {String} id
  * @return {String::ObjectId} Return null if can not created
  */
 const tryToCastToObjectId = (id) => {
-    try {
-        return mongoose.Types.ObjectId(id);
-    } catch (err) {
-        return null;
-    }
+	try {
+		return ObjectId(id);
+	} catch (err) {
+		return null;
+	}
 };
 
 /**
@@ -169,7 +169,7 @@ const tryToCastToObjectId = (id) => {
  * @requires const Schema = require('mongoose').Schema;
  */
 const isObjectId = (id) => {
-    return id instanceof Schema.Types.ObjectId && id !== undefined;
+	return id instanceof ObjectId && id !== undefined;
 };
 
 /**
@@ -177,87 +177,97 @@ const isObjectId = (id) => {
  * @requires const Schema = require('mongoose').Schema;
  */
 const isObjectIdWithTryToCast = (id) => {
-    return isObjectId(id) || !isNull(tryToCastToObjectId(id));
+	return isObjectId(id) || !isNull(tryToCastToObjectId(id.toString()));
 };
 
 /**
 *   @collection
-*   @throws {BadRequest} - If input is no typeof moongose Schema.Types.ObjectId it is throw an error
+*   @throws {BadRequest} If input is no typeof moongose Schema.Types.ObjectId
+*						or a String that can cast to this schema, it is throw an error
 */
 const throwErrorIfNotObjectId = (id) => {
-    if (isObjectId(id))
-        throw new errors.BadRequest('Is not instance of Schema.Types.ObjectId.');
+	if (!isObjectIdWithTryToCast(id)) {
+		throw new BadRequest('Is not instance of Schema.Types.ObjectId.');
+	}
 };
 
 /**
  * Convert bsonId(s) to stringId(s),
  * @collection
- * @param {Array::(bson||string) || (bson||sring)} input 
+ * @param {Array::(bson||string) || (bson||sring)} input
  * @returns {Array::String::Id || String::Id}
  */
 const bsonIdToString = (input) => {
-    if (isArray(input)) {
-        return input.map(id => {
-            return id.toString();
-        });
-    } else if (isDefined(input)) {
-        return input.toString();
-    } else {
-        return input;
-    }
+	let out;
+	if (isArray(input)) {
+		out = input.map((id) => {
+			return id.toString();
+		});
+	} else if (isDefined(input)) {
+		out = input.toString();
+	} else {
+		out = input;
+	}
+	return out;
 };
 
 /**
  * Convert bsonIds to strings and test if itput is the same
  * @collection
- * @param {StringId||BsonId} value1 
- * @param {StringId||BsonId} value2 
+ * @param {StringId||BsonId} value1
+ * @param {StringId||BsonId} value2
  */
 const isSameId = (value1, value2) => {
-    return bsonIdToString(value1) === bsonIdToString(value2);
+	return bsonIdToString(value1) === bsonIdToString(value2);
 };
 
 /**
  * @collection
- * @param {*} e 
- * @param {String::'AND'||'OR'} operation 
+ * @param {*} e
+ * @param {String::'AND'||'OR'} operation
  */
 const isDefinedOperation = (e, operation) => {
-    if (operation === 'OR')
-        return isOneDefined(e);
-    else if (operation === 'AND')
-        return isAllDefined(e);
-    else
-        return isDefined(e);
+	let out;
+	if (operation === 'OR') {
+		out = isOneDefined(e);
+	} else if (operation === 'AND') {
+		out = isAllDefined(e);
+	} else {
+		out = isDefined(e);
+	}
+	return out;
 };
 
 /**
  * @collection
- * @param {*} e 
+ * @param {*} e
  * @param {String::'AND'||'OR'} operation AND || OR
  */
 const isUndefinedOperation = (e, operation) => {
-    if (operation === 'OR')
-        return isOneUndefined(e);
-    else if (operation === 'AND')
-        return isAllUndefined(e);
-    else
-        return isUndefined(e);
+	let out;
+	if (operation === 'OR') {
+		out = isOneUndefined(e);
+	} else if (operation === 'AND') {
+		out = isAllUndefined(e);
+	} else {
+		out = isUndefined(e);
+	}
+	return out;
 };
 
 module.exports = {
-    isArray,
-    isArrayWithElement,
-    isObject,
-    isString,
-    hasKey,
-    isDefined: isDefinedOperation,
-    isUndefined: isUndefinedOperation,
-    isNull,
-    isObjectId,
-    isObjectIdWithTryToCast,
-    throwErrorIfNotObjectId,
-    bsonIdToString,     //todo: rename  ?toIdString ?
-    isSameId,
-    isFunction
+	isArray,
+	isArrayWithElement,
+	isObject,
+	isString,
+	hasKey,
+	isDefined: isDefinedOperation,
+	isUndefined: isUndefinedOperation,
+	isNull,
+	isObjectId,
+	isObjectIdWithTryToCast,
+	throwErrorIfNotObjectId,
+	bsonIdToString,	// todo: rename  ?toIdString ?
+	isSameId,
+	isFunction,
 };

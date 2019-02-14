@@ -1,20 +1,17 @@
-'use strict';
+const auth = require('feathers-authentication');
 
 const globalHooks = require('../../../hooks');
-const auth = require('feathers-authentication');
 const { canRead } = require('../utils/filePermissionHelper');
 
 
-const restrictToCurrentUser = hook => {
-	const { params: { account: { userId }}, result: {data: files}} = hook;
-	const permissionPromises = files.map(f => {
-		return canRead(userId, f)
-			.then(() => f)
-			.catch(() => undefined);
-	});
+const restrictToCurrentUser = (hook) => {
+	const { params: { account: { userId } }, result: { data: files } } = hook;
+	const permissionPromises = files.map(f => canRead(userId, f)
+		.then(() => f)
+		.catch(() => undefined));
 
 	return Promise.all(permissionPromises)
-		.then(allowedFiles => {
+		.then((allowedFiles) => {
 			hook.result.data = allowedFiles;
 			return hook;
 		});
@@ -27,7 +24,7 @@ exports.before = {
 	create: [globalHooks.hasPermission('FILESTORAGE_CREATE')],
 	update: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
 	patch: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
-	remove: [globalHooks.hasPermission('FILESTORAGE_REMOVE')]
+	remove: [globalHooks.hasPermission('FILESTORAGE_REMOVE')],
 };
 
 exports.after = {
@@ -37,5 +34,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };
