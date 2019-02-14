@@ -95,6 +95,7 @@ const FileModel = mongoose.model('file', fileSchema, 'files');
 const run = async (dry) => {
 
 	const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
+	const { _id: teacherRoleId } = await RoleModel.findOne({ name: 'teacher' }).exec();
 
 	const logGreen = obj => {
 		if( dry ) {
@@ -102,7 +103,7 @@ const run = async (dry) => {
 		}
 	};
 
-	const convertDocument = doc => {
+	const convertDocument = (doc) => {
 		logGreen(`Converting document ${doc.name} with path ${doc.path}`);
 
 		const [refOwnerModel, owner, ] = doc.key.split('/');
@@ -118,6 +119,23 @@ const run = async (dry) => {
 			permissions.push({
 				refId: owner,
 				refPermModel: 'user',
+				write: true,
+				read: true,
+				create: true,
+				delete: true,
+			});
+		} else if (refOwnerModel === 'courses') {
+			permissions.push({
+				refId: studentRoleId,
+				refPermModel: 'role',
+				write: doc.studentCanEdit,
+				read: true,
+				create: false,
+				delete: false,
+			});
+			permissions.push({
+				refId: teacherRoleId,
+				refPermModel: 'role',
 				write: true,
 				read: true,
 				create: true,
@@ -145,17 +163,6 @@ const run = async (dry) => {
 			schoolId: undefined,
 			flatFileName: undefined
 		};
-
-		if( doc.studentCanEdit ) {
-			permissions.push({
-				refId: studentRoleId,
-				refPermModel: 'role',
-				write: Boolean(doc.studentCanEdit),
-				read: Boolean(doc.studentCanEdit),
-				create: false,
-				delete: false,
-			});
-		}
 
 		return sanitizeObj({
 			...doc,
