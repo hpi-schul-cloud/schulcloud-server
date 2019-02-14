@@ -28,15 +28,16 @@ after_success:
 #- bash <(curl -X POST --data "apiKey=$apiKey&branch=$BRANCH" http://$url/update)
 
 after_success:
-  # because Skipping a deployment with the script provider because the current build is a pull request.
-  - bash ./deploy.sh
 
-#deploy:
-#  provider: script
-#  script: bash ./deploy.sh
-#  on:
-#   all_branches: true
-#   condition: $TRAVIS_BRANCH =~ ^development|N21/merge$
+  # because Skipping a deployment with the script provider because the current build is a pull request.
+  #  - bash ./deploy.sh
+
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+   all_branches: true
+   condition: $TRAVIS_BRANCH =~ ^master|development|N21/merge$
 
 notifications:
   slack:
