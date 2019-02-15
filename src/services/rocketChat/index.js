@@ -474,9 +474,9 @@ class RocketChatChannel {
 
 	static _onTeamPatched(context) {
 		if (context.features.includes('rocketChat')) {
-			RocketChatChannel.archiveChannel(context._id);
-		} else {
 			RocketChatChannel.unarchiveChannel(context._id);
+		} else {
+			RocketChatChannel.archiveChannel(context._id);
 		}
 	}
 
