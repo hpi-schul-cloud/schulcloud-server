@@ -103,18 +103,20 @@ const run = async (dry) => {
 					return Promise.all(docPromises);
 				})
 				.then(files => !teacherId ? Promise.resolve() : Promise.all(
-					files.filter(_ => Boolean(_)).map(file => FileModel.update({ _id: file._id }, {
-						$set: {
-							permissions: [...file.permissions, {
-								refId: teacherId,
-								refPermModel: 'user',
-								write: false,
-								read: true,
-								create: false,
-								delete: false,
-							}],
-						},
-					}).exec().then(() => file._id)),
+					files.filter(_ => Boolean(_)).map(file => dry
+						? Promise.resolve()
+						: FileModel.update({ _id: file._id }, {
+							$set: {
+								permissions: [...file.permissions, {
+									refId: teacherId,
+									refPermModel: 'user',
+									write: false,
+									read: true,
+									create: false,
+									delete: false,
+								}],
+							},
+						}).exec().then(() => file._id)),
 				))
 				.then((fileIds) => {
 					if (!fileIds || !fileIds.length) {
