@@ -83,13 +83,14 @@ class AdminOverview {
 			const mySchool = isSameId(team.schoolId, sessionSchoolId);
 			const otherSchools = team.schoolIds.length > 1;
 			let schoolMembers = AdminOverview.getMembersBySchool(team, sessionSchoolId);
-			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner');	//role is populated
+			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner');	// role is populated
 
 			schoolMembers = schoolMembers.map((m) => {
-				return {
+				const obj = {
 					role: m.role.name,
 					user: AdminOverview.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName']),
 				};
+				return obj;
 			});
 
 			schoolMembers = schoolMembers.map((m) => {
@@ -257,16 +258,16 @@ class AdminOverview {
 					.then(values => values)
 					.catch(err => err);
 
-			}).catch(err => {
+			}).catch((err) => {
 				throw err;
 			});
-		}).catch(err => {
+		}).catch((err) => {
 			warn(err);
 			throw new BadRequest('It exists no teams with access rights, to send this message.');
 		});
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -288,7 +289,7 @@ class Get {
 		});
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -512,6 +513,7 @@ class Add {
 	 */
 	async _userImportByEmail(teamId, { email, role }, params) {
 		// let { email, role } = data;
+		email = email.toLowerCase(); // important for valid user
 		const {
 			esid,
 			isUserCreated,
@@ -566,7 +568,7 @@ class Add {
 		}
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -613,7 +615,7 @@ class Accept {
 		});
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -648,7 +650,7 @@ class Remove {
 	}
 }
 
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 	const options = {
 		Model: teamsModel,
@@ -670,7 +672,7 @@ module.exports = function () {
 		get: app.service('/teams/extern/get'),
 		add: app.service('/teams/extern/add'),
 		accept: app.service('/teams/extern/accept'),
-		remove: app.service('/teams/extern/remove')
+		remove: app.service('/teams/extern/remove'),
 	};
 
 	teamsServices.before(hooks.before);

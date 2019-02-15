@@ -25,9 +25,9 @@ const {
 	hasKey,
 	isDefined,
 	isUndefined,
-	isNull,
-	isObjectId,
-	isObjectIdWithTryToCast,
+	// isNull,
+	// isObjectId,
+	// isObjectIdWithTryToCast,
 	throwErrorIfNotObjectId,
 	bsonIdToString,
 	isSameId,
@@ -273,7 +273,9 @@ const dataExist = (hook) => {
 const pushUserChangedEvent = async (hook) => {
 	const team = await getTeam(hook);
 	const oldUsers = team.userIds;
-	const newUsers = get(hook, 'newUsers'); // hook.additionalInfosTeam.newUsers;
+	const newUsers = await hook.app.service('teams')
+		.get(hook.id)
+		.then(patchedTeam => patchedTeam.userIds.map(user => user.userId));
 
 	if (isUndefined(oldUsers) || isUndefined(newUsers)) {
 		// logger.warn('No user infos.', { oldUsers, newUsers });
@@ -651,7 +653,7 @@ exports.before = {
 		testChangesForPermissionRouting,
 		updateUsersForEachClass,
 		teamMainHook,
-	], // todo: filterToRelated(keys.data,'data') 
+	], // todo: filterToRelated(keys.data,'data')
 	remove: [
 		teamMainHook,
 		hasTeamPermission('DELETE_TEAM'),
