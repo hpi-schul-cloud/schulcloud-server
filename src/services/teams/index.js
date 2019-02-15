@@ -345,6 +345,7 @@ class Add {
 
 		if (email && role) {
 			// user invited via email
+			email = email.toLowerCase(); // important for valid user
 			try {
 				await collectData();
 				const linkParams = await waitForUser();
