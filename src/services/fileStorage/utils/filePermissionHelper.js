@@ -34,7 +34,8 @@ const checkPermissions = (permission) => {
 			return Promise.resolve(true);
 		}
 
-		const teamMember = fileObject.owner.userIds.find(_ => _.userId.toString() === user.toString());
+		const teamMember = fileObject.owner.userIds && fileObject.owner.userIds
+			.find(_ => _.userId.toString() === user.toString());
 		const userPermissions = permissions.find(perm => perm.refId.toString() === user.toString());
 
 		// User is either not member of Team
