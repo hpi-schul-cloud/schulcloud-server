@@ -2,6 +2,7 @@
 
 const request = require('request-promise-native');
 const { hooks, callbackHooks } = require('./hooks/index');
+const UserModel = require('../user/model');
 
 const { createReceiver, send } = require('../../events/notificationSender');
 
@@ -245,14 +246,38 @@ class NotificationService {
 class ConfigurationService {
 	constructor(options) {
 		this.options = options || {};
+		this.constants = {
+			NOTIFICATION_OPTIONS: 'notificationOptions',
+			FIREBASE_OPTIONS: 'firebaseOptions',
+		};
 	}
 
 	get(id, params) {
 		let options = {};
-		if (id === 'firebaseOptions') {
-			options = this.app.get('notification').firebaseOptions || {};
+		if (id === this.constants.FIREBASE_OPTIONS) {
+			options = this.app.get('notification')[id] || {};
+			return Promise.resolve(options);
 		}
-		return Promise.resolve(options);
+		if (id === this.constants.NOTIFICATION_OPTIONS) {
+			const userId = (params.account || {}).userId || params.payload.userId;
+			return UserModel.userModel.findById(userId).exec().then((user) => {
+				if (user === null) return Promise.reject();
+				options = user.preferences[id] || {};
+				return Promise.resolve(options);
+			});
+		}
+		Promise.reject();
+	}
+
+	patch(id, data, params) {
+		const userId = (params.account || {}).userId || params.payload.userId;
+		if (id === this.constants.NOTIFICATION_OPTIONS) {
+			const user = { preferences: {} };
+			user.preferences[id] = data;
+			return UserModel.userModel.findByIdAndUpdate(userId, { $set: user })
+				.then(() => data);
+		}
+		return Promise.reject();
 	}
 
 	setup(app, path) {
@@ -289,7 +314,7 @@ module.exports = function () {
 	pushService.before(hooks.before);
 	messageService.before(hooks.before);
 	deviceService.before(hooks.before);
-	// configurationService.before(hooks.before);
+	configurationService.before(hooks.before);
 	callbackService.before(callbackHooks.before);
 	notificationService.before(hooks.before);
 
