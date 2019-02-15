@@ -17,6 +17,7 @@ const systemSchema = new Schema({
 	oaClientId: { type: String }, // just for oauth2-systems
 	oaClientSecret: { type: String }, // just for oauth2-systems
 	ldapConfig: {
+		active: { type: Boolean },
 		url: { type: String },
 		rootPath: { type: String },
 		searchUser: { type: String },

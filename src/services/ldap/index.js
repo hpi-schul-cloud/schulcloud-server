@@ -29,14 +29,23 @@ module.exports = function() {
 		get(id, params) {
 			return app.service('systems').find({ query: { _id: id }, paginate: false })
 				.then((system) => {
-					return this.getUsers(system[0].ldapConfig, '').then((userData) => {
-						return this.getClasses(system[0].ldapConfig, '').then((classData) => {
+					if (system[0].ldapConfig.providerOptions.classPathAdditions === '') {
+						return this.getUsers(system[0].ldapConfig, '').then((userData) => {
 							return {
 								users: userData,
-								classes: classData,
+								classes: [],
 							};
 						});
-					});
+					} else {
+						return this.getUsers(system[0].ldapConfig, '').then((userData) => {
+							return this.getClasses(system[0].ldapConfig, '').then((classData) => {
+								return {
+									users: userData,
+									classes: classData,
+								};
+							});
+						});
+					}
 				});
 		}
 
