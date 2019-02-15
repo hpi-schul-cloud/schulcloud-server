@@ -1,3 +1,5 @@
+/* eslint no-console: 0 */
+/* eslint no-confusing-arrow: 0 */
 const ran = true; // set to true to exclude migration
 const name = 'Migrating files of submissions to new file model';
 
@@ -71,32 +73,63 @@ const run = async (dry) => {
 
 	const oldfileModel = mongoose.model('oldfile', oldFileSchema, '_files');
 	const submissionWithFiles = await submissionModel
-		.find({ fileIds: { $exists: true, $not: { $size: 0 } } });
+		.find({ fileIds: { $exists: true, $not: { $size: 0 } } })
+		.populate('homeworkId')
+		.exec();
 
 	if (!submissionWithFiles.length) {
 		return Promise.resolve();
 	}
 
-	const promises = submissionWithFiles.map((sub) => {
-		return Promise.all(sub.fileIds.map(id => oldfileModel.findOne({ _id: id }).lean().exec()))
-			.then((files) => {
-				const docPromises = files
-					.filter(f => Boolean(f))
-					.map(convertDocument)
-					.map(d => FileModel.findOne(d).exec());
-				return Promise.all(docPromises);
-			})
-			.then((files) => {
-				const fileIds = files.map(f => f._id);
-				
-				if(!fileIds.length)  {
-					return Promise.resolve();
-				}
-				
-				console.log(`New fileIds for submissons ${sub._id}`, fileIds);
-				return dry ? Promise.resolve() : submissionModel.update({ _id: sub._id }, { fileIds }).exec();
-			});
-	});
+	const errorHandler = (e) => {
+		console.log('Error', e);
+		return undefined;
+	};
+
+	const promises = submissionWithFiles
+		.map((sub) => {
+			const submissionPrommies = sub.fileIds
+				.map(id => oldfileModel.findOne({ _id: id }).lean().exec().catch(errorHandler));
+
+			const { teacherId } = sub.homeworkId || {};
+
+			return Promise.all(submissionPrommies)
+				.then((files) => {
+					const docPromises = files
+						.filter(f => Boolean(f))
+						.map(convertDocument)
+						.map(d => FileModel.findOne(d).exec().catch(errorHandler));
+
+					return Promise.all(docPromises);
+				})
+				.then(files => !teacherId ? Promise.resolve() : Promise.all(
+					files.filter(_ => Boolean(_)).map(file => dry
+						? Promise.resolve()
+						: FileModel.update({ _id: file._id }, {
+							$set: {
+								permissions: [...file.permissions, {
+									refId: teacherId,
+									refPermModel: 'user',
+									write: false,
+									read: true,
+									create: false,
+									delete: false,
+								}],
+							},
+						}).exec().then(() => file._id)),
+				))
+				.then((fileIds) => {
+					if (!fileIds || !fileIds.length) {
+						return Promise.resolve();
+					}
+
+					console.log(`New fileIds for submissons ${sub._id}`, fileIds);
+
+					return dry
+						? Promise.resolve()
+						: submissionModel.update({ _id: sub._id }, { fileIds }).exec().catch(errorHandler);
+				});
+		});
 
 	return Promise.all(promises);
 };
