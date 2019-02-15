@@ -4,7 +4,7 @@ const request = require('request-promise-native');
 const { hooks, callbackHooks } = require('./hooks/index');
 const UserModel = require('../user/model');
 
-const { createReceiver, send } = require('../../events/notificationSender');
+const { sendPush, sendMessage } = require('../../events/notificationSender');
 
 const DEFAULT_REDIRECT = 'https://schul-cloud.org';
 
@@ -33,11 +33,11 @@ class PushService {
 	}
 
 	create(data, params) {
-		const serviceUrls = this.app.get('services') || {};
-		return send(data.template, data.payload, data.users);
+		return sendPush(data.template, data.payload, data.users);
 	}
 
 	get(id, params) {
+		// FIXME remove, use MessageService.get instead
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.account || {}).userId || params.payload.userId;
@@ -63,18 +63,7 @@ class MessageService {
 	}
 
 	create(data, params) {
-		const userId = (params.account || {}).userId || params.payload.userId;
-		const options = {
-			uri: `${this.serviceUrls.notification}/messages/`,
-			method: 'POST',
-			headers: {
-				token: userId,
-			},
-			body: Object.assign(data, { serviceUrl: this.serviceUrls.notification }),
-			json: true,
-		};
-
-		return request(options).then(response => response);
+		return sendMessage(data.template, data.payload, data.users);
 	}
 
 	get(id, params) {

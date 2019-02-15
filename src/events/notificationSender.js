@@ -9,8 +9,14 @@ const request = require('request-promise-native');
 const serviceUrls = config.get('services') || {};
 const notification = config.get('notification') || {};
 
-function createReceiver(userModel) {
+function getPreferences(deliveryOptions = {}) {
+	const defaultOptions = { push: true, mail: true };
+	return Object.assign({}, defaultOptions, deliveryOptions);
+}
+
+function createReceiver(userModel, deliveryOptions) {
 	const name = `${userModel.firstName} ${userModel.lastName}`;
+	const preferences = getPreferences(deliveryOptions);
 	return {
 		userId: mongoose.Types.ObjectId(userModel.id),
 		name,
@@ -19,18 +25,16 @@ function createReceiver(userModel) {
 			name,
 		},
 		language: 'de', // todo add to user settings
-		preferences: {
-			push: true, // todo add to user settings
-			mail: true,
-		},
+		preferences,
 	};
 }
 
-function createPushMessage(template, data, users, sender, languagePayloads) {
+/** push only delivery of messages */
+function createPushMessage(template, data, users, sender, languagePayloads, deliveryOptions) {
 	return {
 		template,
-		payload: Object.assign({}, data, { tag: template }),
-		receivers: users.map(user => createReceiver(user)),
+		payload: data,
+		receivers: users.map(user => createReceiver(user, deliveryOptions)),
 		sender: sender ? createReceiver(sender) : null,
 		languagePayloads,
 	};
@@ -44,7 +48,7 @@ function sendMessage(message) {
 		}).then(() => Promise.reject(info));
 	}
 
-	if (!message.receivers) {
+	if (!message.receivers || message.receivers.length === 0) {
 		return Promise.reject('receivers missing!');
 	}
 
@@ -55,7 +59,6 @@ function sendMessage(message) {
 			{ serviceUrl: serviceUrls.notification },
 			{ platform: notification.platform }),
 		json: true,
-		// timeout: REQUEST_TIMEOUT
 	};
 
 	return request(options)
@@ -71,7 +74,12 @@ function sendMessage(message) {
 
 
 module.exports = {
-	send(template, data, users, sender) {
+	sendPush(template, data, users, sender) {
+		// todo add language payloads
+		const message = createPushMessage(template, data, users, sender, { language: 'de', payload: {} }, { mail: false });
+		return sendMessage(message);
+	},
+	sendMessage(template, data, users, sender) {
 		// todo add language payloads
 		const message = createPushMessage(template, data, users, sender, { language: 'de', payload: {} });
 		return sendMessage(message);
