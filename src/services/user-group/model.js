@@ -58,7 +58,8 @@ const classModel =  mongoose.model('class', getUserGroupSchema({
 	name: {type: String, required: false},
 	year: {type: Schema.Types.ObjectId, ref: 'year'},
 	gradeLevel: {type: Schema.Types.ObjectId, ref: 'gradeLevel'},
-	nameFormat: {type: String, enum: nameFormats, default: "static"}
+	nameFormat: {type: String, enum: nameFormats, default: "static"},
+	ldapDN: {type: String}
 }));
 const gradeModel =  mongoose.model('grade', getUserGroupSchema());
 

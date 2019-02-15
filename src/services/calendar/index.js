@@ -27,7 +27,9 @@ const convertJsonApiToEvent = (event) => {
 
 	// calendar service ignore case of x-params on event-creation
 	event["x-sc-courseId"]  = event.attributes["x-sc-courseid"];
+	event["x-sc-teamId"]  = event.attributes["x-sc-teamid"];
 	event["x-sc-courseTimeId"] = event.attributes["x-sc-coursetimeid"];
+
 	return event;
 };
 
@@ -54,6 +56,7 @@ const convertEventToJsonApi = (body) => {
 					repeat_wkst: body.weekday,
 					repeat_until: body.repeat_until,
 					"x-sc-courseId": body.courseId,
+					"x-sc-teamId": body.teamId,
 					"x-sc-courseTimeId": body.courseTimeId
 				},
 				relationships: {

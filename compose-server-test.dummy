@@ -1,0 +1,61 @@
+---
+version: \"3.7\"
+
+services:
+
+  ### Schul-Cloud Server
+  ###
+  server-mongodb:
+    image: mongo:3.4
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: always
+    ports:
+      - \"27017\"
+    volumes:
+      - data-server-mongodb:/data/db
+    restart: any
+
+  ###
+  server:
+    image: schulcloud/schulcloud-server:$DOCKERTAG
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    depends_on:
+      - server-mongodb
+    environment:
+      # ENV
+      - NODE_ENV=production
+      - HOST=$HOST_STAGING
+      - SC_TITLE=HPI Schul-Cloud
+      - SC_SHORT_TITLE=HPI Schul-Cloud
+      - SHLVL=1
+      # SMTP
+      - SMTP=$SMTP
+      - SMTP_SENDER=$SMTP_SENDER
+      # Storage
+      - AWS_ENDPOINT_URL=$AWS_ENDPOINT_URL_STAGING
+      - AWS_ACCESS_KEY=$AWS_ACCESS_KEY
+      - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+      # URIs and Port
+      - MONGO_URI=mongodb://server-mongodb:27017/schulcloud
+      - CALENDAR_URI=http://calendar:3000
+      - CONTENT_URI=https://schul-cloud.org:4040
+      - NOTIFICATION_URI=http://notification:3030
+      - PORT=3030
+      # AUTH Secret
+      - AUTHENTICATION=$AUTHENTICATION
+      # ROCKETCHAT
+      - ROCKET_CHAT_URI=$ROCKET_CHAT_URI_STAGING
+      - ROCKET_CHAT_ADMIN_TOKEN=$ROCKET_CHAT_ADMIN_TOKEN
+      - ROCKET_CHAT_ADMIN_ID=$ROCKET_CHAT_ADMIN_ID
+    ports:
+      - \"3030:3030\"
+    restart: always
+
+volumes:
+  data-server-mongodb:
+
