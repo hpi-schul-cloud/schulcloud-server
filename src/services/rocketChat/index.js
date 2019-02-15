@@ -353,8 +353,7 @@ class RocketChatChannel {
 		return this.app.service('teams').get(teamId, internalParams)
 			.then((team) => {
 				currentTeam = team;
-				const userNamePromises = currentTeam.userIds.map(user => this.app.service('rocketChat/user').get(user.userId)
-					.catch(Promise.resolve));
+				const userNamePromises = currentTeam.userIds.map(user => this.app.service('rocketChat/user').get(user.userId).catch(Promise.resolve));
 				return Promise.all(userNamePromises).then(async (users) => {
 					const userNames = users.map(user => user.username);
 					const channelName = await this.generateChannelName(currentTeam);
@@ -398,7 +397,7 @@ class RocketChatChannel {
 			};
 		} catch (err) {
 			logger.warn(err);
-			return new errors.BadRequest('error initializing the rocketchat channel', err);
+			return new errors.BadRequest('error initializing the rocketchat channel');
 		}
 	}
 
