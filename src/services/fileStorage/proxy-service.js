@@ -1,4 +1,5 @@
 const fs = require('fs');
+const logger = require('winston');
 const rp = require('request-promise-native');
 const { Forbidden, BadRequest, NotFound } = require('feathers-errors');
 
@@ -103,7 +104,10 @@ const fileStorageService = {
 				.then(() => FileModel.findOne(props).exec().then(
 					modelData => modelData ? Promise.resolve(modelData) : FileModel.create(props)
 				))
-				.catch(() => new Forbidden());
+				.catch((e) => {
+					logger.error(e);
+					return new Forbidden();
+				});
 		}
 
 		return FileModel.findOne(props).exec().then(
@@ -148,7 +152,10 @@ const fileStorageService = {
 				return createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName);
 			})
 			.then(() => fileInstance.remove().exec())
-			.catch(() => new Forbidden());
+			.catch((e) => {
+				logger.error(e);
+				return new Forbidden();
+			});
 	},
 
 	/**
@@ -211,7 +218,10 @@ const fileStorageService = {
 			.then(() => FileModel.update({ _id }, {
 				$set: update,
 			}).exec())
-			.catch(() => new Forbidden());
+			.catch((e) => {
+				logger.error(e);
+				return new Forbidden();
+			});
 	},
 };
 
@@ -285,7 +295,10 @@ const signedUrlService = {
 					header,
 				};
 			})
-			.catch(() => new Forbidden());
+			.catch((e) => {
+				logger.error(e);
+				return new Forbidden();
+			});
 	},
 
 	async find({ query, payload }) {
@@ -307,7 +320,10 @@ const signedUrlService = {
 			.then(res => ({
 				url: res,
 			}))
-			.catch(() => new Forbidden());
+			.catch((e) => {
+				logger.error(e);
+				return new Forbidden();
+			});
 	},
 
 	async patch(_id, data, params) {
@@ -327,7 +343,10 @@ const signedUrlService = {
 			.then(res => ({
 				url: res,
 			}))
-			.catch(() => new Forbidden());
+			.catch((e) => {
+				logger.error(e);
+				return new Forbidden();
+			});
 	},
 };
 
@@ -406,7 +425,10 @@ const directoryService = {
 			return canCreate(userId, parent)
 				.then(() => directoryExists().then(
 					data_ => data_ ? Promise.resolve(data_) : FileModel.create(props)
-				)).catch(() => new Forbidden());
+				)).catch((e) => {
+					logger.error(e);
+					return new Forbidden();
+				});
 		}
 
 		return directoryExists().then(
@@ -455,7 +477,10 @@ const directoryService = {
 				return FileModel.find({ parent: _id }).remove().exec();
 			})
 			.then(() => fileInstance.remove().exec())
-			.catch(() => new Forbidden());
+			.catch((e) => {
+				logger.error(e);
+				return new Forbidden();
+			});
 	},
 };
 
@@ -657,7 +682,10 @@ const filePermissionService = {
 					$set: { permissions },
 				}).exec();
 			})
-			.catch(() => new Forbidden());
+			.catch((e) => {
+				logger.error(e);
+				return new Forbidden();
+			});
 	},
 };
 
