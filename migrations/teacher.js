@@ -39,7 +39,7 @@ const run = async (dry) => {
 
 			const buggyFiles = sub.fileIds
 				.filter(file => !file.permissions
-					.find(perm => perm.refId.toString() === teacherId.toString()));
+					.find(perm => perm.refId && perm.refId.toString() === teacherId.toString()));
 
 			if (!buggyFiles.length) {
 				return Promise.resolve();
