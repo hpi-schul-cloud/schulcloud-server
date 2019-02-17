@@ -1,6 +1,6 @@
 /* eslint no-console: 0 */
 /* eslint no-confusing-arrow: 0 */
-const ran = true; // set to true to exclude migration
+const ran = false; // set to true to exclude migration
 const name = 'Migrating links to new file model';
 
 const mongoose = require('mongoose');
