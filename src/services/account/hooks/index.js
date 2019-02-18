@@ -93,7 +93,6 @@ const validatePassword = (hook) => {
 		globalHooks.hasRoleNoHook(hook, hook.id, 'teacher', true),
 		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero')])
 		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero]) => {
-
 			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
 			if (
 				(hasStudentCreate && isStudent)
@@ -189,8 +188,9 @@ const securePatching = hook => Promise.all([
 	globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
 	globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
 ]).then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
+	const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
 	if (hook.params.account._id !== hook.id) {
-		if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent))) {
+		if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent) || editsOwnAccount)) {
 			return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'))
 		}
 	}

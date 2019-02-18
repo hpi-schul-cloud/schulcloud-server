@@ -2,7 +2,7 @@
 /* eslint no-confusing-arrow: 0 */
 const chalk = require('chalk');
 
-const ran = false; // set to true to exclude migration
+const ran = true; // set to true to exclude migration
 const name = 'Migrating new file model';
 
 const mongoose = require('mongoose');
@@ -12,7 +12,6 @@ const { Schema } = mongoose;
 const RoleModel = require('../src/services/role/model.js');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.DB_URL || 'mongodb://localhost:27017/schulcloud', { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
@@ -48,9 +47,6 @@ const oldDirectorySchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
-
-const oldfileModel = mongoose.model('oldfile', oldFileSchema, '_files');
-const directoryModel = mongoose.model('directory', oldDirectorySchema);
 
 const permissionSchema = new Schema({
 	refId: {
@@ -92,9 +88,12 @@ const fileSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
-const FileModel = mongoose.model('file', fileSchema, 'files');
-
 const run = async (dry) => {
+	mongoose.connect(process.env.DB_URL || 'mongodb://localhost:27017/schulcloud', { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
+
+	const oldfileModel = mongoose.model('oldfile', oldFileSchema, '_files');
+	const directoryModel = mongoose.model('directory', oldDirectorySchema);
+	const FileModel = mongoose.model('file', fileSchema, 'files');
 
 	const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
 	const { _id: teacherRoleId } = await RoleModel.findOne({ name: 'teacher' }).exec();

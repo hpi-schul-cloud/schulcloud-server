@@ -150,9 +150,8 @@ const registerUser = function(data, params, app) {
 			userId: user._id,
 			activated: true
 		};
-		if( data.sso === 'sso' && data.accountId ){
-
-			let accountId = data.accountId;
+		if (data.sso === 'true' && data.account) {
+			let accountId = data.account;
 			return app.service('accounts').update({_id: accountId}, {$set: {activated: true, userId: user._id}})
 			.then(accountResponse=>{
 				account = accountResponse;
