@@ -22,14 +22,14 @@ const prettyError = require('pretty-error').start();
 const allHooks = require('./app.hooks');
 
 require('console-stamp')(console);
-require('console-stamp')(winston );
+require('console-stamp')(winston);
 
 let secrets;
 try {
 	(['production', 'local'].includes(process.env.NODE_ENV))
 		? secrets = require('../config/secrets.js')
 		: secrets = require('../config/secrets.json');
-} catch(error) {
+} catch (error) {
 	secrets = {};
 }
 
@@ -47,12 +47,12 @@ app.use(compress())
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 	.use('/', serveStatic(app.get('public')))
 	.use(bodyParser.json())
-	.use(bodyParser.urlencoded({extended: true}))
-	.use(bodyParser.raw({type: () => true, limit: '10mb'}))
+	.use(bodyParser.urlencoded({ extended: true }))
+	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 
 	.use(defaultHeaders)
-	.get('/system_info/haproxy', (req, res) => { res.send({ "timestamp":new Date().getTime() });})
-	.get('/ping', (req, res) => { res.send({ "message":"pong","timestamp":new Date().getTime() });})
+	.get('/system_info/haproxy', (req, res) => { res.send({ "timestamp": new Date().getTime() }); })
+	.get('/ping', (req, res) => { res.send({ "message": "pong", "timestamp": new Date().getTime() }); })
 
 	.configure(hooks())
 	.configure(rest(handleResponseType))
@@ -60,11 +60,12 @@ app.use(compress())
 
 	// auth is setup in /authentication/
 	.configure(services)
-	
+
 	.configure(socketio())
 	.configure(sockets)
 	.configure(middleware)
 	.hooks(allHooks);
+
 
 winston.cli();	// optimize for cli, like using colors
 winston.level = 'debug';
