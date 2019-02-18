@@ -3,6 +3,7 @@
 const request = require('request-promise-native');
 const { hooks, callbackHooks } = require('./hooks/index');
 const UserModel = require('../user/model');
+const notificationOptions = require('../../content/notifications.json');
 
 const { sendPush, sendMessage } = require('../../events/notificationSender');
 
@@ -26,6 +27,20 @@ const toQueryString = paramsObject => Object
 	.keys(paramsObject)
 	.map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
 	.join('&');
+
+/** overrides notification options with user preferences */
+const combineOptions = (userOptions) => {
+	const options = Object.assign([], notificationOptions);
+	for (const g in options) {
+		for (const n in options[g].notifications) {
+			const notification = options[g].notifications[n];
+			if (userOptions.hasOwnProperty(notification.notification)) {
+				notification.subscription = userOptions[notification.notification];
+			}
+		}
+	}
+	return options;
+};
 
 class PushService {
 	constructor(options) {
@@ -251,11 +266,12 @@ class ConfigurationService {
 			const userId = (params.account || {}).userId || params.payload.userId;
 			return UserModel.userModel.findById(userId).exec().then((user) => {
 				if (user === null) return Promise.reject();
-				options = user.preferences[id] || {};
+				const userPreferences = user.preferences[id];
+				options = combineOptions(userPreferences);
 				return Promise.resolve(options);
 			});
 		}
-		Promise.reject();
+		return Promise.reject();
 	}
 
 	patch(id, data, params) {

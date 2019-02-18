@@ -1,0 +1,20 @@
+[
+	{
+		"group": "new-content",
+		"title": "Bei neuen Inhalten benachrichtigen",
+		"notifications": [
+			{
+				"notification": "news-added",
+				"description": "Neue News sind für dich verfügbar",
+				"template": "news-added",
+				"preferences": {
+					"tag": "new-content"
+				},
+				"subscription": {
+					"push": true,
+					"mail": true
+				}
+			}
+		]
+	}
+]
