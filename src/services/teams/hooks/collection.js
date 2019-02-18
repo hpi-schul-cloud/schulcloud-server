@@ -142,7 +142,7 @@ const isObjectId = id => id instanceof ObjectId && id !== undefined;
  * @collection
  * @requires const Schema = require('mongoose').Schema;
  */
-const isObjectIdWithTryToCast = id => isObjectId(id) || !isNull(tryToCastToObjectId(id.toString()));
+const isObjectIdWithTryToCast = id => isObjectId(id) || !isNull(tryToCastToObjectId((id || '').toString()));
 
 /**
 *   @collection

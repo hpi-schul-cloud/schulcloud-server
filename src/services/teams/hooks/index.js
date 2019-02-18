@@ -271,11 +271,10 @@ const dataExist = (hook) => {
  * @return {Object::hook}
  */
 const pushUserChangedEvent = async (hook) => {
+	// todo take data from hook, postet data and return
 	const team = await getTeam(hook);
 	const oldUsers = team.userIds;
-	const newUsers = await hook.app.service('teams')
-		.get(hook.id)
-		.then(patchedTeam => patchedTeam.userIds.map(user => user.userId));
+	const newUsers = hook.result.userIds;
 
 	if (isUndefined(oldUsers) || isUndefined(newUsers)) {
 		// logger.warn('No user infos.', { oldUsers, newUsers });
