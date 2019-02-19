@@ -6,9 +6,6 @@ const auth = require('feathers-authentication');
 const _ = require('lodash');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
-const linkModel = require(
-	'../../link/link-model'
-)
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
@@ -79,39 +76,27 @@ const deleteWholeClassFromCourse = (hook) => {
 	});
 };
 
-const courseInviteHook = async hook => {
-	if (hook.path === 'courses' && hook.params.query && hook.params.query.link) {
-		const dbLink = await hook.app.service('link').get(hook.params.query.link) // link is used as "authorization"
-		delete hook.params.query.link
-		if (dbLink) return restrictToCurrentSchool(hook)
+const courseInviteHook = async context => {
+	if (context.path === 'courses' && context.params.query && context.params.query.link) {
+		const dbLink = await context.app.service('link').get(context.params.query.link); // link is used as "authorization"
+		delete context.params.query.link;
+		if (dbLink) return restrictToCurrentSchool(context);
 	}
 
-	return restrictToUsersOwnCourses(hook)
+	return restrictToUsersOwnCourses(context);
 }
 
-const courseInvitePatchHook = async hook => {
-	const subsequentHooks = [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation,
-		deleteWholeClassFromCourse
-	]
-	if (!hook.params.query || !hook.params.query.link) return callSubsequentHooks()
+const patchPermissionHook = async context => {
+	const query = context.params.query || {};
+	const defaultPermissionHook = globalHooks.hasPermission('USERGROUP_EDIT');
 
-	const dbLink = await hook.app.service('link').get(hook.params.query.link) // link is used as "authorization"
-	delete hook.params.query.link
-	return callSubsequentHooks(!!dbLink)
-
-	async function callSubsequentHooks(skip) {
-		let result = hook
-		const hooks = skip ? subsequentHooks.slice(1) : subsequentHooks
-
-		try {
-			for (let index in hooks) {
-				result = await hooks[index](result)
-			}
-		} catch (err) {
-			throw err
-		}
-		return result
+	if (query.link) {
+		const dbLink = await context.app.service('link').get(query.link); // link is used as "authorization"
+		delete context.params.query.link;
+		if (dbLink) return context;
 	}
+
+	return defaultPermissionHook(conext);
 }
 
 exports.before = {
@@ -120,7 +105,8 @@ exports.before = {
 	get: [courseInviteHook],
 	create: [globalHooks.injectUserId, globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
 	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
-	patch: [courseInvitePatchHook],
+	patch: [patchPermissionHook, restrictToCurrentSchool, globalHooks.permitGroupOperation,
+		deleteWholeClassFromCourse],
 	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation]
 };
 

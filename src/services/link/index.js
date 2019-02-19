@@ -24,13 +24,18 @@ module.exports = function () {
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then(data => {
-					res.redirect(data.target + "?shortId=" + data._id);
+					if (data.data || req.query.includeShortId) {
+						res.redirect(data.target + "?shortId=" + data._id);
+					} else {
+						res.redirect(data.target);
+					}
 				})
 				.catch(err => {
 					logger.warn(err);
 					res.status(500).send(err);
 				});
 		} else {
+			delete req.query.includeShortId
 			next();
 		}
 	}
