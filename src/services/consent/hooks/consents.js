@@ -132,9 +132,9 @@ const accessCheck = (consent, app) => {
 			if (!user.birthday) {
 				access = false;
 				requiresParentConsent = false;
-				return Promise.resolve;
+				return Promise.resolve();
 			}
-			const { age } = user;
+			const { age } = user.age;
 
 			if (age < 16) {
 				const parentConsent = (consent.parentConsents || [])[0] || {};
