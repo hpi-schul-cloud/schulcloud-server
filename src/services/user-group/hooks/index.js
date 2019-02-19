@@ -96,7 +96,7 @@ const patchPermissionHook = async context => {
 		if (dbLink) return context;
 	}
 
-	return defaultPermissionHook(conext);
+	return defaultPermissionHook(context);
 }
 
 exports.before = {
