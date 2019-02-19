@@ -5,10 +5,40 @@
 		"notifications": [
 			{
 				"notification": "news-added",
-				"description": "Neue News sind für dich verfügbar",
+				"description": "Neue News sind verfügbar",
 				"template": "news-added",
 				"preferences": {
 					"tag": "new-content"
+				},
+				"subscription": {
+					"push": true,
+					"mail": true
+				}
+			},
+			{
+				"notification": "homework-added",
+				"description": "Neue Hausaufgaben sind verfügbar",
+				"template": "homework-added",
+				"preferences": {
+					"tag": "new-content"
+				},
+				"subscription": {
+					"push": true,
+					"mail": true
+				}
+			}
+		]
+	},
+	{
+		"group": "added-to",
+		"title": "Bei Einladungen benachrichtigen",
+		"notifications": [
+			{
+				"notification": "added-to-team",
+				"description": "Du wurdest in ein Team eingeladen",
+				"template": "added-to-team",
+				"preferences": {
+					"tag": "added-to"
 				},
 				"subscription": {
 					"push": true,
