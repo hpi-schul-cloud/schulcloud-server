@@ -35,7 +35,7 @@ const combineOptions = (userOptions) => {
 		for (const n in options[g].notifications) {
 			const notification = options[g].notifications[n];
 			if (userOptions.hasOwnProperty(notification.notification)) {
-				notification.subscription = userOptions[notification.notification];
+				options[g].notifications[n].subscription = userOptions[notification.notification];
 			}
 		}
 	}
@@ -266,7 +266,7 @@ class ConfigurationService {
 			const userId = (params.account || {}).userId || params.payload.userId;
 			return UserModel.userModel.findById(userId).exec().then((user) => {
 				if (user === null) return Promise.reject();
-				const userPreferences = user.preferences[id];
+				const userPreferences = user.preferences[id] || {};
 				options = combineOptions(userPreferences);
 				return Promise.resolve(options);
 			});
