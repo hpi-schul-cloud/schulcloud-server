@@ -446,8 +446,8 @@ class RocketChatChannel {
 				logger.warn(err);
 			});
 	}
-  
-  static async archiveChannel(teamId) {
+
+	static async archiveChannel(teamId) {
 		const channel = await rocketChatModels.channelModel.findOne({ teamId });
 		if (channel) {
 			await request(getRequestOptions('/api/v1/groups.archive', { roomName: channel.channelName }, true));
