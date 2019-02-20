@@ -120,7 +120,6 @@ class CourseShareService {
 										.then(_ => {
 										});
 								}
-								return;
 							}
 						});
 
@@ -140,7 +139,7 @@ class CourseShareService {
 		const userId = (params.account || {}).userId;
 		const courseName = data.courseName;
 		const copyService = this.app.service('courses/copy');
-		
+
 		return courseModel.find({shareToken})
 			.then(course => {
 				course = course[0];

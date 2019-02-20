@@ -66,7 +66,7 @@ class LessonCopyService {
 
 					let topic = res;
 
-					return FileModel.find({path: {$regex: sourceLesson.courseId._id}}).then(files => {
+					return FileModel.find({path: {$regex: sourceLesson.courseId._id.toString() }}).then(files => {
 						return Promise.all((files || []).filter(f => {
 
 							// check whether the file is included in any lesson
