@@ -162,17 +162,28 @@ const hasPatchPermission = hook => {
     }).then((homework) => {
 
         // allow only students to archive their own homeworks
-        const isStudent = !!homework.courseId.userIds.find(userId => userId.toString() === hook.params.account.userId.toString());
+        const isStudent = !!homework.courseId.userIds.find(userId => {
+            return userId.toString() === hook.params.account.userId.toString();
+        });
         // allow this student to only change archived
-        const onlyChangesArchived = Object.keys(hook.data).length === 1 && hook.data.hasOwnProperty('archived') && Array.isArray(hook.data.archived);
+        const onlyChangesArchived = Object.keys(hook.data).length === 1
+            && Array.isArray(hook.data.archived);
+
         if (isStudent && onlyChangesArchived) {
             // allow the user to only remove him/herself from the archived array (reactivate homework for this user)
-            const removedStudents = homework.archived.filter(studentId => !hook.data.archived.find(stId => studentId.toString() === stId.toString()));
-            const removesOnlySelf = removedStudents.length === 1 && removedStudents[0].toString() === hook.params.account.userId.toString();
+            const removedStudents = homework.archived.filter(studentId => {
+                return !hook.data.archived.find(stId => studentId.toString() === stId.toString());
+            });
+            const removesOnlySelf = removedStudents.length === 1
+                && removedStudents[0].toString() === hook.params.account.userId.toString();
 
             // allow the user to only add him/herself to the archived array (archive homework for this user)
-            const addedStudents = hook.data.archived.filter(studentId => !homework.archived.find(stId => studentId.toString() === stId.toString()));
-            const addsOnlySelf = addedStudents.length === 1 && addedStudents[0].toString() === hook.params.account.userId.toString();
+            const addedStudents = hook.data.archived.filter(studentId => {
+                return !homework.archived.find(stId => studentId.toString() === stId.toString());
+            });
+            const addsOnlySelf = addedStudents.length === 1
+                && addedStudents[0].toString() === hook.params.account.userId.toString();
+
             if (removesOnlySelf || addsOnlySelf) {
                 return Promise.resolve(hook);
             }
