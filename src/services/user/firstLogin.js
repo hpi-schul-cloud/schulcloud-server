@@ -73,24 +73,22 @@ const firstLogin = async function(data, params, app) {
 
     userPromise = app.service('users').patch(user._id, userUpdate);
 
-    if (data.privacyConsent || data.thirdPartyConsent || data.termsOfUseConsent || data.researchConsent) {
+    if (data.privacyConsent || data.thirdPartyConsent || data.termsOfUseConsent) {
         consentUpdate.userId = user._id;
         consentUpdate.userConsent = {
             form: 'digital',
             privacyConsent: data.privacyConsent,
             thirdPartyConsent: data.thirdPartyConsent,
             termsOfUseConsent: data.termsOfUseConsent,
-            researchConsent: data.researchConsent
         };
     }
-    if (data.parent_privacyConsent || data.parent_thirdPartyConsent|| data.parent_termsOfUseConsent || data.parent_researchConsent) {
+    if (data.parent_privacyConsent || data.parent_thirdPartyConsent|| data.parent_termsOfUseConsent) {
         consentUpdate.userId = user._id;
         consentUpdate.parentConsents = [{
             form: 'digital',
             privacyConsent: data.parent_privacyConsent,
             thirdPartyConsent: data.parent_thirdPartyConsent,
             termsOfUseConsent: data.parent_termsOfUseConsent,
-            researchConsent: data.parent_researchConsent
         }];
     }
     if (consentUpdate.userId) consentPromise = app.service('consents').create(consentUpdate);

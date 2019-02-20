@@ -7,7 +7,7 @@ const logger = require('winston');
 
 module.exports = function () {
 	const app = this;
-	
+
 	const options = {
 		Model: link,
 		paginate: {
@@ -16,16 +16,16 @@ module.exports = function () {
 		},
 		lean: true
 	};
-	
+
 	let linkService = service(options);
-	
+
 	function redirectToTarget(req, res, next) {
-		if(req.method === 'GET' && !req.query.target) {	// capture these requests and issue a redirect
+		if (req.method === 'GET' && !req.query.target) {	// capture these requests and issue a redirect
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then(data => {
-					if (data.data) {
-						res.redirect(data.target+"?shortId="+data._id);
+					if (data.data || req.query.includeShortId) {
+						res.redirect(data.target + "?shortId=" + data._id);
 					} else {
 						res.redirect(data.target);
 					}
@@ -35,16 +35,17 @@ module.exports = function () {
 					res.status(500).send(err);
 				});
 		} else {
+			delete req.query.includeShortId
 			next();
 		}
 	}
-	
+
 	class registrationLinkService {
 		constructor(options) {
 			this.options = options || {};
 			this.docs = {};
 		}
-		
+
 		async create(data, params) {
 			let linkData = {};
 			if (data.toHash) {
@@ -57,7 +58,7 @@ module.exports = function () {
 					return Promise.reject(new Error(`Fehler beim Generieren des Hashes. ${err}`));
 				}
 			}
-			
+
 			// base link
 			if (data.role === 'student') {
 				linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}`;
@@ -65,31 +66,31 @@ module.exports = function () {
 				linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}/byemployee`;
 			}
 			if (linkData.hash) linkData.link += `?importHash=${linkData.hash}`;
-			
+
 			// remove possible double-slashes in url except the protocol ones
 			linkData.link = linkData.link.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
-			
+
 			// generate short url
-			await app.service('link').create({target: linkData.link}).then(generatedShortLink => {
+			await app.service('link').create({ target: linkData.link }).then(generatedShortLink => {
 				linkData.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`;
 			}).catch(err => {
 				logger.warn(err);
 				return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
 			});
-			
+
 			// remove possible double-slashes in url except the protocol ones
 			linkData.shortLink = linkData.shortLink.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
-			
+
 			return linkData;
 		}
 	}
-	
+
 	class expertLinkService {
 		constructor(options) {
 			this.options = options || {};
 			this.docs = {};
 		}
-		
+
 		/**
 		 * Generates short expert invite link
 		 * @param data = object {
@@ -102,13 +103,13 @@ module.exports = function () {
 		 *  }
 		 */
 		create(data, params) {
-			return new Promise( async (resolve,reject) => {
+			return new Promise(async (resolve, reject) => {
 				let linkInfo = {};
 				const expertSchoolId = data.esid, email = data.email, teamId = data.teamId;
-				
+
 				const hashService = app.service('hash');
 				const linkService = app.service('link');
-				
+
 				if (email) {
 					// generate import hash
 					await hashService.create({
@@ -122,7 +123,7 @@ module.exports = function () {
 						return Promise.resolve('Success!');
 					});
 				}
-				
+
 				// build final link and remove possible double-slashes in url except the protocol ones
 				if (expertSchoolId && linkInfo.hash) {
 					// expert registration link for new users
@@ -134,9 +135,9 @@ module.exports = function () {
 					logger.warn("Nicht alle Daten für den Experten-Link vorhanden.");
 					return Promise.resolve('Success!');
 				}
-				
+
 				// generate short url
-				await linkService.create({target: linkInfo.link}).then(generatedShortLink => {
+				await linkService.create({ target: linkInfo.link }).then(generatedShortLink => {
 					linkInfo.shortLinkId = generatedShortLink._id;
 					// build final short link and remove possible double-slashes in url except the protocol ones
 					linkInfo.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`.replace(/(https?:\/\/)|(\/)+/g, "$1$2");
@@ -144,27 +145,27 @@ module.exports = function () {
 					logger.warn("Fehler beim Erstellen des Kurzlinks.");
 					return Promise.resolve('Success!');
 				});
-				
+
 				resolve(linkInfo);
 			});
 		}
 	}
-	
+
 	// Initialize our service with any options it requires
 	app.use('/link', redirectToTarget, linkService);
-	
+
 	// generate registration link with optional user hash
 	app.use('/registrationlink', new registrationLinkService());
-	
+
 	// generate team invite link with optional user role (leader or expert)
 	app.use('/expertinvitelink', new expertLinkService());
-	
+
 	// Get our initialize service to that we can bind hooks
 	linkService = app.service('/link');
-	
+
 	// Set up our before hooks
 	linkService.before(hooks.before(linkService));
-	
+
 	// Set up our after hooks
 	linkService.after(hooks.after);
 };
