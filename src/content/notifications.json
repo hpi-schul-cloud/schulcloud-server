@@ -10,6 +10,10 @@
 				"preferences": {
 					"tag": "new-content"
 				},
+				"subscriptionOptions": [
+					"push",
+					"mail"
+				],
 				"subscription": {
 					"push": true,
 					"mail": true
@@ -22,6 +26,10 @@
 				"preferences": {
 					"tag": "new-content"
 				},
+				"subscriptionOptions": [
+					"push",
+					"mail"
+				],
 				"subscription": {
 					"push": true,
 					"mail": true
@@ -40,9 +48,34 @@
 				"preferences": {
 					"tag": "added-to"
 				},
+				"subscriptionOptions": [
+					"push",
+					"mail"
+				],
 				"subscription": {
 					"push": true,
 					"mail": true
+				}
+			}
+		]
+	},
+	{
+		"group": "science",
+		"title": "Experimentelle Features aus der Forschung",
+		"notifications": [
+			{
+				"notification": "science-preload",
+				"description": "Vorabladen von Inhalten",
+				"template": "silent",
+				"preferences": {
+					"tag": "silent"
+				},
+				"subscriptionOptions": [
+					"push"
+				],
+				"subscription": {
+					"push": true,
+					"mail": false
 				}
 			}
 		]
