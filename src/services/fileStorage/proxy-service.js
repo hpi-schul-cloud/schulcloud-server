@@ -357,6 +357,8 @@ const directoryService = {
 	/**
 	 * @param { name, owner and parent }, params
 	 * @returns {Promise}
+	 * @param query contains the file path
+	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
 	 */
 	async create(data, params) {
 		const { payload: { userId } } = params;

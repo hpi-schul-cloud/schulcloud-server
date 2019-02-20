@@ -413,7 +413,7 @@ const removeNotValidUsersBySchoolIds = (schoolIds, teamUsers, users) => {
 	schoolIds = bsonIdToString(schoolIds);
 
 	teamUsers.map((teamUser) => {
-		const user = users.find(u => isSameId(u._id, teamUser.userId));
+		const user = (users.find(u => isSameId(u._id, teamUser.userId)) || {});
 		const schoolId = bsonIdToString(user.schoolId);
 		if (schoolIds.includes(schoolId) === false) {
 			removeList.push(user._id);
