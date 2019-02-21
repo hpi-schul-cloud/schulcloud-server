@@ -52,19 +52,7 @@ class PushService {
 	}
 
 	get(id, params) {
-		// FIXME remove, use MessageService.get instead
-		const serviceUrls = this.app.get('services') || {};
-
-		const userId = (params.account || {}).userId || params.payload.userId;
-		const options = {
-			uri: `${serviceUrls.notification}/push/${id}?token=${userId}`,
-			headers: {
-				token: userId,
-			},
-			json: true,
-		};
-
-		return request(options).then(message => message);
+		return Promise.reject('use message service method get instead');
 	}
 
 	setup(app, path) {

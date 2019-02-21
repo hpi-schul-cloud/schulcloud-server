@@ -29,7 +29,6 @@ function createReceiver(userModel, deliveryOptions) {
 	};
 }
 
-/** push only delivery of messages */
 function createPushMessage(template, data, users, sender, languagePayloads, deliveryOptions) {
 	return {
 		template,
