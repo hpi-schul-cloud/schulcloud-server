@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-useless-escape */
 /* eslint no-param-reassign: 1  */
-const ran = false; // set to true to exclude migration
+const ran = true; // set to true to exclude migration
 const name = 'Replace all hard coded links to old file ids in lesson.';
 
 const mongoose = require('mongoose');
