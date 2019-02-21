@@ -91,7 +91,7 @@ const run = async () => {
 		.filter(lesson => lesson.contents.some(c => c.component === 'text'));
 
 	const promises = lessons.map((lesson) => {
-		const regex = /(?:src|href)=\"(.*?\/files\/file\?(?:path|file)=.+?\/([0-9a-z]+?)\/.*?)\"/gm;
+		const regex = /(?:src|href)=\"(.*?\/files\/file\?(?:path|file)=(.+?\/[0-9a-z]+?\/.*?))\"/gm;
 		const { contents } = lesson;
 
 		const lessonPromises = contents
@@ -101,14 +101,18 @@ const run = async () => {
 				}
 				console.log(`Touching lesson with ID ${lesson._id}`);
 
-				const oldIds = content.content.text
+				const oldKeys = content.content.text
 					.match(regex)
 					.map(str => str.replace(regex, '$2'));
 
-				console.log(`Found old ids ${oldIds}`);
+				console.log(`Found old path keys ${oldKeys}`);
 
-				const oldPromises = oldIds
-					.map(id => oldfileModel.findOne({ _id: id }).lean().exec().catch(errorHandler));
+				const oldPromises = oldKeys
+					.map((key) => {
+						const fn = key.split('/').pop();
+						return key.replace(fn, encodeURIComponent(fn));
+					})
+					.map(key => oldfileModel.findOne({ key }).lean().exec().catch(errorHandler));
 
 				return Promise.all(oldPromises)
 					.then((oldFiles) => {
@@ -123,9 +127,10 @@ const run = async () => {
 						const update = contents.map((c) => {
 							if (c.component === 'text' && regex.test(c.content.text)) {
 								const { text } = c.content;
-								c.content.text = text.replace(regex, (...[match, attribute, id]) => {
-									if (files[oldIds.indexOf(id)]) {
-										return match.replace(attribute, `/files/file?file=${files[oldIds.indexOf(id)]._id}`);
+								c.content.text = text.replace(regex, (...[match, attribute, key]) => {
+									const oldKey = oldKeys.indexOf(key);
+									if (files[oldKey]) {
+										return match.replace(attribute, `/files/file?file=${files[oldKey]._id}`);
 									}
 									return match;
 								});
