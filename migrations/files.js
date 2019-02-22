@@ -186,7 +186,6 @@ const run = async (dry) => {
 			if (dry) {
 				return d;
 			}
-
 			const fileObject = await FileModel.findOne({ _id: d._id }).exec();
 
 			if (fileObject) {

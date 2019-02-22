@@ -19,7 +19,7 @@ const addWholeClassToCourse = (hook) => {
 	let course = hook.result;
 	if ((requestBody.classIds || []).length > 0) { // just courses do have a property "classIds"
 		return Promise.all(requestBody.classIds.map(classId => {
-			return ClassModel.findById(classId).exec().then(c =>  c.userIds);
+			return ClassModel.findById(classId).exec().then(c => c.userIds);
 		})).then(studentIds => {
 			// flatten deep arrays and remove duplicates
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
@@ -27,7 +27,7 @@ const addWholeClassToCourse = (hook) => {
 			// add all students of classes to course, if not already added
 			return Promise.all(studentIds.map(s => {
 				if (!_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(s))) {
-					return CourseModel.update({_id: course._id}, {$push: {userIds: s}}).exec();
+					return CourseModel.update({ _id: course._id }, { $push: { userIds: s } }).exec();
 				} else {
 					return {};
 				}
@@ -53,15 +53,15 @@ const deleteWholeClassFromCourse = (hook) => {
 		let removedClasses = _.differenceBy(course.classIds, requestBody.classIds, (v) => JSON.stringify(v));
 		if (removedClasses.length < 1) return hook;
 		return Promise.all(removedClasses.map(classId => {
-			return ClassModel.findById(classId).exec().then(c =>  (c || []).userIds);
+			return ClassModel.findById(classId).exec().then(c => (c || []).userIds);
 		})).then(studentIds => {
 			// flatten deep arrays and remove duplicates
-      studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
+			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
 			// remove all students of classes from course, if they are in course
 			return Promise.all(studentIds.map(s => {
 				if (!_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(s))) {
-					return CourseModel.update({_id: course._id}, {$pull: {userIds: s}}).exec();
+					return CourseModel.update({ _id: course._id }, { $pull: { userIds: s } }).exec();
 				} else {
 					return {};
 				}
@@ -76,20 +76,44 @@ const deleteWholeClassFromCourse = (hook) => {
 	});
 };
 
+const courseInviteHook = async context => {
+	if (context.path === 'courses' && context.params.query && context.params.query.link) {
+		const dbLink = await context.app.service('link').get(context.params.query.link); // link is used as "authorization"
+		delete context.params.query.link;
+		if (dbLink) return restrictToCurrentSchool(context);
+	}
+
+	return restrictToUsersOwnCourses(context);
+}
+
+const patchPermissionHook = async context => {
+	const query = context.params.query || {};
+	const defaultPermissionHook = globalHooks.hasPermission('USERGROUP_EDIT');
+
+	if (query.link) {
+		const dbLink = await context.app.service('link').get(query.link); // link is used as "authorization"
+		delete context.params.query.link;
+		if (dbLink) return context;
+	}
+
+	return defaultPermissionHook(context);
+}
+
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
 	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool, restrictToUsersOwnCourses],
-	get: [restrictToUsersOwnCourses],
+	get: [courseInviteHook],
 	create: [globalHooks.injectUserId, globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
 	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
-	patch: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation, deleteWholeClassFromCourse],
+	patch: [patchPermissionHook, restrictToCurrentSchool, globalHooks.permitGroupOperation,
+		deleteWholeClassFromCourse],
 	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation]
 };
 
 exports.after = {
 	all: [],
 	find: [],
-	get: [globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'}))],
+	get: [globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({ errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!' }))],
 	create: [addWholeClassToCourse],
 	update: [],
 	patch: [addWholeClassToCourse],
