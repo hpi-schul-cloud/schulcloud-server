@@ -72,7 +72,6 @@ module.exports = function () {
 	app.configure(me);
     app.configure(oauth2);
     app.configure(roster);
-	app.configure(authentication);
 	app.configure(analytics);
 	app.configure(user);
 	app.configure(role);
