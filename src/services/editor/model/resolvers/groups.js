@@ -37,6 +37,7 @@ const groupsResolvers = {
 		group: (root, args, context, info) => {
 			// TODO
 			// return group with args.groupId
+			return {};
 		},
 	},
 	Mutation: {
@@ -44,15 +45,21 @@ const groupsResolvers = {
 			// TODO:
 			// create a group and return it
 			// the args contain userIds, an array of strings
+			return {};
 		},
 		updateGroup: (root, args, context, info) => {
 			// TODO:
-			// the args contain userIds, an array of strings, and the groupId
+			// the args contain userIds, an array of strings, and the groupId#
+			return {};
 		},
-		deleteGroup: (root, args, context, info) => {},
+		deleteGroup: (root, args, context, info) => {
+			return {};
+		},
 	},
 	Subscription: {
-		groupChanged: (root, args, context, info) => {},
+		groupChanged: (root, args, context, info) => {
+			return {};
+		},
 	},
 };
 

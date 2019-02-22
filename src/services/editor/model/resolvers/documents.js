@@ -58,6 +58,7 @@ const documentsResolvers = {
 			// args contain documentId
 			// return document
 			// {id, docValue}
+			return {};
 		},
 	},
 	Mutation: {
@@ -65,16 +66,22 @@ const documentsResolvers = {
 			// TODO
 			// args contain docValue
 			// create a new document with the given value and return it
+			return {};
 		},
 		updateDocument: (root, args, context, info) => {
 			// TODO
 			// args contain documentId and docValue
 			// update the document in the database and return it
+			return {};
 		},
-		deleteDocument: (root, args, context, info) => {},
+		deleteDocument: (root, args, context, info) => {
+			return {};
+		},
 	},
 	Subscription: {
-		documentChanged: (root, args, context, info) => {},
+		documentChanged: (root, args, context, info) => {
+			return {};
+		},
 	},
 };
 

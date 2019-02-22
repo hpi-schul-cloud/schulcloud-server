@@ -20,6 +20,7 @@ const usersResolvers = {
 			// args contain userId
 			// return the user
 			// {id, name, isTeacher} (feel free to rename isTeacher)
+			return {};
 		},
 	},
 };

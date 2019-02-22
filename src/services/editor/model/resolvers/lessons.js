@@ -86,16 +86,22 @@ const lessonsResolvers = {
 				course id::course
 				topic id::topic
 			*/
+			return {};
 		},
 		updateLesson: (root, args, context, info) => {
 			// TODO:
 			// args contain lessonId, and potentially ownerId, sections Array, students
 			// update these fields in the db
+			return {};
 		},
-		deleteLesson: (root, args, context, info) => {},
+		deleteLesson: (root, args, context, info) => {
+			return {};
+		},
 	},
 	Subscription: {
-		lessonChanged: (root, args, context, info) => {},
+		lessonChanged: (root, args, context, info) => {
+			return {};
+		},
 	},
 };
 

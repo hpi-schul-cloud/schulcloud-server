@@ -38,6 +38,7 @@ const sectionsResolvers = {
 			// TODO:
 			// args contain the sectionId
 			// return the section
+			return {};
 		},
 	},
 	Mutation: {
@@ -56,18 +57,24 @@ const sectionsResolvers = {
 				}
 
 			*/
+			return {};
 		},
 		updateSection: (root, args, context, info) => {
 			// TODO:
 			// args contain sectionId, contents (optional), note (optional)
 			// save the updated values
 			// return the section
+			return {};
 		},
-		deleteSection: (root, args, context, info) => {},
+		deleteSection: (root, args, context, info) => {
+			return {};
+		},
 		// NOTE: We could easily add addDocumentToSection(sectionId, documentId) || createAndAddDocumentToSection(sectionId, docValue) or something like that here
 	},
 	Subscription: {
-		sectionChanged: (root, args, context, info) => {},
+		sectionChanged: (root, args, context, info) => {
+			return {};
+		},
 	},
 };
 
