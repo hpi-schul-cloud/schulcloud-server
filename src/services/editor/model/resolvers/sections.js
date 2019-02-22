@@ -1,4 +1,4 @@
-const { gql } = require("apollo-server-core");
+const { gql } = require('apollo-server-core');
 /*
 
 Schema: section

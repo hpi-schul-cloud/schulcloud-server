@@ -2,15 +2,7 @@ const { Forbidden } = require('feathers-errors');
 const jwt = require('jsonwebtoken');
 const logger = require('winston');
 const hooks = require('./hooks');
-
-let secrets;
-try {
-	['production', 'local'].includes(process.env.NODE_ENV)
-		? secrets = require('../../../config/secrets.js')
-		: secrets = require('../../../config/secrets.json');
-} catch (error) {
-	secrets = {};
-}
+const secrets = require('../../middleware/secret');
 
 const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
 
