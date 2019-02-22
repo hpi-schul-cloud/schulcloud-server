@@ -8,6 +8,7 @@ Schema: section
 
 */
 const sectionsTypeDefs = gql`
+	scalar JSON
 	type Section {
 		id: String!
 		title: String

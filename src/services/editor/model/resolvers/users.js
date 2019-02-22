@@ -1,7 +1,6 @@
 const { gql } = require('apollo-server-core');
 
 const usersTypeDefs = gql`
-	scalar Json
 	type User {
 		name: String!
 		id: String!

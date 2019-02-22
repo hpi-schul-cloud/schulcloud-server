@@ -13,7 +13,7 @@ groups (Wird auch für einzelne Nutzer verwendet mit ein users array und einem E
 const groupsTypeDefs = gql`
 	type Group {
 		id: String!
-		users: [User]!
+		users: [Json]!
 	}
 
 	extend type Query {

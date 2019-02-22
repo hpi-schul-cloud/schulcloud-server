@@ -2,6 +2,7 @@ const { gql } = require('apollo-server-core');
 
 const baseTypeDefs = gql`
 	scalar Json
+	
 	type Query {
 		_empty: String
 	}
