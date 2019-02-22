@@ -1,7 +1,7 @@
 // const { merge } = require('lodash');
 const { lessonsTypeDefs, lessonsResolvers } = require('./resolvers/lessons');
 const { groupsTypeDefs, groupsResolvers } = require('./resolvers/groups');
-const { stepsTypeDefs, stepsResolvers } = require('./resolvers/steps');
+const { sectionsTypeDefs, sectionsResolvers } = require('./resolvers/sections');
 const { usersTypeDefs, usersResolvers } = require('./resolvers/users');
 const { documentsTypeDefs, documentsResolvers } = require('./resolvers/documents');
 const { baseTypeDefs } = require('./resolvers/base');
@@ -18,7 +18,7 @@ const resolvers = Object.assign(
 	{},
 	lessonsResolvers,
 	groupsResolvers,
-	stepsResolvers,
+	sectionsResolvers,
 	documentsResolvers,
 	usersResolvers,
 );
@@ -30,7 +30,7 @@ const typeDefs = [
 	usersTypeDefs,
 	lessonsTypeDefs,
 	groupsTypeDefs,
-	stepsTypeDefs,
+	sectionsTypeDefs,
 	documentsTypeDefs,
 ];
 

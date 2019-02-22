@@ -34,7 +34,7 @@ const clipboard = require('./clipboard');
 const me = require('./me');
 const editor = require('./editor');
 
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 
 	mongoose.connect(process.env.DB_URL || app.get('mongodb'), { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
