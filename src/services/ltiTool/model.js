@@ -18,13 +18,14 @@ const ltiTool = new Schema({
   lti_version: { type: String, required: true },
   resource_link_id: { type: String, required: true },
   roles: { type: [{ type: String, enum: ['Learner', 'Instructor', 'ContentDeveloper', 'Administrator', 'Mentor', 'TeachingAssistant'] }]},
-  privacy_permission: { type: String, enum: ['anonymous', 'e-mail', 'name', 'public'], default: 'anonymous' },
+  privacy_permission: { type: String, enum: ['anonymous', 'pseudonymous', 'e-mail', 'name', 'public'], default: 'anonymous' },
   customs: {type: [{key: {type: String}, value: {type: String}}] },
   isTemplate: {type: Boolean},
   isLocal: {type: Boolean},
   createdAt: { type: Date, 'default': Date.now },
   updatedAt: { type: Date, 'default': Date.now },
   originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool'},
+  oAuthClientId: { type: String },
 });
 
 const ltiToolModel = mongoose.model('ltiTool', ltiTool);
