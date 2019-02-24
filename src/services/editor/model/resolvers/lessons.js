@@ -5,7 +5,7 @@ const lessonsTypeDefs = gql`
 		id: String!
 		students: [Group]!
 		owner: Group!
-		sections: [Sections]
+		sections: [Section]
 		topic: Json
 		course: Json
 	}
@@ -17,12 +17,7 @@ const lessonsTypeDefs = gql`
 
 	extend type Mutation {
 		createLesson(topicId: String!, courseId: String!, ownerId: String!): Lesson
-		updateLesson(
-			lessonId: String!
-			ownerId: String!
-			sections: [Json]
-			students: [Json]
-		): Lesson
+		updateLesson(lessonId: String!, ownerId: String!, sections: [Json], students: [Json]): Lesson
 		deleteLesson(toBeDetermined: String!): Lesson
 	}
 
@@ -72,13 +67,12 @@ const lessonsResolvers = {
 		},
 	},
 	Mutation: {
-		createLesson: (root, args, context, info) => {
-			// TODO:
-			// create a lesson in the database
-			// args contain topicId, courseId, ownerId
-			// sections should be an empty array
-			// students should be "copied" over from the course
-			/* save the following:
+		// TODO:
+		// create a lesson in the database
+		// args contain topicId, courseId, ownerId
+		// sections should be an empty array
+		// students should be "copied" over from the course
+		/* save the following:
 			    id
     			sections Array(<id::step>)  - die Reihenfolge innerhalb des Arrays spiegelt den Ablauf wieder   (question) ein Object wäre hilfreicher für umsortierung von steps  (question) Bezeichnung steps sollte diskutiert werden. =parts, chapters, topics
     			owner <id::groups>
@@ -86,22 +80,15 @@ const lessonsResolvers = {
 				course id::course
 				topic id::topic
 			*/
-			return {};
-		},
-		updateLesson: (root, args, context, info) => {
-			// TODO:
-			// args contain lessonId, and potentially ownerId, sections Array, students
-			// update these fields in the db
-			return {};
-		},
-		deleteLesson: (root, args, context, info) => {
-			return {};
-		},
+		createLesson: (root, args, context, info) => ({}),
+		// TODO:
+		// args contain lessonId, and potentially ownerId, sections Array, students
+		// update these fields in the db
+		updateLesson: (root, args, context, info) => ({}),
+		deleteLesson: (root, args, context, info) => ({}),
 	},
 	Subscription: {
-		lessonChanged: (root, args, context, info) => {
-			return {};
-		},
+		lessonChanged: (root, args, context, info) => ({}),
 	},
 };
 
