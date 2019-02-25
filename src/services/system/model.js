@@ -27,6 +27,7 @@ const systemSchema = new Schema({
 		importUserPassword: { type: String },
 		importUrl: { type: String },
 		providerOptions: {
+			schoolName: { type: String },
 			userPathAdditions: { type: String },
 			classPathAdditions: { type: String },
 			roleType: { type: String },
