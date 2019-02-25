@@ -42,7 +42,7 @@ class LDAPSystemSyncer extends Syncer {
 	}
 
 	getSystems() {
-		return this.app.service('systems').find({ query: { type: 'ldap', active: true }, paginate: false })
+		return this.app.service('systems').find({ query: { type: 'ldap', 'ldapConfig.active': true }, paginate: false })
 			.then(systems => {
 				this.logInfo(`Found ${systems.length} LDAP configurations.`);
 				return systems;
