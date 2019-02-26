@@ -42,7 +42,7 @@ exports.before = {
 	find: [hasPermission('FILESTORAGE_VIEW')],
 	get: [hasPermission('FILESTORAGE_VIEW')],
 	create: [hasPermission('FILESTORAGE_CREATE'), replaceAnd],
-	update: [hasPermission('FILESTORAGE_EDIT')],
+	update: [hasPermission('FILESTORAGE_EDIT'), replaceAnd],
 	patch: [hasPermission('FILESTORAGE_EDIT'), replaceAnd],
 	remove: [hasPermission('FILESTORAGE_REMOVE')],
 };
