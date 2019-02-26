@@ -4,24 +4,24 @@ class Group {
 		this.docs = {};
 	}
 
-	static create({ users }, params) {
-		return {
+	create({ users }, params) {
+		return Promise.resolve({
 			_id: '123',
 			users: [{ id: '123', name: 'Peter Paul' }]
-		};
+		});
 	}
 
-	static patch(groupId, { users }, params) {
-		return {
+	patch(groupId, { users }, params) {
+		return Promise.resolve({
 			groupId,
-		};
+		});
 	}
 
-	static get(groupId, params) {
-		return {
+	get(groupId, params) {
+		return Promise.resolve({
 			_id: '123',
-			users: [{ id: '123', name: 'Peter Paul' }]
-		};
+			users: [{ id: '123', name: 'Peter Paul' }],
+		});
 	}
 
 	setup(app) {

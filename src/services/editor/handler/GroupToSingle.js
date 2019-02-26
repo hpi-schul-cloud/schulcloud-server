@@ -4,10 +4,10 @@ class GroupToSingle {
 		this.docs = {};
 	}
 
-	static create({ group }, params) {
-		return {
+	create({ group }, params) {
+		return Promise.resolve({
 			// für jedes element in group wird eine neue group mit einem Element angelegt
-		};
+		});
 	}
 
 	setup(app) {

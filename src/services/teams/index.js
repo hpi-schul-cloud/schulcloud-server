@@ -648,7 +648,7 @@ class Remove {
 	}
 }
 
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 	const options = {
 		Model: teamsModel,

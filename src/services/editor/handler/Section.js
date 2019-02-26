@@ -5,17 +5,17 @@ class Section {
 	}
 
 	// title as docValue ? wenn nicht dann als db model, würde das data handling für find erleichtern
-	static patch(sectionId, { docValue, note, visible }, params) {
-		return {
+	patch(sectionId, { docValue, note, visible }, params) {
+		return Promise.resolve({
 			sectionId,
-		};
+		});
 	}
 
-	static create(data, params) {
+	create(data, params) {
 		// take current user
 		// create group
 
-		return {
+		return Promise.resolve({
 			_id: '123',
 			lesson: '123',
 			owner: '123',
@@ -23,35 +23,35 @@ class Section {
 			permissions: [],
 			state: {},
 			flag: 'isTemplate',
-		};
+		});
 	}
 
-	static get(sectionId, params) {
-		return {
+	get(sectionId, params) {
+		return Promise.resolve({
 			sectionId,
 			// complet data
-		};
+		});
 	}
 
 	// if it is needed
-	static find(params) {
+	find(params) {
 		// query all for users
 		// query all
 
-		return {
+		return Promise.resolve({
 			data: [
 				{
 					_id: '123',
 					name: 'bla',
 				},
 			],
-		};
+		});
 	}
 
-	static remove(sectionId, params) {
-		return {
+	remove(sectionId, params) {
+		return Promise.resolve({
 			sectionId,
-		};
+		});
 	}
 
 	setup(app) {

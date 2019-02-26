@@ -6,21 +6,21 @@ class Lesson {
 
 	// create wird über cours lessons angelegt mit jwt as owner group -> muss der title darüber edit sein
 
-	static patch(lessonId, { title, sectionIds }, params) {
+	patch(lessonId, { title, sectionIds }, params) {
 		// sectionIds map to steps -> but is solved from Editor MS
-		return {
+		return Promise.resolve({
 			lessonId,
 			sectionIds, // as Array
-		};
+		});
 	}
 
-	static get(lessonId, params) {
-		return {
+	get(lessonId, params) {
+		return Promise.resolve({
 			steps: [],
 			owner: '123',
 			students: '123',
 			state: {},
-		};
+		});
 	}
 
 	setup(app) {

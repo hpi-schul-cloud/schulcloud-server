@@ -5,8 +5,9 @@ const {
 	Section,
 	SubSections,
 } = require('./handler/');
+const hooks = require('./hooks');
 
-// subscriptions lesson, sections, group
+// subscriptions lesson->steps / , sections, group
 
 module.exports = function setup() {
 	const app = this;
@@ -16,4 +17,8 @@ module.exports = function setup() {
 	app.use('/editor/lessons', new Lesson());
 	app.use('/editor/split', new GroupToSingle());
 	app.use('/editor/subsections', new SubSections());
+
+	const sections = app.service('/editor/sections');
+
+	sections.before(hooks.before);
 };
