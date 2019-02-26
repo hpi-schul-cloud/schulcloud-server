@@ -9,6 +9,13 @@ const resolveUserId = (hook) => {
 	return hook;
 };
 
+const replaceAnd = (hook) => {
+	if (hook.data.name)
+		hook.data.name = hook.data.name.replace(/&amp;/g, '&');
+	else if (hook.data.newName)
+		hook.data.newName = hook.data.newName.replace(/&amp;/g, '&');
+};
+
 const resolveStorageType = (hook) => {
 	const { params: { payload } } = hook;
 
@@ -34,9 +41,9 @@ exports.before = {
 	],
 	find: [hasPermission('FILESTORAGE_VIEW')],
 	get: [hasPermission('FILESTORAGE_VIEW')],
-	create: [hasPermission('FILESTORAGE_CREATE')],
+	create: [hasPermission('FILESTORAGE_CREATE'), replaceAnd],
 	update: [hasPermission('FILESTORAGE_EDIT')],
-	patch: [hasPermission('FILESTORAGE_EDIT')],
+	patch: [hasPermission('FILESTORAGE_EDIT'), replaceAnd],
 	remove: [hasPermission('FILESTORAGE_REMOVE')],
 };
 
