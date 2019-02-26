@@ -1,21 +1,19 @@
-const { ApolloServer } = require('apollo-server-express');
-const logger = require('winston');
+const {
+	Group,
+	GroupToSingle,
+	Lesson,
+	Section,
+	SubSections,
+} = require('./handler/');
 
-const { typeDefs, resolvers } = require('./model');
-const { createContext } = require('./model/context');
-
-const SCApolloServer = app => new ApolloServer({
-	typeDefs,
-	resolvers,
-	// If you need to provide any models to the resolvers, load and provide them in context
-	context: createContext(app),
-});
+// subscriptions lesson, sections, group
 
 module.exports = function setup() {
 	const app = this;
-	const server = SCApolloServer(app);
-	server.applyMiddleware({ app });
-	const httpServer = app.listen({ port: 4000 },
-		() => logger.info(`GraphQL endpoint ready at port 4000, ${server.graphqlPath}, ${server.subscriptionsPath}`));
-	server.installSubscriptionHandlers(httpServer);
+
+	app.use('/editor/sections', new Section());
+	app.use('/editor/groups', new Group());
+	app.use('/editor/lessons', new Lesson());
+	app.use('/editor/split', new GroupToSingle());
+	app.use('/editor/subsections', new SubSections());
 };

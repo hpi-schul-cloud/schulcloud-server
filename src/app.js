@@ -15,13 +15,14 @@ const sockets = require('./sockets');
 const services = require('./services');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
+const secrets = require('./middleware/secret')
 const setupSwagger = require('./swagger');
 // const prettyError = require('pretty-error').start();
 const allHooks = require('./app.hooks');
 
 require('console-stamp')(console);
 require('console-stamp')(winston);
-
+/*
 let secrets;
 try {
 	(['production', 'local'].includes(process.env.NODE_ENV))
@@ -30,7 +31,7 @@ try {
 } catch(error) {
 	secrets = {};
 }
-
+*/
 const app = feathers();
 const config = configuration(path.join(__dirname, '..'));
 
