@@ -1,3 +1,5 @@
+const { request } = require('../helper/');
+
 class Group {
 	constructor(options) {
 		this.options = options || {};
@@ -5,9 +7,11 @@ class Group {
 	}
 
 	create({ users }, params) {
-		return Promise.resolve({
-			_id: '123',
-			users: [{ id: '123', name: 'Peter Paul' }]
+		return request({
+			uri: 'groups',
+			method: 'create',
+			data: {users},
+			userId: '123',
 		});
 	}
 
