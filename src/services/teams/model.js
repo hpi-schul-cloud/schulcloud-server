@@ -68,7 +68,7 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 	untilDate: { type: Date },
 	//	shareToken:  { type: String, unique: true },
 	times: [timeSchema],
-	features: [{ type: String, enum: ['isTeam'] }],
+	features: [{ type: String, enum: ['isTeam', 'rocketChat'] }],
 	filePermission: [permissionSchema],
 }));
 
