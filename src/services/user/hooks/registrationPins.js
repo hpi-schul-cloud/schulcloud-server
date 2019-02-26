@@ -2,17 +2,13 @@
 
 const commonHooks = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
+const logger = require('winston');
 const auth = require('feathers-authentication');
+const pinModel = require('../../user/model').registrationPinModel;
 
-const removeOldPin = (hook) => {
-	return hook.app.service('registrationPins').find({query:{email: hook.data.email}})
+const removeOldPins = (hook) => {
+	return pinModel.deleteMany({email:hook.data.email})
 		.then(pins => {
-			if (pins.total > 0) {
-				return hook.app.service('registrationPins').remove(pins.data[0]._id)
-					.then(response => {
-						return Promise.resolve(hook);
-					});
-				}
 			return Promise.resolve(hook);
 		});
 };
@@ -25,8 +21,13 @@ const generatePin = (hook) => {
 
 function createinfoText(hook) {
 	let text;
-	let pin = hook.data.pin;
-	if (hook.data.byRole === "parent") {
+	const role = hook.data.mailTextForRole;
+	const pin = hook.data.pin;
+	if (!role || !pin) {
+		logger.warn("Role or PIN missing to define mail text.");
+		return "";
+	}
+	if (role === "parent") {
 		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der HPI Schul-Cloud ermöglichen.
 Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen.
 
@@ -34,8 +35,8 @@ PIN: ${pin}
 
 Mit Freundlichen Grüßen
 Ihr Schul-Cloud Team`;
-	
-	} else if (hook.data.byRole === "student" || hook.data.byRole === "employee" || (hook.data.byRole||"").length > 8) {
+
+	} else if (role === "student" || role === "employee" || role === "expert") {
 		text = `Vielen Dank, dass du die HPI Schul-Cloud nutzen möchtest.
 Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen.
 
@@ -43,6 +44,9 @@ PIN: ${pin}
 
 Mit freundlichen Grüßen
 Ihr Schul-Cloud Team`;
+	} else {
+		logger.warn("No valid role submitted to define mail text.");
+		return "";
 	}
 	return text;
 }
@@ -52,21 +56,22 @@ const checkAndVerifyPin = hook => {
 		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, {verified: true}).then(() => {
 			return Promise.resolve(hook);
 		});
-		//return hook.app.service('registrationPins').update({_id: hook.result.data[0]._id}, {$set: {verified: true}});
 	} else {
 		return Promise.resolve(hook);
 	}
 };
 
 const mailPin = (hook) => {
-	globalHooks.sendEmail(hook, {
-		"subject": "Schul-Cloud: Registrierung mit PIN verifizieren",
-		"emails": (hook.data||{}).email,
-		"content": {
-			"text": createinfoText(hook)
-			// TODO: implement html mails later
-		}
-	});
+	if (!(hook.data||{}).silent) {
+		globalHooks.sendEmail(hook, {
+			"subject": "Schul-Cloud: Registrierung mit PIN verifizieren",
+			"emails": (hook.data||{}).email,
+			"content": {
+				"text": createinfoText(hook)
+				// TODO: implement html mails later
+			}
+		});
+	}
 	return Promise.resolve(hook);
 };
 
@@ -92,7 +97,7 @@ exports.before = {
 	all: [globalHooks.forceHookResolve(auth.hooks.authenticate('jwt'))],
 	find: commonHooks.disable('external'),
 	get: commonHooks.disable('external'),
-	create: [removeOldPin, generatePin, mailPin],
+	create: [removeOldPins, generatePin, mailPin],
 	update: commonHooks.disable('external'),
 	patch: commonHooks.disable('external'),
 	remove: commonHooks.disable('external'),

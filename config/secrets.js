@@ -10,7 +10,7 @@ let secrets = {
 		"sslEnabled": true,
 		"accessKeyId": process.env.AWS_ACCESS_KEY,
 		"secretAccessKey": process.env.AWS_SECRET_ACCESS_KEY,
-		"region": "eu-de",
+		"region": process.env.AWS_REGION || "eu-de",
 		"endpointUrl": process.env.AWS_ENDPOINT_URL,
 		"cors_rules": [{
 		"AllowedHeaders": ["*"],

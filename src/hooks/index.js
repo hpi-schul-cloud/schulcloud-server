@@ -1,4 +1,3 @@
-'use strict';
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
@@ -9,8 +8,10 @@ const KeysModel = require('../services/keys/model');
 // don't require authentication for internal requests
 exports.ifNotLocal = function (hookForRemoteRequests) {
 	return function (hook) {
-		if (typeof (hook.params.provider) != 'undefined') {	// meaning it's not a local call
-			// Call the specified hook
+		// meaning it's a local call and pass it without execute hookForRemoteRequests
+		if(typeof (hook.params.provider) == 'undefined'){ 
+			return hook;
+		}else{
 			return hookForRemoteRequests.call(this, hook);
 		}
 	};
@@ -234,29 +235,49 @@ exports.mapPaginationQuery = (hook) => {
 	}
 };
 
-exports.checkCorrectCourseId = (hook) => {
-	let courseService = hook.app.service('courses');
-	const courseId = (hook.data.courseId || '').toString() || (hook.id || '').toString();
-	let query = {};
+exports.checkCorrectCourseOrTeamId = async (hook) => {
 
-	if (hook.data.courseGroupId) {
-		delete hook.data.courseId;
-		query = {$or: [{teacherIds: {$in: [hook.params.account.userId]}}, {userIds: {$in: [hook.params.account.userId]}}]};
-	} else
-		query = { teacherIds: {$in: [hook.params.account.userId] } };
+	if (hook.data.teamId) {
+		let teamService = hook.app.service('teams');
 
-	return courseService.find({ query: query})
-		.then(courses => {
-			if (courses.data.some(course => { return course._id.toString() === courseId; }))
-				return hook;
-			else
-				throw new errors.Forbidden("The entered course doesn't belong to you!");
-		});
+		let query = {
+			userIds: {
+				$elemMatch: { userId: hook.params.account.userId }
+			}
+		};
+
+		let teams = await teamService.find({ query });
+
+		if (teams.data.some(team => team._id.toString() === hook.data.teamId )) {
+			return hook;
+		} else {
+			throw new errors.Forbidden("The entered team doesn't belong to you!");
+		}
+	} else if (hook.data.courseGroupId || hook.data.courseId) {
+		let courseService = hook.app.service('courses');
+		const courseId = (hook.data.courseId || '').toString() || (hook.id || '').toString();
+		let query = { teacherIds: {$in: [hook.params.account.userId] } };
+
+		if (hook.data.courseGroupId) {
+			delete hook.data.courseId;
+			query = {$or: [{teacherIds: {$in: [hook.params.account.userId]}}, {userIds: {$in: [hook.params.account.userId]}}]};
+		}
+
+		let courses = await courseService.find({ query });
+
+		if (courses.data.some(course => course._id.toString() === courseId )) {
+			return hook;
+		} else {
+			throw new errors.Forbidden("The entered course doesn't belong to you!");
+		}
+	} else {
+		return hook;
+	}
 };
 
 exports.injectUserId = (hook) => {
 	if (typeof (hook.params.provider) == 'undefined') {
-		if (hook.data.userId) {
+		if (hook.data && hook.data.userId) {
 			hook.params.account = {userId: hook.data.userId};
 			hook.params.payload = {userId: hook.data.userId};
 			delete hook.data.userId;
@@ -564,39 +585,48 @@ exports.sendEmail = (hook, maildata) => {
 			});
 
 			_.uniq(receipients).map(email => {
-				mailService.create({
-					email: email,
-					subject: maildata.subject || "E-Mail von der Schul-Cloud",
-					headers: maildata.headers || {},
-					content: {
-						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
-						"html": ""
-					}
-				}).catch (err => {
-					throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
-				});
+				if (!maildata.content.text && !maildata.content.html) {
+					logger.warn("(1) No mailcontent (text/html) was given. Don't send a mail.");
+				} else {
+					mailService.create({
+						email: email,
+						subject: maildata.subject || "E-Mail von der Schul-Cloud",
+						headers: maildata.headers || {},
+						content: {
+							"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
+							"html": "" // still todo, html template mails
+						}
+					}).catch (err => {
+						logger.warn(err);
+						throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+					});
+				}
 			});
-		return hook;
+			return hook;
 		})
 		.catch(err => {
 			throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 		});
 	}
 	else {
-		_.uniq(receipients).map(email=> {
-			mailService.create({
-				email: email,
-				subject: maildata.subject || "E-Mail von der Schul-Cloud",
-				headers: maildata.headers || {},
-				content: {
-					"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
-					"html": ""
-				}
-			})
-			.catch (err => {
-				throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+		if (!maildata.content.text && !maildata.content.html) {
+			logger.warn("(2) No mailcontent (text/html) was given. Don't send a mail.");
+		} else {
+			_.uniq(receipients).map(email=> {
+				mailService.create({
+					email: email,
+					subject: maildata.subject || "E-Mail von der Schul-Cloud",
+					headers: maildata.headers || {},
+					content: {
+						"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
+						"html": "" // still todo, html template mails
+					}
+				}).catch (err => {
+					logger.warn(err);
+					throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+				});
 			});
-		});
+		}
 		return hook;
 	}
 };

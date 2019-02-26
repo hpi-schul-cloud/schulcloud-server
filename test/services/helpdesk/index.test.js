@@ -81,26 +81,23 @@ describe('helpdesk service', function() {
 			}
 		);
 	});
-
+	
 	it('POST /helpdesk to admin without data', () => {
-
 		let postBody = {
 			type: 'contactAdmin',
 			subject: 'Dies ist ein Titel 3',
 			category: 'dashboard',
 			schoolId: '5836bb5664582c35df3bc000'
 		};
-
 		helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
 			.catch(err => {
-				expect(err).to.not.be.undefined;
-				expect(err.code).to.equal(400);
-			}
-		);
+					expect(err).to.not.be.undefined;
+					expect(err.code).to.equal(400);
+				}
+			);
 	});
-
+	
 	it('POST /helpdesk to schoolcloud with problem, valid data', () => {
-
 		let postBody = {
 			type: 'contactHPI',
 			subject: 'Dies ist ein Titel 4',
@@ -108,16 +105,14 @@ describe('helpdesk service', function() {
 			targetState: 'Dies ist der TargetState 2',
 			category: 'dashboard'
 		};
-
 		helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
 			.then (result => {
-				expect(result).to.equal({});
-			}
-		);
+					expect(result).to.equal({});
+				}
+			);
 	});
-
+	
 	it('POST /helpdesk to schoolcloud with feedback, valid data', () => {
-
 		let postBody = {
 			type: 'contactHPI',
 			subject: 'Dies ist ein Titel 4',
@@ -127,28 +122,25 @@ describe('helpdesk service', function() {
 			acceptanceCriteria:'Dies sind acceptanceCriteria',
 			category: 'dashboard'
 		};
-
 		helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
 			.then (result => {
-				expect(result).to.equal({});
-			}
-		);
+					expect(result).to.equal({});
+				}
+			);
 	});
-
+	
 	it('POST /helpdesk to schoolcloud without data', () => {
-
 		let postBody = {
 			type: 'contactHPI',
 			subject: 'Dies ist ein Titel 4',
 			category: 'dashboard'
 		};
-
 		helpdeskService.create(postBody, { payload: {userId: '0000d213816abba584714c0a'}})
 			.catch(err => {
-				expect(err).to.not.be.undefined;
-				expect(err.code).to.equal(400);
-			}
-		);
+					expect(err).to.not.be.undefined;
+					expect(err.code).to.equal(400);
+				}
+			);
 	});
 });
 

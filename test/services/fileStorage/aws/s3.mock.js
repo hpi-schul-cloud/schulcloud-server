@@ -37,6 +37,9 @@ var mockAws = {
 			putObject: function (params, callback) {
 				callback(null, "successfully put object");
 			},
+			headBucket: function (params, callback) {
+				callback(null);
+			},
 		};
 	},
 	Config: function () {

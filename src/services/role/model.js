@@ -24,6 +24,12 @@ roleSchema.statics.resolvePermissions = function(roleIds) {
 	function resolveSubRoles(roleId) {
 		return roleModel.findById(roleId)
 			.then(role => {
+				if(typeof role !== 'object'){
+					role = {};
+				}
+				if(Array.isArray(role.permissions)===false){
+					role.permissions=[];
+				}
 				role.permissions.forEach(p => permissions.add(p));
 				let promises = role.roles
 					.filter(id => !processedRoleIds.includes(id))
