@@ -5,7 +5,7 @@ const {
 	Section,
 	SubSections,
 } = require('./handler/');
-const hooks = require('./hooks');
+const { before, after } = require('./hooks');
 
 // subscriptions lesson->steps / , sections, group
 
@@ -19,6 +19,22 @@ module.exports = function setup() {
 	app.use('/editor/subsections', new SubSections());
 
 	const sections = app.service('/editor/sections');
+	sections.before(before);
+	sections.after(after);
 
-	sections.before(hooks.before);
+	const groups = app.service('/editor/groups');
+	groups.before(before);
+	groups.after(after);
+
+	const lessons = app.service('/editor/lessons');
+	lessons.before(before);
+	lessons.after(after);
+
+	const split = app.service('/editor/split');
+	split.before(before);
+	split.after(after);
+
+	const subsections = app.service('/editor/subsections');
+	subsections.before(before);
+	subsections.after(after);
 };
