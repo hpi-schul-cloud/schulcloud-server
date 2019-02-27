@@ -16,10 +16,22 @@ const passRequestDataToParams = (context) => {
 	return context;
 };
 
+/**
+ * No query parameter should pass to the Editor MircoService.
+ * If any need, it added by the endpoints im server editor service.
+ * But if you need any, the query is saved in params.clientQuery.
+ */
+const saveAndClearQuery = (context) => {
+	context.params.clientQuery = context.params.query;
+	context.params.query = {};
+	return context;
+};
+
 exports.before = {
 	all: [
 		auth.hooks.authenticate('jwt'),
 		passRequestDataToParams,
+		saveAndClearQuery,
 	],
 	find: [],
 	get: [],
