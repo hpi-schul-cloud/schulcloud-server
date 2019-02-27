@@ -460,6 +460,10 @@ const directoryService = {
 						.catch(() => undefined),
 				);
 				return Promise.all(permissionPromises);
+			})
+			.then((allowedFiles) => {
+				const files = allowedFiles.filter(f => f);
+				return files.length ? files : new NotFound();
 			});
 	},
 
