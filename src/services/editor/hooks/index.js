@@ -3,6 +3,7 @@ const logger = require('../../../logger/');
 
 const populateUsers = (context) => {
 	// todo populate id to {id, name:user.firstname+' '+user.lastname}
+	console.log(context.result);
 	return context;
 };
 

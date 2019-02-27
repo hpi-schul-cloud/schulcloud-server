@@ -1,4 +1,5 @@
 const rpn = require('request-promise-native');
+const querystring = require('querystring');
 const { BadRequest } = require('feathers-errors');
 
 const logger = require('../../../logger');
@@ -17,21 +18,22 @@ const mapMethod = {
 
 const isObjectWithElements = e => e && Object.keys(e).length > 0;
 
-const override = (data, overrideData = {}) => {
-	Object.keys(data).forEach((key) => {
+const override = (params, overrideData = {}) => {
+	const { request } = params;
+	Object.keys(request).forEach((key) => {
 		if (overrideData[key]) {
-			data[key] = overrideData[key];
+			request[key] = overrideData[key];
 		}
 	});
-	return data;
+	return request;
 };
 
 // eslint-disable-next-line object-curly-newline
-const getOptions = (uri, { data, userId, method, id }) => {
+const getOptions = (uri, { data, userId, method, id }, query) => {
 
 	const addedId = id ? `/${id}` : '';
 	const options = {
-		uri: `${EDITOR_MS}/${uri}${addedId}`,
+		uri: `${EDITOR_MS}/${uri}${addedId}${query}`,
 		method: mapMethod[method] || 'GET',
 		headers: {
 			Authorization: userId,
@@ -59,7 +61,7 @@ module.exports = (uri, params, overrideData) => {
 	if (!params.request) {
 		throw new BadRequest('Missing request data in params.');
 	}
-	return rpn(getOptions(uri, override(params.request, overrideData)))
+	return rpn(getOptions(uri, override(params, overrideData), querystring.stringify(params.query)))
 		.catch((err) => {
 			logger.warn(new BadRequest(err));
 			throw new BadRequest('Can not execute or fetch data.');
