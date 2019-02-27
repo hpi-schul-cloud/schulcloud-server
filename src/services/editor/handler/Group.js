@@ -9,23 +9,27 @@ class Group {
 	}
 
 	create({ users }, params) {
-		return request(uri,params, {
-			data: {users}
+		return request(uri, params, {
+			data: { users }
 		});
 	}
 
 	patch(groupId, { users }, params) {
-		return request(uri,params, {
-			data: {users}
+		return request(uri, params, {
+			data: { users }
 		});
 	}
 
 	get(groupId, params) {
-		return request(uri,params);
+		return request(uri, params);
 	}
 
 	find(params) {
-		return request(uri,params);
+		return request(uri, params);
+	}
+
+	remove(groupId, params) {
+		return request(uri, params);
 	}
 
 	setup(app) {

@@ -62,6 +62,6 @@ module.exports = (uri, params, overrideData) => {
 	return rpn(getOptions(uri, override(params.request, overrideData)))
 		.catch((err) => {
 			logger.warn(new BadRequest(err));
-			throw new BadRequest('Can not fetch data.');
+			throw new BadRequest('Can not execute or fetch data.');
 		});
 };
