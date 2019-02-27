@@ -53,9 +53,11 @@ You will need the [client](https://github.com/schul-cloud/schulcloud-client) as 
 ```
 
 ## How to name your branch
-
-1. Take the last part of the url of your Trello ticket (e.g. "8-setup-feather-js")
-2. Name the branch "yourname/trelloid" (e.g. "nico/8-setup-feather-js")
+## How to name your branch  
+  
+1. Take the Ticket Number from JIRA (ticketsystem.schul-cloud.org), e.g. SC-999  
+2. Name the branch beginning with Ticket Number , e.g. SC-999: fantasy-problem
+3. Add (WIP), if it is still in progress
 
 ## Testing
 
