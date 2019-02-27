@@ -132,6 +132,14 @@ const fileStorageService = {
 						.catch(() => undefined),
 				);
 				return Promise.all(permissionPromises);
+			})
+			.then((allowedFiles) => {
+				const files = allowedFiles.filter(f => f);
+				if (!files.length) {
+					return new Forbidden();
+				}
+
+				return files;
 			});
 	},
 
