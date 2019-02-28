@@ -415,6 +415,19 @@ const directoryService = {
 			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
 		}
 
+		if (isCourse) {
+			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
+
+			permissions.push({
+				refId: studentRoleId,
+				refPermModel: 'role',
+				write: false,
+				read: true, // students can always read course files
+				create: false,
+				delete: false,
+			});
+		}
+
 		if (!sendPermissions) {
 			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
 			sendPermissions = teamObject ? teamObject.filePermission : [];
