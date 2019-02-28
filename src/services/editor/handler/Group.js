@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 const { request } = require('../helper/');
 
 const uri = 'groups';
@@ -16,7 +17,7 @@ class Group {
 
 	patch(groupId, { users }, params) {
 		return request(uri, params, {
-			data: { users }
+			data: { users },
 		});
 	}
 
