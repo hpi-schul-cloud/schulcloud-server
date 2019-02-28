@@ -462,7 +462,7 @@ const directoryService = {
 
 		const params = sanitizeObj({
 			isDirectory: true,
-			parent: parent || { $exists: false },
+			parent,
 		});
 
 		return FileModel.find(params).exec()
