@@ -372,7 +372,6 @@ class Add {
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Erstellen des Einladelinks.', err);
 			});
-
 	}
 
 	/**

@@ -33,7 +33,7 @@ const getOptions = (uri, { data, userId, method, id }, query) => {
 
 	const addedId = id ? `/${id}` : '';
 	const options = {
-		uri: `${EDITOR_MS}/${uri}${addedId}${query}`,
+		uri: `${EDITOR_MS}/${uri}${addedId}?${query}`,
 		method: mapMethod[method] || 'GET',
 		headers: {
 			Authorization: userId,

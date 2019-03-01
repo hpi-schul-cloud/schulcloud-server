@@ -1,23 +1,23 @@
 /* eslint-disable class-methods-use-this */
 const { request } = require('../helper/');
 
-const uri = 'groups';
+const uri = 'collection';
 
-class Group {
+class Collections {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
 	}
 
-	create({ users }, params) {
+	create({ items }, params) {
 		return request(uri, params, {
-			data: { users },
+			data: { items },
 		});
 	}
 
-	patch(groupId, { users }, params) {
+	patch(groupId, { items }, params) {
 		return request(uri, params, {
-			data: { users },
+			data: { items },
 		});
 	}
 
@@ -38,4 +38,4 @@ class Group {
 	}
 }
 
-module.exports = Group;
+module.exports = Collections;

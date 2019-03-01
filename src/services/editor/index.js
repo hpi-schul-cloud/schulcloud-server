@@ -1,5 +1,6 @@
 const {
 	Group,
+	Collections,
 	GroupToSingle,
 	Lesson,
 	Section,
@@ -15,6 +16,7 @@ module.exports = function setup() {
 
 	app.use(`${route}sections`, new Section());
 	app.use(`${route}groups`, new Group());
+	app.use(`${route}collections`, new Collections());
 	app.use(`${route}lessons`, new Lesson());
 	app.use(`${route}split`, new GroupToSingle());
 	app.use(`${route}subsections`, new SubSections());
@@ -26,6 +28,10 @@ module.exports = function setup() {
 	const groups = app.service(`${route}groups`);
 	groups.before(before);
 	groups.after(after);
+
+	const collections = app.service(`${route}collections`);
+	collections.before(before);
+	collections.after(after);
 
 	const lessons = app.service(`${route}lessons`);
 	lessons.before(beforeLesson);
