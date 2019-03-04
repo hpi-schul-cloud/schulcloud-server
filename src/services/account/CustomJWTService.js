@@ -1,6 +1,7 @@
 const CryptoJS = require('crypto-js');
 
 const accountModel = require('./model');
+const logger = require('../../logger');
 
 class CustomJWTService {
 	constructor(authentication) {
@@ -52,7 +53,10 @@ class CustomJWTService {
 				signature = base64url(signature);
 
 				return `${encodedHeader}.${encodedData}.${signature}`;
-			}).catch(error => error);
+			}).catch((err) => {
+				logger.warn(err);
+				return err;
+			});
 	}
 }
 
