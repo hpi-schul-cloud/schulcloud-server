@@ -53,18 +53,19 @@ describe('user service', function () {
 				});
 		}
 
-		return create_test_base()
-			.then(test_base => create_test_subrole(test_base))
-			.then(test_subrole => testObjects.createTestUser({
-				"id": "0000d231816abba584714d01",
-				"accounts": [],
-				"schoolId": "0000d186816abba584714c5f",
-				"email": "user@testusers.net",
-				"firstName": "Max",
-				"lastName": "Tester",
-				"roles": [
-					test_subrole._id
-				]
+		return createTestBase()
+			.then(testBase => createTestSubrole(testBase))
+			.then(testSubrole => testObjects.createTestUser({
+				id: '0000d231816abba584714d01',
+				accounts: [],
+				schoolId: '0000d186816abba584714c5f',
+				email: 'user@testusers.net',
+				firstName: 'Max',
+				lastName: 'Tester',
+				roles: [
+					testSubrole._id,
+				],
+				manualCleanup: true,
 			}))
 			.then(user => userService.get(user._id))
 			.then(user => {
