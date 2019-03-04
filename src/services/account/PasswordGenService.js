@@ -26,7 +26,7 @@ class PasswordGenService {
 	 */
 	find({ query }) {
 		if (query.readable) {
-			const p2 = new Promise((resolve) => {
+			return new Promise((resolve) => {
 				const arr = [
 					chance.first(),
 					chance.last(),
@@ -36,18 +36,14 @@ class PasswordGenService {
 
 				resolve(randomGen(arr));
 			});
-
-			return p2.then(res => res);
 		}
 
 		const length = (query.length) ? query.length : 255;
 		const minLength = (query.length) ? query.length : 8;
 
-		const p1 = new Promise((resolve) => {
-			resolve(new RandExp(`^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\-_!<>§$%&\/()=?\\;:,.#+*~']).{${minLength},${length}}$`).gen());
+		return new Promise((resolve) => {
+			resolve(new RandExp("^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\-_!<>§$%&\/()=?\\;:,.#+*~']).{" + minLength + "," + length + "}$").gen());
 		});
-
-		return p1.then(res => res);
 	}
 }
 
