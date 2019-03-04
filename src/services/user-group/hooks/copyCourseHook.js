@@ -17,7 +17,7 @@ exports.before = {
 	all: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USERGROUP_CREATE')],
 	find: [hooks.disable()],
 	get: [hooks.disable()],
-	create: [globalHooks.injectUserId, injectCourseId, globalHooks.ifNotLocal(globalHooks.checkCorrectCourseId)],
+	create: [globalHooks.injectUserId, injectCourseId, globalHooks.ifNotLocal(globalHooks.checkCorrectCourseOrTeamId)],
 	update: [hooks.disable()],
 	patch: [hooks.disable()],
 	remove: [hooks.disable()]
@@ -36,7 +36,7 @@ exports.after = {
 exports.beforeShare = {
 	all: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USERGROUP_CREATE')],
 	find: [],
-	get: [globalHooks.ifNotLocal(globalHooks.checkCorrectCourseId)],
+	get: [globalHooks.ifNotLocal(globalHooks.checkCorrectCourseOrTeamId)],
 	create: [globalHooks.injectUserId],
 	update: [hooks.disable()],
 	patch: [hooks.disable()],
