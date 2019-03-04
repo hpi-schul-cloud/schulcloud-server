@@ -1,10 +1,11 @@
 const {
 	Group,
-	Collections,
+	Collection,
 	GroupToSingle,
 	Lesson,
 	Section,
-	SubSections,
+	SubSection,
+	Test,
 } = require('./handler/');
 const { before, after, beforeLesson } = require('./hooks');
 
@@ -16,10 +17,10 @@ module.exports = function setup() {
 
 	app.use(`${route}sections`, new Section());
 	app.use(`${route}groups`, new Group());
-	app.use(`${route}collections`, new Collections());
+	app.use(`${route}collections`, new Collection());
 	app.use(`${route}lessons`, new Lesson());
 	app.use(`${route}split`, new GroupToSingle());
-	app.use(`${route}subsections`, new SubSections());
+	app.use(`${route}subsections`, new SubSection());
 
 	const sections = app.service(`${route}sections`);
 	sections.before(before);
@@ -44,4 +45,8 @@ module.exports = function setup() {
 	const subsections = app.service(`${route}subsections`);
 	subsections.before(before);
 	subsections.after(after);
+
+	if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === undefined) {
+		app.use(`${route}test`, new Test());
+	}
 };

@@ -2,12 +2,16 @@ const Group = require('./Group');
 const GroupToSingle = require('./GroupToSingle');
 const Lesson = require('./Lesson');
 const Section = require('./Section');
-const SubSections = require('./SubSections');
+const SubSection = require('./SubSection');
+const Collection = require('./Collection');
+const Test = require('./Test');
 
 module.exports = {
 	Group,
 	GroupToSingle,
 	Lesson,
 	Section,
-	SubSections,
+	SubSection,
+	Collection,
+	Test,
 };

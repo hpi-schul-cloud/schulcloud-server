@@ -1,4 +1,4 @@
-class SubSections {
+class SubSection {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
@@ -15,4 +15,4 @@ class SubSections {
 	}
 }
 
-module.exports = SubSections;
+module.exports = SubSection;

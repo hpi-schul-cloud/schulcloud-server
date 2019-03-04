@@ -1,10 +1,11 @@
+/* eslint-disable no-param-reassign */
 const rpn = require('request-promise-native');
 const querystring = require('querystring');
 const { BadRequest } = require('feathers-errors');
 
 const logger = require('../../../logger');
 
-const REQUEST_TIMEOUT = 4000;
+const REQUEST_TIMEOUT = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === undefined ? 120 * 1000 : 6 * 1000;
 const EDITOR_MS = process.env.EditorMicroService || 'http://localhost:4001';
 
 const mapMethod = {
@@ -30,10 +31,10 @@ const override = (params, overrideData = {}) => {
 
 // eslint-disable-next-line object-curly-newline
 const getOptions = (uri, { data, userId, method, id }, query) => {
-
 	const addedId = id ? `/${id}` : '';
+	query = query.length > 0 ? `?${query}` : '';
 	const options = {
-		uri: `${EDITOR_MS}/${uri}${addedId}?${query}`,
+		uri: `${EDITOR_MS}/${uri}${addedId}${query}`,
 		method: mapMethod[method] || 'GET',
 		headers: {
 			Authorization: userId,
@@ -47,6 +48,7 @@ const getOptions = (uri, { data, userId, method, id }, query) => {
 	return options;
 };
 
+// todo override replace with explicit data picks.
 /**
  * Avaible params includes in settings:
  * @param uri - uri of editor service, that do not contain the full url path

@@ -8,7 +8,7 @@ const {
 	saveAndClearQuery,
 } = require('./hooks');
 
-exports.before = {
+const before = {
 	all: [
 		authenticate('jwt'),
 		passRequestDataToParams,
@@ -22,7 +22,7 @@ exports.before = {
 	remove: [],
 };
 
-exports.after = {
+const after = {
 	all: [],
 	find: [extractFindData],
 	get: [populateUsers],
@@ -32,6 +32,12 @@ exports.after = {
 	remove: [],
 };
 
-exports.beforeLesson = {
+const beforeLesson = Object.assign(before, {
 	create: [ifNotLocal(block)],
+});
+
+module.exports = {
+	before,
+	after,
+	beforeLesson,
 };

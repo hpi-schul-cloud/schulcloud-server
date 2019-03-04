@@ -1,9 +1,9 @@
 /* eslint-disable class-methods-use-this */
 const { request } = require('../helper/');
 
-const uri = 'collection';
+const uri = 'collections';
 
-class Collections {
+class Collection {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
@@ -38,4 +38,4 @@ class Collections {
 	}
 }
 
-module.exports = Collections;
+module.exports = Collection;

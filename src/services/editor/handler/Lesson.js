@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 const { request } = require('../helper/');
 
-const uri = 'lesson';
+const uri = 'lessons';
 
 class Lesson {
 	constructor(options) {
@@ -14,30 +14,28 @@ class Lesson {
 	 * In our case, the course create event will trigger this.
 	 * The current user is forced as owner, students.
 	 */
-	create({ students }, params) {
+	create({ users }, params) {
 		return request(uri, params, {
-			data: { students },
+			data: { users },
 		});
 	}
 
 	/**
 	 * The course patch, or update event will trigger this too.
 	 */
-	patch(lessonId, { title, sectionIds, students, owner }, params) {
+	// eslint-disable-next-line object-curly-newline
+	patch(lessonId, { title, steps, users, owner }, params) {
 		// sectionIds map to steps -> but is solved from Editor MS
-		return Promise.resolve({
-			lessonId,
-			sectionIds, // as Array
+
+		return request(uri, params, {
+			data: {
+				title, steps, users, owner,
+			},
 		});
 	}
 
 	get(lessonId, params) {
-		return Promise.resolve({
-			steps: [],
-			owner: '123',
-			students: '123',
-			state: {},
-		});
+		return request(uri, params);
 	}
 
 	setup(app) {
