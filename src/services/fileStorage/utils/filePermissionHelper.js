@@ -1,3 +1,5 @@
+const logger = require('winston');
+
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
 const RoleModel = require('../../role/model');
@@ -14,7 +16,8 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 	try {
 		teamRoles = sortRoles(await RoleModel.find({ name: /^team/ }).exec());
 	} catch (error) {
-		console.log(error);
+		logger.error(error);
+		return Promise.reject();
 	}
 
 	return new Promise((resolve, reject) => {
@@ -39,55 +42,53 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 	});
 };
 
-const checkPermissions = (permission) => {
-	return async (user, file) => {
-		const fileObject = await getFile(file);
-		const {
-			permissions,
-			refOwnerModel,
-			owner: { _id: owner },
-		} = fileObject;
+const checkPermissions = permission => async (user, file) => {
+	const fileObject = await getFile(file);
+	const {
+		permissions,
+		refOwnerModel,
+		owner: { _id: owner },
+	} = fileObject;
 
-		// return always true for owner of file
-		if (user.toString() === owner.toString()) {
-			return Promise.resolve(true);
+	// return always true for owner of file
+	if (user.toString() === owner.toString()) {
+		return Promise.resolve(true);
+	}
+
+	// or legacy course model
+	if (refOwnerModel === 'course') {
+		const userObject = await userModel.findOne({ _id: user }).populate('roles').exec();
+		const isStudent = userObject.roles.find(role => role.name === 'student');
+
+		if (isStudent) {
+			const rolePermissions = permissions.find(
+				perm => perm.refId && perm.refId.toString() === isStudent._id.toString(),
+			);
+			return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
 		}
+		return Promise.resolve(true);
+	}
 
-		// or legacy course model
-		if (refOwnerModel === 'course') {
-			const userObject = await userModel.findOne({ _id: user }).populate('roles').exec();
-			const isStudent = userObject.roles.find(role => role.name === 'student');
+	const teamMember = fileObject.owner.userIds && fileObject.owner.userIds
+		.find(_ => _.userId.toString() === user.toString());
+	const userPermissions = permissions
+		.find(perm => perm.refId && perm.refId.toString() === user.toString());
 
-			if (isStudent) {
-				const rolePermissions = permissions.find(
-					perm => perm.refId && perm.refId.toString() === isStudent._id.toString(),
-				);
-				return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
-			}
-			return Promise.resolve(true);
-		}
+	// User is either not member of Team
+	// or file has no explicit user permissions (sharednetz files)
+	if (!teamMember && !userPermissions) {
+		return Promise.reject();
+	}
 
-		const teamMember = fileObject.owner.userIds && fileObject.owner.userIds
-			.find(_ => _.userId.toString() === user.toString());
-		const userPermissions = permissions
-			.find(perm => perm.refId && perm.refId.toString() === user.toString());
+	if (userPermissions) {
+		return userPermissions[permission] ? Promise.resolve(true) : Promise.reject();
+	}
 
-		// User is either not member of Team
-		// or file has no explicit user permissions (sharednetz files)
-		if (!teamMember && !userPermissions) {
-			return Promise.reject();
-		}
-
-		if (userPermissions) {
-			return userPermissions[permission] ? Promise.resolve(true) : Promise.reject();
-		}
-
-		return checkTeamPermission({
-			permission,
-			file: fileObject,
-			user: teamMember,
-		});
-	};
+	return checkTeamPermission({
+		permission,
+		file: fileObject,
+		user: teamMember,
+	});
 };
 
 module.exports = {
