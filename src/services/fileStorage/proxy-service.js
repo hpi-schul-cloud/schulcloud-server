@@ -17,6 +17,8 @@ const { FileModel } = require('./model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
+const { sortRoles } = require('../role/utils/rolesHelper');
+const { userModel } = require('../user/model');
 
 const strategies = {
 	awsS3: AWSStrategy,
@@ -697,6 +699,77 @@ const filePermissionService = {
 					$set: { permissions },
 				}).exec();
 			})
+			.catch((e) => {
+				logger.error(e);
+				return new Forbidden();
+			});
+	},
+	/**
+	 * Returns the permissions of a file filtered by owner model
+	 * and permissions based on the role of the user
+	 * @returns {Promise}
+	 * @param query contains the file id
+	 * @param payload contains userId
+	 */
+	async find({ query, payload }) {
+		const { file: fileId } = query;
+		const { userId } = payload;
+		const fileObj = await FileModel.findOne({ _id: fileId }).populate('owner').lean().exec();
+		const userObject = await userModel.findOne({ _id: userId }).populate('roles').exec();
+
+		const { refOwnerModel, owner } = fileObj;
+		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
+		const rolePromises = rolePermissions
+			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
+
+		const actionMap = {
+			user: () => fileObj.permissions
+				.filter(({ refPermModel }) => refPermModel === 'user')
+				.filter(({ _id }) => _id !== userId),
+			course: () => {
+				const isStudent = userObject.roles.some(role => role.name === 'student');
+
+				return Promise.all(rolePromises)
+					.then(roles => rolePermissions
+						.map((perm) => {
+							const { name } = roles.find(({ _id }) => _id.equals(perm.refId));
+							return {
+								...perm,
+								name,
+							};
+						})
+						.filter(({ name }) => {
+							if (isStudent) {
+								return name === 'student';
+							}
+							return true;
+						}));
+			},
+			teams() {
+				const { role: userRole } = owner.userIds.find(u => userId.equals(u.userId));
+
+				return Promise.all(rolePromises)
+					.then(roles => sortRoles(roles))
+					.then((sortedRoles) => {
+						const userPos = sortedRoles
+							.findIndex(roles => roles.findIndex(({ _id }) => _id.equals(userRole)) > -1);
+
+						return sortedRoles
+							.filter((...[, index]) => index <= userPos)
+							.reduce((flat, role) => [...flat, ...role], [])
+							.map(({ _id, name }) => {
+								const permission = rolePermissions.find(({ refId }) => refId.equals(_id));
+								return {
+									name,
+									...permission,
+								};
+							});
+					});
+			},
+		};
+
+		return canRead(userId, fileId)
+			.then(() => actionMap[refOwnerModel]())
 			.catch((e) => {
 				logger.error(e);
 				return new Forbidden();
