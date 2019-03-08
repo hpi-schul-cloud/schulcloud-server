@@ -17,6 +17,9 @@ const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToU
 const addWholeClassToCourse = (hook) => {
 	let requestBody = hook.data;
 	let course = hook.result;
+	if (requestBody.classIds === undefined) {
+		return hook;
+	}
 	if ((requestBody.classIds || []).length > 0) { // just courses do have a property "classIds"
 		return Promise.all(requestBody.classIds.map(classId => {
 			return ClassModel.findById(classId).exec().then(c => c.userIds);
@@ -47,6 +50,9 @@ const addWholeClassToCourse = (hook) => {
 const deleteWholeClassFromCourse = (hook) => {
 	let requestBody = hook.data;
 	let courseId = hook.id;
+	if (requestBody.classIds === undefined) {
+		return hook;
+	}
 	return CourseModel.findById(courseId).exec().then(course => {
 		if (!course) return hook;
 
