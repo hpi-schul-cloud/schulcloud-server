@@ -651,49 +651,70 @@ const newFileService = {
 const filePermissionService = {
 	async patch(_id, data, params) {
 		const { payload: { userId } } = params;
-		const {
-			role,
-			write,
-			read,
-			create,
-		} = data;
+		const { permissions: commitedPerms } = data;
+
+		const permissionPromises = commitedPerms.map(({ refId }) => Promise.all([
+			RoleModel.findOne({ _id: refId }).exec(),
+			userModel.findOne({ _id: refId }).exec(),
+		])
+			.then(([role, user]) => {
+				if (role) {
+					return 'role';
+				}
+				return user ? 'user' : '';
+			}));
 
 		return canWrite(userId, _id)
 			.then(() => Promise.all([
 				FileModel.findOne({ _id }).exec(),
-				RoleModel.findOne({ name: role }).exec(),
+				permissionPromises,
 			]))
-			.then(([fileObject, roleObject]) => {
-				if (!roleObject) {
-					return Promise.reject(new NotFound(`Unknown role ${role}`));
-				}
-
+			.then(([fileObject, refModels]) => {
 				if (!fileObject) {
 					return Promise.reject(new NotFound(`File with ID ${_id} not found`));
 				}
 
-				const { permissions } = fileObject;
-				let permission = permissions.find(
-					perm => perm.refId.toString() === roleObject._id.toString(),
-				);
+				let { permissions } = fileObject;
 
-				if (!permission) {
-					permissions.push(sanitizeObj({
-						refId: roleObject._id,
-						refPermModel: 'role',
-						write,
-						read,
-						create,
-						delete: data.delete,
-					}));
-				} else {
-					permission = Object.assign(permission, sanitizeObj({
-						write,
-						read,
-						create,
-						delete: data.delete,
-					}));
-				}
+				permissions = permissions.map((perm) => {
+					const update = commitedPerms.find(({ refId }) => perm.refId.equals(refId));
+
+					if (update) {
+						const { write, read, create } = update;
+
+						return Object.assign(perm, sanitizeObj({
+							write,
+							read,
+							create,
+							delete: update.delete,
+						}));
+					}
+
+					return perm;
+				});
+
+				permissions = [
+					...permissions,
+					...commitedPerms
+						.filter(({ refId }) => permissions.findIndex(({ refId: id }) => id.equals(refId)) === -1)
+						.map((perm, idx) => {
+							const {
+								write,
+								read,
+								create,
+								refId,
+							} = perm;
+
+							return sanitizeObj({
+								refId,
+								refOwnerModel: refModels[idx],
+								write,
+								read,
+								create,
+								delete: perm.delete,
+							});
+						}),
+				];
 
 				return FileModel.update({ _id }, {
 					$set: { permissions },
@@ -729,37 +750,39 @@ const filePermissionService = {
 					.filter(({ refId }) => !refId.equals(userId));
 
 				return Promise.all(
-					userPermission.map(({ refId }) => userModel.findOne({ _id: refId }).exec())
+					userPermission.map(({ refId }) => userModel.findOne({ _id: refId }).exec()),
 				)
-				.then((users) => {
-					if (users) {
-						return userPermission.map((perm) => {
-							const { firstName, lastName, _id } = users.find(({_id}) => _id.equals(perm.refId));
-							return {
-								refId: _id,
-								name: `${firstName} ${lastName}`,
-								...perm
-							}
-						});						
-					}
+					.then((users) => {
+						if (users) {
+							return userPermission.map((perm) => {
+								const { firstName, lastName, _id } = users
+									.find(({ _id: id }) => id.equals(perm.refId));
 
-					return Promise.resolve([]);
-				});
+								return {
+									refId: _id,
+									name: `${firstName} ${lastName}`,
+									...perm,
+								};
+							});
+						}
+
+						return Promise.resolve([]);
+					});
 			},
 			course() {
-				const isStudent = userObject.roles.some(role => role.name === 'student');
+				const isStudent = userObject.roles.some(({ name }) => name === 'student');
 
 				return Promise.all(rolePromises)
 					.then(roles => rolePermissions
 						.map((perm) => {
 							const { name } = roles.find(({ _id }) => _id.equals(perm.refId));
 							const { read, write, refId } = perm;
-							
+
 							const sieved = {
 								read: name === 'teacher' ? read : undefined,
 								write,
-							}
-							
+							};
+
 							return {
 								...sanitizeObj(sieved),
 								refId,
@@ -798,7 +821,9 @@ const filePermissionService = {
 								return flat;
 							}, [])
 							.map(({ _id, name, sibling }) => {
-								const { read, write, refId } = rolePermissions.find(({ refId }) => refId.equals(_id));
+								const { read, write, refId } = rolePermissions
+									.find(({ refId: id }) => id.equals(_id));
+
 								const permissions = {
 									read: sibling ? undefined : read,
 									write,
