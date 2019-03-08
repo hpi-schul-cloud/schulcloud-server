@@ -815,7 +815,7 @@ const filePermissionService = {
 		};
 
 		return canRead(userId, fileId)
-			.then(() => actionMap[refOwnerModel]())
+			.then(actionMap[refOwnerModel])
 			.catch((e) => {
 				logger.error(e);
 				return new Forbidden();
