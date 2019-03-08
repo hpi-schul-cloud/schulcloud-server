@@ -20,6 +20,20 @@ const handleResponseType = require('./middleware/handleReponseType');
 const setupSwagger = require('./swagger');
 const prettyError = require('pretty-error').start();
 const allHooks = require('./app.hooks');
+const S3rver = require('s3rver');
+
+if(!['production', 'local'].includes(process.env.NODE_ENV)){
+	new S3rver({
+		port: 9001,
+		hostname: 'localhost',
+		silent: false,
+		directory: "./tmp"
+	}).run((err, host, port) => {
+		if(!err) {
+			console.log(`local S3 is running on ${host}:${port}`);
+		}
+	})
+}
 
 require('console-stamp')(console);
 require('console-stamp')(winston );
