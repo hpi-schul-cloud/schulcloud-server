@@ -723,9 +723,30 @@ const filePermissionService = {
 			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
 
 		const actionMap = {
-			user: () => fileObj.permissions
-				.filter(({ refPermModel }) => refPermModel === 'user')
-				.filter(({ _id }) => _id !== userId),
+			user: () => {
+				const userPermission = fileObj.permissions
+					.filter(({ refPermModel }) => refPermModel === 'user')
+					.filter(({ refId }) => !refId.equals(userId));
+
+				return Promise.all(
+					userPermission.map(({ refId }) => userModel.findOne({ _id: refId }).exec())
+				)
+				.then((users) => {
+					if (users) {
+
+						return userPermission.map((perm) => {
+							const { firstName, lastName, _id } = users.find(({_id}) => _id.equals(perm.refId));
+							return {
+								name: _id,
+								fullName: `${firstName} ${lastName}`,
+								...perm
+							}
+						});						
+					}
+
+					return Promise.resolve([]);
+				});
+			},
 			course() {
 				const isStudent = userObject.roles.some(role => role.name === 'student');
 
