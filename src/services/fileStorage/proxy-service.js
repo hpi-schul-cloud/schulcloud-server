@@ -726,15 +726,22 @@ const filePermissionService = {
 			user: () => fileObj.permissions
 				.filter(({ refPermModel }) => refPermModel === 'user')
 				.filter(({ _id }) => _id !== userId),
-			course: () => {
+			course() {
 				const isStudent = userObject.roles.some(role => role.name === 'student');
 
 				return Promise.all(rolePromises)
 					.then(roles => rolePermissions
 						.map((perm) => {
 							const { name } = roles.find(({ _id }) => _id.equals(perm.refId));
+							const { read, write } = perm;
+							
+							const sieved = {
+								read: name === 'teacher' ? read : undefined,
+								write,
+							}
+							
 							return {
-								...perm,
+								...sanitizeObj(sieved),
 								name,
 							};
 						})
@@ -749,19 +756,36 @@ const filePermissionService = {
 				const { role: userRole } = owner.userIds.find(u => userId.equals(u.userId));
 
 				return Promise.all(rolePromises)
-					.then(roles => sortRoles(roles))
+					.then(sortRoles)
 					.then((sortedRoles) => {
 						const userPos = sortedRoles
 							.findIndex(roles => roles.findIndex(({ _id }) => _id.equals(userRole)) > -1);
 
 						return sortedRoles
-							.filter((...[, index]) => index <= userPos)
-							.reduce((flat, role) => [...flat, ...role], [])
-							.map(({ _id, name }) => {
-								const permission = rolePermissions.find(({ refId }) => refId.equals(_id));
+							.reduce((flat, roles, index) => {
+								if (index <= userPos) {
+									return [
+										...flat,
+										...roles.map(({ name, _id }) => ({
+											name,
+											_id,
+											sibling: index === userPos,
+										})),
+									];
+								}
+
+								return flat;
+							}, [])
+							.map(({ _id, name, sibling }) => {
+								const { read, write } = rolePermissions.find(({ refId }) => refId.equals(_id));
+								const permissions = {
+									read: sibling ? undefined : read,
+									write,
+								};
+
 								return {
 									name,
-									...permission,
+									...sanitizeObj(permissions),
 								};
 							});
 					});
