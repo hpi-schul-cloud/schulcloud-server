@@ -733,12 +733,11 @@ const filePermissionService = {
 				)
 				.then((users) => {
 					if (users) {
-
 						return userPermission.map((perm) => {
 							const { firstName, lastName, _id } = users.find(({_id}) => _id.equals(perm.refId));
 							return {
-								name: _id,
-								fullName: `${firstName} ${lastName}`,
+								refId: _id,
+								name: `${firstName} ${lastName}`,
 								...perm
 							}
 						});						
@@ -754,7 +753,7 @@ const filePermissionService = {
 					.then(roles => rolePermissions
 						.map((perm) => {
 							const { name } = roles.find(({ _id }) => _id.equals(perm.refId));
-							const { read, write } = perm;
+							const { read, write, refId } = perm;
 							
 							const sieved = {
 								read: name === 'teacher' ? read : undefined,
@@ -763,6 +762,7 @@ const filePermissionService = {
 							
 							return {
 								...sanitizeObj(sieved),
+								refId,
 								name,
 							};
 						})
@@ -798,13 +798,14 @@ const filePermissionService = {
 								return flat;
 							}, [])
 							.map(({ _id, name, sibling }) => {
-								const { read, write } = rolePermissions.find(({ refId }) => refId.equals(_id));
+								const { read, write, refId } = rolePermissions.find(({ refId }) => refId.equals(_id));
 								const permissions = {
 									read: sibling ? undefined : read,
 									write,
 								};
 
 								return {
+									refId,
 									name,
 									...sanitizeObj(permissions),
 								};
