@@ -1,10 +1,14 @@
 {
 	"extends": "airbnb-base",
 	"rules": {
+		"max-len": ["error", { "code": 120 }],
 		"no-tabs": "off",
 		"no-restricted-syntax": "off",
 		"no-await-in-loop": "off",
-		"no-underscore-dangle": "off",
+		"no-underscore-dangle": ["error", {"allow": ["_id", "_v"]}],
+		"prefer-destructuring": ["warn", {"object": true, "array": false}],
+		"no-params-reassign": ["error", { "props": false}],
+		"no-unused-vars": ["warn", {"args": "after-used"}],
 		"indent": [
 			"error",
 			"tab",
@@ -48,5 +52,9 @@
 	},
 	"plugins": [
 		"import"
-	]
+	],
+	"env": {
+		"node": true,
+		"mocha": true
+	}
 }
