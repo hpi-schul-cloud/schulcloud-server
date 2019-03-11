@@ -6,7 +6,7 @@ const {
 	Section,
 	SubSection,
 	Test,
-} = require('./handler/');
+} = require('./services/');
 const { before, after, beforeLesson } = require('./hooks');
 
 // subscriptions lesson->steps / , sections, group

@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const { MethodNotAllowed } = require('feathers-errors');
+
 const { addUsers, isGroup } = require('./helper');
 
 /**
@@ -36,10 +37,13 @@ const extractFindData = (context) => {
 	context.result = context.result.data;
 	return context;
 };
-
-const block = () => {
+/*
+const block = (context) => {
+	if (context.method === 'create') {
+		const { app } = context;
+	}
 	throw new MethodNotAllowed('Use patch instant.');
-};
+}; */
 
 /**
  * No query parameter should pass to the Editor MircoService.
@@ -56,6 +60,6 @@ module.exports = {
 	populateUsers,
 	passRequestDataToParams,
 	extractFindData,
-	block,
+	// block,
 	saveAndClearQuery,
 };

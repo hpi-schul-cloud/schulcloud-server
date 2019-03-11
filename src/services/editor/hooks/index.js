@@ -1,10 +1,10 @@
 const { authenticate } = require('feathers-authentication').hooks;
+const { disable } = require('feathers-hooks');
 const { ifNotLocal } = require('../../../hooks/');
 const {
 	populateUsers,
 	passRequestDataToParams,
 	extractFindData,
-	block,
 	saveAndClearQuery,
 } = require('./hooks');
 
@@ -17,7 +17,7 @@ const before = {
 	find: [],
 	get: [],
 	create: [],
-	update: [block],
+	update: [disable()],
 	patch: [],
 	remove: [],
 };
@@ -32,8 +32,8 @@ const after = {
 	remove: [],
 };
 
-const beforeLesson = Object.assign(before, {
-	create: [ifNotLocal(block)],
+const beforeLesson = Object.assign({}, before, {
+	create: [ifNotLocal(disable())],
 });
 
 module.exports = {
