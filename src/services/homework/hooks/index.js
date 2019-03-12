@@ -160,9 +160,8 @@ const hasPatchPermission = hook => {
         query: { $populate: ['courseId'] },
         account: { userId: hook.params.account.userId }
     }).then((homework) => {
-
         // allow only students to archive their own homeworks
-        const isStudent = !!homework.courseId.userIds.find(userId => {
+        const isStudent = homework.courseId && homework.courseId.userIds && !!homework.courseId.userIds.find(userId => {
             return userId.toString() === hook.params.account.userId.toString();
         });
         // allow this student to only change archived
@@ -197,6 +196,7 @@ const hasPatchPermission = hook => {
         }
     })
         .catch(err => {
+            console.error(err)
             return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" }));
         });
 };
