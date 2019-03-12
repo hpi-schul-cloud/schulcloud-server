@@ -1,4 +1,3 @@
-'use strict';
 
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
@@ -11,7 +10,7 @@ exports.before = {
 	create: [auth.hooks.authenticate('jwt'), globalHooks.isSuperHero()],
 	update: [hooks.disable()],
 	patch: [hooks.disable()],
-	remove: [hooks.disable()]
+	remove: [hooks.disable()],
 };
 
 exports.after = {
@@ -21,5 +20,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };
