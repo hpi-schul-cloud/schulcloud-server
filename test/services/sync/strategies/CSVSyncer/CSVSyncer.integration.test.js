@@ -609,7 +609,7 @@ describe('CSVSyncer Integration', () => {
 			expect(instance).to.not.equal(undefined);
 		});
 
-		it('should import one user report two failures', async () => {
+		it('should import one user and report two failures', async () => {
 			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(false);
@@ -907,9 +907,10 @@ describe('CSVSyncer Integration', () => {
 			// Now import the same data again:
 			const [stats2] = await app.service('sync').create(scenarioData, scenarioParams);
 
-			expect(stats2.success).to.equal(false);
-			expect(stats2.users.successful).to.equal(0);
-			expect(stats2.users.failed).to.equal(5);
+			// all 5 users are updated (with the same data, so nothing changes)
+			expect(stats2.success).to.equal(true);
+			expect(stats2.users.successful).to.equal(5);
+			expect(stats2.users.failed).to.equal(0);
 			expect(stats2.invitations.successful).to.equal(0);
 			expect(stats2.invitations.failed).to.equal(0);
 			expect(stats2.classes.successful).to.equal(2);
@@ -937,7 +938,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe('Scenario 12 - Importing again does not update data or classes', () => {
+	describe('Scenario 12 - Importing again updates names and classes', () => {
 		let scenarioParams;
 		let scenarioData1;
 		let scenarioData2;
@@ -1010,9 +1011,10 @@ describe('CSVSyncer Integration', () => {
 			// Now import the second data set:
 			const [stats2] = await app.service('sync').create(scenarioData2, scenarioParams);
 
-			expect(stats2.success).to.equal(false);
-			expect(stats2.users.successful).to.equal(1);
-			expect(stats2.users.failed).to.equal(2);
+			// two users are updated and one is added
+			expect(stats2.success).to.equal(true);
+			expect(stats2.users.successful).to.equal(3);
+			expect(stats2.users.failed).to.equal(0);
 			expect(stats2.invitations.successful).to.equal(0);
 			expect(stats2.invitations.failed).to.equal(0);
 			expect(stats2.classes.successful).to.equal(2);
@@ -1030,13 +1032,13 @@ describe('CSVSyncer Integration', () => {
 			expect(fbi.teacherIds.length).to.equal(4);
 			const fbiteachers = await Promise.all(fbi.teacherIds.map(teacherLastNames));
 			expect(fbiteachers).to.include('Winters');
-			expect(fbiteachers).to.include('Nixon');
+			expect(fbiteachers).to.include('Nixx0n'); // lastName was updated
 			expect(fbiteachers).to.include('Lipton');
 			expect(fbiteachers).to.include('Malarkey');
 
 			const ji = await findClass([undefined, 'Best Company']);
 			expect(ji).to.not.equal(undefined);
-			expect(ji.teacherIds.length).to.equal(0);
+			expect(ji.teacherIds.length).to.equal(1); // Nixon was transfered to Best Company
 		});
 	});
 });
