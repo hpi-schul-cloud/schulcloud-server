@@ -43,7 +43,7 @@ const addWholeClassToCourse = (hook) => {
 const deleteWholeClassFromCourse = (hook) => {
 	const requestBody = hook.data;
 	const courseId = hook.id;
-	if (requestBody.classIds === undefined) {
+	if (requestBody.classIds === undefined && requestBody.user === undefined) {
 		return hook;
 	}
 	return CourseModel.findById(courseId).exec().then((course) => {
@@ -63,7 +63,7 @@ const deleteWholeClassFromCourse = (hook) => {
 				{ $pull: { userIds: { $in: studentIds } } },
 				{ multi: true },
 			).exec();
-			hook.data.userIds = hook.data.userIds.filter(value => !studentIds.toString().includes(value));
+			hook.data.userIds = hook.data.userIds.filter(value => !studentIds.some(id => id.toString() === value));
 			return hook;
 		});
 	});
