@@ -1,7 +1,9 @@
 const Parser = require('rss-parser');
+const logger = require('winston');
 const { setup, cleanup } = require('./utils');
 const { schoolModel } = require('../services/school/model');
 const { newsModel } = require('../services/news/model');
+
 
 const parser = new Parser();
 
@@ -48,7 +50,7 @@ async function processSchool(school) {
 			allCheckedNews = allCheckedNews.concat(checkedNews);
 			dbFeed.status = 'success';
 		} catch (err) {
-			console.error(`Could not handle feed ${dbFeed.url} (${dbFeed._id}) for school ${school._id}`, err);
+			logger.error(`Could not handle feed ${dbFeed.url} (${dbFeed._id}) for school ${school._id}`, err);
 			dbFeed.status = 'error';
 		}
 	}
