@@ -19,31 +19,19 @@ class Section {
 	}
 
 	get(sectionId, params) {
-		return Promise.resolve({
-			sectionId,
-			// complet data
-		});
+		return request(uri, params);
 	}
 
 	// if it is needed
+	/*
 	find(params) {
 		// query all for users
 		// query all
-
-		return Promise.resolve({
-			data: [
-				{
-					_id: '123',
-					name: 'bla',
-				},
-			],
-		});
+		return request(uri, params);
 	}
-
+	*/
 	remove(sectionId, params) {
-		return Promise.resolve({
-			sectionId,
-		});
+		return request(uri, params);
 	}
 
 	// title as docValue ? wenn nicht dann als db model, würde das data handling für find erleichtern
