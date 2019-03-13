@@ -1,10 +1,10 @@
-'use strict';
 
-const globalHooks = require('../../../hooks');
+
 const auth = require('feathers-authentication');
+const globalHooks = require('../../../hooks');
 
-//TODO: after hook for get that checks access.
-//TODO: rethink security, due to no schoolId we can't restrict anything.
+// TODO: after hook for get that checks access.
+// TODO: rethink security, due to no schoolId we can't restrict anything.
 
 const restrictToUserOrRole = (hook) => {
 	const userService = hook.app.service('users');
@@ -12,20 +12,19 @@ const restrictToUserOrRole = (hook) => {
 		query: {
 			_id: hook.params.account.userId,
 			$populate: 'roles',
-		}
+		},
 	}).then((res) => {
 		let access = false;
-		res.data[0].roles.map((role) => {
+		res.data[0].roles.forEach((role) => {
 			if (role.name === 'superhero' || role.name === 'teacher' || role.name === 'administrator') {
 				access = true;
 			}
 		});
 		if (access) {
 			return hook;
-		} else {
-			hook.params.query.userId = hook.params.account.userId;
-			return hook;
 		}
+		hook.params.query.userId = hook.params.account.userId;
+		return hook;
 	});
 };
 
@@ -57,28 +56,21 @@ const addDates = (hook) => {
 };
 
 const mapInObjectToArray = (hook) => {
-	if(((hook.params.query||{}).userId||{})['$in'] && !Array.isArray(((hook.params.query||{}).userId||{})['$in'])){
-		hook.params.query.userId['$in'] = Object.values(hook.params.query.userId['$in']);
+	if (((hook.params.query || {}).userId || {}).$in && !Array.isArray(((hook.params.query || {}).userId || {}).$in)) {
+		hook.params.query.userId.$in = Object.values(hook.params.query.userId.$in);
 	}
 	return hook;
 };
 
-const checkExisting = (hook) => {
-	return hook.app.service('consents').find({query:{userId:hook.data.userId}})
-		.then((consents) => {
-			if (consents.data.length > 0) {
-				// merge existing consent with submitted one, submitted data is primary and overwrites databse
-				hook.data = Object.assign(consents.data[0], hook.data);
-				return hook.app.service('consents').remove(consents.data[0]._id).then(() => {
-					return hook;
-				});
-			} else {
-				return hook;
-			}
-		}).catch((err) => {
-			return Promise.reject(err);
-		});
-};
+const checkExisting = hook => hook.app.service('consents').find({ query: { userId: hook.data.userId } })
+	.then((consents) => {
+		if (consents.data.length > 0) {
+			// merge existing consent with submitted one, submitted data is primary and overwrites databse
+			hook.data = Object.assign(consents.data[0], hook.data);
+			return hook.app.service('consents').remove(consents.data[0]._id).then(() => hook);
+		}
+		return hook;
+	}).catch(err => Promise.reject(err));
 
 exports.before = {
 	all: [],
@@ -108,7 +100,7 @@ const accessCheck = (consent, app) => {
 	let user;
 	let patchFirstlogin = false;
 
-	return app.service('users').get((consent.userId), { query: { $populate: 'roles'}})
+	return app.service('users').get((consent.userId), { query: { $populate: 'roles' } })
 		.then((response) => {
 			user = response;
 			if (userHasOneRole(user, ['demoTeacher', 'demoStudent'])) {
@@ -123,9 +115,9 @@ const accessCheck = (consent, app) => {
 				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent && userConsent.thirdPartyConsent)) {
 					access = false;
 					return Promise.resolve();
-				} else {
-					patchFirstlogin = true;
 				}
+				patchFirstlogin = true;
+
 				return Promise.resolve();
 			}
 
@@ -134,12 +126,13 @@ const accessCheck = (consent, app) => {
 				requiresParentConsent = false;
 				return Promise.resolve();
 			}
-			const  age = user.age;
+			const age = user.age;
 
 			if (age < 16) {
 				const parentConsent = (consent.parentConsents || [])[0] || {};
 				// check parent consents
-				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent && parentConsent.thirdPartyConsent)) {
+				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent
+					&& parentConsent.thirdPartyConsent)) {
 					access = false;
 					return Promise.resolve();
 				}
@@ -157,50 +150,42 @@ const accessCheck = (consent, app) => {
 			if (age > 15) {
 				requiresParentConsent = false;
 			}
+			return Promise.resolve();
 		})
 		.then(() => {
-			if (patchFirstlogin == true && !(user.preferences || {}).firstLogin) {
-				let updatedPreferences = user.preferences || {};
+			if (patchFirstlogin === true && !(user.preferences || {}).firstLogin) {
+				const updatedPreferences = user.preferences || {};
 				updatedPreferences.firstLogin = true;
-				return app.service('users').patch(user._id, {preferences: updatedPreferences});
+				return app.service('users').patch(user._id, { preferences: updatedPreferences });
 			}
-			return;
-		}).then(() => {
+			return Promise.resolve();
+		})
+		.then(() => {
 			if (access && !(user.preferences || {}).firstLogin) {
 				access = false;
 			}
-			return;
-		}).then(() => {
+		})
+		.then(() => {
 			consent.access = access;
 			consent.requiresParentConsent = requiresParentConsent;
 			return consent;
 		})
-		.catch(err => {
-			return Promise.reject(err);
-		});
-
+		.catch(err => Promise.reject(err));
 };
 
-const decorateConsent = (hook) => {
-	return accessCheck(hook.result, hook.app)
-		.then(consent => {
-			hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-			hook.result = consent;
-		})
+const decorateConsent = hook => accessCheck(hook.result, hook.app)
+	.then((consent) => {
+		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
+		hook.result = consent;
+	})
 	.then(() => Promise.resolve(hook));
-};
 
 const decorateConsents = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-	const consentPromises = (hook.result.data || []).map(consent => {
-		return accessCheck(consent, hook.app).then(result => {
-			return result;
-		}).catch(err => {
-			return {};
-		});
-	});
+	const consentPromises = (hook.result.data || []).map(consent => accessCheck(consent, hook.app)
+		.then(result => result).catch(err => ({})));
 
-	return Promise.all(consentPromises).then(users => {
+	return Promise.all(consentPromises).then((users) => {
 		hook.result.data = users;
 		return Promise.resolve(hook);
 	});
@@ -213,5 +198,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

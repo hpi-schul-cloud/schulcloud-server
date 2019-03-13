@@ -1,5 +1,3 @@
-'use strict';
-
 const request = require('request-promise-native');
 const hooks = require('./hooks');
 
@@ -26,9 +24,9 @@ const convertJsonApiToEvent = (event) => {
 	event.description = event.attributes.description;
 
 	// calendar service ignore case of x-params on event-creation
-	event["x-sc-courseId"]  = event.attributes["x-sc-courseid"];
-	event["x-sc-teamId"]  = event.attributes["x-sc-teamid"];
-	event["x-sc-courseTimeId"] = event.attributes["x-sc-coursetimeid"];
+	event['x-sc-courseId'] = event.attributes['x-sc-courseid'];
+	event['x-sc-teamId'] = event.attributes['x-sc-teamid'];
+	event['x-sc-courseTimeId'] = event.attributes['x-sc-coursetimeid'];
 
 	return event;
 };
@@ -38,37 +36,35 @@ const convertJsonApiToEvent = (event) => {
  * @param body
  * @returns {object} - valid json-api body for calendar-service
  */
-const convertEventToJsonApi = (body) => {
-	return {
-		data: [
-			{
-				type: "event",
-				attributes: {
-					summary: body.summary,
-					location: body.location,
-					description: body.description,
-					dtstart: body.startDate,
-					dtend: body.endDate || new Date(new Date(body.startDate).getTime() + body.duration).toISOString(),
-					dtstamp: new Date,
-					transp: "OPAQUE",
-					sequence: 0,
-					repeat_freq: body.frequency,
-					repeat_wkst: body.weekday,
-					repeat_until: body.repeat_until,
-					"x-sc-courseId": body.courseId,
-					"x-sc-teamId": body.teamId,
-					"x-sc-courseTimeId": body.courseTimeId
-				},
-				relationships: {
-					"scope-ids": [
-						body.scopeId
-					],
-					"separate-users": false
-				}
-			}
-		]
-	};
-};
+const convertEventToJsonApi = body => ({
+	data: [
+		{
+			type: 'event',
+			attributes: {
+				summary: body.summary,
+				location: body.location,
+				description: body.description,
+				dtstart: body.startDate,
+				dtend: body.endDate || new Date(new Date(body.startDate).getTime() + body.duration).toISOString(),
+				dtstamp: new Date(),
+				transp: 'OPAQUE',
+				sequence: 0,
+				repeat_freq: body.frequency,
+				repeat_wkst: body.weekday,
+				repeat_until: body.repeat_until,
+				'x-sc-courseId': body.courseId,
+				'x-sc-teamId': body.teamId,
+				'x-sc-courseTimeId': body.courseTimeId,
+			},
+			relationships: {
+				'scope-ids': [
+					body.scopeId,
+				],
+				'separate-users': false,
+			},
+		},
+	],
+});
 
 class Service {
 	constructor(options) {
@@ -80,66 +76,66 @@ class Service {
 					{
 						description: 'the title or summary of a event',
 						name: 'summary',
-						type: 'string'
+						type: 'string',
 					},
 					{
 						description: 'the location of a event',
 						name: 'location',
-						type: 'string'
+						type: 'string',
 					},
 					{
 						description: 'the description of a event',
 						name: 'description',
-						type: 'string'
+						type: 'string',
 					},
 					{
 						description: 'the startDate of a event',
 						name: 'startDate',
-						type: 'date'
+						type: 'date',
 					},
 					{
 						description: 'the endDate of a event',
 						name: 'endDate',
-						type: 'date'
+						type: 'date',
 					},
 					{
 						description: 'the duration of a event',
 						name: 'duration',
-						type: 'number'
+						type: 'number',
 					},
 					{
 						description: 'the frequency of a event',
 						name: 'frequency',
-						type: 'string'
+						type: 'string',
 					},
 					{
 						description: 'the weekday of a event',
 						name: 'weekday',
-						type: 'string'
+						type: 'string',
 					},
 					{
 						description: 'the repeat_until of a event',
 						name: 'repeat_until',
-						type: 'date'
+						type: 'date',
 					},
 					{
 						description: 'the course reference of a event, e.g. for linking to a course page',
 						name: 'courseId',
-						type: 'string'
+						type: 'string',
 					},
 					{
 						description: 'the course-time reference of a event, e.g. for linking to a specific course-time',
 						name: 'courseTimeId',
-						type: 'string'
+						type: 'string',
 					},
 					{
 						description: 'the scope reference of a event',
 						name: 'scopeId',
-						type: 'string'
-					}
+						type: 'string',
+					},
 
 				],
-				summary: 'Creates a new event for the given scope'
+				summary: 'Creates a new event for the given scope',
 			},
 			find: {
 				parameters: [
@@ -147,90 +143,84 @@ class Service {
 						description: 'a valid user id',
 						required: true,
 						name: 'userId',
-						type: 'string'
-					}
+						type: 'string',
+					},
 				],
-				summary: 'Gets all events for a given user'
+				summary: 'Gets all events for a given user',
 			},
 			remove: {
 				parameters: [
 					{
 						description: 'a valid event id',
 						required: true,
-						in: "path",
+						in: 'path',
 						name: 'id',
-						type: 'string'
-					}
+						type: 'string',
+					},
 				],
-				summary: 'Deletes a event from the calendar-service'
+				summary: 'Deletes a event from the calendar-service',
 			},
 			update: {
 				parameters: [
 					{
 						description: 'a valid event id',
 						required: true,
-						in: "path",
+						in: 'path',
 						name: 'id',
-						type: 'string'
-					}
+						type: 'string',
+					},
 				],
-				summary: 'Updates a event from the calendar-service'
-			}
+				summary: 'Updates a event from the calendar-service',
+			},
 		};
 	}
 
 	create(data, params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.calendar + '/events/',
+			uri: `${serviceUrls.calendar}/events/`,
 			method: 'POST',
 			headers: {
-				'Authorization': userId
+				Authorization: userId,
 			},
 			body: convertEventToJsonApi(data),
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(events => {
-			events = (events.data || []).map(event => {
-				return Object.assign(event, {
-					title: event.summary,
-					allDay: false, // TODO: find correct value
-					start: Date.parse(event.dtstart),
-					end: Date.parse(event.dtend),
-					url: '' // TODO: add x-sc-field
-				});
-			});
+		return request(options).then((events) => {
+			events = (events.data || []).map(event => Object.assign(event, {
+				title: event.summary,
+				allDay: false, // TODO: find correct value
+				start: Date.parse(event.dtstart),
+				end: Date.parse(event.dtend),
+				url: '', // TODO: add x-sc-field
+			}));
 			return events.map(convertJsonApiToEvent);
 		});
 	}
 
 	find(params) {
-
 		const serviceUrls = this.app.get('services') || {};
-		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
+		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.calendar + '/events?' + toQueryString(params.query),
+			uri: `${serviceUrls.calendar}/events?${toQueryString(params.query)}`,
 			headers: {
-				'Authorization': userId
+				Authorization: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(events => {
-			events = (params.query || {}).userId || (events.data || events || []).map(event => {
-				return Object.assign(event, {
-					title: event.summary,
-					allDay: false, // TODO: find correct value
-					start: Date.parse(event.dtstart),
-					end: Date.parse(event.dtend)
-				});
-			});
+		return request(options).then((events) => {
+			events = (params.query || {}).userId || (events.data || events || []).map(event => Object.assign(event, {
+				title: event.summary,
+				allDay: false, // TODO: find correct value
+				start: Date.parse(event.dtstart),
+				end: Date.parse(event.dtend),
+			}));
 
 			return events.map(convertJsonApiToEvent);
 		});
@@ -239,21 +229,21 @@ class Service {
 	remove(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
+		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.calendar + '/events/' + id,
+			uri: `${serviceUrls.calendar}/events/${id}`,
 			headers: {
-				'Authorization': userId
+				Authorization: userId,
 			},
 			json: true,
 			method: 'DELETE',
 			timeout: REQUEST_TIMEOUT,
-			body: {"data": [{"type": "event"}]}
+			body: { data: [{ type: 'event' }] },
 		};
 
-		return request(options).then(res => {
+		return request(options).then((res) => {
 			// calendar returns nothing if event was successfully deleted
-			if (!res) return {message: "Successful deleted event"};
+			if (!res) return { message: 'Successful deleted event' };
 			return res;
 		});
 	}
@@ -261,19 +251,19 @@ class Service {
 	update(id, data, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.query || {}).userId || (params.account ||{}).userId || params.payload.userId;
+		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.calendar + '/events/' + id,
+			uri: `${serviceUrls.calendar}/events/${id}`,
 			method: 'PUT',
 			headers: {
-				'Authorization': userId
+				Authorization: userId,
 			},
 			body: convertEventToJsonApi(data),
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(events => {
+		return request(options).then((events) => {
 			events = (events.data || events || []);
 			return events.map(convertJsonApiToEvent);
 		});
@@ -284,7 +274,7 @@ class Service {
 	}
 }
 
-module.exports = function () {
+module.exports = function init() {
 	const app = this;
 
 	// Initialize our service with any options it requires
