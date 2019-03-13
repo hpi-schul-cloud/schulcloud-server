@@ -1,3 +1,5 @@
+/* eslint-disable */
+//toDo: linter
 const _ = require('lodash');
 const CustomStrategy = require('../custom');
 const Verifier = require('./verifier');

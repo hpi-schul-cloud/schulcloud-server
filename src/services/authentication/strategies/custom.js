@@ -1,8 +1,10 @@
-var util = require('util')
-	, Strategy = require('passport-strategy');
+const util = require('util');
+
+
+const Strategy = require('passport-strategy');
 
 function CustomStrategy(options, verify) {
-	if (typeof options == 'function') {
+	if (typeof options === 'function') {
 		verify = options;
 		options = {};
 	}
@@ -10,24 +12,24 @@ function CustomStrategy(options, verify) {
 
 	Strategy.call(this);
 	this.name = 'custom';
-	this._options = options;
-	this._verify = verify;
+	this.options = options;
+	this.verify = verify;
 }
 
 util.inherits(CustomStrategy, Strategy);
 
-CustomStrategy.prototype.authenticate = function(req, options) {
-	var self = this;
+CustomStrategy.prototype.authenticate = function authenticate(req, options) {
+	const self = this;
 	options = options || {};
 
 	function verified(err, user, info) {
 		if (err) { return self.error(err); }
 		if (!user) { return self.fail(info); }
-		self.success(user, info);
+		return self.success(user, info);
 	}
 
 	try {
-		this._verify(req, verified);
+		return this.verify(req, verified);
 	} catch (ex) {
 		return self.error(ex);
 	}
