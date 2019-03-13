@@ -33,6 +33,13 @@ const sanitizeObj = (obj) => {
 	return obj;
 };
 
+const getRefOwnerModel = (owner, isCourse) => {
+	if (owner) {
+		if (isCourse) return 'course';
+		return 'teams';
+	} return 'user';
+};
+
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
 
@@ -79,7 +86,7 @@ const fileStorageService = {
 			});
 		}
 
-		const refOwnerModel = owner ? (isCourse ? 'course' : 'teams') : 'user';
+		const refOwnerModel = getRefOwnerModel(owner, isCourse);
 
 		if (!sendPermissions && refOwnerModel === 'teams') {
 			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
@@ -102,7 +109,7 @@ const fileStorageService = {
 		if (parent) {
 			return canCreate(userId, parent)
 				.then(() => FileModel.findOne(props).exec().then(
-					modelData => modelData ? Promise.resolve(modelData) : FileModel.create(props)
+					modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 				))
 				.catch((e) => {
 					logger.error(e);
@@ -111,7 +118,7 @@ const fileStorageService = {
 		}
 
 		return FileModel.findOne(props).exec().then(
-			modelData => modelData ? Promise.resolve(modelData) : FileModel.create(props)
+			modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 		);
 	},
 
@@ -168,7 +175,9 @@ const fileStorageService = {
 		const { parent } = data;
 		const fileObject = await FileModel.findOne({ _id: parent }).exec();
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
-		let owner, refOwnerModel, update = {};
+		let owner;
+		let refOwnerModel;
+		let update = {};
 
 		if (fileObject) {
 			owner = fileObject.owner;
@@ -272,9 +281,7 @@ const signedUrlService = {
 		].some(rx => rx.test(fileName));
 
 		return parentPromise
-			.then(() => {
-				return parent ? canCreate(userId, parent) : Promise.resolve({});
-			})
+			.then(() => (parent ? canCreate(userId, parent) : Promise.resolve({})))
 			.then(() => {
 				if (fileRegexCheck(flatFileName)) {
 					throw new BadRequest(`Die Datei '${flatFileName}' ist nicht erlaubt!`);
@@ -339,7 +346,9 @@ const signedUrlService = {
 		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
 		return canRead(userId, _id)
-			.then(() => strategy.getSignedUrl({ userId: creatorId, flatFileName: fileObject.storageFileName, action: 'putObject' }))
+			.then(() => strategy.getSignedUrl({
+				userId: creatorId, flatFileName: fileObject.storageFileName, action: 'putObject',
+			}))
 			.then(res => ({
 				url: res,
 			}))
@@ -429,7 +438,7 @@ const directoryService = {
 			isDirectory: true,
 			owner: owner || userId,
 			parent,
-			refOwnerModel: owner ? (isCourse ? 'course' : 'teams') : 'user',
+			refOwnerModel: getRefOwnerModel(owner, isCourse),
 			permissions: [...permissions, ...sendPermissions].map(setRefId),
 		}));
 
@@ -439,7 +448,7 @@ const directoryService = {
 		if (parent) {
 			return canCreate(userId, parent)
 				.then(() => directoryExists().then(
-					data_ => data_ ? Promise.resolve(data_) : FileModel.create(props)
+					data_ => (data_ ? Promise.resolve(data_) : FileModel.create(props)),
 				)).catch((e) => {
 					logger.error(e);
 					return new Forbidden();
@@ -447,7 +456,7 @@ const directoryService = {
 		}
 
 		return directoryExists().then(
-			data_ => data_ ? Promise.resolve(data_) : FileModel.create(props)
+			data_ => (data_ ? Promise.resolve(data_) : FileModel.create(props)),
 		);
 	},
 

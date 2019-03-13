@@ -4,7 +4,8 @@ const logger = require('winston');
 // todo: use production config
 let awsConfig;
 try {
-	awsConfig = require("../../../../config/secrets.json").aws;
+	// eslint-disable-next-line global-require
+	awsConfig = require('../../../../config/secrets.json').aws;
 } catch (e) {
 	logger.log('warn', 'The AWS config couldn\'t be read');
 	awsConfig = {};
@@ -12,27 +13,27 @@ try {
 
 const createAWSObject = (schoolId) => {
 	if (!awsConfig.endpointUrl) throw new Error('AWS integration is not configured on the server');
-	var config = new aws.Config(awsConfig);
+	const config = new aws.Config(awsConfig);
 	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
-	let bucketName = `bucket-${schoolId}`;
-	var s3 = new aws.S3(config);
-	return {s3: s3, bucket: bucketName};
+	const bucketName = `bucket-${schoolId}`;
+	const s3 = new aws.S3(config);
+	return { s3, bucket: bucketName };
 };
 
 // todo: read all schools from production-db dump
-let schoolId = "0000d186816abba584714c5f";
+const schoolId = '0000d186816abba584714c5f';
 
 
-let awsObject = createAWSObject(schoolId);
+const awsObject = createAWSObject(schoolId);
 const params = {
-    Bucket: awsObject.bucket,
-    Prefix: '/'
+	Bucket: awsObject.bucket,
+	Prefix: '/',
 };
 
 // todo: list all files for all school-buckets
-awsObject.s3.listObjectsV2(params, function (err, data) {
+awsObject.s3.listObjectsV2(params, (err, data) => {
 
-    // todo: copy all files to route-folder (flat)
+	// todo: copy all files to route-folder (flat)
 
-    // todo: save meta-data in proxy db
+	// todo: save meta-data in proxy db
 });

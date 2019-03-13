@@ -2,14 +2,14 @@ const service = require('feathers-mongoose');
 const { FileModel } = require('./model');
 const hooks = require('./hooks/model-hooks');
 
-module.exports = function () {
+module.exports = function init() {
 	const app = this;
 
 	const fileOptions = {
 		Model: FileModel,
 		paginate: {
 			default: 10000,
-			max: 10000
+			max: 10000,
 		},
 		lean: true,
 	};
