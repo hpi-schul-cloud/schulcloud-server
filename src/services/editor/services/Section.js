@@ -22,22 +22,14 @@ class Section {
 		return request(uri, params);
 	}
 
-	// if it is needed
-	/*
-	find(params) {
-		// query all for users
-		// query all
-		return request(uri, params);
-	}
-	*/
 	remove(sectionId, params) {
 		return request(uri, params);
 	}
 
 	// title as docValue ? wenn nicht dann als db model, würde das data handling für find erleichtern
-	patch(sectionId, { docValue, note, visible }, params) {
-		return Promise.resolve({
-			sectionId,
+	patch(sectionId, { state }, params) {
+		return request(uri, params, {
+			data: { state },
 		});
 	}
 

@@ -5,6 +5,7 @@ const {
 	Lesson,
 	Section,
 	SubSection,
+	Permission,
 	Test,
 } = require('./services/');
 const { before, after, beforeLesson } = require('./hooks');
@@ -14,13 +15,15 @@ const { before, after, beforeLesson } = require('./hooks');
 module.exports = function setup() {
 	const app = this;
 	const route = '/editor/';
+	const permissionRoute = `${route}sections/:sectionId/permissions`;
 
 	app.use(`${route}sections`, new Section());
 	app.use(`${route}groups`, new Group());
 	app.use(`${route}collections`, new Collection());
 	app.use(`${route}lessons`, new Lesson());
-	app.use(`${route}split`, new GroupToSingle());
-	app.use(`${route}subsections`, new SubSection());
+	// app.use(`${route}split`, new GroupToSingle());
+	// app.use(`${route}subsections`, new SubSection());
+	app.use(permissionRoute, new Permission());
 
 	const sections = app.service(`${route}sections`);
 	sections.before(before);
@@ -38,13 +41,17 @@ module.exports = function setup() {
 	lessons.before(beforeLesson);
 	lessons.after(after);
 
-	const split = app.service(`${route}split`);
+	/* const split = app.service(`${route}split`);
 	split.before(before);
-	split.after(after);
+	split.after(after); */
 
-	const subsections = app.service(`${route}subsections`);
+	/* const subsections = app.service(`${route}subsections`);
 	subsections.before(before);
-	subsections.after(after);
+	subsections.after(after); */
+
+	const permissions = app.service(permissionRoute);
+	permissions.before(before);
+	permissions.after(after);
 
 	if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === undefined) {
 		app.use(`${route}test`, new Test());
