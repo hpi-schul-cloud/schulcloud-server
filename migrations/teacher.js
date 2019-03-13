@@ -1,6 +1,6 @@
 /* eslint no-console: 0 */
 /* eslint no-confusing-arrow: 0 */
-const ran = false; // set to true to exclude migration
+const ran = true; // set to true to exclude migration
 const name = 'Fix access rights for teachers on homework submitted files.';
 
 const mongoose = require('mongoose');
