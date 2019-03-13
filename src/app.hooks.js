@@ -8,7 +8,7 @@ const sanitize = (data, options) => {
 		// TODO what is 'rechnen' used for?
 		data = sanitizeHtml(data, {
 			allowedTags: [ 'h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span', 'del',
-				'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div', 'rechnen',
+				'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
 				'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video', 'iframe' ],
 			allowedAttributes: false, // allow all attributes of allowed tags
 			allowedSchemes: [ 'http', 'https', 'ftp', 'mailto' ],
