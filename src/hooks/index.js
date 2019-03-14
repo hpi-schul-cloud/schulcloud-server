@@ -466,7 +466,7 @@ exports.restrictToUsersOwnClasses = (hook) => {
 };
 
 // meant to be used as an after hook
-exports.denyIfNotCurrentSchool = (hook) => {
+exports.denyIfNotCurrentSchool = ({ errorMessage }) => (hook) => {
 	const userService = hook.app.service('users');
 	return userService.find({
 		query: {
@@ -482,7 +482,8 @@ exports.denyIfNotCurrentSchool = (hook) => {
 		const requesterSchoolId = res.data[0].schoolId;
 		const requestedUserSchoolId = (hook.result || {}).schoolId;
 		if (!requesterSchoolId.equals(requestedUserSchoolId)) {
-			return Promise.reject(new errors.Forbidden('Die angefragte Ressource gehört nicht zur eigenen Schule!'));
+			const defaultErrorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!';
+			return Promise.reject(new errors.Forbidden(errorMessage || defaultErrorMessage));
 		}
 		return hook;
 	});
