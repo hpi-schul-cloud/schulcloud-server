@@ -1,6 +1,7 @@
-'use strict';
+/* eslint-disable global-require */
 
-module.exports = function () {
+
+module.exports = function init() {
 	const app = this;
 
 	const MailService = require('./service')(app);
