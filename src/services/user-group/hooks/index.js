@@ -104,10 +104,15 @@ exports.before = {
 	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool, restrictToUsersOwnCourses],
 	get: [courseInviteHook],
 	create: [globalHooks.injectUserId, globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
-	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
-	patch: [patchPermissionHook, restrictToCurrentSchool, globalHooks.permitGroupOperation,
-		deleteWholeClassFromCourse],
-	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation]
+	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, restrictToUsersOwnCourses],
+	patch: [
+		patchPermissionHook,
+		restrictToCurrentSchool,
+		globalHooks.permitGroupOperation,
+		restrictToUsersOwnCourses,
+		deleteWholeClassFromCourse,
+	],
+	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, restrictToUsersOwnCourses, globalHooks.permitGroupOperation],
 };
 
 exports.after = {
