@@ -1,7 +1,5 @@
 /* eslint-disable no-param-reassign */
-const { MethodNotAllowed } = require('feathers-errors');
-
-const { addUsers, isGroup } = require('./helper');
+const { populateUsersInContext, isGroup } = require('./helper');
 
 /**
  * Populate each user displayName for groups or keys that contain populated groups.
@@ -10,13 +8,14 @@ const populateUsers = async (context) => {
 	const { result } = context;
 	// todo populate id to {id, name:user.firstname+' '+user.lastname}
 	if (isGroup(result)) {
-		return addUsers(context);
+		return populateUsersInContext(context);
 	}
 
+	// todo update later to own request that contain all users and after it replace it with each id.
 	const wait = [];
-	Object.values(result).forEach((key) => {
+	Object.keys(result).forEach((key) => {
 		if (isGroup(result[key])) {
-			wait.push(addUsers(context, result[key].users, key));
+			wait.push(populateUsersInContext(context, key));
 		}
 	});
 
@@ -37,13 +36,6 @@ const extractFindData = (context) => {
 	context.result = context.result.data;
 	return context;
 };
-/*
-const block = (context) => {
-	if (context.method === 'create') {
-		const { app } = context;
-	}
-	throw new MethodNotAllowed('Use patch instant.');
-}; */
 
 /**
  * No query parameter should pass to the Editor MircoService.
@@ -60,6 +52,5 @@ module.exports = {
 	populateUsers,
 	passRequestDataToParams,
 	extractFindData,
-	// block,
 	saveAndClearQuery,
 };

@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 const { request } = require('../helper/');
 
@@ -9,9 +10,9 @@ class Group {
 		this.docs = {};
 	}
 
-	create({ users }, params) {
+	create({ users, lesson }, params) {
 		return request(uri, params, {
-			data: { users },
+			data: { users, lesson },
 		});
 	}
 
@@ -25,7 +26,13 @@ class Group {
 		return request(uri, params);
 	}
 
+	/**
+	 * With query.lesson = <id> can you filter all groups of user from a lesson.""
+	 */
 	find(params) {
+		if ((params.clientQuery || {}).lesson) {
+			params.query.lesson = params.clientQuery.lesson;
+		}
 		return request(uri, params);
 	}
 

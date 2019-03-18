@@ -6,8 +6,8 @@ const { request } = require('../helper/');
 
 const uri = 'sections';
 
-const link = (sectionId) => {
-	return `${uri}/${sectionId}/permissions`;
+const link = (id) => {
+	return `${uri}/${id}/permissions`;
 };
 
 class Permission {

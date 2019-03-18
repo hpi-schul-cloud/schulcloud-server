@@ -1,30 +1,43 @@
 /* eslint-disable no-param-reassign */
 const logger = require('../../../logger/');
+const { userModel } = require('../../models');
 
 const isGroup = e => !undefined && typeof e === 'object' && e.type === 'group' && e.users;
 
 // eslint-disable-next-line arrow-body-style
-const mapUsers = users => users.data.map((user) => {
+const mapUsers = users => users.map((user) => {
 	return {
 		userId: user._id.toString(),
 		name: `${user.firstName} ${user.lastName}`,
+		roles: user.roles.map(role => role.name),
 	};
 });
 
-const addUsers = (context, key) => context.app.service('users').find({
-	query: { _id: { $in: key ? context.result[key].users : context.result.users } },
-}).then((u) => {
+const extractUsers = (context, key) => (key ? context.result[key].users : context.result.users);
+
+const updateContext = (context, key, users) => {
 	if (key) {
-		context.result[key].users = mapUsers(u);
+		context.result[key].users = mapUsers(users);
 	} else {
-		context.result.users = mapUsers(u);
+		context.result.users = mapUsers(users);
 	}
 	return context;
-}).catch(() => {
-	logger.warn('Can not populate user information');
-});
+};
+
+const getUsers = userIds => userModel.find({ _id: { $in: userIds } })
+	.select('roles firstName lastName')
+	.populate('roles', 'name -_ids')
+	.lean()
+	.exec();
+
+const populateUsersInContext = (context, key) => getUsers(extractUsers(context, key))
+	.then(users => updateContext(context, key, users))
+	.catch((err) => {
+		logger.warn('Can not populate user.', err);
+		return context;
+	});
 
 module.exports = {
-	addUsers,
+	populateUsersInContext,
 	isGroup,
 };
