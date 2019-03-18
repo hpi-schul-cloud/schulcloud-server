@@ -1,18 +1,18 @@
-'use strict';
-
+const mockery = require('mockery');
+const chai = require('chai');
 const assert = require('assert');
 const app = require('../../../src/app');
 const mockAws = require('./aws/s3.mock');
-const mockery = require('mockery');
-const chai = require('chai');
+
 const signedUrlService = app.service('/fileStorage/signedUrl');
+const directoryService = app.service('/fileStorage/directories');
 
-describe('fileStorage service', function () {
+describe('fileStorage service', () => {
 
-	before(function (done) {
+	before((done) => {
 		// Enable mockery to mock objects
 		mockery.enable({
-			warnOnUnregistered: false
+			warnOnUnregistered: false,
 		});
 
 		mockery.registerMock('aws-sdk', mockAws);
@@ -21,7 +21,7 @@ describe('fileStorage service', function () {
 		done();
 	});
 
-	after(function () {
+	after(() => {
 		mockery.deregisterAll();
 		mockery.disable();
 	});
@@ -57,29 +57,40 @@ describe('fileStorage service', function () {
 	});
 
 	it('should has a properly worked creation function', () => {
-		assert.ok(app.service('fileStorage').create({schoolId: '0000d186816abba584714c5f'}));
+		assert.ok(app.service('fileStorage').create({ schoolId: '0000d186816abba584714c5f' }));
 	});
 
 	it('should has a properly worked find function', () => {
-		assert.ok(app.service('fileStorage').find({qs: {path: 'users/0000d213816abba584714c0a/'}}));
+		assert.ok(app.service('fileStorage').find({ qs: { path: 'users/0000d213816abba584714c0a/' } }));
 	});
 
 	it('should not allow any of these files', () => {
-
 		const fileNames = ['desktop.ini', 'Desktop.ini', 'Thumbs.db', 'schul-cloud.msi', '.DS_Store', 'tempFile*'];
 
-		const promises = fileNames.map((filename) => {
-			return signedUrlService.create({ filename, fileType: 'text/html' },{
-					payload: { userId: '0000d213816abba584714c0a'},
-					account: { userId: '0000d213816abba584714c0a'}
-				})
-				.catch(err => {
-					chai.expect(err.name).to.equal('BadRequest');
-					chai.expect(err.code).to.equal(400);
-					chai.expect(err.message).to.equal(`Die Datei '${name}' ist nicht erlaubt!`);
-				});
-		});
+		const promises = fileNames.map(filename => signedUrlService.create({ filename, fileType: 'text/html' }, {
+			payload: { userId: '0000d213816abba584714c0a' },
+			account: { userId: '0000d213816abba584714c0a' },
+		}).catch((err) => {
+			chai.expect(err.name).to.equal('BadRequest');
+			chai.expect(err.code).to.equal(400);
+			chai.expect(err.message).to.equal(`Die Datei '${filename}' ist nicht erlaubt!`);
+		}));
 
 		return Promise.all(promises);
-   });
+	});
+
+	it('should not allow any of these folders', () => {
+		const folderNames = ['C_drive', 'Windows', '.3T', '$WINDOWSBD', ' ', 'k_drive', 'Temporary Items'];
+
+		const promises = folderNames.map(name => directoryService.create({ name, owner: '0000d213816abba584714c0a' }, {
+			payload: { userId: '0000d213816abba584714c0a' },
+			account: { userId: '0000d213816abba584714c0a' },
+		}).catch((err) => {
+			chai.expect(err.name).to.equal('BadRequest');
+			chai.expect(err.code).to.equal(400);
+			chai.expect(err.message).to.equal(`Der Ordner '${name}' ist nicht erlaubt!`);
+		}));
+
+		return Promise.all(promises);
+	});
 });
