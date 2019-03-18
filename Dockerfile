@@ -8,6 +8,7 @@ COPY ./package.json .
 RUN npm install 
 #--only=production
 COPY . .
+COPY ./localtime /etc/localtime
 
 #ENTRYPOINT crontab ./crontab && crond
 CMD npm start
