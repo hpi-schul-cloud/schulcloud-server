@@ -1,12 +1,10 @@
-'use strict';
-
 const service = require('feathers-mongoose');
-const {homeworkModel, submissionModel, commentModel} = require('./model');
+const { homeworkModel, submissionModel, commentModel } = require('./model');
 const hooks = require('./hooks');
 const submissionHooks = require('./hooks/submissions');
 const commentHooks = require('./hooks/comments');
 
-module.exports = function() {
+module.exports = function init() {
 	const app = this;
 
 	/* Homework model */
@@ -14,8 +12,8 @@ module.exports = function() {
 		Model: homeworkModel,
 		paginate: {
 			default: 100000,
-			max: 100000
-		}
+			max: 100000,
+		},
 	}));
 	const hwService = app.service('/homework');
 	hwService.before(hooks.before);
@@ -26,8 +24,8 @@ module.exports = function() {
 		Model: submissionModel,
 		paginate: {
 			default: 500,
-			max: 5000
-		}
+			max: 5000,
+		},
 	}));
 	const submissionService = app.service('/submissions');
 	submissionService.before(submissionHooks.before);
@@ -38,8 +36,8 @@ module.exports = function() {
 		Model: commentModel,
 		paginate: {
 			default: 500,
-			max: 5000
-		}
+			max: 5000,
+		},
 	}));
 	const commentService = app.service('/comments');
 	commentService.before(commentHooks.before);

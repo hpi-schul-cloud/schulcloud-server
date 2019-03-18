@@ -1,33 +1,27 @@
-const hooks = require('./hooks/copy');
-const errors = require('feathers-errors');
-const HomeworkModel = require('./model').homeworkModel;
 const _ = require('lodash');
+const hooks = require('./hooks/copy');
+const HomeworkModel = require('./model').homeworkModel;
 
 class HomeworkCopyService {
-
 	constructor(app) {
 		this.app = app;
 	}
-
 
 	/**
 	 * @param id = id of homework to copy
 	 * @returns {new homework}
 	 */
 	get(id, params) {
-
-        return HomeworkModel.findOne({_id: id}).exec()
-			.then(copyAssignment => {
+		return HomeworkModel.findOne({ _id: id }).exec()
+			.then((copyAssignment) => {
 				let tempAssignment = JSON.parse(JSON.stringify(copyAssignment));
-				tempAssignment = _.omit(tempAssignment, ['_id', 'stats', 'isTeacher', 'archived', '__v' ]);
+				tempAssignment = _.omit(tempAssignment, ['_id', 'stats', 'isTeacher', 'archived', '__v']);
 				tempAssignment.private = true;
-				tempAssignment.name = tempAssignment.name + " - Copy";
+				tempAssignment.name += ' - Copy';
 
 				return HomeworkModel.create(tempAssignment, (err, res) => {
-					if (err)
-						return err;
-					else
-						return res;
+					if (err) { return err; }
+					return res;
 				});
 			});
 	}
@@ -42,31 +36,29 @@ class HomeworkCopyService {
 		const userId = data.newTeacherId || params.payload.userId || (params.account || {}).userId;
 
 		return HomeworkModel.findOne({ _id: data._id })
-			.then(copyAssignment => {
+			.then((copyAssignment) => {
 				let tempAssignment = JSON.parse(JSON.stringify(copyAssignment));
-				tempAssignment = _.omit(tempAssignment, ['_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId' ]);
+				tempAssignment = _.omit(tempAssignment, [
+					'_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId',
+				]);
 				tempAssignment.courseId = data.courseId;
 				tempAssignment.lessonId = data.lessonId;
 
 				return this.app.service('users').get(userId)
-					.then(user => {
+					.then((user) => {
 						tempAssignment.schoolId = user.schoolId;
 						tempAssignment.teacherId = user._id;
 
 						return HomeworkModel.create(tempAssignment, (err, res) => {
-							if (err)
-								return err;
-							else
-								return res;
+							if (err) { return err; }
+							return res;
 						});
 					});
 			});
-
 	}
-
 }
 
-module.exports = function () {
+module.exports = function init() {
 	const app = this;
 
 	// Initialize our service with any options it requires

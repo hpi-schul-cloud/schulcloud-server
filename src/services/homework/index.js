@@ -1,8 +1,7 @@
-'use strict';
 const copyService = require('./copy-service');
 const modelService = require('./model-service');
 
-module.exports = function () {
+module.exports = function init() {
 	const app = this;
 	// Setup copy services
 	app.configure(copyService);
