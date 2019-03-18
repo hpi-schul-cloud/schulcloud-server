@@ -18,11 +18,10 @@ const strategies = {
  * @throws Will throw an error if the given config is invalid or if there is no
  * strategy implemented for the referenced provider
  */
-module.exports = function (app, config) {
+module.exports = function init(app, config) {
 	if (config && config.provider && strategies[config.provider]) {
 		const LDAPStrategy = strategies[config.provider];
 		return new LDAPStrategy(app, config);
-	} else {
-		throw new Error('Invalid configuration object');
 	}
+	throw new Error('Invalid configuration object');
 };

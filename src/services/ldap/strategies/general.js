@@ -7,10 +7,6 @@ const AbstractLDAPStrategy = require('./interface.js');
  * @implements {AbstractLDAPStrategy}
  */
 class GeneralLDAPStrategy extends AbstractLDAPStrategy {
-	constructor(app, config) {
-		super(app, config);
-	}
-
 	/**
      * @public
      * @see AbstractLDAPStrategy#getSchoolsQuery
@@ -117,11 +113,10 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	/**
      * @public
      * @see AbstractLDAPStrategy#getClasses
-     * @returns {Array} Array of Objects containing className, ldapDn, uniqueMember 
+     * @returns {Array} Array of Objects containing className, ldapDn, uniqueMember
      * @memberof GeneralLDAPStrategy
      */
 	getClasses(school) {
-
 		const {
 			classAttributeNameMapping,
 			classPathAdditions,
@@ -139,16 +134,13 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 			};
 			const searchString = `${classPathAdditions},${this.config.rootPath}`;
 			return this.app.service('ldap').searchCollection(this.config, searchString, options)
-				.then((data) => {
-					return data.map((obj) => {
-						return {
-							className: obj[classAttributeNameMapping.description],
-							ldapDn: obj[classAttributeNameMapping.dn],
-							uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
-						};
-					});
-				});
+				.then(data => data.map(obj => ({
+					className: obj[classAttributeNameMapping.description],
+					ldapDn: obj[classAttributeNameMapping.dn],
+					uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
+				})));
 		}
+		return Promise.resolve();
 	}
 }
 
