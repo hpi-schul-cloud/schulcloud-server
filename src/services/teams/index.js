@@ -83,14 +83,13 @@ class AdminOverview {
 			const mySchool = isSameId(team.schoolId, sessionSchoolId);
 			const otherSchools = team.schoolIds.length > 1;
 			let schoolMembers = AdminOverview.getMembersBySchool(team, sessionSchoolId);
-			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner');	// role is populated
+			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner');	//role is populated
 
 			schoolMembers = schoolMembers.map((m) => {
-				const obj = {
+				return {
 					role: m.role.name,
 					user: AdminOverview.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName']),
 				};
-				return obj;
 			});
 
 			schoolMembers = schoolMembers.map((m) => {
@@ -258,16 +257,16 @@ class AdminOverview {
 					.then(values => values)
 					.catch(err => err);
 
-			}).catch((err) => {
+			}).catch(err => {
 				throw err;
 			});
-		}).catch((err) => {
+		}).catch(err => {
 			warn(err);
 			throw new BadRequest('It exists no teams with access rights, to send this message.');
 		});
 	}
 
-	setup(app) {
+	setup(app, path) {
 		this.app = app;
 	}
 }
@@ -289,7 +288,7 @@ class Get {
 		});
 	}
 
-	setup(app) {
+	setup(app, path) {
 		this.app = app;
 	}
 }
@@ -373,7 +372,6 @@ class Add {
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Erstellen des Einladelinks.', err);
 			});
-
 	}
 
 	/**
@@ -513,7 +511,6 @@ class Add {
 	 */
 	async _userImportByEmail(teamId, { email, role }, params) {
 		// let { email, role } = data;
-		email = email.toLowerCase(); // important for valid user
 		const {
 			esid,
 			isUserCreated,
@@ -568,7 +565,7 @@ class Add {
 		}
 	}
 
-	setup(app) {
+	setup(app, path) {
 		this.app = app;
 	}
 }
@@ -615,7 +612,7 @@ class Accept {
 		});
 	}
 
-	setup(app) {
+	setup(app, path) {
 		this.app = app;
 	}
 }
@@ -672,7 +669,7 @@ module.exports = function setup() {
 		get: app.service('/teams/extern/get'),
 		add: app.service('/teams/extern/add'),
 		accept: app.service('/teams/extern/accept'),
-		remove: app.service('/teams/extern/remove'),
+		remove: app.service('/teams/extern/remove')
 	};
 
 	teamsServices.before(hooks.before);

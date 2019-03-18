@@ -23,32 +23,30 @@ function createinfoText(hook) {
 	let text;
 	const role = hook.data.mailTextForRole;
 	const pin = hook.data.pin;
-	const shortTitle = process.env.SC_SHORT_TITLE || 'Schul-Cloud*';
-	const longTitle = process.env.SC_TITLE || 'HPI Schul-Cloud*';
 	if (!role || !pin) {
-		logger.warn('Role or PIN missing to define mail text.');
-		return '';
+		logger.warn("Role or PIN missing to define mail text.");
+		return "";
 	}
-	if (role === 'parent') {
-		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der ${longTitle} ermöglichen.
-Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen:
+	if (role === "parent") {
+		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der HPI Schul-Cloud ermöglichen.
+Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen.
 
 PIN: ${pin}
 
 Mit Freundlichen Grüßen
-Ihr ${shortTitle} Team`;
+Ihr Schul-Cloud Team`;
 
-	} else if (role === 'student' || role === 'employee' || role === 'expert') {
-		text = `Vielen Dank, dass du die ${longTitle} nutzen möchtest.
-Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen:
+	} else if (role === "student" || role === "employee" || role === "expert") {
+		text = `Vielen Dank, dass du die HPI Schul-Cloud nutzen möchtest.
+Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen.
 
 PIN: ${pin}
 
 Mit freundlichen Grüßen
-Dein ${shortTitle} Team`;
+Ihr Schul-Cloud Team`;
 	} else {
-		logger.warn('No valid role submitted to define mail text.');
-		return '';
+		logger.warn("No valid role submitted to define mail text.");
+		return "";
 	}
 	return text;
 }
@@ -64,12 +62,12 @@ const checkAndVerifyPin = hook => {
 };
 
 const mailPin = (hook) => {
-	if (!(hook.data || {}).silent) {
+	if (!(hook.data||{}).silent) {
 		globalHooks.sendEmail(hook, {
-			subject: `${process.env.SC_SHORT_TITLE||'Schul-Cloud*'}: Registrierung mit PIN verifizieren`,
-			emails: (hook.data || {}).email,
-			content: {
-				text: createinfoText(hook),
+			"subject": "Schul-Cloud: Registrierung mit PIN verifizieren",
+			"emails": (hook.data||{}).email,
+			"content": {
+				"text": createinfoText(hook)
 				// TODO: implement html mails later
 			}
 		});

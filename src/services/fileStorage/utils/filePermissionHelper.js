@@ -27,17 +27,15 @@ const checkPermissions = (permission) => {
 
 			if (isStudent) {
 				const rolePermissions = permissions.find(
-					perm => perm.refId && perm.refId.toString() === isStudent._id.toString(),
+					perm => perm.refId.toString() === isStudent._id.toString(),
 				);
 				return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
 			}
 			return Promise.resolve(true);
 		}
 
-		const teamMember = fileObject.owner.userIds && fileObject.owner.userIds
-			.find(_ => _.userId.toString() === user.toString());
-		const userPermissions = permissions
-			.find(perm => perm.refId && perm.refId.toString() === user.toString());
+		const teamMember = fileObject.owner.userIds.find(_ => _.userId.toString() === user.toString());
+		const userPermissions = permissions.find(perm => perm.refId.toString() === user.toString());
 
 		// User is either not member of Team
 		// or file has no explicit user permissions (sharednetz files)

@@ -349,24 +349,25 @@ exports.restrictToUsersOwnCourses = (hook) => {
 			return hook;
 		}
 
-		if (hook.method === "find") {
-			hook.params.query.$and = (hook.params.query.$and || []);
-			hook.params.query.$and.push({
-				$or: [
-					{ userIds: res.data[0]._id },
-					{ teacherIds: res.data[0]._id },
-					{ substitutionIds: res.data[0]._id },
-				]
-			})
-		} else {
+		if (hook.method === "get") {
 			let courseService = hook.app.service('courses');
 			return courseService.get(hook.id).then((course) => {
-				if (!userIsInThatCourse(res.data[0], course, true)) {
+				if (!(_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(course.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(course.substitutionIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
 					throw new errors.Forbidden('You are not in that course.');
 				}
 			});
+		} 
+		if (hook.method === "find") {
+			if (typeof(hook.params.query.$or) === 'undefined') {
+				hook.params.query.$or = [
+					{ userIds: res.data[0]._id },
+					{ teacherIds: res.data[0]._id },
+					{ substitutionIds: res.data[0]._id }
+				];
+			}
 		}
-		
 		return hook;
 	});
 };

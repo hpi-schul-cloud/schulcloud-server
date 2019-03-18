@@ -17,7 +17,6 @@ const systemSchema = new Schema({
 	oaClientId: { type: String }, // just for oauth2-systems
 	oaClientSecret: { type: String }, // just for oauth2-systems
 	ldapConfig: {
-		active: { type: Boolean },
 		url: { type: String },
 		rootPath: { type: String },
 		searchUser: { type: String },
@@ -26,35 +25,9 @@ const systemSchema = new Schema({
 		importUser: { type: String },
 		importUserPassword: { type: String },
 		importUrl: { type: String },
-		providerOptions: {
-			schoolName: { type: String },
-			userPathAdditions: { type: String },
-			classPathAdditions: { type: String },
-			roleType: { type: String },
-			userAttributeNameMapping: {
-				givenName: { type: String },
-				sn: { type: String },
-				dn: { type: String },
-				uuid: { type: String },
-				uid: { type: String },
-				mail: { type: String },
-				role: { type: String },
-			},
-			roleAttributeNameMapping: {
-				roleStudent: { type: String },
-				roleTeacher: { type: String },
-				roleAdmin: { type: String },
-				roleNoSc: { type: String },
-			},
-			classAttributeNameMapping: {
-				description: { type: String },
-				dn: { type: String },
-				uniqueMember: { type: String },
-			},
-		},
 	},
 }, {
-	timestamps: true,
+	timestamps: true
 });
 
 const systemModel = mongoose.model('system', systemSchema);

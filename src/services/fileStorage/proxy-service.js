@@ -1,5 +1,4 @@
 const fs = require('fs');
-const logger = require('winston');
 const rp = require('request-promise-native');
 const { Forbidden, BadRequest, NotFound } = require('feathers-errors');
 
@@ -73,7 +72,7 @@ const fileStorageService = {
 				refId: studentRoleId,
 				refPermModel: 'role',
 				write: Boolean(studentCanEdit),
-				read: true, // students can always read course files
+				read: Boolean(studentCanEdit),
 				create: false,
 				delete: false,
 			});
@@ -104,10 +103,7 @@ const fileStorageService = {
 				.then(() => FileModel.findOne(props).exec().then(
 					modelData => modelData ? Promise.resolve(modelData) : FileModel.create(props)
 				))
-				.catch((e) => {
-					logger.error(e);
-					return new Forbidden();
-				});
+				.catch(() => new Forbidden());
 		}
 
 		return FileModel.findOne(props).exec().then(
@@ -152,10 +148,7 @@ const fileStorageService = {
 				return createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName);
 			})
 			.then(() => fileInstance.remove().exec())
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.catch(() => new Forbidden());
 	},
 
 	/**
@@ -218,10 +211,7 @@ const fileStorageService = {
 			.then(() => FileModel.update({ _id }, {
 				$set: update,
 			}).exec())
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.catch(() => new Forbidden());
 	},
 };
 
@@ -295,10 +285,7 @@ const signedUrlService = {
 					header,
 				};
 			})
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.catch(() => new Forbidden());
 	},
 
 	async find({ query, payload }) {
@@ -311,19 +298,16 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
+		const creatorId = fileObject.permissions[0].refId;
 
 		return canRead(userId, file)
 			.then(() => strategy.getSignedUrl(
-				{ userId: creatorId, flatFileName: fileObject.storageFileName, download },
+				{ userId: creatorId, flatFileName: fileObject.storageFileName, download }
 			))
 			.then(res => ({
 				url: res,
 			}))
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.catch(() => new Forbidden());
 	},
 
 	async patch(_id, data, params) {
@@ -336,17 +320,14 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
+		const creatorId = fileObject.permissions[0].refId;
 
 		return canRead(userId, _id)
 			.then(() => strategy.getSignedUrl({ userId: creatorId, flatFileName: fileObject.storageFileName, action: 'putObject' }))
 			.then(res => ({
 				url: res,
 			}))
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.catch(() => new Forbidden());
 	},
 };
 
@@ -357,8 +338,6 @@ const directoryService = {
 	/**
 	 * @param { name, owner and parent }, params
 	 * @returns {Promise}
-	 * @param query contains the file path
-	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
 	 */
 	async create(data, params) {
 		const { payload: { userId } } = params;
@@ -407,19 +386,6 @@ const directoryService = {
 			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
 		}
 
-		if (isCourse) {
-			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
-
-			permissions.push({
-				refId: studentRoleId,
-				refPermModel: 'role',
-				write: false,
-				read: true, // students can always read course files
-				create: false,
-				delete: false,
-			});
-		}
-
 		if (!sendPermissions) {
 			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
 			sendPermissions = teamObject ? teamObject.filePermission : [];
@@ -440,10 +406,7 @@ const directoryService = {
 			return canCreate(userId, parent)
 				.then(() => directoryExists().then(
 					data_ => data_ ? Promise.resolve(data_) : FileModel.create(props)
-				)).catch((e) => {
-					logger.error(e);
-					return new Forbidden();
-				});
+				)).catch(() => new Forbidden());
 		}
 
 		return directoryExists().then(
@@ -492,10 +455,7 @@ const directoryService = {
 				return FileModel.find({ parent: _id }).remove().exec();
 			})
 			.then(() => fileInstance.remove().exec())
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.catch(() => new Forbidden());
 	},
 };
 
@@ -697,10 +657,7 @@ const filePermissionService = {
 					$set: { permissions },
 				}).exec();
 			})
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.catch(() => new Forbidden());
 	},
 };
 

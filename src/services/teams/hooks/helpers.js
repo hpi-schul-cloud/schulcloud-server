@@ -11,13 +11,13 @@ const {
 	hasKey,
 	isDefined,
 	isUndefined,
-	// isNull,
-	// isObjectId,
+	isNull,
+	isObjectId,
 	isObjectIdWithTryToCast,
-	// throwErrorIfNotObjectId,
+	throwErrorIfNotObjectId,
 	bsonIdToString,
 	isSameId,
-	// isFunction,
+	isFunction,
 } = require('./collection');
 
 /**
@@ -280,7 +280,7 @@ const arrayDiff = (oldArray, newArray, key) => {
 
 	const getV = (e) => {
 		let res = e;
-		if (isDefined([key, res[key]], 'AND')) {	// if key is set, take it
+		if (isDefined(key)) {	// if key is set, take it
 			res = res[key];
 		}
 		if (isObjectIdWithTryToCast(res)) {	// only cast to string if bsonId
@@ -413,7 +413,7 @@ const removeNotValidUsersBySchoolIds = (schoolIds, teamUsers, users) => {
 	schoolIds = bsonIdToString(schoolIds);
 
 	teamUsers.map((teamUser) => {
-		const user = (users.find(u => isSameId(u._id, teamUser.userId)) || {});
+		const user = users.find(u => isSameId(u._id, teamUser.userId));
 		const schoolId = bsonIdToString(user.schoolId);
 		if (schoolIds.includes(schoolId) === false) {
 			removeList.push(user._id);

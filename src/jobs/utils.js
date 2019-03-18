@@ -6,8 +6,6 @@ const config = process.env.NODE_ENV === 'test'
 		: require('../../config/default.json');
 
 async function setup() {
-	mongoose.Promise = Promise;
-
 	await mongoose.connect(
 		process.env.DB_URL || config.mongodb,
 		{ user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD },

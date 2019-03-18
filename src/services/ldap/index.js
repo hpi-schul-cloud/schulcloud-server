@@ -1,7 +1,6 @@
 const ldap = require('ldapjs');
 const errors = require('feathers-errors');
 const logger = require('winston');
-const hooks = require('./hooks');
 
 const getLDAPStrategy = require('./strategies');
 
@@ -24,29 +23,6 @@ module.exports = function() {
 
 		find(params) {
 
-		}
-
-		get(id, params) {
-			return app.service('systems').find({ query: { _id: id }, paginate: false })
-				.then((system) => {
-					if (system[0].ldapConfig.providerOptions.classPathAdditions === '') {
-						return this.getUsers(system[0].ldapConfig, '').then((userData) => {
-							return {
-								users: userData,
-								classes: [],
-							};
-						});
-					} else {
-						return this.getUsers(system[0].ldapConfig, '').then((userData) => {
-							return this.getClasses(system[0].ldapConfig, '').then((classData) => {
-								return {
-									users: userData,
-									classes: classData,
-								};
-							});
-						});
-					}
-				});
 		}
 
 		/**
@@ -86,7 +62,7 @@ module.exports = function() {
 		 * rejects with error otherwise
 		 */
 		_connect(config, username, password) {
-			username = username || config.searchUser;
+			username = username || `${config.searchUserCnUid}=${config.searchUser},${config.searchUserPathAdditions},${config.rootPath}`;
 			password = password || config.searchUserPassword;
 
 			return new Promise((resolve, reject) => {
@@ -378,13 +354,4 @@ module.exports = function() {
 	}
 
 	app.use('/ldap', new LdapService());
-
-	// Get our initialize service to that we can bind hooks
-	const systemService = app.service('/ldap');
-
-	// Set up our before hooks
-	systemService.before(hooks.before);
-
-	// Set up our after hooks
-	systemService.after(hooks.after);
 };

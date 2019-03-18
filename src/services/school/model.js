@@ -6,6 +6,7 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
 
@@ -41,7 +42,6 @@ const schoolSchema = new Schema({
 	logo_dataUrl: { type: String },
 	purpose: { type: String },
 	rssFeeds: [{ type: rssFeedSchema }],
-  features: [{ type: String, enum: ['rocketChat'] }],
 }, {
 		timestamps: true,
 	});

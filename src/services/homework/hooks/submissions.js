@@ -6,45 +6,45 @@ const auth = require('feathers-authentication');
 const errors = require('feathers-errors');
 
 const filterRequestedSubmissions = hook => {
-    // if no db query was given, try to slim down/restrict db request
-    if (Object.keys(hook.params.query).length === 0) {
-        // if user is given
-        //TODO: what if hook.params.account is not set?
-        if (hook.params.account) {
-            let userService = hook.app.service('users');
-            return userService.find({
-                query: {
-                    _id: hook.params.account.userId,
-                    $populate: ['roles']
-                }
-            }).then(res => {
-                let user = res.data[0];
-                user.roles.map(role => {
-                    // admin/superhero/teacher/demoteacher - retrieve all submissions of users school
-                    if ((role.permissions || []).includes("SUBMISSIONS_SCHOOL_VIEW")) {
-                        hook.params.query.$or = [
-                            { schoolId: user.schoolId }
-                        ];
-                    } else {
-                        // helpdesk/student/demostudent - only get users submissions
-                        // helpdesk will get no submissions obviously - is that okay?
-                        hook.params.query.$or = [
-                            { studentId: user._id }
-                        ];
-                    }
-                });
-            }).catch(err => {
-                return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach users service" }));
-            });
-        }
-    }
-    return hook;
+	// if no db query was given, try to slim down/restrict db request
+	if (Object.keys(hook.params.query).length === 0) {
+		// if user is given
+		//TODO: what if hook.params.account is not set?
+		if (hook.params.account) {
+			let userService = hook.app.service('users');
+			return userService.find({
+				query: {
+					_id: hook.params.account.userId,
+					$populate: ['roles']
+				}
+			}).then(res => {
+				let user = res.data[0];
+				user.roles.map(role => {
+					// admin/superhero/teacher/demoteacher - retrieve all submissions of users school
+					if ((role.permissions || []).includes("SUBMISSIONS_SCHOOL_VIEW")) {
+						hook.params.query.$or = [
+							{ schoolId: user.schoolId }
+						];
+					} else {
+						// helpdesk/student/demostudent - only get users submissions
+						// helpdesk will get no submissions obviously - is that okay?
+						hook.params.query.$or = [
+							{ studentId: user._id }
+						];
+					}
+				});
+			}).catch(err => {
+				return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach users service" }));
+			});
+		}
+	}
+	return hook;
 };
 
 const filterApplicableSubmissions = hook => {
     let data = hook.result.data || hook.result;
     if (hook.params.account) {
-        Promise.all(data.filter(function (e) {
+        Promise.all(data.filter(function(e) {
             let c = JSON.parse(JSON.stringify(e));
             if (typeof c.teamMembers[0] === 'object') {
                 c.teamMembers = c.teamMembers.map(e => { return e._id; }); // map teamMembers list to _id list (if $populate(d) is used)
@@ -65,9 +65,9 @@ const filterApplicableSubmissions = hook => {
                     ||
                     c.studentId.toString() == hook.params.account.userId.toString() // or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
                     ||
-                    c.teamMembers && c.teamMembers.includes(hook.params.account.userId.toString()) // or is a teamMember
+                    c.teamMembers.includes(hook.params.account.userId.toString()) // or is a teamMember
                     ||
-                    courseGroup && courseGroup.userIds && courseGroup.userIds.includes(hook.params.account.userId.toString())) { // or in the courseGroup
+                    courseGroup.userIds.includes(hook.params.account.userId.toString())) { // or in the courseGroup
                     return true;
                 } else if (c.homeworkId.courseId) {
                     const courseService = hook.app.service('/courses');
@@ -159,14 +159,14 @@ const insertSubmissionsData = hook => {
     // get all the submissions for the homework
     const submissionService = hook.app.service('/submissions');
     return submissionService.find({
-        query: {
-            homeworkId: hook.data.homeworkId,
-            $populate: ['studentId']
-        }
-    }).then((submissions) => {
-        hook.data.submissions = submissions.data;
-        return Promise.resolve(hook);
-    })
+            query: {
+                homeworkId: hook.data.homeworkId,
+                $populate: ['studentId']
+            }
+        }).then((submissions) => {
+            hook.data.submissions = submissions.data;
+            return Promise.resolve(hook);
+        })
         .catch(err => {
             return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach submission service" }));
         });
@@ -247,7 +247,7 @@ const populateCourseGroup = hook => {
     if (!hook.data.courseGroupId) {
         return Promise.resolve(hook);
     }
-
+    
     return hook.app.service('/courseGroups/').get(hook.data.courseGroupId).then(courseGroup => {
         hook.courseGroupTemp = courseGroup;
         return Promise.resolve(hook);

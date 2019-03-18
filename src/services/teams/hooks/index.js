@@ -25,9 +25,9 @@ const {
 	hasKey,
 	isDefined,
 	isUndefined,
-	// isNull,
-	// isObjectId,
-	// isObjectIdWithTryToCast,
+	isNull,
+	isObjectId,
+	isObjectIdWithTryToCast,
 	throwErrorIfNotObjectId,
 	bsonIdToString,
 	isSameId,
@@ -271,10 +271,9 @@ const dataExist = (hook) => {
  * @return {Object::hook}
  */
 const pushUserChangedEvent = async (hook) => {
-	// todo take data from hook, postet data and return
 	const team = await getTeam(hook);
 	const oldUsers = team.userIds;
-	const newUsers = hook.result.userIds;
+	const newUsers = get(hook, 'newUsers'); // hook.additionalInfosTeam.newUsers;
 
 	if (isUndefined(oldUsers) || isUndefined(newUsers)) {
 		// logger.warn('No user infos.', { oldUsers, newUsers });
@@ -652,7 +651,7 @@ exports.before = {
 		testChangesForPermissionRouting,
 		updateUsersForEachClass,
 		teamMainHook,
-	], // todo: filterToRelated(keys.data,'data')
+	], // todo: filterToRelated(keys.data,'data') 
 	remove: [
 		teamMainHook,
 		hasTeamPermission('DELETE_TEAM'),
