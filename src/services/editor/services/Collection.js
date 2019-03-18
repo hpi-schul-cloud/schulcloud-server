@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 const { request } = require('../helper/');
 
@@ -9,27 +10,30 @@ class Collection {
 		this.docs = {};
 	}
 
-	create({ items }, params) {
+	create({ groups, lesson, owner }, params) {
 		return request(uri, params, {
-			data: { items },
+			data: { groups, lesson, owner },
 		});
 	}
 
-	patch(groupId, { items }, params) {
+	patch(collectionId, { groups }, params) {
 		return request(uri, params, {
-			data: { items },
+			data: { groups },
 		});
 	}
 
-	get(groupId, params) {
+	get(collectionId, params) {
 		return request(uri, params);
 	}
 
 	find(params) {
+		if ((params.clientQuery || {}).lesson) {
+			params.query.lesson = params.clientQuery.lesson;
+		}
 		return request(uri, params);
 	}
 
-	remove(groupId, params) {
+	remove(collectionId, params) {
 		return request(uri, params);
 	}
 
