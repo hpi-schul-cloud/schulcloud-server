@@ -4,7 +4,7 @@ const logger = require('winston');
  * A basic syncer that provides step-by-step execution, statistics, and logging
  */
 class Syncer {
-	constructor(app, stats={}) {
+	constructor(app, stats = {}) {
 		this.app = app;
 		this.stats = Object.assign(stats, {
 			success: undefined,
@@ -53,17 +53,17 @@ class Syncer {
 	sync() {
 		this.logInfo('Started syncing');
 		return this.steps()
-		.then(stats => {
-			this.stats.success = this.stats.errors.length === 0;
-			const aggregated = Syncer.aggregateStats(stats);
-			this.logInfo('Finished syncing', aggregated);
-			return Promise.resolve(this.stats);
-		})
-		.catch(err => {
-			this.stats.success = false;
-			this.logError('Error while syncing', err);
-			return Promise.resolve(this.stats);
-		});
+			.then((stats) => {
+				this.stats.success = this.stats.errors.length === 0;
+				const aggregated = Syncer.aggregateStats(stats);
+				this.logInfo('Finished syncing', aggregated);
+				return Promise.resolve(this.stats);
+			})
+			.catch((err) => {
+				this.stats.success = false;
+				this.logError('Error while syncing', err);
+				return Promise.resolve(this.stats);
+			});
 	}
 
 	/**
@@ -88,12 +88,11 @@ class Syncer {
 				agg.failed += cur.failed;
 				return agg;
 			}, { successful: 0, failed: 0 });
-		} else {
-			return {
-				successful: stats && stats.success === true ? 1 : 0,
-				failed: stats && stats.success === false ? 1 : 0,
-			};
 		}
+		return {
+			successful: stats && stats.success === true ? 1 : 0,
+			failed: stats && stats.success === false ? 1 : 0,
+		};
 	}
 
 	logInfo(message, ...args) {

@@ -8,13 +8,10 @@ const CSVSyncer = require('./strategies/CSVSyncer');
 
 const syncers = [LDAPSystemSyncer, CSVSyncer];
 
-module.exports = function () {
-
+module.exports = function init() {
 	const app = this;
 
 	class SyncService {
-		constructor() {}
-
 		find(params) {
 			return this.respond(null, params);
 		}
@@ -24,18 +21,18 @@ module.exports = function () {
 		}
 
 		async respond(data, params) {
-			if (! params.query || ! params.query.target) {
+			if (!params.query || !params.query.target) {
 				throw new errors.BadRequest('No target supplied');
 			}
-			const target = params.query.target;
+			const { target } = params.query;
 			const instances = [];
-			syncers.forEach(syncer => {
-				if (syncer.respondsTo(target)) {
-					const args = syncer.params(params, data);
+			syncers.forEach((SpecificSyncer) => {
+				if (SpecificSyncer.respondsTo(target)) {
+					const args = SpecificSyncer.params(params, data);
 					if (args) {
-						instances.push(new syncer(app, {}, ...args));
+						instances.push(new SpecificSyncer(app, {}, ...args));
 					} else {
-						throw new Error(`Invalid params for ${syncer.name}: "${JSON.stringify(params)}"`);
+						throw new Error(`Invalid params for ${SpecificSyncer.name}: "${JSON.stringify(params)}"`);
 					}
 				}
 			});
