@@ -14,7 +14,9 @@ const REQUEST_TIMEOUT = 4000; // in ms
 const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = process.env;
 
 if (ROCKET_CHAT_URI === undefined) { logger.warn('please set the environment variable ROCKET_CHAT_URI'); }
-if (ROCKET_CHAT_ADMIN_TOKEN === undefined) { logger.warn('please set the environment variable ROCKET_CHAT_ADMIN_TOKEN'); }
+if (ROCKET_CHAT_ADMIN_TOKEN === undefined) {
+	logger.warn('please set the environment variable ROCKET_CHAT_ADMIN_TOKEN');
+}
 if (ROCKET_CHAT_ADMIN_ID === undefined) { logger.warn('please set the environment variable ROCKET_CHAT_ADMIN_ID'); }
 
 /**
@@ -149,7 +151,7 @@ class RocketChatUser {
 	 * react to a user being deleted
 	 * @param {*} context
 	 */
-	static _onUserRemoved(context) {
+	static onUserRemoved(context) {
 		RocketChatUser.deleteUser(context._id);
 	}
 
@@ -211,13 +213,13 @@ class RocketChatUser {
 	 * Register methods of the service to listen to events of other services
 	 * @listens users:removed
 	 */
-	_registerEventListeners() {
-		this.app.service('users').on('removed', RocketChatUser._onUserRemoved.bind(this));
+	registerEventListeners() {
+		this.app.service('users').on('removed', RocketChatUser.onUserRemoved.bind(this));
 	}
 
 	setup(app) {
 		this.app = app;
-		this._registerEventListeners();
+		this.registerEventListeners();
 	}
 }
 
@@ -241,7 +243,9 @@ class RocketChatLogin {
 				let { authToken } = rcAccount;
 				if (authToken !== '') {
 					try {
-						const res = await request(getRequestOptions('/api/v1/me', {}, false, { authToken, userId: rcAccount.rcId }, 'GET'));
+						const res = await request(
+							getRequestOptions('/api/v1/me', {}, false, { authToken, userId: rcAccount.rcId }, 'GET'),
+						);
 						if (res.success) return { authToken };
 					} catch (err) {
 						authToken = '';
@@ -290,7 +294,6 @@ class RocketChatLogout {
 				};
 				await rocketChatModels.userModel.update({ username: rcUser.username }, { authToken: '' });
 				await request(getRequestOptions('/api/v1/logout', {}, false, headers));
-
 			}
 			return ('success');
 		} catch (error) {
@@ -302,7 +305,7 @@ class RocketChatLogout {
 	 * react to a user logging out
 	 * @param {*} context
 	 */
-	_onAuthenticationRemoved(context) {
+	onAuthenticationRemoved(context) {
 		this.get(context.userId);
 	}
 
@@ -310,20 +313,21 @@ class RocketChatLogout {
 	 * Register methods of the service to listen to events of other services
 	 * @listens authentication:removed
 	 */
-	_registerEventListeners() {
-		this.app.service('authentication').on('removed', this._onAuthenticationRemoved.bind(this));
+	registerEventListeners() {
+		this.app.service('authentication').on('removed', this.onAuthenticationRemoved.bind(this));
 	}
 
 	setup(app) {
 		this.app = app;
-		this._registerEventListeners();
+		this.registerEventListeners();
 	}
 }
 
 /**
  * Service that maps schulcloud teams to rocketChat groups.
  *
- * Other services should only get groups by the id of the corresponding team, creation and deletion of RC groups is handled automatically by the service.
+ * Other services should only get groups by the id of the corresponding team, creation and deletion of RC groups is
+ * handled automatically by the service.
  */
 class RocketChatChannel {
 	constructor(options) {
@@ -353,7 +357,9 @@ class RocketChatChannel {
 		return this.app.service('teams').get(teamId, internalParams)
 			.then((team) => {
 				currentTeam = team;
-				const userNamePromises = currentTeam.userIds.map(user => this.app.service('rocketChat/user').get(user.userId).catch(Promise.resolve));
+				const userNamePromises = currentTeam.userIds.map(
+					user => this.app.service('rocketChat/user').get(user.userId).catch(Promise.resolve),
+				);
 				return Promise.all(userNamePromises).then(async (users) => {
 					const userNames = users.map(user => user.username);
 					const channelName = await this.generateChannelName(currentTeam);
@@ -410,7 +416,8 @@ class RocketChatChannel {
 				roomName: channel.channelName,
 				username: userName,
 			};
-			return request(getRequestOptions('/api/v1/groups.invite', body, true)).catch((err) => { logger.warn(err); });
+			return request(getRequestOptions('/api/v1/groups.invite', body, true))
+				.catch((err) => { logger.warn(err); });
 		});
 		return Promise.all(invitationPromises);
 	}
@@ -472,7 +479,7 @@ class RocketChatChannel {
 		return this.getOrCreateRocketChatChannel(teamId, params);
 	}
 
-	static _onTeamPatched(context) {
+	static onTeamPatched(context) {
 		if (context.features.includes('rocketChat')) {
 			RocketChatChannel.unarchiveChannel(context._id);
 		} else {
@@ -485,7 +492,7 @@ class RocketChatChannel {
 	 * removed to a team.
 	 * @param {Object} context event context given by the Team service
 	 */
-	_onTeamUsersChanged(context) {
+	onTeamUsersChanged(context) {
 		const { team } = ((context || {}).additionalInfosTeam || {});
 		let additionalUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).add;
 		let removedUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).remove;
@@ -501,7 +508,7 @@ class RocketChatChannel {
 	 * react to a team being deleted
 	 * @param {*} context
 	 */
-	static _onRemoved(context) {
+	static onRemoved(context) {
 		RocketChatChannel.deleteChannel(context._id);
 	}
 
@@ -510,16 +517,16 @@ class RocketChatChannel {
 	 * @listens teams:after:usersChanged
 	 * @listens teams:removed
 	 */
-	_registerEventListeners() {
-		this.app.on('teams:after:usersChanged', this._onTeamUsersChanged.bind(this)); // use hook to get app
-		this.app.service('teams').on('removed', RocketChatChannel._onRemoved.bind(this));
-		this.app.service('teams').on('patched', RocketChatChannel._onTeamPatched.bind(this));
+	registerEventListeners() {
+		this.app.on('teams:after:usersChanged', this.onTeamUsersChanged.bind(this)); // use hook to get app
+		this.app.service('teams').on('removed', RocketChatChannel.onRemoved.bind(this));
+		this.app.service('teams').on('patched', RocketChatChannel.onTeamPatched.bind(this));
 	}
 
 
 	setup(app) {
 		this.app = app;
-		this._registerEventListeners();
+		this.registerEventListeners();
 	}
 }
 

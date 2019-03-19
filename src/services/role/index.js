@@ -1,19 +1,17 @@
-'use strict';
-
 const service = require('feathers-mongoose');
 const role = require('./model');
 const hooks = require('./hooks');
 
-module.exports = function () {
+module.exports = function init() {
 	const app = this;
 
 	const options = {
 		Model: role,
 		paginate: {
 			default: 10,
-			max: 25
+			max: 25,
 		},
-		lean: true
+		lean: true,
 	};
 
 	// Initialize our service with any options it requires
