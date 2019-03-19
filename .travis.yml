@@ -29,7 +29,7 @@ after_success:
 
 after_success:
   # because Skipping a deployment with the script provider because the current build is a pull request.
-  - bash ./deploy.sh
+  #- bash ./deploy.sh
 
 #deploy:
 #  provider: script
