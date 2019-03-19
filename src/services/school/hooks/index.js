@@ -1,22 +1,21 @@
-'use strict';
-
-const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
+const globalHooks = require('../../../hooks');
 
 const fileStorageTypes = require('../model').fileStorageTypes;
 const getFileStorageStrategy = require('../../fileStorage/strategies').createStrategy;
 
-const _getDefaultFileStorageType = () => {
+const getDefaultFileStorageType = () => {
 	if (!fileStorageTypes || !fileStorageTypes.length) {
-		return void 0;
+		// eslint-disable-next-line no-void
+		return void 0; // ToDo: enable rule again
 	}
 	return fileStorageTypes[0];
 };
 
 const setDefaultFileStorageType = (hook) => {
-	const storageType = _getDefaultFileStorageType();
-	hook.data['fileStorageType'] = storageType;
+	const storageType = getDefaultFileStorageType();
+	hook.data.fileStorageType = storageType;
 	return Promise.resolve(hook);
 };
 
@@ -25,13 +24,11 @@ const createDefaultStorageOptions = (hook) => {
 		// don't create buckets in development or test
 		return Promise.resolve(hook);
 	}
-	const storageType = _getDefaultFileStorageType();
+	const storageType = getDefaultFileStorageType();
 	const schoolId = hook.result._id;
 	const fileStorageStrategy = getFileStorageStrategy(storageType);
 	return fileStorageStrategy.create(schoolId)
-		.then(() => {
-			return Promise.resolve(hook);
-		})
+		.then(() => Promise.resolve(hook))
 		.catch((err) => {
 			if (err && err.code === 'BucketAlreadyOwnedByYou') {
 				// The bucket already exists
@@ -48,7 +45,7 @@ exports.before = {
 	create: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE'), setDefaultFileStorageType],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_EDIT')],
-	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
+	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')],
 };
 
 exports.after = {
@@ -58,5 +55,5 @@ exports.after = {
 	create: [createDefaultStorageOptions],
 	update: [createDefaultStorageOptions],
 	patch: [createDefaultStorageOptions],
-	remove: []
+	remove: [],
 };
