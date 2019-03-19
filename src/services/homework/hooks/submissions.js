@@ -256,12 +256,15 @@ const populateCourseGroup = hook => {
 
 const maxTeamMembers = hook => {
     if (!hook.data.isTeacher && hook.data.homework.teamSubmissions) {
-        if ((hook.data.homework.maxTeamMembers || 0) >= 1 &&
-            ((hook.data.teamMembers || []).length > hook.data.homework.maxTeamMembers) ||
-            (hook.courseGroupTemp && (hook.courseGroupTemp.userIds || []).length > hook.data.homework.maxTeamMembers)) {
-            return Promise.reject(new errors.Conflict({
-                "message": "Dein Team ist größer als erlaubt! ( maximal " + hook.data.homework.maxTeamMembers + " Teammitglieder erlaubt)"
-            }));
+        if (!!hook.data.homework.maxTeamMembers) {
+            // NOTE the following conditional is a bit hard to understand. To prevent side effects, I added a pre-conditional above.
+            if ((hook.data.homework.maxTeamMembers || 0) >= 1 &&
+                ((hook.data.teamMembers || []).length > hook.data.homework.maxTeamMembers) ||
+                (hook.courseGroupTemp && (hook.courseGroupTemp.userIds || []).length > hook.data.homework.maxTeamMembers)) {
+                return Promise.reject(new errors.Conflict({
+                    "message": "Dein Team ist größer als erlaubt! ( maximal " + hook.data.homework.maxTeamMembers + " Teammitglieder erlaubt)"
+                }));
+            }
         }
     } else {
         if ((hook.data.teamMembers || []).length > 1) {
