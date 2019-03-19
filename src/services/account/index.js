@@ -123,7 +123,6 @@ module.exports = function setup() {
 
 	app.use('/accounts/jwt', new CustomJWTService(app.get('secrets').authentication));
 
-
 	app.use('/accounts/confirm', {
 		create(data, params) {
 			return account.update({ _id: data.accountId }, { $set: { activated: true } });
