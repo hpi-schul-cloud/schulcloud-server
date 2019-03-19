@@ -4,6 +4,7 @@ const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const errors = require('feathers-errors');
+const logger = require('winston');
 
 const getAverageRating = function (submissions) {
     // Durchschnittsnote berechnen
@@ -196,7 +197,7 @@ const hasPatchPermission = hook => {
         }
     })
         .catch(err => {
-            console.error(err)
+            logger.warn(err);
             return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" }));
         });
 };
