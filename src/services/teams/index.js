@@ -372,7 +372,6 @@ class Add {
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Erstellen des Einladelinks.', err);
 			});
-
 	}
 
 	/**
@@ -648,7 +647,7 @@ class Remove {
 	}
 }
 
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 	const options = {
 		Model: teamsModel,
