@@ -1,6 +1,9 @@
+/* eslint-disable no-use-before-define */
+// Todo: activate rule again
+
 const mongoose = require('mongoose');
 
-const { Schema } = mongoose;
+const Schema = mongoose.Schema;
 
 const roleSchema = new Schema({
 	name: { type: String, required: true },
@@ -11,8 +14,6 @@ const roleSchema = new Schema({
 }, {
 	timestamps: true,
 });
-
-const roleModel = mongoose.model('role', roleSchema);
 
 roleSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions([this._id]);
@@ -45,5 +46,7 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 	return Promise.all(roleIds.map(id => resolveSubRoles(id)))
 		.then(() => permissions);
 };
+
+const roleModel = mongoose.model('role', roleSchema);
 
 module.exports = roleModel;
