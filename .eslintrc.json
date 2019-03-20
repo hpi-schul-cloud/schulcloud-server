@@ -6,7 +6,7 @@
 		"no-restricted-syntax": "off",
 		"no-await-in-loop": "off",
 		"class-methods-use-this": "off",
-		"no-underscore-dangle": ["error", {"allow": ["_id", "_v"]}],
+		"no-underscore-dangle": ["error", {"allow": ["_id", "_v", "__v"]}],
 		"no-shadow": ["error", {"allow": ["err"]}],
 		"prefer-destructuring": ["warn", {"object": true, "array": false}],
 		"no-param-reassign": ["warn", { "props": false}],
