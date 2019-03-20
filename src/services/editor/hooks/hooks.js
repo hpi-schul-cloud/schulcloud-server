@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const logger = require('winston');
 const { populateUsersInContext, isGroup } = require('./helper');
 
 /**
@@ -25,10 +26,16 @@ const populateUsers = async (context) => {
 const passRequestDataToParams = (context) => {
 	context.params.request = {
 		method: context.method,
-		userId: context.params.account.userId.toString(),
 		id: context.id,
 		data: context.data,
 	};
+
+	try {
+		context.params.request.userId = context.params.account.userId.toString();
+	} catch (err) {
+		logger.warn('User is not defined!');
+		context.params.request.userId = 'unknown';
+	}
 	return context;
 };
 

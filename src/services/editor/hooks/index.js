@@ -34,6 +34,7 @@ const after = {
 
 const beforeLesson = Object.assign({}, before, {
 	create: [ifNotLocal(disable())],
+	remove: [ifNotLocal(disable())],
 });
 
 module.exports = {

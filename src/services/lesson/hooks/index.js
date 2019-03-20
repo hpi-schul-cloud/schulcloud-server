@@ -6,6 +6,16 @@ const auth = require('feathers-authentication');
 const lesson = require('../model');
 const nanoid = require('nanoid');
 
+const lessonCreateEvent = (hook) => {
+	hook.app.emit('lesson:after:create', hook);
+	return hook;
+};
+
+const lessonRemoveEvent = (hook) => {
+	hook.app.emit('lesson:after:remove', hook);
+	return hook;
+};
+
 const checkIfCourseGroupLesson = (permission1, permission2, isCreating, hook) => {
 	// find courseGroupId in different ways (POST, FIND ...)
 	let groupPromise = isCreating ? Promise.resolve({courseGroupId: hook.data.courseGroupId}) : lesson.findOne({_id: hook.id}).then(lesson => {
@@ -20,11 +30,15 @@ const checkIfCourseShareable = (hook) => {
 		const courseService = hook.app.service('courses');
 		const lessonsService = hook.app.service('lessons');
 
+		
+
 		return courseService.get(courseId)
 			.then(course => {
-				if (!course.shareToken)
+				if (!course.shareToken) {
+					lessonCreateEvent(hook);
 					return hook;
-
+				}
+				
 				return lesson.findByIdAndUpdate(hook.result._id, { shareToken: nanoid(12) })
 					.then(lesson => {
 						return hook;
@@ -73,5 +87,5 @@ exports.after = {
 	create: [checkIfCourseShareable],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [lessonRemoveEvent],
 };

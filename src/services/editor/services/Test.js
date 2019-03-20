@@ -2,6 +2,7 @@
 const { userModel } = require('../../user/model');
 const CustomJWTService = require('../../account/CustomJWTService');
 const logger = require('../../../logger/');
+const { fakeParams } = require('../helper/');
 
 class Test {
 	constructor(options) {
@@ -17,9 +18,8 @@ class Test {
 		const jwtService = new CustomJWTService(authentication);
 		const [user1, user2] = await userModel.find({}).limit(2).exec();
 		const fakeData = { users: [user2.id] };
-		const fakeParams = { account: { userId: user1.id } };
 		const jwt = await jwtService.create({ userId: user1.id });
-		return this.app.service('/editor/lessons').create(fakeData, fakeParams).then((lesson) => {
+		return this.app.service('/editor/lessons').create(fakeData, fakeParams(user1.id)).then((lesson) => {
 			lesson.jwt = jwt;
 			return lesson;
 		});

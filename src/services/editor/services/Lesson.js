@@ -1,3 +1,4 @@
+/* eslint-disable object-curly-newline */
 /* eslint-disable class-methods-use-this */
 const { request } = require('../helper/');
 
@@ -14,9 +15,9 @@ class Lesson {
 	 * In our case, the course create event will trigger this.
 	 * The current user is forced as owner, students.
 	 */
-	create({ users }, params) {
+	create({ users, _id, owner, title }, params) {
 		return request(uri, params, {
-			data: { users },
+			data: { users, _id, owner, title },
 		});
 	}
 
@@ -35,6 +36,10 @@ class Lesson {
 	}
 
 	get(lessonId, params) {
+		return request(uri, params);
+	}
+
+	remove(lessonId, params) {
 		return request(uri, params);
 	}
 
