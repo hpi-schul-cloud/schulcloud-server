@@ -29,7 +29,8 @@ const ifSuperhero = (roles) => {
 	let isSuperhero = false;
 	if (isArrayWithElement(roles)) {
 		if (isString(roles[0])) {
-			isSuperhero = roles.includes('superhero'); // todo: make no sense at the moment roles includes only the ids of the roles
+			// todo: make no sense at the moment roles includes only the ids of the roles
+			isSuperhero = roles.includes('superhero');
 		} else if (isObject(roles[0])) {
 			if (isDefined(roles.find(_role => _role.name === 'superhero'))) {
 				isSuperhero = true;
@@ -45,30 +46,28 @@ exports.ifSuperhero = ifSuperhero;
 * @param {hook} hook
 * @return {Object::User}
 */
-exports.getSessionUser = (hook) => {
-	return new Promise((resolve, reject) => {
-		const sessionUserId = bsonIdToString(hook.params.account.userId);
-		const sessionUser = get(hook, 'sessionUser');
-		if (isDefined(sessionUser)) {
-			if (isUndefined(get(hook, 'isSuperhero'))) {
-				set(hook, 'isSuperhero', ifSuperhero(sessionUser.roles)); // todo : is the logic clear?
-			}
-			resolve(sessionUser);
-		} else {
-			hook.app.service('users').get(sessionUserId, {
-				query: { $populate: 'roles' },
-			}).then((resSessionUser) => {
-				set(hook, 'sessionUser', resSessionUser); // to save the infos from request
-				set(hook, 'isSuperhero', ifSuperhero(resSessionUser.roles));
-				resolve(resSessionUser);
-			}).catch((err) => {
-				reject(new NotFound(`Can not find user with userId=${sessionUserId}`, err));
-			});
+exports.getSessionUser = hook => new Promise((resolve, reject) => {
+	const sessionUserId = bsonIdToString(hook.params.account.userId);
+	const sessionUser = get(hook, 'sessionUser');
+	if (isDefined(sessionUser)) {
+		if (isUndefined(get(hook, 'isSuperhero'))) {
+			set(hook, 'isSuperhero', ifSuperhero(sessionUser.roles)); // todo : is the logic clear?
 		}
-	}).catch((err) => {
-		throw new NotFound('User not found.', err);
-	});
-};
+		resolve(sessionUser);
+	} else {
+		hook.app.service('users').get(sessionUserId, {
+			query: { $populate: 'roles' },
+		}).then((resSessionUser) => {
+			set(hook, 'sessionUser', resSessionUser); // to save the infos from request
+			set(hook, 'isSuperhero', ifSuperhero(resSessionUser.roles));
+			resolve(resSessionUser);
+		}).catch((err) => {
+			reject(new NotFound(`Can not find user with userId=${sessionUserId}`, err));
+		});
+	}
+}).catch((err) => {
+	throw new NotFound('User not found.', err);
+});
 
 /**
 * @helper
@@ -97,7 +96,9 @@ const addDefaultFilePermissions = (hook) => {
 *   @param {Object::hook} hook
 *   @param {Object::{userId,schoolId, [selectedRole]}}
 */
-const createUserWithRole = (hook, { userId, schoolId, selectedRole, roleIsId }) => {
+const createUserWithRole = (hook, {
+	userId, schoolId, selectedRole, roleIsId,
+}) => {
 	if (isUndefined(hook.findRole)) {
 		throw new NotAcceptable('Please execute teamRolesToHook before.');
 	}
@@ -213,51 +214,49 @@ exports.isAcceptWay = isAcceptWay;
 * @param {Object::hook} hook
 * @return {Promise::Object::team}
 */
-exports.getTeam = (hook) => {
-	return new Promise((resolve, reject) => {
-		const { method } = hook;
-		const teamId = hook.id || (hook.result || {})._id || hook.teamId || get(hook, 'teamId');
-		const sessionUserId = bsonIdToString(hook.params.account.userId);
-		const restrictedMatch = { $elemMatch: { userId: sessionUserId } };
-		const teamsService = hook.app.service('teams');
+exports.getTeam = hook => new Promise((resolve, reject) => {
+	const { method } = hook;
+	const teamId = hook.id || (hook.result || {})._id || hook.teamId || get(hook, 'teamId');
+	const sessionUserId = bsonIdToString(hook.params.account.userId);
+	const restrictedMatch = { $elemMatch: { userId: sessionUserId } };
+	const teamsService = hook.app.service('teams');
 
-		const resolveIt = (data) => {
-			set(hook, 'team', data); // set it for later use
-			resolve(data);
-		};
+	const resolveIt = (data) => {
+		set(hook, 'team', data); // set it for later use
+		resolve(data);
+	};
 
-		if (isDefined(get(hook, 'team'))) {
-			resolveIt(get(hook, 'team'));
-		} else if (method === 'create') {
-			resolveIt(hook.data);
-		} else if (teamId) {
-			const query = isAcceptWay(hook, teamId) ? { _id: teamId }
-				: { _id: teamId, userIds: restrictedMatch };
-			teamsService.find({ query }).then((_teams) => {
-				extractOne(_teams).then((_team) => {
-					resolveIt(_team);
-				}).catch((err) => {
-					reject(err);
-				});
+	if (isDefined(get(hook, 'team'))) {
+		resolveIt(get(hook, 'team'));
+	} else if (method === 'create') {
+		resolveIt(hook.data);
+	} else if (teamId) {
+		const query = isAcceptWay(hook, teamId) ? { _id: teamId }
+			: { _id: teamId, userIds: restrictedMatch };
+		teamsService.find({ query }).then((_teams) => {
+			extractOne(_teams).then((_team) => {
+				resolveIt(_team);
 			}).catch((err) => {
-				reject(new NotFound(`Can not found team with teamId=${teamId}`, err));
+				reject(err);
 			});
-		} else if (method === 'find') {
-			teamsService.find({
-				query: { userIds: restrictedMatch },
-			}).then((_teams) => {
-				resolveIt(_teams.data);
-			}).catch((err) => {
-				reject(new NotFound(`Can not found team for user with userId=${sessionUserId}`, err));
-			});
-		} else {
-			throw new NotImplemented('It should not run into this case.');
-		}
-	}).catch((err) => {
-		logger.warn(err);
-		throw new NotFound('Can not found this team.');
-	});
-};
+		}).catch((err) => {
+			reject(new NotFound(`Can not found team with teamId=${teamId}`, err));
+		});
+	} else if (method === 'find') {
+		teamsService.find({
+			query: { userIds: restrictedMatch },
+		}).then((_teams) => {
+			resolveIt(_teams.data);
+		}).catch((err) => {
+			reject(new NotFound(`Can not found team for user with userId=${sessionUserId}`, err));
+		});
+	} else {
+		throw new NotImplemented('It should not run into this case.');
+	}
+}).catch((err) => {
+	logger.warn(err);
+	throw new NotFound('Can not found this team.');
+});
 
 
 /**
@@ -305,12 +304,10 @@ const arrayDiff = (oldArray, newArray, key) => {
  * @param {String} [key] - optional for objects in arrays
  * @return {Object::{remove:[],add:[]} }
  */
-exports.arrayRemoveAddDiffs = (baseArray, changedArray, key) => {
-	return {
-		remove: arrayDiff(baseArray, changedArray, key),
-		add: arrayDiff(changedArray, baseArray, key),
-	};
-};
+exports.arrayRemoveAddDiffs = (baseArray, changedArray, key) => ({
+	remove: arrayDiff(baseArray, changedArray, key),
+	add: arrayDiff(changedArray, baseArray, key),
+});
 
 // todo: use createUserWithRole to set new users
 /**
@@ -327,11 +324,11 @@ const mappedInputUserIdsToTeamUsers = (hook, teamUsers, oldTeam, sessionSchoolId
 		throw new BadRequest('param teamUsers must be an array', teamUsers);
 	}
 
-	const getFirstUserByRoleId = (teamUserArray, roleId) => {
-		return teamUserArray.find(_user => isSameId(_user.role, roleId));
-	};
+	const getFirstUserByRoleId = (teamUserArray, roleId) => teamUserArray.find(_user => isSameId(_user.role, roleId));
 	const teamownerRoleId = hook.findRole('name', 'teamowner', '_id');
-	const teamowner = hook.method === 'create' ? getFirstUserByRoleId(teamUsers, teamownerRoleId) : getFirstUserByRoleId(oldTeam.userIds, teamownerRoleId);
+	const teamowner = hook.method === 'create'
+		? getFirstUserByRoleId(teamUsers, teamownerRoleId)
+		: getFirstUserByRoleId(oldTeam.userIds, teamownerRoleId);
 
 	if (isUndefined(teamowner)) { // by create no old team exist
 		throw new NotAcceptable('No teamowner found for this team.');
@@ -412,7 +409,7 @@ const removeNotValidUsersBySchoolIds = (schoolIds, teamUsers, users) => {
 	const removeList = [];
 	schoolIds = bsonIdToString(schoolIds);
 
-	teamUsers.map((teamUser) => {
+	teamUsers.forEach((teamUser) => {
 		const user = (users.find(u => isSameId(u._id, teamUser.userId)) || {});
 		const schoolId = bsonIdToString(user.schoolId);
 		if (schoolIds.includes(schoolId) === false) {
@@ -422,14 +419,7 @@ const removeNotValidUsersBySchoolIds = (schoolIds, teamUsers, users) => {
 	return removeTeamUsers(teamUsers, removeList);
 };
 
-const teamOwnerRoleExist = (hook, teamUsers, oldTeam, users) => {
-	// todo later
-	// const teamownerRoleId = hook.findRole('name', 'teamowner', '_id');
-	// remove logic in mappedInputUserIdsToTeamUsers for owner
-	// test if any of this users has the role teamowner
-	// teamowner must have the userRole teacher!
-	return teamUsers;
-};
+const teamOwnerRoleExist = (hook, teamUsers, oldTeam, users) => teamUsers;
 
 /**
  * Remove duplicated users. It test it over key>userId. Role of first found are used.
@@ -490,24 +480,22 @@ exports.getTeamUsers = (hook, team, users, sessionSchoolId) => {
  * @method all - but return for no hook.data or !patch || !create an empty array
  * @return {Array::Object::User default:[]}
  */
-exports.populateUsersForEachUserIdinHookData = (hook) => {
-	return new Promise((resolve, reject) => {
-		if (['create', 'patch'].includes(hook.method) && hasKey(hook, 'data') && isArrayWithElement(hook.data.userIds)) {
-			hook.app.service('users').find({
-				query: {
-					$or: hook.data.userIds.reduce((arr, v) => {
-						arr.push({ _id: (typeof v === 'object' && v.userId) ? v.userId : v });
-						return arr;
-					}, []),
-				},
-			}).then((users) => {
-				resolve(users.data);
-			}).catch((err) => {
-				logger.warn(err);
-				reject(new BadRequest('Can not search users.'));
-			});
-		} else {
-			resolve([]);
-		}
-	});
-};
+exports.populateUsersForEachUserIdinHookData = hook => new Promise((resolve, reject) => {
+	if (['create', 'patch'].includes(hook.method) && hasKey(hook, 'data') && isArrayWithElement(hook.data.userIds)) {
+		hook.app.service('users').find({
+			query: {
+				$or: hook.data.userIds.reduce((arr, v) => {
+					arr.push({ _id: (typeof v === 'object' && v.userId) ? v.userId : v });
+					return arr;
+				}, []),
+			},
+		}).then((users) => {
+			resolve(users.data);
+		}).catch((err) => {
+			logger.warn(err);
+			reject(new BadRequest('Can not search users.'));
+		});
+	} else {
+		resolve([]);
+	}
+});

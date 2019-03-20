@@ -1,6 +1,15 @@
 const { BadRequest } = require('feathers-errors');
 const { ObjectId } = require('mongoose').Types;
 
+/**
+ * @collection
+ */
+const isArray = array => Array.isArray(array);
+
+/**
+ * @collection
+ * */
+const isObject = e => typeof e === 'object' && !isArray(e);
 
 /**
  * If Array use it.
@@ -9,7 +18,8 @@ const { ObjectId } = require('mongoose').Types;
  * @private
  * @collection
  */
-const mapToArray = e => isArray(e) ? e : (isObject(e) ? Object.values(e) : [e]);
+// eslint-disable-next-line no-nested-ternary
+const mapToArray = e => (isArray(e) ? e : (isObject(e) ? Object.values(e) : [e]));
 
 /**
  * @private
@@ -22,7 +32,7 @@ const batch = (array, execute, additional) => (mapToArray(array)).map(e => execu
 
 
 /**
- * Test if any of the elements in this function are true
+ * Test if all of the elements in this function are true
  * @private
  * @collection
  * @param {Array::Boolean} arrayOfBools
@@ -43,11 +53,6 @@ const oneTrue = arrayOfBools => arrayOfBools.some(b => b === true);
 /**
  * @collection
  */
-const isArray = array => Array.isArray(array);
-
-/**
- * @collection
- */
 const isArrayWithElement = (array) => {
 	try {
 		return isArray(array) && array.length > 0;
@@ -55,11 +60,6 @@ const isArrayWithElement = (array) => {
 		return false;
 	}
 };
-
-/**
- * @collection
- * */
-const isObject = e => typeof e === 'object' && !isArray(e);
 
 /**
  * @collection
