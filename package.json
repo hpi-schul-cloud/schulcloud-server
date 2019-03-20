@@ -64,6 +64,7 @@
     "feathers-swagger": "^0.3.2",
     "file-type": "^9.0.0",
     "freeport": "^1.0.5",
+    "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^2.2.0",
     "ldapjs": "git+https://git@github.com/Blizzard/node-ldapjs.git",
     "lodash": "^4.17.4",

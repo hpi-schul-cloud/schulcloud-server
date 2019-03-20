@@ -1,3 +1,4 @@
+/* eslint-disable no-void */
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const { BadRequest } = require('feathers-errors');
@@ -15,13 +16,14 @@ const {
 	throwErrorIfNotObjectId,
 	bsonIdToString,
 	isSameId,
-	isFunction } = require('../../../../src/services/teams/hooks/collection.js');
+	isFunction,
+} = require('../../../../src/services/teams/hooks/collection.js');
 
 describe('collection helpers', () => {
-
 	describe('isArray', () => {
 		it('returns true for empty arrays', () => {
 			expect(isArray([])).to.equal(true);
+			// eslint-disable-next-line no-array-constructor
 			expect(isArray(new Array())).to.equal(true);
 		});
 
@@ -37,7 +39,7 @@ describe('collection helpers', () => {
 		});
 
 		it('works for huge arrays', () => {
-			const array = new Array(Math.pow(2, 20)).fill(1);
+			const array = new Array(2 ** 20).fill(1);
 			expect(isArray(array)).to.equal(true);
 		});
 	});
@@ -45,6 +47,7 @@ describe('collection helpers', () => {
 	describe('isArrayWithElement', () => {
 		it('returns false for empty arrays', () => {
 			expect(isArrayWithElement([])).to.equal(false);
+			// eslint-disable-next-line no-array-constructor
 			expect(isArrayWithElement(new Array())).to.equal(false);
 		});
 
@@ -60,7 +63,7 @@ describe('collection helpers', () => {
 		});
 
 		it('works for huge arrays', () => {
-			const array = new Array(Math.pow(2, 20)).fill(1);
+			const array = new Array(2 ** 20).fill(1);
 			expect(isArrayWithElement(array)).to.equal(true);
 		});
 	});
@@ -68,7 +71,7 @@ describe('collection helpers', () => {
 	describe('isObject', () => {
 		it('returns true for plain objects', () => {
 			expect(isObject({})).to.equal(true);
-			expect(isObject({a: 123, b: 42})).to.equal(true);
+			expect(isObject({ a: 123, b: 42 })).to.equal(true);
 		});
 
 		it('returns false for other types', () => {
@@ -94,13 +97,13 @@ describe('collection helpers', () => {
 
 	describe('hasKey', () => {
 		it('should return true if a given object has a given key', () => {
-			expect(hasKey({a: 'b'}, 'a')).to.equal(true);
-			expect(hasKey({'foo': 123}, 'foo')).to.equal(true);
+			expect(hasKey({ a: 'b' }, 'a')).to.equal(true);
+			expect(hasKey({ foo: 123 }, 'foo')).to.equal(true);
 		});
 
 		it('should return false otherwise', () => {
 			expect(hasKey({}, 'foo')).to.equal(false);
-			expect(hasKey({a: 123}, 'b')).to.equal(false);
+			expect(hasKey({ a: 123 }, 'b')).to.equal(false);
 			expect(hasKey(this, 4)).to.equal(false);
 		});
 
@@ -173,7 +176,7 @@ describe('collection helpers', () => {
 			const oid = new ObjectId();
 			expect(isObjectId(oid.toString())).to.equal(false);
 			expect(isObjectId('5c3da7980ba3be0a64f1d38c')).to.equal(false);
-			expect(isObjectId({_bsontype:'ObjectID'})).to.equal(false);
+			expect(isObjectId({ _bsontype: 'ObjectID' })).to.equal(false);
 			expect(isObjectId(123)).to.equal(false);
 			expect(isObjectId('123')).to.equal(false);
 			expect(isObjectId(() => {})).to.equal(false);
@@ -191,7 +194,7 @@ describe('collection helpers', () => {
 		it('should return false for other types', () => {
 			expect(isObjectIdWithTryToCast(123)).to.equal(false);
 			expect(isObjectIdWithTryToCast('5c3da7980ba3be0a64f1d38ca')).to.equal(false);
-			expect(isObjectIdWithTryToCast({_bsontype:'ObjectID'})).to.equal(false);
+			expect(isObjectIdWithTryToCast({ _bsontype: 'ObjectID' })).to.equal(false);
 			expect(isObjectIdWithTryToCast('123')).to.equal(false);
 			expect(isObjectIdWithTryToCast(() => {})).to.equal(false);
 			expect(isObjectIdWithTryToCast([])).to.equal(false);
@@ -217,7 +220,7 @@ describe('collection helpers', () => {
 
 		it('should convert arrays of Ids', () => {
 			const oids = new Array(5).fill(new ObjectId());
-			const expectedResult = oids.map((i) => i.toString());
+			const expectedResult = oids.map(i => i.toString());
 			expect(bsonIdToString(oids)).to.deep.equal(expectedResult);
 		});
 
@@ -234,7 +237,7 @@ describe('collection helpers', () => {
 	});
 
 	describe('isSameId', () => {
-		it('should return true for equal ObjectIds',  () => {
+		it('should return true for equal ObjectIds', () => {
 			const oid = new ObjectId();
 			expect(isSameId(oid, oid)).to.equal(true);
 			expect(isSameId(oid, oid.toString())).to.equal(true);
@@ -253,7 +256,8 @@ describe('collection helpers', () => {
 	describe('isFunction', () => {
 		it('should return true for function types', () => {
 			expect(isFunction(() => {})).to.equal(true);
-			expect(isFunction(function () {})).to.equal(true);
+			expect(isFunction(() => {})).to.equal(true);
+			// eslint-disable-next-line no-new-func
 			expect(isFunction(new Function())).to.equal(true);
 		});
 

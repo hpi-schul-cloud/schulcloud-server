@@ -114,7 +114,9 @@ class MockEmailService {
 		this.eventHandler = eventHandler;
 	}
 
-	create({headers, email, subject, content}, params) {
+	create({
+		headers, email, subject, content,
+	}, params) {
 		this.eventHandler({ subject, content });
 		return Promise.resolve();
 	}

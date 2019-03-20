@@ -6,9 +6,7 @@ const Syncer = require('../../../../../src/services/sync/strategies/Syncer');
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
 describe('CSVSyncer', () => {
-	it('works', () => {
-		return new CSVSyncer();
-	});
+	it('works', () => new CSVSyncer());
 
 	it('implements the Syncer interface', () => {
 		expect(Object.getPrototypeOf(CSVSyncer)).to.equal(Syncer);

@@ -1,127 +1,136 @@
 const { BadRequest } = require('feathers-errors');
-const service = require('feathers-mongoose');
+const mongooseService = require('feathers-mongoose');
 
-const _TYPE = ['before', 'after'];
-const _METHOD = ['get', 'update', 'patch', 'create', 'find', 'remove'];
+const TYPE = ['before', 'after'];
+const METHOD = ['get', 'update', 'patch', 'create', 'find', 'remove'];
 
-const _DefaultServiceOptions = {
-	Model: undefined,		//maybe must added fake?
+const DefaultServiceOptions = {
+	Model: undefined,		// maybe must added fake?
 	paginate: {
 		default: 10,
-		max: 100
+		max: 100,
 	},
-	lean: true
+	lean: true,
 };
 
-const _DefaultHeaderParams = {
-	authorization:'<jwtToken>', 
-	host: process.env.HOST || 'localhost:3030', 
-	accept: 'application/json', 
-	'content-type':'application/json', 
-	connection: 'close' 
+const DefaultHeaderParams = {
+	authorization: '<jwtToken>',
+	host: process.env.HOST || 'localhost:3030',
+	accept: 'application/json',
+	'content-type': 'application/json',
+	connection: 'close',
 };
 
 const isType = (type) => {
-	if (_TYPE.includes(type))
-		return type;
+	if (TYPE.includes(type)) { return type; }
 	throw BadRequest('wrong hook type');
 };
 
 const isMethod = (method) => {
-	if (_METHOD.includes(method))
-		return method;
+	if (METHOD.includes(method)) { return method; }
 	throw BadRequest('wrong hook method');
 };
 
 const isObject = (obj) => {
-	if (typeof obj === 'object')
-		return obj;
+	if (typeof obj === 'object') { return obj; }
 	throw BadRequest('Must be an object.');
 };
 
-const getService=(options={})=>{
-	const opt = Object.assign({},_DefaultServiceOptions,options);
-	if(opt.Model===undefined || opt.paginate===undefined){
-		opt._TEST_INFO_='service can not create and is faked';
+const getService = (options = {}) => {
+	const opt = Object.assign({}, DefaultServiceOptions, options);
+	if (opt.Model === undefined || opt.paginate === undefined) {
+		// eslint-disable-next-line no-underscore-dangle
+		opt._TEST_INFO_ = 'service can not create and is faked';
 		return opt;
 	}
-	return service(opt);
+	return mongooseService(opt);
 };
 
-const patchParams = (params,account={}) => {
+const patchParams = (params, account = {}) => {
 	params.provider = params.provider || 'rest';
 	params.query = params.query || {};
-	params.authenticated = params.authenticated || true;  
+	params.authenticated = params.authenticated || true;
 	params.headers = params.headers || {};
-	params.payload = params.payload || {accountId:account._id||'<accountId>'};
-	params.headers = params.headers || _DefaultHeaderParams;
+	params.payload = params.payload || { accountId: account._id || '<accountId>' };
+	params.headers = params.headers || DefaultHeaderParams;
 	params.account = params.account || account;
 	return params;
 };
 
-/*** feathers is hook test ***/
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ?
-	function (obj) {
-		return typeof obj;
-	} :
-	function (obj) {
-		return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-	};
+/** * feathers is hook test ** */
+const typeOf = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
+	? obj => typeof obj
+	: obj => (obj
+		&& typeof Symbol === 'function'
+		&& obj.constructor === Symbol
+		&& obj !== Symbol.prototype ? 'symbol' : typeof obj);
 
 function isHookObject(hookObject) {
-	return (typeof hookObject === 'undefined' ? 'undefined' : _typeof(hookObject)) === 'object' && typeof hookObject.method === 'string' && typeof hookObject.type === 'string';
+	return (typeof hookObject === 'undefined' ? 'undefined' : typeOf(hookObject)) === 'object'
+			&& typeof hookObject.method === 'string'
+			&& typeof hookObject.type === 'string';
 }
 
 
-
-//todo: add service (?)
-//todo: add missing params : query:Object , authenticated:true  ...etc..
+// todo: add service (?)
+// todo: add missing params : query:Object , authenticated:true  ...etc..
 /**
- * 
- * @param {Object::App} app 
- * @param {Object} opt 
- * @param {String} opt.type 
- * @param {String} opt.method 
- * @param {Object} opt.params 
+ *
+ * @param {Object::App} app
+ * @param {Object} opt
+ * @param {String} opt.type
+ * @param {String} opt.method
+ * @param {Object} opt.params
  * @param {Object::Account} opt.account
  * @param {Object} opt.data
  * @param {Object} opt.result
- * @param {String} opt.path 
- * @param {Object} opt.service want to generate a fake service and use opt.options for it, over it you can pass pagination for example
+ * @param {String} opt.path
+ * @param {Object} opt.service want to generate a fake service and use opt.options for it, over it you can pass
+ * pagination for example
  * @param {Object} opt.options {Model,paginate,lean}
  * @param {Object} opt.servicePath will search and take the service into passed app
  */
 const createHook = (app, opt = {}) => {
-	let type = isType(opt.type || 'before'),
-		method = isMethod(opt.method || 'get'),
-		params = patchParams(isObject(opt.params || {}),opt.account),
-		data = isObject(opt.data || {}),
-		result = isObject(opt.result || {}),
-		path = opt.servicePath || opt.path || '_TEST_PATH_',
-		service = opt.servicePath ? app.service(opt.servicePath) : opt.service || getService(opt.options);
+	const type = isType(opt.type || 'before');
 
 
-	let hook = { type, method, params, path, app, service };
+	const method = isMethod(opt.method || 'get');
 
-	if (hook.type === 'after')
-		hook.result = result;
 
-	if (['create', 'patch'].includes(hook.method))
-		hook.data = data;
+	const params = patchParams(isObject(opt.params || {}), opt.account);
 
-	if (isHookObject(hook))
-		return hook;
-	else
-		throw BadRequest('Is no hook object.');
+
+	const data = isObject(opt.data || {});
+
+
+	const result = isObject(opt.result || {});
+
+
+	const path = opt.servicePath || opt.path || '_TEST_PATH_';
+
+
+	const service = opt.servicePath ? app.service(opt.servicePath) : opt.service || getService(opt.options);
+
+
+	const hook = {
+		type, method, params, path, app, service,
+	};
+
+	if (hook.type === 'after') { hook.result = result; }
+
+	if (['create', 'patch'].includes(hook.method)) { hook.data = data; }
+
+	if (isHookObject(hook)) { return hook; }
+	throw BadRequest('Is no hook object.');
 };
 
 
 const createHookStack = (app, opt) => {
-	let stack = {};
-	_TYPE.forEach(type => {
+	const stack = {};
+	TYPE.forEach((type) => {
 		stack[type] = {};
-		_METHOD.forEach(method => {
-			stack[type][method] = createHook(app, Object.assign({type,method},opt));
+		METHOD.forEach((method) => {
+			stack[type][method] = createHook(app, Object.assign({ type, method }, opt));
 		});
 	});
 	return stack;
@@ -129,5 +138,5 @@ const createHookStack = (app, opt) => {
 
 module.exports = {
 	createHook,
-	createHookStack
+	createHookStack,
 };

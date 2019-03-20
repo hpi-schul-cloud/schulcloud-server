@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const { BadRequest, NotFound } = require('feathers-errors');
@@ -51,24 +52,27 @@ describe('hook helpers', () => {
 	});
 
 	describe('removeDuplicatedTeamUsers', () => {
-		let userList = [], populatedUserList;
+		const userList = [];
+		let	populatedUserList;
 		before(() => {
-			let schoolId = ObjectId();
-			let role = ObjectId();
-			let data = [
+			const schoolId = ObjectId();
+			const role = ObjectId();
+			const data = [
 				{ schoolId, role, userId: ObjectId() },
 				{ schoolId, role, userId: ObjectId() },
-				{ schoolId, role, userId: ObjectId() }
+				{ schoolId, role, userId: ObjectId() },
 			];
+			/* eslint-disable no-underscore-dangle, new-cap */
 			userList.push((new teamUserModel(data[0]))._doc);
 			userList.push((new teamUserModel(data[1]))._doc);
 			userList.push((new teamUserModel(data[2]))._doc);
+			/* eslint-enable no-underscore-dangle, new-cap */
 
 			populatedUserList = userList.slice();
-			//fake populate 
-			populatedUserList[0].userId = { '_id': data[0].userId };
-			populatedUserList[1].userId = { '_id': data[1].userId };
-			populatedUserList[2].userId = { '_id': data[2].userId };
+			// fake populate
+			populatedUserList[0].userId = { _id: data[0].userId };
+			populatedUserList[1].userId = { _id: data[1].userId };
+			populatedUserList[2].userId = { _id: data[2].userId };
 		});
 
 		it('should work for empty array', () => {
@@ -82,7 +86,8 @@ describe('hook helpers', () => {
 
 		it('should work for *populated* userIds', () => {
 			expect(removeDuplicatedTeamUsers(populatedUserList)).to.be.an('array').with.lengthOf(3);
-			expect(removeDuplicatedTeamUsers(populatedUserList.concat(populatedUserList))).to.be.an('array').with.lengthOf(3);
+			expect(removeDuplicatedTeamUsers(populatedUserList.concat(populatedUserList)))
+				.to.be.an('array').with.lengthOf(3);
 		});
 
 		it('should work for mixed *populated* and NOT *populated* userIds', () => {
@@ -99,13 +104,14 @@ describe('hook helpers', () => {
 
 	describe('arrayRemoveAddDiffs', () => {
 		it('should work for empty arrays', () => {
-			expect(arrayRemoveAddDiffs([], [])).to.deep.equal({add: [], remove: []});
+			expect(arrayRemoveAddDiffs([], [])).to.deep.equal({ add: [], remove: [] });
 		});
 
 		it('should work for plain arrays', () => {
 			expect(arrayRemoveAddDiffs([1], [2])).to.deep.equal({ add: [2], remove: [1] });
 			expect(arrayRemoveAddDiffs([1, 2, 3], [2, 4])).to.deep.equal({ add: [4], remove: [1, 3] });
-			expect(arrayRemoveAddDiffs(['foo', 'bar'], ['foo', 'baz', 'bar'])).to.deep.equal({ add: ['baz'], remove: [] });
+			expect(arrayRemoveAddDiffs(['foo', 'bar'], ['foo', 'baz', 'bar']))
+				.to.deep.equal({ add: ['baz'], remove: [] });
 			expect(arrayRemoveAddDiffs(['foo', 'bar'], ['bar'])).to.deep.equal({ add: [], remove: ['foo'] });
 		});
 
@@ -115,7 +121,7 @@ describe('hook helpers', () => {
 		});
 
 		it('should work on huge arrays', () => {
-			const arr = new Array(Math.pow(2, 15)).fill(1);
+			const arr = new Array(2 ** 15).fill(1);
 			const arr2 = Array.from(arr);
 			arr2.push(2);
 			expect(arrayRemoveAddDiffs(arr, arr2)).to.deep.equal({ add: [2], remove: [] });
@@ -177,7 +183,7 @@ describe('hook helpers', () => {
 				expect(userId).to.not.equal(undefined);
 				const hook = {
 					app,
-					method: method,
+					method,
 					data: {
 						userIds: [
 							userId,
@@ -225,7 +231,7 @@ describe('hook helpers', () => {
 				expect(userId).to.not.equal(undefined);
 				const hook = {
 					app,
-					method: method,
+					method,
 					data: {
 						userIds: [
 							userId,
@@ -252,7 +258,7 @@ describe('hook helpers', () => {
 
 				const hook = {
 					app,
-					method: method,
+					method,
 					data: {
 						userIds: [
 							userId1,
@@ -369,6 +375,5 @@ describe('hook helpers', () => {
 
 			await deleteUser(user._id);
 		});
-
 	});
 });

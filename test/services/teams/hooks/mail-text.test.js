@@ -19,7 +19,7 @@ describe('Team mail-text helper', () => {
 	});
 
 	describe('createEmailText', () => {
-		let hook, user;
+		let hook;
 		before(() => {
 			hook = createHook(app, {
 				method: 'patch',
@@ -29,6 +29,7 @@ describe('Team mail-text helper', () => {
 		it.skip('should work for new expert', () => {
 			const hookCopy = Object.assign({}, hook);
 			const addClass = app.service('/teams/extern/add');
+			// eslint-disable-next-line no-underscore-dangle
 			const formatResult = addClass._response;
 			const user = {
 				firstname: '<firstname>',
@@ -38,10 +39,10 @@ describe('Team mail-text helper', () => {
 			};
 
 			const linkData = {
-				link:'<link>',
+				link: '<link>',
 				target: '<target>',
-				hash:'<hash>',
-				shortLink:'<shortLink>'
+				hash: '<hash>',
+				shortLink: '<shortLink>',
 			};
 
 			hookCopy.result = formatResult({
@@ -57,7 +58,7 @@ describe('Team mail-text helper', () => {
 			expect(createEmailText(hookCopy, user)).to.equal({
 
 			});
-			//todo check all results ..
+			// todo check all results ..
 		});
 	});
 });

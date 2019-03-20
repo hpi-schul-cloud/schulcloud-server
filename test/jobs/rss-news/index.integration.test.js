@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable no-unused-expressions */
 const chai = require('chai');
 const path = require('path');
 const { exec } = require('child_process');
@@ -21,8 +21,8 @@ function runWorker() {
 	});
 }
 
-describe('RSS Feed Crawler Integration', function () {
-	this.timeout(10000)
+describe('RSS Feed Crawler Integration', function rssFeedCrawlerIntegrationTest() {
+	this.timeout(10000);
 	let sampleSchool;
 	let dbRSSNews;
 	const sampleRSSFeed = {
@@ -30,13 +30,12 @@ describe('RSS Feed Crawler Integration', function () {
 		description: 'netz-21',
 	};
 
-	before(async function () {
+	before(async () => {
 		sampleSchool = (await schoolModel.findOneAndUpdate(
 			{},
 			{ $set: { rssFeeds: [sampleRSSFeed] } },
 			{ new: true },
 		)).toObject();
-
 	});
 
 	beforeEach(runWorker);
@@ -92,6 +91,7 @@ describe('RSS Feed Crawler Integration', function () {
 	describe('Delete manually created rss news', () => {
 		let manualNewsId;
 		before(async () => {
+			// eslint-disable-next-line new-cap
 			const manualNews = await new newsModel({
 				title: 'a',
 				content: 'a',

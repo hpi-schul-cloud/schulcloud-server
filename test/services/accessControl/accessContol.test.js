@@ -1,47 +1,46 @@
-'use strict';
-
 const assert = require('assert');
 const mongoose = require('mongoose');
-const app = require('../../../src/app');
-const userService = app.service('users');
 const chai = require('chai');
-const loginHelper = require('./../helpers/login');
-const testObjects = require('./../helpers/testObjects')(app);
 const promisify = require('es6-promisify');
 const _ = require('lodash');
+const app = require('../../../src/app');
+const loginHelper = require('./../helpers/login');
+const testObjects = require('./../helpers/testObjects')(app);
+
 const expect = chai.expect;
+const userService = app.service('users');
 
 const testCredentials = {
-	username: "testuser@school-of-tests.schul-cloud.org",
-	password: "passwordA",
+	username: 'testuser@school-of-tests.schul-cloud.org',
+	password: 'passwordA',
 };
 
 const ownSchool = {
-	id: '000000000000000000538001'
+	id: '000000000000000000538001',
 };
 
 const otherSchool = {
-	id: '000000000000000000000002'
+	id: '000000000000000000000002',
 };
 
 let authenticator;
 
-const testAccess = (endpoint) => () => {
-		const request = chai.request(app)
-			.get(endpoint)
-			.set('Accept', 'application/json')
-			.set('content-type', 'application/x-www-form-urlencoded');
-		return authenticator.authenticate(request)
-			.then(response => {
-				const data = response.body.data;
-				expect(data).to.have.lengthOf(1);
+const testAccess = endpoint => () => {
+	const request = chai.request(app)
+		.get(endpoint)
+		.set('Accept', 'application/json')
+		.set('content-type', 'application/x-www-form-urlencoded');
+	return authenticator.authenticate(request)
+		.then((response) => {
+			const data = response.body.data;
+			expect(data).to.have.lengthOf(1);
 
-				const schoolIds = data.map(d => d.schoolId);
-				expect(schoolIds).to.not.contain(otherSchool.id);
-			});
+			const schoolIds = data.map(d => d.schoolId);
+			expect(schoolIds).to.not.contain(otherSchool.id);
+		});
 };
 
-describe('access control', function () {
+describe('access control', () => {
 	let requestingAccount;
 	/*
 	before(() => {
@@ -74,5 +73,3 @@ describe('access control', function () {
 		testObjects.cleanup();
 	});
 });
-
-

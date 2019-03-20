@@ -1,3 +1,6 @@
+/* eslint-disable */
+
+
 const testListObjectsReturn = {
 	Contents: [
 		{Key: "testFile"},

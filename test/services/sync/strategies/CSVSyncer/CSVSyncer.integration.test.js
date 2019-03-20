@@ -1,11 +1,12 @@
-'use strict';
+
 
 const chai = require('chai');
+
 const expect = chai.expect;
 
 const app = require('../../../../../src/app');
 const roleModel = require('../../../../../src/services/role/model.js');
-const {userModel} = require('../../../../../src/services/user/model.js');
+const { userModel } = require('../../../../../src/services/user/model.js');
 const MailService = require('../../../../../src/services/helpers/service.js');
 
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
@@ -295,7 +296,6 @@ describe('CSVSyncer Integration', () => {
 			const class2bstudents = await Promise.all(class2b.userIds.map(studentLastNames));
 			expect(class2bstudents).to.include('Fry');
 			expect(class2bstudents).to.include('Rodriguez');
-
 		});
 	});
 

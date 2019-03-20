@@ -1,6 +1,8 @@
-'use strict';
+/* eslint-disable no-unused-expressions */
+
 
 const assert = require('assert');
+const chai = require('chai');
 const app = require('../../../src/app');
 
 const courseService = app.service('courses');
@@ -8,7 +10,6 @@ const copyCourseService = app.service('courses/copy');
 const shareCourseService = app.service('courses/share');
 const courseGroupService = app.service('courseGroups');
 const lessonsService = app.service('lessons');
-const chai = require('chai');
 
 const expect = chai.expect;
 
@@ -21,7 +22,7 @@ const testCourse = {
 	userIds: [],
 	classIds: [],
 	teacherIds: [],
-	ltiToolIds: []
+	ltiToolIds: [],
 };
 
 let courseId;
@@ -84,10 +85,11 @@ describe('courses service', () => {
 			chai.expect(courseName).to.equal('Mathe');
 		}));
 
-	it('creates a course copy through shareToken', () => shareCourseService.create({ shareToken, courseName: 'testCourse 76', userId: testUserId })
-		.then((course) => {
-			chai.expect(course.name).to.equal('testCourse 76');
-		}));
+	it('creates a course copy through shareToken',
+		() => shareCourseService.create({ shareToken, courseName: 'testCourse 76', userId: testUserId })
+			.then((course) => {
+				chai.expect(course.name).to.equal('testCourse 76');
+			}));
 
 	it('creates a courseGroup in a course', () => {
 		testCourseGroup.courseId = courseId;

@@ -1,27 +1,25 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const assert = require('assert');
-const app = require('../../../src/app');
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 const moodleMockServer = require('../account/moodle/moodleMockServer');
 
 const accountService = app.service('accounts');
 const userService = app.service('users');
-
-const jwt = require('jsonwebtoken');
 const logger = app.logger;
 
 chai.use(chaiHttp);
-var should = chai.should();
+const should = chai.should();
 const expect = chai.expect;
 
-describe('General login service', function () {
-
+describe('General login service', () => {
 	const testAccount = {
-		username: "poweruser@mail.schul.tech",
-		password: "passwordA",
-		token: "abcdef012345"
+		username: 'poweruser@mail.schul.tech',
+		password: 'passwordA',
+		token: 'abcdef012345',
 	};
 
 	let testSystem = null;
@@ -29,77 +27,72 @@ describe('General login service', function () {
 
 	function createMoodleTestServer() {
 		return moodleMockServer({
-			acceptUsers: [testAccount]
+			acceptUsers: [testAccount],
 		});
 	}
 
-	before(function () {
+	before(() => createMoodleTestServer()
+		.then((moodle) => {
+			mockMoodle = moodle;
+			return Promise.all([
+				testObjects.createTestSystem({ url: moodle.url }),
+				testObjects.createTestUser()]);
+		})
+		.then(([system, testUser]) => {
+			testSystem = system;
+			return testObjects.createTestAccount(Object.assign({}, testAccount), system, testUser);
+		}));
 
-		return createMoodleTestServer()
-			.then(moodle => {
-				mockMoodle = moodle;
-				return Promise.all([
-					testObjects.createTestSystem({url: moodle.url}),
-					testObjects.createTestUser()]);
+	it('should get a JWT which includes accountId and userId', () => new Promise((resolve, reject) => {
+		chai.request(app)
+			.post('/authentication')
+			.set('Accept', 'application/json')
+			.set('content-type', 'application/x-www-form-urlencoded')
+		// send credentials
+			.send({
+				username: testAccount.username,
+				password: testAccount.password,
 			})
-			.then(([system, testUser]) => {
-				testSystem = system;
-				return testObjects.createTestAccount(Object.assign({}, testAccount), system, testUser);
+			.end((err, res) => {
+				if (err) {
+					reject(err);
+					return;
+				}
+
+				const decodedToken = jwt.decode(res.body.accessToken);
+
+				// get the account id from JWT
+				decodedToken.should.have.property('accountId');
+				testObjects.createdUserIds.push(decodedToken.accountId);
+
+				Promise.all([
+					accountService.get(decodedToken.accountId),
+					userService.get(decodedToken.userId),
+				])
+					.then(([account, user]) => {
+						account.username.should.equal(testAccount.username);
+						account.should.have.property('token');
+						account.token.should.equal(mockMoodle.responseToken);
+						resolve();
+					})
+					.catch((error) => {
+						logger.error(`failed to get the account from the service: ${error}`);
+						// throw error;
+						reject(error);
+						// done();
+					});
+
+				resolve();
 			});
-	});
+	}));
 
-	it('should get a JWT which includes accountId and userId', () => {
-		return new Promise((resolve, reject) => {
-			chai.request(app)
-				.post('/authentication')
-				.set('Accept', 'application/json')
-				.set('content-type', 'application/x-www-form-urlencoded')
-				//send credentials
-				.send({
-					username: testAccount.username,
-					password: testAccount.password
-				})
-				.end((err, res) => {
-					if (err) {
-						reject(err);
-						return;
-					}
-
-					const decodedToken = jwt.decode(res.body.accessToken);
-
-					// get the account id from JWT
-					decodedToken.should.have.property('accountId');
-					testObjects.createdUserIds.push(decodedToken.accountId);
-
-					Promise.all([
-						accountService.get(decodedToken.accountId),
-						userService.get(decodedToken.userId)
-					])
-						.then(([account, user]) => {
-							account.username.should.equal(testAccount.username);
-							account.should.have.property('token');
-							account.token.should.equal(mockMoodle.responseToken);
-							resolve();
-						})
-						.catch(error => {
-							logger.error('failed to get the account from the service: ' + error);
-							//throw error;
-							reject(error);
-							//done();
-						});
-
-					resolve();
-				});
-		});
-	});
-
-	after(function (done) {
+	after((done) => {
 		testObjects.cleanup()
 			.then(() => {
 				done();
 			})
 			.catch((error) => {
-				logger.error('Could not remove test account(s): ' + error);
+				logger.error(`Could not remove test account(s): ${error}`);
 				done();
 			});
 	});
