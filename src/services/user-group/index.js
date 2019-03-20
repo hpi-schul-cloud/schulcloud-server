@@ -1,13 +1,15 @@
-'use strict';
+
 
 const service = require('feathers-mongoose');
-const {courseModel, courseGroupModel, classModel, gradeModel} = require('./model');
+const {
+	courseModel, courseGroupModel, classModel, gradeModel,
+} = require('./model');
 const hooks = require('./hooks');
 const courseGroupsHooks = require('./hooks/courseGroups');
 const courseCopyService = require('./course-copy-service');
 const classHooks = require('./hooks/classes');
 
-module.exports = function() {
+module.exports = function init() {
 	const app = this;
 
 	app.configure(courseCopyService);
@@ -17,9 +19,9 @@ module.exports = function() {
 		Model: courseModel,
 		paginate: {
 			default: 25,
-			max: 100
+			max: 100,
 		},
-		lean: true
+		lean: true,
 	}));
 	const courseService = app.service('/courses');
 	courseService.before(hooks.before);
@@ -30,9 +32,9 @@ module.exports = function() {
 		Model: courseGroupModel,
 		paginate: {
 			default: 25,
-			max: 100
+			max: 100,
 		},
-		lean: true
+		lean: true,
 	}));
 	const courseGroupService = app.service('/courseGroups');
 	courseGroupService.before(courseGroupsHooks.before);
@@ -44,9 +46,9 @@ module.exports = function() {
 		Model: classModel,
 		paginate: {
 			default: 25,
-			max: 100
+			max: 100,
 		},
-		lean: true
+		lean: true,
 	}));
 	const classService = app.service('/classes');
 	classService.before(classHooks.before);
@@ -58,9 +60,9 @@ module.exports = function() {
 		Model: gradeModel,
 		paginate: {
 			default: 25,
-			max: 100
+			max: 100,
 		},
-		lean: true
+		lean: true,
 	}));
 	const gradeService = app.service('/grades');
 	gradeService.before(hooks.before);

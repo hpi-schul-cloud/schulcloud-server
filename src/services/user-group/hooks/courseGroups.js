@@ -1,9 +1,7 @@
-'use strict';
-
-const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const _ = require('lodash');
+const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
@@ -14,15 +12,21 @@ exports.before = {
 	create: [globalHooks.hasPermission('COURSEGROUP_CREATE')],
 	update: [globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool],
 	patch: [globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
-	remove: [globalHooks.hasPermission('COURSEGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation]
+	remove: [
+		globalHooks.hasPermission('COURSEGROUP_CREATE'),
+		restrictToCurrentSchool,
+		globalHooks.permitGroupOperation,
+	],
 };
 
 exports.after = {
 	all: [],
 	find: [],
-	get: [globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'}))],
+	get: [globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({
+		errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
+	}))],
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };
