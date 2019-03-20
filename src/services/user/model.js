@@ -1,6 +1,5 @@
-'use strict';
-
 const mongoose = require('mongoose');
+const roleModel = require('../role/model');
 
 const { Schema } = mongoose;
 
@@ -15,8 +14,8 @@ const userSchema = new Schema({
 
 	birthday: { type: Date },
 
-	importHash:{type:String},
-	//inviteHash:{type:String},
+	importHash: { type: String },
+	// inviteHash:{type:String},
 
 	children: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 	parents: [{ type: Schema.Types.ObjectId, ref: 'user' }],
@@ -33,8 +32,7 @@ const userSchema = new Schema({
 	timestamps: true,
 });
 
-userSchema.methods.getPermissions = function () {
-	const roleModel = require('../role/model');
+userSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions(this.roles);
 };
 

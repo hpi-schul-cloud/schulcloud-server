@@ -57,6 +57,7 @@
     "feathers-configuration": "^0.3.3",
     "feathers-errors": "^2.5.0",
     "feathers-hooks": "^1.7.1",
+    "feathers-hooks-common": "^4.20.7",
     "feathers-mongoose": "^3.6.2",
     "feathers-rest": "^1.6.0",
     "feathers-socketio": "^2.0.1",
