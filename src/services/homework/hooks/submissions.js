@@ -45,7 +45,7 @@ const filterApplicableSubmissions = (hook) => {
 			const c = JSON.parse(JSON.stringify(e));
 			if (typeof c.teamMembers[0] === 'object') {
 				// map teamMembers list to _id list (if $populate(d) is used)
-				c.teamMembers = c.teamMembers.map(element => element._id);
+				c.teamMembers = c.teamMembers.map(m => m._id);
 			}
 
 			let promise;
@@ -58,24 +58,29 @@ const filterApplicableSubmissions = (hook) => {
 			}
 			return promise.then((courseGroup) => {
 				if (c.homeworkId.publicSubmissions // publicSubmissions allowes (everyone can see)
-					// or user is teacher
+				// or user is teacher
 					|| (c.homeworkId.teacherId || {}).toString() === hook.params.account.userId.toString()
 					// or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
 					|| c.studentId.toString() === hook.params.account.userId.toString()
-					|| c.teamMembers.includes(hook.params.account.userId.toString()) // or is a teamMember
-					|| courseGroup.userIds.includes(hook.params.account.userId.toString())) { // or in the courseGroup
+					// or is a teamMember
+					|| (c.teamMembers && c.teamMembers.includes(hook.params.account.userId.toString()))
+					// or in the courseGroup
+					|| (courseGroup
+						&& courseGroup.userIds
+						&& courseGroup.userIds.includes(hook.params.account.userId.toString()))) {
 					return true;
 				} if (c.homeworkId.courseId) {
 					const courseService = hook.app.service('/courses');
 					return courseService.get(c.homeworkId.courseId)
-						.then(course => (
-							// or user is teacher
-							(course || {}).teacherIds || []).includes(hook.params.account.userId.toString())
-							// or user is substitution teacher
-							|| ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString()))
-						.catch(() => Promise.reject(
-							new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach course service" }),
-						));
+						// or user is teacher
+						.then(course => ((course || {}).teacherIds || [])
+							.includes(hook.params.account.userId.toString())
+						// or user is substitution teacher
+                            || ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString()))
+
+						.catch(() => Promise.reject(new errors.GeneralError({
+							message: "[500 INTERNAL ERROR] - can't reach course service",
+						})));
 				}
 				return false;
 			});
@@ -87,7 +92,6 @@ const filterApplicableSubmissions = (hook) => {
 				hook.total = data.length;
 				hook.result = data;
 			}
-			return Promise.resolve(hook);
 		});
 	}
 	return Promise.resolve(hook);
@@ -168,9 +172,9 @@ const insertSubmissionsData = (hook) => {
 		hook.data.submissions = submissions.data;
 		return Promise.resolve(hook);
 	})
-		.catch(() => Promise.reject(
-			new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" }),
-		));
+		.catch(() => Promise.reject(new errors.GeneralError({
+			message: "[500 INTERNAL ERROR] - can't reach submission service",
+		})));
 };
 
 const preventNoTeamMember = (hook) => {
@@ -259,16 +263,18 @@ const populateCourseGroup = (hook) => {
 
 const maxTeamMembers = (hook) => {
 	if (!hook.data.isTeacher && hook.data.homework.teamSubmissions) {
-		if (
-			((hook.data.homework.maxTeamMembers || 0) >= 1
-				&& ((hook.data.teamMembers || []).length > hook.data.homework.maxTeamMembers))
-			|| (hook.courseGroupTemp
-				&& (hook.courseGroupTemp.userIds || []).length > hook.data.homework.maxTeamMembers)
-		) {
-			return Promise.reject(new errors.Conflict({
-				message: `Dein Team ist größer als erlaubt! (maximal ${hook.data.homework.maxTeamMembers}`
+		if (hook.data.homework.maxTeamMembers) {
+			// NOTE the following conditional is a bit hard to understand.
+			// To prevent side effects, I added a pre-conditional above.
+			if (((hook.data.homework.maxTeamMembers || 0) >= 1
+					&& ((hook.data.teamMembers || []).length > hook.data.homework.maxTeamMembers))
+				|| (hook.courseGroupTemp
+					&& (hook.courseGroupTemp.userIds || []).length > hook.data.homework.maxTeamMembers)) {
+				return Promise.reject(new errors.Conflict({
+					message: `Dein Team ist größer als erlaubt! ( maximal ${hook.data.homework.maxTeamMembers}`
 					+ 'Teammitglieder erlaubt)',
-			}));
+				}));
+			}
 		}
 	} else if ((hook.data.teamMembers || []).length > 1) {
 		return Promise.reject(new errors.Conflict({

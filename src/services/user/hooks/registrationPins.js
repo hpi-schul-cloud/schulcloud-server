@@ -17,26 +17,28 @@ function createinfoText(hook) {
 	let text;
 	const role = hook.data.mailTextForRole;
 	const pin = hook.data.pin;
+	const shortTitle = process.env.SC_SHORT_TITLE || 'Schul-Cloud*';
+	const longTitle = process.env.SC_TITLE || 'HPI Schul-Cloud*';
 	if (!role || !pin) {
 		logger.warn('Role or PIN missing to define mail text.');
 		return '';
 	}
 	if (role === 'parent') {
-		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der HPI Schul-Cloud ermöglichen.
-Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen.
+		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der ${longTitle} ermöglichen.
+Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen:
 
 PIN: ${pin}
 
 Mit Freundlichen Grüßen
-Ihr Schul-Cloud Team`;
+Ihr ${shortTitle} Team`;
 	} else if (role === 'student' || role === 'employee' || role === 'expert') {
-		text = `Vielen Dank, dass du die HPI Schul-Cloud nutzen möchtest.
-Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen.
+		text = `Vielen Dank, dass du die ${longTitle} nutzen möchtest.
+Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen:
 
 PIN: ${pin}
 
 Mit freundlichen Grüßen
-Ihr Schul-Cloud Team`;
+Dein ${shortTitle} Team`;
 	} else {
 		logger.warn('No valid role submitted to define mail text.');
 		return '';
@@ -55,7 +57,7 @@ const checkAndVerifyPin = (hook) => {
 const mailPin = (hook) => {
 	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
-			subject: 'Schul-Cloud: Registrierung mit PIN verifizieren',
+			subject: `${process.env.SC_SHORT_TITLE || 'Schul-Cloud*'}: Registrierung mit PIN verifizieren`,
 			emails: (hook.data || {}).email,
 			content: {
 				text: createinfoText(hook),

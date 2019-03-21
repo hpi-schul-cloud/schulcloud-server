@@ -1,6 +1,5 @@
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
 const _ = require('lodash');
+const auth = require('feathers-authentication');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
@@ -15,23 +14,24 @@ const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToU
 const addWholeClassToCourse = (hook) => {
 	const requestBody = hook.data;
 	const course = hook.result;
+	if (requestBody.classIds === undefined) {
+		return hook;
+	}
 	if ((requestBody.classIds || []).length > 0) { // just courses do have a property "classIds"
 		return Promise.all(requestBody.classIds.map(classId => ClassModel.findById(classId).exec()
 			.then(c => c.userIds)))
-			.then((studentIds) => {
+			.then(async (studentIds) => {
 			// flatten deep arrays and remove duplicates
 				studentIds = _.uniqWith(
 					_.flattenDeep(studentIds),
 					(e1, e2) => JSON.stringify(e1) === JSON.stringify(e2),
 				);
 
-				// add all students of classes to course, if not already added
-				return Promise.all(studentIds.map((s) => {
-					if (!_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(s))) {
-						return CourseModel.update({ _id: course._id }, { $push: { userIds: s } }).exec();
-					}
-					return {};
-				})).then(() => hook);
+				await CourseModel.update(
+					{ _id: course._id },
+					{ $addToSet: { userIds: { $each: studentIds } } },
+				).exec();
+				return hook;
 			});
 	}
 	return hook;
@@ -46,6 +46,9 @@ const addWholeClassToCourse = (hook) => {
 const deleteWholeClassFromCourse = (hook) => {
 	const requestBody = hook.data;
 	const courseId = hook.id;
+	if (requestBody.classIds === undefined && requestBody.user === undefined) {
+		return hook;
+	}
 	return CourseModel.findById(courseId).exec().then((course) => {
 		if (!course) return hook;
 
@@ -53,25 +56,21 @@ const deleteWholeClassFromCourse = (hook) => {
 		if (removedClasses.length < 1) return hook;
 		return Promise.all(removedClasses.map(classId => ClassModel.findById(classId).exec()
 			.then(c => (c || []).userIds)))
-			.then((studentIds) => {
+			.then(async (studentIds) => {
 			// flatten deep arrays and remove duplicates
 				studentIds = _.uniqWith(
 					_.flattenDeep(studentIds),
 					(e1, e2) => JSON.stringify(e1) === JSON.stringify(e2),
 				);
 
-				// remove all students of classes from course, if they are in course
-				return Promise.all(studentIds.map((s) => {
-					if (!_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(s))) {
-						return CourseModel.update({ _id: course._id }, { $pull: { userIds: s } }).exec();
-					}
-					return {};
-				})).then((result) => {
-				// also remove all students from request body for not reading them in after hook
-					requestBody.userIds = _.differenceBy(requestBody.userIds, studentIds, v => JSON.stringify(v));
-					hook.data = requestBody;
-					return hook;
-				});
+				// remove class students from course DB and from hook body to not patch them back
+				await CourseModel.update(
+					{ _id: course._id },
+					{ $pull: { userIds: { $in: studentIds } } },
+					{ multi: true },
+				).exec();
+				hook.data.userIds = hook.data.userIds.filter(value => !studentIds.some(id => id.toString() === value));
+				return hook;
 			});
 	});
 };
@@ -105,10 +104,20 @@ exports.before = {
 	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool, restrictToUsersOwnCourses],
 	get: [courseInviteHook],
 	create: [globalHooks.injectUserId, globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
-	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
-	patch: [patchPermissionHook, restrictToCurrentSchool, globalHooks.permitGroupOperation,
-		deleteWholeClassFromCourse],
-	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
+	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, restrictToUsersOwnCourses],
+	patch: [
+		patchPermissionHook,
+		restrictToCurrentSchool,
+		globalHooks.permitGroupOperation,
+		restrictToUsersOwnCourses,
+		deleteWholeClassFromCourse,
+	],
+	remove: [
+		globalHooks.hasPermission('USERGROUP_CREATE'),
+		restrictToCurrentSchool,
+		restrictToUsersOwnCourses,
+		globalHooks.permitGroupOperation,
+	],
 };
 
 exports.after = {
