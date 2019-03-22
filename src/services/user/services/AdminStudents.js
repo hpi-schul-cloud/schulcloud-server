@@ -65,7 +65,7 @@ class AdminStudents {
 			const { schoolId } = currentUser;
 
 			// permission check
-			if (!currentUser.roles.some(role => ['administrator', 'superhero'].includes(role.name))) {
+			if (!currentUser.roles.some(role => ['teacher', 'administrator', 'superhero'].includes(role.name))) {
 				throw new Forbidden();
 			}
 
