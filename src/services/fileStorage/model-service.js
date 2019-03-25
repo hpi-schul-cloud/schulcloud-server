@@ -1,8 +1,5 @@
-'use strict';
-
 const service = require('feathers-mongoose');
-const fileModel = require('./model').fileModel;
-const directoryModel = require('./model').directoryModel;
+const { FileModel } = require('./model');
 const hooks = require('./hooks/model-hooks');
 const EventMatcher = require('../../events/eventMatcher');
 
@@ -10,21 +7,12 @@ module.exports = function () {
 	const app = this;
 
 	const fileOptions = {
-		Model: fileModel,
+		Model: FileModel,
 		paginate: {
 			default: 10000,
 			max: 10000
 		},
-		lean: true
-	};
-
-	const directoryOptions = {
-		Model: directoryModel,
-		paginate: {
-			default: 10000,
-			max: 10000
-		},
-		lean: true
+		lean: true,
 	};
 
 	// Initialize our service with any options it requires

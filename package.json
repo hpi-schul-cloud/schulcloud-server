@@ -1,15 +1,17 @@
 {
   "name": "schulcloud-server",
   "description": "",
-  "version": "0.12.0",
-  "homepage": "",
+  "version": "0.13.0",
+  "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
     "feathers"
   ],
   "license": "GPL",
   "repository": {},
-  "author": {},
+  "author": {
+    "name": "Schul-Cloud Team"
+  },
   "contributors": [],
   "bugs": {},
   "engines": {
@@ -17,19 +19,18 @@
   },
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
-    "test": "./backup.sh -p setup/ -D schulcloud-test -a import && npm run coverage",
-    "test-windows": "sh ./backup.sh -p setup/ -D schulcloud-test -a import && npm run lint && npm run mocha-windows",
-    "test-windows-wo-db": "npm run lint && npm run mocha-windows",
+    "seed": "./backup.sh -p setup/ -D schulcloud-test -a import",
+    "test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
     "backup": "./backup.sh -a -b export",
     "setup": "./backup.sh -p setup/ -a import",
     "start": "node src/",
     "startd": "nodemon src/",
     "debug": "nodemon --inspect=5959 src/",
-    "coverage": "NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha -- -- test/**/*.test.js",
-    "mocha": "NODE_ENV=test mocha test/ --recursive",
-    "mocha-windows": "set NODE_ENV=test && mocha test/ --recursive",
-    "mocha-inspect": "NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
-    "mocha-test-specific-windows": "set NODE_ENV=test && mocha test/app.hooks.test.js"
+    "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha -- -- test/**/*.test.js",
+    "mocha": "cross-env NODE_ENV=test mocha test/ --recursive",
+    "mocha-inspect": "cross-env NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
+    "migrations": "cross-env NODE_ENV=migration node migrations/",
+    "migrations-dry": "cross-env NODE_ENV=migration node migrations/ --dry"
   },
   "dependencies": {
     "aws-sdk": "^2.306.0",
@@ -43,7 +44,9 @@
     "config": "^3.0.0",
     "console-stamp": "^0.2.5",
     "cors": "^2.8.1",
+    "cross-env": "^5.2.0",
     "crypto-js": "^3.1.9-1",
+    "csv-parse": "^4.0.1",
     "ejs": "^2.5.5",
     "email-templates": "^2.5.4",
     "es6-promisify": "^5.0.0",
@@ -62,6 +65,7 @@
     "file-type": "^9.0.0",
     "freeport": "^1.0.5",
     "jwt-decode": "^2.2.0",
+    "ldapjs": "git+https://git@github.com/Blizzard/node-ldapjs.git",
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
     "mongoose": "^4.7.6",
@@ -79,6 +83,7 @@
     "randexp": "^0.4.6",
     "read-chunk": "^3.0.0",
     "request-promise-native": "^1.0.3",
+    "rss-parser": "^3.6.2",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
     "socketio": "^1.0.0",

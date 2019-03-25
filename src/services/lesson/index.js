@@ -72,23 +72,20 @@ class LessonCopyService {
 
 							// check whether the file is included in any lesson
 							return _.some((sourceLesson.contents || []), content => {
-								return content.component === "text" && content.content.text && _.includes(content.content.text, decodeURIComponent(f.key));
+								return content.component === "text" && content.content.text && _.includes(content.content.text, f._id);
 							});
 						}))
 							.then(lessonFiles => {
 								return Promise.all(lessonFiles.map(f => {
 
 									let fileData = {
-										fileName: encodeURIComponent(f.name),
-										oldPath: f.path,
-										newPath: `courses/${newCourseId}/`,
-										externalSchoolId: originalSchoolId,
-										userId: params.account.userId
+										file: f._id,
+										parent: newCourseId
 									};
 
 									let fileStorageService = this.app.service('/fileStorage/copy/');
 
-									return fileStorageService.create(fileData)
+									return fileStorageService.create(fileData, params)
 										.then(newFile => {
 											fileChangelog.push({
 												"old": `${sourceLesson.courseId._id}/${f.name}`,

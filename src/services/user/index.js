@@ -4,7 +4,11 @@ const service = require('feathers-mongoose');
 const user = require('./model');
 const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
+const publicTeachersHooks = require('./hooks/publicTeachers');
 const errors = require('feathers-errors');
+const firstLoginHooks = require('./hooks/firstLogin');
+const { AdminStudents } = require('./services');
+const adminHook = require('./hooks/admin');
 
 const userDataFilter=(user)=>{
 	return {
@@ -43,7 +47,7 @@ module.exports = function () {
 	const options = {
 		Model: user.userModel,
 		paginate: {
-			default: 25,
+			default: 1000,
 			max: 1000
 		},
 		lean: true
@@ -58,6 +62,21 @@ module.exports = function () {
 	userService.before(hooks.before(app));	// TODO: refactor
 	userService.after(hooks.after);
 
+	/* publicTeachers Service */
+	app.use('/publicTeachers', service({
+		Model: user.userModel,
+		paginate: {
+			default: 25,
+			max: 1000
+		},
+		lean: true
+	}));
+
+	const publicTeachersService = app.service('/publicTeachers');
+	publicTeachersService.before(publicTeachersHooks.before);
+	publicTeachersService.after(publicTeachersHooks.after);
+
+
 	/* registrationPin Service */
 	app.use('/registrationPins', service({
 		Model: user.registrationPinModel,
@@ -69,4 +88,19 @@ module.exports = function () {
 	const registrationPinService = app.service('/registrationPins');
 	registrationPinService.before(registrationPinsHooks.before);
 	registrationPinService.after(registrationPinsHooks.after);
+
+	const RegistrationService = require('./registration')(app);
+	app.use('/registration', new RegistrationService());
+	
+	const FirstLoginService = require('./firstLogin')(app);
+	app.use('/firstLogin', new FirstLoginService());
+	const firstLoginService = app.service('firstLogin');
+	firstLoginService.before(firstLoginHooks.before);
+	firstLoginService.after(firstLoginHooks.after);
+
+	const adminStudentsRoute = '/users/admin/students';
+	app.use(adminStudentsRoute, new AdminStudents());
+	const adminStudentsService = app.service(adminStudentsRoute);
+	adminStudentsService.before(adminHook.before);
+	adminStudentsService.after(adminHook.after);
 };
