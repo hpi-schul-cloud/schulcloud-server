@@ -27,8 +27,4 @@ module.exports = function () {
 	fileModelService.on('removed', (message, context) => { EventMatcher.emit('file','removed', message, context); });
 
 
-	app.use('/directories', service(directoryOptions));
-	const directoryModelService = app.service('directories');
-	directoryModelService.before(hooks.before);
-	directoryModelService.after(hooks.after);
 };
