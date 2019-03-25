@@ -28,7 +28,10 @@ class Permission {
 		});
 	}
 
-	patch({ read, write, create }, params) {
+	/**
+	 * If any value it not set, it is mapped to false.
+	 */
+	patch(permissionId, { read = false, write = false, create = false }, params) {
 		return request(link(params.sectionId), params, {
 			data: { read, write, create },
 		});
