@@ -14,9 +14,12 @@ class CSVSyncer extends Syncer {
 		this.sendEmails = sendEmails;
 		this.csvData = csvData;
 		this.requestParams = params;
+
 		Object.assign(this.stats, {
 			users: {
 				successful: 0,
+				created: 0,
+				updated: 0,
 				failed: 0,
 			},
 			invitations: {
@@ -25,6 +28,8 @@ class CSVSyncer extends Syncer {
 			},
 			classes: {
 				successful: 0,
+				created: 0,
+				updated: 0,
 				failed: 0,
 			},
 		});
@@ -57,19 +62,28 @@ class CSVSyncer extends Syncer {
 	/**
 	 * @see {Syncer#steps}
 	 */
-	steps() {
-		return super.steps()
-			.then(async () => {
-				const records = this.parseCsvData();
-				const users = await this.enrichUserData(records);
-				const userObjects = await this.createUsers(users);
-				if (this.importClasses) await this.createClasses(users, userObjects);
-				if (this.sendEmails) {
-					const createdUsers = users.filter(u => u.created);
-					await this.emailUsers(createdUsers);
+	async steps() {
+		await super.steps();
+		const records = this.parseCsvData();
+		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
+		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
+
+		const actions = Object.values(clusteredRecords).map((record) => {
+			return async () => {
+				const enrichedRecord = await this.enrichUserData(record);
+				const user = await this.createOrUpdateUser(enrichedRecord);
+				if (this.importClasses) {
+					await this.createClasses(enrichedRecord, user);
 				}
-				return this.stats;
-			});
+			};
+		});
+
+		while (actions.length > 0) {
+			const action = actions.shift();
+			await action.apply(this);
+		}
+
+		return this.stats;
 	}
 
 	static requiredAttributes() {
@@ -128,141 +142,187 @@ class CSVSyncer extends Syncer {
 		return records;
 	}
 
-	enrichUserData(records) {
-		return Promise.all(records.map(async (user) => {
-			const linkData = await this.generateRegistrationLink({
-				role: this.role,
-				schoolId: this.schoolId,
-				save: true,
-				toHash: user.email,
-			});
-			const enrichedUser = Object.assign(user, {
-				schoolId: this.schoolId,
-				roles: [this.role],
-				sendRegistration: true,
-			});
-			enrichedUser.importHash = linkData.hash;
-			enrichedUser.shortLink = linkData.shortLink;
-			return enrichedUser;
+	static sanitizeRecords(records) {
+		return records.map(record => ({
+			...record,
+			email: record.email.trim().toLowerCase(),
 		}));
+	}
+
+	clusterByEmail(records) {
+		const recordsByEmail = {};
+		records.forEach(async (record) => {
+			if (recordsByEmail[record.email]) {
+				this.stats.errors.push({
+					type: 'user',
+					entity: `${record.firstName},${record.lastName},${record.email}`,
+					message: `Mehrfachnutzung der E-Mail-Adresse "${record.email}". Nur der erste Eintrag wird importiert, alle weiteren ignoriert.`,
+				});
+				this.stats.users.failed += 1;
+			} else {
+				recordsByEmail[record.email] = record;
+			}
+		});
+		return recordsByEmail;
+	}
+
+	async enrichUserData(record) {
+		const linkData = await this.generateRegistrationLink({
+			role: this.role,
+			schoolId: this.schoolId,
+			save: true,
+			toHash: record.email,
+		});
+		const enrichedUser = Object.assign(record, {
+			schoolId: this.schoolId,
+			roles: [this.role],
+			sendRegistration: true,
+		});
+		enrichedUser.importHash = linkData.hash;
+		enrichedUser.shortLink = linkData.shortLink;
+		return enrichedUser;
 	}
 
 	generateRegistrationLink(params) {
 		return this.app.service('registrationlink').create(params);
 	}
 
-	async createUsers(users) {
-		const createdUsers = [];
-		for (const user of users) {
-			try {
-				const userObject = await this.createUser(user);
-				user.created = true;
-				createdUsers.push(userObject);
-				this.stats.users.successful += 1;
-			} catch (err) {
-				this.logError('Cannot create user', user, JSON.stringify(err));
-				this.stats.users.failed += 1;
-				if (err.message.startsWith('user validation failed')) {
-					this.stats.errors.push({
-						type: 'user',
-						entity: `${user.firstName},${user.lastName},${user.email}`,
-						message: `Ungültiger Wert in Spalte "${err.message.match(/Path `(.+)` is required/)[1]}"`,
-					});
-				} else {
-					this.stats.errors.push({
-						type: 'user',
-						entity: `${user.firstName},${user.lastName},${user.email}`,
-						message: err.message,
-					});
-				}
-			}
+	async createOrUpdateUser(record) {
+		const userId = await this.findUserIdForRecord(record);
+		if (userId === null) {
+			return this.createUser(record);
 		}
-		return createdUsers;
+		return this.updateUser(userId, record);
 	}
 
-	createUser(user) {
-		return this.app.service('users').create(user, this.requestParams);
+	async findUserIdForRecord(record) {
+		const users = await this.app.service('users').find({
+			query: {
+				email: record.email,
+			},
+			paginate: false,
+			lean: true,
+		}, this.requestParams);
+		if (users.length >= 1) {
+			return users[0]._id;
+		}
+		return null;
 	}
 
-	emailUsers(users) {
-		return Promise.all(users.map(async (user) => {
-			try {
-				if (user && user.email && user.schoolId && user.shortLink) {
-					await this.app.service('mails').create({
-						email: user.email,
-						subject: `Einladung für die Nutzung der ${process.env.SC_TITLE}!`,
-						headers: {},
-						content: {
-							text: `Einladung in die ${process.env.SC_TITLE}\n`
-								+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
-								+ `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
-								+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
-								+ user.shortLink + '\n'
-								+ 'Viel Spaß und einen guten Start wünscht dir dein '
-								+ `${process.env.SC_SHORT_TITLE}-Team`,
-						},
-					});
-					this.stats.invitations.successful += 1;
-				} else {
-					throw new Error('Invalid user object');
-				}
-			} catch (err) {
-				this.stats.invitations.failed += 1;
-				this.stats.errors.push({
-					type: 'invitation',
-					entity: user.email,
-					message: 'Die automatische Einladungs-E-Mail konnte nicht gesendet werden. Bitte manuell einladen.',
-				});
-				this.logError('Cannot send invitation link to user', err);
+	async createUser(record) {
+		let userObject;
+		try {
+			userObject = await this.app.service('users').create(record, this.requestParams);
+			this.stats.users.created += 1;
+			this.stats.users.successful += 1;
+			if (this.sendEmails) {
+				await this.emailUser(record);
 			}
-		}));
+		} catch (err) {
+			this.logError('Cannot create user', record, JSON.stringify(err));
+			this.handleUserError(err, record);
+		}
+		return userObject;
 	}
 
-	async createClasses(records, users) {
-		const sanitize = (email = '') => email.toLowerCase().trim();
-		const byEmail = collection => collection.reduce((dict, item) => {
-			dict[sanitize(item.email)] = item;
-			return dict;
-		}, {});
-		const classes = CSVSyncer.extractClassesToBeCreated(records);
-		const userByEmail = byEmail(users);
+	async updateUser(userId, record) {
+		let userObject;
+		try {
+			const patch = {
+				firstName: record.firstName,
+				lastName: record.lastName,
+			};
+			const params = {
+				/*
+				query and payload need to be deleted, so that feathers doesn't want to update
+				multiple database objects (or none in this case). We still need the rest of
+				the requestParams to authenticate as Admin
+				*/
+				...this.requestParams,
+				query: undefined,
+				payload: undefined,
+			};
+			userObject = await this.app.service('users').patch(userId, patch, params);
+			this.stats.users.updated += 1;
+			this.stats.users.successful += 1;
+		} catch (err) {
+			this.logError('Cannot update user', record, JSON.stringify(err));
+			this.handleUserError(err, record);
+		}
+		return userObject;
+	}
+
+	handleUserError(err, record) {
+		this.stats.users.failed += 1;
+		if (err.message.startsWith('user validation failed')) {
+			this.stats.errors.push({
+				type: 'user',
+				entity: `${record.firstName},${record.lastName},${record.email}`,
+				message: `Ungültiger Wert in Spalte "${err.message.match(/Path `(.+)` is required/)[1]}"`,
+			});
+		} else {
+			this.stats.errors.push({
+				type: 'user',
+				entity: `${record.firstName},${record.lastName},${record.email}`,
+				message: err.message,
+			});
+		}
+	}
+
+	async emailUser(user) {
+		try {
+			if (user && user.email && user.schoolId && user.shortLink) {
+				await this.app.service('mails').create({
+					email: user.email,
+					subject: `Einladung für die Nutzung der ${process.env.SC_TITLE}!`,
+					headers: {},
+					content: {
+						text: `Einladung in die ${process.env.SC_TITLE}\n`
+							+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
+							+ `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
+							+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
+							+ `${user.shortLink}\n\n`
+							+ 'Viel Spaß und einen guten Start wünscht dir dein '
+							+ `${process.env.SC_SHORT_TITLE}-Team`,
+					},
+				});
+				this.stats.invitations.successful += 1;
+			} else {
+				throw new Error('Invalid user object');
+			}
+		} catch (err) {
+			this.stats.invitations.failed += 1;
+			this.stats.errors.push({
+				type: 'invitation',
+				entity: user.email,
+				message: 'Die automatische Einladungs-E-Mail konnte nicht gesendet werden. Bitte manuell einladen.',
+			});
+			this.logError('Cannot send invitation link to user', err);
+		}
+	}
+
+	async createClasses(record, user) {
+		if (user === undefined) return;
+		const classes = CSVSyncer.splitClasses(record.class);
 		const classMapping = await this.buildClassMapping(classes);
-		const collection = this.role === 'teacher' ? 'teacherIds' : 'userIds';
-		records.forEach((record) => {
-			const user = userByEmail[sanitize(record.email)];
-			if (user === undefined) return;
-			const splitClasses = CSVSyncer.splitClasses(record.class);
-			splitClasses.forEach((klass) => {
-				const classObject = classMapping[klass];
-				if (classObject === undefined) return;
-				classObject[collection].push(user._id);
-			});
-		});
 
-		Object.keys(classMapping).forEach(async (key) => {
-			const classObject = classMapping[key];
-			// convert Mongoose array to vanilla JS array to keep the sanitize hook happy:
-			const importIds = classObject[collection].map(u => u);
-			const patchData = {};
-			patchData[collection] = importIds;
-			await this.app.service('/classes').patch(classObject._id, patchData);
-		});
-	}
+		const actions = classes.map(async (klass) => {
+			const classObject = classMapping[klass];
+			if (classObject === undefined) return;
 
-	static extractClassesToBeCreated(records) {
-		return records.reduce((list, record) => {
-			const classes = CSVSyncer.splitClasses(record.class);
-			classes.forEach((klass) => {
-				if (klass !== '' && !list.includes(klass)) {
-					list.push(klass);
-				}
-			});
-			return list;
-		}, []);
+			const collection = this.role === 'teacher' ? 'teacherIds' : 'userIds';
+			const importIds = classObject[collection].map(uid => uid.toString());
+			if (!importIds.includes(user._id.toString())) {
+				const patchData = {};
+				patchData[collection] = [...importIds, user._id.toString()];
+				await this.app.service('/classes').patch(classObject._id, patchData);
+			}
+		});
+		await Promise.all(actions);
 	}
 
 	static splitClasses(classes) {
-		return classes.split('+');
+		return classes.split('+').filter(name => name !== '');
 	}
 
 	async getClassObject(klass) {
@@ -298,36 +358,14 @@ class CSVSyncer extends Syncer {
 		throw new Error('Class name does not match any format:', klass);
 	}
 
-	async findOrCreateClass(classObject) {
-		const existing = await this.app.service('/classes').find({
-			query: classObject,
-			paginate: false,
-			lean: true,
-		});
-		if (existing.length === 0) {
-			return this.app.service('/classes').create(classObject);
-		}
-		return existing[0];
-	}
-
-	async findGradeLevel(query) {
-		const existing = await this.app.service('/gradeLevels').find({
-			query,
-			paginate: false,
-			lean: true,
-		});
-		if (existing.length >= 0) {
-			return existing[0];
-		}
-		throw new Error('Invalid grade level');
-	}
-
 	async buildClassMapping(classes) {
 		const classMapping = {};
 		await Promise.all(classes.map(async (klass) => {
 			try {
-				const classObject = await this.getClassObject(klass);
-				classMapping[klass] = await this.findOrCreateClass(classObject);
+				if (classMapping[klass] === undefined) {
+					const classObject = await this.getClassObject(klass);
+					classMapping[klass] = await this.findOrCreateClass(classObject);
+				}
 				this.stats.classes.successful += 1;
 			} catch (err) {
 				this.stats.classes.failed += 1;
@@ -341,6 +379,33 @@ class CSVSyncer extends Syncer {
 			return Promise.resolve();
 		}));
 		return classMapping;
+	}
+
+	async findOrCreateClass(classObject) {
+		const existing = await this.app.service('/classes').find({
+			query: classObject,
+			paginate: false,
+			lean: true,
+		});
+		if (existing.length === 0) {
+			const newClass = this.app.service('/classes').create(classObject);
+			this.stats.classes.created += 1;
+			return newClass;
+		}
+		this.stats.classes.updated += 1;
+		return existing[0];
+	}
+
+	async findGradeLevel(query) {
+		const existing = await this.app.service('/gradeLevels').find({
+			query,
+			paginate: false,
+			lean: true,
+		});
+		if (existing.length >= 0) {
+			return existing[0];
+		}
+		throw new Error('Invalid grade level');
 	}
 }
 
