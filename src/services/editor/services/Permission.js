@@ -22,9 +22,15 @@ class Permission {
 	 * @param create Can edit a section structure. Example: teacher can create and edit new answers.
 	 * @example {read:false, write:true, create:true} will allow you create new answers AND edit this answers. Read is override by the higher permissions.
 	 */
-	async create({ group, read, write, create }, params) {
+	create({ group, read, write, create }, params) {
 		return request(link(params.sectionId), params, {
 			data: { group, read, write, create },
+		});
+	}
+
+	patch({ read, write, create }, params) {
+		return request(link(params.sectionId), params, {
+			data: { read, write, create },
 		});
 	}
 

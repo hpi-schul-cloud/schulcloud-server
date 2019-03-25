@@ -2,7 +2,7 @@
 const logger = require('../../../logger/');
 const { userModel } = require('../../models');
 
-const isGroup = e => !undefined && typeof e === 'object' && e.type === 'group' && e.users;
+const isGroup = e => !e && e !== null && typeof e === 'object' && e.type === 'group' && e.users;
 
 // eslint-disable-next-line arrow-body-style
 const mapUsers = users => users.map((user) => {
