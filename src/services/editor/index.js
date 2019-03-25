@@ -62,7 +62,7 @@ module.exports = function setup() {
 	permissions.before(before);
 	permissions.after(after);
 
-	if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === undefined) {
+	if (['local', 'test'].includes(process.env.NODE_ENV)) {
 		app.use(`${route}test`, new Test());
 	}
 };
