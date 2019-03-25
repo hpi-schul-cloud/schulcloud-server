@@ -1,8 +1,4 @@
 const auth = require('feathers-authentication');
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-const newsModel = require('../model').newsModel;
-const newsHistoryModel = require('../model').newsHistoryModel;
-const userModel = require('../../user/model').userModel;
 const logger = require('winston');
 const globalHooks = require('../../../hooks');
 const { newsModel, newsHistoryModel } = require('../model');
