@@ -33,7 +33,6 @@ const passRequestDataToParams = (context) => {
 	try {
 		context.params.request.userId = context.params.account.userId.toString();
 	} catch (err) {
-		logger.warn('User is not defined!');
 		context.params.request.userId = 'unknown';
 	}
 	return context;

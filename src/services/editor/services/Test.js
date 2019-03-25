@@ -19,7 +19,7 @@ class Test {
 		const [user1, user2] = await userModel.find({}).limit(2).exec();
 		const fakeData = { users: [user2.id] };
 		const jwt = await jwtService.create({ userId: user1.id });
-		return this.app.service('/editor/lessons').create(fakeData, fakeParams(user1.id)).then((lesson) => {
+		return this.app.service('/editor/lessons').create(fakeData, fakeParams({ userId: user1.id })).then((lesson) => {
 			lesson.jwt = jwt;
 			return lesson;
 		});

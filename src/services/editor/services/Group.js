@@ -16,9 +16,9 @@ class Group {
 		});
 	}
 
-	patch(groupId, { users }, params) {
+	patch(groupId, { owner, users }, params) {
 		return request(uri, params, {
-			data: { users },
+			data: { owner, users },
 		});
 	}
 

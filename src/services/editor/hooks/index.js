@@ -12,7 +12,7 @@ const before = {
 	all: [
 		authenticate('jwt'),
 		passRequestDataToParams,
-		saveAndClearQuery,
+		ifNotLocal(saveAndClearQuery),
 	],
 	find: [],
 	get: [],

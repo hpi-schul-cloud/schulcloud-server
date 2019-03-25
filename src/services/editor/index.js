@@ -9,13 +9,16 @@ const {
 	Test,
 } = require('./services/');
 const { before, after, beforeLesson } = require('./hooks');
+const { setForceKey } = require('./helper');
 
 // subscriptions lesson->steps / , sections, group
 
 module.exports = function setup() {
 	const app = this;
 	const route = '/editor/';
-	
+
+	setForceKey(app);
+
 	const permissionsRoute = `${route}sections/:sectionId/permissions`;
 	const groupsRoute = `${route}groups`;
 	const sectionsRoute = `${route}sections`;
