@@ -32,10 +32,12 @@ const toQueryString = paramsObject => Object
 const combineOptions = (userOptions) => {
 	const options = Object.assign([], notificationOptions);
 	for (const g in options) {
-		for (const n in options[g].notifications) {
-			const notification = options[g].notifications[n];
-			if (userOptions.hasOwnProperty(notification.notification)) {
-				options[g].notifications[n].subscription = userOptions[notification.notification];
+		if (options.hasOwnProperty(g)) {
+			for (const n in options[g].notifications) {
+				const notification = options[g].notifications[n];
+				if (userOptions.hasOwnProperty(notification.notification)) {
+					options[g].notifications[n].subscription = userOptions[notification.notification];
+				}
 			}
 		}
 	}
@@ -67,6 +69,23 @@ class MessageService {
 
 	create(data, params) {
 		return sendMessage(data.template, data.payload, data.users);
+	}
+
+	find(params) {
+		const serviceUrls = this.app.get('services') || {};
+		const limit = params.limit || 10;
+		const skip = params.skip || 0;
+		const userId = (params.account || {}).userId || params.payload.userId;
+		const options = {
+			uri: `${serviceUrls.notification}/messages/user/${userId}`,
+			headers: {
+				token: userId,
+			},
+			body: JSON.stringify({ limit, skip }),
+			json: true,
+		};
+
+		return request(options);
 	}
 
 	get(id, params) {
