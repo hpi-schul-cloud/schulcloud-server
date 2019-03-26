@@ -7,6 +7,8 @@ const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const errors = require('feathers-errors');
 const firstLoginHooks = require('./hooks/firstLogin');
+const { AdminStudents } = require('./services');
+const adminHook = require('./hooks/admin');
 
 const userDataFilter = (user) => {
 	return {
@@ -94,4 +96,10 @@ module.exports = function setup() {
 	const firstLoginService = app.service('firstLogin');
 	firstLoginService.before(firstLoginHooks.before);
 	firstLoginService.after(firstLoginHooks.after);
+
+	const adminStudentsRoute = '/users/admin/students';
+	app.use(adminStudentsRoute, new AdminStudents());
+	const adminStudentsService = app.service(adminStudentsRoute);
+	adminStudentsService.before(adminHook.before);
+	adminStudentsService.after(adminHook.after);
 };

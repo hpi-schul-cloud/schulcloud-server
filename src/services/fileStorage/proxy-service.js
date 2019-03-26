@@ -132,6 +132,14 @@ const fileStorageService = {
 						.catch(() => undefined),
 				);
 				return Promise.all(permissionPromises);
+			})
+			.then((allowedFiles) => {
+				const files = allowedFiles.filter(f => f);
+				if (!files.length) {
+					return new Forbidden();
+				}
+
+				return files;
 			});
 	},
 
@@ -405,6 +413,19 @@ const directoryService = {
 
 		if (owner) {
 			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
+		}
+
+		if (isCourse) {
+			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
+
+			permissions.push({
+				refId: studentRoleId,
+				refPermModel: 'role',
+				write: false,
+				read: true, // students can always read course files
+				create: false,
+				delete: false,
+			});
 		}
 
 		if (!sendPermissions) {

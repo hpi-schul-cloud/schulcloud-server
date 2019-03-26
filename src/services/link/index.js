@@ -3,6 +3,7 @@ const errors = require('feathers-errors');
 const service = require('feathers-mongoose');
 const link = require('./link-model');
 const hooks = require('./hooks');
+const queryString = require('querystring');
 const logger = require('winston');
 
 module.exports = function () {
@@ -25,7 +26,10 @@ module.exports = function () {
 			linkService.get(linkId)
 				.then(data => {
 					if (data.data || req.query.includeShortId) {
-						res.redirect(data.target + "?shortId=" + data._id);
+						let [url, query] = data.target.split('?');
+						let queryObject = queryString.parse(query || '');
+						queryObject.shortId = data._id;
+						res.redirect(url + '?' + queryString.stringify(queryObject));
 					} else {
 						res.redirect(data.target);
 					}
