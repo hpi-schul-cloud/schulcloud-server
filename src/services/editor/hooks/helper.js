@@ -5,13 +5,11 @@ const { userModel } = require('../../models');
 const isGroup = e => e && e !== null && typeof e === 'object' && e.type === 'group' && e.users;
 
 // eslint-disable-next-line arrow-body-style
-const mapUsers = users => users.map((user) => {
-	return {
-		userId: user._id.toString(),
-		name: `${user.firstName} ${user.lastName}`,
-		roles: user.roles.map(role => role.name),
-	};
-});
+const mapUsers = users => users.map(user => ({
+	userId: user._id.toString(),
+	name: `${user.firstName} ${user.lastName}`,
+	roles: user.roles.map(role => role.name),
+}));
 
 const extractUsers = (context, key) => (key ? context.result[key].users : context.result.users);
 
