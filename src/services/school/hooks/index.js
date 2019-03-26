@@ -47,7 +47,7 @@ exports.before = {
 	/* It is disabled for the moment, is added with new "Löschkonzept"
 	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
 	*/
-	remove: [hooks.disabled()],
+	remove: [hooks.disable()],
 };
 
 exports.after = {
