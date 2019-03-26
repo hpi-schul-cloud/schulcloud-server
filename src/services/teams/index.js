@@ -1,7 +1,6 @@
 const service = require('feathers-mongoose');
 const {
 	BadRequest,
-	// NotAcceptable,
 	Forbidden,
 	GeneralError,
 	NotFound,
