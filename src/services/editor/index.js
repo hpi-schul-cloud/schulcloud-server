@@ -61,8 +61,7 @@ module.exports = function setup() {
 	const permissions = app.service(permissionsRoute);
 	permissions.before(before);
 	permissions.after(after);
-
-	if (['local', 'test'].includes(process.env.NODE_ENV)) {
+	if (['default', 'local', 'test'].includes(process.env.NODE_ENV)) {
 		app.use(`${route}test`, new Test());
 	}
 };
