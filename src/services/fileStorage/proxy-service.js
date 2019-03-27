@@ -323,7 +323,7 @@ const signedUrlService = {
 
 		return canRead(userId, file)
 			.then(() => strategy.getSignedUrl(
-				{ userId: creatorId, flatFileName: fileObject.storageFileName, download },
+				{ userId: creatorId, flatFileName: fileObject.storageFileName, localFileName: fileObject.name, download },
 			))
 			.then(res => ({
 				url: res,
