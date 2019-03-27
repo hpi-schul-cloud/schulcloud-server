@@ -78,11 +78,9 @@ class MessageService {
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
 			uri: `${serviceUrls.notification}/messages/user/${userId}`,
-			headers: {
-				token: userId,
-			},
-			body: JSON.stringify({ limit, skip }),
+			body: { limit, skip },
 			json: true,
+			method: 'POST'
 		};
 
 		return request(options);
@@ -91,14 +89,12 @@ class MessageService {
 	get(id, params) {
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${this.serviceUrls.notification}/messages/${id}?token=${userId}`,
-			headers: {
-				token: userId,
-			},
+			uri: `${this.serviceUrls.notification}/messages/user/${userId}/message/${id}`,
 			json: true,
+			method: 'POST'
 		};
 
-		return request(options).then(message => message);
+		return request(options);
 	}
 
 	remove(id, params) {
@@ -108,7 +104,7 @@ class MessageService {
 			method: 'POST',
 			json: true,
 		};
-		return request(options).then(response => response);
+		return request(options);
 	}
 
 	setup(app, path) {
@@ -129,9 +125,6 @@ class DeviceService {
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
 			uri: `${serviceUrls.notification}/devices/${notification.platform}/${userId}`,
-			headers: {
-				token: userId,
-			},
 			json: true,
 		};
 
@@ -178,33 +171,36 @@ class CallbackService {
 	}
 
 	get(id, params) {
-		const serviceUrls = this.app.get('services') || {};
+
+		const serviceUrls = this.app.get("services") || {};
 		const data = {
 			receiverId: params.query.receiverId,
-			redirect: params.query.redirect || null,
+			redirect: params.query.redirect || null
 		};
 		const options = {
 			uri: `${serviceUrls.notification}/messages/${id}/seen`,
-			method: 'POST',
+			method: "POST",
 			body: data,
-			json: true,
+			json: true
 		};
 
-		return request(options).then(response => response);
+		return request(options);
 	}
 
-	// todo remove auth
 	create(data, params) {
-		const serviceUrls = this.app.get('services') || {};
-
+		const serviceUrls = this.app.get("services") || {};
+		const data = {
+			receiverId: params.query.receiverId,
+			redirect: params.query.redirect || null
+		};
 		const options = {
 			uri: `${serviceUrls.notification}/messages/${data.messageId}/seen`,
-			method: 'POST',
+			method: "POST",
 			body: data,
-			json: true,
+			json: true
 		};
 
-		return request(options).then(response => response);
+		return request(options);
 	}
 
 	setup(app, path) {
@@ -223,9 +219,6 @@ class NotificationService {
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
 			uri: `${serviceUrls.notification}/notifications/${id}`,
-			headers: {
-				token: userId,
-			},
 			json: true,
 		};
 
@@ -240,9 +233,6 @@ class NotificationService {
 		const options = {
 			uri: `${serviceUrls.notification}/notifications/`
 				+ `?user=${userId}&${toQueryString(params.query)}`,
-			headers: {
-				token: userId,
-			},
 			json: true,
 		};
 
@@ -298,8 +288,10 @@ class ConfigurationService {
 }
 
 function redirect(req, res, next) {
-	if (req.query && req.query.redirect) {
-		return res.redirect(301, req.query.redirect);
+	if (req.query && req.query.redirect && res.data && res.data.redirect) {
+		return res.redirect(301, req.data.redirect);
+	} else {
+		res.send(res.data);
 	}
 }
 

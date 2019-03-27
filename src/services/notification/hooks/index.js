@@ -30,7 +30,7 @@ const callbackHooks = {
 		find: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('NOTIFICATION_VIEW')],
 		// take callbacks without authentication
 		get: [],
-		create: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('NOTIFICATION_CREATE')],
+		create: [],
 		update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('NOTIFICATION_EDIT')],
 		patch: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('NOTIFICATION_EDIT')],
 		remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('NOTIFICATION_CREATE')],
