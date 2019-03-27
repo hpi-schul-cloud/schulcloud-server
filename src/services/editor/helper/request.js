@@ -6,7 +6,7 @@ const { BadRequest } = require('feathers-errors');
 const logger = require('../../../logger');
 
 const REQUEST_TIMEOUT = process.env.NODE_ENV !== 'production' ? 120 * 1000 : 6 * 1000;
-const EDITOR_MS = process.env.EditorMicroService || 'http://localhost:4001';
+const EDITOR_MS_URI = process.env.EDITOR_MS_URI || 'http://localhost:4001';
 
 const mapMethod = {
 	get: 'GET',
@@ -34,7 +34,7 @@ const getOptions = (uri, { data, userId, method, id }, query) => {
 	const addedId = id ? `/${id}` : '';
 	query = query.length > 0 ? `?${query}` : '';
 	const options = {
-		uri: `${EDITOR_MS}/${uri}${addedId}${query}`,
+		uri: `${EDITOR_MS_URI}/${uri}${addedId}${query}`,
 		method: mapMethod[method] || 'GET',
 		headers: {
 			Authorization: userId,
