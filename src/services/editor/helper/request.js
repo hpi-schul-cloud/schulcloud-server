@@ -5,7 +5,7 @@ const { BadRequest } = require('feathers-errors');
 
 const logger = require('../../../logger');
 
-const REQUEST_TIMEOUT = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === undefined ? 120 * 1000 : 6 * 1000;
+const REQUEST_TIMEOUT = process.env.NODE_ENV !== 'production' ? 120 * 1000 : 6 * 1000;
 const EDITOR_MS = process.env.EditorMicroService || 'http://localhost:4001';
 
 const mapMethod = {
