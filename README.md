@@ -9,15 +9,17 @@ Production: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server
 
 Swagger UI documentation is available [here](https://schul-cloud.org:8080/docs/).
 When running the server locally, it is served at [http://localhost:3030/docs/](http://localhost:3030/docs/).
+
+
 # Requirements
 
 * node.js
 * mongoDB
 
+
 ## Setup
 
-You will need the [client](https://github.com/schul-cloud/schulcloud-client) as well. Setup instructions for [Windows](https://docs.schul-cloud.org/display/SCDOK/Setup) and [Linux](https://schul-cloud.github.io/blog/2017-04-21/setup-development-under-ubuntu) are available.
-
+You will need the [client](https://github.com/schul-cloud/schulcloud-client) as well. For more detailed setup instructions, take a look [here](https://docs.schul-cloud.org/display/SCDOK/Setup). It is written for Windows but the procedure is similar for other OS.
 
 
 ## Run
@@ -28,34 +30,16 @@ You will need the [client](https://github.com/schul-cloud/schulcloud-client) as 
 3. run `npm run setup`
 
 
-## Run with Debug in Visual Studio Code
+## Debugger Configuration in Visual Studio Code
 
-#Change in launch.json
-```
-{
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch SC-Server",
-            "program": "${workspaceFolder}/src/index.js",
-            "skipFiles": [
-              "<node_internals>/**"
-            ]
+For more details how to set up Visual Studio Code, read [this document](https://docs.schul-cloud.org/display/SCDOK/Visual+Studio+Code).
 
-        }
-    ]
-}
-```
-
-## How to name your branch
-
-1. Take the last part of the url of your Trello ticket (e.g. "8-setup-feather-js")
-2. Name the branch "yourname/trelloid" (e.g. "nico/8-setup-feather-js")
+## How to name your branch  
+  
+1. Take the Ticket Number from JIRA (ticketsystem.schul-cloud.org), e.g. SC-999  
+2. Name the branch beginning with Ticket Number, all words separated by dash "-", e.g. `SC-999-fantasy-problem`
+3. Create a PR containing the Ticket Number in PR title
+4. Add the `[WIP]` label as long as this PR is in development, remove label and request reviewers if you are done and Definition of Done (will get added here later on) are met.
 
 ## Testing
 
