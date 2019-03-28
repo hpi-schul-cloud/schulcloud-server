@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const errors = require('feathers-errors');
+const { Forbidden, BadRequest } = require('feathers-errors');
 const logger = require('winston');
 
 const rocketChatModels = require('./model'); // toDo: deconstruct
@@ -85,7 +85,7 @@ class RocketChatUser {
 	 * @param {object} data
 	 */
 	createRocketChatAccount(userId) {
-		if (userId === undefined) { throw new errors.BadRequest('Missing data value.'); }
+		if (userId === undefined) { throw new BadRequest('Missing data value.'); }
 
 		const internalParams = {
 			query: { $populate: 'schoolId' },
@@ -102,18 +102,18 @@ class RocketChatUser {
 			return request(getRequestOptions('/api/v1/users.register', body)).then((res) => {
 				if (res.success === true && res.user !== undefined) {
 					return res;
-				} throw new errors.BadRequest('False response data from rocketChat');
+				} throw new BadRequest('False response data from rocketChat');
 			}).then((result) => {
 				const rcId = result.user._id;
 				return rocketChatModels.userModel.create({
 					userId, pass, username, rcId,
 				});
 			}).catch((err) => {
-				throw new errors.BadRequest('Can not write user informations to rocketChat.', err);
+				throw new BadRequest('Can not write user informations to rocketChat.', err);
 			});
 		}).catch((err) => {
-			logger.warn(err);
-			throw new errors.BadRequest('Can not create RocketChat Account');
+			logger.warn(new BadRequest('Can not create RocketChat Account', err));
+			throw new BadRequest('Can not create RocketChat Account');
 		});
 	}
 
@@ -126,7 +126,7 @@ class RocketChatUser {
 		try {
 			const scUser = await this.app.service('users').get(userId, { query: { $populate: 'schoolId' } });
 			if (!(scUser.schoolId.features || []).includes('rocketChat')) {
-				throw errors.BadRequest('this users school does not support rocket.chat');
+				throw new BadRequest('this users school does not support rocket.chat');
 			}
 			let rcUser = await rocketChatModels.userModel.findOne({ userId });
 			if (!rcUser) {
@@ -140,8 +140,7 @@ class RocketChatUser {
 				rcId: rcUser.rcId,
 			};
 		} catch (err) {
-			logger.warn(err);
-			return new errors.BadRequest('could not initialize rocketchat user', err);
+			return new BadRequest('could not initialize rocketchat user', err);
 		}
 	}
 
@@ -167,7 +166,7 @@ class RocketChatUser {
 				return Promise.resolve();
 			})
 			.catch((err) => {
-				logger.warn(err);
+				logger.warn(new BadRequest('deleteUser', err));
 			});
 	}
 
@@ -183,8 +182,8 @@ class RocketChatUser {
 				delete result.password;
 				return Promise.resolve(result);
 			}).catch((err) => {
-				logger.warn(err);
-				throw new errors.Forbidden('Can not create token.');
+				logger.warn(new Forbidden('Can not create token.', err));
+				throw new Forbidden('Can not create token.');
 			});
 	}
 
@@ -195,7 +194,7 @@ class RocketChatUser {
 	find({ userIds }) {
 		// toDo: optimize to generate less requests
 		if (!Array.isArray(userIds || {})) {
-			return Promise.reject(new errors.Forbidden('requires an array of userIds'));
+			return Promise.reject(new Forbidden('requires an array of userIds'));
 		}
 		return Promise.all(userIds.map(userId => this.getOrCreateRocketChatAccount(userId)))
 			.then((accounts) => {
@@ -203,7 +202,7 @@ class RocketChatUser {
 				return Promise.resolve(result);
 			})
 			.catch((err) => {
-				throw new errors.BadRequest(err);
+				throw new BadRequest(err);
 			});
 	}
 
@@ -234,7 +233,7 @@ class RocketChatLogin {
 	 */
 	get(userId, params) {
 		if (userId.toString() !== params.account.userId.toString()) {
-			return Promise.reject(new errors.Forbidden('you may only log into your own rocketChat account'));
+			return Promise.reject(new Forbidden('you may only log into your own rocketChat account'));
 		}
 		return this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params)
 			.then(async (rcAccount) => {
@@ -257,10 +256,10 @@ class RocketChatLogin {
 				if (loginResponse.status === 'success' && authToken !== undefined) {
 					await rocketChatModels.userModel.update({ username: rcAccount.username }, { authToken });
 					return Promise.resolve({ authToken });
-				} return Promise.reject(new errors.BadRequest('False response data from rocketChat'));
+				} return Promise.reject(new BadRequest('False response data from rocketChat'));
 			}).catch((err) => {
-				logger.warn(err);
-				throw new errors.Forbidden('Can not create token.');
+				logger.warn(new Forbidden('Can not create token.', err));
+				throw new Forbidden('Can not create token.');
 			});
 	}
 
@@ -290,11 +289,10 @@ class RocketChatLogout {
 				};
 				await rocketChatModels.userModel.update({ username: rcUser.username }, { authToken: '' });
 				await request(getRequestOptions('/api/v1/logout', {}, false, headers));
-
 			}
 			return ('success');
 		} catch (error) {
-			throw errors.BadRequest('could not log out user');
+			throw new BadRequest('could not log out user');
 		}
 	}
 
@@ -323,7 +321,8 @@ class RocketChatLogout {
 /**
  * Service that maps schulcloud teams to rocketChat groups.
  *
- * Other services should only get groups by the id of the corresponding team, creation and deletion of RC groups is handled automatically by the service.
+ * Other services should only get groups by the id of the corresponding team,
+ * creation and deletion of RC groups is handled automatically by the service.
  */
 class RocketChatChannel {
 	constructor(options) {
@@ -344,7 +343,7 @@ class RocketChatChannel {
 	}
 
 	createChannel(teamId) {
-		if (teamId === undefined) { throw new errors.BadRequest('Missing data value.'); }
+		if (teamId === undefined) { throw new BadRequest('Missing data value.'); }
 
 		let currentTeam;
 		const internalParams = {
@@ -364,7 +363,7 @@ class RocketChatChannel {
 					return request(getRequestOptions('/api/v1/groups.create', body, true))
 						.then((res) => {
 							if (res.success === true) return res;
-							return Promise.reject(errors.BadRequest('bad answer on group creation'));
+							return Promise.reject(new BadRequest('bad answer on group creation'));
 						});
 				});
 			}).then((result) => {
@@ -375,8 +374,8 @@ class RocketChatChannel {
 				return rocketChatModels.channelModel.create(channelData);
 			})
 			.catch((err) => {
-				logger.warn(err);
-				throw new errors.BadRequest('Can not create RocketChat Channel');
+				logger.warn(new BadRequest('Can not create RocketChat Channel', err));
+				throw new BadRequest('Can not create RocketChat Channel');
 			});
 	}
 
@@ -384,7 +383,7 @@ class RocketChatChannel {
 		try {
 			const team = await this.app.service('teams').get(teamId);
 			if (!team.features.includes('rocketChat')) {
-				throw errors.BadRequest('rocket.chat is disabled for this team');
+				throw new BadRequest('rocket.chat is disabled for this team');
 			}
 			let channel = await rocketChatModels.channelModel.findOne({ teamId });
 			if (!channel) {
@@ -396,8 +395,8 @@ class RocketChatChannel {
 				channelName: channel.channelName,
 			};
 		} catch (err) {
-			logger.warn(err);
-			return new errors.BadRequest('error initializing the rocketchat channel');
+			logger.warn(new BadRequest('error initializing the rocketchat channel', err));
+			return new BadRequest('error initializing the rocketchat channel');
 		}
 	}
 
@@ -410,7 +409,10 @@ class RocketChatChannel {
 				roomName: channel.channelName,
 				username: userName,
 			};
-			return request(getRequestOptions('/api/v1/groups.invite', body, true)).catch((err) => { logger.warn(err); });
+			return request(getRequestOptions('/api/v1/groups.invite', body, true))
+				.catch((err) => {
+					logger.warn(new BadRequest('addUsersToChannel', err));
+				});
 		});
 		return Promise.all(invitationPromises);
 	}
@@ -424,7 +426,10 @@ class RocketChatChannel {
 				roomName: channel.channelName,
 				username: userName,
 			};
-			return request(getRequestOptions('/api/v1/groups.kick', body, true)).catch((err) => { logger.warn(err); });
+			return request(getRequestOptions('/api/v1/groups.kick', body, true))
+				.catch((err) => {
+					logger.warn(new BadRequest('removeUsersFromChannel', err));
+				});
 		});
 		return Promise.all(kickPromises);
 	}
@@ -443,7 +448,7 @@ class RocketChatChannel {
 				return Promise.resolve();
 			})
 			.catch((err) => {
-				logger.warn(err);
+				logger.warn(new BadRequest('deleteChannel', err));
 			});
 	}
 
