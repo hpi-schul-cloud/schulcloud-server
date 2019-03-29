@@ -1,5 +1,6 @@
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
+const { submissionModel } = require('../../homework/model');
 
 const getFile = id => FileModel
 	.findOne({ _id: id })
@@ -20,8 +21,10 @@ const checkPermissions = (permission) => {
 			return Promise.resolve(true);
 		}
 
+		const isSubmission = await submissionModel.findOne({ fileIds: fileObject._id });
+
 		// or legacy course model
-		if (refOwnerModel === 'course') {
+		if (refOwnerModel === 'course' || isSubmission) {
 			const userObject = await userModel.findOne({ _id: user }).populate('roles').exec();
 			const isStudent = userObject.roles.find(role => role.name === 'student');
 
