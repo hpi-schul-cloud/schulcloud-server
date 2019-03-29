@@ -30,6 +30,8 @@ after_success:
 after_success:
   # because Skipping a deployment with the script provider because the current build is a pull request.
   - bash ./deploy.sh
+  # Check code coverage by codecov
+  - bash <(curl -s https://codecov.io/bash)
 
 #deploy:
 #  provider: script
