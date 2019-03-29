@@ -19,6 +19,7 @@
 ## Deployable
 - [ ] Feature Toggle notwendig (z.B. Environment-Variablen)
 - [ ] Datenbankanpassungen notwendig / Migrationsskripte
+  - Alle DB-Anpassungen müssen in den Seed-Daten reflektiert werden
 - [ ] Notwendige neue Konfiguration an der Infrastruktur wurde mit Dev-Ops besprochen
 
 ## Dokumentation
