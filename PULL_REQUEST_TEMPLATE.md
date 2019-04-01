@@ -40,3 +40,6 @@
 
 ## Freigabe zum Review
 - [ ] WIP entfernen, wenn die Checkliste abgearbeitet wurde
+
+## Mehr
+Weitere Informationen zur DoD [hier im Confluence](https://docs.schul-cloud.org/pages/viewpage.action?pageId=92831762)
