@@ -132,6 +132,14 @@ const fileStorageService = {
 						.catch(() => undefined),
 				);
 				return Promise.all(permissionPromises);
+			})
+			.then((allowedFiles) => {
+				const files = allowedFiles.filter(f => f);
+				if (!files.length) {
+					return new Forbidden();
+				}
+
+				return files;
 			});
 	},
 
@@ -315,7 +323,7 @@ const signedUrlService = {
 
 		return canRead(userId, file)
 			.then(() => strategy.getSignedUrl(
-				{ userId: creatorId, flatFileName: fileObject.storageFileName, download },
+				{ userId: creatorId, flatFileName: fileObject.storageFileName, localFileName: fileObject.name, download },
 			))
 			.then(res => ({
 				url: res,
