@@ -38,11 +38,11 @@ describe('user service', () => {
 				});
 		}
 
-		function createTestSubrole(test_base) {
+		function createTestSubrole(testBase) {
 			return app.service('roles')
 				.create({
 					name: 'test_subrole',
-					roles: [test_base._id],
+					roles: [testBase._id],
 					permissions: [
 						'TEST_SUB',
 					],
