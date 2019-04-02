@@ -115,16 +115,12 @@ describe('registrationPin Service', () => {
 	});
 
 	it('creates pins correctly', () => registrationPinService
-			.create({"email": "test.adresse@schul-cloud.org"})
-				.then(pinObject => registrationPinService.find({query: {"email": "test.adresse@schul-cloud.org"}}))
-				.then(pinObjects => {
-					expect(pinObjects.data[0]).to.have.property('pin');
-				}));
+		.create({ email: 'test.adresse@schul-cloud.org' })
+		.then(() => registrationPinService.find({ query: { email: 'test.adresse@schul-cloud.org' } }))
+		.then(pinObjects => expect(pinObjects.data[0]).to.have.property('pin')));
 
-	it('overwrites old pins', () => registrationPinService.create({"email": "test.adresse@schul-cloud.org"})
-				.then(pinObject => registrationPinService.create({"email": "test.adresse@schul-cloud.org"}))
-				.then(pinObject => registrationPinService.find({query: {"email": "test.adresse@schul-cloud.org"}}))
-				.then(pinObjects => {
-					expect(pinObjects.data).to.have.lengthOf(1);
-				}));
+	it('overwrites old pins', () => registrationPinService.create({ email: 'test.adresse@schul-cloud.org' })
+		.then(() => registrationPinService.create({ email: 'test.adresse@schul-cloud.org' }))
+		.then(() => registrationPinService.find({ query: { email: 'test.adresse@schul-cloud.org' } }))
+		.then(pinObjects => expect(pinObjects.data).to.have.lengthOf(1)));
 });

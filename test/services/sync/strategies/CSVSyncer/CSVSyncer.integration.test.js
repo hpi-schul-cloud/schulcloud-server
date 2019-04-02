@@ -636,12 +636,14 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.errors).to.include({
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
-				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". Nur der erste Eintrag wird importiert, alle weiteren ignoriert.`,
+				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
 			});
 			expect(stats.errors).to.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
-				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". Nur der erste Eintrag wird importiert, alle weiteren ignoriert.`,
+				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
 			});
 		});
 	});
@@ -775,12 +777,14 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.errors).to.include({
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
-				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". Nur der erste Eintrag wird importiert, alle weiteren ignoriert.`,
+				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
 			});
 			expect(stats.errors).to.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
-				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". Nur der erste Eintrag wird importiert, alle weiteren ignoriert.`,
+				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
 			});
 
 			// only one email should ever be sent, as the second and third user are never

@@ -68,14 +68,12 @@ class CSVSyncer extends Syncer {
 		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
-		const actions = Object.values(clusteredRecords).map((record) => {
-			return async () => {
-				const enrichedRecord = await this.enrichUserData(record);
-				const user = await this.createOrUpdateUser(enrichedRecord);
-				if (this.importClasses) {
-					await this.createClasses(enrichedRecord, user);
-				}
-			};
+		const actions = Object.values(clusteredRecords).map(record => async () => {
+			const enrichedRecord = await this.enrichUserData(record);
+			const user = await this.createOrUpdateUser(enrichedRecord);
+			if (this.importClasses) {
+				await this.createClasses(enrichedRecord, user);
+			}
 		});
 
 		while (actions.length > 0) {
@@ -156,7 +154,8 @@ class CSVSyncer extends Syncer {
 				this.stats.errors.push({
 					type: 'user',
 					entity: `${record.firstName},${record.lastName},${record.email}`,
-					message: `Mehrfachnutzung der E-Mail-Adresse "${record.email}". Nur der erste Eintrag wird importiert, alle weiteren ignoriert.`,
+					message: `Mehrfachnutzung der E-Mail-Adresse "${record.email}". `
+						+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
 				});
 				this.stats.users.failed += 1;
 			} else {
