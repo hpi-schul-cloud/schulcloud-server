@@ -1,6 +1,8 @@
 coverage:
   status:
     project:
-      default: true  # disable the default status that measures entire project
-      app:  # declare a new status context "app"
-        paths: "src/"  # only include coverage in "src/" folder
+      default:
+        # basic
+        target: auto
+        threshold: null
+        base: auto
