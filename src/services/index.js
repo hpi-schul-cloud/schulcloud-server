@@ -33,10 +33,15 @@ const rocketChat = require('./rocketChat');
 const clipboard = require('./clipboard');
 const me = require('./me');
 
+const teamEvents = require('./teams/events');
+
 module.exports = function () {
 	const app = this;
 
-	mongoose.connect(process.env.DB_URL || app.get('mongodb'), { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
+	mongoose.connect(
+		process.env.DB_URL || app.get('mongodb'),
+		{ user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD },
+	);
 	mongoose.Promise = global.Promise;
 
 	app.configure(authentication);
@@ -72,4 +77,6 @@ module.exports = function () {
 	app.configure(sync);
 	app.configure(me);
 	app.configure(rocketChat);
+
+	teamEvents(app);
 };
