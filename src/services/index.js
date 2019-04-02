@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
@@ -31,17 +32,18 @@ const sync = require('./sync');
 const rocketChat = require('./rocketChat');
 const clipboard = require('./clipboard');
 const me = require('./me');
-const database = require('../utils/database');
 
-const newsEvents = require('./news/events');
+const teamEvents = require('./teams/events');
 
-module.exports = function initializeServices() {
+module.exports = function () {
 	const app = this;
 
-	// connect mongoose to the database
-	database.connect();
+	mongoose.connect(
+		process.env.DB_URL || app.get('mongodb'),
+		{ user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD },
+	);
+	mongoose.Promise = global.Promise;
 
-	// register services
 	app.configure(authentication);
 	app.configure(analytics);
 	app.configure(user);
@@ -76,6 +78,5 @@ module.exports = function initializeServices() {
 	app.configure(me);
 	app.configure(rocketChat);
 
-	// initialize events
-	newsEvents.configure(app);
+	teamEvents(app);
 };
