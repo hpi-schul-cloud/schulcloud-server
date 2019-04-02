@@ -28,8 +28,7 @@ groups:
       request: 1  # number of review requests sent at a time
       request_order: shuffle
 
-
-  database:
+  privacy:
     conditions:
     - "'*model.js' in files"  # only review if "*model.js" files have been touched
     - "'/backup/setup/*.json' in files" # only review if "/backup/setup/*.json" files have been touched
