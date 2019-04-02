@@ -1,5 +1,3 @@
-
-
 const request = require('request-promise-native');
 const { hooks, callbackHooks } = require('./hooks/index');
 const UserModel = require('../user/model');
@@ -13,7 +11,7 @@ const DEFAULT_REDIRECT = 'https://schul-cloud.org';
  * maps jsonapi properties of a response to fit anything but jsonapi
  * @param response
  */
-const mapResponseProps = (response) => {
+const mapResponseProps = response => {
 	if (response.data && response.data.type) {
 		response.type = response.data.type;
 	}
@@ -23,20 +21,26 @@ const mapResponseProps = (response) => {
 	return response;
 };
 
-const toQueryString = paramsObject => Object
-	.keys(paramsObject)
-	.map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-	.join('&');
+const toQueryString = paramsObject =>
+	Object.keys(paramsObject)
+		.map(
+			key =>
+				`${encodeURIComponent(key)}=${encodeURIComponent(
+					paramsObject[key]
+				)}`
+		)
+		.join('&');
 
 /** overrides notification options with user preferences */
-const combineOptions = (userOptions) => {
+const combineOptions = userOptions => {
 	const options = Object.assign([], notificationOptions);
 	for (const g in options) {
 		if (options.hasOwnProperty(g)) {
 			for (const n in options[g].notifications) {
 				const notification = options[g].notifications[n];
 				if (userOptions.hasOwnProperty(notification.notification)) {
-					options[g].notifications[n].subscription = userOptions[notification.notification];
+					options[g].notifications[n].subscription =
+						userOptions[notification.notification];
 				}
 			}
 		}
@@ -73,8 +77,8 @@ class MessageService {
 
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
-		const limit = params.limit || 10;
-		const skip = params.skip || 0;
+		const limit = params.query.limit || 10;
+		const skip = params.query.skip || 0;
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
 			uri: `${serviceUrls.notification}/messages/user/${userId}`,
@@ -83,13 +87,17 @@ class MessageService {
 			method: 'POST'
 		};
 
-		return request(options);
+		return request(options).then(response => {
+			return response;
+		});
 	}
 
 	get(id, params) {
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${this.serviceUrls.notification}/messages/user/${userId}/message/${id}`,
+			uri: `${
+				this.serviceUrls.notification
+				}/messages/user/${userId}/message/${id}`,
 			json: true,
 			method: 'POST'
 		};
@@ -100,9 +108,11 @@ class MessageService {
 	remove(id, params) {
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${this.serviceUrls.notification}/messages/${id}/remove/${userId}`,
+			uri: `${
+				this.serviceUrls.notification
+				}/messages/${id}/remove/${userId}`,
 			method: 'POST',
-			json: true,
+			json: true
 		};
 		return request(options);
 	}
@@ -124,8 +134,10 @@ class DeviceService {
 
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.notification}/devices/${notification.platform}/${userId}`,
-			json: true,
+			uri: `${serviceUrls.notification}/devices/${
+				notification.platform
+				}/${userId}`,
+			json: true
 		};
 
 		return request(options).then(devices => devices);
@@ -140,7 +152,7 @@ class DeviceService {
 			uri: `${serviceUrls.notification}/devices/`,
 			method: 'POST',
 			body: Object.assign({}, data, { platform: notification.platform }),
-			json: true,
+			json: true
 		};
 
 		return request(options).then(response => mapResponseProps(response));
@@ -152,9 +164,11 @@ class DeviceService {
 
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.notification}/devices/${notification.platform}/${userId}/${id}`,
+			uri: `${serviceUrls.notification}/devices/${
+				notification.platform
+				}/${userId}/${id}`,
 			method: 'DELETE',
-			json: true,
+			json: true
 		};
 
 		return request(options).then(message => message);
@@ -171,15 +185,14 @@ class CallbackService {
 	}
 
 	get(id, params) {
-
-		const serviceUrls = this.app.get("services") || {};
+		const serviceUrls = this.app.get('services') || {};
 		const data = {
 			receiverId: params.query.receiverId,
 			redirect: params.query.redirect || null
 		};
 		const options = {
 			uri: `${serviceUrls.notification}/messages/${id}/seen`,
-			method: "POST",
+			method: 'POST',
 			body: data,
 			json: true
 		};
@@ -188,14 +201,14 @@ class CallbackService {
 	}
 
 	create(data, params) {
-		const serviceUrls = this.app.get("services") || {};
+		const serviceUrls = this.app.get('services') || {};
 		const data = {
 			receiverId: params.query.receiverId,
 			redirect: params.query.redirect || null
 		};
 		const options = {
 			uri: `${serviceUrls.notification}/messages/${data.messageId}/seen`,
-			method: "POST",
+			method: 'POST',
 			body: data,
 			json: true
 		};
@@ -219,7 +232,7 @@ class NotificationService {
 		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
 			uri: `${serviceUrls.notification}/notifications/${id}`,
-			json: true,
+			json: true
 		};
 
 		return request(options).then(message => message);
@@ -231,9 +244,10 @@ class NotificationService {
 		const userId = (params.account || {}).userId || params.payload.userId;
 
 		const options = {
-			uri: `${serviceUrls.notification}/notifications/`
-				+ `?user=${userId}&${toQueryString(params.query)}`,
-			json: true,
+			uri:
+				`${serviceUrls.notification}/notifications/` +
+				`?user=${userId}&${toQueryString(params.query)}`,
+			json: true
 		};
 
 		return request(options).then(message => message);
@@ -249,7 +263,7 @@ class ConfigurationService {
 		this.options = options || {};
 		this.constants = {
 			NOTIFICATION_OPTIONS: 'notificationOptions',
-			FIREBASE_OPTIONS: 'firebaseOptions',
+			FIREBASE_OPTIONS: 'firebaseOptions'
 		};
 	}
 
@@ -260,13 +274,17 @@ class ConfigurationService {
 			return Promise.resolve(options);
 		}
 		if (id === this.constants.NOTIFICATION_OPTIONS) {
-			const userId = (params.account || {}).userId || params.payload.userId;
-			return UserModel.userModel.findById(userId).exec().then((user) => {
-				if (user === null) return Promise.reject();
-				const userPreferences = user.preferences[id] || {};
-				options = combineOptions(userPreferences);
-				return Promise.resolve(options);
-			});
+			const userId =
+				(params.account || {}).userId || params.payload.userId;
+			return UserModel.userModel
+				.findById(userId)
+				.exec()
+				.then(user => {
+					if (user === null) return Promise.reject();
+					const userPreferences = user.preferences[id] || {};
+					options = combineOptions(userPreferences);
+					return Promise.resolve(options);
+				});
 		}
 		return Promise.reject();
 	}
@@ -276,7 +294,8 @@ class ConfigurationService {
 		if (id === this.constants.NOTIFICATION_OPTIONS) {
 			const user = { preferences: {} };
 			user.preferences[id] = data;
-			return UserModel.userModel.findByIdAndUpdate(userId, { $set: user })
+			return UserModel.userModel
+				.findByIdAndUpdate(userId, { $set: user })
 				.then(() => data);
 		}
 		return Promise.reject();
