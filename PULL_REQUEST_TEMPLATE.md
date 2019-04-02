@@ -1,4 +1,10 @@
+---
+labels: ["WIP"]
+---
+
 # Checkliste
+
+- Bis die komplette Checkliste abgearbeitet ist muss das PR-Label WIP gesetzt sein
 
 ## Allgemein
 - [ ] Links zu verwandten PRs anderer Repositories
@@ -8,7 +14,7 @@
 
 ## Code Qualität
 - [ ] Code mit Hinblick auf Security und Datensicherheit betrachten
-- [ ] Linter darf keine Probleme bei verändertenv Dateien aufweisen
+- [ ] Linter darf keine Probleme bei veränderten Dateien aufweisen
 - [ ] Kern-Logik ist hinter der API implementiert?
 
 ## Tests
@@ -39,7 +45,7 @@
 - [ ] Neue Verarbeitung von personenbezogene Daten wurde mit der Datenschutz-Gruppe besprochen
 
 ## Freigabe zum Review
-- [ ] WIP entfernen, wenn die Checkliste abgearbeitet wurde
+- [ ] WIP PR-Label entfernt, wenn die Checkliste abgearbeitet wurde
 
 ## Mehr
 Weitere Informationen zur DoD [hier im Confluence](https://docs.schul-cloud.org/pages/viewpage.action?pageId=92831762)
