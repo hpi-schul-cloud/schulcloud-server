@@ -1,11 +1,10 @@
 ---
-# Please add these <!>
-title: "[WIP] "
+labels: ["WIP"]
 ---
 
 # Checkliste
 
-- Bis die komplette Checkliste abgearbeitet ist muss der PR-Titel mit [WIP] beginnen
+- Bis die komplette Checkliste abgearbeitet ist muss das PR-Label WIP gesetzt sein
 
 ## Allgemein
 - [ ] Links zu verwandten PRs anderer Repositories
@@ -46,7 +45,7 @@ title: "[WIP] "
 - [ ] Neue Verarbeitung von personenbezogene Daten wurde mit der Datenschutz-Gruppe besprochen
 
 ## Freigabe zum Review
-- [ ] [WIP] aus PR-Titel entfernen, wenn die Checkliste abgearbeitet wurde
+- [ ] WIP PR-Label entfernt, wenn die Checkliste abgearbeitet wurde
 
 ## Mehr
 Weitere Informationen zur DoD [hier im Confluence](https://docs.schul-cloud.org/pages/viewpage.action?pageId=92831762)
