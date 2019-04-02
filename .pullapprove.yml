@@ -28,6 +28,7 @@ groups:
       request: 1  # number of review requests sent at a time
       request_order: shuffle
 
+
   database:
     conditions:
     - "'*model.js' in files"  # only review if "*model.js" files have been touched
