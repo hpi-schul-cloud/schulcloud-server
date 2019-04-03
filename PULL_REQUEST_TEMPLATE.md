@@ -1,7 +1,6 @@
----
+<!-- presettings
 labels: ["WIP"]
----
-
+--->
 # Checkliste
 
 - Bis die komplette Checkliste abgearbeitet ist muss das PR-Label WIP gesetzt sein

@@ -4,9 +4,12 @@ pullapprove_conditions:
 - condition: "'WIP' not in labels"
   unmet_status: pending
   explanation: "Work in progress"
-- condition: "'*travis*' in statuses.succeeded"
+- condition: "'*Travis*' in statuses.succeeded"
   unmet_status: failure
   explanation: "Tests must pass before review starts"
+- condition: "'*stickler*' in statuses.succeeded"
+  unmet_status: failure
+  explanation: "Linter must pass before review starts"
 
 
 notifications:
