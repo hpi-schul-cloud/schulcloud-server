@@ -7,6 +7,9 @@ pullapprove_conditions:
 - condition: "'*Travis*' in statuses.succeeded"
   unmet_status: failure
   explanation: "Tests must pass before review starts"
+- condition: "'*stickler*' in statuses.succeeded"
+  unmet_status: failure
+  explanation: "Linter must pass before review starts"
 
 
 notifications:
