@@ -1,6 +1,6 @@
-  ---
+---
 labels: WIP
-  ---
+---
 
 # Checkliste
 
