@@ -1,0 +1,8 @@
+coverage:
+  status:
+    project:
+      app:
+        # basic
+        target: auto
+        threshold: null
+        base: auto

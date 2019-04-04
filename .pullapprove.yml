@@ -1,0 +1,45 @@
+version: 3
+
+pullapprove_conditions:
+- condition: "'WIP' not in labels"
+  unmet_status: pending
+  explanation: "Work in progress"
+#- condition: "'Travis*' in statuses.succeeded" # Not working yet
+#  unmet_status: failure
+#  explanation: "Tests must pass before review starts"
+#- condition: "'stickler*' in statuses.succeeded"
+#  unmet_status: failure
+#  explanation: "Linter must pass before review starts"
+
+
+notifications:
+- when: pull_request.opened
+  comment: |
+    Hey @{{ author }}, thanks for the PR! The review will start once
+    the tests, CI checks and PR requirements (see checklist in your PR) have passed.
+- when: pullapprove.approved
+  if: "author_association == 'CONTRIBUTOR'"
+  comment: "The review is completed. Thanks @{{ author }}, we'll take it from here."
+
+groups:
+  server-core:
+    reviewers:
+      teams:
+      - schul-cloud/server-core
+    reviews:
+      required: 1  # number of approvals required from this group
+      request: 2  # number of review requests sent at a time
+      request_order: shuffle
+
+  privacy:
+    conditions:
+    - "'*model.js' in files"  # only review if "*model.js" files have been touched
+    - "'/backup/setup/*.json' in files" # only review if "/backup/setup/*.json" files have been touched
+    - "'.pullapprove.yml' in files" # only review if this ".pullapprove.yml" file have been touched
+    reviewers:
+      teams:
+      - schul-cloud/data-protection
+    reviews:
+      required: 1  # number of approvals required from this group
+      request: 2  # number of review requests sent at a time
+      request_order: shuffle

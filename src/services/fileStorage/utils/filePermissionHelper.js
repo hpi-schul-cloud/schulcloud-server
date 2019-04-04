@@ -4,6 +4,7 @@ const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
 const RoleModel = require('../../role/model');
 const { sortRoles } = require('../../role/utils/rolesHelper');
+const { submissionModel } = require('../../homework/model');
 
 const getFile = id => FileModel
 	.findOne({ _id: id })
@@ -42,6 +43,17 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 	});
 };
 
+const checkMemberStatus = ({ file, user }) => {
+	const { owner: { userIds, teacherIds } } = file;
+	const finder = obj => user.equals(obj.userId || obj);
+
+	if (!userIds && !teacherIds) {
+		return false;
+	}
+
+	return userIds.find(finder) || teacherIds.find(finder);
+};
+
 const checkPermissions = permission => async (user, file) => {
 	const fileObject = await getFile(file);
 	const {
@@ -55,8 +67,17 @@ const checkPermissions = permission => async (user, file) => {
 		return Promise.resolve(true);
 	}
 
+	const isMember = checkMemberStatus({ file: fileObject, user });
+
+	// User is no member of team or course
+	if (!isMember) {
+		return Promise.reject();
+	}
+
+	const isSubmission = await submissionModel.findOne({ fileIds: fileObject._id });
+
 	// or legacy course model
-	if (refOwnerModel === 'course') {
+	if (refOwnerModel === 'course' || isSubmission) {
 		const userObject = await userModel.findOne({ _id: user }).populate('roles').exec();
 		const isStudent = userObject.roles.find(role => role.name === 'student');
 

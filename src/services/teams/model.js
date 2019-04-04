@@ -6,7 +6,7 @@ const { Schema } = mongoose;
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
-		schoolId: { type: Schema.Types.ObjectId, required: true },
+		schoolId: { type: Schema.Types.ObjectId, required: true, ref: 'school' },
 		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
