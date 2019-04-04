@@ -158,7 +158,15 @@ module.exports = function() {
 		 * @return {Promise[Array[Object]]} resolves with array of objects
 		 * matching the query, rejects with error otherwise
 		 */
-		searchCollection(config, searchString, options, rawAttributes = []) {
+		searchCollection(config, searchString, options = {}, rawAttributes = []) {
+			// Paging to avoid 'max size limit exceeded' issue
+			options = {
+				...options,
+				paged: {
+					pageSize: 100,
+				},
+			};
+
 			return this._getClient(config).then((client) => {
 				return new Promise((resolve, reject) => {
 					let objects = [];
@@ -172,7 +180,7 @@ module.exports = function() {
 							rawAttributes.forEach(element => {
 								result[element] = entry.raw[element].toString('base64');
 							});
-							objects.push(result); //sizeissue
+							objects.push(result);
 						});
 						res.on('end', (result) => {
 							if (result.status === 0) {
