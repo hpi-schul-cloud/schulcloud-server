@@ -760,8 +760,10 @@ const filePermissionService = {
 				return Promise.all(
 					userPermission.map(({ refId }) => userModel.findOne({ _id: refId }).exec()),
 				)
-					.then((users) => {
-						if (users) {
+					.then((result) => {
+						const users = result ? result.filter(u => u) : [];
+						
+						if (users.length) {
 							return userPermission.map((perm) => {
 								const { firstName, lastName, _id } = users
 									.find(({ _id: id }) => id.equals(perm.refId));
