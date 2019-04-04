@@ -27,6 +27,7 @@
     "startd": "nodemon src/",
     "debug": "NODE_ENV=debug NOTIFICATION_SERVICE_ENABLED=1 nodemon --inspect=5959 src/",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha -- -- test/**/*.test.js",
+    "coverage-codecov": "cross-env NODE_ENV=test nyc --reporter=text-lcov node_modules/.bin/_mocha -- -- test/**/*.test.js > coverage.lcov",
     "mocha": "cross-env NODE_ENV=test mocha test/ --recursive",
     "mocha-inspect": "cross-env NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
     "migrations": "cross-env NODE_ENV=migration node migrations/",
