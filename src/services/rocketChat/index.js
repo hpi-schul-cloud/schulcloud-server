@@ -477,11 +477,11 @@ class RocketChatChannel {
 		return this.getOrCreateRocketChatChannel(teamId, params);
 	}
 
-	static _onTeamPatched(context) {
-		if (context.features.includes('rocketChat')) {
-			RocketChatChannel.unarchiveChannel(context._id);
+	static _onTeamPatched(result) {
+		if (result.features.includes('rocketChat')) {
+			RocketChatChannel.unarchiveChannel(result._id);
 		} else {
-			RocketChatChannel.archiveChannel(context._id);
+			RocketChatChannel.archiveChannel(result._id);
 		}
 	}
 
