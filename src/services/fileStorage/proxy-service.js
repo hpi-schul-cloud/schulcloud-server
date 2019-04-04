@@ -70,11 +70,21 @@ const fileStorageService = {
 
 		if (isCourse) {
 			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
+			const { _id: teacherRoleId } = await RoleModel.findOne({ name: 'teacher' }).exec();
 
 			permissions.push({
 				refId: studentRoleId,
 				refPermModel: 'role',
 				write: Boolean(studentCanEdit),
+				read: true, // students can always read course files
+				create: false,
+				delete: false,
+			});
+
+			permissions.push({
+				refId: teacherRoleId,
+				refPermModel: 'role',
+				write: true,
 				read: true, // students can always read course files
 				create: false,
 				delete: false,
