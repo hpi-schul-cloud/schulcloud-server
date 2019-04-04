@@ -25,7 +25,7 @@ groups:
   server-core:
     reviewers:
       teams:
-      - schul-cloud/server-core
+      - server-core
     reviews:
       required: 1  # number of approvals required from this group
       request: 2  # number of review requests sent at a time
@@ -38,7 +38,7 @@ groups:
     - "'.pullapprove.yml' in files" # only review if this ".pullapprove.yml" file have been touched
     reviewers:
       teams:
-      - schul-cloud/data-protection
+      - data-protection
     reviews:
       required: 1  # number of approvals required from this group
       request: 2  # number of review requests sent at a time
