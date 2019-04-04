@@ -1,7 +1,7 @@
 coverage:
   status:
     project:
-      default:
+      app:
         # basic
         target: auto
         threshold: null
