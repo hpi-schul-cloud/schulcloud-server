@@ -1,4 +1,5 @@
 const parse = require('csv-parse/lib/sync');
+const stripBOM = require('strip-bom');
 const Syncer = require('./Syncer');
 
 /**
@@ -91,7 +92,8 @@ class CSVSyncer extends Syncer {
 	parseCsvData() {
 		let records = [];
 		try {
-			records = parse(this.csvData, {
+			const strippedData = stripBOM(this.csvData);
+			records = parse(strippedData, {
 				columns: true,
 				delimiter: ',',
 			});
