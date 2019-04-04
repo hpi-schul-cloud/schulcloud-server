@@ -160,7 +160,7 @@ module.exports = function() {
 		 */
 		searchCollection(config, searchString, options = {}, rawAttributes = []) {
 			// Paging to avoid 'max size limit exceeded' issue
-			let optionsWithPaging = {
+			const optionsWithPaging = {
 				...options,
 				paged: {
 					pageSize: 100,
@@ -169,7 +169,7 @@ module.exports = function() {
 
 			return this._getClient(config).then((client) => {
 				return new Promise((resolve, reject) => {
-					let objects = [];
+					const objects = [];
 					client.search(searchString, optionsWithPaging, (err, res) => {
 						if (err) {
 							reject(err);
