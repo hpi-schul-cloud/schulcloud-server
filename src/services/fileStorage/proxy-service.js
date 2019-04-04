@@ -760,6 +760,7 @@ const filePermissionService = {
 		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
 		const rolePromises = rolePermissions
 			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
+		const isFileCreator = fileObj.permissions[0].refId.toString() === userId.toString();
 
 		const actionMap = {
 			user: () => {
@@ -772,7 +773,6 @@ const filePermissionService = {
 				)
 					.then((result) => {
 						const users = result ? result.filter(u => u) : [];
-						
 						if (users.length) {
 							return userPermission.map((perm) => {
 								const { firstName, lastName, _id } = users
@@ -798,13 +798,23 @@ const filePermissionService = {
 							const { name } = roles.find(({ _id }) => _id.equals(perm.refId));
 							const { read, write, refId } = perm;
 
-							const sieved = {
-								read: name === 'teacher' ? read : undefined,
-								write,
+							const nameMap = {
+								student() {
+									return isStudent ? {
+										read,
+										write: isFileCreator ? write : undefined,
+									} : { write, read };
+								},
+								teacher() {
+									return isStudent ? {} : {
+										read,
+										write: isFileCreator ? write : undefined,
+									};
+								},
 							};
 
 							return {
-								...sanitizeObj(sieved),
+								...sanitizeObj(nameMap[name]()),
 								refId,
 								name,
 							};
@@ -843,10 +853,11 @@ const filePermissionService = {
 							.map(({ _id, name, sibling }) => {
 								const { read, write, refId } = rolePermissions
 									.find(({ refId: id }) => id.equals(_id));
+								const reWrite = isFileCreator ? write : undefined;
 
 								const permissions = {
 									read: sibling ? undefined : read,
-									write,
+									write: sibling ? reWrite : write,
 								};
 
 								return {
