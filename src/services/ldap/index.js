@@ -172,7 +172,7 @@ module.exports = function() {
 							rawAttributes.forEach(element => {
 								result[element] = entry.raw[element].toString('base64');
 							});
-							objects.push(result);
+							objects.push(result); //sizeissue
 						});
 						res.on('end', (result) => {
 							if (result.status === 0) {
