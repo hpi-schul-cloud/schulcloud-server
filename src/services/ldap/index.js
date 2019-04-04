@@ -170,7 +170,7 @@ module.exports = function() {
 			return this._getClient(config).then((client) => {
 				return new Promise((resolve, reject) => {
 					let objects = [];
-					client.search(searchString, optionsWithPaging, function (err, res) {
+					client.search(searchString, optionsWithPaging, (err, res) => {
 						if (err) {
 							reject(err);
 						}
