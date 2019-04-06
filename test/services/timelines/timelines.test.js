@@ -3,10 +3,11 @@ const { expect } = require('chai');
 const app = require('../../../src/app');
 
 const timelineService = app.service('timelines');
-const timelineFetchService = app.service('timelines');
+const timelineFetchService = app.service('timelines/fetch');
 
 const urlFields = ['fetchUrl', 'documentUrl'];
 const userIds = {
+	loggedout: undefined,
 	student: '0000d224816abba584714c9c',
 	teacher: '0000d231816abba584714c9e',
 	admin: '0000d213816abba584714c0a',
@@ -56,6 +57,17 @@ describe('timelines service', function () {
 			});
 			return Promise.all([get, find]);
 		});
+		return Promise.all(testRequests);
+	});
+
+	it('only superhero can trigger fetch', () => {
+		const testRequests = Object.keys(userIds).map(userRole => timelineFetchService
+			.get('5c10e6650a4fa048c4c596dd', {
+				account: { userId: userIds[userRole] },
+			}).catch((error) => {
+				const getAllowed = error.message.includes("Can't receive data from");
+				expect(getAllowed).to.equal(userRole === 'superhero');
+			}));
 		return Promise.all(testRequests);
 	});
 });
