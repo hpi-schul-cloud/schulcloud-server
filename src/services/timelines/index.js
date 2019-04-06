@@ -1,54 +1,50 @@
-'use strict';
-
 const service = require('feathers-mongoose');
+const rp = require('request-promise-native');
 const timeline = require('./timeline-model');
 const hooks = require('./hooks/index');
-const rp = require('request-promise-native');
 
 class TimelineFetchService {
 	get(_id) {
 		// get url to fetch from database
 		return timeline.find({
-				_id: _id
+			_id,
 		}).then((data) => {
 			const timelineData = data[0];
-			if(!timelineData){
+			if (!timelineData) {
 				throw new Error(`Can't find timeline with id: ${_id}`);
 			}
 
 			// fetch new data
-			let options = {
+			const options = {
 				uri: timelineData.fetchUrl,
 				headers: {
-					'User-Agent': 'Request-Promise'
+					'User-Agent': 'Request-Promise',
 				},
-				json: false
+				json: false,
 			};
 			return rp(options).then((newTimelineData) => {
-
 				// update database
-				return timeline.update(
-					{_id: _id},
-					{$set: {json: newTimelineData}}
+				timeline.update(
+					{ _id },
+					{ $set: { json: newTimelineData } },
 				);
-
-			}).catch((err) => {
-				throw new Error(`Can't receive data from ${timelineData.fetchUrl}`)
+			}).catch(() => {
+				throw new Error(`Can't receive data from ${timelineData.fetchUrl}`);
 			});
 		});
 	}
 }
 
-module.exports = function () {
+module.exports = () => {
 	const app = this;
 
 	const options = {
 		Model: timeline,
 		paginate: {
 			default: 1,
-			max: 1000
+			max: 1000,
 		},
-		lean: true
+		lean: true,
 	};
 
 	// Initialize our service with any options it requires
@@ -60,8 +56,8 @@ module.exports = function () {
 	const timelineService = app.service('/timelines');
 
 	// Set up our before hooks
-	timelineService.before(hooks.before(""));
-	timelineFetchService.before(hooks.before("timelineFetch"));
+	timelineService.before(hooks.before(''));
+	timelineFetchService.before(hooks.before('timelineFetch'));
 
 	// Set up our after hooks
 	timelineService.after(hooks.after);
