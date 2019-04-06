@@ -31,19 +31,17 @@ exports.isAdmin = function (options) {
 	};
 };
 
-exports.isSuperHero = (options) => {
-	return (hook) => {
-		const userService = hook.app.service('/users/');
-		const userId = (((hook.params || {}).account || {}).userId || '');
-		return userService.find({ query: { _id: userId, $populate: 'roles' } })
-			.then((user) => {
-				user.data[0].roles = Array.from(user.data[0].roles);
-				if (!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
-					throw new errors.Forbidden('you are not a superhero, sorry...');
-				}
-				return Promise.resolve(hook);
-			});
-	};
+exports.isSuperHero = options => (hook) => {
+	const userService = hook.app.service('/users/');
+	const userId = (((hook.params || {}).account || {}).userId || '');
+	return userService.find({ query: { _id: userId, $populate: 'roles' } })
+		.then((user) => {
+			user.data[0].roles = Array.from(user.data[0].roles);
+			if (!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
+				throw new errors.Forbidden('you are not a superhero, sorry...');
+			}
+			return Promise.resolve(hook);
+		});
 };
 
 exports.hasRole = function (hook, userId, roleName) {
