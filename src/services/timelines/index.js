@@ -35,7 +35,8 @@ class TimelineFetchService {
 	}
 }
 
-module.exports = () => {
+// eslint-disable-next-line func-names
+module.exports = function () {
 	const app = this;
 
 	const options = {

@@ -35,7 +35,8 @@ const user = require('./user');
 const userGroup = require('./user-group');
 const wopi = require('./wopi');
 
-module.exports = () => {
+// eslint-disable-next-line func-names
+module.exports = function () {
 	const app = this;
 
 	const DB_URL = process.env.DB_URL || app.get('mongodb');
