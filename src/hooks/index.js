@@ -1,4 +1,3 @@
-'use strict';
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
@@ -9,8 +8,10 @@ const KeysModel = require('../services/keys/model');
 // don't require authentication for internal requests
 exports.ifNotLocal = function (hookForRemoteRequests) {
 	return function (hook) {
-		if (typeof (hook.params.provider) != 'undefined') {	// meaning it's not a local call
-			// Call the specified hook
+		// meaning it's a local call and pass it without execute hookForRemoteRequests
+		if(typeof (hook.params.provider) == 'undefined'){ 
+			return hook;
+		}else{
 			return hookForRemoteRequests.call(this, hook);
 		}
 	};
@@ -234,29 +235,49 @@ exports.mapPaginationQuery = (hook) => {
 	}
 };
 
-exports.checkCorrectCourseId = (hook) => {
-	let courseService = hook.app.service('courses');
-	const courseId = (hook.data.courseId || '').toString() || (hook.id || '').toString();
-	let query = {};
+exports.checkCorrectCourseOrTeamId = async (hook) => {
 
-	if (hook.data.courseGroupId) {
-		delete hook.data.courseId;
-		query = {$or: [{teacherIds: {$in: [hook.params.account.userId]}}, {userIds: {$in: [hook.params.account.userId]}}]};
-	} else
-		query = { teacherIds: {$in: [hook.params.account.userId] } };
+	if (hook.data.teamId) {
+		let teamService = hook.app.service('teams');
 
-	return courseService.find({ query: query})
-		.then(courses => {
-			if (courses.data.some(course => { return course._id.toString() === courseId; }))
-				return hook;
-			else
-				throw new errors.Forbidden("The entered course doesn't belong to you!");
-		});
+		let query = {
+			userIds: {
+				$elemMatch: { userId: hook.params.account.userId }
+			}
+		};
+
+		let teams = await teamService.find({ query });
+
+		if (teams.data.some(team => team._id.toString() === hook.data.teamId )) {
+			return hook;
+		} else {
+			throw new errors.Forbidden("The entered team doesn't belong to you!");
+		}
+	} else if (hook.data.courseGroupId || hook.data.courseId) {
+		let courseService = hook.app.service('courses');
+		const courseId = (hook.data.courseId || '').toString() || (hook.id || '').toString();
+		let query = { teacherIds: {$in: [hook.params.account.userId] } };
+
+		if (hook.data.courseGroupId) {
+			delete hook.data.courseId;
+			query = {$or: [{teacherIds: {$in: [hook.params.account.userId]}}, {userIds: {$in: [hook.params.account.userId]}}]};
+		}
+
+		let courses = await courseService.find({ query });
+
+		if (courses.data.some(course => course._id.toString() === courseId )) {
+			return hook;
+		} else {
+			throw new errors.Forbidden("The entered course doesn't belong to you!");
+		}
+	} else {
+		return hook;
+	}
 };
 
 exports.injectUserId = (hook) => {
 	if (typeof (hook.params.provider) == 'undefined') {
-		if (hook.data.userId) {
+		if (hook.data && hook.data.userId) {
 			hook.params.account = {userId: hook.data.userId};
 			hook.params.payload = {userId: hook.data.userId};
 			delete hook.data.userId;
@@ -299,61 +320,68 @@ exports.restrictToCurrentSchool = hook => {
 	});
 };
 
-const userIsInThatCourse = (user, course) => {
-	return course.userIds.some(u => u.toString() === user._id.toString()) ||
-	course.teacherIds.some(u => u.toString() === user._id.toString()) ||
-	course.substitutionIds.some(u => u.toString() === user._id.toString());
+const userIsInThatCourse = (user, course, isCourse) => {
+	if (isCourse) {
+		return course.userIds.some(u => u.toString() === user._id.toString())
+			|| course.teacherIds.some(u => u.toString() === user._id.toString())
+			|| (course.substitutionIds || []).some(u => u.toString() === user._id.toString());
+	}
+
+	return course.userIds.some(u => u.toString() === user._id.toString())
+		|| user.roles.some(role => role.name === 'teacher');
 };
 
-exports.restrictToUsersOwnCourses = hook => {
+exports.restrictToUsersOwnCourses = (hook) => {
 	let userService = hook.app.service('users');
 	return userService.find({
 		query: {
 			_id: hook.params.account.userId,
 			$populate: 'roles'
 		}
-	}).then(res => {
+	}).then((res) => {
 		let access = false;
-		res.data[0].roles.map(role => {
-			if (role.name === 'administrator' || role.name === 'superhero' )
+		res.data[0].roles.map((role) => {
+			if (role.name === 'administrator' || role.name === 'superhero' ) {
 				access = true;
+			}
 		});
-		if (access)
+		if (access) {
 			return hook;
+		}
 
-		if (hook.method === "get") {
+		if (hook.method === "find") {
+			hook.params.query.$and = (hook.params.query.$and || []);
+			hook.params.query.$and.push({
+				$or: [
+					{ userIds: res.data[0]._id },
+					{ teacherIds: res.data[0]._id },
+					{ substitutionIds: res.data[0]._id },
+				]
+			})
+		} else {
 			let courseService = hook.app.service('courses');
-			return courseService.get(hook.id).then(course => {
-				if (!(_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
-					!(_.some(course.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
-					!(_.some(course.substitutionIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
+			return courseService.get(hook.id).then((course) => {
+				if (!userIsInThatCourse(res.data[0], course, true)) {
 					throw new errors.Forbidden('You are not in that course.');
 				}
 			});
-		} else if (hook.method === "find") {
-			if (typeof(hook.params.query.$or) === 'undefined') {
-				hook.params.query.$or = [
-					{ userIds: res.data[0]._id },
-					{ teacherIds: res.data[0]._id },
-					{ substitutionIds: res.data[0]._id }
-				];
-			}
 		}
+		
 		return hook;
 	});
 };
 
-exports.restrictToUsersOwnLessons = hook => {
+exports.restrictToUsersOwnLessons = (hook) => {
 	const userService = hook.app.service('users');
 	return userService.find({
 		query: {
 			_id: hook.params.account.userId,
 			$populate: 'roles'
 		}
-	}).then(userResult => {
+	}).then((userResult) => {
 		let access = false;
 		const user = userResult.data[0];
-		user.roles.forEach(role => {
+		user.roles.forEach((role) => {
 			if (role.name === 'administrator' || role.name === 'superhero') {
 				access = true;
 			}
@@ -365,29 +393,40 @@ exports.restrictToUsersOwnLessons = hook => {
 		if (hook.type === 'before') {
 			let populate = hook.params.query.$populate;
 			if (typeof (populate) === 'undefined') {
-				populate = ['courseId'];
+				populate = ['courseId', 'courseGroupId'];
 			} else if (Array.isArray(populate) && !populate.includes('courseId')) {
 				populate.push('courseId');
+				populate.push('courseGroupId');
 			}
 			hook.params.query.$populate = populate;
 		} else {
 			// after-hook
 			if (hook.method === 'get' && (hook.result || {})._id) {
 				let tempLesson = [hook.result];
-				tempLesson = tempLesson.filter(lesson => {
-					return userIsInThatCourse(user, lesson.courseId) 
-					|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
+				tempLesson = tempLesson.filter((lesson) => {
+					if ('courseGroupId' in lesson) {
+						return userIsInThatCourse(user, lesson.courseGroupId, false);
+					}
+					return userIsInThatCourse(user, lesson.courseId, true)
+						|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
 				});
 				if (tempLesson.length === 0) {
 					throw new errors.Forbidden("You don't have access to that lesson.");
 				}
-				hook.result.courseId = hook.result.courseId._id;
+				if ('courseGroupId' in hook.result) {
+					hook.result.courseGroupId = hook.result.courseGroupId._id;
+				} else {
+					hook.result.courseId = hook.result.courseId._id;
+				}
 			}
 
 			if (hook.method === 'find' && ((hook.result || {}).data || []).length > 0) {
-				hook.result.data = hook.result.data.filter(lesson => {
-					return userIsInThatCourse(user, lesson.courseId) 
-					|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
+				hook.result.data = hook.result.data.filter((lesson) => {
+					if ('courseGroupId' in lesson) {
+						return userIsInThatCourse(user, lesson.courseGroupId, false);
+					}
+					return userIsInThatCourse(user, lesson.courseId, true)
+						|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
 				});
 
 				if (hook.result.data.length === 0) {
@@ -395,8 +434,12 @@ exports.restrictToUsersOwnLessons = hook => {
 				} else {
 					hook.result.total = hook.result.data.length;
 				}
-				hook.result.data.forEach(lesson => {
-					lesson.courseId = lesson.courseId._id;
+				hook.result.data.forEach((lesson) => {
+					if ('courseGroupId' in lesson) {
+						lesson.courseGroupId = lesson.courseGroupId._id;
+					} else {
+						lesson.courseId = lesson.courseId._id;
+					}
 				});
 			}
 		}
@@ -541,39 +584,48 @@ exports.sendEmail = (hook, maildata) => {
 			});
 
 			_.uniq(receipients).map(email => {
-				mailService.create({
-					email: email,
-					subject: maildata.subject || "E-Mail von der Schul-Cloud",
-					headers: maildata.headers || {},
-					content: {
-						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
-						"html": ""
-					}
-				}).catch (err => {
-					throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
-				});
+				if (!maildata.content.text && !maildata.content.html) {
+					logger.warn("(1) No mailcontent (text/html) was given. Don't send a mail.");
+				} else {
+					mailService.create({
+						email: email,
+						subject: maildata.subject || "E-Mail von der Schul-Cloud",
+						headers: maildata.headers || {},
+						content: {
+							"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
+							"html": "" // still todo, html template mails
+						}
+					}).catch (err => {
+						logger.warn(err);
+						throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+					});
+				}
 			});
-		return hook;
+			return hook;
 		})
 		.catch(err => {
 			throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 		});
 	}
 	else {
-		_.uniq(receipients).map(email=> {
-			mailService.create({
-				email: email,
-				subject: maildata.subject || "E-Mail von der Schul-Cloud",
-				headers: maildata.headers || {},
-				content: {
-					"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
-					"html": ""
-				}
-			})
-			.catch (err => {
-				throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+		if (!maildata.content.text && !maildata.content.html) {
+			logger.warn("(2) No mailcontent (text/html) was given. Don't send a mail.");
+		} else {
+			_.uniq(receipients).map(email=> {
+				mailService.create({
+					email: email,
+					subject: maildata.subject || "E-Mail von der Schul-Cloud",
+					headers: maildata.headers || {},
+					content: {
+						"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
+						"html": "" // still todo, html template mails
+					}
+				}).catch (err => {
+					logger.warn(err);
+					throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+				});
 			});
-		});
+		}
 		return hook;
 	}
 };

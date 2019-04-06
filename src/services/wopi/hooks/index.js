@@ -2,7 +2,7 @@
 
 const errors = require('feathers-errors');
 const auth = require('feathers-authentication');
-const FileModel = require('../../fileStorage/model').fileModel;
+const {FileModel} = require('../../fileStorage/model');
 
 /**
  * handles the authentication for wopi-clients, the wopi-specific param 'access-token' has to be a valid jwt for the current system
