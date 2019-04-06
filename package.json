@@ -19,7 +19,7 @@
   },
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
-    "seed": "cross-env sh ./backup.sh -p setup/ -D schulcloud-test -a import",
+    "seed": "./backup.sh -p setup/ -D schulcloud-test -a import",
     "test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
     "backup": "./backup.sh -a -b export",
     "setup": "./backup.sh -p setup/ -a import",
