@@ -17,17 +17,9 @@ exports.ifNotLocal = function (hookForRemoteRequests) {
 	};
 };
 
-exports.forceHookResolve = (forcedHook) => {
-	return (hook) => {
-		return forcedHook(hook)
-		.then((newHook) => {
-			return Promise.resolve(newHook);
-		})
-		.catch(() => {
-			return Promise.resolve(hook);
-		});
-	};
-};
+exports.forceHookResolve = forcedHook => hook => forcedHook(hook)
+	.then(newHook => Promise.resolve(newHook))
+	.catch(() => Promise.resolve(hook));
 
 exports.isAdmin = function (options) {
 	return hook => {
@@ -39,11 +31,12 @@ exports.isAdmin = function (options) {
 	};
 };
 
-exports.isSuperHero = function (options) {
-	return hook => {
+exports.isSuperHero = (options) => {
+	return (hook) => {
 		const userService = hook.app.service('/users/');
-		return userService.find({ query: { _id: (((hook.params || {}).account||{}).userId || ""), $populate: 'roles' } })
-			.then(user => {
+		const userId = (((hook.params || {}).account || {}).userId || '');
+		return userService.find({ query: { _id: userId, $populate: 'roles' } })
+			.then((user) => {
 				user.data[0].roles = Array.from(user.data[0].roles);
 				if (!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
 					throw new errors.Forbidden('you are not a superhero, sorry...');
