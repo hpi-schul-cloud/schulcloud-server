@@ -123,6 +123,52 @@ class MessageService {
 	}
 }
 
+class MessageRemoveService {
+	constructor(options) {
+		this.options = options || {};
+	}
+
+	remove(id, params) {
+		const userId = (params.account || {}).userId || params.payload.userId;
+		const options = {
+			uri: `${
+				this.serviceUrls.notification
+				}/messages/user/${userId}/removeAll`,
+			method: 'POST',
+			json: true
+		};
+		return request(options);
+	}
+
+	setup(app, path) {
+		this.app = app;
+		this.serviceUrls = this.app.get('services') || {};
+	}
+}
+
+class MessageReadService {
+	constructor(options) {
+		this.options = options || {};
+	}
+
+	find(params) {
+		const userId = (params.account || {}).userId || params.payload.userId;
+		const options = {
+			uri: `${
+				this.serviceUrls.notification
+				}/messages/user/${userId}/readAll`,
+			method: 'POST',
+			json: true
+		};
+		return request(options);
+	}
+
+	setup(app, path) {
+		this.app = app;
+		this.serviceUrls = this.app.get('services') || {};
+	}
+}
+
 class DeviceService {
 	constructor(options) {
 		this.options = options || {};
@@ -187,6 +233,7 @@ class CallbackService {
 	get(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 		const data = {
+			// todo replace with jwt userid
 			receiverId: params.query.receiverId,
 			redirect: params.query.redirect || null
 		};
@@ -320,6 +367,8 @@ module.exports = function () {
 	// Initialize our service with any options it requires
 	app.use('/notification/push', new PushService());
 	app.use('/notification/messages', new MessageService());
+	app.use('/notification/messages/removeAll', new MessageRemoveService());
+	app.use('/notification/messages/readAll', new MessageReadService());
 	app.use('/notification/devices', new DeviceService());
 	app.use('/notification/configuration', new ConfigurationService());
 	app.use('/notification/callback', new CallbackService(), redirect);

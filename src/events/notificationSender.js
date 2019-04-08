@@ -22,6 +22,7 @@ function createReceiver(userModel, deliveryOptions) {
 		name,
 		mail: userModel.email,
 		payload: {
+			// todo required?
 			name,
 		},
 		language: 'de', // todo add to user settings
