@@ -102,7 +102,8 @@ class RocketChatUser {
 			return request(getRequestOptions('/api/v1/users.register', body)).then((res) => {
 				if (res.success === true && res.user !== undefined) {
 					return res;
-				} throw new BadRequest('False response data from rocketChat');
+				}
+				throw new BadRequest('False response data from rocketChat');
 			}).then((result) => {
 				const rcId = result.user._id;
 				return rocketChatModels.userModel.create({
@@ -354,7 +355,10 @@ class RocketChatChannel {
 				currentTeam = team;
 				const userNamePromises = currentTeam.userIds.map(user => this.app.service('rocketChat/user').get(user.userId).catch(Promise.resolve));
 				return Promise.all(userNamePromises).then(async (users) => {
-					const userNames = users.map(user => user.username);
+					let userNames = [];
+					users.forEach(user => {
+						if (user.username) userNames.push(user.username)
+					});
 					const channelName = await this.generateChannelName(currentTeam);
 					const body = {
 						name: channelName,
