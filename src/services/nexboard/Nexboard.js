@@ -163,9 +163,6 @@ class Nexboard {
 }
 
 module.exports = new Nexboard(
-	// process.env.NEXBOARD_API_KEY,
-	// process.env.NEXBOARD_USER_ID,
-	"5OMGbEuVedWdy7G3yhdmBmCVFDkDW6",
-	322,
-	// "schulcloud",
+	process.env.NEXBOARD_API_KEY,
+	process.env.NEXBOARD_USER_ID,
 )
