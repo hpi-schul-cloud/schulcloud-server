@@ -27,7 +27,6 @@ class Lesson {
 	// eslint-disable-next-line object-curly-newline
 	patch(lessonId, { title, steps, users, owner }, params) {
 		// sectionIds map to steps -> but is solved from Editor MS
-
 		return request(uri, params, {
 			data: {
 				title, steps, users, owner,

@@ -27,9 +27,9 @@ class Section {
 	}
 
 	// title as docValue ? wenn nicht dann als db model, würde das data handling für find erleichtern
-	patch(sectionId, { state }, params) {
+	patch(sectionId, { state, title }, params) {
 		return request(uri, params, {
-			data: { state },
+			data: { state, title },
 		});
 	}
 

@@ -4,11 +4,12 @@ const {
 	GroupToSingle,
 	Lesson,
 	Section,
+	SectionAttachment,
 	SubSection,
 	Permission,
 	Test,
 } = require('./services/');
-const { before, after, beforeLesson } = require('./hooks');
+const { before, after, beforeLesson, beforeSectionAttachments } = require('./hooks');
 const { setForceKey } = require('./helper');
 
 // subscriptions lesson->steps / , sections, group
@@ -22,11 +23,12 @@ module.exports = function setup() {
 	const permissionsRoute = `${route}sections/:sectionId/permissions`;
 	const groupsRoute = `${route}groups`;
 	const sectionsRoute = `${route}sections`;
+	const sectionAttachmentsRoute = `${route}sections/attachments`;
 	const collectionsRoute = `${route}collections`;
 	const lessonsRoute = `${route}lessons`;
 	const subsectionsRoute = `${route}subsections`;
-
 	app.use(sectionsRoute, new Section());
+	app.use(sectionAttachmentsRoute, new SectionAttachment());
 	app.use(groupsRoute, new Group());
 	app.use(collectionsRoute, new Collection());
 	app.use(lessonsRoute, new Lesson());
@@ -37,6 +39,10 @@ module.exports = function setup() {
 	const sections = app.service(sectionsRoute);
 	sections.before(before);
 	sections.after(after);
+
+	const sectionAttachments = app.service(sectionAttachmentsRoute);
+	sectionAttachments.before(beforeSectionAttachments);
+	sectionAttachments.after(after);
 
 	const groups = app.service(groupsRoute);
 	groups.before(before);

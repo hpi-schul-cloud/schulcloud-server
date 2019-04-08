@@ -32,6 +32,11 @@ const after = {
 	remove: [],
 };
 
+const beforeSectionAttachments = {
+	all: [passRequestDataToParams,
+		ifNotLocal(saveAndClearQuery),], find: [], get: [], create: [], update: [], patch: [], remove: []
+}
+
 const beforeLesson = Object.assign({}, before, {
 	create: [ifNotLocal(disable())],
 	remove: [ifNotLocal(disable())],
@@ -41,4 +46,5 @@ module.exports = {
 	before,
 	after,
 	beforeLesson,
+	beforeSectionAttachments,
 };
