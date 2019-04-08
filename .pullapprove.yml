@@ -4,9 +4,12 @@ pullapprove_conditions:
 - condition: "'WIP' not in labels"
   unmet_status: pending
   explanation: "Work in progress"
-- condition: "'*travis*' in statuses.succeeded"
-  unmet_status: failure
-  explanation: "Tests must pass before review starts"
+#- condition: "'Travis*' in statuses.succeeded" # Not working yet
+#  unmet_status: failure
+#  explanation: "Tests must pass before review starts"
+#- condition: "'stickler*' in statuses.succeeded"
+#  unmet_status: failure
+#  explanation: "Linter must pass before review starts"
 
 
 notifications:
@@ -25,7 +28,7 @@ groups:
       - server-core
     reviews:
       required: 1  # number of approvals required from this group
-      request: 1  # number of review requests sent at a time
+      request: 2  # number of review requests sent at a time
       request_order: shuffle
 
   privacy:
@@ -38,5 +41,5 @@ groups:
       - data-protection
     reviews:
       required: 1  # number of approvals required from this group
-      request: 1  # number of review requests sent at a time
+      request: 2  # number of review requests sent at a time
       request_order: shuffle

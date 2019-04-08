@@ -158,11 +158,19 @@ module.exports = function() {
 		 * @return {Promise[Array[Object]]} resolves with array of objects
 		 * matching the query, rejects with error otherwise
 		 */
-		searchCollection(config, searchString, options, rawAttributes = []) {
+		searchCollection(config, searchString, options = {}, rawAttributes = []) {
+			// Paging to avoid 'max size limit exceeded' issue
+			const optionsWithPaging = {
+				...options,
+				paged: {
+					pageSize: 100,
+				},
+			};
+
 			return this._getClient(config).then((client) => {
 				return new Promise((resolve, reject) => {
-					let objects = [];
-					client.search(searchString, options, function (err, res) {
+					const objects = [];
+					client.search(searchString, optionsWithPaging, (err, res) => {
 						if (err) {
 							reject(err);
 						}
