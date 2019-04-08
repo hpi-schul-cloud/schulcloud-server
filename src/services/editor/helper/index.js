@@ -1,12 +1,14 @@
 const request = require('./request');
-const fakeParams = require('./fakeParams');
+const customParams = require('././customParams');
 const setForceKey = require('./setForceKey');
 const { getCourse, getLessonsByCourse } = require('./course');
+const models = require('./models');
 
 module.exports = {
 	request,
-	fakeParams,
+	customParams,
 	setForceKey,
 	getCourse,
 	getLessonsByCourse,
+	models,
 };

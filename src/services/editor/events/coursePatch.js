@@ -1,6 +1,6 @@
 const { BadRequest } = require('feathers-errors');
 const logger = require('winston');
-const { fakeParams, getLessonsByCourse } = require('../helper/');
+const { customParams, getLessonsByCourse } = require('../helper/');
 
 const isUsersPatched = ({ data = {} }) => {
 	const { teacherIds, userIds, substitutionIds } = data;
@@ -11,7 +11,7 @@ const patchEditorLessons = async (app, { teacherIds = [], userIds = [], substitu
 	const owner = [...teacherIds, ...substitutionIds];
 	const users = userIds;
 	const lessons = await getLessonsByCourse(_id);
-	const params = fakeParams({ force: true });
+	const params = customParams({ force: true });
 
 	const promisses = (lessons || []).map(lesson => app.service('/editor/lessons')
 		.patch(lesson._id, { owner, users }, params));
