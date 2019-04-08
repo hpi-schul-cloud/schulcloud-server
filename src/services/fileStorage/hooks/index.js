@@ -10,10 +10,11 @@ const resolveUserId = (hook) => {
 };
 
 const replaceAnd = (hook) => {
-	if (hook.data.name)
+	if (hook.data.name) {
 		hook.data.name = hook.data.name.replace(/&amp;/g, '&');
-	else if (hook.data.newName)
+	} else if (hook.data.newName) {
 		hook.data.newName = hook.data.newName.replace(/&amp;/g, '&');
+	}
 };
 
 const resolveStorageType = (hook) => {
