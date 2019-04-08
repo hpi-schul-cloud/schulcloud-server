@@ -5,8 +5,9 @@ class WebUnits {
 	}
 	// https://docs.feathersjs.com/api/services
 
-	find(params) {
-
+	find(params) {	// is get without id in url path
+		// example: this.app.service('courses').find({schoolId: '123'})
+		// http://localhost:3030/docs/  || https://api.schul-cloud.org/docs/
 	}
 
 	get(id, params) {
