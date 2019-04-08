@@ -88,6 +88,7 @@
     "serve-favicon": "^2.3.2",
     "socketio": "^1.0.0",
     "socketio-file-upload": "^0.6.2",
+    "strip-bom": "^3.0.0",
     "strip-js": "^1.0.6",
     "universal-analytics": "^0.4.17",
     "url-join": "^4.0.0",
