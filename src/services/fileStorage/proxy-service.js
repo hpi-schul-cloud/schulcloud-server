@@ -470,7 +470,7 @@ const directoryService = {
 
 		const params = sanitizeObj({
 			isDirectory: true,
-			parent: parent || { $exists: false },
+			parent,
 		});
 
 		return FileModel.find(params).exec()
@@ -481,6 +481,10 @@ const directoryService = {
 						.catch(() => undefined),
 				);
 				return Promise.all(permissionPromises);
+			})
+			.then((allowedFiles) => {
+				const files = allowedFiles.filter(f => f);
+				return files.length ? files : new NotFound();
 			});
 	},
 
