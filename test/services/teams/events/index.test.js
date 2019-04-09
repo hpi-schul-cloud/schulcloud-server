@@ -3,6 +3,7 @@
 
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
+const sleep = require('util').promisify(setTimeout);
 
 const app = require('../../../../src/app');
 const { userModel } = require('../../../../src/services/user/model');
@@ -12,10 +13,6 @@ const DELAY_TIME = 250;
 const schoolId = ObjectId();
 const userRoleId = ObjectId();
 const teamRoleId = ObjectId();
-
-const wait = () => new Promise((resolve) => {
-	setTimeout(() => { resolve(); }, DELAY_TIME);
-});
 
 const createTeamUser = userId => (new teamUserModel({ role: teamRoleId, schoolId, userId }))._doc;
 
@@ -84,7 +81,7 @@ describe('Test user remove events', () => {
 		await app.service('users').remove(user._id);
 
 		// Execute the primary test with short delay. That the async event process can finished.
-		await wait();
+		await sleep(DELAY_TIME);
 
 		const teamWithRemovedUser = await getTeam(teamId);
 		const found = teamWithRemovedUser.userIds.some(teamUser => teamUser.userId.toString() === userId);
@@ -98,7 +95,7 @@ describe('Test user remove events', () => {
 		await app.service('users').remove(owner._id);
 
 		// Execute the primary test with short delay. That the async event process can finished.
-		await wait();
+		await sleep(DELAY_TIME);
 
 		const notExistingTeam = await getTeam(teamId);
 		expect(notExistingTeam !== undefined).to.equal(true);
