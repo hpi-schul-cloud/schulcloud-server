@@ -3,9 +3,6 @@
 
 const nexboardClient = require('../utils/Nexboard')
 
-const Project = require('./Project')
-const project = new Project()
-
 class Board {
 	constructor(options) {
 		this.options = options || {};
@@ -17,7 +14,7 @@ class Board {
 	}
 
 	async create({ lessonId, title = 'Neues Nexboard Board', description = "Ein digitales Whiteboard" }, params) {
-		const nexboardProject = await project.get(lessonId)
+		const nexboardProject = await this.app.service('nexboard/project').get(lessonId)
 		return nexboardClient.createBoard(title, description, nexboardProject.id)
 	}
 
