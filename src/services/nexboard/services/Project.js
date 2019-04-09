@@ -3,7 +3,7 @@
 const rpn = require('request-promise-native');
 const EDITOR_MS_URI = process.env.EDITOR_MS_URI || 'http://localhost:4001';
 const REQUEST_TIMEOUT = process.env.NODE_ENV !== 'production' ? 120 * 1000 : 6 * 1000;
-const nexboardClient = require('../Nexboard')
+const nexboardClient = require('../utils/Nexboard')
 
 class Project {
 	constructor(options) {
@@ -14,7 +14,7 @@ class Project {
 	async get(id, params) { // id equals lessonId
 		let nexboardSectionAttachments
 		nexboardSectionAttachments = await rpn({
-			uri: `${EDITOR_MS_URI}/sections/attachments`,
+			uri: `${EDITOR_MS_URI}/attachments`,
 			method: 'GET',
 			headers: {
 				// Authorization: userId, // TODO
@@ -43,7 +43,7 @@ class Project {
 		const project = await nexboardClient.createProject(title, description)
 
 		const nexboardSectionAttachment = await rpn({
-			uri: `${EDITOR_MS_URI}/sections/attachments`,
+			uri: `${EDITOR_MS_URI}/attachments`,
 			method: 'POST',
 			headers: {
 				// Authorization: userId, // TODO

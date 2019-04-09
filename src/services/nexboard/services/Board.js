@@ -1,12 +1,12 @@
 /* eslint-disable object-curly-newline */
 /* eslint-disable class-methods-use-this */
 
-const nexboardClient = require('../Nexboard')
+const nexboardClient = require('../utils/Nexboard')
 
 const Project = require('./Project')
 const project = new Project()
 
-class Lesson {
+class Board {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
@@ -26,4 +26,4 @@ class Lesson {
 	}
 }
 
-module.exports = Lesson;
+module.exports = Board;
