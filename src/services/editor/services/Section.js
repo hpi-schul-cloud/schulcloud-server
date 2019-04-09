@@ -12,9 +12,9 @@ class Section {
 	/**
 	 * @param {object} lesson It create one new template. The owner is take from the lesson.
 	 */
-	create({ lesson }, params) {
+	create({ lesson, position }, params) {
 		return request(uri, params, {
-			data: { lesson },
+			data: { lesson, position },
 		});
 	}
 

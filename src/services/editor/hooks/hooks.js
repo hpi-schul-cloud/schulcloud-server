@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-const logger = require('winston');
 const { populateUsersInContext, isGroup } = require('./helper');
 
 /**

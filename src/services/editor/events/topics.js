@@ -2,7 +2,7 @@
 const logger = require('winston');
 const { BadRequest } = require('feathers-errors');
 
-const { fakeParams, getCourse } = require('../helper/');
+const { customParams, getCourse } = require('../helper/');
 
 const topicsCreate = (app) => {
 	app.service('lessons').on('created', async (result) => {
@@ -18,7 +18,7 @@ const topicsCreate = (app) => {
 		const users = (userIds || []).map(e => e.toString());
 		const title = name;
 		// use first teacher as user that make this action
-		const param = fakeParams({ userId: teacherIds[0] });
+		const param = customParams({ userId: teacherIds[0] });
 
 		app.service('/editor/lessons')
 			.create({ _id, owner, users, title }, param)
@@ -37,7 +37,7 @@ const topicsRemove = (app) => {
 		// const { teacherIds } = await getCourse(courseId);
 
 		// use first teacher as user that make this action
-		const param = fakeParams({ force: true });
+		const param = customParams({ force: true });
 		app.service('/editor/lessons')
 			.remove(_id, param)
 			.then((lesson) => {

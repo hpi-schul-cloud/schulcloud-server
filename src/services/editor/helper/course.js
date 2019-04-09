@@ -1,6 +1,6 @@
 
 const { BadRequest } = require('feathers-errors');
-const { courseModel, lessonModel } = require('../../models');
+const { courseModel, lessonModel } = require('./models');
 
 const getCourse = id => courseModel.findById(id)
 	.select('userIds classIds teacherIds substitutionIds')

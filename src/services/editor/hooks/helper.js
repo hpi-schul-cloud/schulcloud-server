@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const logger = require('../../../logger/');
-const { userModel } = require('../../models');
+const { userModel } = require('../helper/').models;
 
 const isGroup = e => e && e !== null && typeof e === 'object' && e.type === 'group' && e.users;
 
