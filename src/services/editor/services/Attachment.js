@@ -1,16 +1,16 @@
 /* eslint-disable class-methods-use-this */
-const { request } = require('../helper/');
+const { request } = require('../helper');
 
-const uri = 'sections/attachments';
+const uri = 'attachments';
 
-class SectionAttachment {
+class Attachment {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
 	}
 
 	/**
-	 * @param {object} sectionAttachment It creates one new section Attachment
+	 * @param {object} attachment It creates one new Attachment
 	 */
 	create({ lesson, key, value }, params) {
 		return request(uri, params, {
@@ -41,4 +41,4 @@ class SectionAttachment {
 	}
 }
 
-module.exports = SectionAttachment;
+module.exports = Attachment;

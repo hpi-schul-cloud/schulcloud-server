@@ -12,8 +12,8 @@ class Project {
 	}
 
 	async get(id, params) { // id equals lessonId
-		let nexboardSectionAttachments
-		nexboardSectionAttachments = await rpn({
+		let nexboardAttachments
+		nexboardAttachments = await rpn({
 			uri: `${EDITOR_MS_URI}/attachments`,
 			method: 'GET',
 			headers: {
@@ -26,8 +26,8 @@ class Project {
 			timeout: REQUEST_TIMEOUT,
 		})
 
-		if (nexboardSectionAttachments.total !== 0) {
-			return nexboardClient.getProject(nexboardSectionAttachments.data[0].value)
+		if (nexboardAttachments.total !== 0) {
+			return nexboardClient.getProject(nexboardAttachments.data[0].value)
 		}
 
 		const nexboardProject = (await this.create({ lessonId: id }, params)).project
@@ -42,7 +42,7 @@ class Project {
 	async create({ lessonId, title = 'Neues Nexboard Projekt', description = "Hier werden alle Nexboards für diese Lerneinheit gesammelt" }, params) {
 		const project = await nexboardClient.createProject(title, description)
 
-		const nexboardSectionAttachment = await rpn({
+		const nexboardAttachment = await rpn({
 			uri: `${EDITOR_MS_URI}/attachments`,
 			method: 'POST',
 			headers: {
@@ -57,7 +57,7 @@ class Project {
 			timeout: REQUEST_TIMEOUT,
 		})
 
-		return { project, lessonId, attachment: nexboardSectionAttachment }
+		return { project, lessonId, attachment: nexboardAttachment }
 	}
 
 	setup(app) {

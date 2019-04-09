@@ -32,7 +32,7 @@ const after = {
 	remove: [],
 };
 
-const beforeSectionAttachments = {
+const beforeAttachments = {
 	all: [passRequestDataToParams,
 		ifNotLocal(saveAndClearQuery),], find: [], get: [], create: [], update: [], patch: [], remove: []
 }
@@ -46,5 +46,5 @@ module.exports = {
 	before,
 	after,
 	beforeLesson,
-	beforeSectionAttachments,
+	beforeAttachments,
 };
