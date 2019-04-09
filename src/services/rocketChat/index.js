@@ -1,6 +1,7 @@
 const request = require('request-promise-native');
 const { Forbidden, BadRequest } = require('feathers-errors');
 const logger = require('winston');
+const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = require('./rocketChatConfig');
 
 const rocketChatModels = require('./model'); // toDo: deconstruct
 const {
@@ -11,7 +12,6 @@ const { randomPass, randomSuffix } = require('./randomPass');
 
 
 const REQUEST_TIMEOUT = 4000; // in ms
-const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = process.env;
 
 if (ROCKET_CHAT_URI === undefined) { logger.warn('please set the environment variable ROCKET_CHAT_URI'); }
 if (ROCKET_CHAT_ADMIN_TOKEN === undefined) {
