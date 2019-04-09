@@ -152,7 +152,7 @@ class RocketChatUser {
 				rcId: rcUser.rcId,
 			};
 		} catch (err) {
-			return new BadRequest('could not initialize rocketchat user', err);
+			throw new BadRequest('could not initialize rocketchat user', err);
 		}
 	}
 
