@@ -8,7 +8,7 @@ const rocketChatLoginService = app.service('/rocketChat/login');
 const rocketChatLogoutService = app.service('rocketChat/logout');
 const rocketChatChannelService = app.service('/rocketChat/channel');
 
-const { expect } = chai;
+//const { expect } = chai;
 
 describe('rocket.chat user service', () => {
 	it('registered the RC user service', () => {
