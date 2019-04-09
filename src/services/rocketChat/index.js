@@ -83,7 +83,7 @@ class RocketChatUser {
 	}
 
 	/**
-	 * creates an account, should be called by getOrCreateRocketChatAccount
+	 * creates an account, should only be called by getOrCreateRocketChatAccount
 	 * @param {object} data
 	 */
 	createRocketChatAccount(userId) {
@@ -95,24 +95,33 @@ class RocketChatUser {
 		return this.app.service('users').get(userId, internalParams).then(async (user) => {
 			const { email } = user;
 			const pass = randomPass();
-			const username = await this.generateUserName(user);
+			let username = await this.generateUserName(user);
 			const name = [user.firstName, user.lastName].join(' ');
 
 			const body = {
 				email, pass, username, name,
 			};
-			return request(getRequestOptions('/api/v1/users.register', body)).then((res) => {
-				if (res.success === true && res.user !== undefined) {
-					return res;
-				}
-				throw new BadRequest('False response data from rocketChat');
-			}).then((result) => {
-				const rcId = result.user._id;
-				return rocketChatModels.userModel.create({
-					userId, pass, username, rcId,
+
+			const createdUser = await request(getRequestOptions('/api/v1/users.register', body))
+				.catch(async (err) => {
+					if (err.error.error === 'Email already exists. [403]') {
+						const queryString = `query={"emails.address":"${email}"}`;
+						const rcUser = await request(getRequestOptions(`/api/v1/users.list?${queryString}`,
+							{}, true, undefined, 'GET'));
+						const updatePasswordBody = {
+							userId: rcUser.users[0]._id,
+							data: {
+								password: pass,
+							},
+						};
+						return request(getRequestOptions('/api/v1/users.update', updatePasswordBody, true));
+					}
+					throw new BadRequest('Can not write user informations to rocketChat.', err);
 				});
-			}).catch((err) => {
-				throw new BadRequest('Can not write user informations to rocketChat.', err);
+			const rcId = createdUser.user._id;
+			({ username } = createdUser.user);
+			return rocketChatModels.userModel.create({
+				userId, pass, username, rcId,
 			});
 		}).catch((err) => {
 			logger.warn(new BadRequest('Can not create RocketChat Account', err));
