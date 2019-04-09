@@ -79,47 +79,6 @@ describe('CSVSyncer', () => {
 		});
 	});
 
-	describe('extractClassesToBeCreated method', () => {
-		const expectResult = (params, expected) => {
-			expect(CSVSyncer.extractClassesToBeCreated(params)).to.deep.equal(expected);
-		};
-
-		it('should return an empty array if no records are given', () => {
-			expectResult([], []);
-		});
-
-		it('should return all distinct class attribute values', () => {
-			expectResult([
-				{ class: '1a' },
-				{ class: '12b' },
-				{ class: '12b' },
-			], ['1a', '12b']);
-		});
-
-		it('should ignore empty class attribute values', () => {
-			expectResult([
-				{ class: '' },
-				{ class: '12b' },
-				{ class: '12b' },
-			], ['12b']);
-		});
-
-		it('should work on composite class attribute values', () => {
-			expectResult([
-				{ class: '1a+1b' },
-				{ class: '1c' },
-			], ['1a', '1b', '1c']);
-			expectResult([
-				{ class: '1a+1b' },
-				{ class: '1b+1a' },
-			], ['1a', '1b']);
-			expectResult([
-				{ class: '1a+1b+1b+1b' },
-				{ class: '1b+1a' },
-			], ['1a', '1b']);
-		});
-	});
-
 	describe('getClassObject method', () => {
 		it('should default to the `static` scheme', async () => {
 			const result = await new CSVSyncer().getClassObject('foobar');
