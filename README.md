@@ -1,10 +1,10 @@
 # Schul-Cloud Server
 Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com/)
 
-Dev: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg?branch=master)](https://travis-ci.com/schul-cloud/schulcloud-server)
-Production: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg?branch=production)](https://travis-ci.com/schul-cloud/schulcloud-server)
+Dev: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg?branch=develop)](https://travis-ci.com/schul-cloud/schulcloud-server)
+Master: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg?branch=master)](https://travis-ci.com/schul-cloud/schulcloud-server)
 
-[![Code Coverage](https://img.shields.io/codecov/c/github/schul-cloud/schulcloud-server/master.svg)](https://codecov.io/github/schulcloud/schulcloud-server?branch=master)
+[![codecov](https://codecov.io/gh/schul-cloud/schulcloud-server/branch/master/graph/badge.svg)](https://codecov.io/gh/schul-cloud/schulcloud-server)
 [![Version](https://img.shields.io/github/release/schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/schulcloud-server/releases)
 
 Swagger UI documentation is available [here](https://schul-cloud.org:8080/docs/).
@@ -34,12 +34,12 @@ You will need the [client](https://github.com/schul-cloud/schulcloud-client) as 
 
 For more details how to set up Visual Studio Code, read [this document](https://docs.schul-cloud.org/display/SCDOK/Visual+Studio+Code).
 
-## How to name your branch  
+## How to name your branch and create a pull request (PR)
   
 1. Take the Ticket Number from JIRA (ticketsystem.schul-cloud.org), e.g. SC-999  
-2. Name the branch beginning with Ticket Number, all words separated by dash "-", e.g. `SC-999-fantasy-problem`
+2. Name the feature branch beginning with Ticket Number, all words separated by dash "-", e.g. `feature/SC-999-fantasy-problem`
 3. Create a PR containing the Ticket Number in PR title
-4. Add the `[WIP]` label as long as this PR is in development, remove label and request reviewers if you are done and Definition of Done (will get added here later on) are met.
+4. Keep the `WIP` label as long as this PR is in development, complete PR checklist (is automatically added), keep or increase code test coverage, and pass all tests before you remove the `WIP` label. Reviewers will be added automatically. For more information check our Definition of Done [here](https://docs.schul-cloud.org/pages/viewpage.action?pageId=92831762).
 
 ## Testing
 
