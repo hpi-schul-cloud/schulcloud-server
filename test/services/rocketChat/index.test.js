@@ -15,6 +15,7 @@ const { expect } = chai;
 
 describe('rocket.chat user service', () => {
 	let server;
+	let rocketChatUserService;
 
 	before(async () => {
 		const rcMock = await rcMockServer({});
@@ -28,6 +29,7 @@ describe('rocket.chat user service', () => {
 		delete require.cache[require.resolve('../../../src/services/rocketChat/index.js')];
 
 		app.configure(require('../../../src/services/rocketChat'));
+		rocketChatUserService = app.service('/rocketChat/user');
 
 		server = app.listen(0);
 		return server;
@@ -38,18 +40,20 @@ describe('rocket.chat user service', () => {
 	});
 
 	it('registered the RC user service', () => {
-		const rocketChatUserService = app.service('/rocketChat/user');
 		assert.ok(rocketChatUserService);
 	});
 
-	it('creates a rc user for a sc user', () => {
-		const rocketChatUserService = app.service('/rocketChat/user');
+	it('creates a rc user for a sc user', () => rocketChatUserService.get('0000d231816abba584714c9e').then((rcUser) => {
+		expect(rcUser.rcId).to.exist;
+		expect(rcUser.username).to.exist;
+		expect(rcUser.password).not.to.exist;
+	}));
 
-		return rocketChatUserService.get('0000d231816abba584714c9e').then((rcUser) => {
-			expect(rcUser.rcId).to.exist;
-			expect(rcUser.username).to.exist;
-			expect(rcUser.password).not.to.exist;
-		});
+	it('retrieves existing rc users instead of creating new', async () => {
+		const firstResult = rocketChatUserService.get('0000d231816abba584714c9e');
+		const secondResult = rocketChatUserService.get('0000d231816abba584714c9e');
+		expect(firstResult.username).to.equal(secondResult.username);
+		expect(firstResult.rcId).to.equal(secondResult.rcId);
 	});
 });
 
