@@ -1,6 +1,7 @@
 const service = require('feathers-mongoose');
 const { newsModel, newsHistoryModel } = require('./model');
 const hooks = require('./hooks');
+const events = require('./events');
 
 module.exports = function news() {
 	const app = this;
@@ -22,4 +23,6 @@ module.exports = function news() {
 	const NewsHistoryService = app.service('/newshistory');
 	NewsHistoryService.before(hooks.before);
 	NewsHistoryService.after(hooks.after);
+
+	events.configure(app);
 };
