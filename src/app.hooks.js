@@ -48,8 +48,7 @@ const sanitizeDeep = (data, path) => {
 				if (['content', 'text', 'comment', 'gradeComment', 'description'].includes(key)
 					&& ['lessons', 'news', 'homework', 'submissions'].includes(path)) {
 					data[key] = sanitize(value, {html: true});
-				}
-				else
+				} else
 					data[key] = sanitize(value, {html: false});
 			} else
 				sanitizeDeep(value, path);
