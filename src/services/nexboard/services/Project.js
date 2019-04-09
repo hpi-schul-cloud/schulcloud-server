@@ -1,9 +1,10 @@
 /* eslint-disable object-curly-newline */
 /* eslint-disable class-methods-use-this */
 const rpn = require('request-promise-native');
+const nexboardClient = require('../utils/Nexboard');
+
 const EDITOR_MS_URI = process.env.EDITOR_MS_URI || 'http://localhost:4001';
 const REQUEST_TIMEOUT = process.env.NODE_ENV !== 'production' ? 120 * 1000 : 6 * 1000;
-const nexboardClient = require('../utils/Nexboard')
 
 class Project {
 	constructor(options) {
@@ -12,35 +13,38 @@ class Project {
 	}
 
 	async get(id, params) { // id equals lessonId
-		let nexboardAttachments
-		nexboardAttachments = await rpn({
+		const nexboardAttachments = await rpn({
 			uri: `${EDITOR_MS_URI}/attachments`,
 			method: 'GET',
 			headers: {
 				// Authorization: userId, // TODO
 			},
 			qs: {
-				lesson: id
+				lesson: id,
 			},
 			json: true,
 			timeout: REQUEST_TIMEOUT,
-		})
+		});
 
 		if (nexboardAttachments.total !== 0) {
-			return nexboardClient.getProject(nexboardAttachments.data[0].value)
+			return nexboardClient.getProject(nexboardAttachments.data[0].value);
 		}
 
-		const nexboardProject = (await this.create({ lessonId: id }, params)).project
+		const nexboardProject = (await this.create({ lessonId: id }, params)).project;
 
-		return nexboardProject
+		return nexboardProject;
 	}
 
 	find(params) {
-		return nexboardClient.getProjectsIds()
+		return nexboardClient.getProjectsIds();
 	}
 
-	async create({ lessonId, title = 'Neues Nexboard Projekt', description = "Hier werden alle Nexboards für diese Lerneinheit gesammelt" }, params) {
-		const project = await nexboardClient.createProject(title, description)
+	async create({
+		lessonId,
+		title = 'Neues Nexboard Projekt',
+		description = 'Hier werden alle Nexboards für diese Lerneinheit gesammelt'
+	}, params) {
+		const project = await nexboardClient.createProject(title, description);
 
 		const nexboardAttachment = await rpn({
 			uri: `${EDITOR_MS_URI}/attachments`,
@@ -51,13 +55,13 @@ class Project {
 			body: {
 				lesson: lessonId,
 				key: 'nexboard',
-				value: project.id
+				value: project.id,
 			},
 			json: true,
 			timeout: REQUEST_TIMEOUT,
-		})
+		});
 
-		return { project, lessonId, attachment: nexboardAttachment }
+		return { project, lessonId, attachment: nexboardAttachment };
 	}
 
 	setup(app) {
