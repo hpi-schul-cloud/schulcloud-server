@@ -65,7 +65,7 @@ const populateUsername = (context) => {
 	return context.app.service('users').get(context.result.data[0].userId)
 		.then((response) => {
 			context.result.data[0] = {
-				...context.result.data[0]['_doc'],
+				...context.result.data[0]._doc,
 				user: {
 					firstName: response.firstName,
 					lastName: response.lastName,

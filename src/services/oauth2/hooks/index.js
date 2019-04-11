@@ -19,7 +19,7 @@ const setSubject = hook => hook.app.service('ltiTools').find({
 		userId: hook.params.account.userId,
 	},
 }).then((pseudonyms) => {
-	const pseudonym = pseudonyms.data[0].pseudonym;
+	const { pseudonym } = pseudonyms.data[0];
 	hook.data.subject = hook.params.account.userId;
 	if (tools.data[0].useIframePseudonym) {
 		hook.data.force_subject_identifier = iframeSubject(pseudonym, hook.app.settings.services.web);

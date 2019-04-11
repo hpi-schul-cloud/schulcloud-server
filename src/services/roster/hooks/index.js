@@ -2,63 +2,60 @@ const errors = require('feathers-errors');
 
 module.exports = {
 
-	tokenIsActive: context => {
-		return context.app.service('/oauth2/introspect')
-			.create({token: context.params.headers.authorization.replace('Bearer ', '')})
-			.then(introspection => {
-				if (introspection.active) {
-					context.params.tokenInfo = introspection
-					return context
-				}
-				throw new errors.BadRequest('Access token invalid')
-			}).catch(error => {
-				throw new Error(error)
-			})
-	},
+	tokenIsActive: context => context.app.service('/oauth2/introspect')
+		.create({ token: context.params.headers.authorization.replace('Bearer ', '') })
+		.then((introspection) => {
+			if (introspection.active) {
+				context.params.tokenInfo = introspection;
+				return context;
+			}
+			throw new errors.BadRequest('Access token invalid');
+		}).catch((error) => {
+			throw new Error(error);
+		}),
 
-	userIsMatching: context => {
-		if (context.params.tokenInfo.obfuscated_subject === decodeURIComponent(context.params.user) ||
-			context.params.tokenInfo.sub === context.params.user) {
-			return context
-		} else {
-			throw new errors.BadRequest('No permissions for the user')
+	userIsMatching: (context) => {
+		if (context.params.tokenInfo.obfuscated_subject === decodeURIComponent(context.params.user)
+			|| context.params.tokenInfo.sub === context.params.user) {
+			return context;
 		}
+		throw new errors.BadRequest('No permissions for the user');
 	},
 
-	stripIframe: context => {
+	stripIframe: (context) => {
 		const regEx = /oauth2\/username\/(.*?)"/;
-		let pseudonym = context.params.user;
+		const pseudonym = context.params.user;
 		context.params.pseudonym = (pseudonym.includes('iframe') ? pseudonym.match(regEx)[1] : pseudonym);
-		return context
+		return context;
 	},
 
-	injectOriginToolIds: context => {
-		if (!context.params.tokenInfo) throw new Error('Token info is missing in params') // first call isTokenActive
-		const toolService = context.app.service("ltiTools");
+	injectOriginToolIds: (context) => {
+		if (!context.params.tokenInfo) throw new Error('Token info is missing in params'); // first call isTokenActive
+		const toolService = context.app.service('ltiTools');
 		return toolService.find({
 			query: {
-				oAuthClientId: context.params.tokenInfo.client_id
-			}
-		}).then(originTools => {
+				oAuthClientId: context.params.tokenInfo.client_id,
+			},
+		}).then((originTools) => {
 			context.params.useIframePseudonym = originTools.data[0].useIframePseudonym;
 			return toolService.find({
 				query: {
-					originTool: originTools.data[0]._id
-				}
-			}).then(tools => {
-				context.params.toolIds = [originTools.data[0]._id] // don't forget actual requested tool id
-				context.params.toolIds = context.params.toolIds.concat(tools.data.map(tool => tool._id)) // all origin tool ids
-				return context
+					originTool: originTools.data[0]._id,
+				},
+			}).then((tools) => {
+				context.params.toolIds = [originTools.data[0]._id]; // don't forget actual requested tool id
+				context.params.toolIds = context.params.toolIds.concat(tools.data.map(tool => tool._id));
+				return context;
 			});
 		});
 	},
 
-	groupContainsUser: context => {
-		if (!context.result.data) return context
-		const users = context.result.data.students.concat(context.result.data.teachers)
+	groupContainsUser: (context) => {
+		if (!context.result.data) return context;
+		const users = context.result.data.students.concat(context.result.data.teachers);
 		if (users.find(user => user.user_id === context.params.tokenInfo.obfuscated_subject)) {
-			return context
+			return context;
 		}
-		throw new errors.BadRequest("Current user is not part of group")
-	}
+		throw new errors.BadRequest('Current user is not part of group');
+	},
 };
