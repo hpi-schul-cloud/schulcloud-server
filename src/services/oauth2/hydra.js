@@ -1,5 +1,4 @@
 const request = require('request-promise-native');
-const uj = require('url-join');
 
 const mockTlsTermination = {
 	'X-Forwarded-Proto': 'https',
@@ -8,7 +7,7 @@ const mockTlsTermination = {
 module.exports = (hydraUrl) => {
 	function get(flow, challenge) {
 		const options = {
-			uri: uj(hydraUrl, `/oauth2/auth/requests/${flow}/${challenge}`),
+			uri: `${hydraUrl}/oauth2/auth/requests/${flow}/${challenge}`,
 			headers: {
 				...mockTlsTermination,
 			},
@@ -19,7 +18,7 @@ module.exports = (hydraUrl) => {
 
 	function put(flow, action, challenge, body) {
 		const options = {
-			uri: uj(hydraUrl, `/oauth2/auth/requests/${flow}/${challenge}/${action}`),
+			uri: `${hydraUrl}/oauth2/auth/requests/${flow}/${challenge}/${action}`,
 			method: 'PUT',
 			body,
 			headers: {
@@ -58,7 +57,7 @@ module.exports = (hydraUrl) => {
 		},
 		introspectOAuth2Token: (token, scope) => {
 			const options = {
-				uri: uj(hydraUrl, '/oauth2/introspect'),
+				uri: `${hydraUrl}/oauth2/introspect`,
 				method: 'POST',
 				body: `token=${token}&scope=${scope}`,
 				headers: {
@@ -70,16 +69,16 @@ module.exports = (hydraUrl) => {
 			return request(options);
 		},
 		isInstanceAlive: () => request({
-			uri: uj(hydraUrl, '/health/alive'),
+			uri: `${hydraUrl}/health/alive`,
 		}),
 		listOAuth2Clients: () => request({
-			uri: uj(hydraUrl, '/clients'),
+			uri: `${hydraUrl}/clients`,
 			headers: {
 				...mockTlsTermination,
 			},
 		}),
 		createOAuth2Client: data => request({
-			uri: uj(hydraUrl, '/clients'),
+			uri: `${hydraUrl}/clients`,
 			method: 'POST',
 			body: data,
 			headers: {
@@ -88,20 +87,20 @@ module.exports = (hydraUrl) => {
 			json: true,
 		}),
 		deleteOAuth2Client: id => request({
-			uri: uj(hydraUrl, `/clients/${id}`),
+			uri: `${hydraUrl}/clients/${id}`,
 			method: 'DELETE',
 			headers: {
 				...mockTlsTermination,
 			},
 		}),
 		listConsentSessions: user => request({
-			uri: uj(hydraUrl, `/oauth2/auth/sessions/consent/${user}`),
+			uri: `${hydraUrl}/oauth2/auth/sessions/consent/${user}`,
 			headers: {
 				...mockTlsTermination,
 			},
 		}),
 		revokeConsentSession: (user, client) => request({
-			uri: uj(hydraUrl, `/oauth2/auth/sessions/consent/${user}/${client}`),
+			uri: `${hydraUrl}/oauth2/auth/sessions/consent/${user}/${client}`,
 			method: 'DELETE',
 			headers: {
 				...mockTlsTermination,

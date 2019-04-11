@@ -42,7 +42,6 @@ backup/*
 
 # local dev secrets
 config/secrets.json
-.env
 
 #clipboard uploads
 uploads/*
