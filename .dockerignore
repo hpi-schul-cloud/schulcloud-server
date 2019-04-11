@@ -1,6 +1,12 @@
-.git
-Dockerfile
 .DS_Store
+.git
 .gitignore
-README.md
+.gitattributes
 .idea
+.travis.yml
+Dockerfile
+README.md
+compose-server-test.dummy
+deploy.sh
+test
+travis_rsa.enc

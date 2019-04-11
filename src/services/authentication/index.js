@@ -5,13 +5,17 @@ const jwt = require('feathers-authentication-jwt');
 const local = require('feathers-authentication-local');
 const logger = require('winston');
 
+const extractors = require('passport-jwt').ExtractJwt;
+
 const system = require('./strategies/system');
 const hooks = require('./hooks');
 
 
 let secrets;
 try {
-	(process.env.NODE_ENV === 'production') ? secrets = require('../../../config/secrets.js') : secrets = require('../../../config/secrets.json');
+	['production', 'local'].includes(process.env.NODE_ENV)
+		? secrets = require('../../../config/secrets.js')
+		: secrets = require('../../../config/secrets.json');
 } catch(error) {
 	secrets = {};
 }
@@ -48,11 +52,40 @@ module.exports = function() {
 		passwordField: 'password'
 	};
 
+	const cookieExtractor = function(req) {
+		let cookies = req.headers.cookie;
+		try {
+			cookies = cookies.split(';');
+			let jwt = undefined;
+			cookies.map(cookie => {
+				if (cookie.includes('jwt')) {
+					cookie = cookie.split('=');
+					if(cookie[0] === 'jwt') {
+						jwt = cookie[1];
+					}
+				}
+			});
+			return jwt;
+		} catch(e) {
+			return undefined;
+		}
+	};
+
+	const authHeaderExtractor = function(req) {
+		let authHeader = req.headers.authorization;
+		if(!authHeader){ return undefined; }
+		return authHeader.replace("Bearer ", '');
+	}
+
 	const jwtConfig = {
 		name: 'jwt',
 		entity: 'account',
 		service: 'accounts',
 		header: 'Authorization',
+		jwtFromRequest: extractors.fromExtractors([
+			cookieExtractor,
+			authHeaderExtractor
+		]),
 		secretOrKey: authenticationSecret
 	};
 
@@ -75,6 +108,11 @@ module.exports = function() {
 	app.configure(system({
 		name: 'iserv',
 		loginStrategy: require('../account/strategies/iserv')
+	}));
+
+	app.configure(system({
+		name: 'ldap',
+		loginStrategy: require('../account/strategies/ldap')
 	}));
 
 

@@ -8,7 +8,7 @@
 	"teacherId": {
 		"$oid": "0000d224816abba584714c9c"
 	},
-	"name": "Private Aufgabe von Ida - ohne Kurs, offen",
+	"name": "Private Aufgabe von Marla - ohne Kurs, offen",
 	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
 	"availableDate": {
 		"$date": "2017-09-28T11:47:46.622Z"
@@ -37,7 +37,7 @@
 	"teacherId": {
 		"$oid": "0000d224816abba584714c9c"
 	},
-	"name": "Private Aufgabe von Ida - ohne Kurs, abgelaufen",
+	"name": "Private Aufgabe von Marla - ohne Kurs, abgelaufen",
 	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
 	"availableDate": {
 		"$date": "2017-09-20T11:00:00.000Z"
@@ -66,7 +66,7 @@
 	"teacherId": {
 		"$oid": "0000d224816abba584714c9c"
 	},
-	"name": "Private Aufgabe von Ida - mit Kurs, offen",
+	"name": "Private Aufgabe von Marla - mit Kurs, offen",
 	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
 	"availableDate": {
 		"$date": "2017-09-20T11:00:00.000Z"
@@ -97,7 +97,7 @@
 	"teacherId": {
 		"$oid": "0000d224816abba584714c9c"
 	},
-	"name": "Private Aufgabe von Ida - mit Kurs, abgelaufen",
+	"name": "Private Aufgabe von Marla - mit Kurs, abgelaufen",
 	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
 	"availableDate": {
 		"$date": "2016-09-20T11:00:00.000Z"
@@ -128,7 +128,7 @@
 	"teacherId": {
 		"$oid": "0000d224816abba584714c9c"
 	},
-	"name": "zu archivierende Aufgabe von Ida",
+	"name": "zu archivierende Aufgabe von Marla",
 	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
 	"availableDate": {
 		"$date": "2017-09-28T12:00:00.000Z"
@@ -159,7 +159,7 @@
 	"teacherId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Aufgabe an Ida (Mathe) - offen",
+	"name": "Aufgabe an Marla (Mathe) - offen",
 	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
 	"availableDate": {
 		"$date": "2017-09-28T08:00:00.000Z"
@@ -189,7 +189,7 @@
 	"teacherId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Aufgabe an Ida (Mathe) - abgelaufen",
+	"name": "Aufgabe an Marla (Mathe) - abgelaufen",
 	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
 	"availableDate": {
 		"$date": "2017-06-28T08:00:00.000Z"
@@ -313,7 +313,7 @@
 	"teacherId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Aufgabe an Ida (Mathe) - mit Abgabe & Bewertung",
+	"name": "Aufgabe an Marla (Mathe) - mit Abgabe & Bewertung",
 	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
 	"availableDate": {
 		"$date": "2017-09-20T10:00:00.000Z"
@@ -343,7 +343,7 @@
 	"teacherId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"name": "Aufgabe an Ida (Mathe) - mit Abgabe, Bewertung, PublicSubmissions",
+	"name": "Aufgabe an Marla (Mathe) - mit Abgabe, Bewertung, PublicSubmissions",
 	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
 	"availableDate": {
 		"$date": "2017-09-20T10:00:00.000Z"
