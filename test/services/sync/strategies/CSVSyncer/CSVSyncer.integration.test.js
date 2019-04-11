@@ -1,11 +1,8 @@
-'use strict';
-
-const chai = require('chai');
-const expect = chai.expect;
+const { expect } = require('chai');
 
 const app = require('../../../../../src/app');
 const roleModel = require('../../../../../src/services/role/model.js');
-const {userModel} = require('../../../../../src/services/user/model.js');
+const { userModel } = require('../../../../../src/services/user/model.js');
 const MailService = require('../../../../../src/services/helpers/service.js');
 
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
@@ -253,7 +250,9 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.failed).to.equal(0);
 			expect(stats.invitations.successful).to.equal(0);
 			expect(stats.invitations.failed).to.equal(0);
-			expect(stats.classes.successful).to.equal(4);
+			expect(stats.classes.successful).to.equal(6);
+			expect(stats.classes.created).to.equal(4);
+			expect(stats.classes.updated).to.equal(2);
 			expect(stats.classes.failed).to.equal(0);
 
 			const classes = await Promise.all(STUDENT_EMAILS.map(async (email) => {
@@ -358,7 +357,9 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.failed).to.equal(0);
 			expect(stats.invitations.successful).to.equal(0);
 			expect(stats.invitations.failed).to.equal(0);
-			expect(stats.classes.successful).to.equal(4);
+			expect(stats.classes.successful).to.equal(6);
+			expect(stats.classes.created).to.equal(1);
+			expect(stats.classes.updated).to.equal(5);
 			expect(stats.classes.failed).to.equal(0);
 
 			await Promise.all(TEACHER_EMAILS.map(async (email) => {
@@ -525,7 +526,7 @@ describe('CSVSyncer Integration', () => {
 			expect(instance).to.not.equal(undefined);
 		});
 
-		it('should import three exchange students', async () => {
+		it('should import three exchange students into existing classes', async () => {
 			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(true);
@@ -533,7 +534,9 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.failed).to.equal(0);
 			expect(stats.invitations.successful).to.equal(0);
 			expect(stats.invitations.failed).to.equal(0);
-			expect(stats.classes.successful).to.equal(2);
+			expect(stats.classes.successful).to.equal(3);
+			expect(stats.classes.created).to.equal(0);
+			expect(stats.classes.updated).to.equal(3);
 			expect(stats.classes.failed).to.equal(0);
 
 			await Promise.all(STUDENT_EMAILS.map(async (email) => {
@@ -612,11 +615,13 @@ describe('CSVSyncer Integration', () => {
 			expect(instance).to.not.equal(undefined);
 		});
 
-		it('should import one user report two failures', async () => {
+		it('should import one user and report two failures', async () => {
 			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(false);
 			expect(stats.users.successful).to.equal(1);
+			expect(stats.users.created).to.equal(1);
+			expect(stats.users.updated).to.equal(0);
 			expect(stats.users.failed).to.equal(2);
 
 			const users = await userModel.find({
@@ -631,12 +636,14 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.errors).to.include({
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
-				message: `Die E-Mail Adresse ${TEACHER_EMAILS[0]} ist bereits in Verwendung!`,
+				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
 			});
 			expect(stats.errors).to.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
-				message: `Die E-Mail Adresse ${TEACHER_EMAILS[0]} ist bereits in Verwendung!`,
+				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
 			});
 		});
 	});
@@ -763,17 +770,21 @@ describe('CSVSyncer Integration', () => {
 
 			expect(stats.success).to.equal(false);
 			expect(stats.users.successful).to.equal(1);
+			expect(stats.users.created).to.equal(1);
+			expect(stats.users.updated).to.equal(0);
 			expect(stats.users.failed).to.equal(2);
 
 			expect(stats.errors).to.include({
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
-				message: `Die E-Mail Adresse ${TEACHER_EMAILS[0]} ist bereits in Verwendung!`,
+				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
 			});
 			expect(stats.errors).to.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
-				message: `Die E-Mail Adresse ${TEACHER_EMAILS[0]} ist bereits in Verwendung!`,
+				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
 			});
 
 			// only one email should ever be sent, as the second and third user are never
@@ -895,10 +906,14 @@ describe('CSVSyncer Integration', () => {
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(5);
+			expect(stats.users.created).to.equal(5);
+			expect(stats.users.updated).to.equal(0);
 			expect(stats.users.failed).to.equal(0);
 			expect(stats.invitations.successful).to.equal(0);
 			expect(stats.invitations.failed).to.equal(0);
-			expect(stats.classes.successful).to.equal(2);
+			expect(stats.classes.successful).to.equal(4);
+			expect(stats.classes.created).to.equal(2);
+			expect(stats.classes.updated).to.equal(2);
 			expect(stats.classes.failed).to.equal(0);
 
 			await Promise.all(TEACHER_EMAILS.map(async (email) => {
@@ -910,12 +925,17 @@ describe('CSVSyncer Integration', () => {
 			// Now import the same data again:
 			const [stats2] = await app.service('sync').create(scenarioData, scenarioParams);
 
-			expect(stats2.success).to.equal(false);
-			expect(stats2.users.successful).to.equal(0);
-			expect(stats2.users.failed).to.equal(5);
+			// all 5 users are updated (with the same data, so nothing changes)
+			expect(stats2.success).to.equal(true);
+			expect(stats2.users.successful).to.equal(5);
+			expect(stats2.users.created).to.equal(0);
+			expect(stats2.users.updated).to.equal(5);
+			expect(stats2.users.failed).to.equal(0);
 			expect(stats2.invitations.successful).to.equal(0);
 			expect(stats2.invitations.failed).to.equal(0);
-			expect(stats2.classes.successful).to.equal(2);
+			expect(stats2.classes.successful).to.equal(4);
+			expect(stats2.classes.created).to.equal(0);
+			expect(stats2.classes.updated).to.equal(4);
 			expect(stats2.classes.failed).to.equal(0);
 
 			const teacherLastNames = async (teacher) => {
@@ -940,7 +960,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe('Scenario 12 - Importing again does not update data or classes', () => {
+	describe('Scenario 12 - Importing again updates names and classes', () => {
 		let scenarioParams;
 		let scenarioData1;
 		let scenarioData2;
@@ -1007,18 +1027,23 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.failed).to.equal(0);
 			expect(stats.invitations.successful).to.equal(0);
 			expect(stats.invitations.failed).to.equal(0);
-			expect(stats.classes.successful).to.equal(1);
+			expect(stats.classes.successful).to.equal(3);
+			expect(stats.classes.created).to.equal(1);
+			expect(stats.classes.updated).to.equal(2);
 			expect(stats.classes.failed).to.equal(0);
 
 			// Now import the second data set:
 			const [stats2] = await app.service('sync').create(scenarioData2, scenarioParams);
 
-			expect(stats2.success).to.equal(false);
-			expect(stats2.users.successful).to.equal(1);
-			expect(stats2.users.failed).to.equal(2);
+			// two users are updated and one is added
+			expect(stats2.success).to.equal(true);
+			expect(stats2.users.successful).to.equal(3);
+			expect(stats2.users.failed).to.equal(0);
 			expect(stats2.invitations.successful).to.equal(0);
 			expect(stats2.invitations.failed).to.equal(0);
-			expect(stats2.classes.successful).to.equal(2);
+			expect(stats.classes.successful).to.equal(3);
+			expect(stats.classes.created).to.equal(1);
+			expect(stats.classes.updated).to.equal(2);
 			expect(stats2.classes.failed).to.equal(0);
 
 			const teacherLastNames = async (teacher) => {
@@ -1029,17 +1054,18 @@ describe('CSVSyncer Integration', () => {
 				return user.lastName;
 			};
 
-			const fbi = await findClass([undefined, 'Easy Company']);
-			expect(fbi.teacherIds.length).to.equal(4);
-			const fbiteachers = await Promise.all(fbi.teacherIds.map(teacherLastNames));
-			expect(fbiteachers).to.include('Winters');
-			expect(fbiteachers).to.include('Nixon');
-			expect(fbiteachers).to.include('Lipton');
-			expect(fbiteachers).to.include('Malarkey');
-
 			const ji = await findClass([undefined, 'Best Company']);
 			expect(ji).to.not.equal(undefined);
-			expect(ji.teacherIds.length).to.equal(0);
+			expect(ji.teacherIds.length).to.equal(1); // Nixon was added to Best Company.
+			// Also note that he is still part of Easy Company from the previous import (see below).
+
+			const ec = await findClass([undefined, 'Easy Company']);
+			expect(ec.teacherIds.length).to.equal(4);
+			const ecTeachers = await Promise.all(ec.teacherIds.map(teacherLastNames));
+			expect(ecTeachers).to.include('Winters');
+			expect(ecTeachers).to.include('Nixx0n'); // lastName was updated
+			expect(ecTeachers).to.include('Lipton');
+			expect(ecTeachers).to.include('Malarkey');
 		});
 	});
 });
