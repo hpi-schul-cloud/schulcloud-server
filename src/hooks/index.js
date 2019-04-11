@@ -1,4 +1,3 @@
-'use strict';
 const errors = require('feathers-errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
@@ -9,10 +8,24 @@ const KeysModel = require('../services/keys/model');
 // don't require authentication for internal requests
 exports.ifNotLocal = function (hookForRemoteRequests) {
 	return function (hook) {
-		if (typeof (hook.params.provider) != 'undefined') {	// meaning it's not a local call
-			// Call the specified hook
+		// meaning it's a local call and pass it without execute hookForRemoteRequests
+		if(typeof (hook.params.provider) == 'undefined'){ 
+			return hook;
+		}else{
 			return hookForRemoteRequests.call(this, hook);
 		}
+	};
+};
+
+exports.forceHookResolve = (forcedHook) => {
+	return (hook) => {
+		forcedHook(hook)
+		.then(() => {
+			return Promise.resolve(hook);
+		})
+		.catch(() => {
+			return Promise.resolve(hook);
+		});
 	};
 };
 
@@ -85,6 +98,29 @@ exports.hasPermission = function (permissionName) {
 				}
 				return Promise.resolve(hook);
 			});
+	};
+};
+
+exports.removeResponse = function (excludeOptions) {
+	/*
+	excludeOptions = false => allways remove response
+	excludeOptions = undefined => remove response when not GET or FIND request
+	excludeOptions = ['get', ...] => remove when method not in array
+	*/
+	return (hook) => {
+		// If it was an internal call then skip this hook
+		if (!hook.params.provider) {
+			return hook;
+		}
+
+		if(excludeOptions === undefined){
+			excludeOptions = ['get', 'find'];
+		}
+		if(Array.isArray(excludeOptions) && excludeOptions.includes(hook.method)){
+			return Promise.resolve(hook);
+		}
+		hook.result = {status: 200};
+		return Promise.resolve(hook);
 	};
 };
 
@@ -199,61 +235,219 @@ exports.mapPaginationQuery = (hook) => {
 	}
 };
 
-exports.checkCorrectCourseId = (hook) => {
-	let courseService = hook.app.service('courses');
-	const courseId = hook.data.courseId.toString();
-	let query = {};
+exports.checkCorrectCourseOrTeamId = async (hook) => {
 
-	if (hook.data.courseGroupId) {
-		delete hook.data.courseId;
-		query = {$or: [{teacherIds: {$in: [hook.params.account.userId]}}, {userIds: {$in: [hook.params.account.userId]}}]};
-	} else
-		query = { teacherIds: {$in: [hook.params.account.userId] } };
+	if (hook.data.teamId) {
+		let teamService = hook.app.service('teams');
 
-	return courseService.find({ query: query})
-		.then(courses => {
-			if (courses.data.some(course => { return course._id.toString() === courseId; }))
-				return hook;
-			else
-				throw new errors.Forbidden("The entered course doesn't belong to you!");
-		});
+		let query = {
+			userIds: {
+				$elemMatch: { userId: hook.params.account.userId }
+			}
+		};
+
+		let teams = await teamService.find({ query });
+
+		if (teams.data.some(team => team._id.toString() === hook.data.teamId )) {
+			return hook;
+		} else {
+			throw new errors.Forbidden("The entered team doesn't belong to you!");
+		}
+	} else if (hook.data.courseGroupId || hook.data.courseId) {
+		let courseService = hook.app.service('courses');
+		const courseId = (hook.data.courseId || '').toString() || (hook.id || '').toString();
+		let query = { teacherIds: {$in: [hook.params.account.userId] } };
+
+		if (hook.data.courseGroupId) {
+			delete hook.data.courseId;
+			query = {$or: [{teacherIds: {$in: [hook.params.account.userId]}}, {userIds: {$in: [hook.params.account.userId]}}]};
+		}
+
+		let courses = await courseService.find({ query });
+
+		if (courses.data.some(course => course._id.toString() === courseId )) {
+			return hook;
+		} else {
+			throw new errors.Forbidden("The entered course doesn't belong to you!");
+		}
+	} else {
+		return hook;
+	}
 };
 
+exports.injectUserId = (hook) => {
+	if (typeof (hook.params.provider) == 'undefined') {
+		if (hook.data && hook.data.userId) {
+			hook.params.account = {userId: hook.data.userId};
+			hook.params.payload = {userId: hook.data.userId};
+			delete hook.data.userId;
+		}
+	}
+
+	return hook;
+};
 
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
+		return userService.find({
+			query: {
+				_id: hook.params.account.userId,
+				$populate: 'roles'
+			}
+		}).then(res => {
+			let access = false;
+			res.data[0].roles.map(role => {
+				if (role.name === 'superhero')
+					access = true;
+			});
+			if (access)
+				return hook;
+			if (hook.method == "get" || hook.method == "find") {
+				if (hook.params.query.schoolId == undefined) {
+					hook.params.query.schoolId = res.data[0].schoolId;
+				} else if (hook.params.query.schoolId != res.data[0].schoolId) {
+					throw new errors.Forbidden('You do not have valid permissions to access this.');
+				}
+			} else {
+				if (hook.data.schoolId == undefined) {
+					hook.data.schoolId = res.data[0].schoolId.toString();
+				} else if (hook.data.schoolId != res.data[0].schoolId) {
+					throw new errors.Forbidden('You do not have valid permissions to access this.');
+				}
+			}
+
+			return hook;
+	});
+};
+
+const userIsInThatCourse = (user, course, isCourse) => {
+	if (isCourse) {
+		return course.userIds.some(u => u.toString() === user._id.toString())
+			|| course.teacherIds.some(u => u.toString() === user._id.toString())
+			|| (course.substitutionIds || []).some(u => u.toString() === user._id.toString());
+	}
+
+	return course.userIds.some(u => u.toString() === user._id.toString())
+		|| user.roles.some(role => role.name === 'teacher');
+};
+
+exports.restrictToUsersOwnCourses = (hook) => {
+	let userService = hook.app.service('users');
 	return userService.find({
 		query: {
 			_id: hook.params.account.userId,
 			$populate: 'roles'
 		}
-	}).then(res => {
+	}).then((res) => {
 		let access = false;
-		res.data[0].roles.map(role => {
-			if (role.name === 'superhero')
+		res.data[0].roles.map((role) => {
+			if (role.name === 'administrator' || role.name === 'superhero' ) {
 				access = true;
+			}
 		});
-		if (access)
+		if (access) {
 			return hook;
-		if (hook.method == "get" || hook.method == "find") {
-			if (hook.params.query.schoolId == undefined) {
-				hook.params.query.schoolId = res.data[0].schoolId;
-			} else if (hook.params.query.schoolId != res.data[0].schoolId) {
-				throw new errors.Forbidden('You do not have valid permissions to access this.');
-			}
-		} else {
-			if (hook.data.schoolId == undefined) {
-				hook.data.schoolId = res.data[0].schoolId.toString();
-			} else if (hook.data.schoolId != res.data[0].schoolId) {
-				throw new errors.Forbidden('You do not have valid permissions to access this.');
-			}
 		}
 
+		if (hook.method === "find") {
+			hook.params.query.$and = (hook.params.query.$and || []);
+			hook.params.query.$and.push({
+				$or: [
+					{ userIds: res.data[0]._id },
+					{ teacherIds: res.data[0]._id },
+					{ substitutionIds: res.data[0]._id },
+				]
+			})
+		} else {
+			let courseService = hook.app.service('courses');
+			return courseService.get(hook.id).then((course) => {
+				if (!userIsInThatCourse(res.data[0], course, true)) {
+					throw new errors.Forbidden('You are not in that course.');
+				}
+			});
+		}
+		
 		return hook;
 	});
 };
 
-exports.restrictToUsersOwnCourses = hook => {
+exports.restrictToUsersOwnLessons = (hook) => {
+	const userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then((userResult) => {
+		let access = false;
+		const user = userResult.data[0];
+		user.roles.forEach((role) => {
+			if (role.name === 'administrator' || role.name === 'superhero') {
+				access = true;
+			}
+		});
+		if (access) {
+			return hook;
+		}
+		// before-hook
+		if (hook.type === 'before') {
+			let populate = hook.params.query.$populate;
+			if (typeof (populate) === 'undefined') {
+				populate = ['courseId', 'courseGroupId'];
+			} else if (Array.isArray(populate) && !populate.includes('courseId')) {
+				populate.push('courseId');
+				populate.push('courseGroupId');
+			}
+			hook.params.query.$populate = populate;
+		} else {
+			// after-hook
+			if (hook.method === 'get' && (hook.result || {})._id) {
+				let tempLesson = [hook.result];
+				tempLesson = tempLesson.filter((lesson) => {
+					if ('courseGroupId' in lesson) {
+						return userIsInThatCourse(user, lesson.courseGroupId, false);
+					}
+					return userIsInThatCourse(user, lesson.courseId, true)
+						|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
+				});
+				if (tempLesson.length === 0) {
+					throw new errors.Forbidden("You don't have access to that lesson.");
+				}
+				if ('courseGroupId' in hook.result) {
+					hook.result.courseGroupId = hook.result.courseGroupId._id;
+				} else {
+					hook.result.courseId = hook.result.courseId._id;
+				}
+			}
+
+			if (hook.method === 'find' && ((hook.result || {}).data || []).length > 0) {
+				hook.result.data = hook.result.data.filter((lesson) => {
+					if ('courseGroupId' in lesson) {
+						return userIsInThatCourse(user, lesson.courseGroupId, false);
+					}
+					return userIsInThatCourse(user, lesson.courseId, true)
+						|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
+				});
+
+				if (hook.result.data.length === 0) {
+					throw new errors.NotFound('There are no lessons that you have access to.');
+				} else {
+					hook.result.total = hook.result.data.length;
+				}
+				hook.result.data.forEach((lesson) => {
+					if ('courseGroupId' in lesson) {
+						lesson.courseGroupId = lesson.courseGroupId._id;
+					} else {
+						lesson.courseId = lesson.courseId._id;
+					}
+				});
+			}
+		}
+		return hook;
+	});
+};
+
+exports.restrictToUsersOwnClasses = hook => {
 	let userService = hook.app.service('users');
 	return userService.find({
 		query: {
@@ -263,19 +457,18 @@ exports.restrictToUsersOwnCourses = hook => {
 	}).then(res => {
 		let access = false;
 		res.data[0].roles.map(role => {
-			if (role.name === 'administrator' || role.name === 'superhero' )
+			if (['administrator', 'superhero'].includes(role.name))
 				access = true;
 		});
 		if (access)
 			return hook;
 
 		if (hook.method === "get") {
-			let courseService = hook.app.service('courses');
-			return courseService.get(hook.id).then(course => {
-				if (!(_.some(course.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
-					!(_.some(course.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
-					!(_.some(course.substitutionIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
-					throw new errors.Forbidden('You are not in that course.');
+			let classService = hook.app.service('classes');
+			return classService.get(hook.id).then(result => {
+				if (!(_.some(result.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId))) &&
+					!(_.some(result.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
+					throw new errors.Forbidden('You are not in that class.');
 				}
 			});
 		} else if (hook.method === "find") {
@@ -391,39 +584,77 @@ exports.sendEmail = (hook, maildata) => {
 			});
 
 			_.uniq(receipients).map(email => {
+				if (!maildata.content.text && !maildata.content.html) {
+					logger.warn("(1) No mailcontent (text/html) was given. Don't send a mail.");
+				} else {
+					mailService.create({
+						email: email,
+						subject: maildata.subject || "E-Mail von der Schul-Cloud",
+						headers: maildata.headers || {},
+						content: {
+							"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
+							"html": "" // still todo, html template mails
+						}
+					}).catch (err => {
+						logger.warn(err);
+						throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+					});
+				}
+			});
+			return hook;
+		})
+		.catch(err => {
+			throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+		});
+	}
+	else {
+		if (!maildata.content.text && !maildata.content.html) {
+			logger.warn("(2) No mailcontent (text/html) was given. Don't send a mail.");
+		} else {
+			_.uniq(receipients).map(email=> {
 				mailService.create({
 					email: email,
 					subject: maildata.subject || "E-Mail von der Schul-Cloud",
 					headers: maildata.headers || {},
 					content: {
-						"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
-						"html": ""
+						"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
+						"html": "" // still todo, html template mails
 					}
-				}).catch (error => {
-					throw new errors.BadRequest(error.message);
+				}).catch (err => {
+					logger.warn(err);
+					throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 				});
 			});
-		return hook;
-		})
-		.catch(error => {
-			throw new errors.BadRequest(error.message);
-		});
-	}
-	else {
-		_.uniq(receipients).map(email=> {
-			mailService.create({
-				email: email,
-				subject: maildata.subject || "E-Mail von der Schul-Cloud",
-				headers: maildata.headers || {},
-				content: {
-					"text": maildata.content.text || { "text": "No alternative mailtext provided. Expected: HTML Template Mail." },
-					"html": ""
-				}
-			})
-			.catch (error => {
-				throw new errors.BadRequest(error.message);
-			});
-		});
+		}
 		return hook;
 	}
+};
+
+exports.getAge = function (dateString) {
+	if(dateString==undefined) {
+		return undefined;
+	}
+	const today = new Date();
+	const birthDate = new Date(dateString);
+	let age = today.getFullYear() - birthDate.getFullYear();
+	let m = today.getMonth() - birthDate.getMonth();
+	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+		age--;
+	}
+	return age;
+};
+
+exports.arrayIncludes = (array, includesList, excludesList) =>{
+	for(let i=0; i < includesList.length; i++){
+		if(array.includes(includesList[i]) === false){
+			return false;
+		}
+	}
+
+	for(let i=0; i<excludesList.length; i++){
+		if(array.includes(excludesList[i])){
+			return false;
+		}
+	}
+	return true;
 };

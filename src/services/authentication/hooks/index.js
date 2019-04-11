@@ -10,6 +10,9 @@ const injectUserId = (hook) => {
 		if(account.userId) {
 			hook.params.payload.userId = account.userId;
 		}
+		if( account.systemId ){
+			hook.params.payload.systemId = account.systemId;
+		}
 		return hook;
 	});
 };
@@ -19,6 +22,11 @@ const lowerCaseUsername = (hook) => {
 		hook.data.username = hook.data.username.toLowerCase();
 	return hook;
 };
+
+const populateResult = (hook) => {
+	hook.result.userId = hook.params.account.userId // required by event listeners
+	return hook;
+}
 
 exports.before = {
 	create: [
@@ -33,5 +41,5 @@ exports.before = {
 
 exports.after = {
 	create: [],
-	remove: []
+	remove: [populateResult]
 };

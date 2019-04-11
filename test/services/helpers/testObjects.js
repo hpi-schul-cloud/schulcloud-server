@@ -1,22 +1,20 @@
-"use strict";
-
-module.exports = function (app) {
-
+module.exports = (app) => {
 	const accountService = app.service('accounts');
 	const systemService = app.service('systems');
 	const userService = app.service('users');
 	const classesService = app.service('classes');
 	const coursesService = app.service('courses');
+	const registrationPinsService = app.service('registrationPins');
 
-	let createdAccountIds = [];
-	let createdUserIds = [];
-	let createdSystemIds = [];
-	let createdClasses = [];
-	let createdCourses = [];
+	const createdAccountIds = [];
+	const createdUserIds = [];
+	const createdSystemIds = [];
+	const createdClasses = [];
+	const createdCourses = [];
 
-	function createTestSystem({url, type='moodle'}) {
-		return systemService.create({url, type})
-			.then(system => {
+	function createTestSystem({ url, type = 'moodle' }) {
+		return systemService.create({ url, type })
+			.then((system) => {
 				createdSystemIds.push(system.id);
 				return system;
 			});
@@ -26,7 +24,7 @@ module.exports = function (app) {
 		if (system) accountParameters.systemId = system.id;
 		accountParameters.userId = user._id;
 		return accountService.create(accountParameters)
-			.then(account => {
+			.then((account) => {
 				createdAccountIds.push(account._id);
 				return Promise.resolve(account);
 			});
@@ -36,18 +34,29 @@ module.exports = function (app) {
 		// required fields for user
 		firstName = 'Max',
 		lastName = 'Mustermann',
-		email = 'max' + Date.now() + '@mustermann.de',
-		schoolId = '584ad186816abba584714c94'
+		email = `max${Date.now()}@mustermann.de`,
+		schoolId = '584ad186816abba584714c94',
+		accounts = [],
+		roles = [],
+		// manual cleanup, e.g. when testing delete:
+		manualCleanup = false,
 	} = {}) {
-		return userService.create({
-			// required fields for user
-			firstName,
-			lastName,
-			email,
-			schoolId
-		})
-			.then(user => {
-				createdCourses.push(user.id);
+		return registrationPinsService.create({ email })
+			.then(registrationPin => registrationPinsService.find({
+				query: { pin: registrationPin.pin, email: registrationPin.email, verified: false },
+			})).then(() => userService.create({
+				firstName,
+				lastName,
+				email,
+				schoolId,
+				accounts,
+				roles,
+			}))
+
+			.then((user) => {
+				if (!manualCleanup) {
+					createdUserIds.push(user.id);
+				}
 				return user;
 			});
 	}
@@ -57,16 +66,16 @@ module.exports = function (app) {
 		name = 'testClass',
 		schoolId = '584ad186816abba584714c94',
 		userIds = [],
-		teacherIds = []
+		teacherIds = [],
 	}) {
 		return classesService.create({
 			// required fields for user
 			name,
 			schoolId,
 			userIds,
-			teacherIds
+			teacherIds,
 		})
-			.then(o => {
+			.then((o) => {
 				createdClasses.push(o.id);
 				return o;
 			});
@@ -79,7 +88,7 @@ module.exports = function (app) {
 		userIds = [],
 		classIds = [],
 		teacherIds = [],
-		ltiToolIds = []
+		ltiToolIds = [],
 	}) {
 		return coursesService.create({
 			// required fields for user
@@ -88,31 +97,26 @@ module.exports = function (app) {
 			userIds,
 			classIds,
 			teacherIds,
-			ltiToolIds
+			ltiToolIds,
 		})
-			.then(o => {
+			.then((o) => {
 				createdCourses.push(o.id);
 				return o;
 			});
 	}
 
 	function cleanup() {
-		const accountDeletions = createdAccountIds.map(id => {
-			return accountService.remove(id);
-		});
-		const userDeletions = createdUserIds.map(id => {
-			return userService.remove(id);
-		});
-		const systemDeletions = createdSystemIds.map(id => {
-			return systemService.remove(id);
-		});
-		const classDeletions = createdClasses.map(id => {
-			return classesService.remove(id);
-		});
-		const courseDeletions = createdCourses.map(id => {
-			return coursesService.remove(id);
-		});
-		return Promise.all(accountDeletions + userDeletions + systemDeletions + classDeletions + courseDeletions);
+		const accountDeletions = createdAccountIds.map(id => accountService.remove(id));
+		const userDeletions = createdUserIds.map(id => userService.remove(id));
+		const systemDeletions = createdSystemIds.map(id => systemService.remove(id));
+		const classDeletions = createdClasses.map(id => classesService.remove(id));
+		const courseDeletions = createdCourses.map(id => coursesService.remove(id));
+		return Promise.all([]
+			.concat(accountDeletions)
+			.concat(userDeletions)
+			.concat(systemDeletions)
+			.concat(classDeletions)
+			.concat(courseDeletions));
 	}
 
 	return {
@@ -122,6 +126,6 @@ module.exports = function (app) {
 		createTestClass,
 		createTestCourse,
 		cleanup,
-		createdUserIds
+		createdUserIds,
 	};
 };

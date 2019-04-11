@@ -12,18 +12,18 @@ const accountModel = require('../account/model');
 const homeworkModel = require('../homework/model');
 const lessonModel = require('../lesson/model');
 const groupModel = require('../user-group/model');
-const fileModel = require('../fileStorage/model');
+const {FileModel} = require('../fileStorage/model');
 
 let promises = [
 	{
 		name: 'users',
-		promise: userModel.count().exec(),
-		model: userModel.find().exec()
+		promise: userModel.userModel.count().exec(),
+		model: userModel.userModel.find().exec()
 	},
 	{
 		name: 'schools',
-		promise: schoolModel.count().exec(),
-		model: schoolModel.find().exec()
+		promise: schoolModel.schoolModel.count().exec(),
+		model: schoolModel.schoolModel.find().exec()
 	},
 	{
 		name: 'accounts',
@@ -62,23 +62,18 @@ let promises = [
 	},
 	{
 		name: 'teachers',
-		promise: userModel.count({roles: '0000d186816abba584714c98'}).exec(),
-		model: userModel.find({roles: '0000d186816abba584714c98'}).exec()
+		promise: userModel.userModel.count({roles: '0000d186816abba584714c98'}).exec(),
+		model: userModel.userModel.find({roles: '0000d186816abba584714c98'}).exec()
 	},
 	{
 		name: 'students',
-		promise: userModel.count({roles: '0000d186816abba584714c99'}).exec(),
-		model: userModel.find({roles: '0000d186816abba584714c99'}).exec()
+		promise: userModel.userModel.count({roles: '0000d186816abba584714c99'}).exec(),
+		model: userModel.userModel.find({roles: '0000d186816abba584714c99'}).exec()
 	},
 	{
-		name: 'files',
-		promise: fileModel.fileModel.count().exec(),
-		model: fileModel.fileModel.find().exec()
-	},
-	{
-		name: 'directories',
-		promise: fileModel.directoryModel.count().exec(),
-		model: fileModel.directoryModel.find().exec()
+		name: 'files/directories',
+		promise: FileModel.count().exec(),
+		model: FileModel.find().exec()
 	},
 ];
 

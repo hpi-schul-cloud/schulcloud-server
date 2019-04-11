@@ -1,4 +1,3 @@
-'use strict';
 const modelService = require('./model-service');
 const proxyService = require('./proxy-service');
 

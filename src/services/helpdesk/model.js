@@ -8,7 +8,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const categories = ['dashboard', 'courses', 'classes', 'calendar', 'homework', 'files', 'content', 'administration', 'login_registration', 'other', 'technical_problem'];
+const categories = ['', 'dashboard', 'courses', 'classes', 'calendar', 'homework', 'files', 'content', 'administration', 'login_registration', 'other', 'technical_problem'];
 const states = ['open', 'closed', 'submitted'];
 
 const problemSchema = new Schema({

@@ -8,7 +8,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const ltiToolSchema = new Schema({
+const ltiTool = new Schema({
   name: { type: String },
   url: { type: String, required: true },
   key: { type: String, required: true },
@@ -23,9 +23,10 @@ const ltiToolSchema = new Schema({
   isTemplate: {type: Boolean},
   isLocal: {type: Boolean},
   createdAt: { type: Date, 'default': Date.now },
-  updatedAt: { type: Date, 'default': Date.now }
+  updatedAt: { type: Date, 'default': Date.now },
+  originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool'},
 });
 
-const ltiToolModel = mongoose.model('ltiTool', ltiToolSchema);
+const ltiToolModel = mongoose.model('ltiTool', ltiTool);
 
 module.exports = ltiToolModel;

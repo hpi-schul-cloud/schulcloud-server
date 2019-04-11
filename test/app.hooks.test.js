@@ -82,6 +82,7 @@ describe('Sanitization Service', function () {
 	it('POST /helpdesk (Sanitization)', () => {
 		let postBody = {
 			subject: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
+			type: 'problem',
 			currentState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			targetState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			category: 'dashboard',
@@ -101,6 +102,7 @@ describe('Sanitization Service', function () {
 	it('POST FAIL /helpdesk (Sanitization)', () => {
 		let postBody = {
 			subject: '<script>alert("test");</script><b></b><i></i><img src="bla" />',
+			type: 'problem',
 			currentState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			targetState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			category: 'dashboard',
