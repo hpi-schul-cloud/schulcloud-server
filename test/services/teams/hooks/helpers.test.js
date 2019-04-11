@@ -115,7 +115,7 @@ describe('hook helpers', () => {
 		});
 
 		it('should work on huge arrays', () => {
-			const arr = new Array(Math.pow(2, 15)).fill(1);
+			const arr = new Array(Math.pow(2, 12)).fill(1);
 			const arr2 = Array.from(arr);
 			arr2.push(2);
 			expect(arrayRemoveAddDiffs(arr, arr2)).to.deep.equal({ add: [2], remove: [] });
