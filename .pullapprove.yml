@@ -43,5 +43,3 @@ groups:
       - data-protection
     reviews:
       required: 1  # number of approvals required from this group
-      request: 1  # number of review requests sent at a time
-      request_order: shuffle
