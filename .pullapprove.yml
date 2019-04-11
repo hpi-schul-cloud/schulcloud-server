@@ -36,9 +36,8 @@ groups:
 
   privacy:
     conditions:
-    - "'*model.js' in files"  # only review if "*model.js" files have been touched
-    - "'/backup/setup/*.json' in files" # only review if "/backup/setup/*.json" files have been touched
-    - "'.pullapprove.yml' in files" # only review if this ".pullapprove.yml" file have been touched
+    - "'*model.js' in files or '/backup/setup/*.json' in files or '.pullapprove.yml' in files"
+    # only review if "*model.js", "/backup/setup/*.json" files or ".pullapprove.yml" have been touched
     reviewers:
       teams:
       - data-protection
