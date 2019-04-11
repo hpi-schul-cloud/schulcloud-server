@@ -28,7 +28,6 @@ const getClasses = (ref, schoolId) => ref.app.service('classes')
 		query: {
 			schoolId,
 			$limit: 1000,
-			$select: 'userIds name',
 		},
 	})
 	.then(classes => classes.data);
@@ -97,7 +96,7 @@ class AdminStudents {
 				}
 				classes.forEach((c) => {
 					if (c.userIds.includes(userId)) {
-						user.classes.push(c.name);
+						user.classes.push(c.displayName);
 					}
 				});
 				return user;
