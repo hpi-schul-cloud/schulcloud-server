@@ -34,12 +34,12 @@ You will need the [client](https://github.com/schul-cloud/schulcloud-client) as 
 
 For more details how to set up Visual Studio Code, read [this document](https://docs.schul-cloud.org/display/SCDOK/Visual+Studio+Code).
 
-## How to name your branch  
+## How to name your branch and create a pull request (PR)
   
 1. Take the Ticket Number from JIRA (ticketsystem.schul-cloud.org), e.g. SC-999  
-2. Name the branch beginning with Ticket Number, all words separated by dash "-", e.g. `SC-999-fantasy-problem`
-3. Create a PR containing the Ticket Number in PR title
-4. Add the `[WIP]` label as long as this PR is in development, remove label and request reviewers if you are done and Definition of Done (will get added here later on) are met.
+2. Name the feature branch beginning with Ticket Number, all words separated by dash "-", e.g. `feature/SC-999-fantasy-problem`
+3. Create a PR on branch develop containing the Ticket Number in PR title
+4. Keep the `WIP` label as long as this PR is in development, complete PR checklist (is automatically added), keep or increase code test coverage, and pass all tests before you remove the `WIP` label. Reviewers will be added automatically. For more information check our Definition of Done [here](https://docs.schul-cloud.org/pages/viewpage.action?pageId=92831762).
 
 ## Testing
 
@@ -61,10 +61,9 @@ For more details how to set up Visual Studio Code, read [this document](https://
 Default branch: develop
 
 1. Go into project folder
-2. Run the tests (see above)
-3. Commit with a meanigful commit message(!) even at 4 a.m. and not stuff like "dfsdfsf"
-4. Checkout to master branch
-5. Run `git pull`
-6. Checkout to the branch you want to upload
-7. run `git rebase -p develop` (not `git merge`!) and solve merge conflicts if needed
-8. run `git push`
+2. Checkout to develop branch (or clone for the first time)
+3. Run `git pull`
+4. Create a branch for your new feature named feature/SC-*Ticket-ID*-*Description*
+5. Run the tests (see above)
+6. Commit with a meanigful commit message(!) even at 4 a.m. and not stuff like "dfsdfsf"
+7. Start a pull request (see above) to branch develop to merge your changes

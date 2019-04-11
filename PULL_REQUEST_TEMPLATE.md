@@ -34,7 +34,6 @@
   - Confluence - https://docs.schul-cloud.org
   - Guidelines / Hilfe
   - Release Notes - wenn es sich um große Feature-Releases handelt
-- [ ] mind. 1 Screenshot bei Content-Änderungen
 
 ## Datenschutz
 - [ ] Model- / Seedänderungen erfordern Review der Datenschutz-Gruppen (wird automatisch hinzugefügt)
