@@ -53,8 +53,6 @@ module.exports = function roster () {
 
 	app.use('/roster/users/:user/metadata', metadataHandler);
 	app.service('/roster/users/:user/metadata').before(metadataHooks);
-	app.use('/provider/users/:user/metadata', metadataHandler);
-	app.service('/provider/users/:user/metadata').before(metadataHooks);
 
 	const userGroupsHandler = {
 		find(params) {
@@ -99,8 +97,6 @@ module.exports = function roster () {
 
 	app.use('/roster/users/:user/groups', userGroupsHandler);
 	app.service('/roster/users/:user/groups').before(userGroupsHooks);
-	app.use('/provider/users/:user/groups', userGroupsHandler);
-	app.service('/provider/users/:user/groups').before(userGroupsHooks);
 
 	const groupsHandler = {
 		get(id, params) {
@@ -160,7 +156,4 @@ module.exports = function roster () {
 	app.use('/roster/groups', groupsHandler);
 	app.service('/roster/groups').before(groupsHooksBefore);
 	app.service('/roster/groups').after(groupsHooksAfter);
-	app.use('/provider/groups', groupsHandler);
-	app.service('/provider/groups').before(groupsHooksBefore);
-	app.service('/provider/groups').after(groupsHooksAfter);
 };
