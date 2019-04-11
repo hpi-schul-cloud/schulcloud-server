@@ -65,7 +65,7 @@ const populateUsername = (context) => {
 	return context.app.service('users').get(context.result.data[0].userId)
 		.then((response) => {
 			context.result.data[0] = {
-				...context.result.data[0]._doc,  // eslint-disable-line no-underscore-dangle
+				...context.result.data[0]._doc, // eslint-disable-line no-underscore-dangle
 				user: {
 					firstName: response.firstName,
 					lastName: response.lastName,
