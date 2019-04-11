@@ -8,6 +8,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const roles = ['Learner', 'Instructor', 'ContentDeveloper', 'Administrator', 'Mentor', 'TeachingAssistant'];
+
 const ltiTool = new Schema({
 	name: { type: String },
 	url: { type: String, required: true },
@@ -17,13 +19,13 @@ const ltiTool = new Schema({
 	lti_message_type: { type: String, required: true },
 	lti_version: { type: String, required: true },
 	resource_link_id: { type: String, required: true },
-	roles: { type: [{ type: String, enum: ['Learner', 'Instructor', 'ContentDeveloper', 'Administrator', 'Mentor', 'TeachingAssistant'] }]},
+	roles: { type: [{ type: String, enum: roles }] },
 	privacy_permission: { type: String, enum: ['anonymous', 'e-mail', 'name', 'public'], default: 'anonymous' },
-	customs: {type: [{key: {type: String}, value: {type: String}}] },
-	isTemplate: {type: Boolean},
-	isLocal: {type: Boolean},
-	createdAt: { type: Date, 'default': Date.now },
-	updatedAt: { type: Date, 'default': Date.now },
+	customs: { type: [{key: {type: String}, value: {type: String}}] },
+	isTemplate: { type: Boolean },
+	isLocal: { type: Boolean },
+	createdAt: { type: Date, default: Date.now },
+	updatedAt: { type: Date, default: Date.now },
 	originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool'},
 	oAuthClientId: { type: String },
 	useIframePseudonym: { type: Boolean },
