@@ -3,7 +3,7 @@ const hooks = require('./hooks');
 const globalHooks = require('../../hooks');
 const oauth2 = require('../oauth2/hooks');
 
-module.exports = function roster () {
+module.exports = function roster() {
 	const app = this;
 
 	app.use('/roster', {

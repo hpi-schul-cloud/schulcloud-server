@@ -3,9 +3,8 @@ const errors = require('feathers-errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra.js');
 
-const style = 'height: 26px; width: 180px; border: none;';
-const iframeSubject = (pseudonym, clientUrl) =>
-	`<iframe title="username" src="${clientUrl}/oauth2/username/${pseudonym}" style="${style}"></iframe>`;
+const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
+const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
 
 exports.getSubject = iframeSubject;
 
