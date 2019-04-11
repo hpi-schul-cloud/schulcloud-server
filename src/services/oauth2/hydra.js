@@ -2,32 +2,30 @@ const request = require('request-promise-native');
 const uj = require('url-join');
 
 const mockTlsTermination = {
-	'X-Forwarded-Proto': 'https'
+	'X-Forwarded-Proto': 'https',
 };
 
 module.exports = (hydraUrl) => {
-
 	function get(flow, challenge) {
 		const options = {
-			uri: uj(hydraUrl, '/oauth2/auth/requests/' + flow + '/' + challenge),
+			uri: uj(hydraUrl, `/oauth2/auth/requests/${flow}/${challenge}`),
 			headers: {
-				...mockTlsTermination
+				...mockTlsTermination,
 			},
-			json: true
+			json: true,
 		};
 		return request(options);
 	}
 
-	// A little helper that takes type (can be "login" or "consent"), the action (can be "accept" or "reject") and a challenge and returns the response from ORY Hydra.
 	function put(flow, action, challenge, body) {
 		const options = {
-			uri: uj(hydraUrl, '/oauth2/auth/requests/' + flow + '/' + challenge + '/' + action),
+			uri: uj(hydraUrl, `/oauth2/auth/requests/${flow}/${challenge}/${action}`),
 			method: 'PUT',
 			body,
 			headers: {
-				...mockTlsTermination
+				...mockTlsTermination,
 			},
-			json: true
+			json: true,
 		};
 		return request(options);
 	}
@@ -35,27 +33,27 @@ module.exports = (hydraUrl) => {
 	return {
 
 		// Fetches information on a login request.
-		getLoginRequest: function (challenge) {
+		getLoginRequest(challenge) {
 			return get('login', challenge);
 		},
 		// Accepts a login request.
-		acceptLoginRequest: function (challenge, body) {
+		acceptLoginRequest(challenge, body) {
 			return put('login', 'accept', challenge, body);
 		},
 		// Rejects a login request.
-		rejectLoginRequest: function (challenge, body) {
+		rejectLoginRequest(challenge, body) {
 			return put('login', 'reject', challenge, body);
 		},
 		// Fetches information on a consent request.
-		getConsentRequest: function (challenge) {
+		getConsentRequest(challenge) {
 			return get('consent', challenge);
 		},
 		// Accepts a consent request.
-		acceptConsentRequest: function (challenge, body) {
+		acceptConsentRequest(challenge, body) {
 			return put('consent', 'accept', challenge, body);
 		},
 		// Rejects a consent request.
-		rejectConsentRequest: function (challenge, body) {
+		rejectConsentRequest(challenge, body) {
 			return put('consent', 'reject', challenge, body);
 		},
 		introspectOAuth2Token: (token, scope) => {
@@ -65,49 +63,49 @@ module.exports = (hydraUrl) => {
 				body: `token=${token}&scope=${scope}`,
 				headers: {
 					...mockTlsTermination,
-					'Content-Type': 'application/x-www-form-urlencoded'
+					'Content-Type': 'application/x-www-form-urlencoded',
 				},
-				json: true
+				json: true,
 			};
 			return request(options);
 		},
 		isInstanceAlive: () => request({
-			uri: uj(hydraUrl, '/health/alive')
+			uri: uj(hydraUrl, '/health/alive'),
 		}),
 		listOAuth2Clients: () => request({
 			uri: uj(hydraUrl, '/clients'),
 			headers: {
-				...mockTlsTermination
-			}
+				...mockTlsTermination,
+			},
 		}),
-		createOAuth2Client: (data) => request({
+		createOAuth2Client: data => request({
 			uri: uj(hydraUrl, '/clients'),
 			method: 'POST',
 			body: data,
 			headers: {
-				...mockTlsTermination
+				...mockTlsTermination,
 			},
-			json: true
+			json: true,
 		}),
-		deleteOAuth2Client: (id) => request({
+		deleteOAuth2Client: id => request({
 			uri: uj(hydraUrl, `/clients/${id}`),
 			method: 'DELETE',
 			headers: {
-				...mockTlsTermination
-			}
+				...mockTlsTermination,
+			},
 		}),
-		listConsentSessions: (user) => request({
+		listConsentSessions: user => request({
 			uri: uj(hydraUrl, `/oauth2/auth/sessions/consent/${user}`),
 			headers: {
-				...mockTlsTermination
-			}
+				...mockTlsTermination,
+			},
 		}),
 		revokeConsentSession: (user, client) => request({
 			uri: uj(hydraUrl, `/oauth2/auth/sessions/consent/${user}/${client}`),
 			method: 'DELETE',
 			headers: {
-				...mockTlsTermination
-			}
-		})
+				...mockTlsTermination,
+			},
+		}),
 	};
-}
+};
