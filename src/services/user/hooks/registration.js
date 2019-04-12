@@ -1,19 +1,19 @@
 const auth = require('feathers-authentication');
 const globalHooks = require('../../../hooks');
 
-const mailToLowerCase = (hook) => {
-	if (hook.data) {
-		if (hook.data.email) {
-			hook.data.email = hook.data.email.toLowerCase();
+const mailToLowerCase = (context) => {
+	if (context.data) {
+		if (context.data.email) {
+			context.data.email = context.data.email.toLowerCase();
 		}
-		if (hook.data.parent_email) {
-			hook.data.parent_email = hook.data.parent_email.toLowerCase();
+		if (context.data.parent_email) {
+			context.data.parent_email = context.data.parent_email.toLowerCase();
 		}
-		if (hook.data.student_email) {
-			hook.data.student_email = hook.data.student_email.toLowerCase();
+		if (context.data.student_email) {
+			context.data.student_email = context.data.student_email.toLowerCase();
 		}
 	}
-	return hook;
+	return context;
 };
 
 exports.before = {
