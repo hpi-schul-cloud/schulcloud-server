@@ -137,7 +137,7 @@ class RocketChatUser {
 	async getOrCreateRocketChatAccount(userId) {
 		try {
 			const scUser = await this.app.service('users').get(userId, { query: { $populate: 'schoolId' } });
-			if (!(scUser.schoolId.features || []).includes('rocketChat')) {
+			if (!((scUser.schoolId.features || []).includes('rocketChat') || scUser.schoolId.purpose === 'expert')) {
 				throw new BadRequest('this users school does not support rocket.chat');
 			}
 			let rcUser = await rocketChatModels.userModel.findOne({ userId });
@@ -399,9 +399,7 @@ class RocketChatChannel {
 
 	async ensureCurrentUserInChannel(channel, params) {
 		return this.addUsersToChannel([params.account.userId], channel.teamId)
-			.catch(err =>
-				logger.warn(err)
-			);
+			.catch(err => logger.warn(err),);
 	}
 
 	async getOrCreateRocketChatChannel(teamId, params) {
