@@ -1,50 +1,52 @@
-'use strict';
-
-const path = require('path');
-const serveStatic = require('feathers').static;
-const favicon = require('serve-favicon');
-const compress = require('compression');
-const cors = require('cors');
-const feathers = require('feathers');
-const configuration = require('feathers-configuration');
-const hooks = require('feathers-hooks');
-const rest = require('feathers-rest');
 const bodyParser = require('body-parser');
-const socketio = require('feathers-socketio');
-const middleware = require('./middleware');
-const sockets = require('./sockets');
-const services = require('./services');
-const winston = require('winston');
-const defaultHeaders = require('./middleware/defaultHeaders');
-const handleResponseType = require('./middleware/handleReponseType');
-const setupSwagger = require('./swagger');
+const compress = require('compression');
+const configuration = require('feathers-configuration');
+const cors = require('cors');
+const favicon = require('serve-favicon');
+const feathers = require('feathers');
+const hooks = require('feathers-hooks');
+const path = require('path');
 const prettyError = require('pretty-error').start();
-const allHooks = require('./app.hooks');
+const rest = require('feathers-rest');
 const S3rver = require('s3rver');
+const serveStatic = require('feathers').static;
+const socketio = require('feathers-socketio');
+const winston = require('winston');
+const services = require('./services');
+const setupSwagger = require('./swagger');
+const sockets = require('./sockets');
+const middleware = require('./middleware');
+const handleResponseType = require('./middleware/handleReponseType');
+const defaultHeaders = require('./middleware/defaultHeaders');
+const allHooks = require('./app.hooks');
 
-if(!['production', 'local'].includes(process.env.NODE_ENV)){
+require('console-stamp')(console);
+require('console-stamp')(winston);
+
+let secrets;
+try {
+	secrets = (['production', 'local'].includes(process.env.NODE_ENV))
+		// eslint-disable-next-line global-require
+		? require('../config/secrets.js')
+		// eslint-disable-next-line global-require
+		: require('../config/secrets.json');
+} catch (error) {
+	secrets = {};
+}
+
+if (!['production', 'local'].includes(process.env.NODE_ENV)) {
 	new S3rver({
 		port: 9001,
 		hostname: 'localhost',
 		silent: false,
-		directory: "./tmp"
-	}).run((err, host, port) => {
-		if(!err) {
-			console.log(`local S3 is running on ${host}:${port}`);
+		directory: './tmp',
+	}).run((err, { address, port }) => {
+		if (err) {
+			console.error('failed to start local s3', err);
+			return;
 		}
-	})
-}
-
-require('console-stamp')(console);
-require('console-stamp')(winston );
-
-let secrets;
-try {
-	(['production', 'local'].includes(process.env.NODE_ENV))
-		? secrets = require('../config/secrets.js')
-		: secrets = require('../config/secrets.json');
-} catch(error) {
-	secrets = {};
+		console.log(`local S3 is running on ${address}:${port}`);
+	});
 }
 
 const app = feathers();

@@ -84,6 +84,7 @@
     "read-chunk": "^3.0.0",
     "request-promise-native": "^1.0.3",
     "rss-parser": "^3.6.2",
+    "s3rver": "^3.0.2",
     "sanitize-html": "^1.18.2",
     "serve-favicon": "^2.3.2",
     "socketio": "^1.0.0",
@@ -102,7 +103,6 @@
     "mocha": "^3.2.0",
     "mockery": "^2.0.0",
     "nodemailer-mock": "^1.1.10",
-    "nyc": "^13.0.1",
-    "s3rver": "^2.2.8"
+    "nyc": "^13.0.1"
   }
 }
