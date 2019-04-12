@@ -4,6 +4,7 @@ const globalHooks = require('../../../hooks');
 const auth = require('@feathersjs/authentication');
 const lesson = require('../model');
 const errors = require('@feathersjs/errors');
+const hooks = require('feathers-hooks-common');
 
 const checkIfCourseGroupLesson = (permission1, permission2, isCreating, hook) => {
 	// find courseGroupId in different ways (POST, FIND ...)
@@ -26,11 +27,15 @@ const checkForShareToken = (hook) => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [hooks.disable()],
-	get: [hooks.disable()],
-	create: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true), globalHooks.injectUserId, checkForShareToken],
-	update: [hooks.disable()],
-	patch: [hooks.disable()],
-	remove: [hooks.disable()]
+	find: [hooks.disallow()],
+	get: [hooks.disallow()],
+	create: [
+		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
+		globalHooks.injectUserId,
+		checkForShareToken,
+	],
+	update: [hooks.disallow()],
+	patch: [hooks.disallow()],
+	remove: [hooks.disallow()],
 };
 

@@ -1,8 +1,9 @@
 'use strict';
 
-const globalHooks = require('../../../hooks');
+const hooks = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
+const globalHooks = require('../../../hooks');
 const HomeworkModel = require('../model').homeworkModel;
 
 const hasViewPermissionBefore = hook => {
@@ -21,12 +22,21 @@ const hasViewPermissionBefore = hook => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [hooks.disable()],
-	get: [globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasViewPermissionBefore],
-	create: [globalHooks.injectUserId, globalHooks.hasPermission('HOMEWORK_VIEW'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasViewPermissionBefore],
-	update: [hooks.disable()],
-	patch: [hooks.disable()],
-	remove: [hooks.disable()]
+	find: [hooks.disallow()],
+	get: [
+		globalHooks.hasPermission('HOMEWORK_VIEW'),
+		globalHooks.hasPermission('HOMEWORK_CREATE'),
+		hasViewPermissionBefore,
+	],
+	create: [
+		globalHooks.injectUserId,
+		globalHooks.hasPermission('HOMEWORK_VIEW'),
+		globalHooks.hasPermission('HOMEWORK_CREATE'),
+		hasViewPermissionBefore,
+	],
+	update: [hooks.disallow()],
+	patch: [hooks.disallow()],
+	remove: [hooks.disallow()],
 };
 
 exports.after = {
@@ -36,5 +46,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

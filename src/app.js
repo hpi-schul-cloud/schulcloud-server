@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-const serveStatic = require('@feathersjs/feathers').static;
 const express = require('@feathersjs/express');
 const favicon = require('serve-favicon');
 const compress = require('compression');
@@ -13,12 +12,11 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const middleware = require('./middleware');
 const sockets = require('./sockets');
-const services = require('./services');
+const services = require('./services/');
 const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const setupSwagger = require('./swagger');
-const prettyError = require('pretty-error').start();
 const allHooks = require('./app.hooks');
 
 require('console-stamp')(console);
@@ -45,7 +43,7 @@ app.use(compress())
 	.options('*', cors())
 	.use(cors())
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
-	.use('/', express(serveStatic(app.get('public'))))
+	.use('/', express.static('public'))
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({extended: true}))
 	.use(bodyParser.raw({type: () => true, limit: '10mb'}))
@@ -56,7 +54,11 @@ app.use(compress())
 	.configure(rest(handleResponseType))
 	.configure(socketio())
 
-	// auth is setup in /authentication/
+	.use((req, res, next) => {
+		// pass header into hooks.params
+		req.feathers.headers = req.headers;
+		next();
+	})
 	.configure(services)
 
 	.configure(socketio())

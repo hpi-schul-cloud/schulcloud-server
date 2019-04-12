@@ -1,4 +1,5 @@
 const auth = require('@feathersjs/authentication');
+const hooks = require('feathers-hooks-common');
 
 const globalHooks = require('../../../hooks');
 const { fileStorageTypes } = require('../model');
@@ -46,7 +47,7 @@ exports.before = {
 	/* It is disabled for the moment, is added with new "Löschkonzept"
 	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
 	*/
-	remove: [hooks.disable()],
+	remove: [hooks.disallow()],
 };
 
 exports.after = {
