@@ -234,7 +234,6 @@ describe('registration service', () => {
 					};
 					return registrationService.create(registrationInput).then((users) => {
 						// should be passed
-						console.log(users);
 						chai.expect(users.user.email).to.equal(emailLowerCase);
 						chai.expect(users.parent.email).to.equal(parentEmailLowerCase);
 						chai.expect(users.account.username).to.equal(emailLowerCase);
