@@ -1,9 +1,8 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
-const errors = require('feathers-errors');
+const auth = require('@feathersjs/authentication');
+const errors = require('@feathersjs/errors');
 const logger = require('winston');
 
 /**
@@ -97,7 +96,7 @@ const updateAccountUsername = (hook) => {
 			return Promise.reject(error);
 		});
 	};
-  
+
 const removeStudentFromClasses = (hook) => {
 	const classesService = hook.app.service('/classes');
 	const userId = hook.id;

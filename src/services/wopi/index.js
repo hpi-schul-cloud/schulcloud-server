@@ -3,7 +3,7 @@
  * Provides a basic wopi - endpoint, https://wopirest.readthedocs.io/en/latest/index.html
  */
 const hooks = require('./hooks');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const rp = require('request-promise-native');
 const { FileModel } = require('../fileStorage/model');
 const {

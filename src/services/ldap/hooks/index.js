@@ -1,6 +1,6 @@
 'use strict';
 
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);

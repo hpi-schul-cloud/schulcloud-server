@@ -1,5 +1,5 @@
-const auth = require('feathers-authentication');
-const { Forbidden } = require('feathers-errors');
+const auth = require('@feathersjs/authentication');
+const { Forbidden } = require('@feathersjs/errors');
 
 const blocked = (hook) => {
 	throw Forbidden('Method is not allowed!');

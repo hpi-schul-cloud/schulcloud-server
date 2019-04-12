@@ -1,5 +1,5 @@
 const feathersSwagger = require('feathers-swagger');
-const serveStatic = require('feathers').static;
+const serveStatic = require('@feathersjs/feathers').static;
 const path = require('path');
 
 module.exports = function (app) {

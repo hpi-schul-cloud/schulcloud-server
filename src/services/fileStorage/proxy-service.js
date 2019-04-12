@@ -1,7 +1,7 @@
 const fs = require('fs');
 const logger = require('winston');
 const rp = require('request-promise-native');
-const { Forbidden, BadRequest, NotFound } = require('feathers-errors');
+const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 
 const { before, after } = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');

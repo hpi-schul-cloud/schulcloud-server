@@ -1,4 +1,4 @@
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const { hasPermission, injectUserId } = require('../../../hooks');
 
 const resolveUserId = (hook) => {

@@ -1,7 +1,7 @@
 'use strict';
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const toArray = data => (Array.isArray(data) ? data	: [data]);
 
 // rewrite tool id if there is a origin tool (content-specific pseudonym)

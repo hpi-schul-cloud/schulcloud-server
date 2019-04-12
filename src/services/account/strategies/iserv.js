@@ -1,6 +1,6 @@
 'use strict';
 const promisify = require('es6-promisify');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const ClientOAuth2 = require('client-oauth2');
 const logger = require('winston');
 

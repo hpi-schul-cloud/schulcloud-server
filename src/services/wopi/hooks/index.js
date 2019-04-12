@@ -1,7 +1,7 @@
 'use strict';
 
-const errors = require('feathers-errors');
-const auth = require('feathers-authentication');
+const errors = require('@feathersjs/errors');
+const auth = require('@feathersjs/authentication');
 const {FileModel} = require('../../fileStorage/model');
 
 /**

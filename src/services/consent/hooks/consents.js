@@ -1,7 +1,7 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 
 //TODO: after hook for get that checks access.
 //TODO: rethink security, due to no schoolId we can't restrict anything.

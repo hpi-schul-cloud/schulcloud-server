@@ -3,7 +3,7 @@
 const commonHooks = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const logger = require('winston');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const pinModel = require('../../user/model').registrationPinModel;
 
 const removeOldPins = (hook) => {

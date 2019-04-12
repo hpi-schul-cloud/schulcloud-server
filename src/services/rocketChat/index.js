@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const { Forbidden, BadRequest } = require('feathers-errors');
+const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const logger = require('winston');
 
 const rocketChatModels = require('./model'); // toDo: deconstruct

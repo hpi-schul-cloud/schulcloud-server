@@ -1,4 +1,4 @@
-const { BadRequest } = require('feathers-errors');
+const { BadRequest } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
 
 

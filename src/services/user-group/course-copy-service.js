@@ -1,5 +1,5 @@
 const hooks = require('./hooks/copyCourseHook');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const courseModel = require('./model').courseModel;
 const homeworkModel = require('../homework/model').homeworkModel;
 const lessonsModel = require('../lesson/model');

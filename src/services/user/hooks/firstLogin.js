@@ -2,7 +2,7 @@
 
 const commonHooks = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 
 exports.before = {
 	all: [],

@@ -1,4 +1,4 @@
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
 const userModel = require('../user/model').userModel;
 

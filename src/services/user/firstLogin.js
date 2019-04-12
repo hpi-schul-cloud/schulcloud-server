@@ -1,5 +1,5 @@
 const globalHooks = require('../../hooks');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 
 const createParent = (data, params, user, app) => {
     return app.service('/registrationPins/').find({query: { "pin": data.pin, "email": data.parent_email, verified: false }})

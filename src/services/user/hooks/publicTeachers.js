@@ -1,4 +1,4 @@
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const mapRoleFilterQuery = (hook) => {

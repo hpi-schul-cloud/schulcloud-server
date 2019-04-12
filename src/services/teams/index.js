@@ -4,7 +4,7 @@ const {
 	Forbidden,
 	GeneralError,
 	NotFound,
-} = require('feathers-errors');
+} = require('@feathersjs/errors');
 const hooks = require('./hooks');
 const { warn } = require('../../logger/index');
 // const globalHooks = require('../../hooks');

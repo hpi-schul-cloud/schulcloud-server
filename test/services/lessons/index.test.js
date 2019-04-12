@@ -5,7 +5,7 @@ const app = require('../../../src/app');
 const lessonService = app.service('lessons');
 const lessonCopyService = app.service('lessons/copy');
 const chai = require('chai');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 
 const testLesson = {
 	name: 'testLesson',
