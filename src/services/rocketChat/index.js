@@ -397,6 +397,13 @@ class RocketChatChannel {
 			});
 	}
 
+	async ensureCurrentUserInChannel(channel, params) {
+		return this.addUsersToChannel([params.account.userId], channel.teamId)
+			.catch(err =>
+				logger.warn(err)
+			);
+	}
+
 	async getOrCreateRocketChatChannel(teamId, params) {
 		try {
 			const team = await this.app.service('teams').get(teamId);
@@ -408,6 +415,7 @@ class RocketChatChannel {
 				channel = await this.createChannel(teamId, params)
 					.then(() => rocketChatModels.channelModel.findOne({ teamId }));
 			}
+			this.ensureCurrentUserInChannel(channel, params);
 			return {
 				teamId: channel.teamId,
 				channelName: channel.channelName,
