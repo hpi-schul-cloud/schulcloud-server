@@ -3,6 +3,7 @@
 const service = require('feathers-mongoose');
 const user = require('./model');
 const hooks = require('./hooks');
+const registrationHook = require('./hooks/registration');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const errors = require('feathers-errors');
@@ -90,6 +91,8 @@ module.exports = function setup() {
 
 	const RegistrationService = require('./registration')(app);
 	app.use('/registration', new RegistrationService());
+	const registationService = app.service('registration');
+	registationService.before(registrationHook.before);
 
 	const FirstLoginService = require('./firstLogin')(app);
 	app.use('/firstLogin', new FirstLoginService());

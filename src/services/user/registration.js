@@ -57,10 +57,12 @@ const populateUser = (app, data) => {
 const insertUserToDB = (app,data,user)=> {
 	if(user._id){
 		return app.service('users').remove(user._id).then( ()=>{
-			return app.service('users').create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
-			.catch(err=> {
+			return app
+			.service('users')
+			.create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
+			.catch(err=> { 	
 				logger.warn(err);
-				throw new errors.BadRequest('Fehler beim Updaten der Nutzerdaten.');}
+				 throw new errors.BadRequest('Fehler beim Updaten der Nutzerdaten.');}
 			);
 		});
 	}else{

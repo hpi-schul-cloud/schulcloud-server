@@ -190,6 +190,21 @@ const pinIsVerified = hook => {
 	}
 };
 
+const mailToLowerCase = hook => {
+	if(hook.data){
+		if(hook.data.email){
+			hook.data.email = hook.data.email.toLowerCase()
+		}
+		if(hook.data.parent_email){
+			hook.data.parent_email = hook.data.parent_email.toLowerCase()
+		}
+		if(hook.data.student_email){
+			hook.data.student_email = hook.data.student_email.toLowerCase()
+		}
+		return Promise.resolve(hook);
+	}
+}
+
 // student administrator helpdesk superhero teacher parent
 const permissionRoleCreate = async (hook) =>{
 	if (!hook.params.provider) {
@@ -261,6 +276,7 @@ exports.before = function(app) {
 		get: [auth.hooks.authenticate('jwt')],
 		create: [
 			checkJwt(),
+			mailToLowerCase,
 			pinIsVerified,
 			sanitizeData,
 			checkUnique,
@@ -270,6 +286,7 @@ exports.before = function(app) {
 		],
 		update: [
 			auth.hooks.authenticate('jwt'),
+			mailToLowerCase,
 			globalHooks.hasPermission('USER_EDIT'),
 			//TODO only local for LDAP
 			sanitizeData,
@@ -277,6 +294,7 @@ exports.before = function(app) {
 		],
 		patch: [
 			auth.hooks.authenticate('jwt'),
+			mailToLowerCase,
 			globalHooks.hasPermission('USER_EDIT'),
 			globalHooks.ifNotLocal(securePatching),
 			globalHooks.permitGroupOperation,
