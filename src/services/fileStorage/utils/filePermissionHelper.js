@@ -68,9 +68,12 @@ const checkPermissions = permission => async (user, file) => {
 	}
 
 	const isMember = checkMemberStatus({ file: fileObject, user });
+	const userPermissions = permissions
+		.find(perm => perm.refId && perm.refId.toString() === user.toString());
 
 	// User is no member of team or course
-	if (!isMember) {
+	// and file has no explicit user permissions (sharednetz files)
+	if (!isMember && !userPermissions) {
 		return Promise.reject();
 	}
 
@@ -90,17 +93,6 @@ const checkPermissions = permission => async (user, file) => {
 		return Promise.resolve(true);
 	}
 
-	const teamMember = fileObject.owner.userIds && fileObject.owner.userIds
-		.find(_ => _.userId.toString() === user.toString());
-	const userPermissions = permissions
-		.find(perm => perm.refId && perm.refId.toString() === user.toString());
-
-	// User is either not member of Team
-	// or file has no explicit user permissions (sharednetz files)
-	if (!teamMember && !userPermissions) {
-		return Promise.reject();
-	}
-
 	if (userPermissions) {
 		return userPermissions[permission] ? Promise.resolve(true) : Promise.reject();
 	}
@@ -108,7 +100,7 @@ const checkPermissions = permission => async (user, file) => {
 	return checkTeamPermission({
 		permission,
 		file: fileObject,
-		user: teamMember,
+		user: isMember,
 	});
 };
 
