@@ -47,10 +47,13 @@ const sanitizeDeep = (data, path) => {
 				// enable html for all current editors
 				if (['content', 'text', 'comment', 'gradeComment', 'description'].includes(key)
 					&& ['lessons', 'news', 'homework', 'submissions'].includes(path)) {
-					data[key] = sanitize(value, {html: true});
-				} else { data[key] = sanitize(value, { html: false }); }
-			} else 
+					data[key] = sanitize(value, { html: true });
+				} else {
+					data[key] = sanitize(value, { html: false });
+				}
+			} else {
 				sanitizeDeep(value, path);
+			}
 		});
 	} else if (typeof data === "string")
 		data = sanitize(data, {html:false});
