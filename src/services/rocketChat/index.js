@@ -195,7 +195,7 @@ class RocketChatUser {
 				return Promise.resolve(result);
 			}).catch((err) => {
 				logger.warn(new Forbidden('Can not create token.', err));
-				throw new Forbidden('Can not create token.');
+				throw new Forbidden('Can not create token.', err);
 			});
 	}
 
@@ -399,7 +399,7 @@ class RocketChatChannel {
 
 	async ensureCurrentUserInChannel(channel, params) {
 		return this.addUsersToChannel([params.account.userId], channel.teamId)
-			.catch(err => logger.warn(err),);
+			.catch(err => logger.warn(err));
 	}
 
 	async getOrCreateRocketChatChannel(teamId, params) {

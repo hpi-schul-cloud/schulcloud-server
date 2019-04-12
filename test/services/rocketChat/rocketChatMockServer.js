@@ -9,7 +9,7 @@ module.exports = function RocketChatMockServer({
 }) {
 	const findFreePort = port ? Promise.resolve(port) : freeport();
 
-	let idCounter = 1;
+	let idCounter = 0;
 
 	return findFreePort.then(freePort => new Promise((resolve) => {
 		const mockRocketChat = express();
@@ -21,15 +21,19 @@ module.exports = function RocketChatMockServer({
 			const newRcUser = {
 				email: req.body.email,
 				username: req.body.username,
-				password: req.body.password,
+				password: req.body.pass,
 				_id: idCounter,
 			};
+			let validity = 'true';
 			users.forEach((user) => {
-				if (user.email === newRcUser.email) res.status(403).send('Email already exists. [403]');
-				// if (user.username === newRcUser.email) do something?
+				if (user.email === newRcUser.email) validity = 'email';
+				// if (user.username === newRcUser.username) do something?
 			});
+			if (validity === 'email') return res.status(403).send({ error: 'Email already exists. [403]' });
+
+			users.push(newRcUser);
 			idCounter += 1;
-			res.send(
+			return res.send(
 				{
 					user: {
 						_id: newRcUser._id,
@@ -37,6 +41,26 @@ module.exports = function RocketChatMockServer({
 					},
 				},
 			);
+		});
+
+		mockRocketChat.post('/api/v1/users.update', (req, res) => {
+			const id = req.body.userId;
+			users[id].password = req.body.data.password;
+
+			return res.send({ user: users[id] });
+		});
+
+		mockRocketChat.get('/api/v1/users.list', (req, res) => {
+			if (req.query.query) {
+				const substrings = req.query.query.split('"');
+				const email = substrings[3];
+				const result = [];
+				users.forEach((user) => {
+					if (user.email === email) result.push(user);
+				});
+				return res.send({ users });
+			}
+			return res.send({ users });
 		});
 
 		mockRocketChat.listen(mockRocketChat.port, () => {
