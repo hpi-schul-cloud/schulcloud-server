@@ -60,7 +60,7 @@ module.exports = function oauth2() {
 	app.service('/oauth2/introspect').before(hooks.before.introspect);
 
 	app.use('/oauth2/auth/sessions/consent', {
-		get(user) {
+		get(user, params) {
 			return hydra.listConsentSessions(user);
 		},
 		remove(user, params) {

@@ -104,6 +104,7 @@ describe('pseudonym service', function pseudonym() {
 			toolId: testTool2._id,
 		},
 	}).then((result) => {
+		pseudonym = result.data[0].pseudonym;
 		expect(result.data[0].pseudonym).to.be.a('String');
 	}));
 

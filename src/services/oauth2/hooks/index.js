@@ -8,25 +8,29 @@ const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/$
 
 exports.getSubject = iframeSubject;
 
-const setSubject = hook => hook.app.service('ltiTools').find({
-	query: {
-		oAuthClientId: hook.params.loginRequest.client.client_id,
-	},
-}).then(tools => hook.app.service('pseudonym').find({
-	query: {
-		toolId: tools.data[0]._id,
-		userId: hook.params.account.userId,
-	},
-}).then((pseudonyms) => {
-	const { pseudonym } = pseudonyms.data[0];
-	hook.data.subject = hook.params.account.userId;
-	if (tools.data[0].useIframePseudonym) {
-		hook.data.force_subject_identifier = iframeSubject(pseudonym, hook.app.settings.services.web);
-	} else {
-		hook.data.force_subject_identifier = pseudonym;
-	}
-	return hook;
-}));
+const setSubject = hook => {
+	if (!hook.params.query.accept) return hook;
+	hook.app.service('ltiTools').find({
+		query: {
+			oAuthClientId: hook.params.loginRequest.client.client_id,
+		},
+	}).then(tools => hook.app.service('pseudonym').find({
+		query: {
+			toolId: tools.data[0]._id,
+			userId: hook.params.account.userId,
+		},
+	}).then((pseudonyms) => {
+		const {pseudonym} = pseudonyms.data[0];
+		if (!hook.data) hook.data = {};
+		hook.data.subject = hook.params.account.userId;
+		if (tools.data[0].useIframePseudonym) {
+			hook.data.force_subject_identifier = iframeSubject(pseudonym, hook.app.settings.services.web);
+		} else {
+			hook.data.force_subject_identifier = pseudonym;
+		}
+		return hook;
+	}));
+}
 
 const injectLoginRequest = hook => Hydra(hook.app.settings.services.hydra).getLoginRequest(hook.id)
 	.then((loginRequest) => {
@@ -52,7 +56,10 @@ const managesOwnConsents = (hook) => {
 
 exports.before = {
 	clients: {
-		all: [auth.hooks.authenticate('jwt'), globalHooks.isSuperHero()],
+		all: [
+			auth.hooks.authenticate('jwt'),
+			globalHooks.ifNotLocal(globalHooks.isSuperHero())
+		],
 	},
 	loginRequest: {
 		patch: [auth.hooks.authenticate('jwt'), injectLoginRequest, setSubject],
