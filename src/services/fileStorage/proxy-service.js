@@ -85,7 +85,7 @@ const fileStorageService = {
 				refId: teacherRoleId,
 				refPermModel: 'role',
 				write: true,
-				read: true, // students can always read course files
+				read: true,
 				create: false,
 				delete: false,
 			});
@@ -676,8 +676,8 @@ const filePermissionService = {
 		const { permissions: commitedPerms } = data;
 
 		const permissionPromises = commitedPerms.map(({ refId }) => Promise.all([
-			RoleModel.findOne({ _id: refId }).exec(),
-			userModel.findOne({ _id: refId }).exec(),
+			RoleModel.findOne({ _id: refId }).lean().exec(),
+			userModel.findOne({ _id: refId }).lean().exec(),
 		])
 			.then(([role, user]) => {
 				if (role) {
@@ -758,7 +758,7 @@ const filePermissionService = {
 		const { file: fileId } = query;
 		const { userId } = payload;
 		const fileObj = await FileModel.findOne({ _id: fileId }).populate('owner').lean().exec();
-		const userObject = await userModel.findOne({ _id: userId }).populate('roles').exec();
+		const userObject = await userModel.findOne({ _id: userId }).populate('roles').lean().exec();
 
 		const { refOwnerModel, owner } = fileObj;
 		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
