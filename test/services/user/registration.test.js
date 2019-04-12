@@ -2,7 +2,8 @@ const assert = require('assert');
 const chai = require('chai');
 
 const app = require('../../../src/app');
-const userModel = require('../../../src/services/user/model');
+const { userModel, registrationPinModel } = require('../../../src/services/user/model');
+const accountModel = require('../../../src/services/account/model');
 
 const registrationService = app.service('registration');
 const registrationPinService = app.service('registrationPins');
@@ -74,7 +75,7 @@ describe('registration service', () => {
 	});
 
 	it('fails with invalid pin', () => {
-		const email = `max${Date.now() }@mustermann.de`;
+		const email = `max${Date.now()}@mustermann.de`;
 		return registrationPinService.create({ email })
 			.then((registrationPin) => {
 				let pin = Number(registrationPin.pin);
@@ -122,7 +123,7 @@ describe('registration service', () => {
 					// no password given, should result in an error.
 					chai.expect(err.message).to.equal('Fehler beim Erstellen des Accounts.');
 					// a user has been created before the error. Lets check if he was deleted...
-					return userModel.userModel.findOne({ email });
+					return userModel.findOne({ email });
 				}).then((users) => {
 					chai.expect(users).to.equal(null);
 				});
@@ -140,7 +141,7 @@ describe('registration service', () => {
 		return app.service('hash').create(hashData)
 			.then((newHash) => {
 				hash = newHash;
-				return userModel.userModel.create({
+				return userModel.create({
 					email,
 					firstName: 'Max',
 					lastName: 'Mustermann',
@@ -179,11 +180,25 @@ describe('registration service', () => {
 	});
 
 	describe('email to lowercase', () => {
+		const toDelte = []; // Array of Objects {model, _id}
+
+		afterEach(() => {
+			for (const x of toDelte) {
+				console.log(x._id);
+				x.model.findByIdAndRemove(x._id).exec();
+			}
+			
+		});
+
 		it('camel case email', () => {
 			const email = `MaxZufall${Date.now()}@MusterMann.de`;
 			const emailLowerCase = email.toLowerCase();
 			return registrationPinService.create({ email })
 				.then((registrationPin) => {
+					toDelte.push({
+						_id: registrationPin._id,
+						model: registrationPinModel,
+					});
 					chai.expect(registrationPin.email).to.equal(emailLowerCase);
 
 					const registrationInput = {
@@ -201,6 +216,14 @@ describe('registration service', () => {
 					};
 					return registrationService.create(registrationInput).then((users) => {
 						// should be passed
+						toDelte.push({
+							model: userModel,
+							_id: users.user._id,
+						},
+						{
+							model: accountModel,
+							_id: users.account._id,
+						});
 						chai.expect(users.user.email).to.equal(emailLowerCase);
 						chai.expect(users.account.username).to.equal(emailLowerCase);
 					});
@@ -214,6 +237,10 @@ describe('registration service', () => {
 			const parentEmailLowerCase = parentEmail.toLowerCase();
 			return registrationPinService.create({ email: parentEmail })
 				.then((registrationPin) => {
+					toDelte.push({
+						_id: registrationPin._id,
+						model: registrationPinModel,
+					});
 					chai.expect(registrationPin.email).to.equal(parentEmailLowerCase);
 
 					const registrationInput = {
@@ -234,6 +261,18 @@ describe('registration service', () => {
 					};
 					return registrationService.create(registrationInput).then((users) => {
 						// should be passed
+						toDelte.push({
+							model: userModel,
+							_id: users.user._id,
+						},
+						{
+							model: userModel,
+							_id: users.parent._id,
+						},
+						{
+							model: accountModel,
+							_id: users.account._id,
+						});
 						chai.expect(users.user.email).to.equal(emailLowerCase);
 						chai.expect(users.parent.email).to.equal(parentEmailLowerCase);
 						chai.expect(users.account.username).to.equal(emailLowerCase);
