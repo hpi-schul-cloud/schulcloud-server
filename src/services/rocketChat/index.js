@@ -402,11 +402,19 @@ class RocketChatChannel {
 			.catch(err => logger.warn(err));
 	}
 
+	userIsInTeam(userId, team) {
+		const user = team.userIds.find(el => el.userId.toString() === userId.toString());
+		return (user !== undefined);
+	}
+
 	async getOrCreateRocketChatChannel(teamId, params) {
 		try {
 			const team = await this.app.service('teams').get(teamId);
 			if (!team.features.includes('rocketChat')) {
 				throw new BadRequest('rocket.chat is disabled for this team');
+			}
+			if (!this.userIsInTeam(params.account.userId, team)) {
+				throw new BadRequest('you are not in this team');
 			}
 			let channel = await rocketChatModels.channelModel.findOne({ teamId });
 			if (!channel) {
