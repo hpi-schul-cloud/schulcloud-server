@@ -13,35 +13,21 @@ const mailToLowerCase = (hook) => {
 			hook.data.student_email = hook.data.student_email.toLowerCase();
 		}
 	}
-	return Promise.resolve(hook);
+	return hook;
 };
 
 exports.before = {
 	all: [],
 	find: [],
-	get: [
-		auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('USER_VIEW'),
-		mailToLowerCase,
-	],
+	get: [],
 	create: [
-		auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('USER_CREATE'),
 		mailToLowerCase,
 	],
 	update: [
-		auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('USER_EDIT'),
 		mailToLowerCase,
 	],
 	patch: [
-		auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('USER_EDIT'),
 		mailToLowerCase,
 	],
-	remove: [
-		auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('USER_CREATE'),
-		mailToLowerCase,
-	],
+	remove: [],
 };

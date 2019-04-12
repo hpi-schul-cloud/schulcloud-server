@@ -179,7 +179,7 @@ describe('registration service', () => {
 	});
 
 	describe('email to lowercase', () => {
-		it('camel case', () => {
+		it('camel case email', () => {
 			const email = `MaxZufall${Date.now()}@MusterMann.de`;
 			const emailLowerCase = email.toLowerCase();
 			return registrationPinService.create({ email })
@@ -202,6 +202,41 @@ describe('registration service', () => {
 					return registrationService.create(registrationInput).then((users) => {
 						// should be passed
 						chai.expect(users.user.email).to.equal(emailLowerCase);
+						chai.expect(users.account.username).to.equal(emailLowerCase);
+					});
+				});
+		});
+
+		it('camel case parent email', () => {
+			const email = `mAx${Date.now()}@musteRmann.de`;
+			const emailLowerCase = email.toLowerCase();
+			const parentEmail = `MoritzMusterfrau${Date.now()}@MusTermann.de`;
+			const parentEmailLowerCase = parentEmail.toLowerCase();
+			return registrationPinService.create({ email: parentEmail })
+				.then((registrationPin) => {
+					chai.expect(registrationPin.email).to.equal(parentEmailLowerCase);
+
+					const registrationInput = {
+						classOrSchoolId: '0000d186816abba584714c5f',
+						pin: registrationPin.pin,
+						password_1: 'Test123!',
+						password_2: 'Test123!',
+						birthDate: '15.10.2014',
+						email,
+						firstName: 'Max',
+						lastName: 'Mustermann',
+						privacyConsent: true,
+						thirdPartyConsent: true,
+						termsOfUseConsent: true,
+						parent_email: parentEmail,
+						parent_firstName: 'Moritz',
+						parent_lastName: 'Mustermann',
+					};
+					return registrationService.create(registrationInput).then((users) => {
+						// should be passed
+						console.log(users);
+						chai.expect(users.user.email).to.equal(emailLowerCase);
+						chai.expect(users.parent.email).to.equal(parentEmailLowerCase);
 						chai.expect(users.account.username).to.equal(emailLowerCase);
 					});
 				});
