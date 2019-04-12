@@ -1,4 +1,4 @@
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const SystemSyncer = require('./SystemSyncer');
 const LDAPSchoolSyncer = require('./LDAPSchoolSyncer');
 

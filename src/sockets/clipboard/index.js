@@ -1,6 +1,6 @@
 'use strict';
 
-const socketio = require('feathers-socketio');
+const socketio = require('@feathersjs/socketio');
 const siofu = require("socketio-file-upload");
 const actions = require('./actions');
 const upload = require('./upload');

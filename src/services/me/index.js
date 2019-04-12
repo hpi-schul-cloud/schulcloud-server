@@ -1,4 +1,4 @@
-const { Forbidden } = require('feathers-errors');
+const { Forbidden } = require('@feathersjs/errors');
 const logger = require('winston');
 const hooks = require('./hooks');
 

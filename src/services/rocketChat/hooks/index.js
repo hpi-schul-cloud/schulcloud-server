@@ -1,14 +1,13 @@
 const globalHooks = require('../../../hooks');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const logger = require('winston');
-const auth = require('feathers-authentication');
-const hooks = require('feathers-hooks')
+const auth = require('@feathersjs/authentication');
 
 const blockedExtern = globalHooks.ifNotLocal((hook) => {
     logger.warn('Intern use only.');
     throw new errors.Forbidden('You have not the permission to execute this services.');
 });
-    
+
 const rocketChatUserHooks= {
     before: {
         all: [auth.hooks.authenticate('jwt')],

@@ -1,5 +1,5 @@
 const ldap = require('ldapjs');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const logger = require('winston');
 const hooks = require('./hooks');
 

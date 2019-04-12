@@ -1,6 +1,6 @@
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const logger = require('winston');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 
 const Syncer = require('./strategies/Syncer');
 const LDAPSystemSyncer = require('./strategies/LDAPSystemSyncer');

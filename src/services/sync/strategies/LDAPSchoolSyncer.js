@@ -1,4 +1,4 @@
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 
 const accountModel = require('../../account/model');
 const SystemSyncer = require('./SystemSyncer');

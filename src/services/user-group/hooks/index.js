@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;

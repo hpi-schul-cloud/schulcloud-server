@@ -1,5 +1,4 @@
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 
 const globalHooks = require('../../../hooks');
 const { fileStorageTypes } = require('../model');

@@ -1,10 +1,10 @@
 'use strict';
 
-const feathers = require('feathers');
+const feathers = require('@feathersjs/feathers');
 const express = require('express');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const path = require("path");
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 
 module.exports = function () {
     const app = this;
