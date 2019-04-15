@@ -50,7 +50,7 @@ const getOptions = (uri, { data, userId, method, id }, query) => {
 
 // todo override replace with explicit data picks.
 /**
- * Avaible params includes in settings:
+ * Available params includes in settings:
  * @param uri - uri of editor service, that do not contain the full url path
  * 				example: "groups" is request editor mircoservice service groups
  * @param params -  params must be include the object request,
