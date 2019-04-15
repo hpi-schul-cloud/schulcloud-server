@@ -83,5 +83,5 @@ module.exports = function initializeServices() {
 
 	// initialize events
 	newsEvents.configure(app);
-  teamEvents.configure(app);
+	teamEvents.configure(app);
 };
