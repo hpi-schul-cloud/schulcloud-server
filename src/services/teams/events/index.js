@@ -1,5 +1,9 @@
 const users = require('./user');
 
-module.exports = (app) => {
+const configure = (app) => {
 	users(app);
+};
+
+module.exports = {
+	configure,
 };

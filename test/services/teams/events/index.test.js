@@ -44,7 +44,7 @@ const getTeam = id => teamsModel.findById(id).lean().exec();
 
 // only for save clear after tests
 const removeTeam = id => teamsModel.findOneAndRemove({ _id: id });
-const removedUser = id => userModel.findOneAndRemove({ _id: id });
+const removeUser = id => userModel.findOneAndRemove({ _id: id });
 
 describe('Test user remove events', () => {
 	let team;
@@ -62,8 +62,8 @@ describe('Test user remove events', () => {
 	after((done) => {
 		// The test should already removed the data, but if not clear it now.
 		removeTeam(team._id);
-		removedUser(owner._id);
-		removedUser(user._id);
+		removeUser(owner._id);
+		removeUser(user._id);
 		done();
 	});
 
