@@ -46,7 +46,7 @@ module.exports = function() {
 			default: 25,
 			max: 100
 		},
-		lean: true
+		lean: { virtuals: true }
 	}));
 	const classService = app.service('/classes');
 	classService.before(classHooks.before);

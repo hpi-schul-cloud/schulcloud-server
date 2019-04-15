@@ -34,18 +34,9 @@ exports.before = {
 
 const addDisplayName = (hook) => {
 	let data = hook.result.data || hook.result;
-    const arrayed = !(Array.isArray(data));
-    data = (Array.isArray(data))?(data):([data]);
-	
-	data = data.map(function (currentClass) {
-		if (currentClass.nameFormat == "static") {
-			currentClass.displayName = currentClass.name;
-		} else if (currentClass.nameFormat == "gradeLevel+name") {
-			currentClass.displayName = `${currentClass.gradeLevel.name}${currentClass.name}`;
-		}
-		return currentClass;
-	});
-	if (((hook.params.query||{})['$sort']||{}).displayName == 1) {
+	const arrayed = !(Array.isArray(data));
+	data = (Array.isArray(data)) ? (data) : ([data]);
+	if (((hook.params.query || {})['$sort'] || {}).displayName == 1) {
 		data.sort((a, b) => {
 			return a.displayName.toLowerCase() > b.displayName.toLowerCase();
 		});
