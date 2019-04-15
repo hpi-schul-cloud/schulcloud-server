@@ -35,7 +35,7 @@ const me = require('./me');
 
 const teamEvents = require('./teams/events');
 
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 
 	mongoose.connect(
@@ -78,5 +78,5 @@ module.exports = function () {
 	app.configure(me);
 	app.configure(rocketChat);
 
-	teamEvents(app);
+	teamEvents.configure(app);
 };

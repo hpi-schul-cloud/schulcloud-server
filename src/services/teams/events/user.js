@@ -25,18 +25,21 @@ const deleteUser = (app) => {
 		teams = teams.map(team => removeTeamUserFromTeam(team, userId));
 		const promises = teams.map(team => patchOrRemoveTeam(team));
 
-		const teamIds = teams.map(team => team._id);
-
 		await Promise.all(promises)
 			.then(() => {
+				const teamIds = teams.map(team => team._id);
 				logger.info(
-					`Remove from user ${userId} from the teams ${teamIds},`
+					`Remove user ${userId} from the teams ${teamIds},`
 					+ 'if team.userIds empty then removed the team too.',
 				);
 			})
 			.catch((err) => {
+				const notRemovedFromTeams = teams.filter(
+					team => team.userIds.some(teamUser => teamUser.userId.toString() === userId),
+				);
+
 				logger.warn(
-					`Can not remove from user ${userId} from the teams ${teamIds},`
+					`Can not remove user ${userId} from the teams ${notRemovedFromTeams},`
 					+ 'if team.userIds empty then removed the team too.',
 					err,
 				);
