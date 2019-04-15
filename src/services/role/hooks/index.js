@@ -30,9 +30,7 @@ exports.before = () => ({
 const Role = require('../model');
 
 exports.after = {
-	all: [
-		hooks.discardQuery('password'),
-	],
+	all: [],
 	find: [],
 	get: [
 		globalHooks.computeProperty(Role, 'getPermissions', 'permissions'),
