@@ -21,12 +21,12 @@ describe('news service', () => {
 					target: teamId,
 					targetModel: 'teams',
 				}).save();
+				expect(await News.count({ _id: teamNews._id })).to.equal(1);
 
 				app.service('teams').emit('removed', { _id: teamId });
 				await sleep(100); // give the event listener time to work
 
-				const result = await News.count({ _id: teamNews._id });
-				expect(result).to.equal(0);
+				expect(await News.count({ _id: teamNews._id })).to.equal(0);
 			});
 
 			it('does not delete any other news', async () => {
