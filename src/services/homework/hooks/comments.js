@@ -9,9 +9,7 @@ const addToSubmission = (hook) => {
 	});
 };
 
-console.log('test');
-
-exports.before = {
+exports.before = () => ({
 	all: [auth.hooks.authenticate('jwt')],
 	find: [globalHooks.hasPermission('COMMENTS_VIEW'), globalHooks.mapPaginationQuery.bind(this)],
 	get: [globalHooks.hasPermission('COMMENTS_VIEW')],
@@ -19,7 +17,7 @@ exports.before = {
 	update: [globalHooks.hasPermission('COMMENTS_EDIT')],
 	patch: [globalHooks.hasPermission('COMMENTS_EDIT'), globalHooks.permitGroupOperation],
 	remove: [globalHooks.hasPermission('COMMENTS_CREATE'), globalHooks.permitGroupOperation],
-};
+});
 
 exports.after = {
 	all: [],

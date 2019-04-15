@@ -194,15 +194,13 @@ const hasPatchPermission = (hook) => {
 			return Promise.reject(new errors.Forbidden());
 		}
 	})
-		.catch(err => {
+		.catch((err) => {
 			logger.warn(err);
 			return Promise.reject(new errors.GeneralError({ "message": "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" }));
 		});
 };
 
-console.log('test');
-
-exports.before = {
+exports.before = () => ({
 	all: [auth.hooks.authenticate('jwt')],
 	find: [
 		globalHooks.hasPermission('HOMEWORK_VIEW'),
@@ -213,8 +211,8 @@ exports.before = {
 	create: [globalHooks.hasPermission('HOMEWORK_CREATE')],
 	update: [globalHooks.hasPermission('HOMEWORK_EDIT')],
 	patch: [globalHooks.hasPermission('HOMEWORK_EDIT'), globalHooks.permitGroupOperation, hasPatchPermission],
-	remove: [globalHooks.hasPermission('HOMEWORK_CREATE'), globalHooks.permitGroupOperation]
-};
+	remove: [globalHooks.hasPermission('HOMEWORK_CREATE'), globalHooks.permitGroupOperation],
+});
 
 exports.after = {
 	all: [],

@@ -317,9 +317,7 @@ const hasDeletePermission = (hook) => {
 	}
 };
 
-console.log('test');
-
-exports.before = {
+exports.before = () => ({
 	all: [auth.hooks.authenticate('jwt'), stringifyUserId],
 	find: [
 		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
@@ -371,7 +369,7 @@ exports.before = {
 		globalHooks.permitGroupOperation,
 		hasDeletePermission,
 	],
-};
+});
 
 exports.after = {
 	all: [],
@@ -380,5 +378,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

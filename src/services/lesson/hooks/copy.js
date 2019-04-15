@@ -25,9 +25,7 @@ const checkForShareToken = (hook) => {
 		});
 };
 
-console.log('test');
-
-exports.before = {
+exports.before = () => ({
 	all: [auth.hooks.authenticate('jwt')],
 	find: [hooks.disallow()],
 	get: [hooks.disallow()],
@@ -39,4 +37,4 @@ exports.before = {
 	update: [hooks.disallow()],
 	patch: [hooks.disallow()],
 	remove: [hooks.disallow()],
-};
+});

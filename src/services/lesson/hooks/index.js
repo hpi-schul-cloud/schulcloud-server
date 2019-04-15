@@ -47,9 +47,7 @@ const checkIfCourseShareable = (hook) => {
 		});*/
 };
 
-console.log('test');
-
-exports.before = {
+exports.before = () => ({
 	all: [auth.hooks.authenticate('jwt'), (hook) => {
 		if (hook.data && hook.data.contents) {
 			hook.data.contents = (hook.data.contents || []).map((item) => {
@@ -69,13 +67,13 @@ exports.before = {
 	],
 	create: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
-		globalHooks.injectUserId, 
+		globalHooks.injectUserId,
 		globalHooks.checkCorrectCourseOrTeamId],
 	update: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 	],
 	patch: [
-		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false), 
+		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 		globalHooks.permitGroupOperation,
 		globalHooks.checkCorrectCourseOrTeamId,
 	],
@@ -83,7 +81,7 @@ exports.before = {
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false),
 		globalHooks.permitGroupOperation,
 	],
-};
+});
 
 exports.after = {
 	all: [],
