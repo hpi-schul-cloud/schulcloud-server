@@ -47,22 +47,42 @@ const checkIfCourseShareable = (hook) => {
 		});*/
 };
 
+console.log('test');
+
 exports.before = {
 	all: [auth.hooks.authenticate('jwt'), (hook) => {
-		if(hook.data && hook.data.contents) {
-			hook.data.contents = (hook.data.contents || []).map((item) =>{
+		if (hook.data && hook.data.contents) {
+			hook.data.contents = (hook.data.contents || []).map((item) => {
 				item.user = item.user || hook.params.account.userId;
 				return item;
 			});
 		}
 		return hook;
 	}],
-	find: [globalHooks.hasPermission('TOPIC_VIEW'), globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
-	get: [globalHooks.hasPermission('TOPIC_VIEW'), globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
-	create: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true), globalHooks.injectUserId, globalHooks.checkCorrectCourseOrTeamId],
-	update: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false)],
-	patch: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false), globalHooks.permitGroupOperation, globalHooks.checkCorrectCourseOrTeamId],
-	remove: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false), globalHooks.permitGroupOperation]
+	find: [
+		globalHooks.hasPermission('TOPIC_VIEW'),
+		globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons),
+	],
+	get: [
+		globalHooks.hasPermission('TOPIC_VIEW'),
+		globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons),
+	],
+	create: [
+		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
+		globalHooks.injectUserId, 
+		globalHooks.checkCorrectCourseOrTeamId],
+	update: [
+		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
+	],
+	patch: [
+		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false), 
+		globalHooks.permitGroupOperation,
+		globalHooks.checkCorrectCourseOrTeamId,
+	],
+	remove: [
+		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false),
+		globalHooks.permitGroupOperation,
+	],
 };
 
 exports.after = {
@@ -72,5 +92,5 @@ exports.after = {
 	create: [checkIfCourseShareable],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

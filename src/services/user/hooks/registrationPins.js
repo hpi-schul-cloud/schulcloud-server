@@ -76,15 +76,15 @@ const mailPin = (hook) => {
 };
 
 const returnPinOnlyToSuperHero = async (hook) => {
-	if (process.env.NODE_ENV === 'test'){
+	if (process.env.NODE_ENV === 'test') {
 		return Promise.resolve(hook);
 	}
 
-	if(((hook.params||{}).account||{}).userId){
+	if (((hook.params||{}).account||{}).userId) {
 		const userService = hook.app.service('/users/');
 		const currentUser = await userService.get(hook.params.account.userId, {query: {$populate: 'roles'}});
 		const userRoles = currentUser.roles.map((role) => {return role.name;});
-		if(userRoles.includes('superhero')){
+		if (userRoles.includes('superhero')) {
 			return Promise.resolve(hook);
 		}
 	}
@@ -97,7 +97,11 @@ exports.before = {
 	all: [globalHooks.forceHookResolve(auth.hooks.authenticate('jwt'))],
 	find: hooks.disallow('external'),
 	get: hooks.disallow('external'),
-	create: [removeOldPins, generatePin, mailPin],
+	create: [
+		removeOldPins,
+		generatePin,
+		mailPin,
+	],
 	update: hooks.disallow('external'),
 	patch: hooks.disallow('external'),
 	remove: hooks.disallow('external'),

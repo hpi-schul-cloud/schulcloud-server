@@ -62,21 +62,48 @@ const filterValidUsers = context => {
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
-	find: [replaceToolWithOrigin],
-	get: [_ => {throw new errors.MethodNotAllowed();}],
-	create: [globalHooks.ifNotLocal(_ => {throw new errors.MethodNotAllowed();})],
-	update: [_ => {throw new errors.MethodNotAllowed();}],
-	patch: [_ => {throw new errors.MethodNotAllowed();}],
-	remove: [globalHooks.ifNotLocal(_ => {throw new errors.MethodNotAllowed();})]
+	all: [
+		auth.hooks.authenticate('jwt'),
+	],
+	find: [
+		replaceToolWithOrigin,
+	],
+	get: [
+		() => {
+			throw new errors.MethodNotAllowed();
+		},
+	],
+	create: [
+		globalHooks.ifNotLocal(() => {
+			throw new errors.MethodNotAllowed();
+		}),
+	],
+	update: [
+		() => {
+			throw new errors.MethodNotAllowed();
+		},
+	],
+	patch: [
+		() => {
+			throw new errors.MethodNotAllowed();
+		},
+	],
+	remove: [
+		globalHooks.ifNotLocal(() => {
+			throw new errors.MethodNotAllowed();
+		}),
+	],
 };
 
 exports.after = {
 	all: [],
-	find: [createMissingPseudonyms, globalHooks.ifNotLocal(filterValidUsers)],
+	find: [
+		createMissingPseudonyms,
+		globalHooks.ifNotLocal(filterValidUsers),
+	],
 	get: [],
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

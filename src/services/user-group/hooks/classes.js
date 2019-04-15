@@ -64,10 +64,13 @@ exports.after = {
 	find: [addDisplayName],
 	get: [
 		addDisplayName,
-		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'})
-	)],
+		globalHooks.ifNotLocal(
+			globalHooks.denyIfNotCurrentSchool({
+				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
+			}),
+		)],
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

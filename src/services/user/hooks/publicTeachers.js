@@ -27,7 +27,8 @@ exports.before = {
 	find: [
 		globalHooks.mapPaginationQuery.bind(this),
 		filterForPublicTeacher,
-		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),	// resolve ids for role strings (e.g. 'TEACHER')
+		// resolve ids for role strings (e.g. 'TEACHER')
+		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
 		auth.hooks.authenticate('jwt'),
 		mapRoleFilterQuery,
 	],

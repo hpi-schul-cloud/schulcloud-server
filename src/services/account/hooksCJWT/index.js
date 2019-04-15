@@ -1,5 +1,3 @@
-'use strict';
-
 const auth = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');

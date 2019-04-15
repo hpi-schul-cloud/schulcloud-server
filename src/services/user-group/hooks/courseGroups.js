@@ -1,8 +1,6 @@
-'use strict';
-
-const globalHooks = require('../../../hooks');
 const auth = require('@feathersjs/authentication');
 const _ = require('lodash');
+const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
@@ -19,9 +17,15 @@ exports.before = {
 exports.after = {
 	all: [],
 	find: [],
-	get: [globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'}))],
+	get: [
+		globalHooks.ifNotLocal(
+			globalHooks.denyIfNotCurrentSchool({
+				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
+			}),
+		),
+	],
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

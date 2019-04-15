@@ -41,9 +41,19 @@ exports.before = {
 	all: [],
 	find: [],
 	get: [],
-	create: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE'), setDefaultFileStorageType],
-	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_EDIT')],
-	patch: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_EDIT')],
+	create: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('SCHOOL_CREATE'),
+		setDefaultFileStorageType,
+	],
+	update: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('SCHOOL_EDIT'),
+	],
+	patch: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('SCHOOL_EDIT'),
+	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
 	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
 	*/
@@ -57,5 +67,5 @@ exports.after = {
 	create: [createDefaultStorageOptions],
 	update: [createDefaultStorageOptions],
 	patch: [createDefaultStorageOptions],
-	remove: []
+	remove: [],
 };
