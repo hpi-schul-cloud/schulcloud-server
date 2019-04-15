@@ -541,15 +541,8 @@ module.exports = function Setup() {
 	const rocketChatLogoutService = app.service('rocketChat/logout');
 	const rocketChatChannelService = app.service('/rocketChat/channel');
 
-	rocketChatUserService.before(rocketChatUserHooks.before);
-	rocketChatUserService.after(rocketChatUserHooks.after);
-
-	rocketChatLoginService.before(rocketChatLoginHooks.before);
-	rocketChatLoginService.after(rocketChatLoginHooks.after);
-
-	rocketChatLogoutService.before(rocketChatLogoutHooks.before);
-	rocketChatLogoutService.after(rocketChatLogoutHooks.after);
-
-	rocketChatChannelService.before(rocketChatChannelHooks.before);
-	rocketChatChannelService.after(rocketChatChannelHooks.after);
+	rocketChatUserService.hooks(rocketChatUserHooks);
+	rocketChatLoginService.hooks(rocketChatLoginHooks);
+	rocketChatLogoutService.hooks(rocketChatLogoutHooks);;
+	rocketChatChannelService.hooks(rocketChatChannelHooks);
 };

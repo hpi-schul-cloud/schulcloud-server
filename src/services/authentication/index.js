@@ -152,9 +152,6 @@ module.exports = function() {
 	};*/
 
 	// Set up our hooks
-	authenticationService.hooks({
-		before: hooks.before,
-		after: hooks.after
-	});
+	authenticationService.hooks(hooks);
 };
 

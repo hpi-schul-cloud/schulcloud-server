@@ -18,8 +18,7 @@ module.exports = function() {
 		}
 	}));
 	const hwService = app.service('/homework');
-	hwService.before(hooks.before);
-	hwService.after(hooks.after);
+	hwService.hooks(hooks);
 
 	/* Submission model */
 	app.use('/submissions', service({
@@ -30,8 +29,7 @@ module.exports = function() {
 		}
 	}));
 	const submissionService = app.service('/submissions');
-	submissionService.before(submissionHooks.before);
-	submissionService.after(submissionHooks.after);
+	submissionService.hooks(submissionHooks);
 
 	/* Comment model */
 	app.use('/comments', service({
@@ -42,6 +40,5 @@ module.exports = function() {
 		}
 	}));
 	const commentService = app.service('/comments');
-	commentService.before(commentHooks.before);
-	commentService.after(commentHooks.after);
+	commentService.hooks(commentHooks);
 };

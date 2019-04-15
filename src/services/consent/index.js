@@ -18,8 +18,7 @@ module.exports = function () {
 		lean: true
 	}));
 	const consentService = app.service('/consents');
-	consentService.before(consentHooks.before);
-	consentService.after(consentHooks.after);
+	consentService.hooks(consentHooks);
 
 	/*ConsentVersion Model*/
 	app.use('/consentVersions', service({
@@ -31,6 +30,5 @@ module.exports = function () {
 		lean: true
 	}));
 	const consentVersionService = app.service('/consentVersions');
-	consentVersionService.before(consentVersionHooks.before);
-	consentVersionService.after(consentVersionHooks.after);
+	consentVersionService.hooks(consentVersionHooks);
 };

@@ -674,16 +674,22 @@ module.exports = function setup() {
 		remove: app.service('/teams/extern/remove'),
 	};
 
-	teamsServices.before(hooks.before);
-	teamsServices.after(hooks.after);
+	teamsServices.hooks({
+		before: hooks.before,
+		after: hooks.after,
+	});
 
 	Object.values(topLevelServices).forEach((_service) => {
-		_service.before(hooks.beforeExtern);
-		_service.after(hooks.afterExtern);
+		_service.hooks({
+			before: hooks.beforeExtern,
+			after: hooks.beforeExtern,
+		});
 	});
 
 	app.use('/teams/manage/admin', new AdminOverview());
 	const teamsAdmin = app.service('/teams/manage/admin');
-	teamsAdmin.before(hooks.beforeAdmin);
-	teamsAdmin.after(hooks.afterAdmin);
+	teamsAdmin.hooks({
+		before: hooks.beforeAdmin,
+		after: hooks.afterAdmin,
+	});
 };

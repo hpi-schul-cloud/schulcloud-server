@@ -16,17 +16,9 @@ module.exports = function () {
 		lean: true
 	};
 
-	// Initialize our service with any options it requires
 	app.use('/schools', service(options));
-
-	// Get our initialize service to that we can bind hooks
 	const schoolService = app.service('/schools');
-
-	// Set up our before hooks
-	schoolService.before(hooks.before);
-
-	// Set up our after hooks
-	schoolService.after(hooks.after);
+	schoolService.hooks(hooks);
 
 	/* year Service */
 	app.use('/years', service({
@@ -37,8 +29,7 @@ module.exports = function () {
 		}
 	}));
 	const yearService = app.service('/years');
-	yearService.before(hooks.before);
-	yearService.after(hooks.after);
+	yearService.hooks(hooks);
 
 	/* gradeLevel Service */
 	app.use('/gradeLevels', service({
@@ -49,6 +40,5 @@ module.exports = function () {
 		}
 	}));
 	const gradeLevelService = app.service('/gradeLevels');
-	gradeLevelService.before(hooks.before);
-	gradeLevelService.after(hooks.after);
+	gradeLevelService.hooks(hooks);
 };

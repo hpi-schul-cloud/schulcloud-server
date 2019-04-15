@@ -124,14 +124,9 @@ module.exports = function () {
 		lean: true
 	};
 
-
-	// Initialize our model service with any options it requires
 	app.use('/lessons', service(options));
-
 	app.use('/lessons/:lessonId/files', new LessonFilesService());
-
 	app.use('/lessons/copy', new LessonCopyService(app));
-
 
 	// Return all lesson.contets which have component = query.type And User = query.user or null
 	app.use('/lessons/contents/:type/', {
@@ -145,17 +140,11 @@ module.exports = function () {
 		}
 	});
 
-	// Get our initialize service to that we can bind hooks
 	const systemService = app.service('/lessons');
 	const lessonFilesService = app.service('/lessons/:lessonId/files/');
 	const lessonCopyService = app.service('/lessons/copy');
 
-	// Set up our before hooks
-	systemService.before(hooks.before);
-	lessonFilesService.before(hooks.before);
-	lessonCopyService.before(copyHooks.before);
-
-	// Set up our after hooks
-	systemService.after(hooks.after);
-	lessonFilesService.after(hooks.after);
+	systemService.hooks(hooks);
+	lessonFilesService.hooks(hooks);
+	lessonCopyService.hooks(copyHooks); //no after
 };

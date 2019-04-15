@@ -2,7 +2,7 @@ const hooks = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
-exports.before = () => ({
+exports.before = {
 	all: [],
 	find: [],
 	get: [hooks.disallow('external')],	// handled by redirection middleware
@@ -10,7 +10,7 @@ exports.before = () => ({
 	update: [hooks.disallow()],
 	patch: [hooks.disallow()],
 	remove: [globalHooks.ifNotLocal(hooks.disallow())],
-});
+};
 
 exports.after = {
 	all: [],

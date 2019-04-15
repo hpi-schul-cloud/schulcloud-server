@@ -37,6 +37,5 @@ module.exports = function () {
 
 	const me = app.service('/me');
 
-	me.before(hooks.before);
-	me.after(hooks.after);
+	me.hooks(hooks);
 };

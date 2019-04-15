@@ -16,6 +16,5 @@ module.exports = function() {
 	app.use('/pseudonym', service(options));
 
 	const pseudonymService = app.service('/pseudonym');
-	pseudonymService.before(hooks.before);
-	pseudonymService.after(hooks.after);
+	pseudonymService.hooks(hooks);
 };

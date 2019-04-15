@@ -247,8 +247,7 @@ const securePatching = (hook) => {
 	});
 };
 
-exports.before = function(app) {
-	return {
+exports.before = {
 		all: [],
 		find: [
 			globalHooks.mapPaginationQuery.bind(this),
@@ -285,7 +284,7 @@ exports.before = function(app) {
 		],
 		remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USER_CREATE'), globalHooks.permitGroupOperation]
 	};
-};
+
 
 /**
  *

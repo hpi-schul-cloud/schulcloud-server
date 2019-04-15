@@ -169,15 +169,16 @@ class CourseShareService {
 module.exports = function () {
 	const app = this;
 
-	// Initialize our service with any options it requires
 	app.use('/courses/copy', new CourseCopyService(app));
 	app.use('/courses/share', new CourseShareService(app));
 
-	// Get our initialize service to that we can bind hooks
 	const courseCopyService = app.service('/courses/copy');
 	const courseShareService = app.service('/courses/share');
 
-	// Set up our before hooks
-	courseCopyService.before(hooks.before);
-	courseShareService.before(hooks.beforeShare);
+	courseCopyService.hooks({
+		before:hooks.before,
+	});
+	courseShareService.hooks({
+		before:hooks.beforeShare,
+	});
 };

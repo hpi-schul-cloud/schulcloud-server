@@ -69,15 +69,7 @@ class HomeworkCopyService {
 module.exports = function () {
 	const app = this;
 
-	// Initialize our service with any options it requires
 	app.use('/homework/copy', new HomeworkCopyService(app));
-
-	// Get our initialize service to that we can bind hooks
 	const homeworkCopyService = app.service('/homework/copy');
-
-	// Set up our before hooks
-	homeworkCopyService.before(hooks.before);
-
-	// Set up our after hooks
-	homeworkCopyService.after(hooks.after);
+	homeworkCopyService.hooks(hooks);
 };

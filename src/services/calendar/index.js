@@ -287,17 +287,9 @@ class Service {
 module.exports = function () {
 	const app = this;
 
-	// Initialize our service with any options it requires
 	app.use('/calendar', new Service());
-
-	// Get our initialize service to that we can bind hooks
 	const contentService = app.service('/calendar');
-
-	// Set up our before hooks
-	contentService.before(hooks.before);
-
-	// Set up our after hooks
-	contentService.after(hooks.after);
+	contentService.hooks(hooks);
 };
 
 module.exports.Service = Service;

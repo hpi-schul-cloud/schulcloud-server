@@ -2,8 +2,8 @@ const hooks = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
-exports.before = function(app) {
-	return {
+console.log('todo tests..');
+exports.before = {
 		all: [auth.hooks.authenticate('jwt')],
 		find: [],
 		get: [globalHooks.hasPermission('ROLE_VIEW')],
@@ -13,7 +13,6 @@ exports.before = function(app) {
 		update: [globalHooks.hasPermission('ROLE_EDIT')],
 		patch: [globalHooks.hasPermission('ROLE_EDIT'),globalHooks.permitGroupOperation],
 		remove: [globalHooks.hasPermission('ROLE_CREATE'),globalHooks.permitGroupOperation]
-	};
 };
 
 const Role = require('../model');

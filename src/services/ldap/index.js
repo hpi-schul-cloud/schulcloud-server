@@ -386,13 +386,6 @@ module.exports = function() {
 	}
 
 	app.use('/ldap', new LdapService());
-
-	// Get our initialize service to that we can bind hooks
 	const systemService = app.service('/ldap');
-
-	// Set up our before hooks
-	systemService.before(hooks.before);
-
-	// Set up our after hooks
-	systemService.after(hooks.after);
+	systemService.hooks(hooks);
 };

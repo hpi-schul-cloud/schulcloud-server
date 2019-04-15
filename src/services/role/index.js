@@ -16,15 +16,7 @@ module.exports = function () {
 		lean: true
 	};
 
-	// Initialize our service with any options it requires
 	app.use('/roles', service(options));
-
-	// Get our initialize service to that we can bind hooks
 	const roleService = app.service('/roles');
-
-	// Set up our before hooks
-	roleService.before(hooks.before(app));
-
-	// Set up our after hooks
-	roleService.after(hooks.after);
+	roleService.hooks(hooks);
 };

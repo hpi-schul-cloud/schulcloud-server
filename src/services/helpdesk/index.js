@@ -16,15 +16,7 @@ module.exports = function () {
 		lean: true
 	};
 
-	// Initialize our service with any options it requires
 	app.use('/helpdesk', service(options));
-
-	// Get our initialize service to that we can bind hooks
 	const helpdeskService = app.service('/helpdesk');
-
-	// Set up our before hooks
-	helpdeskService.before(hooks.before);
-
-	// Set up our after hooks
-	helpdeskService.after(hooks.after);
+	helpdeskService.hooks(hooks);
 };

@@ -53,9 +53,11 @@ module.exports = function () {
 	app.use('/sync', new SyncService());
 
 	const syncService = app.service('/sync');
-	syncService.before({
-		create: [
-			auth.hooks.authenticate('jwt'),
-		],
+	syncService.hooks({
+		before: {
+			create: [
+				auth.hooks.authenticate('jwt'),
+			],
+		}
 	});
 };
