@@ -20,7 +20,7 @@ class Service {
             visitor.pageview(data).send();
         }
         if(!process.env.ANALYTICS_LOGGING){
-            return 'success';
+            return Promise.resolve();
         }
         let model = new AnalyticsModel({
             firstPaint: data.cm1,
@@ -43,10 +43,10 @@ class Service {
             networkProtocol: data.cd6
         });
         return model.save()
-            .then(_ => 'success')
+            .then(_ => Promise.resolve())
             .catch(err => {
                 logger.error(err); 
-                return 'err';
+                return Promise.reject();
             });
     }
 
