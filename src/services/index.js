@@ -18,6 +18,7 @@ const link = require('./link');
 const ltiTool = require('./ltiTool');
 const me = require('./me');
 const news = require('./news');
+const newsEvents = require('./news/events');
 const notification = require('./notification');
 const passwordRecovery = require('./passwordRecovery');
 const pseudonym = require('./pseudonym');
@@ -35,14 +36,18 @@ const user = require('./user');
 const userGroup = require('./user-group');
 const wopi = require('./wopi');
 
-// eslint-disable-next-line func-names
-module.exports = function () {
-	const app = this;
-
-	const DB_URL = process.env.DB_URL || app.get('mongodb');
-	mongoose.connect(DB_URL, { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
+module.exports = function initializeServices() {
+  const app = this;
+  
+	const dbCredentials = {
+		user: process.env.DB_USERNAME,
+		pass: process.env.DB_PASSWORD,
+	};
+  const DB_URL = process.env.DB_URL || app.get('mongodb');
+	mongoose.connect(DB_URL, dbCredentials);
 	mongoose.Promise = global.Promise;
 
+	// register services
 	app.configure(account);
 	app.configure(analytics);
 	app.configure(authentication);
@@ -77,4 +82,7 @@ module.exports = function () {
 	app.configure(user);
 	app.configure(userGroup);
 	app.configure(wopi);
+
+	// initialize events
+	newsEvents.configure(app);
 };
