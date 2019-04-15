@@ -9,12 +9,12 @@ const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToU
 
 const populateGradeLevel = (hook) => {
 	// Add populate to query to be able to show year in displayName
-	if((hook.params.query||{})['$populate']){
-		if(!hook.params.query['$populate'].includes('gradeLevel')){
+	if ((hook.params.query || {})['$populate']) {
+		if (!hook.params.query['$populate'].includes('gradeLevel')) {
 			hook.params.query['$populate'].push('gradeLevel');
 		}
-	}else{
-		if(!hook.params.query){
+	} else {
+		if (!hook.params.query) {
 			hook.params.query = {};
 		}
 		hook.params.query['$populate'] = ['gradeLevel'];
@@ -40,15 +40,15 @@ const addDisplayName = (hook) => {
 		data.sort((a, b) => {
 			return a.displayName.toLowerCase() > b.displayName.toLowerCase();
 		});
-	} else if (((hook.params.query||{})['$sort']||{}).displayName == -1) {
+	} else if (((hook.params.query || {})['$sort'] || {}).displayName == -1) {
 		data.sort((a, b) => {
 			return a.displayName.toLowerCase() < b.displayName.toLowerCase();
 		});
 	}
 
-	if(arrayed){data = data[0];}
-    (hook.result.data)?(hook.result.data = data):(hook.result = data);
-	return Promise.resolve(hook);	
+	if (arrayed) { data = data[0]; }
+	(hook.result.data) ? (hook.result.data = data) : (hook.result = data);
+	return Promise.resolve(hook);
 };
 
 exports.after = {
@@ -56,8 +56,8 @@ exports.after = {
 	find: [addDisplayName],
 	get: [
 		addDisplayName,
-		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'})
-	)],
+		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({ errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!' })
+		)],
 	create: [],
 	update: [],
 	patch: [],
