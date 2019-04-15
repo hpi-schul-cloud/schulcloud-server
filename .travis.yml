@@ -20,6 +20,7 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_2709882c490b_key -iv $encrypted_2709882c490b_iv -in travis_rsa.enc -out travis_rsa -d
 script:
 #- pwd
+- mongod --version
 - npm test
 - npm run coverage-codecov
 #- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
