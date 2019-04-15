@@ -37,13 +37,13 @@ const userGroup = require('./user-group');
 const wopi = require('./wopi');
 
 module.exports = function initializeServices() {
-  const app = this;
-  
+	const app = this;
+
 	const dbCredentials = {
 		user: process.env.DB_USERNAME,
 		pass: process.env.DB_PASSWORD,
 	};
-  const DB_URL = process.env.DB_URL || app.get('mongodb');
+	const DB_URL = process.env.DB_URL || app.get('mongodb');
 	mongoose.connect(DB_URL, dbCredentials);
 	mongoose.Promise = global.Promise;
 
