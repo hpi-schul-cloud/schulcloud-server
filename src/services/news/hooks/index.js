@@ -42,11 +42,16 @@ exports.before = {
 		restrictToCurrentSchool,
 		convertToBoolean,
 	],
-	get: [globalHooks.hasPermission('NEWS_VIEW')],
-	create: [globalHooks.hasPermission('NEWS_CREATE')],
+	get: [
+		globalHooks.hasPermission('NEWS_VIEW'),
+	],
+	create: [
+		globalHooks.hasPermission('NEWS_CREATE'),
+	],
 	update: [
 		globalHooks.hasPermission('NEWS_EDIT'),
-		restrictToCurrentSchool],
+		restrictToCurrentSchool,
+	],
 	patch: [
 		globalHooks.hasPermission('NEWS_EDIT'),
 		restrictToCurrentSchool,
@@ -54,8 +59,8 @@ exports.before = {
 	],
 	remove: [
 		globalHooks.hasPermission('NEWS_CREATE'),
+		globalHooks.ifNotLocal(globalHooks.permitGroupOperation),
 		restrictToCurrentSchool,
-		globalHooks.permitGroupOperation,
 		deleteNewsHistory,
 		globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership),
 	],
