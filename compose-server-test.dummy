@@ -6,7 +6,7 @@ services:
   ### Schul-Cloud Server
   ###
   server-mongodb:
-    image: mongo:3.4
+    image: mongo:4.0
     deploy:
       replicas: 1
       restart_policy:
