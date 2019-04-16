@@ -1,16 +1,54 @@
 {
 	"extends": "airbnb-base",
 	"rules": {
-		"max-len": ["error", { "code": 120 }],
+		"max-len": [
+			"error",
+			{
+				"code": 120
+			}
+		],
 		"no-tabs": "off",
 		"no-restricted-syntax": "off",
 		"no-await-in-loop": "off",
 		"class-methods-use-this": "off",
-		"no-underscore-dangle": ["error", {"allow": ["_id", "_v", "__v"]}],
-		"no-shadow": ["error", {"allow": ["err"]}],
-		"prefer-destructuring": ["warn", {"object": true, "array": false}],
-		"no-param-reassign": ["warn", { "props": false}],
-		"no-unused-vars": ["warn", {"args": "after-used","argsIgnorePattern": "req|res|next|options|params"}],
+		"no-underscore-dangle": [
+			"error",
+			{
+				"allow": [
+					"_id",
+					"_v",
+					"__v"
+				]
+			}
+		],
+		"no-shadow": [
+			"error",
+			{
+				"allow": [
+					"err"
+				]
+			}
+		],
+		"prefer-destructuring": [
+			"warn",
+			{
+				"object": true,
+				"array": false
+			}
+		],
+		"no-param-reassign": [
+			"warn",
+			{
+				"props": false
+			}
+		],
+		"no-unused-vars": [
+			"warn",
+			{
+				"args": "after-used",
+				"argsIgnorePattern": "req|res|next|options|params|err|error|_"
+			}
+		],
 		"indent": [
 			"error",
 			"tab",
