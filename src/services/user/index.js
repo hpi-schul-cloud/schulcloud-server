@@ -91,7 +91,7 @@ module.exports = function setup() {
 	const FirstLoginService = require('./firstLogin')(app);
 	app.use('/firstLogin', new FirstLoginService());
 	const firstLoginService = app.service('firstLogin');
-	firstLoginService.hooks(firstLoginHooks.hooks);
+	firstLoginService.hooks(firstLoginHooks);
 
 	const adminStudentsRoute = '/users/admin/students';
 	app.use(adminStudentsRoute, new AdminStudents());
