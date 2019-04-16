@@ -67,15 +67,19 @@ const classSchema = getUserGroupSchema({
 classSchema.plugin(autoPopulate);
 classSchema.plugin(require('mongoose-lean-virtuals'));
 
-classSchema.virtual('displayName').get(function () {
-	if (this.nameFormat == "static") {
+const getClassDisplayName = (aclass) => {
+	if (aclass.nameFormat == "static") {
 		return currentClass.name;
-	} else if (this.nameFormat == "gradeLevel+name") {
-		return `${this.gradeLevel.name}${this.name}`;
+	} else if (aclass.nameFormat == "gradeLevel+name") {
+		return `${aclass.gradeLevel.name}${aclass.name}`;
 	} else {
-		logger.warn('unknown nameFormat', this.nameFormat);
+		logger.warn('unknown nameFormat', aclass.nameFormat);
 		return;
 	}
+}
+
+classSchema.virtual('displayName').get(function () {
+	return getClassDisplayName(this);
 });
 
 classSchema.set('toObject', { virtuals: true });
@@ -88,5 +92,6 @@ module.exports = {
 	courseModel,
 	courseGroupModel,
 	classModel,
-	gradeModel
+	gradeModel,
+	getClassDisplayName,
 };

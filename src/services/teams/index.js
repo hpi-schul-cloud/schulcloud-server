@@ -153,7 +153,7 @@ class AdminOverview {
 			let { userIds } = team;
 
 			if (!ownerExist && isOwnerSchool && isDefined(userId)) {
-				userIds.push(createUserWithRole(ref, { userId, schoolId, selectedRole }));			
+				userIds.push(createUserWithRole(ref, { userId, schoolId, selectedRole }));
 			} else if (!isOwnerSchool && isUndefined(userId)) {
 				userIds = AdminOverview.removeMemberBySchool(team, schoolId);
 			} else {
@@ -249,7 +249,7 @@ class AdminOverview {
 
 				const waits = emails.map((email) => {
 					return mailService.create({ email, subject, content })
-						.then(res =>  res.accepted[0])
+						.then(res => res.accepted[0])
 						.catch(err => `Error: ${err.message}`);
 				});
 
@@ -537,7 +537,7 @@ class Add {
 		return Promise.all([
 			this._generateLink({ esid, email, teamId, importHash }, isUserCreated),
 			patchTeam(this, teamId, { invitedUserIds }, params),
-		]).then(([linkData, _]) => Add._response({ 
+		]).then(([linkData, _]) => Add._response({
 			linkData, user, isUserCreated, isResend, email,
 		}));
 	}
@@ -597,7 +597,7 @@ class Accept {
 			const { userIds } = team;
 
 			const invitedUser = Accept.findInvitedUserByEmail(team, email);
-			if (isUndefined(invitedUser)) { 
+			if (isUndefined(invitedUser)) {
 				throw new NotFound('User is not in this team.');
 			}
 			const role = ref.findRole('name', invitedUser.role, '_id');
@@ -657,7 +657,7 @@ module.exports = function setup() {
 			default: 50,
 			max: 100,
 		},
-		lean: true,
+		lean: { virtuals: true },
 	};
 
 	app.use('/teams', service(options));
