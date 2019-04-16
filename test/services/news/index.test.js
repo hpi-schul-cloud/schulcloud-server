@@ -5,10 +5,24 @@ const sleep = require('util').promisify(setTimeout);
 const app = require('../../../src/app');
 const News = require('../../../src/services/news/model').newsModel;
 
-describe('news service', () => {
+describe.only('news service', () => {
 	it('registers correctly', () => {
 		expect(app.service('news')).to.not.equal(undefined);
 	});
+
+	describe('get route', () => {
+		it('returns news by id', async ()=>{
+			const schoolNews = await new News({
+				schoolId: new ObjectId(),
+				title: 'global school news',
+				content: 'yo ho ho, and a bottle of rum',
+			}).save();
+
+			const newsService=app.service('news');
+			const result = await newsService.get(schoolNews._id);
+			expect(result.title).to.equal(schoolNews.title);
+		})
+	})
 
 	describe('event handlers', () => {
 		describe('team news', () => {
