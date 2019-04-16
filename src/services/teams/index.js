@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const service = require('feathers-mongoose');
 const {
 	BadRequest,
@@ -122,7 +123,10 @@ class AdminOverview {
 				query: {
 					schoolIds: schoolId,
 					// userIds: { $elemMatch: { schoolId } },
-					$populate: [{ path: 'userIds.role' }, { path: 'userIds.userId', populate: { path: 'roles' } }, 'schoolIds'], 	// schoolId
+					$populate: [{ path: 'userIds.role' }, {
+						path: 'userIds.userId',
+						populate: { path: 'roles' },
+					}, 'schoolIds'], 	// schoolId
 				},
 			})
 				.then(teams => AdminOverview.mapped(teams, schoolId))
@@ -194,9 +198,7 @@ class AdminOverview {
 	}
 
 	static getRestrictedQuery(teamIds, schoolId) {
-		let query = teamIds.map((_id) => {
-			return { _id };
-		});
+		let query = teamIds.map(_id => ({ _id }));
 		query = { $or: query, $populate: [{ path: 'userIds.userId' }] };
 		query.schoolIds = schoolId;
 		return { query };
@@ -224,9 +226,9 @@ class AdminOverview {
 		}
 
 		return Promise.all(
-			[getSessionUser(this, params), hooks.teamRolesToHook(this)]
-		).then(([{ schoolId }, ref]) => {
-			return this.app.service('teams').find((this.getRestrictedQuery(teamIds, schoolId))).then((teams) => {
+			[getSessionUser(this, params), hooks.teamRolesToHook(this)],
+		).then(([{ schoolId }, ref]) => this.app.service('teams')
+			.find((this.getRestrictedQuery(teamIds, schoolId))).then((teams) => {
 				teams = teams.data;
 				if (!isArrayWithElement(teams)) {
 					throw new NotFound('No team found.');
@@ -247,20 +249,16 @@ class AdminOverview {
 					html: '',
 				};
 
-				const waits = emails.map((email) => {
-					return mailService.create({ email, subject, content })
-						.then(res => res.accepted[0])
-						.catch(err => `Error: ${err.message}`);
-				});
+				const waits = emails.map(email => mailService.create({ email, subject, content })
+					.then(res => res.accepted[0])
+					.catch(err => `Error: ${err.message}`));
 
 				return Promise.all(waits)
 					.then(values => values)
 					.catch(err => err);
-
 			}).catch((err) => {
 				throw err;
-			});
-		}).catch((err) => {
+			})).catch((err) => {
 			warn(err);
 			throw new BadRequest('It exists no teams with access rights, to send this message.');
 		});
@@ -307,13 +305,12 @@ class Add {
 	 * @return {Promise::bsonId||stringId} Expert school id.
 	 */
 	_getExpertSchoolId() {
-		return this.app.service('schools').find({ query: { purpose: 'expert' } }).then((schools) => {
-			return extractOne(schools, '_id').then((id) => {
-				return bsonIdToString(id);
+		return this.app.service('schools').find({ query: { purpose: 'expert' } })
+			.then(schools => extractOne(schools, '_id')
+				.then(id => bsonIdToString(id)))
+			.catch((err) => {
+				throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
 			});
-		}).catch((err) => {
-			throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
-		});
 	}
 
 	/**
@@ -321,13 +318,13 @@ class Add {
 	 * @return {Promise::bsonId||stringId} Expert role id.
 	 */
 	_getExpertRoleId() {
-		return this.app.service('roles').find({ query: { name: 'expert' } }).then((roles) => {
-			return extractOne(roles, '_id').then((id) => {
-				return bsonIdToString(id);
+		return this.app.service('roles')
+			.find({ query: { name: 'expert' } })
+			.then(roles => extractOne(roles, '_id')
+				.then(id => bsonIdToString(id)))
+			.catch((err) => {
+				throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', err);
 			});
-		}).catch((err) => {
-			throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', err);
-		});
 	}
 
 	/**
@@ -353,7 +350,9 @@ class Add {
 	 * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
 	 * @param {Boolean} isUserCreated default = false
 	 */
-	async _generateLink({ esid, email, teamId, importHash }, isUserCreated = false) {
+	async _generateLink({
+		esid, email, teamId, importHash,
+	}, isUserCreated = false) {
 		if (isUserCreated === false && isUndefined(importHash)) {
 			return Promise.resolve({ shortLink: `${process.env.HOST}/teams/${teamId}` });
 		}
@@ -372,7 +371,6 @@ class Add {
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Erstellen des Einladelinks.', err);
 			});
-
 	}
 
 	/**
@@ -393,9 +391,13 @@ class Add {
 			this._getExpertRoleId(),
 			getTeam(this, teamId),
 		]).then(async ([user, schoolId, expertRoleId, team]) => {
-			let isUserCreated = false,
-				isResend = false,
-				userRoleName;
+			let isUserCreated = false;
+
+
+			let isResend = false;
+
+
+			let userRoleName;
 			if (isUndefined(user) && role === 'teamexpert') {
 				const newUser = {
 					email, schoolId, roles: [expertRoleId], firstName: 'Experte', lastName: 'Experte',
@@ -459,7 +461,12 @@ class Add {
 	 * @private
 	 * @param {Object::{email::String, role::String, teamId::String}} opt
 	 * @param {Object::params} params The request params.
-	 * @return {Promise::{ message: 'Success!', linkData::Object~from this._generateLink(), user::Object::User, role::String }}
+	 * @return {Promise::{
+	 * message: 'Success!',
+	 * linkData::Object~from this._generateLink(),
+	 * user::Object::User,
+	 * role::String
+	 * }}
 	 */
 	async _userImportById(teamId, { userId, role }, params) {
 		//	const { userId, role } = data;
@@ -535,7 +542,9 @@ class Add {
 			invitedUserIds.push({ email, role });
 		}
 		return Promise.all([
-			this._generateLink({ esid, email, teamId, importHash }, isUserCreated),
+			this._generateLink({
+				esid, email, teamId, importHash,
+			}, isUserCreated),
 			patchTeam(this, teamId, { invitedUserIds }, params),
 		]).then(([linkData, _]) => Add._response({
 			linkData, user, isUserCreated, isResend, email,
