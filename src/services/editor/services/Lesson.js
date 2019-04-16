@@ -25,11 +25,11 @@ class Lesson {
 	 * The course patch, or update event will trigger this too.
 	 */
 	// eslint-disable-next-line object-curly-newline
-	patch(lessonId, { title, steps, users, owner }, params) {
+	patch(lessonId, { title, sections, users, owner }, params) {
 		// sectionIds map to steps -> but is solved from Editor MS
 		return request(uri, params, {
 			data: {
-				title, steps, users, owner,
+				title, sections, users, owner,
 			},
 		});
 	}

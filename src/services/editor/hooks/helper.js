@@ -1,10 +1,8 @@
-/* eslint-disable no-param-reassign */
 const logger = require('../../../logger/');
 const { userModel } = require('../helper/').models;
 
 const isGroup = e => e && e !== null && typeof e === 'object' && e.type === 'group' && e.users;
 
-// eslint-disable-next-line arrow-body-style
 const mapUsers = users => users.map(user => ({
 	userId: user._id.toString(),
 	name: `${user.firstName} ${user.lastName}`,
