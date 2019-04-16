@@ -13,7 +13,7 @@ const hooks = require('./hooks');
 
 let secrets;
 try {
-	['production', 'local'].includes(process.env.NODE_ENV)
+	['production', 'lokal'].includes(process.env.NODE_ENV)
 		? secrets = require('../../../config/secrets.js')
 		: secrets = require('../../../config/secrets.json');
 } catch(error) {

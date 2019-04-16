@@ -24,7 +24,7 @@ require('console-stamp')(winston);
 
 let secrets;
 try {
-	(['production', 'local'].includes(process.env.NODE_ENV))
+	(['production', 'lokal'].includes(process.env.NODE_ENV))
 		? secrets = require('../config/secrets.js')
 		: secrets = require('../config/secrets.json');
 } catch(error) {
@@ -32,7 +32,7 @@ try {
 }
 
 const app = express(feathers());
-let config = configuration(path.join(__dirname, '..'));
+let config = configuration();
 
 app.configure(config);
 setupSwagger(app);
