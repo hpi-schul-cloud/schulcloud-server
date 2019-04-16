@@ -219,6 +219,7 @@ class AdminOverview {
 			throw new BadRequest('Missing parameter');
 		}
 		if (!isArray(teamIds)) {
+			// eslint-disable-next-line no-param-reassign
 			teamIds = [teamIds];
 		}
 		if (teamIds.length <= 0 || !isString(message)) {
@@ -229,6 +230,7 @@ class AdminOverview {
 			[getSessionUser(this, params), hooks.teamRolesToHook(this)],
 		).then(([{ schoolId }, ref]) => this.app.service('teams')
 			.find((this.getRestrictedQuery(teamIds, schoolId))).then((teams) => {
+				// eslint-disable-next-line no-param-reassign
 				teams = teams.data;
 				if (!isArrayWithElement(teams)) {
 					throw new NotFound('No team found.');
@@ -402,6 +404,7 @@ class Add {
 				const newUser = {
 					email, schoolId, roles: [expertRoleId], firstName: 'Experte', lastName: 'Experte',
 				};
+				// eslint-disable-next-line no-param-reassign
 				user = await userModel.create(newUser);
 				isUserCreated = true;
 			}
@@ -480,7 +483,7 @@ class Add {
 		return Promise.all([
 			this._generateLink({ teamId }, false),
 			patchTeam(this, teamId, { userIds, schoolIds }, params),
-		]).then(([linkData, _]) => Add._response({ linkData, user }));
+		]).then(([linkData]) => Add._response({ linkData, user }));
 	}
 
 	/**
@@ -519,6 +522,7 @@ class Add {
 	 */
 	async _userImportByEmail(teamId, { email, role }, params) {
 		// let { email, role } = data;
+		// eslint-disable-next-line no-param-reassign
 		email = email.toLowerCase(); // important for valid user
 		const {
 			esid,
@@ -530,6 +534,7 @@ class Add {
 			importHash,
 		} = await this._collectUserAndLinkData({ email, role, teamId });
 		const { invitedUserIds } = team;
+		// eslint-disable-next-line no-param-reassign
 		role = userRoleName; /*
 			@override
 			is important if user already in invited users exist and the role is take from team
@@ -546,7 +551,7 @@ class Add {
 				esid, email, teamId, importHash,
 			}, isUserCreated),
 			patchTeam(this, teamId, { invitedUserIds }, params),
-		]).then(([linkData, _]) => Add._response({
+		]).then(([linkData]) => Add._response({
 			linkData, user, isUserCreated, isResend, email,
 		}));
 	}
@@ -653,7 +658,7 @@ class Remove {
 		});
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
