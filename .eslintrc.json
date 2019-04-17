@@ -1,16 +1,72 @@
 {
 	"extends": "airbnb-base",
 	"rules": {
-		"max-len": ["error", { "code": 120 }],
+		"object-shorthand":"off",
+		"prefer-arrow-callback":"warn",
+		"func-names":"off",
+		"linebreak-style": [
+			"off",
+			"unix"
+		],
+		"max-len": [
+			"error",
+			{
+				"code": 120
+			}
+		],
+		"eol-last": [
+			"error",
+			"always"
+		],
+		"array-element-newline": [
+			"error",
+			"consistent"
+		],
 		"no-tabs": "off",
+		"no-var": "error",
 		"no-restricted-syntax": "off",
 		"no-await-in-loop": "off",
 		"class-methods-use-this": "off",
-		"no-underscore-dangle": ["error", {"allow": ["_id", "_v", "__v"]}],
-		"no-shadow": ["error", {"allow": ["err"]}],
-		"prefer-destructuring": ["warn", {"object": true, "array": false}],
-		"no-param-reassign": ["warn", { "props": false}],
-		"no-unused-vars": ["warn", {"args": "after-used","argsIgnorePattern": "req|res|next|options|params"}],
+		"no-underscore-dangle": [
+			"error",
+			{
+				"allow": [
+					"_id",
+					"_v",
+					"__v"
+				]
+			}
+		],
+		"no-shadow": [
+			"error",
+			{
+				"allow": [
+					"err",
+					"error",
+					"_"
+				]
+			}
+		],
+		"prefer-destructuring": [
+			"warn",
+			{
+				"object": true,
+				"array": false
+			}
+		],
+		"no-param-reassign": [
+			"warn",
+			{
+				"props": false
+			}
+		],
+		"no-unused-vars": [
+			"warn",
+			{
+				"args": "after-used",
+				"argsIgnorePattern": "app|req|res|next|options|path|params|err|error|_|resolve|reject"
+			}
+		],
 		"indent": [
 			"error",
 			"tab",
@@ -59,5 +115,20 @@
 		"node": true,
 		"mocha": true,
 		"browser": true
-	}
+	},
+	"overrides": [
+		{
+			"files": [
+				"*.test.js"
+			],
+			"rules": {
+				"globals": {
+					"expect": true
+				},
+				"no-unused-expressions": "off",
+				"global-require": "off",
+				"prefer-arrow-callback":"off"
+			}
+		}
+	]
 }
