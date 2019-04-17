@@ -46,7 +46,6 @@ const teamMainHook = globalHooks.ifNotLocal((hook) => {
 		getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook),
 	]).then(([sessionUser, team, users]) => {
 		const userId = bsonIdToString(hook.params.account.userId);
-		const restrictedFindMatch = { userIds: { $elemMatch: { userId } } };
 		const isSuperhero = ifSuperhero(sessionUser.roles);
 		const { method } = hook;
 
@@ -61,7 +60,7 @@ const teamMainHook = globalHooks.ifNotLocal((hook) => {
 				users.push(sessionUser);
 				hook.data = team;
 			} else if (method === 'find') {
-				hook.params.query = restrictedFindMatch;
+				hook.params.query.userIds = { $elemMatch: { userId } };
 				return hook;
 			}
 			// test if session user is in team
@@ -626,7 +625,7 @@ const isUserIsEmpty = (hook) => {
 const keys = {
 	resFind: ['_id', 'name', 'times', 'description', 'userIds', 'color'],
 	resId: ['_id'],
-	query: ['$populate', '$limit'],
+	query: ['$populate', '$limit', '$skip'],
 	data: ['filePermission', 'name', 'times', 'description', 'userIds', 'color', 'features', 'ltiToolIds', 'classIds', 'startDate', 'untilDate', 'schoolId'],
 };
 
