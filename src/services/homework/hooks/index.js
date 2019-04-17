@@ -8,11 +8,11 @@ const getAverageRating = function (submissions) {
 	// Durchschnittsnote berechnen
 	if (submissions.length > 0) {
 		// Nur bewertete Abgaben einbeziehen
-		let submissiongrades = submissions.filter(s => Number.isInteger(s.grade));
+		const submissiongrades = submissions.filter(s => Number.isInteger(s.grade));
 		// Abgabe für jedes Teammitglied einzeln werten
-		var numSubmissions = 0;
-		var gradeSum = 0;
-		submissiongrades.forEach(e => {
+		let numSubmissions = 0;
+		let gradeSum = 0;
+		submissiongrades.forEach((e) => {
 			if (e.courseGroupId && (e.courseGroupId.userIds || []) > 0) {
 				numSubmissions += e.courseGroupId.userIds.length;
 				gradeSum += (e.courseGroupId.userIds * e.grade);
@@ -34,22 +34,22 @@ const getAverageRating = function (submissions) {
 	return undefined;
 };
 function isValidSubmission(submission) {
-	return (submission.comment && submission.comment != "")
+	return (submission.comment && submission.comment !== '')
         || (submission.fileIds && submission.fileIds.length > 0);
 }
 function isGraded(submission) {
-	return (submission.gradeComment && submission.gradeComment != '')
+	return (submission.gradeComment && submission.gradeComment !== '')
         || (submission.grade && Number.isInteger(submission.grade));
 }
 function isTeacher(userId, homework) {
 	const user = userId.toString();
-	let isTeacher = (homework.teacherId.toString() == user);
-	if (!isTeacher && !homework.private) {
+	let isTeacherCheck = (homework.teacherId.toString() === user);
+	if (!isTeacherCheck && !homework.private) {
 		const isCourseTeacher = homework.courseId.teacherIds.includes(user);
 		const isCourseSubstitution = homework.courseId.substitutionIds.includes(user);
-		isTeacher = isCourseTeacher || isCourseSubstitution;
+		isTeacherCheck = isCourseTeacher || isCourseSubstitution;
 	}
-	return isTeacher;
+	return isTeacherCheck;
 }
 
 const hasViewPermissionBefore = (hook) => {
@@ -72,17 +72,17 @@ const hasViewPermissionAfter = (hook) => {
 	// user is teacher OR ( user is in courseId of task AND availableDate < Date.now() )
 	// availableDate < Date.now()
 	function hasPermission(e) {
-		const isTeacher = (e.teacherId == (hook.params.account || {}).userId)
+		const isTeacherCheck = (e.teacherId === (hook.params.account || {}).userId)
             || (!e.private && ((e.courseId || {}).teacherIds || []).includes((hook.params.account || {}).userId.toString()))
             || (!e.private && ((e.courseId || {}).substitutionIds || []).includes((hook.params.account || {}).userId.toString()));
 		const isStudent = ((e.courseId != null)
-            && ((e.courseId || {}).userIds || []).includes(((hook.params.account || {}).userId || "").toString()));
+            && ((e.courseId || {}).userIds || []).includes(((hook.params.account || {}).userId || '').toString()));
 		const published = ((new Date(e.availableDate) < new Date())) && !e.private;
-		return isTeacher || (isStudent && published);
+		return isTeacherCheck || (isStudent && published);
 	}
 
 	let data = JSON.parse(JSON.stringify(hook.result.data || hook.result));
-	if (data[0] != undefined) {
+	if (data[0] !== undefined) {
 		data = data.filter(hasPermission);
 	} else {
 		// check if it is a single homework AND user has view permission
@@ -103,8 +103,8 @@ const addStats = (hook) => {
 	return submissionService.find({
 		query: {
 			homeworkId: { $in: (data.map(n => n._id)) },
-			$populate: ['courseGroupId']
-		}
+			$populate: ['courseGroupId'],
+		},
 	}).then((submissions) => {
 		data = data.map(function (e) {
 			var c = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/

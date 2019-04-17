@@ -4,7 +4,6 @@ const service = require('feathers-mongoose');
 const passwordRecovery = require('./model');
 const hooks = require('./hooks');
 const AccountModel = require('./../account/model');
-const errors = require('@feathersjs/errors');
 
 class ChangePasswordService {
 	constructor() {
@@ -30,13 +29,13 @@ module.exports = function () {
 		Model: passwordRecovery,
 		paginate: {
 			default: 100,
-			max: 100
+			max: 100,
 		},
-		lean: true
+		lean: true,
 	};
 
 	app.use('/passwordRecovery', service(options));
-	app.use('/passwordRecovery/reset', new ChangePasswordService);
+	app.use('/passwordRecovery/reset', new ChangePasswordService());
 	const passwordRecoveryService = app.service('/passwordRecovery');
 	const changePasswordService = app.service('/passwordRecovery/reset');
 

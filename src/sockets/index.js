@@ -1,5 +1,3 @@
-'use strict';
-
 const socketio = require('@feathersjs/socketio');
 const clipboard = require('./clipboard');
 

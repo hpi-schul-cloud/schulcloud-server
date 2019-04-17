@@ -77,7 +77,7 @@ const courseInviteHook = async (context) => {
 	}
 
 	return restrictToUsersOwnCourses(context);
-}
+};
 
 const patchPermissionHook = async (context) => {
 	const query = context.params.query || {};
@@ -90,7 +90,7 @@ const patchPermissionHook = async (context) => {
 	}
 
 	return defaultPermissionHook(context);
-}
+};
 
 exports.before = {
 	all: [

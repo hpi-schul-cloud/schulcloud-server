@@ -1,10 +1,10 @@
 'use strict';
 
-const globalHooks = require('../../../hooks');
 const auth = require('@feathersjs/authentication');
-const lesson = require('../model');
 const errors = require('@feathersjs/errors');
 const hooks = require('feathers-hooks-common');
+const globalHooks = require('../../../hooks');
+const lesson = require('../model');
 
 const checkIfCourseGroupLesson = (permission1, permission2, isCreating, hook) => {
 	// find courseGroupId in different ways (POST, FIND ...)

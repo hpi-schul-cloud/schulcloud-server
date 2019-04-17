@@ -1,9 +1,8 @@
 'use strict';
 
-const globalHooks = require('../../../hooks');
 const auth = require('@feathersjs/authentication');
-const bcrypt = require('bcryptjs');
 const local = require('@feathersjs/authentication-local');
+const globalHooks = require('../../../hooks');
 
 const hashId = (hook) => {
 	if (!hook.data.password) {
@@ -12,8 +11,8 @@ const hashId = (hook) => {
 		const username = hook.data.username;
 		return accountService.find({
 			query: {
-				username: username
-			}
+				username,
+			},
 		}).then((account) => {
 			account = account[0];
 			hook.data.account = account._id;

@@ -70,7 +70,12 @@ class AdminStudents {
 
 			// fetch data that are scoped to schoolId
 			const studentRole = (roles.filter(role => role.name === 'student'))[0];
-			const [users, classes] = await Promise.all([getAllUsers(schoolId, studentRole._id), getClasses(this, schoolId)]);
+			const [users, classes] = await Promise.all(
+				[
+					getAllUsers(schoolId, studentRole._id),
+					getClasses(this, schoolId),
+				],
+			);
 			const userIds = users.map(user => user._id.toString());
 			const consents = await findConsent(userIds).then((data) => {
 				// rebuild consent to object for faster sorting

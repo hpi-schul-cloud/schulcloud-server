@@ -137,6 +137,6 @@ module.exports = function () {
 	const customJWTService = app.service('/accounts/jwt');
 	const accountService = app.service('/accounts');
 
-	customJWTService.hooks(hooksCJWT);	
+	customJWTService.hooks(hooksCJWT);
 	accountService.hooks(hooks);
 };

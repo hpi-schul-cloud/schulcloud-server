@@ -382,7 +382,6 @@ module.exports = function() {
 		_registerEventListeners() {
 			app.on('teams:after:usersChanged', this._onTeamUsersChanged.bind(this));
 		}
-
 	}
 
 	app.use('/ldap', new LdapService());

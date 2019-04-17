@@ -543,6 +543,6 @@ module.exports = function Setup() {
 
 	rocketChatUserService.hooks(rocketChatUserHooks);
 	rocketChatLoginService.hooks(rocketChatLoginHooks);
-	rocketChatLogoutService.hooks(rocketChatLogoutHooks);;
+	rocketChatLogoutService.hooks(rocketChatLogoutHooks);
 	rocketChatChannelService.hooks(rocketChatChannelHooks);
 };

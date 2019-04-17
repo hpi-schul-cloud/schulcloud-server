@@ -1,10 +1,8 @@
-'use strict';
-const errors = require('@feathersjs/errors');
+const queryString = require('querystring');
+const logger = require('winston');
 const service = require('feathers-mongoose');
 const link = require('./link-model');
 const hooks = require('./hooks');
-const queryString = require('querystring');
-const logger = require('winston');
 
 module.exports = function () {
 	const app = this;
@@ -44,7 +42,7 @@ module.exports = function () {
 		}
 	}
 
-	class registrationLinkService {
+	class RegistrationLinkService {
 		constructor(options) {
 			this.options = options || {};
 			this.docs = {};
@@ -89,7 +87,7 @@ module.exports = function () {
 		}
 	}
 
-	class expertLinkService {
+	class ExpertLinkService {
 		constructor(options) {
 			this.options = options || {};
 			this.docs = {};
@@ -157,8 +155,8 @@ module.exports = function () {
 
 
 	app.use('/link', redirectToTarget, linkService);
-	app.use('/registrationlink', new registrationLinkService());
-	app.use('/expertinvitelink', new expertLinkService());
+	app.use('/registrationlink', new RegistrationLinkService());
+	app.use('/expertinvitelink', new ExpertLinkService());
 	linkService = app.service('/link');
 	linkService.hooks(hooks);
 };

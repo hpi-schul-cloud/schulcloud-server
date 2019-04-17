@@ -23,7 +23,12 @@ const populateGradeLevel = (hook) => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool, restrictToUsersOwnClasses, populateGradeLevel],
+	find: [
+		globalHooks.hasPermission('USERGROUP_VIEW'),
+		restrictToCurrentSchool,
+		restrictToUsersOwnClasses,
+		populateGradeLevel,
+	],
 	get: [restrictToUsersOwnClasses, populateGradeLevel],
 	create: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
 	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],

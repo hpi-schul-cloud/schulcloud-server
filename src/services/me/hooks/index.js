@@ -1,18 +1,14 @@
 const auth = require('@feathersjs/authentication');
-const { Forbidden } = require('@feathersjs/errors');
-
-const blocked = (hook) => {
-	throw Forbidden('Method is not allowed!');
-};
+const hooks = require('feathers-hooks-common');
 
 exports.before = {
 	all: [],
 	find: [auth.hooks.authenticate('jwt')],
-	get: [blocked],
-	create: [blocked],
-	update: [blocked],
-	patch: [blocked],
-	remove: [blocked],
+	get: [hooks.disallow()],
+	create: [hooks.disallow()],
+	update: [hooks.disallow()],
+	patch: [hooks.disallow()],
+	remove: [hooks.disallow()],
 };
 
 exports.after = {

@@ -1,5 +1,4 @@
 const hooks = require('./hooks/copyCourseHook');
-const errors = require('@feathersjs/errors');
 const courseModel = require('./model').courseModel;
 const homeworkModel = require('../homework/model').homeworkModel;
 const lessonsModel = require('../lesson/model');
@@ -140,14 +139,30 @@ class CourseShareService {
 		const userId = (params.account || {}).userId;
 		const courseName = data.courseName;
 		const copyService = this.app.service('courses/copy');
-		
-		return courseModel.find({shareToken})
+
+		return courseModel.find({ shareToken })
 			.then((course) => {
 				course = course[0];
 				let tempCourse = JSON.parse(JSON.stringify(course));
-				tempCourse = _.omit(tempCourse, ['createdAt', 'updatedAt', '__v', 'teacherIds', 'classIds', 'userIds', 'substitutionIds', 'shareToken', 'schoolId', 'untilDate', 'startDate', 'times']);
+				tempCourse = _.omit(
+					tempCourse,
+					[
+						'createdAt',
+						'updatedAt',
+						'__v',
+						'teacherIds',
+						'classIds',
+						'userIds',
+						'substitutionIds',
+						'shareToken',
+						'schoolId',
+						'untilDate',
+						'startDate',
+						'times',
+					],
+				);
 
-				tempCourse.teacherIds = [ userId ];
+				tempCourse.teacherIds = [userId];
 
 				if (courseName) {
 					tempCourse.name = courseName;

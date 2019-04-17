@@ -1,5 +1,3 @@
-'use strict';
-
 const service = require('feathers-mongoose');
 const federalState = require('./model');
 const hooks = require('./hooks');
@@ -11,9 +9,9 @@ module.exports = function () {
 		Model: federalState,
 		paginate: {
 			default: 16,
-			max: 25
+			max: 25,
 		},
-		lean: true
+		lean: true,
 	};
 
 	app.use('/federalStates', service(options));

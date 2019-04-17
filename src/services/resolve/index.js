@@ -1,5 +1,3 @@
-'use strict';
-
 const errors = require('@feathersjs/errors');
 
 // get an json api conform entry
@@ -28,9 +26,9 @@ class ScopeResolver {
 				first: '',
 				last: '',
 				next: '',
-				prev: ''
+				prev: '',
 			},
-			data: []
+			data: [],
 		};
 
 		return userService.get(id)

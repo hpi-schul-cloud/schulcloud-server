@@ -1,9 +1,9 @@
 'use strict';
 
 const service = require('feathers-mongoose');
+const rp = require('request-promise-native');
 const release = require('./release-model');
 const hooks = require('./hooks/index');
-const rp = require('request-promise-native');
 
 class ReleaseFetchService {
 	find({query, payload}) {
@@ -46,9 +46,9 @@ module.exports = function () {
 		Model: release,
 		paginate: {
 			default: 10000,
-			max: 10000
+			max: 10000,
 		},
-		lean: true
+		lean: true,
 	};
 
 	app.use('/releases/fetch', new ReleaseFetchService());

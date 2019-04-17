@@ -102,7 +102,10 @@ const validatePassword = (hook) => {
 				return hook;
 			}
 			if (password && !passwordVerification) {
-				throw new errors.Forbidden('Du darfst das Passwort dieses Nutzers nicht ändern oder die Passwortfelder wurden falsch ausgefüllt.');
+				throw new errors.Forbidden(
+					`Du darfst das Passwort dieses Nutzers nicht ändern oder die
+					Passwortfelder wurden falsch ausgefüllt.`,
+				);
 			}
 
 			if (passwordVerification) {
@@ -129,7 +132,9 @@ const checkUnique = (hook) => {
 		.then((result) => {
 			// systemId might be null. In that case, accounts with any systemId will be returned
 			const filtered = result.filter(a => a.systemId === systemId);
-			if (filtered.length > 0) return Promise.reject(new errors.BadRequest('Der Benutzername ist bereits vergeben!'));
+			if (filtered.length > 0) {
+				return Promise.reject(new errors.BadRequest('Der Benutzername ist bereits vergeben!'));
+			}
 			return Promise.resolve(hook);
 		});
 };
@@ -191,7 +196,7 @@ const securePatching = hook => Promise.all([
 	const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
 	if (hook.params.account._id !== hook.id) {
 		if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent) || editsOwnAccount)) {
-			return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'))
+			return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'));
 		}
 	}
 	return Promise.resolve(hook);

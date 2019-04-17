@@ -13,14 +13,18 @@ const hooks = require('./hooks');
 
 let secrets;
 try {
-	['production', 'lokal'].includes(process.env.NODE_ENV)
-		? secrets = require('../../../config/secrets.js')
-		: secrets = require('../../../config/secrets.json');
-} catch(error) {
+	if (['production', 'lokal'].includes(process.env.NODE_ENV)) {
+		// eslint-disable-next-line global-require
+		secrets = require('../../../config/secrets.js');
+	} else {
+		// eslint-disable-next-line global-require
+		secrets = require('../../../config/secrets.json');
+	}
+} catch (error) {
 	secrets = {};
 }
 
-let authenticationSecret = (secrets.authentication) ? secrets.authentication : "secrets";
+const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
 
 module.exports = function() {
     const app = this;
@@ -154,4 +158,3 @@ module.exports = function() {
 	// Set up our hooks
 	authenticationService.hooks(hooks);
 };
-

@@ -1,5 +1,3 @@
-'use strict';
-
 const path = require('path');
 const express = require('@feathersjs/express');
 const favicon = require('serve-favicon');
@@ -10,10 +8,10 @@ const configuration = require('@feathersjs/configuration');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
+const winston = require('winston');
 const middleware = require('./middleware');
 const sockets = require('./sockets');
 const services = require('./services/');
-const winston = require('winston');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const setupSwagger = require('./swagger');
@@ -24,20 +22,24 @@ require('console-stamp')(winston);
 
 let secrets;
 try {
-	(['production', 'lokal'].includes(process.env.NODE_ENV))
-		? secrets = require('../config/secrets.js')
-		: secrets = require('../config/secrets.json');
-} catch(error) {
+	if (['production', 'lokal'].includes(process.env.NODE_ENV)) {
+		// eslint-disable-next-line global-require
+		secrets = require('../config/secrets.js');
+	} else {
+		// eslint-disable-next-line global-require
+		secrets = require('../config/secrets.json');
+	}
+} catch (error) {
 	secrets = {};
 }
 
 const app = express(feathers());
-let config = configuration();
+const config = configuration();
 
 app.configure(config);
 setupSwagger(app);
 
-app.set("secrets", secrets);
+app.set('secrets', secrets);
 
 app.use(compress())
 	.options('*', cors())
@@ -45,8 +47,8 @@ app.use(compress())
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 	.use('/', express.static('public'))
 	.use(bodyParser.json())
-	.use(bodyParser.urlencoded({extended: true}))
-	.use(bodyParser.raw({type: () => true, limit: '10mb'}))
+	.use(bodyParser.urlencoded({ extended: true }))
+	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 
 	.use(defaultHeaders)
 	.get('/system_info/haproxy', (req, res) => { res.send({ "timestamp":new Date().getTime() });})

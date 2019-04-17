@@ -11,7 +11,11 @@ exports.before = {
 	create: [globalHooks.hasPermission('COURSEGROUP_CREATE')],
 	update: [globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool],
 	patch: [globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
-	remove: [globalHooks.hasPermission('COURSEGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation]
+	remove: [
+		globalHooks.hasPermission('COURSEGROUP_CREATE'),
+		restrictToCurrentSchool,
+		globalHooks.permitGroupOperation,
+	],
 };
 
 exports.after = {

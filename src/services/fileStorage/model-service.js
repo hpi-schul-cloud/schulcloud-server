@@ -9,7 +9,7 @@ module.exports = function () {
 		Model: FileModel,
 		paginate: {
 			default: 10000,
-			max: 10000
+			max: 10000,
 		},
 		lean: true,
 	};

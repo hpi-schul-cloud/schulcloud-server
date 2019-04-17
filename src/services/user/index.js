@@ -1,11 +1,9 @@
-'use strict';
-
+const errors = require('@feathersjs/errors');
 const service = require('feathers-mongoose');
 const user = require('./model');
 const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
-const errors = require('@feathersjs/errors');
 const firstLoginHooks = require('./hooks/firstLogin');
 const { AdminStudents } = require('./services');
 const adminHook = require('./hooks/admin');

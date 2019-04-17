@@ -3,8 +3,6 @@ const auth = require('@feathersjs/authentication');
 const _ = require('lodash');
 const globalHooks = require('../../../hooks');
 
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-
 const injectCourseId = (hook) => {
 	hook.data.courseId = hook.data._id;
 
@@ -38,5 +36,5 @@ exports.beforeShare = {
 	create: [globalHooks.injectUserId],
 	update: [hooks.disallow()],
 	patch: [hooks.disallow()],
-	remove: [hooks.disallow()]
+	remove: [hooks.disallow()],
 };

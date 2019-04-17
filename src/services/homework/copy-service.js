@@ -1,7 +1,6 @@
-const hooks = require('./hooks/copy');
-const errors = require('@feathersjs/errors');
-const HomeworkModel = require('./model').homeworkModel;
 const _ = require('lodash');
+const hooks = require('./hooks/copy');
+const HomeworkModel = require('./model').homeworkModel;
 
 class HomeworkCopyService {
 

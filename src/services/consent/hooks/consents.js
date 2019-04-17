@@ -2,8 +2,8 @@ const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 
-//TODO: after hook for get that checks access.
-//TODO: rethink security, due to no schoolId we can't restrict anything.
+// TODO: after hook for get that checks access.
+// TODO: rethink security, due to no schoolId we can't restrict anything.
 
 const restrictToUserOrRole = (hook) => {
 	const userService = hook.app.service('users');
@@ -11,7 +11,7 @@ const restrictToUserOrRole = (hook) => {
 		query: {
 			_id: hook.params.account.userId,
 			$populate: 'roles',
-		}
+		},
 	}).then((res) => {
 		let access = false;
 		res.data[0].roles.map((role) => {
@@ -21,10 +21,10 @@ const restrictToUserOrRole = (hook) => {
 		});
 		if (access) {
 			return hook;
-		} else {
-			hook.params.query.userId = hook.params.account.userId;
-			return hook;
 		}
+
+		hook.params.query.userId = hook.params.account.userId;
+		return hook;
 	});
 };
 
@@ -171,8 +171,7 @@ const decorateConsent = (hook) => {
 		.then((consent) => {
 			hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 			hook.result = consent;
-		})
-	.then(() => Promise.resolve(hook));
+		}).then(() => Promise.resolve(hook));
 };
 
 const decorateConsents = (hook) => {

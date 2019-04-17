@@ -1,11 +1,9 @@
-'use strict';
-
 const socketio = require('@feathersjs/socketio');
-const siofu = require("socketio-file-upload");
+const siofu = require('socketio-file-upload');
+const logger = require('winston');
 const actions = require('./actions');
 const upload = require('./upload');
 const ClipboardModel = require('./clipboard-model');
-const logger = require('winston');
 
 module.exports = function () {
 	const app = this;

@@ -58,6 +58,6 @@ module.exports = function () {
 			create: [
 				auth.hooks.authenticate('jwt'),
 			],
-		}
+		},
 	});
 };

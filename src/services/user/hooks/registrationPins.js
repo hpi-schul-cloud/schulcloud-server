@@ -64,12 +64,12 @@ const checkAndVerifyPin = hook => {
 const mailPin = (hook) => {
 	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
-			subject: `${process.env.SC_SHORT_TITLE||'Schul-Cloud*'}: Registrierung mit PIN verifizieren`,
+			subject: `${process.env.SC_SHORT_TITLE || 'Schul-Cloud*'}: Registrierung mit PIN verifizieren`,
 			emails: (hook.data || {}).email,
 			content: {
 				text: createinfoText(hook),
 				// TODO: implement html mails later
-			}
+			},
 		});
 	}
 	return Promise.resolve(hook);
@@ -80,9 +80,9 @@ const returnPinOnlyToSuperHero = async (hook) => {
 		return Promise.resolve(hook);
 	}
 
-	if (((hook.params||{}).account||{}).userId) {
+	if (((hook.params || {}).account || {}).userId) {
 		const userService = hook.app.service('/users/');
-		const currentUser = await userService.get(hook.params.account.userId, {query: {$populate: 'roles'}});
+		const currentUser = await userService.get(hook.params.account.userId, { query: { $populate: 'roles' } });
 		const userRoles = currentUser.roles.map((role) => {return role.name;});
 		if (userRoles.includes('superhero')) {
 			return Promise.resolve(hook);
