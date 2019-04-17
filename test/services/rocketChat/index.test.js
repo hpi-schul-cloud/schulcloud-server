@@ -5,6 +5,7 @@ const chai = require('chai');
 const mockery = require('mockery');
 const app = require('../../../src/app');
 const rcMockServer = require('./rocketChatMockServer');
+const testObjects = require('../helpers/testObjects')(app);
 
 
 const rocketChatLoginService = app.service('/rocketChat/login');
@@ -43,28 +44,32 @@ describe('rocket.chat user service', () => {
 		assert.ok(rocketChatUserService);
 	});
 
-	it('creates a rc user for a sc user', () => rocketChatUserService.get('0000d231816abba584714c9e').then((rcUser) => {
+	it('creates a rc user for a sc user', async () => {
+		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '0000d186816abba584714c5f' });
+		const rcUser = await rocketChatUserService.get(user._id);
 		expect(rcUser.rcId).to.exist;
 		expect(rcUser.username).to.exist;
 		expect(rcUser.password).not.to.exist;
-	}));
+	});
 
 	it('retrieves existing rc users instead of creating new', async () => {
-		const firstResult = await rocketChatUserService.get('0000d231816abba584714c9e');
-		const secondResult = await rocketChatUserService.get('0000d231816abba584714c9e');
+		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '0000d186816abba584714c5f' });
+		const firstResult = await rocketChatUserService.get(user._id);
+		const secondResult = await rocketChatUserService.get(user._id);
 		expect(firstResult.username).to.equal(secondResult.username);
 		expect(firstResult.rcId).to.equal(secondResult.rcId);
 	});
 
 	it('recovers if email is already used in rc', async () => {
 		const rcModels = require('../../../src/services/rocketChat/model');
-		const user = await rocketChatUserService.get('0000d231816abba584714c9e');
-		await rcModels.userModel.remove(user._id); // break something
-		const newUser = await rocketChatUserService.get('0000d231816abba584714c9e');
+		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '0000d186816abba584714c5f' });
+		const rcUser = await rocketChatUserService.get(user._id);
+		await rcModels.userModel.remove(rcUser._id); // break something
+		const newUser = await rocketChatUserService.get(user._id);
 		expect(newUser.rcId).to.exist;
 		expect(newUser.username).to.exist;
-		expect(newUser.rcId).to.equal(user.rcId);
-		expect(newUser.username).to.equal(user.username);
+		expect(newUser.rcId).to.equal(rcUser.rcId);
+		expect(newUser.username).to.equal(rcUser.username);
 	});
 });
 

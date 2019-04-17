@@ -58,7 +58,7 @@ module.exports = function RocketChatMockServer({
 				users.forEach((user) => {
 					if (user.email === email) result.push(user);
 				});
-				return res.send({ users });
+				return res.send({ users: result });
 			}
 			return res.send({ users });
 		});
