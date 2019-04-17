@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 const service = require('feathers-mongoose');
 const {
 	BadRequest,
@@ -388,17 +387,16 @@ class Add {
 	 */
 	async _collectUserAndLinkData({ email, role, teamId }) {
 		return Promise.all([
+			// eslint-disable-next-line no-underscore-dangle
 			this._getUsersByEmail(email),
+			// eslint-disable-next-line no-underscore-dangle
 			this._getExpertSchoolId(),
+			// eslint-disable-next-line no-underscore-dangle
 			this._getExpertRoleId(),
 			getTeam(this, teamId),
 		]).then(async ([user, schoolId, expertRoleId, team]) => {
 			let isUserCreated = false;
-
-
 			let isResend = false;
-
-
 			let userRoleName;
 			if (isUndefined(user) && role === 'teamexpert') {
 				const newUser = {
@@ -481,8 +479,10 @@ class Add {
 		userIds = removeDuplicatedTeamUsers(userIds);
 
 		return Promise.all([
+			// eslint-disable-next-line no-underscore-dangle
 			this._generateLink({ teamId }, false),
 			patchTeam(this, teamId, { userIds, schoolIds }, params),
+			// eslint-disable-next-line no-underscore-dangle
 		]).then(([linkData]) => Add._response({ linkData, user }));
 	}
 
@@ -532,6 +532,7 @@ class Add {
 			team,
 			userRoleName,
 			importHash,
+			// eslint-disable-next-line no-underscore-dangle
 		} = await this._collectUserAndLinkData({ email, role, teamId });
 		const { invitedUserIds } = team;
 		// eslint-disable-next-line no-param-reassign
@@ -540,6 +541,7 @@ class Add {
 			is important if user already in invited users exist and the role is take from team
 		*/
 
+		// eslint-disable-next-line no-underscore-dangle
 		Add._throwErrorIfUserExistByEmail(team, email);
 
 		// if not already in invite list
@@ -547,10 +549,12 @@ class Add {
 			invitedUserIds.push({ email, role });
 		}
 		return Promise.all([
+			// eslint-disable-next-line no-underscore-dangle
 			this._generateLink({
 				esid, email, teamId, importHash,
 			}, isUserCreated),
 			patchTeam(this, teamId, { invitedUserIds }, params),
+			// eslint-disable-next-line no-underscore-dangle
 		]).then(([linkData]) => Add._response({
 			linkData, user, isUserCreated, isResend, email,
 		}));
@@ -568,8 +572,10 @@ class Add {
 			}
 			let out;
 			if (data.email) {
+				// eslint-disable-next-line no-underscore-dangle
 				out = this._userImportByEmail(teamId, data, params);
 			} else if (data.userId && data.role) {
+				// eslint-disable-next-line no-underscore-dangle
 				out = this._userImportById(teamId, data, params);
 			} else {
 				throw new BadRequest('Missing input data.');
