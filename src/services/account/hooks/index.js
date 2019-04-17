@@ -197,13 +197,6 @@ const securePatching = hook => Promise.all([
 	return Promise.resolve(hook);
 });
 
-const clearPwHash = (hook) => {
-	if (hook.result.password) {
-		delete hook.result.password;
-	}
-	return hook;
-};
-
 /**
  * @method get
  * @param {Array of strings} keys
@@ -260,7 +253,7 @@ exports.before = {
 };
 
 exports.after = {
-	all: [clearPwHash],
+	all: [local.hooks.protect('password')],
 	find: [],
 	get: [filterToRelated(['_id', 'username', 'userId', 'systemId'])],
 	create: [],
