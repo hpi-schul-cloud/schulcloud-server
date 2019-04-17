@@ -13,7 +13,7 @@ module.exports = async function MockServer({ port = null }) {
 		mockServer.use(bodyParser.json()); // for parsing application/json
 		mockServer.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 		mockServer.port = freePort;
-		mockServer.url = `http://localhost:${mockServer.port}`;
+		mockServer.url = `http://localhost:${mockServer.port}/`;
 
 		mockServer.post('/projects', (req, res) => {
 			res.json({
@@ -54,7 +54,7 @@ module.exports = async function MockServer({ port = null }) {
 		});
 
 		mockServer.get('/projects/:projectId/boards', (req, res) => {
-			if (!req.query.projectId) return res.status(400).send('Could not retrieve projects');
+			if (!req.params.projectId) return res.status(400).send('Could not retrieve projects');
 
 			return res.json([{
 				id: '14212',

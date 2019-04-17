@@ -63,7 +63,7 @@ class Nexboard {
 		}))
 			.then(res => res)
 			.catch((err) => {
-				throw new BadRequest(`Could not retrieve Boards from Projcet - ${err.error.msg}`);
+				throw new BadRequest(`Could not retrieve Boards from Project - ${err.error.msg}`);
 			});
 	}
 

@@ -1,7 +1,8 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require('../../../src/app');
 const MockServer = require('./MockServer');
+const { getAccessToken } = require('../helpers/login');
+
 const { expect } = chai;
 
 chai.use(chaiHttp);
@@ -11,11 +12,15 @@ function request({
 	method = 'get',
 	endpoint,
 	data,
+	token,
 }) {
 	return new Promise((resolve, reject) => (
 		chai.request(server)[method](endpoint)
-			.set('Accept', 'application/json')
-			.set('content-type', 'application/x-www-form-urlencoded')
+			.set({
+				Accept: 'application/json',
+				Authorization: `Bearer ${token}`,
+				'Content-Type': 'application/x-www-form-urlencoded',
+			})
 			.send(data)
 			.end((err, res) => {
 				if (err) {
@@ -29,9 +34,15 @@ function request({
 
 describe('Nexboard endpoints', () => {
 	let mockServer;
+	let app;
+	let token;
 	before(async () => {
 		mockServer = await MockServer({});
 		process.env.NEXBOARD_MOCK_URL = mockServer.url;
+
+		app = require('../../../src/app');
+
+		token = await getAccessToken({ username: 'paula.meyer@schul-cloud.org', password: 'Schulcloud1!' });
 	});
 
 	it('should create a new project', async () => {
@@ -42,6 +53,7 @@ describe('Nexboard endpoints', () => {
 			method: 'post',
 			endpoint: '/nexboard/projects',
 			data,
+			token,
 		});
 
 		expect(body.title).to.equal(data.title);
@@ -55,6 +67,7 @@ describe('Nexboard endpoints', () => {
 			server: app,
 			method: 'post',
 			endpoint: '/nexboard/projects',
+			token,
 		});
 
 		expect(body.title).to.be.a('string');
@@ -69,11 +82,13 @@ describe('Nexboard endpoints', () => {
 			server: app,
 			method: 'post',
 			endpoint: '/nexboard/projects',
+			token,
 		});
 
 		const { body: detailedProject } = await request({
 			server: app,
 			endpoint: `/nexboard/projects/${body.id}`,
+			token,
 		});
 
 		expect(detailedProject.title).to.be.a('string');
@@ -87,6 +102,7 @@ describe('Nexboard endpoints', () => {
 		const { body: projects } = await request({
 			server: app,
 			endpoint: '/nexboard/projects',
+			token,
 		});
 
 		expect(projects).to.be.an('array');
@@ -105,6 +121,7 @@ describe('Nexboard endpoints', () => {
 			endpoint: '/nexboard/boards',
 			method: 'post',
 			data,
+			token,
 		});
 
 		expect(board.title).to.equal(data.title);
@@ -120,6 +137,7 @@ describe('Nexboard endpoints', () => {
 		const { body: boards } = await request({
 			server: app,
 			endpoint: `/nexboard/boards?projectId=${data.projectId}`,
+			token,
 		});
 
 		expect(boards).to.be.an('array');
@@ -134,6 +152,7 @@ describe('Nexboard endpoints', () => {
 		const { body: board } = await request({
 			server: app,
 			endpoint: `/nexboard/boards/${id}`,
+			token,
 		});
 
 		expect(board).to.be.an('object');
