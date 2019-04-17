@@ -23,14 +23,20 @@ class Attachment {
 	}
 
 	find(params) {
-		return request(uri, params)
+		if (params.clientQuery.lesson) {
+			params.query.lesson = params.clientQuery.lesson;
+		}
+		if (params.clientQuery.key) {
+			params.query.key = params.clientQuery.key;
+		}
+		return request(uri, params);
 	}
 
 	remove(attachmentId, params) {
 		return request(uri, params);
 	}
 
-	patch(attachmentId, { value, }, params) {
+	patch(attachmentId, { value }, params) {
 		return request(uri, params, {
 			data: { value },
 		});

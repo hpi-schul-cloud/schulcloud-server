@@ -9,7 +9,7 @@ const {
 	Permission,
 	Test,
 } = require('./services/');
-const { before, after, beforeLesson, beforeAttachments } = require('./hooks');
+const { before, after, beforeLesson } = require('./hooks');
 const { setForceKey } = require('./helper');
 
 // subscriptions lesson->steps / , sections, group
@@ -41,7 +41,7 @@ module.exports = function setup() {
 	sections.after(after);
 
 	const attachments = app.service(attachmentsRoute);
-	attachments.before(beforeAttachments);
+	attachments.before(before);
 	attachments.after(after);
 
 	const groups = app.service(groupsRoute);
