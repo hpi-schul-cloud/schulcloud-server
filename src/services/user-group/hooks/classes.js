@@ -1,8 +1,7 @@
 'use strict';
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
@@ -24,7 +23,12 @@ const populateGradeLevel = (hook) => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool, restrictToUsersOwnClasses, populateGradeLevel],
+	find: [
+		globalHooks.hasPermission('USERGROUP_VIEW'),
+		restrictToCurrentSchool,
+		restrictToUsersOwnClasses,
+		populateGradeLevel,
+	],
 	get: [restrictToUsersOwnClasses, populateGradeLevel],
 	create: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
 	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
@@ -65,10 +69,13 @@ exports.after = {
 	find: [addDisplayName],
 	get: [
 		addDisplayName,
-		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!'})
-	)],
+		globalHooks.ifNotLocal(
+			globalHooks.denyIfNotCurrentSchool({
+				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
+			}),
+		)],
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

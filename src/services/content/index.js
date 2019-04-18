@@ -102,7 +102,6 @@ class RedirectService {
 module.exports = function () {
 	const app = this;
 
-	// Initialize material model
 	const options = {
 		Model: material,
 		paginate: {
@@ -112,21 +111,14 @@ module.exports = function () {
 		lean: true
 	};
 
-	// Initialize our service with options it requires
 	app.use('/content/resources', new ResourcesService());
 	app.use('/content/search', new SearchService());
 	app.use('/content/redirect', new RedirectService(), RedirectService.redirect);
 	app.use('/materials', service(options));
 
-	// Get our initialize service to that we can bind hooks
 	const resourcesService = app.service('/content/resources');
 	const searchService = app.service('/content/search');
 
-	// Set up our before hooks
-	resourcesService.before(hooks.before);
-	searchService.before(hooks.before);
-
-	// Set up our after hooks
-	resourcesService.after(hooks.after);
-	searchService.after(hooks.after);
+	resourcesService.hooks(hooks);
+	searchService.hooks(hooks);
 };
