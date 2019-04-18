@@ -1,4 +1,4 @@
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const logger = require('winston');
 const globalHooks = require('../../../hooks');
 const { newsModel, newsHistoryModel } = require('../model');
@@ -29,7 +29,7 @@ function getBoolean(value){
 	}
 }
 
-const convertToBoolean = hook => {
+const convertToBoolean = (hook) => {
 	if (hook.params.query && hook.params.query.target && hook.params.query.target.$exists) {
 		hook.params.query.target.$exists = getBoolean(hook.params.query.target.$exists);
 	}
@@ -37,11 +37,26 @@ const convertToBoolean = hook => {
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [globalHooks.hasPermission('NEWS_VIEW'), restrictToCurrentSchool, convertToBoolean],
-	get: [globalHooks.hasPermission('NEWS_VIEW')],
-	create: [globalHooks.hasPermission('NEWS_CREATE')],
-	update: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool],
-	patch: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
+	find: [
+		globalHooks.hasPermission('NEWS_VIEW'),
+		restrictToCurrentSchool,
+		convertToBoolean,
+	],
+	get: [
+		globalHooks.hasPermission('NEWS_VIEW'),
+	],
+	create: [
+		globalHooks.hasPermission('NEWS_CREATE'),
+	],
+	update: [
+		globalHooks.hasPermission('NEWS_EDIT'),
+		restrictToCurrentSchool,
+	],
+	patch: [
+		globalHooks.hasPermission('NEWS_EDIT'),
+		restrictToCurrentSchool,
+		globalHooks.permitGroupOperation,
+	],
 	remove: [
 		globalHooks.hasPermission('NEWS_CREATE'),
 		globalHooks.ifNotLocal(globalHooks.permitGroupOperation),

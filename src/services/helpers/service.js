@@ -1,5 +1,5 @@
-const promisify = require("es6-promisify");
 const nodemailer = require('nodemailer');
+const logger = require('winston');
 
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {
@@ -10,36 +10,32 @@ const checkForToken = (params, app) => {
 	return Promise.resolve(false);
 };
 
-module.exports = function (app) {
-
+module.exports = function setup(app) {
 	class MailService {
-		constructor() {
-
-		}
-
 		// POST
-		create({headers, email, subject, content}, params) {
+		create({
+			headers,
+			email,
+			subject,
+			content,
+		}, params) {
 			return checkForToken(params, app)
-				.then(user => {
-					let transporter;
-					if (app.get("secrets").smtp) {
-						transporter = nodemailer.createTransport(app.get("secrets").smtp || {});
-					} else {
-						transporter = nodemailer.createTransport(app.get("secrets").sendmail || {});
-					}
+				.then(async (user) => {
+					const options = app.get('secrets').smtp || app.get('secrets').sendmail || {};
+					const transporter = nodemailer.createTransport(options);
 
-					let sendMail = promisify(transporter.sendMail, transporter);
-					return sendMail({
+					// send mail with defined transport object
+					const info = await transporter.sendMail({
 						from: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
-						headers: headers,
+						headers,
 						to: user ? user.email : email,
-						subject: subject,
+						subject,
 						html: content.html,
-						text: content.text
+						text: content.text,
 					});
-				}).catch(err => {
-					return Promise.reject(err);
-				});
+
+					logger.info('Message sent: %s', info.messageId);
+				}).catch(err => Promise.reject(err));
 		}
 	}
 
