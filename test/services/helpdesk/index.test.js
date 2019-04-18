@@ -1,9 +1,9 @@
 const assert = require('assert');
 
-const helpdeskService = app.service('helpdesk');
-const chai = require('chai');
 const { expect } = require('chai');
 const app = require('../../../src/app');
+
+const helpdeskService = app.service('helpdesk');
 
 const { logger } = app;
 

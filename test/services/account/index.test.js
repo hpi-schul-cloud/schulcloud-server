@@ -1,5 +1,3 @@
-
-
 const assert = require('assert');
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
@@ -10,11 +8,6 @@ const testObjects = require('../helpers/testObjects')(app);
 const accountService = app.service('/accounts');
 const userService = app.service('/users');
 const registrationPinsService = app.service('/registrationPins');
-
-const userId;
-const accountId;
-const passwordHash;
-const accountPw = 'ca4t9fsfr3dsd';
 
 describe('Account Service', () => {
 	after(() => testObjects.cleanup());
