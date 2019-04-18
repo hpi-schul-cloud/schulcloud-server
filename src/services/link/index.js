@@ -1,10 +1,8 @@
-'use strict';
-const errors = require('feathers-errors');
+const queryString = require('querystring');
+const logger = require('winston');
 const service = require('feathers-mongoose');
 const link = require('./link-model');
 const hooks = require('./hooks');
-const queryString = require('querystring');
-const logger = require('winston');
 
 module.exports = function () {
 	const app = this;
@@ -44,7 +42,7 @@ module.exports = function () {
 		}
 	}
 
-	class registrationLinkService {
+	class RegistrationLinkService {
 		constructor(options) {
 			this.options = options || {};
 			this.docs = {};
@@ -89,7 +87,7 @@ module.exports = function () {
 		}
 	}
 
-	class expertLinkService {
+	class ExpertLinkService {
 		constructor(options) {
 			this.options = options || {};
 			this.docs = {};
@@ -155,21 +153,10 @@ module.exports = function () {
 		}
 	}
 
-	// Initialize our service with any options it requires
+
 	app.use('/link', redirectToTarget, linkService);
-
-	// generate registration link with optional user hash
-	app.use('/registrationlink', new registrationLinkService());
-
-	// generate team invite link with optional user role (leader or expert)
-	app.use('/expertinvitelink', new expertLinkService());
-
-	// Get our initialize service to that we can bind hooks
+	app.use('/registrationlink', new RegistrationLinkService());
+	app.use('/expertinvitelink', new ExpertLinkService());
 	linkService = app.service('/link');
-
-	// Set up our before hooks
-	linkService.before(hooks.before(linkService));
-
-	// Set up our after hooks
-	linkService.after(hooks.after);
+	linkService.hooks(hooks);
 };
