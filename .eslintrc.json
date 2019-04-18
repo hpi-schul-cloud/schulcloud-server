@@ -1,6 +1,10 @@
 {
 	"extends": "airbnb-base",
 	"rules": {
+		"no-multiple-empty-lines":["error",{
+			"max":2,
+			"maxBOF":0
+		}],
 		"object-shorthand":"off",
 		"prefer-arrow-callback":"warn",
 		"func-names":"off",
