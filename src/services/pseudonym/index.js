@@ -1,9 +1,8 @@
-
 const service = require('feathers-mongoose');
 const Pseudonym = require('./model');
 const hooks = require('./hooks');
 
-module.exports = function pseudonym() {
+module.exports = function() {
 	const app = this;
 	const options = {
 		Model: Pseudonym,
@@ -16,6 +15,5 @@ module.exports = function pseudonym() {
 	app.use('/pseudonym', service(options));
 
 	const pseudonymService = app.service('/pseudonym');
-	pseudonymService.before(hooks.before);
-	pseudonymService.after(hooks.after);
+	pseudonymService.hooks(hooks);
 };

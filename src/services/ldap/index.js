@@ -1,5 +1,5 @@
 const ldap = require('ldapjs');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const logger = require('winston');
 const hooks = require('./hooks');
 
@@ -382,17 +382,9 @@ module.exports = function() {
 		_registerEventListeners() {
 			app.on('teams:after:usersChanged', this._onTeamUsersChanged.bind(this));
 		}
-
 	}
 
 	app.use('/ldap', new LdapService());
-
-	// Get our initialize service to that we can bind hooks
 	const systemService = app.service('/ldap');
-
-	// Set up our before hooks
-	systemService.before(hooks.before);
-
-	// Set up our after hooks
-	systemService.after(hooks.after);
+	systemService.hooks(hooks);
 };

@@ -1,6 +1,5 @@
-
-const auth = require('feathers-authentication');
-const errors = require('feathers-errors');
+const auth = require('@feathersjs/authentication');
+const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 
 const toArray = data => (Array.isArray(data) ? data	: [data]);

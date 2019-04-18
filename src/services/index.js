@@ -35,12 +35,20 @@ const rocketChat = require('./rocketChat');
 const clipboard = require('./clipboard');
 const me = require('./me');
 
-module.exports = function () {
+const newsEvents = require('./news/events');
+
+module.exports = function initializeServices() {
 	const app = this;
 
-	mongoose.connect(process.env.DB_URL || app.get('mongodb'), { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
+	// connect mongoose to the database
+	const dbCredentials = {
+		user: process.env.DB_USERNAME,
+		pass: process.env.DB_PASSWORD,
+	};
+	mongoose.connect(process.env.DB_URL || app.get('mongodb'), dbCredentials);
 	mongoose.Promise = global.Promise;
 
+	// register services
 	app.configure(authentication);
 	app.configure(analytics);
 	app.configure(user);
@@ -76,4 +84,7 @@ module.exports = function () {
 	app.configure(rocketChat);
 	app.configure(oauth2);
 	app.configure(roster);
+
+	// initialize events
+	newsEvents.configure(app);
 };
