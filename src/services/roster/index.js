@@ -46,7 +46,7 @@ module.exports = function roster() {
 	const metadataHooks = {
 		find: [
 			globalHooks.ifNotLocal(hooks.tokenIsActive),
-			hooks.userIsMatching,
+			globalHooks.ifNotLocal(hooks.userIsMatching),
 			hooks.stripIframe,
 		],
 	};
@@ -90,7 +90,7 @@ module.exports = function roster() {
 	const userGroupsHooks = {
 		find: [
 			globalHooks.ifNotLocal(hooks.tokenIsActive),
-			hooks.userIsMatching,
+			globalHooks.ifNotLocal(hooks.userIsMatching),
 			hooks.stripIframe,
 			hooks.injectOriginToolIds],
 	};

@@ -101,23 +101,25 @@ describe('oauth2 service', function oauth() {
 						scope: 'openid',
 						state: '12345678',
 					});
-					chai.request(authorizationUri)
-						.get('')
-						.set('content-type', 'application/json')
-						.end((err, res) => {
-							const position = res.redirects[0].indexOf("login_challenge=") +
+					request({
+						uri: authorizationUri,
+						method: 'GET',
+						followRedirect: false,
+					}).catch((res) => {
+						const position = res.error.indexOf("login_challenge=") +
+							"login_challenge".length + 1;
+						loginRequest1 = res.error.substr(position, 32);
+						request({
+							uri: authorizationUri,
+							method: 'GET',
+							followRedirect: false,
+						}).catch((res) => {
+							const position = res.error.indexOf("login_challenge=") +
 								"login_challenge".length + 1;
-							loginRequest1 = res.redirects[0].substr(position);
-							chai.request(authorizationUri)
-								.get('')
-								.set('content-type', 'application/json')
-								.end((err, res) => {
-									const position = res.redirects[0].indexOf("login_challenge=") +
-										"login_challenge".length + 1;
-									loginRequest2 = res.redirects[0].substr(position);
-									done();
-								})
-						})
+							loginRequest2 = res.error.substr(position, 32);
+							done();
+						});
+					});
 				})
 		});
 	});
