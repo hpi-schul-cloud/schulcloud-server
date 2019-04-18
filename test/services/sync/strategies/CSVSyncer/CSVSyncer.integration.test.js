@@ -294,7 +294,6 @@ describe('CSVSyncer Integration', () => {
 			const class2bstudents = await Promise.all(class2b.userIds.map(studentLastNames));
 			expect(class2bstudents).to.include('Fry');
 			expect(class2bstudents).to.include('Rodriguez');
-
 		});
 	});
 

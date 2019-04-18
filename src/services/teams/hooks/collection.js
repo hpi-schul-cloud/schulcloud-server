@@ -9,7 +9,7 @@ const { ObjectId } = require('mongoose').Types;
  * @private
  * @collection
  */
-const mapToArray = e => isArray(e) ? e : (isObject(e) ? Object.values(e) : [e]);
+const mapToArray = e => (isArray(e) ? e : (isObject(e) ? Object.values(e) : [e]));
 
 /**
  * @private

@@ -1,5 +1,3 @@
-'use strict';
-
 const assert = require('assert');
 const app = require('../../../src/app');
 
@@ -10,7 +8,7 @@ const courseGroupService = app.service('courseGroups');
 const lessonsService = app.service('lessons');
 const chai = require('chai');
 
-const expect = chai.expect;
+const { expect } = chai;
 
 const testUserId = '0000d231816abba584714c9e';
 const testCourseExample = '0000dcfbfb5c7a3f00bf21ab';
@@ -21,7 +19,7 @@ const testCourse = {
 	userIds: [],
 	classIds: [],
 	teacherIds: [],
-	ltiToolIds: []
+	ltiToolIds: [],
 };
 
 let courseId;

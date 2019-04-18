@@ -10,7 +10,7 @@ const courseGroupsHooks = require('./hooks/courseGroups');
 const courseCopyService = require('./course-copy-service');
 const classHooks = require('./hooks/classes');
 
-module.exports = function() {
+module.exports = function () {
 	const app = this;
 
 	app.configure(courseCopyService);

@@ -1,5 +1,3 @@
-'use strict';
-
 const auth = require('@feathersjs/authentication');
 const jwt = require('@feathersjs/authentication-jwt');
 const local = require('@feathersjs/authentication-local');
@@ -26,8 +24,8 @@ try {
 
 const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
 
-module.exports = function() {
-    const app = this;
+module.exports = function () {
+	const app = this;
 
 	const authConfig = Object.assign({}, app.get('auth'), {
 		header: 'Authorization',
@@ -39,9 +37,9 @@ module.exports = function() {
 			subject: 'anonymous',
 			issuer: 'feathers',
 			algorithm: 'HS256',
-			expiresIn: '30d'
+			expiresIn: '30d',
 		},
-		secret: authenticationSecret
+		secret: authenticationSecret,
 	});
 
 
@@ -53,33 +51,33 @@ module.exports = function() {
 		// TODO: change username to unique identifier as multiple
 		// users can have same username in different services
 		usernameField: 'username',
-		passwordField: 'password'
+		passwordField: 'password',
 	};
 
-	const cookieExtractor = function(req) {
+	const cookieExtractor = function (req) {
 		let cookies = req.headers.cookie;
 		try {
 			cookies = cookies.split(';');
-			let jwt = undefined;
-			cookies.map(cookie => {
+			let jwt;
+			cookies.map((cookie) => {
 				if (cookie.includes('jwt')) {
 					cookie = cookie.split('=');
-					if(cookie[0] === 'jwt') {
+					if (cookie[0] === 'jwt') {
 						jwt = cookie[1];
 					}
 				}
 			});
 			return jwt;
-		} catch(e) {
+		} catch (e) {
 			return undefined;
 		}
 	};
 
-	const authHeaderExtractor = function(req) {
-		let authHeader = req.headers.authorization;
-		if(!authHeader){ return undefined; }
-		return authHeader.replace("Bearer ", '');
-	}
+	const authHeaderExtractor = function (req) {
+		const authHeader = req.headers.authorization;
+		if (!authHeader) { return undefined; }
+		return authHeader.replace('Bearer ', '');
+	};
 
 	const jwtConfig = {
 		name: 'jwt',
@@ -88,9 +86,9 @@ module.exports = function() {
 		header: 'Authorization',
 		jwtFromRequest: extractors.fromExtractors([
 			cookieExtractor,
-			authHeaderExtractor
+			authHeaderExtractor,
 		]),
-		secretOrKey: authenticationSecret
+		secretOrKey: authenticationSecret,
 	};
 
 
@@ -101,22 +99,22 @@ module.exports = function() {
 
 	app.configure(system({
 		name: 'moodle',
-		loginStrategy: require('../account/strategies/moodle')
+		loginStrategy: require('../account/strategies/moodle'),
 	}));
 
 	app.configure(system({
 		name: 'itslearning',
-		loginStrategy: require('../account/strategies/itslearning')
+		loginStrategy: require('../account/strategies/itslearning'),
 	}));
 
 	app.configure(system({
 		name: 'iserv',
-		loginStrategy: require('../account/strategies/iserv')
+		loginStrategy: require('../account/strategies/iserv'),
 	}));
 
 	app.configure(system({
 		name: 'ldap',
-		loginStrategy: require('../account/strategies/ldap')
+		loginStrategy: require('../account/strategies/ldap'),
 	}));
 
 
@@ -153,7 +151,7 @@ module.exports = function() {
 			notes: 'Returns a JSON Web Token for the associated user in case of success.'
 			//errorResponses: []
 		}
-	};*/
+	}; */
 
 	// Set up our hooks
 	authenticationService.hooks(hooks);

@@ -56,34 +56,32 @@ const denyDbWriteOnType = (hook) => {
 	return hook;
 };
 
-const feedback = () => {
-	return (hook) => {
-		const data = hook.data || {};
-		if (data.type === 'contactAdmin') {
-			globalHooks.sendEmail(hook, {
-				subject: 'Ein Problem wurde gemeldet.',
-				roles: ['helpdesk', 'administrator'],
-				content: {
-					text: createInfoText(
-						(hook.params.account || {}).username || 'nouser', data,
-					),
-				},
-			});
-			// TODO: NOTIFICATION SERVICE
-		} else {
-			globalHooks.sendEmail(hook, {
-				subject: data.subject || 'nosubject',
-				emails: ['ticketsystem@schul-cloud.org'],
-				content: {
-					text: createFeedbackText(
-						(hook.params.account || {}).username || 'nouser',
-						data,
-					),
-				},
-			});
-		}
-		return Promise.resolve(hook);
-	};
+const feedback = () => (hook) => {
+	const data = hook.data || {};
+	if (data.type === 'contactAdmin') {
+		globalHooks.sendEmail(hook, {
+			subject: 'Ein Problem wurde gemeldet.',
+			roles: ['helpdesk', 'administrator'],
+			content: {
+				text: createInfoText(
+					(hook.params.account || {}).username || 'nouser', data,
+				),
+			},
+		});
+		// TODO: NOTIFICATION SERVICE
+	} else {
+		globalHooks.sendEmail(hook, {
+			subject: data.subject || 'nosubject',
+			emails: ['ticketsystem@schul-cloud.org'],
+			content: {
+				text: createFeedbackText(
+					(hook.params.account || {}).username || 'nouser',
+					data,
+				),
+			},
+		});
+	}
+	return Promise.resolve(hook);
 };
 
 exports.before = {

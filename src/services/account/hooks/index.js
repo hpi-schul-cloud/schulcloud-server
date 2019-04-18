@@ -208,18 +208,16 @@ const securePatching = hook => Promise.all([
  * @afterHook
  * @notLocal
  */
-const filterToRelated = (keys) => {
-	return globalHooks.ifNotLocal((hook) => {
-		const newResult = {};
-		keys.forEach((key) => {
-			if (hook.result[key] !== undefined) {
-				newResult[key] = hook.result[key];
-			}
-		});
-		hook.result = newResult;
-		return hook;
+const filterToRelated = keys => globalHooks.ifNotLocal((hook) => {
+	const newResult = {};
+	keys.forEach((key) => {
+		if (hook.result[key] !== undefined) {
+			newResult[key] = hook.result[key];
+		}
 	});
-};
+	hook.result = newResult;
+	return hook;
+});
 
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')

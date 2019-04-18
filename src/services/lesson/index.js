@@ -22,17 +22,12 @@ class LessonFilesService {
 				throw new errors.NotFound('No lesson was not found for given lessonId and shareToken!');
 			}
 			// fetch files in the given course and check whether they are included in the lesson
-			return FileModel.find({ path: { $regex: lesson.courseId } }).then((files) => {
-				return Promise.all((files || []).filter((f) => {
+			return FileModel.find({ path: { $regex: lesson.courseId } }).then(files => Promise.all((files || []).filter(f =>
 
-					// check whether the file is included in any lesson
-					return _.some((lesson.contents || []), (content) => {
-						return content.component === 'text'
+			// check whether the file is included in any lesson
+					 _.some((lesson.contents || []), content => content.component === 'text'
 						&& content.content.text
-						&& _.includes(content.content.text, f.key);
-					});
-				}));
-			});
+						&& _.includes(content.content.text, f.key)))));
 		});
 	}
 }
@@ -65,51 +60,39 @@ class LessonCopyService {
 
 					const topic = res;
 
-					return FileModel.find({ path: { $regex: sourceLesson.courseId._id } }).then((files) => {
-						return Promise.all((files || []).filter((f) => {
+					return FileModel.find({ path: { $regex: sourceLesson.courseId._id } }).then(files => Promise.all((files || []).filter(f =>
 
-							// check whether the file is included in any lesson
-							return _.some((sourceLesson.contents || []), (content) => {
-								return content.component === 'text'
+					// check whether the file is included in any lesson
+							 _.some((sourceLesson.contents || []), content => content.component === 'text'
 								&& content.content.text
-								&& _.includes(content.content.text, f._id);
-							});
-						}))
-							.then((lessonFiles) => {
-								return Promise.all(lessonFiles.map((f) => {
+								&& _.includes(content.content.text, f._id))))
+						.then(lessonFiles => Promise.all(lessonFiles.map((f) => {
+							const fileData = {
+								file: f._id,
+								parent: newCourseId,
+							};
 
-									const fileData = {
-										file: f._id,
-										parent: newCourseId,
-									};
+							const fileStorageService = this.app.service('/fileStorage/copy/');
 
-									const fileStorageService = this.app.service('/fileStorage/copy/');
-
-									return fileStorageService.create(fileData, params)
-										.then((newFile) => {
-											fileChangelog.push({
-												old: `${sourceLesson.courseId._id}/${f.name}`,
-												new: `${newCourseId}/${newFile.name}`,
-											});
-										});
-								})).then(() => {
-									return Promise.all(
-										topic.contents.map((content) => {
-											if (content.component === 'text' && content.content.text) {
-												fileChangelog.map((change) => {
-													content.content.text = content.content.text.replace(
-														new RegExp(change.old, 'g'),
-														change.new,
-													);
-												});
-											}
-										}),
-									).then(() => {
-										return lessonModel.update({ _id: topic._id }, topic);
+							return fileStorageService.create(fileData, params)
+								.then((newFile) => {
+									fileChangelog.push({
+										old: `${sourceLesson.courseId._id}/${f.name}`,
+										new: `${newCourseId}/${newFile.name}`,
 									});
 								});
-							});
-					});
+						})).then(() => Promise.all(
+							topic.contents.map((content) => {
+								if (content.component === 'text' && content.content.text) {
+									fileChangelog.map((change) => {
+										content.content.text = content.content.text.replace(
+											new RegExp(change.old, 'g'),
+											change.new,
+										);
+									});
+								}
+							}),
+						).then(() => lessonModel.update({ _id: topic._id }, topic)))));
 				});
 			});
 	}

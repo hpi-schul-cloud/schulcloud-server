@@ -1,41 +1,41 @@
 const testListObjectsReturn = {
 	Contents: [
-		{Key: "testFile"},
-		{Key: ".scfake"}
-	]
+		{ Key: 'testFile' },
+		{ Key: '.scfake' },
+	],
 };
 
 const testHeadObjectReturn = {
-	Metadata: { name: "testName", thumbnail: "testThumbnail" },
-	LastModified: "test",
+	Metadata: { name: 'testName', thumbnail: 'testThumbnail' },
+	LastModified: 'test',
 	ContentLength: 5,
-	ContentType: "mime/image",
-	Key: "testKey"
+	ContentType: 'mime/image',
+	Key: 'testKey',
 };
 
-var mockAws = {
-	S3: function(){
+const mockAws = {
+	S3: function () {
 		return {
-			createBucket: function(params, callback){
-				callback(null, "successfully created bucket");
+			createBucket: function (params, callback) {
+				callback(null, 'successfully created bucket');
 			},
 			putBucketCors: function (params) {
-				return "successfully inserted cors";
+				return 'successfully inserted cors';
 			},
 			listObjectsV2: function (params, callback) {
 				callback(null, testListObjectsReturn);
 			},
 			getSignedUrl: function (action, params, callback) {
-				callback(null, "successfully created signed url");
+				callback(null, 'successfully created signed url');
 			},
 			headObject: function (params, callback) {
 				callback(null, testHeadObjectReturn);
 			},
-			deleteObjects: function(params, callback) {
-				callback(null, {Deleted: params.Delete.Objects});
+			deleteObjects: function (params, callback) {
+				callback(null, { Deleted: params.Delete.Objects });
 			},
 			putObject: function (params, callback) {
-				callback(null, "successfully put object");
+				callback(null, 'successfully put object');
 			},
 			headBucket: function (params, callback) {
 				callback(null);
@@ -47,7 +47,7 @@ var mockAws = {
 	},
 	Endpoint: function () {
 		return {};
-	}
+	},
 };
 
 module.exports = mockAws;
