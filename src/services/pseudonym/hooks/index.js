@@ -1,7 +1,7 @@
-'use strict';
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
+const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
-const errors = require('feathers-errors');
+
 const toArray = data => (Array.isArray(data) ? data	: [data]);
 
 // rewrite tool id if there is a origin tool (content-specific pseudonym)
@@ -62,21 +62,48 @@ const filterValidUsers = context => {
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
-	find: [replaceToolWithOrigin],
-	get: [_ => {throw new errors.MethodNotAllowed();}],
-	create: [globalHooks.ifNotLocal(_ => {throw new errors.MethodNotAllowed();})],
-	update: [_ => {throw new errors.MethodNotAllowed();}],
-	patch: [_ => {throw new errors.MethodNotAllowed();}],
-	remove: [globalHooks.ifNotLocal(_ => {throw new errors.MethodNotAllowed();})]
+	all: [
+		auth.hooks.authenticate('jwt'),
+	],
+	find: [
+		replaceToolWithOrigin,
+	],
+	get: [
+		() => {
+			throw new errors.MethodNotAllowed();
+		},
+	],
+	create: [
+		globalHooks.ifNotLocal(() => {
+			throw new errors.MethodNotAllowed();
+		}),
+	],
+	update: [
+		() => {
+			throw new errors.MethodNotAllowed();
+		},
+	],
+	patch: [
+		() => {
+			throw new errors.MethodNotAllowed();
+		},
+	],
+	remove: [
+		globalHooks.ifNotLocal(() => {
+			throw new errors.MethodNotAllowed();
+		}),
+	],
 };
 
 exports.after = {
 	all: [],
-	find: [createMissingPseudonyms, globalHooks.ifNotLocal(filterValidUsers)],
+	find: [
+		createMissingPseudonyms,
+		globalHooks.ifNotLocal(filterValidUsers),
+	],
 	get: [],
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };
