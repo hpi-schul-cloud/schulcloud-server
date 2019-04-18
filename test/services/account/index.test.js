@@ -220,14 +220,14 @@ describe('Account Service', () => {
 
 	describe('FIND route', () => {
 		it('should not be able to find all accounts via empty query', () => accountService.find()
-				.catch((exception) => {
-					assert.equal(exception.message, 'Cannot read property \'username\' of undefined');
-				}));
+			.catch((exception) => {
+				assert.equal(exception.message, 'Cannot read property \'username\' of undefined');
+			}));
 
 		it('should find accounts by username', async () => {
 			const username = 'adam.admin@schul-cloud.org';
 			const accountDetails = {
-				username: username,
+				username,
 				password: 'ca4t9fsfr3dsd',
 				userId: new ObjectId(),
 			};

@@ -64,7 +64,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 						email: obj.mail,
 						firstName: obj.givenName,
 						lastName: obj.sn,
-						roles: roles,
+						roles,
 						ldapDn: obj.dn,
 						ldapUUID: obj.uuid,
 						ldapUID: obj.uid,

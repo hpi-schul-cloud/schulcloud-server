@@ -100,7 +100,7 @@ const removeStudentFromClasses = (hook) => {
 
 	const query = { userIds: userId };
 
-	return classesService.find({ query: query })
+	return classesService.find({ query })
 		.then(classes => Promise.all(
 			classes.data.map((myClass) => {
 				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
@@ -116,7 +116,7 @@ const removeStudentFromCourses = (hook) => {
 
 	const query = { userIds: userId };
 
-	return coursesService.find({ query: query })
+	return coursesService.find({ query })
 		.then(courses => Promise.all(
 			courses.data.map((course) => {
 				course.userIds.splice(course.userIds.indexOf(userId), 1);
@@ -158,7 +158,7 @@ const pinIsVerified = (hook) => {
 		return (globalHooks.hasPermission('USER_CREATE')).call(this, hook);
 	}
 	const email = (hook.params._additional || {}).parentEmail || hook.data.email;
-	return hook.app.service('/registrationPins').find({ query: { email: email, verified: true } })
+	return hook.app.service('/registrationPins').find({ query: { email, verified: true } })
 		.then((pins) => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
 				const age = globalHooks.getAge(hook.data.birthday);

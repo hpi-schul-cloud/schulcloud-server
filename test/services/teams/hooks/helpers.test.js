@@ -178,7 +178,7 @@ describe('hook helpers', () => {
 				expect(userId).to.not.equal(undefined);
 				const hook = {
 					app,
-					method: method,
+					method,
 					data: {
 						userIds: [
 							userId,
@@ -226,7 +226,7 @@ describe('hook helpers', () => {
 				expect(userId).to.not.equal(undefined);
 				const hook = {
 					app,
-					method: method,
+					method,
 					data: {
 						userIds: [
 							userId,
@@ -253,7 +253,7 @@ describe('hook helpers', () => {
 
 				const hook = {
 					app,
-					method: method,
+					method,
 					data: {
 						userIds: [
 							userId1,

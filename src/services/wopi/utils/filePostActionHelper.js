@@ -11,8 +11,8 @@ const deleteFile = (file, payload, account, app) => {
 	const fileStorageService = app.service('fileStorage');
 	return fileStorageService.remove(null, {
 		query: { _id: file._id },
-		payload: payload,
-		account: account,
+		payload,
+		account,
 	});
 };
 
@@ -38,7 +38,7 @@ const renameFile = (file, payload, account, app) => {
 		_id: file._id,
 		newName: payload.wopiRequestedName,
 		userPayload: payload,
-		account: account,
+		account,
 	});
 };
 

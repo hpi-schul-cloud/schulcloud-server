@@ -66,7 +66,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 					email: obj.mailPrimaryAddress || obj.mail,
 					firstName: obj.givenName,
 					lastName: obj.sn,
-					roles: roles,
+					roles,
 					ldapDn: obj.dn,
 					ldapUUID: obj.entryUUID,
 					ldapUID: obj.uid,

@@ -91,7 +91,7 @@ describe('wopi service', () => {
 		assert.ok(app.service('wopi/files/:fileId').create({}, {
 			account: { userId: testUserId },
 			payload: testUserPayload,
-			headers: headers,
+			headers,
 			fileId: testFile2._id,
 		}));
 	});
@@ -102,7 +102,7 @@ describe('wopi service', () => {
 		app.service('wopi/files/:fileId').create({}, {
 			account: { userId: testUserId },
 			payload: testUserPayload,
-			headers: headers,
+			headers,
 			fileId: testFile2._id,
 		}).catch((e) => {
 			assert.equal(e.name, 'BadRequest');
@@ -118,7 +118,7 @@ describe('wopi service', () => {
 		const params = {
 			account: { userId: testUserId },
 			payload: testUserPayload,
-			headers: headers,
+			headers,
 			fileId: testFile._id,
 			_id: testFile._id,
 		};
@@ -135,7 +135,7 @@ describe('wopi service', () => {
 				return app.service('wopi/files/:fileId').create({}, {
 					account: { userId: testUserId },
 					payload: testUserPayload,
-					headers: headers,
+					headers,
 					fileId: testFile._id,
 					_id: testFile._id,
 				});

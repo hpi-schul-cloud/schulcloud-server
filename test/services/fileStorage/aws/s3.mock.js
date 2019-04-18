@@ -14,38 +14,41 @@ const testHeadObjectReturn = {
 };
 
 const mockAws = {
-	S3: function () {
+	// eslint-disable-next-line object-shorthand
+	S3: function s3() {
 		return {
-			createBucket: function (params, callback) {
+			createBucket(params, callback) {
 				callback(null, 'successfully created bucket');
 			},
-			putBucketCors: function (params) {
+			putBucketCors(params) {
 				return 'successfully inserted cors';
 			},
-			listObjectsV2: function (params, callback) {
+			listObjectsV2(params, callback) {
 				callback(null, testListObjectsReturn);
 			},
-			getSignedUrl: function (action, params, callback) {
+			getSignedUrl(action, params, callback) {
 				callback(null, 'successfully created signed url');
 			},
-			headObject: function (params, callback) {
+			headObject(params, callback) {
 				callback(null, testHeadObjectReturn);
 			},
-			deleteObjects: function (params, callback) {
+			deleteObjects(params, callback) {
 				callback(null, { Deleted: params.Delete.Objects });
 			},
-			putObject: function (params, callback) {
+			putObject(params, callback) {
 				callback(null, 'successfully put object');
 			},
-			headBucket: function (params, callback) {
+			headBucket(params, callback) {
 				callback(null);
 			},
 		};
 	},
-	Config: function () {
+	// eslint-disable-next-line object-shorthand
+	Config: function config() {
 		return {};
 	},
-	Endpoint: function () {
+	// eslint-disable-next-line object-shorthand
+	Endpoint: function endpoint() {
 		return {};
 	},
 };

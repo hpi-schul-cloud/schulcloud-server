@@ -16,7 +16,7 @@ module.exports = function (app) {
 		const user = {
 			firstName: firstName.toLowerCase().split(' ').map(externals.capitalizeFirstLetter).join(' '),
 			lastName: lastName.toLowerCase().split(' ').map(externals.capitalizeFirstLetter).join(' '),
-			username: username,
+			username,
 		};
 
 		template.render(user, (err, results) => {
@@ -25,7 +25,7 @@ module.exports = function (app) {
 			}
 
 			const mailService = app.service('/mails');
-			mailService.create({ email: email, subject: 'Anmeldedaten Schul-Cloud', content: results });
+			mailService.create({ email, subject: 'Anmeldedaten Schul-Cloud', content: results });
 		});
 	};
 

@@ -14,10 +14,10 @@ const AbstractLoginStrategy = require('./interface.js');
 class ITSLearningLoginStrategy extends AbstractLoginStrategy {
 	login({ username, password }, system) {
 		const itsLearningOptions = {
-			username: username,
-			password: password,
+			username,
+			password,
 			wwwroot: system,
-			logger: logger,
+			logger,
 		};
 		if (!itsLearningOptions.username) return Promise.reject('No username set');
 		if (!itsLearningOptions.password) return Promise.reject(new errors.NotAuthenticated('No password set'));
