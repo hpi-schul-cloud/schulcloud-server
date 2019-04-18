@@ -22,15 +22,15 @@ require('console-stamp')(winston);
 
 let secrets;
 try {
-	if (['production', 'lokal'].includes(process.env.NODE_ENV)) {
-		// eslint-disable-next-line global-require
-		secrets = require('../config/secrets.js');
-	} else {
-		// eslint-disable-next-line global-require
-		secrets = require('../config/secrets.json');
-	}
+    if (['production', 'lokal'].includes(process.env.NODE_ENV)) {
+        // eslint-disable-next-line global-require
+        secrets = require('../config/secrets.js');
+    } else {
+        // eslint-disable-next-line global-require
+        secrets = require('../config/secrets.json');
+    }
 } catch (error) {
-	secrets = {};
+    secrets = {};
 }
 
 const app = express(feathers());
@@ -42,33 +42,33 @@ setupSwagger(app);
 app.set('secrets', secrets);
 
 app.use(compress())
-	.options('*', cors())
-	.use(cors())
-	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
-	.use('/', express.static('public'))
-	.use(bodyParser.json())
-	.use(bodyParser.urlencoded({ extended: true }))
-	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
+    .options('*', cors())
+    .use(cors())
+    .use(favicon(path.join(app.get('public'), 'favicon.ico')))
+    .use('/', express.static('public'))
+    .use(bodyParser.json())
+    .use(bodyParser.urlencoded({ extended: true }))
+    .use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 
-	.use(defaultHeaders)
-	.get('/system_info/haproxy', (req, res) => { res.send({ timestamp: new Date().getTime() }); })
-	.get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
-	.configure(rest(handleResponseType))
-	.configure(socketio())
+    .use(defaultHeaders)
+    .get('/system_info/haproxy', (req, res) => { res.send({ timestamp: new Date().getTime() }); })
+    .get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
+    .configure(rest(handleResponseType))
+    .configure(socketio())
 
-	.use((req, res, next) => {
-		// pass header into hooks.params
-		req.feathers.headers = req.headers;
-		next();
-	})
-	.configure(services)
+    .use((req, res, next) => {
+        // pass header into hooks.params
+        req.feathers.headers = req.headers;
+        next();
+    })
+    .configure(services)
 
-	.configure(socketio())
-	.configure(sockets)
-	.configure(middleware)
-	.hooks(allHooks);
+    .configure(socketio())
+    .configure(sockets)
+    .configure(middleware)
+    .hooks(allHooks);
 
-winston.cli();	// optimize for cli, like using colors
+winston.cli();  // optimize for cli, like using colors
 winston.level = 'debug';
 
 module.exports = app;

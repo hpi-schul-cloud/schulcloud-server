@@ -3,18 +3,18 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const permissionSchema = new Schema({
-	refId: {
-		type: Schema.Types.ObjectId,
-		refPath: 'refPermModel',
-	},
-	refPermModel: {
-		type: String,
-		enum: ['user', 'role'],
-	},
-	write: { type: Boolean, default: true },
-	read: { type: Boolean, default: true },
-	create: { type: Boolean, default: true },
-	delete: { type: Boolean, default: true },
+    refId: {
+        type: Schema.Types.ObjectId,
+        refPath: 'refPermModel',
+    },
+    refPermModel: {
+        type: String,
+        enum: ['user', 'role'],
+    },
+    write: { type: Boolean, default: true },
+    read: { type: Boolean, default: true },
+    create: { type: Boolean, default: true },
+    delete: { type: Boolean, default: true },
 }, { _id: false });
 
 /**
@@ -32,34 +32,34 @@ const permissionSchema = new Schema({
  * @param lockId {ObjectId} - indicates whether a file is locked for editing or not (wopi-related)
  */
 const fileSchema = new Schema({
-	isDirectory: { type: Boolean, default: false },
-	name: { type: String },
-	size: { type: Number },
-	type: { type: String },
-	storageFileName: { type: String },
-	thumbnail: { type: String },
-	shareToken: { type: String },
-	parent: { type: Schema.Types.ObjectId, ref: 'file' },
-	owner: {
-		type: Schema.Types.ObjectId,
-		required: true,
-		refPath: 'refOwnerModel',
-	},
-	refOwnerModel: {
-		type: String,
-		required: true,
-		enum: ['user', 'course', 'teams'],
-	},
-	permissions: [permissionSchema],
-	lockId: { type: Schema.Types.ObjectId, ref: 'user' },
-	createdAt: { type: Date, default: Date.now },
-	updatedAt: { type: Date, default: Date.now },
+    isDirectory: { type: Boolean, default: false },
+    name: { type: String },
+    size: { type: Number },
+    type: { type: String },
+    storageFileName: { type: String },
+    thumbnail: { type: String },
+    shareToken: { type: String },
+    parent: { type: Schema.Types.ObjectId, ref: 'file' },
+    owner: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        refPath: 'refOwnerModel',
+    },
+    refOwnerModel: {
+        type: String,
+        required: true,
+        enum: ['user', 'course', 'teams'],
+    },
+    permissions: [permissionSchema],
+    lockId: { type: Schema.Types.ObjectId, ref: 'user' },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
 });
 
 // make file-model searchable
 fileSchema.index({ name: 'text' });
 
 module.exports = {
-	FileModel: mongoose.model('file', fileSchema),
-	permissionSchema,
+    FileModel: mongoose.model('file', fileSchema),
+    permissionSchema,
 };

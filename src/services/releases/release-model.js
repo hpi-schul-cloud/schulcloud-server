@@ -8,15 +8,15 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const releaseSchema = new Schema({
-	_id: { type: String, required: true },
-	name: { type: String, required: true },
-	body: { type: String, default: '' },
-	url: { type: String, required: true },
-	author: { type: String, required: true },
-	authorUrl: { type: String, required: true },
-	createdAt: { type: Date, required: true },
-	publishedAt: { type: Date, required: true },
-	zipUrl: { type: String },
+    _id: { type: String, required: true },
+    name: { type: String, required: true },
+    body: { type: String, default: '' },
+    url: { type: String, required: true },
+    author: { type: String, required: true },
+    authorUrl: { type: String, required: true },
+    createdAt: { type: Date, required: true },
+    publishedAt: { type: Date, required: true },
+    zipUrl: { type: String },
 });
 
 const releaseModel = mongoose.model('release', releaseSchema);

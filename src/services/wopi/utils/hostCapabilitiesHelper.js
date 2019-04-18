@@ -8,27 +8,27 @@
  * Host-Capabilities: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#wopi-host-capabilities-properties
  */
 const HOST_CAPABILITIES = [
-	'SupportsCobalt',
-	'SupportsContainers',
-	'SupportsDeleteFile',
-	'SupportsEcosystem',
-	'SupportsExtendedLockLength',
-	'SupportsFolders',
-	'SupportsGetFileWopiSrc',
-	'SupportsGetLock',
-	'SupportsLocks',
-	'SupportsRename',
-	'SupportsUpdate',
-	'SupportsUserInfo',
-	'UserCanRename',
+    'SupportsCobalt',
+    'SupportsContainers',
+    'SupportsDeleteFile',
+    'SupportsEcosystem',
+    'SupportsExtendedLockLength',
+    'SupportsFolders',
+    'SupportsGetFileWopiSrc',
+    'SupportsGetLock',
+    'SupportsLocks',
+    'SupportsRename',
+    'SupportsUpdate',
+    'SupportsUserInfo',
+    'UserCanRename',
 ];
 
 const CURRENTLY_IMPLEMENTED = ['SupportsDeleteFile', 'SupportsLocks', 'SupportsGetLock', 'SupportsRename', 'SupportsUpdate', 'UserCanRename'];
 
 const defaultCapabilities = () => {
-	const caps = {};
-	HOST_CAPABILITIES.forEach(h => caps[h] = CURRENTLY_IMPLEMENTED.includes(h));
-	return caps;
+    const caps = {};
+    HOST_CAPABILITIES.forEach(h => caps[h] = CURRENTLY_IMPLEMENTED.includes(h));
+    return caps;
 };
 
 module.exports = { defaultCapabilities };

@@ -9,10 +9,10 @@ const { isArrayWithElement, isDefined, bsonIdToString } = require('./hooks/colle
  * @param {*} params
  */
 const local = (params) => {
-	if (typeof ((params || {}).provider) !== 'undefined') {
-		delete params.provider;
-	}
-	return params;
+    if (typeof ((params || {}).provider) !== 'undefined') {
+        delete params.provider;
+    }
+    return params;
 };
 
 /**
@@ -20,14 +20,14 @@ const local = (params) => {
  * @param {*} user
  */
 exports.getUpdatedSchoolIdArray = (team, user) => {
-	const schoolIds = bsonIdToString(team.schoolIds);
-	const userSchoolId = bsonIdToString(user.schoolId);
+    const schoolIds = bsonIdToString(team.schoolIds);
+    const userSchoolId = bsonIdToString(user.schoolId);
 
-	if (schoolIds.includes(userSchoolId) === false) {
-		schoolIds.push(userSchoolId);
-	}
+    if (schoolIds.includes(userSchoolId) === false) {
+        schoolIds.push(userSchoolId);
+    }
 
-	return schoolIds;
+    return schoolIds;
 };
 
 /**
@@ -41,12 +41,12 @@ exports.removeInvitedUserByEmail = (team, email) => team.invitedUserIds.filter(u
  * @param {*} params
  */
 const getSessionUser = (refClass, params, userId) => {
-	const sesessionUserId = userId || bsonIdToString((params.account || {}).userId);
+    const sesessionUserId = userId || bsonIdToString((params.account || {}).userId);
 
-	return refClass.app.service('users').get(sesessionUserId).catch((err) => {
-		warn(err);
-		throw new Forbidden('You have not the permission.');
-	});
+    return refClass.app.service('users').get(sesessionUserId).catch((err) => {
+        warn(err);
+        throw new Forbidden('You have not the permission.');
+    });
 };
 exports.getSessionUser = getSessionUser;
 
@@ -57,33 +57,33 @@ exports.getSessionUser = getSessionUser;
  * @param {*} params
  */
 exports.patchTeam = (refClass, teamId, data, params) => refClass.app.service('teams').patch(teamId, data, local(params)).catch((err) => {
-	warn(err);
-	throw new BadRequest('Can not patch team.');
+    warn(err);
+    throw new BadRequest('Can not patch team.');
 });
 
 /**
  * @param {*} app
  * @param {*} teamId
  */
-const getTeam = (refClass, teamId) => {		// todo: app to this -> this.app
-	const populateParams = {
-		query: {
-			$populate: [{ path: 'roles' }, { path: 'userIds.userId' }],
-		},
-	};
-	return refClass.app.service('teams').get(teamId, populateParams).catch((err) => {
-		warn(err);
-		throw new Forbidden('You have not the permission.');
-	});
+const getTeam = (refClass, teamId) => {     // todo: app to this -> this.app
+    const populateParams = {
+        query: {
+            $populate: [{ path: 'roles' }, { path: 'userIds.userId' }],
+        },
+    };
+    return refClass.app.service('teams').get(teamId, populateParams).catch((err) => {
+        warn(err);
+        throw new Forbidden('You have not the permission.');
+    });
 };
 exports.getTeam = getTeam;
 
 exports.extractOne = (find, key) => {
-	if (find.total !== 1 && isArrayWithElement(find.data)) {
-		throw new BadRequest('Can not extract one from find data.');
-	}
-	find = isDefined(key) ? find.data[0][key] : find.data[0];
-	return Promise.resolve(find);
+    if (find.total !== 1 && isArrayWithElement(find.data)) {
+        throw new BadRequest('Can not extract one from find data.');
+    }
+    find = isDefined(key) ? find.data[0][key] : find.data[0];
+    return Promise.resolve(find);
 };
 
 /**
@@ -96,7 +96,7 @@ exports.extractOne = (find, key) => {
  * @param {*} params
  */
 exports.getBasic = (refClass, teamId, params, userId) => Promise.all([
-	teamRolesToHook(refClass),
-	getSessionUser(refClass, params, userId),
-	getTeam(refClass, teamId),
+    teamRolesToHook(refClass),
+    getSessionUser(refClass, params, userId),
+    getTeam(refClass, teamId),
 ]);

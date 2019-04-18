@@ -12,27 +12,27 @@ const { FileModel } = require('../../fileStorage/model');
  * @param {*} hook
  */
 const wopiAuthentication = (hook) => {
-	hook.params.headers = hook.params.headers || {};
-	let jwt = (hook.params.query || {}).access_token || hook.params.headers.authorization; // depends on client
-	if (!jwt) throw new Error('access_token is missing!');
+    hook.params.headers = hook.params.headers || {};
+    let jwt = (hook.params.query || {}).access_token || hook.params.headers.authorization; // depends on client
+    if (!jwt) throw new Error('access_token is missing!');
 
-	// remove client specific stuff
-	if (jwt.indexOf('?permission') >= 0) jwt = jwt.slice(0, jwt.indexOf('?permission'));
+    // remove client specific stuff
+    if (jwt.indexOf('?permission') >= 0) jwt = jwt.slice(0, jwt.indexOf('?permission'));
 
-	hook.params.headers.authorization = jwt;
+    hook.params.headers.authorization = jwt;
 
-	return auth.hooks.authenticate('jwt')(hook);
+    return auth.hooks.authenticate('jwt')(hook);
 };
 
 /**
  * All editing (POST, PATCH, DELETE) actions should include the wopi-override header!
  */
 const retrieveWopiOverrideHeader = (hook) => {
-	hook.params.headers = hook.params.headers || [];
-	if (!hook.params.headers['x-wopi-override']) throw new errors.BadRequest('X-WOPI-Override header was not provided or was empty!');
-	hook.params.payload.wopiRequestedName = hook.params.headers['x-wopi-requestedname'];
-	hook.params.wopiAction = hook.params.headers['x-wopi-override'];
-	return hook;
+    hook.params.headers = hook.params.headers || [];
+    if (!hook.params.headers['x-wopi-override']) throw new errors.BadRequest('X-WOPI-Override header was not provided or was empty!');
+    hook.params.payload.wopiRequestedName = hook.params.headers['x-wopi-requestedname'];
+    hook.params.wopiAction = hook.params.headers['x-wopi-override'];
+    return hook;
 };
 
 /**
@@ -46,46 +46,46 @@ const retrieveWopiOverrideHeader = (hook) => {
  * INFORMATION: sometimes wopi-clients not implemented locks! Therefore this hook has to be disabled.
  */
 const checkLockHeader = (hook) => {
-	const concerningActions = ['LOCK', 'PUT', 'REFRESH_LOCK', 'UNLOCK'];
-	const { wopiAction } = hook.params;
+    const concerningActions = ['LOCK', 'PUT', 'REFRESH_LOCK', 'UNLOCK'];
+    const { wopiAction } = hook.params;
 
-	if (!concerningActions.includes(wopiAction)) return hook;
+    if (!concerningActions.includes(wopiAction)) return hook;
 
-	const lockId = hook.params.headers['x-wopi-lock'];
-	const { fileId } = hook.params;
+    const lockId = hook.params.headers['x-wopi-lock'];
+    const { fileId } = hook.params;
 
-	// check if lockId is correct for the given file
-	return FileModel.findOne({ _id: fileId }).then((file) => {
-		if (!file) throw new errors.NotFound('The requested file was not found!');
-		const fileLockId = (file.lockId || '').toString();
+    // check if lockId is correct for the given file
+    return FileModel.findOne({ _id: fileId }).then((file) => {
+        if (!file) throw new errors.NotFound('The requested file was not found!');
+        const fileLockId = (file.lockId || '').toString();
 
-		if (fileLockId && fileLockId !== lockId) throw new errors.Conflict('Lock mismatch: The given file could be locked by another wopi-client!');
+        if (fileLockId && fileLockId !== lockId) throw new errors.Conflict('Lock mismatch: The given file could be locked by another wopi-client!');
 
-		return hook;
-	});
+        return hook;
+    });
 };
 
 const setLockResponseHeader = (hook) => {
-	hook.result.headerPipes = [{ key: 'X-WOPI-Lock', value: hook.result.lockId || '' }];
-	return hook;
+    hook.result.headerPipes = [{ key: 'X-WOPI-Lock', value: hook.result.lockId || '' }];
+    return hook;
 };
 
 exports.before = {
-	all: [wopiAuthentication],
-	find: [],
-	get: [],
-	create: [retrieveWopiOverrideHeader, checkLockHeader],
-	update: [retrieveWopiOverrideHeader, checkLockHeader],
-	patch: [retrieveWopiOverrideHeader, checkLockHeader],
-	remove: [retrieveWopiOverrideHeader, checkLockHeader],
+    all: [wopiAuthentication],
+    find: [],
+    get: [],
+    create: [retrieveWopiOverrideHeader, checkLockHeader],
+    update: [retrieveWopiOverrideHeader, checkLockHeader],
+    patch: [retrieveWopiOverrideHeader, checkLockHeader],
+    remove: [retrieveWopiOverrideHeader, checkLockHeader],
 };
 
 exports.after = {
-	all: [],
-	find: [],
-	get: [],
-	create: [setLockResponseHeader],
-	update: [],
-	patch: [],
-	remove: [],
+    all: [],
+    find: [],
+    get: [],
+    create: [setLockResponseHeader],
+    update: [],
+    patch: [],
+    remove: [],
 };

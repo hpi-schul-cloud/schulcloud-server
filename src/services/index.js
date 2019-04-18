@@ -36,51 +36,51 @@ const me = require('./me');
 const newsEvents = require('./news/events');
 
 module.exports = function initializeServices() {
-	const app = this;
+    const app = this;
 
-	// connect mongoose to the database
-	const dbCredentials = {
-		user: process.env.DB_USERNAME,
-		pass: process.env.DB_PASSWORD,
-	};
-	mongoose.connect(process.env.DB_URL || app.get('mongodb'), dbCredentials);
-	mongoose.Promise = global.Promise;
+    // connect mongoose to the database
+    const dbCredentials = {
+        user: process.env.DB_USERNAME,
+        pass: process.env.DB_PASSWORD,
+    };
+    mongoose.connect(process.env.DB_URL || app.get('mongodb'), dbCredentials);
+    mongoose.Promise = global.Promise;
 
-	// register services
-	app.configure(authentication);
-	app.configure(analytics);
-	app.configure(user);
-	app.configure(role);
-	app.configure(account);
-	app.configure(system);
-	app.configure(school);
-	app.configure(resolve);
-	app.configure(userGroup);
-	app.configure(teams);
-	app.configure(ltiTool);
-	app.configure(content);
-	app.configure(calendar);
-	app.configure(lesson);
-	app.configure(fileStorage);
-	app.configure(link);
-	app.configure(news);
-	app.configure(helpers);
-	app.configure(homework);
-	app.configure(federalState);
-	app.configure(passwordRecovery);
-	app.configure(notification);
-	app.configure(releases);
-	app.configure(helpdesk);
-	app.configure(statistic);
-	app.configure(wopi);
-	app.configure(pseudonym);
-	app.configure(consent);
-	app.configure(clipboard);
-	app.configure(ldap);
-	app.configure(sync);
-	app.configure(me);
-	app.configure(rocketChat);
+    // register services
+    app.configure(authentication);
+    app.configure(analytics);
+    app.configure(user);
+    app.configure(role);
+    app.configure(account);
+    app.configure(system);
+    app.configure(school);
+    app.configure(resolve);
+    app.configure(userGroup);
+    app.configure(teams);
+    app.configure(ltiTool);
+    app.configure(content);
+    app.configure(calendar);
+    app.configure(lesson);
+    app.configure(fileStorage);
+    app.configure(link);
+    app.configure(news);
+    app.configure(helpers);
+    app.configure(homework);
+    app.configure(federalState);
+    app.configure(passwordRecovery);
+    app.configure(notification);
+    app.configure(releases);
+    app.configure(helpdesk);
+    app.configure(statistic);
+    app.configure(wopi);
+    app.configure(pseudonym);
+    app.configure(consent);
+    app.configure(clipboard);
+    app.configure(ldap);
+    app.configure(sync);
+    app.configure(me);
+    app.configure(rocketChat);
 
-	// initialize events
-	newsEvents.configure(app);
+    // initialize events
+    newsEvents.configure(app);
 };

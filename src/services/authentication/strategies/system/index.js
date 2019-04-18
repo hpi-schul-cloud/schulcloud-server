@@ -3,58 +3,58 @@ const CustomStrategy = require('../custom');
 const Verifier = require('./verifier');
 
 const defaults = {
-	name: 'system',
-	username: '',
-	passwort: '',
-	systemId: '',
-	loginStrategy: '',
-	passReqToCallback: true,
+    name: 'system',
+    username: '',
+    passwort: '',
+    systemId: '',
+    loginStrategy: '',
+    passReqToCallback: true,
 };
 
 const KEYS = [
-	'entity',
-	'service',
-	'session',
-	'passReqToCallback',
+    'entity',
+    'service',
+    'session',
+    'passReqToCallback',
 ];
 
 
 function init(options = {}) {
-	return function () {
-		const app = this;
-		const _super = app.setup;
+    return function () {
+        const app = this;
+        const _super = app.setup;
 
-		if (!app.passport) {
-			throw new Error('Can not find app.passport. Did you initialize feathers-authentication?');
-		}
+        if (!app.passport) {
+            throw new Error('Can not find app.passport. Did you initialize feathers-authentication?');
+        }
 
-		const name = options.name || defaults.name;
-		const authOptions = app.get('auth') || {};
-		const systemOptions = authOptions[name] || {};
+        const name = options.name || defaults.name;
+        const authOptions = app.get('auth') || {};
+        const systemOptions = authOptions[name] || {};
 
-		const systemSettings = _.merge({}, defaults, _.pick(authOptions, KEYS), systemOptions, _.omit(options, ['Verifier']));
+        const systemSettings = _.merge({}, defaults, _.pick(authOptions, KEYS), systemOptions, _.omit(options, ['Verifier']));
 
-		app.setup = function () {
-			const result = _super.apply(this, arguments);
-			const verifier = new Verifier(app, systemSettings);
+        app.setup = function () {
+            const result = _super.apply(this, arguments);
+            const verifier = new Verifier(app, systemSettings);
 
-			if (!verifier.verify) {
-				throw new Error('Your verifier must implement a \'verify\' function. It should have the same signature as a local passport verify callback.');
-			}
+            if (!verifier.verify) {
+                throw new Error('Your verifier must implement a \'verify\' function. It should have the same signature as a local passport verify callback.');
+            }
 
-			// Register 'system' strategy with passport
-			app.passport.use(systemSettings.name, new CustomStrategy(systemSettings, verifier.verify.bind(verifier)));
-			app.passport.options(systemSettings.name, systemSettings);
+            // Register 'system' strategy with passport
+            app.passport.use(systemSettings.name, new CustomStrategy(systemSettings, verifier.verify.bind(verifier)));
+            app.passport.options(systemSettings.name, systemSettings);
 
-			return result;
-		};
-	};
+            return result;
+        };
+    };
 }
 
 // Exposed Modules
 Object.assign(init, {
-	defaults,
-	Verifier,
+    defaults,
+    Verifier,
 });
 
 exports.default = init;
