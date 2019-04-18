@@ -3,31 +3,16 @@
 	"rules": {
 		"no-multiple-empty-lines":["error",{
 			"max":2,
-			"maxBOF":0
+			"maxBOF":0,
+			"maxEOF":0
 		}],
-		"object-shorthand":"off",
-		"prefer-arrow-callback":"warn",
-		"func-names":"off",
-		"linebreak-style": [
-			"off",
-			"unix"
-		],
 		"max-len": [
 			"error",
 			{
 				"code": 120
 			}
 		],
-		"eol-last": [
-			"error",
-			"always"
-		],
-		"array-element-newline": [
-			"error",
-			"consistent"
-		],
 		"no-tabs": "off",
-		"no-var": "error",
 		"no-restricted-syntax": "off",
 		"no-await-in-loop": "off",
 		"class-methods-use-this": "off",
@@ -46,8 +31,7 @@
 			{
 				"allow": [
 					"err",
-					"error",
-					"_"
+					"error"
 				]
 			}
 		],
@@ -68,7 +52,7 @@
 			"warn",
 			{
 				"args": "after-used",
-				"argsIgnorePattern": "app|req|res|next|options|path|params|err|error|_|resolve|reject"
+				"argsIgnorePattern": "app|req|res|next|options|params"
 			}
 		],
 		"indent": [
@@ -126,12 +110,8 @@
 				"*.test.js"
 			],
 			"rules": {
-				"globals": {
-					"expect": true
-				},
 				"no-unused-expressions": "off",
-				"global-require": "off",
-				"prefer-arrow-callback":"off"
+				"global-require": "warn"
 			}
 		}
 	]
