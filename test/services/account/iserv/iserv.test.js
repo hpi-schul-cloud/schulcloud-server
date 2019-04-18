@@ -11,39 +11,39 @@ const { expect } = require('chai');
 chai.use(chaiHttp);
 
 describe('IServ single-sign-on', function () {
-    this.timeout(5000);
+	this.timeout(5000);
 
-    let mockSystem = null;
+	let mockSystem = null;
 
-    function createIServMockServer() {
-        return iservMockServer();
-    }
+	function createIServMockServer() {
+		return iservMockServer();
+	}
 
-    before(() => createIServMockServer()
-        .then((iserv) => {
-            mockSystem = {
-                url: iserv.url,
-                oaClientId: 'test',
-                oaClientSecret: 'test',
-            };
-        }));
+	before(() => createIServMockServer()
+		.then((iserv) => {
+			mockSystem = {
+				url: iserv.url,
+				oaClientId: 'test',
+				oaClientSecret: 'test',
+			};
+		}));
 
-    it('should succeed when input with correct credentials', () => {
-        const loginService = new IServStrategy();
-        return loginService.login(config.testIServUser, mockSystem)
-            .then((response) => {
-                const _res = response;
-                expect(_res).to.be.not.undefined;
-                expect(_res.data.statusCode).to.equal('200');
-            });
-    });
+	it('should succeed when input with correct credentials', () => {
+		const loginService = new IServStrategy();
+		return loginService.login(config.testIServUser, mockSystem)
+			.then((response) => {
+				const _res = response;
+				expect(_res).to.be.not.undefined;
+				expect(_res.data.statusCode).to.equal('200');
+			});
+	});
 
-    it('should fail when input wrong user credentials', () => {
-        const loginService = new IServStrategy();
-        return loginService.login(config.testIServUserFail, mockSystem)
-            .catch((err) => {
-                const body = JSON.parse(err.body);
-                expect(body.statusCode).to.equal('401');
-            });
-    });
+	it('should fail when input wrong user credentials', () => {
+		const loginService = new IServStrategy();
+		return loginService.login(config.testIServUserFail, mockSystem)
+			.catch((err) => {
+				const body = JSON.parse(err.body);
+				expect(body.statusCode).to.equal('401');
+			});
+	});
 });

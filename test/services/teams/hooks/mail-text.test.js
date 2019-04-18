@@ -8,57 +8,57 @@ const app = require('../../../../src/app');
 
 
 describe('Team mail-text helper', () => {
-    let server;
+	let server;
 
-    before((done) => {
-        server = app.listen(0, done);
-    });
+	before((done) => {
+		server = app.listen(0, done);
+	});
 
-    after((done) => {
-        server.close(done);
-    });
+	after((done) => {
+		server.close(done);
+	});
 
-    describe('createEmailText', () => {
-        let hook; let
-            user;
-        before(() => {
-            hook = createHook(app, {
-                method: 'patch',
-                type: 'after',
-            });
-        });
-        it.skip('should work for new expert', () => {
-            const hookCopy = Object.assign({}, hook);
-            const addClass = app.service('/teams/extern/add');
-            const formatResult = addClass._response;
-            const user = {
-                firstname: '<firstname>',
-                lastname: '<lastname>',
-                email: '<email>',
-                importHash: '<hash>',
-            };
+	describe('createEmailText', () => {
+		let hook; let
+			user;
+		before(() => {
+			hook = createHook(app, {
+				method: 'patch',
+				type: 'after',
+			});
+		});
+		it.skip('should work for new expert', () => {
+			const hookCopy = Object.assign({}, hook);
+			const addClass = app.service('/teams/extern/add');
+			const formatResult = addClass._response;
+			const user = {
+				firstname: '<firstname>',
+				lastname: '<lastname>',
+				email: '<email>',
+				importHash: '<hash>',
+			};
 
-            const linkData = {
-                link: '<link>',
-                target: '<target>',
-                hash: '<hash>',
-                shortLink: '<shortLink>',
-            };
+			const linkData = {
+				link: '<link>',
+				target: '<target>',
+				hash: '<hash>',
+				shortLink: '<shortLink>',
+			};
 
-            hookCopy.result = formatResult({
-                linkData,
-                user,
-                isUserCreated: true,
-                isResend: false,
-                email: user.email,
-            });
+			hookCopy.result = formatResult({
+				linkData,
+				user,
+				isUserCreated: true,
+				isResend: false,
+				email: user.email,
+			});
 
 
-            console.log(createEmailText(hookCopy, user));
-            expect(createEmailText(hookCopy, user)).to.equal({
+			console.log(createEmailText(hookCopy, user));
+			expect(createEmailText(hookCopy, user)).to.equal({
 
-            });
-            // todo check all results ..
-        });
-    });
+			});
+			// todo check all results ..
+		});
+	});
 });

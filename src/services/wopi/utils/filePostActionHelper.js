@@ -8,12 +8,12 @@ const { FileModel } = require('../../fileStorage/model');
 
 /** https://wopirest.readthedocs.io/en/latest/files/DeleteFile.html */
 const deleteFile = (file, payload, account, app) => {
-    const fileStorageService = app.service('fileStorage');
-    return fileStorageService.remove(null, {
-        query: { _id: file._id },
-        payload,
-        account,
-    });
+	const fileStorageService = app.service('fileStorage');
+	return fileStorageService.remove(null, {
+		query: { _id: file._id },
+		payload,
+		account,
+	});
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/Lock.html
@@ -21,8 +21,8 @@ const deleteFile = (file, payload, account, app) => {
   * adoption: the lockId was checked in a hook before
   */
 const lock = (file) => {
-    file.lockId = mongoose.Types.ObjectId();
-    return FileModel.update({ _id: file._id }, file).exec().then(_ => Promise.resolve({ lockId: file.lockId }));
+	file.lockId = mongoose.Types.ObjectId();
+	return FileModel.update({ _id: file._id }, file).exec().then(_ => Promise.resolve({ lockId: file.lockId }));
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/GetLock.html */
@@ -33,35 +33,35 @@ const unlock = file => FileModel.update({ _id: file._id }, { $unset: { lockId: 1
 
 /** https://wopirest.readthedocs.io/en/latest/files/RenameFile.html */
 const renameFile = (file, payload, account, app) => {
-    const fileRenameService = app.service('fileStorage/rename');
-    return fileRenameService.create({
-        _id: file._id,
-        newName: payload.wopiRequestedName,
-        userPayload: payload,
-        account,
-    });
+	const fileRenameService = app.service('fileStorage/rename');
+	return fileRenameService.create({
+		_id: file._id,
+		newName: payload.wopiRequestedName,
+		userPayload: payload,
+		account,
+	});
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/GetShareUrl.html */
 const shareUrl = (file, payload, account, app) => {
-    throw new errors.NotImplemented('This function is currently not implemented!');
+	throw new errors.NotImplemented('This function is currently not implemented!');
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/PutUserInfo.html */
 const putUserInfo = (file, payload, account, app) => {
-    throw new errors.NotImplemented('This function is currently not implemented!');
+	throw new errors.NotImplemented('This function is currently not implemented!');
 };
 
 
 const actionHeaderMap = {
-    DELETE: deleteFile,
-    LOCK: lock,
-    GET_LOCK: getLock,
-    UNLOCK: unlock,
-    REFRESH_LOCK: lock,
-    RENAME_FILE: renameFile,
-    GET_SHARE_URL: shareUrl,
-    PUT_USER_INFO: putUserInfo,
+	DELETE: deleteFile,
+	LOCK: lock,
+	GET_LOCK: getLock,
+	UNLOCK: unlock,
+	REFRESH_LOCK: lock,
+	RENAME_FILE: renameFile,
+	GET_SHARE_URL: shareUrl,
+	PUT_USER_INFO: putUserInfo,
 };
 
 module.exports = header => actionHeaderMap[header];

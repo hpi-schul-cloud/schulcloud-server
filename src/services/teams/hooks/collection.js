@@ -49,11 +49,11 @@ const isArray = array => Array.isArray(array);
  * @collection
  */
 const isArrayWithElement = (array) => {
-    try {
-        return isArray(array) && array.length > 0;
-    } catch (err) {
-        return false;
-    }
+	try {
+		return isArray(array) && array.length > 0;
+	} catch (err) {
+		return false;
+	}
 };
 
 /**
@@ -125,11 +125,11 @@ const isNull = e => e === null;
  * @return {String::ObjectId} Return null if can not created
  */
 const tryToCastToObjectId = (id) => {
-    try {
-        return ObjectId(id);
-    } catch (err) {
-        return null;
-    }
+	try {
+		return ObjectId(id);
+	} catch (err) {
+		return null;
+	}
 };
 
 /**
@@ -150,9 +150,9 @@ const isObjectIdWithTryToCast = id => isObjectId(id) || !isNull(tryToCastToObjec
 *                       or a String that can cast to this schema, it is throw an error
 */
 const throwErrorIfNotObjectId = (id) => {
-    if (!isObjectIdWithTryToCast(id)) {
-        throw new BadRequest('Is not instance of Schema.Types.ObjectId.');
-    }
+	if (!isObjectIdWithTryToCast(id)) {
+		throw new BadRequest('Is not instance of Schema.Types.ObjectId.');
+	}
 };
 
 /**
@@ -162,15 +162,15 @@ const throwErrorIfNotObjectId = (id) => {
  * @returns {Array::String::Id || String::Id}
  */
 const bsonIdToString = (input) => {
-    let out;
-    if (isArray(input)) {
-        out = input.map(id => id.toString());
-    } else if (isDefined(input)) {
-        out = input.toString();
-    } else {
-        out = input;
-    }
-    return out;
+	let out;
+	if (isArray(input)) {
+		out = input.map(id => id.toString());
+	} else if (isDefined(input)) {
+		out = input.toString();
+	} else {
+		out = input;
+	}
+	return out;
 };
 
 /**
@@ -187,15 +187,15 @@ const isSameId = (value1, value2) => bsonIdToString(value1) === bsonIdToString(v
  * @param {String::'AND'||'OR'} operation
  */
 const isDefinedOperation = (e, operation) => {
-    let out;
-    if (operation === 'OR') {
-        out = isOneDefined(e);
-    } else if (operation === 'AND') {
-        out = isAllDefined(e);
-    } else {
-        out = isDefined(e);
-    }
-    return out;
+	let out;
+	if (operation === 'OR') {
+		out = isOneDefined(e);
+	} else if (operation === 'AND') {
+		out = isAllDefined(e);
+	} else {
+		out = isDefined(e);
+	}
+	return out;
 };
 
 /**
@@ -204,30 +204,30 @@ const isDefinedOperation = (e, operation) => {
  * @param {String::'AND'||'OR'} operation AND || OR
  */
 const isUndefinedOperation = (e, operation) => {
-    let out;
-    if (operation === 'OR') {
-        out = isOneUndefined(e);
-    } else if (operation === 'AND') {
-        out = isAllUndefined(e);
-    } else {
-        out = isUndefined(e);
-    }
-    return out;
+	let out;
+	if (operation === 'OR') {
+		out = isOneUndefined(e);
+	} else if (operation === 'AND') {
+		out = isAllUndefined(e);
+	} else {
+		out = isUndefined(e);
+	}
+	return out;
 };
 
 module.exports = {
-    isArray,
-    isArrayWithElement,
-    isObject,
-    isString,
-    hasKey,
-    isDefined: isDefinedOperation,
-    isUndefined: isUndefinedOperation,
-    isNull,
-    isObjectId,
-    isObjectIdWithTryToCast,
-    throwErrorIfNotObjectId,
-    bsonIdToString, // todo: rename  ?toIdString ?
-    isSameId,
-    isFunction,
+	isArray,
+	isArrayWithElement,
+	isObject,
+	isString,
+	hasKey,
+	isDefined: isDefinedOperation,
+	isUndefined: isUndefinedOperation,
+	isNull,
+	isObjectId,
+	isObjectIdWithTryToCast,
+	throwErrorIfNotObjectId,
+	bsonIdToString, // todo: rename  ?toIdString ?
+	isSameId,
+	isFunction,
 };

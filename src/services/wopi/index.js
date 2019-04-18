@@ -6,8 +6,8 @@ const rp = require('request-promise-native');
 const hooks = require('./hooks');
 const { FileModel } = require('../fileStorage/model');
 const {
-    canWrite,
-    canRead,
+	canWrite,
+	canRead,
 } = require('../fileStorage/utils/filePermissionHelper');
 const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
 const filePostActionHelper = require('./utils/filePostActionHelper');
@@ -21,151 +21,151 @@ const wopiPrefix = '/wopi/files/';
  * https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html
  */
 class WopiFilesInfoService {
-    constructor(app) {
-        this.app = app;
-        this.docs = docs.wopiFilesInfoService;
-    }
+	constructor(app) {
+		this.app = app;
+		this.docs = docs.wopiFilesInfoService;
+	}
 
-    find({ fileId, account }) {
-        const { userId } = account;
-        const userService = this.app.service('users');
+	find({ fileId, account }) {
+		const { userId } = account;
+		const userService = this.app.service('users');
 
-        // property descriptions: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#required-response-properties
-        let capabilities = {
-            OwnerId: userId, // if an user passes the permission check, it's valid to handle it as file-owner
-            UserId: userId,
-        };
+		// property descriptions: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#required-response-properties
+		let capabilities = {
+			OwnerId: userId, // if an user passes the permission check, it's valid to handle it as file-owner
+			UserId: userId,
+		};
 
-        // check whether a valid file is requested
-        return FileModel.findOne({ _id: fileId })
-            .then((file) => {
-                if (!file) {
-                    throw new errors.NotFound('The requested file was not found!');
-                }
+		// check whether a valid file is requested
+		return FileModel.findOne({ _id: fileId })
+			.then((file) => {
+				if (!file) {
+					throw new errors.NotFound('The requested file was not found!');
+				}
 
-                capabilities = {
-                    ...capabilities,
-                    BaseFileName: file.name,
-                    Size: file.size,
-                    Version: file.__v,
-                };
+				capabilities = {
+					...capabilities,
+					BaseFileName: file.name,
+					Size: file.size,
+					Version: file.__v,
+				};
 
-                return canRead(userId, fileId);
-            })
-            .then(() => userService.get(userId))
-            .then((user) => {
-                capabilities = {
-                    ...capabilities,
-                    UserFriendlyName: `${user.firstName} ${user.lastName}`,
-                };
+				return canRead(userId, fileId);
+			})
+			.then(() => userService.get(userId))
+			.then((user) => {
+				capabilities = {
+					...capabilities,
+					UserFriendlyName: `${user.firstName} ${user.lastName}`,
+				};
 
-                return canWrite(userId, fileId).catch(() => undefined);
-            })
-            .then((canWrite) => {
-                capabilities = {
-                    ...capabilities,
-                    UserCanWrite: Boolean(canWrite),
-                    UserCanNotWriteRelative: true,
-                };
+				return canWrite(userId, fileId).catch(() => undefined);
+			})
+			.then((canWrite) => {
+				capabilities = {
+					...capabilities,
+					UserCanWrite: Boolean(canWrite),
+					UserCanNotWriteRelative: true,
+				};
 
-                return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), capabilities));
-            })
-            .catch(() => new errors.Forbidden());
-    }
+				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), capabilities));
+			})
+			.catch(() => new errors.Forbidden());
+	}
 
-    create(data, {
-        payload, _id, account, wopiAction,
-    }) {
-        // check whether a valid file is requested
-        return FileModel.findOne({ _id }).then((file) => {
-            if (!file) throw new errors.NotFound('The requested file was not found!');
+	create(data, {
+		payload, _id, account, wopiAction,
+	}) {
+		// check whether a valid file is requested
+		return FileModel.findOne({ _id }).then((file) => {
+			if (!file) throw new errors.NotFound('The requested file was not found!');
 
-            // trigger specific action
-            return filePostActionHelper(wopiAction)(file, payload, account, this.app);
-        });
-    }
+			// trigger specific action
+			return filePostActionHelper(wopiAction)(file, payload, account, this.app);
+		});
+	}
 }
 
 /** Wopi-Get/PutFile-Service
  */
 class WopiFilesContentsService {
-    constructor(app) {
-        this.app = app;
-        this.docs = docs.wopiFilesContentsService;
-    }
+	constructor(app) {
+		this.app = app;
+		this.docs = docs.wopiFilesContentsService;
+	}
 
-    /**
+	/**
      * retrieves a file`s binary contents
      * https://wopirest.readthedocs.io/en/latest/files/GetFile.html
      */
-    find({ fileId: _id, payload, account }) {
-        const signedUrlService = this.app.service('fileStorage/signedUrl');
+	find({ fileId: _id, payload, account }) {
+		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
-        // check whether a valid file is requested
-        return FileModel.findOne({ _id }).then((file) => {
-            if (!file) throw new errors.NotFound('The requested file was not found!');
+		// check whether a valid file is requested
+		return FileModel.findOne({ _id }).then((file) => {
+			if (!file) throw new errors.NotFound('The requested file was not found!');
 
-            // generate signed Url for fetching file from storage
-            return signedUrlService.find({
-                query: {
-                    file: file._id,
-                },
-                payload,
-                account,
-            }).then(signedUrl => rp({
-                uri: signedUrl.url,
-                encoding: null,
-            }));
-        });
-    }
+			// generate signed Url for fetching file from storage
+			return signedUrlService.find({
+				query: {
+					file: file._id,
+				},
+				payload,
+				account,
+			}).then(signedUrl => rp({
+				uri: signedUrl.url,
+				encoding: null,
+			}));
+		});
+	}
 
 
-    /*
+	/*
     * updates a file’s binary contents, file has to exist in proxy db
     * https://wopirest.readthedocs.io/en/latest/files/PutFile.html
     */
-    create(data, {
-        fileId, payload, account, wopiAction,
-    }) {
-        if (wopiAction !== 'PUT') throw new errors.BadRequest('WopiFilesContentsService: Wrong X-WOPI-Override header value!');
+	create(data, {
+		fileId, payload, account, wopiAction,
+	}) {
+		if (wopiAction !== 'PUT') throw new errors.BadRequest('WopiFilesContentsService: Wrong X-WOPI-Override header value!');
 
-        const signedUrlService = this.app.service('fileStorage/signedUrl');
+		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
-        // check whether a valid file is requested
-        return FileModel.findOne({ _id: fileId }).then((file) => {
-            if (!file) throw new errors.NotFound('The requested file was not found!');
-            file.key = decodeURIComponent(file.key);
+		// check whether a valid file is requested
+		return FileModel.findOne({ _id: fileId }).then((file) => {
+			if (!file) throw new errors.NotFound('The requested file was not found!');
+			file.key = decodeURIComponent(file.key);
 
-            // generate signedUrl for updating file to storage
-            return signedUrlService.patch(
-                file._id,
-                {},
-                { payload, account },
-            ).then((signedUrl) => {
-                // put binary content directly to file in storage
-                const options = {
-                    method: 'PUT',
-                    uri: signedUrl.url,
-                    contentType: file.type,
-                    body: data,
-                };
+			// generate signedUrl for updating file to storage
+			return signedUrlService.patch(
+				file._id,
+				{},
+				{ payload, account },
+			).then((signedUrl) => {
+				// put binary content directly to file in storage
+				const options = {
+					method: 'PUT',
+					uri: signedUrl.url,
+					contentType: file.type,
+					body: data,
+				};
 
-                return rp(options).then(_ => FileModel.findOneAndUpdate({ _id: fileId }, { $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length }).exec())
-                    .then(_ => Promise.resolve({ lockId: file.lockId }));
-            });
-        });
-    }
+				return rp(options).then(_ => FileModel.findOneAndUpdate({ _id: fileId }, { $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length }).exec())
+					.then(_ => Promise.resolve({ lockId: file.lockId }));
+			});
+		});
+	}
 }
 
 module.exports = function () {
-    const app = this;
+	const app = this;
 
-    app.use(`${wopiPrefix}:fileId/contents`, new WopiFilesContentsService(app), handleResponseHeaders);
-    app.use(`${wopiPrefix}:fileId`, new WopiFilesInfoService(app), handleResponseHeaders);
+	app.use(`${wopiPrefix}:fileId/contents`, new WopiFilesContentsService(app), handleResponseHeaders);
+	app.use(`${wopiPrefix}:fileId`, new WopiFilesInfoService(app), handleResponseHeaders);
 
-    const filesService = app.service(`${wopiPrefix}:fileId`);
-    const filesContentService = app.service(`${wopiPrefix}:fileId/contents`);
+	const filesService = app.service(`${wopiPrefix}:fileId`);
+	const filesContentService = app.service(`${wopiPrefix}:fileId/contents`);
 
-    filesService.hooks(hooks);
-    filesContentService.hooks(hooks);
+	filesService.hooks(hooks);
+	filesContentService.hooks(hooks);
 };

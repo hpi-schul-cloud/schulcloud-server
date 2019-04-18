@@ -8,11 +8,11 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const federalStateSchema = new Schema({
-    name: { type: String, required: true },
-    abbreviation: { type: String, required: true },
-    logoUrl: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
+	name: { type: String, required: true },
+	abbreviation: { type: String, required: true },
+	logoUrl: { type: String, required: true },
+	createdAt: { type: Date, default: Date.now },
+	updatedAt: { type: Date, default: Date.now },
 });
 
 const federalStateModel = mongoose.model('federalstate', federalStateSchema);
