@@ -157,7 +157,7 @@ describe('oauth2 service', function oauth() {
 		assert.strictEqual(result.challenge, loginRequest1);
 	}));
 
-	it('PATCH Login Request Accept', () => loginService.patch(loginRequest1, null, {
+	it('PATCH Login Request Accept', () => loginService.patch(loginRequest1, {}, {
 		query: { accept: 1 },
 		account: { userId: testUser2._id },
 	}).then((result) => {
@@ -165,7 +165,7 @@ describe('oauth2 service', function oauth() {
 		assert.ok(result.redirect_to.indexOf(testClient2.client_id) !== -1);
 	}));
 
-	it('PATCH Login Request Reject', () => loginService.patch(loginRequest2, null, {
+	it('PATCH Login Request Reject', () => loginService.patch(loginRequest2, {}, {
 		query: { accept: 0 },
 		account: { userId: '0000d224816abba584714c9c' },
 	}).then(() => {

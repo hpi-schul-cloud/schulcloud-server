@@ -1,4 +1,3 @@
-
 const hooks = require('./hooks');
 const globalHooks = require('../../hooks');
 const oauth2 = require('../oauth2/hooks');
@@ -32,7 +31,7 @@ module.exports = function roster() {
 					const user = users.data[0];
 					return {
 						data: {
-							user_id: params.user,
+							user_id: params.route.user,
 							username: 'Anonymous',
 							type: user.roles[0].name,
 						},
@@ -44,15 +43,17 @@ module.exports = function roster() {
 	};
 
 	const metadataHooks = {
-		find: [
-			globalHooks.ifNotLocal(hooks.tokenIsActive),
-			globalHooks.ifNotLocal(hooks.userIsMatching),
-			hooks.stripIframe,
-		],
+		before: {
+			find: [
+				globalHooks.ifNotLocal(hooks.tokenIsActive),
+				globalHooks.ifNotLocal(hooks.userIsMatching),
+				hooks.stripIframe,
+			],
+		},
 	};
 
 	app.use('/roster/users/:user/metadata', metadataHandler);
-	app.service('/roster/users/:user/metadata').before(metadataHooks);
+	app.service('/roster/users/:user/metadata').hooks(metadataHooks);
 
 	const userGroupsHandler = {
 		find(params) {
@@ -88,15 +89,18 @@ module.exports = function roster() {
 	};
 
 	const userGroupsHooks = {
-		find: [
-			globalHooks.ifNotLocal(hooks.tokenIsActive),
-			globalHooks.ifNotLocal(hooks.userIsMatching),
-			hooks.stripIframe,
-			hooks.injectOriginToolIds],
+		before: {
+			find: [
+				globalHooks.ifNotLocal(hooks.tokenIsActive),
+				globalHooks.ifNotLocal(hooks.userIsMatching),
+				hooks.stripIframe,
+				hooks.injectOriginToolIds
+			],
+		},
 	};
 
 	app.use('/roster/users/:user/groups', userGroupsHandler);
-	app.service('/roster/users/:user/groups').before(userGroupsHooks);
+	app.service('/roster/users/:user/groups').hooks(userGroupsHooks);
 
 	const groupsHandler = {
 		get(id, params) {
@@ -143,17 +147,18 @@ module.exports = function roster() {
 			});
 		},
 	};
-	const groupsHooksBefore = {
-		get: [
-			globalHooks.ifNotLocal(hooks.tokenIsActive),
-			hooks.injectOriginToolIds],
-	};
-
-	const groupsHooksAfter = {
-		get: hooks.groupContainsUser,
+	const groupsHooks = {
+		before: {
+			get: [
+				globalHooks.ifNotLocal(hooks.tokenIsActive),
+				hooks.injectOriginToolIds
+			],
+		},
+		after: {
+			get: hooks.groupContainsUser,
+		},
 	};
 
 	app.use('/roster/groups', groupsHandler);
-	app.service('/roster/groups').before(groupsHooksBefore);
-	app.service('/roster/groups').after(groupsHooksAfter);
+	app.service('/roster/groups').hooks(groupsHooks);
 };

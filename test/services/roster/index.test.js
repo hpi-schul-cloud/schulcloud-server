@@ -85,7 +85,7 @@ describe('roster service', function oauth() {
 	});
 
 	it('GET metadata', (done) => {
-		metadataService.find({user: pseudonym1}).then((metadata) => {
+		metadataService.find({ route: { user: pseudonym1 } }).then((metadata) => {
 			assert.strictEqual(pseudonym1, metadata.data.user_id);
 			assert.strictEqual('teacher', metadata.data.type);
 			done();
@@ -93,10 +93,10 @@ describe('roster service', function oauth() {
 	});
 
 	it('GET user groups', (done) => {
-	userGroupsService.find({
-		user: pseudonym1,
-		tokenInfo: { client_id: testTool1.oAuthClientId }
-	}).then((groups) => {
+		userGroupsService.find({
+			route: { user: pseudonym1 },
+			tokenInfo: { client_id: testTool1.oAuthClientId }
+		}).then((groups) => {
 			const group1 = groups.data.groups[0];
 			assert.strictEqual(testCourse._id, group1.group_id);
 			assert.strictEqual(testCourse.name, group1.name);

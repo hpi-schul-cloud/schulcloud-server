@@ -1,4 +1,4 @@
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 
 module.exports = {
 
@@ -15,7 +15,7 @@ module.exports = {
 		}),
 
 	userIsMatching: (context) => {
-		if (context.params.tokenInfo.obfuscated_subject === decodeURIComponent(context.params.user)
+		if (context.params.tokenInfo.obfuscated_subject === decodeURIComponent(context.params.route.user)
 			|| context.params.tokenInfo.sub === context.params.user) {
 			return context;
 		}
@@ -24,7 +24,7 @@ module.exports = {
 
 	stripIframe: (context) => {
 		const regEx = /oauth2\/username\/(.*?)"/;
-		const pseudonym = context.params.user;
+		const pseudonym = context.params.route.user;
 		context.params.pseudonym = (pseudonym.includes('iframe') ? pseudonym.match(regEx)[1] : pseudonym);
 		return context;
 	},

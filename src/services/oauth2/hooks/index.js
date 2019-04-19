@@ -1,5 +1,5 @@
-const auth = require('feathers-authentication');
-const errors = require('feathers-errors');
+const auth = require('@feathersjs/authentication');
+const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra.js');
 
@@ -10,7 +10,7 @@ exports.getSubject = iframeSubject;
 
 const setSubject = hook => {
 	if (!hook.params.query.accept) return hook;
-	hook.app.service('ltiTools').find({
+	return hook.app.service('ltiTools').find({
 		query: {
 			oAuthClientId: hook.params.loginRequest.client.client_id,
 		},
@@ -54,24 +54,34 @@ const managesOwnConsents = (hook) => {
 	throw new errors.Forbidden("You want to manage another user's consents");
 };
 
-exports.before = {
+exports.hooks = {
 	clients: {
-		all: [
-			auth.hooks.authenticate('jwt'),
-			globalHooks.ifNotLocal(globalHooks.isSuperHero())
-		],
+		before: {
+			all: [
+				auth.hooks.authenticate('jwt'),
+				globalHooks.ifNotLocal(globalHooks.isSuperHero())
+			],
+		},
 	},
 	loginRequest: {
-		patch: [auth.hooks.authenticate('jwt'), injectLoginRequest, setSubject],
+		before: {
+			patch: [auth.hooks.authenticate('jwt'), injectLoginRequest, setSubject],
+		},
 	},
 	consentRequest: {
-		all: [auth.hooks.authenticate('jwt')],
-		patch: [injectConsentRequest, validateSubject],
+		before: {
+			all: [auth.hooks.authenticate('jwt')],
+			patch: [injectConsentRequest, validateSubject],
+		},
 	},
 	introspect: {
-		create: [globalHooks.ifNotLocal(() => { throw new errors.MethodNotAllowed(); })],
+		before: {
+			create: [globalHooks.ifNotLocal(() => { throw new errors.MethodNotAllowed(); })],
+		},
 	},
 	consentSessions: {
-		all: [auth.hooks.authenticate('jwt'), managesOwnConsents],
+		before: {
+			all: [auth.hooks.authenticate('jwt'), managesOwnConsents],
+		},
 	},
 };
