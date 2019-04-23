@@ -1,4 +1,4 @@
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
 const _ = require('lodash');

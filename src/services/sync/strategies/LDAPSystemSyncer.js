@@ -1,4 +1,3 @@
-const errors = require('feathers-errors');
 const Syncer = require('./Syncer');
 const LDAPSyncer = require('./LDAPSyncer');
 
