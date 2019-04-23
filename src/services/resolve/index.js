@@ -1,6 +1,4 @@
-'use strict';
-
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 
 // get an json api conform entry
 const getDataEntry = ({ type, id, name, authorities = ["can-read"], attributes = {} }) => {
@@ -28,9 +26,9 @@ class ScopeResolver {
 				first: '',
 				last: '',
 				next: '',
-				prev: ''
+				prev: '',
 			},
-			data: []
+			data: [],
 		};
 
 		return userService.get(id)

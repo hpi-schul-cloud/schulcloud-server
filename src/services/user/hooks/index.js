@@ -1,10 +1,7 @@
-'use strict';
-
-const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
-const errors = require('feathers-errors');
+const auth = require('@feathersjs/authentication');
+const errors = require('@feathersjs/errors');
 const logger = require('winston');
+const globalHooks = require('../../../hooks');
 
 /**
  *
@@ -45,14 +42,14 @@ const checkUnique = (hook) => {
 			if (isLoggedIn || asTask === undefined || asTask === 'student') {
 				return Promise.reject(new errors.BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
 			} else if (asTask === 'parent') {
-					userService.update({ _id: user._id }, {
-						$set: {
-							children: (user.children || []).concat(input.children),
-							firstName: input.firstName,
-							lastName: input.lastName
-						}
-					});
-					return Promise.reject(new errors.BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!", user)); /* to stop the create process, the message are catch and resolve in regestration hook */
+				userService.update({ _id: user._id }, {
+					$set: {
+						children: (user.children || []).concat(input.children),
+						firstName: input.firstName,
+						lastName: input.lastName
+					}
+				});
+				return Promise.reject(new errors.BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!", user)); /* to stop the create process, the message are catch and resolve in regestration hook */
 			}
 
 			return Promise.resolve(hook);
@@ -96,8 +93,8 @@ const updateAccountUsername = (hook) => {
 			logger.log(error);
 			return Promise.reject(error);
 		});
-	};
-  
+};
+
 const removeStudentFromClasses = (hook) => {
 	const classesService = hook.app.service('/classes');
 	const userId = hook.id;
@@ -107,14 +104,14 @@ const removeStudentFromClasses = (hook) => {
 	const query = { userIds: userId };
 
 	return classesService.find({ query: query})
-	.then(classes => {
-		return Promise.all(
-			classes.data.map(myClass => {
-				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
-				return classesService.patch(myClass._id, myClass);
-			})
-		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err);});
-	});
+		.then(classes => {
+			return Promise.all(
+				classes.data.map(myClass => {
+					myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
+					return classesService.patch(myClass._id, myClass);
+				})
+			).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err);});
+		});
 };
 
 const removeStudentFromCourses = (hook) => {
@@ -125,14 +122,14 @@ const removeStudentFromCourses = (hook) => {
 	const query = { userIds: userId };
 
 	return coursesService.find({ query: query})
-	.then(courses => {
-		return Promise.all(
-			courses.data.map(course => {
-				course.userIds.splice(course.userIds.indexOf(userId), 1);
-				return coursesService.patch(course._id, course);
-			})
-		).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err);});
-	});
+		.then(courses => {
+			return Promise.all(
+				courses.data.map(course => {
+					course.userIds.splice(course.userIds.indexOf(userId), 1);
+					return coursesService.patch(course._id, course);
+				})
+			).then(_ => hook).catch(err => {throw new errors.Forbidden('No Permission',err);});
+		});
 };
 
 const sanitizeData = (hook) => {
@@ -172,21 +169,21 @@ const pinIsVerified = hook => {
 	} else {
 		const email=(hook.params._additional||{}).parentEmail||hook.data.email;
 		return hook.app.service('/registrationPins').find({query:{email:email , verified: true}})
-		.then(pins => {
-			if (pins.data.length === 1 && pins.data[0].pin) {
-				const age = globalHooks.getAge(hook.data.birthday);
+			.then(pins => {
+				if (pins.data.length === 1 && pins.data[0].pin) {
+					const age = globalHooks.getAge(hook.data.birthday);
 
-				if (!((hook.data.roles||[]).includes("student") && age < 16)) {
-					hook.app.service('/registrationPins').remove(pins.data[0]._id);
+					if (!((hook.data.roles||[]).includes("student") && age < 16)) {
+						hook.app.service('/registrationPins').remove(pins.data[0]._id);
+					}
+
+					return Promise.resolve(hook);
+				}
+				else{
+					return Promise.reject(new errors.BadRequest('Der Pin wurde noch nicht bei der Registrierung eingetragen.'));
 				}
 
-				return Promise.resolve(hook);
-			}
-			else{
-				return Promise.reject(new errors.BadRequest('Der Pin wurde noch nicht bei der Registrierung eingetragen.'));
-			}
-
-		});
+			});
 	}
 };
 
@@ -229,63 +226,23 @@ const securePatching = (hook) => {
 		globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
 		globalHooks.hasRole(hook, hook.id, 'student')
 	])
-	.then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
-		if (!isSuperHero) {
-			delete hook.data.schoolId;
-			delete (hook.data.$push || {}).schoolId;
-		}
-		if (!(isSuperHero || isAdmin)) {
-			delete hook.data.roles;
-			delete (hook.data.$push || {}).roles;
-		}
-		if (hook.params.account.userId != hook.id) {
-			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent)))
-			{
-				return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'));
+		.then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
+			if (!isSuperHero) {
+				delete hook.data.schoolId;
+				delete (hook.data.$push || {}).schoolId;
 			}
-		}
-		return Promise.resolve(hook);
-	});
-};
-
-exports.before = function(app) {
-	return {
-		all: [],
-		find: [
-			globalHooks.mapPaginationQuery.bind(this),
-			globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),	// resolve ids for role strings (e.g. 'TEACHER')
-			auth.hooks.authenticate('jwt'),
-			globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
-			mapRoleFilterQuery
-		],
-		get: [auth.hooks.authenticate('jwt')],
-		create: [
-			checkJwt(),
-			pinIsVerified,
-			sanitizeData,
-			checkUnique,
-			checkUniqueAccount,
-			//permissionRoleCreate,
-			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
-		],
-		update: [
-			auth.hooks.authenticate('jwt'),
-			globalHooks.hasPermission('USER_EDIT'),
-			//TODO only local for LDAP
-			sanitizeData,
-			globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name')
-		],
-		patch: [
-			auth.hooks.authenticate('jwt'),
-			globalHooks.hasPermission('USER_EDIT'),
-			globalHooks.ifNotLocal(securePatching),
-			globalHooks.permitGroupOperation,
-			sanitizeData,
-			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
-			updateAccountUsername,
-		],
-		remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('USER_CREATE'), globalHooks.permitGroupOperation]
-	};
+			if (!(isSuperHero || isAdmin)) {
+				delete hook.data.roles;
+				delete (hook.data.$push || {}).roles;
+			}
+			if (hook.params.account.userId != hook.id) {
+				if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent)))
+				{
+					return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'));
+				}
+			}
+			return Promise.resolve(hook);
+		});
 };
 
 /**
@@ -409,20 +366,72 @@ const pushRemoveEvent= hook=>{
 
 const User = require('../model');
 
+
+exports.before = {
+	all: [],
+	find: [
+		globalHooks.mapPaginationQuery.bind(this),
+		// resolve ids for role strings (e.g. 'TEACHER')
+		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
+		auth.hooks.authenticate('jwt'),
+		globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
+		mapRoleFilterQuery,
+	],
+	get: [auth.hooks.authenticate('jwt')],
+	create: [
+		checkJwt(),
+		pinIsVerified,
+		sanitizeData,
+		checkUnique,
+		checkUniqueAccount,
+		globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+	],
+	update: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('USER_EDIT'),
+		//TODO only local for LDAP
+		sanitizeData,
+		globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name')
+	],
+	patch: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('USER_EDIT'),
+		globalHooks.ifNotLocal(securePatching),
+		globalHooks.permitGroupOperation,
+		sanitizeData,
+		globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
+		updateAccountUsername,
+	],
+	remove: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('USER_CREATE'),
+		globalHooks.permitGroupOperation,
+	],
+};
+
 exports.after = {
 	all: [],
-	find: [decorateAvatar, decorateUsers],
+	find: [
+		decorateAvatar,
+		decorateUsers,
+	],
 	get: [
 		decorateAvatar,
 		decorateUser,
 		globalHooks.computeProperty(User.userModel, 'getPermissions', 'permissions'),
-		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!'}))
+		globalHooks.ifNotLocal(
+			globalHooks.denyIfNotCurrentSchool({
+				errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
+			}),
+		),
 	],
-	create: [handleClassId],
+	create: [
+		handleClassId,
+	],
 	update: [],
 	patch: [],
 	remove: [
-		pushRemoveEvent, 
+		pushRemoveEvent,
 		removeStudentFromClasses,
 		removeStudentFromCourses,
 	],

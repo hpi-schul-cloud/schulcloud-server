@@ -1,6 +1,4 @@
-
-
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
@@ -27,7 +25,8 @@ exports.before = {
 		globalHooks.hasPermission('USERGROUP_VIEW'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnClasses,
-		populateGradeLevel],
+		populateGradeLevel,
+	],
 	get: [restrictToUsersOwnClasses, populateGradeLevel],
 	create: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
 	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
@@ -61,9 +60,11 @@ exports.after = {
 	find: [addDisplayName],
 	get: [
 		addDisplayName,
-		globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({
-			errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
-		}))],
+		globalHooks.ifNotLocal(
+			globalHooks.denyIfNotCurrentSchool({
+				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
+			}),
+		)],
 	create: [],
 	update: [],
 	patch: [],

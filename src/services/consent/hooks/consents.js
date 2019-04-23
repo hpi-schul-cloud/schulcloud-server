@@ -1,10 +1,9 @@
-'use strict';
-
+const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
-const auth = require('feathers-authentication');
 
-//TODO: after hook for get that checks access.
-//TODO: rethink security, due to no schoolId we can't restrict anything.
+
+// TODO: after hook for get that checks access.
+// TODO: rethink security, due to no schoolId we can't restrict anything.
 
 const restrictToUserOrRole = (hook) => {
 	const userService = hook.app.service('users');
@@ -12,7 +11,7 @@ const restrictToUserOrRole = (hook) => {
 		query: {
 			_id: hook.params.account.userId,
 			$populate: 'roles',
-		}
+		},
 	}).then((res) => {
 		let access = false;
 		res.data[0].roles.map((role) => {
@@ -22,10 +21,10 @@ const restrictToUserOrRole = (hook) => {
 		});
 		if (access) {
 			return hook;
-		} else {
-			hook.params.query.userId = hook.params.account.userId;
-			return hook;
 		}
+
+		hook.params.query.userId = hook.params.account.userId;
+		return hook;
 	});
 };
 
@@ -78,20 +77,6 @@ const checkExisting = (hook) => {
 		}).catch((err) => {
 			return Promise.reject(err);
 		});
-};
-
-exports.before = {
-	all: [],
-	find: [
-		auth.hooks.authenticate('jwt'),
-		globalHooks.ifNotLocal(restrictToUserOrRole),
-		mapInObjectToArray,
-	],
-	get: [auth.hooks.authenticate('jwt')],
-	create: [addDates, checkExisting],
-	update: [auth.hooks.authenticate('jwt'), addDates],
-	patch: [auth.hooks.authenticate('jwt'), addDates],
-	remove: [auth.hooks.authenticate('jwt')],
 };
 
 const userHasOneRole = (user, roles) => {
@@ -183,27 +168,40 @@ const accessCheck = (consent, app) => {
 
 const decorateConsent = (hook) => {
 	return accessCheck(hook.result, hook.app)
-		.then(consent => {
+		.then((consent) => {
 			hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 			hook.result = consent;
-		})
-	.then(() => Promise.resolve(hook));
+		}).then(() => Promise.resolve(hook));
 };
 
 const decorateConsents = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-	const consentPromises = (hook.result.data || []).map(consent => {
-		return accessCheck(consent, hook.app).then(result => {
+	const consentPromises = (hook.result.data || []).map((consent) => {
+		return accessCheck(consent, hook.app).then((result) => {
 			return result;
-		}).catch(err => {
+		}).catch((err) => {
 			return {};
 		});
 	});
 
-	return Promise.all(consentPromises).then(users => {
+	return Promise.all(consentPromises).then((users) => {
 		hook.result.data = users;
 		return Promise.resolve(hook);
 	});
+};
+
+exports.before = {
+	all: [],
+	find: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.ifNotLocal(restrictToUserOrRole),
+		mapInObjectToArray,
+	],
+	get: [auth.hooks.authenticate('jwt')],
+	create: [addDates, checkExisting],
+	update: [auth.hooks.authenticate('jwt'), addDates],
+	patch: [auth.hooks.authenticate('jwt'), addDates],
+	remove: [auth.hooks.authenticate('jwt')],
 };
 
 exports.after = {
@@ -213,5 +211,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

@@ -1,5 +1,3 @@
-
-
 const request = require('request-promise-native');
 const hooks = require('./hooks/index');
 
@@ -195,30 +193,22 @@ class NotificationService {
 	}
 }
 
-module.exports = () => {
+// eslint-disable-next-line func-names
+module.exports = function () {
 	const app = this;
 
-	// Initialize our service with any options it requires
 	app.use('/notification/messages', new MessageService());
 	app.use('/notification/devices', new DeviceService());
 	app.use('/notification/callback', new CallbackService());
 	app.use('/notification', new NotificationService());
 
-	// Get our initialize service to that we can bind hooks
 	const messageService = app.service('/notification/messages');
 	const deviceService = app.service('/notification/devices');
 	const callbackService = app.service('/notification/callback');
 	const notificationService = app.service('/notification');
 
-	// Set up our before hooks
-	messageService.before(hooks.before);
-	deviceService.before(hooks.before);
-	callbackService.before(hooks.before);
-	notificationService.before(hooks.before);
-
-	// Set up our after hooks
-	messageService.after(hooks.after);
-	deviceService.after(hooks.after);
-	callbackService.after(hooks.after);
-	notificationService.after(hooks.after);
+	messageService.hooks(hooks);
+	deviceService.hooks(hooks);
+	callbackService.hooks(hooks);
+	notificationService.hooks(hooks);
 };

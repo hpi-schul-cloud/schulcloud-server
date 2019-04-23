@@ -1,6 +1,14 @@
 {
 	"extends": "airbnb-base",
 	"rules": {
+		"no-multiple-empty-lines": [
+			"error",
+			{
+				"max": 2,
+				"maxBOF": 0,
+				"maxEOF": 0
+			}
+		],
 		"max-len": [
 			"error",
 			{
@@ -25,7 +33,8 @@
 			"error",
 			{
 				"allow": [
-					"err"
+					"err",
+					"error"
 				]
 			}
 		],
@@ -46,18 +55,8 @@
 			"warn",
 			{
 				"args": "after-used",
-				"argsIgnorePattern": "req|res|next|options|params"
+				"argsIgnorePattern": "app|req|res|next|options|params"
 			}
-		],
-		"no-multiple-empty-lines": [
-			"warn",
-			{
-				"max": 2
-			}
-		],
-		"eol-last": [
-			"error",
-			"always"
 		],
 		"indent": [
 			"error",
@@ -107,5 +106,16 @@
 		"node": true,
 		"mocha": true,
 		"browser": true
-	}
+	},
+	"overrides": [
+		{
+			"files": [
+				"*.test.js"
+			],
+			"rules": {
+				"no-unused-expressions": "off",
+				"global-require": "warn"
+			}
+		}
+	]
 }

@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const { BadRequest } = require('feathers-errors');
+const { BadRequest } = require('@feathersjs/errors');
 const { setupUser, deleteUser } = require('../helper/helper.user');
 const { createHook, createHookStack } = require('../helper/helper.hook');
 const createEmailText = require('../../../../src/services/teams/hooks/mail-text.js');
