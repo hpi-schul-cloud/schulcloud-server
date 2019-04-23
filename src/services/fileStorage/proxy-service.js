@@ -1,9 +1,9 @@
 const fs = require('fs');
 const logger = require('winston');
 const rp = require('request-promise-native');
-const { Forbidden, BadRequest, NotFound } = require('feathers-errors');
+const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 
-const { before, after } = require('./hooks');
+const hooks = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
 const swaggerDocs = require('./docs/');
 const {
@@ -912,7 +912,6 @@ module.exports = function () {
 	].forEach((path) => {
 		// Get our initialize service to that we can bind hooks
 		const service = app.service(path);
-		service.before(before);
-		service.after(after);
+		service.hooks(hooks);
 	});
 };
