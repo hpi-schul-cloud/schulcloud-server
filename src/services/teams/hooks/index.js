@@ -1,8 +1,8 @@
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const logger = require('winston');
 const {
 	Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable,
-} = require('feathers-errors');
+} = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 
 const { set, get } = require('./scope');

@@ -29,7 +29,7 @@ describe('Mail Service', () => {
 		delete require.cache[require.resolve('../../../src/services/helpers/service')];
 
 		// load new app to make mockery work
-		const feathers = require('feathers');
+		const feathers = require('@feathersjs/feathers');
 		const app = feathers();
 		let secrets;
 		try {
