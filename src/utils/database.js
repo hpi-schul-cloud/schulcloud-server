@@ -1,38 +1,37 @@
+/* eslint-disable import/no-dynamic-require */
 /* eslint-disable global-require */
 const mongoose = require('mongoose');
 const logger = require('../logger/index');
 
-let config;
-switch (process.env.NODE_ENV) {
-	case ('test'):
-		logger.info('load configuration for test environment');
-		config = require('../../config/test.json');
-		break;
-	case ('production'):
-		logger.info('load configuration for production environment');
-		config = require('../../config/production.json');
-		break;
-	default:
-		logger.info('load configuration for default environment');
-		config = require('../../config/default.json');
+const configurations = {
+	test: '../../config/test.json',
+	production: '../../config/production.json',
+	default: '../../config/default.json',
+};
+
+const currentConfiguration = process.env.NODE_ENV || 'default';
+
+if (!currentConfiguration) {
+	throw new Error('if defined, NODE_ENV must be set to test or production');
 }
+
+const config = require(configurations[currentConfiguration]);
 
 function connect() {
 	mongoose.Promise = global.Promise;
 
-	const host = process.env.DB_URL || config.mongodb;
-	const user = process.env.DB_USERNAME;
-	const pass = process.env.DB_PASSWORD;
+	const DB_URL = process.env.DB_URL || config.mongodb;
+	const { DB_USERNAME, DB_PASSWORD } = process.env;
 
 	logger.info('connect to database host',
-		host, user ? `with username ${user}` : 'without user',
-		pass ? 'and' : 'and without', 'password');
+		DB_URL, DB_USERNAME ? `with username ${DB_USERNAME}` : 'without user',
+		DB_PASSWORD ? 'and' : 'and without', 'password');
 
 	return mongoose.connect(
-		host,
+		DB_URL,
 		{
-			user,
-			pass,
+			DB_USERNAME,
+			DB_PASSWORD,
 			useMongoClient: true,
 		},
 	);
