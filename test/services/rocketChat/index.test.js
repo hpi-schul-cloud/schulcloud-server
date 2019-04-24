@@ -4,9 +4,7 @@ const assert = require('assert');
 const chai = require('chai');
 const mockery = require('mockery');
 
-
 const rcMockServer = require('./rocketChatMockServer');
-
 
 const { expect } = chai;
 
@@ -28,13 +26,12 @@ describe('rocket.chat user service', () => {
 		mockery.registerMock('./rocketChatConfig', { ROCKET_CHAT_URI: rcMock.url });
 
 		delete require.cache[require.resolve('../../../src/services/rocketChat/index.js')];
-		const rocketChat = require('../../../src/services/rocketChat')
-		app.configure(rocketChat)
+		const rocketChat = require('../../../src/services/rocketChat');
+		app.configure(rocketChat);
 		rocketChatUserService = app.service('/rocketChat/user');
 
 		server = app.listen(0);
 		return server;
-
 	});
 
 	after((done) => {
