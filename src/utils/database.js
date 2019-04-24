@@ -17,8 +17,8 @@ switch (process.env.NODE_ENV) {
 		config = require('../../config/default.json');
 }
 
-function setup() {
-	mongoose.Promise = Promise;
+function connect() {
+	mongoose.Promise = global.Promise;
 
 	return mongoose.connect(
 		process.env.DB_URL || config.mongodb,
@@ -34,4 +34,4 @@ function close() {
 	return mongoose.connection.close();
 }
 
-module.exports = { setup, close };
+module.exports = { connect, close };
