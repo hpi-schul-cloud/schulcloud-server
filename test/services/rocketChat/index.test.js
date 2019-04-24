@@ -3,18 +3,18 @@
 const assert = require('assert');
 const chai = require('chai');
 const mockery = require('mockery');
-const app = require('../../../src/app');
+
+
 const rcMockServer = require('./rocketChatMockServer');
-const testObjects = require('../helpers/testObjects')(app);
 
-
-const rocketChatLoginService = app.service('/rocketChat/login');
-const rocketChatLogoutService = app.service('rocketChat/logout');
-const rocketChatChannelService = app.service('/rocketChat/channel');
 
 const { expect } = chai;
 
 describe('rocket.chat user service', () => {
+	delete require.cache[require.resolve('../../../src/app')];
+	const app = require('../../../src/app');
+	const testObjects = require('../helpers/testObjects')(app);
+
 	let server;
 	let rocketChatUserService;
 
@@ -28,12 +28,13 @@ describe('rocket.chat user service', () => {
 		mockery.registerMock('./rocketChatConfig', { ROCKET_CHAT_URI: rcMock.url });
 
 		delete require.cache[require.resolve('../../../src/services/rocketChat/index.js')];
-
-		app.configure(require('../../../src/services/rocketChat'));
+		const rocketChat = require('../../../src/services/rocketChat')
+		app.configure(rocketChat)
 		rocketChatUserService = app.service('/rocketChat/user');
 
 		server = app.listen(0);
 		return server;
+
 	});
 
 	after((done) => {
@@ -74,18 +75,27 @@ describe('rocket.chat user service', () => {
 });
 
 describe('rocket.chat login service', () => {
+	delete require.cache[require.resolve('../../../src/app')];
+	const app = require('../../../src/app');
+	const rocketChatLoginService = app.service('/rocketChat/login');
 	it('registered the RC login service', () => {
 		assert.ok(rocketChatLoginService);
 	});
 });
 
 describe('rocket.chat logout service', () => {
+	delete require.cache[require.resolve('../../../src/app')];
+	const app = require('../../../src/app');
+	const rocketChatLogoutService = app.service('rocketChat/logout');
 	it('registered the RC logout service', () => {
 		assert.ok(rocketChatLogoutService);
 	});
 });
 
 describe('rocket.chat channel service', () => {
+	delete require.cache[require.resolve('../../../src/app')];
+	const app = require('../../../src/app');
+	const rocketChatChannelService = app.service('/rocketChat/channel');
 	it('registered the RC channel service', () => {
 		assert.ok(rocketChatChannelService);
 	});
