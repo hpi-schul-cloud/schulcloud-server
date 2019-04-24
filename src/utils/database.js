@@ -31,8 +31,8 @@ function connect() {
 	return mongoose.connect(
 		DB_URL,
 		{
-			DB_USERNAME,
-			DB_PASSWORD,
+			user: DB_USERNAME,
+			pass: DB_PASSWORD,
 			useMongoClient: true,
 		},
 	);
