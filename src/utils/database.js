@@ -20,11 +20,19 @@ switch (process.env.NODE_ENV) {
 function connect() {
 	mongoose.Promise = global.Promise;
 
+	const host = process.env.DB_URL || config.mongodb;
+	const user = process.env.DB_USERNAME;
+	const pass = process.env.DB_PASSWORD;
+
+	logger.info('connect to database host',
+		host, user ? `with username ${user}` : 'without user',
+		pass ? 'and' : 'and without', 'password');
+
 	return mongoose.connect(
-		process.env.DB_URL || config.mongodb,
+		host,
 		{
-			user: process.env.DB_USERNAME,
-			pass: process.env.DB_PASSWORD,
+			user,
+			pass,
 			useMongoClient: true,
 		},
 	);
