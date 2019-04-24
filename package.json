@@ -18,7 +18,8 @@
     "node": ">= 8.0.0"
   },
   "scripts": {
-    "lint": "eslint ./src ./test --ext .js --fix",
+    "lint": "eslint --fix",
+    "lint:all": "npm lint ./src ./test --ext .js --fix",
     "seed": "./backup.sh -p setup/ -D schulcloud-test -a import",
     "test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
     "backup": "./backup.sh -a -b export",
@@ -99,9 +100,14 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-react": "^6.9.0",
+    "lint-staged": "^8.1.5",
     "mocha": "^3.2.0",
     "mockery": "^2.0.0",
     "nodemailer-mock": "^1.1.10",
-    "nyc": "^13.0.1"
+    "nyc": "^13.0.1",
+    "yorkie": "^2.0.0"
+  },
+  "gitHooks": {
+    "pre-commit": "cross-env PRE_COMMIT=true lint-staged"
   }
 }
