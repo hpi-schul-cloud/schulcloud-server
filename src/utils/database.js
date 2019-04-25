@@ -38,7 +38,11 @@ function connect() {
 	);
 }
 
+function close() {
+	return mongoose.connection.close();
+}
+
 module.exports = {
 	connect,
-	close: mongoose.connection.close,
+	close,
 };
