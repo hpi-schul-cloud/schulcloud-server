@@ -1,4 +1,6 @@
+const autoPopulate = require('mongoose-autopopulate');
 const mongoose = require('mongoose');
+const logger = require('winston');
 
 const { Schema } = mongoose;
 
@@ -53,15 +55,39 @@ const courseGroupModel = mongoose.model('courseGroup', getUserGroupSchema({
 
 const nameFormats = ['static', 'gradeLevel+name'];
 
-const classModel = mongoose.model('class', getUserGroupSchema({
+const classSchema = getUserGroupSchema({
 	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
 	invitationLink: { type: String },
 	name: { type: String, required: false },
 	year: { type: Schema.Types.ObjectId, ref: 'year' },
-	gradeLevel: { type: Schema.Types.ObjectId, ref: 'gradeLevel' },
+	gradeLevel: { type: Schema.Types.ObjectId, ref: 'gradeLevel', autoPopulate: true },
 	nameFormat: { type: String, enum: nameFormats, default: 'static' },
 	ldapDN: { type: String },
-}));
+});
+
+classSchema.plugin(autoPopulate);
+classSchema.plugin(require('mongoose-lean-virtuals'));
+
+const getClassDisplayName = (aclass) => {
+	if (aclass.nameFormat === 'static') {
+		return aclass.name;
+	} if (aclass.nameFormat === 'gradeLevel+name') {
+		return `${aclass.gradeLevel.name}${aclass.name}`;
+	}
+	logger.warn('unknown nameFormat', aclass.nameFormat);
+	return undefined;
+};
+
+// => has no access to this
+// eslint-disable-next-line func-names
+classSchema.virtual('displayName').get(function () {
+	return getClassDisplayName(this);
+});
+
+classSchema.set('toObject', { virtuals: true });
+classSchema.set('toJSON', { virtuals: true });
+
+const classModel = mongoose.model('class', classSchema);
 const gradeModel = mongoose.model('grade', getUserGroupSchema());
 
 module.exports = {
@@ -69,4 +95,5 @@ module.exports = {
 	courseGroupModel,
 	classModel,
 	gradeModel,
+	getClassDisplayName,
 };

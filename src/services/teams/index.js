@@ -122,7 +122,10 @@ class AdminOverview {
 				query: {
 					schoolIds: schoolId,
 					// userIds: { $elemMatch: { schoolId } },
-					$populate: [{ path: 'userIds.role' }, { path: 'userIds.userId', populate: { path: 'roles' } }, 'schoolIds'], // schoolId
+					$populate: [{ path: 'userIds.role' }, {
+						path: 'userIds.userId',
+						populate: { path: 'roles' },
+					}, 'schoolIds'], 	// schoolId
 				},
 			})
 				.then(teams => AdminOverview.mapped(teams, schoolId))
@@ -215,6 +218,7 @@ class AdminOverview {
 			throw new BadRequest('Missing parameter');
 		}
 		if (!isArray(teamIds)) {
+			// eslint-disable-next-line no-param-reassign
 			teamIds = [teamIds];
 		}
 		if (teamIds.length <= 0 || !isString(message)) {
@@ -223,40 +227,42 @@ class AdminOverview {
 
 		return Promise.all(
 			[getSessionUser(this, params), hooks.teamRolesToHook(this)],
-		).then(([{ schoolId }, ref]) => this.app.service('teams').find((this.getRestrictedQuery(teamIds, schoolId))).then((teams) => {
-			teams = teams.data;
-			if (!isArrayWithElement(teams)) {
-				throw new NotFound('No team found.');
-			}
-
-			const subject = `${process.env.SC_SHORT_TITLE}: Team-Anfrage`;
-			const mailService = this.app.service('/mails');
-			const ownerRoleId = ref.findRole('name', 'teamowner', '_id');
-			const emails = teams.reduce((stack, team) => {
-				const owner = AdminOverview.getOwner(team, ownerRoleId);
-				if (isDefined(owner.userId.email)) {
-					stack.push(owner.userId.email);
+		).then(([{ schoolId }, ref]) => this.app.service('teams')
+			.find((this.getRestrictedQuery(teamIds, schoolId))).then((teams) => {
+				// eslint-disable-next-line no-param-reassign
+				teams = teams.data;
+				if (!isArrayWithElement(teams)) {
+					throw new NotFound('No team found.');
 				}
-				return stack;
-			}, []);
-			const content = {
-				text: this.formatText(message) || 'No alternative mailtext provided. Expected: HTML Template Mail.',
-				html: '',
-			};
 
-			const waits = emails.map(email => mailService.create({ email, subject, content })
-				.then(res => res.accepted[0])
-				.catch(err => `Error: ${err.message}`));
+				const subject = `${process.env.SC_SHORT_TITLE}: Team-Anfrage`;
+				const mailService = this.app.service('/mails');
+				const ownerRoleId = ref.findRole('name', 'teamowner', '_id');
+				const emails = teams.reduce((stack, team) => {
+					const owner = AdminOverview.getOwner(team, ownerRoleId);
+					if (isDefined(owner.userId.email)) {
+						stack.push(owner.userId.email);
+					}
+					return stack;
+				}, []);
+				const content = {
+					text: this.formatText(message) || 'No alternative mailtext provided. Expected: HTML Template Mail.',
+					html: '',
+				};
 
-			return Promise.all(waits)
-				.then(values => values)
-				.catch(err => err);
-		}).catch((err) => {
-			throw err;
-		})).catch((err) => {
-			warn(err);
-			throw new BadRequest('It exists no teams with access rights, to send this message.');
-		});
+				const waits = emails.map(email => mailService.create({ email, subject, content })
+					.then(res => res.accepted[0])
+					.catch(err => `Error: ${err.message}`));
+
+				return Promise.all(waits)
+					.then(values => values)
+					.catch(err => err);
+			}).catch((err) => {
+				throw err;
+			})).catch((err) => {
+				warn(err);
+				throw new BadRequest('It exists no teams with access rights, to send this message.');
+			});
 	}
 
 	setup(app) {
@@ -300,9 +306,12 @@ class Add {
      * @return {Promise::bsonId||stringId} Expert school id.
      */
 	_getExpertSchoolId() {
-		return this.app.service('schools').find({ query: { purpose: 'expert' } }).then(schools => extractOne(schools, '_id').then(id => bsonIdToString(id))).catch((err) => {
-			throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
-		});
+		return this.app.service('schools').find({ query: { purpose: 'expert' } })
+			.then(schools => extractOne(schools, '_id')
+				.then(id => bsonIdToString(id)))
+			.catch((err) => {
+				throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
+			});
 	}
 
 	/**
@@ -310,9 +319,13 @@ class Add {
      * @return {Promise::bsonId||stringId} Expert role id.
      */
 	_getExpertRoleId() {
-		return this.app.service('roles').find({ query: { name: 'expert' } }).then(roles => extractOne(roles, '_id').then(id => bsonIdToString(id))).catch((err) => {
-			throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', err);
-		});
+		return this.app.service('roles')
+			.find({ query: { name: 'expert' } })
+			.then(roles => extractOne(roles, '_id')
+				.then(id => bsonIdToString(id)))
+			.catch((err) => {
+				throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', err);
+			});
 	}
 
 	/**
@@ -334,10 +347,10 @@ class Add {
 	}
 
 	/**
-     * @private
-     * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
-     * @param {Boolean} isUserCreated default = false
-     */
+	 * @private
+	 * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
+	 * @param {Boolean} isUserCreated default = false
+	 */
 	async _generateLink({
 		esid, email, teamId, importHash,
 	}, isUserCreated = false) {
@@ -374,8 +387,11 @@ class Add {
      */
 	async _collectUserAndLinkData({ email, role, teamId }) {
 		return Promise.all([
+			// eslint-disable-next-line no-underscore-dangle
 			this._getUsersByEmail(email),
+			// eslint-disable-next-line no-underscore-dangle
 			this._getExpertSchoolId(),
+			// eslint-disable-next-line no-underscore-dangle
 			this._getExpertRoleId(),
 			getTeam(this, teamId),
 		]).then(async ([user, schoolId, expertRoleId, team]) => {
@@ -386,6 +402,7 @@ class Add {
 				const newUser = {
 					email, schoolId, roles: [expertRoleId], firstName: 'Experte', lastName: 'Experte',
 				};
+				// eslint-disable-next-line no-param-reassign
 				user = await userModel.create(newUser);
 				isUserCreated = true;
 			}
@@ -442,11 +459,16 @@ class Add {
 	}
 
 	/**
-     * @private
-     * @param {Object::{email::String, role::String, teamId::String}} opt
-     * @param {Object::params} params The request params.
-     * @return {Promise::{ message: 'Success!', linkData::Object~from this._generateLink(), user::Object::User, role::String }}
-     */
+	 * @private
+	 * @param {Object::{email::String, role::String, teamId::String}} opt
+	 * @param {Object::params} params The request params.
+	 * @return {Promise::{
+	 * message: 'Success!',
+	 * linkData::Object~from this._generateLink(),
+	 * user::Object::User,
+	 * role::String
+	 * }}
+	 */
 	async _userImportById(teamId, { userId, role }, params) {
 		//  const { userId, role } = data;
 		const [ref, user, team] = await getBasic(this, teamId, params, userId);
@@ -457,9 +479,11 @@ class Add {
 		userIds = removeDuplicatedTeamUsers(userIds);
 
 		return Promise.all([
+			// eslint-disable-next-line no-underscore-dangle
 			this._generateLink({ teamId }, false),
 			patchTeam(this, teamId, { userIds, schoolIds }, params),
-		]).then(([linkData, _]) => Add._response({ linkData, user }));
+			// eslint-disable-next-line no-underscore-dangle
+		]).then(([linkData]) => Add._response({ linkData, user }));
 	}
 
 	/**
@@ -498,6 +522,7 @@ class Add {
      */
 	async _userImportByEmail(teamId, { email, role }, params) {
 		// let { email, role } = data;
+		// eslint-disable-next-line no-param-reassign
 		email = email.toLowerCase(); // important for valid user
 		const {
 			esid,
@@ -507,13 +532,16 @@ class Add {
 			team,
 			userRoleName,
 			importHash,
+			// eslint-disable-next-line no-underscore-dangle
 		} = await this._collectUserAndLinkData({ email, role, teamId });
 		const { invitedUserIds } = team;
+		// eslint-disable-next-line no-param-reassign
 		role = userRoleName; /*
             @override
             is important if user already in invited users exist and the role is take from team
         */
 
+		// eslint-disable-next-line no-underscore-dangle
 		Add._throwErrorIfUserExistByEmail(team, email);
 
 		// if not already in invite list
@@ -521,11 +549,13 @@ class Add {
 			invitedUserIds.push({ email, role });
 		}
 		return Promise.all([
+			// eslint-disable-next-line no-underscore-dangle
 			this._generateLink({
 				esid, email, teamId, importHash,
 			}, isUserCreated),
 			patchTeam(this, teamId, { invitedUserIds }, params),
-		]).then(([linkData, _]) => Add._response({
+			// eslint-disable-next-line no-underscore-dangle
+		]).then(([linkData]) => Add._response({
 			linkData, user, isUserCreated, isResend, email,
 		}));
 	}
@@ -542,8 +572,10 @@ class Add {
 			}
 			let out;
 			if (data.email) {
+				// eslint-disable-next-line no-underscore-dangle
 				out = this._userImportByEmail(teamId, data, params);
 			} else if (data.userId && data.role) {
+				// eslint-disable-next-line no-underscore-dangle
 				out = this._userImportById(teamId, data, params);
 			} else {
 				throw new BadRequest('Missing input data.');
@@ -632,7 +664,7 @@ class Remove {
 		});
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -645,7 +677,7 @@ module.exports = function setup() {
 			default: 50,
 			max: 100,
 		},
-		lean: true,
+		lean: { virtuals: true },
 	};
 
 	app.use('/teams', service(options));

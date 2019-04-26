@@ -57,7 +57,7 @@ class MessageService {
 		return request(options).then(message => message);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -116,7 +116,7 @@ class DeviceService {
 		return request(options).then(message => message);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -144,7 +144,7 @@ class CallbackService {
 		return request(options).then(response => response);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -176,7 +176,8 @@ class NotificationService {
 		const userId = (params.account || {}).userId || params.payload.userId;
 
 		const options = {
-			uri: `${serviceUrls.notification}/notifications/` + `?user=${userId}&${toQueryString(params.query)}`,
+			uri: `${serviceUrls.notification}/notifications/`
+				+ `?user=${userId}&${toQueryString(params.query)}`,
 			headers: {
 				token: userId,
 			},
@@ -187,11 +188,12 @@ class NotificationService {
 		return request(options).then(message => message);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
 
+// eslint-disable-next-line func-names
 module.exports = function () {
 	const app = this;
 
