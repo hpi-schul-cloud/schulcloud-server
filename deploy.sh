@@ -1,6 +1,9 @@
 #! /bin/bash
 
-export TESTDEPLOY=$( cat testdeploy )
+# rollt neue Versionen automaitsch auf brandenburg, demo, open und test aus
+# develop-Branch geht auf Test, Master-Branch geht auf Produktivsysteme
+
+#export TESTDEPLOY=$( cat testdeploy )
 
 if [ "$TRAVIS_BRANCH" = "master" ]
 then
@@ -23,20 +26,40 @@ function buildandpush {
 }
 
 function deploytotest {
+  # nur develop soll auf test
+  # compose-File wird vom Ansible verteilt
+
   # screw together config file for docker swarm
-  eval "echo \"$( cat compose-server-test.dummy )\"" > docker-compose-server.yml
+#  eval "echo \"$( cat compose-server-test.dummy )\"" > docker-compose-server.yml
 
   # copy config-file to server and execute mit travis_rsa
   chmod 600 travis_rsa
-  scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa docker-compose-server.yml linux@test.schul-cloud.org:~
-  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker stack deploy -c /home/linux/docker-compose-server.yml test-schul-cloud
-  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker service update --force test-schul-cloud_server
+#  scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa docker-compose-server.yml linux@test.schul-cloud.org:~
+#  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker stack deploy -c /home/linux/docker-compose-server.yml test-schul-cloud
+#  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker service update --force test-schul-cloud_server
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:develop test-schul-cloud_server
+}
+
+function deploytoprods {
+  # deployt neue Master auf die Instanzen brandenburg, open, demo
+  # compose-Files werden via Ansible verteilt, viele unterschiedliche Geheimnisse, Mongo_URIs etc
+
+  # copy config-file to server and execute mit travis_rsa
+  chmod 600 travis_rsa
+
+  # brandenburg
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@brandenburg.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest brabu
+  # open
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@open.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest open
+  # demo
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@demo.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest demo
 }
 
 if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
   buildandpush
-elif [ "$TESTDEPLOY" = "true" ]
+  deploytoprods
+elif [ "$TRAVIS_BRANCH" = "develop" ]
 then
   buildandpush	
   deploytotest
@@ -45,5 +68,3 @@ else
 fi
 
 exit 0
-
-
