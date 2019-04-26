@@ -1,5 +1,3 @@
-'use strict';
-
 const request = require('request-promise-native');
 const hooks = require('./hooks/index');
 
@@ -15,12 +13,10 @@ const mapResponseProps = (response) => {
 	return response;
 };
 
-const toQueryString = (paramsObject) => {
-	return Object
-		.keys(paramsObject)
-		.map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-		.join('&');
-};
+const toQueryString = paramsObject => Object
+	.keys(paramsObject)
+	.map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
+	.join('&');
 
 class MessageService {
 	constructor(options) {
@@ -28,46 +24,40 @@ class MessageService {
 	}
 
 	create(data, params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/messages/',
+			uri: `${serviceUrls.notification}/messages/`,
 			method: 'POST',
 			headers: {
-				'token': userId
+				token: userId,
 			},
-			body: Object.assign(data, {serviceUrl: serviceUrls.notification}),
+			body: Object.assign(data, { serviceUrl: serviceUrls.notification }),
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(response => {
-			return response;
-		});
+		return request(options).then(response => response);
 	}
 
 	get(id, params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/messages/' + id +'?token=' + userId,
+			uri: `${serviceUrls.notification}/messages/${id}?token=${userId}`,
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => {
-			return message;
-		});
+		return request(options).then(message => message);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -80,59 +70,53 @@ class DeviceService {
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/devices/' + userId +'?token=' + userId,
+			uri: `${serviceUrls.notification}/devices/${userId}?token=${userId}`,
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(devices => {
-			return devices;
-		});
+		return request(options).then(devices => devices);
 	}
 
 	create(data, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = (params.account || {}).userId || params.payload.userId;
 
 		const options = {
-			uri: serviceUrls.notification + '/devices/',
+			uri: `${serviceUrls.notification}/devices/`,
 			method: 'POST',
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			body: data,
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(response => {
-			return mapResponseProps(response);
-		});
+		return request(options).then(response => mapResponseProps(response));
 	}
 
 	remove(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/devices/' + id +'?token=' + userId,
+			uri: `${serviceUrls.notification}/devices/${id}?token=${userId}`,
 			method: 'DELETE',
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => {
-			return message;
-		});
+		return request(options).then(message => message);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -143,27 +127,24 @@ class CallbackService {
 	}
 
 	create(data, params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/callback/',
+			uri: `${serviceUrls.notification}/callback/`,
 			method: 'POST',
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			body: data,
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(response => {
-			return response;
-		});
+		return request(options).then(response => response);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -176,46 +157,43 @@ class NotificationService {
 	get(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: serviceUrls.notification + '/notifications/' + id,
+			uri: `${serviceUrls.notification}/notifications/${id}`,
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => {
-			return message;
-		});
+		return request(options).then(message => message);
 	}
 
 	find(params) {
-
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.account ||{}).userId || params.payload.userId;
+		const userId = (params.account || {}).userId || params.payload.userId;
 
 		const options = {
-			uri: serviceUrls.notification + '/notifications/' + '?user=' + userId + '&' + toQueryString(params.query),
+			uri: `${serviceUrls.notification}/notifications/`
+				+ `?user=${userId}&${toQueryString(params.query)}`,
 			headers: {
-				'token': userId
+				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT
+			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => {
-			return message;
-		});
+		return request(options).then(message => message);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
 
+// eslint-disable-next-line func-names
 module.exports = function () {
 	const app = this;
 
