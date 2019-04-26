@@ -65,7 +65,7 @@
     "file-type": "^9.0.0",
     "freeport": "^1.0.5",
     "jwt-decode": "^2.2.0",
-    "ldapjs": "git+git@github.com:schul-cloud/node-ldapjs.git",
+    "ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
     "mongoose": "^4.7.6",
