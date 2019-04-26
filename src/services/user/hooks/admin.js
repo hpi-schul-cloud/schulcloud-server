@@ -1,5 +1,5 @@
 
-const { authenticate } = require('feathers-authentication').hooks;
+const { authenticate } = require('@feathersjs/authentication').hooks;
 // is admin
 // restricted to current school
 

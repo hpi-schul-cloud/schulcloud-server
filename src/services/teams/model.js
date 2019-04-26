@@ -50,7 +50,7 @@ const teamUserSchema = new Schema({
 
 const teamUserModel = mongoose.model('_teamUserSchema', teamUserSchema);
 
-const teamsModel = mongoose.model('teams', getUserGroupSchema({
+const teamsSchema = getUserGroupSchema({
 	schoolIds: {
 		type: [{ type: Schema.Types.ObjectId, ref: 'school' }],
 		required: true,
@@ -70,7 +70,9 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 	times: [timeSchema],
 	features: [{ type: String, enum: ['isTeam', 'rocketChat'] }],
 	filePermission: [permissionSchema],
-}));
+});
+
+const teamsModel = mongoose.model('teams', teamsSchema);
 
 module.exports = {
 	teamsModel,
