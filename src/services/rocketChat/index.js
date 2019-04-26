@@ -53,9 +53,9 @@ const getRequestOptions = (shortUri, body, asAdmin, auth, method) => {
 
 const makeStringRCConform = (input) => {
 	const dict = {
-		ä: 'ae', Ä: 'Ae', ö: 'oe', Ö: 'Oe', ü: 'ue', Ü: 'Ue', ' ': '-',
+		ä: 'ae', Ä: 'Ae', ö: 'oe', Ö: 'Oe', ü: 'ue', Ü: 'Ue', ' ': '-', ß: 'ss'
 	};
-	return input.replace(/[äÄöÖüÜ ]/g, match => dict[match]);
+	return input.replace(/[äÄöÖüÜß ]/g, match => dict[match]);
 };
 
 /**
