@@ -391,6 +391,9 @@ const hasTeamPermission = (permsissions, _teamId) => {
 			if (get(hook, 'isSuperhero') === true) {
 				return Promise.resolve(hook);
 			}
+			if (sessionUser.roles.map(r =>r.name === 'student')){
+				return Promise.reject(hook);
+			}
 			const userId = bsonIdToString(hook.params.account.userId);
 			const teamId = _teamId || hook.teamId || hook.id;
 			const teamUser = team.userIds.find(_user => isSameId(_user.userId, userId));
