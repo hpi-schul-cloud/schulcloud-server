@@ -125,7 +125,7 @@ class AdminOverview {
 					$populate: [{ path: 'userIds.role' }, {
 						path: 'userIds.userId',
 						populate: { path: 'roles' },
-					}, 'schoolIds'], 	// schoolId
+					}, 'schoolIds'], // schoolId
 				},
 			})
 				.then(teams => AdminOverview.mapped(teams, schoolId))
@@ -260,9 +260,9 @@ class AdminOverview {
 			}).catch((err) => {
 				throw err;
 			})).catch((err) => {
-				warn(err);
-				throw new BadRequest('It exists no teams with access rights, to send this message.');
-			});
+			warn(err);
+			throw new BadRequest('It exists no teams with access rights, to send this message.');
+		});
 	}
 
 	setup(app) {
@@ -347,10 +347,10 @@ class Add {
 	}
 
 	/**
-	 * @private
-	 * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
-	 * @param {Boolean} isUserCreated default = false
-	 */
+     * @private
+     * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
+     * @param {Boolean} isUserCreated default = false
+     */
 	async _generateLink({
 		esid, email, teamId, importHash,
 	}, isUserCreated = false) {
@@ -459,16 +459,16 @@ class Add {
 	}
 
 	/**
-	 * @private
-	 * @param {Object::{email::String, role::String, teamId::String}} opt
-	 * @param {Object::params} params The request params.
-	 * @return {Promise::{
-	 * message: 'Success!',
-	 * linkData::Object~from this._generateLink(),
-	 * user::Object::User,
-	 * role::String
-	 * }}
-	 */
+     * @private
+     * @param {Object::{email::String, role::String, teamId::String}} opt
+     * @param {Object::params} params The request params.
+     * @return {Promise::{
+     * message: 'Success!',
+     * linkData::Object~from this._generateLink(),
+     * user::Object::User,
+     * role::String
+     * }}
+     */
 	async _userImportById(teamId, { userId, role }, params) {
 		//  const { userId, role } = data;
 		const [ref, user, team] = await getBasic(this, teamId, params, userId);

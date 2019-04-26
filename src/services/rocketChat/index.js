@@ -83,9 +83,9 @@ class RocketChatUser {
 	}
 
 	/**
-	 * creates an account, should only be called by getOrCreateRocketChatAccount
-	 * @param {object} data
-	 */
+     * creates an account, should only be called by getOrCreateRocketChatAccount
+     * @param {object} data
+     */
 	createRocketChatAccount(userId) {
 		if (userId === undefined) { throw new BadRequest('Missing data value.'); }
 
@@ -157,9 +157,9 @@ class RocketChatUser {
 	}
 
 	/**
-	 * react to a user being deleted
-	 * @param {*} context
-	 */
+     * react to a user being deleted
+     * @param {*} context
+     */
 	static onUserRemoved(context) {
 		RocketChatUser.deleteUser(context._id);
 	}
@@ -219,9 +219,9 @@ class RocketChatUser {
 	}
 
 	/**
-	 * Register methods of the service to listen to events of other services
-	 * @listens users:removed
-	 */
+     * Register methods of the service to listen to events of other services
+     * @listens users:removed
+     */
 	registerEventListeners() {
 		this.app.service('users').on('removed', RocketChatUser.onUserRemoved.bind(this));
 	}
@@ -310,17 +310,17 @@ class RocketChatLogout {
 	}
 
 	/**
-	 * react to a user logging out
-	 * @param {*} context
-	 */
+     * react to a user logging out
+     * @param {*} context
+     */
 	onAuthenticationRemoved(context) {
 		this.get(context.userId);
 	}
 
 	/**
-	 * Register methods of the service to listen to events of other services
-	 * @listens authentication:removed
-	 */
+     * Register methods of the service to listen to events of other services
+     * @listens authentication:removed
+     */
 	registerEventListeners() {
 		this.app.service('authentication').on('removed', this.onAuthenticationRemoved.bind(this));
 	}
@@ -518,10 +518,10 @@ class RocketChatChannel {
 	}
 
 	/**
-	 * React to event published by the Team service when users are added or
-	 * removed to a team.
-	 * @param {Object} context event context given by the Team service
-	 */
+     * React to event published by the Team service when users are added or
+     * removed to a team.
+     * @param {Object} context event context given by the Team service
+     */
 	onTeamUsersChanged(context) {
 		const { team } = ((context || {}).additionalInfosTeam || {});
 		let additionalUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).add;
@@ -535,18 +535,18 @@ class RocketChatChannel {
 	}
 
 	/**
-	 * react to a team being deleted
-	 * @param {*} context
-	 */
+     * react to a team being deleted
+     * @param {*} context
+     */
 	static onRemoved(context) {
 		RocketChatChannel.deleteChannel(context._id);
 	}
 
 	/**
-	 * Register methods of the service to listen to events of other services
-	 * @listens teams:after:usersChanged
-	 * @listens teams:removed
-	 */
+     * Register methods of the service to listen to events of other services
+     * @listens teams:after:usersChanged
+     * @listens teams:removed
+     */
 	registerEventListeners() {
 		this.app.on('teams:after:usersChanged', this.onTeamUsersChanged.bind(this)); // use hook to get app
 		this.app.service('teams').on('removed', RocketChatChannel.onRemoved.bind(this));
