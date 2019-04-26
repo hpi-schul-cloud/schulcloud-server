@@ -392,7 +392,7 @@ const hasTeamPermission = (permsissions, _teamId) => {
 				return Promise.resolve(hook);
 			}
 			if (sessionUser.roles.map(r =>r.name === 'student')){
-				return Promise.reject(hook);
+				throw new Forbidden(`Students are not allowed to invite Extern!`);
 			}
 			const userId = bsonIdToString(hook.params.account.userId);
 			const teamId = _teamId || hook.teamId || hook.id;
