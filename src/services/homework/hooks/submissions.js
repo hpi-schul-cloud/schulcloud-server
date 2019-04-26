@@ -96,7 +96,7 @@ const insertSubmissionData = (hook) => {
 				hook.data = JSON.parse(JSON.stringify(hook.data));
 				hook.data.isTeamMember = false;
 				hook.data.isOwner = false;
-				if (hook.data.submission.studentId._id == hook.params.account.userId) {
+				if (hook.data.submission.studentId === hook.params.account.userId) {
 					hook.data.isOwner = true;
 					hook.data.isTeamMember = true;
 				}
