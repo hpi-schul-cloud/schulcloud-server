@@ -1,8 +1,5 @@
-'use strict';
-
-const {isAdmin, ifNotLocal, permitGroupOperation} = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
+const { permitGroupOperation } = require('../../../hooks');
 const globalHooks = require('../../../hooks');
 
 exports.before = {
@@ -12,7 +9,7 @@ exports.before = {
 	create: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SYSTEM_CREATE')],
 	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SYSTEM_EDIT')],
 	patch: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SYSTEM_EDIT'), permitGroupOperation],
-	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SYSTEM_CREATE'), permitGroupOperation]
+	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SYSTEM_CREATE'), permitGroupOperation],
 };
 
 exports.after = {
@@ -22,5 +19,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

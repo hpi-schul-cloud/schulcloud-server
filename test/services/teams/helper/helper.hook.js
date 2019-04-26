@@ -1,4 +1,4 @@
-const { BadRequest } = require('feathers-errors');
+const { BadRequest } = require('@feathersjs/errors');
 const service = require('feathers-mongoose');
 
 const _TYPE = ['before', 'after'];

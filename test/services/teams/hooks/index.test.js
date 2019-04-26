@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const { BadRequest } = require('feathers-errors');
+const { BadRequest } = require('@feathersjs/errors');
 const { setupUser, deleteUser } = require('../helper/helper.user');
 const hooks = require('../../../../src/services/teams/hooks/index.js');
 const { filterToRelated } = require('../../../../src/services/teams/hooks/index.js');

@@ -204,31 +204,6 @@ describe('Account Service', () => {
 			}
 		});
 
-		it('should be able to patch the password if verification is correct', async () => {
-			const user = await testObjects.createTestUser();
-			const password = 'ca4t9fsfr3dsd';
-			const accountDetails = {
-				username: user.email,
-				password,
-				userId: user._id,
-			};
-			const account = await accountService.create(accountDetails);
-			try {
-				const result = await accountService.patch(account._id, {
-					password: '123SchulCloud$',
-					password_verification: password,
-				}, {
-					account: {
-						userId: accountDetails.userId,
-						password: account.password,
-					},
-				});
-				expect(account.password).to.not.equal(result.password);
-			} finally {
-				await accountService.remove(account._id);
-			}
-		});
-
 		it('should successfully patch activated to true', async () => {
 			const user = await testObjects.createTestUser();
 			const accountDetails = {

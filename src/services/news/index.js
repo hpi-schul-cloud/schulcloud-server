@@ -13,13 +13,11 @@ module.exports = function news() {
 		},
 	}));
 	const NewsService = app.service('/news');
-	NewsService.before(hooks.before);
-	NewsService.after(hooks.after);
+	NewsService.hooks(hooks);
 
 	app.use('/newshistory', service({
 		Model: newsHistoryModel,
 	}));
 	const NewsHistoryService = app.service('/newshistory');
-	NewsHistoryService.before(hooks.before);
-	NewsHistoryService.after(hooks.after);
+	NewsHistoryService.hooks(hooks);
 };

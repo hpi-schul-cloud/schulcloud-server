@@ -2,9 +2,9 @@
 /**
  * Provides a basic wopi - endpoint, https://wopirest.readthedocs.io/en/latest/index.html
  */
-const hooks = require('./hooks');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const rp = require('request-promise-native');
+const hooks = require('./hooks');
 const { FileModel } = require('../fileStorage/model');
 const {
 	canWrite,
@@ -164,19 +164,13 @@ class WopiFilesContentsService {
 module.exports = function () {
 	const app = this;
 
-	// Initialize our service with any options it requires
 	app.use(wopiPrefix + ':fileId/contents', new WopiFilesContentsService(app), handleResponseHeaders);
 	app.use(wopiPrefix + ':fileId', new WopiFilesInfoService(app), handleResponseHeaders);
 
-	// Get our initialize service to that we can bind hooks
 	const filesService = app.service(wopiPrefix + ':fileId');
 	const filesContentService = app.service(wopiPrefix + ':fileId/contents');
 
-	// Set up our before hooks
-	filesService.before(hooks.before);
-	filesContentService.before(hooks.before);
+	filesService.hooks(hooks);
+	filesContentService.hooks(hooks);
 
-	// Set up our after hooks
-	filesService.after(hooks.after);
-	filesContentService.after(hooks.after);
 };
