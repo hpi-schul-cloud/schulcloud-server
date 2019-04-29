@@ -12,20 +12,13 @@ const introspectService = app.service('oauth2/introspect');
 const consentService = app.service('oauth2/auth/sessions/consent');
 const toolService = app.service('ltiTools');
 
-const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe('oauth2 service', function oauthTest() {
 	this.timeout(10000);
 
-	const testUser1 = {
-		_id: '0000d231816abba584714c9e',
-	};
 	const testUser2 = {
 		_id: '0000d224816abba584714c9c',
-	};
-	const testUser3 = {
-		_id: '0000d213816abba584714c0a',
 	};
 
 	const testClient = {
@@ -79,7 +72,7 @@ describe('oauth2 service', function oauthTest() {
 
 	let loginRequest1 = null;
 	let loginRequest2 = null;
-	let redirectTo = null;
+	// let redirectTo = null;
 
 	before((done) => {
 		this.timeout(10000);

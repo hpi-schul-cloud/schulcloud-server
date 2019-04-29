@@ -11,7 +11,6 @@ const pseudonymService = app.service('pseudonym');
 const toolService = app.service('ltiTools');
 const coursesService = app.service('courses');
 
-const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe('roster service', function oauth() {
