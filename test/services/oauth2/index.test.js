@@ -157,7 +157,7 @@ describe('oauth2 service', function oauthTest() {
 		query: { accept: 1 },
 		account: { userId: testUser2._id },
 	}).then((result) => {
-		redirectTo = result.redirect_to;
+		// redirectTo = result.redirect_to;
 		assert.ok(result.redirect_to.indexOf(testClient2.client_id) !== -1);
 	}));
 
