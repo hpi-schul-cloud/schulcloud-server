@@ -8,7 +8,7 @@ const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/$
 
 exports.getSubject = iframeSubject;
 
-const setSubject = hook => {
+const setSubject = (hook) => {
 	if (!hook.params.query.accept) return hook;
 	return hook.app.service('ltiTools').find({
 		query: {
@@ -20,7 +20,7 @@ const setSubject = hook => {
 			userId: hook.params.account.userId,
 		},
 	}).then((pseudonyms) => {
-		const {pseudonym} = pseudonyms.data[0];
+		const { pseudonym } = pseudonyms.data[0];
 		if (!hook.data) hook.data = {};
 		hook.data.subject = hook.params.account.userId;
 		if (tools.data[0].useIframePseudonym) {
@@ -30,7 +30,7 @@ const setSubject = hook => {
 		}
 		return hook;
 	}));
-}
+};
 
 const injectLoginRequest = hook => Hydra(hook.app.settings.services.hydra).getLoginRequest(hook.id)
 	.then((loginRequest) => {
@@ -59,7 +59,7 @@ exports.hooks = {
 		before: {
 			all: [
 				auth.hooks.authenticate('jwt'),
-				globalHooks.ifNotLocal(globalHooks.isSuperHero())
+				globalHooks.ifNotLocal(globalHooks.isSuperHero()),
 			],
 		},
 	},

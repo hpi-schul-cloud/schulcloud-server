@@ -1,5 +1,3 @@
-
-
 const assert = require('assert');
 const chai = require('chai');
 const app = require('../../../src/app');
@@ -8,7 +6,7 @@ const pseudonymService = app.service('pseudonym');
 const toolService = app.service('ltiTools');
 const expect = chai.expect;
 
-describe('pseudonym service', function pseudonym() {
+describe('pseudonym service', function pseudonymTest() {
 	this.timeout(10000);
 
 	const testTool1 = {
@@ -143,7 +141,7 @@ describe('pseudonym service', function pseudonym() {
 			userId: '599ec1688e4e364ac18ff46e', // not existing userId
 			toolId: testTool1._id,
 		},
-	}).then((result) => {
+	}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((error) => {
 		assert(error.name, 'NotFound');
@@ -155,7 +153,7 @@ describe('pseudonym service', function pseudonym() {
 			userId: '599ec1688e4e364ec18ff46e',
 			toolId: '599ec1688e4e364ec18ff46e', // not existing toolId
 		},
-	}).then((result) => {
+	}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((error) => {
 		assert(error.name, 'NotFound');

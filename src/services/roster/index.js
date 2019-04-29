@@ -6,7 +6,7 @@ module.exports = function roster() {
 	const app = this;
 
 	app.use('/roster', {
-		find(params) {
+		find() {
 			return Promise.resolve('Roster interface available');
 		},
 	});
@@ -94,7 +94,7 @@ module.exports = function roster() {
 				globalHooks.ifNotLocal(hooks.tokenIsActive),
 				globalHooks.ifNotLocal(hooks.userIsMatching),
 				hooks.stripIframe,
-				hooks.injectOriginToolIds
+				hooks.injectOriginToolIds,
 			],
 		},
 	};
@@ -151,7 +151,7 @@ module.exports = function roster() {
 		before: {
 			get: [
 				globalHooks.ifNotLocal(hooks.tokenIsActive),
-				hooks.injectOriginToolIds
+				hooks.injectOriginToolIds,
 			],
 		},
 		after: {

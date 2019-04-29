@@ -15,7 +15,7 @@ const toolService = app.service('ltiTools');
 const expect = chai.expect;
 chai.use(chaiHttp);
 
-describe('oauth2 service', function oauth() {
+describe('oauth2 service', function oauthTest() {
 	this.timeout(10000);
 
 	const testUser1 = {
@@ -29,26 +29,26 @@ describe('oauth2 service', function oauth() {
 	};
 
 	const testClient = {
-		"client_id": "unit_test",
-		"client_name": "Unit Test Client",
-		"client_secret": "xxxxxxxxxxxxx",
-		"redirect_uris": [
-			"https://localhost:8888"
+		client_id: 'unit_test',
+		client_name: 'Unit Test Client',
+		client_secret: 'xxxxxxxxxxxxx',
+		redirect_uris: [
+			'https://localhost:8888',
 		],
-		"token_endpoint_auth_method": "client_secret_basic",
-		"subject_type": "pairwise"
-	}
+		token_endpoint_auth_method: 'client_secret_basic',
+		subject_type: 'pairwise',
+	};
 
 	const testClient2 = {
-		"client_id": "unit_test_2",
-		"client_name": "Unit Test Client",
-		"client_secret": "xxxxxxxxxxxxx",
-		"redirect_uris": [
-			"https://localhost:8888"
+		client_id: 'unit_test_2',
+		client_name: 'Unit Test Client',
+		client_secret: 'xxxxxxxxxxxxx',
+		redirect_uris: [
+			'https://localhost:8888',
 		],
-		"token_endpoint_auth_method": "client_secret_basic",
-		"subject_type": "pairwise"
-	}
+		token_endpoint_auth_method: 'client_secret_basic',
+		subject_type: 'pairwise',
+	};
 
 	const testTool1 = {
 		_id: '5a79cb15c3874f9aea14daa5',
@@ -63,6 +63,7 @@ describe('oauth2 service', function oauth() {
 		key: '1',
 		oAuthClientId: testClient2.client_id,
 	};
+
 	const testTool2 = {
 		_id: '5a79cb15c3874f9aea14daa6',
 		originTool: '5a79cb15c3874f9aea14daa5',
@@ -86,41 +87,43 @@ describe('oauth2 service', function oauth() {
 			toolService.create(testTool1),
 			toolService.create(testTool2),
 		]).then(() => {
-				clientsService.create(testClient2).then((client) => {
-					const oauth = oauth2.create({client: {
-							id: client.client_id,
-							secret: client.client_secret,
-						},
-						auth: {
-							tokenHost: 'http://localhost:9000',
-							tokenPath: '/oauth2/token',
-							authorizePath: '/oauth2/auth',
-						}});
-					const authorizationUri = oauth.authorizationCode.authorizeURL({
-						redirect_uri: client.redirect_uris[0],
-						scope: 'openid',
-						state: '12345678',
-					});
+			clientsService.create(testClient2).then((client) => {
+				const oauth = oauth2.create({
+					client: {
+						id: client.client_id,
+						secret: client.client_secret,
+					},
+					auth: {
+						tokenHost: 'http://localhost:9000',
+						tokenPath: '/oauth2/token',
+						authorizePath: '/oauth2/auth',
+					},
+				});
+				const authorizationUri = oauth.authorizationCode.authorizeURL({
+					redirect_uri: client.redirect_uris[0],
+					scope: 'openid',
+					state: '12345678',
+				});
+				request({
+					uri: authorizationUri,
+					method: 'GET',
+					followRedirect: false,
+				}).catch((res) => {
+					const position = res.error.indexOf('login_challenge=')
+						+ 'login_challenge'.length + 1;
+					loginRequest1 = res.error.substr(position, 32);
 					request({
 						uri: authorizationUri,
 						method: 'GET',
 						followRedirect: false,
-					}).catch((res) => {
-						const position = res.error.indexOf("login_challenge=") +
-							"login_challenge".length + 1;
-						loginRequest1 = res.error.substr(position, 32);
-						request({
-							uri: authorizationUri,
-							method: 'GET',
-							followRedirect: false,
-						}).catch((res) => {
-							const position = res.error.indexOf("login_challenge=") +
-								"login_challenge".length + 1;
-							loginRequest2 = res.error.substr(position, 32);
-							done();
-						});
+					}).catch((res2) => {
+						const position2 = res2.error.indexOf('login_challenge=')
+							+ 'login_challenge'.length + 1;
+						loginRequest2 = res2.error.substr(position2, 32);
+						done();
 					});
-				})
+				});
+			});
 		});
 	});
 
@@ -186,23 +189,22 @@ describe('oauth2 service', function oauth() {
 	// 	});
 	// });
 
-	it('Introspect Inactive Token', () => introspectService.create({token: "xxx"}).then((res) => {
+	it('Introspect Inactive Token', () => introspectService.create({ token: 'xxx' }).then((res) => {
 		assert((res.active === false));
 	}));
 
 	it('GET Consent', () => consentService.get(testUser2._id, {
-		account: { userId: testUser2._id }
+		account: { userId: testUser2._id },
 	}).then((consents) => {
 		assert.ok(consents);
 	}));
 
 	it('REMOVE Consent', () => consentService.remove(testUser2._id, {
 		account: { userId: testUser2._id },
-		query: { client: testClient.client_id }
+		query: { client: testClient.client_id },
 	}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((err) => {
 		assert.strictEqual(404, err.statusCode);
 	}));
-
 });

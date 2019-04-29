@@ -42,13 +42,13 @@ describe('roster service', function oauth() {
 		teacherIds: [testUser1._id],
 		userIds: [
 			'0000d213816abba584714c0a',
-			'0000d224816abba584714c9c'
+			'0000d224816abba584714c9c',
 		],
 		ltiToolIds: [
-			testTool1._id
+			testTool1._id,
 		],
 		shareToken: 'xxx',
-	}
+	};
 
 	let pseudonym1 = null;
 
@@ -58,10 +58,12 @@ describe('roster service', function oauth() {
 			toolService.create(testTool1),
 			coursesService.create(testCourse),
 		]).then(() => {
-			pseudonymService.find({query: {
+			pseudonymService.find({
+				query: {
 					userId: testUser1._id,
 					toolId: testTool1._id,
-			}}).then((pseudonym) => {
+				},
+			}).then((pseudonym) => {
 				pseudonym1 = pseudonym.data[0].pseudonym;
 				done();
 			});
@@ -89,20 +91,20 @@ describe('roster service', function oauth() {
 			assert.strictEqual(pseudonym1, metadata.data.user_id);
 			assert.strictEqual('teacher', metadata.data.type);
 			done();
-		})
+		});
 	});
 
 	it('GET user groups', (done) => {
 		userGroupsService.find({
 			route: { user: pseudonym1 },
-			tokenInfo: { client_id: testTool1.oAuthClientId }
+			tokenInfo: { client_id: testTool1.oAuthClientId },
 		}).then((groups) => {
 			const group1 = groups.data.groups[0];
 			assert.strictEqual(testCourse._id, group1.group_id);
 			assert.strictEqual(testCourse.name, group1.name);
 			assert.strictEqual(testCourse.userIds.length, group1.student_count);
 			done();
-		})
+		});
 	});
 
 	it('GET group', (done) => {
@@ -110,11 +112,10 @@ describe('roster service', function oauth() {
 			tokenInfo: {
 				client_id: testTool1.oAuthClientId,
 				obfuscated_subject: pseudonym1,
-			}
+			},
 		}).then((group) => {
 			assert.strictEqual(pseudonym1, group.data.teachers[0].user_id);
 			done();
-		})
+		});
 	});
-
 });
