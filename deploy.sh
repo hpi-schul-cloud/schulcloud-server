@@ -1,7 +1,7 @@
 #! /bin/bash
 
-# rollt neue Versionen automaitsch auf brandenburg, demo, open und test aus
-# develop-Branch geht auf Test, Master-Branch geht auf Produktivsysteme
+# automatically rolls out new versions on brandenburg, demo, open and test
+# develop-Branch goes to test, Master-Branch goes to productive systems
 
 #export TESTDEPLOY=$( cat testdeploy )
 
@@ -26,8 +26,8 @@ function buildandpush {
 }
 
 function deploytotest {
-  # nur develop soll auf test
-  # compose-File wird vom Ansible verteilt
+  # only develop should be on test
+  # compose-file is distributed by the ansible
 
   # screw together config file for docker swarm
 #  eval "echo \"$( cat compose-server-test.dummy )\"" > docker-compose-server.yml
@@ -41,8 +41,8 @@ function deploytotest {
 }
 
 function deploytoprods {
-  # deployt neue Master auf die Instanzen brandenburg, open, demo
-  # compose-Files werden via Ansible verteilt, viele unterschiedliche Geheimnisse, Mongo_URIs etc
+  # Deploys new masters on the instances brandenburg, open, demo
+  # compose-files are distributed via Ansible, many different secrets, Mongo_URIs etc.
 
   # copy config-file to server and execute mit travis_rsa
   chmod 600 travis_rsa
