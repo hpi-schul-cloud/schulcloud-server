@@ -3,6 +3,7 @@ const { consentModel, consentVersionModel } = require('./model');
 const consentHooks = require('./hooks/consents');
 const consentVersionHooks = require('./hooks/consentversions');
 
+// eslint-disable-next-line func-names
 module.exports = function () {
 	const app = this;
 
