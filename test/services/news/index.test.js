@@ -125,7 +125,7 @@ describe('news service', () => {
 			expect(await News.findById(schoolNews2._id)).to.equal(null);
 		});
 	});
-	describe.only('visibility', () => {
+	describe('visibility', () => {
 		it('create sample news of school news for school members', async () => {
 			// Nutzer ist in class kann sehen
 			const schoolId = await new ObjectId();
@@ -155,7 +155,9 @@ describe('news service', () => {
 			const newsCount = await News.count({ _id: news._id });
 			expect(newsCount).to.equal(1);
 		});
-		// Sichtbarkeiten testen
+	});
+	// Sichtbarkeiten testen
+	/*
 		it.only('create test user', async () => {
 			const schoolId = await new ObjectId();
 			// await testObjects.createTestUser({ schoolId });
@@ -184,6 +186,7 @@ describe('news service', () => {
 		// after(testObjects.cleanup);
 		});
 	});
+	*/
 
 	// Nutzer im Anschluss löschen after()
 	// Nutzer ist in Schule ist im Team und kann team news sehen
