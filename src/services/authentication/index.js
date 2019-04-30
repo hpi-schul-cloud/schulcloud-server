@@ -1,8 +1,8 @@
 'use strict';
 
-const auth = require('feathers-authentication');
-const jwt = require('feathers-authentication-jwt');
-const local = require('feathers-authentication-local');
+const auth = require('@feathersjs/authentication');
+const jwt = require('@feathersjs/authentication-jwt');
+const local = require('@feathersjs/authentication-local');
 const logger = require('winston');
 
 const extractors = require('passport-jwt').ExtractJwt;
@@ -13,14 +13,18 @@ const hooks = require('./hooks');
 
 let secrets;
 try {
-	['production', 'local'].includes(process.env.NODE_ENV)
-		? secrets = require('../../../config/secrets.js')
-		: secrets = require('../../../config/secrets.json');
-} catch(error) {
+	if (['production', 'lokal'].includes(process.env.NODE_ENV)) {
+		// eslint-disable-next-line global-require
+		secrets = require('../../../config/secrets.js');
+	} else {
+		// eslint-disable-next-line global-require
+		secrets = require('../../../config/secrets.json');
+	}
+} catch (error) {
 	secrets = {};
 }
 
-let authenticationSecret = (secrets.authentication) ? secrets.authentication : "secrets";
+const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
 
 module.exports = function() {
     const app = this;
@@ -152,9 +156,5 @@ module.exports = function() {
 	};*/
 
 	// Set up our hooks
-	authenticationService.hooks({
-		before: hooks.before,
-		after: hooks.after
-	});
+	authenticationService.hooks(hooks);
 };
-

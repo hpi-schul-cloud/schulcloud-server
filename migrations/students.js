@@ -3,15 +3,14 @@
 const ran = false; // set to true to exclude migration
 const name = 'Fix access rights for students on course directories.';
 
-const mongoose = require('mongoose');
+const database = require('../src/utils/database');
 
 const { FileModel } = require('../src/services/fileStorage/model.js');
 const RoleModel = require('../src/services/role/model');
 
-mongoose.Promise = global.Promise;
 
 const run = async () => {
-	mongoose.connect(process.env.DB_URL || 'mongodb://localhost:27017/schulcloud', { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
+	database.connect();
 
 	const errorHandler = (e) => {
 		console.log('Error', e);
