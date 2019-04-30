@@ -102,7 +102,7 @@ describe('pseudonym service', function pseudonymTest() {
 			toolId: testTool2._id,
 		},
 	}).then((result) => {
-		pseudonym = result.data[0]; // eslint-disable-line prefer-destructuring
+		pseudonym = result.data[0].pseudonym; // eslint-disable-line prefer-destructuring
 		expect(result.data[0].pseudonym).to.be.a('String');
 	}));
 
