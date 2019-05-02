@@ -4,6 +4,7 @@ const {
 	GroupToSingle,
 	Lesson,
 	Section,
+	Attachment,
 	SubSection,
 	Permission,
 	Test,
@@ -22,11 +23,12 @@ module.exports = function setup() {
 	const permissionsRoute = `${route}sections/:sectionId/permissions`;
 	const groupsRoute = `${route}groups`;
 	const sectionsRoute = `${route}sections`;
+	const attachmentsRoute = `${route}attachments`;
 	const collectionsRoute = `${route}collections`;
 	const lessonsRoute = `${route}lessons`;
 	const subsectionsRoute = `${route}subsections`;
-
 	app.use(sectionsRoute, new Section());
+	app.use(attachmentsRoute, new Attachment());
 	app.use(groupsRoute, new Group());
 	app.use(collectionsRoute, new Collection());
 	app.use(lessonsRoute, new Lesson());
@@ -37,6 +39,10 @@ module.exports = function setup() {
 	const sections = app.service(sectionsRoute);
 	sections.before(before);
 	sections.after(after);
+
+	const attachments = app.service(attachmentsRoute);
+	attachments.before(before);
+	attachments.after(after);
 
 	const groups = app.service(groupsRoute);
 	groups.before(before);

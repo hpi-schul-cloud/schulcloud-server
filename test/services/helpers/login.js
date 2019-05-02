@@ -10,8 +10,8 @@ chai.use(chaiHttp);
  * @param password
  * @returns {{authenticate: (function(*=))}} A function that authenticates chai-http requests using the obtained token
  */
-exports.authenticateWithCredentials = ({username, password}) => {
-	const accessTokenPromise = getAccessToken({username, password});
+exports.authenticateWithCredentials = ({ username, password }) => {
+	const accessTokenPromise = getAccessToken({ username, password });
 	let authenticate = request => {
 		return accessTokenPromise
 			.then(accessToken => {
@@ -20,16 +20,16 @@ exports.authenticateWithCredentials = ({username, password}) => {
 				return Promise.resolve(request);
 			});
 	};
-	return {authenticate};
+	return { authenticate };
 };
 
-const getAccessToken = ({username, password}) => (new Promise((resolve, reject) => {
+const getAccessToken = ({ username, password }) => (new Promise((resolve, reject) => {
 	chai.request(app)
 		.post('/authentication')
 		.set('Accept', 'application/json')
 		.set('content-type', 'application/x-www-form-urlencoded')
 		//send credentials
-		.send({username, password})
+		.send({ username, password })
 		.end((err, res) => {
 			if (err) {
 				reject(err);
@@ -39,3 +39,5 @@ const getAccessToken = ({username, password}) => (new Promise((resolve, reject) 
 			}
 		});
 }));
+
+exports.getAccessToken = getAccessToken;

@@ -33,6 +33,7 @@ const clipboard = require('./clipboard');
 const me = require('./me');
 const database = require('../utils/database');
 const editor = require('./editor');
+const nexboard = require('./nexboard');
 
 // get event listener
 const editorEvents = require('./editor/events/');
@@ -78,6 +79,8 @@ module.exports = function initializeServices() {
 	app.configure(sync);
 	app.configure(me);
 	app.configure(rocketChat);
+	app.configure(editor);
+	app.configure(nexboard);
 
 	// initialize events
 	newsEvents.configure(app);
