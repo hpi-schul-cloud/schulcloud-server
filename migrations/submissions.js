@@ -4,6 +4,7 @@ const ran = true; // set to true to exclude migration
 const name = 'Migrating files of submissions to new file model';
 
 const mongoose = require('mongoose');
+const database = require('../src/utils/database');
 
 const { Schema } = mongoose;
 const { submissionModel } = require('../src/services/homework/model.js');
@@ -17,7 +18,7 @@ const sanitizeObj = (obj) => {
 };
 
 const convertDocument = (doc) => {
-	const [refOwnerModel, owner,] = doc.key.split('/');
+	const [refOwnerModel, owner] = doc.key.split('/');
 
 	const refOwnerModelMap = {
 		users: 'user',
@@ -69,7 +70,7 @@ const oldFileSchema = new Schema({
 });
 
 const run = async (dry) => {
-	mongoose.connect(process.env.DB_URL || 'mongodb://localhost:27017/schulcloud', { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
+	database.connect();
 
 	const oldfileModel = mongoose.model('oldfile', oldFileSchema, '_files');
 	const submissionWithFiles = await submissionModel
