@@ -9,15 +9,14 @@ const { newsModel } = require('../../../src/services/news/model');
 const { expect } = chai;
 
 function runWorker() {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const child = exec(
             `node ${path.join(__dirname, '../../../src/jobs/rss-news.js')}`,
             { env: { ...process.env } },
         );
 
-        child.on('exit', () => {
-            resolve();
-        });
+        child.on('exit', resolve);
+        child.on('error', reject);
     });
 }
 
@@ -26,8 +25,8 @@ describe('RSS Feed Crawler Integration', function () {
     let sampleSchool;
     let dbRSSNews;
     const sampleRSSFeed = {
-        url: 'https://netz-21.de/iserv/public/news/rss/Bildungscloud',
-        description: 'netz-21',
+        url: 'https://hpi.de/nc/rss.xml',
+        description: 'HPI News',
     };
 
     before(async function () {
