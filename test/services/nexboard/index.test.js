@@ -42,7 +42,20 @@ describe('Nexboard endpoints', () => {
 
 		app = require('../../../src/app');
 
-		token = await getAccessToken({ username: 'paula.meyer@schul-cloud.org', password: 'Schulcloud1!' });
+		const getToken = async ({ userId = 'demo-schueler' }) => {
+			const result = await app.service('authentication').create({
+				strategy: 'local',
+				username: userId + '@schul-cloud.org',
+				password: 'Schulcloud1!',
+			}, {
+					'content-type': 'application/json',
+					provider: 'rest',
+				});
+			return result.accessToken;
+		};
+
+		// token = await getAccessToken({ username: 'paula.meyer@schul-cloud.org', password: 'Schulcloud1!' });
+		token = await getToken({});
 	});
 
 	it('should create a new project', async () => {
