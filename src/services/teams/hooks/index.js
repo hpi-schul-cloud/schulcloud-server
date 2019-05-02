@@ -55,25 +55,23 @@ const teamMainHook = globalHooks.ifNotLocal((hook) => {
 		}
 		const sessionSchoolId = bsonIdToString(sessionUser.schoolId);
 
-		if (isSuperhero === false) {
-			if (method === 'create') {
-				team = updateMissingDataInHookForCreate(hook, sessionUser);
-				users.push(sessionUser);
-				hook.data = team;
-			} else if (method === 'find') {
-				hook.params.query = restrictedFindMatch;
-				return hook;
-			}
-			// test if session user is in team
-			const isAccept = isAcceptWay(hook, team._id, team, users);
+		if (method === 'create') {
+			team = updateMissingDataInHookForCreate(hook, sessionUser);
+			users.push(sessionUser);
+			hook.data = team;
+		} else if (method === 'find') {
+			hook.params.query = restrictedFindMatch;
+			return hook;
+		}
+		// test if session user is in team
+		const isAccept = isAcceptWay(hook, team._id, team, users);
 
-			if (isUndefined(isAccept)) {
-				const userExist = team.userIds.some(_user => isSameId(_user.userId, userId));
-				const schoolExist = team.schoolIds.includes(sessionSchoolId);
+		if (isUndefined(isAccept)) {
+			const userExist = team.userIds.some(_user => isSameId(_user.userId, userId));
+			const schoolExist = team.schoolIds.includes(sessionSchoolId);
 
-				if (isUndefined([userExist, schoolExist], 'OR')) {
-					throw new Forbidden('You have not the permission to access this. (1)', { userExist, schoolExist });
-				}
+			if (isUndefined([userExist, schoolExist], 'OR')) {
+				throw new Forbidden('You have not the permission to access this. (1)', { userExist, schoolExist });
 			}
 		}
 
@@ -381,7 +379,7 @@ const hasTeamPermission = (permsissions, _teamId) => {
 	return globalHooks.ifNotLocal((hook) => {
 
 		if (get(hook, 'isSuperhero') === true) {
-			return hook;
+			return Promise.resolve(hook);
 		}
 		if (isString(permsissions)) {
 			permsissions = [permsissions];
@@ -390,7 +388,7 @@ const hasTeamPermission = (permsissions, _teamId) => {
 			[getSessionUser(hook), teamRolesToHook(hook), getTeam(hook)],
 		).then(([sessionUser, ref, team]) => {
 			if (get(hook, 'isSuperhero') === true) {
-				return hook;
+				return Promise.resolve(hook);
 			}
 			const userId = bsonIdToString(hook.params.account.userId);
 			const teamId = _teamId || hook.teamId || hook.id;
