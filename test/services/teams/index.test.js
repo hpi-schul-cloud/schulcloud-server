@@ -1,18 +1,20 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const app = require('../../../src/app');
-const { setupUser, deleteUser } = require('./helper/helper.user');
+const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 
-const { expect } = chai;
-const host=process.env.HOST||'http://localhost:3030';
-chai.use(chaiHttp);
+const app = require('../../../src/app');
+const {
+	createTestUser,
+	createTestAccount,
+	generateRequestParams,
+	cleanup,
+} = require('../helpers/testObjects.js')(app);
 
-describe('Test top level team services endpoints.', () => {
-	let server, agent;
+const teamService = app.service('/teams');
+
+describe('Team Service', () => {
+	let server;
 
 	before((done) => {
-		const agent = chai.request.agent(host);
 		server = app.listen(0, done);
 	});
 
@@ -20,7 +22,7 @@ describe('Test top level team services endpoints.', () => {
 		server.close(done);
 	});
 
-	describe('/teams/extern/add', () => {
+	describe.skip('/teams/extern/add', () => {
 		let service={}, team={};
 		before( ()=>{
 			service = app.service('/teams/extern/add');
@@ -51,6 +53,31 @@ describe('Test top level team services endpoints.', () => {
             });
 		*/
 		});
+	});
 
+	describe('CREATE method', () => {
+		it('is allowed for superheroes', async () => {
+			const hero = await createTestUser({ roles: ['superhero'] });
+			const username = hero.email;
+			const password = 'Schulcloud1!';
+			await createTestAccount({ username, password }, 'local', hero);
+			const params = await generateRequestParams({ username, password });
+
+			try {
+				const record = {
+					name: 'test',
+					schoolId: hero.schoolId,
+					schoolIds: [hero.schoolId],
+					userIds: [hero._id],
+				};
+				const slimteam = await teamService.create(record, { ...params, query: {} });
+				expect(slimteam).to.be.ok;
+
+				const team = await teamService.get(slimteam._id);
+				expect(team.userIds.some(item => item.userId.toString() === hero._id.toString())).to.equal(true);
+			} finally {
+				cleanup();
+			}
+		});
 	});
 });
