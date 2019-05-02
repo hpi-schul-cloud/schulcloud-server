@@ -70,6 +70,27 @@ module.exports = (app, opt = {
 		return { user, account, requestParams };
 	};
 
+	const generateJWT = async ({ username, password }) => {
+		const result = await app.service('authentication').create({
+			strategy: 'local',
+			username,
+			password,
+		}, {
+			headers: {
+				'content-type': 'application/json',
+			},
+			provider: 'rest',
+		});
+		return result.accessToken;
+	};
+
+	const generateRequestParams = async ({ username, password }) => ({
+		headers: {
+			authorization: `Bearer ${await generateJWT({ username, password })}`,
+		},
+		provider: 'rest',
+	});
+
 	return {
 		createTestSystem: testSystem.create,
 		createTestAccount: warn('@implement should rewrite', accounts.create),
