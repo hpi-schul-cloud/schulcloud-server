@@ -26,7 +26,6 @@ const statistic = require('./statistic');
 const wopi = require('./wopi');
 const pseudonym = require('./pseudonym');
 const consent = require('./consent');
-const privacy = require('./privacy');
 const ldap = require('./ldap');
 const sync = require('./sync');
 const rocketChat = require('./rocketChat');
@@ -71,7 +70,6 @@ module.exports = function initializeServices() {
 	app.configure(wopi);
 	app.configure(pseudonym);
 	app.configure(consent);
-	app.configure(privacy);
 	app.configure(clipboard);
 	app.configure(ldap);
 	app.configure(sync);

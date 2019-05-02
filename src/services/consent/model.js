@@ -1,11 +1,10 @@
-'use strict';
-
 // model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const mongooseHistory = require('mongoose-history');
 
 const { Schema } = mongoose;
 
@@ -39,16 +38,30 @@ const consentSchema = new Schema({
 	}],
 });
 
+consentSchema.plugin(mongooseHistory);
+
+const consentTypes = {
+	PRIVACY: 'privacy',
+	TERMS_OF_USE: 'termsOfUse',
+};
+
 const consentVersionSchema = new Schema({
-	versionNumber: { type: String },
-	consentText: { type: String },
-	date: { type: Date },
-});
+	consentType: {
+		type: String,
+		required: true,
+		enum: Object.values(consentTypes),
+	},
+	consentText: { type: String, required: true },
+	publishedAt: { type: Date, required: true },
+}, { timestamps: true });
+
+consentVersionSchema.plugin(mongooseHistory);
 
 const consentModel = mongoose.model('consent', consentSchema);
-const consentVersionModel = mongoose.model('consentVersion', consentVersionSchema);
+const ConsentVersionModel = mongoose.model('consentVersion', consentVersionSchema);
 
 module.exports = {
 	consentModel,
-	consentVersionModel,
+	consentTypes,
+	ConsentVersionModel,
 };
