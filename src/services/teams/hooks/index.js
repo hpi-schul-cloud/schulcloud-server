@@ -56,6 +56,7 @@ const teamMainHook = globalHooks.ifNotLocal((hook) => {
 		const sessionSchoolId = bsonIdToString(sessionUser.schoolId);
 
 		if (method === 'create') {
+			// eslint-disable-next-line no-param-reassign
 			team = updateMissingDataInHookForCreate(hook, sessionUser);
 			users.push(sessionUser);
 			hook.data = team;
