@@ -30,11 +30,6 @@ module.exports = function setup() {
 	const customJWTService = app.service('/accounts/jwt');
 	const accountService = app.service('/accounts');
 
-	// Set up our before hooks
-	customJWTService.before(hooksCJWT.before);
-	accountService.before(hooks.before);
-
-	// Set up our after hooks
-	customJWTService.after(hooksCJWT.after);
-	accountService.after(hooks.after);
+	customJWTService.hooks(hooksCJWT);
+	accountService.hooks(hooks);
 };

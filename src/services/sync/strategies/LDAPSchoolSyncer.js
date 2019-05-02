@@ -1,5 +1,3 @@
-const errors = require('feathers-errors');
-
 const accountModel = require('../../account/model');
 const SystemSyncer = require('./SystemSyncer');
 
