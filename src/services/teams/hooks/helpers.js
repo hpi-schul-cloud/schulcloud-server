@@ -1,6 +1,6 @@
 const {
 	NotFound, NotImplemented, NotAcceptable, BadRequest,
-} = require('feathers-errors');
+} = require('@feathersjs/errors');
 const logger = require('winston');
 const { set, get } = require('./scope');
 const {
@@ -142,7 +142,12 @@ exports.updateMissingDataInHookForCreate = (hook, sessionUser) => {
 	}
 
 	// add team flag
-	hook.data.features = ['isTeam'];
+	if (hook.data.features) {
+		hook.data.features.push('isTeam');
+	} else {
+		hook.data.features = ['isTeam'];
+	}
+
 	addDefaultFilePermissions(hook);
 
 	hook.data.schoolIds = [schoolId];

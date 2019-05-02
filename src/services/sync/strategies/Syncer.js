@@ -4,7 +4,7 @@ const logger = require('winston');
  * A basic syncer that provides step-by-step execution, statistics, and logging
  */
 class Syncer {
-	constructor(app, stats={}) {
+	constructor(app, stats = {}) {
 		this.app = app;
 		this.stats = Object.assign(stats, {
 			success: undefined,

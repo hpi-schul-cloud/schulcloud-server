@@ -1,9 +1,9 @@
 const fs = require('fs');
 const logger = require('winston');
 const rp = require('request-promise-native');
-const { Forbidden, BadRequest, NotFound } = require('feathers-errors');
+const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 
-const { before, after } = require('./hooks');
+const hooks = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
 const swaggerDocs = require('./docs/');
 const {
@@ -470,7 +470,7 @@ const directoryService = {
 
 		const params = sanitizeObj({
 			isDirectory: true,
-			parent: parent || { $exists: false },
+			parent,
 		});
 
 		return FileModel.find(params).exec()
@@ -481,6 +481,10 @@ const directoryService = {
 						.catch(() => undefined),
 				);
 				return Promise.all(permissionPromises);
+			})
+			.then((allowedFiles) => {
+				const files = allowedFiles.filter(f => f);
+				return files.length ? files : new NotFound();
 			});
 	},
 
@@ -741,7 +745,6 @@ module.exports = function () {
 	].forEach((path) => {
 		// Get our initialize service to that we can bind hooks
 		const service = app.service(path);
-		service.before(before);
-		service.after(after);
+		service.hooks(hooks);
 	});
 };

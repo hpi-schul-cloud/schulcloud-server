@@ -1,5 +1,7 @@
 # Checkliste
 
+- Bis die komplette Checkliste abgearbeitet ist muss das PR-Label WIP gesetzt sein
+
 ## Allgemein
 - [ ] Links zu verwandten PRs anderer Repositories
   - https://github.com/schul-cloud/schulcloud-client/pulls/????
@@ -8,7 +10,7 @@
 
 ## Code Qualität
 - [ ] Code mit Hinblick auf Security und Datensicherheit betrachten
-- [ ] Linter darf keine Probleme bei verändertenv Dateien aufweisen
+- [ ] Linter darf keine Probleme bei veränderten Dateien aufweisen
 - [ ] Kern-Logik ist hinter der API implementiert?
 
 ## Tests
@@ -32,14 +34,13 @@
   - Confluence - https://docs.schul-cloud.org
   - Guidelines / Hilfe
   - Release Notes - wenn es sich um große Feature-Releases handelt
-- [ ] mind. 1 Screenshot bei Content-Änderungen
 
 ## Datenschutz
 - [ ] Model- / Seedänderungen erfordern Review der Datenschutz-Gruppen (wird automatisch hinzugefügt)
 - [ ] Neue Verarbeitung von personenbezogene Daten wurde mit der Datenschutz-Gruppe besprochen
 
 ## Freigabe zum Review
-- [ ] WIP entfernen, wenn die Checkliste abgearbeitet wurde
+- [ ] WIP PR-Label entfernt, wenn die Checkliste abgearbeitet wurde
 
 ## Mehr
 Weitere Informationen zur DoD [hier im Confluence](https://docs.schul-cloud.org/pages/viewpage.action?pageId=92831762)

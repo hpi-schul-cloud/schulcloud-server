@@ -1,5 +1,5 @@
 const ldap = require('ldapjs');
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const logger = require('winston');
 const hooks = require('./hooks');
 
@@ -158,11 +158,19 @@ module.exports = function() {
 		 * @return {Promise[Array[Object]]} resolves with array of objects
 		 * matching the query, rejects with error otherwise
 		 */
-		searchCollection(config, searchString, options, rawAttributes = []) {
+		searchCollection(config, searchString, options = {}, rawAttributes = []) {
+			// Paging to avoid 'max size limit exceeded' issue
+			const optionsWithPaging = {
+				...options,
+				paged: {
+					pageSize: 100,
+				},
+			};
+
 			return this._getClient(config).then((client) => {
 				return new Promise((resolve, reject) => {
-					let objects = [];
-					client.search(searchString, options, function (err, res) {
+					const objects = [];
+					client.search(searchString, optionsWithPaging, (err, res) => {
 						if (err) {
 							reject(err);
 						}
@@ -374,17 +382,9 @@ module.exports = function() {
 		_registerEventListeners() {
 			app.on('teams:after:usersChanged', this._onTeamUsersChanged.bind(this));
 		}
-
 	}
 
 	app.use('/ldap', new LdapService());
-
-	// Get our initialize service to that we can bind hooks
 	const systemService = app.service('/ldap');
-
-	// Set up our before hooks
-	systemService.before(hooks.before);
-
-	// Set up our after hooks
-	systemService.after(hooks.after);
+	systemService.hooks(hooks);
 };

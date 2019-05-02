@@ -1,5 +1,5 @@
-const { Forbidden } = require('feathers-errors');
 const jwt = require('jsonwebtoken');
+const { Forbidden } = require('@feathersjs/errors');
 const logger = require('winston');
 const hooks = require('./hooks');
 const secrets = require('../../middleware/secret');
@@ -52,6 +52,5 @@ module.exports = function setup() {
 
 	const me = app.service('/me');
 
-	me.before(hooks.before);
-	me.after(hooks.after);
+	me.hooks(hooks);
 };

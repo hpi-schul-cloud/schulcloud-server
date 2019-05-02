@@ -1,5 +1,3 @@
-// get services
-const mongoose = require('mongoose');
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
@@ -33,17 +31,20 @@ const sync = require('./sync');
 const rocketChat = require('./rocketChat');
 const clipboard = require('./clipboard');
 const me = require('./me');
+const database = require('../utils/database');
 const editor = require('./editor');
 
 // get event listener
 const editorEvents = require('./editor/events/');
+const newsEvents = require('./news/events');
 
-module.exports = function setup() {
+module.exports = function initializeServices() {
 	const app = this;
 
-	mongoose.connect(process.env.DB_URL || app.get('mongodb'), { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
-	mongoose.Promise = global.Promise;
-	// configure services
+	// connect mongoose to the database
+	database.connect();
+
+	// register services
 	app.configure(authentication);
 	app.configure(analytics);
 	app.configure(user);
@@ -77,8 +78,8 @@ module.exports = function setup() {
 	app.configure(sync);
 	app.configure(me);
 	app.configure(rocketChat);
-	app.configure(editor);
 
-	// add event listener
+	// initialize events
+	newsEvents.configure(app);
 	editorEvents(app);
 };

@@ -1,10 +1,7 @@
-'use strict';
-
-const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
-const lesson = require('../model');
+const auth = require('@feathersjs/authentication');
 const nanoid = require('nanoid');
+const globalHooks = require('../../../hooks');
+const lesson = require('../model');
 
 const checkIfCourseGroupLesson = (permission1, permission2, isCreating, hook) => {
 	// find courseGroupId in different ways (POST, FIND ...)
@@ -51,23 +48,41 @@ const checkIfCourseShareable = (hook) => {
 		});*/
 };
 
-exports.before = {
+exports.before = () => ({
 	all: [auth.hooks.authenticate('jwt'), (hook) => {
-		if(hook.data && hook.data.contents) {
-			hook.data.contents = (hook.data.contents || []).map((item) =>{
+		if (hook.data && hook.data.contents) {
+			hook.data.contents = (hook.data.contents || []).map((item) => {
 				item.user = item.user || hook.params.account.userId;
 				return item;
 			});
 		}
 		return hook;
 	}],
-	find: [globalHooks.hasPermission('TOPIC_VIEW'), globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
-	get: [globalHooks.hasPermission('TOPIC_VIEW'), globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
-	create: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true), globalHooks.injectUserId, globalHooks.checkCorrectCourseOrTeamId],
-	update: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false)],
-	patch: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false), globalHooks.permitGroupOperation, globalHooks.checkCorrectCourseOrTeamId],
-	remove: [checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false), globalHooks.permitGroupOperation]
-};
+	find: [
+		globalHooks.hasPermission('TOPIC_VIEW'),
+		globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons),
+	],
+	get: [
+		globalHooks.hasPermission('TOPIC_VIEW'),
+		globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons),
+	],
+	create: [
+		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
+		globalHooks.injectUserId,
+		globalHooks.checkCorrectCourseOrTeamId],
+	update: [
+		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
+	],
+	patch: [
+		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
+		globalHooks.permitGroupOperation,
+		globalHooks.checkCorrectCourseOrTeamId,
+	],
+	remove: [
+		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false),
+		globalHooks.permitGroupOperation,
+	],
+});
 
 exports.after = {
 	all: [],
