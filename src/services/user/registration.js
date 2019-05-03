@@ -200,7 +200,6 @@ const registerUser = function(data, params, app) {
 		consent = {
 			form: 'digital',
 			privacyConsent: data.privacyConsent,
-			thirdPartyConsent: data.thirdPartyConsent,
 			termsOfUseConsent: data.termsOfUseConsent,
 		};
 		if (parent) {
