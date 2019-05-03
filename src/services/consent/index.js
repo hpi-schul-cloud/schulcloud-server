@@ -1,5 +1,5 @@
 const service = require('feathers-mongoose');
-const { consentModel, consentVersionModel } = require('./model');
+const { consentModel, ConsentVersionModel } = require('./model');
 const consentHooks = require('./hooks/consents');
 const consentVersionHooks = require('./hooks/consentversions');
 
@@ -21,7 +21,7 @@ module.exports = function () {
 
 	/* ConsentVersion Model */
 	app.use('/consentVersions', service({
-		Model: consentVersionModel,
+		Model: ConsentVersionModel,
 		paginate: {
 			default: 25,
 			max: 100,
