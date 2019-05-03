@@ -101,8 +101,8 @@ class WopiFilesContentsService {
 	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html
 	 */
   find({fileId: _id, payload, account}) {
+	  	console.log({fileId: _id, payload, account});
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
-
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id }).then(file => {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
@@ -114,11 +114,14 @@ class WopiFilesContentsService {
 				},
 				payload,
 				account
-			}).then(signedUrl => {
+			}).then((signedUrl) => {
+				console.log(signedUrl);
 				return rp({
 					uri: signedUrl.url,
 					encoding: null
 				});
+			}).catch((err) => {
+				console.log(err);
 			});
 		});
 	}
