@@ -1,6 +1,7 @@
 const errors = require('@feathersjs/errors');
 const auth = require('@feathersjs/authentication');
 const { FileModel } = require('../../fileStorage/model');
+const logger = require('winston');
 
 /**
  * handles the authentication for wopi-clients, the wopi-specific param 'access-token' has to be a valid jwt for the current system
@@ -18,8 +19,8 @@ const wopiAuthentication = hook => {
 
 	// remove client specific stuff
 	if(jwt.indexOf('?permission') >= 0) jwt = jwt.slice(0, jwt.indexOf('?permission'));
-	hook.params.headers.authorization = jwt.replace("Bearer ", '');
-
+	hook.params.headers.authorization = jwt.replace('Bearer ', '');
+	logger.info('#1', hook.params.headers);
 	return auth.hooks.authenticate('jwt')(hook);
 };
 
@@ -31,6 +32,7 @@ const retrieveWopiOverrideHeader = hook => {
 	if (!hook.params.headers['x-wopi-override']) throw new errors.BadRequest('X-WOPI-Override header was not provided or was empty!');
 	hook.params.payload.wopiRequestedName = hook.params.headers['x-wopi-requestedname'];
 	hook.params.wopiAction = hook.params.headers['x-wopi-override'];
+	logger.info('#2', hook.params.payload.wopiRequestedName, hook.params.wopiAction);
 	return hook;
 };
 
@@ -66,6 +68,7 @@ const checkLockHeader = (hook) => {
 
 const setLockResponseHeader = (hook) => {
 	hook.result.headerPipes = [{ key: 'X-WOPI-Lock', value: hook.result.lockId || '' }];
+	logger.info('#3', hook.result.headerPipes);
 	return hook;
 };
 
