@@ -16,9 +16,7 @@ const {
 const fixtures = require('./fixtures');
 
 describe('filePermissionHelper', () => {
-
 	describe('checkPermissions function should', () => {
-
 		before((done) => {
 			const promises = [
 				FileModel.create(fixtures.files),
@@ -53,20 +51,20 @@ describe('filePermissionHelper', () => {
 
 		it('let read, write, create and delete user created files', (done) => {
 			const permissionPromises = [
-				canWrite('0000d224816abba584714c8c', '5ca601745d629505e51252d7').then(() => f).catch(() => undefined),
-				canRead('0000d224816abba584714c8c', '5ca601745d629505e51252d7').then(() => f).catch(() => undefined),
-				canCreate('0000d224816abba584714c8c', '5ca601745d629505e51252d7').then(() => f).catch(() => undefined),
-				canDelete('0000d224816abba584714c8c', '5ca601745d629505e51252d7').then(() => f).catch(() => undefined),
+				canWrite('0000d224816abba584714c8c', '5ca601745d629505e51252d7').then(() => true).catch(() => undefined),
+				canRead('0000d224816abba584714c8c', '5ca601745d629505e51252d7').then(() => true).catch(() => undefined),
+				canCreate('0000d224816abba584714c8c', '5ca601745d629505e51252d7').then(() => true).catch(() => undefined),
+				canDelete('0000d224816abba584714c8c', '5ca601745d629505e51252d7').then(() => true).catch(() => undefined),
 			];
 
-			Promise.all(permissionPromises).then(result => {
+			Promise.all(permissionPromises).then((result) => {
 				expect(result).to.have.lengthOf(4);
 				done();
 			});
 		});
 
 		it('let read shared file', (done) => {
-			canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef27').then(result => {
+			canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef27').then((result) => {
 				expect(result).to.be.true;
 				done();
 			});
@@ -74,13 +72,13 @@ describe('filePermissionHelper', () => {
 
 		it('let read, write, create and delete course files for teacher', (done) => {
 			const permissionPromises = [
-				canWrite('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
-				canRead('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
-				canCreate('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
-				canDelete('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
+				canWrite('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
+				canRead('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
+				canCreate('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
+				canDelete('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
 			];
 
-			Promise.all(permissionPromises).then(result => {
+			Promise.all(permissionPromises).then((result) => {
 				expect(result).to.have.lengthOf(4);
 				done();
 			});
@@ -88,13 +86,13 @@ describe('filePermissionHelper', () => {
 
 		it('let read, write, create and delete course files members', (done) => {
 			const permissionPromises = [
-				canWrite('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
-				canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
-				canCreate('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
-				canDelete('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
+				canWrite('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
+				canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
+				canCreate('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
+				canDelete('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
 			];
 
-			Promise.all(permissionPromises).then(result => {
+			Promise.all(permissionPromises).then((result) => {
 				expect(result).to.have.lengthOf(4);
 				done();
 			});
@@ -102,13 +100,13 @@ describe('filePermissionHelper', () => {
 
 		it('does not let read, write, create and delete course files for non members students', (done) => {
 			const permissionPromises = [
-				canWrite('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
-				canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
-				canCreate('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
-				canDelete('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => f).catch(() => undefined),
+				canWrite('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
+				canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
+				canCreate('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
+				canDelete('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28').then(() => true).catch(() => undefined),
 			];
 
-			Promise.all(permissionPromises).then(result => {
+			Promise.all(permissionPromises).then((result) => {
 				expect(result).to.have.lengthOf(4);
 				expect(result.filter(Boolean)).to.have.lengthOf(0);
 				done();
@@ -117,4 +115,3 @@ describe('filePermissionHelper', () => {
 
 	});
 });
-
