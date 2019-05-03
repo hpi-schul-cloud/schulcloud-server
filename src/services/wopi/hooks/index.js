@@ -12,6 +12,7 @@ const logger = require('winston');
  * in the request."
  * @param {*} hook 
  */
+/*
 const wopiAuthentication = hook => {
 	hook.params.headers = hook.params.headers || {};
 	let jwt =  (hook.params.query || {}).access_token || hook.params.headers.authorization; // depends on client
@@ -23,7 +24,18 @@ const wopiAuthentication = hook => {
 	logger.info('#1', hook.params.headers);
 	return auth.hooks.authenticate('jwt')(hook);
 };
+*/
+const clearJWT = context => {
+	hook.params.headers = hook.params.headers || {};
+	let jwt =  (hook.params.query || {}).access_token || hook.params.headers.authorization; // depends on client
+	if (!jwt) throw new Error('access_token is missing!');
 
+	// remove client specific stuff
+	if(jwt.indexOf('?permission') >= 0) jwt = jwt.slice(0, jwt.indexOf('?permission'));
+	hook.params.headers.authorization = jwt.replace('Bearer ', '');
+	logger.info('#1', hook.params.headers);
+	return context;
+}
 /**
  * All editing (POST, PATCH, DELETE) actions should include the wopi-override header!
  */
@@ -73,7 +85,7 @@ const setLockResponseHeader = (hook) => {
 };
 
 exports.before = {
-	all: [wopiAuthentication],
+	all: [auth.hooks.authenticate('jwt'), clearJWT],
 	find: [],
 	get: [],
 	create: [retrieveWopiOverrideHeader, checkLockHeader],
