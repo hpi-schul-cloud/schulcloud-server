@@ -20,16 +20,16 @@ module.exports = {
 			firstName: 'Max',
 			lastName: 'Musterlehrer',
 			roles: ['0000d186816abba584714c99'],
-		}
+		},
 	],
 	roles: [
 		{
 			_id: '0000d186816abba584714c98',
-			name: 'student'
+			name: 'student',
 		},
 		{
 			_id: '0000d186816abba584714c99',
-			name: 'teacher'
+			name: 'teacher',
 		},
 	],
 	courses: [
@@ -42,7 +42,7 @@ module.exports = {
 			ltiToolIds: ['59a55f39a2049554a93fed16'],
 			substitutionIds: ['59ad4c412b442b7f81810285'],
 			color: '#ACACAC',
-		}
+		},
 	],
 	files: [
 		{
@@ -81,5 +81,5 @@ module.exports = {
 			],
 			isDirectory: false,
 		},
-	]
+	],
 };
