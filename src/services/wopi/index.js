@@ -88,8 +88,9 @@ class WopiFilesInfoService {
 	}
 
 	create(data, {payload, _id, account, wopiAction}) {
+		console.log('Create params', {payload, _id, account, wopiAction} );
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id }).then(file => {
+		return FileModel.findOne({ _id }).then((file) => {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
 
 			// trigger specific action
