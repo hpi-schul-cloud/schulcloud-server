@@ -122,6 +122,8 @@ class WopiFilesContentsService {
 					uri: signedUrl.url,
 					encoding: null
 				});
+			}).catch((err) => {
+				console.log(err);
 			});
 		});
 	}
@@ -161,6 +163,8 @@ class WopiFilesContentsService {
 					return FileModel.findOneAndUpdate({_id: fileId}, {$inc: { __v: 1}, updatedAt: Date.now(), size: data.length}).exec();
 				})
 				.then((_) => Promise.resolve({lockId: file.lockId}));
+			}).catch((err) => {
+				console.log(err);
 			});
 		});
 	}
