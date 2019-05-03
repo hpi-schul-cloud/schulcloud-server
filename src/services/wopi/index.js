@@ -28,6 +28,7 @@ class WopiFilesInfoService {
 	}
 
 	find({fileId, account}) {
+		console.log('init', {fileId, account});
 		const { userId } = account;
 		const userService = this.app.service('users');
 
@@ -39,7 +40,8 @@ class WopiFilesInfoService {
 
 		// check whether a valid file is requested
 		return FileModel.findOne({_id: fileId})
-			.then(file => {
+			.then((file) => {
+				console.log(file);
 				if (!file) {
 					throw new errors.NotFound("The requested file was not found!");
 				}
@@ -51,30 +53,37 @@ class WopiFilesInfoService {
 					Version: file['__v'],
 				};
 
-				return canRead(userId, fileId);
+				return canRead(userId, fileId).catch((err) => {
+					console.log('canRead', err);
+				});
 			})
 			.then(() => userService.get(userId))
 			.then((user) => {
-
+				console.log('user', user);
 				capabilities = {
 					...capabilities,
 					UserFriendlyName: `${user.firstName} ${user.lastName}`,
 				};
 
-				return canWrite(userId, fileId).catch(() => undefined);
+				return canWrite(userId, fileId).catch((err) => {
+					console.log('canWrite', err);
+					return undefined;
+				});
 			})
 			.then((canWrite) => {
-
 				capabilities = {
 					...capabilities,
 					UserCanWrite: Boolean(canWrite),
-					UserCanNotWriteRelative: true
+					UserCanNotWriteRelative: true,
 				};
-
+				console.log('capabilities', capabilities);
 				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), capabilities));
 
 			})
-			.catch(() => new errors.Forbidden());
+			.catch((err) => {
+				console.log('global error', err);
+				return new errors.Forbidden();
+			});
 	}
 
 	create(data, {payload, _id, account, wopiAction}) {
@@ -104,7 +113,7 @@ class WopiFilesContentsService {
 	  	console.log({fileId: _id, payload, account});
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id }).then(file => {
+		return FileModel.findOne({ _id }).then((file) => {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
 
 			// generate signed Url for fetching file from storage
@@ -137,7 +146,7 @@ class WopiFilesContentsService {
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
-		return FileModel.findOne({_id: fileId}).then(file => {
+		return FileModel.findOne({_id: fileId}).then((file) => {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
 			file.key = decodeURIComponent(file.key);
 
@@ -146,7 +155,7 @@ class WopiFilesContentsService {
 				file._id,
 				{},
 				{ payload, account }
-			).then(signedUrl => {
+			).then((signedUrl) => {
 				// put binary content directly to file in storage
 				const options = {
 					method: 'PUT',
