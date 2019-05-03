@@ -101,11 +101,13 @@ class WopiFilesContentsService {
 	 * retrieves a file`s binary contents
 	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html
 	 */
-  find({fileId: _id, payload, account}) {
+  find(params) { //{fileId: _id, payload, account}
+		const { _id, account, payload } = params;
+		const { fileId } = params.route;
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id }).then((file) => {
+		return FileModel.findOne({ fileId }).then((file) => {
 			if (!file) throw new errors.NotFound("The requested file was not found!");
 
 			// generate signed Url for fetching file from storage
@@ -129,7 +131,9 @@ class WopiFilesContentsService {
 	* updates a file’s binary contents, file has to exist in proxy db
 	* https://wopirest.readthedocs.io/en/latest/files/PutFile.html
 	*/
-	create(data, {fileId, payload, account, wopiAction}) {
+	create(data, params) {
+		const { payload, account, wopiAction } = params;
+		const { fileId } = params.route;
 		if (wopiAction !== 'PUT') throw new errors.BadRequest("WopiFilesContentsService: Wrong X-WOPI-Override header value!");
 
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
@@ -150,7 +154,7 @@ class WopiFilesContentsService {
 					method: 'PUT',
 					uri: signedUrl.url,
 					contentType: file.type,
-					body: data
+					body: data,
 				};
 
 				return rp(options).then((_) => {
