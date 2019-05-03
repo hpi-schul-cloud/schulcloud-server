@@ -18,8 +18,7 @@ const wopiAuthentication = hook => {
 
 	// remove client specific stuff
 	if(jwt.indexOf('?permission') >= 0) jwt = jwt.slice(0, jwt.indexOf('?permission'));
-  
-	hook.params.headers.authorization = jwt;
+	hook.params.headers.authorization = jwt.replace("Bearer ", '');
 
 	return auth.hooks.authenticate('jwt')(hook);
 };
