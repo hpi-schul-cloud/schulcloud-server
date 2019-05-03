@@ -4,7 +4,6 @@ FROM node:8.15-alpine
 WORKDIR /schulcloud-server
 # RSS-Cron starten
 RUN apk update && apk upgrade && apk add --no-cache git make python tzdata curl
-
 COPY ./package.json .
 COPY ./package-lock.json .
 
