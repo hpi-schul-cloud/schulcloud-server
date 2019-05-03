@@ -52,7 +52,7 @@ describe('rolesHelper should', () => {
 					roles: [
 						'5bb5c190fb457b1c3c0c7e0f',
 					],
-				}
+				},
 			],
 			[
 				{
