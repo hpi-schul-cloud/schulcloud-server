@@ -28,7 +28,7 @@ class WopiFilesInfoService {
 	}
 
 	find({fileId, account}) {
-		console.log('init', {fileId, account});
+		console.log('init', {fileId, account}, this.params);
 		const { userId } = account;
 		const userService = this.app.service('users');
 
@@ -179,7 +179,7 @@ module.exports = function () {
 	app.use(wopiPrefix + ':fileId/contents', new WopiFilesContentsService(app), handleResponseHeaders);
 	app.use(wopiPrefix + ':fileId', new WopiFilesInfoService(app), handleResponseHeaders);
 
-	const filesService = app.service(wopiPrefix + ':fileId');
+	const filesService = app.service(wopiPrefix); //  + ':fileId'
 	const filesContentService = app.service(wopiPrefix + ':fileId/contents');
 
 	filesService.hooks(hooks);
