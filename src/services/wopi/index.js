@@ -177,7 +177,7 @@ module.exports = function () {
 	const app = this;
 
 	app.use(wopiPrefix + ':fileId/contents', new WopiFilesContentsService(app), handleResponseHeaders);
-	app.use(wopiPrefix + ':fileId', new WopiFilesInfoService(app), handleResponseHeaders);
+	app.use(wopiPrefix, new WopiFilesInfoService(app)); //  + ':fileId'   || , handleResponseHeaders
 
 	const filesService = app.service(wopiPrefix); //  + ':fileId'
 	const filesContentService = app.service(wopiPrefix + ':fileId/contents');
