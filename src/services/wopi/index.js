@@ -27,7 +27,7 @@ class WopiFilesInfoService {
 		this.docs = docs.wopiFilesInfoService;
 	}
 
-	find(fileId, params) {  // {fileId, account}
+	get(fileId, params) {  // {fileId, account}
 		const { account } = params;
 		console.log('init', fileId, account, params);
 		const { userId } = account;
