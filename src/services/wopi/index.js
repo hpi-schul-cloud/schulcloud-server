@@ -27,8 +27,9 @@ class WopiFilesInfoService {
 		this.docs = docs.wopiFilesInfoService;
 	}
 
-	find({fileId, account}) {
-		console.log('init', {fileId, account}, this.params);
+	find(fileId, params) {  // {fileId, account}
+		const { account } = params;
+		console.log('init', fileId, account, params);
 		const { userId } = account;
 		const userService = this.app.service('users');
 
@@ -172,14 +173,14 @@ class WopiFilesContentsService {
 		});
 	}
 }
-
+const wopiPrefix2 = '/wopi/files';
 module.exports = function () {
 	const app = this;
 
 	app.use(wopiPrefix + ':fileId/contents', new WopiFilesContentsService(app), handleResponseHeaders);
-	app.use(wopiPrefix, new WopiFilesInfoService(app)); //  + ':fileId'   || , handleResponseHeaders
+	app.use(wopiPrefix2, new WopiFilesInfoService(app)); //  + ':fileId'   || , handleResponseHeaders
 
-	const filesService = app.service(wopiPrefix); //  + ':fileId'
+	const filesService = app.service(wopiPrefix2); //  + ':fileId'
 	const filesContentService = app.service(wopiPrefix + ':fileId/contents');
 
 	filesService.hooks(hooks);
