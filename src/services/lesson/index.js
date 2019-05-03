@@ -44,7 +44,7 @@ class LessonCopyService {
 	}
 
 	/**
-	 * Clones a lesson to a specified course, including files.
+	 * Clones a lesson to a specified course, including files and homeworks.
 	 * @param data consists of lessonId and newCourseId (target, source).
 	 * @param params user Object and other params.
 	 * @returns newly created lesson.
