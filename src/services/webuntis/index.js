@@ -8,7 +8,5 @@ module.exports = function setup() {
 	app.use(routeName, new WebUntis());
 
 	const webUnitsService = app.service(routeName);
-
-	webUnitsService.before(hooks.before);
-	webUnitsService.after(hooks.after);
+	webUnitsService.hooks(hooks);
 };
