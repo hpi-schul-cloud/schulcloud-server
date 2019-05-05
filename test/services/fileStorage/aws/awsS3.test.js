@@ -34,7 +34,6 @@ describe('AWS file storage strategy', function () {
 		});
 
 		delete require.cache[require.resolve('../../../../src/services/fileStorage/strategies/awsS3')];
-		delete require.cache[require.resolve('../../../../config/secrets.json')];
 		const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
 		aws = new AWSStrategy();
 

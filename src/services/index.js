@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
@@ -33,13 +32,17 @@ const rocketChat = require('./rocketChat');
 const clipboard = require('./clipboard');
 const me = require('./me');
 const webuntis = require('./webuntis');
+const database = require('../utils/database');
 
-module.exports = function () {
+const newsEvents = require('./news/events');
+
+module.exports = function initializeServices() {
 	const app = this;
 
-	mongoose.connect(process.env.DB_URL || app.get('mongodb'), { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
-	mongoose.Promise = global.Promise;
+	// connect mongoose to the database
+	database.connect();
 
+	// register services
 	app.configure(authentication);
 	app.configure(analytics);
 	app.configure(user);
@@ -74,4 +77,7 @@ module.exports = function () {
 	app.configure(me);
 	app.configure(rocketChat);
 	app.configure(webuntis);
+
+	// initialize events
+	newsEvents.configure(app);
 };

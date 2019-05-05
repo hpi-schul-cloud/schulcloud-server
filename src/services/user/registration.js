@@ -1,4 +1,4 @@
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
@@ -200,7 +200,6 @@ const registerUser = function(data, params, app) {
 		consent = {
 			form: 'digital',
 			privacyConsent: data.privacyConsent,
-			thirdPartyConsent: data.thirdPartyConsent,
 			termsOfUseConsent: data.termsOfUseConsent,
 		};
 		if (parent) {

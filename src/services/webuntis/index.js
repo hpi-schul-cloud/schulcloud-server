@@ -7,8 +7,8 @@ module.exports = function setup() {
 	const routeName = '/webUntis';
 	app.use(routeName, new WebUntis());
 
-	const webUntisService = app.service(routeName);
+	const webUnitsService = app.service(routeName);
 
-	webUntisService.before(hooks.before);
-	webUntisService.after(hooks.after);
+	webUnitsService.before(hooks.before);
+	webUnitsService.after(hooks.after);
 };
