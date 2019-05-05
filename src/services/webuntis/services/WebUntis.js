@@ -1,4 +1,4 @@
-class WebUnits {
+class WebUntis {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
@@ -38,4 +38,4 @@ class WebUnits {
 	}
 }
 
-module.exports = WebUnits;
+module.exports = WebUntis;

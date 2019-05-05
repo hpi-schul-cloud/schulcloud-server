@@ -32,7 +32,7 @@ const sync = require('./sync');
 const rocketChat = require('./rocketChat');
 const clipboard = require('./clipboard');
 const me = require('./me');
-const webunits = require('./webunits');
+const webuntis = require('./webuntis');
 
 module.exports = function () {
 	const app = this;
@@ -73,5 +73,5 @@ module.exports = function () {
 	app.configure(sync);
 	app.configure(me);
 	app.configure(rocketChat);
-	app.configure(webunits);
+	app.configure(webuntis);
 };
