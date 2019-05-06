@@ -28,12 +28,10 @@ class WopiFilesInfoService {
 		this.docs = docs.wopiFilesInfoService;
 	}
 
-	find(params) { // {fileId, account}
-		logger.info('find file', params);
+	find(params) {
 		const { fileId } = params.route;
 		const { userId } = params.account;
 		const userService = this.app.service('users');
-		logger.info('init file', { fileId, userId });
 		// property descriptions:
 		// https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#required-response-properties
 		let capabilities = {
@@ -45,9 +43,6 @@ class WopiFilesInfoService {
 		return FileModel.findOne({ _id: fileId })
 			.exec()
 			.then((file) => {
-				logger.info('file meta', {
-					name: file.name, size: file.size, __v: file.__v,
-				});
 				if (!file) {
 					throw new NotFound('The requested file was not found!');
 				}
@@ -76,7 +71,6 @@ class WopiFilesInfoService {
 					UserCanWrite: Boolean(canWriteBool),
 					UserCanNotWriteRelative: true,
 				};
-				logger.info('capabilities', capabilities, hostCapabilitiesHelper.defaultCapabilities());
 
 				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), capabilities));
 			})
@@ -88,9 +82,6 @@ class WopiFilesInfoService {
 
 	// eslint-disable-next-line object-curly-newline
 	create(data, { payload, _id, account, wopiAction }) {
-		logger.info('init file create', {
-			data, payload, _id, account, wopiAction,
-		});
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id }).then((file) => {
 			if (!file) {
@@ -116,19 +107,14 @@ class WopiFilesContentsService {
 	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html
 	 */
 	find(params) { // {fileId: _id, payload, account}
-		logger.info('init content find');
-		const { _id, account, payload } = params;
+		const { account, payload } = params;
 		const { fileId } = params.route;
-		logger.info('init content', {
-			_id, account, payload, fileId,
-		});
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id: fileId })
 			.exec()
 			.then((file) => {
-				logger.info('fileId', file._id);
 				if (!file) {
 					throw new NotFound('The requested file was not found!');
 				}
@@ -140,12 +126,12 @@ class WopiFilesContentsService {
 					payload,
 					account,
 				}).then((signedUrl) => {
-					logger.info('signedUrl content find', signedUrl);
-					return rp({
+					const opt = {
 						uri: signedUrl.url,
 						encoding: null,
-					}).catch((err) => {
-						logger.warn('rp content find', new Error(err));
+					};
+					return rp(opt).catch((err) => {
+						logger.warn(new Error(err));
 					});
 				}).catch((err) => {
 					logger.warn(new Error(err));
@@ -153,7 +139,7 @@ class WopiFilesContentsService {
 				});
 			})
 			.catch((err) => {
-				logger.warn('error content FileModel', err);
+				logger.warn(err);
 				throw new NotFound('The requested file was not found!');
 			});
 	}
@@ -164,12 +150,8 @@ class WopiFilesContentsService {
 	* https://wopirest.readthedocs.io/en/latest/files/PutFile.html
 	*/
 	create(data, params) {
-		logger.info('init content create');
 		const { payload, account, wopiAction } = params;
 		const { fileId } = params.route;
-		logger.info('init content create', {
-			payload, account, wopiAction, fileId,
-		});
 		if (wopiAction !== 'PUT') {
 			throw new BadRequest('WopiFilesContentsService: Wrong X-WOPI-Override header value!');
 		}
@@ -182,9 +164,7 @@ class WopiFilesContentsService {
 				throw new NotFound('The requested file was not found!');
 			}
 			file.key = decodeURIComponent(file.key);
-			logger.info({
-				info: 'file', key: file.key, type: file.type, _id: file._id, name: file.name,
-			});
+
 			// generate signedUrl for updating file to storage
 			return signedUrlService.patch(
 				file._id,
@@ -205,7 +185,7 @@ class WopiFilesContentsService {
 							{ _id: file._id },
 							{ $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length },
 						).exec().catch((err) => {
-							logger.warn('findOneAndUpdate content create', new Error(err));
+							logger.warn(new Error(err));
 						}),
 					)
 					.then(() => Promise.resolve({ lockId: file.lockId }))
@@ -213,7 +193,7 @@ class WopiFilesContentsService {
 						logger.warn(err);
 					});
 			}).catch((err) => {
-				logger.warn('error content signedUrlService', new Error(err));
+				logger.warn(new Error(err));
 			});
 		});
 	}

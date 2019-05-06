@@ -17,7 +17,6 @@ const { FileModel } = require('../../fileStorage/model');
 */
 
 const wopiAuthentication = (hook) => {
-	console.log('wopiAuthentication');
 	hook.params.headers = hook.params.headers || {};
 	let jwt =  (hook.params.query || {}).access_token || hook.params.headers.authorization; // depends on client
 	if (!jwt) {
@@ -35,7 +34,6 @@ const wopiAuthentication = (hook) => {
  * All editing (POST, PATCH, DELETE) actions should include the wopi-override header!
  */
 const retrieveWopiOverrideHeader = (hook) => {
-	console.log('retrieveWopiOverrideHeader');
 	hook.params.headers = hook.params.headers || [];
 	if (!hook.params.headers['x-wopi-override']) {
 		throw new BadRequest('X-WOPI-Override header was not provided or was empty!');
@@ -57,7 +55,6 @@ const retrieveWopiOverrideHeader = (hook) => {
 	* INFORMATION: sometimes wopi-clients not implemented locks! Therefore this hook has to be disabled.
  */
 const checkLockHeader = (hook) => {
-	console.log('checkLockHeader');
 	const concerningActions = ['LOCK', 'PUT', 'REFRESH_LOCK', 'UNLOCK'];
 	const { wopiAction } = hook.params;
 
@@ -67,8 +64,6 @@ const checkLockHeader = (hook) => {
 
 	const lockId = hook.params.headers['x-wopi-lock'];
 	const { fileId } = hook.params.route;
-	console.log('fileId', fileId);
-	console.log('hook.params', hook.params);
 	// check if lockId is correct for the given file
 	return FileModel.findOne({ _id: fileId }).then((file) => {
 		if (!file) {
@@ -85,7 +80,6 @@ const checkLockHeader = (hook) => {
 };
 
 const setLockResponseHeader = (hook) => {
-	console.log('setLockResponseHeader');
 	hook.result.headerPipes = [{ key: 'X-WOPI-Lock', value: hook.result.lockId || '' }];
 	return hook;
 };
