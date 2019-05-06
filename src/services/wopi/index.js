@@ -125,7 +125,7 @@ class WopiFilesContentsService {
 		return FileModel.findOne({ _id: fileId })
 			.exec()
 			.then((file) => {
-				logger.info('file', file);
+				logger.info('fileId', file._id);
 				if (!file) {
 					throw new NotFound('The requested file was not found!');
 				}
@@ -176,7 +176,9 @@ class WopiFilesContentsService {
 				throw new NotFound('The requested file was not found!');
 			}
 			file.key = decodeURIComponent(file.key);
-			logger.info('file', file);
+			logger.info({
+				info: 'file', key: file.key, type: file.type, _id: file._id, name: file.name,
+			});
 			// generate signedUrl for updating file to storage
 			return signedUrlService.patch(
 				file._id,
@@ -193,7 +195,7 @@ class WopiFilesContentsService {
 
 				return rp(options)
 					.then(() => FileModel.findOneAndUpdate(
-						{ _id: fileId },
+						{ _id: file._id },
 						{ $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length },
 					).exec())
 					.then(() => Promise.resolve({ lockId: file.lockId }));
