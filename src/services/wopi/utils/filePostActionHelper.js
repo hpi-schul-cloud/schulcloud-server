@@ -43,6 +43,7 @@ const unlock = (file) => {
 
 /** https://wopirest.readthedocs.io/en/latest/files/RenameFile.html */
 const renameFile = (file, payload, account, app) => {
+	console.log('renameFile', file);
 	const fileRenameService = app.service('fileStorage/rename');
 	return fileRenameService.create({
 		_id: file._id,
@@ -74,4 +75,7 @@ const actionHeaderMap = {
 	PUT_USER_INFO: putUserInfo,
 };
 
-module.exports = header => actionHeaderMap[header];
+module.exports = (header) => {
+	console.log('header', header);
+	return actionHeaderMap[header];
+};
