@@ -114,11 +114,13 @@ class WopiFilesContentsService {
 	find(params) { // {fileId: _id, payload, account}
 		const { _id, account, payload } = params;
 		const { fileId } = params.route;
-		logger.info('init content', _id, account, payload, fileId);
+		logger.info('init content', {
+			_id, account, payload, fileId,
+		});
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
-		return FileModel.findOne({ fileId }).then((file) => {
+		return FileModel.findOne({ _id: fileId }).then((file) => {
 			logger.info('file', file);
 			if (!file) {
 				throw new NotFound('The requested file was not found!');
