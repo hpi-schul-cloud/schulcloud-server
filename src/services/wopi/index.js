@@ -77,7 +77,7 @@ class WopiFilesInfoService {
 				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), capabilities));
 			})
 			.catch((err) => {
-				logger.warn(err);
+				logger.warn(new Error(err));
 				return new Forbidden();
 			});
 	}
@@ -139,8 +139,7 @@ class WopiFilesContentsService {
 					encoding: null,
 				});
 			}).catch((err) => {
-				logger.warn(err);
-				return new BadRequest('Can not create signedUrl');
+				logger.warn(new Error(err));
 			});
 		});
 	}
@@ -190,8 +189,7 @@ class WopiFilesContentsService {
 					).exec())
 					.then(() => Promise.resolve({ lockId: file.lockId }));
 			}).catch((err) => {
-				logger.warn(err);
-				return new BadRequest();
+				logger.warn(new Error(err));
 			});
 		});
 	}
