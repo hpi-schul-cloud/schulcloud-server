@@ -2,8 +2,6 @@ const { expect } = require('chai');
 
 const { FileModel } = require('../../../../src/services/fileStorage/model');
 const { userModel } = require('../../../../src/services/user/model');
-const RoleModel = require('../../../../src/services/role/model');
-// const { submissionModel } = require('../../../../src/services/homework/model');
 const { courseModel } = require('../../../../src/services/user-group/model');
 
 const {
@@ -21,7 +19,6 @@ describe('filePermissionHelper', () => {
 			const promises = [
 				FileModel.create(fixtures.files),
 				userModel.create(fixtures.users),
-				RoleModel.create(fixtures.roles),
 				courseModel.create(fixtures.roles),
 			];
 
@@ -34,7 +31,6 @@ describe('filePermissionHelper', () => {
 			const promises = [
 				...fixtures.files.map(_ => FileModel.findByIdAndRemove(_._id)),
 				...fixtures.users.map(_ => userModel.findByIdAndRemove(_._id)),
-				...fixtures.roles.map(_ => RoleModel.findByIdAndRemove(_._id)),
 				...fixtures.courses.map(_ => courseModel.findByIdAndRemove(_._id)),
 			];
 

@@ -22,16 +22,6 @@ module.exports = {
 			roles: ['0000d186816abba584714c99'],
 		},
 	],
-	roles: [
-		{
-			_id: '0000d186816abba584714c98',
-			name: 'student',
-		},
-		{
-			_id: '0000d186816abba584714c99',
-			name: 'teacher',
-		},
-	],
 	courses: [
 		{
 			_id: '0000dcfbfb5c7a3f00bf21ac',
