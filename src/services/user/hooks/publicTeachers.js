@@ -17,7 +17,7 @@ const filterForPublicTeacher = (hook) => {
 
 	// Limit accessible user (only teacher which are discoverable)
 	hook.params.query.roles = ['teacher'];
-	// hook.params.query.discoverable = true;
+	hook.params.query.discoverable = true;
 
 	return Promise.resolve(hook);
 };
