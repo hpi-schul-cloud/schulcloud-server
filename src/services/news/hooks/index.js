@@ -8,21 +8,21 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 const deleteNewsHistory = (hook) => {
 	newsModel.findOne({ _id: hook.id })
 		.then((news) => {
-			for (let i = 0; i < news.history.length; i++) {
+			for (let i = 0; i < news.history.length; i += 1) {
 				newsHistoryModel.findOneAndRemove({ _id: news.history[i] })
 					.catch(err => logger.log('error', err));
 			}
 		});
 };
 
-function getBoolean(value){
-	switch(value){
+function getBoolean(value) {
+	switch (value) {
 		case true:
-		case "true":
+		case 'true':
 		case 1:
-		case "1":
-		case "on":
-		case "yes":
+		case '1':
+		case 'on':
+		case 'yes':
 			return true;
 		default:
 			return false;
@@ -39,7 +39,6 @@ exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
 	find: [
 		globalHooks.hasPermission('NEWS_VIEW'),
-		restrictToCurrentSchool,
 		convertToBoolean,
 	],
 	get: [
