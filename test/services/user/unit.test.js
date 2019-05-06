@@ -5,6 +5,7 @@ const app = require('../../../src/app');
 
 const userService = app.service('users');
 const registrationPinService = app.service('registrationPins');
+const publicTeachersService = app.service('publicTeachers');
 const classesService = app.service('classes');
 const coursesService = app.service('courses');
 const testObjects = require('../helpers/testObjects')(app);
@@ -123,4 +124,38 @@ describe('registrationPin Service', () => {
 		.then(() => registrationPinService.create({ email: 'test.adresse@schul-cloud.org' }))
 		.then(() => registrationPinService.find({ query: { email: 'test.adresse@schul-cloud.org' } }))
 		.then(pinObjects => expect(pinObjects.data).to.have.lengthOf(1)));
+});
+
+describe('publicTeachers service', () => {
+	const testSchoolId = '0000d186816abba584714c5f';
+	let testStudent = {};
+	let testTeacherDiscoverable = {};
+	let testTeacherNotDiscoverable = {};
+
+	it('register services and create test users', async () => {
+		testStudent = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: testSchoolId,
+		});
+		testTeacherDiscoverable = await testObjects.createTestUser({
+			roles: ['teacher'],
+			discoverable: true,
+			schoolId: testSchoolId,
+		});
+		testTeacherNotDiscoverable = await testObjects.createTestUser({
+			roles: ['teacher'],
+			discoverable: false,
+			schoolId: testSchoolId,
+		});
+		assert.ok(userService);
+		assert.ok(publicTeachersService);
+	});
+
+	it('find discoverable teachers', async () => {
+		const testDiscoverable = await publicTeachersService.get(testSchoolId);
+		expect(testDiscoverable.length).to.equal(1);
+		expect(testDiscoverable[0]._id).to.equal(testTeacherDiscoverable._id);
+	});
+
+	after(testObjects.cleanup);
 });
