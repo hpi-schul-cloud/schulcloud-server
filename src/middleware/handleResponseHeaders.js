@@ -4,7 +4,7 @@
  * this helper handles response headers piped through services/hooks
  */
 module.exports = (req, res, next) => {
-
+	console.log('handle response');
 	(res.data.headerPipes || []).forEach(h => {
 		if (h.key) res.header(h.key, h.value);
 	});
