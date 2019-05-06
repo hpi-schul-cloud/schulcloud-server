@@ -43,7 +43,9 @@ class WopiFilesInfoService {
 
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id: fileId })
+			.exec()
 			.then((file) => {
+				logger.info('file meta', file);
 				if (!file) {
 					throw new NotFound('The requested file was not found!');
 				}
@@ -77,7 +79,7 @@ class WopiFilesInfoService {
 				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), capabilities));
 			})
 			.catch((err) => {
-				logger.warn(new BadRequest(err));
+				logger.warn(new Error(err));
 				return new Forbidden();
 			});
 	}
@@ -120,29 +122,35 @@ class WopiFilesContentsService {
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id: fileId }).then((file) => {
-			logger.info('file', file);
-			if (!file) {
-				throw new NotFound('The requested file was not found!');
-			}
-			// generate signed Url for fetching file from storage
-			return signedUrlService.find({
-				query: {
-					file: file._id,
-				},
-				payload,
-				account,
-			}).then((signedUrl) => {
-				logger.info('signedUrl', signedUrl);
-				return rp({
-					uri: signedUrl.url,
-					encoding: null,
+		return FileModel.findOne({ _id: fileId })
+			.exec()
+			.then((file) => {
+				logger.info('file', file);
+				if (!file) {
+					throw new NotFound('The requested file was not found!');
+				}
+				// generate signed Url for fetching file from storage
+				return signedUrlService.find({
+					query: {
+						file: file._id,
+					},
+					payload,
+					account,
+				}).then((signedUrl) => {
+					logger.info('signedUrl', signedUrl);
+					return rp({
+						uri: signedUrl.url,
+						encoding: null,
+					});
+				}).catch((err) => {
+					logger.warn(new Error(err));
+					return 'Die Datei konnte leider nicht geladen werden!';
 				});
-			}).catch((err) => {
-				logger.warn(new BadRequest(err));
-				return 'Die Datei konnte leider nicht geladen werden!';
+			})
+			.catch((err) => {
+				logger.warn(err);
+				throw new NotFound('The requested file was not found!');
 			});
-		});
 	}
 
 
@@ -190,7 +198,7 @@ class WopiFilesContentsService {
 					).exec())
 					.then(() => Promise.resolve({ lockId: file.lockId }));
 			}).catch((err) => {
-				logger.warn(new BadRequest(err));
+				logger.warn(new Error(err));
 			});
 		});
 	}
