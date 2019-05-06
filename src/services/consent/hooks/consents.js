@@ -37,9 +37,6 @@ const addDates = (hook) => {
 		if ('termsOfUseConsent' in parentConsent) {
 			parentConsent.dateOfTermsOfUseConsent = Date.now();
 		}
-		if ('thirdPartyConsent' in parentConsent) {
-			parentConsent.dateOfThirdPartyConsent = Date.now();
-		}
 	}
 	if (hook.data.userConsent) {
 		const { userConsent } = hook.data;
@@ -48,9 +45,6 @@ const addDates = (hook) => {
 		}
 		if ('termsOfUseConsent' in userConsent) {
 			userConsent.dateOfTermsOfUseConsent = Date.now();
-		}
-		if ('thirdPartyConsent' in userConsent) {
-			userConsent.dateOfThirdPartyConsent = Date.now();
 		}
 	}
 };
@@ -105,7 +99,7 @@ const accessCheck = (consent, app) => {
 			if (userHasOneRole(user, ['teacher', 'administrator', 'expert'])) {
 				const userConsent = consent.userConsent || {};
 				requiresParentConsent = false;
-				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent && userConsent.thirdPartyConsent)) {
+				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent)) {
 					access = false;
 					return Promise.resolve();
 				} else {
@@ -124,7 +118,7 @@ const accessCheck = (consent, app) => {
 			if (age < 16) {
 				const parentConsent = (consent.parentConsents || [])[0] || {};
 				// check parent consents
-				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent && parentConsent.thirdPartyConsent)) {
+				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent)) {
 					access = false;
 					return Promise.resolve();
 				}
@@ -132,7 +126,7 @@ const accessCheck = (consent, app) => {
 			if (age > 13) {
 				// check user consents
 				const userConsent = consent.userConsent || {};
-				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent && userConsent.thirdPartyConsent)) {
+				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent)) {
 					access = false;
 					if ((user.preferences || {}).firstLogin) {
 						return Promise.resolve();
