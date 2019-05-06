@@ -133,14 +133,12 @@ module.exports = (app) => {
 		return result.accessToken;
 	};
 
-	const generateRequestParams = async ({ username, password }) => {
-		return {
-			headers: {
-				authorization: `Bearer ${await generateJWT({ username, password })}`,
-			},
-			provider: 'rest',
-		};
-	};
+	const generateRequestParams = async ({ username, password }) => ({
+		headers: {
+			authorization: `Bearer ${await generateJWT({ username, password })}`,
+		},
+		provider: 'rest',
+	});
 
 	return {
 		createTestSystem,
