@@ -29,10 +29,11 @@ class WopiFilesInfoService {
 	}
 
 	find(params) { // {fileId, account}
+		logger.info('find file', params);
 		const { fileId } = params.route;
 		const { userId } = params.account;
 		const userService = this.app.service('users');
-		console.log('init file', { fileId, userId });
+		logger.info('init file', { fileId, userId });
 		// property descriptions:
 		// https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#required-response-properties
 		let capabilities = {
@@ -71,6 +72,7 @@ class WopiFilesInfoService {
 					UserCanWrite: Boolean(canWriteBool),
 					UserCanNotWriteRelative: true,
 				};
+				logger.info('capabilities', capabilities, hostCapabilitiesHelper.defaultCapabilities());
 
 				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), capabilities));
 			})
@@ -82,7 +84,7 @@ class WopiFilesInfoService {
 
 	// eslint-disable-next-line object-curly-newline
 	create(data, { payload, _id, account, wopiAction }) {
-		console.log('init file create', {
+		logger.info('init file create', {
 			data, payload, _id, account, wopiAction,
 		});
 		// check whether a valid file is requested
@@ -112,12 +114,12 @@ class WopiFilesContentsService {
 	find(params) { // {fileId: _id, payload, account}
 		const { _id, account, payload } = params;
 		const { fileId } = params.route;
-		console.log('init content', _id, account, payload, fileId);
+		logger.info('init content', _id, account, payload, fileId);
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
 		return FileModel.findOne({ fileId }).then((file) => {
-			console.log('file', file);
+			logger.info('file', file);
 			if (!file) {
 				throw new NotFound('The requested file was not found!');
 			}
@@ -129,7 +131,7 @@ class WopiFilesContentsService {
 				payload,
 				account,
 			}).then((signedUrl) => {
-				console.log('signedUrl', signedUrl);
+				logger.info('signedUrl', signedUrl);
 				return rp({
 					uri: signedUrl.url,
 					encoding: null,
@@ -157,9 +159,11 @@ class WopiFilesContentsService {
 
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id: fileId }).then((file) => {
-			if (!file) throw new NotFound('The requested file was not found!');
+			if (!file) {
+				throw new NotFound('The requested file was not found!');
+			}
 			file.key = decodeURIComponent(file.key);
-
+			logger.info('file', file);
 			// generate signedUrl for updating file to storage
 			return signedUrlService.patch(
 				file._id,

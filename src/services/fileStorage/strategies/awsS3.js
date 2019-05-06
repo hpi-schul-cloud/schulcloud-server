@@ -174,7 +174,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					return;
 				}
 
-				logger.info(`Bucket ${awsObject.bucket} does exist`);
+				// logger.info(`Bucket ${awsObject.bucket} does exist`);
 				resolve(awsObject);
 			});
 		});
