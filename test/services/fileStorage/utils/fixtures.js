@@ -5,30 +5,30 @@ module.exports = {
 			email: 'max@mustermann.de',
 			firstName: 'Max',
 			lastName: 'Musterschueler',
-			roles: ['0000d186816abba584714c98'],
+			roles: ['0000d186816aaaa584714c98'],
 		},
 		{
 			_id: '0000d224816abba584714c8d',
 			email: 'max@mustermann.de',
 			firstName: 'Peter',
 			lastName: 'Musterschueler',
-			roles: ['0000d186816abba584714c98'],
+			roles: ['0000d186816aaaa584714c98'],
 		},
 		{
 			_id: '0000d224816abba584714c8e',
 			email: 'max@mustermann.de',
 			firstName: 'Max',
 			lastName: 'Musterlehrer',
-			roles: ['0000d186816abba584714c99'],
+			roles: ['0000d186816aaaa584714c99'],
 		},
 	],
 	roles: [
 		{
-			_id: '0000d186816abba584714c98',
+			_id: '0000d186816aaaa584714c98',
 			name: 'student',
 		},
 		{
-			_id: '0000d186816abba584714c99',
+			_id: '0000d186816aaaa584714c99',
 			name: 'teacher',
 		},
 	],
@@ -71,7 +71,7 @@ module.exports = {
 			refOwnerModel: 'course',
 			permissions: [
 				{
-					refId: '0000d186816abba584714c98',
+					refId: '0000d186816aaaa584714c98',
 					refPermModel: 'role',
 					read: true,
 					delete: true,
