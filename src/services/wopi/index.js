@@ -151,6 +151,9 @@ class WopiFilesContentsService {
 	create(data, params) {
 		const { payload, account, wopiAction } = params;
 		const { fileId } = params.route;
+		logger.info('init content create', {
+			payload, account, wopiAction, fileId,
+		});
 		if (wopiAction !== 'PUT') {
 			throw new BadRequest('WopiFilesContentsService: Wrong X-WOPI-Override header value!');
 		}
