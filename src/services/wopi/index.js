@@ -116,6 +116,7 @@ class WopiFilesContentsService {
 	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html
 	 */
 	find(params) { // {fileId: _id, payload, account}
+		logger.info('init content find');
 		const { _id, account, payload } = params;
 		const { fileId } = params.route;
 		logger.info('init content', {
@@ -163,6 +164,7 @@ class WopiFilesContentsService {
 	* https://wopirest.readthedocs.io/en/latest/files/PutFile.html
 	*/
 	create(data, params) {
+		logger.info('init content create');
 		const { payload, account, wopiAction } = params;
 		const { fileId } = params.route;
 		logger.info('init content create', {
@@ -206,7 +208,10 @@ class WopiFilesContentsService {
 							logger.warn('findOneAndUpdate content create', new Error(err));
 						}),
 					)
-					.then(() => Promise.resolve({ lockId: file.lockId }));
+					.then(() => Promise.resolve({ lockId: file.lockId }))
+					.catch((err) => {
+						logger.warn(err);
+					});
 			}).catch((err) => {
 				logger.warn('error content signedUrlService', new Error(err));
 			});
