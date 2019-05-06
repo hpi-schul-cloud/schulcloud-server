@@ -143,6 +143,8 @@ class WopiFilesContentsService {
 					return rp({
 						uri: signedUrl.url,
 						encoding: null,
+					}).catch((err) => {
+						logger.warn('rp content find', new Error(err));
 					});
 				}).catch((err) => {
 					logger.warn(new Error(err));
@@ -196,10 +198,14 @@ class WopiFilesContentsService {
 				};
 
 				return rp(options)
-					.then(() => FileModel.findOneAndUpdate(
-						{ _id: file._id },
-						{ $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length },
-					).exec())
+					.then(
+						() => FileModel.findOneAndUpdate(
+							{ _id: file._id },
+							{ $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length },
+						).exec().catch((err) => {
+							logger.warn('findOneAndUpdate content create', new Error(err));
+						}),
+					)
 					.then(() => Promise.resolve({ lockId: file.lockId }));
 			}).catch((err) => {
 				logger.warn('error content signedUrlService', new Error(err));
