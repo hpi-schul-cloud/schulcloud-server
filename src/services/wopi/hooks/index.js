@@ -66,8 +66,8 @@ const checkLockHeader = (hook) => {
 	}
 
 	const lockId = hook.params.headers['x-wopi-lock'];
-	const fileId = hook.params;
-
+	const { fileId } = hook.params;
+	console.log('fileId', fileId);
 	// check if lockId is correct for the given file
 	return FileModel.findOne({ _id: fileId }).then((file) => {
 		if (!file) {
