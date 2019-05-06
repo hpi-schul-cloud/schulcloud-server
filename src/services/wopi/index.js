@@ -45,7 +45,9 @@ class WopiFilesInfoService {
 		return FileModel.findOne({ _id: fileId })
 			.exec()
 			.then((file) => {
-				logger.info('file meta', file);
+				logger.info('file meta', {
+					name: file.name, size: file.size, __v: file.__v,
+				});
 				if (!file) {
 					throw new NotFound('The requested file was not found!');
 				}
@@ -137,7 +139,7 @@ class WopiFilesContentsService {
 					payload,
 					account,
 				}).then((signedUrl) => {
-					logger.info('signedUrl', signedUrl);
+					logger.info('signedUrl content find', signedUrl);
 					return rp({
 						uri: signedUrl.url,
 						encoding: null,
@@ -148,7 +150,7 @@ class WopiFilesContentsService {
 				});
 			})
 			.catch((err) => {
-				logger.warn(err);
+				logger.warn('error content FileModel', err);
 				throw new NotFound('The requested file was not found!');
 			});
 	}
@@ -200,7 +202,7 @@ class WopiFilesContentsService {
 					).exec())
 					.then(() => Promise.resolve({ lockId: file.lockId }));
 			}).catch((err) => {
-				logger.warn(new Error(err));
+				logger.warn('error content signedUrlService', new Error(err));
 			});
 		});
 	}
