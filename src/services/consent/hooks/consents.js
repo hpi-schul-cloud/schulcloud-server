@@ -1,10 +1,9 @@
-'use strict';
-
+const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
-const auth = require('feathers-authentication');
 
-//TODO: after hook for get that checks access.
-//TODO: rethink security, due to no schoolId we can't restrict anything.
+
+// TODO: after hook for get that checks access.
+// TODO: rethink security, due to no schoolId we can't restrict anything.
 
 const restrictToUserOrRole = (hook) => {
 	const userService = hook.app.service('users');
@@ -12,7 +11,7 @@ const restrictToUserOrRole = (hook) => {
 		query: {
 			_id: hook.params.account.userId,
 			$populate: 'roles',
-		}
+		},
 	}).then((res) => {
 		let access = false;
 		res.data[0].roles.map((role) => {
@@ -22,10 +21,10 @@ const restrictToUserOrRole = (hook) => {
 		});
 		if (access) {
 			return hook;
-		} else {
-			hook.params.query.userId = hook.params.account.userId;
-			return hook;
 		}
+
+		hook.params.query.userId = hook.params.account.userId;
+		return hook;
 	});
 };
 
@@ -38,9 +37,6 @@ const addDates = (hook) => {
 		if ('termsOfUseConsent' in parentConsent) {
 			parentConsent.dateOfTermsOfUseConsent = Date.now();
 		}
-		if ('thirdPartyConsent' in parentConsent) {
-			parentConsent.dateOfThirdPartyConsent = Date.now();
-		}
 	}
 	if (hook.data.userConsent) {
 		const { userConsent } = hook.data;
@@ -49,9 +45,6 @@ const addDates = (hook) => {
 		}
 		if ('termsOfUseConsent' in userConsent) {
 			userConsent.dateOfTermsOfUseConsent = Date.now();
-		}
-		if ('thirdPartyConsent' in userConsent) {
-			userConsent.dateOfThirdPartyConsent = Date.now();
 		}
 	}
 };
@@ -80,20 +73,6 @@ const checkExisting = (hook) => {
 		});
 };
 
-exports.before = {
-	all: [],
-	find: [
-		auth.hooks.authenticate('jwt'),
-		globalHooks.ifNotLocal(restrictToUserOrRole),
-		mapInObjectToArray,
-	],
-	get: [auth.hooks.authenticate('jwt')],
-	create: [addDates, checkExisting],
-	update: [auth.hooks.authenticate('jwt'), addDates],
-	patch: [auth.hooks.authenticate('jwt'), addDates],
-	remove: [auth.hooks.authenticate('jwt')],
-};
-
 const userHasOneRole = (user, roles) => {
 	if (!(roles instanceof Array)) {
 		roles = [roles];
@@ -120,7 +99,7 @@ const accessCheck = (consent, app) => {
 			if (userHasOneRole(user, ['teacher', 'administrator', 'expert'])) {
 				const userConsent = consent.userConsent || {};
 				requiresParentConsent = false;
-				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent && userConsent.thirdPartyConsent)) {
+				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent)) {
 					access = false;
 					return Promise.resolve();
 				} else {
@@ -139,7 +118,7 @@ const accessCheck = (consent, app) => {
 			if (age < 16) {
 				const parentConsent = (consent.parentConsents || [])[0] || {};
 				// check parent consents
-				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent && parentConsent.thirdPartyConsent)) {
+				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent)) {
 					access = false;
 					return Promise.resolve();
 				}
@@ -147,7 +126,7 @@ const accessCheck = (consent, app) => {
 			if (age > 13) {
 				// check user consents
 				const userConsent = consent.userConsent || {};
-				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent && userConsent.thirdPartyConsent)) {
+				if (!(userConsent.privacyConsent && userConsent.termsOfUseConsent)) {
 					access = false;
 					if ((user.preferences || {}).firstLogin) {
 						return Promise.resolve();
@@ -183,27 +162,40 @@ const accessCheck = (consent, app) => {
 
 const decorateConsent = (hook) => {
 	return accessCheck(hook.result, hook.app)
-		.then(consent => {
+		.then((consent) => {
 			hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 			hook.result = consent;
-		})
-	.then(() => Promise.resolve(hook));
+		}).then(() => Promise.resolve(hook));
 };
 
 const decorateConsents = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-	const consentPromises = (hook.result.data || []).map(consent => {
-		return accessCheck(consent, hook.app).then(result => {
+	const consentPromises = (hook.result.data || []).map((consent) => {
+		return accessCheck(consent, hook.app).then((result) => {
 			return result;
-		}).catch(err => {
+		}).catch((err) => {
 			return {};
 		});
 	});
 
-	return Promise.all(consentPromises).then(users => {
+	return Promise.all(consentPromises).then((users) => {
 		hook.result.data = users;
 		return Promise.resolve(hook);
 	});
+};
+
+exports.before = {
+	all: [],
+	find: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.ifNotLocal(restrictToUserOrRole),
+		mapInObjectToArray,
+	],
+	get: [auth.hooks.authenticate('jwt')],
+	create: [addDates, checkExisting],
+	update: [auth.hooks.authenticate('jwt'), addDates],
+	patch: [auth.hooks.authenticate('jwt'), addDates],
+	remove: [auth.hooks.authenticate('jwt')],
 };
 
 exports.after = {
@@ -213,5 +205,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };
