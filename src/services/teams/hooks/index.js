@@ -62,6 +62,7 @@ const teamMainHook = globalHooks.ifNotLocal(hook => Promise.all([
 			hook.params.query.userIds = { $elemMatch: { userId } };
 			return hook;
 		}
+
 		// test if session user is in team
 		const isAccept = isAcceptWay(hook, team._id, team, users);
 
@@ -384,8 +385,9 @@ const hasTeamPermission = (permsissions, _teamId) => globalHooks.ifNotLocal((hoo
 		[getSessionUser(hook), teamRolesToHook(hook), getTeam(hook)],
 	).then(([sessionUser, ref, team]) => {
 		if (get(hook, 'isSuperhero') === true) {
-			return hook;
+			return Promise.resolve(hook);
 		}
+
 		const userId = bsonIdToString(hook.params.account.userId);
 		const teamId = _teamId || hook.teamId || hook.id;
 		const teamUser = team.userIds.find(_user => isSameId(_user.userId, userId));

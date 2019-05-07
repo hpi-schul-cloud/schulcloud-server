@@ -122,7 +122,10 @@ class AdminOverview {
 				query: {
 					schoolIds: schoolId,
 					// userIds: { $elemMatch: { schoolId } },
-					$populate: [{ path: 'userIds.role' }, { path: 'userIds.userId', populate: { path: 'roles' } }, 'schoolIds'], 	// schoolId
+					$populate: [{ path: 'userIds.role' }, {
+						path: 'userIds.userId',
+						populate: { path: 'roles' },
+					}, 'schoolIds'], 	// schoolId
 				},
 			})
 				.then(teams => AdminOverview.mapped(teams, schoolId))
@@ -153,7 +156,7 @@ class AdminOverview {
 			let { userIds } = team;
 
 			if (!ownerExist && isOwnerSchool && isDefined(userId)) {
-				userIds.push(createUserWithRole(ref, { userId, schoolId, selectedRole }));			
+				userIds.push(createUserWithRole(ref, { userId, schoolId, selectedRole }));
 			} else if (!isOwnerSchool && isUndefined(userId)) {
 				userIds = AdminOverview.removeMemberBySchool(team, schoolId);
 			} else {
@@ -194,9 +197,7 @@ class AdminOverview {
 	}
 
 	static getRestrictedQuery(teamIds, schoolId) {
-		let query = teamIds.map((_id) => {
-			return { _id };
-		});
+		let query = teamIds.map(_id => ({ _id }));
 		query = { $or: query, $populate: [{ path: 'userIds.userId' }] };
 		query.schoolIds = schoolId;
 		return { query };
@@ -217,6 +218,7 @@ class AdminOverview {
 			throw new BadRequest('Missing parameter');
 		}
 		if (!isArray(teamIds)) {
+			// eslint-disable-next-line no-param-reassign
 			teamIds = [teamIds];
 		}
 		if (teamIds.length <= 0 || !isString(message)) {
@@ -224,9 +226,10 @@ class AdminOverview {
 		}
 
 		return Promise.all(
-			[getSessionUser(this, params), hooks.teamRolesToHook(this)]
-		).then(([{ schoolId }, ref]) => {
-			return this.app.service('teams').find((this.getRestrictedQuery(teamIds, schoolId))).then((teams) => {
+			[getSessionUser(this, params), hooks.teamRolesToHook(this)],
+		).then(([{ schoolId }, ref]) => this.app.service('teams')
+			.find((this.getRestrictedQuery(teamIds, schoolId))).then((teams) => {
+				// eslint-disable-next-line no-param-reassign
 				teams = teams.data;
 				if (!isArrayWithElement(teams)) {
 					throw new NotFound('No team found.');
@@ -247,20 +250,16 @@ class AdminOverview {
 					html: '',
 				};
 
-				const waits = emails.map((email) => {
-					return mailService.create({ email, subject, content })
-						.then(res =>  res.accepted[0])
-						.catch(err => `Error: ${err.message}`);
-				});
+				const waits = emails.map(email => mailService.create({ email, subject, content })
+					.then(res => res.accepted[0])
+					.catch(err => `Error: ${err.message}`));
 
 				return Promise.all(waits)
 					.then(values => values)
 					.catch(err => err);
-
 			}).catch((err) => {
 				throw err;
-			});
-		}).catch((err) => {
+			})).catch((err) => {
 			warn(err);
 			throw new BadRequest('It exists no teams with access rights, to send this message.');
 		});
@@ -307,13 +306,12 @@ class Add {
 	 * @return {Promise::bsonId||stringId} Expert school id.
 	 */
 	_getExpertSchoolId() {
-		return this.app.service('schools').find({ query: { purpose: 'expert' } }).then((schools) => {
-			return extractOne(schools, '_id').then((id) => {
-				return bsonIdToString(id);
+		return this.app.service('schools').find({ query: { purpose: 'expert' } })
+			.then(schools => extractOne(schools, '_id')
+				.then(id => bsonIdToString(id)))
+			.catch((err) => {
+				throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
 			});
-		}).catch((err) => {
-			throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
-		});
 	}
 
 	/**
@@ -321,13 +319,13 @@ class Add {
 	 * @return {Promise::bsonId||stringId} Expert role id.
 	 */
 	_getExpertRoleId() {
-		return this.app.service('roles').find({ query: { name: 'expert' } }).then((roles) => {
-			return extractOne(roles, '_id').then((id) => {
-				return bsonIdToString(id);
+		return this.app.service('roles')
+			.find({ query: { name: 'expert' } })
+			.then(roles => extractOne(roles, '_id')
+				.then(id => bsonIdToString(id)))
+			.catch((err) => {
+				throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', err);
 			});
-		}).catch((err) => {
-			throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', err);
-		});
 	}
 
 	/**
@@ -353,7 +351,9 @@ class Add {
 	 * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
 	 * @param {Boolean} isUserCreated default = false
 	 */
-	async _generateLink({ esid, email, teamId, importHash }, isUserCreated = false) {
+	async _generateLink({
+		esid, email, teamId, importHash,
+	}, isUserCreated = false) {
 		if (isUserCreated === false && isUndefined(importHash)) {
 			return Promise.resolve({ shortLink: `${process.env.HOST}/teams/${teamId}` });
 		}
@@ -372,7 +372,6 @@ class Add {
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Erstellen des Einladelinks.', err);
 			});
-
 	}
 
 	/**
@@ -388,18 +387,22 @@ class Add {
 	 */
 	async _collectUserAndLinkData({ email, role, teamId }) {
 		return Promise.all([
+			// eslint-disable-next-line no-underscore-dangle
 			this._getUsersByEmail(email),
+			// eslint-disable-next-line no-underscore-dangle
 			this._getExpertSchoolId(),
+			// eslint-disable-next-line no-underscore-dangle
 			this._getExpertRoleId(),
 			getTeam(this, teamId),
 		]).then(async ([user, schoolId, expertRoleId, team]) => {
-			let isUserCreated = false,
-				isResend = false,
-				userRoleName;
+			let isUserCreated = false;
+			let isResend = false;
+			let userRoleName;
 			if (isUndefined(user) && role === 'teamexpert') {
 				const newUser = {
 					email, schoolId, roles: [expertRoleId], firstName: 'Experte', lastName: 'Experte',
 				};
+				// eslint-disable-next-line no-param-reassign
 				user = await userModel.create(newUser);
 				isUserCreated = true;
 			}
@@ -459,7 +462,12 @@ class Add {
 	 * @private
 	 * @param {Object::{email::String, role::String, teamId::String}} opt
 	 * @param {Object::params} params The request params.
-	 * @return {Promise::{ message: 'Success!', linkData::Object~from this._generateLink(), user::Object::User, role::String }}
+	 * @return {Promise::{
+	 * message: 'Success!',
+	 * linkData::Object~from this._generateLink(),
+	 * user::Object::User,
+	 * role::String
+	 * }}
 	 */
 	async _userImportById(teamId, { userId, role }, params) {
 		//	const { userId, role } = data;
@@ -471,9 +479,11 @@ class Add {
 		userIds = removeDuplicatedTeamUsers(userIds);
 
 		return Promise.all([
+			// eslint-disable-next-line no-underscore-dangle
 			this._generateLink({ teamId }, false),
 			patchTeam(this, teamId, { userIds, schoolIds }, params),
-		]).then(([linkData, _]) => Add._response({ linkData, user }));
+			// eslint-disable-next-line no-underscore-dangle
+		]).then(([linkData]) => Add._response({ linkData, user }));
 	}
 
 	/**
@@ -512,6 +522,7 @@ class Add {
 	 */
 	async _userImportByEmail(teamId, { email, role }, params) {
 		// let { email, role } = data;
+		// eslint-disable-next-line no-param-reassign
 		email = email.toLowerCase(); // important for valid user
 		const {
 			esid,
@@ -521,13 +532,16 @@ class Add {
 			team,
 			userRoleName,
 			importHash,
+			// eslint-disable-next-line no-underscore-dangle
 		} = await this._collectUserAndLinkData({ email, role, teamId });
 		const { invitedUserIds } = team;
+		// eslint-disable-next-line no-param-reassign
 		role = userRoleName; /*
 			@override
 			is important if user already in invited users exist and the role is take from team
 		*/
 
+		// eslint-disable-next-line no-underscore-dangle
 		Add._throwErrorIfUserExistByEmail(team, email);
 
 		// if not already in invite list
@@ -535,9 +549,13 @@ class Add {
 			invitedUserIds.push({ email, role });
 		}
 		return Promise.all([
-			this._generateLink({ esid, email, teamId, importHash }, isUserCreated),
+			// eslint-disable-next-line no-underscore-dangle
+			this._generateLink({
+				esid, email, teamId, importHash,
+			}, isUserCreated),
 			patchTeam(this, teamId, { invitedUserIds }, params),
-		]).then(([linkData, _]) => Add._response({ 
+			// eslint-disable-next-line no-underscore-dangle
+		]).then(([linkData]) => Add._response({
 			linkData, user, isUserCreated, isResend, email,
 		}));
 	}
@@ -554,8 +572,10 @@ class Add {
 			}
 			let out;
 			if (data.email) {
+				// eslint-disable-next-line no-underscore-dangle
 				out = this._userImportByEmail(teamId, data, params);
 			} else if (data.userId && data.role) {
+				// eslint-disable-next-line no-underscore-dangle
 				out = this._userImportById(teamId, data, params);
 			} else {
 				throw new BadRequest('Missing input data.');
@@ -597,7 +617,7 @@ class Accept {
 			const { userIds } = team;
 
 			const invitedUser = Accept.findInvitedUserByEmail(team, email);
-			if (isUndefined(invitedUser)) { 
+			if (isUndefined(invitedUser)) {
 				throw new NotFound('User is not in this team.');
 			}
 			const role = ref.findRole('name', invitedUser.role, '_id');
@@ -644,7 +664,7 @@ class Remove {
 		});
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -657,7 +677,7 @@ module.exports = function setup() {
 			default: 50,
 			max: 100,
 		},
-		lean: true,
+		lean: { virtuals: true },
 	};
 
 	app.use('/teams', service(options));
@@ -682,7 +702,7 @@ module.exports = function setup() {
 	Object.values(topLevelServices).forEach((_service) => {
 		_service.hooks({
 			before: hooks.beforeExtern,
-			after: hooks.beforeExtern,
+			after: hooks.afterExtern,
 		});
 	});
 
