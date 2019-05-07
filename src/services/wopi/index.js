@@ -29,6 +29,9 @@ class WopiFilesInfoService {
 	}
 
 	find(params) {
+		if (!(params.route || {}).fileId) {
+			throw new BadRequest('No fileId exist.');
+		}
 		const { fileId } = params.route;
 		const { userId } = params.account;
 		const userService = this.app.service('users');
@@ -44,7 +47,7 @@ class WopiFilesInfoService {
 			.exec()
 			.then((file) => {
 				if (!file) {
-					throw new NotFound('The requested file was not found!');
+					throw new NotFound('The requested file was not found! (1)');
 				}
 
 				capabilities = {
@@ -83,9 +86,9 @@ class WopiFilesInfoService {
 	// eslint-disable-next-line object-curly-newline
 	create(data, { payload, _id, account, wopiAction }) {
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id }).then((file) => {
+		return FileModel.findOne({ _id }).exec().then((file) => {
 			if (!file) {
-				throw new NotFound('The requested file was not found!');
+				throw new NotFound('The requested file was not found! (2)');
 			}
 
 			// trigger specific action
@@ -107,6 +110,9 @@ class WopiFilesContentsService {
 	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html
 	 */
 	find(params) { // {fileId: _id, payload, account}
+		if (!(params.route || {}).fileId) {
+			throw new BadRequest('No fileId exist.');
+		}
 		const { account, payload } = params;
 		const { fileId } = params.route;
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
@@ -116,7 +122,7 @@ class WopiFilesContentsService {
 			.exec()
 			.then((file) => {
 				if (!file) {
-					throw new NotFound('The requested file was not found!');
+					throw new NotFound('The requested file was not found! (3)');
 				}
 				// generate signed Url for fetching file from storage
 				return signedUrlService.find({
@@ -140,7 +146,7 @@ class WopiFilesContentsService {
 			})
 			.catch((err) => {
 				logger.warn(err);
-				throw new NotFound('The requested file was not found!');
+				throw new NotFound('The requested file was not found! (4)');
 			});
 	}
 
@@ -150,6 +156,9 @@ class WopiFilesContentsService {
 	* https://wopirest.readthedocs.io/en/latest/files/PutFile.html
 	*/
 	create(data, params) {
+		if (!(params.route || {}).fileId) {
+			throw new BadRequest('No fileId exist.');
+		}
 		const { payload, account, wopiAction } = params;
 		const { fileId } = params.route;
 		if (wopiAction !== 'PUT') {
@@ -161,7 +170,7 @@ class WopiFilesContentsService {
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id: fileId }).then((file) => {
 			if (!file) {
-				throw new NotFound('The requested file was not found!');
+				throw new NotFound('The requested file was not found! (5)');
 			}
 			file.key = decodeURIComponent(file.key);
 

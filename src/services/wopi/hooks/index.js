@@ -55,6 +55,9 @@ const retrieveWopiOverrideHeader = (hook) => {
 	* INFORMATION: sometimes wopi-clients not implemented locks! Therefore this hook has to be disabled.
  */
 const checkLockHeader = (hook) => {
+	if (!(hook.params.route || {}).fileId) {
+		throw new BadRequest('No fileId exist.');
+	}
 	const concerningActions = ['LOCK', 'PUT', 'REFRESH_LOCK', 'UNLOCK'];
 	const { wopiAction } = hook.params;
 
