@@ -1,9 +1,9 @@
 const fs = require('fs');
 const logger = require('winston');
 const rp = require('request-promise-native');
-const { Forbidden, BadRequest, NotFound } = require('feathers-errors');
+const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 
-const { before, after } = require('./hooks');
+const hooks = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
 const swaggerDocs = require('./docs/');
 const {
@@ -17,6 +17,8 @@ const { FileModel } = require('./model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
+const { sortRoles } = require('../role/utils/rolesHelper');
+const { userModel } = require('../user/model');
 
 const strategies = {
 	awsS3: AWSStrategy,
@@ -68,12 +70,22 @@ const fileStorageService = {
 
 		if (isCourse) {
 			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
+			const { _id: teacherRoleId } = await RoleModel.findOne({ name: 'teacher' }).exec();
 
 			permissions.push({
 				refId: studentRoleId,
 				refPermModel: 'role',
 				write: Boolean(studentCanEdit),
 				read: true, // students can always read course files
+				create: false,
+				delete: false,
+			});
+
+			permissions.push({
+				refId: teacherRoleId,
+				refPermModel: 'role',
+				write: true,
+				read: true,
 				create: false,
 				delete: false,
 			});
@@ -124,7 +136,7 @@ const fileStorageService = {
 		const { owner, parent } = query;
 		const { userId } = payload;
 
-		return FileModel.find({ owner, parent: parent || { $exists: false } }).exec()
+		return FileModel.find({ owner, parent }).exec()
 			.then((files) => {
 				const permissionPromises = files.map(
 					f => canRead(userId, f)
@@ -173,7 +185,7 @@ const fileStorageService = {
 	 */
 	async patch(_id, data, params) {
 		const { payload: { userId } } = params;
-		const { parent } = data;
+		let { parent } = data;
 		const fileObject = await FileModel.findOne({ _id: parent }).exec();
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
 		let owner, refOwnerModel, update = {};
@@ -189,7 +201,9 @@ const fileStorageService = {
 		} else if (parent === userId.toString()) {
 			owner = userId;
 			refOwnerModel = 'user';
+			parent = undefined;
 			update = {
+				parent,
 				owner,
 				refOwnerModel,
 			};
@@ -661,54 +675,209 @@ const newFileService = {
 const filePermissionService = {
 	async patch(_id, data, params) {
 		const { payload: { userId } } = params;
-		const {
-			role,
-			write,
-			read,
-			create,
-		} = data;
+		const { permissions: commitedPerms } = data;
+
+		const permissionPromises = commitedPerms.map(({ refId }) => Promise.all([
+			RoleModel.findOne({ _id: refId }).lean().exec(),
+			userModel.findOne({ _id: refId }).lean().exec(),
+		])
+			.then(([role, user]) => {
+				if (role) {
+					return 'role';
+				}
+				return user ? 'user' : '';
+			}));
 
 		return canWrite(userId, _id)
 			.then(() => Promise.all([
 				FileModel.findOne({ _id }).exec(),
-				RoleModel.findOne({ name: role }).exec(),
+				permissionPromises,
 			]))
-			.then(([fileObject, roleObject]) => {
-				if (!roleObject) {
-					return Promise.reject(new NotFound(`Unknown role ${role}`));
-				}
-
+			.then(([fileObject, refModels]) => {
 				if (!fileObject) {
 					return Promise.reject(new NotFound(`File with ID ${_id} not found`));
 				}
 
-				const { permissions } = fileObject;
-				let permission = permissions.find(
-					perm => perm.refId.toString() === roleObject._id.toString(),
-				);
+				let { permissions } = fileObject;
 
-				if (!permission) {
-					permissions.push(sanitizeObj({
-						refId: roleObject._id,
-						refPermModel: 'role',
-						write,
-						read,
-						create,
-						delete: data.delete,
-					}));
-				} else {
-					permission = Object.assign(permission, sanitizeObj({
-						write,
-						read,
-						create,
-						delete: data.delete,
-					}));
-				}
+				permissions = permissions.map((perm) => {
+					const update = commitedPerms.find(({ refId }) => perm.refId.equals(refId));
+
+					if (update) {
+						const { write, read, create } = update;
+
+						return Object.assign(perm, sanitizeObj({
+							write,
+							read,
+							create,
+							delete: update.delete,
+						}));
+					}
+
+					return perm;
+				});
+
+				permissions = [
+					...permissions,
+					...commitedPerms
+						.filter(({ refId }) => permissions.findIndex(({ refId: id }) => id.equals(refId)) === -1)
+						.map((perm, idx) => {
+							const {
+								write,
+								read,
+								create,
+								refId,
+							} = perm;
+
+							return sanitizeObj({
+								refId,
+								refOwnerModel: refModels[idx],
+								write,
+								read,
+								create,
+								delete: perm.delete,
+							});
+						}),
+				];
 
 				return FileModel.update({ _id }, {
 					$set: { permissions },
 				}).exec();
 			})
+			.catch((e) => {
+				logger.error(e);
+				return new Forbidden();
+			});
+	},
+	/**
+	 * Returns the permissions of a file filtered by owner model
+	 * and permissions based on the role of the user
+	 * @returns {Promise}
+	 * @param query contains the file id
+	 * @param payload contains userId
+	 */
+	async find({ query, payload }) {
+		const { file: fileId } = query;
+		const { userId } = payload;
+		const fileObj = await FileModel.findOne({ _id: fileId }).populate('owner').lean().exec();
+		const userObject = await userModel.findOne({ _id: userId }).populate('roles').lean().exec();
+
+		const { refOwnerModel, owner } = fileObj;
+		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
+		const rolePromises = rolePermissions
+			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
+		const isFileCreator = fileObj.permissions[0].refId.toString() === userId.toString();
+
+		const actionMap = {
+			user: () => {
+				const userPermission = fileObj.permissions
+					.filter(({ refPermModel }) => refPermModel === 'user')
+					.filter(({ refId }) => !refId.equals(userId));
+
+				return Promise.all(
+					userPermission.map(({ refId }) => userModel.findOne({ _id: refId }).exec()),
+				)
+					.then((result) => {
+						const users = result ? result.filter(u => u) : [];
+						if (users.length) {
+							return userPermission.map((perm) => {
+								const { firstName, lastName, _id } = users
+									.find(({ _id: id }) => id.equals(perm.refId));
+
+								return {
+									refId: _id,
+									name: `${firstName} ${lastName}`,
+									...perm,
+								};
+							});
+						}
+
+						return Promise.resolve([]);
+					});
+			},
+			course() {
+				const isStudent = userObject.roles.some(({ name }) => name === 'student');
+
+				return Promise.all(rolePromises)
+					.then(roles => rolePermissions
+						.map((perm) => {
+							const { name } = roles.find(({ _id }) => _id.equals(perm.refId));
+							const { read, write, refId } = perm;
+
+							const nameMap = {
+								student() {
+									return isStudent ? {
+										read,
+										write: isFileCreator ? write : undefined,
+									} : { write, read };
+								},
+								teacher() {
+									return isStudent ? {} : {
+										read,
+										write: isFileCreator ? write : undefined,
+									};
+								},
+							};
+
+							return {
+								...sanitizeObj(nameMap[name]()),
+								refId,
+								name,
+							};
+						})
+						.filter(({ name }) => {
+							if (isStudent) {
+								return name === 'student';
+							}
+							return true;
+						}));
+			},
+			teams() {
+				const { role: userRole } = owner.userIds.find(u => userId.equals(u.userId));
+
+				return Promise.all(rolePromises)
+					.then(sortRoles)
+					.then((sortedRoles) => {
+						const userPos = sortedRoles
+							.findIndex(roles => roles.findIndex(({ _id }) => _id.equals(userRole)) > -1);
+
+						return sortedRoles
+							.reduce((flat, roles, index) => {
+								if (index <= userPos) {
+									return [
+										...flat,
+										...roles.map(({ name, _id }) => ({
+											name,
+											_id,
+											sibling: index === userPos,
+										})),
+									];
+								}
+
+								return flat;
+							}, [])
+							.map(({ _id, name, sibling }) => {
+								const { read, write, refId } = rolePermissions
+									.find(({ refId: id }) => id.equals(_id));
+								const reWrite = isFileCreator ? write : undefined;
+
+								const permissions = {
+									read: sibling ? undefined : read,
+									write: sibling ? reWrite : write,
+								};
+
+								return {
+									refId,
+									name,
+									...sanitizeObj(permissions),
+								};
+							});
+					});
+			},
+		};
+
+		return canRead(userId, fileId)
+			.then(actionMap[refOwnerModel])
 			.catch((e) => {
 				logger.error(e);
 				return new Forbidden();
@@ -745,7 +914,6 @@ module.exports = function () {
 	].forEach((path) => {
 		// Get our initialize service to that we can bind hooks
 		const service = app.service(path);
-		service.before(before);
-		service.after(after);
+		service.hooks(hooks);
 	});
 };

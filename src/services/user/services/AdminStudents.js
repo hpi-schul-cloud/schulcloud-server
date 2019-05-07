@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
-const { BadRequest, Forbidden } = require('feathers-errors');
+const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const logger = require('winston');
 
 const { userModel } = require('../model');
@@ -36,12 +36,10 @@ const findConsent = userIds => consentModel.find({ userId: { $in: userIds } })
 	.select({
 		'userConsent.dateOfPrivacyConsent': 0,
 		'userConsent.dateOfTermsOfUseConsent': 0,
-		'userConsent.dateOfThirdPartyConsent': 0,
 		'userConsent.dateOfResearchConsent': 0,
 		'userConsent.researchConsent': 0,
 		'parentConsents.dateOfPrivacyConsent': 0,
 		'parentConsents.dateOfTermsOfUseConsent': 0,
-		'parentConsents.dateOfThirdPartyConsent': 0,
 		'parentConsents.dateOfResearchConsent': 0,
 		'parentConsents.researchConsent': 0,
 	})
@@ -70,7 +68,12 @@ class AdminStudents {
 
 			// fetch data that are scoped to schoolId
 			const studentRole = (roles.filter(role => role.name === 'student'))[0];
-			const [users, classes] = await Promise.all([getAllUsers(schoolId, studentRole._id), getClasses(this, schoolId)]);
+			const [users, classes] = await Promise.all(
+				[
+					getAllUsers(schoolId, studentRole._id),
+					getClasses(this, schoolId),
+				],
+			);
 			const userIds = users.map(user => user._id.toString());
 			const consents = await findConsent(userIds).then((data) => {
 				// rebuild consent to object for faster sorting

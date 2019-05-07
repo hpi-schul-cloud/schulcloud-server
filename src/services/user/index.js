@@ -1,11 +1,9 @@
-'use strict';
-
+const errors = require('@feathersjs/errors');
 const service = require('feathers-mongoose');
 const user = require('./model');
 const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
-const errors = require('feathers-errors');
 const firstLoginHooks = require('./hooks/firstLogin');
 const { AdminStudents } = require('./services');
 const adminHook = require('./hooks/admin');
@@ -58,8 +56,7 @@ module.exports = function setup() {
 	const userService = app.service('/users');
 	app.use('users/linkImport', new UserLinkImportService(userService));	//do not use hooks
 
-	userService.before(hooks.before(app));	// TODO: refactor
-	userService.after(hooks.after);
+	userService.hooks(hooks);	// TODO: refactor
 
 	/* publicTeachers Service */
 	app.use('/publicTeachers', service({
@@ -72,8 +69,7 @@ module.exports = function setup() {
 	}));
 
 	const publicTeachersService = app.service('/publicTeachers');
-	publicTeachersService.before(publicTeachersHooks.before);
-	publicTeachersService.after(publicTeachersHooks.after);
+	publicTeachersService.hooks(publicTeachersHooks);
 
 
 	/* registrationPin Service */
@@ -85,8 +81,7 @@ module.exports = function setup() {
 		},
 	}));
 	const registrationPinService = app.service('/registrationPins');
-	registrationPinService.before(registrationPinsHooks.before);
-	registrationPinService.after(registrationPinsHooks.after);
+	registrationPinService.hooks(registrationPinsHooks);
 
 	const RegistrationService = require('./registration')(app);
 	app.use('/registration', new RegistrationService());
@@ -94,12 +89,10 @@ module.exports = function setup() {
 	const FirstLoginService = require('./firstLogin')(app);
 	app.use('/firstLogin', new FirstLoginService());
 	const firstLoginService = app.service('firstLogin');
-	firstLoginService.before(firstLoginHooks.before);
-	firstLoginService.after(firstLoginHooks.after);
+	firstLoginService.hooks(firstLoginHooks);
 
 	const adminStudentsRoute = '/users/admin/students';
 	app.use(adminStudentsRoute, new AdminStudents());
 	const adminStudentsService = app.service(adminStudentsRoute);
-	adminStudentsService.before(adminHook.before);
-	adminStudentsService.after(adminHook.after);
+	adminStudentsService.hooks(adminHook);
 };
