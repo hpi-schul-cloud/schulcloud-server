@@ -379,11 +379,12 @@ const hasTeamPermission = (permsissions, _teamId) => globalHooks.ifNotLocal((hoo
 		return hook;
 	}
 	if (isString(permsissions)) {
+		// eslint-disable-next-line no-param-reassign
 		permsissions = [permsissions];
 	}
 	return Promise.all(
 		[getSessionUser(hook), teamRolesToHook(hook), getTeam(hook)],
-	).then(([sessionUser, ref, team]) => {
+	).then(([sessionUser, ref, team]) => { // eslint-disable-line no-unused-vars
 		if (get(hook, 'isSuperhero') === true) {
 			return Promise.resolve(hook);
 		}
