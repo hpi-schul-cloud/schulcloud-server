@@ -1,11 +1,47 @@
+const logger = require('winston');
+
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
+const RoleModel = require('../../role/model');
+const { sortRoles } = require('../../role/utils/rolesHelper');
 const { submissionModel } = require('../../homework/model');
 
 const getFile = id => FileModel
 	.findOne({ _id: id })
 	.populate('owner')
 	.exec();
+
+const checkTeamPermission = async ({ user, file, permission }) => {
+	let teamRoles;
+
+	try {
+		teamRoles = sortRoles(await RoleModel.find({ name: /^team/ }).exec());
+	} catch (error) {
+		logger.error(error);
+		return Promise.reject();
+	}
+
+	return new Promise((resolve, reject) => {
+		const { role } = user;
+		const { permissions } = file;
+		const rolePermissions = permissions.find(perm => perm.refId.toString() === role.toString());
+
+		const { role: creatorRole } = file.owner.userIds
+			.find(_ => _.userId.toString() === file.permissions[0].refId.toString());
+
+		const findRole = roleId => roles => roles
+			.findIndex(r => r._id.toString() === roleId.toString()) > -1;
+
+		if (permission === 'delete') {
+			const userPos = teamRoles.findIndex(findRole(role));
+			const creatorPos = teamRoles.findIndex(findRole(creatorRole));
+
+			return userPos > creatorPos ? resolve(true) : reject();
+		}
+
+		return rolePermissions[permission] ? resolve(true) : reject();
+	});
+};
 
 const checkMemberStatus = ({ file, user }) => {
 	const { owner: { userIds, teacherIds } } = file;
@@ -57,18 +93,16 @@ const checkPermissions = permission => async (user, file) => {
 		return Promise.resolve(true);
 	}
 
-	return new Promise((resolve, reject) => {
-		if (userPermissions) {
-			return userPermissions[permission] ? resolve(true) : reject();
-		}
+	if (userPermissions) {
+		return userPermissions[permission] ? Promise.resolve(true) : Promise.reject();
+	}
 
-		const { role } = isMember;
-		const rolePermissions = permissions.find(perm => perm.refId.toString() === role.toString());
-
-		return rolePermissions[permission] ? resolve(true) : reject();
+	return checkTeamPermission({
+		permission,
+		file: fileObject,
+		user: isMember,
 	});
 };
-
 
 module.exports = {
 	checkPermissions,
