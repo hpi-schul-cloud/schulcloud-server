@@ -1,13 +1,13 @@
 {
   "name": "schulcloud-server",
   "description": "",
-  "version": "0.13.0",
+  "version": "0.17.1",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
     "feathers"
   ],
-  "license": "GPL",
+  "license": "AGPL-3.0",
   "repository": {},
   "author": {
     "name": "Schul-Cloud Team"
@@ -47,6 +47,7 @@
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
+    "chalk": "^2.4.2",
     "chance": "^1.0.12",
     "client-oauth2": "^4.1.0",
     "compression": "^1.6.2",
@@ -65,11 +66,13 @@
     "file-type": "^9.0.0",
     "freeport": "^1.0.5",
     "jwt-decode": "^2.2.0",
-    "ldapjs": "git+https://git@github.com/Blizzard/node-ldapjs.git",
+    "ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
     "mongoose": "^4.7.6",
+    "mongoose-autopopulate": "^0.9.1",
     "mongoose-id-validator": "^0.4.3",
+    "mongoose-lean-virtuals": "^0.3.5",
     "mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
     "moodle-client": "^0.4.0",
     "nanoid": "^1.2.2",
