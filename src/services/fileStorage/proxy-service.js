@@ -1,5 +1,6 @@
 const fs = require('fs');
 const logger = require('winston');
+const _ = require('lodash');
 const rp = require('request-promise-native');
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 
@@ -124,7 +125,7 @@ const fileStorageService = {
 		const { owner, parent } = query;
 		const { userId } = payload;
 
-		return FileModel.find({ owner, parent }).exec()
+		return FileModel.find({ owner, parent: parent || { $exists: false } }).exec()
 			.then((files) => {
 				const permissionPromises = files.map(
 					f => canRead(userId, f)
@@ -176,12 +177,15 @@ const fileStorageService = {
 		let { parent } = data;
 		const fileObject = await FileModel.findOne({ _id: parent }).exec();
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
-		let owner, refOwnerModel, update = {};
+		let owner;
+		let refOwnerModel;
+		let fieldsToSet = {};
+		let fieldsToUnset = {};
 
 		if (fileObject) {
 			owner = fileObject.owner;
 			refOwnerModel = fileObject.refOwnerModel;
-			update = {
+			fieldsToSet = {
 				parent,
 				owner,
 				refOwnerModel,
@@ -189,16 +193,17 @@ const fileStorageService = {
 		} else if (parent === userId.toString()) {
 			owner = userId;
 			refOwnerModel = 'user';
-			parent = undefined;
-			update = {
-				parent,
+			fieldsToSet = {
 				owner,
 				refOwnerModel,
+			};
+			fieldsToUnset = {
+				parent: '',
 			};
 		} else {
 			owner = parent;
 			refOwnerModel = teamObject ? 'teams' : 'course';
-			update = {
+			fieldsToSet = {
 				owner,
 				refOwnerModel,
 			};
@@ -225,9 +230,18 @@ const fileStorageService = {
 		};
 
 		return permissionPromise()
-			.then(() => FileModel.update({ _id }, {
-				$set: update,
-			}).exec())
+			.then(() => {
+				if (_.isEmpty(fieldsToUnset)) {
+					FileModel.update({ _id }, {
+						$set: fieldsToSet,
+					}).exec();
+				} else {
+					FileModel.update({ _id }, {
+						$set: fieldsToSet,
+						$unset: fieldsToUnset
+					}).exec();
+				}
+			})
 			.catch((e) => {
 				logger.error(e);
 				return new Forbidden();
