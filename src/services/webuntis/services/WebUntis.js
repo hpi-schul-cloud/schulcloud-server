@@ -1,7 +1,23 @@
 class WebUntis {
 	constructor(options) {
 		this.options = options || {};
-		this.docs = {};
+		this.docs = {
+			find: {
+				security: [{ bearer: [] }]
+			},
+			get: {
+				security: [{ bearer: [] }]
+			},
+			create: {
+				security: [{ bearer: [] }]
+			},
+			patch: {
+				security: [{ bearer: [] }]
+			},
+			remove: {
+				security: [{ bearer: [] }]
+			}
+		};
 	}
 	// https://docs.feathersjs.com/api/services
 
