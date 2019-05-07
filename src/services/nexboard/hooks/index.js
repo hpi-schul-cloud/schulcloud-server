@@ -3,8 +3,8 @@ const { authenticate } = require('@feathersjs/authentication').hooks;
 const before = {
 	all: [
 		(context) => {
-			console.log('HEADERS', context.params.headers)
-			return context
+			console.log('HEADERS', context.params.headers);
+			return context;
 		},
 		authenticate('jwt'),
 	],

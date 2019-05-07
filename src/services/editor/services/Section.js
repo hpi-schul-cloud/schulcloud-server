@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 const { request } = require('../helper/');
 
 const uri = 'sections';
@@ -6,7 +5,7 @@ const uri = 'sections';
 class Section {
 	constructor(options) {
 		this.options = options || {};
-		this.docs = {};
+		// this.docs = {};
 	}
 
 	/**

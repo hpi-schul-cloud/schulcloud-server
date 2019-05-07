@@ -1,11 +1,11 @@
 const {
 	Group,
 	Collection,
-	GroupToSingle,
+	// GroupToSingle,
 	Lesson,
 	Section,
 	Attachment,
-	SubSection,
+	// SubSection,
 	Permission,
 	Test,
 } = require('./services/');
@@ -26,7 +26,7 @@ module.exports = function setup() {
 	const attachmentsRoute = `${route}attachments`;
 	const collectionsRoute = `${route}collections`;
 	const lessonsRoute = `${route}lessons`;
-	const subsectionsRoute = `${route}subsections`;
+	// const subsectionsRoute = `${route}subsections`;
 	app.use(sectionsRoute, new Section());
 	app.use(attachmentsRoute, new Attachment());
 	app.use(groupsRoute, new Group());
@@ -36,37 +36,34 @@ module.exports = function setup() {
 	// app.use(subsectionsRoute, new SubSection());
 	app.use(permissionsRoute, new Permission());
 
+	const hooks = { before, after };
 	const sections = app.service(sectionsRoute);
-	sections.before(before);
-	sections.after(after);
+	sections.hooks(hooks);
 
 	const attachments = app.service(attachmentsRoute);
-	attachments.before(before);
-	attachments.after(after);
+	attachments.hooks(hooks);
 
 	const groups = app.service(groupsRoute);
-	groups.before(before);
-	groups.after(after);
+	groups.hooks(hooks);
 
 	const collections = app.service(collectionsRoute);
-	collections.before(before);
-	collections.after(after);
+	collections.hooks(hooks);
 
 	const lessons = app.service(lessonsRoute);
-	lessons.before(beforeLesson);
-	lessons.after(after);
+	lessons.hooks({
+		before: beforeLesson,
+		after,
+	});
 
 	/* const split = app.service(`${route}split`);
-	split.before(before);
-	split.after(after); */
+	split.hooks(hooks); */
 
 	/* const subsections = app.service(subsectionsRoute);
-	subsections.before(before);
-	subsections.after(after); */
+	subsections.hooks(hooks); */
 
 	const permissions = app.service(permissionsRoute);
-	permissions.before(before);
-	permissions.after(after);
+	permissions.hooks(hooks);
+
 	if (['default', 'local', 'test'].includes(process.env.NODE_ENV)) {
 		app.use(`${route}test`, new Test());
 	}

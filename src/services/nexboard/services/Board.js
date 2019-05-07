@@ -9,7 +9,7 @@ class Board {
 		this.docs = {};
 	}
 
-	get(id, params) {
+	get(id) {
 		return nexboardClient.getBoard(id);
 	}
 

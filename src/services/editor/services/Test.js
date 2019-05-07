@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const { userModel } = require('../../user/model');
 const CustomJWTService = require('../../account/CustomJWTService');
 const logger = require('../../../logger/');
@@ -7,7 +6,7 @@ const { customParams } = require('../helper/');
 class Test {
 	constructor(options) {
 		this.options = options || {};
-		this.docs = {};
+		// this.docs = {};
 	}
 
 	async find() {
@@ -19,10 +18,12 @@ class Test {
 		const [user1, user2] = await userModel.find({}).limit(2).exec();
 		const fakeData = { users: [user2.id] };
 		const jwt = await jwtService.create({ userId: user1.id });
-		return this.app.service('/editor/lessons').create(fakeData, customParams({ userId: user1.id })).then((lesson) => {
-			lesson.jwt = jwt;
-			return lesson;
-		});
+		return this.app.service('/editor/lessons')
+			.create(fakeData, customParams({ userId: user1.id }))
+			.then((lesson) => {
+				lesson.jwt = jwt;
+				return lesson;
+			});
 	}
 
 	setup(app) {

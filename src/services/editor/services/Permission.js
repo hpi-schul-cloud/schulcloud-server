@@ -6,21 +6,20 @@ const { request } = require('../helper/');
 
 const uri = 'sections';
 
-const link = (id) => {
-	return `${uri}/${id}/permissions`;
-};
+const link = id => `${uri}/${id}/permissions`;
 
 class Permission {
 	constructor(options) {
 		this.options = options || {};
-		this.docs = {};
+		// this.docs = {};
 	}
 
 	/**
 	 * @param read Can read a section.
 	 * @param write Can edit a section, but can not modified the structure. Example: student answer a question.
 	 * @param create Can edit a section structure. Example: teacher can create and edit new answers.
-	 * @example {read:false, write:true, create:true} will allow you create new answers AND edit this answers. Read is override by the higher permissions.
+	 * @example {read:false, write:true, create:true}
+	 * 			will allow you create new answers AND edit this answers. Read is override by the higher permissions.
 	 */
 	create({ group, read, write, create }, params) {
 		return request(link(params.sectionId), params, {

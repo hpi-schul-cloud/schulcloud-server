@@ -1,5 +1,5 @@
 const rp = require('request-promise-native');
-const { BadRequest } = require('feathers-errors');
+const { BadRequest } = require('@feathersjs/errors');
 
 const DEFAULT_BASE_URL = 'https://nexboard.nexenio.com/portal/api/v1/public/';
 

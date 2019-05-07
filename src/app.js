@@ -21,8 +21,8 @@ const allHooks = require('./app.hooks');
 require('console-stamp')(console);
 require('console-stamp')(winston);
 
-const app = feathers();
-const config = configuration(path.join(__dirname, '..'));
+const app = express(feathers());
+const config = configuration();
 
 app.configure(config);
 setupSwagger(app);

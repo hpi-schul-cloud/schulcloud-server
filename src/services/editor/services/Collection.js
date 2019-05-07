@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable class-methods-use-this */
 const { request } = require('../helper/');
 
 const uri = 'collections';
@@ -7,7 +5,7 @@ const uri = 'collections';
 class Collection {
 	constructor(options) {
 		this.options = options || {};
-		this.docs = {};
+		// this.docs = {};
 	}
 
 	create({ groups, lesson, owner }, params) {

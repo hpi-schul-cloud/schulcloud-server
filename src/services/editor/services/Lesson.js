@@ -7,7 +7,7 @@ const uri = 'lessons';
 class Lesson {
 	constructor(options) {
 		this.options = options || {};
-		this.docs = {};
+		// this.docs = {};
 	}
 
 	/**

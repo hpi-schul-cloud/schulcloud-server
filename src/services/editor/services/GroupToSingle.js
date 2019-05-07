@@ -1,7 +1,7 @@
 class GroupToSingle {
 	constructor(options) {
 		this.options = options || {};
-		this.docs = {};
+		// this.docs = {};
 	}
 
 	create({ group }, params) {

@@ -1,5 +1,5 @@
-const { authenticate } = require('feathers-authentication').hooks;
-const { disable } = require('feathers-hooks');
+const { authenticate } = require('@feathersjs/authentication').hooks; // require('feathers-authentication').hooks;
+const hooks = require('feathers-hooks-common');
 const { ifNotLocal } = require('../../../hooks/');
 const {
 	populateUsers,
@@ -17,7 +17,7 @@ const before = {
 	find: [],
 	get: [],
 	create: [],
-	update: [disable()],
+	update: [hooks.disallow()],
 	patch: [],
 	remove: [],
 };
@@ -33,8 +33,8 @@ const after = {
 };
 
 const beforeLesson = Object.assign({}, before, {
-	create: [ifNotLocal(disable())],
-	remove: [ifNotLocal(disable())],
+	create: [ifNotLocal(hooks.disallow())],
+	remove: [ifNotLocal(hooks.disallow())],
 });
 
 module.exports = {

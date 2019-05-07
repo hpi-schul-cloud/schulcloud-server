@@ -2,7 +2,7 @@ const {
 	Project,
 	Board,
 } = require('./services/');
-const { before, after } = require('./hooks');
+const hooks = require('./hooks');
 
 module.exports = function setup() {
 	const app = this;
@@ -14,10 +14,8 @@ module.exports = function setup() {
 	app.use(boardRoute, new Board());
 
 	const projects = app.service(projectRoute);
-	projects.before(before);
-	projects.after(after);
+	projects.hooks(hooks);
 
 	const boards = app.service(boardRoute);
-	boards.before(before);
-	boards.after(after);
+	boards.hooks(hooks);
 };
