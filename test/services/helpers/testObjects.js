@@ -38,6 +38,7 @@ module.exports = (app) => {
 		schoolId = '584ad186816abba584714c94',
 		accounts = [],
 		roles = [],
+		discoverable = false,
 		// manual cleanup, e.g. when testing delete:
 		manualCleanup = false,
 	} = {}) {
@@ -51,6 +52,7 @@ module.exports = (app) => {
 				schoolId,
 				accounts,
 				roles,
+				discoverable,
 			}))
 
 			.then((user) => {
