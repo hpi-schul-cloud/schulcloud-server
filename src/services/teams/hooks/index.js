@@ -61,7 +61,7 @@ const teamMainHook = globalHooks.ifNotLocal((hook) => {
 			users.push(sessionUser);
 			hook.data = team;
 		} else if (method === 'find') {
-			hook.params.query = restrictedFindMatch;
+			hook.params.query.userIds = { $elemMatch: { userId } };
 			return hook;
 		}
 		// test if session user is in team
@@ -625,7 +625,7 @@ const isUserIsEmpty = (hook) => {
 const keys = {
 	resFind: ['_id', 'name', 'times', 'description', 'userIds', 'color'],
 	resId: ['_id'],
-	query: ['$populate', '$limit'],
+	query: ['$populate', '$limit', '$skip'],
 	data: ['filePermission', 'name', 'times', 'description', 'userIds', 'color', 'features', 'ltiToolIds', 'classIds', 'startDate', 'untilDate', 'schoolId'],
 };
 
