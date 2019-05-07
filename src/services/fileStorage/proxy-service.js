@@ -136,7 +136,7 @@ const fileStorageService = {
 		const { owner, parent } = query;
 		const { userId } = payload;
 
-		return FileModel.find({ owner, parent: parent || { $exists: false } }).exec()
+		return FileModel.find({ owner, parent }).exec()
 			.then((files) => {
 				const permissionPromises = files.map(
 					f => canRead(userId, f)
@@ -185,7 +185,7 @@ const fileStorageService = {
 	 */
 	async patch(_id, data, params) {
 		const { payload: { userId } } = params;
-		const { parent } = data;
+		let { parent } = data;
 		const fileObject = await FileModel.findOne({ _id: parent }).exec();
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
 		let owner, refOwnerModel, update = {};
@@ -201,7 +201,9 @@ const fileStorageService = {
 		} else if (parent === userId.toString()) {
 			owner = userId;
 			refOwnerModel = 'user';
+			parent = undefined;
 			update = {
+				parent,
 				owner,
 				refOwnerModel,
 			};
