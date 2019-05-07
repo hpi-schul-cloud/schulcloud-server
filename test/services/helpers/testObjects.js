@@ -6,16 +6,22 @@ module.exports = (app) => {
 	const coursesService = app.service('courses');
 	const registrationPinsService = app.service('registrationPins');
 
-	const createdAccountIds = [];
-	const createdUserIds = [];
-	const createdSystemIds = [];
-	const createdClasses = [];
-	const createdCourses = [];
+	function initInstanceIds() {
+		return {
+			accounts: [],
+			users: [],
+			systems: [],
+			classes: [],
+			courses: [],
+		};
+	}
+
+	let instanceIds = initInstanceIds();
 
 	function createTestSystem({ url, type = 'moodle' }) {
 		return systemService.create({ url, type })
 			.then((system) => {
-				createdSystemIds.push(system.id);
+				instanceIds.systems.push(system.id);
 				return system;
 			});
 	}
@@ -25,7 +31,7 @@ module.exports = (app) => {
 		accountParameters.userId = user._id;
 		return accountService.create(accountParameters)
 			.then((account) => {
-				createdAccountIds.push(account._id);
+				instanceIds.accounts.push(account._id);
 				return Promise.resolve(account);
 			});
 	}
@@ -57,7 +63,7 @@ module.exports = (app) => {
 
 			.then((user) => {
 				if (!manualCleanup) {
-					createdUserIds.push(user.id);
+					instanceIds.users.push(user.id);
 				}
 				return user;
 			});
@@ -78,7 +84,7 @@ module.exports = (app) => {
 			teacherIds,
 		})
 			.then((o) => {
-				createdClasses.push(o.id);
+				instanceIds.classes.push(o.id);
 				return o;
 			});
 	}
@@ -102,23 +108,20 @@ module.exports = (app) => {
 			ltiToolIds,
 		})
 			.then((o) => {
-				createdCourses.push(o.id);
+				instanceIds.courses.push(o.id);
 				return o;
 			});
 	}
 
 	function cleanup() {
-		const accountDeletions = createdAccountIds.map(id => accountService.remove(id));
-		const userDeletions = createdUserIds.map(id => userService.remove(id));
-		const systemDeletions = createdSystemIds.map(id => systemService.remove(id));
-		const classDeletions = createdClasses.map(id => classesService.remove(id));
-		const courseDeletions = createdCourses.map(id => coursesService.remove(id));
-		return Promise.all([]
-			.concat(accountDeletions)
-			.concat(userDeletions)
-			.concat(systemDeletions)
-			.concat(classDeletions)
-			.concat(courseDeletions));
+		const deletions = Object.keys(instanceIds).map((serviceName) => {
+			const service = app.service(serviceName);
+			return instanceIds[serviceName].map(id => service.remove(id));
+		});
+		// flatten all Promises into one array:
+		const flatDeletions = deletions.reduce((acc, x) => acc.concat(x), []);
+		instanceIds = initInstanceIds();
+		return Promise.all(flatDeletions);
 	}
 
 	return {
@@ -128,6 +131,6 @@ module.exports = (app) => {
 		createTestClass,
 		createTestCourse,
 		cleanup,
-		createdUserIds,
+		createdUserIds: instanceIds.users,
 	};
 };
