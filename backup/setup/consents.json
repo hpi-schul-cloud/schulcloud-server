@@ -5,20 +5,16 @@
         "form": "digital",
         "privacyConsent": true,
         "termsOfUseConsent": true,
-        "thirdPartyConsent": true,
         "dateOfPrivacyConsent": { "$date": "2017-01-01T00:06:37.148Z" },
-        "dateOfTermsOfUseConsent": { "$date": "2017-01-01T00:06:37.148Z" },
-        "dateOfThirdPartyConsent": { "$date": "2017-01-01T00:06:37.148Z" }
+        "dateOfTermsOfUseConsent": { "$date": "2017-01-01T00:06:37.148Z" }
     },
     "parentConsents": [ {
         "parentId": { "$oid" : "0000d213816abba584714c0b"},
         "form": "digital",
         "privacyConsent": true,
         "termsOfUseConsent": true,
-        "thirdPartyConsent": true,
         "dateOfPrivacyConsent": { "$date": "2017-01-01T00:06:37.148Z" },
-        "dateOfTermsOfUseConsent": { "$date": "2017-01-01T00:06:37.148Z" },
-        "dateOfThirdPartyConsent": { "$date": "2017-01-01T00:06:37.148Z" }
+        "dateOfTermsOfUseConsent": { "$date": "2017-01-01T00:06:37.148Z" }
     }]
 },{
     "_id" : { "$oid" : "000069d5c43227155b73abac"},
@@ -27,9 +23,7 @@
         "form": "analog",
         "privacyConsent": true,
         "termsOfUseConsent": true,
-        "thirdPartyConsent": true,
         "dateOfPrivacyConsent": { "$date": "2017-01-01T00:06:37.148Z" },
-        "dateOfTermsOfUseConsent": { "$date": "2017-01-01T00:06:37.148Z" },
-        "dateOfThirdPartyConsent": { "$date": "2017-01-01T00:06:37.148Z" }
+        "dateOfTermsOfUseConsent": { "$date": "2017-01-01T00:06:37.148Z" }
     }]
 }]
