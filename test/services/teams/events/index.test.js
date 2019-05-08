@@ -4,6 +4,8 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const sleep = require('util').promisify(setTimeout);
+const testObjects = require('../../helpers/testObjects');
+
 
 const app = require('../../../../src/app');
 const { userModel } = require('../../../../src/services/user/model');
@@ -47,17 +49,19 @@ const removeTeam = id => teamsModel.findOneAndRemove({ _id: id });
 const removeUser = id => userModel.findOneAndRemove({ _id: id });
 
 describe('Test user remove events for teams.', () => {
-	
 	describe('Test if own of the users is removed.', () => {
 		let team;
 		let teamId;
 		let owner;
 		let user;
+		let test;
 
 		before(async () => {
 			owner = await createUser();
 			team = await createTeam(owner);
 			teamId = team._id.toString();
+			test = await testObjects(app);
+			console.log(test.teams);
 			return Promise.resolve();
 		});
 
