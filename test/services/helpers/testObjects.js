@@ -1,4 +1,11 @@
+const serviceHelpers = require('./services');
+
 module.exports = (app) => {
+	const opt = {
+		schoolId: '584ad186816abba584714c94',
+	};
+	const { teams } = serviceHelpers(app, opt);
+
 	const accountService = app.service('accounts');
 	const systemService = app.service('systems');
 	const userService = app.service('users');
@@ -150,5 +157,6 @@ module.exports = (app) => {
 		generateJWT,
 		generateRequestParams,
 		createdUserIds,
+		teams,
 	};
 };
