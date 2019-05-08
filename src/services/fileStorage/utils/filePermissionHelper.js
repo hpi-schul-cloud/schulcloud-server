@@ -45,13 +45,10 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 
 const checkMemberStatus = ({ file, user }) => {
 	const { owner: { userIds, teacherIds } } = file;
+	const list = userIds || teacherIds;
 	const finder = obj => user.equals(obj.userId || obj);
 
-	if (!userIds && !teacherIds) {
-		return false;
-	}
-
-	return userIds.find(finder) || teacherIds.find(finder);
+	return list && list.find(finder);
 };
 
 const checkPermissions = permission => async (user, file) => {
