@@ -238,7 +238,7 @@ const fileStorageService = {
 				} else {
 					FileModel.update({ _id }, {
 						$set: fieldsToSet,
-						$unset: fieldsToUnset
+						$unset: fieldsToUnset,
 					}).exec();
 				}
 			})
