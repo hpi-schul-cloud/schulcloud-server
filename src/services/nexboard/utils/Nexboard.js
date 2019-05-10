@@ -21,7 +21,7 @@ class Nexboard {
 	}) {
 		return {
 			method,
-			uri: `${this.url}${endpoint}`,
+			uri: `${process.env.NEXBOARD_MOCK_URL || this.url}${endpoint}`,
 			qs,
 			body,
 			json: true,
@@ -98,8 +98,7 @@ class Nexboard {
 	}
 }
 
-module.exports = url => new Nexboard(
+module.exports = new Nexboard(
 	process.env.NEXBOARD_API_KEY,
 	process.env.NEXBOARD_USER_ID,
-	url,
 );

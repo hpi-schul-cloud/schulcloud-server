@@ -1,6 +1,6 @@
 /* eslint-disable object-curly-newline */
 /* eslint-disable class-methods-use-this */
-const nexboardClient = require('../utils/Nexboard')(process.env.NEXBOARD_MOCK_URL);
+const nexboardClient = require('../utils/Nexboard');
 
 class Project {
 	constructor(options) {
