@@ -426,12 +426,13 @@ const rejectDefaultFilePermissionUpdatesIfNotPermitted = (context) => {
 	if (isUndefined(context.data)) {
 		return context;
 	}
-	const updatesDefaultFilePermissions = context.data.filePermission !== undefined;
+	const updatesDefaultFilePermissions = isDefined(context.data.filePermission);
 	if (updatesDefaultFilePermissions && !hasTeamPermission('DEFAULT_FILE_PERMISSIONS')) {
 		throw new Forbidden('Permission DEFAULT_FILE_PERMISSIONS is missing.');
 	}
 	return context;
 };
+exports.rejectDefaultFilePermissionUpdatesIfNotPermitted = rejectDefaultFilePermissionUpdatesIfNotPermitted;
 
 /**
  * This hook test what is want to change and execute

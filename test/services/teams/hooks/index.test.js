@@ -3,7 +3,10 @@ const { ObjectId } = require('mongoose').Types;
 const { BadRequest } = require('@feathersjs/errors');
 const { setupUser, deleteUser } = require('../helper/helper.user');
 const hooks = require('../../../../src/services/teams/hooks/index.js');
-const { filterToRelated } = require('../../../../src/services/teams/hooks/index.js');
+const {
+	filterToRelated,
+	rejectDefaultFilePermissionUpdatesIfNotPermitted,
+} = require('../../../../src/services/teams/hooks/index.js');
 const app = require('../../../../src/app');
 const { createHook } = require('../helper/helper.hook');
 
@@ -112,6 +115,27 @@ describe('Team service hook tests.', () => {
 		it.skip('should work for path as array', ()=>{
 			// todo
 		});
-		
+	});
+
+	describe('rejectDefaultFilePermissionUpdatesIfNotPermitted', () => {
+		const fut = rejectDefaultFilePermissionUpdatesIfNotPermitted;
+
+		it('should not do anything if no data is present', () => {
+			const ctx = { foo: 'bar' };
+			expect(fut(ctx)).to.deep.equal(ctx);
+		});
+
+		it('should only reject changes made to permissions', () => {
+			const ctx = { data: { name: 'updatedName' }, method: 'patch' };
+			expect(fut(ctx)).to.deep.equal(ctx);
+		});
+
+		it('should accept changing default file permissions as team admin', () => {
+			expect.fail();
+		});
+
+		it('should reject changing default file permissions for all other team members', () => {
+			expect.fail();
+		});
 	});
 });
