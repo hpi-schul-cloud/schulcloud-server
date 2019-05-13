@@ -84,7 +84,7 @@ module.exports = function() {
 	const jwtConfig = {
 		name: 'jwt',
 		entity: 'account',
-		service: 'accounts',
+		service: 'jwtaccountshandler',
 		header: 'Authorization',
 		jwtFromRequest: extractors.fromExtractors([
 			cookieExtractor,

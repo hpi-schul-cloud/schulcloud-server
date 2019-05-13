@@ -1,4 +1,3 @@
-const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 
 const globalHooks = require('../../../hooks');
@@ -318,7 +317,7 @@ const hasDeletePermission = (hook) => {
 };
 
 exports.before = () => ({
-	all: [auth.hooks.authenticate('jwt'), stringifyUserId],
+	all: [globalHooks.authenticateJWT, stringifyUserId],
 	find: [
 		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
 		filterRequestedSubmissions,

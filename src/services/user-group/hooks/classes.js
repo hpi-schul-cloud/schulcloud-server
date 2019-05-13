@@ -1,4 +1,3 @@
-const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
@@ -20,7 +19,7 @@ const populateGradeLevel = (hook) => {
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [globalHooks.authenticateJWT],
 	find: [
 		globalHooks.hasPermission('USERGROUP_VIEW'),
 		restrictToCurrentSchool,

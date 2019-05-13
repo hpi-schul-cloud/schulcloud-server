@@ -1,5 +1,4 @@
-const auth = require('@feathersjs/authentication');
-const { hasPermission, injectUserId } = require('../../../hooks');
+const { hasPermission, injectUserId, authenticateJWT } = require('../../../hooks');
 
 const resolveUserId = (hook) => {
 	// local workaround if authentication is disabled
@@ -28,7 +27,7 @@ const resolveStorageType = (hook) => {
 
 exports.before = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		authenticateJWT,
 		injectUserId,
 		resolveUserId,
 		resolveStorageType,

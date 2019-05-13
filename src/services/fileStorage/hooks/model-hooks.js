@@ -1,5 +1,3 @@
-const auth = require('@feathersjs/authentication');
-
 const globalHooks = require('../../../hooks');
 const { canRead } = require('../utils/filePermissionHelper');
 
@@ -18,7 +16,7 @@ const restrictToCurrentUser = (hook) => {
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [globalHooks.authenticateJWT],
 	find: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
 	get: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
 	create: [globalHooks.hasPermission('FILESTORAGE_CREATE')],

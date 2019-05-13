@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
@@ -94,7 +93,7 @@ const patchPermissionHook = async (context) => {
 
 exports.before = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 	],
 	find: [
 		globalHooks.hasPermission('USERGROUP_VIEW'),

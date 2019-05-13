@@ -1,4 +1,3 @@
-const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 
@@ -187,15 +186,15 @@ const decorateConsents = (hook) => {
 exports.before = {
 	all: [],
 	find: [
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 		globalHooks.ifNotLocal(restrictToUserOrRole),
 		mapInObjectToArray,
 	],
-	get: [auth.hooks.authenticate('jwt')],
+	get: [globalHooks.authenticateJWT],
 	create: [addDates, checkExisting],
-	update: [auth.hooks.authenticate('jwt'), addDates],
-	patch: [auth.hooks.authenticate('jwt'), addDates],
-	remove: [auth.hooks.authenticate('jwt')],
+	update: [globalHooks.authenticateJWT, addDates],
+	patch: [globalHooks.authenticateJWT, addDates],
+	remove: [globalHooks.authenticateJWT],
 };
 
 exports.after = {

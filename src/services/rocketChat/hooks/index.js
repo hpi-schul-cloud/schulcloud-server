@@ -1,6 +1,5 @@
 const logger = require('winston');
 const hooks = require('feathers-hooks-common');
-const auth = require('@feathersjs/authentication');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 
 const globalHooks = require('../../../hooks');
@@ -30,7 +29,7 @@ const ensureCurrentUserInChannel = (hook) => {
 
 const rocketChatUserHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [globalHooks.authenticateJWT],
 		find: [],
 		get: [],
 		create: [hooks.disallow()],
@@ -51,7 +50,7 @@ const rocketChatUserHooks = {
 
 const rocketChatLoginHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [globalHooks.authenticateJWT],
 		find: [hooks.disallow()],
 		get: [],
 		create: [hooks.disallow()],
@@ -72,7 +71,7 @@ const rocketChatLoginHooks = {
 
 const rocketChatLogoutHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [globalHooks.authenticateJWT],
 		find: [hooks.disallow()],
 		get: [],
 		create: [hooks.disallow()],
@@ -93,7 +92,7 @@ const rocketChatLogoutHooks = {
 
 const rocketChatChannelHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [globalHooks.authenticateJWT],
 		find: [hooks.disallow()],
 		get: [checkTeam, globalHooks.ifNotLocal(ensureCurrentUserInChannel)],
 		create: [hooks.disallow()],

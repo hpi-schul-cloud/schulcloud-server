@@ -1,4 +1,3 @@
-const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 
@@ -63,7 +62,7 @@ const filterValidUsers = context => {
 
 exports.before = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 	],
 	find: [
 		replaceToolWithOrigin,

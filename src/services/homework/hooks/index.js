@@ -1,4 +1,3 @@
-const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const logger = require('winston');
 
@@ -201,7 +200,7 @@ const hasPatchPermission = (hook) => {
 };
 
 exports.before = () => ({
-	all: [auth.hooks.authenticate('jwt')],
+	all: [globalHooks.authenticateJWT],
 	find: [
 		globalHooks.hasPermission('HOMEWORK_VIEW'),
 		globalHooks.mapPaginationQuery.bind(this),

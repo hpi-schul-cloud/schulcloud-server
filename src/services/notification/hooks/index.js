@@ -1,10 +1,9 @@
-const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 
 exports.before = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 	],
 	find: [globalHooks.hasPermission('NOTIFICATION_VIEW')],
 	get: [globalHooks.hasPermission('NOTIFICATION_VIEW')],

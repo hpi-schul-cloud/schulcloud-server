@@ -9,6 +9,9 @@ const RandExp = require('randexp');
 const Chance = require('chance');
 const chance = new Chance();
 
+const { JWTAccountHandler } = require('./services');
+const JWTAccountHandlerHooks = require('./hooks/JWTAccountHandlerHooks');
+
 class CustomJWTService {
 	constructor(authentication) {
 		this.authentication = authentication;
@@ -133,10 +136,14 @@ module.exports = function () {
 		}
 	});
 
+	app.use('/jwtaccountshandler', new JWTAccountHandler()); // , new JWTAccountHandler(), passToParams
+
 	// Get our initialize service to that we can bind hooks
 	const customJWTService = app.service('/accounts/jwt');
 	const accountService = app.service('/accounts');
+	const authHandler = app.service('/jwtaccountshandler');
 
 	customJWTService.hooks(hooksCJWT);
 	accountService.hooks(hooks);
+	authHandler.hooks(JWTAccountHandlerHooks);
 };

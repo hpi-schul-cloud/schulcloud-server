@@ -1,7 +1,7 @@
 const errors = require('@feathersjs/errors');
 const logger = require('winston');
-const auth = require('@feathersjs/authentication');
 
+const globalHooks = require('../../hooks');
 const Syncer = require('./strategies/Syncer');
 const LDAPSystemSyncer = require('./strategies/LDAPSystemSyncer');
 const CSVSyncer = require('./strategies/CSVSyncer');
@@ -56,7 +56,7 @@ module.exports = function () {
 	syncService.hooks({
 		before: {
 			create: [
-				auth.hooks.authenticate('jwt'),
+				globalHooks.authenticateJWT,
 			],
 		},
 	});

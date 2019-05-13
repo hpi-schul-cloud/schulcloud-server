@@ -1,6 +1,3 @@
-'use strict';
-
-const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const hooks = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
@@ -26,7 +23,7 @@ const checkForShareToken = (hook) => {
 };
 
 exports.before = () => ({
-	all: [auth.hooks.authenticate('jwt')],
+	all: [globalHooks.authenticateJWT],
 	find: [hooks.disallow()],
 	get: [hooks.disallow()],
 	create: [

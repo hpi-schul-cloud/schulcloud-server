@@ -1,9 +1,37 @@
+const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
 const _ = require('lodash');
 const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.
+
+/**
+ * This hook is to combine old and new hooks.
+ */
+exports.authenticateJWT = context => (auth.hooks.authenticate('jwt'))(context)
+	.then(({ params }) => {
+		const { account } = params;
+
+		if (account) {
+			const user = account.userId;
+			const userId = user._id.toString();
+			account.userId = userId;
+			const roles = user.roles.map((role) => {
+				role._id.toString();
+				return role;
+			});
+
+			context.params.user = user;
+			context.params.userId = userId;
+			context.params.roles = roles;
+			context.params.account = account;
+			console.log(JSON.stringify(context.params).replace(/,/g, ', \n'));
+		}
+
+		return context;
+	});
+
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function (hookForRemoteRequests) {
@@ -20,12 +48,12 @@ exports.ifNotLocal = function (hookForRemoteRequests) {
 exports.forceHookResolve = (forcedHook) => {
 	return (hook) => {
 		forcedHook(hook)
-		.then(() => {
-			return Promise.resolve(hook);
-		})
-		.catch(() => {
-			return Promise.resolve(hook);
-		});
+			.then(() => {
+				return Promise.resolve(hook);
+			})
+			.catch(() => {
+				return Promise.resolve(hook);
+			});
 	};
 };
 
@@ -61,7 +89,7 @@ exports.hasRole = function (hook, userId, roleName) {
 			user.roles = Array.from(user.roles);
 
 			return (_.some(user.roles, u => u.name == roleName));
-			});
+		});
 };
 
 exports.hasPermission = function (permissionName) {
@@ -289,34 +317,34 @@ exports.injectUserId = (hook) => {
 
 exports.restrictToCurrentSchool = hook => {
 	let userService = hook.app.service("users");
-		return userService.find({
-			query: {
-				_id: hook.params.account.userId,
-				$populate: 'roles'
-			}
-		}).then(res => {
-			let access = false;
-			res.data[0].roles.map(role => {
-				if (role.name === 'superhero')
-					access = true;
-			});
-			if (access)
-				return hook;
-			if (hook.method == "get" || hook.method == "find") {
-				if (hook.params.query.schoolId == undefined) {
-					hook.params.query.schoolId = res.data[0].schoolId;
-				} else if (hook.params.query.schoolId != res.data[0].schoolId) {
-					throw new errors.Forbidden('You do not have valid permissions to access this.');
-				}
-			} else {
-				if (hook.data.schoolId == undefined) {
-					hook.data.schoolId = res.data[0].schoolId.toString();
-				} else if (hook.data.schoolId != res.data[0].schoolId) {
-					throw new errors.Forbidden('You do not have valid permissions to access this.');
-				}
-			}
-
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles'
+		}
+	}).then(res => {
+		let access = false;
+		res.data[0].roles.map(role => {
+			if (role.name === 'superhero')
+				access = true;
+		});
+		if (access)
 			return hook;
+		if (hook.method == "get" || hook.method == "find") {
+			if (hook.params.query.schoolId == undefined) {
+				hook.params.query.schoolId = res.data[0].schoolId;
+			} else if (hook.params.query.schoolId != res.data[0].schoolId) {
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+			}
+		} else {
+			if (hook.data.schoolId == undefined) {
+				hook.data.schoolId = res.data[0].schoolId.toString();
+			} else if (hook.data.schoolId != res.data[0].schoolId) {
+				throw new errors.Forbidden('You do not have valid permissions to access this.');
+			}
+		}
+
+		return hook;
 	});
 };
 
@@ -572,40 +600,40 @@ exports.sendEmail = (hook, maildata) => {
 
 	if(promises.length > 0){
 		Promise.all(promises)
-		.then(promise => {
-			promise.map(result => {
-				if (result.data){
-					result.data.map(user => {
-						receipients.push(user.email);
+			.then(promise => {
+				promise.map(result => {
+					if (result.data){
+						result.data.map(user => {
+							receipients.push(user.email);
 						});
-				} else if (result.email) {
-					receipients.push(result.email);
-				}
-			});
+					} else if (result.email) {
+						receipients.push(result.email);
+					}
+				});
 
-			_.uniq(receipients).map(email => {
-				if (!maildata.content.text && !maildata.content.html) {
-					logger.warn("(1) No mailcontent (text/html) was given. Don't send a mail.");
-				} else {
-					mailService.create({
-						email: email,
-						subject: maildata.subject || "E-Mail von der Schul-Cloud",
-						headers: maildata.headers || {},
-						content: {
-							"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
-							"html": "" // still todo, html template mails
-						}
-					}).catch (err => {
-						logger.warn(err);
-						throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
-					});
-				}
+				_.uniq(receipients).map(email => {
+					if (!maildata.content.text && !maildata.content.html) {
+						logger.warn("(1) No mailcontent (text/html) was given. Don't send a mail.");
+					} else {
+						mailService.create({
+							email: email,
+							subject: maildata.subject || "E-Mail von der Schul-Cloud",
+							headers: maildata.headers || {},
+							content: {
+								"text": maildata.content.text || "No alternative mailtext provided. Expected: HTML Template Mail.",
+								"html": "" // still todo, html template mails
+							}
+						}).catch (err => {
+							logger.warn(err);
+							throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
+						});
+					}
+				});
+				return hook;
+			})
+			.catch(err => {
+				throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
 			});
-			return hook;
-		})
-		.catch(err => {
-			throw new errors.BadRequest((err.error||{}).message || err.message || err || "Unknown mailing error");
-		});
 	}
 	else {
 		if (!maildata.content.text && !maildata.content.html) {

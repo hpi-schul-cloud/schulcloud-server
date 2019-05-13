@@ -1,4 +1,3 @@
-const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const logger = require('winston');
 const globalHooks = require('../../../hooks');
@@ -156,7 +155,7 @@ const sanitizeData = (hook) => {
 const checkJwt = () => {
 	return function (hook) {
 		if (((hook.params||{}).headers||{}).authorization != undefined) {
-			return (auth.hooks.authenticate('jwt')).call(this, hook);
+			return (globalHooks.authenticateJWT).call(this, hook);
 		} else {
 			return Promise.resolve(hook);
 		}
@@ -373,11 +372,11 @@ exports.before = {
 		globalHooks.mapPaginationQuery.bind(this),
 		// resolve ids for role strings (e.g. 'TEACHER')
 		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 		globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
 		mapRoleFilterQuery,
 	],
-	get: [auth.hooks.authenticate('jwt')],
+	get: [globalHooks.authenticateJWT],
 	create: [
 		checkJwt(),
 		pinIsVerified,
@@ -387,14 +386,14 @@ exports.before = {
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
 	],
 	update: [
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 		globalHooks.hasPermission('USER_EDIT'),
 		//TODO only local for LDAP
 		sanitizeData,
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name')
 	],
 	patch: [
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 		globalHooks.hasPermission('USER_EDIT'),
 		globalHooks.ifNotLocal(securePatching),
 		globalHooks.permitGroupOperation,
@@ -403,7 +402,7 @@ exports.before = {
 		updateAccountUsername,
 	],
 	remove: [
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 		globalHooks.hasPermission('USER_CREATE'),
 		globalHooks.permitGroupOperation,
 	],

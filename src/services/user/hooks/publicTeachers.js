@@ -1,4 +1,3 @@
-const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const mapRoleFilterQuery = (hook) => {
@@ -29,10 +28,10 @@ exports.before = {
 		filterForPublicTeacher,
 		// resolve ids for role strings (e.g. 'TEACHER')
 		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 		mapRoleFilterQuery,
 	],
-	get: [auth.hooks.authenticate('jwt')],
+	get: [globalHooks.authenticateJWT],
 	create: [],
 	update: [],
 	patch: [],

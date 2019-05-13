@@ -1,11 +1,10 @@
-const auth = require('@feathersjs/authentication');
 const _ = require('lodash');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [globalHooks.authenticateJWT],
 	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool],
 	get: [],
 	create: [globalHooks.hasPermission('COURSEGROUP_CREATE')],

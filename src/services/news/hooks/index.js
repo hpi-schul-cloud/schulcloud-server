@@ -1,4 +1,3 @@
-const auth = require('@feathersjs/authentication');
 const logger = require('winston');
 const globalHooks = require('../../../hooks');
 const { newsModel, newsHistoryModel } = require('../model');
@@ -36,7 +35,7 @@ const convertToBoolean = (hook) => {
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [globalHooks.authenticateJWT],
 	find: [
 		globalHooks.hasPermission('NEWS_VIEW'),
 		restrictToCurrentSchool,

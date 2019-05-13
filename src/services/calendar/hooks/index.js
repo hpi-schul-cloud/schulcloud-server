@@ -1,4 +1,3 @@
-const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const { courseModel } = require('../../user-group/model');
 
@@ -34,7 +33,7 @@ const persistCourseTimesEvent = (hook) => {
 
 exports.before = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 	],
 	find: [globalHooks.hasPermission('CALENDAR_VIEW')],
 	get: [globalHooks.hasPermission('CALENDAR_VIEW')],

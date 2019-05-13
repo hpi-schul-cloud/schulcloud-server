@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+// const auth = require('@feathersjs/authentication');
 const logger = require('winston');
 const {
 	Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable,
@@ -632,7 +632,7 @@ const keys = {
 // todo: TeamPermissions
 exports.before = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 		existId,
 		filterToRelated(keys.query, 'params.query'),
 		globalHooks.ifNotLocal(teamRolesToHook),
@@ -676,7 +676,7 @@ exports.after = {
 
 exports.beforeExtern = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 		existId,
 		filterToRelated([], 'params.query'),
 	],
@@ -706,7 +706,7 @@ exports.afterExtern = {
 
 exports.beforeAdmin = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		globalHooks.authenticateJWT,
 		isAdmin,
 		existId,
 		filterToRelated([], 'params.query'),

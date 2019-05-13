@@ -1,4 +1,3 @@
-const auth = require('@feathersjs/authentication');
 const nanoid = require('nanoid');
 const globalHooks = require('../../../hooks');
 const lesson = require('../model');
@@ -46,7 +45,7 @@ const checkIfCourseShareable = (hook) => {
 };
 
 exports.before = () => ({
-	all: [auth.hooks.authenticate('jwt'), (hook) => {
+	all: [globalHooks.authenticateJWT, (hook) => {
 		if (hook.data && hook.data.contents) {
 			hook.data.contents = (hook.data.contents || []).map((item) => {
 				item.user = item.user || hook.params.account.userId;
