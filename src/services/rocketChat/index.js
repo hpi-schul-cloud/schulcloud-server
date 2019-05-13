@@ -367,7 +367,7 @@ class RocketChatChannel {
 				currentTeam = team;
 				const userNamePromises = currentTeam.userIds.map(user => this.app.service('rocketChat/user')
 					.get(user.userId)
-					.catch(Promise.resolve));
+					.catch(() => Promise.resolve));
 				return Promise.all(userNamePromises).then(async (users) => {
 					const userNames = [];
 					users.forEach((user) => {
@@ -397,38 +397,20 @@ class RocketChatChannel {
 			});
 	}
 
-	async ensureCurrentUserInChannel(channel, params) {
-		return this.addUsersToChannel([params.account.userId], channel.teamId)
-			.catch(err => logger.warn(err));
-	}
-
-	userIsInTeam(userId, team) {
-		const user = team.userIds.find(el => el.userId.toString() === userId.toString());
-		return (user !== undefined);
-	}
-
 	async getOrCreateRocketChatChannel(teamId, params) {
 		try {
-			const team = await this.app.service('teams').get(teamId);
-			if (!team.features.includes('rocketChat')) {
-				throw new BadRequest('rocket.chat is disabled for this team');
-			}
-			if (!this.userIsInTeam(params.account.userId, team)) {
-				throw new BadRequest('you are not in this team');
-			}
 			let channel = await rocketChatModels.channelModel.findOne({ teamId });
 			if (!channel) {
 				channel = await this.createChannel(teamId, params)
 					.then(() => rocketChatModels.channelModel.findOne({ teamId }));
 			}
-			this.ensureCurrentUserInChannel(channel, params);
 			return {
 				teamId: channel.teamId,
 				channelName: channel.channelName,
 			};
 		} catch (err) {
 			logger.warn(new BadRequest('error initializing the rocketchat channel', err));
-			return new BadRequest('error initializing the rocketchat channel');
+			return new BadRequest('error initializing the rocketchat channel', err);
 		}
 	}
 

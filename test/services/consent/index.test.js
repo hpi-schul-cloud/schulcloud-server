@@ -20,13 +20,11 @@ describe('consent service', function() {
           "form": "digital",
           "privacyConsent": true,
           "termsOfUseConsent": true,
-          "thirdPartyConsent": true,
         },
         "parentConsents": [{
           "parentId": "0000d213816abba584714c0b",
           "privacyConsent": true,
           "termsOfUseConsent": true,
-          "thirdPartyConsent": true,
         }]
       })
         .then(consent => {return consentService.get(consent._id);})
@@ -48,7 +46,6 @@ describe('consent service', function() {
             "userConsent": {
               "privacyConsent": true,
               "termsOfUseConsent": true,
-              "thirdPartyConsent": true,
             }
           });
         })
@@ -70,7 +67,6 @@ describe('consent service', function() {
             "userConsent": {
               "privacyConsent": true,
               "termsOfUseConsent": true,
-              "thirdPartyConsent": true,
             }
           });
         })

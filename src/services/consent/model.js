@@ -21,20 +21,16 @@ const consentSchema = new Schema({
 		form: { type: String, enum: consentForm },
 		dateOfPrivacyConsent: { type: Date },
 		dateOfTermsOfUseConsent: { type: Date },
-		dateOfThirdPartyConsent: { type: Date },
 		privacyConsent: { type: Boolean },
 		termsOfUseConsent: { type: Boolean },
-		thirdPartyConsent: { type: Boolean },
 	},
 	parentConsents: [{
 		parentId: { type: Schema.Types.ObjectId, ref: 'user' },
 		form: { type: String, enum: consentForm },
 		dateOfPrivacyConsent: { type: Date },
 		dateOfTermsOfUseConsent: { type: Date },
-		dateOfThirdPartyConsent: { type: Date },
 		privacyConsent: { type: Boolean },
 		termsOfUseConsent: { type: Boolean },
-		thirdPartyConsent: { type: Boolean },
 	}],
 });
 

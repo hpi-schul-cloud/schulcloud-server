@@ -67,21 +67,19 @@ const firstLogin = async (data, params, app) => {
 
 	const userPromise = app.service('users').patch(user._id, userUpdate);
 
-	if (data.privacyConsent || data.thirdPartyConsent || data.termsOfUseConsent) {
+	if (data.privacyConsent || data.termsOfUseConsent) {
 		consentUpdate.userId = user._id;
 		consentUpdate.userConsent = {
 			form: 'digital',
 			privacyConsent: data.privacyConsent,
-			thirdPartyConsent: data.thirdPartyConsent,
 			termsOfUseConsent: data.termsOfUseConsent,
 		};
 	}
-	if (data.parent_privacyConsent || data.parent_thirdPartyConsent || data.parent_termsOfUseConsent) {
+	if (data.parent_privacyConsent || data.parent_termsOfUseConsent) {
 		consentUpdate.userId = user._id;
 		consentUpdate.parentConsents = [{
 			form: 'digital',
 			privacyConsent: data.parent_privacyConsent,
-			thirdPartyConsent: data.parent_thirdPartyConsent,
 			termsOfUseConsent: data.parent_termsOfUseConsent,
 		}];
 	}
