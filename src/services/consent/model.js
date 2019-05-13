@@ -42,11 +42,11 @@ const consentTypes = {
 };
 
 const consentVersionSchema = new Schema({
-	consentType: {
+	consentTypes: [{
 		type: String,
 		required: true,
 		enum: Object.values(consentTypes),
-	},
+	}],
 	consentText: { type: String, required: true },
 	publishedAt: { type: Date, required: true },
 }, { timestamps: true });
