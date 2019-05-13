@@ -15,4 +15,5 @@ COPY . .
 ENV TZ=Europe/Berlin
 
 #ENTRYPOINT crontab ./crontab && crond
-CMD npm start
+#CMD npm start
+CMD ./startup.sh
