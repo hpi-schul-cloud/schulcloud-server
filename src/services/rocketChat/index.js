@@ -367,7 +367,7 @@ class RocketChatChannel {
 				currentTeam = team;
 				const userNamePromises = currentTeam.userIds.map(user => this.app.service('rocketChat/user')
 					.get(user.userId)
-					.catch(Promise.resolve));
+					.catch(() => Promise.resolve));
 				return Promise.all(userNamePromises).then(async (users) => {
 					const userNames = [];
 					users.forEach((user) => {
