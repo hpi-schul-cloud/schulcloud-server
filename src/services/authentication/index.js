@@ -1,8 +1,8 @@
 'use strict';
 
-const auth = require('feathers-authentication');
-const jwt = require('feathers-authentication-jwt');
-const local = require('feathers-authentication-local');
+const auth = require('@feathersjs/authentication');
+const jwt = require('@feathersjs/authentication-jwt');
+const local = require('@feathersjs/authentication-local');
 const logger = require('winston');
 
 const extractors = require('passport-jwt').ExtractJwt;
@@ -13,12 +13,18 @@ const hooks = require('./hooks');
 
 let secrets;
 try {
-	(process.env.NODE_ENV === 'production') ? secrets = require('../../../config/secrets.js') : secrets = require('../../../config/secrets.json');
-} catch(error) {
+	if (['production', 'lokal'].includes(process.env.NODE_ENV)) {
+		// eslint-disable-next-line global-require
+		secrets = require('../../../config/secrets.js');
+	} else {
+		// eslint-disable-next-line global-require
+		secrets = require('../../../config/secrets.json');
+	}
+} catch (error) {
 	secrets = {};
 }
 
-let authenticationSecret = (secrets.authentication) ? secrets.authentication : "secrets";
+const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
 
 module.exports = function() {
     const app = this;
@@ -69,14 +75,20 @@ module.exports = function() {
 		}
 	};
 
+	const authHeaderExtractor = function(req) {
+		let authHeader = req.headers.authorization;
+		if(!authHeader){ return undefined; }
+		return authHeader.replace("Bearer ", '');
+	}
+
 	const jwtConfig = {
 		name: 'jwt',
 		entity: 'account',
 		service: 'accounts',
 		header: 'Authorization',
 		jwtFromRequest: extractors.fromExtractors([
-			cookieExtractor, 
-			extractors.fromHeader("authorization")
+			cookieExtractor,
+			authHeaderExtractor
 		]),
 		secretOrKey: authenticationSecret
 	};
@@ -100,6 +112,11 @@ module.exports = function() {
 	app.configure(system({
 		name: 'iserv',
 		loginStrategy: require('../account/strategies/iserv')
+	}));
+
+	app.configure(system({
+		name: 'ldap',
+		loginStrategy: require('../account/strategies/ldap')
 	}));
 
 
@@ -139,9 +156,5 @@ module.exports = function() {
 	};*/
 
 	// Set up our hooks
-	authenticationService.hooks({
-		before: hooks.before,
-		after: hooks.after
-	});
+	authenticationService.hooks(hooks);
 };
-

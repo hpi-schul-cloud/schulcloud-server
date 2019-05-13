@@ -112,9 +112,9 @@ if [ -n "$PASSWORD" ]; then
 fi
 
 STYLE=""
-if [ -n "$JSON_ARRAY" ]; then
-    STYLE="--jsonArray "
-fi
+#if [ -n "$JSON_ARRAY" ]; then
+#    STYLE="--jsonArray "
+#fi
 
 if [ -n "$PRETTY_PRINT" ]; then
     STYLE="$STYLE --pretty "
@@ -146,6 +146,14 @@ elif [ "$ACTION" = "import" ]; then
 	pushd $BACKUP_PATH >/dev/null
 
 	for path in *.json; do
+		# auf array pru:fen und Parameter dazu
+		STR=$( head -n1 $path )
+		if [[ ${STR:0:1} == "[" ]] ; then
+			ARRAY="--jsonArray"
+		else
+			ARRAY=""
+		fi
+
 		if [[ $path == *".secrets."* ]]
 		then
 			collection=${path%.secrets.json}
@@ -156,12 +164,14 @@ elif [ "$ACTION" = "import" ]; then
 
 		if [ "$PASSWORD" == "" ];
 		then
-			mongoimport --host $HOST --db $DB --collection $collection $path $STYLE --drop
+			mongoimport --host $HOST --db $DB --collection $collection $path $STYLE $ARRAY --drop
 		else
-			mongoimport --host $HOST $CREDENTIALS --db $DB --collection $collection $path $STYLE --drop
+			mongoimport --host $HOST $CREDENTIALS --db $DB --collection $collection $path $STYLE $ARRAY --drop
 		fi
 	done
 
 else
 	echo "Usage: ./backup.sh [opts] <export|import>"
 fi
+
+exit 0

@@ -1,113 +1,113 @@
-const errors = require('feathers-errors');
-const _ = require('lodash');
-const CourseModel = require('../../user-group/model').courseModel;
-const LessonModel = require('../../lesson/model');
-const ClassModel = require('../../user-group/model').classModel;
-const FilePermissionModel = require('../model').fileModel;
+const logger = require('winston');
 
-class FilePermissionHelper {
-	constructor() {
+const { FileModel } = require('../model');
+const { userModel } = require('../../user/model');
+const RoleModel = require('../../role/model');
+const { sortRoles } = require('../../role/utils/rolesHelper');
+const { submissionModel } = require('../../homework/model');
+
+const getFile = id => FileModel
+	.findOne({ _id: id })
+	.populate('owner')
+	.exec();
+
+const checkTeamPermission = async ({ user, file, permission }) => {
+	let teamRoles;
+
+	try {
+		teamRoles = sortRoles(await RoleModel.find({ name: /^team/ }).exec());
+	} catch (error) {
+		logger.error(error);
+		return Promise.reject();
 	}
 
-	/**
-	 * checks extra permissions for a given file, e.g. for shared files
-	 * @param userId {String} - the User for which the permissions are checked
-	 * @param fileKey {String} - the key/path to the file
-	 * @param permissionTypes [String] - the type of permissions which will be checked
-	 * @param throwError {Boolean} - whether to throw an error or not
-	 */
-	checkExtraPermissions(userId, fileKey, permissionTypes, throwError, queries) {
-		if (!fileKey || fileKey === '') return throwError ? Promise.reject(new errors.Forbidden("You don't have permissions!")) : false;
+	return new Promise((resolve, reject) => {
+		const { role } = user;
+		const { permissions } = file;
+		const rolePermissions = permissions.find(perm => perm.refId.toString() === role.toString());
 
-		return FilePermissionModel.find({key: fileKey}).exec().then(res => {
+		const { role: creatorRole } = file.owner.userIds
+			.find(_ => _.userId.toString() === file.permissions[0].refId.toString());
 
-			// check whether key and shareToken are identical to return file
-			if (res[0].key === (queries || {}).key && res[0].shareToken === (queries || {}).shareToken && typeof (queries || {}).shareToken !== 'undefined') {
-				return Promise.resolve({permission: "shared"});
-			}
+		const findRole = roleId => roles => roles
+			.findIndex(r => r._id.toString() === roleId.toString()) > -1;
 
-			// res-object should be unique for file key, but it's safer to map all permissions
-			let permissions = _.flatten(res.map(filePermissions => filePermissions.permissions));
+		if (permission === 'delete') {
+			const userPos = teamRoles.findIndex(findRole(role));
+			const creatorPos = teamRoles.findIndex(findRole(creatorRole));
 
-			// try to find given permissionTypes for given userId
-			let permissionExists = permissions.filter(p => {
-					return JSON.stringify(userId) === JSON.stringify(p.userId) && _.difference(permissionTypes, p.permissions).length === 0;
-				}).length > 0;
-
-			if (!permissionExists) return throwError ? Promise.reject(new errors.Forbidden("You don't have permissions!")) : false;
-
-			return Promise.resolve({permission: "shared"});
-		}).catch(err => {
-			return throwError ? Promise.reject(new errors.Forbidden("You don't have permissions!")) : false;
-		});
-	}
-
-	checkNormalPermissions(userId, filePath) {
-		let values = filePath.split("/");
-		if (values[0] === '') values = values.slice(1);	// omit empty component for leading slash
-		if (values.length < 2) return Promise.reject(new errors.BadRequest("Path is invalid"));
-		const contextType = values[0];
-		const contextId = values[1];
-		switch (contextType) {
-			case 'users':	// user's own files
-				if (contextId !== userId.toString()) {
-					return Promise.reject(new errors.Forbidden("You don't have permissions!"));
-				} else {
-					return Promise.resolve({context: 'user'});
-				}
-			case 'courses':
-				// checks, a) whether the user is student or teacher of the course, b) the course exists
-				return CourseModel.find({
-					$and: [
-						{$or: [{userIds: userId}, {teacherIds: userId}]},
-						{_id: contextId}
-					]
-				}).exec().then(res => {
-					// user is not in that course, check if the file is one of a shared lesson
-					if (!res || res.length <= 0) {
-						return LessonModel.find({
-							$and: [
-								{ "contents.content.text": { $regex: decodeURIComponent(filePath), $options: 'i'}},
-								{ "shareToken": { $exists: true }}
-								]
-						}).exec().then(res => {
-							if (!res || res.length <= 0) {
-								return Promise.reject(new errors.Forbidden("You don't have permissions!"));
-							}
-							return Promise.resolve({context: res[0]});
-						});
-					}
-					return Promise.resolve({context: res[0]});
-				});
-			case 'classes':
-				// checks, a) whether the user is student or teacher of the class, b) the class exists
-				return ClassModel.find({
-					$and: [
-						{$or: [{userIds: userId}, {teacherIds: userId}]},
-						{_id: contextId}
-					]
-				}).exec().then(res => {
-					if (!res || res.length <= 0) {
-						return Promise.reject(new errors.Forbidden("You don't have permissions!"));
-					}
-					return Promise.resolve({context: res[0]});
-				});
-			default:
-				return Promise.reject(new errors.BadRequest("Path is invalid"));
+			return userPos > creatorPos ? resolve(true) : reject();
 		}
+
+		return rolePermissions[permission] ? resolve(true) : reject();
+	});
+};
+
+const checkMemberStatus = ({ file, user }) => {
+	const { owner: { userIds, teacherIds } } = file;
+	const finder = obj => user.equals(obj.userId || obj);
+
+	if (!userIds && !teacherIds) {
+		return false;
 	}
 
-	/**
-	 * verifies whether the given userId has permission for the given directory (course, user, class)
-	 * @param userId {String}
-	 * @param filePath {String} - e.g. users/{userId}
-	 * @param permissions [String] - extra permissions to check
-	 * @param throwError {Boolean} - whether to throw an error or not
-	 * @returns {*}
-	 */
-	checkPermissions(userId, filePath, permissions = ["can-read", "can-write"], throwError = true, queries) {
-		return this.checkNormalPermissions(userId, filePath).catch(err => this.checkExtraPermissions(userId, filePath, permissions, throwError, queries));
-	}
-}
+	return userIds.find(finder) || teacherIds.find(finder);
+};
 
-module.exports = new FilePermissionHelper();
+const checkPermissions = permission => async (user, file) => {
+	const fileObject = await getFile(file);
+	const {
+		permissions,
+		refOwnerModel,
+		owner: { _id: owner },
+	} = fileObject;
+
+	// return always true for owner of file
+	if (user.toString() === owner.toString()) {
+		return Promise.resolve(true);
+	}
+
+	const isMember = checkMemberStatus({ file: fileObject, user });
+	const userPermissions = permissions
+		.find(perm => perm.refId && perm.refId.toString() === user.toString());
+
+	// User is no member of team or course
+	// and file has no explicit user permissions (sharednetz files)
+	if (!isMember && !userPermissions) {
+		return Promise.reject();
+	}
+
+	const isSubmission = await submissionModel.findOne({ fileIds: fileObject._id });
+
+	// or legacy course model
+	if (refOwnerModel === 'course' || isSubmission) {
+		const userObject = await userModel.findOne({ _id: user }).populate('roles').exec();
+		const isStudent = userObject.roles.find(role => role.name === 'student');
+
+		if (isStudent) {
+			const rolePermissions = permissions.find(
+				perm => perm.refId && perm.refId.toString() === isStudent._id.toString(),
+			);
+			return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
+		}
+		return Promise.resolve(true);
+	}
+
+	if (userPermissions) {
+		return userPermissions[permission] ? Promise.resolve(true) : Promise.reject();
+	}
+
+	return checkTeamPermission({
+		permission,
+		file: fileObject,
+		user: isMember,
+	});
+};
+
+module.exports = {
+	checkPermissions,
+	canWrite: checkPermissions('write'),
+	canRead: checkPermissions('read'),
+	canCreate: checkPermissions('create'),
+	canDelete: checkPermissions('delete'),
+};

@@ -1,7 +1,19 @@
-FROM node:8.12.0
+#FROM node:8.12.0
+FROM node:8.15-alpine
 
 WORKDIR /schulcloud-server
-COPY . .
-RUN npm install
+# RSS-Cron starten
+RUN apk update && apk upgrade && apk add --no-cache git make python tzdata curl
+COPY ./package.json .
+COPY ./package-lock.json .
 
-CMD npm start
+RUN npm install 
+#--only=production
+
+COPY . .
+#COPY ./localtime /etc/localtime
+ENV TZ=Europe/Berlin
+
+#ENTRYPOINT crontab ./crontab && crond
+#CMD npm start
+CMD ./startup.sh

@@ -1,21 +1,47 @@
+---
 language: node_js
-node_js:
-  - "8"
+node_js: '8'
+
+sudo: required
+
 services:
-  - mongodb
+- docker
+- mongodb
+
+env:
+  global:
+    - GIT_SHA=$( git rev-parse HEAD )
+    - DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" )
+    - ROCKET_CHAT_URI=http://localhost:5000
+cache:
+  directories:
+  - node_modules
+before_install:
+- openssl aes-256-cbc -K $encrypted_2709882c490b_key -iv $encrypted_2709882c490b_iv -in travis_rsa.enc -out travis_rsa -d
 script:
-  - npm test
-  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+#- pwd
+- npm test
+- npm run coverage-codecov
+#- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+
 after_success:
+  # because Skipping a deployment with the script provider because the current build is a pull request.
+  - bash ./deploy.sh
+  # Check code coverage by codecov
   - bash <(curl -s https://codecov.io/bash)
-  - bash <(curl -X POST --data "apiKey=$apiKey&branch=$BRANCH" http://$url/update)
+  #- bash <(curl -X POST --data "apiKey=$apiKey&branch=$BRANCH" http://$url/update)
+
+#deploy:
+#  provider: script
+#  script: bash ./deploy.sh
+#  on:
+#   all_branches: true
+#   condition: $TRAVIS_BRANCH =~ ^development|N21/merge$
+
 notifications:
   slack:
     rooms:
-      - secure: "JpP7zgvDI9n/VBnply1c/RhCDUi3htY9jFo/MVfzIgzP1ngxoayHvo+T9gWhTfUHnwak4wu4RRH7Scw7YCyInS9lhFmUG/9MB/rgKpVUKrb+pyfAtmZogyyt5q7pwQmxuOH44dvQqNs78eg3E47fejyvfsOnt9ne1uCF9Ry2LkXHJ/c5cXA8BroVh6vg1M50Ny0Kayx/hpO2f8Oj38vEh4l4KmEcbNPZyZ9cQ4yJjm1hj7zMpG+k1J0BOmN+juNU7aDLAwPP2XP/mG8346E47xZShbkQq+bNZfUUI39GyVY7p2bCePzo5fuzVvQfSYiXlNDvztDdLxJ+XiQJe2ashQUzkQuIyfAfEVQEmRqG5W+2mZ2iQoAvuK4So5QgoUUD3b2d4osiwOQqYaJmHihc6MxT/05hdbM79i+rCEViuuG62LJ3gbRO+PDMZwplv9ArvIRKsh5Tgx6BOYfadDASB2muWx/AhvIhudZOTZjBYc8msvWGKu2fvYL4HbS15C4oh1nxgccDo2PoOJSyZOhFb9BEvTAFe+qDkpk9lmSHw6FNzDIMkv64Z8CqHn3fLkJwsCjsYJLOOSYv28S7anx66KeJwRR7+0DTWlbjBwftyiG+KhHghUF2rYiRiBGmaSSnXFD9X9s0PBl/fwGkkvrclM5vykZ26iPtwv5a36T0t7Q="
+    - secure: JpP7zgvDI9n/VBnply1c/RhCDUi3htY9jFo/MVfzIgzP1ngxoayHvo+T9gWhTfUHnwak4wu4RRH7Scw7YCyInS9lhFmUG/9MB/rgKpVUKrb+pyfAtmZogyyt5q7pwQmxuOH44dvQqNs78eg3E47fejyvfsOnt9ne1uCF9Ry2LkXHJ/c5cXA8BroVh6vg1M50Ny0Kayx/hpO2f8Oj38vEh4l4KmEcbNPZyZ9cQ4yJjm1hj7zMpG+k1J0BOmN+juNU7aDLAwPP2XP/mG8346E47xZShbkQq+bNZfUUI39GyVY7p2bCePzo5fuzVvQfSYiXlNDvztDdLxJ+XiQJe2ashQUzkQuIyfAfEVQEmRqG5W+2mZ2iQoAvuK4So5QgoUUD3b2d4osiwOQqYaJmHihc6MxT/05hdbM79i+rCEViuuG62LJ3gbRO+PDMZwplv9ArvIRKsh5Tgx6BOYfadDASB2muWx/AhvIhudZOTZjBYc8msvWGKu2fvYL4HbS15C4oh1nxgccDo2PoOJSyZOhFb9BEvTAFe+qDkpk9lmSHw6FNzDIMkv64Z8CqHn3fLkJwsCjsYJLOOSYv28S7anx66KeJwRR7+0DTWlbjBwftyiG+KhHghUF2rYiRiBGmaSSnXFD9X9s0PBl/fwGkkvrclM5vykZ26iPtwv5a36T0t7Q=
     on_success: change
     on_failure: always
     on_pull_requests: false
-cache:
-  directories:
-    - node_modules

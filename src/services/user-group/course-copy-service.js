@@ -1,5 +1,4 @@
 const hooks = require('./hooks/copyCourseHook');
-const errors = require('feathers-errors');
 const courseModel = require('./model').courseModel;
 const homeworkModel = require('../homework/model').homeworkModel;
 const lessonsModel = require('../lesson/model');
@@ -43,14 +42,14 @@ class CourseCopyService {
 		tempData = _.omit(tempData, ['_id', 'courseId']);
 
 		return courseModel.findOne({_id: data._id})
-			.then(course => {
+			.then((course) => {
 				let tempCourse = JSON.parse(JSON.stringify(course));
 				tempCourse = _.omit(tempCourse, ['_id', 'createdAt', 'updatedAt', '__v', 'name', 'color', 'teacherIds', 'classIds', 'userIds', 'substitutionIds', 'shareToken', 'untilDate', 'startDate', 'times']);
 
 				tempCourse = Object.assign(tempCourse, tempData, {userId: (params.account || {}).userId});
 
 				return this.app.service('courses').create(tempCourse)
-					.then(res => {
+					.then((res) => {
 						let homeworkPromise = homeworkModel.find({courseId: data._id}).populate('lessonId');
 						let lessonsPromise = lessonsModel.find({courseId: data._id});
 
@@ -64,23 +63,25 @@ class CourseCopyService {
 											createdLessons.push({_id: lessonRes._id, name: lessonRes.name});
 										});
 								}))
-									.then(_ => {
-										return Promise.all(homeworks.map(homework => {
-											let convertedLesson = undefined;
-											if (homework.archived.length > 0 || (homework.teacherId.toString() !== params.account.userId.toString() && homework.private))
-												return;
-											else if (homework.lessonId) {
-												convertedLesson = createdLessons.filter(h => {
-													return h.name === homework.lessonId.name;
-												});
-												convertedLesson = convertedLesson[0]._id;
-											}
-											return createHomework(homework, res._id, convertedLesson, params.account.userId.toString() == homework.teacherId.toString() ? params.account.userId : homework.teacherId, this.app, params.account.userId);
-										}))
-											.then(_ => {
-												return res;
-											});
-									});
+									.then(() => Promise.all(homeworks.map((homework) => {
+										if (homework.archived.length > 0
+											|| (homework.teacherId.toString() !== params.account.userId.toString()
+											&& homework.private)) return false;
+										// homeworks that are part of a lesson are copied in LessonCopyService
+										if (!homework.lessonId) {
+											return createHomework(
+												homework,
+												res._id,
+												undefined,
+												params.account.userId.toString() === homework.teacherId.toString()
+													? params.account.userId : homework.teacherId,
+												this.app,
+												params.account.userId,
+											);
+										}
+										return false;
+									}))
+										.then(() => res));
 							});
 				});
 			});
@@ -140,44 +141,61 @@ class CourseShareService {
 		const userId = (params.account || {}).userId;
 		const courseName = data.courseName;
 		const copyService = this.app.service('courses/copy');
-		
-		return courseModel.find({shareToken})
-			.then(course => {
+
+		return courseModel.find({ shareToken })
+			.then((course) => {
 				course = course[0];
 				let tempCourse = JSON.parse(JSON.stringify(course));
-				tempCourse = _.omit(tempCourse, ['createdAt', 'updatedAt', '__v', 'teacherIds', 'classIds', 'userIds', 'substitutionIds', 'shareToken', 'schoolId', 'untilDate', 'startDate', 'times']);
+				tempCourse = _.omit(
+					tempCourse,
+					[
+						'createdAt',
+						'updatedAt',
+						'__v',
+						'teacherIds',
+						'classIds',
+						'userIds',
+						'substitutionIds',
+						'shareToken',
+						'schoolId',
+						'untilDate',
+						'startDate',
+						'times',
+					],
+				);
 
-				tempCourse.teacherIds = [ userId ];
+				tempCourse.teacherIds = [userId];
 
-				if (courseName)
+				if (courseName) {
 					tempCourse.name = courseName;
+				}
 
 				return this.app.service('users').get(userId)
-					.then(user => {
-
+					.then((user) => {
 						tempCourse.schoolId = user.schoolId;
 						tempCourse.userId = userId;
 
 						return copyService.create(tempCourse)
-							.then(res => { return res; })
-							.catch(err => { return err; });
+							.then((res) => { return res; })
+							.catch((err) => { return err; });
 					});
 			});
 	}
 }
 
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 
-	// Initialize our service with any options it requires
 	app.use('/courses/copy', new CourseCopyService(app));
 	app.use('/courses/share', new CourseShareService(app));
 
-	// Get our initialize service to that we can bind hooks
 	const courseCopyService = app.service('/courses/copy');
 	const courseShareService = app.service('/courses/share');
 
-	// Set up our before hooks
-	courseCopyService.before(hooks.before);
-	courseShareService.before(hooks.beforeShare);
+	courseCopyService.hooks({
+		before: hooks.before,
+	});
+	courseShareService.hooks({
+		before: hooks.beforeShare,
+	});
 };

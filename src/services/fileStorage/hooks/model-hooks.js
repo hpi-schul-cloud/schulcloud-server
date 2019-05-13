@@ -1,44 +1,20 @@
-'use strict';
+const auth = require('@feathersjs/authentication');
 
 const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
-const permissions = require('../utils/filePermissionHelper');
+const { canRead } = require('../utils/filePermissionHelper');
 
-const restrictToCurrentUser = hook => {
-	let files = hook.result.data;
-	let userId = hook.params.account.userId;
-	let allowedFiles = [];
-	let queries = hook.params.query;
-	// permissions check for each file
-	return Promise.all(files.map(f => {
-		return permissions.checkPermissions(userId, f.key, ['can-write'], false, queries).then(isAllowed => {
-			if (isAllowed) {
-				f.context = isAllowed.context;
-				allowedFiles.push(f);
-			}
-			return;
-		});
-	})).then(_ => {
-		// get context folder name
-		return Promise.all(allowedFiles.map(f => {
-			let context = f.context;
-			if (!context) {
-				f.context = 'geteilte Datei';
-			}
-			else if (context === 'user') {
-				f.context = 'Meine Dateien';
-			}
-			else {
-				f.context = context.name;
-			}
-			return f;
-		})).then(files => {
-			hook.result.data = files;
-			hook.result.total = files.length;
+
+const restrictToCurrentUser = (hook) => {
+	const { params: { account: { userId } }, result: { data: files } } = hook;
+	const permissionPromises = files.map(f => canRead(userId, f)
+		.then(() => f)
+		.catch(() => undefined));
+
+	return Promise.all(permissionPromises)
+		.then((allowedFiles) => {
+			hook.result.data = allowedFiles;
 			return hook;
 		});
-	});
 };
 
 exports.before = {
@@ -48,7 +24,7 @@ exports.before = {
 	create: [globalHooks.hasPermission('FILESTORAGE_CREATE')],
 	update: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
 	patch: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
-	remove: [globalHooks.hasPermission('FILESTORAGE_REMOVE')]
+	remove: [globalHooks.hasPermission('FILESTORAGE_REMOVE')],
 };
 
 exports.after = {
@@ -58,5 +34,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };
