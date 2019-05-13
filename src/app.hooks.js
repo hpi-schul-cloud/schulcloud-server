@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
 
