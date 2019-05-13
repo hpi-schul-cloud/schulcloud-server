@@ -26,7 +26,6 @@ exports.authenticateJWT = context => (auth.hooks.authenticate('jwt'))(context)
 			context.params.userId = userId;
 			context.params.roles = roles;
 			context.params.account = account;
-			console.log(JSON.stringify(context.params).replace(/,/g, ', \n'));
 		}
 
 		return context;
