@@ -186,7 +186,7 @@ const fileStorageService = {
      */
 	async patch(_id, data, params) {
 		const { payload: { userId } } = params;
-		let { parent } = data;
+		const { parent } = data;
 		const fileObject = await FileModel.findOne({ _id: parent }).exec();
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
 		let owner;
@@ -764,12 +764,12 @@ const filePermissionService = {
 			});
 	},
 	/**
-	 * Returns the permissions of a file filtered by owner model
-	 * and permissions based on the role of the user
-	 * @returns {Promise}
-	 * @param query contains the file id
-	 * @param payload contains userId
-	 */
+     * Returns the permissions of a file filtered by owner model
+     * and permissions based on the role of the user
+     * @returns {Promise}
+     * @param query contains the file id
+     * @param payload contains userId
+     */
 	async find({ query, payload }) {
 		const { file: fileId } = query;
 		const { userId } = payload;

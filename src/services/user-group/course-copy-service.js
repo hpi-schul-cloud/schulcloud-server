@@ -41,23 +41,21 @@ class CourseCopyService {
 
 				return this.app.service('courses').create(tempCourse)
 					.then((res) => {
-						let homeworkPromise = homeworkModel.find({ courseId: data._id }).populate('lessonId');
-						let lessonsPromise = lessonsModel.find({ courseId: data._id });
+						const homeworkPromise = homeworkModel.find({ courseId: data._id }).populate('lessonId');
+						const lessonsPromise = lessonsModel.find({ courseId: data._id });
 
 						return Promise.all([homeworkPromise, lessonsPromise])
 							.then(([homeworks, lessons]) => {
-								let createdLessons = [];
+								const createdLessons = [];
 
-								return Promise.all(lessons.map((lesson) => {
-									return createLesson(lesson._id, res._id, params.account.userId, this.app, lesson.shareToken)
-										.then((lessonRes) => {
-											createdLessons.push({ _id: lessonRes._id, name: lessonRes.name });
-										});
-								}))
+								return Promise.all(lessons.map(lesson => createLesson(lesson._id, res._id, params.account.userId, this.app, lesson.shareToken)
+									.then((lessonRes) => {
+										createdLessons.push({ _id: lessonRes._id, name: lessonRes.name });
+									})))
 									.then(() => Promise.all(homeworks.map((homework) => {
 										if (homework.archived.length > 0
-											|| (homework.teacherId.toString() !== params.account.userId.toString()
-												&& homework.private)) return false;
+                                            || (homework.teacherId.toString() !== params.account.userId.toString()
+                                                && homework.private)) return false;
 										// homeworks that are part of a lesson are copied in LessonCopyService
 										if (!homework.lessonId) {
 											return createHomework(

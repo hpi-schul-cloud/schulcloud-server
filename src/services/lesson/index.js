@@ -25,10 +25,10 @@ class LessonFilesService {
 			// fetch files in the given course and check whether they are included in the lesson
 			return FileModel.find({ path: { $regex: lesson.courseId } }).then(files => Promise.all((files || []).filter(f =>
 
-				// check whether the file is included in any lesson
+			// check whether the file is included in any lesson
 				_.some((lesson.contents || []), content => content.component === 'text'
-					&& content.content.text
-					&& _.includes(content.content.text, f.key)))));
+                    && content.content.text
+                    && _.includes(content.content.text, f.key)))));
 		});
 	}
 }
@@ -39,11 +39,11 @@ class LessonCopyService {
 	}
 
 	/**
-	 * Clones a lesson to a specified course, including files and homeworks.
-	 * @param data consists of lessonId and newCourseId (target, source).
-	 * @param params user Object and other params.
-	 * @returns newly created lesson.
-	 */
+     * Clones a lesson to a specified course, including files and homeworks.
+     * @param data consists of lessonId and newCourseId (target, source).
+     * @param params user Object and other params.
+     * @returns newly created lesson.
+     */
 	create(data, params) {
 		const { lessonId, newCourseId } = data;
 		const fileChangelog = [];
@@ -66,8 +66,8 @@ class LessonCopyService {
 
 						return Promise.all(homeworks.map(((homework) => {
 							if (homework.archived.length > 0
-								|| (homework.teacherId.toString() !== params.account.userId.toString()
-									&& homework.private)) { return false; }
+                                || (homework.teacherId.toString() !== params.account.userId.toString()
+                                    && homework.private)) { return false; }
 
 							const homeworkService = this.app.service('homework/copy');
 
@@ -87,43 +87,36 @@ class LessonCopyService {
 					).then(files => Promise.all((files || []).filter(
 						// check whether the file is included in any lesson
 						f => _.some((sourceLesson.contents || []), content => content.component === 'text'
-							&& content.content.text
-							&& _.includes(content.content.text, f._id)),
+                            && content.content.text
+                            && _.includes(content.content.text, f._id)),
 					))
-						.then((lessonFiles) => {
-							return Promise.all(lessonFiles.map((f) => {
+						.then(lessonFiles => Promise.all(lessonFiles.map((f) => {
+							const fileData = {
+								file: f._id,
+								parent: newCourseId,
+							};
 
-								const fileData = {
-									file: f._id,
-									parent: newCourseId,
-								};
+							const fileStorageService = this.app.service('/fileStorage/copy/');
 
-								const fileStorageService = this.app.service('/fileStorage/copy/');
-
-								return fileStorageService.create(fileData, params)
-									.then((newFile) => {
-										fileChangelog.push({
-											old: `${sourceLesson.courseId._id}/${f.name}`,
-											new: `${newCourseId}/${newFile.name}`,
-										});
+							return fileStorageService.create(fileData, params)
+								.then((newFile) => {
+									fileChangelog.push({
+										old: `${sourceLesson.courseId._id}/${f.name}`,
+										new: `${newCourseId}/${newFile.name}`,
 									});
-							})).then(() => {
-								return Promise.all(
-									topic.contents.map((content) => {
-										if (content.component === 'text' && content.content.text) {
-											fileChangelog.map((change) => {
-												content.content.text = content.content.text.replace(
-													new RegExp(change.old, 'g'),
-													change.new,
-												);
-											});
-										}
-									}),
-								).then(() => {
-									return lessonModel.update({ _id: topic._id }, topic);
 								});
-							});
-						}));
+						})).then(() => Promise.all(
+							topic.contents.map((content) => {
+								if (content.component === 'text' && content.content.text) {
+									fileChangelog.map((change) => {
+										content.content.text = content.content.text.replace(
+											new RegExp(change.old, 'g'),
+											change.new,
+										);
+									});
+								}
+							}),
+						).then(() => lessonModel.update({ _id: topic._id }, topic)))));
 					return Promise.all([homeworkPromise, filePromise]);
 				});
 			});
