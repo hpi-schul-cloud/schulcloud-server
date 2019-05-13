@@ -14,13 +14,16 @@ exports.authenticateJWT = context => (auth.hooks.authenticate('jwt'))(context)
 		const { account } = params;
 
 		if (account) {
+			account._id = account._id.toString();
 			const user = account.userId;
 			const userId = user._id.toString();
 			account.userId = userId;
 			const roles = user.roles.map((role) => {
-				role._id.toString();
+				role._id = role._id.toString();
 				return role;
 			});
+
+			user.roles.map(role => role._id);
 
 			context.params.user = user;
 			context.params.userId = userId;
