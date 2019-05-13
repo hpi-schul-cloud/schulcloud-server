@@ -87,8 +87,8 @@ describe('collection helpers', () => {
 		it('should return false for other types', () => {
 			expect(isString(123)).to.equal(false);
 			expect(isString([])).to.equal(false);
-			expect(isString(new Promise(() => {}))).to.equal(false);
-			expect(isString(() => {})).to.equal(false);
+			expect(isString(new Promise(() => { }))).to.equal(false);
+			expect(isString(() => { })).to.equal(false);
 		});
 	});
 
@@ -176,7 +176,7 @@ describe('collection helpers', () => {
 			expect(isObjectId({ _bsontype: 'ObjectID' })).to.equal(false);
 			expect(isObjectId(123)).to.equal(false);
 			expect(isObjectId('123')).to.equal(false);
-			expect(isObjectId(() => {})).to.equal(false);
+			expect(isObjectId(() => { })).to.equal(false);
 			expect(isObjectId([])).to.equal(false);
 		});
 	});
@@ -193,7 +193,7 @@ describe('collection helpers', () => {
 			expect(isObjectIdWithTryToCast('5c3da7980ba3be0a64f1d38ca')).to.equal(false);
 			expect(isObjectIdWithTryToCast({ _bsontype: 'ObjectID' })).to.equal(false);
 			expect(isObjectIdWithTryToCast('123')).to.equal(false);
-			expect(isObjectIdWithTryToCast(() => {})).to.equal(false);
+			expect(isObjectIdWithTryToCast(() => { })).to.equal(false);
 			expect(isObjectIdWithTryToCast([])).to.equal(false);
 		});
 	});
@@ -252,8 +252,9 @@ describe('collection helpers', () => {
 
 	describe('isFunction', () => {
 		it('should return true for function types', () => {
-			expect(isFunction(() => {})).to.equal(true);
-			expect(isFunction(() => {})).to.equal(true);
+			expect(isFunction(() => { })).to.equal(true);
+			// eslint-disable-next-line prefer-arrow-callback 
+			expect(isFunction(function fn() { })).to.equal(true);
 			expect(isFunction(new Function())).to.equal(true);
 		});
 

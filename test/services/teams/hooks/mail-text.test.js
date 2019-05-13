@@ -19,8 +19,7 @@ describe('Team mail-text helper', () => {
 	});
 
 	describe('createEmailText', () => {
-		let hook; let
-			user;
+		let hook;
 		before(() => {
 			hook = createHook(app, {
 				method: 'patch',

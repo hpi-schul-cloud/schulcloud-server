@@ -23,8 +23,8 @@ describe('Team Service', () => {
 	});
 
 	describe.skip('/teams/extern/add', () => {
-		let service = {}; const
-			team = {};
+		let service = {};
+		const team = {};
 		before(() => {
 			service = app.service('/teams/extern/add');
 			team._id = ObjectId();
