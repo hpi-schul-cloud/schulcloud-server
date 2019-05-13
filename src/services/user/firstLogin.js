@@ -33,6 +33,7 @@ const firstLogin = async (data, params, app) => {
 	// let userPromise;
 	const consentUpdate = {};
 	let consentPromise = Promise.resolve();
+	let updateConsentUsingVersions = Promise.resolve();
 	const user = await app.service('users').get(params.account.userId);
 
 	if (data.parent_email) {
@@ -75,6 +76,30 @@ const firstLogin = async (data, params, app) => {
 			termsOfUseConsent: data.termsOfUseConsent,
 		};
 	}
+
+	if (data.termsOfUseConsentVersion || data.privacyConsentVersion) {
+		updateConsentUsingVersions = app.service('consents').find({ userId: user._id }).then((consents) => {
+			if (consents.total === 0) {
+				throw new Error('user consent not found!');
+			}
+			const consent = consents.data[0];
+			const consentVersionUpdate = {
+				userConsent: {
+					form: 'digital',
+				},
+			};
+			if (data.privacyConsentVersion) {
+				consentVersionUpdate.userConsent.privacyConsent = true;
+				consentVersionUpdate.userConsent.dateOfPrivacyConsent = Date.now();
+			}
+			if (data.termsOfUseConsentVersion) {
+				consentVersionUpdate.userConsent.termsOfUseConsent = true;
+				consentVersionUpdate.userConsent.dateOfTermsOfUseConsent = Date.now();
+			}
+			return app.service('consents').patch(consent._id, { $set: consentVersionUpdate });
+		});
+	}
+
 	if (data.parent_privacyConsent || data.parent_termsOfUseConsent) {
 		consentUpdate.userId = user._id;
 		consentUpdate.parentConsents = [{
@@ -91,7 +116,7 @@ const firstLogin = async (data, params, app) => {
 		accountPromise = app.service('accounts').patch(accountId, accountUpdate, params);
 	}
 
-	return Promise.all([accountPromise, userPromise, consentPromise])
+	return Promise.all([accountPromise, userPromise, consentPromise, updateConsentUsingVersions])
 		.then(result => Promise.resolve(result))
 		.catch(err => Promise.reject(err));
 };
