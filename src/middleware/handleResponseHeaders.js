@@ -7,8 +7,9 @@ module.exports = (req, res, next) => {
 	});
 
 	// wopi doesn't have a 201 statusCode which would cause problems
-	if (res.statusCode === 201) res.statusCode = 200;
-
+	if (res.statusCode === 201) {
+		res.statusCode = 200;
+	}
 	delete res.data.headerPipes;
 
 	next();

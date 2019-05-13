@@ -5,7 +5,8 @@
  *
  * LibreOffice Online supports barely any of these
  *
- * Host-Capabilities: https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#wopi-host-capabilities-properties
+ * Host-Capabilities:
+ * https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html#wopi-host-capabilities-properties
  */
 const HOST_CAPABILITIES = [
 	'SupportsCobalt',
@@ -23,11 +24,16 @@ const HOST_CAPABILITIES = [
 	'UserCanRename',
 ];
 
-const CURRENTLY_IMPLEMENTED = ['SupportsDeleteFile', 'SupportsLocks', 'SupportsGetLock', 'SupportsRename', 'SupportsUpdate', 'UserCanRename'];
+const CURRENTLY_IMPLEMENTED = [
+	'SupportsDeleteFile', 'SupportsLocks', 'SupportsGetLock', 'SupportsRename', 'SupportsUpdate', 'UserCanRename',
+];
 
 const defaultCapabilities = () => {
 	const caps = {};
-	HOST_CAPABILITIES.forEach(h => caps[h] = CURRENTLY_IMPLEMENTED.includes(h));
+	HOST_CAPABILITIES.forEach((h) => {
+		caps[h] = CURRENTLY_IMPLEMENTED.includes(h);
+		return caps;
+	});
 	return caps;
 };
 

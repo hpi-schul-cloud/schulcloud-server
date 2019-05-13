@@ -3,6 +3,7 @@ const mockery = require('mockery');
 const app = require('../../../src/app');
 const mockAws = require('../fileStorage/aws/s3.mock');
 
+
 describe('wopi service', () => {
 	const testUserId = '599ec14d8e4e364ec18ff46d';
 
@@ -36,7 +37,7 @@ describe('wopi service', () => {
 		schoolId: '599ec0bb8e4e364ec18ff46c',
 	};
 
-	before(function (done) {
+	before(function execute(done) {
 		this.timeout(10000);
 		// Enable mockery to mock objects
 		mockery.enable({
@@ -47,16 +48,16 @@ describe('wopi service', () => {
 
 		delete require.cache[require.resolve('../../../src/services/fileStorage/strategies/awsS3')];
 		app.service('files').create(testFile)
-			.then((_) => {
+			.then(() => {
 				done();
 			});
 	});
 
 
-	after(function (done) {
+	after(function execute(done) {
 		this.timeout(10000);
 		app.service('files').remove(testFile._id)
-			.then((_) => {
+			.then(() => {
 				mockery.deregisterAll();
 				mockery.disable();
 				done();
@@ -71,10 +72,10 @@ describe('wopi service', () => {
 		assert.ok(app.service('wopi/files/:fileId/contents'));
 	});
 
-	it('GET /wopi/files/:fileId', (done) => {
+	it('GET /wopi/files/:fileId', (done) => { // !
 		app.service('wopi/files/:fileId').find({
 			query: { access_token: testAccessToken },
-			fileId: testFile._id,
+			route: { fileId: testFile._id },
 			account: { userId: testUserId },
 		}).then((result) => {
 			assert.equal(result.BaseFileName, testFile.name);
@@ -93,6 +94,7 @@ describe('wopi service', () => {
 			payload: testUserPayload,
 			headers,
 			fileId: testFile2._id,
+			route: { fileId: testFile2._id },
 		}));
 	});
 
@@ -104,6 +106,7 @@ describe('wopi service', () => {
 			payload: testUserPayload,
 			headers,
 			fileId: testFile2._id,
+			route: { fileId: testFile2._id },
 		}).catch((e) => {
 			assert.equal(e.name, 'BadRequest');
 			assert.equal(e.message, 'X-WOPI-Override header was not provided or was empty!');
@@ -111,7 +114,7 @@ describe('wopi service', () => {
 		});
 	});
 
-	it('POST /wopi/files/:fileId Action Lock and GetLock', (done) => {
+	it('POST /wopi/files/:fileId Action Lock and GetLock', (done) => { // !
 		const headers = {};
 		headers.authorization = testAccessToken;
 		headers['x-wopi-override'] = 'LOCK';
@@ -119,29 +122,28 @@ describe('wopi service', () => {
 			account: { userId: testUserId },
 			payload: testUserPayload,
 			headers,
-			fileId: testFile._id,
+			route: { fileId: testFile._id },
 			_id: testFile._id,
 		};
-		let lockId;
+		// let lockId;
 
 		app.service('wopi/files/:fileId').create({}, params)
-			.then((res) => {
-				lockId = res.lockId;
+			.then(async (res) => {
+				const { lockId } = res;
 				assert.notEqual(lockId, undefined);
 
 				headers.authorization = testAccessToken;
 				headers['x-wopi-override'] = 'GET_LOCK';
-
-				return app.service('wopi/files/:fileId').create({}, {
+				const result = await app.service('wopi/files/:fileId').create({}, {
 					account: { userId: testUserId },
 					payload: testUserPayload,
 					headers,
 					fileId: testFile._id,
+					route: { fileId: testFile._id },
 					_id: testFile._id,
 				});
-			})
-			.then((res) => {
-				assert.equal(lockId.toString(), res.lockId.toString());
+
+				assert.equal(lockId.toString(), result.lockId.toString());
 				done();
 			});
 	});
@@ -149,7 +151,7 @@ describe('wopi service', () => {
 	it('GET /wopi/files/:fileId/contents', () => {
 		assert.ok(app.service('wopi/files/:fileId/contents').find({
 			query: { access_token: testAccessToken },
-			fileId: testFile._id,
+			route: { fileId: testFile._id },
 			account: { userId: testUserId },
 		}));
 	});

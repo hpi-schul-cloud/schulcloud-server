@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
+const { NotImplemented } = require('@feathersjs/errors');
 const { FileModel } = require('../../fileStorage/model');
 
 /**
- * Just because the route /wopi/files/:id should trigger different actions for a different 'X-WOPI-Override' header value,
+ * Just because the route /wopi/files/:id should trigger different
+ * actions for a different 'X-WOPI-Override' header value,
  * this helper uses the correct function for a specific header
  */
 
@@ -22,14 +24,17 @@ const deleteFile = (file, payload, account, app) => {
   */
 const lock = (file) => {
 	file.lockId = mongoose.Types.ObjectId();
-	return FileModel.update({ _id: file._id }, file).exec().then(_ => Promise.resolve({ lockId: file.lockId }));
+	return FileModel.update({ _id: file._id }, file).exec().then(() => Promise.resolve({ lockId: file.lockId }));
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/GetLock.html */
-const getLock = file => FileModel.findOne({ _id: file._id }).exec().then(_ => Promise.resolve({ lockId: file.lockId }));
+const getLock = file => FileModel.findOne({ _id: file._id })
+	.exec()
+	.then(() => Promise.resolve({ lockId: file.lockId }));
 
 /** https://wopirest.readthedocs.io/en/latest/files/Unlock.html */
 const unlock = file => FileModel.update({ _id: file._id }, { $unset: { lockId: 1 } }).exec();
+
 
 /** https://wopirest.readthedocs.io/en/latest/files/RenameFile.html */
 const renameFile = (file, payload, account, app) => {
@@ -43,13 +48,13 @@ const renameFile = (file, payload, account, app) => {
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/GetShareUrl.html */
-const shareUrl = (file, payload, account, app) => {
-	throw new errors.NotImplemented('This function is currently not implemented!');
+const shareUrl = () => {
+	throw new NotImplemented('This function is currently not implemented!');
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/PutUserInfo.html */
-const putUserInfo = (file, payload, account, app) => {
-	throw new errors.NotImplemented('This function is currently not implemented!');
+const putUserInfo = () => {
+	throw new NotImplemented('This function is currently not implemented!');
 };
 
 
