@@ -48,7 +48,7 @@
 		"no-param-reassign": [
 			"warn",
 			{
-				"props": false
+				"props": true
 			}
 		],
 		"no-unused-vars": [
