@@ -23,35 +23,36 @@ describe('Team Service', () => {
 	});
 
 	describe.skip('/teams/extern/add', () => {
-		let service={}, team={};
-		before( ()=>{
+		let service = {}; const
+			team = {};
+		before(() => {
 			service = app.service('/teams/extern/add');
 			team._id = ObjectId();
-			//todo create user
-			//todo create team
-			//todo expert school
+			// todo create user
+			// todo create team
+			// todo expert school
 		});
 
-		after(()=>{
-			//remove user
-			//remove team
-			//remove school
+		after(() => {
+			// remove user
+			// remove team
+			// remove school
 		});
 
-		it.skip('should accept emails & role', async ()=>{
-			const result = await service.patch(team._id,{email:'tester@test.de', role:'teamexpert'});
-		/*	agent.post('/authentication')
-			.send({})	Authorization:<token>, strategy:'local'
-			.end((err, response) => {
-                if(err){ 
-					throw err	
-				};
-				if(response===undefined){
-					throw new Error('');
-				}
+		it.skip('should accept emails & role', async () => {
+			const result = await service.patch(team._id, { email: 'tester@test.de', role: 'teamexpert' });
+			/*  agent.post('/authentication')
+            .send({})   Authorization:<token>, strategy:'local'
+            .end((err, response) => {
+                if(err){
+                    throw err
+                };
+                if(response===undefined){
+                    throw new Error('');
+                }
                 //do resolve
             });
-		*/
+        */
 		});
 	});
 
