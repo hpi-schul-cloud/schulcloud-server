@@ -29,7 +29,7 @@ const restrictToUserOrRole = (hook) => {
 };
 
 const addDates = (hook) => {
-	if (hook.data.parentConsents) {
+	if (hook.data.parentConsents && hook.data.parentConsents.length) {
 		const parentConsent = hook.data.parentConsents[0];
 		if ('privacyConsent' in parentConsent) {
 			parentConsent.dateOfPrivacyConsent = Date.now();
