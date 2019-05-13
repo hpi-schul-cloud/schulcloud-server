@@ -96,30 +96,30 @@ const registerUser = function (data, params, app) {
 			user = response.user;
 			oldUser = response.oldUser;
 		})).then(() => {
-		if ((user.roles || []).includes('student')) {
-			// wrong birthday object?
-			if (user.birthday instanceof Date && isNaN(user.birthday)) {
-				return Promise.reject(new errors.BadRequest('Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut.'));
+			if ((user.roles || []).includes('student')) {
+				// wrong birthday object?
+				if (user.birthday instanceof Date && isNaN(user.birthday)) {
+					return Promise.reject(new errors.BadRequest('Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut.'));
+				}
+				// wrong age?
+				const age = globalHooks.getAge(user.birthday);
+				if (data.parent_email && age >= 16) {
+					return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 16 Jahre oder älter sein.`));
+				} if (!data.parent_email && age < 16) {
+					return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 16 Jahre sein.`));
+				}
 			}
-			// wrong age?
-			const age = globalHooks.getAge(user.birthday);
-			if (data.parent_email && age >= 16) {
-				return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 16 Jahre oder älter sein.`));
-			} if (!data.parent_email && age < 16) {
-				return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 16 Jahre sein.`));
+
+			// identical emails?
+			if (data.parent_email && data.parent_email === data.email) {
+				return Promise.reject(new errors.BadRequest('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.'));
 			}
-		}
 
-		// identical emails?
-		if (data.parent_email && data.parent_email === data.email) {
-			return Promise.reject(new errors.BadRequest('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.'));
-		}
-
-		if (data.password_1 && data.passwort_1 !== data.passwort_2) {
-			return new errors.BadRequest('Die Passwörter stimmen nicht überein');
-		}
-		return Promise.resolve();
-	})
+			if (data.password_1 && data.passwort_1 !== data.passwort_2) {
+				return new errors.BadRequest('Die Passwörter stimmen nicht überein');
+			}
+			return Promise.resolve();
+		})
 		.then(() => {
 			const userMail = data.parent_email || data.student_email || data.email;
 			const pinInput = data.pin;
@@ -130,106 +130,132 @@ const registerUser = function (data, params, app) {
 				if (!(check.data && check.data.length > 0 && check.data[0].pin === pinInput)) {
 					return Promise.reject('Ungültige Pin, bitte überprüfe die Eingabe.');
 				}
-				return Promise.resolve();
+			}).then(newParent => {
+				parent = newParent;
+				return userModel.userModel.findByIdAndUpdate(user._id, { parents: [parent._id] }, { new: true }).exec()
+					.then(updatedUser => user = updatedUser);
+			}).catch(err => {
+				return Promise.reject('Fehler beim Verknüpfen der Eltern.');
 			});
-		})
-		.then(() =>
-		// create user
-			insertUserToDB(app, data, user)
-				.then((newUser) => {
-					user = newUser;
-				}))
-		.then(() => {
-			account = {
-				username: user.email,
-				password: data.password_1,
-				userId: user._id,
-				activated: true,
-			};
-			if (data.sso === 'true' && data.account) {
-				const accountId = data.account;
-				return app.service('accounts').update({ _id: accountId }, { $set: { activated: true, userId: user._id } })
-					.then((accountResponse) => {
-						account = accountResponse;
-					})
-					.catch(err => Promise.reject(new Error('Fehler der Account existiert nicht.')));
+		} else {
+				return Promise.resolve();
 			}
-			return app.service('accounts').create(account)
-				.then((newAccount) => { account = newAccount; })
-				.catch(err => Promise.reject(new Error('Fehler beim Erstellen des Accounts.')));
-		})
-		.then((res) => {
-			// add parent if necessary
-			if (data.parent_email) {
-				parent = {
-					firstName: data.parent_firstName,
-					lastName: data.parent_lastName,
-					email: data.parent_email,
-					children: [user._id],
-					schoolId: data.schoolId,
-					roles: ['parent'],
-				};
-				return app.service('users').create(parent, { _additional: { asTask: 'parent' } })
-					.catch((err) => {
-						if (err.message.startsWith('parentCreatePatch')) {
-							return Promise.resolve(err.data);
-						}
-						return Promise.reject(new Error('Fehler beim Erstellen des Elternaccounts.'));
-					}).then((newParent) => {
-						parent = newParent;
-						return userModel.userModel.findByIdAndUpdate(user._id, { parents: [parent._id] }, { new: true }).exec()
-							.then(updatedUser => user = updatedUser);
-					})
-					.catch(err => Promise.reject('Fehler beim Verknüpfen der Eltern.'));
-			}
+	}).then(function () {
+	//store consent
+	consent = {
+		form: 'digital',
+		privacyConsent: data.privacyConsent,
+		termsOfUseConsent: data.termsOfUseConsent,
+	};
+	if (parent) {
+		consent.parentId = parent._id;
+		consentPromise = app.service('consents').create({ userId: user._id, parentConsents: [consent] });
+	} else {
+		consentPromise = app.service('consents').create({ userId: user._id, userConsent: consent });
+	}
+	return consentPromise
+		.then(newConsent => {
+			consent = newConsent;
 			return Promise.resolve();
-		})
-		.then(() => {
-			// store consent
-			consent = {
-				form: 'digital',
-				privacyConsent: data.privacyConsent,
-				thirdPartyConsent: data.thirdPartyConsent,
-				termsOfUseConsent: data.termsOfUseConsent,
-			};
-			if (parent) {
-				consent.parentId = parent._id;
-				consentPromise = app.service('consents').create({ userId: user._id, parentConsents: [consent] });
-			} else {
-				consentPromise = app.service('consents').create({ userId: user._id, userConsent: consent });
-			}
-			return consentPromise
-				.then((newConsent) => {
-					consent = newConsent;
-					return Promise.resolve();
-				}).catch(err => Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.')));
-		})
-		.then(() => Promise.resolve({
-			user, parent, account, consent,
-		}))
-		.catch((err) => {
-			const rollbackPromises = [];
-			if (user && user._id) {
-				rollbackPromises.push(userModel.userModel.findOneAndRemove({ _id: user._id }).exec()
-					.then((_) => {
-						if (oldUser) {
-							return userModel.userModel.create(oldUser);
-						}
-					}));
-			}
-			if (parent && parent._id) {
-				rollbackPromises.push(userModel.userModel.findOneAndRemove({ _id: parent._id }).exec());
-			}
-			if (account && account._id) {
-				rollbackPromises.push(accountModel.findOneAndRemove({ _id: account._id }).exec());
-			}
-			if (consent && consent._id) {
-				rollbackPromises.push(consentModel.consentModel.findOneAndRemove({ _id: consent._id }).exec());
-			}
-			return Promise.all(rollbackPromises)
-				.catch(err => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator.')))
-				.then(() => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Fehler bei der Registrierung.')));
 		});
+})
+	.then(() =>
+		// create user
+		insertUserToDB(app, data, user)
+			.then((newUser) => {
+				user = newUser;
+			}))
+	.then(() => {
+		account = {
+			username: user.email,
+			password: data.password_1,
+			userId: user._id,
+			activated: true,
+		};
+		if (data.sso === 'true' && data.account) {
+			const accountId = data.account;
+			return app.service('accounts').update({ _id: accountId }, { $set: { activated: true, userId: user._id } })
+				.then((accountResponse) => {
+					account = accountResponse;
+				})
+				.catch(err => Promise.reject(new Error('Fehler der Account existiert nicht.')));
+		}
+		return app.service('accounts').create(account)
+			.then((newAccount) => { account = newAccount; })
+			.catch(err => Promise.reject(new Error('Fehler beim Erstellen des Accounts.')));
+	})
+	.then((res) => {
+		// add parent if necessary
+		if (data.parent_email) {
+			parent = {
+				firstName: data.parent_firstName,
+				lastName: data.parent_lastName,
+				email: data.parent_email,
+				children: [user._id],
+				schoolId: data.schoolId,
+				roles: ['parent'],
+			};
+			return app.service('users').create(parent, { _additional: { asTask: 'parent' } })
+				.catch((err) => {
+					if (err.message.startsWith('parentCreatePatch')) {
+						return Promise.resolve(err.data);
+					}
+					return Promise.reject(new Error('Fehler beim Erstellen des Elternaccounts.'));
+				}).then((newParent) => {
+					parent = newParent;
+					return userModel.userModel.findByIdAndUpdate(user._id, { parents: [parent._id] }, { new: true }).exec()
+						.then(updatedUser => user = updatedUser);
+				})
+				.catch(err => Promise.reject('Fehler beim Verknüpfen der Eltern.'));
+		}
+		return Promise.resolve();
+	})
+	.then(() => {
+		// store consent
+		consent = {
+			form: 'digital',
+			privacyConsent: data.privacyConsent,
+			thirdPartyConsent: data.thirdPartyConsent,
+			termsOfUseConsent: data.termsOfUseConsent,
+		};
+		if (parent) {
+			consent.parentId = parent._id;
+			consentPromise = app.service('consents').create({ userId: user._id, parentConsents: [consent] });
+		} else {
+			consentPromise = app.service('consents').create({ userId: user._id, userConsent: consent });
+		}
+		return consentPromise
+			.then((newConsent) => {
+				consent = newConsent;
+				return Promise.resolve();
+			}).catch(err => Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.')));
+	})
+	.then(() => Promise.resolve({
+		user, parent, account, consent,
+	}))
+	.catch((err) => {
+		const rollbackPromises = [];
+		if (user && user._id) {
+			rollbackPromises.push(userModel.userModel.findOneAndRemove({ _id: user._id }).exec()
+				.then((_) => {
+					if (oldUser) {
+						return userModel.userModel.create(oldUser);
+					}
+				}));
+		}
+		if (parent && parent._id) {
+			rollbackPromises.push(userModel.userModel.findOneAndRemove({ _id: parent._id }).exec());
+		}
+		if (account && account._id) {
+			rollbackPromises.push(accountModel.findOneAndRemove({ _id: account._id }).exec());
+		}
+		if (consent && consent._id) {
+			rollbackPromises.push(consentModel.consentModel.findOneAndRemove({ _id: consent._id }).exec());
+		}
+		return Promise.all(rollbackPromises)
+			.catch(err => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator.')))
+			.then(() => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Fehler bei der Registrierung.')));
+	});
 };
 
 module.exports = function (app) {

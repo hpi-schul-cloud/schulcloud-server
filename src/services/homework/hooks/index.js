@@ -72,7 +72,7 @@ const hasViewPermissionAfter = (hook) => {
 	// user is teacher OR ( user is in courseId of task AND availableDate < Date.now() )
 	// availableDate < Date.now()
 	function hasPermission(e) {
-		const isTeacherCheck = (e.teacherId === (hook.params.account || {}).userId)
+		const isTeacherCheck = (e.teacherId === (hook.params.account || {}).userId.toString())
             || (!e.private && ((e.courseId || {}).teacherIds || []).includes((hook.params.account || {}).userId.toString()))
             || (!e.private && ((e.courseId || {}).substitutionIds || []).includes((hook.params.account || {}).userId.toString()));
 		const isStudent = ((e.courseId != null)

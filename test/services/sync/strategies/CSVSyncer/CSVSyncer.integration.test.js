@@ -451,7 +451,7 @@ describe('CSVSyncer Integration', () => {
 			expect(instance).to.not.equal(undefined);
 		});
 
-		it.skip('should import five teachers into three existing classes', async () => {
+		it('should import five teachers into three existing classes', async () => {
 			const emails = [];
 			app.use('/mails', new MockEmailService((email) => { emails.push(email); }));
 
@@ -697,7 +697,7 @@ describe('CSVSyncer Integration', () => {
 			expect(instance).to.not.equal(undefined);
 		});
 
-		it.skip('should not be able to send emails', async () => {
+		it('should not be able to send emails', async () => {
 			app.use('/mails', new MockEmailService(() => { throw new Error('Some Email error...'); }));
 
 			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
@@ -761,7 +761,7 @@ describe('CSVSyncer Integration', () => {
 			expect(instance).to.not.equal(undefined);
 		});
 
-		it.skip('should import one user report two failures', async () => {
+		it('should import one user report two failures', async () => {
 			const emails = [];
 			app.use('/mails', new MockEmailService((email) => { emails.push(email); }));
 

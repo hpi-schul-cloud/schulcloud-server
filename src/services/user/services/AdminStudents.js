@@ -36,12 +36,10 @@ const findConsent = userIds => consentModel.find({ userId: { $in: userIds } })
 	.select({
 		'userConsent.dateOfPrivacyConsent': 0,
 		'userConsent.dateOfTermsOfUseConsent': 0,
-		'userConsent.dateOfThirdPartyConsent': 0,
 		'userConsent.dateOfResearchConsent': 0,
 		'userConsent.researchConsent': 0,
 		'parentConsents.dateOfPrivacyConsent': 0,
 		'parentConsents.dateOfTermsOfUseConsent': 0,
-		'parentConsents.dateOfThirdPartyConsent': 0,
 		'parentConsents.dateOfResearchConsent': 0,
 		'parentConsents.researchConsent': 0,
 	})

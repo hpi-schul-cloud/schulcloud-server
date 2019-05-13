@@ -702,7 +702,7 @@ module.exports = function setup() {
 	Object.values(topLevelServices).forEach((_service) => {
 		_service.hooks({
 			before: hooks.beforeExtern,
-			after: hooks.beforeExtern,
+			after: hooks.afterExtern,
 		});
 	});
 
