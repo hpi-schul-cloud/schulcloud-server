@@ -1,24 +1,51 @@
 const auth = require('@feathersjs/authentication');
 const logger = require('winston');
 const {
-	Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable,
+	Forbidden, BadRequest,
 } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 
+const rejectQueryingOtherUsers = (context) => {
+	if (context.params === undefined || context.params.account === undefined) {
+		throw new BadRequest('Expected authentication.');
+	}
+	if (!['get', 'find'].includes(context.method)) {
+		throw new BadRequest('Only GET and FIND methods are allowed.');
+	}
+	if (context.method === 'get' && context.id === undefined) {
+		throw new BadRequest('Expected userId.');
+	}
+	if (context.method === 'find' && context.params.query === undefined) {
+		throw new BadRequest('Expected query for userId.');
+	}
+	const targetUserId = context.id || context.params.query.userId;
+	const currentUserId = context.params.account.userId.toString();
+	if (targetUserId === undefined || targetUserId !== currentUserId) {
+		throw new Forbidden('Requested and requesting userIds do not match.');
+	}
+	return context;
+};
+
 module.exports = {
-	before: {
-		all: [],
-		find: [],
-		get: [],
+	hooks: {
+		before: {
+			all: [
+				globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
+				globalHooks.ifNotLocal(rejectQueryingOtherUsers),
+			],
+			find: [],
+			get: [],
+		},
+		after: {
+			all: [],
+			find: [],
+			get: [],
+		},
+		error: {
+			all: [],
+			find: [],
+			get: [],
+		},
 	},
-	after: {
-		all: [],
-		find: [],
-		get: [],
-	},
-	error: {
-		all: [],
-		find: [],
-		get: [],
-	},
+	rejectQueryingOtherUsers,
 };

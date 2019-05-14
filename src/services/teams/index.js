@@ -725,5 +725,5 @@ module.exports = function setup() {
 
 	app.use('/teams/:scopeId/userPermissions', new ScopePermissionService());
 	const scopePermissionService = app.service('/teams/:scopeId/userPermissions');
-	scopePermissionService.hooks(scopePermissionsHooks);
+	scopePermissionService.hooks(scopePermissionsHooks.hooks);
 };
