@@ -670,12 +670,40 @@ class Remove {
 }
 
 class ScopePermissionService {
+	async setup(app) {
+		this.app = app;
+	}
+
+	async getUserPermissions(userId, team) {
+		const [teamUser] = team.userIds.filter(u => u.userId.toString() === userId.toString());
+		if (teamUser !== undefined) {
+			const role = await this.app.service('roles').get(teamUser.role.toString());
+			return role.permissions;
+		}
+		return [];
+	}
+
 	get(userId, params) {
-		return Promise.resolve();
+		return this.getUserPermissions(userId, params.team);
 	}
 
 	find(params) {
-		return Promise.resolve();
+		const userIds = [];
+		const query = params.query.userId;
+		if (query) {
+			if (query.$in) {
+				userIds.concat(query.$in);
+			} else {
+				userIds.push(query);
+			}
+		}
+		const ops = userIds.map(async userId => [userId, await this.getUserPermissions(userId, params.team)]);
+		return Promise.all(ops)
+			.then(results => results.reduce((agg, [key, value]) => {
+				const newAgg = agg;
+				newAgg[key] = value;
+				return newAgg;
+			}, {}));
 	}
 }
 
