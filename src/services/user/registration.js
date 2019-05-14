@@ -199,8 +199,8 @@ const registerUser = function(data, params, app) {
 		//store consent
 		consent = {
 			form: 'digital',
-			privacyConsent: data.privacyConsent,
-			termsOfUseConsent: data.termsOfUseConsent,
+			privacyConsent: (data.privacyConsent || data.parent_privacyConsent) === 'true',
+			termsOfUseConsent: (data.termsOfUseConsent || data.parent_termsOfUseConsent) === 'true',
 		};
 		if (parent) {
 			consent.parentId = parent._id;
