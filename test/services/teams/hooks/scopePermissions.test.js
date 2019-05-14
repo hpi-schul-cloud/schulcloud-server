@@ -7,7 +7,7 @@ const {
 	rejectQueryingOtherUsers,
 } = require('../../../../src/services/teams/hooks/scopePermissions.js');
 
-describe.only('scopePermissionService hook', () => {
+describe('scopePermissionService hook', () => {
 	describe('rejectQueryingOtherUsers', () => {
 		const fut = rejectQueryingOtherUsers;
 
@@ -38,6 +38,7 @@ describe.only('scopePermissionService hook', () => {
 			const userId = new ObjectId();
 			const params = { account: { userId } };
 			expect(() => fut({ params })).to.throw(BadRequest);
+			expect(() => fut({ method: 'delete', params })).to.throw(BadRequest);
 		});
 
 		it('should let external requesters only query their own userId', () => {
