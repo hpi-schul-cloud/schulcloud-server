@@ -1,22 +1,24 @@
 const assert = require('assert');
 const chai = require('chai');
+const logger = require('winston');
+const { ObjectId } = require('mongoose').Types;
 
 const { expect } = chai;
 
-describe('Sanitization Service', () => {
+const app = require('../src/app');
+const { cleanup, createTestUser, getRole } = require('./services/helpers/testObjects')(app);
+
+describe('Sanitization Hook', () => {
 	let newsService;
 	let helpdeskService;
 	let courseService;
 	let lessonService;
-	let app;
+
 	let currentUsedId;
 	let currentLessonId = null;
 
 	before((done) => {
-		this.timeout(10000);
-		// eslint-disable-next-line global-require
-		app = require('../src/app');
-		app.setup();
+		// app.setup();
 		newsService = app.service('news');
 		helpdeskService = app.service('helpdesk');
 		courseService = app.service('courses');
@@ -237,4 +239,52 @@ describe('Sanitization Service', () => {
 				expect(result).to.not.be.undefined;
 				expect(result.name).to.equal('SanitizationTest äöüß§$%/()=');
 			}));
+});
+
+describe('removeObjectIdInData hook', () => {
+	let userId;
+	let userServices;
+	let userObject;
+	let _id;
+
+	before((done) => {
+		userServices = app.service('users');
+		_id = ObjectId();
+		userObject = {
+			_id,
+			firstName: 'Max',
+			lastName: 'Mustermann',
+			email: `max${Date.now()}@mustermann.de`,
+			schoolId: '584ad186816abba584714c94',
+			roles: [],
+		};
+		done();
+	});
+
+	after(async () => {
+		await cleanup();
+	});
+
+	it('Should work by create', async () => {
+		const user = await createTestUser(userObject)
+			.then((res) => {
+				userId = res._id;
+				return res;
+			})
+			.catch((err) => {
+				logger.warn('Can not create test User.', err);
+			});
+
+		expect(_id).to.not.equal(user._id.toString());
+	});
+
+	it('Should work by patch', async () => {
+		const user = await userServices.patch(userId, { _id });
+		expect(_id).to.not.equal(user._id.toString());
+	});
+
+	it('Should work by update', async () => {
+		const user = await userServices.update(userId, userObject);
+		expect(_id).to.not.equal(user._id.toString());
+	});
 });

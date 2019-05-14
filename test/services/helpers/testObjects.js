@@ -105,6 +105,11 @@ module.exports = (app) => {
 			});
 	}
 
+	function findRoles(opt = {}) {
+		const roleService = app.service('roles');
+		return roleService.find({ query: opt });
+	}
+
 	function cleanup() {
 		const accountDeletions = createdAccountIds.map(id => accountService.remove(id));
 		const userDeletions = createdUserIds.map(id => userService.remove(id));
@@ -150,5 +155,6 @@ module.exports = (app) => {
 		generateJWT,
 		generateRequestParams,
 		createdUserIds,
+		findRoles,
 	};
 };
