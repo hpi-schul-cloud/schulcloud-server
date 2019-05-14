@@ -51,7 +51,7 @@ describe('scopePermissionService hook', () => {
 		});
 	});
 
-	describe.only('lookupTeam', () => {
+	describe('lookupTeam', () => {
 		const fakeApp = teamToReturn => ({
 			service: (serviceName) => {
 				if (serviceName.match(/^\/?teams\/?$/i)) {
