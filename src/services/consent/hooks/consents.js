@@ -40,10 +40,10 @@ const addDates = (hook) => {
 	}
 	if (hook.data.userConsent) {
 		const { userConsent } = hook.data;
-		if ('privacyConsent' in userConsent) {
+		if ('privacyConsent' in userConsent && !('dateOfPrivacyConsent' in userConsent)) {
 			userConsent.dateOfPrivacyConsent = Date.now();
 		}
-		if ('termsOfUseConsent' in userConsent) {
+		if ('termsOfUseConsent' in userConsent && !('dateOfTermsOfUseConsent' in userConsent)) {
 			userConsent.dateOfTermsOfUseConsent = Date.now();
 		}
 	}
@@ -61,13 +61,10 @@ const checkExisting = hook => hook.app.service('consents').find({ query: { userI
 		if (consents.data.length > 0) {
 			// merge existing consent with submitted one, submitted data is primary and overwrites databse
 			hook.data = Object.assign(consents.data[0], hook.data);
-			return hook.app.service('consents').remove(consents.data[0]._id).then(() => {
-				return hook;
-			});
-		} 
-			return hook;
-		
-	}).catch((err) => Promise.reject(err));
+			return hook.app.service('consents').remove(consents.data[0]._id).then(() => hook);
+		}
+		return hook;
+	}).catch(err => Promise.reject(err));
 
 const userHasOneRole = (user, roles) => {
 	if (!(roles instanceof Array)) {
@@ -109,7 +106,7 @@ const accessCheck = (consent, app) => {
 				requiresParentConsent = false;
 				return Promise.resolve();
 			}
-			const {age} = user;
+			const { age } = user;
 
 			if (age < 16) {
 				const parentConsent = (consent.parentConsents || [])[0] || {};
@@ -161,7 +158,7 @@ const decorateConsent = hook => accessCheck(hook.result, hook.app)
 
 const decorateConsents = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-	const consentPromises = (hook.result.data || []).map(consent => accessCheck(consent, hook.app).then((result) => result).catch((err) => ({})));
+	const consentPromises = (hook.result.data || []).map(consent => accessCheck(consent, hook.app).then(result => result).catch(err => ({})));
 
 	return Promise.all(consentPromises).then((users) => {
 		hook.result.data = users;

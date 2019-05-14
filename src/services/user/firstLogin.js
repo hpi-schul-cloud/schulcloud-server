@@ -83,20 +83,18 @@ const firstLogin = async (data, params, app) => {
 				throw new Error('user consent not found!');
 			}
 			const consent = consents.data[0];
-			const consentVersionUpdate = {
-				userConsent: {
-					form: 'digital',
-				},
-			};
+			const userConsent = Object.assign({
+				form: 'digital',
+			}, consent.userConsent);
 			if (data.privacyConsentVersion) {
-				consentVersionUpdate.userConsent.privacyConsent = true;
-				consentVersionUpdate.userConsent.dateOfPrivacyConsent = Date.now();
+				userConsent.privacyConsent = true;
+				userConsent.dateOfPrivacyConsent = Date.now();
 			}
 			if (data.termsOfUseConsentVersion) {
-				consentVersionUpdate.userConsent.termsOfUseConsent = true;
-				consentVersionUpdate.userConsent.dateOfTermsOfUseConsent = Date.now();
+				userConsent.termsOfUseConsent = true;
+				userConsent.dateOfTermsOfUseConsent = Date.now();
 			}
-			return app.service('consents').patch(consent._id, { $set: consentVersionUpdate });
+			return app.service('consents').patch(consent._id, { userConsent });
 		});
 	}
 
