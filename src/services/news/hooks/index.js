@@ -63,7 +63,6 @@ exports.before = {
 		globalHooks.hasPermission('NEWS_CREATE'),
 		globalHooks.ifNotLocal(globalHooks.permitGroupOperation),
 		restrictToCurrentSchool,
-		deleteNewsHistory,
 		globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership),
 	],
 };
@@ -75,5 +74,7 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: [],
+	remove: [
+		deleteNewsHistory,
+	],
 };
