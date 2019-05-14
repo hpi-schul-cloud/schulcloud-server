@@ -7,7 +7,6 @@ const {
 } = require('@feathersjs/errors');
 const hooks = require('./hooks');
 const { warn } = require('../../logger/index');
-// const globalHooks = require('../../hooks');
 const { teamsModel } = require('./model');
 const { userModel } = require('../user/model');
 const {
@@ -32,6 +31,7 @@ const {
 	bsonIdToString,
 	isSameId,
 } = require('./hooks/collection');
+const scopePermissionsHooks = require('./hooks/scopePermissions');
 // const {teamRolesToHook} = require('./hooks');
 // todo docs require
 
@@ -669,6 +669,16 @@ class Remove {
 	}
 }
 
+class ScopePermissionService {
+	get(userId, params) {
+		return Promise.resolve();
+	}
+
+	find(params) {
+		return Promise.resolve();
+	}
+}
+
 module.exports = function setup() {
 	const app = this;
 	const options = {
@@ -712,4 +722,8 @@ module.exports = function setup() {
 		before: hooks.beforeAdmin,
 		after: hooks.afterAdmin,
 	});
+
+	app.use('/teams/:scopeId/userPermissions', new ScopePermissionService());
+	const scopePermissionService = app.service('/teams/:scopeId/userPermissions');
+	scopePermissionService.hooks(scopePermissionsHooks);
 };
