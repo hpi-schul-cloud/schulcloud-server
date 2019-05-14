@@ -391,6 +391,10 @@ class RocketChatChannel {
 				};
 				return rocketChatModels.channelModel.create(channelData);
 			})
+			.then((result) => {
+				this.synchronizeModerators(currentTeam);
+				return Promise.resolve(result);
+			})
 			.catch((err) => {
 				logger.warn(new BadRequest('Can not create RocketChat Channel', err));
 				throw new BadRequest('Can not create RocketChat Channel');
@@ -482,6 +486,41 @@ class RocketChatChannel {
 		return Promise.resolve();
 	}
 
+	async synchronizeModerators(team) {
+		try {
+			const channel = await this.app.service('/rocketChat/channel').get(team._id);
+			const rcResponse = await request(getRequestOptions(
+				`/api/v1/groups.moderators?roomName=${channel.channelName}`,
+				{},
+				true,
+				undefined,
+				'GET',
+			));
+			let rcModerators = rcResponse.moderators;
+			const scModeratorPromises = [];
+			team.userIds.forEach(async (user) => {
+				if (this.teamModeratorRoles.includes(user.role.toString())) {
+					scModeratorPromises.push(this.app.service('rocketChat/user').get(user.userId));
+				}
+			});
+			let scModerators = await Promise.all(scModeratorPromises);
+			rcModerators = rcModerators.map(mod => mod._id);
+			scModerators = scModerators.map(mod => mod.rcId);
+			const addModerators = scModerators.filter(x => !rcModerators.includes(x));
+			const removeModerators = rcModerators.filter(x => !scModerators.includes(x));
+			addModerators.forEach(x => request(getRequestOptions(
+				'/api/v1/groups.addModerator', { roomName: channel.channelName, userId: x }, true,
+			)));
+			removeModerators.forEach(x => request(getRequestOptions(
+				'/api/v1/groups.removeModerator', { roomName: channel.channelName, userId: x }, true,
+			)));
+			return Promise.resolve();
+		} catch (err) {
+			logger.log(`Fehler beim Synchronisieren der rocket.chat moderatoren für team ${team._id} `, err);
+			return Promise.reject(err);
+		}
+	}
+
 	/**
 	 * returns an existing or new rocketChat channel for a given Team ID
 	 * @param {*} teamId Id of a Team in the schulcloud
@@ -491,9 +530,10 @@ class RocketChatChannel {
 		return this.getOrCreateRocketChatChannel(teamId, params);
 	}
 
-	static onTeamPatched(result) {
+	onTeamPatched(result) {
 		if (result.features.includes('rocketChat')) {
 			RocketChatChannel.unarchiveChannel(result._id);
+			this.synchronizeModerators(result);
 		} else {
 			RocketChatChannel.archiveChannel(result._id);
 		}
@@ -532,13 +572,17 @@ class RocketChatChannel {
 	registerEventListeners() {
 		this.app.on('teams:after:usersChanged', this.onTeamUsersChanged.bind(this)); // use hook to get app
 		this.app.service('teams').on('removed', RocketChatChannel.onRemoved.bind(this));
-		this.app.service('teams').on('patched', RocketChatChannel.onTeamPatched.bind(this));
+		this.app.service('teams').on('patched', this.onTeamPatched.bind(this));
 	}
 
 
-	setup(app) {
+	async setup(app) {
 		this.app = app;
 		this.registerEventListeners();
+		const teamModeratorRoles = await app.service('roles').find({
+			query: { name: { $in: ['teamowner', 'teamadministrator'] } },
+		});
+		this.teamModeratorRoles = teamModeratorRoles.data.map(role => role._id.toString());
 	}
 }
 
