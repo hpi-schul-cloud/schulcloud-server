@@ -26,12 +26,22 @@ const rejectQueryingOtherUsers = (context) => {
 	return context;
 };
 
+const lookupTeam = async (context) => {
+	if (context.params === undefined || context.params.route === undefined) {
+		throw new BadRequest('Params not found.');
+	}
+	const teamId = context.params.route.scopeId;
+	context.params.team = await context.app.service('teams').get(teamId);
+	return context;
+};
+
 module.exports = {
 	hooks: {
 		before: {
 			all: [
 				globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
 				globalHooks.ifNotLocal(rejectQueryingOtherUsers),
+				lookupTeam,
 			],
 			find: [],
 			get: [],
@@ -47,5 +57,7 @@ module.exports = {
 			get: [],
 		},
 	},
+
+	lookupTeam,
 	rejectQueryingOtherUsers,
 };

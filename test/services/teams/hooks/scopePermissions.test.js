@@ -1,9 +1,8 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
 const {
+	lookupTeam,
 	rejectQueryingOtherUsers,
 } = require('../../../../src/services/teams/hooks/scopePermissions.js');
 
@@ -49,6 +48,38 @@ describe('scopePermissionService hook', () => {
 			};
 			expect(() => fut({ method: 'find', params: { ...params, query: { userId: id } } })).not.to.throw();
 			expect(() => fut({ method: 'get', id, params })).not.to.throw();
+		});
+	});
+
+	describe.only('lookupTeam', () => {
+		const fakeApp = teamToReturn => ({
+			service: (serviceName) => {
+				if (serviceName.match(/^\/?teams\/?$/i)) {
+					return {
+						get: () => Promise.resolve(teamToReturn),
+						find: () => Promise.resolve(teamToReturn),
+					};
+				}
+				return undefined;
+			},
+		});
+
+		it('adds the requested team to the query', async () => {
+			const team = {
+				_id: new ObjectId(),
+				foo: 'bar',
+			};
+			const context = {
+				app: fakeApp(team),
+				params: { route: { scopeId: team._id } },
+			};
+			expect(() => lookupTeam(context)).not.to.throw();
+			expect(await lookupTeam(context)).to.deep.equal(context);
+			expect(context.params.team).to.deep.equal(team);
+		});
+
+		it('should fail if params are not correctly set', () => {
+			expect(() => lookupTeam({})).to.be.rejected;
 		});
 	});
 });
