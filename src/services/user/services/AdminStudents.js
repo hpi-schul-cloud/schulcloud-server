@@ -90,7 +90,7 @@ class AdminStudents {
 			});
 
 			// patch classes and consent into user
-			return users.map((user) => {
+			users.map((user) => {
 				user.classes = [];
 				const userId = user._id.toString();
 				const con = consents[userId];
@@ -104,6 +104,18 @@ class AdminStudents {
 				});
 				return user;
 			});
+
+			const sortObject = (params.query || {}).$sort || {};
+			const sortingKey = Object.keys(sortObject)[0];
+			if (sortObject[sortingKey] === '1') {
+				users.sort((a, b) => a[sortingKey].toLowerCase() > b[sortingKey].toLowerCase());
+			} else if (sortObject[sortingKey] === '-1') {
+				users.sort((a, b) => a[sortingKey].toLowerCase() < b[sortingKey].toLowerCase());
+			}
+
+			return users;
+
+
 		} catch (err) {
 			logger.warn(err);
 			if ((err || {}).code === 403) {
