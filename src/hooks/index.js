@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
 const logger = require('winston');

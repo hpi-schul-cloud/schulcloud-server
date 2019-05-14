@@ -6,7 +6,7 @@ const { ObjectId } = require('mongoose').Types;
 const { expect } = chai;
 
 const app = require('../src/app');
-const { cleanup, createTestUser, getRole } = require('./services/helpers/testObjects')(app);
+const { cleanup, createTestUser } = require('./services/helpers/testObjects')(app);
 
 describe('Sanitization Hook', () => {
 	let newsService;
@@ -18,7 +18,6 @@ describe('Sanitization Hook', () => {
 	let currentLessonId = null;
 
 	before((done) => {
-		// app.setup();
 		newsService = app.service('news');
 		helpdeskService = app.service('helpdesk');
 		courseService = app.service('courses');
