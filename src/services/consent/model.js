@@ -49,6 +49,7 @@ const consentVersionSchema = new Schema({
 	}],
 	consentText: { type: String, required: true },
 	publishedAt: { type: Date, required: true },
+	title: { type: String, required: true },
 }, { timestamps: true });
 
 consentVersionSchema.plugin(mongooseHistory);
