@@ -1,5 +1,5 @@
 const logger = require('winston');
-const hooks = require('./hooks');
+const { hooks } = require('./hooks');
 
 class ScopePermissionService {
 	static initialize(app, path, permissionHandler) {
@@ -9,7 +9,7 @@ class ScopePermissionService {
 
 		app.use(path, new ScopePermissionService(permissionHandler));
 		const scopePermissionService = app.service(path);
-		scopePermissionService.hooks(hooks.hooks);
+		scopePermissionService.hooks(hooks);
 	}
 
 	constructor(permissionHandler) {
@@ -21,7 +21,7 @@ class ScopePermissionService {
 	}
 
 	async getUserPermissions(userId, scope) {
-		const permissions = await this.permissionHandler(userId, scope);
+		const permissions = await this.permissionHandler.apply(this, [userId, scope]);
 		return permissions || [];
 	}
 

@@ -1,8 +1,5 @@
 const auth = require('@feathersjs/authentication');
-const logger = require('winston');
-const {
-	Forbidden, BadRequest,
-} = require('@feathersjs/errors');
+const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const globalHooks = require('../../../../hooks');
 
 const rejectQueryingOtherUsers = (context) => {
