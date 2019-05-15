@@ -2,11 +2,9 @@
 /* eslint-disable new-cap */
 const { teamsModel, teamUserModel } = require('../../../../src/services/teams/model');
 
-const store = {
-	teamIds: [],
-};
+let createdTeamIds = [];
 
-// replace later over load from db
+// todo replace later over load from db
 const roleId = {
 	teamowner: '5bb5c62bfb457b1c3c0c7e14',
 	teamadministrator: '5bb5c545fb457b1c3c0c7e13',
@@ -25,7 +23,7 @@ const createTeam = opt => owner => teamsModel.create({
 	schoolIds: [opt.schoolId],
 	userIds: [createTeamUser(owner._id, opt.schoolId, 'teamowner')],
 }).then((team) => {
-	store.teamIds.push(team._id);
+	createdTeamIds.push(team._id);
 	return team._doc;
 });
 
@@ -41,21 +39,22 @@ const removeOneTeam = id => teamsModel.findOneAndRemove({ _id: id }).exec();
 
 const removeManyTeams = ids => teamsModel.deleteMany({ _ids: { $in: ids } }).exec();
 
-const teamServices = app => app.service('teams');
+// const teamServices = app => app.service('teams');
 
 const cleanup = async () => {
-	await removeManyTeams(store.userIds);
-	store.userIds = [];
+	await removeManyTeams(createdTeamIds);
+	createdTeamIds = [];
 };
 
 module.exports = (app, opt) => ({
 	create: createTeam(opt),
 	getById: getTeamById,
 	addTeamUserToTeam: addTeamUserToTeam(opt),
-	service: teamServices(app),
+	// service: teamServices(app),
 	roleId,
 	createUser: createTeamUser,
 	removeOne: removeOneTeam,
 	removeMany: removeManyTeams,
 	cleanup,
+	info: createdTeamIds,
 });
