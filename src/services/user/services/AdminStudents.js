@@ -13,8 +13,9 @@ const getCurrentUser = id => userModel.findById(id)
 	.lean()
 	.exec();
 
-const getAllUsers = (schoolId, roles) => userModel.find({ schoolId, roles })
+const getAllUsers = (schoolId, roles, sortObject) => userModel.find({ schoolId, roles })
 	.select('firstName lastName email createdAt')
+	.sort(sortObject)
 	.lean()
 	.exec();
 
@@ -46,6 +47,39 @@ const findConsent = userIds => consentModel.find({ userId: { $in: userIds } })
 	.lean()
 	.exec();
 
+const getConsentStatus = (consent) => {
+	const isUserConsent = (c = {}) => {
+		const uC = c.userConsent;
+		return uC && uC.privacyConsent && uC.termsOfUseConsent;
+	};
+
+	const isNOTparentConsent = (c = {}) => {
+		const pCs = c.parentConsents || [];
+		return pCs.length === 0 || !(pCs.privacyConsent && pCs.termsOfUseConsent);
+	};
+
+	if (!consent) {
+		return 'missing';
+	}
+
+	if (consent.requiresParentConsent) {
+		if (isNOTparentConsent(consent)) {
+			return 'missing';
+		}
+
+		if (isUserConsent(consent)) {
+			return 'ok';
+		}
+		return 'parentsAgreed';
+	}
+
+	if (isUserConsent(consent)) {
+		return 'ok';
+	}
+
+	return 'parentsAgreed';
+};
+
 class AdminStudents {
 	constructor(options) {
 		this.options = options || {};
@@ -70,7 +104,7 @@ class AdminStudents {
 			const studentRole = (roles.filter(role => role.name === 'student'))[0];
 			const [users, classes] = await Promise.all(
 				[
-					getAllUsers(schoolId, studentRole._id),
+					getAllUsers(schoolId, studentRole._id, (params.query || {}).$sort),
 					getClasses(this, schoolId),
 				],
 			);
@@ -105,17 +139,15 @@ class AdminStudents {
 				return user;
 			});
 
-			const sortObject = (params.query || {}).$sort || {};
-			const sortingKey = Object.keys(sortObject)[0];
-			if (sortObject[sortingKey] === '1') {
-				users.sort((a, b) => a[sortingKey].toLowerCase() > b[sortingKey].toLowerCase());
-			} else if (sortObject[sortingKey] === '-1') {
-				users.sort((a, b) => a[sortingKey].toLowerCase() < b[sortingKey].toLowerCase());
-			}
+			const filteredUsers = users.filter((user) => {
+				const { consentStatus } = params.query || {};
 
-			return users;
-
-
+				if ((consentStatus || {}).$in) {
+					return consentStatus.$in.includes(getConsentStatus(user.consent));
+				}
+				return true;
+			});
+			return filteredUsers;
 		} catch (err) {
 			logger.warn(err);
 			if ((err || {}).code === 403) {
