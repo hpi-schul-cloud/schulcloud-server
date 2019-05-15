@@ -29,7 +29,7 @@ class UserLinkImportService {
 	get(hash, params) {	//can not use get becouse the hash can have / that mapped to non existing routes
 		return this.userService.find({ query: { importHash: hash } })
 			.then(users => {
-				if (users.data.length <= 0 || users.data.length > 1) {
+				if (users.data.length !== 1) {
 					throw new errors.BadRequest('Can not match the hash.');
 				}
 				return userDataFilter(users.data[0]);
