@@ -94,12 +94,12 @@ class RocketChatUser {
 		};
 		return this.app.service('users').get(userId, internalParams).then(async (user) => {
 			const { email } = user;
-			const pass = randomPass();
+			const secret = randomPass();
 			let username = await this.generateUserName(user);
 			const name = [user.firstName, user.lastName].join(' ');
 
 			const body = {
-				email, pass, username, name,
+				email, pass: secret, username, name,
 			};
 
 			const createdUser = await request(getRequestOptions('/api/v1/users.register', body))
@@ -111,7 +111,7 @@ class RocketChatUser {
 						const updatePasswordBody = {
 							userId: rcUser.users[0]._id,
 							data: {
-								password: pass,
+								password: secret,
 							},
 						};
 						return request(getRequestOptions('/api/v1/users.update', updatePasswordBody, true));
@@ -121,11 +121,11 @@ class RocketChatUser {
 			const rcId = createdUser.user._id;
 			({ username } = createdUser.user);
 			return rocketChatModels.userModel.create({
-				userId, pass, username, rcId,
+				userId, secret, username, rcId,
 			});
 		}).catch((err) => {
 			logger.warn(new BadRequest('Can not create RocketChat Account', err));
-			throw new BadRequest('Can not create RocketChat Account');
+			throw new BadRequest('Can not create RocketChat Account', err);
 		});
 	}
 
@@ -147,7 +147,7 @@ class RocketChatUser {
 			}
 			return {
 				username: rcUser.username,
-				password: rcUser.pass,
+				secret: rcUser.secret,
 				authToken: rcUser.authToken,
 				rcId: rcUser.rcId,
 			};
@@ -191,7 +191,7 @@ class RocketChatUser {
 		return this.getOrCreateRocketChatAccount(userId)
 			.then((login) => {
 				const result = login;
-				delete result.password;
+				delete result.secret;
 				return Promise.resolve(result);
 			}).catch((err) => {
 				logger.warn(new Forbidden('Can not create token.', err));
@@ -261,7 +261,7 @@ class RocketChatLogin {
 				}
 				const login = {
 					user: rcAccount.username,
-					password: rcAccount.password,
+					password: rcAccount.secret,
 				};
 				const loginResponse = await request(getRequestOptions('/api/v1/login', login));
 				const newToken = (loginResponse.data || {}).authToken;
