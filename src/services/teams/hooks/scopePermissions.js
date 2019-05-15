@@ -26,12 +26,20 @@ const rejectQueryingOtherUsers = (context) => {
 	return context;
 };
 
-const lookupTeam = async (context) => {
-	if (context.params === undefined || context.params.route === undefined) {
-		throw new BadRequest('Params not found.');
+const lookupScope = async (context) => {
+	if (context.params === undefined || context.params.route === undefined || context.path === undefined) {
+		throw new BadRequest('Missing required params.');
 	}
-	const teamId = context.params.route.scopeId;
-	context.params.team = await context.app.service('teams').get(teamId);
+	const scopeName = context.path.match(/^\/?(\w+)\//)[1];
+	const { scopeId } = context.params.route;
+	if (scopeName === undefined || scopeId === undefined) {
+		throw new BadRequest('Cannot find scope name or scopeId.');
+	}
+	const service = context.app.service(scopeName);
+	if (service === undefined) {
+		throw new BadRequest(`Scope '${scopeName}' does not exist.`);
+	}
+	context.params.scope = await service.get(scopeId);
 	return context;
 };
 
@@ -41,7 +49,7 @@ module.exports = {
 			all: [
 				globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
 				globalHooks.ifNotLocal(rejectQueryingOtherUsers),
-				lookupTeam,
+				lookupScope,
 			],
 			find: [],
 			get: [],
@@ -58,6 +66,6 @@ module.exports = {
 		},
 	},
 
-	lookupTeam,
+	lookupScope,
 	rejectQueryingOtherUsers,
 };

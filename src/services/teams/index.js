@@ -684,7 +684,7 @@ class ScopePermissionService {
 	}
 
 	get(userId, params) {
-		return this.getUserPermissions(userId, params.team);
+		return this.getUserPermissions(userId, params.scope);
 	}
 
 	find(params) {
@@ -697,7 +697,7 @@ class ScopePermissionService {
 				userIds.push(query);
 			}
 		}
-		const ops = userIds.map(async userId => [userId, await this.getUserPermissions(userId, params.team)]);
+		const ops = userIds.map(async userId => [userId, await this.getUserPermissions(userId, params.scope)]);
 		return Promise.all(ops)
 			.then(results => results.reduce((agg, [key, value]) => {
 				const newAgg = agg;
