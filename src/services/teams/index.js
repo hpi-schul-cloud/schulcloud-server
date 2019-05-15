@@ -31,7 +31,7 @@ const {
 	bsonIdToString,
 	isSameId,
 } = require('./hooks/collection');
-const scopePermissionsHooks = require('./hooks/scopePermissions');
+const { ScopePermissionService } = require('../helpers/scopePermissions');
 // const {teamRolesToHook} = require('./hooks');
 // todo docs require
 
@@ -669,44 +669,6 @@ class Remove {
 	}
 }
 
-class ScopePermissionService {
-	async setup(app) {
-		this.app = app;
-	}
-
-	async getUserPermissions(userId, team) {
-		const [teamUser] = team.userIds.filter(u => u.userId.toString() === userId.toString());
-		if (teamUser !== undefined) {
-			const role = await this.app.service('roles').get(teamUser.role.toString());
-			return role.permissions;
-		}
-		return [];
-	}
-
-	get(userId, params) {
-		return this.getUserPermissions(userId, params.scope);
-	}
-
-	find(params) {
-		const userIds = [];
-		const query = params.query.userId;
-		if (query) {
-			if (query.$in) {
-				userIds.concat(query.$in);
-			} else {
-				userIds.push(query);
-			}
-		}
-		const ops = userIds.map(async userId => [userId, await this.getUserPermissions(userId, params.scope)]);
-		return Promise.all(ops)
-			.then(results => results.reduce((agg, [key, value]) => {
-				const newAgg = agg;
-				newAgg[key] = value;
-				return newAgg;
-			}, {}));
-	}
-}
-
 module.exports = function setup() {
 	const app = this;
 	const options = {
@@ -751,7 +713,14 @@ module.exports = function setup() {
 		after: hooks.afterAdmin,
 	});
 
-	app.use('/teams/:scopeId/userPermissions', new ScopePermissionService());
-	const scopePermissionService = app.service('/teams/:scopeId/userPermissions');
-	scopePermissionService.hooks(scopePermissionsHooks.hooks);
+
+	const teamPermissionHandler = async (userId, team) => {
+		const [teamUser] = team.userIds.filter(u => u.userId.toString() === userId.toString());
+		if (teamUser !== undefined) {
+			const role = await app.service('roles').get(teamUser.role.toString());
+			return role.permissions;
+		}
+		return [];
+	};
+	ScopePermissionService.initialize(app, '/teams/:scopeId/userPermissions', teamPermissionHandler);
 };

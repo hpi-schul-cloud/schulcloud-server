@@ -4,7 +4,7 @@ const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const {
 	lookupScope,
 	rejectQueryingOtherUsers,
-} = require('../../../../src/services/teams/hooks/scopePermissions.js');
+} = require('../../../../../src/services/helpers/scopePermissions/hooks');
 
 describe('scopePermissionService hook', () => {
 	describe('rejectQueryingOtherUsers', () => {

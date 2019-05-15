@@ -3,7 +3,7 @@ const logger = require('winston');
 const {
 	Forbidden, BadRequest,
 } = require('@feathersjs/errors');
-const globalHooks = require('../../../hooks');
+const globalHooks = require('../../../../hooks');
 
 const rejectQueryingOtherUsers = (context) => {
 	if (context.params === undefined || context.params.account === undefined) {
