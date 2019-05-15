@@ -38,9 +38,9 @@ const addDisplayName = (hook) => {
 	let data = hook.result.data || hook.result;
 	const arrayed = !(Array.isArray(data));
 	data = (Array.isArray(data)) ? (data) : ([data]);
-	if (((hook.params.query || {}).$sort || {}).displayName === "1") {
+	if (((hook.params.query || {}).$sort || {}).displayName === '1') {
 		data.sort((a, b) => a.displayName.toLowerCase() > b.displayName.toLowerCase());
-	} else if (((hook.params.query || {}).$sort || {}).displayName === "-1") {
+	} else if (((hook.params.query || {}).$sort || {}).displayName === '-1') {
 		data.sort((a, b) => a.displayName.toLowerCase() < b.displayName.toLowerCase());
 	}
 

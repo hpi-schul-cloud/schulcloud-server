@@ -131,6 +131,7 @@ class AdminStudents {
 				if (con) {
 					user.consent = con;
 				}
+				user.consentStatus = getConsentStatus(user.consent);
 				classes.forEach((c) => {
 					if (c.userIds.includes(userId)) {
 						user.classes.push(c.displayName);
@@ -143,7 +144,7 @@ class AdminStudents {
 				const { consentStatus } = params.query || {};
 
 				if ((consentStatus || {}).$in) {
-					return consentStatus.$in.includes(getConsentStatus(user.consent));
+					return consentStatus.$in.includes(user.consentStatus);
 				}
 				return true;
 			});
