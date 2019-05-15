@@ -32,12 +32,14 @@ class WebUntis {
 
 		// Read classes
 		await webUntis.login('api', 'api');
-		//var schoolyear = await webUntis.getCurrentSchoolyear();
+		//const schoolyear = await webUntis.getCurrentSchoolyear();
 		//const importTime = await webUntis.getLatestImportTime();
 		//const students = await webUntis.getStudents();
 		//const teachers = await webUntis.getTeachers();
-		const classes = await webUntis.getClasses();
-		//const timetable = await webUntis.getTimetableForClass(229);
+		//const classes = await webUntis.getClasses();
+		//const timegrid = await webUntis.getTimegrid();
+		//const status = await webUntis.getStatusData();
+		const timetable = await webUntis.getTimetableForClass(229);
 		//const substitutions = await webUntis.getSubstitutions(20120101, 20130101);
 		//const remarkCategories = await webUntis.getRemarkCategories();
 		//const remarkCategoryGroups = await webUntis.getRemarkCategoryGroups();
@@ -47,8 +49,8 @@ class WebUntis {
 		//const timeTable = await webUntis.getTimetableWithAbsences(20120101, 20190101);
 		await webUntis.logout();
 
-		// Return list of classes
-		return classes;
+		// Return data
+		return timetable;
 	}
 
 	get(id, params) {

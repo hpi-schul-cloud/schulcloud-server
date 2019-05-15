@@ -1,7 +1,29 @@
 const axios = require('axios');
 const cookie = require('cookie');
 
+/**
+ * Type of entities.
+ * @enum {number}
+ */
+const EntityType = {
+	CLASS: 1,
+	TEACHER: 2,
+	SUBJECT: 3,
+	ROOM: 4,
+	STUDENT: 5
+};
+
+/**
+ * Client for the WebUntis API.
+ * @class
+ */
 class WebUntisApi {
+	/**
+	 * Constructor.
+	 *
+	 * @param {string} url - Base URL to the WebUntis API
+	 * @param {string} school - Name of school
+s	 */
 	constructor(url, school) {
 		// Save configuration
 		this.clientId = 'schulcloud';
@@ -21,6 +43,14 @@ class WebUntisApi {
 		});
 	}
 
+	/**
+	 * Log in to WebUntis.
+	 *
+	 * @param {string} username - User name
+	 * @param {string} password - User password
+	 *
+	 * @return {Promise<Object>} Session data
+	 */
 	async login(username, password) {
 		// Send login request
 		const response = await this.rpc.post(`/WebUntis/jsonrpc.do?school=${this.school}`, {
@@ -62,6 +92,9 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Log out from WebUntis.
+	 */
 	async logout() {
 		// Send logout request
 		const response = await this.rpc.post(`/WebUntis/jsonrpc.do?school=${this.school}`, {
@@ -78,6 +111,11 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get teachers.
+	 *
+	 * @return {Promise<Array>} List of teachers
+	 */
 	async getTeachers() {
 		// [TODO] Returns empty data on current test account
 
@@ -86,6 +124,11 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get students.
+	 *
+	 * @return {Promise<Array>} List of students
+	 */
 	async getStudents() {
 		// [TODO] Returns empty data on current test account
 
@@ -94,6 +137,11 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get classes.
+	 *
+	 * @return {Promise<Array>} List of classes
+	 */
 	async getClasses(schoolyearId = null) {
 		// Create parameters
 		var params = {};
@@ -108,86 +156,181 @@ class WebUntisApi {
 		// [TODO] name -> schoolyearId
 	}
 
+	/**
+	 * Get subjects.
+	 *
+	 * @return {Promise<Array>} List of subjects
+	 */
 	async getSubjects() {
 		// Send request
 		const response = await this.sendRequest('getSubjects', {});
 		return response.data.result;
 	}
 
+	/**
+	 * Get rooms.
+	 *
+	 * @return {Promise<Array>} List of rooms
+	 */
 	async getRooms() {
 		// Send request
 		const response = await this.sendRequest('getRooms', {});
 		return response.data.result;
 	}
 
+	/**
+	 * Get departments.
+	 *
+	 * @return {Promise<Array>} List of departments
+	 */
 	async getDepartments() {
 		// Send request
 		const response = await this.sendRequest('getDepartments', {});
 		return response.data.result;
 	}
 
+	/**
+	 * Get holidays.
+	 *
+	 * @return {Promise<Array>} List of holidays
+	 */
 	async getHolidays() {
 		// Send request
 		const response = await this.sendRequest('getHolidays', {});
 		return response.data.result;
 	}
 
+	/**
+	 * Get the school's time grid.
+	 *
+	 * @return {Promise<Array>} Time grid
+	 */
 	async getTimegrid() {
 		// Send request
 		const response = await this.sendRequest('getTimegridUnits', {});
 		return response.data.result;
 	}
 
+	/**
+	 * Get status for displaying WebUntis data (e.g., colors)
+	 *
+	 * @return {Promise<Object>} Status data
+	 */
 	async getStatusData() {
 		// Send request
 		const response = await this.sendRequest('getStatusData', {});
 		return response.data.result;
 	}
 
+	/**
+	 * Get the current school year
+	 *
+	 * @return {Promise<Object>} School year information
+	 */
 	async getCurrentSchoolyear() {
 		// Send request
 		const response = await this.sendRequest('getCurrentSchoolyear', {});
 		return response.data.result;
 	}
 
+	/**
+	 * Get school years.
+	 *
+	 * @return {Promise<Array>} List of year information
+	 */
 	async getSchoolyears() {
 		// Send request
 		const response = await this.sendRequest('getSchoolyears', {});
 		return response.data.result;
 	}
 
-	async getTimetableForClass(classId, startDate = '', endDate = '') {
-		return this.getTimetableFor(1, classId, startDate, endDate);
+	/**
+	 * Get timetable for a class.
+	 *
+	 * @param {number} classId - Class ID
+	 * @param {number} [startDate=0] - Start date
+	 * @param {number} [endDate=0] - End date
+	 *
+	 * @return {Promise<Array>} List of timetable entries
+	 */
+	async getTimetableForClass(classId, startDate = 0, endDate = 0) {
+		return this.getTimetableFor(EntityType.CLASS, classId, startDate, endDate);
 	}
 
-	async getTimetableForTeacher(teacherId, startDate = '', endDate = '') {
-		return this.getTimetableFor(2, teacherId, startDate, endDate);
+	/**
+	 * Get timetable for a teacher.
+	 *
+	 * @param {number} teacherId - Teacher ID
+	 * @param {number} [startDate=0] - Start date
+	 * @param {number} [endDate=0] - End date
+	 *
+	 * @return {Promise<Array>} List of timetable entries
+	 */
+	async getTimetableForTeacher(teacherId, startDate = 0, endDate = 0) {
+		return this.getTimetableFor(EntityType.TEACHER, teacherId, startDate, endDate);
 	}
 
-	async getTimetableForSubject(subjectId, startDate = '', endDate = '') {
-		return this.getTimetableFor(3, subjectId, startDate, endDate);
+	/**
+	 * Get timetable for a subject.
+	 *
+	 * @param {number} subjectId - Subject ID
+	 * @param {number} [startDate=0] - Start date
+	 * @param {number} [endDate=0] - End date
+	 *
+	 * @return {Promise<Array>} List of timetable entries
+	 */
+	async getTimetableForSubject(subjectId, startDate = 0, endDate = 0) {
+		return this.getTimetableFor(EntityType.SUBJECT, subjectId, startDate, endDate);
 	}
 
-	async getTimetableForRoom(roomId, startDate = '', endDate = '') {
-		return this.getTimetableFor(4, roomId, startDate, endDate);
+	/**
+	 * Get timetable for a room.
+	 *
+	 * @param {number} roomId - Room ID
+	 * @param {number} [startDate=0] - Start date
+	 * @param {number} [endDate=0] - End date
+	 *
+	 * @return {Promise<Array>} List of timetable entries
+	 */
+	async getTimetableForRoom(roomId, startDate = 0, endDate = 0) {
+		return this.getTimetableFor(EntityType.ROOM, roomId, startDate, endDate);
 	}
 
-	async getTimetableForStudent(studentId, startDate = '', endDate = '') {
-		return this.getTimetableFor(5, studentId, startDate, endDate);
+	/**
+	 * Get timetable for a student.
+	 *
+	 * @param {number} studentId - Student ID
+	 * @param {number} [startDate=0] - Start date
+	 * @param {number} [endDate=0] - End date
+	 *
+	 * @return {Promise<Array>} List of timetable entries
+	 */
+	async getTimetableForStudent(studentId, startDate = 0, endDate = 0) {
+		return this.getTimetableFor(EntityType.STUDENT, studentId, startDate, endDate);
 	}
 
-	async getTimetableFor(type, id, startDate = '', endDate = '') {
+	/**
+	 * Get timetable for any entity.
+	 *
+	 * @param {EntityType} type - Type of entity
+	 * @param {number} id - ID of entity
+	 * @param {number} [startDate=0] - Start date
+	 * @param {number} [endDate=0] - End date
+	 *
+	 * @return {Promise<Array>} List of timetable entries
+	 */
+	async getTimetableFor(type, id, startDate = 0, endDate = 0) {
 		// Create parameters
 		var params = {
 			type: type,
 			id: id
 		};
 
-		if (startDate != '') {
+		if (startDate != 0) {
 			params.startDate = startDate;
 		}
 
-		if (endDate != '') {
+		if (endDate != 0) {
 			params.endDate = endDate;
 		}
 
@@ -198,23 +341,56 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get time of last data import.
+	 *
+	 * @return {Promise<Object>} Time stamp
+	 */
 	async getLatestImportTime() {
 		// Send request
 		const response = await this.sendRequest('getLatestImportTime', {});
-		return response.data;
+		return { date: response.data.result };
 	}
 
-	async searchForTeacher(forename, surname, birthDate = null) {
+	/**
+	 * Search for teacher.
+	 *
+	 * @param {string} forename - First name
+	 * @param {string} surname - Family name
+	 * @param {number} [birthDate=0] - Birth date
+	 *
+	 * @return {Promise<Object>} Teacher information
+	 */
+	async searchForTeacher(forename, surname, birthDate = 0) {
 		// [TODO] Could not be tested due to empty test data
-		return this.searchFor(2, forename, surname, birthDate);
+		return this.searchFor(EntityType.TEACHER, forename, surname, birthDate);
 	}
 
-	async searchForStudent(forename, surname, birthDate = null) {
+	/**
+	 * Search for student.
+	 *
+	 * @param {string} forename - First name
+	 * @param {string} surname - Family name
+	 * @param {number} [birthDate=0] - Birth date
+	 *
+	 * @return {Promise<Object>} Student information
+	 */
+	async searchForStudent(forename, surname, birthDate = 0) {
 		// [TODO] Could not be tested due to empty test data
-		return this.searchFor(5, forename, surname, birthDate);
+		return this.searchFor(EntityType.STUDENT, forename, surname, birthDate);
 	}
 
-	async searchFor(type, forename, surname, birthDate = null) {
+	/**
+	 * Search for person (teacher or student).
+	 *
+	 * @param {EntityType} type - Type of entity
+	 * @param {string} forename - First name
+	 * @param {string} surname - Family name
+	 * @param {number} [birthDate=0] - Birth date
+	 *
+	 * @return {Promise<Object>} Student or teacher information
+	 */
+	async searchFor(type, forename, surname, birthDate = 0) {
 		// [TODO] Could not be tested due to empty test data
 
 		// Create parameters
@@ -231,6 +407,15 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get substitutions.
+	 *
+	 * @param {number} startDate - Start date
+	 * @param {number} endDate - End date
+	 * @param {number} [departmentId=0] - ID of department
+	 *
+	 * @return {Promise<Array>} List of substitutions
+	 */
 	async getSubstitutions(startDate, endDate, departmentId = 0) {
 		// Create parameters
 		var params = {
@@ -244,6 +429,11 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get remark categories.
+	 *
+	 * @return {Promise<Array>} List of remark categories
+	 */
 	async getRemarkCategories() {
 		// [TODO] Returns empty data on current test account
 
@@ -252,6 +442,11 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get remark category groups.
+	 *
+	 * @return {Promise<Array>} List of remark category groups
+	 */
 	async getRemarkCategoryGroups() {
 		// [TODO] Returns empty data on current test account
 
@@ -260,6 +455,14 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get remarks.
+	 *
+	 * @param {number} startDate - Start date
+	 * @param {number} endDate - End date
+	 *
+	 * @return {Promise<Array>} List of remarks
+	 */
 	async getRemarks(startDate, endDate) {
 		// [TODO] Returns empty data on current test account
 
@@ -274,14 +477,42 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get remarks for a class.
+	 *
+	 * @param {number} classId - Class ID
+	 * @param {number} startDate - Start date
+	 * @param {number} endDate - End date
+	 *
+	 * @return {Promise<Array>} List of remarks
+	 */
 	async getRemarksForClass(classId, startDate, endDate) {
-		return this.getRemarksFor(1, classId, startDate, endDate);
+		return this.getRemarksFor(EntityType.CLASS, classId, startDate, endDate);
 	}
 
+	/**
+	 * Get remarks for a student.
+	 *
+	 * @param {number} studentId - Student ID
+	 * @param {number} startDate - Start date
+	 * @param {number} endDate - End date
+	 *
+	 * @return {Promise<Array>} List of remarks
+	 */
 	async getRemarksForStudent(studentId, startDate, endDate) {
-		return this.getRemarksFor(5, studentId, startDate, endDate);
+		return this.getRemarksFor(EntityType.STUDENT, studentId, startDate, endDate);
 	}
 
+	/**
+	 * Get remarks for any entity.
+	 *
+	 * @param {EntityType} type - Type of entity
+	 * @param {number} id - ID of entity
+	 * @param {number} startDate - Start date
+	 * @param {number} endDate - End date
+	 *
+	 * @return {Promise<Array>} List of remarks
+	 */
 	async getRemarksFor(type, id, startDate, endDate) {
 		// [TODO] Returns empty data on current test account
 
@@ -301,6 +532,11 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get exam types.
+	 *
+	 * @return {Promise<Array>} List of exam types
+	 */
 	async getExamTypes() {
 		// [TODO] Returns empty data on current test account
 
@@ -309,6 +545,15 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get exams.
+	 *
+	 * @param {number} startDate - Start date
+	 * @param {number} endDate - End date
+	 * @param {number} examType - Exam type
+	 *
+	 * @return {Promise<Array>} List of exams
+	 */
 	async getExams(startDate, endDate, examType) {
 		// [TODO] Could not be tested due to empty test data
 
@@ -324,6 +569,14 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Get timetable with absence times.
+	 *
+	 * @param {number} startDate - Start date
+	 * @param {number} endDate - End date
+	 *
+	 * @return {Promise<Array>} List of timetable entries
+	 */
 	async getTimetableWithAbsences(startDate, endDate) {
 		// [TODO] Returns empty data on current test account
 
@@ -338,6 +591,14 @@ class WebUntisApi {
 		return response.data.result;
 	}
 
+	/**
+	 * Send request to WebUntis API.
+	 *
+	 * @param {string} method - Method name
+	 * @param {Object} params - Parameters
+	 *
+	 * @return {Promise} Response from the API
+	 */
 	async sendRequest(method, params) {
 		// Send request
 		return this.rpc.post(`/WebUntis/jsonrpc.do?school=${this.school}`, {
