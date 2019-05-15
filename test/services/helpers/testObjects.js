@@ -1,13 +1,11 @@
 const serviceHelpers = require('./services');
 
-module.exports = (app) => {
-	const opt = {
-		schoolId: '584ad186816abba584714c94',
-	};
-	const { teams } = serviceHelpers(app, opt);
+module.exports = (app, opt = {
+	schoolId: '0000d186816abba584714c5f', // '584ad186816abba584714c94',
+}) => {
+	const { teams, testSystem, login } = serviceHelpers(app, opt);
 
 	const accountService = app.service('accounts');
-	const systemService = app.service('systems');
 	const userService = app.service('users');
 	const classesService = app.service('classes');
 	const coursesService = app.service('courses');
@@ -15,18 +13,10 @@ module.exports = (app) => {
 
 	const createdAccountIds = [];
 	const createdUserIds = [];
-	const createdSystemIds = [];
 	const createdClasses = [];
 	const createdCourses = [];
 
-	function createTestSystem({ url, type = 'moodle' }) {
-		return systemService.create({ url, type })
-			.then((system) => {
-				createdSystemIds.push(system.id);
-				return system;
-			});
-	}
-
+	// should rewrite
 	function createTestAccount(accountParameters, system, user) {
 		if (system) accountParameters.systemId = system.id;
 		accountParameters.userId = user._id;
@@ -42,7 +32,7 @@ module.exports = (app) => {
 		firstName = 'Max',
 		lastName = 'Mustermann',
 		email = `max${Date.now()}@mustermann.de`,
-		schoolId = '584ad186816abba584714c94',
+		schoolId = opt.schoolId,
 		accounts = [],
 		roles = [],
 		// manual cleanup, e.g. when testing delete:
@@ -51,7 +41,8 @@ module.exports = (app) => {
 		return registrationPinsService.create({ email })
 			.then(registrationPin => registrationPinsService.find({
 				query: { pin: registrationPin.pin, email: registrationPin.email, verified: false },
-			})).then(() => userService.create({
+			}))
+			.then(() => userService.create({
 				firstName,
 				lastName,
 				email,
@@ -59,7 +50,6 @@ module.exports = (app) => {
 				accounts,
 				roles,
 			}))
-
 			.then((user) => {
 				if (!manualCleanup) {
 					createdUserIds.push(user.id);
@@ -71,7 +61,7 @@ module.exports = (app) => {
 	function createTestClass({
 		// required fields
 		name = 'testClass',
-		schoolId = '584ad186816abba584714c94',
+		schoolId = opt.schoolId,
 		userIds = [],
 		teacherIds = [],
 	}) {
@@ -91,7 +81,7 @@ module.exports = (app) => {
 	function createTestCourse({
 		// required fields for base group
 		name = 'testCourse',
-		schoolId = '584ad186816abba584714c94',
+		schoolId = opt.schoolId,
 		userIds = [],
 		classIds = [],
 		teacherIds = [],
@@ -112,28 +102,56 @@ module.exports = (app) => {
 			});
 	}
 
-	function cleanup() {
+	const cleanup = () => {
 		const accountDeletions = createdAccountIds.map(id => accountService.remove(id));
 		const userDeletions = createdUserIds.map(id => userService.remove(id));
-		const systemDeletions = createdSystemIds.map(id => systemService.remove(id));
+		const systemDeletions = testSystem.cleanup();
 		const classDeletions = createdClasses.map(id => classesService.remove(id));
 		const courseDeletions = createdCourses.map(id => coursesService.remove(id));
-		return Promise.all([]
+		const teamsDeletion = teams.cleanup();
+		return Promise.all([teamsDeletion]
 			.concat(accountDeletions)
 			.concat(userDeletions)
 			.concat(systemDeletions)
 			.concat(classDeletions)
 			.concat(courseDeletions));
-	}
+	};
+
+	const info = () => ({
+		teams: teams.info,
+		users: createdUserIds,
+		testSystem: testSystem.info,
+	});
+
+	const createTestTeamWithOwner = async () => {
+		const user = await createTestUser();
+		const team = await teams.create(user);
+		return { team, user };
+	};
+
+	const setupUser = async () => {
+		// create account
+		const user = await createTestUser();
+		// const account = createTestAccount();
+		// fetch jwt
+		const account = {};
+		const requestParams = {};
+		return { user, account, requestParams };
+	};
 
 	return {
-		createTestSystem,
+		createTestSystem: testSystem.create,
 		createTestAccount,
 		createTestUser,
 		createTestClass,
 		createTestCourse,
 		cleanup,
-		createdUserIds,
+		generateJWT: login.generateJWT,
+		generateRequestParams: login.generateRequestParams,
+		createdUserIds, // @deprecated use info
 		teams,
+		createTestTeamWithOwner,
+		info,
+		setupUser,
 	};
 };
