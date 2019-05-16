@@ -81,7 +81,8 @@ const courseInviteHook = async (context) => {
 
 const patchPermissionHook = async (context) => {
 	const query = context.params.query || {};
-	const defaultPermissionHook = globalHooks.hasPermission('USERGROUP_EDIT');
+	const defaultPermissionHook = ctx => Promise.resolve(globalHooks.hasPermission('USERGROUP_EDIT')(ctx))
+		.then(_ctx => restrictToUsersOwnCourses(_ctx));
 
 	if (query.link) {
 		const dbLink = await context.app.service('link').get(query.link); // link is used as "authorization"
