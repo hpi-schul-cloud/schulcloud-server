@@ -1,10 +1,9 @@
-const logger = require('winston');
 const { hooks } = require('./hooks');
 
 class ScopePermissionService {
 	static initialize(app, path, permissionHandler) {
 		if (!permissionHandler) {
-			logger.warn(`ScopePermisionService initialized at '${path}' without permissionHandler!`);
+			throw new Error(`ScopePermisionService initialized at '${path}' without permissionHandler.`);
 		}
 
 		app.use(path, new ScopePermissionService(permissionHandler));
