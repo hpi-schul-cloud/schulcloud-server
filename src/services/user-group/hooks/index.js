@@ -81,7 +81,7 @@ const courseInviteHook = async (context) => {
 
 const patchPermissionHook = async (context) => {
 	const query = context.params.query || {};
-	const defaultPermissionHook = ctx => globalHooks.hasPermission('USERGROUP_EDIT')(ctx)
+	const defaultPermissionHook = ctx => Promise.resolve(globalHooks.hasPermission('USERGROUP_EDIT')(ctx))
 		.then(_ctx => restrictToUsersOwnCourses(_ctx));
 
 	if (query.link) {
