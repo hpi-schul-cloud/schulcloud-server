@@ -8,7 +8,7 @@ const mongooseHistory = require('mongoose-history');
 
 const { Schema } = mongoose;
 
-const consentForm = ['analog', 'digital'];
+const consentForm = ['analog', 'digital', 'update'];
 
 const consentSchema = new Schema({
 	userId: {

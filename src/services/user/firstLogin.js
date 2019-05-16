@@ -78,23 +78,39 @@ const firstLogin = async (data, params, app) => {
 	}
 
 	if (data.termsOfUseConsentVersion || data.privacyConsentVersion) {
+		const updateConsentDates = (consent) => {
+			if (data.privacyConsentVersion) {
+				consent.privacyConsent = true;
+				consent.dateOfPrivacyConsent = Date.now();
+			}
+			if (data.termsOfUseConsentVersion) {
+				consent.termsOfUseConsent = true;
+				consent.dateOfTermsOfUseConsent = Date.now();
+			}
+			return consent;
+		};
+
 		updateConsentUsingVersions = app.service('consents').find({ userId: user._id }).then((consents) => {
-			if (consents.total === 0) {
+			if (consents.total !== 1) {
 				throw new Error('user consent not found!');
 			}
 			const consent = consents.data[0];
-			const userConsent = Object.assign({
-				form: 'digital',
-			}, consent.userConsent);
-			if (data.privacyConsentVersion) {
-				userConsent.privacyConsent = true;
-				userConsent.dateOfPrivacyConsent = Date.now();
+			// update userConsent if exist otherwise the parentConsent should be updated
+			let updatedConsent = {
+				form: 'update',
+			};
+			const updateConsentType = consent.userConsent ? 'userConsent' : 'parentConsents';
+			if (updateConsentType === 'userConsent') {
+				updatedConsent = Object.assign({}, updatedConsent, consent[updateConsentType]);
+				updatedConsent = updateConsentDates(updatedConsent);
+				return app.service('consents').patch(consent._id, { userConsent: updatedConsent });
 			}
-			if (data.termsOfUseConsentVersion) {
-				userConsent.termsOfUseConsent = true;
-				userConsent.dateOfTermsOfUseConsent = Date.now();
+			if (updateConsentType === 'parentConsents' && (!consent.parentConsents || !consent.parentConsents.length)) {
+				throw new Error('no parent or user consent found');
 			}
-			return app.service('consents').patch(consent._id, { userConsent });
+			updatedConsent = Object.assign({}, updatedConsent, consent.parentConsents[0]);
+			updatedConsent = updateConsentDates(updatedConsent);
+			return app.service('consents').patch(consent._id, { parentConsents: [updatedConsent] });
 		});
 	}
 
