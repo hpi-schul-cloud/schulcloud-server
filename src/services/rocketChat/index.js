@@ -125,7 +125,7 @@ class RocketChatUser {
 			});
 		}).catch((err) => {
 			logger.warn(new BadRequest('Can not create RocketChat Account', err));
-			throw new BadRequest('Can not create RocketChat Account');
+			throw new BadRequest('Can not create RocketChat Account', err);
 		});
 	}
 
@@ -194,8 +194,8 @@ class RocketChatUser {
 				delete result.password;
 				return Promise.resolve(result);
 			}).catch((err) => {
-				logger.warn(new Forbidden('Can not create token.', err));
-				throw new Forbidden('Can not create token.', err);
+				logger.warn('encountered an error while fetching a rocket.chat user.', err);
+				throw err;
 			});
 	}
 
@@ -272,7 +272,7 @@ class RocketChatLogin {
 				} return Promise.reject(new BadRequest('False response data from rocketChat'));
 			}).catch((err) => {
 				logger.warn(new Forbidden('Can not create token.', err));
-				throw new Forbidden('Can not create token.');
+				throw new Forbidden('Can not create token.', err);
 			});
 	}
 
@@ -397,7 +397,7 @@ class RocketChatChannel {
 			})
 			.catch((err) => {
 				logger.warn(new BadRequest('Can not create RocketChat Channel', err));
-				throw new BadRequest('Can not create RocketChat Channel');
+				throw new BadRequest('Can not create RocketChat Channel', err);
 			});
 	}
 
