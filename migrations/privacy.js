@@ -54,12 +54,9 @@ Außerdem besteht eine verschlüsselte Netzverbindung zwischen dem
 Server am HPI und dem Client (SSL-Verschlüsselung).
 				
 Bei Rückfragen kannst du dich jederzeit an Deine Schule oder an 
-<a href="info@schul.cloud.org">info@schul.cloud.org</a> wenden. 
+<a href="info@schul-cloud.org">info@schul-cloud.org</a> wenden. 
 Weitere Hinweise zur Datenverarbeitung  findest 
-Du in der oben verlinkten Datenschutzerklärung deiner Schule.
-				
-Bitte nimm mit Klick auf &raquo;Gelesen&laquo; 
-unsere Meldung zur Kenntnis, um mit der Nutzung fortzufahren.`,
+Du in der oben verlinkten Datenschutzerklärung deiner Schule.`,
 			publishedAt: new Date('2019-05-13'),
 		}).save());
 	} else {
