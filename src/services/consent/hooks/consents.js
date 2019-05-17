@@ -131,14 +131,13 @@ const accessCheck = (consent, app) => {
 				requiresParentConsent = false;
 			}
 		})
-		// eslint-disable-next-line consistent-return
 		.then(() => {
 			if (patchFirstlogin === true && !(user.preferences || {}).firstLogin) {
 				const updatedPreferences = user.preferences || {};
 				updatedPreferences.firstLogin = true;
 				return app.service('users').patch(user._id, { preferences: updatedPreferences });
 			}
-			// fixme here is an return missing
+			return Promise.resolve();
 		})
 		.then(() => {
 			if (access && !(user.preferences || {}).firstLogin) {
@@ -163,8 +162,7 @@ const decorateConsents = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 	const consentPromises = (hook.result.data || [])
 		.map(consent => accessCheck(consent, hook.app)
-			.then(result => result)
-			.catch(() => ({}))); // fixme this error should be logged
+			.then(result => result));
 
 	return Promise.all(consentPromises).then((users) => {
 		hook.result.data = users;

@@ -52,8 +52,6 @@ const consentVersionSchema = new Schema({
 	title: { type: String, required: true },
 }, { timestamps: true });
 
-consentVersionSchema.plugin(mongooseHistory);
-
 const consentModel = mongoose.model('consent', consentSchema);
 const ConsentVersionModel = mongoose.model('consentVersion', consentVersionSchema);
 

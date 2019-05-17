@@ -1,17 +1,15 @@
 const auth = require('@feathersjs/authentication');
-// const globalHooks = require('../../../hooks');
+const hooks = require('feathers-hooks-common');
 
 // todo check userId
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [
-		// globalHooks.ifNotLocal(),
-	],
-	get: [auth.hooks.authenticate('jwt')],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
+	find: [],
+	get: [],
+	create: [hooks.disallow()],
+	update: [hooks.disallow()],
+	patch: [hooks.disallow()],
+	remove: [hooks.disallow()],
 };
 
 exports.after = {
