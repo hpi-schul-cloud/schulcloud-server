@@ -14,7 +14,7 @@ const restrictToUserOrRole = (hook) => {
 		},
 	}).then((res) => {
 		let access = false;
-		res.data[0].roles.map((role) => {
+		res.data[0].roles.forEach((role) => {
 			if (role.name === 'superhero' || role.name === 'teacher' || role.name === 'administrator') {
 				access = true;
 			}
@@ -81,6 +81,7 @@ const accessCheck = (consent, app) => {
 	let patchFirstlogin = false;
 
 	return app.service('users').get((consent.userId), { query: { $populate: 'roles' } })
+		// eslint-disable-next-line consistent-return
 		.then((response) => {
 			user = response;
 			if (userHasOneRole(user, ['demoTeacher', 'demoStudent'])) {
@@ -130,12 +131,14 @@ const accessCheck = (consent, app) => {
 				requiresParentConsent = false;
 			}
 		})
+		// eslint-disable-next-line consistent-return
 		.then(() => {
-			if (patchFirstlogin == true && !(user.preferences || {}).firstLogin) {
+			if (patchFirstlogin === true && !(user.preferences || {}).firstLogin) {
 				const updatedPreferences = user.preferences || {};
 				updatedPreferences.firstLogin = true;
 				return app.service('users').patch(user._id, { preferences: updatedPreferences });
 			}
+			// fixme here is an return missing
 		})
 		.then(() => {
 			if (access && !(user.preferences || {}).firstLogin) {
@@ -158,7 +161,10 @@ const decorateConsent = hook => accessCheck(hook.result, hook.app)
 
 const decorateConsents = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-	const consentPromises = (hook.result.data || []).map(consent => accessCheck(consent, hook.app).then(result => result).catch(err => ({})));
+	const consentPromises = (hook.result.data || [])
+		.map(consent => accessCheck(consent, hook.app)
+			.then(result => result)
+			.catch(() => ({}))); // fixme this error should be logged
 
 	return Promise.all(consentPromises).then((users) => {
 		hook.result.data = users;

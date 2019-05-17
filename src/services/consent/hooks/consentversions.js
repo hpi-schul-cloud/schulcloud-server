@@ -1,5 +1,5 @@
 const auth = require('@feathersjs/authentication');
-const globalHooks = require('../../../hooks');
+// const globalHooks = require('../../../hooks');
 
 // todo check userId
 exports.before = {

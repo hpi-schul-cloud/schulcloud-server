@@ -1,3 +1,6 @@
+const constants = require('../../utils/constants');
+
+/* eslint-disable prefer-promise-reject-errors */ // fixmer this should be removed
 const createParent = (data, params, user, app) => app.service('/registrationPins/')
 	.find({ query: { pin: data.pin, email: data.parent_email, verified: false } })
 	.then((check) => {
@@ -8,6 +11,7 @@ const createParent = (data, params, user, app) => app.service('/registrationPins
 			firstName: data.parent_firstName,
 			lastName: data.parent_lastName,
 			email: data.parent_email,
+			// eslint-disable-next-line no-underscore-dangle
 			children: [user._Id],
 			schoolId: user.schoolId,
 			roles: ['parent'],
@@ -48,6 +52,7 @@ const firstLogin = async (data, params, app) => {
 	if (data.studentBirthdate) {
 		const dateArr = data.studentBirthdate.split('.');
 		const userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
+		// eslint-disable-next-line no-restricted-globals
 		if (userBirthday instanceof Date && isNaN(userBirthday)) {
 			return Promise.reject('Bitte einen validen Geburtstag auswählen.');
 		}
@@ -55,8 +60,7 @@ const firstLogin = async (data, params, app) => {
 	}
 	// malformed email?
 	if (data['student-email']) {
-		const regex = RegExp("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
-		if (!regex.test(data['student-email'])) {
+		if (!constants.expressions.email.test(data['student-email'])) {
 			return Promise.reject('Bitte eine valide E-Mail-Adresse eingeben.');
 		}
 		userUpdate.email = data['student-email'];
