@@ -134,7 +134,7 @@ const removeStudentFromCourses = (hook) => {
 				course.userIds.splice(course.userIds.indexOf(userId), 1);
 				return coursesService.patch(course._id, course);
 			}),
-		).then(_ => hook).catch((err) => { throw new errors.Forbidden('No Permission', err); }));
+		).then(() => hook).catch((err) => { throw new errors.Forbidden('No Permission', err); }));
 };
 
 const sanitizeData = (hook) => {
@@ -186,6 +186,7 @@ const pinIsVerified = (hook) => {
 };
 
 // student administrator helpdesk superhero teacher parent
+// eslint-disable-next-line no-unused-vars
 const permissionRoleCreate = async (hook) => {
 	if (!hook.params.provider) {
 		// internal call
@@ -313,9 +314,7 @@ const setAvatarData = (user) => {
 const decorateAvatar = (hook) => {
 	if (hook.result.total) {
 		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-		(hook.result.data || []).forEach((user) => {
-			user = setAvatarData(user);
-		});
+		(hook.result.data || []).forEach(user => setAvatarData(user));
 	} else {
 		// run and find with only one user
 		hook.result = setAvatarData(hook.result);
