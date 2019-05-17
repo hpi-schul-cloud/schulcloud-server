@@ -28,7 +28,7 @@ const populateResult = (hook) => {
 exports.before = {
 	create: [
 		lowerCaseUsername,
-		auth.hooks.authenticate(['local', 'jwt']),
+		auth.hooks.authenticate(['local', 'jwt', 'ldap', 'iserv', 'moodle', 'itslearning']),
 		injectUserId,
 	],
 	remove: [

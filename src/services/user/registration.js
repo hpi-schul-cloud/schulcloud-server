@@ -197,16 +197,20 @@ const registerUser = function(data, params, app) {
 		}
 	}).then(function(){
 		//store consent
-		consent = {
-			form: 'digital',
-			privacyConsent: data.privacyConsent,
-			thirdPartyConsent: data.thirdPartyConsent,
-			termsOfUseConsent: data.termsOfUseConsent,
-		};
 		if (parent) {
-			consent.parentId = parent._id;
+			consent = {
+				form: 'digital',
+				parentId: parent._id,
+				privacyConsent: data.parent_privacyConsent === 'true',
+				termsOfUseConsent: data.parent_termsOfUseConsent === 'true',
+			};
 			consentPromise = app.service('consents').create({userId: user._id,parentConsents: [consent]});
 		} else {
+			consent = {
+				form: 'digital',
+				privacyConsent: data.privacyConsent === 'true',
+				termsOfUseConsent: data.termsOfUseConsent === 'true',
+			};
 			consentPromise = app.service('consents').create({userId: user._id, userConsent: consent});
 		}
 		return consentPromise
