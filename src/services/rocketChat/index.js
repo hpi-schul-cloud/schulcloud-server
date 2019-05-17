@@ -573,13 +573,15 @@ class RocketChatChannel {
 	}
 
 
-	async setup(app) {
+	setup(app) {
 		this.app = app;
 		this.registerEventListeners();
-		const teamModeratorRoles = await app.service('roles').find({
+		return app.service('roles').find({
 			query: { name: { $in: ['teamowner', 'teamadministrator'] } },
+		}).then((teamModeratorRoles) => {
+			this.teamModeratorRoles = teamModeratorRoles.data.map(role => role._id.toString());
+			return Promise.resolve();
 		});
-		this.teamModeratorRoles = teamModeratorRoles.data.map(role => role._id.toString());
 	}
 }
 
