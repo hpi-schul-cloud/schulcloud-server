@@ -391,10 +391,7 @@ class RocketChatChannel {
 				};
 				return rocketChatModels.channelModel.create(channelData);
 			})
-			.then((result) => {
-				this.synchronizeModerators(currentTeam);
-				return Promise.resolve(result);
-			})
+			.then(result => this.synchronizeModerators(currentTeam).then(() => result))
 			.catch((err) => {
 				logger.warn(new BadRequest('Can not create RocketChat Channel', err));
 				throw new BadRequest('Can not create RocketChat Channel');
@@ -496,7 +493,7 @@ class RocketChatChannel {
 				undefined,
 				'GET',
 			));
-			let rcModerators = rcResponse.moderators;
+			let rcChannelModerators = rcResponse.moderators;
 			const scModeratorPromises = [];
 			team.userIds.forEach(async (user) => {
 				if (this.teamModeratorRoles.includes(user.role.toString())) {
@@ -504,14 +501,14 @@ class RocketChatChannel {
 				}
 			});
 			let scModerators = await Promise.all(scModeratorPromises);
-			rcModerators = rcModerators.map(mod => mod._id);
+			rcChannelModerators = rcChannelModerators.map(mod => mod._id);
 			scModerators = scModerators.map(mod => mod.rcId);
-			const addModerators = scModerators.filter(x => !rcModerators.includes(x));
-			const removeModerators = rcModerators.filter(x => !scModerators.includes(x));
-			addModerators.forEach(x => request(getRequestOptions(
+			const moderatorsToAdd = scModerators.filter(x => !rcChannelModerators.includes(x));
+			const moderatorsToRemove = rcChannelModerators.filter(x => !scModerators.includes(x));
+			moderatorsToAdd.forEach(x => request(getRequestOptions(
 				'/api/v1/groups.addModerator', { roomName: channel.channelName, userId: x }, true,
 			)));
-			removeModerators.forEach(x => request(getRequestOptions(
+			moderatorsToRemove.forEach(x => request(getRequestOptions(
 				'/api/v1/groups.removeModerator', { roomName: channel.channelName, userId: x }, true,
 			)));
 			return Promise.resolve();
@@ -530,10 +527,10 @@ class RocketChatChannel {
 		return this.getOrCreateRocketChatChannel(teamId, params);
 	}
 
-	onTeamPatched(result) {
+	async onTeamPatched(result) {
 		if (result.features.includes('rocketChat')) {
-			RocketChatChannel.unarchiveChannel(result._id);
-			this.synchronizeModerators(result);
+			await RocketChatChannel.unarchiveChannel(result._id);
+			await this.synchronizeModerators(result);
 		} else {
 			RocketChatChannel.archiveChannel(result._id);
 		}
