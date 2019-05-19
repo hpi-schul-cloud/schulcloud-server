@@ -54,6 +54,7 @@ app.use(compress())
 	.get('/system_info/haproxy', (req, res) => { res.send({ timestamp: new Date().getTime() }); })
 	.get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
 	.configure(rest(handleResponseType))
+	.configure(sockets)
 
 	.use((req, res, next) => {
 		// pass header into hooks.params
@@ -61,7 +62,6 @@ app.use(compress())
 		next();
 	})
 	.configure(services)
-	.configure(sockets)
 	.configure(middleware)
 	.hooks(allHooks);
 
