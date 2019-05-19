@@ -1,9 +1,6 @@
 const socketio = require('@feathersjs/socketio');
-const clipboard = require('./clipboard');
 
-module.exports = function () {
+module.exports = function sockets() {
 	const app = this;
-
 	app.configure(socketio());
-
 };
