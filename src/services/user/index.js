@@ -5,7 +5,7 @@ const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const firstLoginHooks = require('./hooks/firstLogin');
-const { AdminStudents } = require('./services');
+const { AdminUsers } = require('./services');
 const adminHook = require('./hooks/admin');
 
 const userDataFilter = (user) => {
@@ -92,7 +92,12 @@ module.exports = function setup() {
 	firstLoginService.hooks(firstLoginHooks);
 
 	const adminStudentsRoute = '/users/admin/students';
-	app.use(adminStudentsRoute, new AdminStudents());
+	app.use(adminStudentsRoute, new AdminUsers('student'));
 	const adminStudentsService = app.service(adminStudentsRoute);
 	adminStudentsService.hooks(adminHook);
+
+	const adminTeachersRoute = '/users/admin/teachers';
+	app.use(adminTeachersRoute, new AdminUsers('teacher'));
+	const adminTeachersService = app.service(adminTeachersRoute);
+	adminTeachersService.hooks(adminHook);
 };

@@ -80,9 +80,9 @@ const getConsentStatus = (consent) => {
 	return 'parentsAgreed';
 };
 
-class AdminStudents {
-	constructor(options) {
-		this.options = options || {};
+class AdminUsers {
+	constructor(role) {
+		this.role = role || {};
 		this.docs = {};
 	}
 
@@ -101,7 +101,7 @@ class AdminStudents {
 			}
 
 			// fetch data that are scoped to schoolId
-			const studentRole = (roles.filter(role => role.name === 'student'))[0];
+			const studentRole = (roles.filter(role => role.name === this.role))[0];
 			const [users, classes] = await Promise.all(
 				[
 					getAllUsers(schoolId, studentRole._id, (params.query || {}).$sort),
@@ -163,4 +163,4 @@ class AdminStudents {
 	}
 }
 
-module.exports = AdminStudents;
+module.exports = AdminUsers;
