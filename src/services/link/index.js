@@ -26,7 +26,7 @@ module.exports = function () {
 					if (data.data || req.query.includeShortId) {
 						let [url, query] = data.target.split('?');
 						let queryObject = queryString.parse(query || '');
-						queryObject.shortId = data._id;
+						queryObject.link = data._id;
 						res.redirect(url + '?' + queryString.stringify(queryObject));
 					} else {
 						res.redirect(data.target);
