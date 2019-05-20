@@ -1,5 +1,5 @@
 const queryString = require('querystring');
-const logger = require('winston');
+const logger = require('../../logger');
 const service = require('feathers-mongoose');
 const link = require('./link-model');
 const hooks = require('./hooks');

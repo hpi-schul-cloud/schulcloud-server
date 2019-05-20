@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const logger = require('winston');
+const logger = require('../../logger');
 
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {

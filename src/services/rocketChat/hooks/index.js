@@ -1,4 +1,4 @@
-const logger = require('winston');
+const logger = require('../../../logger');
 const hooks = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');

@@ -1,6 +1,6 @@
 const request = require('request-promise-native');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../logger');
 const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = require('./rocketChatConfig');
 
 const rocketChatModels = require('./model'); // toDo: deconstruct

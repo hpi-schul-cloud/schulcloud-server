@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
-const logger = require('winston');
+const logger = require('../logger');
 const _ = require('lodash');
 const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.

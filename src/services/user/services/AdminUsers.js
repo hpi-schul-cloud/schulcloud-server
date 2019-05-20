@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../../logger');
 
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');

@@ -1,4 +1,4 @@
-const logger = require('winston');
+const logger = require('../../../logger');
 
 /**
  * A basic syncer that provides step-by-step execution, statistics, and logging

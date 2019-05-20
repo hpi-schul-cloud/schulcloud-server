@@ -1,9 +1,9 @@
 const errors = require('@feathersjs/errors');
-const logger = require('winston');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
+const logger = require('../../logger');
 
 const formatBirthdate1 = (datestamp) => {
 	if (datestamp == undefined) return false;

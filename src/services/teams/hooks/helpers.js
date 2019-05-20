@@ -1,7 +1,7 @@
 const {
 	NotFound, NotImplemented, NotAcceptable, BadRequest,
 } = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../../logger');
 const { set, get } = require('./scope');
 const {
 	isArray,

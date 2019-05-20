@@ -1,6 +1,6 @@
 const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../../logger');
 
 const globalHooks = require('../../../hooks');
 

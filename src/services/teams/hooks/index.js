@@ -1,5 +1,5 @@
 const auth = require('@feathersjs/authentication');
-const logger = require('winston');
+const logger = require('../../../logger');
 const {
 	Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable,
 } = require('@feathersjs/errors');

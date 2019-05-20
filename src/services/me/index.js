@@ -1,5 +1,5 @@
 const { Forbidden } = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../logger');
 const hooks = require('./hooks');
 
 class Service {

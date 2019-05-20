@@ -1,18 +1,21 @@
-const winston = require('winston');
+'use strict';
+
+const logger = require('../logger'); // winston configuration
 
 module.exports = function (app) {
 	// Add a logger to our app object for convenience
-	app.logger = winston;
+	app.logger = logger;
 
 	return function (error, req, res, next) {
 		if (error) {
 			const message = `${error.code ? `(${error.code}) ` : ''}Route: ${req.url} - ${error.message}`;
 
 			if (error.code === 404) {
-				winston.info(message);
-			} else {
-				winston.error(message);
-				winston.info(error.stack);
+				logger.info(message);
+			}
+			else {
+				logger.error(message);
+				logger.info(error.stack);
 			}
 		}
 
