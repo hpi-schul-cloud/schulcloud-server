@@ -56,14 +56,16 @@ describe('AdminStudentsService', () => {
 	});
 
 	it('sorts students correctly', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		await testObjects.createTestUser({ firstName: 'Max', roles: ['student'] });
 		await testObjects.createTestUser({ firstName: 'Moritz', roles: ['student'] });
 
 		const params = {
-			query: {
-				$sort: {
-					firstName: -1,
-				},
+			account: {
+				userId: teacher._id,
+			},
+			$sort: {
+				firstName: -1,
 			},
 		};
 		const result = await adminStudentsService.find(params);
@@ -72,29 +74,36 @@ describe('AdminStudentsService', () => {
 	});
 
 	it('filters students correctly', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 
 		const paramsMissing = {
+			account: {
+				userId: teacher._id,
+			},
 			query: {
-				cosentStatus: {
+				consentStatus: {
 					$in: ['missing'],
 				},
 			},
 		};
 		const paramsOk = {
+			account: {
+				userId: teacher._id,
+			},
 			query: {
-				cosentStatus: {
+				consentStatus: {
 					$in: ['ok'],
 				},
 			},
 		};
 		const resultMissing = await adminStudentsService.find(paramsMissing);
-		resultMissing.map(e => e._id);
+		const idsMissing = resultMissing.map(e => e._id);
 		const resultOk = await adminStudentsService.find(paramsOk);
-		resultOk.map(e => e._id);
+		const idsOk = resultOk.map(e => e._id);
 
-		expect(resultMissing.includes(student._id));
-		expect(!resultOk.includes(student._id));
+		expect(idsMissing).to.include(student._id);
+		expect(idsOk).to.not.include(student._id);
 	});
 
 	after(async () => {
