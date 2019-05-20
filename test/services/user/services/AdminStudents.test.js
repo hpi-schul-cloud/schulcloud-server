@@ -55,6 +55,48 @@ describe('AdminStudentsService', () => {
 		expect(result[0].classes).to.include('2A'); // gradeLevel+name
 	});
 
+	it('sorts students correctly', async () => {
+		await testObjects.createTestUser({ firstName: 'Max', roles: ['student'] });
+		await testObjects.createTestUser({ firstName: 'Moritz', roles: ['student'] });
+
+		const params = {
+			query: {
+				$sort: {
+					firstName: -1,
+				},
+			},
+		};
+		const result = await adminStudentsService.find(params);
+
+		expect(result[0].firstName >= result[1].firstName);
+	});
+
+	it('filters students correctly', async () => {
+		const student = await testObjects.createTestUser({ roles: ['student'] });
+
+		const paramsMissing = {
+			query: {
+				cosentStatus: {
+					$in: ['missing'],
+				},
+			},
+		};
+		const paramsOk = {
+			query: {
+				cosentStatus: {
+					$in: ['ok'],
+				},
+			},
+		};
+		const resultMissing = await adminStudentsService.find(paramsMissing);
+		resultMissing.map(e => e._id);
+		const resultOk = await adminStudentsService.find(paramsOk);
+		resultOk.map(e => e._id);
+
+		expect(resultMissing.includes(student._id));
+		expect(!resultOk.includes(student._id));
+	});
+
 	after(async () => {
 		await testObjects.cleanup();
 	});

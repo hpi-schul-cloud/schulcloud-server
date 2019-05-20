@@ -33,7 +33,7 @@ const getClasses = (ref, schoolId) => ref.app.service('classes')
 	})
 	.then(classes => classes.data);
 
-const findConsent = userIds => consentModel.find({ userId: { $in: userIds } })
+const findConsents = userIds => consentModel.find({ userId: { $in: userIds } })
 	.select({
 		'userConsent.dateOfPrivacyConsent': 0,
 		'userConsent.dateOfTermsOfUseConsent': 0,
@@ -47,6 +47,7 @@ const findConsent = userIds => consentModel.find({ userId: { $in: userIds } })
 	.lean()
 	.exec();
 
+// this method is currently duplicated in consents service
 const getConsentStatus = (consent) => {
 	const isUserConsent = (c = {}) => {
 		const uC = c.userConsent;
@@ -109,7 +110,7 @@ class AdminUsers {
 				],
 			);
 			const userIds = users.map(user => user._id.toString());
-			const consents = await findConsent(userIds).then((data) => {
+			const consents = await findConsents(userIds).then((data) => {
 				// rebuild consent to object for faster sorting
 				const out = {};
 				data.forEach((e) => {

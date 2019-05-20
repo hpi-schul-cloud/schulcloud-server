@@ -184,6 +184,42 @@ const decorateConsents = (hook) => {
 	});
 };
 
+// this method is currently duplicated in AdminUsers service
+const getConsentStatus = (consent) => {
+	const isUserConsent = (c = {}) => {
+		const uC = c.userConsent;
+		return uC && uC.privacyConsent && uC.termsOfUseConsent;
+	};
+
+	const isNOTparentConsent = (c = {}) => {
+		const pCs = c.parentConsents || [];
+		return pCs.length === 0 || !(pCs.some(pC => pC.privacyConsent && pC.termsOfUseConsent));
+	};
+
+	if (consent.requiresParentConsent) {
+		if (isNOTparentConsent(consent)) {
+			return 'missing';
+		}
+
+		if (isUserConsent(consent)) {
+			return 'ok';
+		}
+		return 'parentsAgreed';
+	}
+
+	if (isUserConsent(consent)) {
+		return 'ok';
+	}
+
+	return 'parentsAgreed';
+};
+
+const addConsentStatus = (hook) => {
+	hook.result.data.forEach((consent) => {
+		consent.consentStatus = getConsentStatus(consent);
+	});
+};
+
 exports.before = {
 	all: [],
 	find: [
@@ -200,8 +236,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [decorateConsents],
-	get: [decorateConsent],
+	find: [decorateConsents, addConsentStatus],
+	get: [decorateConsent, addConsentStatus],
 	create: [],
 	update: [],
 	patch: [],
