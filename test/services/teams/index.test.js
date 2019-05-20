@@ -1,20 +1,18 @@
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const app = require('../../../src/app');
+const { setupUser, deleteUser } = require('./helper/helper.user');
 const { ObjectId } = require('mongoose').Types;
 
-const app = require('../../../src/app');
-const {
-	createTestUser,
-	createTestAccount,
-	generateRequestParams,
-	cleanup,
-} = require('../helpers/testObjects.js')(app);
+const { expect } = chai;
+const host=process.env.HOST||'http://localhost:3030';
+chai.use(chaiHttp);
 
-const teamService = app.service('/teams');
-
-describe('Team Service', () => {
-	let server;
+describe('Test top level team services endpoints.', () => {
+	let server, agent;
 
 	before((done) => {
+		const agent = chai.request.agent(host);
 		server = app.listen(0, done);
 	});
 
@@ -22,7 +20,7 @@ describe('Team Service', () => {
 		server.close(done);
 	});
 
-	describe.skip('/teams/extern/add', () => {
+	describe('/teams/extern/add', () => {
 		let service={}, team={};
 		before( ()=>{
 			service = app.service('/teams/extern/add');
@@ -53,31 +51,6 @@ describe('Team Service', () => {
             });
 		*/
 		});
-	});
 
-	describe('CREATE method', () => {
-		it('is allowed for superheroes', async () => {
-			const hero = await createTestUser({ roles: ['superhero'] });
-			const username = hero.email;
-			const password = 'Schulcloud1!';
-			await createTestAccount({ username, password }, 'local', hero);
-			const params = await generateRequestParams({ username, password });
-
-			try {
-				const record = {
-					name: 'test',
-					schoolId: hero.schoolId,
-					schoolIds: [hero.schoolId],
-					userIds: [hero._id],
-				};
-				const slimteam = await teamService.create(record, { ...params, query: {} });
-				expect(slimteam).to.be.ok;
-
-				const team = await teamService.get(slimteam._id);
-				expect(team.userIds.some(item => item.userId.toString() === hero._id.toString())).to.equal(true);
-			} finally {
-				cleanup();
-			}
-		});
 	});
 });
