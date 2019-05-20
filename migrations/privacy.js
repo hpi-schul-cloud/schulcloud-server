@@ -31,14 +31,13 @@ const run = async () => {
 	}))));
 
 	// add chat information to consentversions
-	const id = '56cb91bdc3464f14678934cb';
+	const publishedAt = new Date('2019-05-13').getUTCDate();
 	// use static id to not add this entry again on possible second run
 	const exist = await ConsentVersionModel
-		.findOne({ _id: id }).exec();
+		.findOne({ publishedAt, consentTypes: 'privacy' }).exec();
 	if (!exist) {
 		console.log('add sample consent version');
 		chain.push(new ConsentVersionModel({
-			_id: id,
 			title: 'Neue Chatfunktion',
 			consentTypes: ['privacy'],
 			consentText:
@@ -57,7 +56,7 @@ Bei Rückfragen kannst du dich jederzeit an Deine Schule oder an
 <a href="info@schul-cloud.org">info@schul-cloud.org</a> wenden. 
 Weitere Hinweise zur Datenverarbeitung  findest 
 Du in der oben verlinkten Datenschutzerklärung deiner Schule.`,
-			publishedAt: new Date('2019-05-13'),
+			publishedAt,
 		}).save());
 	} else {
 		console.log('consent version already added');
