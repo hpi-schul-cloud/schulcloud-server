@@ -23,7 +23,7 @@ const createTeam = opt => owner => teamsModel.create({
 	schoolIds: [opt.schoolId],
 	userIds: [createTeamUser(owner._id, opt.schoolId, 'teamowner')],
 }).then((team) => {
-	createdTeamIds.push(team._id);
+	createdTeamIds.push(team._id.toString());
 	return team._doc;
 });
 

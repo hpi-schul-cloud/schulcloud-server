@@ -3,7 +3,7 @@ let createdSystemIds = [];
 const createTestSystem = app => ({ url, type = 'moodle' }) => {
 	return app.service('systems').create({ url, type })
 		.then((system) => {
-			createdSystemIds.push(system.id);
+			createdSystemIds.push(system._id.toString());
 			return system;
 		});
 };
