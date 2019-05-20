@@ -1,13 +1,13 @@
 {
   "name": "schulcloud-server",
   "description": "",
-  "version": "0.13.0",
+  "version": "0.17.4",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
     "feathers"
   ],
-  "license": "GPL",
+  "license": "AGPL-3.0",
   "repository": {},
   "author": {
     "name": "Schul-Cloud Team"
