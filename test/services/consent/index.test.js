@@ -28,11 +28,11 @@ describe('consent service', function() {
         }]
       })
         .then(consent => {return consentService.get(consent._id);})
-        .then(consent => {
-			chai.expect(consent).to.exist;
-			chai.expect(consent.parentConsents[0]).to.have.property("dateOfPrivacyConsent");
-			chai.expect(consent).to.have.property('consentStatus');
-        });
+			.then(consent => {
+				chai.expect(consent).to.exist;
+				chai.expect(consent.parentConsents[0]).to.have.property("dateOfPrivacyConsent");
+				chai.expect(consent).to.have.property('consentStatus');
+			});
 
   });
 
