@@ -1,3 +1,5 @@
+const logger = require('winston');
+
 const serviceHelpers = require('./services');
 
 module.exports = (app, opt = {
@@ -22,8 +24,8 @@ module.exports = (app, opt = {
 		accountParameters.userId = user._id;
 		return accountService.create(accountParameters)
 			.then((account) => {
-				createdAccountIds.push(account._id);
-				return Promise.resolve(account);
+				createdAccountIds.push(account._id.toString());
+				return account;
 			});
 	}
 
@@ -33,7 +35,7 @@ module.exports = (app, opt = {
 		lastName = 'Mustermann',
 		email = `max${Date.now()}@mustermann.de`,
 		schoolId = opt.schoolId,
-		accounts = [],
+		accounts = [], // test if it has a effect
 		roles = [],
 		// manual cleanup, e.g. when testing delete:
 		manualCleanup = false,
@@ -49,10 +51,9 @@ module.exports = (app, opt = {
 				schoolId,
 				accounts,
 				roles,
-			}))
-			.then((user) => {
+			})).then((user) => {
 				if (!manualCleanup) {
-					createdUserIds.push(user.id);
+					createdUserIds.push(user._id.toString());
 				}
 				return user;
 			});
@@ -64,6 +65,8 @@ module.exports = (app, opt = {
 		schoolId = opt.schoolId,
 		userIds = [],
 		teacherIds = [],
+		nameFormat = 'static',
+		gradeLevel = undefined,
 	}) {
 		return classesService.create({
 			// required fields for user
@@ -71,11 +74,12 @@ module.exports = (app, opt = {
 			schoolId,
 			userIds,
 			teacherIds,
-		})
-			.then((o) => {
-				createdClasses.push(o.id);
-				return o;
-			});
+			nameFormat,
+			gradeLevel,
+		}).then((res) => {
+			createdClasses.push(res._id.toString());
+			return res;
+		});
 	}
 
 	function createTestCourse({
@@ -95,11 +99,10 @@ module.exports = (app, opt = {
 			classIds,
 			teacherIds,
 			ltiToolIds,
-		})
-			.then((o) => {
-				createdCourses.push(o.id);
-				return o;
-			});
+		}).then((course) => {
+			createdCourses.push(course._id.toString());
+			return course;
+		});
 	}
 
 	const cleanup = () => {
@@ -109,12 +112,21 @@ module.exports = (app, opt = {
 		const classDeletions = createdClasses.map(id => classesService.remove(id));
 		const courseDeletions = createdCourses.map(id => coursesService.remove(id));
 		const teamsDeletion = teams.cleanup();
+
 		return Promise.all([teamsDeletion]
 			.concat(accountDeletions)
 			.concat(userDeletions)
 			.concat(systemDeletions)
 			.concat(classDeletions)
-			.concat(courseDeletions));
+			.concat(courseDeletions))
+			.then((res) => {
+				logger.info('[TestObjects] cleanup data.');
+				return res;
+			})
+			.catch((err) => {
+				logger.warn('[TestObjects] Can not cleanup.', err);
+				return err;
+			});
 	};
 
 	const info = () => ({
