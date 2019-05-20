@@ -215,9 +215,17 @@ const getConsentStatus = (consent) => {
 };
 
 const addConsentStatus = (hook) => {
-	hook.result.data.forEach((consent) => {
-		consent.consentStatus = getConsentStatus(consent);
-	});
+	if (hook.result) {
+		hook.result.consentStatus = getConsentStatus(hook.result);
+	}
+};
+
+const addConsentsStatus = (hook) => {
+	if (hook.result.data) {
+		hook.result.data.forEach((consent) => {
+			consent.consentStatus = getConsentStatus(consent);
+		});
+	}
 };
 
 exports.before = {
@@ -236,7 +244,7 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [decorateConsents, addConsentStatus],
+	find: [decorateConsents, addConsentsStatus],
 	get: [decorateConsent, addConsentStatus],
 	create: [],
 	update: [],
