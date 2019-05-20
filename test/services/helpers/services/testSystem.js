@@ -1,12 +1,11 @@
 let createdSystemIds = [];
 
-const createTestSystem = app => ({ url, type = 'moodle' }) => {
-	return app.service('systems').create({ url, type })
-		.then((system) => {
-			createdSystemIds.push(system._id.toString());
-			return system;
-		});
-};
+const createTestSystem = app => ({ url, type = 'moodle' }) => app.service('systems').create({ url, type })
+	.then((system) => {
+		createdSystemIds.push(system._id.toString());
+		return system;
+	});
+
 
 const cleanup = app => () => {
 	const ids = createdSystemIds;
@@ -14,7 +13,7 @@ const cleanup = app => () => {
 	return ids.map(id => app.service('systems').remove(id));
 };
 
-module.exports = (app, opt) => ({
+module.exports = app => ({
 	create: createTestSystem(app),
 	cleanup: cleanup(app),
 	info: createdSystemIds,

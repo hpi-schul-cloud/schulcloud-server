@@ -23,7 +23,7 @@ const generateRequestParams = app => async ({ username, password }) => {
 	};
 };
 
-module.exports = (app, opt) => ({
+module.exports = app => ({
 	generateJWT: generateJWT(app),
 	generateRequestParams: generateRequestParams(app),
 });
