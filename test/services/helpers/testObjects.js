@@ -44,8 +44,7 @@ module.exports = (app) => {
 		return registrationPinsService.create({ email })
 			.then(registrationPin => registrationPinsService.find({
 				query: { pin: registrationPin.pin, email: registrationPin.email, verified: false },
-			}))
-			.then(() => userService.create({
+			})).then(() => userService.create({
 				firstName,
 				lastName,
 				email,
@@ -53,6 +52,7 @@ module.exports = (app) => {
 				accounts,
 				roles,
 			}))
+
 			.then((user) => {
 				if (!manualCleanup) {
 					createdUserIds.push(user.id);
@@ -119,27 +119,6 @@ module.exports = (app) => {
 			.concat(courseDeletions));
 	}
 
-	const generateJWT = async ({ username, password }) => {
-		const result = await app.service('authentication').create({
-			strategy: 'local',
-			username,
-			password,
-		}, {
-			headers: {
-				'content-type': 'application/json',
-			},
-			provider: 'rest',
-		});
-		return result.accessToken;
-	};
-
-	const generateRequestParams = async ({ username, password }) => ({
-		headers: {
-			authorization: `Bearer ${await generateJWT({ username, password })}`,
-		},
-		provider: 'rest',
-	});
-
 	return {
 		createTestSystem,
 		createTestAccount,
@@ -147,8 +126,6 @@ module.exports = (app) => {
 		createTestClass,
 		createTestCourse,
 		cleanup,
-		generateJWT,
-		generateRequestParams,
 		createdUserIds,
 	};
 };
