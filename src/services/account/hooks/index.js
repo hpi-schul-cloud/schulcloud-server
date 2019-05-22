@@ -151,23 +151,31 @@ const removePassword = (hook) => {
 };
 
 const NotAllowed = new BadRequest('Not allowed');
-const restrictAccess = (context) => {
-	// todo: if superhero pass it
-	const { username, userId } = context.params.query;
-	if (!userId && !username) {
-		throw NotAllowed;
+const restrictAccess = async (context) => {
+	// superhero can pass it
+	const user = (context.params.account || {}).userId;
+	console.log('user', user);
+	if (user) {
+		const { roles } = await context.app.service('users').get(user, {
+			query: {
+				$populate: { path: 'roles' },
+			},
+		});
+		if (roles.some(role => role.name === 'superhero')) {
+			return context;
+		}
 	}
+
+	// other restrict operations
+	const { username, userId } = context.params.query;
+	if (!userId && !username) { throw NotAllowed; }
 	const query = {};
 	if (userId) {
-		if (!ObjectId.isValid(userId)) {
-			throw NotAllowed;
-		}
+		if (!ObjectId.isValid(userId)) { throw NotAllowed; }
 		query.userId = userId;
 	}
 	if (username) {
-		if (typeof username !== 'string') {
-			throw NotAllowed;
-		}
+		if (typeof username !== 'string') { throw NotAllowed; }
 		query.username = username;
 	}
 	// @override
@@ -239,10 +247,17 @@ const filterToRelated = (keys) => {
 	});
 };
 
+const testIfJWTExist = (context) => {
+	if ((context.params.headers || {}).authorization) {
+		return auth.hooks.authenticate('jwt')(context);
+	}
+	return context;
+};
+
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
 	// otherwise we cannot get the accounts required for login
-	find: [restrictAccess],
+	find: [testIfJWTExist, restrictAccess],
 	get: [hooks.disallow('external')],
 	create: [
 		sanitizeUsername,
