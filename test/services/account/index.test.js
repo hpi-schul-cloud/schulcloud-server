@@ -1,5 +1,3 @@
-'use strict';
-
 const assert = require('assert');
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
@@ -11,15 +9,8 @@ const accountService = app.service('/accounts');
 const userService = app.service('/users');
 const registrationPinsService = app.service('/registrationPins');
 
-let userId = undefined;
-let accountId = undefined;
-let passwordHash = undefined;
-const accountPw = 'ca4t9fsfr3dsd';
-
 describe('Account Service', () => {
-	after(() => {
-		return testObjects.cleanup();
-	});
+	after(() => testObjects.cleanup());
 
 	it('registered the accounts service', () => {
 		assert.ok(app.service('accounts'));
@@ -104,7 +95,8 @@ describe('Account Service', () => {
 			await new Promise((resolve, reject) => {
 				accountService.create(newAccount)
 					.then(() => {
-						reject(new Error('This call should fail because of an already existing user with the same username'));
+						reject(new Error('This call should fail because '
+						+ 'of an already existing user with the same username'));
 					})
 					.catch((err) => {
 						expect(err.message).to.equal('Der Benutzername ist bereits vergeben!');
@@ -169,7 +161,7 @@ describe('Account Service', () => {
 			};
 			const account = await accountService.create(accountDetails);
 			try {
-				await accountService.patch('0000d213816abba584714c0a', { password: '1234'});
+				await accountService.patch('0000d213816abba584714c0a', { password: '1234' });
 				throw new Error('This should not happen.');
 			} catch (exception) {
 				assert.equal(exception.message, 'Dein Passwort stimmt mit dem Pattern nicht überein.');
@@ -194,7 +186,7 @@ describe('Account Service', () => {
 					account: {
 						userId: user._id,
 						password: '$2a$10$CHN6Qs2Igbn.s4BengUOfu9.0qVuy0uyTrzDDJszw9e1lBZwUFqeq',
-					}
+					},
 				});
 				throw new Error('This should not happen.');
 			} catch (exception) {
@@ -228,17 +220,15 @@ describe('Account Service', () => {
 	});
 
 	describe('FIND route', () => {
-		it('should not be able to find all accounts via empty query', () => {
-			return accountService.find()
-				.catch((exception) => {
-					assert.equal(exception.message, 'Cannot read property \'username\' of undefined');
-				});
-		});
+		it('should not be able to find all accounts via empty query', () => accountService.find()
+			.catch((exception) => {
+				assert.equal(exception.code, 400);
+			}));
 
 		it('should find accounts by username', async () => {
 			const username = 'adam.admin@schul-cloud.org';
 			const accountDetails = {
-				username: username,
+				username,
 				password: 'ca4t9fsfr3dsd',
 				userId: new ObjectId(),
 			};
