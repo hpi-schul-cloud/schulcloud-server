@@ -154,7 +154,6 @@ const NotAllowed = new BadRequest('Not allowed');
 const restrictAccess = async (context) => {
 	// superhero can pass it
 	const user = (context.params.account || {}).userId;
-	console.log('user', user);
 	if (user) {
 		const { roles } = await context.app.service('users').get(user, {
 			query: {
