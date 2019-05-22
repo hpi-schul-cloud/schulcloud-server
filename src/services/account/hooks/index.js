@@ -166,7 +166,7 @@ const restrictAccess = async (context) => {
 	}
 
 	// other restrict operations
-	const { username, userId } = context.params.query;
+	const { username, userId } = context.params.query || {};
 	if (!userId && !username) { throw NotAllowed; }
 	const query = {};
 	if (userId) {
