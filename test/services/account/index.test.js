@@ -1,5 +1,6 @@
 const assert = require('assert');
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
 const { ObjectId } = require('mongoose').Types;
 
 const app = require('../../../src/app');
@@ -9,8 +10,22 @@ const accountService = app.service('/accounts');
 const userService = app.service('/users');
 const registrationPinsService = app.service('/registrationPins');
 
+chai.use(chaiHttp);
+
+const { expect } = chai;
+
 describe('Account Service', () => {
-	after(() => testObjects.cleanup());
+	let server;
+
+	before((done) => {
+		server = app.listen(0, done);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		server.close();
+		return Promise.resolve();
+	});
 
 	it('registered the accounts service', () => {
 		assert.ok(app.service('accounts'));
@@ -241,6 +256,51 @@ describe('Account Service', () => {
 			} finally {
 				await accountService.remove(account._id);
 			}
+		});
+
+		// todo extern request without superhero
+		it('should filter querys for extern not authenticated requests', (done) => {
+			chai.request(app)
+				.get('/accounts')
+				.query({ username: { $gte: 0 } })
+				.end((err) => {
+					expect(err).to.have.status(400);
+					done();
+				});
+		});
+
+		// todo extern request with superhero
+		it.skip('should allow extern request for superhero with token', (done) => {
+			// todo wait for test helpers
+			// create superhero user
+			// generate token for it
+			// start request with token
+			const token = '<token>';
+			chai.request(app)
+				.get('/accounts')
+				.query({ username: { $gte: 0 } })
+				.set('Authorization', token)
+				.end((err, res) => {
+					expect(err).to.be.null;
+					expect(res).to.have.status(200);
+					done();
+				});
+		});
+
+		it.skip('should not allow extern request for other roles with token', (done) => {
+			// todo wait for test helpers
+			// create superhero user
+			// generate token for it
+			// start request with token
+			const token = '<token>';
+			chai.request(app)
+				.get('/accounts')
+				.query({ username: { $gte: 0 } })
+				.set('Authorization', token)
+				.end((err) => {
+					expect(err).to.have.status(200);
+					done();
+				});
 		});
 	});
 });
