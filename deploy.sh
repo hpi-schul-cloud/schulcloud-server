@@ -55,30 +55,14 @@ function deploytoprods {
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@demo.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest demo_server
 }
 
-function deploytostaging {
-  # Deploys new masters on the instances brandenburg, open, demo
-  # compose-files are distributed via Ansible, many different secrets, Mongo_URIs etc.
-
-  # copy config-file to server and execute mit travis_rsa
-  chmod 600 travis_rsa
-
-  # staging
-  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@staging.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG staging_server
-}
-
-
 if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
   buildandpush
   deploytoprods
-elif [[ "$TRAVIS_BRANCH" = "develop" ]]
+elif [ "$TRAVIS_BRANCH" = "develop" ]
 then
   buildandpush	
   deploytotest
-elif [[ $TRAVIS_BRANCH = release* ]]
-then
-  buildandpush
-  deploytostaging
 else
   echo "Nix wird deployt"
 fi

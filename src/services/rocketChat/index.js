@@ -125,7 +125,7 @@ class RocketChatUser {
 			});
 		}).catch((err) => {
 			logger.warn(new BadRequest('Can not create RocketChat Account', err));
-			throw new BadRequest('Can not create RocketChat Account', err);
+			throw new BadRequest('Can not create RocketChat Account');
 		});
 	}
 
@@ -194,8 +194,8 @@ class RocketChatUser {
 				delete result.password;
 				return Promise.resolve(result);
 			}).catch((err) => {
-				logger.warn('encountered an error while fetching a rocket.chat user.', err);
-				throw err;
+				logger.warn(new Forbidden('Can not create token.', err));
+				throw new Forbidden('Can not create token.', err);
 			});
 	}
 
@@ -272,7 +272,7 @@ class RocketChatLogin {
 				} return Promise.reject(new BadRequest('False response data from rocketChat'));
 			}).catch((err) => {
 				logger.warn(new Forbidden('Can not create token.', err));
-				throw new Forbidden('Can not create token.', err);
+				throw new Forbidden('Can not create token.');
 			});
 	}
 
@@ -391,10 +391,9 @@ class RocketChatChannel {
 				};
 				return rocketChatModels.channelModel.create(channelData);
 			})
-			.then(result => this.synchronizeModerators(currentTeam).then(() => result))
 			.catch((err) => {
 				logger.warn(new BadRequest('Can not create RocketChat Channel', err));
-				throw new BadRequest('Can not create RocketChat Channel', err);
+				throw new BadRequest('Can not create RocketChat Channel');
 			});
 	}
 
@@ -483,41 +482,6 @@ class RocketChatChannel {
 		return Promise.resolve();
 	}
 
-	async synchronizeModerators(team) {
-		try {
-			const channel = await this.app.service('/rocketChat/channel').get(team._id);
-			const rcResponse = await request(getRequestOptions(
-				`/api/v1/groups.moderators?roomName=${channel.channelName}`,
-				{},
-				true,
-				undefined,
-				'GET',
-			));
-			let rcChannelModerators = rcResponse.moderators;
-			const scModeratorPromises = [];
-			team.userIds.forEach(async (user) => {
-				if (this.teamModeratorRoles.includes(user.role.toString())) {
-					scModeratorPromises.push(this.app.service('rocketChat/user').get(user.userId));
-				}
-			});
-			let scModerators = await Promise.all(scModeratorPromises);
-			rcChannelModerators = rcChannelModerators.map(mod => mod._id);
-			scModerators = scModerators.map(mod => mod.rcId);
-			const moderatorsToAdd = scModerators.filter(x => !rcChannelModerators.includes(x));
-			const moderatorsToRemove = rcChannelModerators.filter(x => !scModerators.includes(x));
-			moderatorsToAdd.forEach(x => request(getRequestOptions(
-				'/api/v1/groups.addModerator', { roomName: channel.channelName, userId: x }, true,
-			)));
-			moderatorsToRemove.forEach(x => request(getRequestOptions(
-				'/api/v1/groups.removeModerator', { roomName: channel.channelName, userId: x }, true,
-			)));
-			return Promise.resolve();
-		} catch (err) {
-			logger.log(`Fehler beim Synchronisieren der rocket.chat moderatoren für team ${team._id} `, err);
-			return Promise.reject(err);
-		}
-	}
-
 	/**
 	 * returns an existing or new rocketChat channel for a given Team ID
 	 * @param {*} teamId Id of a Team in the schulcloud
@@ -527,10 +491,9 @@ class RocketChatChannel {
 		return this.getOrCreateRocketChatChannel(teamId, params);
 	}
 
-	async onTeamPatched(result) {
+	static onTeamPatched(result) {
 		if (result.features.includes('rocketChat')) {
-			await RocketChatChannel.unarchiveChannel(result._id);
-			await this.synchronizeModerators(result);
+			RocketChatChannel.unarchiveChannel(result._id);
 		} else {
 			RocketChatChannel.archiveChannel(result._id);
 		}
@@ -569,19 +532,13 @@ class RocketChatChannel {
 	registerEventListeners() {
 		this.app.on('teams:after:usersChanged', this.onTeamUsersChanged.bind(this)); // use hook to get app
 		this.app.service('teams').on('removed', RocketChatChannel.onRemoved.bind(this));
-		this.app.service('teams').on('patched', this.onTeamPatched.bind(this));
+		this.app.service('teams').on('patched', RocketChatChannel.onTeamPatched.bind(this));
 	}
 
 
 	setup(app) {
 		this.app = app;
 		this.registerEventListeners();
-		return app.service('roles').find({
-			query: { name: { $in: ['teamowner', 'teamadministrator'] } },
-		}).then((teamModeratorRoles) => {
-			this.teamModeratorRoles = teamModeratorRoles.data.map(role => role._id.toString());
-			return Promise.resolve();
-		});
 	}
 }
 
