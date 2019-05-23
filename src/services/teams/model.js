@@ -39,8 +39,8 @@ const teamsSchema = getUserGroupSchema({
 	userIds: [teamUserSchema],
 	invitedUserIds: [teamInvitedUserSchema],
 	description: { type: String, default: '' },
-	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
-	color: { type: String, required: true, default: '#ACACAC' },
+	classIds: [{ type: Schema.Types.ObjectId, ref: 'class' }],
+	color: { type: String, default: '#ACACAC' },
 	features: [{ type: String, enum: ['isTeam', 'rocketChat'] }],
 	filePermission: [permissionSchema],
 });
