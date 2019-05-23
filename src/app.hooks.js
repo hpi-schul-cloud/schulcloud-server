@@ -2,6 +2,8 @@
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
 
+const globalHooks = require('./hooks/');
+
 const sanitize = (data, options) => {
 	// https://www.npmjs.com/package/sanitize-html
 	if ((options || {}).html === true) {
@@ -88,7 +90,7 @@ module.exports = {
 		all: [],
 		find: [],
 		get: [],
-		create: [sanitizeData, removeObjectIdInData],
+		create: [sanitizeData, globalHooks.ifNotLocal(removeObjectIdInData)],
 		update: [sanitizeData],
 		patch: [sanitizeData],
 		remove: [],
