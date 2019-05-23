@@ -1,9 +1,9 @@
 const { expect } = require('chai');
-const logger = require('winston');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 
 const adminStudentsService = app.service('/users/admin/students');
+const classesService = app.service('/classes');
 const gradeLevelService = app.service('/gradeLevels');
 
 describe('AdminStudentsService', () => {
@@ -22,58 +22,37 @@ describe('AdminStudentsService', () => {
 	});
 
 	it('builds class display names correctly', async () => {
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
-			logger.warn('Can not create teacher', err);
-		});
-		const student = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
-			logger.warn('Can not create student', err);
-		});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const student = await testObjects.createTestUser({ roles: ['student'] });
 
-		expect(teacher).to.not.be.undefined;
-		expect(student).to.not.be.undefined;
-
-		const testClass = await testObjects.createTestClass({
+		await testObjects.createTestClass({
 			name: 'staticName',
 			userIds: [student._id],
 			teacherIds: [teacher._id],
 		});
-		expect(testClass).to.not.be.undefined;
 
-		const gradeLevel = await gradeLevelService.find({
+		const gradeLevel = (await gradeLevelService.find({
 			query: { name: '2' },
-		}).then(gradeLevels => gradeLevels.data[0]).catch((err) => {
-			logger.warn('Can not find gradeLevel', err);
-		});
-		expect(gradeLevel).to.not.be.undefined;
-
+		})).data[0];
 		const gradeLevelClass = await testObjects.createTestClass({
 			name: 'A',
 			userIds: [student._id],
 			teacherIds: [teacher._id],
+		});
+		await classesService.patch(gradeLevelClass._id, {
 			nameFormat: 'gradeLevel+name',
 			gradeLevel: gradeLevel._id,
-		}).catch((err) => {
-			logger.warn('Can not create test class.', err);
 		});
-		expect(gradeLevelClass).to.not.be.undefined;
 
 		const params = {
 			account: {
 				userId: teacher._id,
 			},
 		};
+		const result = await adminStudentsService.find(params);
 
-		const result = await adminStudentsService.find(params).catch((err) => {
-			logger.warn('Can not execute adminStudentsService.find.', err);
-		});
-
-		const searchClass = (users, name) => users.some(
-			user => student._id.toString() === user._id.toString() && user.classes.includes(name),
-		);
-
-		expect(result).to.not.be.undefined;
-		expect(searchClass(result, 'staticName')).to.be.true;
-		expect(searchClass(result, '2A')).to.be.true;
+		expect(result[0].classes).to.include('staticName');
+		expect(result[0].classes).to.include('2A'); // gradeLevel+name
 	});
 
 	after(async () => {

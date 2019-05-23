@@ -71,28 +71,13 @@ classSchema.plugin(autoPopulate);
 classSchema.plugin(require('mongoose-lean-virtuals'));
 
 const getClassDisplayName = (aclass) => {
-	// for static classes
 	if (aclass.nameFormat === 'static') {
 		return aclass.name;
-	}
-
-	// for non static classes
-	if (
-		aclass.nameFormat === 'gradeLevel+name'
-		&& typeof aclass.gradeLevel === 'object'
-		&& (aclass.gradeLevel || {}).name
-	) {
+	} if (aclass.nameFormat === 'gradeLevel+name') {
 		return `${aclass.gradeLevel.name}${aclass.name}`;
 	}
-
-	// error handling
-	if (!aclass.nameFormat) {
-		logger.warn(`unknown nameFormat in class${aclass._id}`);
-	} else {
-		logger.warn(`The gradeLevel in class ${aclass._id} do not exist, or is is not populated.`, aclass.nameFormat);
-	}
-
-	return aclass;
+	logger.warn('unknown nameFormat', aclass.nameFormat);
+	return undefined;
 };
 
 // => has no access to this
