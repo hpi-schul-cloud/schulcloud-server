@@ -211,7 +211,7 @@ const getConsentStatus = (consent) => {
 		return 'ok';
 	}
 
-	return 'parentsAgreed';
+	return 'missing';
 };
 
 const addConsentStatus = (hook) => {

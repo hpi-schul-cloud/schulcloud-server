@@ -33,53 +33,22 @@ const getClasses = (ref, schoolId) => ref.app.service('classes')
 	})
 	.then(classes => classes.data);
 
-const findConsents = userIds => consentModel.find({ userId: { $in: userIds } })
-	.select({
-		'userConsent.dateOfPrivacyConsent': 0,
-		'userConsent.dateOfTermsOfUseConsent': 0,
-		'userConsent.dateOfResearchConsent': 0,
-		'userConsent.researchConsent': 0,
-		'parentConsents.dateOfPrivacyConsent': 0,
-		'parentConsents.dateOfTermsOfUseConsent': 0,
-		'parentConsents.dateOfResearchConsent': 0,
-		'parentConsents.researchConsent': 0,
+const findConsents = (ref, userIds) => ref.app.service('/consents')
+	.find({
+		query: {
+			userId: { $in: userIds },
+			$select: [
+				'userId',
+				'userConsent.form',
+				'userConsent.privacyConsent',
+				'userConsent.termsOfUseConsent',
+				'parentConsents.parentId',
+				'parentConsents.form',
+				'parentConsents.privacyConsent',
+				'parentConsents.termsOfUseConsent'],
+		},
 	})
-	.lean()
-	.exec();
-
-// this method is currently duplicated in consents service
-const getConsentStatus = (consent) => {
-	const isUserConsent = (c = {}) => {
-		const uC = c.userConsent;
-		return uC && uC.privacyConsent && uC.termsOfUseConsent;
-	};
-
-	const isNOTparentConsent = (c = {}) => {
-		const pCs = c.parentConsents || [];
-		return pCs.length === 0 || !(pCs.privacyConsent && pCs.termsOfUseConsent);
-	};
-
-	if (!consent) {
-		return 'missing';
-	}
-
-	if (consent.requiresParentConsent) {
-		if (isNOTparentConsent(consent)) {
-			return 'missing';
-		}
-
-		if (isUserConsent(consent)) {
-			return 'ok';
-		}
-		return 'parentsAgreed';
-	}
-
-	if (isUserConsent(consent)) {
-		return 'ok';
-	}
-
-	return 'parentsAgreed';
-};
+	.then(consents => consents.data);
 
 class AdminUsers {
 	constructor(role) {
@@ -110,7 +79,7 @@ class AdminUsers {
 				],
 			);
 			const userIds = users.map(user => user._id.toString());
-			const consents = await findConsents(userIds).then((data) => {
+			const consents = await findConsents(this, userIds).then((data) => {
 				// rebuild consent to object for faster sorting
 				const out = {};
 				data.forEach((e) => {
@@ -128,11 +97,7 @@ class AdminUsers {
 			users.map((user) => {
 				user.classes = [];
 				const userId = user._id.toString();
-				const con = consents[userId];
-				if (con) {
-					user.consent = con;
-				}
-				user.consentStatus = getConsentStatus(user.consent);
+				user.consent = consents[userId] || {};
 				classes.forEach((c) => {
 					if (c.userIds.includes(userId)) {
 						user.classes.push(c.displayName);
@@ -145,7 +110,8 @@ class AdminUsers {
 				const { consentStatus } = params.query || {};
 
 				if ((consentStatus || {}).$in) {
-					return consentStatus.$in.includes(user.consentStatus);
+					const userStatus = user.consent.consentStatus || 'missing';
+					return consentStatus.$in.includes(userStatus);
 				}
 				return true;
 			});

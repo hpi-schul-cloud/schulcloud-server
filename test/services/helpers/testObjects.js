@@ -6,11 +6,11 @@ module.exports = (app) => {
 	const coursesService = app.service('courses');
 	const registrationPinsService = app.service('registrationPins');
 
-	const createdAccountIds = [];
-	const createdUserIds = [];
-	const createdSystemIds = [];
-	const createdClasses = [];
-	const createdCourses = [];
+	let createdAccountIds = [];
+	let createdUserIds = [];
+	let createdSystemIds = [];
+	let createdClasses = [];
+	let createdCourses = [];
 
 	function createTestSystem({ url, type = 'moodle' }) {
 		return systemService.create({ url, type })
@@ -34,6 +34,7 @@ module.exports = (app) => {
 		// required fields for user
 		firstName = 'Max',
 		lastName = 'Mustermann',
+		birthday = undefined,
 		email = `max${Date.now()}@mustermann.de`,
 		schoolId = '584ad186816abba584714c94',
 		accounts = [],
@@ -48,6 +49,7 @@ module.exports = (app) => {
 			.then(() => userService.create({
 				firstName,
 				lastName,
+				birthday,
 				email,
 				schoolId,
 				accounts,
@@ -107,10 +109,15 @@ module.exports = (app) => {
 
 	function cleanup() {
 		const accountDeletions = createdAccountIds.map(id => accountService.remove(id));
+		createdAccountIds = [];
 		const userDeletions = createdUserIds.map(id => userService.remove(id));
+		createdUserIds = [];
 		const systemDeletions = createdSystemIds.map(id => systemService.remove(id));
+		createdSystemIds = [];
 		const classDeletions = createdClasses.map(id => classesService.remove(id));
+		createdClasses = [];
 		const courseDeletions = createdCourses.map(id => coursesService.remove(id));
+		createdCourses = [];
 		return Promise.all([]
 			.concat(accountDeletions)
 			.concat(userDeletions)
