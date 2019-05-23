@@ -89,8 +89,8 @@ module.exports = {
 		find: [],
 		get: [],
 		create: [sanitizeData, removeObjectIdInData],
-		update: [sanitizeData, removeObjectIdInData],
-		patch: [sanitizeData, removeObjectIdInData],
+		update: [sanitizeData],
+		patch: [sanitizeData],
 		remove: [],
 	},
 
