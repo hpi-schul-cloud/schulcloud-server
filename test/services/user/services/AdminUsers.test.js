@@ -5,7 +5,6 @@ const testObjects = require('../../helpers/testObjects')(app);
 
 const adminStudentsService = app.service('/users/admin/students');
 const adminTeachersService = app.service('/users/admin/teachers');
-const classesService = app.service('/classes');
 const gradeLevelService = app.service('/gradeLevels');
 const consentService = app.service('consents');
 
