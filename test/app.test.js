@@ -9,13 +9,13 @@ chai.use(chaiHttp);
 const logger = require('winston');
 
 describe('Feathers application tests', function () {
-	before(function (done) {
+	before(function setup(done) {
 		this.server = app.listen(3031);
 		logger.level = 'error';
 		this.server.once('listening', () => done());
 	});
 
-	after(function (done) {
+	after(function cleanup(done) {
 		this.server.close(done);
 	});
 
