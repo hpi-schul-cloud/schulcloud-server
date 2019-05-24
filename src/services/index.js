@@ -1,6 +1,7 @@
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
+const newsEvents = require('./news/events');
 const content = require('./content');
 const calendar = require('./calendar');
 const ltiTool = require('./ltiTool');
@@ -17,6 +18,7 @@ const resolve = require('./resolve');
 const federalState = require('./federalState');
 const userGroup = require('./user-group');
 const teams = require('./teams');
+const teamEvents = require('./teams/events');
 const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
 const notification = require('./notification');
@@ -85,4 +87,6 @@ module.exports = function initializeServices() {
 	// initialize events
 	newsEvents.configure(app);
 	editorEvents(app);
+	teamEvents.configure(app);
+
 };
