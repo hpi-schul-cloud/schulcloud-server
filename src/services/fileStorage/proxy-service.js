@@ -115,7 +115,7 @@ const fileStorageService = {
 		if (parent) {
 			return canCreate(userId, parent)
 				.then(() => FileModel.findOne(props).exec().then(
-					modelData => modelData ? Promise.resolve(modelData) : FileModel.create(props)
+					modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 				))
 				.catch((e) => {
 					logger.error(e);
@@ -124,7 +124,7 @@ const fileStorageService = {
 		}
 
 		return FileModel.findOne(props).exec().then(
-			modelData => modelData ? Promise.resolve(modelData) : FileModel.create(props)
+			modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 		);
 	},
 
@@ -186,7 +186,7 @@ const fileStorageService = {
 	 */
 	async patch(_id, data, params) {
 		const { payload: { userId } } = params;
-		let { parent } = data;
+		const { parent } = data;
 		const fileObject = await FileModel.findOne({ _id: parent }).exec();
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
 		let owner;
@@ -308,9 +308,7 @@ const signedUrlService = {
 		].some(rx => rx.test(fileName));
 
 		return parentPromise
-			.then(() => {
-				return parent ? canCreate(userId, parent) : Promise.resolve({});
-			})
+			.then(() => (parent ? canCreate(userId, parent) : Promise.resolve({})))
 			.then(() => {
 				if (fileRegexCheck(flatFileName)) {
 					throw new BadRequest(`Die Datei '${flatFileName}' ist nicht erlaubt!`);
@@ -351,7 +349,9 @@ const signedUrlService = {
 
 		return canRead(userId, file)
 			.then(() => strategy.getSignedUrl(
-				{ userId: creatorId, flatFileName: fileObject.storageFileName, localFileName: fileObject.name, download },
+				{
+					userId: creatorId, flatFileName: fileObject.storageFileName, localFileName: fileObject.name, download,
+				},
 			))
 			.then(res => ({
 				url: res,
@@ -475,7 +475,7 @@ const directoryService = {
 		if (parent) {
 			return canCreate(userId, parent)
 				.then(() => directoryExists().then(
-					data_ => data_ ? Promise.resolve(data_) : FileModel.create(props)
+					data_ => (data_ ? Promise.resolve(data_) : FileModel.create(props)),
 				)).catch((e) => {
 					logger.error(e);
 					return new Forbidden();
@@ -483,7 +483,7 @@ const directoryService = {
 		}
 
 		return directoryExists().then(
-			data_ => data_ ? Promise.resolve(data_) : FileModel.create(props)
+			data_ => (data_ ? Promise.resolve(data_) : FileModel.create(props)),
 		);
 	},
 

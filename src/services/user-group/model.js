@@ -1,5 +1,3 @@
-
-
 const autoPopulate = require('mongoose-autopopulate');
 const mongoose = require('mongoose');
 const logger = require('winston');

@@ -7,7 +7,6 @@ const LDAPSyncer = require('./LDAPSyncer');
  * @implements {Syncer}
  */
 class LDAPSystemSyncer extends Syncer {
-
 	constructor(app, stats) {
 		super(app, stats);
 		Object.assign(this.stats, {
@@ -32,17 +31,15 @@ class LDAPSystemSyncer extends Syncer {
 	steps() {
 		return super.steps()
 			.then(() => this.getSystems())
-			.then(systems => {
-				return Promise.all(systems.map(system => {
-					this.stats.systems[system.alias] = {};
-					return new LDAPSyncer(this.app, this.stats.systems[system.alias], system).sync();
-				}));
-			});
+			.then(systems => Promise.all(systems.map((system) => {
+				this.stats.systems[system.alias] = {};
+				return new LDAPSyncer(this.app, this.stats.systems[system.alias], system).sync();
+			})));
 	}
 
 	getSystems() {
 		return this.app.service('systems').find({ query: { type: 'ldap', 'ldapConfig.active': true }, paginate: false })
-			.then(systems => {
+			.then((systems) => {
 				this.logInfo(`Found ${systems.length} LDAP configurations.`);
 				return systems;
 			});
