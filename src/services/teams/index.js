@@ -724,11 +724,22 @@ module.exports = function setup() {
 		return [];
 	});
 
-	const teamListHandler = async (user) => {
-		const teams = await app.service('teams').find({
+	ScopeListService.initialize(app, '/users/:scopeId/teams', async (user, permissions) => {
+		// Find all teams the user is in, regardless of permissions
+		const query = {
 			'userIds.userId': user._id,
-		});
+		};
+		const result = await app.service('teams').find({ query });
+		// Permissions can only be checked via a lookup in the Role service,
+		// because permissions can be inherited from parent-roles and are only decorated
+		// into the role with an after-hook.
+		// We need to use map+filter here, because the role-lookup is async and cannot
+		// be handled by array#filter (which is inherently synchronous) alone.
+		const teams = (await Promise.all(result.data.map(async (t) => {
+			const [u] = t.userIds.filter(i => i.userId.toString() === user._id.toString());
+			const role = await app.service('roles').get(u.role);
+			return permissions.every(p => role.permissions.includes(p)) ? t : undefined;
+		}))).filter(e => e);
 		return teams;
-	};
-	ScopeListService.initialize(app, '/users/:scopeId/teams', teamListHandler);
+	});
 };
