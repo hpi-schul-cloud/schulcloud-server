@@ -1,5 +1,5 @@
 const util = require('util');
-	 const Strategy = require('passport-strategy');
+const Strategy = require('passport-strategy');
 
 function CustomStrategy(options, verify) {
 	if (typeof options === 'function') {

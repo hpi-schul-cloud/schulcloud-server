@@ -79,19 +79,19 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 						}
 					} else {
 						if (obj[userAttributeNameMapping.role]
-							=== roleAttributeNameMapping.roleStudent) {
+                            === roleAttributeNameMapping.roleStudent) {
 							roles.push('student');
 						}
 						if (obj[userAttributeNameMapping.role]
-							=== roleAttributeNameMapping.roleTeacher) {
+                            === roleAttributeNameMapping.roleTeacher) {
 							roles.push('teacher');
 						}
 						if (obj[userAttributeNameMapping.role]
-							=== roleAttributeNameMapping.roleAdmin) {
+                            === roleAttributeNameMapping.roleAdmin) {
 							roles.push('administrator');
 						}
 						if (obj[userAttributeNameMapping.role]
-							=== roleAttributeNameMapping.roleNoSc) {
+                            === roleAttributeNameMapping.roleNoSc) {
 							return;
 						}
 					}

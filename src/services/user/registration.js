@@ -126,7 +126,7 @@ const registerUser = function (data, params, app) {
 			return app.service('registrationPins').find({
 				query: { pin: pinInput, email: userMail, verified: false },
 			}).then((check) => {
-			// check pin
+				// check pin
 				if (!(check.data && check.data.length > 0 && check.data[0].pin === pinInput)) {
 					return Promise.reject('Ungültige Pin, bitte überprüfe die Eingabe.');
 				}
@@ -135,7 +135,7 @@ const registerUser = function (data, params, app) {
 		})
 		.then(() =>
 		// create user
-		 insertUserToDB(app, data, user)
+			insertUserToDB(app, data, user)
 				.then((newUser) => {
 					user = newUser;
 				}))
@@ -159,7 +159,7 @@ const registerUser = function (data, params, app) {
 				.catch(err => Promise.reject(new Error('Fehler beim Erstellen des Accounts.')));
 		})
 		.then((res) => {
-		// add parent if necessary
+			// add parent if necessary
 			if (data.parent_email) {
 				parent = {
 					firstName: data.parent_firstName,
@@ -185,7 +185,7 @@ const registerUser = function (data, params, app) {
 			return Promise.resolve();
 		})
 		.then(() => {
-		// store consent
+			// store consent
 			if (parent) {
 				consent = {
 					form: 'digital',

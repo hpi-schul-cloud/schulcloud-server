@@ -59,8 +59,8 @@ class SystemVerifier {
 		})
 			.then((username) => {
 				this.app.service('/systems').get(systemId).then(system => this.loginStrategy.login({ username, password }, system, schoolId)).then(_ =>
-					// credentials are valid at this point => get or create account
-					 this._getAccount({
+				// credentials are valid at this point => get or create account
+					this._getAccount({
 						username: username.toLowerCase(),
 						password,
 						systemId,

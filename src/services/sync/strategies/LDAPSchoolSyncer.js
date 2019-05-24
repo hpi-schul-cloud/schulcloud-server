@@ -21,15 +21,15 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	}
 
 	/**
-	 * @see {Syncer#prefix}
-	 */
+     * @see {Syncer#prefix}
+     */
 	prefix() {
 		return `${super.prefix()} | ${this.school.name}`;
 	}
 
 	/**
-	 * @see {Syncer#steps}
-	 */
+     * @see {Syncer#steps}
+     */
 	steps() {
 		return super.steps()
 			.then(_ => this.getUserData())
@@ -43,8 +43,8 @@ class LDAPSchoolSyncer extends SystemSyncer {
 			.then(ldapUsers => Promise.all(ldapUsers.map(idmUser => this.createOrUpdateUser(idmUser, this.school)))
 				.then((res) => {
 					this.logInfo(`Created ${this.stats.users.created} users, `
-								+ `updated ${this.stats.users.updated} users. `
-								+ `Skipped errors: ${this.stats.users.errors}.`);
+                                + `updated ${this.stats.users.updated} users. `
+                                + `Skipped errors: ${this.stats.users.errors}.`);
 					return Promise.resolve(res);
 				}));
 	}

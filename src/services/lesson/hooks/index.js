@@ -26,18 +26,18 @@ const checkIfCourseShareable = (hook) => {
 	return hook;
 
 	/* MERGE MASTER N/21 - comment is master. CHeck if side effects for course groups occur
-	if ('courseGroupId' in hook.result) return hook;
-	const courseId = hook.result.courseId;
-	const courseService = hook.app.service('courses');
-	const lessonsService = hook.app.service('lessons');
+    if ('courseGroupId' in hook.result) return hook;
+    const courseId = hook.result.courseId;
+    const courseService = hook.app.service('courses');
+    const lessonsService = hook.app.service('lessons');
 
-	return courseService.get(courseId)
-		.then((course) => {
-			if (!course.shareToken) return hook;
+    return courseService.get(courseId)
+        .then((course) => {
+            if (!course.shareToken) return hook;
 
-			return lesson.findByIdAndUpdate(hook.result._id, { shareToken: nanoid(12) })
-				.then(lesson => hook);
-		}); */
+            return lesson.findByIdAndUpdate(hook.result._id, { shareToken: nanoid(12) })
+                .then(lesson => hook);
+        }); */
 };
 
 exports.before = () => ({

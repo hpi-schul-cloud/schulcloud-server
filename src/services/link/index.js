@@ -19,7 +19,7 @@ module.exports = function () {
 	let linkService = service(options);
 
 	function redirectToTarget(req, res, next) {
-		if (req.method === 'GET' && !req.query.target) {	// capture these requests and issue a redirect
+		if (req.method === 'GET' && !req.query.target) { // capture these requests and issue a redirect
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then((data) => {
@@ -94,16 +94,16 @@ module.exports = function () {
 		}
 
 		/**
-		 * Generates short expert invite link
-		 * @param data = object {
-		 *      role: user role = string "teamexpert"/"teamadministrator"
-		 *      host: current webaddress from client = string
-		 *      teamId: users teamId = string
-		 *      invitee: email of user who gets invited = string
-		 *      inviter: user id of user who generates the invite = ObjectId/string
-		 *      save: make hash link-friendly? = boolean (might be string)
-		 *  }
-		 */
+         * Generates short expert invite link
+         * @param data = object {
+         *      role: user role = string "teamexpert"/"teamadministrator"
+         *      host: current webaddress from client = string
+         *      teamId: users teamId = string
+         *      invitee: email of user who gets invited = string
+         *      inviter: user id of user who generates the invite = ObjectId/string
+         *      save: make hash link-friendly? = boolean (might be string)
+         *  }
+         */
 		create(data, params) {
 			return new Promise(async (resolve, reject) => {
 				const linkInfo = {};
@@ -131,7 +131,7 @@ module.exports = function () {
 				if (expertSchoolId && linkInfo.hash) {
 					// expert registration link for new users
 					linkInfo.link = `${(data.host || process.env.HOST)}/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
-				} else if (teamId) {	/** @replaced logic is inside team services now * */
+				} else if (teamId) { /** @replaced logic is inside team services now * */
 					// team accept link for existing users
 					linkInfo.link = `${(data.host || process.env.HOST)}/teams/invitation/accept/${teamId}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
 				} else {

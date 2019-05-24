@@ -179,7 +179,7 @@ const setTeamMembers = (hook) => {
 const noSubmissionBefore = (hook) => {
 	// check that no one has already submitted for the current User
 	const submissionsForMe = hook.data.submissions.filter(submission => // is there an submission for the current user?
-		 (submission.teamMembers.includes(hook.params.account.userId))
+		(submission.teamMembers.includes(hook.params.account.userId))
             || ((submission.studentId || {})._id == hook.params.account.userId));
 	if (submissionsForMe.length > 0) {
 		return Promise.reject(new errors.Conflict({

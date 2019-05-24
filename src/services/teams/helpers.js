@@ -65,7 +65,7 @@ exports.patchTeam = (refClass, teamId, data, params) => refClass.app.service('te
  * @param {*} app
  * @param {*} teamId
  */
-const getTeam = (refClass, teamId) => {		// todo: app to this -> this.app
+const getTeam = (refClass, teamId) => { // todo: app to this -> this.app
 	const populateParams = {
 		query: {
 			$populate: [{ path: 'roles' }, { path: 'userIds.userId' }],

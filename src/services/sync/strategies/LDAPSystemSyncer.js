@@ -15,8 +15,8 @@ class LDAPSystemSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#respondsTo}
-	 */
+     * @see {Syncer#respondsTo}
+     */
 	static respondsTo(target) {
 		return target === 'ldap';
 	}
@@ -26,8 +26,8 @@ class LDAPSystemSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#steps}
-	 */
+     * @see {Syncer#steps}
+     */
 	steps() {
 		return super.steps()
 			.then(() => this.getSystems())

@@ -34,7 +34,7 @@ roleSchema.statics.resolvePermissions = function (roleIds) {
 					.filter(id => !processedRoleIds.includes(id))
 					.map((id) => {
 						processedRoleIds.push(id);
-						return resolveSubRoles(id);	// recursion
+						return resolveSubRoles(id); // recursion
 					});
 				return Promise.all(promises);
 			});

@@ -9,10 +9,10 @@ class Service {
 	}
 
 	/**
-	 * request headers
-	 * set Content-Type = application/json
-	 * set Authorization = Bearer [jwt]
-	 */
+     * request headers
+     * set Content-Type = application/json
+     * set Authorization = Bearer [jwt]
+     */
 	find(params) {
 		const { userId } = params.account;
 		const userServiceParams = {

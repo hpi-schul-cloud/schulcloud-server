@@ -9,10 +9,10 @@ const { homeworkModel } = require('../homework/model');
 
 class LessonFilesService {
 	/**
-	 * @returns all files which are included in text-components of a given lesson
-	 * @param lessonId
-	 * @param query contains shareToken
-	 */
+     * @returns all files which are included in text-components of a given lesson
+     * @param lessonId
+     * @param query contains shareToken
+     */
 	find({ lessonId, query }) {
 		const { shareToken } = query;
 		if (!lessonId || !shareToken) throw new errors.BadRequest('Missing parameters!');
@@ -26,9 +26,9 @@ class LessonFilesService {
 			return FileModel.find({ path: { $regex: lesson.courseId } }).then(files => Promise.all((files || []).filter(f =>
 
 			// check whether the file is included in any lesson
-					 _.some((lesson.contents || []), content => content.component === 'text'
-						&& content.content.text
-						&& _.includes(content.content.text, f.key)))));
+				_.some((lesson.contents || []), content => content.component === 'text'
+                        && content.content.text
+                        && _.includes(content.content.text, f.key)))));
 		});
 	}
 }
@@ -39,11 +39,11 @@ class LessonCopyService {
 	}
 
 	/**
-	 * Clones a lesson to a specified course, including files and homeworks.
-	 * @param data consists of lessonId and newCourseId (target, source).
-	 * @param params user Object and other params.
-	 * @returns newly created lesson.
-	 */
+     * Clones a lesson to a specified course, including files and homeworks.
+     * @param data consists of lessonId and newCourseId (target, source).
+     * @param params user Object and other params.
+     * @returns newly created lesson.
+     */
 	create(data, params) {
 		const { lessonId, newCourseId } = data;
 		const fileChangelog = [];
@@ -66,8 +66,8 @@ class LessonCopyService {
 
 						return Promise.all(homeworks.map(((homework) => {
 							if (homework.archived.length > 0
-								|| (homework.teacherId.toString() !== params.account.userId.toString()
-								&& homework.private)) { return false; }
+                                || (homework.teacherId.toString() !== params.account.userId.toString()
+                                && homework.private)) { return false; }
 
 							const homeworkService = this.app.service('homework/copy');
 
@@ -87,8 +87,8 @@ class LessonCopyService {
 					).then(files => Promise.all((files || []).filter(
 						// check whether the file is included in any lesson
 						f => _.some((sourceLesson.contents || []), content => content.component === 'text'
-								&& content.content.text
-								&& _.includes(content.content.text, f._id)),
+                                && content.content.text
+                                && _.includes(content.content.text, f._id)),
 					))
 						.then(lessonFiles => Promise.all(lessonFiles.map((f) => {
 							const fileData = {

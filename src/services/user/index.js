@@ -24,7 +24,7 @@ class UserLinkImportService {
 		this.docs = {};
 	}
 
-	get(hash, params) {	// can not use get becouse the hash can have / that mapped to non existing routes
+	get(hash, params) { // can not use get becouse the hash can have / that mapped to non existing routes
 		return this.userService.find({ query: { importHash: hash } })
 			.then((users) => {
 				if (users.data.length !== 1) {
@@ -50,9 +50,9 @@ module.exports = function setup() {
 	app.use('/users', service(options));
 
 	const userService = app.service('/users');
-	app.use('users/linkImport', new UserLinkImportService(userService));	// do not use hooks
+	app.use('users/linkImport', new UserLinkImportService(userService)); // do not use hooks
 
-	userService.hooks(hooks);	// TODO: refactor
+	userService.hooks(hooks); // TODO: refactor
 
 	/* publicTeachers Service */
 	app.use('/publicTeachers', service({

@@ -16,8 +16,8 @@ class LDAPSyncer extends SystemSyncer {
 	}
 
 	/**
-	 * @see {Syncer#steps}
-	 */
+     * @see {Syncer#steps}
+     */
 	steps() {
 		return super.steps()
 			.then(() => this.getSchools())

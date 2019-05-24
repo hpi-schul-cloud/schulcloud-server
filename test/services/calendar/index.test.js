@@ -12,7 +12,7 @@ const path = require('path');
 const requestMock = require('./mock/mockResponses');
 
 describe('calendar service', function () {
-	this.timeout(10000);	// for slow require(app) call
+	this.timeout(10000); // for slow require(app) call
 
 	let app = null;
 	let calendarService = null;

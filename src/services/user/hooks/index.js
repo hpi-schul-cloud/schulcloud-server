@@ -35,7 +35,7 @@ const checkUnique = (hook) => {
 			}
 
 			const user = typeof result.data[0] === 'object' ? result.data[0] : {};
-			const input	= typeof hook.data === 'object' ? hook.data : {};
+			const input = typeof hook.data === 'object' ? hook.data : {};
 			const isLoggedIn = !!((hook.params || {}).account && hook.params.account.userId);
 			const { asTask } = hook.params._additional || {};
 
@@ -197,7 +197,7 @@ const permissionRoleCreate = async (hook) => {
 	}
 
 	if (isLoggedIn === true && globalHooks.arrayIncludes((hook.data.roles || []), ['student', 'teacher'], ['parent', 'administrator', 'helpdesk', 'superhero'])
-		|| isLoggedIn === false && globalHooks.arrayIncludes((hook.data.roles || []), ['student', 'parent'], ['teacher', 'administrator', 'helpdesk', 'superhero'])
+        || isLoggedIn === false && globalHooks.arrayIncludes((hook.data.roles || []), ['student', 'parent'], ['teacher', 'administrator', 'helpdesk', 'superhero'])
 	) {
 		return Promise.resolve(hook);
 	}
@@ -234,9 +234,9 @@ const securePatching = hook => Promise.all([
  * @returns {string} - a display name of the given user
  */
 const getDisplayName = (user, app) =>
-	// load protected roles
-	 app.service('/roles').find({
-		query: {	// TODO: cache these
+// load protected roles
+	app.service('/roles').find({
+		query: { // TODO: cache these
 			name: ['teacher', 'admin'],
 		},
 	}).then((protectedRoles) => {

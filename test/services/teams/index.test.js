@@ -41,18 +41,18 @@ describe('Team Service', () => {
 
 		it.skip('should accept emails & role', async () => {
 			const result = await service.patch(team._id, { email: 'tester@test.de', role: 'teamexpert' });
-		/*	agent.post('/authentication')
-			.send({})	Authorization:<token>, strategy:'local'
-			.end((err, response) => {
+			/*  agent.post('/authentication')
+            .send({})   Authorization:<token>, strategy:'local'
+            .end((err, response) => {
                 if(err){
-					throw err
-				};
-				if(response===undefined){
-					throw new Error('');
-				}
+                    throw err
+                };
+                if(response===undefined){
+                    throw new Error('');
+                }
                 //do resolve
             });
-		*/
+        */
 		});
 	});
 

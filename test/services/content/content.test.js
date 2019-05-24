@@ -11,7 +11,7 @@ const path = require('path');
 
 
 describe('content service', function () {
-	this.timeout(10000);	// for slow require(app) call
+	this.timeout(10000); // for slow require(app) call
 	const requestMock = options => readFile(requestToFilename(options)).then(data => JSON.parse(data));
 
 	let app = null;
@@ -68,7 +68,7 @@ function writeResponseToDisk(requestOptions, response) {
 }
 
 function requestToFilename(requestOptions) {
-	const key = JSON.stringify(requestOptions.qs).replace(/([^ -~]|[\."<>\|\\\/\:\*\?])+/g, '');	// just ASCII characters, NTFS-safe
+	const key = JSON.stringify(requestOptions.qs).replace(/([^ -~]|[\."<>\|\\\/\:\*\?])+/g, ''); // just ASCII characters, NTFS-safe
 	const filename = `response${key}.json`;
 	return path.resolve(__dirname, 'mock', filename);
 }

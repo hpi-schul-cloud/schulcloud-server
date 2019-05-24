@@ -40,7 +40,7 @@ const {
 *   @param {Object::hook} hook
 *   @method all
 *   @ifNotLocal work only for extern requests
-*	*/
+*   */
 const teamMainHook = globalHooks.ifNotLocal(hook => Promise.all([
 	getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook),
 ]).then(([sessionUser, team, users]) => {
@@ -309,12 +309,12 @@ const teamRolesToHook = (hook) => {
 		hook.teamroles = roles.data; // add team roles with permissions to hook
 
 		/**
-		 * @param {String} key
-		 * @param {Object||String} value search value
-		 * @param {String} [resultKey] if only one value of a key should return
-		 * @example hook.findRole('name','teamowner');
-		 * @example hook.findRole('name','teamleader','permissions');
-		 */
+         * @param {String} key
+         * @param {Object||String} value search value
+         * @param {String} [resultKey] if only one value of a key should return
+         * @example hook.findRole('name','teamowner');
+         * @example hook.findRole('name','teamleader','permissions');
+         */
 		hook.findRole = (key, value, resultKey) => { // add a search function to hook
 			const self = hook;
 
@@ -531,7 +531,7 @@ const sendInfo = (hook) => {
  * @afterHook
  * @method patch,get
  * @param {Object::hook} hook - Add the current user to top level,
- * 								easy access of it role and permissions.
+ *                              easy access of it role and permissions.
  * @return {Object::hook}
  */
 const addCurrentUser = globalHooks.ifNotLocal((hook) => {

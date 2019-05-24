@@ -94,10 +94,10 @@ exports.hasPermission = function (permissionName) {
 
 exports.removeResponse = function (excludeOptions) {
 	/*
-	excludeOptions = false => allways remove response
-	excludeOptions = undefined => remove response when not GET or FIND request
-	excludeOptions = ['get', ...] => remove when method not in array
-	*/
+    excludeOptions = false => allways remove response
+    excludeOptions = undefined => remove response when not GET or FIND request
+    excludeOptions = ['get', ...] => remove when method not in array
+    */
 	return (hook) => {
 		// If it was an internal call then skip this hook
 		if (!hook.params.provider) {
@@ -202,10 +202,10 @@ const deepValue = (obj, path, newValue) => {
 };
 
 exports.computeProperty = function (Model, functionName, variableName) {
-	return hook => Model.findById(hook.result._id)	// get the model instance to call functions etc  TODO make query results not lean
-		.then(modelInstance => modelInstance[functionName]())	// compute that property
+	return hook => Model.findById(hook.result._id) // get the model instance to call functions etc  TODO make query results not lean
+		.then(modelInstance => modelInstance[functionName]()) // compute that property
 		.then((result) => {
-			hook.result[variableName] = Array.from(result);		// save it in the resulting object
+			hook.result[variableName] = Array.from(result); // save it in the resulting object
 		})
 		.catch(e => logger.error(e))
 		.then(_ => Promise.resolve(hook));
@@ -300,12 +300,12 @@ exports.restrictToCurrentSchool = (hook) => {
 const userIsInThatCourse = (user, course, isCourse) => {
 	if (isCourse) {
 		return course.userIds.some(u => u.toString() === user._id.toString())
-			|| course.teacherIds.some(u => u.toString() === user._id.toString())
-			|| (course.substitutionIds || []).some(u => u.toString() === user._id.toString());
+            || course.teacherIds.some(u => u.toString() === user._id.toString())
+            || (course.substitutionIds || []).some(u => u.toString() === user._id.toString());
 	}
 
 	return course.userIds.some(u => u.toString() === user._id.toString())
-		|| user.roles.some(role => role.name === 'teacher');
+        || user.roles.some(role => role.name === 'teacher');
 };
 
 exports.restrictToUsersOwnCourses = (hook) => {
@@ -385,7 +385,7 @@ exports.restrictToUsersOwnLessons = (hook) => {
 						return userIsInThatCourse(user, lesson.courseGroupId, false);
 					}
 					return userIsInThatCourse(user, lesson.courseId, true)
-						|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
+                        || (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
 				});
 				if (tempLesson.length === 0) {
 					throw new errors.Forbidden("You don't have access to that lesson.");
@@ -403,7 +403,7 @@ exports.restrictToUsersOwnLessons = (hook) => {
 						return userIsInThatCourse(user, lesson.courseGroupId, false);
 					}
 					return userIsInThatCourse(user, lesson.courseId, true)
-						|| (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
+                        || (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
 				});
 
 				if (hook.result.data.length === 0) {
@@ -442,7 +442,7 @@ exports.restrictToUsersOwnClasses = (hook) => {
 			const classService = hook.app.service('classes');
 			return classService.get(hook.id).then((result) => {
 				if (!(_.some(result.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))
-					&& !(_.some(result.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
+                    && !(_.some(result.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
 					throw new errors.Forbidden('You are not in that class.');
 				}
 			});

@@ -95,7 +95,7 @@ class StatisticsService {
 	get(id, params) {
 		return _.find(promises, { name: id }).model
 			.then((generic) => {
-				const stats =	generic.map(gen => moment(gen.createdAt).format('YYYY-MM-DD'));
+				const stats = generic.map(gen => moment(gen.createdAt).format('YYYY-MM-DD'));
 
 				const counts = {};
 				stats.forEach((x) => { counts[x] = (counts[x] || 0) + 1; });

@@ -26,7 +26,7 @@ const getAccessToken = ({ username, password }) => (new Promise((resolve, reject
 		.post('/authentication')
 		.set('Accept', 'application/json')
 		.set('content-type', 'application/x-www-form-urlencoded')
-		// send credentials
+	// send credentials
 		.send({ username, password })
 		.end((err, res) => {
 			if (err) {

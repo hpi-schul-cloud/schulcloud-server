@@ -7,7 +7,7 @@ const helpdeskService = app.service('helpdesk');
 const { logger } = app;
 
 describe('helpdesk service', () => {
-	const testProblem =		{
+	const testProblem = {
 		type: 'contactAdmin',
 		_id: '5836bb5664582c35df3bc214',
 		subject: 'Dies ist ein Titel',

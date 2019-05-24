@@ -75,10 +75,10 @@ function randomGen(arr) {
 
 class PasswordGenService {
 	/**
-	 * generates a random String depending on the query params
-	 * @param query (length<Integer> | readable<Boolean>)
-	 * @returns {Promise.<TResult>}
-	 */
+     * generates a random String depending on the query params
+     * @param query (length<Integer> | readable<Boolean>)
+     * @returns {Promise.<TResult>}
+     */
 	find({ query, payload }) {
 		if (query.readable) {
 			const p2 = new Promise((resolve, reject) => {

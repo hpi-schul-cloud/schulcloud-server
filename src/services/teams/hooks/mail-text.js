@@ -52,10 +52,10 @@ module.exports = (hook, inviter) => {
 	let text;
 	if (isNewRegistration(linkData, user)) {
 		text = inviteWithRegistration(opt); // expert, new account
-	} else if (email !== undefined) {	// is email invite
-		text = addedToTeam(opt);	// teacher, accept needed (invite via email)
+	} else if (email !== undefined) { // is email invite
+		text = addedToTeam(opt); // teacher, accept needed (invite via email)
 	} else {
-		text = inviteWithEmail(opt); 	// teacher, no accept needed (n21)
+		text = inviteWithEmail(opt); // teacher, no accept needed (n21)
 	}
 	return text;
 };

@@ -5,7 +5,7 @@ const _TYPE = ['before', 'after'];
 const _METHOD = ['get', 'update', 'patch', 'create', 'find', 'remove'];
 
 const _DefaultServiceOptions = {
-	Model: undefined,		// maybe must added fake?
+	Model: undefined, // maybe must added fake?
 	paginate: {
 		default: 10,
 		max: 100,

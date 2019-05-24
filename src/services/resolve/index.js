@@ -69,7 +69,7 @@ class ScopeResolver {
 							type: 'scope',
 							id: _team._id,
 							name: _team.name,
-							authorities: ['can-read', 'can-write', 'can-send-notifications'],	// todo: only leaders have notification and write permissions
+							authorities: ['can-read', 'can-write', 'can-send-notifications'], // todo: only leaders have notification and write permissions
 							attributes: {
 								scopeType: 'team',
 							},

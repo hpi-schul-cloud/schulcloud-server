@@ -283,10 +283,10 @@ const arrayDiff = (oldArray, newArray, key) => {
 
 	const getV = (e) => {
 		let res = e;
-		if (isDefined([key, res[key]], 'AND')) {	// if key is set, take it
+		if (isDefined([key, res[key]], 'AND')) { // if key is set, take it
 			res = res[key];
 		}
-		if (isObjectIdWithTryToCast(res)) {	// only cast to string if bsonId
+		if (isObjectIdWithTryToCast(res)) { // only cast to string if bsonId
 			res = bsonIdToString(res);
 		}
 		return res;
@@ -294,7 +294,7 @@ const arrayDiff = (oldArray, newArray, key) => {
 
 	const diff = (a1, a2) => {
 		a2 = a2.map(e => getV(e));
-		return a1.filter(x => !a2.includes(getV(x)));	// pass element from a1 if it is not in a2
+		return a1.filter(x => !a2.includes(getV(x))); // pass element from a1 if it is not in a2
 	};
 
 	return diff(oldArray, newArray);
@@ -388,12 +388,12 @@ const removeTeamUsers = (teamUsers, userIds) => {
 		return teamUsers;
 	}
 	/*
-	return teamUsers.reduce((list, teamUser) => {
-		if (!userIds.includes(teamUser.userId))
-			list.push(teamUser);
-		return list;
-	}, []);
-	*/
+    return teamUsers.reduce((list, teamUser) => {
+        if (!userIds.includes(teamUser.userId))
+            list.push(teamUser);
+        return list;
+    }, []);
+    */
 	return teamUsers.filter(user => !userIds.includes(user.userId));
 };
 
@@ -422,12 +422,12 @@ const removeNotValidUsersBySchoolIds = (schoolIds, teamUsers, users) => {
 };
 
 const teamOwnerRoleExist = (hook, teamUsers, oldTeam, users) =>
-	// todo later
-	// const teamownerRoleId = hook.findRole('name', 'teamowner', '_id');
-	// remove logic in mappedInputUserIdsToTeamUsers for owner
-	// test if any of this users has the role teamowner
-	// teamowner must have the userRole teacher!
-	 teamUsers
+// todo later
+// const teamownerRoleId = hook.findRole('name', 'teamowner', '_id');
+// remove logic in mappedInputUserIdsToTeamUsers for owner
+// test if any of this users has the role teamowner
+// teamowner must have the userRole teacher!
+	teamUsers
 ;
 
 /**

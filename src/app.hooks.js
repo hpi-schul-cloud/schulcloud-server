@@ -45,7 +45,7 @@ const sanitizeDeep = (data, path) => {
 				if (['password'].includes(key)) return data;
 				// enable html for all current editors
 				const needsHtml = ['content', 'text', 'comment', 'gradeComment', 'description'].includes(key)
-					&& ['lessons', 'news', 'homework', 'submissions'].includes(path);
+                    && ['lessons', 'news', 'homework', 'submissions'].includes(path);
 				data[key] = sanitize(value, { html: needsHtml });
 			} else {
 				sanitizeDeep(value, path);

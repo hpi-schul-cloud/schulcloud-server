@@ -1,7 +1,7 @@
 const express = require('express');
 const promisify = require('es6-promisify');
 const bodyParser = require('body-parser');
-const freeport = promisify(require('freeport'));	// uses promises with freeport
+const freeport = promisify(require('freeport')); // uses promises with freeport
 const config = require('./config');
 
 module.exports = function () {

@@ -44,27 +44,27 @@ const testAccess = endpoint => () => {
 describe('access control', () => {
 	let requestingAccount;
 	/*
-	before(() => {
-		return Promise.all([
-			//testObjects.createTestSystem({type: null}),
-			testObjects.createTestUser({schoolId: ownSchool.id}),
-			testObjects.createTestUser({schoolId: otherSchool.id}),
-			testObjects.createTestClass({schoolId: ownSchool.id}),
-			testObjects.createTestClass({schoolId: otherSchool.id}),
-			testObjects.createTestCourse({schoolId: ownSchool.id}),
-			testObjects.createTestCourse({schoolId: otherSchool.id}),
-		]).then(([requester, otherUser]) => {
-			return testObjects.createTestAccount(_.cloneDeep(testCredentials), null, requester);
-		})
-			.then(reqAccount => {
-				requestingAccount = reqAccount;
-				return loginHelper.authenticateWithCredentials(testCredentials);
-			})
-			.then(_authenticator => {
-				authenticator = _authenticator;
-			});
-	});
-	*/
+    before(() => {
+        return Promise.all([
+            //testObjects.createTestSystem({type: null}),
+            testObjects.createTestUser({schoolId: ownSchool.id}),
+            testObjects.createTestUser({schoolId: otherSchool.id}),
+            testObjects.createTestClass({schoolId: ownSchool.id}),
+            testObjects.createTestClass({schoolId: otherSchool.id}),
+            testObjects.createTestCourse({schoolId: ownSchool.id}),
+            testObjects.createTestCourse({schoolId: otherSchool.id}),
+        ]).then(([requester, otherUser]) => {
+            return testObjects.createTestAccount(_.cloneDeep(testCredentials), null, requester);
+        })
+            .then(reqAccount => {
+                requestingAccount = reqAccount;
+                return loginHelper.authenticateWithCredentials(testCredentials);
+            })
+            .then(_authenticator => {
+                authenticator = _authenticator;
+            });
+    });
+    */
 
 	it.skip('shows only users who belong to the same school as the requester', testAccess('/users'));
 	it.skip('shows only courses who belong to the same school as the requester', testAccess('/courses'));

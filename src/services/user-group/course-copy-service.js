@@ -23,11 +23,11 @@ class CourseCopyService {
 	}
 
 	/**
-	 * Copies a course and copies homework and lessons of that course.
-	 * @param data object consisting of name, color, teacherIds, classIds, userIds, .... everything you can edit or what is required by a course.
-	 * @param params user Object and other params.
-	 * @returns newly created course.
-	 */
+     * Copies a course and copies homework and lessons of that course.
+     * @param data object consisting of name, color, teacherIds, classIds, userIds, .... everything you can edit or what is required by a course.
+     * @param params user Object and other params.
+     * @returns newly created course.
+     */
 	create(data, params) {
 		let tempData = JSON.parse(JSON.stringify(data));
 		tempData = _.omit(tempData, ['_id', 'courseId']);
@@ -54,8 +54,8 @@ class CourseCopyService {
 									})))
 									.then(() => Promise.all(homeworks.map((homework) => {
 										if (homework.archived.length > 0
-											|| (homework.teacherId.toString() !== params.account.userId.toString()
-											&& homework.private)) return false;
+                                            || (homework.teacherId.toString() !== params.account.userId.toString()
+                                            && homework.private)) return false;
 										// homeworks that are part of a lesson are copied in LessonCopyService
 										if (!homework.lessonId) {
 											return createHomework(

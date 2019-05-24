@@ -26,7 +26,7 @@ module.exports = function MoodleMockServer({
 			if (acceptUsers.find(user => user.username === req.body.username && user.password === req.body.password)) {
 				res.json({ token: responseToken });
 			} else {
-				res.send('{"error": "Invalid login, please try again"}');	// HTTP response code is 200 in any case
+				res.send('{"error": "Invalid login, please try again"}'); // HTTP response code is 200 in any case
 			}
 		});
 

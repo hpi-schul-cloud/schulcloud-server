@@ -16,16 +16,16 @@ class MoodleLoginStrategy extends AbstractLoginStrategy {
 			username,
 			password,
 			wwwroot: system.url,
-			// token: data.token,	// TODO: allow to use tokens, check with the API
+			// token: data.token,   // TODO: allow to use tokens, check with the API
 			logger, /* ,
-			 service: 'schul-cloud' */
+             service: 'schul-cloud' */
 		};
 		if (!moodleOptions.username) return Promise.reject('no username set');
-		if (!moodleOptions.password/* && !moodleOptions.token */) return Promise.reject(new errors.NotAuthenticated('No password set'));	// TODO: 'or token'. Also check error type
+		if (!moodleOptions.password/* && !moodleOptions.token */) return Promise.reject(new errors.NotAuthenticated('No password set')); // TODO: 'or token'. Also check error type
 		if (!moodleOptions.wwwroot) return Promise.reject('no url for moodle login provided');
 
 		return moodleClient.init(moodleOptions)
-			.then((client) => {	// verify that the login did succeed
+			.then((client) => { // verify that the login did succeed
 				if (!client.token) return Promise.reject(new Error('failed to obtain token'));
 				return Promise.resolve(client);
 			});

@@ -5,7 +5,7 @@ const passwordRecoveryService = app.service('passwordRecovery');
 const chai = require('chai');
 
 describe('passwordRecovery service', () => {
-	const testRecovery =		{
+	const testRecovery = {
 		username: 'schueler@schul-cloud.org',
 	};
 

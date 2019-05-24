@@ -14,7 +14,7 @@ const { removeLeadingSlash } = require('../utils/filePathHelper');
 
 let awsConfig = {};
 try {
-//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
+//  awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 	(['production'].includes(process.env.NODE_ENV))
 		? awsConfig = require('../../../../config/secrets.js').aws
 		: awsConfig = require('../../../../config/secrets.json').aws;
@@ -52,9 +52,9 @@ const splitFilesAndDirectories = (path, data) => {
 
 		if (pathComponents.length === 1) {
 			files.push(entry);
-		} else if (entry.name === '.scfake') {	// prevent duplicates showing up by only considering .scfake
+		} else if (entry.name === '.scfake') { // prevent duplicates showing up by only considering .scfake
 			const components = entry.key.split('/');
-			const directoryName = components[components.length - 2];	// the component before '.scfake'
+			const directoryName = components[components.length - 2]; // the component before '.scfake'
 			directories.push({
 				name: directoryName,
 			});
@@ -78,7 +78,7 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 		}
 
 		let pathComponents = path.split('/');
-		if (pathComponents[0] == '') pathComponents = pathComponents.slice(1);	// omit leading slash
+		if (pathComponents[0] == '') pathComponents = pathComponents.slice(1); // omit leading slash
 		// remove first and second directory from storageContext because it's just meta
 		return `/${pathComponents.slice(2).join('/')}`;
 	};
@@ -330,7 +330,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				return promisify(awsObject.s3.deleteObjects, awsObject.s3)(deleteParams);
 			})
 			.then((deletionData) => {
-				if (deletionData.Deleted.length == 1000) return this._deleteAllInDirectory(awsObject, params);	// AWS S3 returns only 1000 items at once
+				if (deletionData.Deleted.length == 1000) return this._deleteAllInDirectory(awsObject, params); // AWS S3 returns only 1000 items at once
 				return Promise.resolve(deletionData);
 			});
 	}
