@@ -1,11 +1,9 @@
-'use strict';
-
 const assert = require('assert');
+const chai = require('chai');
 const app = require('../../../src/app');
+
 const lessonService = app.service('lessons');
 const lessonCopyService = app.service('lessons/copy');
-const chai = require('chai');
-const errors = require('@feathersjs/errors');
 
 const testLesson = {
 	name: 'testLesson',

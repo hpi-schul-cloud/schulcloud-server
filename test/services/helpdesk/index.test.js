@@ -1,24 +1,21 @@
-'use strict';
-
 const assert = require('assert');
+const { expect } = require('chai');
 const app = require('../../../src/app');
+
 const helpdeskService = app.service('helpdesk');
-const chai = require('chai');
-const expect = require('chai').expect;
-const logger = app.logger;
 
-describe('helpdesk service', function() {
+const { logger } = app;
 
-	const testProblem =
-		{
-			type: 'contactAdmin',
-			_id: '5836bb5664582c35df3bc214',
-			subject: 'Dies ist ein Titel',
-			currentState: 'Dies ist der CurrentState',
-			targetState: 'Dies ist der TargetState',
-			category: 'dashboard',
-			schoolId: '5836bb5664582c35df3bc000'
-		};
+describe('helpdesk service', () => {
+	const testProblem =		{
+		type: 'contactAdmin',
+		_id: '5836bb5664582c35df3bc214',
+		subject: 'Dies ist ein Titel',
+		currentState: 'Dies ist der CurrentState',
+		targetState: 'Dies ist der TargetState',
+		category: 'dashboard',
+		schoolId: '5836bb5664582c35df3bc000',
+	};
 
 
 	before(function (done) {
