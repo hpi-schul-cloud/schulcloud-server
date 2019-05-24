@@ -31,7 +31,7 @@ const {
 	bsonIdToString,
 	isSameId,
 } = require('./hooks/collection');
-const { ScopePermissionService } = require('../helpers/scopePermissions');
+const { ScopePermissionService, ScopeListService } = require('../helpers/scopePermissions');
 // const {teamRolesToHook} = require('./hooks');
 // todo docs require
 
@@ -723,4 +723,12 @@ module.exports = function setup() {
 		return [];
 	};
 	ScopePermissionService.initialize(app, '/teams/:scopeId/userPermissions', teamPermissionHandler);
+
+	const teamListHandler = async (user) => {
+		const teams = await app.service('teams').find({
+			'userIds.userId': user._id,
+		});
+		return teams;
+	};
+	ScopeListService.initialize(app, '/users/:scopeId/teams', teamListHandler);
 };
