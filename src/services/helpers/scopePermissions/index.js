@@ -71,7 +71,11 @@ class ScopeListService extends ScopeService {
 	}
 
 	find(params) {
-		return this.getUserScopes(params.scope);
+		let list = [];
+		if (params.query && params.query.permissions) {
+			list = params.query.permissions;
+		}
+		return this.getUserScopes(params.scope, list);
 	}
 
 	static hooks() {
