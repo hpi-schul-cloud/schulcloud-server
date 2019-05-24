@@ -292,7 +292,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						Key: `${path}/.scfake`,
 						Body: fileStream,
 						Metadata: {
-							path: path,
+							path,
 							name: '.scfake',
 						},
 					};

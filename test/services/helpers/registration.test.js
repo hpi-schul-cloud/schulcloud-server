@@ -14,7 +14,7 @@ describe('registration service', () => {
 
 	it('processes registration by student correctly', () => {
 		const email = `max${Date.now()}@mustermann.de`;
-		return registrationPinService.create({ email: email })
+		return registrationPinService.create({ email })
 			.then((registrationPin) => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
@@ -73,7 +73,7 @@ describe('registration service', () => {
 
 	it('fails with invalid pin', () => {
 		const email = `max${Date.now()}@mustermann.de`;
-		return registrationPinService.create({ email: email })
+		return registrationPinService.create({ email })
 			.then((registrationPin) => {
 				let pin = Number(registrationPin.pin);
 				pin = pin === 9999 ? 1000 : pin + 1;

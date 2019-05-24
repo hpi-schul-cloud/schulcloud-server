@@ -74,8 +74,8 @@ class LDAPSyncer extends SystemSyncer {
 							name: ldapSchool.displayName,
 							systems: [this.system._id],
 							ldapSchoolIdentifier: ldapSchool.ldapOu,
-							currentYear: currentYear,
-							federalState: federalState,
+							currentYear,
+							federalState,
 						};
 						newSchools += 1;
 						return this.app.service('schools').create(schoolData);

@@ -51,16 +51,16 @@ describe('consent service', () => {
 		const userId = '58b40278dac20e0645353e3a';
 		return consentService
 			.create({
-				userId: userId,
+				userId,
 			})
 			.then(consent => consentService.create({
-				userId: userId,
+				userId,
 				userConsent: {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 				},
 			}))
-			.then(consent => consentService.find({ query: { userId: userId } }))
+			.then(consent => consentService.find({ query: { userId } }))
 			.then((results) => {
 				chai.expect(results.total).to.equal(1);
 				chai.expect(results.data[0]).to.have.property('userConsent');

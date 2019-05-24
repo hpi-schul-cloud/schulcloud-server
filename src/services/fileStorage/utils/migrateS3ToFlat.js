@@ -16,7 +16,7 @@ const createAWSObject = (schoolId) => {
 	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
 	const bucketName = `bucket-${schoolId}`;
 	const s3 = new aws.S3(config);
-	return { s3: s3, bucket: bucketName };
+	return { s3, bucket: bucketName };
 };
 
 // todo: read all schools from production-db dump

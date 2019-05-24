@@ -8,8 +8,8 @@ const AbstractLoginStrategy = require('./interface.js');
 class IServLoginStrategy extends AbstractLoginStrategy {
 	login({ username, password }, system) {
 		const iservOptions = {
-			username: username,
-			password: password,
+			username,
+			password,
 			grant_type: 'password',
 			client_id: system.oaClientId,
 			client_secret: system.oaClientSecret,

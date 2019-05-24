@@ -13,11 +13,11 @@ class MoodleLoginStrategy extends AbstractLoginStrategy {
 
 	login({ username, password }, system) {
 		const moodleOptions = {
-			username: username,
-			password: password,
+			username,
+			password,
 			wwwroot: system.url,
 			// token: data.token,	// TODO: allow to use tokens, check with the API
-			logger: logger, /* ,
+			logger, /* ,
 			 service: 'schul-cloud' */
 		};
 		if (!moodleOptions.username) return Promise.reject('no username set');

@@ -172,7 +172,7 @@ class UserResolver {
 						type: 'user',
 						id: user._id,
 						name: user.fullName,
-						authorities: authorities,
+						authorities,
 					});
 				});
 				return Promise.resolve(response);

@@ -516,7 +516,7 @@ exports.sendEmail = (hook, maildata) => {
 		promises.push(
 			userService.find({
 				query: {
-					roles: roles,
+					roles,
 					schoolId: hook.data.schoolId,
 					$populate: ['roles'],
 					$limit: 1000,
@@ -560,7 +560,7 @@ exports.sendEmail = (hook, maildata) => {
 						logger.warn("(1) No mailcontent (text/html) was given. Don't send a mail.");
 					} else {
 						mailService.create({
-							email: email,
+							email,
 							subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 							headers: maildata.headers || {},
 							content: {
@@ -584,7 +584,7 @@ exports.sendEmail = (hook, maildata) => {
 		} else {
 			_.uniq(receipients).map((email) => {
 				mailService.create({
-					email: email,
+					email,
 					subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 					headers: maildata.headers || {},
 					content: {
