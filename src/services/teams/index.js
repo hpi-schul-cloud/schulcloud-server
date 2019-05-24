@@ -714,15 +714,15 @@ module.exports = function setup() {
 	});
 
 
-	const teamPermissionHandler = async (userId, team) => {
+	ScopePermissionService.initialize(app, '/teams/:scopeId/userPermissions', async (userId, team) => {
+		// Return all permissions of the user's team role within the given team
 		const [teamUser] = team.userIds.filter(u => u.userId.toString() === userId.toString());
 		if (teamUser !== undefined) {
 			const role = await app.service('roles').get(teamUser.role.toString());
 			return role.permissions;
 		}
 		return [];
-	};
-	ScopePermissionService.initialize(app, '/teams/:scopeId/userPermissions', teamPermissionHandler);
+	});
 
 	const teamListHandler = async (user) => {
 		const teams = await app.service('teams').find({
