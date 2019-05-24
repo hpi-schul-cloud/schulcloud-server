@@ -1,6 +1,4 @@
-const auth = require('@feathersjs/authentication');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
-const globalHooks = require('../../../../hooks');
 
 const rejectQueryingOtherUsers = (context) => {
 	if (context.params === undefined || context.params.account === undefined) {
@@ -41,28 +39,6 @@ const lookupScope = async (context) => {
 };
 
 module.exports = {
-	hooks: {
-		before: {
-			all: [
-				globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
-				globalHooks.ifNotLocal(rejectQueryingOtherUsers),
-				lookupScope,
-			],
-			find: [],
-			get: [],
-		},
-		after: {
-			all: [],
-			find: [],
-			get: [],
-		},
-		error: {
-			all: [],
-			find: [],
-			get: [],
-		},
-	},
-
 	lookupScope,
 	rejectQueryingOtherUsers,
 };

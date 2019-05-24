@@ -1,26 +1,42 @@
-const { hooks } = require('./hooks');
+const auth = require('@feathersjs/authentication');
+const globalHooks = require('../../../hooks');
+const { lookupScope, rejectQueryingOtherUsers } = require('./hooks');
 
-class ScopePermissionService {
-	static initialize(app, path, permissionHandler) {
-		if (!permissionHandler) {
-			throw new Error(`ScopePermisionService initialized at '${path}' without permissionHandler.`);
-		}
-
-		app.use(path, new ScopePermissionService(permissionHandler));
-		const scopePermissionService = app.service(path);
-		scopePermissionService.hooks(hooks);
-	}
-
-	constructor(permissionHandler) {
-		this.permissionHandler = permissionHandler;
+class ScopeService {
+	constructor(handler) {
+		this.handler = handler;
 	}
 
 	async setup(app) {
 		this.app = app;
 	}
 
+	static hooks() {
+		return {
+			before: {
+				all: [
+					globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
+					globalHooks.ifNotLocal(rejectQueryingOtherUsers),
+					lookupScope,
+				],
+			},
+		};
+	}
+
+	static initialize(app, path, handler) {
+		if (!handler) {
+			throw new Error(`ScopePermisionService initialized at '${path}' without handler.`);
+		}
+
+		app.use(path, new this(handler));
+		const scopePermissionService = app.service(path);
+		scopePermissionService.hooks(this.hooks());
+	}
+}
+
+class ScopePermissionService extends ScopeService {
 	async getUserPermissions(userId, scope) {
-		const permissions = await this.permissionHandler.apply(this, [userId, scope]);
+		const permissions = await this.handler.apply(this, [userId, scope]);
 		return permissions || [];
 	}
 
@@ -48,6 +64,30 @@ class ScopePermissionService {
 	}
 }
 
+class ScopeListService extends ScopeService {
+	async getUserScopes(userId, permissions = []) {
+		const scopes = await this.handler.apply(this, [userId, permissions]);
+		return scopes || [];
+	}
+
+	find(params) {
+		return this.getUserScopes(params.scope);
+	}
+
+	static hooks() {
+		return {
+			before: {
+				all: [
+					globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
+					lookupScope,
+				],
+			},
+		};
+	}
+}
+
 module.exports = {
+	ScopeService,
 	ScopePermissionService,
+	ScopeListService,
 };
