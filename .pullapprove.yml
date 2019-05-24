@@ -45,3 +45,4 @@ groups:
     reviews:
       required: 1  # number of approvals required from this group
       request: -1  # request from all members a review
+      author_value: 1
