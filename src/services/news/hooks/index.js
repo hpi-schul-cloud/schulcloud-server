@@ -15,34 +15,12 @@ const deleteNewsHistory = (hook) => {
 		});
 };
 
-function getBoolean(value) {
-	switch (value) {
-		case true:
-		case 'true':
-		case 1:
-		case '1':
-		case 'on':
-		case 'yes':
-			return true;
-		default:
-			return false;
-	}
-}
-
-const convertToBoolean = (hook) => {
-	if (hook.params.query && hook.params.query.target && hook.params.query.target.$exists) {
-		hook.params.query.target.$exists = getBoolean(hook.params.query.target.$exists);
-	}
-};
-
 exports.before = {
 	all: [
 		auth.hooks.authenticate('jwt'),
 	],
 	find: [],
-	get: [
-		globalHooks.hasPermission('NEWS_VIEW'),
-	],
+	get: [],
 	create: [
 		globalHooks.hasPermission('NEWS_CREATE'),
 	],
