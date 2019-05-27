@@ -73,7 +73,7 @@ class NewsService {
 		if (!this.hasPermission(userId, 'NEWS_VIEW')) {
 			throw new Error('Mising permissions to view school news.');
 		}
-		return newsModel.find({	schoolId }).lean();
+		return newsModel.find({	schoolId, target: { $exists: false } }).lean();
 	}
 
 	/**
