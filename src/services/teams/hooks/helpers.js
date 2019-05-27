@@ -80,13 +80,17 @@ const addDefaultFilePermissions = (hook) => {
 	if (isUndefined([hook.data, hook.teamroles], 'OR')) {
 		return hook;
 	}
-	hook.data.filePermission = [];
-
-	hook.teamroles.forEach((role) => {
-		const refId = role._id;
-		const refPermModel = 'role';
-		hook.data.filePermission.push({ refId, refPermModel });
-	});
+	const refPermModel = 'role';
+	hook.data.filePermission = [
+		{
+			refPermModel,
+			refId: hook.findRole('name', 'teammember', '_id'),
+		},
+		{
+			refPermModel,
+			refId: hook.findRole('name', 'teamexpert', '_id'),
+		},
+	];
 
 	return hook;
 };
