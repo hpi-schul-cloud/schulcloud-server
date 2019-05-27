@@ -1,6 +1,4 @@
 const { expect } = require('chai');
-const { ObjectId } = require('mongoose').Types;
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const {
 	ScopeService, ScopePermissionService, ScopeListService,
 } = require('../../../../src/services/helpers/scopePermissions');
