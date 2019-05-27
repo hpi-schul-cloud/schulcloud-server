@@ -453,12 +453,12 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 		const sessionUserId = bsonIdToString(hook.params.account.userId);
 
 		let isLeaveTeam = false;
-    let isRemoveOthers = false;
-    let isAddingFromOwnSchool = false;
-    let isAddingFromOtherSchool = false;
-    let hasChangeRole = false;
-    let highestChangedRole = '';
-    
+		let isRemoveOthers = false;
+		let isAddingFromOwnSchool = false;
+		let isAddingFromOtherSchool = false;
+		let hasChangeRole = false;
+		let highestChangedRole = '';
+
 		const leaveTeam = hasTeamPermission('LEAVE_TEAM');
 		const removeMembers = hasTeamPermission('REMOVE_MEMBERS');
 		const addSchoolMembers = hasTeamPermission('ADD_SCHOOL_MEMBERS');
