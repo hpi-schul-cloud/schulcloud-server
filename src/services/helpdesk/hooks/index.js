@@ -71,7 +71,7 @@ const feedback = () => (hook) => {
 		// TODO: NOTIFICATION SERVICE
 	} else {
 		globalHooks.sendEmail(hook, {
-			subject: data.subject || 'nosubject',
+			subject: data.title || data.subject || 'nosubject',
 			emails: ['ticketsystem@schul-cloud.org'],
 			content: {
 				text: createFeedbackText(
