@@ -177,7 +177,7 @@ class NotificationService {
 
 		const options = {
 			uri: `${serviceUrls.notification}/notifications/`
-				+ `?user=${userId}&${toQueryString(params.query)}`,
+                + `?user=${userId}&${toQueryString(params.query)}`,
 			headers: {
 				token: userId,
 			},

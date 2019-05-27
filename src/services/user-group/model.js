@@ -1,5 +1,3 @@
-
-
 const autoPopulate = require('mongoose-autopopulate');
 const mongoose = require('mongoose');
 const logger = require('winston');
@@ -71,13 +69,28 @@ classSchema.plugin(autoPopulate);
 classSchema.plugin(require('mongoose-lean-virtuals'));
 
 const getClassDisplayName = (aclass) => {
+	// for static classes
 	if (aclass.nameFormat === 'static') {
 		return aclass.name;
-	} if (aclass.nameFormat === 'gradeLevel+name') {
+	}
+
+	// for non static classes
+	if (
+		aclass.nameFormat === 'gradeLevel+name'
+        && typeof aclass.gradeLevel === 'object'
+        && (aclass.gradeLevel || {}).name
+	) {
 		return `${aclass.gradeLevel.name}${aclass.name}`;
 	}
-	logger.warn('unknown nameFormat', aclass.nameFormat);
-	return undefined;
+
+	// error handling
+	if (!aclass.nameFormat) {
+		logger.warn(`unknown nameFormat in class${aclass._id}`);
+	} else {
+		logger.warn(`The gradeLevel in class ${aclass._id} do not exist, or is is not populated.`, aclass.nameFormat);
+	}
+
+	return aclass;
 };
 
 // => has no access to this

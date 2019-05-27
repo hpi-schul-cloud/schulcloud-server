@@ -5,20 +5,18 @@ const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const firstLoginHooks = require('./hooks/firstLogin');
-const { AdminStudents } = require('./services');
+const { AdminUsers } = require('./services');
 const adminHook = require('./hooks/admin');
 
-const userDataFilter = (user) => {
-	return {
-		"userId": user._id,
-		"email": user.email,
-		"firstName": user.firstName,
-		"lastName": user.lastName,
-		"importHash": user.importHash,
-		"schoolId": user.schoolId,
-		"birthday": user.birthday,
-	};
-};
+const userDataFilter = user => ({
+	userId: user._id,
+	email: user.email,
+	firstName: user.firstName,
+	lastName: user.lastName,
+	importHash: user.importHash,
+	schoolId: user.schoolId,
+	birthday: user.birthday,
+});
 
 class UserLinkImportService {
 	constructor(userService) {
@@ -26,16 +24,14 @@ class UserLinkImportService {
 		this.docs = {};
 	}
 
-	get(hash, params) {	//can not use get becouse the hash can have / that mapped to non existing routes
+	get(hash, params) { // can not use get becouse the hash can have / that mapped to non existing routes
 		return this.userService.find({ query: { importHash: hash } })
-			.then(users => {
-				if (users.data.length <= 0 || users.data.length > 1) {
+			.then((users) => {
+				if (users.data.length !== 1) {
 					throw new errors.BadRequest('Can not match the hash.');
 				}
 				return userDataFilter(users.data[0]);
-			}).catch(err => {
-				return err;
-			});
+			}).catch(err => err);
 	}
 }
 
@@ -54,9 +50,9 @@ module.exports = function setup() {
 	app.use('/users', service(options));
 
 	const userService = app.service('/users');
-	app.use('users/linkImport', new UserLinkImportService(userService));	//do not use hooks
+	app.use('users/linkImport', new UserLinkImportService(userService)); // do not use hooks
 
-	userService.hooks(hooks);	// TODO: refactor
+	userService.hooks(hooks); // TODO: refactor
 
 	/* publicTeachers Service */
 	app.use('/publicTeachers', service({
@@ -92,7 +88,12 @@ module.exports = function setup() {
 	firstLoginService.hooks(firstLoginHooks);
 
 	const adminStudentsRoute = '/users/admin/students';
-	app.use(adminStudentsRoute, new AdminStudents());
+	app.use(adminStudentsRoute, new AdminUsers('student'));
 	const adminStudentsService = app.service(adminStudentsRoute);
 	adminStudentsService.hooks(adminHook);
+
+	const adminTeachersRoute = '/users/admin/teachers';
+	app.use(adminTeachersRoute, new AdminUsers('teacher'));
+	const adminTeachersService = app.service(adminTeachersRoute);
+	adminTeachersService.hooks(adminHook);
 };

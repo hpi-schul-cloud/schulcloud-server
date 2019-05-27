@@ -4,15 +4,11 @@ const logger = require('winston');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
 
-const removeOldPins = (hook) => {
-	return pinModel.deleteMany({email:hook.data.email})
-		.then(pins => {
-			return Promise.resolve(hook);
-		});
-};
+const removeOldPins = hook => pinModel.deleteMany({ email: hook.data.email })
+	.then(pins => Promise.resolve(hook));
 
 const generatePin = (hook) => {
-	let pin = Math.floor((Math.random() * 8999)+1000);
+	const pin = Math.floor((Math.random() * 8999) + 1000);
 	hook.data.pin = pin.toString();
 	return Promise.resolve(hook);
 };
@@ -20,7 +16,7 @@ const generatePin = (hook) => {
 function createinfoText(hook) {
 	let text;
 	const role = hook.data.mailTextForRole;
-	const pin = hook.data.pin;
+	const { pin } = hook.data;
 	const shortTitle = process.env.SC_SHORT_TITLE || 'Schul-Cloud*';
 	const longTitle = process.env.SC_TITLE || 'HPI Schul-Cloud*';
 	if (!role || !pin) {
@@ -35,7 +31,6 @@ PIN: ${pin}
 
 Mit Freundlichen Grüßen
 Ihr ${shortTitle} Team`;
-
 	} else if (role === 'student' || role === 'employee' || role === 'expert') {
 		text = `Vielen Dank, dass du die ${longTitle} nutzen möchtest.
 Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen:
@@ -51,14 +46,11 @@ Dein ${shortTitle} Team`;
 	return text;
 }
 
-const checkAndVerifyPin = hook => {
-	if(hook.result.data.length === 1 && hook.result.data[0].verified===false) {
-		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, {verified: true}).then(() => {
-			return Promise.resolve(hook);
-		});
-	} else {
-		return Promise.resolve(hook);
+const checkAndVerifyPin = (hook) => {
+	if (hook.result.data.length === 1 && hook.result.data[0].verified === false) {
+		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, { verified: true }).then(() => Promise.resolve(hook));
 	}
+	return Promise.resolve(hook);
 };
 
 const mailPin = (hook) => {
@@ -83,7 +75,7 @@ const returnPinOnlyToSuperHero = async (hook) => {
 	if (((hook.params || {}).account || {}).userId) {
 		const userService = hook.app.service('/users/');
 		const currentUser = await userService.get(hook.params.account.userId, { query: { $populate: 'roles' } });
-		const userRoles = currentUser.roles.map((role) => {return role.name;});
+		const userRoles = currentUser.roles.map(role => role.name);
 		if (userRoles.includes('superhero')) {
 			return Promise.resolve(hook);
 		}
