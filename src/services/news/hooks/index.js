@@ -1,6 +1,6 @@
 const auth = require('@feathersjs/authentication');
 const logger = require('winston');
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
+const { BadRequest } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const { newsModel, newsHistoryModel } = require('../model');
 
@@ -16,6 +16,13 @@ const deleteNewsHistory = (hook) => {
 		});
 };
 
+/**
+ * Decorates context.params.account with the user's schoolId
+ * @param {context} context Hook context
+ * @requires auth.hooks.authenticate('jwt')
+ * @throws {BadRequest} if not authenticated or userId is missing.
+ * @throws {NotFound} if user cannot be found
+ */
 const lookupSchool = async (context) => {
 	if (context.params.account && context.params.account.userId) {
 		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
@@ -23,7 +30,7 @@ const lookupSchool = async (context) => {
 		return context;
 	}
 	throw new BadRequest('Authentication is required.');
-}
+};
 
 exports.before = {
 	all: [
