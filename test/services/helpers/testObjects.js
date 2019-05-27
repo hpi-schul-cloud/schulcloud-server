@@ -1,136 +1,88 @@
-module.exports = (app) => {
-	const accountService = app.service('accounts');
-	const systemService = app.service('systems');
-	const userService = app.service('users');
-	const classesService = app.service('classes');
-	const coursesService = app.service('courses');
-	const registrationPinsService = app.service('registrationPins');
+const logger = require('winston');
 
-	function initInstanceIds() {
-		return {
-			accounts: [],
-			users: [],
-			systems: [],
-			classes: [],
-			courses: [],
-		};
-	}
+const serviceHelpers = require('./services');
 
-	let instanceIds = initInstanceIds();
+const warn = (message, pass) => {
+	logger.warn(message);
+	return pass;
+};
 
-	function createTestSystem({ url, type = 'moodle' }) {
-		return systemService.create({ url, type })
-			.then((system) => {
-				instanceIds.systems.push(system.id);
-				return system;
+module.exports = (app, opt = {
+	schoolId: '0000d186816abba584714c5f',
+}) => {
+	const {
+		teams,
+		testSystem,
+		login,
+		classes,
+		users,
+		courses,
+		accounts,
+	} = serviceHelpers(app, opt);
+
+	const cleanup = () => {
+		const accountDeletions = accounts.cleanup(); // createdAccountIds.map(id => accountService.remove(id));
+		const userDeletions = users.cleanup();
+		const systemDeletions = testSystem.cleanup();
+		const classDeletions = classes.cleanup();
+		const courseDeletions = courses.cleanup(); // createdCourses.map(id => coursesService.remove(id));
+		const teamsDeletion = teams.cleanup();
+
+		return Promise.all([teamsDeletion]
+			.concat(accountDeletions)
+			.concat(userDeletions)
+			.concat(systemDeletions)
+			.concat(classDeletions)
+			.concat(courseDeletions))
+			.then((res) => {
+				logger.info('[TestObjects] cleanup data.');
+				return res;
+			})
+			.catch((err) => {
+				logger.warn('[TestObjects] Can not cleanup.', err);
+				return err;
 			});
-	}
+	};
 
-	function createTestAccount(accountParameters, system, user) {
-		if (system) accountParameters.systemId = system.id;
-		accountParameters.userId = user._id;
-		return accountService.create(accountParameters)
-			.then((account) => {
-				instanceIds.accounts.push(account._id);
-				return Promise.resolve(account);
-			});
-	}
+	const info = () => ({
+		teams: teams.info,
+		users: users.info,
+		testSystem: testSystem.info,
+		classes: classes.info,
+		tempPins: users.tempPinIds,
+		courses: courses.info,
+		accounts: accounts.info,
+	});
 
-	function createTestUser({
-		// required fields for user
-		firstName = 'Max',
-		lastName = 'Mustermann',
-		email = `max${Date.now()}@mustermann.de`,
-		schoolId = '584ad186816abba584714c94',
-		accounts = [],
-		roles = [],
-		discoverable = false,
-		// manual cleanup, e.g. when testing delete:
-		manualCleanup = false,
-	} = {}) {
-		return registrationPinsService.create({ email })
-			.then(registrationPin => registrationPinsService.find({
-				query: { pin: registrationPin.pin, email: registrationPin.email, verified: false },
-			})).then(() => userService.create({
-				firstName,
-				lastName,
-				email,
-				schoolId,
-				accounts,
-				roles,
-				discoverable,
-			}))
+	const createTestTeamWithOwner = async () => {
+		const user = await users.create();
+		const team = await teams.create(user);
+		return { team, user };
+	};
 
-			.then((user) => {
-				if (!manualCleanup) {
-					instanceIds.users.push(user.id);
-				}
-				return user;
-			});
-	}
-
-	function createTestClass({
-		// required fields
-		name = 'testClass',
-		schoolId = '584ad186816abba584714c94',
-		userIds = [],
-		teacherIds = [],
-	}) {
-		return classesService.create({
-			// required fields for user
-			name,
-			schoolId,
-			userIds,
-			teacherIds,
-		})
-			.then((o) => {
-				instanceIds.classes.push(o.id);
-				return o;
-			});
-	}
-
-	function createTestCourse({
-		// required fields for base group
-		name = 'testCourse',
-		schoolId = '584ad186816abba584714c94',
-		userIds = [],
-		classIds = [],
-		teacherIds = [],
-		ltiToolIds = [],
-	}) {
-		return coursesService.create({
-			// required fields for user
-			name,
-			schoolId,
-			userIds,
-			classIds,
-			teacherIds,
-			ltiToolIds,
-		})
-			.then((o) => {
-				instanceIds.courses.push(o.id);
-				return o;
-			});
-	}
-
-	function cleanup() {
-		const deletions = Object.keys(instanceIds).map((serviceName) => {
-			const service = app.service(serviceName);
-			return instanceIds[serviceName].map(id => service.remove(id));
-		});
-		// flatten all Promises into one array:
-		const flatDeletions = deletions.reduce((acc, x) => acc.concat(x), []);
-		instanceIds = initInstanceIds();
-		return Promise.all(flatDeletions);
-	}
+	const setupUser = async () => {
+		// create account
+		const user = await users.create();
+		// const account = createTestAccount();
+		// fetch jwt
+		const account = {};
+		const requestParams = {};
+		return { user, account, requestParams };
+	};
 
 	return {
-		createTestSystem,
-		createTestAccount,
-		createTestUser,
-		createTestClass,
-		createTestCourse,
+		createTestSystem: testSystem.create,
+		createTestAccount: warn('@implement should rewrite', accounts.create),
+		createTestUser: users.create,
+		createTestClass: classes.create,
+		createTestCourse: courses.create,
 		cleanup,
-		createdUserIds: instanceIds.users,
+		generateJWT: login.generateJWT,
+		generateRequestParams: login.generateRequestParams,
+		createdUserIds: warn('@deprecated use info() instat', users.info),
+		teams,
+		createTestTeamWithOwner,
+		info,
+		setupUser: warn('@implement should finished', setupUser),
 	};
 };

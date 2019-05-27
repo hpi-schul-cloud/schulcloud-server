@@ -23,14 +23,18 @@ const getRoles = () => roleModel.find()
 	.lean()
 	.exec();
 
-const getClasses = (ref, schoolId) => ref.app.service('classes')
+const getClasses = (app, schoolId) => app.service('classes')
 	.find({
 		query: {
 			schoolId,
 			$limit: 1000,
 		},
 	})
-	.then(classes => classes.data);
+	.then(classes => classes.data)
+	.catch((err) => {
+		logger.warn(`Can not execute app.service("classes").find for ${schoolId}`, err);
+		return err;
+	});
 
 const findConsent = userIds => consentModel.find({ userId: { $in: userIds } })
 	.select({
@@ -53,7 +57,7 @@ class AdminStudents {
 	}
 
 	async find(params) {
-	//	const { app } = this;
+		//  const { app } = this;
 		try {
 			const currentUserId = params.account.userId.toString();
 
@@ -65,15 +69,16 @@ class AdminStudents {
 			if (!currentUser.roles.some(role => ['teacher', 'administrator', 'superhero'].includes(role.name))) {
 				throw new Forbidden();
 			}
-
 			// fetch data that are scoped to schoolId
 			const studentRole = (roles.filter(role => role.name === 'student'))[0];
+
 			const [users, classes] = await Promise.all(
 				[
 					getAllUsers(schoolId, studentRole._id),
-					getClasses(this, schoolId),
+					getClasses(this.app, schoolId),
 				],
 			);
+
 			const userIds = users.map(user => user._id.toString());
 			const consents = await findConsent(userIds).then((data) => {
 				// rebuild consent to object for faster sorting
@@ -83,7 +88,6 @@ class AdminStudents {
 				});
 				return out;
 			});
-
 			// bsonId to stringId that it can use .includes for is in test
 			classes.forEach((c) => {
 				c.userIds = c.userIds.map(id => id.toString());
