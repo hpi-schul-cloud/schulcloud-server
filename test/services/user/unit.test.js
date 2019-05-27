@@ -152,10 +152,14 @@ describe('publicTeachers service', () => {
 
 	it('find 1 discoverable teacher but not find other non-discoverable users', async () => {
 		const result = await publicTeachersService.find({ query: { schoolId: testObjects.options.schoolId } });
-		expect(result.total).to.equal(1);
-		expect(result.data[0]._id.toString()).to.equal(testTeacherDiscoverable._id.toString());
-		expect(result.data[0]._id.toString()).to.not.equal(testStudent._id.toString());
-		expect(result.data[0]._id.toString()).to.not.equal(testTeacherNotDiscoverable._id.toString());
+		if (process.env.SC_FEDERALSTATE !== 'niedersachsen') {
+			expect(result.total).to.equal(1);
+			expect(result.data[0]._id.toString()).to.equal(testTeacherDiscoverable._id.toString());
+			expect(result.data[0]._id.toString()).to.not.equal(testStudent._id.toString());
+			expect(result.data[0]._id.toString()).to.not.equal(testTeacherNotDiscoverable._id.toString());
+		} else {
+			expect(result.total).to.equal(3);
+		}
 	});
 
 	after(async () => {
