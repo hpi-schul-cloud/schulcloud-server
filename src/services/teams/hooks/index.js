@@ -410,16 +410,34 @@ const hasTeamPermission = (permsissions, _teamId) => globalHooks.ifNotLocal((hoo
 exports.hasTeamPermission = hasTeamPermission; // to use it global
 
 /**
+ * @helper
+ * @param {Object::hook} hook
+ * @param {String||BsonId} firstId a teamRoleId
+ * @param {String||BsonId} secondId another teamRoleId
+ * @return {Boolena} returns true if the first Role is equal or higher in the hierarchy of team-roles
+ */
+const isHigherOrEqualTeamrole = (hook, firstId, secondId) => {
+	const teamRoleHierarchy = ['teamleader', 'teamadministrator', 'teamowner'];
+	const firstRole = hook.findRole('_id', firstId, 'name');
+	const secondRole = secondId !== '' ? hook.findRole('_id', secondId, 'name') : '';
+	return teamRoleHierarchy.indexOf(firstRole) >= teamRoleHierarchy.indexOf(secondRole);
+};
+
+/**
  * This hook test what is want to change and execute
  * for every changed keys the permission check for it.
  * @beforeHook
  * @ifNotLocal
  */
-const testChangesForPermissionRouting = globalHooks.ifNotLocal((hook) => {
+const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 	const d = hook.data;
 	if (isUndefined(d)) {
 		return hook;
 	}
+
+	const sessionUser = await getSessionUser(hook);
+	if (get(hook, 'isSuperhero')) return Promise.resolve(hook);
+
 	// hasTeamPermission throw error if do not have the permission. Superhero is also test.
 	if (isDefined([d.times, d.color, d.description, d.name, d.startDate, d.untilDate], 'OR')) {
 		(hasTeamPermission('RENAME_TEAM'))(hook); // throw error if has not the permission
@@ -428,13 +446,19 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal((hook) => {
 		return hook;
 	}
 	return Promise.all([
-		getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook),
-	]).then(([sessionUser, team, users]) => {
+		getTeam(hook), populateUsersForEachUserIdinHookData(hook),
+	]).then(([team, users]) => {
 		const changes = arrayRemoveAddDiffs(team.userIds, hook.data.userIds, 'userId'); // remove add
 		const sessionSchoolId = sessionUser.schoolId;
 		const sessionUserId = bsonIdToString(hook.params.account.userId);
-		let isLeaveTeam = false; let isRemoveOthers = false; let isAddingFromOwnSchool = false; let isAddingFromOtherSchool = false; let
-			hasChangeRole = false;
+
+		let isLeaveTeam = false;
+		let isRemoveOthers = false;
+		let isAddingFromOwnSchool = false;
+		let isAddingFromOtherSchool = false;
+		let hasChangeRole = false;
+		let highestChangedRole = '';
+
 		const leaveTeam = hasTeamPermission('LEAVE_TEAM');
 		const removeMembers = hasTeamPermission('REMOVE_MEMBERS');
 		const addSchoolMembers = hasTeamPermission('ADD_SCHOOL_MEMBERS');
@@ -462,6 +486,10 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal((hook) => {
 			if (isDefined(teamUser)) {
 				if (isDefined(_.role) && !isSameId(teamUser.role, _.role)) {
 					hasChangeRole = true;
+					if (isHigherOrEqualTeamrole(hook, _.role, highestChangedRole)) highestChangedRole = _.role;
+					if (isHigherOrEqualTeamrole(hook, teamUser.role, highestChangedRole)) {
+						highestChangedRole = teamUser.role;
+					}
 				}
 			}
 		});
@@ -493,6 +521,12 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal((hook) => {
 			wait.push(changeTeamRoles(hook).catch((err) => {
 				throw new Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
 			}));
+
+			const sessionUserTeamUser = team.userIds.find(user => user.userId.toString() === sessionUserId);
+			const sessionUserTeamRole = ((sessionUserTeamUser || {}).role).toString();
+			if (!isHigherOrEqualTeamrole(hook, sessionUserTeamRole, highestChangedRole)) {
+				wait.push(Promise.reject(new Forbidden('You cant change a Permission higher than yours')));
+			}
 		}
 
 		return Promise.all(wait).then(() => hook).catch((err) => {
