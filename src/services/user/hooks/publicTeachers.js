@@ -17,7 +17,8 @@ const filterForPublicTeacher = (hook) => {
 
 	// Limit accessible user (only teacher which are discoverable)
 	hook.params.query.roles = ['teacher'];
-	if (process.env.SC_FEDERALSTATE !== 'niedersachsen') {
+
+	if (process.env.IGNORE_DISCOVERABILITY !== 'true') {
 		hook.params.query.discoverable = true;
 	}
 

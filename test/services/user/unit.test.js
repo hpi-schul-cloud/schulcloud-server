@@ -150,17 +150,29 @@ describe('publicTeachers service', () => {
 		assert.ok(publicTeachersService);
 	});
 
-	it('find 1 discoverable teacher but not find other non-discoverable users', async () => {
-		const result = await publicTeachersService.find({ query: { schoolId: testObjects.options.schoolId } });
-		if (process.env.SC_FEDERALSTATE !== 'niedersachsen') {
-			expect(result.total).to.equal(1);
-			expect(result.data[0]._id.toString()).to.equal(testTeacherDiscoverable._id.toString());
-			expect(result.data[0]._id.toString()).to.not.equal(testStudent._id.toString());
-			expect(result.data[0]._id.toString()).to.not.equal(testTeacherNotDiscoverable._id.toString());
-		} else {
-			expect(result.total).to.equal(3);
-		}
+	// save process.env.IGNORE_DISCOVERABILITY value
+	const ORIGINAL_IGNORE_DISCOVERABILITY = process.env.IGNORE_DISCOVERABILITY;
+	let result;
+
+	it('without IGNORE_DISCOVERABILITY: find 1 discoverable teacher but not find other users', async () => {
+		// test with IGNORE_DISCOVERABILITY = false
+		process.env.IGNORE_DISCOVERABILITY = 'false';
+		result = await publicTeachersService.find({ query: { schoolId: testObjects.options.schoolId } });
+		expect(result.total).to.equal(1);
+		expect(result.data[0]._id.toString()).to.equal(testTeacherDiscoverable._id.toString());
+		expect(result.data[0]._id.toString()).to.not.equal(testStudent._id.toString());
+		expect(result.data[0]._id.toString()).to.not.equal(testTeacherNotDiscoverable._id.toString());
 	});
+
+	it('with IGNORE_DISCOVERABILITY: find all 3 users ignoring their discoverable setting', async () => {
+		// test with IGNORE_DISCOVERABILITY = true
+		process.env.IGNORE_DISCOVERABILITY = 'true';
+		result = await publicTeachersService.find({ query: { schoolId: testObjects.options.schoolId } });
+		expect(result.total).to.equal(3);
+	});
+
+	// reset process.env.IGNORE_DISCOVERABILITY back to original value
+	process.env.IGNORE_DISCOVERABILITY = ORIGINAL_IGNORE_DISCOVERABILITY;
 
 	after(async () => {
 		await testObjects.cleanup();
