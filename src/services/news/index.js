@@ -42,15 +42,35 @@ class NewsService {
 	}
 
 	/**
+	 * Checks scoped permission for a user.
+	 * @param {BsonId|String} userId
+	 * @param {String} permission
+	 * @param {BsonId|String} targetId (optional) news target (scope) id. Only valid with targetModel.
+	 * @param {String} targetModel (optional) news target (scope) model. Only valid with target.
+	 * @returns {Promise<Boolean>} Promise that resolves to true/false
+	 * @example await hasPermission(user._id, 'NEWS_VIEW') => true
+	 * @example await hasPermission(user._id, 'NEWS_CREATE', team._id, 'teams') => false
+	 * @memberof NewsService
+	 */
+	async hasPermission(userId, permission, targetId, targetModel) {
+		if (targetId && targetModel) {
+			const scope = this.app.service(`${targetModel}/:scopeId/userPermissions/`);
+			const params = { route: { scopeId: targetId.toString() } };
+			const scopePermissions = await scope.get(userId, params) || [];
+			return scopePermissions.includes(permission);
+		}
+		const user = await this.app.service('users').get(userId);
+		return user.permissions.includes(permission);
+	}
+
+	/**
 	 * Returns all school news the user is allowed to see.
 	 * @param {Object} { userId, schoolId } -- The user's Id and schoolId
 	 * @returns Array<News Document>
 	 * @memberof NewsService
 	 */
 	async findSchoolNews({ userId, schoolId }) {
-		const user = await this.app.service('users').get(userId);
-		const hasAccess = user.permissions.includes('NEWS_VIEW');
-		if (!hasAccess) {
+		if (!this.hasPermission(userId, 'NEWS_VIEW')) {
 			throw new Error('Mising permissions to view school news.');
 		}
 		return newsModel.find({	schoolId }).lean();
@@ -97,10 +117,28 @@ class NewsService {
 	}
 
 	/**
+	 * GET /news/{id}
+	 * Returns the news item specified by id
+	 * @param {BsonId|String} id
+	 * @param {Object} params
+	 * @returns one news item
+	 * @memberof NewsService
+	 */
+	async get(id, params) {
+		const news = await newsModel.findOne({ _id: id }).lean();
+		const authorized = await this.hasPermission(params.account.userId, 'NEWS_VIEW', news.target, news.targetModel);
+		const sameSchool = news.schoolId.toString() === params.account.schoolId.toString();
+		if (!sameSchool || !authorized) {
+			throw new Error('Not authorized.');
+		}
+		return news;
+	}
+
+	/**
 	 * GET /news/
 	 * Returns all news the user can see.
 	 * @param {*} params
-	 * @returns array of news items
+	 * @returns paginated array of news items
 	 * @memberof NewsService
 	 */
 	async find(params) {
