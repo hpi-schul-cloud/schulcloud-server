@@ -7,22 +7,23 @@ class Service {
 		this.options = options || {};
 		this.docs = {};
 	}
+
 	/**
-	 * request headers
-	 * set Content-Type = application/json
-	 * set Authorization = Bearer [jwt]
-	 */
+     * request headers
+     * set Content-Type = application/json
+     * set Authorization = Bearer [jwt]
+     */
 	find(params) {
-		const userId = params.account.userId;
+		const { userId } = params.account;
 		const userServiceParams = {
 			query: {
-				$populate: ['roles']
-			}
+				$populate: ['roles'],
+			},
 		};
-		return this.app.service('/users').get(userId, userServiceParams).catch(err => {
+		return this.app.service('/users').get(userId, userServiceParams).catch((err) => {
 			logger.warn(err);
 			throw new Forbidden('Your access token is not valid.');
-		})
+		});
 	}
 
 	setup(app, path) {
