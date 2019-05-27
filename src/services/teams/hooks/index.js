@@ -40,59 +40,56 @@ const {
 *   @param {Object::hook} hook
 *   @method all
 *   @ifNotLocal work only for extern requests
-*	*/
-const teamMainHook = globalHooks.ifNotLocal((hook) => {
-	return Promise.all([
-		getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook),
-	]).then(([sessionUser, team, users]) => {
-		const userId = bsonIdToString(hook.params.account.userId);
-		const restrictedFindMatch = { userIds: { $elemMatch: { userId } } };
-		const isSuperhero = ifSuperhero(sessionUser.roles);
-		const { method } = hook;
+*   */
+const teamMainHook = globalHooks.ifNotLocal(hook => Promise.all([
+	getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook),
+]).then(([sessionUser, team, users]) => {
+	const userId = bsonIdToString(hook.params.account.userId);
+	const restrictedFindMatch = { userIds: { $elemMatch: { userId } } };
+	const isSuperhero = ifSuperhero(sessionUser.roles);
+	const { method } = hook;
 
-		if (isUndefined([sessionUser, team, sessionUser.schoolId], 'OR')) {
-			throw new BadRequest('Bad intern call. (3)');
-		}
-		const sessionSchoolId = bsonIdToString(sessionUser.schoolId);
+	if (isUndefined([sessionUser, team, sessionUser.schoolId], 'OR')) {
+		throw new BadRequest('Bad intern call. (3)');
+	}
+	const sessionSchoolId = bsonIdToString(sessionUser.schoolId);
 
-		if (isSuperhero === false) {
-			if (method === 'create') {
-				team = updateMissingDataInHookForCreate(hook, sessionUser);
-				users.push(sessionUser);
-				hook.data = team;
-			} else if (method === 'find') {
-				hook.params.query = restrictedFindMatch;
-				return hook;
-			}
-			// test if session user is in team
-			const isAccept = isAcceptWay(hook, team._id, team, users);
-
-			if (isUndefined(isAccept)) {
-				const userExist = team.userIds.some(_user => isSameId(_user.userId, userId));
-				const schoolExist = team.schoolIds.includes(sessionSchoolId);
-
-				if (isUndefined([userExist, schoolExist], 'OR')) {
-					throw new Forbidden('You have not the permission to access this. (1)', { userExist, schoolExist });
-				}
-			}
-		}
-
-		let teamUsers;
-		if (hasKey(hook, 'data') && isArrayWithElement(hook.data.userIds)) {
-			teamUsers = getTeamUsers(hook, team, users, sessionSchoolId);
-			hook.data.userIds = teamUsers;
-		}
-
-		set(hook, 'sessionUser', sessionUser);
-		set(hook, 'isSuperhero', isSuperhero);
-		set(hook, 'newUsers', teamUsers || []);
-
+	if (method === 'create') {
+		// eslint-disable-next-line no-param-reassign
+		team = updateMissingDataInHookForCreate(hook, sessionUser);
+		users.push(sessionUser);
+		hook.data = team;
+	} else if (method === 'find') {
+		hook.params.query.userIds = { $elemMatch: { userId } };
 		return hook;
-	}).catch((err) => {
-		logger.warn(err);
-		throw new BadRequest('Bad response.');
-	});
-});
+	}
+	// test if session user is in team
+	const isAccept = isAcceptWay(hook, team._id, team, users);
+
+	if (isUndefined(isAccept)) {
+		const userExist = team.userIds.some(_user => isSameId(_user.userId, userId));
+		const schoolExist = team.schoolIds.includes(sessionSchoolId);
+
+		if (isUndefined([userExist, schoolExist], 'OR')) {
+			throw new Forbidden('You have not the permission to access this. (1)', { userExist, schoolExist });
+		}
+	}
+
+	let teamUsers;
+	if (hasKey(hook, 'data') && isArrayWithElement(hook.data.userIds)) {
+		teamUsers = getTeamUsers(hook, team, users, sessionSchoolId);
+		hook.data.userIds = teamUsers;
+	}
+
+	set(hook, 'sessionUser', sessionUser);
+	set(hook, 'isSuperhero', isSuperhero);
+	set(hook, 'newUsers', teamUsers || []);
+
+	return hook;
+}).catch((err) => {
+	logger.warn(err);
+	throw new BadRequest('Bad response.');
+}));
 
 /**
  * mapped userIds from class to userIds, clear all double userId inputs
@@ -204,19 +201,15 @@ const filterToRelated = (keys, path, _ifNotLocal = true, objectToFilter) => {
 	}
 	const execute = (hook) => {
 		const filter = (data) => {
-			const reducer = (old) => {
-				return (newObject, key) => {
-					if (old[key] !== undefined) // if related key exist
-						newObject[key] = old[key];
-					return newObject;
-				};
+			const reducer = old => (newObject, key) => {
+				if (old[key] !== undefined) // if related key exist
+				{ newObject[key] = old[key]; }
+				return newObject;
 			};
 
 			let out;
 			if (Array.isArray(data)) {
-				out = data.map((element) => {
-					return keys.reduce(reducer(element), {});
-				});
+				out = data.map(element => keys.reduce(reducer(element), {}));
 			} else {
 				out = keys.reduce(reducer(data), {});
 			}
@@ -227,7 +220,8 @@ const filterToRelated = (keys, path, _ifNotLocal = true, objectToFilter) => {
 			path = path.split('.');
 		}
 		const result = objectToFilter || hook;
-		let link, linkKey;
+		let link; let
+			linkKey;
 		const target = path.length > 0 ? path.reduce((stack, key) => {
 			if (stack[key] === undefined) {
 				throw new NotImplemented('The path do not exist.');
@@ -315,12 +309,12 @@ const teamRolesToHook = (hook) => {
 		hook.teamroles = roles.data; // add team roles with permissions to hook
 
 		/**
-		 * @param {String} key
-		 * @param {Object||String} value search value
-		 * @param {String} [resultKey] if only one value of a key should return
-		 * @example hook.findRole('name','teamowner');
-		 * @example hook.findRole('name','teamleader','permissions');
-		 */
+         * @param {String} key
+         * @param {Object||String} value search value
+         * @param {String} [resultKey] if only one value of a key should return
+         * @example hook.findRole('name','teamowner');
+         * @example hook.findRole('name','teamleader','permissions');
+         */
 		hook.findRole = (key, value, resultKey) => { // add a search function to hook
 			const self = hook;
 
@@ -336,7 +330,7 @@ const teamRolesToHook = (hook) => {
 			if (isObject(value) && value._id) {
 				value = value[key];
 			}
-			let role = self.teamroles.find(teamroles => teamroles[key].toString() === value.toString());
+			const role = self.teamroles.find(teamroles => teamroles[key].toString() === value.toString());
 			let out;
 			if (role && resultKey) {
 				out = role[resultKey];
@@ -377,46 +371,57 @@ exports.teamRolesToHook = teamRolesToHook;
  * @return {function::function(hook)}
  * @ifNotLocal
  */
-const hasTeamPermission = (permsissions, _teamId) => {
-	return globalHooks.ifNotLocal((hook) => {
-
+const hasTeamPermission = (permsissions, _teamId) => globalHooks.ifNotLocal((hook) => {
+	if (get(hook, 'isSuperhero') === true) {
+		return Promise.resolve(hook);
+	}
+	if (isString(permsissions)) {
+		permsissions = [permsissions];
+	}
+	return Promise.all(
+		[getSessionUser(hook), teamRolesToHook(hook), getTeam(hook)],
+	).then(([sessionUser, ref, team]) => {
 		if (get(hook, 'isSuperhero') === true) {
-			return hook;
-		}
-		if (isString(permsissions)) {
-			permsissions = [permsissions];
-		}
-		return Promise.all(
-			[getSessionUser(hook), teamRolesToHook(hook), getTeam(hook)],
-		).then(([sessionUser, ref, team]) => {
-			if (get(hook, 'isSuperhero') === true) {
-				return hook;
-			}
-			const userId = bsonIdToString(hook.params.account.userId);
-			const teamId = _teamId || hook.teamId || hook.id;
-			const teamUser = team.userIds.find(_user => isSameId(_user.userId, userId));
-
-			if (isUndefined(teamUser)) {
-				throw new NotFound(`Session user is not in this team userId=${userId} teamId=${teamId}`);
-			}
-
-			const teamRoleId = teamUser.role;
-			const userTeamPermissions = ref.findRole('_id', teamRoleId, 'permissions');
-
-			permsissions.forEach((_permsission) => {
-				if (userTeamPermissions.includes(_permsission) === false) {
-					throw new Forbidden(`No permission=${_permsission} found!`);
-				}
-			});
-
 			return Promise.resolve(hook);
-		}).catch((err) => {
-			logger.warn(err);
-			throw new Forbidden('You have not the permission to access this. (2)');
+		}
+		const userId = bsonIdToString(hook.params.account.userId);
+		const teamId = _teamId || hook.teamId || hook.id;
+		const teamUser = team.userIds.find(_user => isSameId(_user.userId, userId));
+
+		if (isUndefined(teamUser)) {
+			throw new NotFound(`Session user is not in this team userId=${userId} teamId=${teamId}`);
+		}
+
+		const teamRoleId = teamUser.role;
+		const userTeamPermissions = ref.findRole('_id', teamRoleId, 'permissions');
+
+		permsissions.forEach((_permsission) => {
+			if (userTeamPermissions.includes(_permsission) === false) {
+				throw new Forbidden(`No permission=${_permsission} found!`);
+			}
 		});
+
+		return Promise.resolve(hook);
+	}).catch((err) => {
+		logger.warn(err);
+		throw new Forbidden('You have not the permission to access this. (2)');
 	});
-};
+});
 exports.hasTeamPermission = hasTeamPermission; // to use it global
+
+/**
+ * @helper
+ * @param {Object::hook} hook
+ * @param {String||BsonId} firstId a teamRoleId
+ * @param {String||BsonId} secondId another teamRoleId
+ * @return {Boolena} returns true if the first Role is equal or higher in the hierarchy of team-roles
+ */
+const isHigherOrEqualTeamrole = (hook, firstId, secondId) => {
+	const teamRoleHierarchy = ['teamleader', 'teamadministrator', 'teamowner'];
+	const firstRole = hook.findRole('_id', firstId, 'name');
+	const secondRole = secondId !== '' ? hook.findRole('_id', secondId, 'name') : '';
+	return teamRoleHierarchy.indexOf(firstRole) >= teamRoleHierarchy.indexOf(secondRole);
+};
 
 /**
  * This hook test what is want to change and execute
@@ -424,11 +429,15 @@ exports.hasTeamPermission = hasTeamPermission; // to use it global
  * @beforeHook
  * @ifNotLocal
  */
-const testChangesForPermissionRouting = globalHooks.ifNotLocal((hook) => {
+const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 	const d = hook.data;
 	if (isUndefined(d)) {
 		return hook;
 	}
+
+	const sessionUser = await getSessionUser(hook);
+	if (get(hook, 'isSuperhero')) return Promise.resolve(hook);
+
 	// hasTeamPermission throw error if do not have the permission. Superhero is also test.
 	if (isDefined([d.times, d.color, d.description, d.name, d.startDate, d.untilDate], 'OR')) {
 		(hasTeamPermission('RENAME_TEAM'))(hook); // throw error if has not the permission
@@ -437,12 +446,19 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal((hook) => {
 		return hook;
 	}
 	return Promise.all([
-		getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook),
-	]).then(([sessionUser, team, users]) => {
+		getTeam(hook), populateUsersForEachUserIdinHookData(hook),
+	]).then(([team, users]) => {
 		const changes = arrayRemoveAddDiffs(team.userIds, hook.data.userIds, 'userId'); // remove add
 		const sessionSchoolId = sessionUser.schoolId;
 		const sessionUserId = bsonIdToString(hook.params.account.userId);
-		let isLeaveTeam = false, isRemoveOthers = false, isAddingFromOwnSchool = false, isAddingFromOtherSchool = false, hasChangeRole = false;
+
+		let isLeaveTeam = false;
+		let isRemoveOthers = false;
+		let isAddingFromOwnSchool = false;
+		let isAddingFromOtherSchool = false;
+		let hasChangeRole = false;
+		let highestChangedRole = '';
+
 		const leaveTeam = hasTeamPermission('LEAVE_TEAM');
 		const removeMembers = hasTeamPermission('REMOVE_MEMBERS');
 		const addSchoolMembers = hasTeamPermission('ADD_SCHOOL_MEMBERS');
@@ -457,7 +473,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal((hook) => {
 		});
 
 		changes.add.forEach((e) => {
-			const user = users.find((user) => isSameId(e.userId, user._id));
+			const user = users.find(user => isSameId(e.userId, user._id));
 			if (isSameId(user.schoolId, sessionSchoolId)) {
 				isAddingFromOwnSchool = true;
 			} else {
@@ -466,10 +482,14 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal((hook) => {
 		});
 
 		hook.data.userIds.forEach((_) => {
-			const teamUser = team.userIds.find((teamUser) => isSameId(_.userId, teamUser.userId));
+			const teamUser = team.userIds.find(teamUser => isSameId(_.userId, teamUser.userId));
 			if (isDefined(teamUser)) {
 				if (isDefined(_.role) && !isSameId(teamUser.role, _.role)) {
 					hasChangeRole = true;
+					if (isHigherOrEqualTeamrole(hook, _.role, highestChangedRole)) highestChangedRole = _.role;
+					if (isHigherOrEqualTeamrole(hook, teamUser.role, highestChangedRole)) {
+						highestChangedRole = teamUser.role;
+					}
 				}
 			}
 		});
@@ -501,11 +521,15 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal((hook) => {
 			wait.push(changeTeamRoles(hook).catch((err) => {
 				throw new Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
 			}));
+
+			const sessionUserTeamUser = team.userIds.find(user => user.userId.toString() === sessionUserId);
+			const sessionUserTeamRole = ((sessionUserTeamUser || {}).role).toString();
+			if (!isHigherOrEqualTeamrole(hook, sessionUserTeamRole, highestChangedRole)) {
+				wait.push(Promise.reject(new Forbidden('You cant change a Permission higher than yours')));
+			}
 		}
 
-		return Promise.all(wait).then(() => {
-			return hook;
-		}).catch((err) => {
+		return Promise.all(wait).then(() => hook).catch((err) => {
 			throw err;
 		});
 	}).catch((err) => {
@@ -541,7 +565,7 @@ const sendInfo = (hook) => {
  * @afterHook
  * @method patch,get
  * @param {Object::hook} hook - Add the current user to top level,
- * 								easy access of it role and permissions.
+ *                              easy access of it role and permissions.
  * @return {Object::hook}
  */
 const addCurrentUser = globalHooks.ifNotLocal((hook) => {
@@ -549,7 +573,7 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 		const userId = bsonIdToString(hook.params.account.userId);
 		const { userIds } = hook.result;
 		const user = Object.assign({}, userIds.find(
-			(u) => isSameId(u.userId._id || u.userId, userId)
+			u => isSameId(u.userId._id || u.userId, userId),
 		));
 		if (isUndefined([user, user.role], 'OR')) {
 			logger.warn('Can not execute addCurrentUser for unknown user. Or user execute a patch with the result that he has left the team.', { userId });
@@ -591,16 +615,14 @@ const isTeacherDirectlyImport = (hook) => {
  * If not throw an error.
  * @beforeHook
  */
-const isAdmin = (hook) => {
-	return getSessionUser(hook).then((sessionUser) => {
-		const roleNames = sessionUser.roles.map(role => role.name);
-		if (!roleNames.includes('administrator')) {
-			throw new Forbidden('Only administrators can do this.');
-		}
+const isAdmin = hook => getSessionUser(hook).then((sessionUser) => {
+	const roleNames = sessionUser.roles.map(role => role.name);
+	if (!roleNames.includes('administrator')) {
+		throw new Forbidden('Only administrators can do this.');
+	}
 
-		return hook;
-	});
-};
+	return hook;
+});
 
 /**
  * @afterHook
@@ -626,7 +648,7 @@ const isUserIsEmpty = (hook) => {
 const keys = {
 	resFind: ['_id', 'name', 'times', 'description', 'userIds', 'color'],
 	resId: ['_id'],
-	query: ['$populate', '$limit'],
+	query: ['$populate', '$limit', '$skip'],
 	data: ['filePermission', 'name', 'times', 'description', 'userIds', 'color', 'features', 'ltiToolIds', 'classIds', 'startDate', 'untilDate', 'schoolId'],
 };
 

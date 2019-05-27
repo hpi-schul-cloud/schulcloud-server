@@ -38,8 +38,8 @@ const checkUnique = (hook) => {
 			}
 
 			const user = typeof result.data[0] === 'object' ? result.data[0] : {};
-			const input	= typeof hook.data === 'object' ? hook.data : {};
-			const isLoggedIn = !!((hook.params || {}).account && hook.params.account.userId);
+			const input = typeof hook.data === 'object' ? hook.data : {};
+			const isLoggedIn = ((hook.params || {}).account && hook.params.account.userId);
 			// eslint-disable-next-line no-underscore-dangle
 			const { asTask } = hook.params._additional || {};
 
@@ -254,7 +254,7 @@ const securePatching = hook => Promise.all([
  * @param app {object} - the global feathers-app
  * @returns {string} - a display name of the given user
  */
-const getDisplayName = (user, app) => 	app.service('/roles').find({
+const getDisplayName = (user, app) => app.service('/roles').find({
 	// load protected roles
 	query: {	// TODO: cache these
 		name: ['teacher', 'admin'],
