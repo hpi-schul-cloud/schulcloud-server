@@ -20,32 +20,32 @@ phantom.javascriptEnabled = true;
 /*********SETTINGS END*****************/
 
 page.onConsoleMessage = function(msg) {
-	console.log(msg);
+    console.log(msg);
 };
 /**********DEFINE STEPS THAT FANTOM SHOULD DO***********************/
 steps = [
 
-	//Step 1 - Open ITSLearning home page
-	function() {
-		page.open(initialUrl, function(status) {});
-	},
-	//Step 2 - Populate and submit the login form
-	function() {
-		page.evaluate(function(username, password) {
-			document.getElementById("ctl00_ContentPlaceHolder1_Username_input").value = username;
-			document.getElementById("ctl00_ContentPlaceHolder1_Password_input").value = password;
-			document.getElementById("ctl00_ContentPlaceHolder1_nativeLoginButton").click();
-		}, username, password);
-		page.onResourceRequested = function(request) {
-			console.log('Request ' + JSON.stringify(request, undefined, 4));
-			requests.push(request);
-		};
-	},
-	//Step 3 - clearCookies of ITSLearning
-	function() {
-		//console.log(queryParams);
-		page.clearCookies();
-	}
+    //Step 1 - Open ITSLearning home page
+    function() {
+        page.open(initialUrl, function(status) {});
+    },
+    //Step 2 - Populate and submit the login form
+    function() {
+        page.evaluate(function(username, password) {
+            document.getElementById("ctl00_ContentPlaceHolder1_Username_input").value = username;
+            document.getElementById("ctl00_ContentPlaceHolder1_Password_input").value = password;
+            document.getElementById("ctl00_ContentPlaceHolder1_nativeLoginButton").click();
+        }, username, password);
+        page.onResourceRequested = function(request) {
+            console.log('Request ' + JSON.stringify(request, undefined, 4));
+            requests.push(request);
+        };
+    },
+    //Step 3 - clearCookies of ITSLearning
+    function() {
+        //console.log(queryParams);
+        page.clearCookies();
+    }
 ];
 /**********END STEPS THAT FANTOM SHOULD DO***********************/
 
@@ -53,14 +53,14 @@ steps = [
 interval = setInterval(executeRequestsStepByStep, 20);
 
 function executeRequestsStepByStep() {
-	if (loadInProgress == false && typeof steps[testindex] == "function") {
-		//console.log("step " + (testindex + 1));
-		steps[testindex]();
-		testindex++;
-	}
-	if (typeof steps[testindex] != "function") {
-		phantom.exit();
-	}
+    if (loadInProgress == false && typeof steps[testindex] == "function") {
+        //console.log("step " + (testindex + 1));
+        steps[testindex]();
+        testindex++;
+    }
+    if (typeof steps[testindex] != "function") {
+        phantom.exit();
+    }
 }
 
 /**
@@ -68,11 +68,11 @@ function executeRequestsStepByStep() {
  * Without this, we will get content of the page, even a page is not fully loaded.
  */
 page.onLoadStarted = function() {
-	loadInProgress = true;
+    loadInProgress = true;
 };
 page.onLoadFinished = function() {
-	loadInProgress = false;
+    loadInProgress = false;
 };
 page.onConsoleMessage = function(msg) {
-	console.log(msg);
+    console.log(msg);
 };

@@ -111,7 +111,7 @@ describe('Account Service', () => {
 				accountService.create(newAccount)
 					.then(() => {
 						reject(new Error('This call should fail because '
-						+ 'of an already existing user with the same username'));
+                        + 'of an already existing user with the same username'));
 					})
 					.catch((err) => {
 						expect(err.message).to.equal('Der Benutzername ist bereits vergeben!');

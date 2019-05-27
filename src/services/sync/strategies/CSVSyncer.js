@@ -37,15 +37,15 @@ class CSVSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#respondsTo}
-	 */
+     * @see {Syncer#respondsTo}
+     */
 	static respondsTo(target) {
 		return target === 'csv';
 	}
 
 	/**
-	 * @see {Syncer#params}
-	 */
+     * @see {Syncer#params}
+     */
 	static params(params, data = {}) {
 		const query = (params || {}).query || {};
 		if (query.school && query.role && data.data) {
@@ -61,8 +61,8 @@ class CSVSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#steps}
-	 */
+     * @see {Syncer#steps}
+     */
 	async steps() {
 		await super.steps();
 		const records = this.parseCsvData();
@@ -157,7 +157,7 @@ class CSVSyncer extends Syncer {
 					type: 'user',
 					entity: `${record.firstName},${record.lastName},${record.email}`,
 					message: `Mehrfachnutzung der E-Mail-Adresse "${record.email}". `
-						+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+                        + 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
 				});
 				this.stats.users.failed += 1;
 			} else {
@@ -235,10 +235,10 @@ class CSVSyncer extends Syncer {
 			};
 			const params = {
 				/*
-				query and payload need to be deleted, so that feathers doesn't want to update
-				multiple database objects (or none in this case). We still need the rest of
-				the requestParams to authenticate as Admin
-				*/
+                query and payload need to be deleted, so that feathers doesn't want to update
+                multiple database objects (or none in this case). We still need the rest of
+                the requestParams to authenticate as Admin
+                */
 				...this.requestParams,
 				query: undefined,
 				payload: undefined,
@@ -279,12 +279,12 @@ class CSVSyncer extends Syncer {
 					headers: {},
 					content: {
 						text: `Einladung in die ${process.env.SC_TITLE}\n`
-							+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
-							+ `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
-							+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
-							+ `${user.shortLink}\n\n`
-							+ 'Viel Spaß und einen guten Start wünscht dir dein '
-							+ `${process.env.SC_SHORT_TITLE}-Team`,
+                            + `Hallo ${user.firstName} ${user.lastName}!\n\n`
+                            + `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
+                            + 'bitte vervollständige deine Registrierung unter folgendem Link: '
+                            + `${user.shortLink}\n\n`
+                            + 'Viel Spaß und einen guten Start wünscht dir dein '
+                            + `${process.env.SC_SHORT_TITLE}-Team`,
 					},
 				});
 				this.stats.invitations.successful += 1;
