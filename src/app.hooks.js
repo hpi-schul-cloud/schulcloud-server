@@ -42,20 +42,17 @@ const sanitize = (data, options) => {
  */
 const sanitizeDeep = (data, path) => {
 	if (typeof data === 'object' && data !== null) {
-		// eslint-disable-next-line consistent-return
 		Object.entries(data).forEach(([key, value]) => {
 			if (typeof value === 'string') {
 				// ignore values completely
-				if (['password'].includes(key)) {
-					return data;
-				}
+				if (['password'].includes(key)) return data;
 				// enable html for all current editors
-				if (["content", "text", "comment", "gradeComment", "description"].includes(key) && ["lessons", "news", "homework"].includes(path))
-					data[key] = sanitize(value, {html: true});
-				else
-					data[key] = sanitize(value, {html: false});
-			} else
+				const needsHtml = ['content', 'text', 'comment', 'gradeComment', 'description'].includes(key)
+                    && ['lessons', 'news', 'homework', 'submissions'].includes(path);
+				data[key] = sanitize(value, { html: needsHtml });
+			} else {
 				sanitizeDeep(value, path);
+			}
 		});
 	} else if (typeof data === 'string') {
 		data = sanitize(data, { html: false });
