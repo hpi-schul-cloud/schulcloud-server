@@ -1,10 +1,7 @@
 const auth = require('@feathersjs/authentication');
 const logger = require('winston');
 const { BadRequest } = require('@feathersjs/errors');
-const globalHooks = require('../../../hooks');
 const { newsModel, newsHistoryModel } = require('../model');
-
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
 const deleteNewsHistory = (hook) => {
 	newsModel.findOne({ _id: hook.id })
