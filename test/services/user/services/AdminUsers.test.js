@@ -8,7 +8,7 @@ const adminTeachersService = app.service('/users/admin/teachers');
 const gradeLevelService = app.service('/gradeLevels');
 const consentService = app.service('consents');
 
-describe('AdminStudentsService', () => {
+describe('AdminUsersService', () => {
 	let server;
 
 	before((done) => {
