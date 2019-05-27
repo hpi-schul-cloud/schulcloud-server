@@ -39,11 +39,7 @@ exports.before = {
 	all: [
 		auth.hooks.authenticate('jwt'),
 	],
-	find: [
-		globalHooks.hasPermission('NEWS_VIEW'),
-		restrictToCurrentSchool,
-		convertToBoolean,
-	],
+	find: [],
 	get: [
 		globalHooks.hasPermission('NEWS_VIEW'),
 	],
