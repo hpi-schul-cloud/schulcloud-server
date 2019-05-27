@@ -36,7 +36,7 @@ const checkUnique = (hook) => {
 
 			const user = typeof result.data[0] === 'object' ? result.data[0] : {};
 			const input = typeof hook.data === 'object' ? hook.data : {};
-			const isLoggedIn = !!((hook.params || {}).account && hook.params.account.userId);
+			const isLoggedIn = ((hook.params || {}).account && hook.params.account.userId);
 			const { asTask } = hook.params._additional || {};
 
 			if (isLoggedIn || asTask === undefined || asTask === 'student') {
