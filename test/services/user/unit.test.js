@@ -129,7 +129,6 @@ describe('registrationPin Service', () => {
 });
 
 describe('publicTeachers service', () => {
-	const testSchoolId = '0000d186816abba584714c5f';
 	let testStudent = {};
 	let testTeacherDiscoverable = {};
 	let testTeacherNotDiscoverable = {};
@@ -137,25 +136,22 @@ describe('publicTeachers service', () => {
 	it('register services and create test users', async () => {
 		testStudent = await testObjects.createTestUser({
 			roles: ['student'],
-			schoolId: testSchoolId,
 			discoverable: false,
 		});
 		testTeacherDiscoverable = await testObjects.createTestUser({
 			roles: ['teacher'],
 			discoverable: true,
-			schoolId: testSchoolId,
 		});
 		testTeacherNotDiscoverable = await testObjects.createTestUser({
 			roles: ['teacher'],
 			discoverable: false,
-			schoolId: testSchoolId,
 		});
 		assert.ok(userService);
 		assert.ok(publicTeachersService);
 	});
 
 	it('find 1 discoverable teacher but not find other non-discoverable users', async () => {
-		const result = await publicTeachersService.find({ query: { schoolId: testSchoolId } });
+		const result = await publicTeachersService.find({ query: { schoolId: testObjects.options.schoolId } });
 		expect(result.total).to.equal(1);
 		expect(result.data[0]._id.toString()).to.equal(testTeacherDiscoverable._id.toString());
 		expect(result.data[0]._id.toString()).to.not.equal(testStudent._id.toString());
