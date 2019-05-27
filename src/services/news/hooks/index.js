@@ -1,5 +1,6 @@
 const auth = require('@feathersjs/authentication');
 const logger = require('winston');
+const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const { newsModel, newsHistoryModel } = require('../model');
 
@@ -15,15 +16,23 @@ const deleteNewsHistory = (hook) => {
 		});
 };
 
+const lookupSchool = async (context) => {
+	if (context.params.account && context.params.account.userId) {
+		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
+		context.params.account.schoolId = schoolId;
+		return context;
+	}
+	throw new BadRequest('Authentication is required.');
+}
+
 exports.before = {
 	all: [
 		auth.hooks.authenticate('jwt'),
+		lookupSchool,
 	],
 	find: [],
 	get: [],
-	create: [
-		globalHooks.hasPermission('NEWS_CREATE'),
-	],
+	create: [],
 	update: [
 		globalHooks.hasPermission('NEWS_EDIT'),
 		restrictToCurrentSchool,

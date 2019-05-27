@@ -137,7 +137,7 @@ class NewsService {
 	/**
 	 * GET /news/
 	 * Returns all news the user can see.
-	 * @param {*} params
+	 * @param {Object} params
 	 * @returns paginated array of news items
 	 * @memberof NewsService
 	 */
@@ -151,6 +151,24 @@ class NewsService {
 			news = news.concat(await this.findScopedNews(params.account.userId));
 		}
 		return Promise.resolve(paginate(news, params));
+	}
+
+	/**
+	 * POST /news/
+	 * Creates a news item
+	 * @param {Object} data @see NewsModel
+	 * @param {Object} params
+	 * @returns
+	 * @memberof NewsService
+	 */
+	async create(data, params) {
+		const authorized = await this.hasPermission(params.account.userId, 'NEWS_CREATE',
+			data.target, data.targetModel);
+		const sameSchool = data.schoolId.toString() === params.account.schoolId.toString();
+		if (!authorized || !sameSchool) {
+			throw new Error('Not authorized.');
+		}
+		return newsModel.create(data);
 	}
 }
 
