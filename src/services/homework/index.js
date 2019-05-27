@@ -1,4 +1,3 @@
-'use strict';
 const copyService = require('./copy-service');
 const modelService = require('./model-service');
 

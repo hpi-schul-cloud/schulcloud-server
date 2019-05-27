@@ -1,9 +1,7 @@
-'use strict';
-
 const assert = require('assert');
 const app = require('../../../src/app');
 
-describe('statistic service', function() {
+describe('statistic service', () => {
 	it('registered the statistics service', () => {
 		assert.ok(app.service('statistics'));
 	});
@@ -13,6 +11,6 @@ describe('statistic service', function() {
 	});
 
 	it('should be able to get users stats', () => {
-		assert.ok(app.service('statistics').find({qs: "users"}));
+		assert.ok(app.service('statistics').find({ qs: 'users' }));
 	});
 });
