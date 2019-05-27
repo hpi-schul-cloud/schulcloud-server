@@ -5,6 +5,7 @@ const createTestUser = (app, opt) => ({
 	// required fields for user
 	firstName = 'Max',
 	lastName = 'Mustermann',
+	birthday = undefined,
 	email = `max${Date.now()}@mustermann.de`,
 	schoolId = opt.schoolId,
 	accounts = [], // test if it has a effect
@@ -23,6 +24,7 @@ const createTestUser = (app, opt) => ({
 	.then(() => app.service('users').create({
 		firstName,
 		lastName,
+		birthday,
 		email,
 		schoolId,
 		accounts,

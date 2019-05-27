@@ -166,6 +166,50 @@ const decorateConsents = (hook) => {
 	});
 };
 
+// this method is currently duplicated in AdminUsers service
+const getConsentStatus = (consent) => {
+	const isUserConsent = (c = {}) => {
+		const uC = c.userConsent;
+		return uC && uC.privacyConsent && uC.termsOfUseConsent;
+	};
+
+	const isNOTparentConsent = (c = {}) => {
+		const pCs = c.parentConsents || [];
+		return pCs.length === 0 || !(pCs.some(pC => pC.privacyConsent && pC.termsOfUseConsent));
+	};
+
+	if (consent.requiresParentConsent) {
+		if (isNOTparentConsent(consent)) {
+			return 'missing';
+		}
+
+		if (isUserConsent(consent)) {
+			return 'ok';
+		}
+		return 'parentsAgreed';
+	}
+
+	if (isUserConsent(consent)) {
+		return 'ok';
+	}
+
+	return 'missing';
+};
+
+const addConsentStatus = (hook) => {
+	if (hook.result) {
+		hook.result.consentStatus = getConsentStatus(hook.result);
+	}
+};
+
+const addConsentsStatus = (hook) => {
+	if (hook.result.data) {
+		hook.result.data.forEach((consent) => {
+			consent.consentStatus = getConsentStatus(consent);
+		});
+	}
+};
+
 exports.before = {
 	all: [],
 	find: [
@@ -182,8 +226,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [decorateConsents],
-	get: [decorateConsent],
+	find: [decorateConsents, addConsentsStatus],
+	get: [decorateConsent, addConsentStatus],
 	create: [],
 	update: [],
 	patch: [],
