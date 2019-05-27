@@ -22,10 +22,8 @@ notifications:
     the tests, CI checks and PR requirements (see checklist in your PR) have passed.
 - when: pullapprove.approved
   comment:
-    The review is completed. @{{ author }}, please merge this PR and 
-    close the coresponding ticket on https://ticketsystem.schul-cloud.org
-    Further information about finalizing a PR can be found in our
-    Review Guides https://docs.schul-cloud.org/display/SCDOK/Review-Guidelines
+    The review is completed. @{{ author }}, please follow further instructions from
+    our Review-Guidelines https://docs.schul-cloud.org/display/SCDOK/Review-Guidelines
 
 groups:
   server-core:
@@ -47,3 +45,4 @@ groups:
     reviews:
       required: 1  # number of approvals required from this group
       request: -1  # request from all members a review
+      author_value: 1
