@@ -99,15 +99,15 @@ const validatePassword = (hook) => {
 			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
 			if (
 				(hasStudentCreate && isStudent)
-				|| (hasAdminView && (isStudent || isTeacher))
-				|| isSuperHero
-				|| editsOwnAccount) {
+                || (hasAdminView && (isStudent || isTeacher))
+                || isSuperHero
+                || editsOwnAccount) {
 				return hook;
 			}
 			if (password && !passwordVerification) {
 				throw new Forbidden(
 					`Du darfst das Passwort dieses Nutzers nicht ändern oder die
-					Passwortfelder wurden falsch ausgefüllt.`,
+                    Passwortfelder wurden falsch ausgefüllt.`,
 				);
 			}
 

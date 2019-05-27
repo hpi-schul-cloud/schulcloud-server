@@ -106,9 +106,9 @@ class WopiFilesContentsService {
 	}
 
 	/**
-	 * retrieves a file`s binary contents
-	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html
-	 */
+     * retrieves a file`s binary contents
+     * https://wopirest.readthedocs.io/en/latest/files/GetFile.html
+     */
 	find(params) { // {fileId: _id, payload, account}
 		if (!(params.route || {}).fileId) {
 			throw new BadRequest('No fileId exist.');
@@ -152,9 +152,9 @@ class WopiFilesContentsService {
 
 
 	/*
-	* updates a file’s binary contents, file has to exist in proxy db
-	* https://wopirest.readthedocs.io/en/latest/files/PutFile.html
-	*/
+    * updates a file’s binary contents, file has to exist in proxy db
+    * https://wopirest.readthedocs.io/en/latest/files/PutFile.html
+    */
 	create(data, params) {
 		if (!(params.route || {}).fileId) {
 			throw new BadRequest('No fileId exist.');
