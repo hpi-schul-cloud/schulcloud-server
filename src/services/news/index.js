@@ -200,6 +200,38 @@ class NewsService {
 		await newsModel.remove({ _id: id });
 		return news;
 	}
+
+	/**
+	 * PUT /news/{id}
+	 * Replaces a single news item
+	 * @param {BsonId|String} id The news item's Id
+	 * @param {News} data updated news item
+	 * @param {Object} params Feathers request params (note that using params.query won't work here)
+	 * @returns {News} updated news item
+	 * @throws {Forbidden} if not authorized
+	 * @memberof NewsService
+	 */
+	async update(id, data, params) {
+		const news = await newsModel.findOne({ _id: id }).lean();
+		await this.authorize(news, params.account, 'NEWS_EDIT');
+		return newsModel.findOneAndUpdate({ _id: id }, data).lean();
+	}
+
+	/**
+	 * PATCH /news/{id}
+	 * Patches a single news item
+	 * @param {BsonId|String} id The news item's Id
+	 * @param {Object} data object containing updated news item attributes
+	 * @param {Object} params Feathers request params (note that using params.query won't work here)
+	 * @returns {News} patched news item
+	 * @throws {Forbidden} if not authorized
+	 * @memberof NewsService
+	 */
+	async patch(id, data, params) {
+		const news = await newsModel.findOne({ _id: id }).lean();
+		await this.authorize(news, params.account, 'NEWS_EDIT');
+		return newsModel.findOneAndUpdate({ _id: id }, { $set: data }).lean();
+	}
 }
 
 module.exports = function news() {

@@ -40,15 +40,8 @@ exports.before = {
 	find: [],
 	get: [],
 	create: [],
-	update: [
-		globalHooks.hasPermission('NEWS_EDIT'),
-		restrictToCurrentSchool,
-	],
-	patch: [
-		globalHooks.hasPermission('NEWS_EDIT'),
-		restrictToCurrentSchool,
-		globalHooks.permitGroupOperation,
-	],
+	update: [],
+	patch: [],
 	remove: [],
 };
 
