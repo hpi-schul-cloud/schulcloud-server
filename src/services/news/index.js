@@ -1,5 +1,6 @@
 const service = require('feathers-mongoose');
-const { Forbidden } = require('@feathersjs/errors');
+const { Forbidden, NotFound } = require('@feathersjs/errors');
+const logger = require('winston');
 const { newsModel, newsHistoryModel } = require('./model');
 const hooks = require('./hooks');
 
@@ -84,6 +85,13 @@ class NewsService {
 		}
 	}
 
+	checkExistence(news, query) {
+		if (!news) {
+			logger.error(`Cannot find news item with query "${query}" => "${news}"`);
+			throw new NotFound('News item does not exist.');
+		}
+	}
+
 	/**
 	 * Returns all school news the user is allowed to see.
 	 * @param {Object} { userId, schoolId } -- The user's Id and schoolId
@@ -144,10 +152,13 @@ class NewsService {
 	 * @param {Object} params
 	 * @returns one news item
 	 * @throws {Forbidden} if not authorized
+	 * @throws {NotFound} if the id does not belong to a news object
 	 * @memberof NewsService
 	 */
 	async get(id, params) {
-		const news = await newsModel.findOne({ _id: id }).lean();
+		const query = { _id: id };
+		const news = await newsModel.findOne(query).lean();
+		this.checkExistence(news, query);
 		await this.authorize(news, params.account, 'NEWS_VIEW');
 		return news;
 	}
@@ -192,12 +203,15 @@ class NewsService {
 	 * @param {Object} params Note that params.query won't work here
 	 * @returns {News} the deleted news item
 	 * @throws {Forbidden} if not authorized
+	 * @throws {NotFound} if the id does not belong to a news object
 	 * @memberof NewsService
 	 */
 	async remove(id, params) {
-		const news = await newsModel.findOne({ _id: id }).lean();
+		const query = { _id: id };
+		const news = await newsModel.findOne(query).lean();
+		this.checkExistence(news, query);
 		await this.authorize(news, params.account, 'NEWS_CREATE');
-		await newsModel.remove({ _id: id });
+		await newsModel.findByIdAndDelete(id);
 		return news;
 	}
 
@@ -209,12 +223,15 @@ class NewsService {
 	 * @param {Object} params Feathers request params (note that using params.query won't work here)
 	 * @returns {News} updated news item
 	 * @throws {Forbidden} if not authorized
+	 * @throws {NotFound} if the id does not belong to a news object
 	 * @memberof NewsService
 	 */
 	async update(id, data, params) {
-		const news = await newsModel.findOne({ _id: id }).lean();
+		const query = { _id: id };
+		const news = await newsModel.findOne(query).lean();
+		this.checkExistence(news, query);
 		await this.authorize(news, params.account, 'NEWS_EDIT');
-		return newsModel.findOneAndUpdate({ _id: id }, data).lean();
+		return newsModel.findOneByIdAndUpdate(id, data).lean();
 	}
 
 	/**
@@ -225,12 +242,14 @@ class NewsService {
 	 * @param {Object} params Feathers request params (note that using params.query won't work here)
 	 * @returns {News} patched news item
 	 * @throws {Forbidden} if not authorized
+	 * @throws {NotFound} if the id does not belong to a news object
 	 * @memberof NewsService
 	 */
 	async patch(id, data, params) {
-		const news = await newsModel.findOne({ _id: id }).lean();
+		const query = { _id: id };
+		const news = await newsModel.findOne(query).lean();
 		await this.authorize(news, params.account, 'NEWS_EDIT');
-		return newsModel.findOneAndUpdate({ _id: id }, { $set: data }).lean();
+		return newsModel.findOneByIdAndUpdate(id, { $set: data }).lean();
 	}
 }
 
