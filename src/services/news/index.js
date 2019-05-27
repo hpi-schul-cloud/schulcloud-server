@@ -1,4 +1,5 @@
 const service = require('feathers-mongoose');
+const { Forbidden } = require('@feathersjs/errors');
 const { newsModel, newsHistoryModel } = require('./model');
 const hooks = require('./hooks');
 
@@ -48,8 +49,9 @@ class NewsService {
 	 * @param {BsonId|String} targetId (optional) news target (scope) id. Only valid with targetModel.
 	 * @param {String} targetModel (optional) news target (scope) model. Only valid with target.
 	 * @returns {Promise<Boolean>} Promise that resolves to true/false
-	 * @example await hasPermission(user._id, 'NEWS_VIEW') => true
-	 * @example await hasPermission(user._id, 'NEWS_CREATE', team._id, 'teams') => false
+	 * @example
+	 * await hasPermission(user._id, 'NEWS_VIEW') => true
+	 * await hasPermission(user._id, 'NEWS_CREATE', team._id, 'teams') => false
 	 * @memberof NewsService
 	 */
 	async hasPermission(userId, permission, targetId, targetModel) {
@@ -64,6 +66,25 @@ class NewsService {
 	}
 
 	/**
+	 * Throw an error if the user is not allowed to perform the given operation
+	 * @param {News} news news item (required: {schoolId}, optional: {target, targetModel})
+	 * @param {Object} { userId, schoolId }
+	 * @param {String} permission permision to check
+	 * @returns undefined
+	 * @example
+	 * await authorize(news, params.account, 'NEWS_VIEW') => undefined
+	 * await authorize(news, params.account, 'NEWS_CREATE') => (throws Forbidden)
+	 * @memberof NewsService
+	 */
+	async authorize(news, { userId, schoolId }, permission) {
+		const authorized = await this.hasPermission(userId, permission, news.target, news.targetModel);
+		const sameSchool = news.schoolId.toString() === schoolId.toString();
+		if (!authorized || !sameSchool) {
+			throw new Forbidden('Not authorized.');
+		}
+	}
+
+	/**
 	 * Returns all school news the user is allowed to see.
 	 * @param {Object} { userId, schoolId } -- The user's Id and schoolId
 	 * @returns Array<News Document>
@@ -71,7 +92,7 @@ class NewsService {
 	 */
 	async findSchoolNews({ userId, schoolId }) {
 		if (!this.hasPermission(userId, 'NEWS_VIEW')) {
-			throw new Error('Mising permissions to view school news.');
+			throw new Forbidden('Mising permissions to view school news.');
 		}
 		return newsModel.find({	schoolId, target: { $exists: false } }).lean();
 	}
@@ -126,11 +147,7 @@ class NewsService {
 	 */
 	async get(id, params) {
 		const news = await newsModel.findOne({ _id: id }).lean();
-		const authorized = await this.hasPermission(params.account.userId, 'NEWS_VIEW', news.target, news.targetModel);
-		const sameSchool = news.schoolId.toString() === params.account.schoolId.toString();
-		if (!sameSchool || !authorized) {
-			throw new Error('Not authorized.');
-		}
+		await this.authorize(news, params.account, 'NEWS_VIEW');
 		return news;
 	}
 
@@ -162,20 +179,14 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async create(data, params) {
-		const authorized = await this.hasPermission(params.account.userId, 'NEWS_CREATE',
-			data.target, data.targetModel);
-		const sameSchool = data.schoolId.toString() === params.account.schoolId.toString();
-		if (!authorized || !sameSchool) {
-			throw new Error('Not authorized.');
-		}
+		await this.authorize(data, params.account, 'NEWS_CREATE');
 		return newsModel.create(data);
 	}
 }
 
 module.exports = function news() {
 	const app = this;
-	const newsService = new NewsService();
-	app.use('/news', newsService);
+	app.use('/news', new NewsService());
 	app.service('news').hooks(hooks);
 
 	app.use('/newshistory', service({
