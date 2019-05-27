@@ -38,17 +38,20 @@ class NewsService {
 		return newsModel.find({	schoolId });
 	}
 
-	async findScopedNews(userId) {
+	async findScopedNews(userId, target) {
 		const scopes = await newsModel.distinct('targetModel');
 		const ops = scopes.map(async (scope) => {
 			const scopeListService = this.app.service(`/users/:scopeId/${scope}`);
 			if (scopeListService === undefined) {
 				throw new Error(`Missing ScopeListService for scope "${scope}".`);
 			}
-			const scopeItems = await scopeListService.find({
+			let scopeItems = await scopeListService.find({
 				route: { scopeId: userId.toString() },
 				query: { permissions: ['NEWS_VIEW'] },
 			});
+			if (target) {
+				scopeItems = scopeItems.filter(i => i._id.toString() === target.toString());
+			}
 			return Promise.all(scopeItems.map(async (item) => {
 				const news = await newsModel.find({
 					targetModel: scope,
@@ -73,8 +76,13 @@ class NewsService {
 	 */
 	async find(params) {
 		let news = [];
-		news = news.concat(await this.findSchoolNews(params.account));
-		news = news.concat(await this.findScopedNews(params.account.userId));
+		const scoped = params.query && params.query.target;
+		if (scoped) {
+			news = news.concat(await this.findScopedNews(params.account.userId, params.query.target));
+		} else {
+			news = news.concat(await this.findSchoolNews(params.account));
+			news = news.concat(await this.findScopedNews(params.account.userId));
+		}
 		return Promise.resolve(paginate(news, params));
 	}
 }
