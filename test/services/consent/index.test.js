@@ -47,6 +47,17 @@ describe('consent service', () => {
 			chai.expect(consent.userConsent).to.have.property('dateOfPrivacyConsent');
 		}));
 
+	it('it sets consent status', () => {
+		const userId = '0000d213816abba584714c0b';
+		consentService
+			.create({
+				userId,
+			}).then(() => consentService.find({ query: { userId } }))
+			.then((results) => {
+				chai.expect(results.data[0]).to.have.property('consentStatus');
+			});
+	});
+
 	it('patches instead of creating second consent for same user', () => {
 		const userId = '58b40278dac20e0645353e3a';
 		return consentService
