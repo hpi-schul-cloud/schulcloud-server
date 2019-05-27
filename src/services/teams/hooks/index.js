@@ -490,7 +490,9 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 				if (isDefined(_.role) && !isSameId(teamUser.role, _.role)) {
 					hasChangeRole = true;
 					if (isHigherOrEqualTeamrole(hook, _.role, highestChangedRole)) highestChangedRole = _.role;
-					if (isHigherOrEqualTeamrole(hook, teamUser.role, highestChangedRole)) highestChangedRole = teamUser.role;
+					if (isHigherOrEqualTeamrole(hook, teamUser.role, highestChangedRole)) {
+						highestChangedRole = teamUser.role;
+					}
 				}
 			}
 		});
