@@ -49,12 +49,7 @@ exports.before = {
 		restrictToCurrentSchool,
 		globalHooks.permitGroupOperation,
 	],
-	remove: [
-		globalHooks.hasPermission('NEWS_CREATE'),
-		globalHooks.ifNotLocal(globalHooks.permitGroupOperation),
-		restrictToCurrentSchool,
-		globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership),
-	],
+	remove: [],
 };
 
 exports.after = {

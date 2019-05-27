@@ -184,6 +184,22 @@ class NewsService {
 		await this.authorize(data, params.account, 'NEWS_CREATE');
 		return newsModel.create(data);
 	}
+
+	/**
+	 * DELETE /news/{id}
+	 * Deletes a single news item.
+	 * @param {BsonId|String} id The news item's Id
+	 * @param {Object} params Note that params.query won't work here
+	 * @returns {News} the deleted news item
+	 * @throws {Forbidden} if not authorized
+	 * @memberof NewsService
+	 */
+	async remove(id, params) {
+		const news = await newsModel.findOne({ _id: id }).lean();
+		await this.authorize(news, params.account, 'NEWS_CREATE');
+		await newsModel.remove({ _id: id });
+		return news;
+	}
 }
 
 module.exports = function news() {
