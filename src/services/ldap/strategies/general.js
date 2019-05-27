@@ -79,19 +79,19 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 						}
 					} else {
 						if (obj[userAttributeNameMapping.role]
-							=== roleAttributeNameMapping.roleStudent) {
+                            === roleAttributeNameMapping.roleStudent) {
 							roles.push('student');
 						}
 						if (obj[userAttributeNameMapping.role]
-							=== roleAttributeNameMapping.roleTeacher) {
+                            === roleAttributeNameMapping.roleTeacher) {
 							roles.push('teacher');
 						}
 						if (obj[userAttributeNameMapping.role]
-							=== roleAttributeNameMapping.roleAdmin) {
+                            === roleAttributeNameMapping.roleAdmin) {
 							roles.push('administrator');
 						}
 						if (obj[userAttributeNameMapping.role]
-							=== roleAttributeNameMapping.roleNoSc) {
+                            === roleAttributeNameMapping.roleNoSc) {
 							return;
 						}
 					}
@@ -117,11 +117,10 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	/**
      * @public
      * @see AbstractLDAPStrategy#getClasses
-     * @returns {Array} Array of Objects containing className, ldapDn, uniqueMember 
+     * @returns {Array} Array of Objects containing className, ldapDn, uniqueMember
      * @memberof GeneralLDAPStrategy
      */
 	getClasses(school) {
-
 		const {
 			classAttributeNameMapping,
 			classPathAdditions,
@@ -139,15 +138,11 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 			};
 			const searchString = `${classPathAdditions},${this.config.rootPath}`;
 			return this.app.service('ldap').searchCollection(this.config, searchString, options)
-				.then((data) => {
-					return data.map((obj) => {
-						return {
-							className: obj[classAttributeNameMapping.description],
-							ldapDn: obj[classAttributeNameMapping.dn],
-							uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
-						};
-					});
-				});
+				.then(data => data.map(obj => ({
+					className: obj[classAttributeNameMapping.description],
+					ldapDn: obj[classAttributeNameMapping.dn],
+					uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
+				})));
 		}
 	}
 }

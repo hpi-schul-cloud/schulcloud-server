@@ -3,7 +3,9 @@ const logger = require('winston');
 const { ObjectId } = require('mongoose').Types;
 
 const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const T = require('../helpers/testObjects')(app);
+
+const teamService = app.service('/teams');
 
 describe('Test team basic methods', () => {
 	describe('teams create', () => {
@@ -11,18 +13,17 @@ describe('Test team basic methods', () => {
 		let teamId;
 
 		before(async () => {
-			const user = await testObjects.createTestUser().catch((err) => {
+			const user = await T.createTestUser().catch((err) => {
 				logger.warn('Can not create test user', err);
 			});
 
 			const schoolId = user.schoolId.toString();
 			const userId = user._id.toString();
-			const fakeLoginParams = testObjects.fakeLoginParams({ userId });
+			const fakeLoginParams = T.fakeLoginParams({ userId });
 
-			team = await app.service('teams').create({
+			team = await teamService.create({
 				name: 'TestTeam',
 				schoolId,
-				// schoolIds: [schoolId],
 				userIds: [userId],
 			}, fakeLoginParams).catch((err) => {
 				logger.warn('Can not create test team', err);
@@ -33,7 +34,8 @@ describe('Test team basic methods', () => {
 			return Promise.resolve();
 		});
 
-		after(() => Promise.all([testObjects.cleanup(), testObjects.teams.removeOne(teamId)]));
+		after(() => Promise.all([T.cleanup(), T.teams.removeOne(teamId)]));
+
 
 		it('should for extern request only return the _id', () => {
 			expect(Object.keys(team)).to.be.an('array').to.has.lengthOf(1);
@@ -45,6 +47,30 @@ describe('Test team basic methods', () => {
 			expect(filePermission).to.be.an('array').to.have.lengthOf(2);
 			expect(ObjectId.isValid(filePermission[0].refId)).to.be.true;
 			expect(ObjectId.isValid(filePermission[1].refId)).to.be.true;
+		});
+
+		it('is allowed for superheroes', async () => {
+			const hero = await T.createTestUser({ roles: ['superhero'] });
+			const username = hero.email;
+			const password = 'Schulcloud1!';
+			await T.createTestAccount({ username, password }, 'local', hero);
+			const params = await T.generateRequestParams({ username, password });
+
+			try {
+				const record = {
+					name: 'test',
+					schoolId: hero.schoolId,
+					schoolIds: [hero.schoolId],
+					userIds: [hero._id],
+				};
+				const slimteam = await teamService.create(record, { ...params, query: {} });
+				expect(slimteam).to.be.ok;
+
+				const { userIds } = await teamService.get(slimteam._id);
+				expect(userIds.some(item => item.userId.toString() === hero._id.toString())).to.equal(true);
+			} finally {
+				T.cleanup();
+			}
 		});
 	});
 });
