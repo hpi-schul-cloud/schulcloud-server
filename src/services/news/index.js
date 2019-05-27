@@ -143,6 +143,7 @@ class NewsService {
 	 * @param {BsonId|String} id
 	 * @param {Object} params
 	 * @returns one news item
+	 * @throws {Forbidden} if not authorized
 	 * @memberof NewsService
 	 */
 	async get(id, params) {
@@ -175,7 +176,8 @@ class NewsService {
 	 * Creates a news item
 	 * @param {Object} data @see NewsModel
 	 * @param {Object} params
-	 * @returns
+	 * @returns {News} the created news object
+	 * @throws {Forbidden} if not authorized
 	 * @memberof NewsService
 	 */
 	async create(data, params) {
