@@ -70,7 +70,8 @@ class NewsService {
 		if (!this.hasPermission(userId, 'NEWS_VIEW')) {
 			throw new Forbidden('Mising permissions to view school news.');
 		}
-		return newsModel.find({	schoolId, target: { $exists: false } }).lean();
+		const query = {	schoolId, target: { $exists: false } };
+		return this.app.service('newsModel').find({ query, paginate: false });
 	}
 
 	/**
@@ -98,10 +99,12 @@ class NewsService {
 				scopeItems = scopeItems.filter(i => i._id.toString() === target.toString());
 			}
 			return Promise.all(scopeItems.map(async (item) => {
-				const news = await newsModel.find({
+				const query = {
 					targetModel: scope,
 					target: item._id,
-				}).lean();
+					$populate: target,
+				};
+				const news = await this.app.service('newsModel').find({ query, paginate: false });
 				// Manually populate the target (current API requires this):
 				return Promise.all(news.map(async n => ({
 					...n,
@@ -124,9 +127,8 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async get(id, params) {
-		const query = { _id: id };
-		const news = await newsModel.findOne(query).lean();
-		this.checkExistence(news, query);
+		const news = await this.app.service('newsModel').get(id);
+		this.checkExistence(news, id);
 		await this.authorize(news, params.account, 'NEWS_VIEW');
 		return news;
 	}
@@ -147,7 +149,7 @@ class NewsService {
 			news = news.concat(await this.findSchoolNews(params.account));
 			news = news.concat(await this.findScopedNews(params.account.userId));
 		}
-		return Promise.resolve(paginate(news, params));
+		return Promise.resolve(paginate(news, { params, paginate: true }));
 	}
 
 	/**
@@ -161,7 +163,7 @@ class NewsService {
 	 */
 	async create(data, params) {
 		await this.authorize(data, params.account, 'NEWS_CREATE');
-		return newsModel.create(data);
+		return this.app.service('newsModel').create(data);
 	}
 
 	/**
@@ -175,11 +177,10 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async remove(id, params) {
-		const query = { _id: id };
-		const news = await newsModel.findOne(query).lean();
-		this.checkExistence(news, query);
+		const news = await this.app.service('newsModel').get(id);
+		this.checkExistence(news, id);
 		await this.authorize(news, params.account, 'NEWS_CREATE');
-		await newsModel.findByIdAndDelete(id);
+		await this.app.service('newsModel').remove(id);
 		return news;
 	}
 
@@ -195,11 +196,10 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async update(id, data, params) {
-		const query = { _id: id };
-		const news = await newsModel.findOne(query).lean();
-		this.checkExistence(news, query);
+		const news = await this.app.service('newsModel').get(id);
+		this.checkExistence(news, id);
 		await this.authorize(news, params.account, 'NEWS_EDIT');
-		return newsModel.findOneByIdAndUpdate(id, data).lean();
+		return this.app.service('newsModel').update(id, data);
 	}
 
 	/**
@@ -214,10 +214,10 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async patch(id, data, params) {
-		const query = { _id: id };
-		const news = await newsModel.findOne(query).lean();
+		const news = await this.app.service('newsModel').get(id);
+		this.checkExistence(news, id);
 		await this.authorize(news, params.account, 'NEWS_EDIT');
-		return newsModel.findOneByIdAndUpdate(id, { $set: data }).lean();
+		return this.app.service('newsModel').patch(id, data);
 	}
 }
 
@@ -232,6 +232,7 @@ module.exports = function news() {
 	// (external requests are blocked)
 	app.use('/newsModel', service({
 		Model: newsModel,
+		lean: true,
 		paginate: {
 			default: 25,
 		},
