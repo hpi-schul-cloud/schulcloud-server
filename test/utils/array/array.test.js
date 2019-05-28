@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { flatten, paginate } = require('../../../src/utils/array');
+const { flatten, paginate, sort } = require('../../../src/utils/array');
 
 describe('array helpers', () => {
 	describe('#flatten', () => {
@@ -179,6 +179,58 @@ describe('array helpers', () => {
 				limit: 1,
 				data: [6],
 			});
+		});
+	});
+
+	describe('#sort', () => {
+		it('should work on empty arrays', () => {
+			expect(() => sort([])).not.to.throw(Error);
+			expect(sort([])).to.deep.equal([]);
+		});
+
+		it('should work without sortOrder', () => {
+			expect(() => sort([3, 1, 2])).not.to.throw(Error);
+			expect(sort([3, 1, 2])).to.deep.equal([1, 2, 3]);
+			expect(sort([5, 6, 1, 9, 2, 5, 5, 7])).to.deep.equal([1, 2, 5, 5, 5, 6, 7, 9]);
+		});
+
+		it('should return undefined if given an undefined array', () => {
+			expect(() => sort()).not.to.throw(Error);
+			expect(sort(undefined)).to.equal(undefined);
+		});
+
+		it('should sort by nested attributes if complete sortOrder is given', () => {
+			const data = [
+				{ a: 1, foo: 3 },
+				{ a: 5, foo: 1 },
+				{ a: 2, foo: 8 },
+			];
+			expect(sort(data, 'a')).to.deep.equal([
+				{ a: 1, foo: 3 },
+				{ a: 2, foo: 8 },
+				{ a: 5, foo: 1 },
+			]);
+			expect(sort(data, '-a')).to.deep.equal([
+				{ a: 5, foo: 1 },
+				{ a: 2, foo: 8 },
+				{ a: 1, foo: 3 },
+			]);
+			expect(sort(data, 'foo')).to.deep.equal([
+				{ a: 5, foo: 1 },
+				{ a: 1, foo: 3 },
+				{ a: 2, foo: 8 },
+			]);
+			expect(sort(data, '-foo')).to.deep.equal([
+				{ a: 2, foo: 8 },
+				{ a: 1, foo: 3 },
+				{ a: 5, foo: 1 },
+			]);
+		});
+
+		it('should sort on value if sortOrder is "" or "-"', () => {
+			expect(() => sort([1, 3, 2], '')).not.to.throw(Error);
+			expect(sort([1, 3, 2], '')).to.deep.equal([1, 2, 3]);
+			expect(sort([1, 3, 2], '-')).to.deep.equal([3, 2, 1]);
 		});
 	});
 });

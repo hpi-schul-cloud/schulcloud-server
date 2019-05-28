@@ -4,7 +4,7 @@ const logger = require('winston');
 const { newsModel, newsHistoryModel } = require('./model');
 const hooks = require('./hooks');
 const newsModelHooks = require('./hooks/model');
-const { flatten, paginate } = require('../../utils/array');
+const { flatten, paginate, sort } = require('../../utils/array');
 
 class NewsService {
 	setup(app) {
@@ -148,6 +148,9 @@ class NewsService {
 		} else {
 			news = news.concat(await this.findSchoolNews(params.account));
 			news = news.concat(await this.findScopedNews(params.account.userId));
+		}
+		if (params.query) {
+			news = sort(news, params.query.$sort);
 		}
 		// paginate by default, but let $paginate=false through
 		news = paginate(news, { $paginate: true, ...params.query });

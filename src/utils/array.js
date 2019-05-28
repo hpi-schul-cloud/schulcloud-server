@@ -38,7 +38,32 @@ const paginate = (data, params) => {
 	};
 };
 
+const sort = (data, sortOrder) => {
+	if (!data) {
+		return data;
+	}
+	let valueOp = v => v;
+	let descending = false;
+	if (typeof sortOrder === 'string') {
+		descending = /^-/.test(sortOrder);
+		const match = /^-?(.*)/.test(sortOrder);
+		if (match) {
+			const attributeName = sortOrder.match(/-?(.*)/)[1];
+			if (attributeName.length > 0) {
+				valueOp = item => item[attributeName];
+			}
+		}
+	}
+	return data.sort((a, b) => {
+		if (descending) {
+			return (`${valueOp(b)}`).localeCompare(`${valueOp(a)}`);
+		}
+		return (`${valueOp(a)}`).localeCompare(`${valueOp(b)}`);
+	});
+};
+
 module.exports = {
 	flatten,
 	paginate,
+	sort,
 };
