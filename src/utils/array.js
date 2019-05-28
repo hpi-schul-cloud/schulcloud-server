@@ -14,11 +14,11 @@ const flatten = arr => arr.reduce((agg, el) => {
 /**
  * Emulates Feathers-style pagination on a given array.
  * @param {Array} data Array-like collection to paginate
- * @param {Object} params Feathers request params containing paginate, $limit, and $skip
+ * @param {Object} params Feathers request params containing $paginate, $limit, and $skip
  * @returns {Object} { total, limit, skip, data }
  */
 const paginate = (data, params) => {
-	if (!params || !params.paginate) {
+	if (!params || !params.$paginate) {
 		return data;
 	}
 	let limit = params.$limit || data.length;

@@ -29,12 +29,42 @@ const lookupSchool = async (context) => {
 	throw new BadRequest('Authentication is required.');
 };
 
+const getBoolean = (value) => {
+	switch (value) {
+		case true:
+		case 'true':
+		case 1:
+		case '1':
+		case 'on':
+		case 'yes':
+			return true;
+		default:
+			return false;
+	}
+};
+
+/**
+ * Convert pagination parameter to boolean if it exists
+ * @param {context} context
+ */
+const preparePagination = (context) => {
+	if (context.params) {
+		const { query } = context.params;
+		if (query && query.$paginate !== undefined) {
+			context.params.query.$paginate = getBoolean(query.$paginate);
+		}
+	}
+	return context;
+};
+
 exports.before = {
 	all: [
 		auth.hooks.authenticate('jwt'),
 		lookupSchool,
 	],
-	find: [],
+	find: [
+		preparePagination,
+	],
 	get: [],
 	create: [],
 	update: [],

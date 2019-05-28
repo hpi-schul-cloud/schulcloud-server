@@ -29,11 +29,11 @@ describe('array helpers', () => {
 			expect(() => paginate([])).not.to.throw(Error);
 			expect(paginate([])).to.deep.equal([]);
 			expect(paginate([1, 2, 3])).to.deep.equal([1, 2, 3]);
-			expect(paginate([1, 2, 3]), { paginate: false }).to.deep.equal([1, 2, 3]);
+			expect(paginate([1, 2, 3]), { $paginate: false }).to.deep.equal([1, 2, 3]);
 		});
 
 		it('should emulate feathers pagination', () => {
-			expect(paginate([1, 2, 3], { paginate: true })).to.deep.equal({
+			expect(paginate([1, 2, 3], { $paginate: true })).to.deep.equal({
 				total: 3,
 				skip: 0,
 				limit: 3,
@@ -42,7 +42,7 @@ describe('array helpers', () => {
 		});
 
 		it('should work on empty arrays', () => {
-			expect(paginate([], { paginate: true })).to.deep.equal({
+			expect(paginate([], { $paginate: true })).to.deep.equal({
 				total: 0,
 				skip: 0,
 				limit: 0,
@@ -53,7 +53,7 @@ describe('array helpers', () => {
 		describe('$skip', () => {
 			it('should not return skipped elements', () => {
 				expect(paginate([1, 2, 3, 4], {
-					paginate: true,
+					$paginate: true,
 					$skip: 1,
 				})).to.deep.equal({
 					total: 4,
@@ -63,7 +63,7 @@ describe('array helpers', () => {
 				});
 
 				expect(paginate([1, 2, 3, 4], {
-					paginate: true,
+					$paginate: true,
 					$skip: 3,
 				})).to.deep.equal({
 					total: 4,
@@ -75,7 +75,7 @@ describe('array helpers', () => {
 
 			it('should work for skip > total', () => {
 				expect(paginate([1, 2, 3, 4], {
-					paginate: true,
+					$paginate: true,
 					$skip: 25,
 				})).to.deep.equal({
 					total: 4,
@@ -87,7 +87,7 @@ describe('array helpers', () => {
 
 			it('should work for skip < 0', () => {
 				expect(paginate([1, 2, 3, 4], {
-					paginate: true,
+					$paginate: true,
 					$skip: -3,
 				})).to.deep.equal({
 					total: 4,
@@ -101,7 +101,7 @@ describe('array helpers', () => {
 		describe('$limit', () => {
 			it('should limit the result length', () => {
 				expect(paginate([1, 2, 3, 4], {
-					paginate: true,
+					$paginate: true,
 					$limit: 2,
 				})).to.deep.equal({
 					total: 4,
@@ -111,7 +111,7 @@ describe('array helpers', () => {
 				});
 
 				expect(paginate([1, 2, 3, 4], {
-					paginate: true,
+					$paginate: true,
 					$limit: 1,
 				})).to.deep.equal({
 					total: 4,
@@ -123,7 +123,7 @@ describe('array helpers', () => {
 
 			it('should work for limit < 0', () => {
 				expect(paginate([1, 2, 3, 4], {
-					paginate: true,
+					$paginate: true,
 					$limit: -3,
 				})).to.deep.equal({
 					total: 4,
@@ -135,7 +135,7 @@ describe('array helpers', () => {
 
 			it('should work for limit > length', () => {
 				expect(paginate([1, 2, 3, 4], {
-					paginate: true,
+					$paginate: true,
 					$limit: 22,
 				})).to.deep.equal({
 					total: 4,
@@ -148,7 +148,7 @@ describe('array helpers', () => {
 
 		it('should work with $limit and $skip set', () => {
 			expect(paginate([1, 2, 3, 4, 5, 6, 7], {
-				paginate: true,
+				$paginate: true,
 				$limit: 2,
 				$skip: 2,
 			})).to.deep.equal({
@@ -159,7 +159,7 @@ describe('array helpers', () => {
 			});
 
 			expect(paginate([1, 2, 3, 4, 5, 6, 7], {
-				paginate: true,
+				$paginate: true,
 				$limit: 5,
 				$skip: 2,
 			})).to.deep.equal({
@@ -170,7 +170,7 @@ describe('array helpers', () => {
 			});
 
 			expect(paginate([1, 2, 3, 4, 5, 6, 7], {
-				paginate: true,
+				$paginate: true,
 				$limit: 1,
 				$skip: 5,
 			})).to.deep.equal({
