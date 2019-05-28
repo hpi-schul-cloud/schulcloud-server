@@ -232,6 +232,9 @@ module.exports = function news() {
 	// (external requests are blocked)
 	app.use('/newsModel', service({
 		Model: newsModel,
+		paginate: {
+			default: 25,
+		},
 	}));
 	app.service('/newsModel').hooks(newsModelHooks);
 
