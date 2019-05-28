@@ -3,6 +3,7 @@ const { Forbidden, NotFound } = require('@feathersjs/errors');
 const logger = require('winston');
 const { newsModel, newsHistoryModel } = require('./model');
 const hooks = require('./hooks');
+const newsModelHooks = require('./hooks/model');
 const { flatten, paginate } = require('../../utils/array');
 
 class NewsService {
@@ -222,8 +223,17 @@ class NewsService {
 
 module.exports = function news() {
 	const app = this;
+
+	// use /news to access a user's news
 	app.use('/news', new NewsService());
 	app.service('news').hooks(hooks);
+
+	// use /newsModel to directly access the model from other services
+	// (external requests are blocked)
+	app.use('/newsModel', service({
+		Model: newsModel,
+	}));
+	app.service('/newsModel').hooks(newsModelHooks);
 
 	app.use('/newshistory', service({
 		Model: newsHistoryModel,
