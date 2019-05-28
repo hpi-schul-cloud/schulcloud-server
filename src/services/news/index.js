@@ -149,7 +149,9 @@ class NewsService {
 			news = news.concat(await this.findSchoolNews(params.account));
 			news = news.concat(await this.findScopedNews(params.account.userId));
 		}
-		return Promise.resolve(paginate(news, { params, paginate: true }));
+		// paginate by default, but let $paginate=false through
+		news = paginate(news, { $paginate: true, ...params.query });
+		return Promise.resolve(news);
 	}
 
 	/**
