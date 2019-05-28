@@ -41,9 +41,10 @@ const removeManyTeams = ids => teamsModel.deleteMany({ _ids: { $in: ids } }).exe
 
 // const teamServices = app => app.service('teams');
 
-const cleanup = async () => {
-	await removeManyTeams(createdTeamIds);
+const cleanup = () => {
+	const ids = createdTeamIds;
 	createdTeamIds = [];
+	return removeManyTeams(ids);
 };
 
 module.exports = (app, opt) => ({
