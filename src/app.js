@@ -51,8 +51,8 @@ app.use(compress())
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 
 	.use(defaultHeaders)
-	.get('/system_info/haproxy', (req, res) => { res.send({ "timestamp":new Date().getTime() });})
-	.get('/ping', (req, res) => { res.send({ "message":"pong","timestamp":new Date().getTime() });})
+	.get('/system_info/haproxy', (req, res) => { res.send({ timestamp: new Date().getTime() }); })
+	.get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
 	.configure(rest(handleResponseType))
 	.configure(socketio())
 
@@ -68,7 +68,7 @@ app.use(compress())
 	.configure(middleware)
 	.hooks(allHooks);
 
-winston.cli();	// optimize for cli, like using colors
+winston.cli(); // optimize for cli, like using colors
 winston.level = 'debug';
 
 module.exports = app;

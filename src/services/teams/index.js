@@ -82,7 +82,7 @@ class AdminOverview {
 			const mySchool = isSameId(team.schoolId, sessionSchoolId);
 			const otherSchools = team.schoolIds.length > 1;
 			let schoolMembers = AdminOverview.getMembersBySchool(team, sessionSchoolId);
-			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner');	// role is populated
+			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner'); // role is populated
 
 			schoolMembers = schoolMembers.map((m) => {
 				const obj = {
@@ -108,7 +108,7 @@ class AdminOverview {
 				otherSchools,
 				createdAt: team.createdAt,
 				ownerExist,
-				//		ownerSchool:team.schoolId.name,
+				//      ownerSchool:team.schoolId.name,
 				schools: team.schoolIds.map(s => AdminOverview.getKeys(s, ['name', '_id'])),
 				schoolMembers,
 			};
@@ -125,7 +125,7 @@ class AdminOverview {
 					$populate: [{ path: 'userIds.role' }, {
 						path: 'userIds.userId',
 						populate: { path: 'roles' },
-					}, 'schoolIds'], 	// schoolId
+					}, 'schoolIds'], // schoolId
 				},
 			})
 				.then(teams => AdminOverview.mapped(teams, schoolId))
@@ -136,14 +136,14 @@ class AdminOverview {
 	}
 
 	/**
-	 * If team is create at this school and owner if not exist,
-	 * the school admin can set a new owner for this team.
-	 * If school is created from other school and *userId is not set*,
-	 * it remove all users from own school.
-	 * @param {String} teamId
-	 * @param {Object} data data.userId
-	 * @param {Object} params
-	 */
+     * If team is create at this school and owner if not exist,
+     * the school admin can set a new owner for this team.
+     * If school is created from other school and *userId is not set*,
+     * it remove all users from own school.
+     * @param {String} teamId
+     * @param {Object} data data.userId
+     * @param {Object} params
+     */
 	patch(teamId, { userId }, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
 			const {
@@ -168,10 +168,10 @@ class AdminOverview {
 	}
 
 	/**
-	 * If team is created at own school, it remove it.
-	 * @param {*} teamId
-	 * @param {*} params
-	 */
+     * If team is created at own school, it remove it.
+     * @param {*} teamId
+     * @param {*} params
+     */
 	remove(teamId, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
 			const { isOwnerSchool } = AdminOverview.getIsOwnerStats(ref, sessionUser, team);
@@ -184,8 +184,8 @@ class AdminOverview {
 
 
 	/**
-	* Contact Owner part
-	*/
+    * Contact Owner part
+    */
 
 	static getOwner(team, ownerRoleId) {
 		return team.userIds.find(user => isSameId(user.role, ownerRoleId));
@@ -204,15 +204,15 @@ class AdminOverview {
 	}
 
 	/**
-	 * Over this services method can administrators can send message for school teams.
-	 * It has a batch logic to send the same message to different teams.
-	 * This message contact the owner of this teams over his email.
-	 * @param {Object::{message:String,teamIds:String||Array::String}} data
-	 * @param {*} params
-	 */
+     * Over this services method can administrators can send message for school teams.
+     * It has a batch logic to send the same message to different teams.
+     * This message contact the owner of this teams over his email.
+     * @param {Object::{message:String,teamIds:String||Array::String}} data
+     * @param {*} params
+     */
 	create({ message, teamIds }, params) {
-		//	const message = data.message;
-		//	let teamIds = data.teamIds;
+		//  const message = data.message;
+		//  let teamIds = data.teamIds;
 
 		if (isUndefined([teamIds, message], 'OR')) {
 			throw new BadRequest('Missing parameter');
@@ -277,8 +277,8 @@ class Get {
 	}
 
 	/**
-	 * @param {} params
-	 */
+     * @param {} params
+     */
 	find(params) {
 		return getSessionUser(this, params).then((sessionUser) => {
 			const { email } = sessionUser;
@@ -302,9 +302,9 @@ class Add {
 	}
 
 	/**
-	 * @private
-	 * @return {Promise::bsonId||stringId} Expert school id.
-	 */
+     * @private
+     * @return {Promise::bsonId||stringId} Expert school id.
+     */
 	_getExpertSchoolId() {
 		return this.app.service('schools').find({ query: { purpose: 'expert' } })
 			.then(schools => extractOne(schools, '_id')
@@ -315,9 +315,9 @@ class Add {
 	}
 
 	/**
-	 * @private
-	 * @return {Promise::bsonId||stringId} Expert role id.
-	 */
+     * @private
+     * @return {Promise::bsonId||stringId} Expert role id.
+     */
 	_getExpertRoleId() {
 		return this.app.service('roles')
 			.find({ query: { name: 'expert' } })
@@ -329,10 +329,10 @@ class Add {
 	}
 
 	/**
-	 * @private
-	 * @param {String} email
-	 * @return {Promise::User}
-	 */
+     * @private
+     * @param {String} email
+     * @return {Promise::User}
+     */
 	async _getUsersByEmail(email) {
 		return this.app.service('users').find({
 			query: {
@@ -347,10 +347,10 @@ class Add {
 	}
 
 	/**
-	 * @private
-	 * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
-	 * @param {Boolean} isUserCreated default = false
-	 */
+     * @private
+     * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
+     * @param {Boolean} isUserCreated default = false
+     */
 	async _generateLink({
 		esid, email, teamId, importHash,
 	}, isUserCreated = false) {
@@ -375,16 +375,16 @@ class Add {
 	}
 
 	/**
-	 * Use for email invites
-	 * @private
-	 * @param {Object::{email::String, role::String, teamId::String}} opt
-	 * @return {Object::
-	 * 		schoolId::String,
-	 * 		isUserCreated::Boolean,
-	 * 		user::Object::User,
-	 * 		team::Object::Team,
-	 * }}
-	 */
+     * Use for email invites
+     * @private
+     * @param {Object::{email::String, role::String, teamId::String}} opt
+     * @return {Object::
+     *      schoolId::String,
+     *      isUserCreated::Boolean,
+     *      user::Object::User,
+     *      team::Object::Team,
+     * }}
+     */
 	async _collectUserAndLinkData({ email, role, teamId }) {
 		return Promise.all([
 			// eslint-disable-next-line no-underscore-dangle
@@ -439,15 +439,15 @@ class Add {
 	}
 
 	/**
-	 * Format the response.
-	 * @private
-	 * @param {Object} opt
-	 * @param {Object} opt.linkData
-	 * @param {Object} opt.user
-	 * @param {Object} [opt.isUserCreated = false]
-	 * @param {Object} [opt.isResend = false]
-	 * @param {Object} [opt.email]
-	 */
+     * Format the response.
+     * @private
+     * @param {Object} opt
+     * @param {Object} opt.linkData
+     * @param {Object} opt.user
+     * @param {Object} [opt.isUserCreated = false]
+     * @param {Object} [opt.isResend = false]
+     * @param {Object} [opt.email]
+     */
 	static _response(opt) {
 		if (isUndefined([opt.linkData, opt.user], 'OR')) {
 			throw new BadRequest('Can not complete the response');
@@ -459,18 +459,18 @@ class Add {
 	}
 
 	/**
-	 * @private
-	 * @param {Object::{email::String, role::String, teamId::String}} opt
-	 * @param {Object::params} params The request params.
-	 * @return {Promise::{
-	 * message: 'Success!',
-	 * linkData::Object~from this._generateLink(),
-	 * user::Object::User,
-	 * role::String
-	 * }}
-	 */
+     * @private
+     * @param {Object::{email::String, role::String, teamId::String}} opt
+     * @param {Object::params} params The request params.
+     * @return {Promise::{
+     * message: 'Success!',
+     * linkData::Object~from this._generateLink(),
+     * user::Object::User,
+     * role::String
+     * }}
+     */
 	async _userImportById(teamId, { userId, role }, params) {
-		//	const { userId, role } = data;
+		//  const { userId, role } = data;
 		const [ref, user, team] = await getBasic(this, teamId, params, userId);
 		const { schoolId } = user;
 		const schoolIds = getUpdatedSchoolIdArray(team, user);
@@ -487,10 +487,10 @@ class Add {
 	}
 
 	/**
-	 * @private
-	 * @param {Obejct::team.userIds} {userIds} The userIds *must* be *popluated*
-	 * @throws if user already inside this team
-	 */
+     * @private
+     * @param {Obejct::team.userIds} {userIds} The userIds *must* be *popluated*
+     * @throws if user already inside this team
+     */
 	static _throwErrorIfUserExistByEmail({ userIds }, email) {
 		if (!isArray(userIds)) {
 			throw new BadRequest('Wrong input.');
@@ -508,18 +508,18 @@ class Add {
 	}
 
 	/**
-	 * The schoolIds for new added users will not updated inside this step.
-	 * It will manage if the user accpet the invite.
-	 * @private
-	 * @param {Object::{email::String, role::String, teamId::String}} opt
-	 * @param {Object::params} params The request params.
-	 * @return {Promise::{
-	 *  	message: 'Success!',
-	 * 		linkData::Object~from this._generateLink(),
-	 * 		user::Object::User,
-	 * 		role::String
-	 * }}
-	 */
+     * The schoolIds for new added users will not updated inside this step.
+     * It will manage if the user accpet the invite.
+     * @private
+     * @param {Object::{email::String, role::String, teamId::String}} opt
+     * @param {Object::params} params The request params.
+     * @return {Promise::{
+     *      message: 'Success!',
+     *      linkData::Object~from this._generateLink(),
+     *      user::Object::User,
+     *      role::String
+     * }}
+     */
 	async _userImportByEmail(teamId, { email, role }, params) {
 		// let { email, role } = data;
 		// eslint-disable-next-line no-param-reassign
@@ -537,9 +537,9 @@ class Add {
 		const { invitedUserIds } = team;
 		// eslint-disable-next-line no-param-reassign
 		role = userRoleName; /*
-			@override
-			is important if user already in invited users exist and the role is take from team
-		*/
+            @override
+            is important if user already in invited users exist and the role is take from team
+        */
 
 		// eslint-disable-next-line no-underscore-dangle
 		Add._throwErrorIfUserExistByEmail(team, email);
@@ -561,10 +561,10 @@ class Add {
 	}
 
 	/**
-	 * @param {String} teamId
-	 * @param {Object::{email::String, userId::String, role::String}} data
-	 * @param {Object::params} params The request params.
-	 */
+     * @param {String} teamId
+     * @param {Object::{email::String, userId::String, role::String}} data
+     * @param {Object::params} params The request params.
+     */
 	patch(teamId, data, params) {
 		try {
 			if (isDefined(data.role) && ['teamexpert', 'teamadministrator'].includes(data.role) === false) {
@@ -598,7 +598,7 @@ class Accept {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
-		//	this.app = options.app;
+		//  this.app = options.app;
 	}
 
 	static findInvitedUserByEmail(team, email) {
@@ -606,9 +606,9 @@ class Accept {
 	}
 
 	/**
-	 * @param {*} id
-	 * @param {*} params
-	 */
+     * @param {*} id
+     * @param {*} params
+     */
 	get(teamId, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
 			const { email } = sessionUser;
@@ -646,14 +646,14 @@ class Remove {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
-		//	this.app = options.app;
+		//  this.app = options.app;
 	}
 
 	/**
-	 * @param {*} id
-	 * @param {*} data
-	 * @param {*} params
-	 */
+     * @param {*} id
+     * @param {*} data
+     * @param {*} params
+     */
 	patch(teamId, { email }, params) {
 		if (isUndefined(email)) {
 			throw new BadRequest('Missing parameter.');
@@ -702,7 +702,7 @@ module.exports = function setup() {
 	Object.values(topLevelServices).forEach((_service) => {
 		_service.hooks({
 			before: hooks.beforeExtern,
-			after: hooks.beforeExtern,
+			after: hooks.afterExtern,
 		});
 	});
 

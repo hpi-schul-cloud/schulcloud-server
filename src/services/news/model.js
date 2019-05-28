@@ -6,10 +6,10 @@ const newsModel = mongoose.model('news', new Schema({
 	schoolId: { type: Schema.Types.ObjectId, required: true },
 	title: { type: String, required: true },
 	content: { type: String, required: true },
-	displayAt: { type: Date, 'default': Date.now },
+	displayAt: { type: Date, default: Date.now },
 
 	creatorId: { type: Schema.Types.ObjectId, ref: 'user' },
-	createdAt: { type: Date, 'default': Date.now },
+	createdAt: { type: Date, default: Date.now },
 
 	updaterId: { type: Schema.Types.ObjectId, ref: 'user' },
 	updatedAt: { type: Date },
@@ -38,10 +38,10 @@ const newsModel = mongoose.model('news', new Schema({
 const newsHistoryModel = mongoose.model('newshistory', new Schema({
 	title: { type: String, required: true },
 	content: { type: String, required: true },
-	displayAt: { type: Date, 'default': Date.now },
+	displayAt: { type: Date, default: Date.now },
 
 	creatorId: { type: Schema.Types.ObjectId, ref: 'user' },
-	createdAt: { type: Date, 'default': Date.now },
+	createdAt: { type: Date, default: Date.now },
 	parentId: { type: Schema.Types.ObjectId, ref: 'news' },
 }));
 

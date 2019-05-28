@@ -54,7 +54,7 @@ const firstLogin = async (data, params, app) => {
 	}
 	// malformed email?
 	if (data['student-email']) {
-		var regex = RegExp("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
+		const regex = RegExp("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
 		if (!regex.test(data['student-email'])) {
 			return Promise.reject('Bitte eine valide E-Mail-Adresse eingeben.');
 		}
@@ -67,21 +67,19 @@ const firstLogin = async (data, params, app) => {
 
 	const userPromise = app.service('users').patch(user._id, userUpdate);
 
-	if (data.privacyConsent || data.thirdPartyConsent || data.termsOfUseConsent) {
+	if (data.privacyConsent || data.termsOfUseConsent) {
 		consentUpdate.userId = user._id;
 		consentUpdate.userConsent = {
 			form: 'digital',
 			privacyConsent: data.privacyConsent,
-			thirdPartyConsent: data.thirdPartyConsent,
 			termsOfUseConsent: data.termsOfUseConsent,
 		};
 	}
-	if (data.parent_privacyConsent || data.parent_thirdPartyConsent || data.parent_termsOfUseConsent) {
+	if (data.parent_privacyConsent || data.parent_termsOfUseConsent) {
 		consentUpdate.userId = user._id;
 		consentUpdate.parentConsents = [{
 			form: 'digital',
 			privacyConsent: data.parent_privacyConsent,
-			thirdPartyConsent: data.parent_thirdPartyConsent,
 			termsOfUseConsent: data.parent_termsOfUseConsent,
 		}];
 	}
