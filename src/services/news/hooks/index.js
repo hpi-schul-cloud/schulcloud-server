@@ -1,16 +1,11 @@
 const auth = require('@feathersjs/authentication');
-const logger = require('winston');
 const { BadRequest } = require('@feathersjs/errors');
-const { newsModel, newsHistoryModel } = require('../model');
+const { newsHistoryModel } = require('../model');
 
-const deleteNewsHistory = (hook) => {
-	newsModel.findOne({ _id: hook.id })
-		.then((news) => {
-			for (let i = 0; i < news.history.length; i += 1) {
-				newsHistoryModel.findOneAndRemove({ _id: news.history[i] })
-					.catch(err => logger.log('error', err));
-			}
-		});
+const deleteNewsHistory = async (context) => {
+	if (context.id) {
+		await newsHistoryModel.remove({ parentId: context.id });
+	}
 };
 
 /**

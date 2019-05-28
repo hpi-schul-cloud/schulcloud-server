@@ -117,6 +117,24 @@ class NewsService {
 	}
 
 	/**
+	 * Create a copy of the original news if it is edited
+	 * @param {News} oldItem
+	 * @returns {Promise<NewsHistory>} the created news history document
+	 * @memberof NewsService
+	 * @static
+	 */
+	static createHistoryEntry(oldItem) {
+		const historyEntry = {
+			title: oldItem.title,
+			content: oldItem.content,
+			displayAt: oldItem.displayAt,
+			creatorId: oldItem.updaterId ? oldItem.updaterId : oldItem.creatorId,
+			parentId: oldItem._id,
+		};
+		return newsHistoryModel.create(historyEntry);
+	}
+
+	/**
 	 * GET /news/{id}
 	 * Returns the news item specified by id
 	 * @param {BsonId|String} id
@@ -203,8 +221,10 @@ class NewsService {
 	async update(id, data, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account, 'NEWS_EDIT');
-		return this.app.service('newsModel').update(id, data);
+		await this.authorize(news, params.account, 'NEWS_EDIT'); 
+		const updatedNews = await this.app.service('newsModel').update(id, data);
+		await NewsService.createHistoryEntry(news);
+		return updatedNews;
 	}
 
 	/**
@@ -222,7 +242,9 @@ class NewsService {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account, 'NEWS_EDIT');
-		return this.app.service('newsModel').patch(id, data);
+		const patchedNews = await this.app.service('newsModel').patch(id, data);
+		await NewsService.createHistoryEntry(news);
+		return patchedNews;
 	}
 }
 
@@ -243,10 +265,4 @@ module.exports = function news() {
 		},
 	}));
 	app.service('/newsModel').hooks(newsModelHooks);
-
-	app.use('/newshistory', service({
-		Model: newsHistoryModel,
-	}));
-	const newsHistoryService = app.service('/newshistory');
-	newsHistoryService.hooks(hooks);
 };
