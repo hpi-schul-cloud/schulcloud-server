@@ -14,7 +14,7 @@ describe('Sanitization Service', function () {
 		this.timeout(10000); // for slow require(app) call
 		app = require('../src/app');
 		app.setup();
-		newsService = app.service('news');
+		newsService = app.service('newsModel');
 		helpdeskService = app.service('helpdesk');
 		courseService = app.service('courses');
 		lessonService = app.service('lessons');
