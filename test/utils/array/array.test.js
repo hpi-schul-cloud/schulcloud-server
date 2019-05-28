@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { flatten, paginate } = require('../../src/utils/array');
+const { flatten, paginate } = require('../../../src/utils/array');
 
 describe('array helpers', () => {
 	describe('#flatten', () => {
