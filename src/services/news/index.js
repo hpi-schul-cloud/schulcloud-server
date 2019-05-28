@@ -44,7 +44,7 @@ class NewsService {
 	 * await authorize(news, params.account, 'NEWS_CREATE') => (throws Forbidden)
 	 * @memberof NewsService
 	 */
-	async authorize(news, { userId, schoolId }, permission) {
+	async authorize(news = {}, { userId, schoolId } = {}, permission) {
 		const authorized = await this.hasPermission(userId, permission, news.target, news.targetModel);
 		const sameSchool = news.schoolId.toString() === schoolId.toString();
 		if (!authorized || !sameSchool) {
