@@ -1,5 +1,8 @@
+/* eslint-disable no-param-reassign */
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
+
+const globalHooks = require('./hooks/');
 
 const sanitize = (data, options) => {
 	// https://www.npmjs.com/package/sanitize-html
@@ -51,21 +54,32 @@ const sanitizeDeep = (data, path) => {
 				sanitizeDeep(value, path);
 			}
 		});
-	} else if (typeof data === 'string') data = sanitize(data, { html: false });
-	else if (Array.isArray(data)) {
-		for (let i = 0; i < data.length; i++) {
-			if (typeof data[i] === 'string') data[i] = sanitize(data[i], { html: false });
-			else sanitizeDeep(data[i], path);
+	} else if (typeof data === 'string') {
+		data = sanitize(data, { html: false });
+	} else if (Array.isArray(data)) {
+		for (let i = 0; i < data.length; i += 1) {
+			if (typeof data[i] === 'string') {
+				data[i] = sanitize(data[i], { html: false });
+			} else {
+				sanitizeDeep(data[i], path);
+			}
 		}
 	}
 	return data;
 };
 
-const sanitizeData = (hook) => {
-	if (hook.data && hook.path && hook.path !== 'authentication') {
-		sanitizeDeep(hook.data, hook.path);
+const sanitizeData = (context) => {
+	if (context.data && context.path && context.path !== 'authentication') {
+		sanitizeDeep(context.data, context.path);
 	}
-	return hook;
+	return context;
+};
+
+const removeObjectIdInData = (context) => {
+	if (context.data && context.data._id) {
+		delete context.data._id;
+	}
+	return context;
 };
 
 module.exports = {
@@ -73,13 +87,23 @@ module.exports = {
 		all: [],
 		find: [],
 		get: [],
-		create: [sanitizeData],
+		create: [sanitizeData, globalHooks.ifNotLocal(removeObjectIdInData)],
 		update: [sanitizeData],
 		patch: [sanitizeData],
 		remove: [],
 	},
 
 	after: {
+		all: [],
+		find: [],
+		get: [],
+		create: [],
+		update: [],
+		patch: [],
+		remove: [],
+	},
+
+	error: {
 		all: [],
 		find: [],
 		get: [],
