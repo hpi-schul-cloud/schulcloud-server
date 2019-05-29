@@ -167,7 +167,7 @@ describe('publicTeachers service', () => {
 		expect(result.data[0]._id.toString()).to.not.equal(testTeacherNotDiscoverable._id.toString());
 	});
 
-	it('with IGNORE_DISCOVERABILITY: find all 3 users ignoring their discoverable setting', async () => {
+	it('with IGNORE_DISCOVERABILITY: find all 2 teachers ignoring their discoverable setting', async () => {
 		// test with IGNORE_DISCOVERABILITY = true
 		process.env.IGNORE_DISCOVERABILITY = 'true';
 		result = await publicTeachersService.find({ query: { schoolId: '0000d186816abba584714c55' } });
