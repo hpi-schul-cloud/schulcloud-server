@@ -171,7 +171,7 @@ describe('publicTeachers service', () => {
 		// test with IGNORE_DISCOVERABILITY = true
 		process.env.IGNORE_DISCOVERABILITY = 'true';
 		result = await publicTeachersService.find({ query: { schoolId: '0000d186816abba584714c55' } });
-		expect(result.total).to.equal(3);
+		expect(result.total).to.equal(2);
 	});
 
 	// reset process.env.IGNORE_DISCOVERABILITY back to original value
