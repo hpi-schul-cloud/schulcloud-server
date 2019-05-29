@@ -137,17 +137,17 @@ describe('publicTeachers service', () => {
 		testStudent = await testObjects.createTestUser({
 			roles: ['student'],
 			discoverable: false,
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '0000d186816abba584714c55',
 		});
 		testTeacherDiscoverable = await testObjects.createTestUser({
 			roles: ['teacher'],
 			discoverable: true,
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '0000d186816abba584714c55',
 		});
 		testTeacherNotDiscoverable = await testObjects.createTestUser({
 			roles: ['teacher'],
 			discoverable: false,
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '0000d186816abba584714c55',
 		});
 		assert.ok(userService);
 		assert.ok(publicTeachersService);
@@ -160,7 +160,7 @@ describe('publicTeachers service', () => {
 	it('without IGNORE_DISCOVERABILITY: find 1 discoverable teacher but not find other users', async () => {
 		// test with IGNORE_DISCOVERABILITY = false
 		process.env.IGNORE_DISCOVERABILITY = 'false';
-		result = await publicTeachersService.find({ query: { schoolId: '0000d186816abba584714c5f' } });
+		result = await publicTeachersService.find({ query: { schoolId: '0000d186816abba584714c55' } });
 		expect(result.total).to.equal(1);
 		expect(result.data[0]._id.toString()).to.equal(testTeacherDiscoverable._id.toString());
 		expect(result.data[0]._id.toString()).to.not.equal(testStudent._id.toString());
@@ -170,7 +170,7 @@ describe('publicTeachers service', () => {
 	it('with IGNORE_DISCOVERABILITY: find all 3 users ignoring their discoverable setting', async () => {
 		// test with IGNORE_DISCOVERABILITY = true
 		process.env.IGNORE_DISCOVERABILITY = 'true';
-		result = await publicTeachersService.find({ query: { schoolId: '0000d186816abba584714c5f' } });
+		result = await publicTeachersService.find({ query: { schoolId: '0000d186816abba584714c55' } });
 		expect(result.total).to.equal(3);
 	});
 
