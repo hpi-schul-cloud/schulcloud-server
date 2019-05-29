@@ -15,19 +15,17 @@ const persistCourseTimesEvent = (hook) => {
 			const courseTimeId = event['x-sc-courseTimeId'];
 
 			// find course-time and update eventId
-			return courseService.get(courseId).then(() => {
-				return courseModel.findOneAndUpdate(
-					{
-						_id: courseId,
-						'times._id': courseTimeId,
+			return courseService.get(courseId).then(() => courseModel.findOneAndUpdate(
+				{
+					_id: courseId,
+					'times._id': courseTimeId,
+				},
+				{
+					$set: {
+						'times.$.eventId': event._id,
 					},
-					{
-						$set: {
-							'times.$.eventId': event._id,
-						},
-					},
-				);
-			});
+				},
+			));
 		}
 	})).then(() => Promise.resolve(hook));
 };
