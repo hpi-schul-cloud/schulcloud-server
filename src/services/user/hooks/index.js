@@ -3,6 +3,8 @@ const errors = require('@feathersjs/errors');
 const logger = require('winston');
 const globalHooks = require('../../../hooks');
 
+const constants = require('../../../utils/constants');
+
 /**
  *
  * @param {object} hook - The hook of the server-request, containing req.params.query.roles as role-filter
@@ -22,7 +24,8 @@ const checkUnique = (hook) => {
 	const userService = hook.service;
 	const { email } = hook.data;
 	if (email === undefined) {
-		return Promise.reject(new errors.BadRequest('Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.'));
+		return Promise.reject(new errors
+			.BadRequest('Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.'));
 	}
 	return userService.find({ query: { email: email.toLowerCase() } })
 		.then((result) => {
@@ -37,6 +40,7 @@ const checkUnique = (hook) => {
 			const user = typeof result.data[0] === 'object' ? result.data[0] : {};
 			const input = typeof hook.data === 'object' ? hook.data : {};
 			const isLoggedIn = ((hook.params || {}).account && hook.params.account.userId);
+			// eslint-disable-next-line no-underscore-dangle
 			const { asTask } = hook.params._additional || {};
 
 			if (isLoggedIn || asTask === undefined || asTask === 'student') {
@@ -49,7 +53,12 @@ const checkUnique = (hook) => {
 						lastName: input.lastName,
 					},
 				});
-				return Promise.reject(new errors.BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!", user)); /* to stop the create process, the message are catch and resolve in regestration hook */
+				return Promise.reject(new errors
+					.BadRequest(
+						"parentCreatePatch... it's not a bug, it's a feature - and it really is this time!",
+						user,
+					));
+				/* to stop the create process, the message are catch and resolve in regestration hook */
 			}
 
 			return Promise.resolve(hook);
@@ -61,7 +70,10 @@ const checkUniqueAccount = (hook) => {
 	const { email } = hook.data;
 	return accountService.find({ query: { username: email.toLowerCase() } })
 		.then((result) => {
-			if (result.length > 0) return Promise.reject(new errors.BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`));
+			if (result.length > 0) {
+				return Promise.reject(new errors
+					.BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`));
+			}
 			return Promise.resolve(hook);
 		});
 };
@@ -71,7 +83,7 @@ const updateAccountUsername = (hook) => {
 
 	accountService.find({ query: { userId: hook.id } })
 		.then((result) => {
-			if (result.length == 0) {
+			if (result.length === 0) {
 				return Promise.resolve(hook);
 			}
 			const account = result[0];
@@ -82,7 +94,7 @@ const updateAccountUsername = (hook) => {
 				}
 				const { email } = hook.data;
 				return accountService.patch(accountId, { username: email }, { account: hook.params.account })
-					.then(result => Promise.resolve(hook));
+					.then(() => Promise.resolve(hook));
 			}
 			hook.result = {};
 			return Promise.resolve(hook);
@@ -122,13 +134,12 @@ const removeStudentFromCourses = (hook) => {
 				course.userIds.splice(course.userIds.indexOf(userId), 1);
 				return coursesService.patch(course._id, course);
 			}),
-		).then(_ => hook).catch((err) => { throw new errors.Forbidden('No Permission', err); }));
+		).then(() => hook).catch((err) => { throw new errors.Forbidden('No Permission', err); }));
 };
 
 const sanitizeData = (hook) => {
 	if ('email' in hook.data) {
-		const regex = RegExp("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
-		if (!regex.test(hook.data.email)) {
+		if (!constants.expressions.email.test(hook.data.email)) {
 			return Promise.reject(new errors.BadRequest('Bitte gib eine valide E-Mail Adresse an!'));
 		}
 	}
@@ -146,8 +157,8 @@ const sanitizeData = (hook) => {
 	return Promise.resolve(hook);
 };
 
-const checkJwt = () => function (hook) {
-	if (((hook.params || {}).headers || {}).authorization != undefined) {
+const checkJwt = () => function checkJwtfnc(hook) {
+	if (((hook.params || {}).headers || {}).authorization !== undefined) {
 		return (auth.hooks.authenticate('jwt')).call(this, hook);
 	}
 	return Promise.resolve(hook);
@@ -157,6 +168,7 @@ const pinIsVerified = (hook) => {
 	if ((hook.params || {}).account && hook.params.account.userId) {
 		return (globalHooks.hasPermission('USER_CREATE')).call(this, hook);
 	}
+	// eslint-disable-next-line no-underscore-dangle
 	const email = (hook.params._additional || {}).parentEmail || hook.data.email;
 	return hook.app.service('/registrationPins').find({ query: { email, verified: true } })
 		.then((pins) => {
@@ -174,6 +186,7 @@ const pinIsVerified = (hook) => {
 };
 
 // student administrator helpdesk superhero teacher parent
+// eslint-disable-next-line no-unused-vars
 const permissionRoleCreate = async (hook) => {
 	if (!hook.params.provider) {
 		// internal call
@@ -196,8 +209,16 @@ const permissionRoleCreate = async (hook) => {
 		}
 	}
 
-	if (isLoggedIn === true && globalHooks.arrayIncludes((hook.data.roles || []), ['student', 'teacher'], ['parent', 'administrator', 'helpdesk', 'superhero'])
-        || isLoggedIn === false && globalHooks.arrayIncludes((hook.data.roles || []), ['student', 'parent'], ['teacher', 'administrator', 'helpdesk', 'superhero'])
+	if ((isLoggedIn === true && globalHooks.arrayIncludes(
+		(hook.data.roles || []),
+		['student', 'teacher'],
+		['parent', 'administrator', 'helpdesk', 'superhero'],
+	))
+		|| (isLoggedIn === false && globalHooks.arrayIncludes(
+			(hook.data.roles || []),
+			['student', 'parent'],
+			['teacher', 'administrator', 'helpdesk', 'superhero'],
+		))
 	) {
 		return Promise.resolve(hook);
 	}
@@ -219,7 +240,7 @@ const securePatching = hook => Promise.all([
 			delete hook.data.roles;
 			delete (hook.data.$push || {}).roles;
 		}
-		if (hook.params.account.userId != hook.id) {
+		if (hook.params.account.userId !== hook.id) {
 			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent))) {
 				return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'));
 			}
@@ -233,24 +254,22 @@ const securePatching = hook => Promise.all([
  * @param app {object} - the global feathers-app
  * @returns {string} - a display name of the given user
  */
-const getDisplayName = (user, app) =>
-// load protected roles
-	app.service('/roles').find({
-		query: { // TODO: cache these
-			name: ['teacher', 'admin'],
-		},
-	}).then((protectedRoles) => {
-		const protectedRoleIds = (protectedRoles.data || []).map(role => role._id);
-		const isProtectedUser = protectedRoleIds.find(role => (user.roles || []).includes(role));
+const getDisplayName = (user, app) => app.service('/roles').find({
+	// load protected roles
+	query: {	// TODO: cache these
+		name: ['teacher', 'admin'],
+	},
+}).then((protectedRoles) => {
+	const protectedRoleIds = (protectedRoles.data || []).map(role => role._id);
+	const isProtectedUser = protectedRoleIds.find(role => (user.roles || []).includes(role));
 
-		user.age = globalHooks.getAge(user.birthday);
+	user.age = globalHooks.getAge(user.birthday);
 
-		if (isProtectedUser) {
-			return user.lastName ? user.lastName : user._id;
-		}
-		return user.lastName ? `${user.firstName} ${user.lastName}` : user._id;
-	})
-;
+	if (isProtectedUser) {
+		return user.lastName ? user.lastName : user._id;
+	}
+	return user.lastName ? `${user.firstName} ${user.lastName}` : user._id;
+});
 
 /**
  *
@@ -263,25 +282,6 @@ const decorateUser = hook => getDisplayName(hook.result, hook.app)
 		hook.result.displayName = displayName;
 	})
 	.then(() => Promise.resolve(hook));
-
-/**
- *
- * @param hook {object} - the hook of the server-request
- * @returns {object} - the hook with the decorated user avatar
- */
-const decorateAvatar = (hook) => {
-	if (hook.result.total) {
-		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-		(hook.result.data || []).map((user) => {
-			user = setAvatarData(user);
-		});
-	} else {
-		// run and find with only one user
-		hook.result = setAvatarData(hook.result);
-	}
-
-	return Promise.resolve(hook);
-};
 
 /**
  *
@@ -309,6 +309,24 @@ const setAvatarData = (user) => {
 /**
  *
  * @param hook {object} - the hook of the server-request
+ * @returns {object} - the hook with the decorated user avatar
+ */
+const decorateAvatar = (hook) => {
+	if (hook.result.total) {
+		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
+		(hook.result.data || []).forEach(user => setAvatarData(user));
+	} else {
+		// run and find with only one user
+		hook.result = setAvatarData(hook.result);
+	}
+
+	return Promise.resolve(hook);
+};
+
+
+/**
+ *
+ * @param hook {object} - the hook of the server-request
  * @returns {object} - the hook with the decorated users
  */
 const decorateUsers = (hook) => {
@@ -328,7 +346,7 @@ const handleClassId = (hook) => {
 	if (!('classId' in hook.data)) {
 		return Promise.resolve(hook);
 	}
-	hook.app.service('/classes').patch(hook.data.classId, {
+	return hook.app.service('/classes').patch(hook.data.classId, {
 		$push: { userIds: hook.result._id },
 	}).then(res => Promise.resolve(hook));
 };
