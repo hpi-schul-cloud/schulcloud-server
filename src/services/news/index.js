@@ -27,7 +27,7 @@ class NewsService {
 		if (targetId && targetModel) {
 			const scope = this.app.service(`${targetModel}/:scopeId/userPermissions/`);
 			const params = { route: { scopeId: targetId.toString() } };
-			const scopePermissions = await scope.get(userId, params) || [];
+			const scopePermissions = await scope.get(userId, params);
 			return scopePermissions.includes(permission);
 		}
 		const user = await this.app.service('users').get(userId);
