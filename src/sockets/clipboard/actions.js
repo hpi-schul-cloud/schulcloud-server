@@ -31,7 +31,9 @@ const deleteMedia = socket => (id) => {
 	course.broadcastUpdate('desks');
 };
 
-const setBoardLayout = socket => ({ desk, deskType, key, maxElements }) => {
+const setBoardLayout = socket => ({
+	desk, deskType, key, maxElements,
+}) => {
 	const { course } = socket.meta;
 	const deskObject = course.desks[deskType][desk];
 	if (!deskObject) return;

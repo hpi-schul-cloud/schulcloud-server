@@ -6,6 +6,7 @@ const upload = require('./upload');
 const ClipboardModel = require('./clipboard-model');
 
 const joinCourse = socket => new Promise((resolve, reject) => {
+	// eslint-disable-next-line no-underscore-dangle
 	const { courseId } = socket.request._query;
 	socket.meta.courseId = courseId;
 	socket.join(courseId, (err) => {
@@ -77,7 +78,7 @@ const initModel = socket => () => new Promise((resolve, reject) => {
 });
 
 const getUser = (app, socket) => () => app.service('users').get(socket.client.userId)
-	.then((result, err) => {
+	.then((result) => {
 		const user = {
 			id: result._id,
 			role: result.permissions.indexOf('USERGROUP_EDIT') >= 0 ? 'teacher' : 'student',
