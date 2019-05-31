@@ -111,6 +111,7 @@ module.exports = (app, opt = {
 		createTestTeamWithOwner,
 		info,
 		setupUser: warn('@implement should finished', setupUser),
+		options: opt,
 		findRoles,
 	};
 };
