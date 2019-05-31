@@ -4,10 +4,11 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const mongooseHistory = require('mongoose-history');
 
 const { Schema } = mongoose;
 
-const consentForm = ['analog', 'digital'];
+const consentForm = ['analog', 'digital', 'update'];
 
 const consentSchema = new Schema({
 	userId: {
@@ -33,16 +34,29 @@ const consentSchema = new Schema({
 	}],
 });
 
+consentSchema.plugin(mongooseHistory);
+
+const consentTypes = {
+	PRIVACY: 'privacy',
+	TERMS_OF_USE: 'termsOfUse',
+};
+
 const consentVersionSchema = new Schema({
-	versionNumber: { type: String },
-	consentText: { type: String },
-	date: { type: Date },
-});
+	consentTypes: [{
+		type: String,
+		required: true,
+		enum: Object.values(consentTypes),
+	}],
+	consentText: { type: String, required: true },
+	publishedAt: { type: Date, required: true },
+	title: { type: String, required: true },
+}, { timestamps: true });
 
 const consentModel = mongoose.model('consent', consentSchema);
-const consentVersionModel = mongoose.model('consentVersion', consentVersionSchema);
+const ConsentVersionModel = mongoose.model('consentVersion', consentVersionSchema);
 
 module.exports = {
 	consentModel,
-	consentVersionModel,
+	consentTypes,
+	ConsentVersionModel,
 };

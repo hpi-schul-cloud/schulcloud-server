@@ -1,3 +1,6 @@
+const constants = require('../../utils/constants');
+
+/* eslint-disable prefer-promise-reject-errors */ // fixmer this should be removed
 const createParent = (data, params, user, app) => app.service('/registrationPins/')
 	.find({ query: { pin: data.pin, email: data.parent_email, verified: false } })
 	.then((check) => {
@@ -8,6 +11,7 @@ const createParent = (data, params, user, app) => app.service('/registrationPins
 			firstName: data.parent_firstName,
 			lastName: data.parent_lastName,
 			email: data.parent_email,
+			// eslint-disable-next-line no-underscore-dangle
 			children: [user._Id],
 			schoolId: user.schoolId,
 			roles: ['parent'],
@@ -33,6 +37,7 @@ const firstLogin = async (data, params, app) => {
 	// let userPromise;
 	const consentUpdate = {};
 	let consentPromise = Promise.resolve();
+	let updateConsentUsingVersions = Promise.resolve();
 	const user = await app.service('users').get(params.account.userId);
 
 	if (data.parent_email) {
@@ -47,6 +52,7 @@ const firstLogin = async (data, params, app) => {
 	if (data.studentBirthdate) {
 		const dateArr = data.studentBirthdate.split('.');
 		const userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
+		// eslint-disable-next-line no-restricted-globals
 		if (userBirthday instanceof Date && isNaN(userBirthday)) {
 			return Promise.reject('Bitte einen validen Geburtstag auswählen.');
 		}
@@ -54,8 +60,7 @@ const firstLogin = async (data, params, app) => {
 	}
 	// malformed email?
 	if (data['student-email']) {
-		const regex = RegExp("^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
-		if (!regex.test(data['student-email'])) {
+		if (!constants.expressions.email.test(data['student-email'])) {
 			return Promise.reject('Bitte eine valide E-Mail-Adresse eingeben.');
 		}
 		userUpdate.email = data['student-email'];
@@ -75,6 +80,44 @@ const firstLogin = async (data, params, app) => {
 			termsOfUseConsent: data.termsOfUseConsent,
 		};
 	}
+
+	if (data.termsOfUseConsentVersion || data.privacyConsentVersion) {
+		const updateConsentDates = (consent) => {
+			if (data.privacyConsentVersion) {
+				consent.privacyConsent = true;
+				consent.dateOfPrivacyConsent = Date.now();
+			}
+			if (data.termsOfUseConsentVersion) {
+				consent.termsOfUseConsent = true;
+				consent.dateOfTermsOfUseConsent = Date.now();
+			}
+			return consent;
+		};
+
+		updateConsentUsingVersions = app.service('consents').find({ userId: user._id }).then((consents) => {
+			if (consents.total !== 1) {
+				throw new Error('user consent not found!');
+			}
+			const consent = consents.data[0];
+			// update userConsent if exist otherwise the parentConsent should be updated
+			let updatedConsent = {
+				form: 'update',
+			};
+			const updateConsentType = consent.userConsent ? 'userConsent' : 'parentConsents';
+			if (updateConsentType === 'userConsent') {
+				updatedConsent = Object.assign({}, updatedConsent, consent[updateConsentType]);
+				updatedConsent = updateConsentDates(updatedConsent);
+				return app.service('consents').patch(consent._id, { userConsent: updatedConsent });
+			}
+			if (updateConsentType === 'parentConsents' && (!consent.parentConsents || !consent.parentConsents.length)) {
+				throw new Error('no parent or user consent found');
+			}
+			updatedConsent = Object.assign({}, updatedConsent, consent.parentConsents[0]);
+			updatedConsent = updateConsentDates(updatedConsent);
+			return app.service('consents').patch(consent._id, { parentConsents: [updatedConsent] });
+		});
+	}
+
 	if (data.parent_privacyConsent || data.parent_termsOfUseConsent) {
 		consentUpdate.userId = user._id;
 		consentUpdate.parentConsents = [{
@@ -91,7 +134,7 @@ const firstLogin = async (data, params, app) => {
 		accountPromise = app.service('accounts').patch(accountId, accountUpdate, params);
 	}
 
-	return Promise.all([accountPromise, userPromise, consentPromise])
+	return Promise.all([accountPromise, userPromise, consentPromise, updateConsentUsingVersions])
 		.then(result => Promise.resolve(result))
 		.catch(err => Promise.reject(err));
 };
