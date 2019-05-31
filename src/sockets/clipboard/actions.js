@@ -8,6 +8,7 @@ const disconnect = socket => () => {
 const addMedia = socket => (meta) => {
 	const { user, course } = socket.meta;
 	const { medium } = meta;
+	// eslint-disable-next-line no-plusplus
 	medium.id = ++course.lastId;
 	medium.sender = user && user.name;
 	if (!course.desks[meta.deskType][meta.desk]) return;
@@ -20,6 +21,7 @@ const deleteMedia = socket => (id) => {
 	Object.keys(course.desks).forEach((deskType) => {
 		if (!course.desks[deskType]) return;
 		Object.keys(course.desks[deskType]).forEach((desk) => {
+			// eslint-disable-next-line no-param-reassign
 			desk = course.desks[deskType][desk];
 			if (desk.media) {
 				desk.media = desk.media.filter(medium => medium.id !== id);
@@ -46,18 +48,22 @@ const setBoardLayout = socket => ({ desk, deskType, key, maxElements }) => {
 	course.broadcastUpdate('desks');
 };
 
-const setMediaOnBoard = socket => ({ desk, deskType, slot, media }) => {
+const setMediaOnBoard = socket => ({
+	desk, deskType, slot, media,
+}) => {
 	const { course } = socket.meta;
-	let { board } = course.desks[deskType][desk];
+	const { board } = course.desks[deskType][desk];
 	if (slot === undefined) {
-		for (let i = 0; i < board.maxElements; i++) {
+		for (let i = 0; i < board.maxElements; i += 1) {
 			if (!board.media[i]) {
+				// eslint-disable-next-line no-param-reassign
 				slot = i;
 				break;
 			}
 		}
 	}
 	if (slot === undefined) {
+		// eslint-disable-next-line no-param-reassign
 		slot = 0;
 	}
 	board.media[slot] = media;

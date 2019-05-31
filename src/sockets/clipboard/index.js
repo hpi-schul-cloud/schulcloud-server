@@ -111,7 +111,7 @@ const sendFullState = socket => () => {
 	}); // on connect send inital state
 };
 
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 
 	app.use(siofu.router);

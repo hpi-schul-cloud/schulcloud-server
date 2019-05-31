@@ -54,7 +54,7 @@ app.use(compress())
 	.configure(middleware)
 	.hooks(allHooks);
 
-winston.cli();	// optimize for cli, like using colors
+winston.cli(); // optimize for cli, like using colors
 winston.level = 'debug';
 
 module.exports = app;
