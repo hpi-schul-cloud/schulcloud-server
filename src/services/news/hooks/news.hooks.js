@@ -5,6 +5,7 @@ const deleteNewsHistory = async (context) => {
 	if (context.id) {
 		await newsHistoryModel.remove({ parentId: context.id });
 	}
+	return context;
 };
 
 /**
@@ -15,7 +16,7 @@ const deleteNewsHistory = async (context) => {
  * @throws {NotFound} if user cannot be found
  */
 const lookupSchool = async (context) => {
-	if (context.params.account && context.params.account.userId) {
+	if (context.params && context.params.account && context.params.account.userId) {
 		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
 		context.params.account.schoolId = schoolId;
 		return context;
