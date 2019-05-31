@@ -328,7 +328,8 @@
 			"UPLOAD_FILES",
 			"USE_ROCKETCHAT",
 			"LEAVE_TEAM",
-			"USE_LIBREOFFICE"
+			"USE_LIBREOFFICE",
+			"NEWS_VIEW"
 		],
 		"__v": 0
 	},
@@ -371,7 +372,7 @@
 		"permissions": [
 			"EDIT_ALL_FILES",
 			"ADD_SCHOOL_MEMBERS",
-			"CREATE_NEWS",
+			"NEWS_CREATE",
 			"CREATE_TOPICS_AND_TASKS",
 			"CHANGE_TEAM_ROLES"
 		],
@@ -398,6 +399,7 @@
 			"INVITE_ADMINISTRATORS",
 			"REMOVE_MEMBERS",
 			"RENAME_TEAM",
+			"NEWS_EDIT",
 			"DEFAULT_FILE_PERMISSIONS"
 		],
 		"__v": 0

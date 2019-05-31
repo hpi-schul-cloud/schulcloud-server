@@ -18,7 +18,7 @@ describe('Sanitization Hook', () => {
 	let currentLessonId = null;
 
 	before((done) => {
-		newsService = app.service('news');
+		newsService = app.service('newsModel');
 		helpdeskService = app.service('helpdesk');
 		courseService = app.service('courses');
 		lessonService = app.service('lessons');
