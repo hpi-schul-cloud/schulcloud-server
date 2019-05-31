@@ -1,17 +1,15 @@
-'use strict';
-
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
+const hooks = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 
 exports.before = {
 	all: [],
-	find: [hooks.disable()],
-	get: [hooks.disable()],
+	find: [hooks.disallow()],
+	get: [hooks.disallow()],
 	create: [auth.hooks.authenticate('jwt'), globalHooks.isSuperHero()],
-	update: [hooks.disable()],
-	patch: [hooks.disable()],
-	remove: [hooks.disable()]
+	update: [hooks.disallow()],
+	patch: [hooks.disallow()],
+	remove: [hooks.disallow()],
 };
 
 exports.after = {
@@ -21,5 +19,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

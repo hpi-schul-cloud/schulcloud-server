@@ -3,12 +3,12 @@
 /* eslint no-param-reassign: 1  */
 const ran = true; // set to true to exclude migration
 const name = 'Replace all hard coded links to old file ids in lesson.';
-
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
-const lessonsModel = require('../src/services/lesson/model.js');
-const { FileModel } = require('../src/services/fileStorage/model.js');
+const database = require('../../src/utils/database');
+const lessonsModel = require('../../src/services/lesson/model.js');
+const { FileModel } = require('../../src/services/fileStorage/model.js');
 
 mongoose.Promise = global.Promise;
 
@@ -18,7 +18,7 @@ const sanitizeObj = (obj) => {
 };
 
 const convertDocument = (doc) => {
-	const [refOwnerModel, owner,] = doc.key.split('/');
+	const [refOwnerModel, owner] = doc.key.split('/');
 
 	const refOwnerModelMap = {
 		users: 'user',
@@ -71,8 +71,7 @@ const oldFileSchema = new Schema({
 
 
 const run = async () => {
-	mongoose.connect(process.env.DB_URL || 'mongodb://localhost:27017/schulcloud', { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
-
+	database.connect();
 	const oldfileModel = mongoose.model('oldfile', oldFileSchema, '_files');
 
 	const errorHandler = (err) => {

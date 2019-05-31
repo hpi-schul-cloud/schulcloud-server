@@ -4,7 +4,7 @@
 
 ## Allgemein
 - [ ] Links zu verwandten PRs anderer Repositories
-  - https://github.com/schul-cloud/schulcloud-client/pulls/????
+  - https://github.com/schul-cloud/schulcloud-client/pull/????
   - Im Ticket (oder PR, wenn kein Ticket): Beschreibung und Begründung der Änderung/Neuerungen
 - [ ] Link zum Ticket https://ticketsystem.schul-cloud.org/browse/SC-????
 
@@ -20,7 +20,8 @@
 
 ## Deployable
 - [ ] Feature Toggle notwendig (z.B. Environment-Variablen)
-- [ ] Datenbankanpassungen notwendig / Migrationsskripte
+- [ ] Datenbankanpassungen notwendig?
+  - Gibt es ein Migrationsskripte?
   - Alle DB-Anpassungen müssen in den Seed-Daten reflektiert werden
 - [ ] Notwendige neue Konfiguration an der Infrastruktur wurde mit Dev-Ops besprochen
 

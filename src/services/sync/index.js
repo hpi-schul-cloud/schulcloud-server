@@ -1,6 +1,6 @@
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 const logger = require('winston');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 
 const Syncer = require('./strategies/Syncer');
 const LDAPSystemSyncer = require('./strategies/LDAPSystemSyncer');
@@ -9,7 +9,6 @@ const CSVSyncer = require('./strategies/CSVSyncer');
 const syncers = [LDAPSystemSyncer, CSVSyncer];
 
 module.exports = function () {
-
 	const app = this;
 
 	class SyncService {
@@ -24,12 +23,12 @@ module.exports = function () {
 		}
 
 		async respond(data, params) {
-			if (! params.query || ! params.query.target) {
+			if (!params.query || !params.query.target) {
 				throw new errors.BadRequest('No target supplied');
 			}
-			const target = params.query.target;
+			const { target } = params.query;
 			const instances = [];
-			syncers.forEach(syncer => {
+			syncers.forEach((syncer) => {
 				if (syncer.respondsTo(target)) {
 					const args = syncer.params(params, data);
 					if (args) {
@@ -53,9 +52,11 @@ module.exports = function () {
 	app.use('/sync', new SyncService());
 
 	const syncService = app.service('/sync');
-	syncService.before({
-		create: [
-			auth.hooks.authenticate('jwt'),
-		],
+	syncService.hooks({
+		before: {
+			create: [
+				auth.hooks.authenticate('jwt'),
+			],
+		},
 	});
 };

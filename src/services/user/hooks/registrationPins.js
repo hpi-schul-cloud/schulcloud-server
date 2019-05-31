@@ -1,20 +1,14 @@
-'use strict';
-
-const commonHooks = require('feathers-hooks-common');
-const globalHooks = require('../../../hooks');
+const hooks = require('feathers-hooks-common');
+const auth = require('@feathersjs/authentication');
 const logger = require('winston');
-const auth = require('feathers-authentication');
+const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
 
-const removeOldPins = (hook) => {
-	return pinModel.deleteMany({email:hook.data.email})
-		.then(pins => {
-			return Promise.resolve(hook);
-		});
-};
+const removeOldPins = hook => pinModel.deleteMany({ email: hook.data.email })
+	.then(pins => Promise.resolve(hook));
 
 const generatePin = (hook) => {
-	let pin = Math.floor((Math.random() * 8999)+1000);
+	const pin = Math.floor((Math.random() * 8999) + 1000);
 	hook.data.pin = pin.toString();
 	return Promise.resolve(hook);
 };
@@ -22,7 +16,7 @@ const generatePin = (hook) => {
 function createinfoText(hook) {
 	let text;
 	const role = hook.data.mailTextForRole;
-	const pin = hook.data.pin;
+	const { pin } = hook.data;
 	const shortTitle = process.env.SC_SHORT_TITLE || 'Schul-Cloud*';
 	const longTitle = process.env.SC_TITLE || 'HPI Schul-Cloud*';
 	if (!role || !pin) {
@@ -37,7 +31,6 @@ PIN: ${pin}
 
 Mit Freundlichen Grüßen
 Ihr ${shortTitle} Team`;
-
 	} else if (role === 'student' || role === 'employee' || role === 'expert') {
 		text = `Vielen Dank, dass du die ${longTitle} nutzen möchtest.
 Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen:
@@ -53,40 +46,37 @@ Dein ${shortTitle} Team`;
 	return text;
 }
 
-const checkAndVerifyPin = hook => {
-	if(hook.result.data.length === 1 && hook.result.data[0].verified===false) {
-		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, {verified: true}).then(() => {
-			return Promise.resolve(hook);
-		});
-	} else {
-		return Promise.resolve(hook);
+const checkAndVerifyPin = (hook) => {
+	if (hook.result.data.length === 1 && hook.result.data[0].verified === false) {
+		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, { verified: true }).then(() => Promise.resolve(hook));
 	}
+	return Promise.resolve(hook);
 };
 
 const mailPin = (hook) => {
 	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
-			subject: `${process.env.SC_SHORT_TITLE||'Schul-Cloud*'}: Registrierung mit PIN verifizieren`,
+			subject: `${process.env.SC_SHORT_TITLE || 'Schul-Cloud*'}: Registrierung mit PIN verifizieren`,
 			emails: (hook.data || {}).email,
 			content: {
 				text: createinfoText(hook),
 				// TODO: implement html mails later
-			}
+			},
 		});
 	}
 	return Promise.resolve(hook);
 };
 
 const returnPinOnlyToSuperHero = async (hook) => {
-	if (process.env.NODE_ENV === 'test'){
+	if (process.env.NODE_ENV === 'test') {
 		return Promise.resolve(hook);
 	}
 
-	if(((hook.params||{}).account||{}).userId){
+	if (((hook.params || {}).account || {}).userId) {
 		const userService = hook.app.service('/users/');
-		const currentUser = await userService.get(hook.params.account.userId, {query: {$populate: 'roles'}});
-		const userRoles = currentUser.roles.map((role) => {return role.name;});
-		if(userRoles.includes('superhero')){
+		const currentUser = await userService.get(hook.params.account.userId, { query: { $populate: 'roles' } });
+		const userRoles = currentUser.roles.map(role => role.name);
+		if (userRoles.includes('superhero')) {
 			return Promise.resolve(hook);
 		}
 	}
@@ -97,12 +87,16 @@ const returnPinOnlyToSuperHero = async (hook) => {
 
 exports.before = {
 	all: [globalHooks.forceHookResolve(auth.hooks.authenticate('jwt'))],
-	find: commonHooks.disable('external'),
-	get: commonHooks.disable('external'),
-	create: [removeOldPins, generatePin, mailPin],
-	update: commonHooks.disable('external'),
-	patch: commonHooks.disable('external'),
-	remove: commonHooks.disable('external'),
+	find: hooks.disallow('external'),
+	get: hooks.disallow('external'),
+	create: [
+		removeOldPins,
+		generatePin,
+		mailPin,
+	],
+	update: hooks.disallow('external'),
+	patch: hooks.disallow('external'),
+	remove: hooks.disallow('external'),
 };
 
 exports.after = {
@@ -112,5 +106,5 @@ exports.after = {
 	create: [returnPinOnlyToSuperHero],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

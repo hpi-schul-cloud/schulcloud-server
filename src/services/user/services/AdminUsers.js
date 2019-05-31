@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
-const { BadRequest, Forbidden } = require('feathers-errors');
+const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const logger = require('winston');
 
 const { userModel } = require('../model');
@@ -13,8 +13,9 @@ const getCurrentUser = id => userModel.findById(id)
 	.lean()
 	.exec();
 
-const getAllUsers = (schoolId, roles) => userModel.find({ schoolId, roles })
+const getAllUsers = (schoolId, roles, sortObject) => userModel.find({ schoolId, roles })
 	.select('firstName lastName email createdAt')
+	.sort(sortObject)
 	.lean()
 	.exec();
 
@@ -23,39 +24,44 @@ const getRoles = () => roleModel.find()
 	.lean()
 	.exec();
 
-const getClasses = (ref, schoolId) => ref.app.service('classes')
+const getClasses = (app, schoolId) => app.service('classes')
 	.find({
 		query: {
 			schoolId,
 			$limit: 1000,
 		},
 	})
-	.then(classes => classes.data);
+	.then(classes => classes.data)
+	.catch((err) => {
+		logger.warn(`Can not execute app.service("classes").find for ${schoolId}`, err);
+		return err;
+	});
 
-const findConsent = userIds => consentModel.find({ userId: { $in: userIds } })
-	.select({
-		'userConsent.dateOfPrivacyConsent': 0,
-		'userConsent.dateOfTermsOfUseConsent': 0,
-		'userConsent.dateOfThirdPartyConsent': 0,
-		'userConsent.dateOfResearchConsent': 0,
-		'userConsent.researchConsent': 0,
-		'parentConsents.dateOfPrivacyConsent': 0,
-		'parentConsents.dateOfTermsOfUseConsent': 0,
-		'parentConsents.dateOfThirdPartyConsent': 0,
-		'parentConsents.dateOfResearchConsent': 0,
-		'parentConsents.researchConsent': 0,
+const findConsents = (ref, userIds) => ref.app.service('/consents')
+	.find({
+		query: {
+			userId: { $in: userIds },
+			$select: [
+				'userId',
+				'userConsent.form',
+				'userConsent.privacyConsent',
+				'userConsent.termsOfUseConsent',
+				'parentConsents.parentId',
+				'parentConsents.form',
+				'parentConsents.privacyConsent',
+				'parentConsents.termsOfUseConsent'],
+		},
 	})
-	.lean()
-	.exec();
+	.then(consents => consents.data);
 
-class AdminStudents {
-	constructor(options) {
-		this.options = options || {};
+class AdminUsers {
+	constructor(role) {
+		this.role = role || {};
 		this.docs = {};
 	}
 
 	async find(params) {
-	//	const { app } = this;
+		//  const { app } = this;
 		try {
 			const currentUserId = params.account.userId.toString();
 
@@ -67,12 +73,17 @@ class AdminStudents {
 			if (!currentUser.roles.some(role => ['teacher', 'administrator', 'superhero'].includes(role.name))) {
 				throw new Forbidden();
 			}
-
 			// fetch data that are scoped to schoolId
-			const studentRole = (roles.filter(role => role.name === 'student'))[0];
-			const [users, classes] = await Promise.all([getAllUsers(schoolId, studentRole._id), getClasses(this, schoolId)]);
+			const studentRole = (roles.filter(role => role.name === this.role))[0];
+			const [users, classes] = await Promise.all(
+				[
+					getAllUsers(schoolId, studentRole._id, (params.query || {}).$sort),
+					getClasses(this.app, schoolId),
+				],
+			);
+
 			const userIds = users.map(user => user._id.toString());
-			const consents = await findConsent(userIds).then((data) => {
+			const consents = await findConsents(this, userIds).then((data) => {
 				// rebuild consent to object for faster sorting
 				const out = {};
 				data.forEach((e) => {
@@ -80,20 +91,16 @@ class AdminStudents {
 				});
 				return out;
 			});
-
 			// bsonId to stringId that it can use .includes for is in test
 			classes.forEach((c) => {
 				c.userIds = c.userIds.map(id => id.toString());
 			});
 
 			// patch classes and consent into user
-			return users.map((user) => {
+			users.map((user) => {
 				user.classes = [];
 				const userId = user._id.toString();
-				const con = consents[userId];
-				if (con) {
-					user.consent = con;
-				}
+				user.consent = consents[userId] || {};
 				classes.forEach((c) => {
 					if (c.userIds.includes(userId)) {
 						user.classes.push(c.displayName);
@@ -101,6 +108,17 @@ class AdminStudents {
 				});
 				return user;
 			});
+
+			const filteredUsers = users.filter((user) => {
+				const { consentStatus } = params.query || {};
+
+				if ((consentStatus || {}).$in) {
+					const userStatus = user.consent.consentStatus || 'missing';
+					return consentStatus.$in.includes(userStatus);
+				}
+				return true;
+			});
+			return filteredUsers;
 		} catch (err) {
 			logger.warn(err);
 			if ((err || {}).code === 403) {
@@ -115,4 +133,4 @@ class AdminStudents {
 	}
 }
 
-module.exports = AdminStudents;
+module.exports = AdminUsers;

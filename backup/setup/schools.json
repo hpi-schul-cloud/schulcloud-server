@@ -30,13 +30,19 @@
 		},
 		{
 			"$oid": "0000d186816abba584714c92"
+		},
+		{
+			"$oid": "0000d186816abba584714c90"
 		}
 	],
 	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"__v": 0,
 	"currentYear": { "$oid": "5b7de0021a3a07c20a1c165e"},
-	"purpose": "demo"
+	"purpose": "demo",
+	"features" : [
+        "rocketChat"
+    ]
 },
 {
 	"_id" : { "$oid": "599ec0bb8e4e364ec18ff46c" },

@@ -21,7 +21,7 @@ const getUserGroupSchema = (additional = {}) => {
  * duration {Number} - the duration of a course lesson
  * startTime {Number] - the start time of a course lesson as milliseconds
  * weekday {Number} - from 0 to 6, the weekday the course take place
- *		(e.g. 0 = monday, 1 = tuesday ... )
+ *      (e.g. 0 = monday, 1 = tuesday ... )
  * eventId {String} - id of the event in the external calendar-service
  * room {String} - a specific location for the recurring course lesson, e.g. a room number
  */
@@ -50,7 +50,7 @@ const teamUserSchema = new Schema({
 
 const teamUserModel = mongoose.model('_teamUserSchema', teamUserSchema);
 
-const teamsModel = mongoose.model('teams', getUserGroupSchema({
+const teamsSchema = getUserGroupSchema({
 	schoolIds: {
 		type: [{ type: Schema.Types.ObjectId, ref: 'school' }],
 		required: true,
@@ -59,18 +59,20 @@ const teamsModel = mongoose.model('teams', getUserGroupSchema({
 	userIds: [teamUserSchema],
 	invitedUserIds: [teamInvitedUserSchema],
 	description: { type: String, default: '' },
-	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
+	classIds: [{ type: Schema.Types.ObjectId, ref: 'class' }],
 	// substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
 	// todo: add later
-	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
-	color: { type: String, required: true, default: '#ACACAC' },
+	ltiToolIds: [{ type: Schema.Types.ObjectId, ref: 'ltiTool' }],
+	color: { type: String, default: '#ACACAC' },
 	startDate: { type: Date },
 	untilDate: { type: Date },
-	//	shareToken:  { type: String, unique: true },
+	//  shareToken:  { type: String, unique: true },
 	times: [timeSchema],
 	features: [{ type: String, enum: ['isTeam', 'rocketChat'] }],
 	filePermission: [permissionSchema],
-}));
+});
+
+const teamsModel = mongoose.model('teams', teamsSchema);
 
 module.exports = {
 	teamsModel,

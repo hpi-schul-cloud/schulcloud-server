@@ -1,19 +1,20 @@
-'use strict';
-
+const autoPopulate = require('mongoose-autopopulate');
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const logger = require('winston');
+
+const { Schema } = mongoose;
 
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
-		name: {type: String, required: true},
-		schoolId: {type: Schema.Types.ObjectId, required: true},
-		userIds: [{type: Schema.Types.ObjectId, ref: 'user'}],
-		createdAt: {type: Date, 'default': Date.now},
-		updatedAt: {type: Date, 'default': Date.now}
+		name: { type: String, required: true },
+		schoolId: { type: Schema.Types.ObjectId, required: true },
+		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+		createdAt: { type: Date, default: Date.now },
+		updatedAt: { type: Date, default: Date.now },
 	};
 
-	return new Schema(Object.assign(schema, additional),{
-		timestamps: true
+	return new Schema(Object.assign(schema, additional), {
+		timestamps: true,
 	});
 };
 
@@ -25,47 +26,89 @@ const getUserGroupSchema = (additional = {}) => {
  * room {String} - a specific location for the recurring course lesson, e.g. a room number
  */
 const timeSchema = new Schema({
-	weekday: {type: Number, min: 0, max: 6, required: true},
-	startTime: {type: Number},
-	duration: {type: Number},
-	eventId: {type: String},
-	room: {type: String}
+	weekday: {
+		type: Number, min: 0, max: 6, required: true,
+	},
+	startTime: { type: Number },
+	duration: { type: Number },
+	eventId: { type: String },
+	room: { type: String },
 });
 
 const courseModel = mongoose.model('course', getUserGroupSchema({
-	description: {type: String},
-	classIds: [{type: Schema.Types.ObjectId, required: true, ref: 'class'}],
-	teacherIds: [{type: Schema.Types.ObjectId, required: true, ref: 'user'}],
-	substitutionIds: [{type: Schema.Types.ObjectId, required: true, ref: 'user'}],
-	ltiToolIds: [{type: Schema.Types.ObjectId, required: true, ref: 'ltiTool'}],
-	color: {type: String, required: true, 'default': '#ACACAC'},
-	startDate: {type: Date},
-	untilDate: {type: Date},
+	description: { type: String },
+	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
+	teacherIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
+	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
+	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
+	color: { type: String, required: true, default: '#ACACAC' },
+	startDate: { type: Date },
+	untilDate: { type: Date },
 	shareToken: { type: String, unique: true },
-	times: [timeSchema]
+	times: [timeSchema],
 }));
 
 // represents a sub-group of students inside a course, e.g. for projects etc.
 const courseGroupModel = mongoose.model('courseGroup', getUserGroupSchema({
-	courseId: {type: Schema.Types.ObjectId, required: true, ref: 'course'}
+	courseId: { type: Schema.Types.ObjectId, required: true, ref: 'course' },
 }));
 
-const nameFormats = ["static", "gradeLevel+name" ];
+const nameFormats = ['static', 'gradeLevel+name'];
 
-const classModel =  mongoose.model('class', getUserGroupSchema({
-	teacherIds: [{type: Schema.Types.ObjectId, ref: 'user', required: true}],
-	invitationLink: {type: String},
-	name: {type: String, required: false},
-	year: {type: Schema.Types.ObjectId, ref: 'year'},
-	gradeLevel: {type: Schema.Types.ObjectId, ref: 'gradeLevel'},
-	nameFormat: {type: String, enum: nameFormats, default: "static"},
-	ldapDN: {type: String}
-}));
-const gradeModel =  mongoose.model('grade', getUserGroupSchema());
+const classSchema = getUserGroupSchema({
+	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
+	invitationLink: { type: String },
+	name: { type: String, required: false },
+	year: { type: Schema.Types.ObjectId, ref: 'year' },
+	gradeLevel: { type: Schema.Types.ObjectId, ref: 'gradeLevel', autoPopulate: true },
+	nameFormat: { type: String, enum: nameFormats, default: 'static' },
+	ldapDN: { type: String },
+});
+
+classSchema.plugin(autoPopulate);
+classSchema.plugin(require('mongoose-lean-virtuals'));
+
+const getClassDisplayName = (aclass) => {
+	// for static classes
+	if (aclass.nameFormat === 'static') {
+		return aclass.name;
+	}
+
+	// for non static classes
+	if (
+		aclass.nameFormat === 'gradeLevel+name'
+        && typeof aclass.gradeLevel === 'object'
+        && (aclass.gradeLevel || {}).name
+	) {
+		return `${aclass.gradeLevel.name}${aclass.name}`;
+	}
+
+	// error handling
+	if (!aclass.nameFormat) {
+		logger.warn(`unknown nameFormat in class${aclass._id}`);
+	} else {
+		logger.warn(`The gradeLevel in class ${aclass._id} do not exist, or is is not populated.`, aclass.nameFormat);
+	}
+
+	return aclass;
+};
+
+// => has no access to this
+// eslint-disable-next-line func-names
+classSchema.virtual('displayName').get(function () {
+	return getClassDisplayName(this);
+});
+
+classSchema.set('toObject', { virtuals: true });
+classSchema.set('toJSON', { virtuals: true });
+
+const classModel = mongoose.model('class', classSchema);
+const gradeModel = mongoose.model('grade', getUserGroupSchema());
 
 module.exports = {
 	courseModel,
 	courseGroupModel,
 	classModel,
-	gradeModel
+	gradeModel,
+	getClassDisplayName,
 };

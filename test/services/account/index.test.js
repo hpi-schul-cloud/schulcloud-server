@@ -1,7 +1,6 @@
-'use strict';
-
 const assert = require('assert');
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
 const { ObjectId } = require('mongoose').Types;
 
 const app = require('../../../src/app');
@@ -11,14 +10,21 @@ const accountService = app.service('/accounts');
 const userService = app.service('/users');
 const registrationPinsService = app.service('/registrationPins');
 
-let userId = undefined;
-let accountId = undefined;
-let passwordHash = undefined;
-const accountPw = 'ca4t9fsfr3dsd';
+chai.use(chaiHttp);
+
+const { expect } = chai;
 
 describe('Account Service', () => {
-	after(() => {
-		return testObjects.cleanup();
+	let server;
+
+	before((done) => {
+		server = app.listen(0, done);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		server.close();
+		return Promise.resolve();
 	});
 
 	it('registered the accounts service', () => {
@@ -31,7 +37,7 @@ describe('Account Service', () => {
 				firstName: 'Max',
 				lastName: 'Mustermann',
 				email: `max${Date.now()}@mustermann.de`,
-				schoolId: '584ad186816abba584714c94',
+				schoolId: '0000d186816abba584714c5f',
 			};
 
 			const registrationPin = await registrationPinsService.create({
@@ -104,7 +110,8 @@ describe('Account Service', () => {
 			await new Promise((resolve, reject) => {
 				accountService.create(newAccount)
 					.then(() => {
-						reject(new Error('This call should fail because of an already existing user with the same username'));
+						reject(new Error('This call should fail because '
+                        + 'of an already existing user with the same username'));
 					})
 					.catch((err) => {
 						expect(err.message).to.equal('Der Benutzername ist bereits vergeben!');
@@ -169,7 +176,7 @@ describe('Account Service', () => {
 			};
 			const account = await accountService.create(accountDetails);
 			try {
-				await accountService.patch('0000d213816abba584714c0a', { password: '1234'});
+				await accountService.patch('0000d213816abba584714c0a', { password: '1234' });
 				throw new Error('This should not happen.');
 			} catch (exception) {
 				assert.equal(exception.message, 'Dein Passwort stimmt mit dem Pattern nicht überein.');
@@ -194,36 +201,11 @@ describe('Account Service', () => {
 					account: {
 						userId: user._id,
 						password: '$2a$10$CHN6Qs2Igbn.s4BengUOfu9.0qVuy0uyTrzDDJszw9e1lBZwUFqeq',
-					}
+					},
 				});
 				throw new Error('This should not happen.');
 			} catch (exception) {
 				assert.equal(exception.message, 'Dein Passwort ist nicht korrekt!');
-			} finally {
-				await accountService.remove(account._id);
-			}
-		});
-
-		it('should be able to patch the password if verification is correct', async () => {
-			const user = await testObjects.createTestUser();
-			const password = 'ca4t9fsfr3dsd';
-			const accountDetails = {
-				username: user.email,
-				password,
-				userId: user._id,
-			};
-			const account = await accountService.create(accountDetails);
-			try {
-				const result = await accountService.patch(account._id, {
-					password: '123SchulCloud$',
-					password_verification: password,
-				}, {
-					account: {
-						userId: accountDetails.userId,
-						password: account.password,
-					},
-				});
-				expect(account.password).to.not.equal(result.password);
 			} finally {
 				await accountService.remove(account._id);
 			}
@@ -253,17 +235,15 @@ describe('Account Service', () => {
 	});
 
 	describe('FIND route', () => {
-		it('should not be able to find all accounts via empty query', () => {
-			return accountService.find()
-				.catch((exception) => {
-					assert.equal(exception.message, 'Cannot read property \'username\' of undefined');
-				});
-		});
+		it('should not be able to find all accounts via empty query', () => accountService.find()
+			.catch((exception) => {
+				assert.equal(exception.code, 400);
+			}));
 
 		it('should find accounts by username', async () => {
 			const username = 'adam.admin@schul-cloud.org';
 			const accountDetails = {
-				username: username,
+				username,
 				password: 'ca4t9fsfr3dsd',
 				userId: new ObjectId(),
 			};
@@ -276,6 +256,51 @@ describe('Account Service', () => {
 			} finally {
 				await accountService.remove(account._id);
 			}
+		});
+
+		// todo extern request without superhero
+		it('should filter querys for extern not authenticated requests', (done) => {
+			chai.request(app)
+				.get('/accounts')
+				.query({ username: { $gte: 0 } })
+				.end((err) => {
+					expect(err).to.have.status(400);
+					done();
+				});
+		});
+
+		// todo extern request with superhero
+		it.skip('should allow extern request for superhero with token', (done) => {
+			// todo wait for test helpers
+			// create superhero user
+			// generate token for it
+			// start request with token
+			const token = '<token>';
+			chai.request(app)
+				.get('/accounts')
+				.query({ username: { $gte: 0 } })
+				.set('Authorization', token)
+				.end((err, res) => {
+					expect(err).to.be.null;
+					expect(res).to.have.status(200);
+					done();
+				});
+		});
+
+		it.skip('should not allow extern request for other roles with token', (done) => {
+			// todo wait for test helpers
+			// create superhero user
+			// generate token for it
+			// start request with token
+			const token = '<token>';
+			chai.request(app)
+				.get('/accounts')
+				.query({ username: { $gte: 0 } })
+				.set('Authorization', token)
+				.end((err) => {
+					expect(err).to.have.status(200);
+					done();
+				});
 		});
 	});
 });

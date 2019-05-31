@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
+const newsEvents = require('./news/events');
 const content = require('./content');
 const calendar = require('./calendar');
 const ltiTool = require('./ltiTool');
@@ -18,6 +18,7 @@ const resolve = require('./resolve');
 const federalState = require('./federalState');
 const userGroup = require('./user-group');
 const teams = require('./teams');
+const teamEvents = require('./teams/events');
 const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
 const notification = require('./notification');
@@ -32,13 +33,15 @@ const sync = require('./sync');
 const rocketChat = require('./rocketChat');
 const clipboard = require('./clipboard');
 const me = require('./me');
+const database = require('../utils/database');
 
-module.exports = function () {
+module.exports = function initializeServices() {
 	const app = this;
 
-	mongoose.connect(process.env.DB_URL || app.get('mongodb'), { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
-	mongoose.Promise = global.Promise;
+	// connect mongoose to the database
+	database.connect();
 
+	// register services
 	app.configure(authentication);
 	app.configure(analytics);
 	app.configure(user);
@@ -72,4 +75,8 @@ module.exports = function () {
 	app.configure(sync);
 	app.configure(me);
 	app.configure(rocketChat);
+
+	// initialize events
+	newsEvents.configure(app);
+	teamEvents.configure(app);
 };

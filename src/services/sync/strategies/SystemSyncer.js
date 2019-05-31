@@ -1,4 +1,3 @@
-const errors = require('feathers-errors');
 const Syncer = require('./Syncer');
 
 /**
@@ -7,7 +6,6 @@ const Syncer = require('./Syncer');
  * @implements {Syncer}
  */
 class SystemSyncer extends Syncer {
-
 	constructor(app, stats, system) {
 		super(app, stats);
 		this.system = system;
@@ -15,7 +13,7 @@ class SystemSyncer extends Syncer {
 
 	static getSystems(app, type) {
 		return app.service('systems').find({
-			query: { type }
+			query: { type },
 		}).then(systems => systems.data);
 	}
 

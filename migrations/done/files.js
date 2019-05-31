@@ -6,10 +6,11 @@ const ran = true; // set to true to exclude migration
 const name = 'Migrating new file model';
 
 const mongoose = require('mongoose');
+const database = require('../../src/utils/database');
 
 const { Schema } = mongoose;
 
-const RoleModel = require('../src/services/role/model.js');
+const RoleModel = require('../../src/services/role/model.js');
 
 mongoose.Promise = global.Promise;
 
@@ -89,7 +90,7 @@ const fileSchema = new Schema({
 });
 
 const run = async (dry) => {
-	mongoose.connect(process.env.DB_URL || 'mongodb://localhost:27017/schulcloud', { user: process.env.DB_USERNAME, pass: process.env.DB_PASSWORD });
+	database.connect();
 
 	const oldfileModel = mongoose.model('oldfile', oldFileSchema, '_files');
 	const directoryModel = mongoose.model('directory', oldDirectorySchema);
@@ -107,7 +108,7 @@ const run = async (dry) => {
 	const convertDocument = (doc) => {
 		logGreen(`Converting document ${doc.name} with path ${doc.path}`);
 
-		const [refOwnerModel, owner,] = doc.key.split('/');
+		const [refOwnerModel, owner] = doc.key.split('/');
 
 		const refOwnerModelMap = {
 			users: 'user',
