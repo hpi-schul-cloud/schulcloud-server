@@ -6,11 +6,11 @@ const ran = true; // set to true to exclude migration
 const name = 'Migrating new file model';
 
 const mongoose = require('mongoose');
-const database = require('../src/utils/database');
+const database = require('../../src/utils/database');
 
 const { Schema } = mongoose;
 
-const RoleModel = require('../src/services/role/model.js');
+const RoleModel = require('../../src/services/role/model.js');
 
 mongoose.Promise = global.Promise;
 
