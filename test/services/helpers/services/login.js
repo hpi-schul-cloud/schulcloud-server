@@ -23,7 +23,29 @@ const generateRequestParams = app => async ({ username, password }) => {
 	};
 };
 
+// hook.params.account.userId
+const fakeLoginParams = app => ({
+	userId,
+	account,
+	headers = {},
+	query = {},
+	route = {},
+}) => ({
+	account: account || {
+		userId,
+	},
+	authenticated: true,
+	provider: 'rest',
+	headers,
+	query,
+	route,
+	payload: {
+		accountId: (account || {})._id,
+	},
+});
+
 module.exports = app => ({
 	generateJWT: generateJWT(app),
 	generateRequestParams: generateRequestParams(app),
+	fakeLoginParams: fakeLoginParams(app),
 });

@@ -1,19 +1,23 @@
 const assert = require('assert');
 const chai = require('chai');
+const logger = require('winston');
+const { ObjectId } = require('mongoose').Types;
 
 const { expect } = chai;
-const promisify = require('es6-promisify');
-const fs = require('fs');
-const path = require('path');
 
-describe('Sanitization Service', function () {
-	let newsService; let helpdeskService; let courseService; let lessonService; let app; let currentUsedId; let
-		currentLessonId = null;
+const app = require('../src/app');
+const { cleanup, createTestUser } = require('./services/helpers/testObjects')(app);
+
+describe('Sanitization Hook', () => {
+	let newsService;
+	let helpdeskService;
+	let courseService;
+	let lessonService;
+
+	let currentUsedId;
+	let currentLessonId = null;
 
 	before((done) => {
-		this.timeout(10000); // for slow require(app) call
-		app = require('../src/app');
-		app.setup();
 		newsService = app.service('newsModel');
 		helpdeskService = app.service('helpdesk');
 		courseService = app.service('courses');
@@ -25,8 +29,6 @@ describe('Sanitization Service', function () {
 		done();
 	});
 
-	// ###################################
-
 	it('registered the news service (Sanitization)', (done) => {
 		assert.ok(newsService);
 		done();
@@ -35,9 +37,9 @@ describe('Sanitization Service', function () {
 	it('POST /news (Sanitization)', () => {
 		const postBody = {
 			schoolId: '0000d186816abba584714c5f',
-			// "schoolId": "5836bb5664582c35df3bc000",
 			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
-			content: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			content: '<p>SanitizationTest<script>alert("test);</script>'
+					+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 		};
 
 		return newsService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
@@ -51,7 +53,6 @@ describe('Sanitization Service', function () {
 	it('POST FAIL /news (Sanitization)', () => {
 		const postBody = {
 			schoolId: '0000d186816abba584714c5f',
-			// "schoolId": "5836bb5664582c35df3bc000",
 			title: '<script>alert("test");</script><b></b><i></i><img src="bla" />',
 			content: 'a',
 		};
@@ -64,12 +65,11 @@ describe('Sanitization Service', function () {
 			});
 	});
 
-	it('DELETE /news (Sanitization)', () => newsService.remove(currentUsedId, { payload: { userId: '0000d213816abba584714c0a' } }).then((result) => {
-		expect(result).to.not.be.undefined;
-		expect(result.title).to.equal('SanitizationTest äöüß§$%/()=');
-	}));
-
-	// ###################################
+	it('DELETE /news (Sanitization)',
+		() => newsService.remove(currentUsedId, { payload: { userId: '0000d213816abba584714c0a' } }).then((result) => {
+			expect(result).to.not.be.undefined;
+			expect(result.title).to.equal('SanitizationTest äöüß§$%/()=');
+		}));
 
 	it('registered the helpdesk service (Sanitization)', (done) => {
 		assert.ok(helpdeskService);
@@ -80,11 +80,12 @@ describe('Sanitization Service', function () {
 		const postBody = {
 			subject: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
 			type: 'problem',
-			currentState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
-			targetState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			currentState: '<p>SanitizationTest<script>alert("test);</script>'
+						+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			targetState: '<p>SanitizationTest<script>alert("test);</script>'
+						+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			category: 'dashboard',
 			schoolId: '0000d186816abba584714c5f',
-			// schoolId: '5836bb5664582c35df3bc000'
 		};
 
 		return helpdeskService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
@@ -100,11 +101,12 @@ describe('Sanitization Service', function () {
 		const postBody = {
 			subject: '<script>alert("test");</script><b></b><i></i><img src="bla" />',
 			type: 'problem',
-			currentState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
-			targetState: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			currentState: '<p>SanitizationTest<script>alert("test);</script>'
+						+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			targetState: '<p>SanitizationTest<script>alert("test);</script>'
+						+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			category: 'dashboard',
 			schoolId: '0000d186816abba584714c5f',
-			// schoolId: '5836bb5664582c35df3bc000'
 		};
 
 		return helpdeskService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
@@ -115,13 +117,12 @@ describe('Sanitization Service', function () {
 			});
 	});
 
-	it('DELETE /helpdesk (Sanitization)', () => helpdeskService.remove(currentUsedId, { payload: { userId: '0000d213816abba584714c0a' } })
-		.then((result) => {
-			expect(result).to.not.be.undefined;
-			expect(result.subject).to.equal('SanitizationTest äöüß§$%/()=');
-		}));
-
-	// ###################################
+	it('DELETE /helpdesk (Sanitization)',
+		() => helpdeskService.remove(currentUsedId, { payload: { userId: '0000d213816abba584714c0a' } })
+			.then((result) => {
+				expect(result).to.not.be.undefined;
+				expect(result.subject).to.equal('SanitizationTest äöüß§$%/()=');
+			}));
 
 	it('registered the courses service (Sanitization)', (done) => {
 		assert.ok(courseService);
@@ -132,11 +133,11 @@ describe('Sanitization Service', function () {
 	it('POST /courses and /lessons (Sanitization)', () => {
 		const postBody = {
 			name: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
-			description: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			description: '<p>SanitizationTest<script>alert("test);</script>'
+						+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			color: '#d32f22',
 			teacherIds: ['0000d213816abba584714c0a'],
 			schoolId: '0000d186816abba584714c5f',
-			// schoolId: '5836bb5664582c35df3bc000'
 		};
 
 		return courseService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
@@ -150,11 +151,11 @@ describe('Sanitization Service', function () {
 	it('POST FAIL /courses (Sanitization)', () => {
 		const postBody = {
 			name: '<script>alert("test");</script><b></b><i></i><img src="bla" />',
-			description: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			description: '<p>SanitizationTest<script>alert("test);</script>'
+						+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			color: '#d32f22',
 			teacherIds: ['0000d213816abba584714c0a'],
 			schoolId: '0000d186816abba584714c5f',
-			// schoolId: '5836bb5664582c35df3bc000'
 		};
 
 		return courseService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
@@ -176,12 +177,12 @@ describe('Sanitization Service', function () {
 					component: 'text',
 					user: '0000d213816abba584714c0a',
 					content: {
-						text: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+						text: '<p>SanitizationTest<script>alert("test);</script>'
+							+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 					},
 				},
 			],
 			schoolId: '0000d186816abba584714c5f',
-			// schoolId: '5836bb5664582c35df3bc000'
 			position: 0,
 			materialIds: [],
 		};
@@ -190,7 +191,8 @@ describe('Sanitization Service', function () {
 			.then((lresult) => {
 				currentLessonId = lresult._id;
 				expect(lresult.name).to.equal('SanitizationTest äöüß§$%/()=');
-				expect(lresult.contents[0].content.text).to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>äöüß§$%/()=');
+				expect(lresult.contents[0].content.text)
+					.to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>äöüß§$%/()=');
 			});
 	});
 
@@ -205,12 +207,12 @@ describe('Sanitization Service', function () {
 					component: 'text',
 					user: '0000d213816abba584714c0a',
 					content: {
-						text: '<p>SanitizationTest<script>alert("test);</script><a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+						text: '<p>SanitizationTest<script>alert("test);</script>'
+							+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 					},
 				},
 			],
 			schoolId: '0000d186816abba584714c5f',
-			// schoolId: '5836bb5664582c35df3bc000'
 			position: 0,
 			materialIds: [],
 		};
@@ -223,15 +225,65 @@ describe('Sanitization Service', function () {
 			});
 	});
 
-	it('DELETE /lessons (Sanitization)', () => lessonService.remove(currentLessonId, { payload: { userId: '0000d213816abba584714c0a' } })
-		.then((result) => {
-			expect(result).to.not.be.undefined;
-			expect(result.name).to.equal('SanitizationTest äöüß§$%/()=');
-		}));
+	it('DELETE /lessons (Sanitization)',
+		() => lessonService.remove(currentLessonId, { payload: { userId: '0000d213816abba584714c0a' } })
+			.then((result) => {
+				expect(result).to.not.be.undefined;
+				expect(result.name).to.equal('SanitizationTest äöüß§$%/()=');
+			}));
 
-	it('DELETE /courses (Sanitization)', () => courseService.remove(currentUsedId, { payload: { userId: '0000d213816abba584714c0a' } })
-		.then((result) => {
-			expect(result).to.not.be.undefined;
-			expect(result.name).to.equal('SanitizationTest äöüß§$%/()=');
-		}));
+	it('DELETE /courses (Sanitization)',
+		() => courseService.remove(currentUsedId, { payload: { userId: '0000d213816abba584714c0a' } })
+			.then((result) => {
+				expect(result).to.not.be.undefined;
+				expect(result.name).to.equal('SanitizationTest äöüß§$%/()=');
+			}));
+});
+
+describe('removeObjectIdInData hook', () => {
+	let userId;
+	let userServices;
+	let userObject;
+	let _id;
+
+	before((done) => {
+		userServices = app.service('users');
+		_id = ObjectId();
+		userObject = {
+			_id,
+			firstName: 'Max',
+			lastName: 'Mustermann',
+			email: `max${Date.now()}@mustermann.de`,
+			schoolId: '584ad186816abba584714c94',
+			roles: [],
+		};
+		done();
+	});
+
+	after(async () => {
+		await cleanup();
+	});
+
+	it('Should work by create', async () => {
+		const user = await createTestUser(userObject)
+			.then((res) => {
+				userId = res._id;
+				return res;
+			})
+			.catch((err) => {
+				logger.warn('Can not create test User.', err);
+			});
+
+		expect(_id).to.not.equal(user._id.toString());
+	});
+
+	it('Should work by patch', async () => {
+		const user = await userServices.patch(userId, { _id });
+		expect(_id).to.not.equal(user._id.toString());
+	});
+
+	it('Should work by update', async () => {
+		const user = await userServices.update(userId, userObject);
+		expect(_id).to.not.equal(user._id.toString());
+	});
 });
