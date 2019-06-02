@@ -273,6 +273,102 @@ describe('news service', () => {
 				expect(result.total).to.equal(0);
 			});
 
+			it('should paginate by default, but accept paginate=false as query parameter', async () => {
+				const schoolId = new ObjectId();
+				await News.create([
+					{
+						schoolId,
+						title: 'school A news',
+						content: 'this is the content',
+					},
+					{
+						schoolId,
+						title: 'school A news (2)',
+						content: 'even more content',
+					},
+				]);
+				const user = await createTestUser({ schoolId, roles: 'student' }); // user is student at school A
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+
+				// default: paginate=true
+				const paginatedResult = await newsService.find(params);
+				expect(paginatedResult.total).to.equal(2);
+				expect(paginatedResult.data.every(item => item.title.includes('school A news'))).to.equal(true);
+
+				// query param:
+				params.query = { $paginate: false };
+				const result = await newsService.find(params);
+				expect(result).to.be.instanceOf(Array);
+				expect(result.length).to.equal(2);
+			});
+
+			it('should handle sorting if requested', async () => {
+				const schoolId = new ObjectId();
+				await News.create([
+					{
+						schoolId,
+						title: '1',
+						content: 'this is the content',
+					},
+					{
+						schoolId,
+						title: '3',
+						content: 'even more content',
+					},
+					{
+						schoolId,
+						title: '2',
+						content: 'content galore',
+					},
+				]);
+				const user = await createTestUser({ schoolId, roles: 'student' }); // user is student at school A
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				params.query = { $sort: { title: -1 } };
+				const result = await newsService.find(params);
+				expect(result.total).to.equal(3);
+				expect(result.data[0].title).to.equal('3');
+				expect(result.data[1].title).to.equal('2');
+				expect(result.data[2].title).to.equal('1');
+			});
+
+			it('should be able to sort by date', async () => {
+				const schoolId = new ObjectId();
+				await News.create([
+					{
+						schoolId,
+						title: '1',
+						content: 'this is the content',
+						createdAt: new Date('2019/06/02'),
+					},
+					{
+						schoolId,
+						title: '2',
+						content: 'even more content',
+						createdAt: new Date('2019/05/30'),
+					},
+					{
+						schoolId,
+						title: '3',
+						content: 'content galore',
+						createdAt: new Date('2019/06/03'),
+					},
+				]);
+				const user = await createTestUser({ schoolId, roles: 'student' }); // user is student at school A
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				params.query = { $sort: { createdAt: 1 } };
+				const result = await newsService.find(params);
+				expect(result.total).to.equal(3);
+				expect(result.data[0].title).to.equal('2');
+				expect(result.data[1].title).to.equal('1');
+				expect(result.data[2].title).to.equal('3');
+			});
+
 			after(async () => {
 				await cleanup();
 				await News.deleteMany({});
