@@ -13,8 +13,10 @@ const getCurrentUser = id => userModel.findById(id)
 	.lean()
 	.exec();
 
-const getAllUsers = (schoolId, roles, sortObject) => userModel.find({ schoolId, roles })
+const getAllUsers = (schoolId, roles, sortObject, skip = 0, limit = NaN) => userModel.find({ schoolId, roles })
 	.select('firstName lastName email createdAt')
+	.skip(skip)
+	.limit(limit)
 	.sort(sortObject)
 	.lean()
 	.exec();
@@ -77,7 +79,13 @@ class AdminUsers {
 			const studentRole = (roles.filter(role => role.name === this.role))[0];
 			const [users, classes] = await Promise.all(
 				[
-					getAllUsers(schoolId, studentRole._id, (params.query || {}).$sort),
+					getAllUsers(
+						schoolId,
+						studentRole._id,
+						(params.query || {}).$sort,
+						parseInt((params.query || 0).$skip, 10),
+						parseInt((params.query || NaN).$limit, 10),
+					),
 					getClasses(this.app, schoolId),
 				],
 			);
@@ -108,6 +116,29 @@ class AdminUsers {
 				});
 				return user;
 			});
+
+			// sorting by class and by consent is implemented manually,
+			// as classes and consents are fetched from seperate db collection
+			const classSortParam = (((params.query || {}).$sort || {}).class || {}).toString();
+			if (classSortParam === '1') {
+				users.sort((a, b) => (a.classes[0] || '').toLowerCase() > (b.classes[0] || '').toLowerCase());
+			} else if (classSortParam === '-1') {
+				users.sort((a, b) => (a.classes[0] || '').toLowerCase() < (b.classes[0] || '').toLowerCase());
+			}
+
+			const sortOrder = {
+				ok: 1,
+				parentsAgreed: 2,
+				missing: 3,
+			};
+			const consentSortParam = (((params.query || {}).$sort || {}).consent || {}).toString();
+			if (consentSortParam === '1') {
+				users.sort((a, b) => (sortOrder[a.consent.consentStatus || 'missing']
+					- sortOrder[b.consent.consentStatus || 'missing']));
+			} else if (consentSortParam === '-1') {
+				users.sort((a, b) => (sortOrder[b.consent.consentStatus || 'missing']
+					- sortOrder[a.consent.consentStatus || 'missing']));
+			}
 
 			const filteredUsers = users.filter((user) => {
 				const { consentStatus } = params.query || {};
