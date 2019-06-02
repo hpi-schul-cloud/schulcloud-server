@@ -221,7 +221,7 @@ class NewsService {
 	async update(id, data, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account, 'NEWS_EDIT'); 
+		await this.authorize(news, params.account, 'NEWS_EDIT');
 		const updatedNews = await this.app.service('newsModel').update(id, data);
 		await NewsService.createHistoryEntry(news);
 		return updatedNews;
