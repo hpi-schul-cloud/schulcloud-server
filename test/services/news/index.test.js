@@ -278,16 +278,16 @@ describe('news service', () => {
 				await News.create([
 					{
 						schoolId,
-						title: 'school A news',
+						title: 'school news',
 						content: 'this is the content',
 					},
 					{
 						schoolId,
-						title: 'school A news (2)',
+						title: 'school news (2)',
 						content: 'even more content',
 					},
 				]);
-				const user = await createTestUser({ schoolId, roles: 'student' }); // user is student at school A
+				const user = await createTestUser({ schoolId, roles: 'student' });
 				const credentials = { username: user.email, password: user.email };
 				await createTestAccount(credentials, 'local', user);
 				const params = await generateRequestParams(credentials);
@@ -295,7 +295,7 @@ describe('news service', () => {
 				// default: paginate=true
 				const paginatedResult = await newsService.find(params);
 				expect(paginatedResult.total).to.equal(2);
-				expect(paginatedResult.data.every(item => item.title.includes('school A news'))).to.equal(true);
+				expect(paginatedResult.data.every(item => item.title.includes('school news'))).to.equal(true);
 
 				// query param:
 				params.query = { $paginate: false };
@@ -323,7 +323,7 @@ describe('news service', () => {
 						content: 'content galore',
 					},
 				]);
-				const user = await createTestUser({ schoolId, roles: 'student' }); // user is student at school A
+				const user = await createTestUser({ schoolId, roles: 'student' });
 				const credentials = { username: user.email, password: user.email };
 				await createTestAccount(credentials, 'local', user);
 				const params = await generateRequestParams(credentials);
@@ -357,7 +357,7 @@ describe('news service', () => {
 						createdAt: new Date('2019/06/03'),
 					},
 				]);
-				const user = await createTestUser({ schoolId, roles: 'student' }); // user is student at school A
+				const user = await createTestUser({ schoolId, roles: 'student' });
 				const credentials = { username: user.email, password: user.email };
 				await createTestAccount(credentials, 'local', user);
 				const params = await generateRequestParams(credentials);
