@@ -1,13 +1,141 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const sleep = require('util').promisify(setTimeout);
+const {
+	NotAuthenticated,
+	BadRequest,
+	Forbidden,
+} = require('@feathersjs/errors');
 
 const app = require('../../../src/app');
+const {
+	cleanup,
+	createTestAccount,
+	createTestUser,
+	generateRequestParams,
+} = require('../helpers/testObjects')(app);
 const News = require('../../../src/services/news/model').newsModel;
+
+const newsService = app.service('news');
 
 describe('news service', () => {
 	it('registers correctly', () => {
 		expect(app.service('news')).to.not.equal(undefined);
+	});
+
+	describe('integration tests', () => {
+		let server;
+
+		before((done) => {
+			server = app.listen(0, done);
+		});
+
+		after((done) => {
+			server.close(done);
+		});
+
+		describe('GET route', () => {
+			it('should not work without authentication', async () => {
+				// external request
+				try {
+					await newsService.get(new ObjectId(), { provider: 'rest' });
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(NotAuthenticated);
+				}
+
+				// internal request
+				try {
+					await newsService.get(new ObjectId());
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(BadRequest);
+					expect(err.message).that.equal('Authentication is required.');
+				}
+			});
+
+			it('should return news items by id', async () => {
+				const schoolId = new ObjectId();
+				const schoolNews = await News.create({
+					schoolId,
+					title: 'knightly news',
+					content: 'ni ni ni ni ni ni',
+				});
+				const user = await createTestUser({ schoolId, roles: 'student' });
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const result = await newsService.get(schoolNews._id, params);
+				expect(result._id.toString()).to.equal(schoolNews._id.toString());
+				expect(result.title).to.equal(schoolNews.title);
+				expect(result.content).that.equal(schoolNews.content);
+			});
+
+			it('should not return news if the user does not have the NEWS_VIEW permission', async () => {
+				const schoolId = new ObjectId();
+				const schoolNews = await News.create({
+					schoolId,
+					title: 'bridge news',
+					content: 'What is thy name? What is thy task? What is thy favourite colour?',
+				});
+				// the user has no role and thus no permissions:
+				const user = await createTestUser({ schoolId });
+				expect(user.roles.length).to.equal(0);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				try {
+					await newsService.get(schoolNews._id, params);
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(Forbidden);
+				}
+			});
+
+			it('should not return news items from a different school', async () => {
+				const schoolId = new ObjectId();
+				const otherSchoolId = new ObjectId();
+				const schoolNews = await News.create({
+					schoolId,
+					title: 'French news',
+					content: 'obtenir la vache!',
+				});
+				const user = await createTestUser({ schoolId: otherSchoolId, roles: 'student' });
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				try {
+					await newsService.get(schoolNews._id, params);
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(Forbidden);
+				}
+			});
+
+			it('should respond with an error if no news exist for the given id', async () => {
+				const schoolId = new ObjectId();
+				const user = await createTestUser({ schoolId, roles: 'student' });
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				try {
+					await newsService.get(new ObjectId(), params);
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					// The following should work, but doesn't:
+					// expect(err).to.be.instanceOf(NotFound);
+					// workaround:
+					expect(err.name).that.equal('NotFound');
+					expect(err.className).to.equal('not-found');
+					expect(err.code).to.equal(404);
+				}
+			});
+
+			after(async () => {
+				await cleanup();
+				await News.deleteMany({});
+			});
+		});
 	});
 
 	describe('event handlers', () => {
