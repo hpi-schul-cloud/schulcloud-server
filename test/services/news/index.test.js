@@ -35,7 +35,7 @@ describe('news service', () => {
 			server.close(done);
 		});
 
-		describe('GET route', () => {
+		describe('GET', () => {
 			it('should not work without authentication', async () => {
 				// external request
 				try {
@@ -138,7 +138,7 @@ describe('news service', () => {
 			});
 		});
 
-		describe('FIND route', () => {
+		describe('FIND', () => {
 			it('should not work without authentication', async () => {
 				// external request
 				try {
@@ -367,6 +367,78 @@ describe('news service', () => {
 				expect(result.data[0].title).to.equal('2');
 				expect(result.data[1].title).to.equal('1');
 				expect(result.data[2].title).to.equal('3');
+			});
+
+			after(async () => {
+				await cleanup();
+				await News.deleteMany({});
+			});
+		});
+
+		describe('CREATE', () => {
+			it('should not work without authentication', async () => {
+				// external request
+				try {
+					await newsService.create({foo: 'bar'}, { provider: 'rest' });
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(NotAuthenticated);
+				}
+
+				// internal request
+				try {
+					await newsService.create({ foo: 'bar' });
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(BadRequest);
+					expect(err.message).that.equal('Authentication is required.');
+				}
+			});
+
+			it('should enable to create news items at the user\'s school', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const result = await newsService.create({
+					schoolId,
+					title: 'school news',
+					content: 'foo bar baz',
+				}, params);
+				expect(result).to.not.equal(undefined);
+				expect(result._id).to.not.equal(undefined);
+				expect(await News.count({ schoolId })).to.equal(1);
+			});
+
+			it('should not allow news creation if the permission NEWS_CREATE is not set', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'student' }); // student lacks the permission
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				try {
+					await newsService.create({
+						schoolId,
+						title: 'school news',
+						content: 'foo bar baz',
+					}, params);
+					expect.fail('The previous call should have failed.');
+				} catch (err) {
+					expect(err).to.be.instanceOf(Forbidden);
+				} finally {
+					expect(await News.count({ schoolId })).to.equal(0);
+				}
+			});
+
+			it.skip('should enable creating news in scopes the user has the necessary permissions in', async () => {
+
+			});
+
+			it.skip('should not allow creating news in other scopes', () => {
+
 			});
 
 			after(async () => {
