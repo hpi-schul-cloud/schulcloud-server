@@ -67,8 +67,9 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async findSchoolNews({ userId, schoolId }) {
-		if (!this.hasPermission(userId, 'NEWS_VIEW')) {
-			throw new Forbidden('Mising permissions to view school news.');
+		const hasPermission = await this.hasPermission(userId, 'NEWS_VIEW');
+		if (!hasPermission) {
+			return [];
 		}
 		const query = {	schoolId, target: { $exists: false } };
 		return this.app.service('newsModel').find({ query, paginate: false });
