@@ -250,6 +250,29 @@ describe('news service', () => {
 				expect(result.data.some(item => item.title === 'team A news')).to.equal(true);
 			});
 
+			it('should not return team news if the user has no NEWS_VIEW permission inside the team', async () => {
+				const schoolId = new ObjectId();
+				const teams = teamHelper(app, { schoolId });
+				const user = await createTestUser({ schoolId, roles: 'student' });
+				const user2 = await createTestUser({ schoolId, roles: 'teacher' });
+				const team = await teams.create(user2);
+				teams.addTeamUserToTeam(team._id, user2, 'teamexpert'); // assuming the expert cannot see team news
+				await News.create([
+					{
+						schoolId,
+						title: 'team A news',
+						content: 'even more content',
+						target: team._id,
+						targetModel: 'teams',
+					},
+				]);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const result = await newsService.find(params);
+				expect(result.total).to.equal(0);
+			});
+
 			after(async () => {
 				await cleanup();
 				await News.deleteMany({});
