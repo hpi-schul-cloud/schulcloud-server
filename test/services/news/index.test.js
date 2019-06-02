@@ -379,7 +379,7 @@ describe('news service', () => {
 			it('should not work without authentication', async () => {
 				// external request
 				try {
-					await newsService.create({foo: 'bar'}, { provider: 'rest' });
+					await newsService.create({ foo: 'bar' }, { provider: 'rest' });
 					expect.fail('The previous call should have failed');
 				} catch (err) {
 					expect(err).to.be.instanceOf(NotAuthenticated);
