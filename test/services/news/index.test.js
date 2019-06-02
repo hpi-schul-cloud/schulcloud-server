@@ -14,6 +14,7 @@ const {
 	createTestUser,
 	generateRequestParams,
 } = require('../helpers/testObjects')(app);
+const teamHelper = require('../helpers/services/teams');
 const News = require('../../../src/services/news/model').newsModel;
 
 const newsService = app.service('news');
@@ -129,6 +130,124 @@ describe('news service', () => {
 					expect(err.className).to.equal('not-found');
 					expect(err.code).to.equal(404);
 				}
+			});
+
+			after(async () => {
+				await cleanup();
+				await News.deleteMany({});
+			});
+		});
+
+		describe('FIND route', () => {
+			it('should not work without authentication', async () => {
+				// external request
+				try {
+					await newsService.find({ provider: 'rest' });
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(NotAuthenticated);
+				}
+
+				// internal request
+				try {
+					await newsService.find({});
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(BadRequest);
+					expect(err.message).that.equal('Authentication is required.');
+				}
+			});
+
+			it('should return all news items a user can see', async () => {
+				const schoolId = new ObjectId();
+				await News.create([
+					{
+						schoolId,
+						title: 'school A news',
+						content: 'this is the content',
+					},
+					{
+						schoolId,
+						title: 'school A news (2)',
+						content: 'even more content',
+					},
+					{
+						schoolId: new ObjectId(),
+						title: 'school B news',
+						content: 'we have content, too',
+					},
+				]);
+				const user = await createTestUser({ schoolId, roles: 'student' }); // user is student at school A
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const result = await newsService.find(params);
+				expect(result.total).to.equal(2);
+				expect(result.data.every(item => item.title.includes('school A news'))).to.equal(true);
+			});
+
+			it('should not return any news items if the user has no NEWS_VIEW permission', async () => {
+				const schoolId = new ObjectId();
+				await News.create([
+					{
+						schoolId,
+						title: 'school A news',
+						content: 'this is the content',
+					},
+					{
+						schoolId,
+						title: 'school A news (2)',
+						content: 'even more content',
+					},
+					{
+						schoolId: new ObjectId(),
+						title: 'school B news',
+						content: 'we have content, too',
+					},
+				]);
+				const user = await createTestUser({ schoolId }); // user is at school A, but has no role
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const result = await newsService.find(params);
+				expect(result.total).to.equal(0);
+			});
+
+			it('should return team news of teams the user is in', async () => {
+				const schoolId = new ObjectId();
+				const teams = teamHelper(app, { schoolId });
+				const user = await createTestUser({ schoolId, roles: 'administrator' });
+				const user2 = await createTestUser({ schoolId, roles: 'teacher' });
+				const teamA = await teams.create(user);
+				const teamB = await teams.create(user2);
+				await News.create([
+					{
+						schoolId,
+						title: 'school news',
+						content: 'this is the content',
+					},
+					{
+						schoolId,
+						title: 'team A news',
+						content: 'even more content',
+						target: teamA._id,
+						targetModel: 'teams',
+					},
+					{
+						schoolId,
+						title: 'team B news',
+						content: 'we have content, too',
+						target: teamB._id,
+						targetModel: 'teams',
+					},
+				]);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const result = await newsService.find(params);
+				expect(result.total).to.equal(2);
+				expect(result.data.some(item => item.title === 'school news')).to.equal(true);
+				expect(result.data.some(item => item.title === 'team A news')).to.equal(true);
 			});
 
 			after(async () => {
