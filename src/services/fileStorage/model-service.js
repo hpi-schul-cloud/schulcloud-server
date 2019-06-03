@@ -10,7 +10,7 @@ module.exports = function () {
 		Model: FileModel,
 		paginate: {
 			default: 10000,
-			max: 10000
+			max: 10000,
 		},
 		lean: true,
 	};
@@ -21,10 +21,8 @@ module.exports = function () {
 	fileModelService.before(hooks.before);
 	fileModelService.after(hooks.after);
 
-	fileModelService.on('created', (message, context) => { EventMatcher.emit('file','created', message, context); });
-	fileModelService.on('updated', (message, context) => { EventMatcher.emit('file','created', message, context); });
-	fileModelService.on('patched', (message, context) => { EventMatcher.emit('file','patched', message, context); });
-	fileModelService.on('removed', (message, context) => { EventMatcher.emit('file','removed', message, context); });
-
-
+	fileModelService.on('created', (message, context) => { EventMatcher.emit('file', 'created', message, context); });
+	fileModelService.on('updated', (message, context) => { EventMatcher.emit('file', 'created', message, context); });
+	fileModelService.on('patched', (message, context) => { EventMatcher.emit('file', 'patched', message, context); });
+	fileModelService.on('removed', (message, context) => { EventMatcher.emit('file', 'removed', message, context); });
 };

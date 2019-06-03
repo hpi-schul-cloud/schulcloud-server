@@ -1,25 +1,23 @@
-'use strict';
 
-const expect = require('chai').expect;
+
+const { expect } = require('chai');
 const mockery = require('mockery');
 const winston = require('winston');
 const nodemailerMock = require('nodemailer-mock');
 
 describe('Mail Service', () => {
-
 	const emailOptions = {
-		email: "test@test.test",
-		subject: "test",
-		content: {"html": "<h1>Testing Purposes</h1>", "text": "Testing Purposes"}
+		email: 'test@test.test',
+		subject: 'test',
+		content: { html: '<h1>Testing Purposes</h1>', text: 'Testing Purposes' },
 	};
 
-	var mailService;
+	let mailService;
 
-	before(function (done) {
-
+	before((done) => {
 		// Enable mockery to mock objects
 		mockery.enable({
-			warnOnUnregistered: false
+			warnOnUnregistered: false,
 		});
 
 		// Once mocked, any code that calls require('nodemailer') will get our nodemailerMock
@@ -34,10 +32,10 @@ describe('Mail Service', () => {
 		let secrets;
 		try {
 			secrets = require('../config/secrets.json');
-		} catch(error) {
+		} catch (error) {
 			secrets = {};
 		}
-		app.set("secrets", secrets);
+		app.set('secrets', secrets);
 		const MailService = require('../../../src/services/helpers/service')(app);
 		app.use('/mails', new MailService());
 		mailService = app.service('/mails');
@@ -45,18 +43,15 @@ describe('Mail Service', () => {
 		done();
 	});
 
-	after(function () {
-
+	after(() => {
 		// Remove our mocked nodemailer and disable mockery
 		mockery.deregisterAll();
 		mockery.disable();
-
 	});
 
-	it('should send an email using nodemailer-mock', function () {
-
+	it('should send an email using nodemailer-mock', () => {
 		mailService.create(emailOptions)
-			.then(_ => {
+			.then((_) => {
 				// get the array of emails we sent
 				const sentMail = nodemailerMock.mock.sentMail();
 				expect(sentMail.length).to.equal(1);
@@ -64,12 +59,10 @@ describe('Mail Service', () => {
 				expect(sentMail[0].subject).to.equal(emailOptions.subject);
 				expect(sentMail[0].html).to.equal(emailOptions.content.html);
 				expect(sentMail[0].text).to.equal(emailOptions.content.text);
-				return;
 			});
 	});
 
-	it('should fail to send an email using nodemailer-mock', function () {
-
+	it('should fail to send an email using nodemailer-mock', () => {
 		// tell the mock class to return an error
 		const err = 'My custom error';
 		nodemailerMock.mock.shouldFailOnce();
@@ -79,8 +72,6 @@ describe('Mail Service', () => {
 		return mailService.create(emailOptions)
 			.catch((err) => {
 				expect(err).to.be.equal(err);
-
-				return;
 			});
 	});
 });

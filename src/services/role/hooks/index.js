@@ -1,20 +1,20 @@
-'use strict';
 
-const globalHooks = require('../../../hooks');
+
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
+const globalHooks = require('../../../hooks');
 
-exports.before = function(app) {
+exports.before = function (app) {
 	return {
 		all: [auth.hooks.authenticate('jwt')],
 		find: [],
 		get: [globalHooks.hasPermission('ROLE_VIEW')],
 		create: [globalHooks.hasPermission('ROLE_CREATE'),
-			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name')
+			globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		],
 		update: [globalHooks.hasPermission('ROLE_EDIT')],
-		patch: [globalHooks.hasPermission('ROLE_EDIT'),globalHooks.permitGroupOperation],
-		remove: [globalHooks.hasPermission('ROLE_CREATE'),globalHooks.permitGroupOperation]
+		patch: [globalHooks.hasPermission('ROLE_EDIT'), globalHooks.permitGroupOperation],
+		remove: [globalHooks.hasPermission('ROLE_CREATE'), globalHooks.permitGroupOperation],
 	};
 };
 
@@ -27,5 +27,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

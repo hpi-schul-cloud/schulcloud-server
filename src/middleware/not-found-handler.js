@@ -1,4 +1,4 @@
-'use strict';
+
 
 const errors = require('feathers-errors');
 

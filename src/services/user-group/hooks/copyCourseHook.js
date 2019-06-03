@@ -1,9 +1,9 @@
-'use strict';
 
-const globalHooks = require('../../../hooks');
+
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
 const _ = require('lodash');
+const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
@@ -20,7 +20,7 @@ exports.before = {
 	create: [globalHooks.injectUserId, injectCourseId, globalHooks.ifNotLocal(globalHooks.checkCorrectCourseOrTeamId)],
 	update: [hooks.disable()],
 	patch: [hooks.disable()],
-	remove: [hooks.disable()]
+	remove: [hooks.disable()],
 };
 
 exports.after = {
@@ -30,7 +30,7 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };
 
 exports.beforeShare = {
@@ -40,5 +40,5 @@ exports.beforeShare = {
 	create: [globalHooks.injectUserId],
 	update: [hooks.disable()],
 	patch: [hooks.disable()],
-	remove: [hooks.disable()]
+	remove: [hooks.disable()],
 };

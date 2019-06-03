@@ -19,7 +19,8 @@ describe('Team mail-text helper', () => {
 	});
 
 	describe('createEmailText', () => {
-		let hook, user;
+		let hook; let
+			user;
 		before(() => {
 			hook = createHook(app, {
 				method: 'patch',
@@ -38,10 +39,10 @@ describe('Team mail-text helper', () => {
 			};
 
 			const linkData = {
-				link:'<link>',
+				link: '<link>',
 				target: '<target>',
-				hash:'<hash>',
-				shortLink:'<shortLink>'
+				hash: '<hash>',
+				shortLink: '<shortLink>',
 			};
 
 			hookCopy.result = formatResult({
@@ -57,7 +58,7 @@ describe('Team mail-text helper', () => {
 			expect(createEmailText(hookCopy, user)).to.equal({
 
 			});
-			//todo check all results ..
+			// todo check all results ..
 		});
 	});
 });

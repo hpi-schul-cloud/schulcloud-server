@@ -15,25 +15,25 @@ const deleteNewsHistory = (hook) => {
 		});
 };
 
-const notifyUsers = hook => {
+const notifyUsers = (hook) => {
 	hook.app.emit('news:added', hook);
 };
 
-function getBoolean(value){
-	switch(value){
+function getBoolean(value) {
+	switch (value) {
 		case true:
-		case "true":
+		case 'true':
 		case 1:
-		case "1":
-		case "on":
-		case "yes":
+		case '1':
+		case 'on':
+		case 'yes':
 			return true;
 		default:
 			return false;
 	}
 }
 
-const convertToBoolean = hook => {
+const convertToBoolean = (hook) => {
 	if (hook.params.query && hook.params.query.target && hook.params.query.target.$exists) {
 		hook.params.query.target.$exists = getBoolean(hook.params.query.target.$exists);
 	}
@@ -46,7 +46,7 @@ exports.before = {
 	create: [globalHooks.hasPermission('NEWS_CREATE')],
 	update: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool],
 	patch: [globalHooks.hasPermission('NEWS_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
-	remove: [globalHooks.hasPermission('NEWS_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation, deleteNewsHistory, globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership)]
+	remove: [globalHooks.hasPermission('NEWS_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation, deleteNewsHistory, globalHooks.ifNotLocal(globalHooks.checkSchoolOwnership)],
 };
 
 exports.after = {

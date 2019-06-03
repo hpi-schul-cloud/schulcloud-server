@@ -1,53 +1,53 @@
 const testListObjectsReturn = {
 	Contents: [
-		{Key: "testFile"},
-		{Key: ".scfake"}
-	]
+		{ Key: 'testFile' },
+		{ Key: '.scfake' },
+	],
 };
 
 const testHeadObjectReturn = {
-	Metadata: { name: "testName", thumbnail: "testThumbnail" },
-	LastModified: "test",
+	Metadata: { name: 'testName', thumbnail: 'testThumbnail' },
+	LastModified: 'test',
 	ContentLength: 5,
-	ContentType: "mime/image",
-	Key: "testKey"
+	ContentType: 'mime/image',
+	Key: 'testKey',
 };
 
-var mockAws = {
-	S3: function(){
+const mockAws = {
+	S3() {
 		return {
-			createBucket: function(params, callback){
-				callback(null, "successfully created bucket");
+			createBucket(params, callback) {
+				callback(null, 'successfully created bucket');
 			},
-			putBucketCors: function (params) {
-				return "successfully inserted cors";
+			putBucketCors(params) {
+				return 'successfully inserted cors';
 			},
-			listObjectsV2: function (params, callback) {
+			listObjectsV2(params, callback) {
 				callback(null, testListObjectsReturn);
 			},
-			getSignedUrl: function (action, params, callback) {
-				callback(null, "successfully created signed url");
+			getSignedUrl(action, params, callback) {
+				callback(null, 'successfully created signed url');
 			},
-			headObject: function (params, callback) {
+			headObject(params, callback) {
 				callback(null, testHeadObjectReturn);
 			},
-			deleteObjects: function(params, callback) {
-				callback(null, {Deleted: params.Delete.Objects});
+			deleteObjects(params, callback) {
+				callback(null, { Deleted: params.Delete.Objects });
 			},
-			putObject: function (params, callback) {
-				callback(null, "successfully put object");
+			putObject(params, callback) {
+				callback(null, 'successfully put object');
 			},
-			headBucket: function (params, callback) {
+			headBucket(params, callback) {
 				callback(null);
 			},
 		};
 	},
-	Config: function () {
+	Config() {
 		return {};
 	},
-	Endpoint: function () {
+	Endpoint() {
 		return {};
-	}
+	},
 };
 
 module.exports = mockAws;

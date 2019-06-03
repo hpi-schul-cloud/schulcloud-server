@@ -1,4 +1,4 @@
-'use strict';
+
 
 // model.js - A mongoose model
 //
@@ -6,7 +6,8 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const types = ['moodle', 'itslearning', 'lernsax', 'iserv', 'local', 'ldap'];
 

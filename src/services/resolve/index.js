@@ -1,18 +1,18 @@
-'use strict';
+
 
 const errors = require('feathers-errors');
 
 // get an json api conform entry
-const getDataEntry = ({ type, id, name, authorities = ["can-read"], attributes = {} }) => {
-	return {
-		type,
-		id,
-		attributes: Object.assign({}, {
-			name,
-			authorities
-		}, attributes)
-	};
-};
+const getDataEntry = ({
+	type, id, name, authorities = ['can-read'], attributes = {},
+}) => ({
+	type,
+	id,
+	attributes: Object.assign({}, {
+		name,
+		authorities,
+	}, attributes),
+});
 
 // get scopes from user object Id
 class ScopeResolver {
@@ -28,65 +28,63 @@ class ScopeResolver {
 				first: '',
 				last: '',
 				next: '',
-				prev: ''
+				prev: '',
 			},
-			data: []
+			data: [],
 		};
 
 		return userService.get(id)
-			.then(user => {
+			.then((user) => {
 				response.data.push(getDataEntry({
 					type: 'user',
 					id: user._id,
 					name: user.fullName,
 					authorities: [
-						"can-read",
-						"can-write",
-						"can-send-notifications"
-					]
+						'can-read',
+						'can-write',
+						'can-send-notifications',
+					],
 				}));
 
 				// find courses and classes where user is student or teacher
 				return Promise.all([
-					courseService.find({ query: { $or: [{ userIds: user._id }, { teacherIds: user._id }] }, headers: { "x-api-key": (params.headers || {})["x-api-key"] } }),
-					classService.find({ query: { $or: [{ userIds: user._id }, { teacherIds: user._id }] }, headers: { "x-api-key": (params.headers || {})["x-api-key"] } }),
-					teamService.find({ query: { $limit: 1000, userIds: { $elemMatch: { userId: user._id } } } })
+					courseService.find({ query: { $or: [{ userIds: user._id }, { teacherIds: user._id }] }, headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }),
+					classService.find({ query: { $or: [{ userIds: user._id }, { teacherIds: user._id }] }, headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }),
+					teamService.find({ query: { $limit: 1000, userIds: { $elemMatch: { userId: user._id } } } }),
 				]).then(([courses, classes, teams]) => {
-					courses.data = courses.data.map(c => {
+					courses.data = courses.data.map((c) => {
 						c.attributes = {
-							scopeType: 'course'
+							scopeType: 'course',
 						};
 						return c;
 					});
 
-					classes.data = classes.data.map(c => {
+					classes.data = classes.data.map((c) => {
 						c.attributes = {
-							scopeType: 'class'
+							scopeType: 'class',
 						};
 						return c;
 					});
 
-					teams.data.forEach(_team => {
+					teams.data.forEach((_team) => {
 						response.data.push(getDataEntry({
 							type: 'scope',
 							id: _team._id,
 							name: _team.name,
-							authorities: ["can-read", "can-write", "can-send-notifications"],	//todo: only leaders have notification and write permissions
+							authorities: ['can-read', 'can-write', 'can-send-notifications'],	// todo: only leaders have notification and write permissions
 							attributes: {
-								scopeType: 'team'
-							}
+								scopeType: 'team',
+							},
 						}));
 					});
 
 					const scopes = [].concat(courses.data, classes.data);
-					scopes.forEach(scope => {
-						const authorities = ["can-read"];
+					scopes.forEach((scope) => {
+						const authorities = ['can-read'];
 
-						let isTeacher = scope.teacherIds.filter((teacherId) => {
-							return JSON.stringify(teacherId) === JSON.stringify(user._id);
-						});
+						const isTeacher = scope.teacherIds.filter(teacherId => JSON.stringify(teacherId) === JSON.stringify(user._id));
 						if (isTeacher.length > 0) {
-							authorities.push("can-write", "can-send-notifications");
+							authorities.push('can-write', 'can-send-notifications');
 						}
 
 						response.data.push(getDataEntry({
@@ -94,7 +92,7 @@ class ScopeResolver {
 							id: scope._id,
 							name: scope.name,
 							authorities,
-							attributes: scope.attributes
+							attributes: scope.attributes,
 						}));
 					});
 					return Promise.resolve(response);
@@ -121,29 +119,23 @@ class UserResolver {
 				first: '',
 				last: '',
 				next: '',
-				prev: ''
+				prev: '',
 			},
-			data: []
+			data: [],
 		};
 
 		// only if both services fail the error will be thrown
 		const getScope = Promise.all([
-			userService.get(id, { headers: { "x-api-key": (params.headers || {})["x-api-key"] } }).then(data => {
+			userService.get(id, { headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }).then((data) => {
 				data.type = 'user';
 				return data;
 			}).catch(_ => undefined),
-			courseService.get(id, { headers: { "x-api-key": (params.headers || {})["x-api-key"] } }).then(data => {
-				return data;
-			}).catch(_ => undefined),
-			classService.get(id, { headers: { "x-api-key": (params.headers || {})["x-api-key"] } }).then(data => {
-				return data;
-			}).catch(_ => undefined)
-		]).then(([userData, courseData, classData]) => {
-			return userData || courseData || classData;
-		});
+			courseService.get(id, { headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }).then(data => data).catch(_ => undefined),
+			classService.get(id, { headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }).then(data => data).catch(_ => undefined),
+		]).then(([userData, courseData, classData]) => userData || courseData || classData);
 
 
-		return getScope.then(scope => {
+		return getScope.then((scope) => {
 			// find users that are related to scope (either teacher or student)
 			if (!scope) throw new errors.NotFound('No scope found for given id.');
 
@@ -152,39 +144,37 @@ class UserResolver {
 					$or: [
 						{
 							_id: {
-								$in: scope.userIds
-							}
+								$in: scope.userIds,
+							},
 						},
 						{
 							_id: {
-								$in: scope.teacherIds
-							}
+								$in: scope.teacherIds,
+							},
 						},
 						{
-							_id: scope._id
-						}
+							_id: scope._id,
+						},
 					],
-					$populate: ["roles"]
-				}
+					$populate: ['roles'],
+				},
 			});
 		})
-			.then(data => {
+			.then((data) => {
 				const users = data.data;
 
-				response.data = users.map(user => {
-					let authorities = ["can-read"];
-					let isTeacher = user.roles.filter((role) => {
-						return role.name === 'teacher';
-					});
+				response.data = users.map((user) => {
+					const authorities = ['can-read'];
+					const isTeacher = user.roles.filter(role => role.name === 'teacher');
 					if (isTeacher.length > 0) {
-						authorities.push("can-write", "can-send-notifications");
+						authorities.push('can-write', 'can-send-notifications');
 					}
 
 					return getDataEntry({
 						type: 'user',
 						id: user._id,
 						name: user.fullName,
-						authorities: authorities
+						authorities,
 					});
 				});
 				return Promise.resolve(response);

@@ -1,8 +1,8 @@
-'use strict';
 
-const globalHooks = require('../../../hooks');
+
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication');
+const globalHooks = require('../../../hooks');
 
 exports.before = {
 	all: [],
@@ -11,7 +11,7 @@ exports.before = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };
 
 exports.after = {
@@ -21,5 +21,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

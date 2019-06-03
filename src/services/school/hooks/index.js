@@ -57,5 +57,5 @@ exports.after = {
 	create: [createDefaultStorageOptions],
 	update: [createDefaultStorageOptions],
 	patch: [createDefaultStorageOptions],
-	remove: []
+	remove: [],
 };

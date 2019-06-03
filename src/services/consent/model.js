@@ -1,4 +1,4 @@
-'use strict';
+
 
 // model.js - A mongoose model
 //

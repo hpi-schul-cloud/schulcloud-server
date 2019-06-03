@@ -1,8 +1,8 @@
-'use strict';
+
 
 const commonHooks = require('feathers-hooks-common');
-const globalHooks = require('../../../hooks');
 const auth = require('feathers-authentication');
+const globalHooks = require('../../../hooks');
 
 exports.before = {
 	all: [],
@@ -21,5 +21,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

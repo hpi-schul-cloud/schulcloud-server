@@ -1,8 +1,8 @@
-var util = require('util')
-	, Strategy = require('passport-strategy');
+const util = require('util');
+	 const Strategy = require('passport-strategy');
 
 function CustomStrategy(options, verify) {
-	if (typeof options == 'function') {
+	if (typeof options === 'function') {
 		verify = options;
 		options = {};
 	}
@@ -16,8 +16,8 @@ function CustomStrategy(options, verify) {
 
 util.inherits(CustomStrategy, Strategy);
 
-CustomStrategy.prototype.authenticate = function(req, options) {
-	var self = this;
+CustomStrategy.prototype.authenticate = function (req, options) {
+	const self = this;
 	options = options || {};
 
 	function verified(err, user, info) {

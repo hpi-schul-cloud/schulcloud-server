@@ -1,26 +1,24 @@
-'use strict';
+
 
 const service = require('feathers-mongoose');
+const errors = require('feathers-errors');
 const user = require('./model');
 const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
-const errors = require('feathers-errors');
 const firstLoginHooks = require('./hooks/firstLogin');
 const { AdminStudents } = require('./services');
 const adminHook = require('./hooks/admin');
 
-const userDataFilter = (user) => {
-	return {
-		"userId": user._id,
-		"email": user.email,
-		"firstName": user.firstName,
-		"lastName": user.lastName,
-		"importHash": user.importHash,
-		"schoolId": user.schoolId,
-		"birthday": user.birthday,
-	};
-};
+const userDataFilter = user => ({
+	userId: user._id,
+	email: user.email,
+	firstName: user.firstName,
+	lastName: user.lastName,
+	importHash: user.importHash,
+	schoolId: user.schoolId,
+	birthday: user.birthday,
+});
 
 class UserLinkImportService {
 	constructor(userService) {
@@ -28,16 +26,14 @@ class UserLinkImportService {
 		this.docs = {};
 	}
 
-	get(hash, params) {	//can not use get becouse the hash can have / that mapped to non existing routes
+	get(hash, params) {	// can not use get becouse the hash can have / that mapped to non existing routes
 		return this.userService.find({ query: { importHash: hash } })
-			.then(users => {
+			.then((users) => {
 				if (users.data.length <= 0 || users.data.length > 1) {
 					throw new errors.BadRequest('Can not match the hash.');
 				}
 				return userDataFilter(users.data[0]);
-			}).catch(err => {
-				return err;
-			});
+			}).catch(err => err);
 	}
 }
 
@@ -56,7 +52,7 @@ module.exports = function setup() {
 	app.use('/users', service(options));
 
 	const userService = app.service('/users');
-	app.use('users/linkImport', new UserLinkImportService(userService));	//do not use hooks
+	app.use('users/linkImport', new UserLinkImportService(userService));	// do not use hooks
 
 	userService.before(hooks.before(app));	// TODO: refactor
 	userService.after(hooks.after);

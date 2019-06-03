@@ -193,11 +193,11 @@ class CSVSyncer extends Syncer {
 						subject: `Einladung für die Nutzung der ${process.env.SC_TITLE}!`,
 						headers: {},
 						content: {
-							text: `Einladung in die ${process.env.SC_TITLE}\n`
+							text: `${`Einladung in die ${process.env.SC_TITLE}\n`
 								+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
 								+ `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
-								+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
-								+ user.shortLink + '\n'
+								+ 'bitte vervollständige deine Registrierung unter folgendem Link: '}${
+								 user.shortLink}\n`
 								+ 'Viel Spaß und einen guten Start wünscht dir dein '
 								+ `${process.env.SC_SHORT_TITLE}-Team`,
 						},

@@ -1,4 +1,4 @@
-'use strict';
+
 
 // model.js - A mongoose model
 //
@@ -6,15 +6,16 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const keySchema = new Schema({
-	name: {type: String, required: true},
-	key: {type: String, required: true},
-	createdAt: {type: Date, 'default': Date.now},
-	updatedAt: {type: Date, 'default': Date.now}
-},{
-	timestamps: true
+	name: { type: String, required: true },
+	key: { type: String, required: true },
+	createdAt: { type: Date, default: Date.now },
+	updatedAt: { type: Date, default: Date.now },
+}, {
+	timestamps: true,
 });
 
 const keyModel = mongoose.model('key', keySchema);
