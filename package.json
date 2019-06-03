@@ -85,7 +85,7 @@
     "phantomjs-prebuilt": "^2.1.14",
     "pretty-error": "^2.0.3",
     "querystring": "^0.2.0",
-    "randexp": "^0.4.6",
+    "randexp": "^0.5.3",
     "read-chunk": "^3.0.0",
     "request-promise-native": "^1.0.3",
     "rss-parser": "^3.6.2",
