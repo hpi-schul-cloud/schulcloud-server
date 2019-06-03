@@ -26,7 +26,7 @@
     "start": "node src/",
     "startd": "nodemon src/",
     "debug": "nodemon --inspect=5959 src/",
-    "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha test/**/*.test.js",
+    "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha --exit test/**/*.test.js",
     "coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov > coverage.lcov",
     "mocha": "cross-env NODE_ENV=test mocha --exit test/ --recursive",
     "mocha-inspect": "cross-env NODE_ENV=test mocha --exit --debug-brk --inspect test/ --recursive",
