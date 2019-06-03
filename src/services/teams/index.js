@@ -79,8 +79,8 @@ class AdminOverview {
 
 	static mapped(teams, sessionSchoolId) {
 		return teams.data.map((team) => {
-			const mySchool = isSameId(team.schoolId, sessionSchoolId);
-			const otherSchools = team.schoolIds.length > 1;
+			const createdAtMySchool = isSameId(team.schoolId, sessionSchoolId);
+			const hasMembersOfOtherSchools = team.schoolIds.length > 1;
 			let schoolMembers = AdminOverview.getMembersBySchool(team, sessionSchoolId);
 			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner'); // role is populated
 
@@ -104,8 +104,8 @@ class AdminOverview {
 				_id: team._id,
 				color: team.color,
 				desciption: team.desciption,
-				mySchool,
-				otherSchools,
+				createdAtMySchool,
+				hasMembersOfOtherSchools,
 				createdAt: team.createdAt,
 				ownerExist,
 				//      ownerSchool:team.schoolId.name,
