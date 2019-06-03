@@ -19,6 +19,9 @@ class Service {
             let visitor = ua(data.tid);
             visitor.pageview(data).send();
         }
+        if(!process.env.ANALYTICS_LOGGING){
+            return 'success';
+        }
         let model = new AnalyticsModel({
             firstPaint: data.cm1,
             timeToInteractive: data.cm2,
