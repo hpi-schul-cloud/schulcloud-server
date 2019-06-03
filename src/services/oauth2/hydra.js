@@ -94,13 +94,13 @@ module.exports = (hydraUrl) => {
 			},
 		}),
 		listConsentSessions: user => request({
-			uri: `${hydraUrl}/oauth2/auth/sessions/consent/${user}`,
+			uri: `${hydraUrl}/oauth2/auth/sessions/consent?subject=${user}`,
 			headers: {
 				...mockTlsTermination,
 			},
 		}),
 		revokeConsentSession: (user, client) => request({
-			uri: `${hydraUrl}/oauth2/auth/sessions/consent/${user}/${client}`,
+			uri: `${hydraUrl}/oauth2/auth/sessions/consent?subject=${user}&client=${client}`,
 			method: 'DELETE',
 			headers: {
 				...mockTlsTermination,
