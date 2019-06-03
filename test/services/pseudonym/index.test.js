@@ -4,7 +4,7 @@ const app = require('../../../src/app');
 
 const pseudonymService = app.service('pseudonym');
 const toolService = app.service('ltiTools');
-const expect = chai.expect;
+const { expect } = chai;
 
 describe('pseudonym service', function pseudonymTest() {
 	this.timeout(10000);

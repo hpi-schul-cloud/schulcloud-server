@@ -2,7 +2,7 @@ const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 
-const toArray = data => (Array.isArray(data) ? data	: [data]);
+const toArray = data => (Array.isArray(data) ? data : [data]);
 
 // rewrite tool id if there is a origin tool (content-specific pseudonym)
 const replaceToolWithOrigin = (hook) => {
