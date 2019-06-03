@@ -7,7 +7,7 @@ const mockTlsTermination = {
 module.exports = (hydraUrl) => {
 	function get(flow, challenge) {
 		const options = {
-			uri: `${hydraUrl}/oauth2/auth/requests/${flow}/${challenge}`,
+			uri: `${hydraUrl}/oauth2/auth/requests/${flow}?${flow}_challenge=${challenge}`,
 			headers: {
 				...mockTlsTermination,
 			},
@@ -18,7 +18,7 @@ module.exports = (hydraUrl) => {
 
 	function put(flow, action, challenge, body) {
 		const options = {
-			uri: `${hydraUrl}/oauth2/auth/requests/${flow}/${challenge}/${action}`,
+			uri: `${hydraUrl}/oauth2/auth/requests/${flow}/${action}?${flow}_challenge=${challenge}`,
 			method: 'PUT',
 			body,
 			headers: {
