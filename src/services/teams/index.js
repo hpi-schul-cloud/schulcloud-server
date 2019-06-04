@@ -156,7 +156,7 @@ class AdminOverview {
 			let { userIds } = team;
 
 			if (!ownerExist && isOwnerSchool && isDefined(userId)) {
-				userIds.push(createUserWithRole(ref, { userId, schoolId, selectedRole }));
+				userIds.push(createUserWithRole(ref, { userId, schoolId, selectedRole: 'teamowner' }));
 			} else if (!isOwnerSchool && isUndefined(userId)) {
 				userIds = AdminOverview.removeMemberBySchool(team, schoolId);
 			} else {
@@ -214,6 +214,8 @@ class AdminOverview {
 		//  const message = data.message;
 		//  let teamIds = data.teamIds;
 
+		const teamService = this.app.service('/teams');
+
 		if (isUndefined([teamIds, message], 'OR')) {
 			throw new BadRequest('Missing parameter');
 		}
@@ -227,39 +229,42 @@ class AdminOverview {
 
 		return Promise.all(
 			[getSessionUser(this, params), hooks.teamRolesToHook(this)],
-		).then(([{ schoolId }, ref]) => this.app.service('teams')
-			.find((this.getRestrictedQuery(teamIds, schoolId))).then((teams) => {
-				// eslint-disable-next-line no-param-reassign
-				teams = teams.data;
-				if (!isArrayWithElement(teams)) {
-					throw new NotFound('No team found.');
-				}
-
-				const subject = `${process.env.SC_SHORT_TITLE}: Team-Anfrage`;
-				const mailService = this.app.service('/mails');
-				const ownerRoleId = ref.findRole('name', 'teamowner', '_id');
-				const emails = teams.reduce((stack, team) => {
-					const owner = AdminOverview.getOwner(team, ownerRoleId);
-					if (isDefined(owner.userId.email)) {
-						stack.push(owner.userId.email);
+		).then(([{ schoolId }, ref]) => {
+			teamService
+				.find((AdminOverview.getRestrictedQuery(teamIds, schoolId)))
+				.then((teams) => {
+					teams = teams.data;
+					if (!isArrayWithElement(teams)) {
+						throw new NotFound('No team found.');
 					}
-					return stack;
-				}, []);
-				const content = {
-					text: this.formatText(message) || 'No alternative mailtext provided. Expected: HTML Template Mail.',
-					html: '',
-				};
 
-				const waits = emails.map(email => mailService.create({ email, subject, content })
-					.then(res => res.accepted[0])
-					.catch(err => `Error: ${err.message}`));
+					const subject = `${process.env.SC_SHORT_TITLE}: Team-Anfrage`;
+					const mailService = this.app.service('/mails');
+					const ownerRoleId = ref.findRole('name', 'teamowner', '_id');
+					const emails = teams.reduce((stack, team) => {
+						const owner = AdminOverview.getOwner(team, ownerRoleId);
+						if (isDefined(owner.userId.email)) {
+							stack.push(owner.userId.email);
+						}
+						return stack;
+					}, []);
+					const content = {
+						text: AdminOverview.formatText(message)
+								|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
+						html: '',
+					};
 
-				return Promise.all(waits)
-					.then(values => values)
-					.catch(err => err);
-			}).catch((err) => {
-				throw err;
-			})).catch((err) => {
+					const waits = emails.map(email => mailService.create({ email, subject, content })
+						.then(res => res.accepted[0])
+						.catch(err => `Error: ${err.message}`));
+
+					return Promise.all(waits)
+						.then(values => values)
+						.catch(err => err);
+				}).catch((err) => {
+					throw err;
+				});
+		}).catch((err) => {
 			warn(err);
 			throw new BadRequest('It exists no teams with access rights, to send this message.');
 		});
