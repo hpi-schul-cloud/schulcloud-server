@@ -47,6 +47,7 @@
     "bcryptjs": "latest",
     "body-parser": "^1.15.2",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "chai-http": "^4.2.0",
     "chalk": "^2.4.2",
     "chance": "^1.0.12",
