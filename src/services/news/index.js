@@ -53,12 +53,14 @@ class NewsService {
 		}
 	}
 
-	async addPermissions(news, { userId, schoolId } = {}, permissions) {
+	async getPermissions(news, { userId, schoolId } = {}, permissions) {
 		const retValue = [];
 		for (const key of Object.keys(permissions)) {
 			try {
 				await this.authorize(news, { userId, schoolId }, key);
-				retValue.push(permissions[key]);
+				if (!retValue.includes(permissions[key])) {
+					retValue.push(permissions[key]);
+				}
 			} catch (err) {
 				// ignore
 			}
@@ -161,7 +163,7 @@ class NewsService {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account, 'NEWS_VIEW');
-		await this.addPermissions(news, params.account, {
+		await this.getPermissions(news, params.account, {
 			NEWS_VIEW: 'view',
 			NEWS_EDIT: 'edit',
 		});
