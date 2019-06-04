@@ -164,7 +164,6 @@ class NewsService {
 		await this.addPermissions(news, params.account, {
 			NEWS_VIEW: 'view',
 			NEWS_EDIT: 'edit',
-			NEWS_DELETE: 'delete',
 		});
 		return news;
 	}
