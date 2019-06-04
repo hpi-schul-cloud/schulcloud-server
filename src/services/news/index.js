@@ -65,7 +65,7 @@ class NewsService {
 				// ignore
 			}
 		}
-		news.permissions = retValue;
+		return retValue;
 	}
 
 	checkExistence(news, query) {
@@ -97,7 +97,7 @@ class NewsService {
 	 * @returns Array<News Document>
 	 * @memberof NewsService
 	 */
-	async findScopedNews(userId, target) {
+	async findScopedNews({ userId, schoolId }, target) {
 		const scopes = await newsModel.distinct('targetModel');
 		const ops = scopes.map(async (scope) => {
 			// For each possible target model, find all targets the user has NEWS_VIEW permissions in.
@@ -124,6 +124,10 @@ class NewsService {
 				return Promise.all(news.map(async n => ({
 					...n,
 					target: await this.app.service(scope).get(n.target),
+					permissions: await this.getPermissions(n, { userId, schoolId }, {
+						NEWS_VIEW: 'view',
+						NEWS_EDIT: 'edit',
+					}),
 				})));
 			}));
 		});
@@ -163,7 +167,7 @@ class NewsService {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account, 'NEWS_VIEW');
-		await this.getPermissions(news, params.account, {
+		news.permissions = await this.getPermissions(news, params.account, {
 			NEWS_VIEW: 'view',
 			NEWS_EDIT: 'edit',
 		});
@@ -181,10 +185,10 @@ class NewsService {
 		let news = [];
 		const scoped = params.query && params.query.target;
 		if (scoped) {
-			news = news.concat(await this.findScopedNews(params.account.userId, params.query.target));
+			news = news.concat(await this.findScopedNews(params.account, params.query.target));
 		} else {
 			news = news.concat(await this.findSchoolNews(params.account));
-			news = news.concat(await this.findScopedNews(params.account.userId));
+			news = news.concat(await this.findScopedNews(params.account));
 		}
 		if (params.query) {
 			news = sort(news, params.query.$sort);
