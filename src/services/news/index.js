@@ -53,6 +53,19 @@ class NewsService {
 		}
 	}
 
+	async addPermissions(news, { userId, schoolId } = {}, permissions) {
+		const retValue = [];
+		for (const key of Object.keys(permissions)) {
+			try {
+				await this.authorize(news, { userId, schoolId }, key);
+				retValue.push(permissions[key]);
+			} catch (err) {
+				// ignore
+			}
+		}
+		news.permissions = retValue;
+	}
+
 	checkExistence(news, query) {
 		if (!news) {
 			logger.error(`Cannot find news item with query "${query}" => "${news}"`);
@@ -148,6 +161,11 @@ class NewsService {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account, 'NEWS_VIEW');
+		await this.addPermissions(news, params.account, {
+			NEWS_VIEW: 'view',
+			NEWS_EDIT: 'edit',
+			NEWS_DELETE: 'delete',
+		});
 		return news;
 	}
 
