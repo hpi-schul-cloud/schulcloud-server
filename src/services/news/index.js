@@ -193,6 +193,7 @@ class NewsService {
 			news = news.concat(await this.findSchoolNews(params.account));
 			news = news.concat(await this.findScopedNews(params.account));
 		}
+		news = await Promise.all(news);
 		if (params.query) {
 			news = sort(news, params.query.$sort);
 		}
