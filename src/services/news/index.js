@@ -6,6 +6,11 @@ const hooks = require('./hooks');
 const newsModelHooks = require('./hooks/model');
 const { flatten, paginate, sort } = require('../../utils/array');
 
+const NEWS_PERMISSIONS = {
+	NEWS_VIEW: 'view',
+	NEWS_EDIT: 'edit',
+};
+
 class NewsService {
 	setup(app) {
 		this.app = app;
@@ -86,7 +91,11 @@ class NewsService {
 			throw new Forbidden('Mising permissions to view school news.');
 		}
 		const query = { schoolId, target: { $exists: false } };
-		return this.app.service('newsModel').find({ query, paginate: false });
+		const news = await this.app.service('newsModel').find({ query, paginate: false });
+		return news.map(async n => ({
+			...n,
+			permissions: await this.getPermissions(n, { userId, schoolId }, NEWS_PERMISSIONS),
+		}));
 	}
 
 	/**
@@ -124,10 +133,7 @@ class NewsService {
 				return Promise.all(news.map(async n => ({
 					...n,
 					target: await this.app.service(scope).get(n.target),
-					permissions: await this.getPermissions(n, { userId, schoolId }, {
-						NEWS_VIEW: 'view',
-						NEWS_EDIT: 'edit',
-					}),
+					permissions: await this.getPermissions(n, { userId, schoolId }, NEWS_PERMISSIONS),
 				})));
 			}));
 		});
@@ -167,10 +173,7 @@ class NewsService {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account, 'NEWS_VIEW');
-		news.permissions = await this.getPermissions(news, params.account, {
-			NEWS_VIEW: 'view',
-			NEWS_EDIT: 'edit',
-		});
+		news.permissions = await this.getPermissions(news, params.account, NEWS_PERMISSIONS);
 		return news;
 	}
 
