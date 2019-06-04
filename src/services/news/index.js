@@ -70,7 +70,7 @@ class NewsService {
 		if (!this.hasPermission(userId, 'NEWS_VIEW')) {
 			throw new Forbidden('Mising permissions to view school news.');
 		}
-		const query = {	schoolId, target: { $exists: false } };
+		const query = { schoolId, target: { $exists: false } };
 		return this.app.service('newsModel').find({ query, paginate: false });
 	}
 
@@ -221,7 +221,7 @@ class NewsService {
 	async update(id, data, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account, 'NEWS_EDIT'); 
+		await this.authorize(news, params.account, 'NEWS_EDIT');
 		const updatedNews = await this.app.service('newsModel').update(id, data);
 		await NewsService.createHistoryEntry(news);
 		return updatedNews;
