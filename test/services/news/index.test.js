@@ -446,6 +446,72 @@ describe('news service', () => {
 				await News.deleteMany({});
 			});
 		});
+
+		describe('DELETE', () => {
+			it('should not work without authentication', async () => {
+				// external request
+				try {
+					await newsService.remove(new ObjectId(), { provider: 'rest' });
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(NotAuthenticated);
+				}
+
+				// internal request
+				try {
+					await newsService.remove(new ObjectId());
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(BadRequest);
+					expect(err.message).that.equal('Authentication is required.');
+				}
+			});
+
+			it('should delete news items at the user\'s school', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const news = await News.create({
+					title: 'Old news',
+					content: 'Please delete',
+					schoolId,
+				});
+				expect(await News.count({ schoolId })).to.equal(1);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				await newsService.remove(news._id, params);
+				expect(await News.count({ schoolId })).to.equal(0);
+			});
+
+			it('should not allow news deletion if the permission NEWS_CREATE is not set', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'student' }); // student lacks the permission
+				const news = await News.create({
+					title: 'Old news',
+					content: 'Please delete',
+					schoolId,
+				});
+				expect(await News.count({ schoolId })).to.equal(1);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				try {
+					await newsService.remove(news._id, params);
+					expect.fail('The previous call should have failed.');
+				} catch (err) {
+					expect(err).to.be.instanceOf(Forbidden);
+				} finally {
+					expect(await News.count({ schoolId })).to.equal(1);
+				}
+			});
+
+			after(async () => {
+				await cleanup();
+				await News.deleteMany({});
+			});
+		});
 	});
 
 	describe('event handlers', () => {
