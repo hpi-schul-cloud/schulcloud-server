@@ -73,4 +73,12 @@ describe('Test team basic methods', () => {
 			}
 		});
 	});
+
+	describe('\'/teams/manage/admin\' service', () => {
+		it('registered the service', () => {
+			const service = app.service('/teams/manage/admin');
+		
+			assert.ok(service, 'Registered the service');
+		  });
+	});
 });
