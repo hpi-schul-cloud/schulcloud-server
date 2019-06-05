@@ -80,20 +80,44 @@ describe('AdminUsersService', () => {
 
 	it('sorts students correctly', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-		await testObjects.createTestUser({ firstName: 'Max', roles: ['student'] });
-		await testObjects.createTestUser({ firstName: 'Moritz', roles: ['student'] });
+		const student1 = testObjects.createTestUser({
+			firstName: 'Max',
+			roles: ['student'],
+			consentStatus: 'ok',
+		});
+		const student2 = testObjects.createTestUser({
+			firstName: 'Moritz',
+			roles: ['student'],
+			consentStatus: 'missing',
+		});
 
-		const params = {
+		await testObjects.createTestClass({
+			name: '1a',
+			userIds: [student1._id],
+			teacherIds: [],
+		});
+		await testObjects.createTestClass({
+			name: '2B',
+			userIds: [student2._id],
+			teacherIds: [],
+		});
+
+		const createParams = sortObject => ({
 			account: {
 				userId: teacher._id,
 			},
-			$sort: {
-				firstName: -1,
-			},
-		};
-		const result = await adminStudentsService.find(params);
+			$sort: sortObject,
+		});
 
-		expect(result[0].firstName > result[1].firstName);
+		const resultSortedByFirstName = await adminStudentsService.find(createParams({ firstName: -1 }));
+		expect(resultSortedByFirstName[0].firstName > resultSortedByFirstName[1].firstName);
+
+		const resultSortedByClass = await adminStudentsService.find(createParams({ class: -1 }));
+		expect(resultSortedByClass[0].class > resultSortedByClass[1].class);
+
+		const resultSortedByConsent = await adminStudentsService.find(createParams({ consent: -1 }));
+		expect(resultSortedByConsent[0].consentStatus).to.equal('missing');
+		expect(resultSortedByConsent[1].consentStatus).to.equal('ok');
 	});
 
 	it('filters students correctly', async () => {
@@ -102,30 +126,9 @@ describe('AdminUsersService', () => {
 		const studentWithParentConsent = await testObjects.createTestUser({
 			roles: ['student'],
 			birthday: '2010-01-01',
+			consentStatus: 'parentsAgreed',
 		});
-		const studentWithConsents = await testObjects.createTestUser({ roles: ['student'] });
-
-		await consentService.create({
-			userId: studentWithParentConsent._id,
-			parentConsents: [{
-				privacyConsent: true,
-				termsOfUseConsent: true,
-			}],
-		});
-
-		await consentService.create({
-			userId: studentWithConsents._id,
-			userConsent: {
-				form: 'digital',
-				privacyConsent: true,
-				termsOfUseConsent: true,
-			},
-			parentConsents: [{
-				form: 'digital',
-				privacyConsent: true,
-				termsOfUseConsent: true,
-			}],
-		});
+		const studentWithConsents = await testObjects.createTestUser({ roles: ['student'], consentStatus: 'ok' });
 
 		const createParams = status => ({
 			account: {
