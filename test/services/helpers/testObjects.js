@@ -85,7 +85,7 @@ module.exports = (app, opt = {
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
 		fakeLoginParams: login.fakeLoginParams,
-		createdUserIds: warn('@deprecated use info() instat', users.info),
+		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
 		createTestTeamWithOwner,
 		info,
