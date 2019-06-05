@@ -72,6 +72,29 @@ describe('news service', () => {
 				expect(result.content).that.equal(schoolNews.content);
 			});
 
+			it('should work for team news of teams the user is in, even from other schools', async () => {
+				const schoolId = new ObjectId();
+				const school2Id = new ObjectId();
+				const teams = teamHelper(app, { schoolId });
+				const user = await createTestUser({ schoolId, roles: 'administrator' });
+				const user2 = await createTestUser({ schoolId: school2Id, roles: 'teacher' });
+				const team = await teams.create(user2);
+				await teams.addTeamUserToTeam(team._id, user, 'teammember');
+				const news = await News.create({
+					schoolId,
+					title: 'team news',
+					content: 'content for my friends',
+					target: team._id,
+					targetModel: 'teams',
+				});
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const result = await newsService.get(news._id, params);
+				expect(result).to.not.equal(undefined);
+				expect(result._id.toString()).to.equal(news._id.toString());
+			});
+
 			it('should not return news if the user does not have the NEWS_VIEW permission', async () => {
 				const schoolId = new ObjectId();
 				const schoolNews = await News.create({
