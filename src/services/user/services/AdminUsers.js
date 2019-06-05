@@ -5,7 +5,6 @@ const logger = require('winston');
 
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
-const { consentModel } = require('../../consent/model');
 
 const getCurrentUser = id => userModel.findById(id)
 	.select('schoolId')
