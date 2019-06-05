@@ -12,13 +12,11 @@ const roleSchema = new Schema({
 	timestamps: true,
 });
 
-const roleModel = mongoose.model('role', roleSchema);
-
-roleSchema.methods.getPermissions = function getPermissions() {
+roleSchema.methods.getPermissions = function () {
 	return roleModel.resolvePermissions([this._id]);
 };
 
-roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
+roleSchema.statics.resolvePermissions = function (roleIds) {
 	const processedRoleIds = [];
 	const permissions = new Set();
 
@@ -46,5 +44,6 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 		.then(() => permissions);
 };
 
+const roleModel = mongoose.model('role', roleSchema);
 
 module.exports = roleModel;
