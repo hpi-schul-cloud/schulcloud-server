@@ -12,6 +12,7 @@ describe('Test team basic methods', () => {
 	describe('teams create', () => {
 		let team;
 		let teamId;
+		let userId;
 
 		before(async () => {
 			const user = await T.createTestUser().catch((err) => {
@@ -19,7 +20,7 @@ describe('Test team basic methods', () => {
 			});
 
 			const schoolId = user.schoolId.toString();
-			const userId = user._id.toString();
+			userId = user._id.toString();
 			const fakeLoginParams = T.fakeLoginParams({ userId });
 
 			team = await teamService.create({
@@ -50,6 +51,16 @@ describe('Test team basic methods', () => {
 			expect(ObjectId.isValid(filePermission[1].refId)).to.be.true;
 		});
 
+		it('should find created test team for user', async () => {
+			const result = await app.service('teams').find(userId);
+			const elements = [];
+			result.data.forEach((element) => {
+				elements.push(element._id);
+			});
+			const testTeam = elements.pop();
+			expect(testTeam.toString()).to.equal(teamId);
+		});
+
 		it('is allowed for superheroes', async () => {
 			const hero = await T.createTestUser({ roles: ['superhero'] });
 			const username = hero.email;
@@ -74,5 +85,4 @@ describe('Test team basic methods', () => {
 			}
 		});
 	});
-
 });
