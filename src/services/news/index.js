@@ -3,7 +3,7 @@ const { Forbidden, NotFound } = require('@feathersjs/errors');
 const logger = require('winston');
 const { newsModel, newsHistoryModel } = require('./model');
 const hooks = require('./hooks');
-const newsModelHooks = require('./hooks/model');
+const newsModelHooks = require('./hooks/newsModel.hooks');
 const { flatten, paginate, sort } = require('../../utils/array');
 
 const NEWS_PERMISSIONS = {
