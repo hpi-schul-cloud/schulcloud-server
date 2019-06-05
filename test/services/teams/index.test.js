@@ -85,5 +85,4 @@ describe('Test team basic methods', () => {
 			}
 		});
 	});
-
 });
