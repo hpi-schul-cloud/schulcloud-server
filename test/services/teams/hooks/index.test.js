@@ -1,15 +1,19 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const { BadRequest } = require('@feathersjs/errors');
-const { setupUser, deleteUser } = require('../helper/helper.user');
-const hooks = require('../../../../src/services/teams/hooks/index.js');
+const auth = require('@feathersjs/authentication');
+const { Forbidden } = require('@feathersjs/errors');
 const {
 	filterToRelated,
 	rejectDefaultFilePermissionUpdatesIfNotPermitted,
 } = require('../../../../src/services/teams/hooks/index.js');
 const app = require('../../../../src/app');
 const { createHook } = require('../helper/helper.hook');
-
+const {
+	createTestAccount,
+	createTestUser,
+	generateRequestParams,
+} = require('../../helpers/testObjects')(app);
+const teamHelper = require('../../helpers/services/teams');
 
 describe('Team service hook tests.', () => {
 	let server;
@@ -130,12 +134,54 @@ describe('Team service hook tests.', () => {
 			expect(fut(ctx)).to.deep.equal(ctx);
 		});
 
-		it('should accept changing default file permissions as team admin', () => {
-			expect.fail();
+		it('should accept changing default file permissions as team admin', async () => {
+			const schoolId = new ObjectId();
+			const teams = teamHelper(app, { schoolId });
+			const user = await createTestUser({ schoolId, roles: 'teacher' });
+			const team = await teams.create(user);
+			const credentials = { username: user.email, password: user.email };
+			await createTestAccount(credentials, 'local', user);
+			const params = { ...await generateRequestParams(credentials), query: {} };
+			const newFilePermission = {
+				write: false, read: true, create: false, delete: false,
+			};
+			const ctx = await auth.hooks.authenticate('jwt')({
+				id: team._id,
+				params,
+				data: { filePermission: newFilePermission },
+				app,
+				type: 'before',
+			});
+			const result = await fut(ctx);
+			expect(result).to.deep.equal(ctx);
 		});
 
-		it('should reject changing default file permissions for all other team members', () => {
-			expect.fail();
+		it('should reject changing default file permissions for all other team members', async () => {
+			const schoolId = new ObjectId();
+			const teams = teamHelper(app, { schoolId });
+			const user = await createTestUser({ schoolId, roles: 'teacher' });
+			const user2 = await createTestUser({ schoolId, roles: 'user' });
+			const team = await teams.create(user);
+			await teams.addTeamUserToTeam(team._id, user2, 'teamexpert');
+			const credentials = { username: user2.email, password: user2.email };
+			await createTestAccount(credentials, 'local', user2);
+			const params = { ...await generateRequestParams(credentials), query: {} };
+			const newFilePermission = {
+				write: false, read: true, create: false, delete: false,
+			};
+			const ctx = await auth.hooks.authenticate('jwt')({
+				id: team._id,
+				params,
+				data: { filePermission: newFilePermission },
+				app,
+				type: 'before',
+			});
+			try {
+				await fut(ctx);
+				expect.fail('The previous call should have failed.');
+			} catch (err) {
+				expect(err).to.be.instanceOf(Forbidden);
+			}
 		});
 	});
 });
