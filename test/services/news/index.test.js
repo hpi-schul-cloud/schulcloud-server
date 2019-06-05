@@ -746,6 +746,141 @@ describe('news service', () => {
 				await News.deleteMany({});
 			});
 		});
+
+		describe('UPDATE', () => {
+			it('should not work without authentication', async () => {
+				// external request
+				try {
+					await newsService.update(new ObjectId(), { foo: 'bar' }, { provider: 'rest' });
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(NotAuthenticated);
+				}
+
+				// internal request
+				try {
+					await newsService.update(new ObjectId(), { foo: 'bar' });
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(BadRequest);
+					expect(err.message).that.equal('Authentication is required.');
+				}
+			});
+
+			it('should enable to update news items at the user\'s school', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const news = await News.create({
+					title: 'school news',
+					content: 'some content',
+					schoolId,
+				});
+				const updatedNews = await newsService.patch(news._id, {
+					title: 'updated!', content: news.content, schoolId,
+				}, params);
+				expect(updatedNews).to.not.equal(undefined);
+				expect(updatedNews._id.toString()).to.equal(news._id.toString());
+				expect(updatedNews.title).to.equal('updated!');
+				expect(await News.count({ schoolId })).to.equal(1);
+				expect(await News.findOne({ title: 'updated!' })).to.not.equal(undefined);
+			});
+
+			it('should not allow updating news if the permission NEWS_EDIT is not set', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'student' }); // student lacks the permission
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const news = await News.create({
+					title: 'school news',
+					content: 'some content',
+					schoolId,
+				});
+				try {
+					await newsService.update(
+						news._id,
+						{
+							schoolId,
+							title: 'updated school news',
+							content: 'foo bar baz',
+						},
+						params,
+					);
+					expect.fail('The previous call should have failed.');
+				} catch (err) {
+					expect(err).to.be.instanceOf(Forbidden);
+				} finally {
+					expect(await News.count({ schoolId })).to.equal(1);
+					expect(await News.count({ title: 'school news' })).to.equal(1);
+					expect(await News.count({ title: 'updated school news' })).to.equal(0);
+				}
+			});
+
+			it('should enable updating news in scopes the user has the necessary permissions in', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'student' });
+				const teams = teamHelper(app, { schoolId });
+				const team = await teams.create(user);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const news = await News.create({
+					schoolId,
+					title: 'school news',
+					content: 'foo bar baz',
+					target: team._id,
+					targetModel: 'teams',
+				});
+				const result = await newsService.update(news._id, {
+					content: 'updated content', title: news.title, schoolId,
+				}, params);
+				expect(result).to.not.equal(undefined);
+				expect(result._id.toString()).to.equal(news._id.toString());
+				expect(await News.count({ schoolId })).to.equal(1);
+				expect(await News.count({ content: 'updated content' })).to.equal(1);
+			});
+
+			it('should not allow patching news in other scopes', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const user2 = await createTestUser({ schoolId, roles: 'student' });
+				const teams = teamHelper(app, { schoolId });
+				const team = await teams.create(user2);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const news = await News.create({
+					schoolId,
+					title: 'school news',
+					content: 'foo bar baz',
+					target: team._id,
+					targetModel: 'teams',
+				});
+				try {
+					await newsService.update(news._id, {
+						content: 'updated content in other scope', title: news.title, schoolId,
+					}, params);
+					expect.fail('The previous call should have failed.');
+				} catch (err) {
+					expect(err).to.be.instanceOf(Forbidden);
+				} finally {
+					expect(await News.count({ schoolId })).to.equal(1);
+					expect(await News.count({ content: 'updated content in other scope' })).to.equal(0);
+				}
+			});
+
+			after(async () => {
+				await cleanup();
+				await News.deleteMany({});
+			});
+		});
 	});
 
 	describe('event handlers', () => {
