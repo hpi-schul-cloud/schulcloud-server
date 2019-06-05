@@ -546,6 +546,72 @@ describe('news service', () => {
 				}
 			});
 
+			it('should enable deleting news in scopes the user has the necessary permissions in', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const teams = teamHelper(app, { schoolId });
+				const team = await teams.create(user);
+				const teamNews = await News.create([
+					{
+						schoolId,
+						title: 'team news 1',
+						content: 'this is the content',
+						target: team._id,
+						targetModel: 'teams',
+					},
+					{
+						schoolId,
+						title: 'team news 2',
+						content: 'this is the content',
+						target: team._id,
+						targetModel: 'teams',
+					},
+				]);
+				expect(await News.count({ schoolId })).to.equal(2);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				await newsService.remove(teamNews[0]._id, params);
+				expect(await News.count({ schoolId })).to.equal(1);
+			});
+
+			it('should not allow creating news in other scopes', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const user2 = await createTestUser({ schoolId, roles: 'student' });
+				const teams = teamHelper(app, { schoolId });
+				const team = await teams.create(user2);
+				const teamNews = await News.create([
+					{
+						schoolId,
+						title: 'team news 1',
+						content: 'this is the content',
+						target: team._id,
+						targetModel: 'teams',
+					},
+					{
+						schoolId,
+						title: 'team news 2',
+						content: 'this is the content',
+						target: team._id,
+						targetModel: 'teams',
+					},
+				]);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				try {
+					await newsService.remove(teamNews[0]._id, params);
+					expect.fail('The previous call should have failed.');
+				} catch (err) {
+					expect(err).to.be.instanceOf(Forbidden);
+				} finally {
+					expect(await News.count({ schoolId })).to.equal(2);
+				}
+			});
+
 			after(async () => {
 				await cleanup();
 				await News.deleteMany({});
