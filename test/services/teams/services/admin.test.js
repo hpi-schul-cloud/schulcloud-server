@@ -13,95 +13,132 @@ describe('\'/teams/manage/admin\' service', () => {
         assert.ok(service, 'Registered the service');
     });
 
-
-    it('mapped function', async () => {
-
+    describe('mapped function', () => {
         
+        let teams, expectedResult;
         const sessionSchoolId = mongoose.Types.ObjectId('4edd40c86762e0fb12000003');
 
-        const createdAt = Date.now();
-        const teamId = mongoose.Types.ObjectId('0000d186816abba584714c55');
-        const userId = mongoose.Types.ObjectId('0000d733686abba584714c55');
+        beforeEach( () => {
 
-        const teams = {
-            data: [{
+            const createdAt = Date.now();
+            const teamId = mongoose.Types.ObjectId('0000d186816abba584714c55');
+            const userId = mongoose.Types.ObjectId('0000d733686abba584714c55');
+
+            teams = {
+                data: [{
+                    _id: teamId,
+                    color: '#d32f2f',
+                    name: 'spinatenpower',
+                    createdAt,
+                    desciption: 'Spintatenpower makes teams greate again',
+                    schoolId: sessionSchoolId,
+                    schoolIds: [
+                        {
+                            "_id": sessionSchoolId,
+                            "name":"Schiller-Oberschule",
+                            "fileStorageType":"awsS3",
+                            "systems":["0000d186816abba584714c90"],
+                            "updatedAt":"2017-01-01T00:06:37.148Z",
+                            "createdAt":"2017-01-01T00:06:37.148Z",
+                            "__v":0,
+                            "currentYear":"5b7de0021a3a07c20a1c165e",
+                            "purpose":"demo"
+                        }
+                    ],
+                    userIds: [
+                        {
+                            schoolId: sessionSchoolId,
+                            role: {
+                                name: 'teamowner'
+                            },
+                            userId: {
+                                _id: userId,
+                                roles: [
+                                    {
+                                        name: 'lehrer',
+                                        createdAt: createdAt
+                                    }
+                                ],
+                                firstName: 'Hans',
+                                lastName: 'Peter',
+                                should: 'removed'
+                            }
+                        }
+                    ]
+    
+    
+                }],
+                limit: 50,
+                skip: 0,
+                total: 1
+            };
+
+            expectedResult = [{
+                membersTotal: 1,
+                name: 'spinatenpower',
                 _id: teamId,
                 color: '#d32f2f',
-                name: 'spintenpower',
-                createdAt,
-                description: 'Spintatenpower makes teams greate again',
-                schoolId: sessionSchoolId,
-                schoolIds: [
+                desciption: 'Spintatenpower makes teams greate again',
+                createdAtMySchool: true,
+                hasMembersOfOtherSchools: false,
+                createdAt: createdAt,
+                ownerExist: true,
+                schools: [{
+                    _id: sessionSchoolId,
+                    name: "Schiller-Oberschule",
+                }],
+                schoolMembers: [
                     {
-                        "_id": sessionSchoolId,
-                        "name":"Schiller-Oberschule",
-                        "fileStorageType":"awsS3",
-                        "systems":["0000d186816abba584714c90"],
-                        "updatedAt":"2017-01-01T00:06:37.148Z",
-                        "createdAt":"2017-01-01T00:06:37.148Z",
-                        "__v":0,
-                        "currentYear":"5b7de0021a3a07c20a1c165e",
-                        "purpose":"demo"
-                    }
-                ],
-                userIds: [
-                    {
-                        schoolId: sessionSchoolId,
-                        role: {
-                            name: 'teamowner'
-                        },
-                        userId: {
+                        role: 'teamowner',
+                        user: {
                             _id: userId,
-                            roles: [
-                                {
-                                    name: 'teacher',
-                                    createdAt: createdAt
-                                }
-                            ],
                             firstName: 'Hans',
                             lastName: 'Peter',
-                            should: 'removed'
+                            roles: ['lehrer']
                         }
                     }
                 ]
+            }]
+
+        })
 
 
-            }],
-            limit: 50,
-            skip: 0,
-            total: 1
-        };
+        it('simple test with single school', async () => {
 
-        const result = AdminOverview.mapped(teams, sessionSchoolId);
+    
+            const result = AdminOverview.mapped(teams, sessionSchoolId);
+            assert.deepStrictEqual(result, expectedResult);
+        });
 
-        const expectedResult = {
-            membersTotal: 1,
-            name: 'spinatenpower',
-            _id: teamId,
-            color: '#d32f2f',
-            description: 'Spintatenpower makes teams greate again',
-            createdAtMySchool: true,
-            hasMembersOfOtherSchools: false,
-            createdAt: createdAt,
-            ownerExist: true,
-            schools: [{
-                _id: sessionSchoolId,
-                name: "Schiller-Oberschule",
-            }],
-            schoolMembers: [
-                {
-                    schoolId: sessionSchoolId,
-                    role: 'teamowner',
-                    user: {
-                        _id: userId,
-                        firstName: 'Hans',
-                        lastName: 'Peter',
-                        roles: ['lehrer']
-                    }
-                }
-            ]
-        }
+        it('team without owner', () => {
 
-        assert.deepStrictEqual(result.toString(), expectedResult.toString());
-    });
+            teams.data[0].userIds[0].role.name = "teammember";
+            expectedResult[0].schoolMembers[0].role="teammember";
+            expectedResult[0].ownerExist = false;
+
+            const result = AdminOverview.mapped(teams, sessionSchoolId);
+    
+            assert.deepStrictEqual(result, expectedResult);
+
+        })
+
+        it('team without owner', () => {
+
+            const schoolId = mongoose.Types.ObjectId('4edd40c86762e0fb12000007');
+
+            teams.data[0].schoolId = schoolId;
+            teams.data[0].schoolIds[0]._id = schoolId;
+            
+            const result = AdminOverview.mapped(teams, sessionSchoolId);
+            
+            
+            assert.equal(result.length, 0);
+            
+        })
+
+
+
+    })
+
+    
 });
