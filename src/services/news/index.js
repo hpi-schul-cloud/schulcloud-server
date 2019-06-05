@@ -3,7 +3,7 @@ const { Forbidden, NotFound } = require('@feathersjs/errors');
 const logger = require('winston');
 const { newsModel, newsHistoryModel } = require('./model');
 const hooks = require('./hooks');
-const newsModelHooks = require('./hooks/model');
+const newsModelHooks = require('./hooks/newsModel.hooks');
 const { flatten, paginate, sort } = require('../../utils/array');
 
 const NEWS_PERMISSIONS = {
@@ -87,8 +87,9 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async findSchoolNews({ userId, schoolId }) {
-		if (!this.hasPermission(userId, 'NEWS_VIEW')) {
-			throw new Forbidden('Mising permissions to view school news.');
+		const hasPermission = await this.hasPermission(userId, 'NEWS_VIEW');
+		if (!hasPermission) {
+			return [];
 		}
 		const query = { schoolId, target: { $exists: false } };
 		const news = await this.app.service('newsModel').find({ query, paginate: false });
