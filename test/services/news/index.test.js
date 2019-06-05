@@ -433,12 +433,51 @@ describe('news service', () => {
 				}
 			});
 
-			it.skip('should enable creating news in scopes the user has the necessary permissions in', async () => {
-
+			it('should enable creating news in scopes the user has the necessary permissions in', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const teams = teamHelper(app, { schoolId });
+				const team = await teams.create(user);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const result = await newsService.create({
+					schoolId,
+					title: 'school news',
+					content: 'foo bar baz',
+					target: team._id,
+					targetModel: 'teams',
+				}, params);
+				expect(result).to.not.equal(undefined);
+				expect(result._id).to.not.equal(undefined);
+				expect(await News.count({ schoolId })).to.equal(1);
 			});
 
-			it.skip('should not allow creating news in other scopes', () => {
-
+			it('should not allow creating news in other scopes', async () => {
+				const schoolId = new ObjectId();
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const user2 = await createTestUser({ schoolId, roles: 'student' });
+				const teams = teamHelper(app, { schoolId });
+				const team = await teams.create(user2);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				try {
+					await newsService.create({
+						schoolId,
+						title: 'school news',
+						content: 'foo bar baz',
+						target: team._id,
+						targetModel: 'teams',
+					}, params);
+					expect.fail('The previous call should have failed.');
+				} catch (err) {
+					expect(err).to.be.instanceOf(Forbidden);
+				} finally {
+					expect(await News.count({ schoolId })).to.equal(0);
+				}
 			});
 
 			after(async () => {
