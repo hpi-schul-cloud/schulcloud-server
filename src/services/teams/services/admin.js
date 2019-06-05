@@ -4,17 +4,17 @@ const {
 	Forbidden,
 	NotFound,
 } = require('@feathersjs/errors');
-const hooks = require('./hooks');
-const { warn } = require('../../logger/index');
+const hooks = require('../hooks');
+const { warn } = require('../../../logger/index');
 
 const {
 	createUserWithRole,
-} = require('./hooks/helpers');
+} = require('../hooks/helpers');
 const {
 	getBasic,
-	patchTeam,s
+	patchTeam,
 	getSessionUser,
-} = require('./helpers');
+} = require('../helpers');
 const {
 	isArray,
 	isArrayWithElement,
@@ -22,7 +22,7 @@ const {
 	isDefined,
 	isUndefined,
 	isSameId,
-} = require('./hooks/collection');
+} = require('../hooks/collection');
 
 class AdminOverview {
 	constructor(options) {
