@@ -55,8 +55,8 @@ exports.before = {
 		globalHooks.hasPermission('SCHOOL_EDIT'),
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
-	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
-	*/
+    remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
+    */
 	remove: [hooks.disallow()],
 };
 

@@ -14,14 +14,39 @@ if (!(configurations.includes(env))) {
 
 const config = require(`../../config/${env}.json`);
 
+function addAuthenticationToOptions(DB_USERNAME, DB_PASSWORD, options) {
+	const auth = {};
+	if (DB_USERNAME) {
+		auth.user = DB_USERNAME;
+	}
+	if (DB_PASSWORD) {
+		auth.password = DB_PASSWORD;
+	}
+	if (DB_USERNAME || DB_PASSWORD) {
+		options.auth = auth;
+	}
+}
+
 function connect() {
 	mongoose.Promise = global.Promise;
 
+	// read env params
 	const {
 		DB_URL = config.mongodb,
 		DB_USERNAME,
 		DB_PASSWORD,
 	} = process.env;
+
+	// set default options
+	const options = {
+		useMongoClient: true,
+	};
+
+	addAuthenticationToOptions(
+		DB_USERNAME,
+		DB_PASSWORD,
+		options,
+	);
 
 	logger.info('connect to database host',
 		DB_URL,
@@ -30,11 +55,7 @@ function connect() {
 
 	return mongoose.connect(
 		DB_URL,
-		{
-			user: DB_USERNAME,
-			pass: DB_PASSWORD,
-			useMongoClient: true,
-		},
+		options,
 	);
 }
 

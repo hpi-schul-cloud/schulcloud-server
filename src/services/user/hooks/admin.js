@@ -1,4 +1,3 @@
-
 const { authenticate } = require('@feathersjs/authentication').hooks;
 // is admin
 // restricted to current school

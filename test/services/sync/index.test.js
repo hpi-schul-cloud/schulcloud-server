@@ -1,10 +1,10 @@
-'use strict';
-
 const assert = require('assert');
 const chai = require('chai');
-const expect = chai.expect;
+
+const { expect } = chai;
 
 const app = require('../../../src/app');
+
 const syncService = app.service('sync');
 
 describe('sync service', () => {
@@ -13,11 +13,11 @@ describe('sync service', () => {
 	});
 
 	it('accepts GET and POST requests', async () => {
-        for (let method of ['find', 'create']) {
-            expect(syncService[method]).to.exist;
-        }
-        for (let method of ['get', 'update', 'patch', 'remove']) {
-            expect(syncService[method]).to.not.exist;
-        }
+		for (const method of ['find', 'create']) {
+			expect(syncService[method]).to.exist;
+		}
+		for (const method of ['get', 'update', 'patch', 'remove']) {
+			expect(syncService[method]).to.not.exist;
+		}
 	});
 });

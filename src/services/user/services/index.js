@@ -1,5 +1,5 @@
-const AdminStudents = require('./AdminStudents');
+const AdminUsers = require('./AdminUsers');
 
 module.exports = {
-	AdminStudents,
+	AdminUsers,
 };

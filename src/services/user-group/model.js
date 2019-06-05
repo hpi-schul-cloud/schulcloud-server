@@ -1,5 +1,3 @@
-
-
 const autoPopulate = require('mongoose-autopopulate');
 const mongoose = require('mongoose');
 const logger = require('winston');
@@ -79,8 +77,8 @@ const getClassDisplayName = (aclass) => {
 	// for non static classes
 	if (
 		aclass.nameFormat === 'gradeLevel+name'
-		&& typeof aclass.gradeLevel === 'object'
-		&& (aclass.gradeLevel || {}).name
+        && typeof aclass.gradeLevel === 'object'
+        && (aclass.gradeLevel || {}).name
 	) {
 		return `${aclass.gradeLevel.name}${aclass.name}`;
 	}

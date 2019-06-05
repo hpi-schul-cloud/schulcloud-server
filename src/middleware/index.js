@@ -1,5 +1,3 @@
-'use strict';
-
 const handler = require('@feathersjs/express/errors');
 const notFound = require('./not-found-handler');
 const logger = require('./logger');
