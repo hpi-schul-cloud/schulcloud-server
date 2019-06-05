@@ -25,6 +25,10 @@ class UserLinkImportService {
 				return userDataFilter(users.data[0]);
 			}).catch(err => err);
 	}
+
+	setup(app) {
+		this.app = app;
+	}
 }
 
 module.exports = UserLinkImportService;
