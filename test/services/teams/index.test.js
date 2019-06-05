@@ -7,6 +7,7 @@ const T = require('../helpers/testObjects')(app);
 
 const teamService = app.service('/teams');
 
+
 describe('Test team basic methods', () => {
 	describe('teams create', () => {
 		let team;
@@ -74,11 +75,4 @@ describe('Test team basic methods', () => {
 		});
 	});
 
-	describe('\'/teams/manage/admin\' service', () => {
-		it('registered the service', () => {
-			const service = app.service('/teams/manage/admin');
-		
-			assert.ok(service, 'Registered the service');
-		  });
-	});
 });
