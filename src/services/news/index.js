@@ -16,27 +16,64 @@ class NewsService {
 		this.app = app;
 	}
 
-	/**
-	 * Checks scoped permission for a user.
-	 * @param {BsonId|String} userId
-	 * @param {String} permission
-	 * @param {BsonId|String} targetId (optional) news target (scope) id. Only valid with targetModel.
-	 * @param {String} targetModel (optional) news target (scope) model. Only valid with target.
-	 * @returns {Promise<Boolean>} Promise that resolves to true/false
-	 * @example
-	 * await hasPermission(user._id, 'NEWS_VIEW') => true
-	 * await hasPermission(user._id, 'NEWS_CREATE', team._id, 'teams') => false
-	 * @memberof NewsService
-	 */
-	async hasPermission(userId, permission, targetId, targetModel) {
-		if (targetId && targetModel) {
-			const scope = this.app.service(`${targetModel}/:scopeId/userPermissions/`);
-			const params = { route: { scopeId: targetId.toString() } };
+
+	async getPermissions(userId, dataItem) {
+		// scope case: user role in scope must have given permission
+		if (dataItem.target && dataItem.targetModel) {
+			const scope = this.app.service(`${dataItem.targetModel}/:scopeId/userPermissions/`);
+			const params = { route: { scopeId: dataItem.target.toString() } };
 			const scopePermissions = await scope.get(userId, params);
-			return scopePermissions.includes(permission);
+			return scopePermissions;
 		}
+
+		// default school case: dataItem and users schoolId must match and user permission must exist
+		return this.getSchoolPermissions(userId, dataItem.schoolId);
+	}
+
+	/**
+		 * Checks scoped permission for a user and given news.
+		 * @param {BsonId|String} userId
+		 * @param {String} permission
+		 * @param {BsonId|String} targetId (optional) news target (scope) id. Only valid with targetModel.
+		 * @param {String} targetModel (optional) news target (scope) model. Only valid with target.
+		 * @returns {Promise<Boolean>} Promise that resolves to true/false
+		 * @example
+		 * await hasPermission(user._id, 'NEWS_VIEW') => true
+		 * await hasPermission(user._id, 'NEWS_CREATE', team._id, 'teams') => false
+		 * @memberof NewsService
+		 */
+	async hasPermission(userId, permission, news) {
+		if (!news) {
+			// maybe, use hasSchoolPermission instead...
+			return false;
+		}
+		const permissions = await this.getPermissions(userId, news);
+		return permissions.includes(permission);
+	}
+
+	/**
+	 * Tests if a user with given userId has a (global) permission within a school-/scope/.
+	 * @param {*} userId
+	 * @param {*} schoolId
+	 * @param {*} permission
+	 * @returns {boolean}
+	 */
+	async getSchoolPermissions(userId, schoolId) {
+		// test user exists
 		const user = await this.app.service('users').get(userId);
-		return user.permissions.includes(permission);
+		if (user == null) return false;
+
+		// test user is school member
+		const sameSchool = schoolId.toString() === user.schoolId.toString();
+		if (!sameSchool) return false;
+
+		// finally, test user has permission
+		return user.permissions;
+	}
+
+	async hasSchoolPermission(userId, schoolId, permision) {
+		const permissions = await this.getSchoolPermissions(userId, schoolId);
+		return permissions.includes(permision);
 	}
 
 	/**
@@ -50,24 +87,20 @@ class NewsService {
 	 * await authorize(news, params.account, 'NEWS_CREATE') => (throws Forbidden)
 	 * @memberof NewsService
 	 */
-	async authorize(news = {}, { userId, schoolId } = {}, permission) {
-		const authorized = await this.hasPermission(userId, permission, news.target, news.targetModel);
-		const sameSchool = news.schoolId.toString() === schoolId.toString();
-		if (!authorized || !sameSchool) {
+	async authorize(news = {}, userId, permission) {
+		const authorized = await this.hasPermission(userId, permission, news);
+		if (!authorized) {
 			throw new Forbidden('Not authorized.');
 		}
 	}
 
-	async getPermissions(news, { userId, schoolId } = {}, permissions) {
+	async getDataItemPermissions(dataItem, userId, permissions) {
 		const retValue = [];
+		const itemPermissions = await this.getPermissions(userId, dataItem);
 		for (const key of Object.keys(permissions)) {
-			try {
-				await this.authorize(news, { userId, schoolId }, key);
-				if (!retValue.includes(permissions[key])) {
-					retValue.push(permissions[key]);
-				}
-			} catch (err) {
-				// ignore
+			if (itemPermissions.includes(key)
+				&& !retValue.includes(permissions[key])) {
+				retValue.push(permissions[key]);
 			}
 		}
 		return retValue;
@@ -86,16 +119,22 @@ class NewsService {
 	 * @returns Array<News Document>
 	 * @memberof NewsService
 	 */
-	async findSchoolNews({ userId, schoolId }) {
-		if (!this.hasPermission(userId, 'NEWS_VIEW')) {
-			throw new Forbidden('Mising permissions to view school news.');
-		}
-		const query = { schoolId, target: { $exists: false } };
-		const news = await this.app.service('newsModel').find({ query, paginate: false });
-		return news.map(async n => ({
-			...n,
-			permissions: await this.getPermissions(n, { userId, schoolId }, NEWS_PERMISSIONS),
-		}));
+	findSchoolNews({ userId, schoolId }) {
+		return this.hasSchoolPermission(userId, schoolId, 'NEWS_VIEW')
+			.then((hasPermission) => {
+				if (!hasPermission) {
+					return [];
+				}
+				const query = { schoolId, target: { $exists: false } };
+				return this.app.service('newsModel').find({ query, paginate: false });
+			}).then(news => Promise.all(news.map(async n => ({
+				...n,
+				permissions: await this.getDataItemPermissions(n, userId, NEWS_PERMISSIONS),
+			}))))
+			.catch((err) => {
+				logger.error('Cannot find school news', err);
+				return [];
+			});
 	}
 
 	/**
@@ -106,7 +145,7 @@ class NewsService {
 	 * @returns Array<News Document>
 	 * @memberof NewsService
 	 */
-	async findScopedNews({ userId, schoolId }, target) {
+	async findScopedNews(userId, target) {
 		const scopes = await newsModel.distinct('targetModel');
 		const ops = scopes.map(async (scope) => {
 			// For each possible target model, find all targets the user has NEWS_VIEW permissions in.
@@ -133,7 +172,7 @@ class NewsService {
 				return Promise.all(news.map(async n => ({
 					...n,
 					target: await this.app.service(scope).get(n.target),
-					permissions: await this.getPermissions(n, { userId, schoolId }, NEWS_PERMISSIONS),
+					permissions: await this.getDataItemPermissions(n, userId, NEWS_PERMISSIONS),
 				})));
 			}));
 		});
@@ -172,8 +211,8 @@ class NewsService {
 	async get(id, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account, 'NEWS_VIEW');
-		news.permissions = await this.getPermissions(news, params.account, NEWS_PERMISSIONS);
+		await this.authorize(news, params.account.userId, 'NEWS_VIEW');
+		news.permissions = await this.getDataItemPermissions(news, params.account.userId, NEWS_PERMISSIONS);
 		return news;
 	}
 
@@ -188,12 +227,11 @@ class NewsService {
 		let news = [];
 		const scoped = params.query && params.query.target;
 		if (scoped) {
-			news = news.concat(await this.findScopedNews(params.account, params.query.target));
+			news = news.concat(await this.findScopedNews(params.account.userId, params.query.target));
 		} else {
 			news = news.concat(await this.findSchoolNews(params.account));
-			news = news.concat(await this.findScopedNews(params.account));
+			news = news.concat(await this.findScopedNews(params.account.userId));
 		}
-		news = await Promise.all(news);
 		if (params.query) {
 			news = sort(news, params.query.$sort);
 		}
@@ -212,7 +250,7 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async create(data, params) {
-		await this.authorize(data, params.account, 'NEWS_CREATE');
+		await this.authorize(data, params.account.userId, 'NEWS_CREATE');
 		return this.app.service('newsModel').create(data);
 	}
 
@@ -229,7 +267,7 @@ class NewsService {
 	async remove(id, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account, 'NEWS_CREATE');
+		await this.authorize(news, params.account.userId, 'NEWS_CREATE');
 		await this.app.service('newsModel').remove(id);
 		return news;
 	}
@@ -248,7 +286,7 @@ class NewsService {
 	async update(id, data, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account, 'NEWS_EDIT');
+		await this.authorize(news, params.account.userId, 'NEWS_EDIT');
 		const updatedNews = await this.app.service('newsModel').update(id, data);
 		await NewsService.createHistoryEntry(news);
 		return updatedNews;
@@ -268,7 +306,7 @@ class NewsService {
 	async patch(id, data, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account, 'NEWS_EDIT');
+		await this.authorize(news, params.account.userId, 'NEWS_EDIT');
 		const patchedNews = await this.app.service('newsModel').patch(id, data);
 		await NewsService.createHistoryEntry(news);
 		return patchedNews;
