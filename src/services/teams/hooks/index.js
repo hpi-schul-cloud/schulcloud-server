@@ -419,8 +419,8 @@ const rejectDefaultFilePermissionUpdatesIfNotPermitted = (context) => {
 		return context;
 	}
 	const updatesDefaultFilePermissions = isDefined(context.data.filePermission);
-	if (updatesDefaultFilePermissions && !hasTeamPermission('DEFAULT_FILE_PERMISSIONS')) {
-		throw new Forbidden('Permission DEFAULT_FILE_PERMISSIONS is missing.');
+	if (updatesDefaultFilePermissions) {
+		return hasTeamPermission('DEFAULT_FILE_PERMISSIONS')(context);
 	}
 	return context;
 };
