@@ -95,8 +95,22 @@ const fileStorageService = {
 		const refOwnerModel = owner ? (isCourse ? 'course' : 'teams') : 'user';
 
 		if (!sendPermissions && refOwnerModel === 'teams') {
-			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
-			sendPermissions = teamObject.filePermission;
+			const teamObject = await teamsModel.findOne({ _id: owner }).lean().exec();
+			const teamRoles = await RoleModel.find({ name: /^team/ }).lean().exec();
+			const { filePermission: defaultPermissions } = teamObject;
+
+			sendPermissions = teamRoles.map(({ _id: roleId }) => {
+				const defaultPerm = defaultPermissions.find(({ refId }) => roleId.equals(refId));
+
+				return defaultPerm || {
+					refId: roleId,
+					refPermModel: 'role',
+					write: true,
+					read: true,
+					create: true,
+					delete: true,
+				};
+			});
 		} else {
 			sendPermissions = [];
 		}
