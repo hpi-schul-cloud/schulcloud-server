@@ -199,7 +199,7 @@ describe('array helpers', () => {
 			expect(sort(undefined)).to.equal(undefined);
 		});
 
-		it('should sort by nested attributes if complete sortOrder is given', () => {
+		it('should sort by nested attributes if sortOrder string is given', () => {
 			const data = [
 				{ a: 1, foo: 3 },
 				{ a: 5, foo: 1 },
@@ -231,6 +231,69 @@ describe('array helpers', () => {
 			expect(() => sort([1, 3, 2], '')).not.to.throw(Error);
 			expect(sort([1, 3, 2], '')).to.deep.equal([1, 2, 3]);
 			expect(sort([1, 3, 2], '-')).to.deep.equal([3, 2, 1]);
+		});
+
+		it('should sort based on sortOrder objects', () => {
+			const data = [
+				{ a: 1, foo: 3 },
+				{ a: 5, foo: 1 },
+				{ a: 2, foo: 8 },
+			];
+			expect(sort(data, { a: 1 })).to.deep.equal([
+				{ a: 1, foo: 3 },
+				{ a: 2, foo: 8 },
+				{ a: 5, foo: 1 },
+			]);
+			expect(sort(data, { a: -1 })).to.deep.equal([
+				{ a: 5, foo: 1 },
+				{ a: 2, foo: 8 },
+				{ a: 1, foo: 3 },
+			]);
+			expect(sort(data, { foo: 1 })).to.deep.equal([
+				{ a: 5, foo: 1 },
+				{ a: 1, foo: 3 },
+				{ a: 2, foo: 8 },
+			]);
+			expect(sort(data, { foo: -1 })).to.deep.equal([
+				{ a: 2, foo: 8 },
+				{ a: 1, foo: 3 },
+				{ a: 5, foo: 1 },
+			]);
+		});
+
+		it('should sort based on complex sortOrder objects', () => {
+			const data = [
+				{ a: 1, foo: 3 },
+				{ a: 1, foo: 1 },
+				{ a: 3, foo: 9 },
+				{ a: 2, foo: 8 },
+				{ a: 2, foo: 5 },
+				{ a: 2, foo: 8 },
+			];
+			expect(sort(data, { a: 1, foo: 1 })).to.deep.equal([
+				{ a: 1, foo: 1 },
+				{ a: 1, foo: 3 },
+				{ a: 2, foo: 5 },
+				{ a: 2, foo: 8 },
+				{ a: 2, foo: 8 },
+				{ a: 3, foo: 9 },
+			]);
+			expect(sort(data, { foo: 1 })).to.deep.equal([
+				{ a: 1, foo: 1 },
+				{ a: 1, foo: 3 },
+				{ a: 2, foo: 5 },
+				{ a: 2, foo: 8 },
+				{ a: 2, foo: 8 },
+				{ a: 3, foo: 9 },
+			]);
+			expect(sort(data, { foo: -1, a: -1 })).to.deep.equal([
+				{ a: 3, foo: 9 },
+				{ a: 2, foo: 8 },
+				{ a: 2, foo: 8 },
+				{ a: 2, foo: 5 },
+				{ a: 1, foo: 3 },
+				{ a: 1, foo: 1 },
+			]);
 		});
 	});
 });
