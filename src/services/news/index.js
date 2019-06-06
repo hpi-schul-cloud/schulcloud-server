@@ -6,11 +6,6 @@ const hooks = require('./hooks');
 const newsModelHooks = require('./hooks/newsModel.hooks');
 const { flatten, paginate, sort } = require('../../utils/array');
 
-const NEWS_PERMISSIONS = {
-	NEWS_VIEW: 'view',
-	NEWS_EDIT: 'edit',
-};
-
 class NewsService {
 	setup(app) {
 		this.app = app;
@@ -53,19 +48,18 @@ class NewsService {
 
 	/**
 	 * Tests if a user with given userId has a (global) permission within a school-/scope/.
-	 * @param {*} userId
-	 * @param {*} schoolId
-	 * @param {*} permission
-	 * @returns {boolean}
+	 * @param {ObjectId} userId
+	 * @param {ObjectId} schoolId
+	 * @returns {Array<String>}
 	 */
 	async getSchoolPermissions(userId, schoolId) {
 		// test user exists
 		const user = await this.app.service('users').get(userId);
-		if (user == null) return false;
+		if (user == null) return [];
 
 		// test user is school member
 		const sameSchool = schoolId.toString() === user.schoolId.toString();
-		if (!sameSchool) return false;
+		if (!sameSchool) return [];
 
 		// finally, test user has permission
 		return user.permissions;
@@ -94,18 +88,6 @@ class NewsService {
 		}
 	}
 
-	async getDataItemPermissions(dataItem, userId, permissions) {
-		const retValue = [];
-		const itemPermissions = await this.getPermissions(userId, dataItem);
-		for (const key of Object.keys(permissions)) {
-			if (itemPermissions.includes(key)
-				&& !retValue.includes(permissions[key])) {
-				retValue.push(permissions[key]);
-			}
-		}
-		return retValue;
-	}
-
 	checkExistence(news, query) {
 		if (!news) {
 			logger.error(`Cannot find news item with query "${query}" => "${news}"`);
@@ -129,7 +111,7 @@ class NewsService {
 				return this.app.service('newsModel').find({ query, paginate: false });
 			}).then(news => Promise.all(news.map(async n => ({
 				...n,
-				permissions: await this.getDataItemPermissions(n, userId, NEWS_PERMISSIONS),
+				permissions: await this.getPermissions(userId, n),
 			}))))
 			.catch((err) => {
 				logger.error('Cannot find school news', err);
@@ -172,7 +154,7 @@ class NewsService {
 				return Promise.all(news.map(async n => ({
 					...n,
 					target: await this.app.service(scope).get(n.target),
-					permissions: await this.getDataItemPermissions(n, userId, NEWS_PERMISSIONS),
+					permissions: await this.getPermissions(userId, n),
 				})));
 			}));
 		});
@@ -212,7 +194,7 @@ class NewsService {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account.userId, 'NEWS_VIEW');
-		news.permissions = await this.getDataItemPermissions(news, params.account.userId, NEWS_PERMISSIONS);
+		news.permissions = await this.getPermissions(params.account.userId, news);
 		return news;
 	}
 
