@@ -79,28 +79,40 @@ describe('AdminUsersService', () => {
 	});
 
 	it('sorts students correctly', async () => {
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-		const student1 = testObjects.createTestUser({
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
+			logger.warn('Can not create teacher', err);
+		});
+		const student1 = await testObjects.createTestUser({
 			firstName: 'Max',
 			roles: ['student'],
 			consentStatus: 'ok',
+		}).catch((err) => {
+			logger.warn('Can not create student', err);
 		});
-		const student2 = testObjects.createTestUser({
+		const student2 = await testObjects.createTestUser({
 			firstName: 'Moritz',
 			roles: ['student'],
 			consentStatus: 'missing',
+		}).catch((err) => {
+			logger.warn('Can not create student', err);
 		});
 
-		await testObjects.createTestClass({
+		expect(teacher).to.not.be.undefined;
+		expect(student1).to.not.be.undefined;
+		expect(student2).to.not.be.undefined;
+
+		const testClass1 = await testObjects.createTestClass({
 			name: '1a',
 			userIds: [student1._id],
-			teacherIds: [],
+			teacherIds: [teacher._id],
 		});
-		await testObjects.createTestClass({
+		expect(testClass1).to.not.be.undefined;
+		const testClass2 = await testObjects.createTestClass({
 			name: '2B',
-			userIds: [student2._id],
-			teacherIds: [],
+			userIds: [student1._id],
+			teacherIds: [teacher._id],
 		});
+		expect(testClass2).to.not.be.undefined;
 
 		const createParams = sortObject => ({
 			account: {
@@ -115,9 +127,17 @@ describe('AdminUsersService', () => {
 		const resultSortedByClass = await adminStudentsService.find(createParams({ class: -1 }));
 		expect(resultSortedByClass[0].class > resultSortedByClass[1].class);
 
+
+		const sortOrder = {
+			missing: 1,
+			parentsAgreed: 2,
+			ok: 3,
+		};
+
 		const resultSortedByConsent = await adminStudentsService.find(createParams({ consent: -1 }));
-		expect(resultSortedByConsent[0].consentStatus).to.equal('missing');
-		expect(resultSortedByConsent[1].consentStatus).to.equal('ok');
+		expect(sortOrder[resultSortedByConsent[0].consent.consentStatus])
+			.to.be.greaterThan(sortOrder[resultSortedByConsent[1].consent.consentStatus]);
+
 	});
 
 	it('filters students correctly', async () => {
