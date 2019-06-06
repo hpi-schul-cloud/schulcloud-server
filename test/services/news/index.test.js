@@ -12,7 +12,6 @@ const {
 	cleanup,
 	createTestAccount,
 	createTestUser,
-	createTestRole,
 	generateRequestParams,
 } = require('../helpers/testObjects')(app);
 const teamHelper = require('../helpers/services/teams');
@@ -257,8 +256,7 @@ describe('news service', () => {
 				const user = await createTestUser({ schoolId, roles: 'student' });
 				const user2 = await createTestUser({ schoolId, roles: 'teacher' });
 				const team = await teams.create(user2);
-				await createTestRole({ name: 'teamuser', permissions: [] });
-				await teams.addTeamUserToTeam(team._id, user, 'teamuser');
+				teams.addTeamUserToTeam(team._id, user2, 'teamexpert'); // assuming the expert cannot see team news
 				await News.create([
 					{
 						schoolId,
