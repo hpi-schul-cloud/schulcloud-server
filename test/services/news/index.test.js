@@ -281,6 +281,45 @@ describe('news service', () => {
 				expect(result.data.some(item => item.title === 'team A news 2')).to.equal(true);
 			});
 
+			it('should return team news of non-school teams the user is in', async () => {
+				const teamSchoolId = new ObjectId();
+				const schoolId = new ObjectId();
+				const teams = teamHelper(app, { schoolId: teamSchoolId });
+				const user = await createTestUser({ schoolId, roles: 'administrator' });
+				const user2 = await createTestUser({ schoolId: teamSchoolId, roles: 'teacher' });
+				const team = await teams.create(user2);
+				await teams.addTeamUserToTeam(team._id, user, 'teammember');
+				await News.create([
+					{
+						schoolId: teamSchoolId,
+						title: 'school news',
+						content: 'this is the content',
+					},
+					{
+						schoolId: teamSchoolId,
+						title: 'team news',
+						content: 'even more content',
+						target: team._id,
+						targetModel: 'teams',
+					},
+					{
+						schoolId: new ObjectId(), // team news created at a third school
+						title: 'team news 2',
+						content: 'even more content',
+						target: team._id,
+						targetModel: 'teams',
+					},
+				]);
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const result = await newsService.find(params);
+				expect(result.total).to.equal(2);
+				expect(result.data.some(item => item.title === 'school news')).to.equal(false);
+				expect(result.data.some(item => item.title === 'team news')).to.equal(true);
+				expect(result.data.some(item => item.title === 'team news 2')).to.equal(true);
+			});
+
 			it('should not return team news if the user has no NEWS_VIEW permission inside the team', async () => {
 				const schoolId = new ObjectId();
 				const teams = teamHelper(app, { schoolId });
