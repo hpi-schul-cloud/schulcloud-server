@@ -257,6 +257,13 @@ describe('news service', () => {
 						targetModel: 'teams',
 					},
 					{
+						schoolId: new ObjectId(), // team news created at another school
+						title: 'team A news 2',
+						content: 'even more content',
+						target: teamA._id,
+						targetModel: 'teams',
+					},
+					{
 						schoolId,
 						title: 'team B news',
 						content: 'we have content, too',
@@ -268,9 +275,10 @@ describe('news service', () => {
 				await createTestAccount(credentials, 'local', user);
 				const params = await generateRequestParams(credentials);
 				const result = await newsService.find(params);
-				expect(result.total).to.equal(2);
+				expect(result.total).to.equal(3);
 				expect(result.data.some(item => item.title === 'school news')).to.equal(true);
 				expect(result.data.some(item => item.title === 'team A news')).to.equal(true);
+				expect(result.data.some(item => item.title === 'team A news 2')).to.equal(true);
 			});
 
 			it('should not return team news if the user has no NEWS_VIEW permission inside the team', async () => {
