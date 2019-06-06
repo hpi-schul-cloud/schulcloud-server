@@ -131,7 +131,6 @@ describe('\'/teams/manage/admin\' service', () => {
             
             const result = AdminOverview.mapped(teams, sessionSchoolId);
             
-            
             assert.equal(result.length, 0);
             
         })
