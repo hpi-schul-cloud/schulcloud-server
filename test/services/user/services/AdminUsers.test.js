@@ -136,7 +136,7 @@ describe('AdminUsersService', () => {
 
 		const resultSortedByConsent = await adminStudentsService.find(createParams({ consent: -1 }));
 		expect(sortOrder[resultSortedByConsent[0].consent.consentStatus])
-			.to.be.greaterThan(sortOrder[resultSortedByConsent[1].consent.consentStatus]);
+			.to.be.at.least(sortOrder[resultSortedByConsent[1].consent.consentStatus]);
 
 	});
 
