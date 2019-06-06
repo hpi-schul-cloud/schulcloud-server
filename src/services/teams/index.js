@@ -737,6 +737,7 @@ module.exports = function setup() {
 		// be handled by array#filter (which is inherently synchronous) alone.
 		const teams = (await Promise.all(result.data.map(async (t) => {
 			const [u] = t.userIds.filter(i => i.userId.toString() === user._id.toString());
+			if (!u.role) return false;
 			const role = await app.service('roles').get(u.role);
 			return permissions.every(p => role.permissions.includes(p)) ? t : undefined;
 		}))).filter(e => e);
