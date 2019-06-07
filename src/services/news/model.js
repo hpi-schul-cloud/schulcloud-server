@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
+const { immutableFieldPlugin } = require('../../utils/mongoose');
 
 const { Schema } = mongoose;
 
-const newsModel = mongoose.model('news', new Schema({
-	schoolId: { type: Schema.Types.ObjectId, required: true },
+const newsSchema = new Schema({
+	schoolId: { type: Schema.Types.ObjectId, required: true, immutable: true },
 	title: { type: String, required: true },
 	content: { type: String, required: true },
-	displayAt: { type: Date, default: Date.now },
+	displayAt: { type: Date, default: Date.now, required: true },
 
 	creatorId: { type: Schema.Types.ObjectId, ref: 'user' },
 	createdAt: { type: Date, default: Date.now },
@@ -19,6 +20,7 @@ const newsModel = mongoose.model('news', new Schema({
 		type: String,
 		default: 'internal',
 		enum: ['internal', 'rss'],
+		immutable: true,
 	},
 	sourceDescription: {
 		type: String,
@@ -28,12 +30,18 @@ const newsModel = mongoose.model('news', new Schema({
 		// Instead of a hardcoded model name in `ref`, `refPath` means Mongoose
 		// will look at the `targetModel` property to find the right model.
 		refPath: 'targetModel',
+		immutable: true,
 	},
 	targetModel: {
 		type: String,
 		enum: ['courses', 'teams', 'class'],
+		immutable: true,
 	},
-}));
+});
+
+newsSchema.plugin(immutableFieldPlugin);
+
+const newsModel = mongoose.model('news', newsSchema);
 
 const newsHistoryModel = mongoose.model('newshistory', new Schema({
 	title: { type: String, required: true },
