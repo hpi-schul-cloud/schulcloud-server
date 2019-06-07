@@ -9,8 +9,8 @@ const newsSchema = new Schema({
 	content: { type: String, required: true },
 	displayAt: { type: Date, default: Date.now, required: true },
 
-	creatorId: { type: Schema.Types.ObjectId, ref: 'user' },
-	createdAt: { type: Date, default: Date.now },
+	creatorId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+	createdAt: { type: Date, default: Date.now, required: true },
 
 	updaterId: { type: Schema.Types.ObjectId, ref: 'user' },
 	updatedAt: { type: Date },
@@ -21,6 +21,7 @@ const newsSchema = new Schema({
 		default: 'internal',
 		enum: ['internal', 'rss'],
 		immutable: true,
+		required: true,
 	},
 	sourceDescription: {
 		type: String,
@@ -31,11 +32,19 @@ const newsSchema = new Schema({
 		// will look at the `targetModel` property to find the right model.
 		refPath: 'targetModel',
 		immutable: true,
+		// target and targetModel must be defined together or not
+		required: function requiredTarget() {
+			return !!this.targetModel;
+		},
 	},
 	targetModel: {
 		type: String,
 		enum: ['courses', 'teams', 'class'],
 		immutable: true,
+		// target and targetModel must be defined together or not
+		required: function requiredTargetModel() {
+			return !!this.target;
+		},
 	},
 });
 
