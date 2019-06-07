@@ -145,7 +145,7 @@ class AdminOverview {
 			// const userId = data.userId;
 			let { userIds } = team;
 
-			if (!ownerExist && isOwnerSchool && isDefined(userId)) {
+			if (isOwnerSchool && isDefined(userId)) {
 				userIds.push(createUserWithRole(ref, { userId, schoolId, selectedRole: 'teamowner' }));
 			} else if (!isOwnerSchool && isUndefined(userId)) {
 				userIds = AdminOverview.removeMemberBySchool(team, schoolId);
