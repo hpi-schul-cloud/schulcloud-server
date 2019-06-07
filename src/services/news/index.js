@@ -102,12 +102,17 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	findSchoolNews({ userId, schoolId }) {
+		const now = Date.now();
 		return this.hasSchoolPermission(userId, schoolId, 'NEWS_VIEW')
 			.then((hasPermission) => {
 				if (!hasPermission) {
 					return [];
 				}
-				const query = { schoolId, target: { $exists: false } };
+				const query = {
+					schoolId,
+					target: { $exists: false },
+					$and: { permissions: ['NEWS_VIEW'], displayAt: { $lte: now } },
+				};
 				return this.app.service('newsModel').find({ query, paginate: false });
 			}).then(news => Promise.all(news.map(async n => ({
 				...n,
@@ -128,6 +133,7 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async findScopedNews(userId, target) {
+		const now = Date.now();
 		const scopes = await newsModel.distinct('targetModel');
 		const ops = scopes.map(async (scope) => {
 			// For each possible target model, find all targets the user has NEWS_VIEW permissions in.
@@ -137,7 +143,9 @@ class NewsService {
 			}
 			let scopeItems = await scopeListService.find({
 				route: { scopeId: userId.toString() },
-				query: { permissions: ['NEWS_VIEW'] },
+				query: {
+					$and: { permissions: ['NEWS_VIEW'], displayAt: { $lte: now } },
+				},
 			});
 			if (target) {
 				// if a target id is given, only return news from this target
