@@ -55,6 +55,15 @@ const teamMainHook = globalHooks.ifNotLocal(hook => Promise.all([
 	const sessionSchoolId = bsonIdToString(sessionUser.schoolId);
 
 	if (method === 'create') {
+		// check for student permission to create team (can be blocked by school settings)
+		if (sessionUser.roles.some(role => role.name === 'student')) {
+			hook.app.service('schools').get(sessionUser.schoolId).then((usersSchool) => {
+				if (usersSchool.features.includes('disableStudentTeamCreation')) {
+					throw new Forbidden('Your school admin does not allow team creations by students.');
+				}
+			});
+		}
+
 		// eslint-disable-next-line no-param-reassign
 		team = updateMissingDataInHookForCreate(hook, sessionUser);
 		users.push(sessionUser);
