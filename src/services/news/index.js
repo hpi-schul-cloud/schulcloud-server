@@ -102,7 +102,6 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	findSchoolNews({ userId, schoolId }) {
-		const now = Date.now();
 		return this.hasSchoolPermission(userId, schoolId, 'NEWS_VIEW')
 			.then((hasPermission) => {
 				if (!hasPermission) {
@@ -111,7 +110,6 @@ class NewsService {
 				const query = {
 					schoolId,
 					target: { $exists: false },
-					$and: { permissions: ['NEWS_VIEW'], displayAt: { $lte: now } },
 				};
 				return this.app.service('newsModel').find({ query, paginate: false });
 			}).then(news => Promise.all(news.map(async n => ({
@@ -133,7 +131,6 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async findScopedNews(userId, target) {
-		const now = Date.now();
 		const scopes = await newsModel.distinct('targetModel');
 		const ops = scopes.map(async (scope) => {
 			// For each possible target model, find all targets the user has NEWS_VIEW permissions in.
@@ -144,7 +141,7 @@ class NewsService {
 			let scopeItems = await scopeListService.find({
 				route: { scopeId: userId.toString() },
 				query: {
-					$and: { permissions: ['NEWS_VIEW'], displayAt: { $lte: now } },
+					permissions: ['NEWS_VIEW'],
 				},
 			});
 			if (target) {
@@ -214,19 +211,25 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async find(params) {
+		const now = Date.now();
 		let news = [];
-		const scoped = params.query && params.query.target;
+		const scoped = !!(params.query && params.query.target);
 		if (scoped) {
 			news = news.concat(await this.findScopedNews(params.account.userId, params.query.target));
 		} else {
 			news = news.concat(await this.findSchoolNews(params.account));
 			news = news.concat(await this.findScopedNews(params.account.userId));
 		}
+		// remove unpublished news if no edit permission exist
+		// todo add this action to hasPermission
+		news = news.filter(n => n.displayAt <= now || n.permissions.includes('NEWS_EDIT'));
+		// todo news should be a query only here...
 		if (params.query) {
 			news = sort(news, params.query.$sort);
 		}
 		// paginate by default, but let $paginate=false through
 		news = paginate(news, { $paginate: true, ...params.query });
+		// todo, request filtered and paginated data here instead...
 		return Promise.resolve(news);
 	}
 
