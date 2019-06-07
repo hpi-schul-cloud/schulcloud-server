@@ -1,4 +1,3 @@
-const service = require('feathers-mongoose');
 const {
 	BadRequest,
 	Forbidden,
@@ -137,9 +136,7 @@ class AdminOverview {
 	patch(teamId, { userId }, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
 			const {
-				ownerExist,
 				isOwnerSchool,
-				selectedRole,
 				schoolId,
 			} = AdminOverview.getIsOwnerStats(ref, sessionUser, team);
 			// const userId = data.userId;
@@ -222,8 +219,8 @@ class AdminOverview {
 		).then(([{ schoolId }, ref]) => {
 			teamService
 				.find((AdminOverview.getRestrictedQuery(teamIds, schoolId)))
-				.then((teams) => {
-					teams = teams.data;
+				.then(({ data }) => {
+					const teams = data;
 					if (!isArrayWithElement(teams)) {
 						throw new NotFound('No team found.');
 					}

@@ -1,4 +1,3 @@
-const { expect } = require('chai');
 const mongoose = require('mongoose');
 const assert = require('assert').strict;
 
