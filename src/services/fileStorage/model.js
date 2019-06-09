@@ -1,21 +1,25 @@
 const mongoose = require('mongoose');
+const uuid = require('uuid/v4');
 
 const { Schema } = mongoose;
 
-const permissionSchema = new Schema({
-	refId: {
-		type: Schema.Types.ObjectId,
-		refPath: 'refPermModel',
+const permissionSchema = new Schema(
+	{
+		refId: {
+			type: Schema.Types.ObjectId,
+			refPath: 'refPermModel'
+		},
+		refPermModel: {
+			type: String,
+			enum: ['user', 'role']
+		},
+		write: { type: Boolean, default: true },
+		read: { type: Boolean, default: true },
+		create: { type: Boolean, default: true },
+		delete: { type: Boolean, default: true }
 	},
-	refPermModel: {
-		type: String,
-		enum: ['user', 'role'],
-	},
-	write: { type: Boolean, default: true },
-	read: { type: Boolean, default: true },
-	create: { type: Boolean, default: true },
-	delete: { type: Boolean, default: true },
-}, { _id: false });
+	{ _id: false }
+);
 
 /**
  * handles meta-data for a file
@@ -38,22 +42,23 @@ const fileSchema = new Schema({
 	type: { type: String },
 	storageFileName: { type: String },
 	thumbnail: { type: String },
+	thumbnailRequestToken: { type: String, default: uuid },
 	shareToken: { type: String },
 	parent: { type: Schema.Types.ObjectId, ref: 'file' },
 	owner: {
 		type: Schema.Types.ObjectId,
 		required: true,
-		refPath: 'refOwnerModel',
+		refPath: 'refOwnerModel'
 	},
 	refOwnerModel: {
 		type: String,
 		required: true,
-		enum: ['user', 'course', 'teams'],
+		enum: ['user', 'course', 'teams']
 	},
 	permissions: [permissionSchema],
 	lockId: { type: Schema.Types.ObjectId, ref: 'user' },
 	createdAt: { type: Date, default: Date.now },
-	updatedAt: { type: Date, default: Date.now },
+	updatedAt: { type: Date, default: Date.now }
 });
 
 // make file-model searchable
@@ -61,5 +66,5 @@ fileSchema.index({ name: 'text' });
 
 module.exports = {
 	FileModel: mongoose.model('file', fileSchema),
-	permissionSchema,
+	permissionSchema
 };

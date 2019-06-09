@@ -410,6 +410,23 @@ const hasTeamPermission = (permsissions, _teamId) => globalHooks.ifNotLocal((hoo
 exports.hasTeamPermission = hasTeamPermission; // to use it global
 
 /**
+ * Hook to reject patches of default file permissions if the patching user
+ * does not have the permission DEFAULT_FILE_PERMISSIONS
+ * @beforeHook
+ */
+const rejectDefaultFilePermissionUpdatesIfNotPermitted = (context) => {
+	if (isUndefined(context.data)) {
+		return context;
+	}
+	const updatesDefaultFilePermissions = isDefined(context.data.filePermission);
+	if (updatesDefaultFilePermissions) {
+		return hasTeamPermission('DEFAULT_FILE_PERMISSIONS')(context);
+	}
+	return context;
+};
+exports.rejectDefaultFilePermissionUpdatesIfNotPermitted = rejectDefaultFilePermissionUpdatesIfNotPermitted;
+
+/*
  * @helper
  * @param {Object::hook} hook
  * @param {String||BsonId} firstId a teamRoleId
@@ -458,7 +475,6 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 		let isAddingFromOtherSchool = false;
 		let hasChangeRole = false;
 		let highestChangedRole = '';
-
 		const leaveTeam = hasTeamPermission('LEAVE_TEAM');
 		const removeMembers = hasTeamPermission('REMOVE_MEMBERS');
 		const addSchoolMembers = hasTeamPermission('ADD_SCHOOL_MEMBERS');
@@ -473,7 +489,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 		});
 
 		changes.add.forEach((e) => {
-			const user = users.find(user => isSameId(e.userId, user._id));
+			const user = users.find(u => isSameId(e.userId, u._id));
 			if (isSameId(user.schoolId, sessionSchoolId)) {
 				isAddingFromOwnSchool = true;
 			} else {
@@ -482,7 +498,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 		});
 
 		hook.data.userIds.forEach((_) => {
-			const teamUser = team.userIds.find(teamUser => isSameId(_.userId, teamUser.userId));
+			const teamUser = team.userIds.find(tu => isSameId(_.userId, tu.userId));
 			if (isDefined(teamUser)) {
 				if (isDefined(_.role) && !isSameId(teamUser.role, _.role)) {
 					hasChangeRole = true;
@@ -494,7 +510,6 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 			}
 		});
 
-		//  try{
 		const wait = [];
 		if (isAddingFromOtherSchool) {
 			throw new Forbidden('Can not adding users from other schools.');
@@ -671,6 +686,7 @@ exports.before = {
 	], // inject is needing?
 	update: [blockedMethod],
 	patch: [
+		rejectDefaultFilePermissionUpdatesIfNotPermitted,
 		testChangesForPermissionRouting,
 		updateUsersForEachClass,
 		teamMainHook,

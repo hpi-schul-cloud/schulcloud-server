@@ -24,6 +24,9 @@ const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 
+const FILEPREVIEW_SERVICE_URI = 'http://localhost:3000/filepreview';
+const CALLBACK_URI = 'SCHULCLOUD_SERVER_URI/fileStorage/thumbnail/';
+
 const strategies = {
 	awsS3: AWSStrategy
 };
@@ -172,14 +175,12 @@ const fileStorageService = {
 				]);
 			})
 			.then(([download_url, signed_s3_url, file]) => {
-				console.log(file);
 				rp.post({
-					url: 'http://localhost:3000/filepreview',
+					url: FILEPREVIEW_SERVICE_URI,
 					body: {
 						download_url,
 						signed_s3_url,
-						callback_url:
-							'http://192.168.2.119:3030/fileStorage/' + file._id,
+						callback_url: CALLBACK_URI + file.thumbnailRequestToken,
 						options: {
 							width: 120
 						}
@@ -661,10 +662,12 @@ const renameService = {
 		const {
 			payload: { userId }
 		} = params;
-		const { newName, _id } = data;
+		const { newName, id } = data;
 
-		if (!_id || !newName)
+		if (!id || !newName)
 			return Promise.reject(new BadRequest('Missing parameters'));
+
+		const _id = id;
 
 		return canWrite(userId, _id)
 			.then(() => FileModel.findOne({ _id }).exec())

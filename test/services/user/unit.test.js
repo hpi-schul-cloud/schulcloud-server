@@ -5,6 +5,7 @@ const app = require('../../../src/app');
 
 const userService = app.service('users');
 const registrationPinService = app.service('registrationPins');
+const publicTeachersService = app.service('publicTeachers');
 const classesService = app.service('classes');
 const coursesService = app.service('courses');
 const testObjects = require('../helpers/testObjects')(app);
@@ -106,7 +107,9 @@ describe('user service', () => {
 		});
 	});
 
-	after(testObjects.cleanup);
+	after(async () => {
+		await testObjects.cleanup();
+	});
 });
 
 describe('registrationPin Service', () => {
@@ -123,4 +126,58 @@ describe('registrationPin Service', () => {
 		.then(() => registrationPinService.create({ email: 'test.adresse@schul-cloud.org' }))
 		.then(() => registrationPinService.find({ query: { email: 'test.adresse@schul-cloud.org' } }))
 		.then(pinObjects => expect(pinObjects.data).to.have.lengthOf(1)));
+});
+
+describe('publicTeachers service', () => {
+	let testStudent = {};
+	let testTeacherDiscoverable = {};
+	let testTeacherNotDiscoverable = {};
+
+	it('register services and create test users', async () => {
+		testStudent = await testObjects.createTestUser({
+			roles: ['student'],
+			discoverable: false,
+			schoolId: '0000d186816abba584714c55',
+		});
+		testTeacherDiscoverable = await testObjects.createTestUser({
+			roles: ['teacher'],
+			discoverable: true,
+			schoolId: '0000d186816abba584714c55',
+		});
+		testTeacherNotDiscoverable = await testObjects.createTestUser({
+			roles: ['teacher'],
+			discoverable: false,
+			schoolId: '0000d186816abba584714c55',
+		});
+		assert.ok(userService);
+		assert.ok(publicTeachersService);
+	});
+
+	// save process.env.IGNORE_DISCOVERABILITY value
+	const ORIGINAL_IGNORE_DISCOVERABILITY = process.env.IGNORE_DISCOVERABILITY;
+	let result;
+
+	it('without IGNORE_DISCOVERABILITY: find 1 discoverable teacher but not find other users', async () => {
+		// test with IGNORE_DISCOVERABILITY = false
+		process.env.IGNORE_DISCOVERABILITY = 'false';
+		result = await publicTeachersService.find({ query: { schoolId: '0000d186816abba584714c55' } });
+		expect(result.total).to.equal(1);
+		expect(result.data[0]._id.toString()).to.equal(testTeacherDiscoverable._id.toString());
+		expect(result.data[0]._id.toString()).to.not.equal(testStudent._id.toString());
+		expect(result.data[0]._id.toString()).to.not.equal(testTeacherNotDiscoverable._id.toString());
+	});
+
+	it('with IGNORE_DISCOVERABILITY: find all 2 teachers ignoring their discoverable setting', async () => {
+		// test with IGNORE_DISCOVERABILITY = true
+		process.env.IGNORE_DISCOVERABILITY = 'true';
+		result = await publicTeachersService.find({ query: { schoolId: '0000d186816abba584714c55' } });
+		expect(result.total).to.equal(2);
+	});
+
+	// reset process.env.IGNORE_DISCOVERABILITY back to original value
+	process.env.IGNORE_DISCOVERABILITY = ORIGINAL_IGNORE_DISCOVERABILITY;
+
+	after(async () => {
+		await testObjects.cleanup();
+	});
 });

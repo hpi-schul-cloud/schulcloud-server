@@ -3388,6 +3388,11 @@ mongoose-autopopulate@^0.9.1:
   resolved "https://registry.yarnpkg.com/mongoose-autopopulate/-/mongoose-autopopulate-0.9.1.tgz#ee497b50a40e065fb54f4be81eef3004d33c17bb"
   integrity sha512-Sh0eJXwENYtZbNBzkGyxxbcwwXeSd8Zi9QLHxLsVwwRoiYPC5qCas8+3mQcyKdWoZJOVV6rBVzS2Q1M/d+3j0g==
 
+mongoose-history@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/mongoose-history/-/mongoose-history-0.8.0.tgz#68383dbcfd428d05e4cbc3f8fbc454e1c5c34e4a"
+  integrity sha512-9ZaTXYbs3EpOl+dyPCCQtkbFUFPL1fw1BZ6qdRSP820BKEgdLp2JuQs6b6SBKZVkbn5TcQ2ZW2rxkghvYy8Q1Q==
+
 mongoose-id-validator@^0.4.3:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/mongoose-id-validator/-/mongoose-id-validator-0.4.3.tgz#9b5242bba4f1504c3038f53b20938f3fc44699cc"

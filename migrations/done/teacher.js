@@ -3,10 +3,10 @@
 const ran = true; // set to true to exclude migration
 const name = 'Fix access rights for teachers on homework submitted files.';
 
-const database = require('../src/utils/database');
+const database = require('../../src/utils/database');
 
-const { submissionModel } = require('../src/services/homework/model.js');
-const { FileModel } = require('../src/services/fileStorage/model.js');
+const { submissionModel } = require('../../src/services/homework/model.js');
+const { FileModel } = require('../../src/services/fileStorage/model.js');
 
 
 const run = async (dry) => {

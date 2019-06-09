@@ -44,6 +44,11 @@ module.exports = (app, opt = {
 			});
 	};
 
+	function findRoles(query = {}) {
+		const roleService = app.service('roles');
+		return roleService.find({ query });
+	}
+
 	const info = () => ({
 		teams: teams.info,
 		users: users.info,
@@ -79,10 +84,13 @@ module.exports = (app, opt = {
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
-		createdUserIds: warn('@deprecated use info() instat', users.info),
+		fakeLoginParams: login.fakeLoginParams,
+		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
 		createTestTeamWithOwner,
 		info,
 		setupUser: warn('@implement should finished', setupUser),
+		options: opt,
+		findRoles,
 	};
 };
