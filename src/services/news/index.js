@@ -26,17 +26,17 @@ class NewsService {
 	}
 
 	/**
-		 * Checks scoped permission for a user and given news.
-		 * @param {BsonId|String} userId
-		 * @param {String} permission
-		 * @param {BsonId|String} targetId (optional) news target (scope) id. Only valid with targetModel.
-		 * @param {String} targetModel (optional) news target (scope) model. Only valid with target.
-		 * @returns {Promise<Boolean>} Promise that resolves to true/false
-		 * @example
-		 * await hasPermission(user._id, 'NEWS_VIEW') => true
-		 * await hasPermission(user._id, 'NEWS_CREATE', team._id, 'teams') => false
-		 * @memberof NewsService
-		 */
+	 * Checks scoped permission for a user and given news.
+	 * @param {BsonId|String} userId
+	 * @param {String} permission
+	 * @param {BsonId|String} targetId (optional) news target (scope) id. Only valid with targetModel.
+	 * @param {String} targetModel (optional) news target (scope) model. Only valid with target.
+	 * @returns {Promise<Boolean>} Promise that resolves to true/false
+	 * @example
+	 * await hasPermission(user._id, 'NEWS_VIEW') => true
+	 * await hasPermission(user._id, 'NEWS_CREATE', team._id, 'teams') => false
+	 * @memberof NewsService
+	 */
 	async hasPermission(userId, permission, news) {
 		if (!news) {
 			// maybe, use hasSchoolPermission instead...
