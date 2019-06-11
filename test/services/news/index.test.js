@@ -433,7 +433,7 @@ describe('news service', () => {
 				}
 			});
 
-			it('should enable creating news in scopes the user has the necessary permissions in', async () => {
+			it.skip('should enable creating news in scopes the user has the necessary permissions in', async () => {
 				const schoolId = new ObjectId();
 				expect(await News.count({ schoolId })).to.equal(0);
 				const user = await createTestUser({ schoolId, roles: 'teacher' });
