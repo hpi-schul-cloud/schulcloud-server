@@ -1,8 +1,16 @@
 const { Forbidden } = require('@feathersjs/errors');
+const { Types } = require('mongoose').Schema;
+
+const equals = (v1, v2) => {
+	if (v1 instanceof Types.ObjectId) {
+		return v1.toString() === v2.toString();
+	}
+	return v1 === v2;
+};
 
 function immutableField(field) {
-	return function setOrKeep(value) {
-		if (this[field] && value && this[field] !== value) {
+	return function failOnChange(value) {
+		if (this[field] && value && !equals(this[field], value)) {
 			throw new Forbidden(`The field ${field} is immutable.`);
 		}
 		return this[field] || value;
