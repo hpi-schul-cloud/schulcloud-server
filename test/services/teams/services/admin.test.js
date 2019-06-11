@@ -100,12 +100,12 @@ describe('\'/teams/manage/admin\' service', () => {
 		});
 
 
-		it('simple test with single school', async () => {
+		it('test basic functionality', async () => {
 			const result = AdminOverview.mapped(teams, sessionSchoolId);
 			assert.deepStrictEqual(result, expectedResult);
 		});
 
-		it('team without owner', () => {
+		it('team without owner', async () => {
 			teams.data[0].userIds[0].role.name = 'teammember';
 			expectedResult[0].schoolMembers[0].role = 'teammember';
 			expectedResult[0].ownerExist = false;
@@ -115,15 +115,26 @@ describe('\'/teams/manage/admin\' service', () => {
 			assert.deepStrictEqual(result, expectedResult);
 		});
 
-		it('team without owner', () => {
-			const schoolId = mongoose.Types.ObjectId('4edd40c86762e0fb12000007');
+		it('created at other school', async () => {
+			const schoolId = mongoose.Types.ObjectId('4edd40c86372e0fb12000007');
 
 			teams.data[0].schoolId = schoolId;
-			teams.data[0].schoolIds[0]._id = schoolId;
+			teams.data[0].userIds[0].schoolId = schoolId;
+			teams.data[0].schoolIds.push(Object.assign({}, teams.data[0].schoolIds[0]));
+			teams.data[0].schoolIds[1]._id = schoolId;
+
+
+			expectedResult[0].createdAtMySchool = false;
+			expectedResult[0].hasMembersOfOtherSchools = true;
+			expectedResult[0].schoolMembers = [];
+			expectedResult[0].schools.push({
+				_id: schoolId,
+				name: teams.data[0].schoolIds[1].name,
+			});
 
 			const result = AdminOverview.mapped(teams, sessionSchoolId);
 
-			assert.equal(result.length, 0);
+			assert.deepStrictEqual(result, expectedResult);
 		});
 	});
 });
