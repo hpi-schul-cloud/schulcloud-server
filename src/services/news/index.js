@@ -4,6 +4,7 @@ const logger = require('winston');
 const { newsModel, newsHistoryModel } = require('./model');
 const hooks = require('./hooks');
 const newsModelHooks = require('./hooks/newsModel.hooks');
+const unpublishedNewsHooks = require('./hooks/unpublishedNews.hooks');
 const { flatten, paginate, sort } = require('../../utils/array');
 
 class NewsService {
@@ -319,12 +320,29 @@ class NewsService {
 	}
 }
 
+class UnpublishedNewsService {
+	/**
+	 * GET /news/unpublished
+	 * Returns unpublished news the user can see.
+	 * @param {Object} params
+	 * @returns paginated array of news items
+	 * @memberof UnpublishedNewsService
+	 */
+	async find(params) {
+		return Promise.resolve([]);
+	}
+}
+
 module.exports = function news() {
 	const app = this;
 
 	// use /news to access a user's news
 	app.use('/news', new NewsService());
 	app.service('news').hooks(hooks);
+
+	// use /news/unpublished to find yet unpublished news
+	app.use('/news/unpublished', new UnpublishedNewsService());
+	app.service('news/unpublished').hooks(unpublishedNewsHooks);
 
 	// use /newsModel to directly access the model from other services
 	// (external requests are blocked)
