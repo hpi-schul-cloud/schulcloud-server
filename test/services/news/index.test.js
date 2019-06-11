@@ -376,6 +376,7 @@ describe('news service', () => {
 		});
 
 		describe('CREATE', () => {
+			this.timeout(10000);
 			it('should not work without authentication', async () => {
 				// external request
 				try {
@@ -452,7 +453,7 @@ describe('news service', () => {
 				expect(result).to.not.equal(undefined);
 				expect(result._id).to.not.equal(undefined);
 				expect(await News.count({ schoolId })).to.equal(1);
-			}).timeout(10000);
+			});
 
 			it('should not allow creating news in other scopes', async () => {
 				const schoolId = new ObjectId();
