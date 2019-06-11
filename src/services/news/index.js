@@ -1,17 +1,93 @@
 const service = require('feathers-mongoose');
-const { Forbidden, NotFound } = require('@feathersjs/errors');
+const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
 const logger = require('winston');
-const { newsModel, newsHistoryModel } = require('./model');
+const {
+	newsModel, targetModels, newsHistoryModel, newsPermissions,
+} = require('./model');
 const hooks = require('./hooks');
 const newsModelHooks = require('./hooks/newsModel.hooks');
-const unpublishedNewsHooks = require('./hooks/unpublishedNews.hooks');
-const { flatten, paginate, sort } = require('../../utils/array');
+const { flatten } = require('../../utils/array');
 
-class NewsService {
+
+class AbstractService {
+	// eslint-disable-next-line no-useless-constructor
 	setup(app) {
 		this.app = app;
 	}
 
+	/**
+	* Returns school query if the user is allowed to see.
+	* @param userId The user's Id
+	* @param schoolId The schoolId
+	* @returns Query
+	*/
+	createSchoolQuery(userId, schoolId, permission) {
+		return this.hasSchoolPermission(userId, schoolId, permission)
+			.then((hasPermission) => {
+				if (!hasPermission) {
+					return null;
+				}
+				return [{
+					schoolId,
+					target: { $exists: false },
+				}];
+			});
+	}
+
+	/**
+		 * Returns scoped news the user is allowed to see
+		 *
+		 * @param {BsonId|String} userId the user's Id
+		 * @param {BsonId|String} target (optional) Id of the news target (course, team, etc.)
+		 * @returns Array<Query>
+		 */
+	async createScopedQuery(userId, permission, target = null, targetModel = null) {
+		// check params
+		if (target ? !targetModel : targetModel) {
+			throw new BadRequest('target and targetModel, both must be given or not');
+		}
+		// only one target requested
+		if (target && targetModel) {
+			return this.hasPermission(userId, permission, { target, targetModel })
+				.then(() => (
+					[{
+						targetModel,
+						target,
+					}]));
+		}
+		// return data of all user scopes
+		const ops = targetModels.map(async (scope) => {
+			// For each possible target model, find all targets the user has NEWS_VIEW permissions in.
+			const scopeListService = this.app.service(`/users/:scopeId/${scope}`);
+			if (scopeListService === undefined) {
+				return null;
+			}
+			const scopeItems = await scopeListService.find({
+				route: { scopeId: userId.toString() },
+				query: {
+					permissions: [permission],
+				},
+			});
+			return scopeItems.map(item => ({
+				targetModel: scope,
+				target: item._id,
+				// $populate: [{ path: 'target', select: ['_id', 'name'] }],
+			}));
+			// const news = await this.app.service('newsModel').find({ query, paginate: false });
+			// // add scope permissions to news item
+			// return Promise.all(news.map(async n => ({
+			// 	...n,
+			// 	permissions: await this.getPermissions(userId, {
+			// 		...n,
+			// 		target: n.target._id,
+			// 	}),
+			// })));
+		});
+		const results = await Promise.all(ops);
+		return flatten(results.filter(r => r !== null));
+	}
+
+	/* Permissions */
 
 	async getPermissions(userId, dataItem) {
 		// scope case: user role in scope must have given permission
@@ -38,12 +114,12 @@ class NewsService {
 	 * await hasPermission(user._id, 'NEWS_CREATE', team._id, 'teams') => false
 	 * @memberof NewsService
 	 */
-	async hasPermission(userId, permission, news) {
-		if (!news) {
+	async hasPermission(userId, permission, dataItem) {
+		if (!dataItem) {
 			// maybe, use hasSchoolPermission instead...
 			return false;
 		}
-		const permissions = await this.getPermissions(userId, news);
+		const permissions = await this.getPermissions(userId, dataItem);
 		return permissions.includes(permission);
 	}
 
@@ -94,81 +170,9 @@ class NewsService {
 			throw new NotFound('News item does not exist.');
 		}
 	}
+}
 
-	/**
-	 * Returns all school news the user is allowed to see.
-	 * @param {Object} { userId, schoolId } -- The user's Id and schoolId
-	 * @returns Array<News Document>
-	 * @memberof NewsService
-	 */
-	findSchoolNews({ userId, schoolId }) {
-		return this.hasSchoolPermission(userId, schoolId, 'NEWS_VIEW')
-			.then((hasPermission) => {
-				if (!hasPermission) {
-					return [];
-				}
-				const query = {
-					schoolId,
-					target: { $exists: false },
-				};
-				return this.app.service('newsModel').find({ query, paginate: false });
-			}).then(news => Promise.all(news.map(async n => ({
-				...n,
-				permissions: await this.getPermissions(userId, n),
-			}))))
-			.catch((err) => {
-				logger.error('Cannot find school news', err);
-				return [];
-			});
-	}
-
-	/**
-	 * Returns scoped news the user is allowed to see
-	 *
-	 * @param {BsonId|String} userId the user's Id
-	 * @param {BsonId|String} target (optional) Id of the news target (course, team, etc.)
-	 * @returns Array<News Document>
-	 * @memberof NewsService
-	 */
-	async findScopedNews(userId, target) {
-		const scopes = await newsModel.distinct('targetModel');
-		const ops = scopes.map(async (scope) => {
-			// For each possible target model, find all targets the user has NEWS_VIEW permissions in.
-			const scopeListService = this.app.service(`/users/:scopeId/${scope}`);
-			if (scopeListService === undefined) {
-				throw new Error(`Missing ScopeListService for scope "${scope}".`);
-			}
-			let scopeItems = await scopeListService.find({
-				route: { scopeId: userId.toString() },
-				query: {
-					permissions: ['NEWS_VIEW'],
-				},
-			});
-			if (target) {
-				// if a target id is given, only return news from this target
-				scopeItems = scopeItems.filter(i => i._id.toString() === target.toString());
-			}
-			return Promise.all(scopeItems.map(async (item) => {
-				const query = {
-					targetModel: scope,
-					target: item._id,
-					$populate: [{ path: 'target', select: ['_id', 'name'] }],
-				};
-				const news = await this.app.service('newsModel').find({ query, paginate: false });
-				// add scope permissions to news item
-				return Promise.all(news.map(async n => ({
-					...n,
-					permissions: await this.getPermissions(userId, {
-						...n,
-						target: n.target._id,
-					}),
-				})));
-			}));
-		});
-		const results = await Promise.all(ops);
-		return flatten(results);
-	}
-
+class NewsService extends AbstractService {
 	/**
 	 * Create a copy of the original news if it is edited
 	 * @param {News} oldItem
@@ -200,7 +204,7 @@ class NewsService {
 	async get(id, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account.userId, 'NEWS_VIEW');
+		await this.authorize(news, params.account.userId, newsPermissions.VIEW);
 		news.permissions = await this.getPermissions(params.account.userId, news);
 		return news;
 	}
@@ -214,25 +218,73 @@ class NewsService {
 	 */
 	async find(params) {
 		const now = Date.now();
-		let news = [];
-		const scoped = !!(params.query && params.query.target);
+		const query = [];
+		const scoped = !!(params.query && (params.query.target || params.query.targetModel));
+		// based on params.unpublished divide between view published news and unpublished news with edit permission
+		const baseFilter = {
+			published: params.unpublished ? { $gt: now } : { $lte: now },
+			permission: params.unpublished ? newsPermissions.EDIT : newsPermissions.VIEW,
+		};
+
 		if (scoped) {
-			news = news.concat(await this.findScopedNews(params.account.userId, params.query.target));
+			// add selected scope news
+			query.push(await super.createScopedQuery(
+				params.account.userId, baseFilter.permission, params.query.target, params.query.targetModel,
+			));
 		} else {
-			news = news.concat(await this.findSchoolNews(params.account));
-			news = news.concat(await this.findScopedNews(params.account.userId));
+			// add school news
+			query.push(await super.createSchoolQuery(
+				params.account.userId, params.account.schoolId, baseFilter.permission,
+			));
+			if (params.query.target !== 'school') {
+				// add all scope news if more than the current school is requested
+				query.push(await super.createScopedQuery(
+					params.account.userId, baseFilter.permission,
+				));
+			}
 		}
-		// remove unpublished news if no edit permission exist
-		// todo add this action to hasPermission
-		news = news.filter(n => n.displayAt <= now || n.permissions.includes('NEWS_EDIT'));
-		// todo news should be a query only here...
-		if (params.query) {
-			news = sort(news, params.query.$sort);
-		}
-		// paginate by default, but let $paginate=false through
-		news = paginate(news, { $paginate: true, ...params.query });
-		// todo, request filtered and paginated data here instead...
-		return Promise.resolve(news);
+		const flatQuery = flatten(query);
+		const completeQuery = {
+			query: {
+				displayAt: baseFilter.published,
+				$or: flatQuery,
+				$populate: [
+					{ path: 'schoolId', select: ['_id', 'name'] },
+					{ path: 'creatorId', select: ['_id', 'firstName', 'lastName'] },
+					{ path: 'updaterId', select: ['_id', 'firstName', 'lastName'] },
+					{ path: 'target', select: ['_id', 'name'] },
+				],
+				$sort: params.query.$sort,
+			},
+			$paginate: params.query.$paginate,
+		};
+		return this.app.service('newsModel')
+			.find(completeQuery)
+			.then((result) => {
+				// restore ids from populated documents
+				const dataIdsFixed = result.data.map(n => ({
+					...n,
+					school: n.schoolId,
+					schoolId: n.schoolId._id,
+					creator: n.creatorId,
+					creatorId: (n.creatorId || {})._id,
+					updater: n.updaterId,
+					updaterId: (n.updaterId || {})._id,
+				}));
+				return { ...result, data: dataIdsFixed };
+			})
+			.then(async (result) => {
+				// decorate permissions in data objects
+				const decoratedData = await Promise.all(result.data.map(async n => ({
+					...n,
+					permissions: await this.getPermissions(params.account.userId, {
+						target: (n.target || {})._id,
+						targetModel: n.targetModel,
+						schoolId: n.schoolId,
+					}),
+				})));
+				return { ...result, data: decoratedData };
+			});
 	}
 
 	/**
@@ -245,7 +297,7 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async create(data, params) {
-		await this.authorize(data, params.account.userId, 'NEWS_CREATE');
+		await this.authorize(data, params.account.userId, newsPermissions.CREATE);
 		const newNewsData = {
 			...data,
 			creatorId: params.account.userId,
@@ -267,7 +319,7 @@ class NewsService {
 	async remove(id, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account.userId, 'NEWS_CREATE');
+		await this.authorize(news, params.account.userId, newsPermissions.REMOVE);
 		await this.app.service('newsModel').remove(id);
 		return news;
 	}
@@ -286,7 +338,7 @@ class NewsService {
 	async update(id, data, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account.userId, 'NEWS_EDIT');
+		await this.authorize(news, params.account.userId, newsPermissions.EDIT);
 		const updatedNewsData = {
 			...data,
 			updaterId: params.account.userId,
@@ -310,7 +362,7 @@ class NewsService {
 	async patch(id, data, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account.userId, 'NEWS_EDIT');
+		await this.authorize(news, params.account.userId, newsPermissions.EDIT);
 		const patchedNewsData = {
 			...data,
 			updaterId: params.account.userId,
@@ -321,29 +373,12 @@ class NewsService {
 	}
 }
 
-class UnpublishedNewsService {
-	/**
-	 * GET /news/unpublished
-	 * Returns unpublished news the user can see.
-	 * @param {Object} params
-	 * @returns paginated array of news items
-	 * @memberof UnpublishedNewsService
-	 */
-	async find(params) {
-		return Promise.resolve([]);
-	}
-}
-
 module.exports = function news() {
 	const app = this;
 
 	// use /news to access a user's news
 	app.use('/news', new NewsService());
 	app.service('news').hooks(hooks);
-
-	// use /news/unpublished to find yet unpublished news
-	app.use('/news/unpublished', new UnpublishedNewsService());
-	app.service('news/unpublished').hooks(unpublishedNewsHooks);
 
 	// use /newsModel to directly access the model from other services
 	// (external requests are blocked)
