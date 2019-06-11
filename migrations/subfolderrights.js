@@ -35,7 +35,7 @@ const run = async (dry) => {
 	const promises = courseFolders
 		.map((dir) => {
 			const { permissions, _id } = dir;
-			const studentPermissions = permissions.find(perm => perm.refId && perm.refId.equals(studentRoleId));
+			const studentPermissions = permissions.find(({ refId }) => refId && refId.equals(studentRoleId));
 
 			if (!studentPermissions.create) {
 				studentPermissions.create = true;
