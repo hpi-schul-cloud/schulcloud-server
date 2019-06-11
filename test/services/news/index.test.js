@@ -28,6 +28,7 @@ describe('news service', () => {
 		let server;
 
 		before((done) => {
+			this.timeout(10000);
 			server = app.listen(0, done);
 		});
 
