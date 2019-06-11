@@ -73,7 +73,6 @@
     "mongoose-autopopulate": "^0.9.1",
     "mongoose-history": "^0.8.0",
     "mongoose-id-validator": "^0.4.3",
-    "mongoose-immutable-plugin": "^1.0.1",
     "mongoose-lean-virtuals": "^0.3.5",
     "mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
     "moodle-client": "^0.4.0",
