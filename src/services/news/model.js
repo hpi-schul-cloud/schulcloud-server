@@ -7,7 +7,12 @@ const { Schema } = mongoose;
 const targetModels = ['courses', 'teams', 'class'];
 
 const newsSchema = new Schema({
-	schoolId: { type: Schema.Types.ObjectId, required: true, immutable: true },
+	schoolId: {
+		type: Schema.Types.ObjectId,
+		required: true,
+		immutable: true,
+		ref: 'school',
+	},
 	title: { type: String, required: true },
 	content: { type: String, required: true },
 	displayAt: { type: Date, default: Date.now, required: true },
