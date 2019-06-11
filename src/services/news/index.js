@@ -152,7 +152,7 @@ class NewsService {
 				const query = {
 					targetModel: scope,
 					target: item._id,
-					$populate: 'target',
+					$populate: [{ path: 'target', select: ['_id', 'name'] }],
 				};
 				const news = await this.app.service('newsModel').find({ query, paginate: false });
 				// add scope permissions to news item
