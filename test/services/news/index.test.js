@@ -28,7 +28,6 @@ describe('news service', () => {
 		let server;
 
 		before((done) => {
-			this.timeout(10000);
 			server = app.listen(0, done);
 		});
 
@@ -453,7 +452,7 @@ describe('news service', () => {
 				expect(result).to.not.equal(undefined);
 				expect(result._id).to.not.equal(undefined);
 				expect(await News.count({ schoolId })).to.equal(1);
-			});
+			}).timeout(10000);
 
 			it('should not allow creating news in other scopes', async () => {
 				const schoolId = new ObjectId();
