@@ -152,14 +152,16 @@ class NewsService {
 				const query = {
 					targetModel: scope,
 					target: item._id,
-					$populate: target,
+					$populate: 'target',
 				};
 				const news = await this.app.service('newsModel').find({ query, paginate: false });
-				// Manually populate the target (current API requires this):
+				// add scope permissions to news item
 				return Promise.all(news.map(async n => ({
 					...n,
-					target: await this.app.service(scope).get(n.target),
-					permissions: await this.getPermissions(userId, n),
+					permissions: await this.getPermissions(userId, {
+						...n,
+						target: n.target._id,
+					}),
 				})));
 			}));
 		});
