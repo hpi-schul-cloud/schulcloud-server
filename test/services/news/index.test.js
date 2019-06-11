@@ -16,7 +16,10 @@ const {
 	generateRequestParams,
 } = require('../helpers/testObjects')(app);
 const teamHelper = require('../helpers/services/teams');
-const News = require('../../../src/services/news/model').newsModel;
+const {
+	newsModel: News,
+	newsHistoryModel: NewsHistory,
+} = require('../../../src/services/news/model');
 
 const newsService = app.service('news');
 
@@ -852,6 +855,7 @@ describe('news service', () => {
 			after(async () => {
 				await cleanup();
 				await News.deleteMany({});
+				await NewsHistory.deleteMany({});
 			});
 		});
 
@@ -991,6 +995,7 @@ describe('news service', () => {
 			after(async () => {
 				await cleanup();
 				await News.deleteMany({});
+				await NewsHistory.deleteMany({});
 			});
 		});
 	});
