@@ -28,6 +28,7 @@ describe('\'/teams/manage/admin\' service', () => {
 					color: '#d32f2f',
 					name: 'spinatenpower',
 					createdAt,
+					features: ['isTeam'],
 					desciption: 'Spintatenpower makes teams greate again',
 					schoolId: sessionSchoolId,
 					schoolIds: [
@@ -79,6 +80,7 @@ describe('\'/teams/manage/admin\' service', () => {
 				desciption: 'Spintatenpower makes teams greate again',
 				createdAtMySchool: true,
 				hasMembersOfOtherSchools: false,
+				hasRocketChat: false,
 				createdAt,
 				ownerExist: true,
 				schools: [{
@@ -136,5 +138,14 @@ describe('\'/teams/manage/admin\' service', () => {
 
 			assert.deepStrictEqual(result, expectedResult);
 		});
+
+		it('rocket chat is activeted', async () => {
+			teams.data[0].features.push('rocketChat');
+			expectedResult[0].hasRocketChat = true;
+			const result = AdminOverview.mapped(teams, sessionSchoolId);
+			assert.deepStrictEqual(result, expectedResult);
+		});
+
+
 	});
 });

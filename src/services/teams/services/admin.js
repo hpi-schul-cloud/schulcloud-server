@@ -71,6 +71,7 @@ class AdminOverview {
 			const hasMembersOfOtherSchools = team.schoolIds.length > 1;
 			let schoolMembers = AdminOverview.getMembersBySchool(team, sessionSchoolId);
 			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner'); // role is populated
+			const hasRocketChat = team.features.includes('rocketChat');
 
 			schoolMembers = schoolMembers.map((m) => {
 				const obj = {
@@ -94,6 +95,7 @@ class AdminOverview {
 				desciption: team.desciption,
 				createdAtMySchool,
 				hasMembersOfOtherSchools,
+				hasRocketChat,
 				createdAt: team.createdAt,
 				ownerExist,
 				//      ownerSchool:team.schoolId.name,
