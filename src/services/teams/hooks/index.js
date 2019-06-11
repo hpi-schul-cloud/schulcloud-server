@@ -55,15 +55,6 @@ const teamMainHook = globalHooks.ifNotLocal(hook => Promise.all([
 	const sessionSchoolId = bsonIdToString(sessionUser.schoolId);
 
 	if (method === 'create') {
-		// check for student permission to create team (can be blocked by school settings)
-		if (sessionUser.roles.some(role => role.name === 'student')) {
-			hook.app.service('schools').get(sessionUser.schoolId).then((usersSchool) => {
-				if (usersSchool.features.includes('disableStudentTeamCreation')) {
-					throw new Forbidden('Your school admin does not allow team creations by students.');
-				}
-			});
-		}
-
 		// eslint-disable-next-line no-param-reassign
 		team = updateMissingDataInHookForCreate(hook, sessionUser);
 		users.push(sessionUser);
@@ -614,6 +605,27 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 });
 
 /**
+ * Test if the sessionUser is allowed to create a team. Every teacher and admin can create teams.
+ * Students can create teams if it is not disabled (can be blocked by school settings)
+ * If not throw an error.
+ * @beforeHook
+ */
+const isAllowedToCreateTeams = hook => getSessionUser(hook).then((sessionUser) => {
+	hook.app.service('schools').get(hook.data.schoolId).then((school) => {
+		const roleNames = sessionUser.roles.map(role => role.name);
+		if (roleNames.includes('administrator') || roleNames.includes('teacher') || roleNames.includes('student')) {
+			if (roleNames.includes('student') && school.features.includes('disableStudentTeamCreation')) {
+				throw new Forbidden('Your school admin does not allow team creations by students.');
+			}
+		} else {
+			throw new Forbidden('Only administrator, teacher and students can create teams.');
+		}
+
+		return hook;
+	});
+});
+
+/**
  * Test if data.userId is set. If true it test if the role is teacher. If not throw an error.
  * @beforeHook
  */
@@ -689,6 +701,7 @@ exports.before = {
 	create: [
 		filterToRelated(keys.data, 'data'),
 		globalHooks.injectUserId,
+		isAllowedToCreateTeams,
 		testInputData,
 		updateUsersForEachClass,
 		teamMainHook,
