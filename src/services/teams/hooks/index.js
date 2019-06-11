@@ -611,7 +611,7 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
  * @beforeHook
  */
 const isAllowedToCreateTeams = hook => getSessionUser(hook).then((sessionUser) => {
-	hook.app.service('schools').get(hook.data.schoolId).then((school) => {
+	return hook.app.service('schools').get(hook.data.schoolId).then((school) => {
 		const roleNames = sessionUser.roles.map(role => role.name);
 		if (roleNames.includes('administrator') || roleNames.includes('teacher') || roleNames.includes('student')) {
 			if (roleNames.includes('student') && school.features.includes('disableStudentTeamCreation')) {
