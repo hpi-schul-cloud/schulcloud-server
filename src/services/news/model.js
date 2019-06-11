@@ -9,7 +9,12 @@ const newsSchema = new Schema({
 	content: { type: String, required: true },
 	displayAt: { type: Date, default: Date.now, required: true },
 
-	creatorId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+	creatorId: {
+		type: Schema.Types.ObjectId,
+		ref: 'user',
+		required: true,
+		immutable: true,
+	},
 	createdAt: { type: Date, default: Date.now, required: true },
 
 	updaterId: { type: Schema.Types.ObjectId, ref: 'user' },

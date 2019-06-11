@@ -244,12 +244,12 @@ class NewsService {
 	 */
 	async create(data, params) {
 		await this.authorize(data, params.account.userId, 'NEWS_CREATE');
-		const newNewsItem = {
+		const newNewsData = {
 			...data,
 			creatorId: params.account.userId,
 			updaterId: null,
 		};
-		return this.app.service('newsModel').create(newNewsItem);
+		return this.app.service('newsModel').create(newNewsData);
 	}
 
 	/**
@@ -285,11 +285,11 @@ class NewsService {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account.userId, 'NEWS_EDIT');
-		const updatedNewsItem = {
+		const updatedNewsData = {
 			...data,
 			updaterId: params.account.userId,
 		};
-		const updatedNews = await this.app.service('newsModel').update(id, updatedNewsItem);
+		const updatedNews = await this.app.service('newsModel').update(id, updatedNewsData);
 		await NewsService.createHistoryEntry(news);
 		return updatedNews;
 	}
@@ -309,7 +309,11 @@ class NewsService {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account.userId, 'NEWS_EDIT');
-		const patchedNews = await this.app.service('newsModel').patch(id, data);
+		const patchedNewsData = {
+			...data,
+			updaterId: params.account.userId,
+		};
+		const patchedNews = await this.app.service('newsModel').patch(id, patchedNewsData);
 		await NewsService.createHistoryEntry(news);
 		return patchedNews;
 	}

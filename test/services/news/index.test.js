@@ -581,6 +581,37 @@ describe('news service', () => {
 				}
 			});
 
+			it('should set the creatorId to the creating user\'s id', async () => {
+				const schoolId = new ObjectId();
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const result = await newsService.create({
+					schoolId,
+					title: 'school news',
+					content: 'foo bar baz',
+				}, params);
+				expect(result).to.not.equal(undefined);
+				expect(result.creatorId.toString()).to.equal(user._id.toString());
+			});
+
+			it('should not allow seting someone else as creator', async () => {
+				const schoolId = new ObjectId();
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const result = await newsService.create({
+					schoolId,
+					creatorId: new ObjectId(),
+					title: 'school news',
+					content: 'foo bar baz',
+				}, params);
+				expect(result).to.not.equal(undefined);
+				expect(result.creatorId.toString()).to.equal(user._id.toString());
+			});
+
 			after(async () => {
 				await cleanup();
 				await News.deleteMany({});
@@ -722,6 +753,7 @@ describe('news service', () => {
 			after(async () => {
 				await cleanup();
 				await News.deleteMany({});
+				await NewsHistory.deleteMany({});
 			});
 		});
 
@@ -850,6 +882,47 @@ describe('news service', () => {
 					expect(await News.count({ schoolId })).to.equal(1);
 					expect(await News.count({ content: 'patched content in other scope' })).to.equal(0);
 				}
+			});
+
+			it('should set the updateId to the patching user\'s id', async () => {
+				const schoolId = new ObjectId();
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const news = await News.create({
+					title: 'school news',
+					content: 'some content',
+					schoolId,
+					creatorId: new ObjectId(),
+				});
+				const patchedNews = await newsService.patch(news._id, { title: 'patched!' }, params);
+				expect(patchedNews).to.not.equal(undefined);
+				expect(patchedNews.updaterId).to.not.equal(undefined);
+				expect(patchedNews.updaterId.toString()).to.equal(user._id.toString());
+				expect(patchedNews.creatorId.toString()).to.equal(news.creatorId.toString());
+			});
+
+			it('should not allow patching the creatorId', async () => {
+				const schoolId = new ObjectId();
+				const user = await createTestUser({ schoolId, roles: 'teacher' });
+				const credentials = { username: user.email, password: user.email };
+				await createTestAccount(credentials, 'local', user);
+				const params = await generateRequestParams(credentials);
+				const news = await News.create({
+					title: 'school news',
+					content: 'some content',
+					schoolId,
+					creatorId: new ObjectId(),
+				});
+				const patchedNews = await newsService.patch(news._id, {
+					title: 'patched!',
+					creatorId: user._id,
+				}, params);
+				expect(patchedNews).to.not.equal(undefined);
+				expect(patchedNews.updaterId).to.not.equal(undefined);
+				expect(patchedNews.updaterId.toString()).to.equal(user._id.toString());
+				expect(patchedNews.creatorId.toString()).to.equal(news.creatorId.toString());
 			});
 
 			after(async () => {
