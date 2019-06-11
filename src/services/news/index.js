@@ -244,7 +244,12 @@ class NewsService {
 	 */
 	async create(data, params) {
 		await this.authorize(data, params.account.userId, 'NEWS_CREATE');
-		return this.app.service('newsModel').create(data);
+		const newNewsItem = {
+			...data,
+			creatorId: params.account.userId,
+			updaterId: null,
+		};
+		return this.app.service('newsModel').create(newNewsItem);
 	}
 
 	/**
@@ -280,7 +285,11 @@ class NewsService {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account.userId, 'NEWS_EDIT');
-		const updatedNews = await this.app.service('newsModel').update(id, data);
+		const updatedNewsItem = {
+			...data,
+			updaterId: params.account.userId,
+		};
+		const updatedNews = await this.app.service('newsModel').update(id, updatedNewsItem);
 		await NewsService.createHistoryEntry(news);
 		return updatedNews;
 	}

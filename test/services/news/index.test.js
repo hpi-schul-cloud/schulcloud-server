@@ -58,12 +58,13 @@ describe('news service', () => {
 
 			it('should return news items by id', async () => {
 				const schoolId = new ObjectId();
+				const user = await createTestUser({ schoolId, roles: 'student' });
 				const schoolNews = await News.create({
 					schoolId,
+					creatorId: user._id,
 					title: 'knightly news',
 					content: 'ni ni ni ni ni ni',
 				});
-				const user = await createTestUser({ schoolId, roles: 'student' });
 				const credentials = { username: user.email, password: user.email };
 				await createTestAccount(credentials, 'local', user);
 				const params = await generateRequestParams(credentials);
@@ -83,6 +84,7 @@ describe('news service', () => {
 				await teams.addTeamUserToTeam(team._id, user, 'teammember');
 				const news = await News.create({
 					schoolId,
+					creatorId: user._id,
 					title: 'team news',
 					content: 'content for my friends',
 					target: team._id,
@@ -98,13 +100,14 @@ describe('news service', () => {
 
 			it('should not return news if the user does not have the NEWS_VIEW permission', async () => {
 				const schoolId = new ObjectId();
+				// the user has no role and thus no permissions:
+				const user = await createTestUser({ schoolId });
 				const schoolNews = await News.create({
+					creatorId: user._id,
 					schoolId,
 					title: 'bridge news',
 					content: 'What is thy name? What is thy task? What is thy favourite colour?',
 				});
-				// the user has no role and thus no permissions:
-				const user = await createTestUser({ schoolId });
 				expect(user.roles.length).to.equal(0);
 				const credentials = { username: user.email, password: user.email };
 				await createTestAccount(credentials, 'local', user);
@@ -121,6 +124,7 @@ describe('news service', () => {
 				const schoolId = new ObjectId();
 				const otherSchoolId = new ObjectId();
 				const schoolNews = await News.create({
+					creatorId: new ObjectId(),
 					schoolId,
 					title: 'French news',
 					content: 'obtenir la vache!',
@@ -187,16 +191,19 @@ describe('news service', () => {
 				await News.create([
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'school A news',
 						content: 'this is the content',
 					},
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'school A news (2)',
 						content: 'even more content',
 					},
 					{
 						schoolId: new ObjectId(),
+						creatorId: new ObjectId(),
 						title: 'school B news',
 						content: 'we have content, too',
 					},
@@ -215,16 +222,19 @@ describe('news service', () => {
 				await News.create([
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'school A news',
 						content: 'this is the content',
 					},
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'school A news (2)',
 						content: 'even more content',
 					},
 					{
 						schoolId: new ObjectId(),
+						creatorId: new ObjectId(),
 						title: 'school B news',
 						content: 'we have content, too',
 					},
@@ -247,11 +257,13 @@ describe('news service', () => {
 				await News.create([
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'school news',
 						content: 'this is the content',
 					},
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'team A news',
 						content: 'even more content',
 						target: teamA._id,
@@ -259,6 +271,7 @@ describe('news service', () => {
 					},
 					{
 						schoolId: new ObjectId(), // team news created at another school
+						creatorId: new ObjectId(),
 						title: 'team A news 2',
 						content: 'even more content',
 						target: teamA._id,
@@ -266,6 +279,7 @@ describe('news service', () => {
 					},
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'team B news',
 						content: 'we have content, too',
 						target: teamB._id,
@@ -293,11 +307,13 @@ describe('news service', () => {
 				await News.create([
 					{
 						schoolId: teamSchoolId,
+						creatorId: new ObjectId(),
 						title: 'school news',
 						content: 'this is the content',
 					},
 					{
 						schoolId: teamSchoolId,
+						creatorId: new ObjectId(),
 						title: 'team news',
 						content: 'even more content',
 						target: team._id,
@@ -305,6 +321,7 @@ describe('news service', () => {
 					},
 					{
 						schoolId: new ObjectId(), // team news created at a third school
+						creatorId: new ObjectId(),
 						title: 'team news 2',
 						content: 'even more content',
 						target: team._id,
@@ -332,6 +349,7 @@ describe('news service', () => {
 				await News.create([
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'team A news',
 						content: 'even more content',
 						target: team._id,
@@ -350,11 +368,13 @@ describe('news service', () => {
 				await News.create([
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'school news',
 						content: 'this is the content',
 					},
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'school news (2)',
 						content: 'even more content',
 					},
@@ -381,16 +401,19 @@ describe('news service', () => {
 				await News.create([
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: '1',
 						content: 'this is the content',
 					},
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: '3',
 						content: 'even more content',
 					},
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: '2',
 						content: 'content galore',
 					},
@@ -412,18 +435,21 @@ describe('news service', () => {
 				await News.create([
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: '1',
 						content: 'this is the content',
 						createdAt: new Date('2019/06/02'),
 					},
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: '2',
 						content: 'even more content',
 						createdAt: new Date('2019/05/30'),
 					},
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: '3',
 						content: 'content galore',
 						createdAt: new Date('2019/06/03'),
@@ -586,6 +612,7 @@ describe('news service', () => {
 					title: 'Old news',
 					content: 'Please delete',
 					schoolId,
+					creatorId: new ObjectId(),
 				});
 				expect(await News.count({ schoolId })).to.equal(1);
 				const credentials = { username: user.email, password: user.email };
@@ -603,6 +630,7 @@ describe('news service', () => {
 					title: 'Old news',
 					content: 'Please delete',
 					schoolId,
+					creatorId: new ObjectId(),
 				});
 				expect(await News.count({ schoolId })).to.equal(1);
 				const credentials = { username: user.email, password: user.email };
@@ -627,6 +655,7 @@ describe('news service', () => {
 				const teamNews = await News.create([
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'team news 1',
 						content: 'this is the content',
 						target: team._id,
@@ -634,6 +663,7 @@ describe('news service', () => {
 					},
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'team news 2',
 						content: 'this is the content',
 						target: team._id,
@@ -658,6 +688,7 @@ describe('news service', () => {
 				const teamNews = await News.create([
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'team news 1',
 						content: 'this is the content',
 						target: team._id,
@@ -665,6 +696,7 @@ describe('news service', () => {
 					},
 					{
 						schoolId,
+						creatorId: new ObjectId(),
 						title: 'team news 2',
 						content: 'this is the content',
 						target: team._id,
@@ -721,6 +753,7 @@ describe('news service', () => {
 					title: 'school news',
 					content: 'some content',
 					schoolId,
+					creatorId: new ObjectId(),
 				});
 				const patchedNews = await newsService.patch(news._id, { title: 'patched!' }, params);
 				expect(patchedNews).to.not.equal(undefined);
@@ -741,6 +774,7 @@ describe('news service', () => {
 					title: 'school news',
 					content: 'some content',
 					schoolId,
+					creatorId: new ObjectId(),
 				});
 				try {
 					await newsService.patch(
@@ -773,6 +807,7 @@ describe('news service', () => {
 				const params = await generateRequestParams(credentials);
 				const news = await News.create({
 					schoolId,
+					creatorId: new ObjectId(),
 					title: 'school news',
 					content: 'foo bar baz',
 					target: team._id,
@@ -797,6 +832,7 @@ describe('news service', () => {
 				const params = await generateRequestParams(credentials);
 				const news = await News.create({
 					schoolId,
+					creatorId: new ObjectId(),
 					title: 'school news',
 					content: 'foo bar baz',
 					target: team._id,
@@ -850,6 +886,7 @@ describe('news service', () => {
 					title: 'school news',
 					content: 'some content',
 					schoolId,
+					creatorId: new ObjectId(),
 				});
 				const updatedNews = await newsService.patch(news._id, {
 					title: 'updated!', content: news.content, schoolId,
@@ -872,6 +909,7 @@ describe('news service', () => {
 					title: 'school news',
 					content: 'some content',
 					schoolId,
+					creatorId: new ObjectId(),
 				});
 				try {
 					await newsService.update(
@@ -904,13 +942,14 @@ describe('news service', () => {
 				const params = await generateRequestParams(credentials);
 				const news = await News.create({
 					schoolId,
+					creatorId: new ObjectId(),
 					title: 'school news',
 					content: 'foo bar baz',
 					target: team._id,
 					targetModel: 'teams',
 				});
 				const result = await newsService.update(news._id, {
-					content: 'updated content', title: news.title, schoolId,
+					content: 'updated content', title: news.title, schoolId, creatorId: news.creatorId,
 				}, params);
 				expect(result).to.not.equal(undefined);
 				expect(result._id.toString()).to.equal(news._id.toString());
@@ -930,6 +969,7 @@ describe('news service', () => {
 				const params = await generateRequestParams(credentials);
 				const news = await News.create({
 					schoolId,
+					creatorId: new ObjectId(),
 					title: 'school news',
 					content: 'foo bar baz',
 					target: team._id,
@@ -961,6 +1001,7 @@ describe('news service', () => {
 				const teamId = new ObjectId();
 				const teamNews = await new News({
 					schoolId: new ObjectId(),
+					creatorId: new ObjectId(),
 					title: 'team news',
 					content: 'here are some news concerning this team',
 					target: teamId,
@@ -979,6 +1020,7 @@ describe('news service', () => {
 				const teamId = new ObjectId();
 				await new News({
 					schoolId,
+					creatorId: new ObjectId(),
 					title: 'team news',
 					content: 'here are some news concerning this team',
 					target: teamId,
@@ -987,6 +1029,7 @@ describe('news service', () => {
 				const courseId = new ObjectId();
 				const courseNews = await new News({
 					schoolId,
+					creatorId: new ObjectId(),
 					title: 'course news',
 					content: 'here are some news concerning this course',
 					target: courseId,
@@ -994,6 +1037,7 @@ describe('news service', () => {
 				}).save();
 				const schoolNews = await new News({
 					schoolId,
+					creatorId: new ObjectId(),
 					title: 'global school news',
 					content: 'yo ho ho, and a bottle of rum',
 				}).save();
