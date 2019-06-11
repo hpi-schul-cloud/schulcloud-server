@@ -262,4 +262,4 @@ class AdminOverview {
 	}
 }
 
-module.exports = AdminOverview
+module.exports = AdminOverview;
