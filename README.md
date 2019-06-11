@@ -1,6 +1,7 @@
 # Schul-Cloud Server
 Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com/)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e418783cd2c14522b1a59f48f62180bb)](https://app.codacy.com/app/schul-cloud/schulcloud-server?utm_source=github.com&utm_medium=referral&utm_content=schul-cloud/schulcloud-server&utm_campaign=Badge_Grade_Settings)
 Dev: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg?branch=develop)](https://travis-ci.com/schul-cloud/schulcloud-server)
 Master: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg?branch=master)](https://travis-ci.com/schul-cloud/schulcloud-server)
 
