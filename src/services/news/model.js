@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
+const targetModels = ['courses', 'teams', 'class'];
+
 const newsSchema = new Schema({
 	schoolId: { type: Schema.Types.ObjectId, required: true, immutable: true },
 	title: { type: String, required: true },
@@ -45,7 +47,7 @@ const newsSchema = new Schema({
 	},
 	targetModel: {
 		type: String,
-		enum: ['courses', 'teams', 'class'],
+		enum: targetModels,
 		immutable: true,
 		// target and targetModel must be defined together or not
 		required: function requiredTargetModel() {
@@ -82,5 +84,6 @@ const newsHistoryModel = mongoose.model('newshistory', new Schema({
 
 module.exports = {
 	newsModel,
+	targetModels,
 	newsHistoryModel,
 };
