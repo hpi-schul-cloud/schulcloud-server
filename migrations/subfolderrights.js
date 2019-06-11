@@ -1,7 +1,7 @@
 /* eslint no-console: 0 */
 /* eslint no-confusing-arrow: 0 */
 const ran = false; // set to true to exclude migration
-const name = 'Fix access rights for teachers on homework submitted files.';
+const name = 'Add permission for students to create files in course subfolders.';
 
 const database = require('../src/utils/database');
 
@@ -24,6 +24,7 @@ const run = async (dry) => {
 			isDirectory: true,
 			refOwnerModel: 'course',
 		})
+		.lean()
 		.exec()
 		.catch(errorHandler);
 
