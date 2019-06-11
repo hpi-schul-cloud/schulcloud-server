@@ -48,7 +48,7 @@ class NewsService {
 	}
 
 	/**
-	 * Tests if a user with given userId has a (global) permission within a school-/scope/.
+	 * Tests if a user with given userId has a (global) permission within a school.
 	 * @param {ObjectId} userId
 	 * @param {ObjectId} schoolId
 	 * @returns {Array<String>}
@@ -62,7 +62,6 @@ class NewsService {
 		const sameSchool = schoolId.toString() === user.schoolId.toString();
 		if (!sameSchool) return [];
 
-		// finally, test user has permission
 		return user.permissions;
 	}
 
