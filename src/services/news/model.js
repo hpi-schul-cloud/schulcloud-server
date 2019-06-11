@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { immutableFieldPlugin } = require('../../utils/mongoose');
+const immutableFieldPlugin = require('mongoose-immutable-plugin');
 
 const { Schema } = mongoose;
 
