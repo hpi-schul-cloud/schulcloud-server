@@ -280,25 +280,31 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async find(params) {
+		const query = params.query || {};
 		const now = Date.now();
 		// based on params.unpublished divide between view published news and unpublished news with edit permission
 		const baseFilter = {
-			published: (params.query || {}).unpublished ? { $gt: now } : { $lte: now },
-			permission: (params.query || {}).unpublished ? newsPermissions.EDIT : newsPermissions.VIEW,
+			published: query.unpublished ? { $gt: now } : { $lte: now },
+			permission: query.unpublished ? newsPermissions.EDIT : newsPermissions.VIEW,
 		};
-		const query = {
+		const searchFilter = {};
+		if (query.q) {
+			searchFilter.title = { $regex: query.q };
+		}
+		const internalRequestParams = {
 			query: {
 				displayAt: baseFilter.published,
 				$or: await this.buildFindQuery(params, baseFilter),
-				$sort: (params.query || {}).$sort,
-				$limit: (params.query || {}).$limit,
-				$skip: (params.query || {}).$skip,
-				$populate: NewsService.populateParams().query.$populate,
+				$sort: query.$sort,
+				$limit: query.$limit,
+				$skip: query.$skip,
+				...NewsService.populateParams().query,
+				...searchFilter,
 			},
-			$paginate: (params.query || {}).$paginate,
+			$paginate: query.$paginate,
 		};
 		return this.app.service('newsModel')
-			.find(query)
+			.find(internalRequestParams)
 			.then(NewsService.decorateResults)
 			.then(result => this.decoratePermissions(result, params.account.userId));
 	}
