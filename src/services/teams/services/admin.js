@@ -73,22 +73,32 @@ class AdminOverview {
 			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner'); // role is populated
 			const hasRocketChat = team.features.includes('rocketChat');
 
-			schoolMembers = schoolMembers.map((m) => {
-				const obj = {
-					role: m.role.name,
-					user: AdminOverview.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName']),
-				};
-				return obj;
+			const reducedSchoolMembers = [];
+			schoolMembers.forEach((m) => {
+				if (m.userId) {
+					const obj = {
+						role: m.role.name,
+						user: AdminOverview.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName']),
+					};
+					reducedSchoolMembers.push(obj);
+				}
 			});
 
-			schoolMembers = schoolMembers.map((m) => {
+			// reduce total number of members, if user is already delete, but linked at team collection
+			// memberTotal, could be wrong anyways, because it do not prof if user realy exists at an other school
+			// but it is also only for preventing errors, if user are not removed from delete after deleting, 
+			// like reducedSchoolMembers
+			const memeberDiffAtOwnSchool = schoolMembers - reducedSchoolMembers;
+
+			schoolMembers = reducedSchoolMembers.map((m) => {
 				m.user.roles = (m.user.roles || []).map(role => role.name);
 				return m;
 			});
 
+
 			return {
 				// todo ownerExist -> ref role needed
-				membersTotal: team.userIds.length,
+				membersTotal: team.userIds.length - memeberDiffAtOwnSchool,
 				name: team.name,
 				_id: team._id,
 				color: team.color,
