@@ -87,8 +87,10 @@ describe('Test team basic methods', () => {
 					schoolIds: [demoStudent.schoolId],
 					userIds: [demoStudent._id],
 				};
-				const slimteam = await teamService.create(record, { ...params, query: {} });
-				expect(slimteam).to.not.be.ok;
+				await teamService.create(record, { ...params, query: {} }).catch((e) => {
+					expect(e.name).to.equal('Forbidden');
+					expect(e.message).to.equal('Only administrator, teacher and students can create teams.');
+				});
 			} finally {
 				T.cleanup();
 			}
