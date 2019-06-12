@@ -451,7 +451,7 @@ const directoryService = {
 				refPermModel: 'role',
 				write: false,
 				read: true, // students can always read course files
-				create: false,
+				create: true,
 				delete: false,
 			});
 		}
@@ -549,9 +549,11 @@ const renameService = {
      */
 	create(data, params) {
 		const { payload: { userId } } = params;
-		const { newName, _id } = data;
+		const { newName, id } = data;
 
-		if (!_id || !newName) return Promise.reject(new BadRequest('Missing parameters'));
+		if (!id || !newName) return Promise.reject(new BadRequest('Missing parameters'));
+
+		const _id = id;
 
 		return canWrite(userId, _id)
 			.then(() => FileModel.findOne({ _id }).exec())
