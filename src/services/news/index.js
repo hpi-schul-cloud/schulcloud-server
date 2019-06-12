@@ -101,7 +101,7 @@ class AbstractService {
 		}
 
 		// default school case: dataItem and users schoolId must match and user permission must exist
-		return this.getSchoolPermissions(userId, schoolId);
+		return this.getSchoolPermissions(userId, isObjectId(schoolId) ? schoolId : schoolId._id);
 	}
 
 	/**
