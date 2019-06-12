@@ -272,7 +272,7 @@ class NewsService extends AbstractService {
 			query.push(await super.createSchoolQuery(
 				params.account.userId, params.account.schoolId, baseFilter.permission,
 			));
-			if (params.query && params.query.target !== 'school') {
+			if ((params.query || {}).target !== 'school') {
 				// add all scope news if more than the current school is requested
 				query.push(await super.createScopedQuery(
 					params.account.userId, baseFilter.permission,
