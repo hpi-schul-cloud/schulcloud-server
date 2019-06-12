@@ -71,17 +71,7 @@ class AbstractService {
 			return scopeItems.map(item => ({
 				targetModel: scope,
 				target: item._id,
-				// $populate: [{ path: 'target', select: ['_id', 'name'] }],
 			}));
-			// const news = await this.app.service('newsModel').find({ query, paginate: false });
-			// // add scope permissions to news item
-			// return Promise.all(news.map(async n => ({
-			// 	...n,
-			// 	permissions: await this.getPermissions(userId, {
-			// 		...n,
-			// 		target: n.target._id,
-			// 	}),
-			// })));
 		});
 		const results = await Promise.all(ops);
 		return flatten(results.filter(r => r !== null));
@@ -90,6 +80,7 @@ class AbstractService {
 	/* Permissions */
 
 	async getPermissions(userId, { target, targetModel, schoolId } = {}) {
+		// target and school might be populated or not
 		const isObjectId = o => o instanceof ObjectId || typeof o === 'string';
 		// scope case: user role in scope must have given permission
 		if (target && targetModel) {
