@@ -83,12 +83,11 @@ class AdminOverview {
 					};
 					reducedSchoolMembers.push(obj);
 				}
-
 			});
 
 			// reduce total number of members, if user is already delete, but linked at team collection
 			// memberTotal, could be wrong anyways, because it do not prof if user realy exists at an other school
-			// but it is also only for preventing errors, if user are not removed from delete after deleting, 
+			// but it is also only for preventing errors, if user are not removed from delete after deleting,
 			// like reducedSchoolMembers
 			const memeberDiffAtOwnSchool = schoolMembers - reducedSchoolMembers;
 
