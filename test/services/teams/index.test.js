@@ -13,7 +13,7 @@ describe('Test team basic methods', () => {
 		let teamId;
 
 		before(async () => {
-			const user = await T.createTestUser().catch((err) => {
+			const user = await T.createTestUser({ roles: ['administrator'] }).catch((err) => {
 				logger.warn('Can not create test user', err);
 			});
 
