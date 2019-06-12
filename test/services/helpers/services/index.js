@@ -6,6 +6,7 @@ const users = require('./users');
 const courses = require('./courses');
 const accounts = require('./accounts');
 const roles = require('./roles');
+const schools = require('./schools');
 
 module.exports = (app, opt) => ({
 	teams: teams(app, opt),
@@ -16,4 +17,5 @@ module.exports = (app, opt) => ({
 	courses: courses(app, opt),
 	accounts: accounts(app, opt),
 	roles,
+	schools: schools(app, opt),
 });
