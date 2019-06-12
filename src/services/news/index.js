@@ -7,7 +7,7 @@ const {
 } = require('./model');
 const hooks = require('./hooks');
 const newsModelHooks = require('./hooks/newsModel.hooks');
-const { flatten } = require('../../utils/array');
+const { flatten, convertToSortOrderObject } = require('../../utils/array');
 
 
 class AbstractService {
@@ -319,6 +319,10 @@ class NewsService extends AbstractService {
 		if (query.q) {
 			searchFilter.title = { $regex: query.q };
 		}
+		const sortQuery = {};
+		if (query.sort) {
+			sortQuery.$sort = convertToSortOrderObject(query.sort);
+		}
 		const internalRequestParams = {
 			query: {
 				displayAt: baseFilter.published,
@@ -327,8 +331,8 @@ class NewsService extends AbstractService {
 				$skip: query.$skip,
 				...NewsService.populateParams().query,
 				...searchFilter,
+				...sortQuery,
 			},
-			$orderby: query.$sort,
 			$paginate: query.$paginate,
 		};
 		return this.app.service('newsModel')
