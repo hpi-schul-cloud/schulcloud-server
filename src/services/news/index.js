@@ -283,8 +283,8 @@ class NewsService extends AbstractService {
 		const now = Date.now();
 		// based on params.unpublished divide between view published news and unpublished news with edit permission
 		const baseFilter = {
-			published: params.unpublished ? { $gt: now } : { $lte: now },
-			permission: params.unpublished ? newsPermissions.EDIT : newsPermissions.VIEW,
+			published: (params.query || {}).unpublished ? { $gt: now } : { $lte: now },
+			permission: (params.query || {}).unpublished ? newsPermissions.EDIT : newsPermissions.VIEW,
 		};
 		const query = {
 			query: {
