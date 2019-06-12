@@ -145,7 +145,5 @@ describe('\'/teams/manage/admin\' service', () => {
 			const result = AdminOverview.mapped(teams, sessionSchoolId);
 			assert.deepStrictEqual(result, expectedResult);
 		});
-
-
 	});
 });
