@@ -323,12 +323,12 @@ class NewsService extends AbstractService {
 			query: {
 				displayAt: baseFilter.published,
 				$or: await this.buildFindQuery(params, baseFilter),
-				$sort: query.$sort,
 				$limit: query.$limit,
 				$skip: query.$skip,
 				...NewsService.populateParams().query,
 				...searchFilter,
 			},
+			$orderby: query.$sort,
 			$paginate: query.$paginate,
 		};
 		return this.app.service('newsModel')
