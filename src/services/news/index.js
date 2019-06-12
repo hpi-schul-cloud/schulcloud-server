@@ -316,11 +316,11 @@ class NewsService extends AbstractService {
 			permission: query.unpublished ? newsPermissions.EDIT : newsPermissions.VIEW,
 		};
 		const searchFilter = {};
-		if (query.q) {
+		if (query.q && /^[\w\s\d]{0,50}$/.test(query.q)) {
 			searchFilter.title = { $regex: query.q };
 		}
 		const sortQuery = {};
-		if (query.sort) {
+		if (query.sort && /^-?\w{1,50}$/.test(query.sort)) {
 			sortQuery.$sort = convertToSortOrderObject(query.sort);
 		}
 		const internalRequestParams = {
