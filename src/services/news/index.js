@@ -25,7 +25,9 @@ class AbstractService {
 		return this.hasSchoolPermission(userId, schoolId, permission)
 			.then((hasPermission) => {
 				if (!hasPermission) {
-					return null;
+					return [{
+						$expr: { $eq: [true, false] },
+					}];
 				}
 				return [{
 					schoolId,
