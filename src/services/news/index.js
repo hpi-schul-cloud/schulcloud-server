@@ -333,7 +333,7 @@ class NewsService extends AbstractService {
 				...searchFilter,
 				...sortQuery,
 			},
-			$paginate: query.$paginate,
+			paginate: query.$paginate,
 		};
 		return this.app.service('newsModel')
 			.find(internalRequestParams)
