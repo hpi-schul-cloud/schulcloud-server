@@ -300,9 +300,9 @@ class NewsService extends AbstractService {
 				displayAt: baseFilter.published,
 				$or: await this.buildFindQuery(params, baseFilter),
 				$sort: (params.query || {}).$sort,
+				$populate: NewsService.populateParams().query.$populate,
 			},
 			$paginate: (params.query || {}).$paginate,
-			...NewsService.populateParams(),
 		};
 		return this.app.service('newsModel')
 			.find(query)
