@@ -269,7 +269,7 @@ class NewsService extends AbstractService {
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account.userId, newsPermissions.VIEW);
 		news.permissions = await this.getPermissions(params.account.userId, news);
-		return news;
+		return NewsService.decorateResults(news);
 	}
 
 	/**
@@ -337,7 +337,7 @@ class NewsService extends AbstractService {
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account.userId, newsPermissions.REMOVE);
 		await this.app.service('newsModel').remove(id);
-		return news;
+		return NewsService.decorateResults(news);
 	}
 
 	/**
@@ -363,7 +363,7 @@ class NewsService extends AbstractService {
 			...updatedNewsData, ...NewsService.populateParams(),
 		});
 		await NewsService.createHistoryEntry(news);
-		return updatedNews;
+		return NewsService.decorateResults(updatedNews);
 	}
 
 	/**
@@ -390,7 +390,7 @@ class NewsService extends AbstractService {
 			...NewsService.populateParams(),
 		});
 		await NewsService.createHistoryEntry(news);
-		return patchedNews;
+		return NewsService.decorateResults(patchedNews);
 	}
 }
 
