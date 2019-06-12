@@ -35,7 +35,7 @@ const { ScopePermissionService, ScopeListService } = require('../helpers/scopePe
 // const {teamRolesToHook} = require('./hooks');
 // todo docs require
 
-const AdminOverview = require('./services/admin');
+const { AdminOverview } = require('./services');
 
 
 class Get {
