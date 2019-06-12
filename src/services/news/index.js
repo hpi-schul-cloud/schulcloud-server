@@ -10,7 +10,6 @@ const { flatten } = require('../../utils/array');
 
 
 class AbstractService {
-	// eslint-disable-next-line no-useless-constructor
 	setup(app) {
 		this.app = app;
 	}
@@ -173,6 +172,42 @@ class AbstractService {
 }
 
 class NewsService extends AbstractService {
+	static populationTargets() {
+		return [
+			{ path: 'schoolId', select: ['_id', 'name'] },
+			{ path: 'creatorId', select: ['_id', 'firstName', 'lastName'] },
+			{ path: 'updaterId', select: ['_id', 'firstName', 'lastName'] },
+			{ path: 'target', select: ['_id', 'name'] },
+		];
+	}
+
+	static decorateResults(result) {
+		// restore ids from populated documents
+		const dataIdsFixed = result.data.map(n => ({
+			...n,
+			school: n.schoolId,
+			schoolId: (n.schoolId || {})._id,
+			creator: n.creatorId,
+			creatorId: (n.creatorId || {})._id,
+			updater: n.updaterId,
+			updaterId: (n.updaterId || {})._id,
+		}));
+		return { ...result, data: dataIdsFixed };
+	}
+
+	async decoratePermissions(result, userId) {
+		// decorate permissions in data objects
+		const decoratedData = await Promise.all(result.data.map(async n => ({
+			...n,
+			permissions: await this.getPermissions(userId, {
+				target: (n.target || {})._id,
+				targetModel: n.targetModel,
+				schoolId: n.schoolId,
+			}),
+		})));
+		return { ...result, data: decoratedData };
+	}
+
 	/**
 	 * Create a copy of the original news if it is edited
 	 * @param {News} oldItem
@@ -189,6 +224,30 @@ class NewsService extends AbstractService {
 			parentId: oldItem._id,
 		};
 		return newsHistoryModel.create(historyEntry);
+	}
+
+	async buildFindQuery(params, baseFilter) {
+		const query = [];
+		const scoped = !!(params.query && (params.query.target || params.query.targetModel));
+
+		if (scoped) {
+			// add selected scope news
+			query.push(await super.createScopedQuery(
+				params.account.userId, baseFilter.permission, params.query.target, params.query.targetModel,
+			));
+		} else {
+			// add school news
+			query.push(await super.createSchoolQuery(
+				params.account.userId, params.account.schoolId, baseFilter.permission,
+			));
+			if (params.query && params.query.target !== 'school') {
+				// add all scope news if more than the current school is requested
+				query.push(await super.createScopedQuery(
+					params.account.userId, baseFilter.permission,
+				));
+			}
+		}
+		return flatten(query);
 	}
 
 	/**
@@ -218,73 +277,24 @@ class NewsService extends AbstractService {
 	 */
 	async find(params) {
 		const now = Date.now();
-		const query = [];
-		const scoped = !!(params.query && (params.query.target || params.query.targetModel));
 		// based on params.unpublished divide between view published news and unpublished news with edit permission
 		const baseFilter = {
 			published: params.unpublished ? { $gt: now } : { $lte: now },
 			permission: params.unpublished ? newsPermissions.EDIT : newsPermissions.VIEW,
 		};
-
-		if (scoped) {
-			// add selected scope news
-			query.push(await super.createScopedQuery(
-				params.account.userId, baseFilter.permission, params.query.target, params.query.targetModel,
-			));
-		} else {
-			// add school news
-			query.push(await super.createSchoolQuery(
-				params.account.userId, params.account.schoolId, baseFilter.permission,
-			));
-			if (params.query.target !== 'school') {
-				// add all scope news if more than the current school is requested
-				query.push(await super.createScopedQuery(
-					params.account.userId, baseFilter.permission,
-				));
-			}
-		}
-		const flatQuery = flatten(query);
-		const completeQuery = {
+		const query = {
 			query: {
 				displayAt: baseFilter.published,
-				$or: flatQuery,
-				$populate: [
-					{ path: 'schoolId', select: ['_id', 'name'] },
-					{ path: 'creatorId', select: ['_id', 'firstName', 'lastName'] },
-					{ path: 'updaterId', select: ['_id', 'firstName', 'lastName'] },
-					{ path: 'target', select: ['_id', 'name'] },
-				],
-				$sort: params.query.$sort,
+				$or: await this.buildFindQuery(params, baseFilter),
+				$populate: NewsService.populationTargets(),
+				$sort: (params.query || {}).$sort,
 			},
-			$paginate: params.query.$paginate,
+			$paginate: (params.query || {}).$paginate,
 		};
 		return this.app.service('newsModel')
-			.find(completeQuery)
-			.then((result) => {
-				// restore ids from populated documents
-				const dataIdsFixed = result.data.map(n => ({
-					...n,
-					school: n.schoolId,
-					schoolId: n.schoolId._id,
-					creator: n.creatorId,
-					creatorId: (n.creatorId || {})._id,
-					updater: n.updaterId,
-					updaterId: (n.updaterId || {})._id,
-				}));
-				return { ...result, data: dataIdsFixed };
-			})
-			.then(async (result) => {
-				// decorate permissions in data objects
-				const decoratedData = await Promise.all(result.data.map(async n => ({
-					...n,
-					permissions: await this.getPermissions(params.account.userId, {
-						target: (n.target || {})._id,
-						targetModel: n.targetModel,
-						schoolId: n.schoolId,
-					}),
-				})));
-				return { ...result, data: decoratedData };
-			});
+			.find(query)
+			.then(NewsService.decorateResults)
+			.then(result => this.decoratePermissions(result, params.account.userId));
 	}
 
 	/**
