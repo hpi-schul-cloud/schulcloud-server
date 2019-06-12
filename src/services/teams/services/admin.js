@@ -1,19 +1,9 @@
-const {
-	BadRequest,
-	Forbidden,
-	NotFound,
-} = require('@feathersjs/errors');
+const { BadRequest, Forbidden, NotFound } = require('@feathersjs/errors');
 const hooks = require('../hooks');
 const { warn } = require('../../../logger/index');
 
-const {
-	createUserWithRole,
-} = require('../hooks/helpers');
-const {
-	getBasic,
-	patchTeam,
-	getSessionUser,
-} = require('../helpers');
+const { createUserWithRole } = require('../hooks/helpers');
+const { getBasic, patchTeam, getSessionUser } = require('../helpers');
 const {
 	isArray,
 	isArrayWithElement,
@@ -69,14 +59,24 @@ class AdminOverview {
 		return teams.data.map((team) => {
 			const createdAtMySchool = isSameId(team.schoolId, sessionSchoolId);
 			const hasMembersOfOtherSchools = team.schoolIds.length > 1;
-			let schoolMembers = AdminOverview.getMembersBySchool(team, sessionSchoolId);
-			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner'); // role is populated
+			let schoolMembers = AdminOverview.getMembersBySchool(
+				team,
+				sessionSchoolId,
+			);
+			const ownerExist = team.userIds.some(
+				user => user.role.name === 'teamowner',
+			); // role is populated
 			const hasRocketChat = team.features.includes('rocketChat');
 
 			schoolMembers = schoolMembers.map((m) => {
 				const obj = {
 					role: m.role.name,
-					user: AdminOverview.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName']),
+					user: AdminOverview.getKeys(m.userId, [
+						'roles',
+						'_id',
+						'firstName',
+						'lastName',
+					]),
 				};
 				return obj;
 			});
@@ -108,15 +108,20 @@ class AdminOverview {
 	find(params) {
 		return getSessionUser(this, params).then((sessionUser) => {
 			const { schoolId } = sessionUser;
-			return this.app.service('teams')
+			return this.app
+				.service('teams')
 				.find({
 					query: {
 						schoolIds: schoolId,
 						// userIds: { $elemMatch: { schoolId } },
-						$populate: [{ path: 'userIds.role' }, {
-							path: 'userIds.userId',
-							populate: { path: 'roles' },
-						}, 'schoolIds'], // schoolId
+						$populate: [
+							{ path: 'userIds.role' },
+							{
+								path: 'userIds.userId',
+								populate: { path: 'roles' },
+							},
+							'schoolIds',
+						], // schoolId
 					},
 				})
 				.then(teams => AdminOverview.mapped(teams, schoolId))
@@ -127,25 +132,32 @@ class AdminOverview {
 	}
 
 	/**
-     * If team is create at this school and owner if not exist,
-     * the school admin can set a new owner for this team.
-     * If school is created from other school and *userId is not set*,
-     * it remove all users from own school.
-     * @param {String} teamId
-     * @param {Object} data data.userId
-     * @param {Object} params
-     */
+   * If team is create at this school and owner if not exist,
+   * the school admin can set a new owner for this team.
+   * If school is created from other school and *userId is not set*,
+   * it remove all users from own school.
+   * @param {String} teamId
+   * @param {Object} data data.userId
+   * @param {Object} params
+   */
 	patch(teamId, { userId }, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
-			const {
-				isOwnerSchool,
-				schoolId,
-			} = AdminOverview.getIsOwnerStats(ref, sessionUser, team);
+			const { isOwnerSchool, schoolId } = AdminOverview.getIsOwnerStats(
+				ref,
+				sessionUser,
+				team,
+			);
 			// const userId = data.userId;
 			let { userIds } = team;
 
 			if (isOwnerSchool && isDefined(userId)) {
-				userIds.push(createUserWithRole(ref, { userId, schoolId, selectedRole: 'teamowner' }));
+				userIds.push(
+					createUserWithRole(ref, {
+						userId,
+						schoolId,
+						selectedRole: 'teamowner',
+					}),
+				);
 			} else if (!isOwnerSchool && isUndefined(userId)) {
 				userIds = AdminOverview.removeMemberBySchool(team, schoolId);
 			} else {
@@ -157,13 +169,17 @@ class AdminOverview {
 	}
 
 	/**
-     * If team is created at own school, it remove it.
-     * @param {*} teamId
-     * @param {*} params
-     */
+   * If team is created at own school, it remove it.
+   * @param {*} teamId
+   * @param {*} params
+   */
 	remove(teamId, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
-			const { isOwnerSchool } = AdminOverview.getIsOwnerStats(ref, sessionUser, team);
+			const { isOwnerSchool } = AdminOverview.getIsOwnerStats(
+				ref,
+				sessionUser,
+				team,
+			);
 			if (isUndefined(isOwnerSchool)) {
 				throw new Forbidden('You have not the permission.');
 			}
@@ -171,10 +187,9 @@ class AdminOverview {
 		});
 	}
 
-
 	/**
-    * Contact Owner part
-    */
+   * Contact Owner part
+   */
 
 	static getOwner(team, ownerRoleId) {
 		return team.userIds.find(user => isSameId(user.role, ownerRoleId));
@@ -193,12 +208,12 @@ class AdminOverview {
 	}
 
 	/**
-     * Over this services method can administrators can send message for school teams.
-     * It has a batch logic to send the same message to different teams.
-     * This message contact the owner of this teams over his email.
-     * @param {Object::{message:String,teamIds:String||Array::String}} data
-     * @param {*} params
-     */
+   * Over this services method can administrators can send message for school teams.
+   * It has a batch logic to send the same message to different teams.
+   * This message contact the owner of this teams over his email.
+   * @param {Object::{message:String,teamIds:String||Array::String}} data
+   * @param {*} params
+   */
 	create({ message, teamIds }, params) {
 		//  const message = data.message;
 		//  let teamIds = data.teamIds;
@@ -216,47 +231,57 @@ class AdminOverview {
 			throw new BadRequest('Wrong value.');
 		}
 
-		return Promise.all(
-			[getSessionUser(this, params), hooks.teamRolesToHook(this)],
-		).then(([{ schoolId }, ref]) => {
-			teamService
-				.find((AdminOverview.getRestrictedQuery(teamIds, schoolId)))
-				.then(({ data }) => {
-					const teams = data;
-					if (!isArrayWithElement(teams)) {
-						throw new NotFound('No team found.');
-					}
-
-					const subject = `${process.env.SC_SHORT_TITLE}: Team-Anfrage`;
-					const mailService = this.app.service('/mails');
-					const ownerRoleId = ref.findRole('name', 'teamowner', '_id');
-					const emails = teams.reduce((stack, team) => {
-						const owner = AdminOverview.getOwner(team, ownerRoleId);
-						if (isDefined(owner.userId.email)) {
-							stack.push(owner.userId.email);
+		return Promise.all([
+			getSessionUser(this, params),
+			hooks.teamRolesToHook(this),
+		])
+			.then(([{ schoolId }, ref]) => {
+				teamService
+					.find(AdminOverview.getRestrictedQuery(teamIds, schoolId))
+					.then(({ data }) => {
+						const teams = data;
+						if (!isArrayWithElement(teams)) {
+							throw new NotFound('No team found.');
 						}
-						return stack;
-					}, []);
-					const content = {
-						text: AdminOverview.formatText(message)
-								|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
-						html: '',
-					};
 
-					const waits = emails.map(email => mailService.create({ email, subject, content })
-						.then(res => res.accepted[0])
-						.catch(err => `Error: ${err.message}`));
+						const subject = `${
+							process.env.SC_SHORT_TITLE
+						}: Nachricht an den Team-Eigentümer über die Team-Administration-Kontaktfunktion`;
+						const mailService = this.app.service('/mails');
+						const ownerRoleId = ref.findRole('name', 'teamowner', '_id');
+						const emails = teams.reduce((stack, team) => {
+							const owner = AdminOverview.getOwner(team, ownerRoleId);
+							if (isDefined(owner.userId.email)) {
+								stack.push(owner.userId.email);
+							}
+							return stack;
+						}, []);
+						const content = {
+							text:
+                AdminOverview.formatText(message)
+                || 'No alternative mailtext provided. Expected: HTML Template Mail.',
+							html: '',
+						};
 
-					return Promise.all(waits)
-						.then(values => values)
-						.catch(err => err);
-				}).catch((err) => {
-					throw err;
-				});
-		}).catch((err) => {
-			warn(err);
-			throw new BadRequest('It exists no teams with access rights, to send this message.');
-		});
+						const waits = emails.map(email => mailService
+							.create({ email, subject, content })
+							.then(res => res.accepted[0])
+							.catch(err => `Error: ${err.message}`));
+
+						return Promise.all(waits)
+							.then(values => values)
+							.catch(err => err);
+					})
+					.catch((err) => {
+						throw err;
+					});
+			})
+			.catch((err) => {
+				warn(err);
+				throw new BadRequest(
+					'It exists no teams with access rights, to send this message.',
+				);
+			});
 	}
 
 	setup(app) {
