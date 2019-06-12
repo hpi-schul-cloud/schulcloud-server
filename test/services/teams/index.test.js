@@ -72,5 +72,26 @@ describe('Test team basic methods', () => {
 				T.cleanup();
 			}
 		});
+
+		it('is not allowed for demoStudent', async () => {
+			const demoStudent = await T.createTestUser({ roles: ['demoStudent'] });
+			const username = demoStudent.email;
+			const password = 'Schulcloud1!';
+			await T.createTestAccount({ username, password }, 'local', demoStudent);
+			const params = await T.generateRequestParams({ username, password });
+
+			try {
+				const record = {
+					name: 'test',
+					schoolId: demoStudent.schoolId,
+					schoolIds: [demoStudent.schoolId],
+					userIds: [demoStudent._id],
+				};
+				const slimteam = await teamService.create(record, { ...params, query: {} });
+				expect(slimteam).to.not.be.ok;
+			} finally {
+				T.cleanup();
+			}
+		});
 	});
 });
