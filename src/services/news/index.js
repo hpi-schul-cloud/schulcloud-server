@@ -35,12 +35,12 @@ class AbstractService {
 	}
 
 	/**
-		 * Returns scoped news the user is allowed to see
-		 *
-		 * @param {BsonId|String} userId the user's Id
-		 * @param {BsonId|String} target (optional) Id of the news target (course, team, etc.)
-		 * @returns Array<Query>
-		 */
+	 * Returns scoped news the user is allowed to see
+	 *
+	 * @param {BsonId|String} userId the user's Id
+	 * @param {BsonId|String} target (optional) Id of the news target (course, team, etc.)
+	 * @returns Array<Query>
+	 */
 	async createScopedQuery(userId, permission, target = null, targetModel = null) {
 		// check params
 		if (target ? !targetModel : targetModel) {
