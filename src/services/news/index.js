@@ -405,9 +405,8 @@ class NewsService extends AbstractService {
 			...data,
 			updaterId: params.account.userId,
 		};
-		const updatedNews = await this.app.service('newsModel').update(id, {
-			...updatedNewsData, ...NewsService.populateParams(),
-		});
+		const updatedNews = await this.app.service('newsModel')
+			.update(id, updatedNewsData, NewsService.populateParams());
 		await NewsService.createHistoryEntry(news);
 		return NewsService.decorateResults(updatedNews);
 	}
@@ -431,10 +430,8 @@ class NewsService extends AbstractService {
 			...data,
 			updaterId: params.account.userId,
 		};
-		const patchedNews = await this.app.service('newsModel').patch(id, {
-			...patchedNewsData,
-			...NewsService.populateParams(),
-		});
+		const patchedNews = await this.app.service('newsModel')
+			.patch(id, patchedNewsData, NewsService.populateParams());
 		await NewsService.createHistoryEntry(news);
 		return NewsService.decorateResults(patchedNews);
 	}
