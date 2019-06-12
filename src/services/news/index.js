@@ -214,22 +214,30 @@ class NewsService extends AbstractService {
 	}
 
 	/**
-	 * Decorates a paginated result set with the user's permissions for each news item in the set
-	 * @param {Object} result paginated result set
+	 * Decorates a result set with the user's permissions for each news item in the set
+	 * @param {Object} result result set
 	 * @param {ObjectId} userId the user's id
-	 * @returns {Object} decorated paginated result set
+	 * @returns {Object} decorated result set
 	 * @memberof NewsService
 	 */
 	async decoratePermissions(result, userId) {
-		const decoratedData = await Promise.all(result.data.map(async n => ({
+		const decorate = async n => ({
 			...n,
 			permissions: await this.getPermissions(userId, {
 				target: (n.target || {})._id,
 				targetModel: n.targetModel,
 				schoolId: n.schoolId,
 			}),
-		})));
-		return { ...result, data: decoratedData };
+		});
+
+		if (result instanceof Array) {
+			return Promise.all(result.map(decorate));
+		}
+		if (result.data) { // paginated result set
+			const decoratedData = await Promise.all(result.data.map(decorate));
+			return { ...result, data: decoratedData };
+		}
+		return decorate(result);
 	}
 
 	/**
