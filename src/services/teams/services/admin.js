@@ -196,8 +196,8 @@ class AdminOverview {
 	}
 
 	static formatText(text) {
-		// todo
-		return text;
+		// eslint-disable-next-line max-len
+		return `Hallo, du wurdest in deiner Rolle als Team-Eigentümer über die Team-Administration-Kontaktfunktion kontaktiert: ${text}`;
 	}
 
 	static getRestrictedQuery(teamIds, schoolId) {
