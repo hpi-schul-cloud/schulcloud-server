@@ -166,6 +166,11 @@ class AbstractService {
 }
 
 class NewsService extends AbstractService {
+	/**
+	 * Fields to populate after querying, including whitelisted attributes
+	 * @static
+	 * @memberof NewsService
+	 */
 	static populateParams() {
 		return {
 			query: {
@@ -179,6 +184,13 @@ class NewsService extends AbstractService {
 		};
 	}
 
+	/**
+	 * Decorates a result or result set with handy short-hands for the API-consumer
+	 * @static
+	 * @param {News|Array<News>|Object} result a news item or collection of news items
+	 * @returns {News|Array<News>|Object} decorated result(s)
+	 * @memberof NewsService
+	 */
 	static decorateResults(result) {
 		const decorate = n => ({
 			...n,
@@ -199,8 +211,14 @@ class NewsService extends AbstractService {
 		return decorate(result);
 	}
 
+	/**
+	 * Decorates a paginated result set with the user's permissions for each news item in the set
+	 * @param {Object} result paginated result set
+	 * @param {ObjectId} userId the user's id
+	 * @returns {Object} decorated paginated result set
+	 * @memberof NewsService
+	 */
 	async decoratePermissions(result, userId) {
-		// decorate permissions in data objects
 		const decoratedData = await Promise.all(result.data.map(async n => ({
 			...n,
 			permissions: await this.getPermissions(userId, {
@@ -230,10 +248,18 @@ class NewsService extends AbstractService {
 		return newsHistoryModel.create(historyEntry);
 	}
 
+	/**
+	 * Builds a mongoose-query based on the request params.
+	 * It is possible to request only school news (target='school'),
+	 * only scope news (target=[some id], targetModel=[teams/courses/...]), or both (default).
+	 * @param {Object} params Feathers request params
+	 * @param {Object} baseFilter
+	 * @returns {Object} mongoose-style query object
+	 * @memberof NewsService
+	 */
 	async buildFindQuery(params, baseFilter) {
 		const query = [];
 		const scoped = !!(params.query && (params.query.target || params.query.targetModel));
-
 		if (scoped) {
 			// add selected scope news
 			query.push(await super.createScopedQuery(
