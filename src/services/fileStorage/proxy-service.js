@@ -451,7 +451,7 @@ const directoryService = {
 				refPermModel: 'role',
 				write: false,
 				read: true, // students can always read course files
-				create: false,
+				create: true,
 				delete: false,
 			});
 		}

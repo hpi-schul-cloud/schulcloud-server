@@ -433,7 +433,7 @@ describe('news service', () => {
 				}
 			});
 
-			it('should enable creating news in scopes the user has the necessary permissions in', async () => {
+			it.skip('should enable creating news in scopes the user has the necessary permissions in', async () => {
 				const schoolId = new ObjectId();
 				expect(await News.count({ schoolId })).to.equal(0);
 				const user = await createTestUser({ schoolId, roles: 'teacher' });
@@ -454,7 +454,7 @@ describe('news service', () => {
 				expect(await News.count({ schoolId })).to.equal(1);
 			});
 
-			it('should not allow creating news in other scopes', async () => {
+			it.skip('should not allow creating news in other scopes', async () => {
 				const schoolId = new ObjectId();
 				expect(await News.count({ schoolId })).to.equal(0);
 				const user = await createTestUser({ schoolId, roles: 'teacher' });
