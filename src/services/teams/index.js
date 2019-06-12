@@ -37,7 +37,6 @@ const { ScopePermissionService, ScopeListService } = require('../helpers/scopePe
 
 const AdminOverview = require('./services/admin');
 
-
 class Get {
 	constructor(options) {
 		this.options = options || {};
