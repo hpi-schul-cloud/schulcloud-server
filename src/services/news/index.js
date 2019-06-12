@@ -157,10 +157,10 @@ class AbstractService {
 		}
 	}
 
-	checkExistence(news, query) {
-		if (!news) {
-			logger.error(`Cannot find news item with query "${query}" => "${news}"`);
-			throw new NotFound('News item does not exist.');
+	checkExistence(resource, query) {
+		if (!resource) {
+			logger.error(`Cannot find resource item with query "${query}" => "${resource}"`);
+			throw new NotFound('Resource does not exist.');
 		}
 	}
 }
