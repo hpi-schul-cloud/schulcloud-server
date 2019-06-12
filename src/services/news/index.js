@@ -1,6 +1,7 @@
 const service = require('feathers-mongoose');
 const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
 const logger = require('winston');
+const { ObjectId } = require('mongoose').Types;
 const {
 	newsModel, targetModels, newsHistoryModel, newsPermissions,
 } = require('./model');
@@ -88,17 +89,19 @@ class AbstractService {
 
 	/* Permissions */
 
-	async getPermissions(userId, dataItem) {
+	async getPermissions(userId, { target, targetModel, schoolId } = {}) {
+		const isObjectId = o => o instanceof ObjectId || typeof o === 'string';
 		// scope case: user role in scope must have given permission
-		if (dataItem.target && dataItem.targetModel) {
-			const scope = this.app.service(`${dataItem.targetModel}/:scopeId/userPermissions/`);
-			const params = { route: { scopeId: dataItem.target.toString() } };
+		if (target && targetModel) {
+			const targetId = isObjectId(target) ? target.toString() : target._id.toString();
+			const scope = this.app.service(`${targetModel}/:scopeId/userPermissions/`);
+			const params = { route: { scopeId: targetId } };
 			const scopePermissions = await scope.get(userId, params);
 			return scopePermissions;
 		}
 
 		// default school case: dataItem and users schoolId must match and user permission must exist
-		return this.getSchoolPermissions(userId, dataItem.schoolId);
+		return this.getSchoolPermissions(userId, schoolId);
 	}
 
 	/**
@@ -172,18 +175,21 @@ class AbstractService {
 }
 
 class NewsService extends AbstractService {
-	static populationTargets() {
-		return [
-			{ path: 'schoolId', select: ['_id', 'name'] },
-			{ path: 'creatorId', select: ['_id', 'firstName', 'lastName'] },
-			{ path: 'updaterId', select: ['_id', 'firstName', 'lastName'] },
-			{ path: 'target', select: ['_id', 'name'] },
-		];
+	static populateParams() {
+		return {
+			query: {
+				$populate: [
+					{ path: 'schoolId', select: ['_id', 'name'] },
+					{ path: 'creatorId', select: ['_id', 'firstName', 'lastName'] },
+					{ path: 'updaterId', select: ['_id', 'firstName', 'lastName'] },
+					{ path: 'target', select: ['_id', 'name'] },
+				],
+			},
+		};
 	}
 
 	static decorateResults(result) {
-		// restore ids from populated documents
-		const dataIdsFixed = result.data.map(n => ({
+		const decorate = n => ({
 			...n,
 			school: n.schoolId,
 			schoolId: (n.schoolId || {})._id,
@@ -191,8 +197,15 @@ class NewsService extends AbstractService {
 			creatorId: (n.creatorId || {})._id,
 			updater: n.updaterId,
 			updaterId: (n.updaterId || {})._id,
-		}));
-		return { ...result, data: dataIdsFixed };
+		});
+		if (result instanceof Array) {
+			return result.map(decorate);
+		}
+		if (result.data) { // paginated result set
+			const dataIdsFixed = result.data.map(decorate);
+			return { ...result, data: dataIdsFixed };
+		}
+		return decorate(result);
 	}
 
 	async decoratePermissions(result, userId) {
@@ -261,7 +274,7 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async get(id, params) {
-		const news = await this.app.service('newsModel').get(id);
+		const news = await this.app.service('newsModel').get(id, NewsService.populateParams());
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account.userId, newsPermissions.VIEW);
 		news.permissions = await this.getPermissions(params.account.userId, news);
@@ -286,10 +299,10 @@ class NewsService extends AbstractService {
 			query: {
 				displayAt: baseFilter.published,
 				$or: await this.buildFindQuery(params, baseFilter),
-				$populate: NewsService.populationTargets(),
 				$sort: (params.query || {}).$sort,
 			},
 			$paginate: (params.query || {}).$paginate,
+			...NewsService.populateParams(),
 		};
 		return this.app.service('newsModel')
 			.find(query)
@@ -327,7 +340,7 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async remove(id, params) {
-		const news = await this.app.service('newsModel').get(id);
+		const news = await this.app.service('newsModel').get(id, NewsService.populateParams());
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account.userId, newsPermissions.REMOVE);
 		await this.app.service('newsModel').remove(id);
@@ -353,7 +366,9 @@ class NewsService extends AbstractService {
 			...data,
 			updaterId: params.account.userId,
 		};
-		const updatedNews = await this.app.service('newsModel').update(id, updatedNewsData);
+		const updatedNews = await this.app.service('newsModel').update(id, {
+			...updatedNewsData, ...NewsService.populateParams(),
+		});
 		await NewsService.createHistoryEntry(news);
 		return updatedNews;
 	}
@@ -370,14 +385,17 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async patch(id, data, params) {
-		const news = await this.app.service('newsModel').get(id);
+		const news = await this.app.service('newsModel').get(id, NewsService.populateParams());
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account.userId, newsPermissions.EDIT);
 		const patchedNewsData = {
 			...data,
 			updaterId: params.account.userId,
 		};
-		const patchedNews = await this.app.service('newsModel').patch(id, patchedNewsData);
+		const patchedNews = await this.app.service('newsModel').patch(id, {
+			...patchedNewsData,
+			...NewsService.populateParams(),
+		});
 		await NewsService.createHistoryEntry(news);
 		return patchedNews;
 	}
