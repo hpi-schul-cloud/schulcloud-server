@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-// const { Forbidden } = require('@feathersjs/errors');
-// const { immutableFieldPlugin } = require('../../utils/mongoose');
 
 const { Schema } = mongoose;
 
@@ -67,19 +65,6 @@ const newsSchema = new Schema({
 		},
 	},
 });
-
-// newsSchema.plugin(immutableFieldPlugin);
-
-// // eslint-disable-next-line prefer-arrow-callback
-// newsSchema.pre('save', function checkImmutables(next) {
-// 	const props = newsSchema.tree;
-// 	Object.keys(props).forEach((prop) => {
-// 		if (props[prop].immutable && !props[prop].isNew && props[prop].isModified) {
-// 			throw new Forbidden('bäaaam');
-// 		}
-// 	});
-// 	return next();
-// });
 
 const newsModel = mongoose.model('news', newsSchema);
 
