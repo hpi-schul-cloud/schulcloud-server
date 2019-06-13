@@ -25,7 +25,6 @@ const newsSchema = new Schema({
 	creatorId: {
 		type: Schema.Types.ObjectId,
 		ref: 'user',
-		required: true,
 		immutable: true,
 	},
 	createdAt: { type: Date, default: Date.now, required: true },
