@@ -89,7 +89,7 @@ class AdminOverview {
 			// memberTotal, could be wrong anyways, because it do not prof if user realy exists at an other school
 			// but it is also only for preventing errors, if user are not removed from delete after deleting,
 			// like reducedSchoolMembers
-			const memeberDiffAtOwnSchool = schoolMembers - reducedSchoolMembers;
+			const memeberDiffAtOwnSchool = schoolMembers.length - reducedSchoolMembers.length;
 
 			schoolMembers = reducedSchoolMembers.map((m) => {
 				m.user.roles = (m.user.roles || []).map(role => role.name);
