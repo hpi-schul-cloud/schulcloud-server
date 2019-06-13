@@ -28,9 +28,11 @@
     "debug": "nodemon --inspect=5959 src/",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha -- -- test/**/*.test.js",
     "coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov > coverage.lcov",
+    "coverage-codacy": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codacy-coverage",
     "mocha": "cross-env NODE_ENV=test mocha test/ --recursive",
     "mocha-inspect": "cross-env NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
-    "migrations": "cross-env NODE_ENV=migration node migrations/",
+	"migrations": "node migrations/",
+	"migrations-local": "cross-env NODE_ENV=migration node migrations/",
     "migrations-dry": "cross-env NODE_ENV=migration node migrations/ --dry"
   },
   "dependencies": {
@@ -100,6 +102,7 @@
     "winston": "^2.3.0"
   },
   "devDependencies": {
+    "codacy-coverage": "^3.4.0",
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",

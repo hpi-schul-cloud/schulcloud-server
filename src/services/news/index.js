@@ -3,7 +3,7 @@ const { Forbidden, NotFound } = require('@feathersjs/errors');
 const logger = require('winston');
 const { newsModel, newsHistoryModel } = require('./model');
 const hooks = require('./hooks');
-const newsModelHooks = require('./hooks/model');
+const newsModelHooks = require('./hooks/newsModel.hooks');
 const { flatten, paginate, sort } = require('../../utils/array');
 
 class NewsService {
@@ -67,8 +67,9 @@ class NewsService {
 	 * @memberof NewsService
 	 */
 	async findSchoolNews({ userId, schoolId }) {
-		if (!this.hasPermission(userId, 'NEWS_VIEW')) {
-			throw new Forbidden('Mising permissions to view school news.');
+		const hasPermission = await this.hasPermission(userId, 'NEWS_VIEW');
+		if (!hasPermission) {
+			return [];
 		}
 		const query = {	schoolId, target: { $exists: false } };
 		return this.app.service('newsModel').find({ query, paginate: false });
@@ -221,7 +222,7 @@ class NewsService {
 	async update(id, data, params) {
 		const news = await this.app.service('newsModel').get(id);
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account, 'NEWS_EDIT'); 
+		await this.authorize(news, params.account, 'NEWS_EDIT');
 		const updatedNews = await this.app.service('newsModel').update(id, data);
 		await NewsService.createHistoryEntry(news);
 		return updatedNews;
