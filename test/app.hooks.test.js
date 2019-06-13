@@ -37,6 +37,7 @@ describe('Sanitization Hook', () => {
 	it('POST /news (Sanitization)', () => {
 		const postBody = {
 			schoolId: '0000d186816abba584714c5f',
+			creatorId: '0000d213816abba584714c0a',
 			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
 			content: '<p>SanitizationTest<script>alert("test);</script>'
 					+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
@@ -53,6 +54,7 @@ describe('Sanitization Hook', () => {
 	it('POST FAIL /news (Sanitization)', () => {
 		const postBody = {
 			schoolId: '0000d186816abba584714c5f',
+			creatorId: '0000d213816abba584714c0a',
 			title: '<script>alert("test");</script><b></b><i></i><img src="bla" />',
 			content: 'a',
 		};

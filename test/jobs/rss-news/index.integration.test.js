@@ -95,6 +95,7 @@ describe('RSS Feed Crawler Integration', function () {
                 title: 'a',
                 content: 'a',
                 schoolId: sampleSchool._id,
+                creatorId: sampleSchool._id,
                 source: 'rss',
             }).save();
 
