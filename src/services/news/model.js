@@ -31,7 +31,6 @@ const newsSchema = new Schema({
 
 	updaterId: { type: Schema.Types.ObjectId, ref: 'user' },
 	updatedAt: { type: Date },
-	history: [{ type: Schema.Types.ObjectId, ref: 'newsArchiv' }],
 	externalId: { type: String }, // e.g. guid for rss feed items
 	source: {
 		type: String,
