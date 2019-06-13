@@ -207,8 +207,12 @@ class AdminOverview {
 	}
 
 	static formatText(text) {
-		// eslint-disable-next-line max-len
-		return `Hallo, du wurdest in deiner Rolle als Team-Eigentümer über die Team-Administration-Kontaktfunktion kontaktiert: ${text}`;
+		return `Hallo,
+		\nes besteht Klärungsbedarf zu deinem Team.
+		\nDu wurdest über die Administratoren-Kontaktfunktion benachrichtigt. 
+		\n\nText der Nachricht: \n${text}
+		\n\nVielen Dank
+		\nDein ${process.env.SC_SHORT_TITLE}-Team`;
 	}
 
 	static getRestrictedQuery(teamIds, schoolId) {
@@ -257,7 +261,7 @@ class AdminOverview {
 
 						const subject = `${
 							process.env.SC_SHORT_TITLE
-						}: Nachricht an den Team-Eigentümer über die Team-Administration-Kontaktfunktion`;
+						}: Es besteht Klärungsbedarf zu deinem Team!`;
 						const mailService = this.app.service('/mails');
 						const ownerRoleId = ref.findRole('name', 'teamowner', '_id');
 						const emails = teams.reduce((stack, team) => {
