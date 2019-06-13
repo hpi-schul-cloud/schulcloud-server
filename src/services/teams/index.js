@@ -84,15 +84,18 @@ class AdminOverview {
 			let schoolMembers = AdminOverview.getMembersBySchool(team, sessionSchoolId);
 			const ownerExist = team.userIds.some(user => user.role.name === 'teamowner'); // role is populated
 
-			schoolMembers = schoolMembers.map((m) => {
-				const obj = {
-					role: m.role.name,
-					user: AdminOverview.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName']),
-				};
-				return obj;
+			const reducedSchoolMembers = [];
+			schoolMembers.forEach((m) => {
+				if (m.userId) {
+					const obj = {
+						role: m.role.name,
+						user: AdminOverview.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName']),
+					};
+					reducedSchoolMembers.push(obj);
+				}
 			});
 
-			schoolMembers = schoolMembers.map((m) => {
+			schoolMembers = reducedSchoolMembers.map((m) => {
 				m.user.roles = (m.user.roles || []).map(role => role.name);
 				return m;
 			});

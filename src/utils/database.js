@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const logger = require('../logger/index');
 
-const configurations = ['test', 'production', 'default'];
+const configurations = ['test', 'production', 'default', 'migration'];
 const env = process.env.NODE_ENV || 'default';
 
 if (!(configurations.includes(env))) {
