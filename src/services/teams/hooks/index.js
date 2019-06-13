@@ -337,7 +337,7 @@ const teamRolesToHook = (hook) => {
 			} else if (role) {
 				out = role;
 			} else {
-				logger.warn({ role, value, resultKey });
+				logger.warn(JSON.stringify({ role, value, resultKey }));
 				throw new NotFound('No team role found. (4)');
 			}
 			return out;
