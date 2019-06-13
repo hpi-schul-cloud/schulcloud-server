@@ -347,7 +347,7 @@ describe('news service', () => {
 				expect(result.total).to.equal(0);
 			});
 
-			it('should paginate by default, but accept paginate=false as query parameter', async () => {
+			it('should paginate by default, but accept $paginate=false as query parameter', async () => {
 				const schoolId = (await createTestSchool())._id;
 				await News.create([
 					{
@@ -366,7 +366,7 @@ describe('news service', () => {
 				const user = await createTestUser({ schoolId, roles: 'student' });
 				const params = await generateRequestParamsFromUser(user);
 
-				// default: paginate=true
+				// default: $paginate=true
 				const paginatedResult = await newsService.find(params);
 				expect(paginatedResult.total).to.equal(2);
 				expect(paginatedResult.data.every(item => item.title.includes('school news'))).to.equal(true);

@@ -7,8 +7,11 @@ const {
 } = require('./model');
 const hooks = require('./hooks');
 const newsModelHooks = require('./hooks/newsModel.hooks');
-const { flatten, convertToSortOrderObject } = require('../../utils/array');
+const { flatten, paginate, convertToSortOrderObject } = require('../../utils/array');
 
+const DEFAULT_PAGINATION_OPTIONS = {
+	default: 25,
+};
 
 class AbstractService {
 	setup(app) {
@@ -25,9 +28,7 @@ class AbstractService {
 		return this.hasSchoolPermission(userId, schoolId, permission)
 			.then((hasPermission) => {
 				if (!hasPermission) {
-					return [{
-						$expr: { $eq: [true, false] },
-					}];
+					return null;
 				}
 				return [{
 					schoolId,
@@ -101,17 +102,15 @@ class AbstractService {
 	 * Checks scoped permission for a user and given news.
 	 * @param {BsonId|String} userId
 	 * @param {String} permission
-	 * @param {BsonId|String} targetId (optional) news target (scope) id. Only valid with targetModel.
-	 * @param {String} targetModel (optional) news target (scope) model. Only valid with target.
+	 * @param {Object} dataItem {target, targetModel} news target (scope) id and target model.
 	 * @returns {Promise<Boolean>} Promise that resolves to true/false
 	 * @example
-	 * await hasPermission(user._id, 'NEWS_VIEW') => true
-	 * await hasPermission(user._id, 'NEWS_CREATE', team._id, 'teams') => false
+	 * await hasPermission(user._id, 'NEWS_CREATE', {target: team._id, targetModel: 'teams'}) => false
 	 * @memberof NewsService
 	 */
 	async hasPermission(userId, permission, dataItem) {
 		if (!dataItem) {
-			// maybe, use hasSchoolPermission instead...
+			// use hasSchoolPermission instead
 			return false;
 		}
 		const permissions = await this.getPermissions(userId, dataItem);
@@ -287,7 +286,7 @@ class NewsService extends AbstractService {
 				));
 			}
 		}
-		return flatten(query);
+		return flatten(query.filter(q => q !== null));
 	}
 
 	/**
@@ -316,7 +315,7 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async find(params) {
-		const query = params.query || {};
+		const query = params.query || { $paginate: DEFAULT_PAGINATION_OPTIONS };
 		const now = Date.now();
 		// based on params.unpublished divide between view published news and unpublished news with edit permission
 		const baseFilter = {
@@ -331,10 +330,14 @@ class NewsService extends AbstractService {
 		if (query.sort && /^-?\w{1,50}$/.test(query.sort)) {
 			sortQuery.$sort = convertToSortOrderObject(query.sort);
 		}
+		const subqueries = await this.buildFindQuery(params, baseFilter);
+		if (subqueries.length === 0) {
+			return paginate([], query);
+		}
 		const internalRequestParams = {
 			query: {
 				displayAt: baseFilter.published,
-				$or: await this.buildFindQuery(params, baseFilter),
+				$or: subqueries,
 				$limit: query.$limit,
 				$skip: query.$skip,
 				...NewsService.populateParams().query,
@@ -449,9 +452,7 @@ module.exports = function news() {
 	app.use('/newsModel', service({
 		Model: newsModel,
 		lean: true,
-		paginate: {
-			default: 25,
-		},
+		paginate: DEFAULT_PAGINATION_OPTIONS,
 	}));
 	app.service('/newsModel').hooks(newsModelHooks);
 };
