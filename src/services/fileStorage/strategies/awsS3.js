@@ -1,4 +1,4 @@
-const promisify = require('es6-promisify');
+const { promisify } = require('es6-promisify');
 const errors = require('@feathersjs/errors');
 const aws = require('aws-sdk');
 const { posix: pathUtil } = require('path');
@@ -14,7 +14,7 @@ const { removeLeadingSlash } = require('../utils/filePathHelper');
 
 let awsConfig = {};
 try {
-//  awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
+	//  awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 	(['production'].includes(process.env.NODE_ENV))
 		? awsConfig = require('../../../../config/secrets.js').aws
 		: awsConfig = require('../../../../config/secrets.json').aws;
