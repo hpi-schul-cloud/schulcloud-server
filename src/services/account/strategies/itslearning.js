@@ -1,5 +1,5 @@
 const logger = require('winston');
-const promisify = require('es6-promisify');
+const { promisify } = require('es6-promisify');
 const errors = require('@feathersjs/errors');
 const path = require('path');
 const childProcess = require('child_process');

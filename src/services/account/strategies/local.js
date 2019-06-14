@@ -1,5 +1,4 @@
 const logger = require('winston');
-const promisify = require('es6-promisify');
 const errors = require('@feathersjs/errors');
 const request = require('request-promise-native');
 
@@ -14,7 +13,7 @@ const acceptedCredentials = [
 class LocalLoginStrategy extends AbstractLoginStrategy {
 	login({ username, password }, system) {
 		const found = acceptedCredentials.find(credentials => credentials.username == username
-                    && credentials.password == password);
+			&& credentials.password == password);
 		if (found) {
 			return Promise.resolve(found);
 		}
