@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "",
-  "version": "17.1.5",
+  "version": "18.0.0",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -15,7 +15,7 @@
   "contributors": [],
   "bugs": {},
   "engines": {
-    "node": ">= 8.0.0"
+    "node": "^8.15.0"
   },
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
@@ -31,8 +31,8 @@
     "coverage-codacy": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codacy-coverage",
     "mocha": "cross-env NODE_ENV=test mocha test/ --recursive",
     "mocha-inspect": "cross-env NODE_ENV=test mocha --debug-brk --inspect test/ --recursive",
-	"migrations": "node migrations/",
-	"migrations-local": "cross-env NODE_ENV=migration node migrations/",
+    "migrations": "node migrations/",
+    "migrations-local": "cross-env NODE_ENV=migration node migrations/",
     "migrations-dry": "cross-env NODE_ENV=migration node migrations/ --dry"
   },
   "dependencies": {
