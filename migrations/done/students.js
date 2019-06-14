@@ -3,10 +3,10 @@
 const ran = false; // set to true to exclude migration
 const name = 'Fix access rights for students on course directories.';
 
-const database = require('../src/utils/database');
+const database = require('../../src/utils/database');
 
-const { FileModel } = require('../src/services/fileStorage/model.js');
-const RoleModel = require('../src/services/role/model');
+const { FileModel } = require('../../src/services/fileStorage/model.js');
+const RoleModel = require('../../src/services/role/model');
 
 
 const run = async () => {

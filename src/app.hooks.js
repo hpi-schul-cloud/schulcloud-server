@@ -1,11 +1,13 @@
+/* eslint-disable no-param-reassign */
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
+
+const globalHooks = require('./hooks/');
 
 const sanitize = (data, options) => {
 	// https://www.npmjs.com/package/sanitize-html
 	if ((options || {}).html === true) {
 		// editor-content data
-		// TODO what is 'rechnen' used for?
 		data = sanitizeHtml(data, {
 			allowedTags: ['h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span', 'del',
 				'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
@@ -45,27 +47,38 @@ const sanitizeDeep = (data, path) => {
 				if (['password'].includes(key)) return data;
 				// enable html for all current editors
 				const needsHtml = ['content', 'text', 'comment', 'gradeComment', 'description'].includes(key)
-                    && ['lessons', 'news', 'homework', 'submissions'].includes(path);
+                    && ['lessons', 'newsModel', 'homework', 'submissions'].includes(path);
 				data[key] = sanitize(value, { html: needsHtml });
 			} else {
 				sanitizeDeep(value, path);
 			}
 		});
-	} else if (typeof data === 'string') data = sanitize(data, { html: false });
-	else if (Array.isArray(data)) {
-		for (let i = 0; i < data.length; i++) {
-			if (typeof data[i] === 'string') data[i] = sanitize(data[i], { html: false });
-			else sanitizeDeep(data[i], path);
+	} else if (typeof data === 'string') {
+		data = sanitize(data, { html: false });
+	} else if (Array.isArray(data)) {
+		for (let i = 0; i < data.length; i += 1) {
+			if (typeof data[i] === 'string') {
+				data[i] = sanitize(data[i], { html: false });
+			} else {
+				sanitizeDeep(data[i], path);
+			}
 		}
 	}
 	return data;
 };
 
-const sanitizeData = (hook) => {
-	if (hook.data && hook.path && hook.path !== 'authentication') {
-		sanitizeDeep(hook.data, hook.path);
+const sanitizeData = (context) => {
+	if (context.data && context.path && context.path !== 'authentication') {
+		sanitizeDeep(context.data, context.path);
 	}
-	return hook;
+	return context;
+};
+
+const removeObjectIdInData = (context) => {
+	if (context.data && context.data._id) {
+		delete context.data._id;
+	}
+	return context;
 };
 
 module.exports = {
@@ -73,13 +86,23 @@ module.exports = {
 		all: [],
 		find: [],
 		get: [],
-		create: [sanitizeData],
+		create: [sanitizeData, globalHooks.ifNotLocal(removeObjectIdInData)],
 		update: [sanitizeData],
 		patch: [sanitizeData],
 		remove: [],
 	},
 
 	after: {
+		all: [],
+		find: [],
+		get: [],
+		create: [],
+		update: [],
+		patch: [],
+		remove: [],
+	},
+
+	error: {
 		all: [],
 		find: [],
 		get: [],

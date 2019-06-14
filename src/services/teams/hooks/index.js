@@ -337,7 +337,7 @@ const teamRolesToHook = (hook) => {
 			} else if (role) {
 				out = role;
 			} else {
-				logger.warn({ role, value, resultKey });
+				logger.warn(JSON.stringify({ role, value, resultKey }));
 				throw new NotFound('No team role found. (4)');
 			}
 			return out;
@@ -410,6 +410,23 @@ const hasTeamPermission = (permsissions, _teamId) => globalHooks.ifNotLocal((hoo
 exports.hasTeamPermission = hasTeamPermission; // to use it global
 
 /**
+ * Hook to reject patches of default file permissions if the patching user
+ * does not have the permission DEFAULT_FILE_PERMISSIONS
+ * @beforeHook
+ */
+const rejectDefaultFilePermissionUpdatesIfNotPermitted = (context) => {
+	if (isUndefined(context.data)) {
+		return context;
+	}
+	const updatesDefaultFilePermissions = isDefined(context.data.filePermission);
+	if (updatesDefaultFilePermissions) {
+		return hasTeamPermission('DEFAULT_FILE_PERMISSIONS')(context);
+	}
+	return context;
+};
+exports.rejectDefaultFilePermissionUpdatesIfNotPermitted = rejectDefaultFilePermissionUpdatesIfNotPermitted;
+
+/*
  * @helper
  * @param {Object::hook} hook
  * @param {String||BsonId} firstId a teamRoleId
@@ -458,7 +475,6 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 		let isAddingFromOtherSchool = false;
 		let hasChangeRole = false;
 		let highestChangedRole = '';
-
 		const leaveTeam = hasTeamPermission('LEAVE_TEAM');
 		const removeMembers = hasTeamPermission('REMOVE_MEMBERS');
 		const addSchoolMembers = hasTeamPermission('ADD_SCHOOL_MEMBERS');
@@ -473,7 +489,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 		});
 
 		changes.add.forEach((e) => {
-			const user = users.find(user => isSameId(e.userId, user._id));
+			const user = users.find(u => isSameId(e.userId, u._id));
 			if (isSameId(user.schoolId, sessionSchoolId)) {
 				isAddingFromOwnSchool = true;
 			} else {
@@ -482,7 +498,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 		});
 
 		hook.data.userIds.forEach((_) => {
-			const teamUser = team.userIds.find(teamUser => isSameId(_.userId, teamUser.userId));
+			const teamUser = team.userIds.find(tu => isSameId(_.userId, tu.userId));
 			if (isDefined(teamUser)) {
 				if (isDefined(_.role) && !isSameId(teamUser.role, _.role)) {
 					hasChangeRole = true;
@@ -494,7 +510,6 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 			}
 		});
 
-		//  try{
 		const wait = [];
 		if (isAddingFromOtherSchool) {
 			throw new Forbidden('Can not adding users from other schools.');
@@ -590,6 +605,29 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 });
 
 /**
+ * Test if the sessionUser is allowed to create a team. Every teacher and admin can create teams.
+ * Students can create teams if it is not disabled (can be blocked by school settings)
+ * If not throw an error.
+ * @beforeHook
+ */
+const isAllowedToCreateTeams = hook => getSessionUser(hook).then(sessionUser => hook
+	.app.service('schools').get(hook.data.schoolId).then((school) => {
+		const roleNames = sessionUser.roles.map(role => role.name);
+		if (roleNames.includes('superhero')
+		|| roleNames.includes('administrator')
+		|| roleNames.includes('teacher')
+		|| roleNames.includes('student')) {
+			if (roleNames.includes('student') && school.features.includes('disableStudentTeamCreation')) {
+				throw new Forbidden('Your school admin does not allow team creations by students.');
+			}
+		} else {
+			throw new Forbidden('Only administrator, teacher and students can create teams.');
+		}
+
+		return hook;
+	}));
+
+/**
  * Test if data.userId is set. If true it test if the role is teacher. If not throw an error.
  * @beforeHook
  */
@@ -665,12 +703,14 @@ exports.before = {
 	create: [
 		filterToRelated(keys.data, 'data'),
 		globalHooks.injectUserId,
+		isAllowedToCreateTeams,
 		testInputData,
 		updateUsersForEachClass,
 		teamMainHook,
 	], // inject is needing?
 	update: [blockedMethod],
 	patch: [
+		rejectDefaultFilePermissionUpdatesIfNotPermitted,
 		testChangesForPermissionRouting,
 		updateUsersForEachClass,
 		teamMainHook,
