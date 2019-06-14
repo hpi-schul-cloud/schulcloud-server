@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const assert = require('assert');
 const express = require('express');
-const promisify = require('es6-promisify');
+const { promisify } = require('es6-promisify');
 const freeport = promisify(require('freeport'));
 const app = require('../../../../src/app');
 const moodleMockServer = require('./moodleMockServer');
@@ -50,7 +50,7 @@ describe('Moodle single-sign-on', () => {
 			.post('/accounts')
 			.set('Accept', 'application/json')
 			.set('content-type', 'application/x-www-form-urlencoded')
-		// send credentials
+			// send credentials
 			.send({
 				username: newTestAccount.username,
 				password: newTestAccount.password,

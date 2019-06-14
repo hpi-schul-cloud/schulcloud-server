@@ -57,7 +57,7 @@ describe('Feathers application tests', () => {
 				.get('/docs')
 				.end((err, res) => {
 					assert.equal(res.statusCode, 200);
-					expect(res.body.info.description).to.contain('Schul-Cloud');
+					expect(res.text).to.contain('#/definitions/users');
 					resolve();
 				});
 		}));

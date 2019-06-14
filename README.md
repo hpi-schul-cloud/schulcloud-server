@@ -6,6 +6,7 @@ Master: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg
 
 [![codecov](https://codecov.io/gh/schul-cloud/schulcloud-server/branch/master/graph/badge.svg)](https://codecov.io/gh/schul-cloud/schulcloud-server)
 [![Version](https://img.shields.io/github/release/schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/schulcloud-server/releases)
+[![Greenkeeper badge](https://badges.greenkeeper.io/schul-cloud/schulcloud-server.svg)](https://greenkeeper.io/)
 
 Swagger UI documentation is available [here](https://schul-cloud.org:8080/docs/).
 When running the server locally, it is served at [http://localhost:3030/docs/](http://localhost:3030/docs/).
