@@ -1,23 +1,24 @@
-const { promisify } = require('es6-promisify');
+const {promisify} = require('es6-promisify');
 const errors = require('@feathersjs/errors');
 const aws = require('aws-sdk');
 const { posix: pathUtil } = require('path');
 const logger = require('winston');
 const fs = require('fs');
 
+
 const SchoolModel = require('../../school/model');
 const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
 
-// const prodMode = process.env.NODE_ENV === 'production';
+//const prodMode = process.env.NODE_ENV === 'production';
 
 let awsConfig = {};
 try {
-	//  awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
+//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 	(['production'].includes(process.env.NODE_ENV))
-		? awsConfig = require('../../../../config/secrets.js').aws
-		: awsConfig = require('../../../../config/secrets.json').aws;
+		? awsConfig = require("../../../../config/secrets.js").aws
+		: awsConfig = require("../../../../config/secrets.js").aws;
 } catch (e) {
 	logger.log('warn', 'The AWS config couldn\'t be read');
 }
@@ -71,7 +72,7 @@ const splitFilesAndDirectories = (path, data) => {
 };
 
 const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
-	const headObject = promisify(s3.headObject, s3);
+	const headObject = promisify(s3.headObject.bind(awsObject.s3), s3);
 	const _getPath = (path) => {
 		if (!path) {
 			return '/';
@@ -116,7 +117,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			.then((result) => {
 				if (!result) return Promise.reject(new errors.NotFound('school not found'));
 				const awsObject = createAWSObject(result._id);
-				const createBucket = promisify(awsObject.s3.createBucket, awsObject.s3);
+				const createBucket = promisify(awsObject.s3.createBucket.bind(awsObject.s3), awsObject.s3);
 				return createBucket({ Bucket: awsObject.bucket })
 					.then((res) => {
 						awsObject.s3.putBucketCors({
@@ -184,7 +185,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					Bucket: awsObject.bucket,
 					Prefix: path,
 				};
-				return promisify(awsObject.s3.listObjectsV2, awsObject.s3)(params)
+				return promisify(awsObject.s3.listObjectsV2.bind(awsObject.s3), awsObject.s3)(params)
 					.then(res => Promise.resolve(getFileMetadata(path, res.Contents, awsObject.bucket, awsObject.s3)));
 			});
 	}
@@ -206,7 +207,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					Key: newPath, // destination path
 				};
 
-				return promisify(awsObject.s3.copyObject, awsObject.s3)(params);
+				return promisify(awsObject.s3.copyObject.bind(awsObject.s3), awsObject.s3)(params);
 			});
 	}
 
@@ -227,7 +228,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						Quiet: true,
 					},
 				};
-				return promisify(awsObject.s3.deleteObjects, awsObject.s3)(params);
+				return promisify(awsObject.s3.deleteObjects.bind(awsObject.s3), awsObject.s3)(params);
 			});
 	}
 
@@ -249,7 +250,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					ContentType: fileType,
 				};
 
-				return promisify(awsObject.s3.getSignedUrl, awsObject.s3)('putObject', params);
+				return promisify(awsObject.s3.getSignedUrl.bind(awsObject.s3), awsObject.s3)('putObject', params);
 			});
 	}
 
@@ -272,7 +273,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				params.ResponseContentDisposition = `attachment; filename = ${localFileName}`;
 			}
 
-			return promisify(awsObject.s3.getSignedUrl, awsObject.s3)(action, params);
+			return promisify(awsObject.s3.getSignedUrl.bind(awsObject.s3), awsObject.s3)(action, params);
 		});
 	}
 
@@ -297,7 +298,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						},
 					};
 
-					return promisify(awsObject.s3.putObject, awsObject.s3)(params);
+					return promisify(awsObject.s3.putObject.bind(awsObject.s3), awsObject.s3)(params);
 				});
 			});
 	}
@@ -320,14 +321,14 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 	/** ** @DEPRECATED *** */
 	_deleteAllInDirectory(awsObject, params) {
-		return promisify(awsObject.s3.listObjectsV2, awsObject.s3)(params)
+		return promisify(awsObject.s3.listObjectsV2.bind(awsObject.s3), awsObject.s3)(params)
 			.then((data) => {
 				if (data.Contents.length == 0) throw new Error(`Invalid Prefix ${params.Prefix}`); // there should always be at least the .scfake file
 
 				const deleteParams = { Bucket: params.Bucket, Delete: {} };
 				deleteParams.Delete.Objects = data.Contents.map(c => ({ Key: c.Key }));
 
-				return promisify(awsObject.s3.deleteObjects, awsObject.s3)(deleteParams);
+				return promisify(awsObject.s3.deleteObjects.bind(awsObject.s3), awsObject.s3)(deleteParams);
 			})
 			.then((deletionData) => {
 				if (deletionData.Deleted.length == 1000) return this._deleteAllInDirectory(awsObject, params); // AWS S3 returns only 1000 items at once
