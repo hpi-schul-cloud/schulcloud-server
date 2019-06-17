@@ -1,4 +1,4 @@
-const {promisify} = require('es6-promisify');
+const { promisify } = require('es6-promisify');
 const errors = require('@feathersjs/errors');
 const aws = require('aws-sdk');
 const { posix: pathUtil } = require('path');
@@ -11,14 +11,16 @@ const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
 
-//const prodMode = process.env.NODE_ENV === 'production';
+// const prodMode = process.env.NODE_ENV === 'production';
 
 let awsConfig = {};
 try {
 //	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
+/* eslint-disable global-require, no-unused-expressions */
 	(['production'].includes(process.env.NODE_ENV))
-		? awsConfig = require("../../../../config/secrets.js").aws
-		: awsConfig = require("../../../../config/secrets.json").aws;
+		? awsConfig = require('../../../../config/secrets.js').aws
+		: awsConfig = require('../../../../config/secrets.json').aws;
+/* eslint-enable global-require, no-unused-expressions */
 } catch (e) {
 	logger.log('warn', 'The AWS config couldn\'t be read');
 }
@@ -72,7 +74,7 @@ const splitFilesAndDirectories = (path, data) => {
 };
 
 const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
-	const headObject = promisify(s3.headObject.bind(awsObject.s3), s3);
+	const headObject = promisify(s3.headObject.bind(s3), s3);
 	const _getPath = (path) => {
 		if (!path) {
 			return '/';
