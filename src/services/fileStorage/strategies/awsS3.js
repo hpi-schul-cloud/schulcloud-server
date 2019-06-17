@@ -15,12 +15,12 @@ const { removeLeadingSlash } = require('../utils/filePathHelper');
 
 let awsConfig = {};
 try {
-//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
-/* eslint-disable global-require, no-unused-expressions */
+	//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
+	/* eslint-disable global-require, no-unused-expressions */
 	(['production'].includes(process.env.NODE_ENV))
 		? awsConfig = require('../../../../config/secrets.js').aws
 		: awsConfig = require('../../../../config/secrets.json').aws;
-/* eslint-enable global-require, no-unused-expressions */
+	/* eslint-enable global-require, no-unused-expressions */
 } catch (e) {
 	logger.log('warn', 'The AWS config couldn\'t be read');
 }
@@ -65,7 +65,7 @@ const splitFilesAndDirectories = (path, data) => {
 	});
 
 	// remove .scfake fake file
-	files = files.filter(f => f.name != '.scfake');
+	files = files.filter(f => f.name !== '.scfake');
 
 	return {
 		files,
@@ -75,18 +75,18 @@ const splitFilesAndDirectories = (path, data) => {
 
 const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 	const headObject = promisify(s3.headObject.bind(s3), s3);
-	const _getPath = (path) => {
+	const getPath = (path) => {
 		if (!path) {
 			return '/';
 		}
 
 		let pathComponents = path.split('/');
-		if (pathComponents[0] == '') pathComponents = pathComponents.slice(1); // omit leading slash
+		if (pathComponents[0] === '') pathComponents = pathComponents.slice(1); // omit leading slash
 		// remove first and second directory from storageContext because it's just meta
 		return `/${pathComponents.slice(2).join('/')}`;
 	};
 
-	const _getFileName = (path) => {
+	const getFileName = (path) => {
 		if (!path) {
 			return '';
 		}
@@ -102,8 +102,8 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 	return Promise.all(awsObjects.map(object => headObject({ Bucket: bucketName, Key: object.Key })
 		.then(res => ({
 			key: object.Key,
-			name: _getFileName(object.Key),
-			path: _getPath(res.Metadata.path),
+			name: getFileName(object.Key),
+			path: getPath(res.Metadata.path),
 			lastModified: res.LastModified,
 			size: res.ContentLength,
 			type: res.ContentType,
@@ -201,7 +201,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				if (!result || !result.schoolId) return Promise.reject(errors.NotFound('User not found'));
 
 				const awsObject = createAWSObject(result.schoolId);
-				const sourceBucket = `bucket-${externalSchoolId || result.schoolId}`; // files can be copied to different schools
+				// files can be copied to different schools
+				const sourceBucket = `bucket-${externalSchoolId || result.schoolId}`;
 
 				const params = {
 					Bucket: awsObject.bucket, // destination bucket
@@ -284,7 +285,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return filePermissionHelper.checkPermissions(userId, path)
 			.then((res) => {
-				if (path[0] == '/') path = path.substring(1);
+				if (path[0] === '/') path = path.substring(1);
 				return UserModel.userModel.findById(userId).exec().then((result) => {
 					if (!result || !result.schoolId) return Promise.reject(errors.NotFound('User not found'));
 
@@ -317,15 +318,16 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					Bucket: awsObject.bucket,
 					Prefix: removeLeadingSlash(path),
 				};
-				return this._deleteAllInDirectory(awsObject, params);
+				return this.deleteAllInDirectory(awsObject, params);
 			});
 	}
 
 	/** ** @DEPRECATED *** */
-	_deleteAllInDirectory(awsObject, params) {
+	deleteAllInDirectory(awsObject, params) {
 		return promisify(awsObject.s3.listObjectsV2.bind(awsObject.s3), awsObject.s3)(params)
 			.then((data) => {
-				if (data.Contents.length == 0) throw new Error(`Invalid Prefix ${params.Prefix}`); // there should always be at least the .scfake file
+				// there should always be at least the .scfake file
+				if (data.Contents.length === 0) throw new Error(`Invalid Prefix ${params.Prefix}`);
 
 				const deleteParams = { Bucket: params.Bucket, Delete: {} };
 				deleteParams.Delete.Objects = data.Contents.map(c => ({ Key: c.Key }));
@@ -333,7 +335,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				return promisify(awsObject.s3.deleteObjects.bind(awsObject.s3), awsObject.s3)(deleteParams);
 			})
 			.then((deletionData) => {
-				if (deletionData.Deleted.length == 1000) return this._deleteAllInDirectory(awsObject, params); // AWS S3 returns only 1000 items at once
+				// AWS S3 returns only 1000 items at once
+				if (deletionData.Deleted.length === 1000) return this.deleteAllInDirectory(awsObject, params);
 				return Promise.resolve(deletionData);
 			});
 	}
