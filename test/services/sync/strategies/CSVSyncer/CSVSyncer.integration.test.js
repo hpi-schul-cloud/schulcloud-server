@@ -149,9 +149,9 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email\n'
-                    + `Peter,Pan,${TEACHER_EMAILS[0]}\n`
-                    + `Peter,Lustig,${TEACHER_EMAILS[1]}\n`
-                    + `Test,Testington,${TEACHER_EMAILS[2]}\n`,
+					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
+					+ `Peter,Lustig,${TEACHER_EMAILS[1]}\n`
+					+ `Test,Testington,${TEACHER_EMAILS[2]}\n`,
 			};
 		});
 
@@ -218,11 +218,11 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
-                    + `Turanga,Leela,${STUDENT_EMAILS[0]},\n`
-                    + `Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1a\n`
-                    + `Amy,Wong,${STUDENT_EMAILS[2]},1a\n`
-                    + `Philip J.,Fry,${STUDENT_EMAILS[3]},1b+2b\n`
-                    + `Bender Bending,Rodriguez,${STUDENT_EMAILS[4]},2b+2c\n`,
+					+ `Turanga,Leela,${STUDENT_EMAILS[0]},\n`
+					+ `Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1a\n`
+					+ `Amy,Wong,${STUDENT_EMAILS[2]},1a\n`
+					+ `Philip J.,Fry,${STUDENT_EMAILS[3]},1b+2b\n`
+					+ `Bender Bending,Rodriguez,${STUDENT_EMAILS[4]},2b+2c\n`,
 			};
 		});
 
@@ -323,11 +323,11 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
-                    + `Jonathan 'Jack',O'Neill,${TEACHER_EMAILS[0]},1a\n`
-                    + `Dr. Samantha 'Sam',Carter,${TEACHER_EMAILS[1]},1a+SG1\n`
-                    + `Daniel,Jackson,${TEACHER_EMAILS[2]},Archeology\n`
-                    + `Teal'c,of Chulak,${TEACHER_EMAILS[3]},SG1\n`
-                    + `George,Hammond,${TEACHER_EMAILS[4]},12/3\n`,
+					+ `Jonathan 'Jack',O'Neill,${TEACHER_EMAILS[0]},1a\n`
+					+ `Dr. Samantha 'Sam',Carter,${TEACHER_EMAILS[1]},1a+SG1\n`
+					+ `Daniel,Jackson,${TEACHER_EMAILS[2]},Archeology\n`
+					+ `Teal'c,of Chulak,${TEACHER_EMAILS[3]},SG1\n`
+					+ `George,Hammond,${TEACHER_EMAILS[4]},12/3\n`,
 			};
 		});
 
@@ -428,9 +428,9 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
-                    + `Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n`
-                    + `Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n`
-                    + `Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
+					+ `Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n`
+					+ `Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n`
+					+ `Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
 			};
 		});
 
@@ -503,9 +503,9 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
-                    + `工藤,新,${STUDENT_EMAILS[0]},1a\n`
-                    + `毛利,蘭,${STUDENT_EMAILS[1]},1a\n`
-                    + `毛利,小五郎,${STUDENT_EMAILS[2]},2b\n`,
+					+ `工藤,新,${STUDENT_EMAILS[0]},1a\n`
+					+ `毛利,蘭,${STUDENT_EMAILS[1]},1a\n`
+					+ `毛利,小五郎,${STUDENT_EMAILS[2]},2b\n`,
 			};
 		});
 
@@ -593,9 +593,9 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email\n'
-                    + `Peter,Pan,${TEACHER_EMAILS[0]}\n`
-                    + `Peter,Lustig,${TEACHER_EMAILS[0]}\n`
-                    + `Test,Testington,${TEACHER_EMAILS[0]}\n`,
+					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
+					+ `Peter,Lustig,${TEACHER_EMAILS[0]}\n`
+					+ `Test,Testington,${TEACHER_EMAILS[0]}\n`,
 			};
 		});
 
@@ -632,17 +632,17 @@ describe('CSVSyncer Integration', () => {
 			});
 			expect(role.name).to.equal('teacher');
 
-			expect(stats.errors).to.include({
+			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
 				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-                    + 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
-			expect(stats.errors).to.include({
+			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
 				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-                    + 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 		});
 	});
@@ -674,9 +674,9 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
-                    + `Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n`
-                    + `Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n`
-                    + `Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
+					+ `Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n`
+					+ `Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n`
+					+ `Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
 			};
 		});
 
@@ -739,9 +739,9 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email\n'
-                    + `Peter,Pan,${TEACHER_EMAILS[0]}\n`
-                    + `Peter,Lustig,${TEACHER_EMAILS[0]}\n`
-                    + `Test,Testington,${TEACHER_EMAILS[0]}\n`,
+					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
+					+ `Peter,Lustig,${TEACHER_EMAILS[0]}\n`
+					+ `Test,Testington,${TEACHER_EMAILS[0]}\n`,
 			};
 		});
 
@@ -773,17 +773,17 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.updated).to.equal(0);
 			expect(stats.users.failed).to.equal(2);
 
-			expect(stats.errors).to.include({
+			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
 				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-                    + 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
-			expect(stats.errors).to.include({
+			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
 				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-                    + 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 
 			// only one email should ever be sent, as the second and third user are never
@@ -875,11 +875,11 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
-                    + `Dr. Temperance,Brennan,${TEACHER_EMAILS[0]},Jeffersonian Institute\n`
-                    + `Seeley,Booth,${TEACHER_EMAILS[1]},FBI\n`
-                    + `Lance,Sweets,${TEACHER_EMAILS[2]},FBI\n`
-                    + `Camille,Saroyan,${TEACHER_EMAILS[3]},Jeffersonian Institute\n`
-                    + `Zack,Addy,${TEACHER_EMAILS[4]},\n`,
+					+ `Dr. Temperance,Brennan,${TEACHER_EMAILS[0]},Jeffersonian Institute\n`
+					+ `Seeley,Booth,${TEACHER_EMAILS[1]},FBI\n`
+					+ `Lance,Sweets,${TEACHER_EMAILS[2]},FBI\n`
+					+ `Camille,Saroyan,${TEACHER_EMAILS[3]},Jeffersonian Institute\n`
+					+ `Zack,Addy,${TEACHER_EMAILS[4]},\n`,
 			};
 		});
 
@@ -984,15 +984,15 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData1 = {
 				data: 'firstName,lastName,email,class\n'
-                    + `Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n`
-                    + `Lewis,Nixon,${TEACHER_EMAILS[1]},Easy Company\n`
-                    + `Carwood,Lipton,${TEACHER_EMAILS[2]},Easy Company\n`,
+					+ `Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n`
+					+ `Lewis,Nixon,${TEACHER_EMAILS[1]},Easy Company\n`
+					+ `Carwood,Lipton,${TEACHER_EMAILS[2]},Easy Company\n`,
 			};
 			scenarioData2 = {
 				data: 'firstName,lastName,email,class\n'
-                    + `Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n`
-                    + `LeW1s,Nixx0n,${TEACHER_EMAILS[1]},Best Company\n`
-                    + `Donald,Malarkey,${TEACHER_EMAILS[3]},Easy Company\n`,
+					+ `Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n`
+					+ `LeW1s,Nixx0n,${TEACHER_EMAILS[1]},Best Company\n`
+					+ `Donald,Malarkey,${TEACHER_EMAILS[3]},Easy Company\n`,
 			};
 		});
 

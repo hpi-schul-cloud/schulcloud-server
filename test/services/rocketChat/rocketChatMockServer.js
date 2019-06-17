@@ -1,5 +1,5 @@
 const express = require('express');
-const promisify = require('es6-promisify');
+const { promisify } = require('es6-promisify');
 const bodyParser = require('body-parser');
 const freeport = promisify(require('freeport'));
 

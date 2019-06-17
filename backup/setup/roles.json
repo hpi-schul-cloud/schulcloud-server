@@ -349,7 +349,8 @@
 			"UPLOAD_FILES",
 			"USE_ROCKETCHAT",
 			"LEAVE_TEAM",
-			"USE_LIBREOFFICE"
+			"USE_LIBREOFFICE",
+			"NEWS_VIEW"
 		],
 		"__v": 0
 	},
