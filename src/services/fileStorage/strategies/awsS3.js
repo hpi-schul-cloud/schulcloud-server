@@ -285,6 +285,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		if (!userId || !path) return Promise.reject(new errors.BadRequest('Missing parameters'));
 		return filePermissionHelper.checkPermissions(userId, path)
 			.then((res) => {
+				// eslint-disable-next-line no-param-reassign
 				if (path[0] === '/') path = path.substring(1);
 				return UserModel.userModel.findById(userId).exec().then((result) => {
 					if (!result || !result.schoolId) return Promise.reject(errors.NotFound('User not found'));
