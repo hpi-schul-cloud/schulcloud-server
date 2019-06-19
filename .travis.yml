@@ -1,6 +1,6 @@
 ---
 language: node_js
-node_js: '8'
+node_js: '8.15'
 
 sudo: required
 
@@ -28,7 +28,7 @@ after_success:
   # because Skipping a deployment with the script provider because the current build is a pull request.
   - bash ./deploy.sh
   # Check code coverage by codecov
-  - bash <(curl -s https://codecov.io/bash)
+  #- bash <(curl -s https://codecov.io/bash)
   #- bash <(curl -X POST --data "apiKey=$apiKey&branch=$BRANCH" http://$url/update)
 
 #deploy:

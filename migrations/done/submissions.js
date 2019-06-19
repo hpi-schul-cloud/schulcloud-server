@@ -1,14 +1,14 @@
 /* eslint no-console: 0 */
 /* eslint no-confusing-arrow: 0 */
 const ran = true; // set to true to exclude migration
-const name = 'Migrating links to new file model';
+const name = 'Migrating files of submissions to new file model';
 
 const mongoose = require('mongoose');
-const database = require('../src/utils/database');
+const database = require('../../src/utils/database');
 
 const { Schema } = mongoose;
-const LinkModel = require('../src/services/link/link-model');
-const { FileModel } = require('../src/services/fileStorage/model.js');
+const { submissionModel } = require('../../src/services/homework/model.js');
+const { FileModel } = require('../../src/services/fileStorage/model.js');
 
 mongoose.Promise = global.Promise;
 
@@ -73,42 +73,64 @@ const run = async (dry) => {
 	database.connect();
 
 	const oldfileModel = mongoose.model('oldfile', oldFileSchema, '_files');
-	const linkObjects = await LinkModel.find({ target: { $regex: '/files/fileModel/' } }).exec();
-	const regex = RegExp('(.+?/files/fileModel/)(.*?)(/.*)');
+	const submissionWithFiles = await submissionModel
+		.find({ fileIds: { $exists: true, $not: { $size: 0 } } })
+		.populate('homeworkId')
+		.exec();
+
+	if (!submissionWithFiles.length) {
+		return Promise.resolve();
+	}
 
 	const errorHandler = (e) => {
 		console.log('Error', e);
 		return undefined;
 	};
 
-	const promises = linkObjects
-		.map((link) => {
-			const { target } = link;
-			const id = target.replace(regex, '$2');
+	const promises = submissionWithFiles
+		.map((sub) => {
+			const submissionPrommies = sub.fileIds
+				.map(id => oldfileModel.findOne({ _id: id }).lean().exec().catch(errorHandler));
 
-			return oldfileModel.findOne({ _id: id }).lean().exec().catch(errorHandler)
-				.then(file => file
-					? FileModel.findOne(convertDocument(file)).exec().catch(errorHandler)
-					: Promise.resolve())
-				.then((file) => {
-					if (!file) {
+			const { teacherId } = sub.homeworkId || {};
+
+			return Promise.all(submissionPrommies)
+				.then((files) => {
+					const docPromises = files
+						.filter(f => Boolean(f))
+						.map(convertDocument)
+						.map(d => FileModel.findOne(d).exec().catch(errorHandler));
+
+					return Promise.all(docPromises);
+				})
+				.then(files => !teacherId ? Promise.resolve() : Promise.all(
+					files.filter(_ => Boolean(_)).map(file => dry
+						? Promise.resolve()
+						: FileModel.update({ _id: file._id }, {
+							$set: {
+								permissions: [...file.permissions, {
+									refId: teacherId,
+									refPermModel: 'user',
+									write: false,
+									read: true,
+									create: false,
+									delete: false,
+								}],
+							},
+						}).exec().then(() => file._id)),
+				))
+				.then((fileIds) => {
+					if (!fileIds || !fileIds.length) {
 						return Promise.resolve();
 					}
 
-					const { _id: fileId } = file;
-					const newTarget = target.replace(regex, `$1${fileId}$3`);
-
-					console.log(`Replace target of link ${link._id}:`);
-					console.log(target);
-					console.log('with');
-					console.log(newTarget);
+					console.log(`New fileIds for submissons ${sub._id}`, fileIds);
 
 					return dry
 						? Promise.resolve()
-						: LinkModel.update({ _id: link._id }, { target: newTarget }).exec().catch(errorHandler);
+						: submissionModel.update({ _id: sub._id }, { fileIds }).exec().catch(errorHandler);
 				});
 		});
-
 
 	return Promise.all(promises);
 };

@@ -8,7 +8,6 @@ const signedUrlService = app.service('/fileStorage/signedUrl');
 const directoryService = app.service('/fileStorage/directories');
 
 describe('fileStorage service', () => {
-
 	before((done) => {
 		// Enable mockery to mock objects
 		mockery.enable({
@@ -35,24 +34,24 @@ describe('fileStorage service', () => {
 	});
 
 	/* @deprecated by new model
-	it('registered the directoryModel service', () => {
-		assert.ok(app.service('directories'));
-	});
-	*/
+    it('registered the directoryModel service', () => {
+        assert.ok(app.service('directories'));
+    });
+    */
 
-	it ('registered the directory rename service', () => {
+	it('registered the directory rename service', () => {
 		assert.ok(app.service('fileStorage/directories/rename'));
 	});
 
-	it ('registered the file rename service', () => {
+	it('registered the file rename service', () => {
 		assert.ok(app.service('fileStorage/rename'));
 	});
 
-	it ('registered the file copy service', () => {
+	it('registered the file copy service', () => {
 		assert.ok(app.service('fileStorage/copy'));
 	});
 
-	it ('registered the file total service', () => {
+	it('registered the file total service', () => {
 		assert.ok(app.service('fileStorage/total'));
 	});
 
