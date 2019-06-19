@@ -294,7 +294,6 @@ describe('CSVSyncer Integration', () => {
 			const class2bstudents = await Promise.all(class2b.userIds.map(studentLastNames));
 			expect(class2bstudents).to.include('Fry');
 			expect(class2bstudents).to.include('Rodriguez');
-
 		});
 	});
 
@@ -633,17 +632,17 @@ describe('CSVSyncer Integration', () => {
 			});
 			expect(role.name).to.equal('teacher');
 
-			expect(stats.errors).to.include({
+			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
 				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
-			expect(stats.errors).to.include({
+			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
 				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 		});
 	});
@@ -774,17 +773,17 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.updated).to.equal(0);
 			expect(stats.users.failed).to.equal(2);
 
-			expect(stats.errors).to.include({
+			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
 				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
-			expect(stats.errors).to.include({
+			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
 				message: `Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-					+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 
 			// only one email should ever be sent, as the second and third user are never

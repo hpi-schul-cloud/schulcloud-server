@@ -1,5 +1,7 @@
-const AdminStudents = require('./AdminStudents');
+const AdminUsers = require('./AdminUsers');
+const UserLinkImportService = require('./UserLinkImportService');
 
 module.exports = {
-	AdminStudents,
+	AdminUsers,
+	UserLinkImportService,
 };

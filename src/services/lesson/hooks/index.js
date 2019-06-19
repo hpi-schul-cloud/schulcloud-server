@@ -5,44 +5,39 @@ const lesson = require('../model');
 
 const checkIfCourseGroupLesson = (permission1, permission2, isCreating, hook) => {
 	// find courseGroupId in different ways (POST, FIND ...)
-	let groupPromise = isCreating ? Promise.resolve({courseGroupId: hook.data.courseGroupId}) : lesson.findOne({_id: hook.id}).then(lesson => {
-		return JSON.stringify(lesson.courseGroupId) ? globalHooks.hasPermission(permission1)(hook) : globalHooks.hasPermission(permission2)(hook);
-	});
+	const groupPromise = isCreating ? Promise.resolve({ courseGroupId: hook.data.courseGroupId }) : lesson.findOne({ _id: hook.id }).then(lesson => (JSON.stringify(lesson.courseGroupId) ? globalHooks.hasPermission(permission1)(hook) : globalHooks.hasPermission(permission2)(hook)));
 };
 
 // add a shareToken to a lesson if course has a shareToken
 const checkIfCourseShareable = (hook) => {
 	if (hook.result.courseId && hook.result.courseId !== 'undefined') {
-		const courseId = hook.result.courseId;
+		const { courseId } = hook.result;
 		const courseService = hook.app.service('courses');
 		const lessonsService = hook.app.service('lessons');
 
 		return courseService.get(courseId)
-			.then(course => {
-				if (!course.shareToken)
-					return hook;
+			.then((course) => {
+				if (!course.shareToken) return hook;
 
 				return lesson.findByIdAndUpdate(hook.result._id, { shareToken: nanoid(12) })
-					.then(lesson => {
-						return hook;
-					});
+					.then(lesson => hook);
 			});
-	} else {
-		return hook;
 	}
+	return hook;
+
 	/* MERGE MASTER N/21 - comment is master. CHeck if side effects for course groups occur
-	if ('courseGroupId' in hook.result) return hook;
-	const courseId = hook.result.courseId;
-	const courseService = hook.app.service('courses');
-	const lessonsService = hook.app.service('lessons');
+    if ('courseGroupId' in hook.result) return hook;
+    const courseId = hook.result.courseId;
+    const courseService = hook.app.service('courses');
+    const lessonsService = hook.app.service('lessons');
 
-	return courseService.get(courseId)
-		.then((course) => {
-			if (!course.shareToken) return hook;
+    return courseService.get(courseId)
+        .then((course) => {
+            if (!course.shareToken) return hook;
 
-			return lesson.findByIdAndUpdate(hook.result._id, { shareToken: nanoid(12) })
-				.then(lesson => hook);
-		});*/
+            return lesson.findByIdAndUpdate(hook.result._id, { shareToken: nanoid(12) })
+                .then(lesson => hook);
+        }); */
 };
 
 exports.before = () => ({

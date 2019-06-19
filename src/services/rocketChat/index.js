@@ -83,9 +83,9 @@ class RocketChatUser {
 	}
 
 	/**
-	 * creates an account, should only be called by getOrCreateRocketChatAccount
-	 * @param {object} data
-	 */
+     * creates an account, should only be called by getOrCreateRocketChatAccount
+     * @param {object} data
+     */
 	createRocketChatAccount(userId) {
 		if (userId === undefined) { throw new BadRequest('Missing data value.'); }
 
@@ -125,15 +125,15 @@ class RocketChatUser {
 			});
 		}).catch((err) => {
 			logger.warn(new BadRequest('Can not create RocketChat Account', err));
-			throw new BadRequest('Can not create RocketChat Account');
+			throw new BadRequest('Can not create RocketChat Account', err);
 		});
 	}
 
 	/**
-	 * returns the account data for an rocketChat account, matching a given schulcloud user ID.
-	 * If no matching rocketChat account exists yet, it is created
-	 * @param {*} userId id of a user in the schulcloud
-	 */
+     * returns the account data for an rocketChat account, matching a given schulcloud user ID.
+     * If no matching rocketChat account exists yet, it is created
+     * @param {*} userId id of a user in the schulcloud
+     */
 	async getOrCreateRocketChatAccount(userId) {
 		try {
 			const scUser = await this.app.service('users').get(userId, { query: { $populate: 'schoolId' } });
@@ -157,17 +157,17 @@ class RocketChatUser {
 	}
 
 	/**
-	 * react to a user being deleted
-	 * @param {*} context
-	 */
+     * react to a user being deleted
+     * @param {*} context
+     */
 	static onUserRemoved(context) {
 		RocketChatUser.deleteUser(context._id);
 	}
 
 	/**
-	 * removes the rocketChat user belonging to the schulcloud user given by Id
-	 * @param {*} userId Id of a team in the schulcloud
-	 */
+     * removes the rocketChat user belonging to the schulcloud user given by Id
+     * @param {*} userId Id of a team in the schulcloud
+     */
 	static deleteUser(userId) {
 		return rocketChatModels.userModel.findOne({ userId })
 			.then(async (user) => {
@@ -183,10 +183,10 @@ class RocketChatUser {
 	}
 
 	/**
-	 * returns rocketChat specific data to a given schulcloud user id
-	 * @param {*} userId Id of a user in the schulcloud
-	 * @param {} params
-	 */
+     * returns rocketChat specific data to a given schulcloud user id
+     * @param {*} userId Id of a user in the schulcloud
+     * @param {} params
+     */
 	get(userId) {
 		return this.getOrCreateRocketChatAccount(userId)
 			.then((login) => {
@@ -194,15 +194,15 @@ class RocketChatUser {
 				delete result.password;
 				return Promise.resolve(result);
 			}).catch((err) => {
-				logger.warn(new Forbidden('Can not create token.', err));
-				throw new Forbidden('Can not create token.', err);
+				logger.warn('encountered an error while fetching a rocket.chat user.', err);
+				throw err;
 			});
 	}
 
 	/**
-	 * returns the rocketChat usernames for an array of schulcloud userIds
-	 * @param {object} params an object containing an array `userIds`
-	 */
+     * returns the rocketChat usernames for an array of schulcloud userIds
+     * @param {object} params an object containing an array `userIds`
+     */
 	find({ userIds }) {
 		// toDo: optimize to generate less requests
 		if (!Array.isArray(userIds || {})) {
@@ -219,9 +219,9 @@ class RocketChatUser {
 	}
 
 	/**
-	 * Register methods of the service to listen to events of other services
-	 * @listens users:removed
-	 */
+     * Register methods of the service to listen to events of other services
+     * @listens users:removed
+     */
 	registerEventListeners() {
 		this.app.service('users').on('removed', RocketChatUser.onUserRemoved.bind(this));
 	}
@@ -239,10 +239,10 @@ class RocketChatLogin {
 	}
 
 	/**
-	 * Logs in a user given by his Id
-	 * @param {*} userId Id of a user in the schulcloud
-	 * @param {*} params
-	 */
+     * Logs in a user given by his Id
+     * @param {*} userId Id of a user in the schulcloud
+     * @param {*} params
+     */
 	get(userId, params) {
 		if (userId.toString() !== params.account.userId.toString()) {
 			return Promise.reject(new Forbidden('you may only log into your own rocketChat account'));
@@ -272,7 +272,7 @@ class RocketChatLogin {
 				} return Promise.reject(new BadRequest('False response data from rocketChat'));
 			}).catch((err) => {
 				logger.warn(new Forbidden('Can not create token.', err));
-				throw new Forbidden('Can not create token.');
+				throw new Forbidden('Can not create token.', err);
 			});
 	}
 
@@ -288,10 +288,10 @@ class RocketChatLogout {
 	}
 
 	/**
-	 * logs a user given by his schulcloud id out of rocketChat
-	 * @param {*} userId
-	 * @param {*} params
-	 */
+     * logs a user given by his schulcloud id out of rocketChat
+     * @param {*} userId
+     * @param {*} params
+     */
 	async get(userId, params) {
 		try {
 			const rcUser = await this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params);
@@ -310,17 +310,17 @@ class RocketChatLogout {
 	}
 
 	/**
-	 * react to a user logging out
-	 * @param {*} context
-	 */
+     * react to a user logging out
+     * @param {*} context
+     */
 	onAuthenticationRemoved(context) {
 		this.get(context.userId);
 	}
 
 	/**
-	 * Register methods of the service to listen to events of other services
-	 * @listens authentication:removed
-	 */
+     * Register methods of the service to listen to events of other services
+     * @listens authentication:removed
+     */
 	registerEventListeners() {
 		this.app.service('authentication').on('removed', this.onAuthenticationRemoved.bind(this));
 	}
@@ -391,9 +391,10 @@ class RocketChatChannel {
 				};
 				return rocketChatModels.channelModel.create(channelData);
 			})
+			.then(result => this.synchronizeModerators(currentTeam).then(() => result))
 			.catch((err) => {
 				logger.warn(new BadRequest('Can not create RocketChat Channel', err));
-				throw new BadRequest('Can not create RocketChat Channel');
+				throw new BadRequest('Can not create RocketChat Channel', err);
 			});
 	}
 
@@ -449,9 +450,9 @@ class RocketChatChannel {
 	}
 
 	/**
-	 * removes the channel belonging to the team given by Id
-	 * @param {*} teamId Id of a team in the schulcloud
-	 */
+     * removes the channel belonging to the team given by Id
+     * @param {*} teamId Id of a team in the schulcloud
+     */
 	static deleteChannel(teamId) {
 		return rocketChatModels.channelModel.findOne({ teamId })
 			.then(async (channel) => {
@@ -482,28 +483,64 @@ class RocketChatChannel {
 		return Promise.resolve();
 	}
 
+	async synchronizeModerators(team) {
+		try {
+			const channel = await this.app.service('/rocketChat/channel').get(team._id);
+			const rcResponse = await request(getRequestOptions(
+				`/api/v1/groups.moderators?roomName=${channel.channelName}`,
+				{},
+				true,
+				undefined,
+				'GET',
+			));
+			let rcChannelModerators = rcResponse.moderators;
+			const scModeratorPromises = [];
+			team.userIds.forEach(async (user) => {
+				if (this.teamModeratorRoles.includes(user.role.toString())) {
+					scModeratorPromises.push(this.app.service('rocketChat/user').get(user.userId));
+				}
+			});
+			let scModerators = await Promise.all(scModeratorPromises);
+			rcChannelModerators = rcChannelModerators.map(mod => mod._id);
+			scModerators = scModerators.map(mod => mod.rcId);
+			const moderatorsToAdd = scModerators.filter(x => !rcChannelModerators.includes(x));
+			const moderatorsToRemove = rcChannelModerators.filter(x => !scModerators.includes(x));
+			moderatorsToAdd.forEach(x => request(getRequestOptions(
+				'/api/v1/groups.addModerator', { roomName: channel.channelName, userId: x }, true,
+			)));
+			moderatorsToRemove.forEach(x => request(getRequestOptions(
+				'/api/v1/groups.removeModerator', { roomName: channel.channelName, userId: x }, true,
+			)));
+			return Promise.resolve();
+		} catch (err) {
+			logger.log(`Fehler beim Synchronisieren der rocket.chat moderatoren für team ${team._id} `, err);
+			return Promise.reject(err);
+		}
+	}
+
 	/**
-	 * returns an existing or new rocketChat channel for a given Team ID
-	 * @param {*} teamId Id of a Team in the schulcloud
-	 * @param {*} params
-	 */
+     * returns an existing or new rocketChat channel for a given Team ID
+     * @param {*} teamId Id of a Team in the schulcloud
+     * @param {*} params
+     */
 	get(teamId, params) {
 		return this.getOrCreateRocketChatChannel(teamId, params);
 	}
 
-	static onTeamPatched(result) {
+	async onTeamPatched(result) {
 		if (result.features.includes('rocketChat')) {
-			RocketChatChannel.unarchiveChannel(result._id);
+			await RocketChatChannel.unarchiveChannel(result._id);
+			await this.synchronizeModerators(result);
 		} else {
 			RocketChatChannel.archiveChannel(result._id);
 		}
 	}
 
 	/**
-	 * React to event published by the Team service when users are added or
-	 * removed to a team.
-	 * @param {Object} context event context given by the Team service
-	 */
+     * React to event published by the Team service when users are added or
+     * removed to a team.
+     * @param {Object} context event context given by the Team service
+     */
 	onTeamUsersChanged(context) {
 		const { team } = ((context || {}).additionalInfosTeam || {});
 		let additionalUsers = (((context || {}).additionalInfosTeam || {}).changes || {}).add;
@@ -517,28 +554,34 @@ class RocketChatChannel {
 	}
 
 	/**
-	 * react to a team being deleted
-	 * @param {*} context
-	 */
+     * react to a team being deleted
+     * @param {*} context
+     */
 	static onRemoved(context) {
 		RocketChatChannel.deleteChannel(context._id);
 	}
 
 	/**
-	 * Register methods of the service to listen to events of other services
-	 * @listens teams:after:usersChanged
-	 * @listens teams:removed
-	 */
+     * Register methods of the service to listen to events of other services
+     * @listens teams:after:usersChanged
+     * @listens teams:removed
+     */
 	registerEventListeners() {
 		this.app.on('teams:after:usersChanged', this.onTeamUsersChanged.bind(this)); // use hook to get app
 		this.app.service('teams').on('removed', RocketChatChannel.onRemoved.bind(this));
-		this.app.service('teams').on('patched', RocketChatChannel.onTeamPatched.bind(this));
+		this.app.service('teams').on('patched', this.onTeamPatched.bind(this));
 	}
 
 
 	setup(app) {
 		this.app = app;
 		this.registerEventListeners();
+		return app.service('roles').find({
+			query: { name: { $in: ['teamowner', 'teamadministrator'] } },
+		}).then((teamModeratorRoles) => {
+			this.teamModeratorRoles = teamModeratorRoles.data.map(role => role._id.toString());
+			return Promise.resolve();
+		});
 	}
 }
 
