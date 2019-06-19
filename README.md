@@ -4,7 +4,9 @@ Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com
 Dev: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg?branch=develop)](https://travis-ci.com/schul-cloud/schulcloud-server)
 Master: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg?branch=master)](https://travis-ci.com/schul-cloud/schulcloud-server)
 
-[![codecov](https://codecov.io/gh/schul-cloud/schulcloud-server/branch/master/graph/badge.svg)](https://codecov.io/gh/schul-cloud/schulcloud-server)
+Dev: [![codecov](https://codecov.io/gh/schul-cloud/schulcloud-server/branch/develop/graph/badge.svg)](https://codecov.io/gh/schul-cloud/schulcloud-server/branch/develop)
+Master: [![codecov](https://codecov.io/gh/schul-cloud/schulcloud-server/branch/master/graph/badge.svg)](https://codecov.io/gh/schul-cloud/schulcloud-server)
+
 [![Version](https://img.shields.io/github/release/schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/schulcloud-server/releases)
 [![Greenkeeper badge](https://badges.greenkeeper.io/schul-cloud/schulcloud-server.svg)](https://greenkeeper.io/)
 
