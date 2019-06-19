@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "",
-  "version": "17.1.5",
+  "version": "18.0.0",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -15,7 +15,7 @@
   "contributors": [],
   "bugs": {},
   "engines": {
-    "node": ">= 8.0.0"
+    "node": "^8.15.0"
   },
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
