@@ -617,7 +617,9 @@ const isAllowedToCreateTeams = hook => getSessionUser(hook).then(sessionUser => 
 		|| roleNames.includes('administrator')
 		|| roleNames.includes('teacher')
 		|| roleNames.includes('student')) {
-			if (roleNames.includes('student') && school.features.includes('disableStudentTeamCreation')) {
+			if (roleNames.includes('student')
+				&& school.features instanceof Array
+				&& school.features.includes('disableStudentTeamCreation')) {
 				throw new Forbidden('Your school admin does not allow team creations by students.');
 			}
 		} else {
