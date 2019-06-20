@@ -6,9 +6,9 @@ const name = 'Replace all hard coded links to old file ids in lesson.';
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
-const database = require('../src/utils/database');
-const lessonsModel = require('../src/services/lesson/model.js');
-const { FileModel } = require('../src/services/fileStorage/model.js');
+const database = require('../../src/utils/database');
+const lessonsModel = require('../../src/services/lesson/model.js');
+const { FileModel } = require('../../src/services/fileStorage/model.js');
 
 mongoose.Promise = global.Promise;
 

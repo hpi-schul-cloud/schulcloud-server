@@ -37,15 +37,15 @@ class CSVSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#respondsTo}
-	 */
+     * @see {Syncer#respondsTo}
+     */
 	static respondsTo(target) {
 		return target === 'csv';
 	}
 
 	/**
-	 * @see {Syncer#params}
-	 */
+     * @see {Syncer#params}
+     */
 	static params(params, data = {}) {
 		const query = (params || {}).query || {};
 		if (query.school && query.role && data.data) {
@@ -61,8 +61,8 @@ class CSVSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#steps}
-	 */
+     * @see {Syncer#steps}
+     */
 	async steps() {
 		await super.steps();
 		const records = this.parseCsvData();
@@ -157,7 +157,7 @@ class CSVSyncer extends Syncer {
 					type: 'user',
 					entity: `${record.firstName},${record.lastName},${record.email}`,
 					message: `Mehrfachnutzung der E-Mail-Adresse "${record.email}". `
-						+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+						+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 				});
 				this.stats.users.failed += 1;
 			} else {
@@ -235,10 +235,10 @@ class CSVSyncer extends Syncer {
 			};
 			const params = {
 				/*
-				query and payload need to be deleted, so that feathers doesn't want to update
-				multiple database objects (or none in this case). We still need the rest of
-				the requestParams to authenticate as Admin
-				*/
+                query and payload need to be deleted, so that feathers doesn't want to update
+                multiple database objects (or none in this case). We still need the rest of
+                the requestParams to authenticate as Admin
+                */
 				...this.requestParams,
 				query: undefined,
 				payload: undefined,

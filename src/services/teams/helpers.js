@@ -34,9 +34,7 @@ exports.getUpdatedSchoolIdArray = (team, user) => {
  * @param {*} team
  * @param {*} email
  */
-exports.removeInvitedUserByEmail = (team, email) => {
-	return team.invitedUserIds.filter(user => user.email !== email);
-};
+exports.removeInvitedUserByEmail = (team, email) => team.invitedUserIds.filter(user => user.email !== email);
 
 /**
  * @param {*} app
@@ -59,17 +57,20 @@ exports.getSessionUser = getSessionUser;
  * @param {*} params
  */
 exports.patchTeam = (refClass, teamId, data, params) => {
-	return refClass.app.service('teams').patch(teamId, data, local(params)).catch((err) => {
-		warn(err);
-		throw new BadRequest('Can not patch team.');
-	});
+	refClass.app
+		.service('teams')
+		.patch(teamId, data, local(params))
+		.catch((err) => {
+			warn(err);
+			throw new BadRequest('Can not patch team.');
+		});
 };
 
 /**
  * @param {*} app
  * @param {*} teamId
  */
-const getTeam = (refClass, teamId) => {		// todo: app to this -> this.app
+const getTeam = (refClass, teamId) => { // todo: app to this -> this.app
 	const populateParams = {
 		query: {
 			$populate: [{ path: 'roles' }, { path: 'userIds.userId' }],
@@ -99,10 +100,8 @@ exports.extractOne = (find, key) => {
  * @param {*} teamId
  * @param {*} params
  */
-exports.getBasic = (refClass, teamId, params, userId) => {
-	return Promise.all([
-		teamRolesToHook(refClass),
-		getSessionUser(refClass, params, userId),
-		getTeam(refClass, teamId),
-	]);
-};
+exports.getBasic = (refClass, teamId, params, userId) => Promise.all([
+	teamRolesToHook(refClass),
+	getSessionUser(refClass, params, userId),
+	getTeam(refClass, teamId),
+]);

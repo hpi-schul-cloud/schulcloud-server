@@ -1,5 +1,3 @@
-'use strict';
-
 const moment = require('moment');
 const _ = require('lodash');
 const hooks = require('./hooks/index');
@@ -78,12 +76,10 @@ const promises = [
 const fetchStatistics = () => {
 	const statistics = {};
 
-	return Promise.all(promises.map(p => {
-		return p.promise.then(res => {
-			statistics[p.name] = res;
-			return res;
-		});
-	})).then(_ => statistics);
+	return Promise.all(promises.map(p => p.promise.then((res) => {
+		statistics[p.name] = res;
+		return res;
+	}))).then(_ => statistics);
 };
 
 class StatisticsService {
@@ -91,33 +87,29 @@ class StatisticsService {
 		this.docs = swaggerDocs.statisticsService;
 	}
 
-	find({query, payload}) {
+	find({ query, payload }) {
 		return fetchStatistics()
-			.then(statistics => {
-				return statistics;
-			});
+			.then(statistics => statistics);
 	}
 
 	get(id, params) {
-		return _.find(promises, {name: id}).model
-			.then(generic => {
-				let stats =	generic.map(gen => {
-					return moment(gen.createdAt).format('YYYY-MM-DD');
-				});
+		return _.find(promises, { name: id }).model
+			.then((generic) => {
+				const stats = generic.map(gen => moment(gen.createdAt).format('YYYY-MM-DD'));
 
-				let counts = {};
-				stats.forEach((x) => { counts[x] = (counts[x] || 0)+1; });
+				const counts = {};
+				stats.forEach((x) => { counts[x] = (counts[x] || 0) + 1; });
 
 				const ordered = {};
 				Object.keys(counts).sort().forEach((key) => {
 					ordered[key] = counts[key];
 				});
 
-				let x = [];
-				let y = [];
+				const x = [];
+				const y = [];
 
 				if (params.query.returnArray) {
-					for (let key in ordered) {
+					for (const key in ordered) {
 						if (ordered.hasOwnProperty(key)) {
 							x.push(key);
 							y.push(ordered[key]);
@@ -125,7 +117,7 @@ class StatisticsService {
 					}
 				}
 
-				return (params.query.returnArray) ? {x,y} : ordered;
+				return (params.query.returnArray) ? { x, y } : ordered;
 			});
 	}
 }
