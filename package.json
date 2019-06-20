@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "",
-  "version": "17.1.5",
+  "version": "18.0.0",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -15,7 +15,7 @@
   "contributors": [],
   "bugs": {},
   "engines": {
-    "node": ">= 8.0.0"
+    "node": "^8.15.0"
   },
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
@@ -27,8 +27,7 @@
     "startd": "nodemon src/",
     "debug": "nodemon --inspect=5959 src/",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha --exit test/**/*.test.js",
-    "coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov > coverage.lcov",
-    "coverage-codacy": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codacy-coverage",
+    "coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
     "mocha": "cross-env NODE_ENV=test mocha --exit test/ --recursive",
     "mocha-inspect": "cross-env NODE_ENV=test mocha --exit --debug-brk --inspect test/ --recursive",
     "migrations": "node migrations/",
@@ -103,7 +102,7 @@
     "winston": "^2.4.0"
   },
   "devDependencies": {
-    "codacy-coverage": "^3.4.0",
+    "codecov": "^3.5.0",
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
