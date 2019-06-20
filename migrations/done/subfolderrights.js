@@ -3,10 +3,10 @@
 const ran = true; // set to true to exclude migration
 const name = 'Add permission for students to create files in course subfolders.';
 
-const database = require('../src/utils/database');
+const database = require('../../src/utils/database');
 
-const RoleModel = require('../src/services/role/model');
-const { FileModel } = require('../src/services/fileStorage/model.js');
+const RoleModel = require('../../src/services/role/model');
+const { FileModel } = require('../../src/services/fileStorage/model.js');
 
 
 const run = async (dry) => {
