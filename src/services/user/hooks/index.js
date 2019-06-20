@@ -429,7 +429,7 @@ exports.before = {
 	],
 	remove: [
 		auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('USER_CREATE'),
+		globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
 		globalHooks.ifNotLocal(enforceRoleHierarchyOnDelete),
 		globalHooks.permitGroupOperation,
 	],
