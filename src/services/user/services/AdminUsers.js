@@ -123,7 +123,12 @@ class AdminUsers {
 				}
 				return true;
 			});
-			return filteredUsers;
+			return {
+				total: filteredUsers.length,
+				limit: (params.query || {}).$limit,
+				skip: (params.query || {}).$skip,
+				data: filteredUsers,
+			};
 		} catch (err) {
 			logger.warn(err);
 			if ((err || {}).code === 403) {
