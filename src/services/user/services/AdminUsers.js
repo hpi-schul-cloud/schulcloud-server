@@ -21,7 +21,7 @@ const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('users'
 		$sort: sortObject.$sort,
 		$select: ['firstName', 'lastName', 'email', 'createdAt'],
 	},
-}).then(users => users.data);
+});
 
 const getRoles = () => roleModel.find()
 	.select('name')
@@ -80,13 +80,14 @@ class AdminUsers {
 			}
 			// fetch data that are scoped to schoolId
 			const studentRole = (roles.filter(role => role.name === this.role))[0];
-			const [users, classes] = await Promise.all(
+			const [usersData, classes] = await Promise.all(
 				[
 					getAllUsers(this, schoolId, studentRole._id, (params.query || {})),
 					getClasses(this.app, schoolId),
 				],
 			);
-
+			const { total } = usersData;
+			const users = usersData.data;
 			const userIds = users.map(user => user._id.toString());
 			const consents = await findConsents(this, userIds, (params.query || {}).$limit).then((data) => {
 				// rebuild consent to object for faster sorting
@@ -124,7 +125,7 @@ class AdminUsers {
 				return true;
 			});
 			return {
-				total: filteredUsers.length,
+				total,
 				limit: (params.query || {}).$limit,
 				skip: (params.query || {}).$skip,
 				data: filteredUsers,
