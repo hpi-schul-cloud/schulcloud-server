@@ -1,6 +1,6 @@
 /* eslint no-console: 0 */
 /* eslint no-confusing-arrow: 0 */
-const ran = false; // set to true to exclude migration
+const ran = true; // set to true to exclude migration
 const name = 'Add privacy access rights for users.';
 
 const database = require('../src/utils/database');
@@ -41,7 +41,7 @@ const run = async () => {
 			title: 'Neue Chatfunktion',
 			consentTypes: ['privacy'],
 			consentText:
-`Die neue Funktion „Teams“ ist verfügbar. 
+				`Die neue Funktion „Teams“ ist verfügbar. 
 Innerhalb der Teams könnt ihr zusätzlich zum Dateiaustausch, 
 Gruppenterminen und Gruppennews einen Chat hinzufügen und so teamweite Nachrichten versenden, 
 sofern der Admin deiner Schule die Nutzung der Chatfunktion grundsätzlich freigeschaltet hat. 

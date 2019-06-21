@@ -6,7 +6,7 @@ sudo: required
 
 services:
 - docker
-- mongodb
+#- mongodb
 
 env:
   global:
@@ -18,24 +18,26 @@ cache:
   - node_modules
 before_install:
 - openssl aes-256-cbc -K $encrypted_2709882c490b_key -iv $encrypted_2709882c490b_iv -in travis_rsa.enc -out travis_rsa -d
+- sudo docker pull mongo:4.0
+- sudo docker run -d -p 27017:27017 mongo:4.0
 script:
 #- pwd
 - npm test
-- npm run coverage-codacy
+- npm run coverage-codecov
 #- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 
 after_success:
   # because Skipping a deployment with the script provider because the current build is a pull request.
-  - bash ./deploy.sh
+  #- bash ./deploy.sh
   # Check code coverage by codecov
-  # - bash <(curl -s https://codecov.io/bash)
+  #- bash <(curl -s https://codecov.io/bash)
   #- bash <(curl -X POST --data "apiKey=$apiKey&branch=$BRANCH" http://$url/update)
 
-#deploy:
-#  provider: script
-#  script: bash ./deploy.sh
-#  on:
-#   all_branches: true
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+   all_branches: true
 #   condition: $TRAVIS_BRANCH =~ ^development|N21/merge$
 
 notifications:

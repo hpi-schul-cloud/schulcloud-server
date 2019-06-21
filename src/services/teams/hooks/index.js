@@ -337,7 +337,7 @@ const teamRolesToHook = (hook) => {
 			} else if (role) {
 				out = role;
 			} else {
-				logger.warn({ role, value, resultKey });
+				logger.warn(JSON.stringify({ role, value, resultKey }));
 				throw new NotFound('No team role found. (4)');
 			}
 			return out;
@@ -617,7 +617,9 @@ const isAllowedToCreateTeams = hook => getSessionUser(hook).then(sessionUser => 
 		|| roleNames.includes('administrator')
 		|| roleNames.includes('teacher')
 		|| roleNames.includes('student')) {
-			if (roleNames.includes('student') && school.features.includes('disableStudentTeamCreation')) {
+			if (roleNames.includes('student')
+				&& school.features instanceof Array
+				&& school.features.includes('disableStudentTeamCreation')) {
 				throw new Forbidden('Your school admin does not allow team creations by students.');
 			}
 		} else {
@@ -750,6 +752,7 @@ exports.beforeExtern = {
 	patch: [
 		dataExist,
 		teamRolesToHook,
+		globalHooks.hasPermission('TEAM_INVITE_EXTERNAL'),
 		hasTeamPermission(['INVITE_EXPERTS', 'INVITE_ADMINISTRATORS']),
 		filterToRelated(['userId', 'email', 'role'], 'data'),
 		isTeacherDirectlyImport,
