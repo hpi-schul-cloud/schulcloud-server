@@ -13,10 +13,7 @@ const {
 	canCreate,
 	canDelete,
 } = require('./utils/filePermissionHelper');
-const {
-	returnFileType,
-	generateFileNameSuffix: generateFlatFileName,
-} = require('./utils/filePathHelper');
+const { returnFileType, generateFileNameSuffix: generateFlatFileName } = require('./utils/filePathHelper');
 const { FileModel } = require('./model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
@@ -33,7 +30,7 @@ const strategies = {
 
 const createCorrectStrategy = (fileStorageType) => {
 	const Strategy = strategies[fileStorageType];
-	if (!Strategy) { throw new BadRequest('No file storage provided for this school'); }
+	if (!Strategy) throw new BadRequest('No file storage provided for this school');
 	return new Strategy();
 };
 
@@ -51,20 +48,16 @@ const fileStorageService = {
 	 * @returns {Promise}
 	 */
 	async create(data, params) {
-		const {
-			payload: { userId },
-		} = params;
+		const { payload: { userId } } = params;
 		const { owner, parent, studentCanEdit } = data;
-		const permissions = [
-			{
-				refId: userId,
-				refPermModel: 'user',
-				write: true,
-				read: true,
-				create: true,
-				delete: true,
-			},
-		];
+		const permissions = [{
+			refId: userId,
+			refPermModel: 'user',
+			write: true,
+			read: true,
+			create: true,
+			delete: true,
+		}];
 		const setRefId = (perm) => {
 			if (!perm.refId) {
 				perm.refId = perm._id;
@@ -83,12 +76,8 @@ const fileStorageService = {
 		}
 
 		if (isCourse) {
-			const { _id: studentRoleId } = await RoleModel.findOne({
-				name: 'student',
-			}).exec();
-			const { _id: teacherRoleId } = await RoleModel.findOne({
-				name: 'teacher',
-			}).exec();
+			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
+			const { _id: teacherRoleId } = await RoleModel.findOne({ name: 'teacher' }).exec();
 
 			permissions.push({
 				refId: studentRoleId,
@@ -323,9 +312,7 @@ const signedUrlService = {
 	 * @returns {Promise}
 	 */
 	create({ parent, filename, fileType }, params) {
-		const {
-			payload: { userId },
-		} = params;
+		const { payload: { userId } } = params;
 		const strategy = createCorrectStrategy(params.payload.fileStorageType);
 		const flatFileName = generateFlatFileName(filename);
 
@@ -366,16 +353,10 @@ const signedUrlService = {
 			.then(() => (parent ? canCreate(userId, parent) : Promise.resolve({})))
 			.then(() => {
 				if (fileRegexCheck(flatFileName)) {
-					throw new BadRequest(
-						`Die Datei '${flatFileName}' ist nicht erlaubt!`,
-					);
+					throw new BadRequest(`Die Datei '${flatFileName}' ist nicht erlaubt!`);
 				}
 
-				return strategy.generateSignedUrl({
-					userId,
-					flatFileName,
-					fileType,
-				});
+				return strategy.generateSignedUrl({ userId, flatFileName, fileType });
 			})
 			.then((res) => {
 				const header = {
