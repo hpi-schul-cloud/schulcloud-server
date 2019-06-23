@@ -8,6 +8,6 @@ module.exports = function () {
 	app.configure(proxyService);
 	// Setup model services
 	app.configure(modelService);
-	// Setup popo
+	// Setup thumbnail service
 	app.configure(thumbnailService);
 };
