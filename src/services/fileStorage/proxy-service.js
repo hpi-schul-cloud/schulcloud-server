@@ -383,8 +383,7 @@ const signedUrlService = {
 					'Content-Type': fileType,
 					'x-amz-meta-name': encodeURIComponent(filename),
 					'x-amz-meta-flat-name': encodeURIComponent(flatFileName),
-					'x-amz-meta-thumbnail':
-						'https://schulcloud.org/images/login-right.png',
+					'x-amz-meta-thumbnail': 'https://schulcloud.org/images/login-right.png',
 				};
 				return {
 					url: res,
@@ -407,9 +406,7 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const creatorId =			fileObject.permissions[0].refPermModel !== 'user'
-			? userId
-			: fileObject.permissions[0].refId;
+		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
 		return canRead(userId, file)
 			.then(() => strategy.getSignedUrl({
@@ -437,9 +434,7 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const creatorId =			fileObject.permissions[0].refPermModel !== 'user'
-			? userId
-			: fileObject.permissions[0].refId;
+		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
 		return canRead(userId, _id)
 			.then(() => strategy.getSignedUrl({

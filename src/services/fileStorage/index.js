@@ -2,7 +2,7 @@ const modelService = require('./model-service');
 const proxyService = require('./proxy-service');
 const thumbnailService = require('./thumbnail-service');
 
-module.exports = function() {
+module.exports = function () {
 	const app = this;
 	// Setup proxy services
 	app.configure(proxyService);
