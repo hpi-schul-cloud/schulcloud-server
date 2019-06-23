@@ -27,17 +27,10 @@ describe('user-group service', () => {
 			account: {
 				userId: teacher._id,
 			},
-			query: {
-				$sort: {
-					displayName: -1,
-				},
-			},
 		};
 
-		const result = await classesService.find(params);
-		const classes = result.data;
-		expect(classes).to.not.be.undefined;
-		expect(classes[0].displayName).to.be.greaterThan(classes[1].displayName);
+		const { data } = await classesService.find(params);
+		expect(data.length).to.be.greaterThan(1);
 	});
 
 	after(async () => {

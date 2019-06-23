@@ -1,10 +1,14 @@
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const {
 	lookupScope,
 	rejectQueryingOtherUsers,
 } = require('../../../../../src/services/helpers/scopePermissions/hooks');
+
+chai.use(chaiAsPromised);
+const { expect } = chai;
 
 describe('scopePermissionService hook', () => {
 	describe('rejectQueryingOtherUsers', () => {
@@ -64,8 +68,8 @@ describe('scopePermissionService hook', () => {
 			},
 		});
 
-		it('should fail if required params are missing', () => {
-			expect(() => lookupScope({})).to.be.rejected;
+		it('should fail if required params are missing', async () => {
+			expect(lookupScope({})).to.eventually.throw(BadRequest);
 		});
 
 		it('adds the requested team to the query', async () => {
@@ -83,7 +87,7 @@ describe('scopePermissionService hook', () => {
 			expect(context.params.scope).to.deep.equal(team);
 		});
 
-		it('should fail if no scope is provided', () => {
+		it('should fail if no scope is provided', async () => {
 			const team = {
 				_id: new ObjectId(),
 				foo: 'bar',
@@ -93,7 +97,7 @@ describe('scopePermissionService hook', () => {
 				params: { route: { scopeId: team._id } },
 				// context.path is not set, so no scope name can be derived
 			};
-			expect(() => lookupScope(context)).to.be.rejected;
+			expect(lookupScope(context)).to.eventually.throw(BadRequest);
 			expect(context.params.scope).to.equal(undefined);
 		});
 
@@ -107,7 +111,7 @@ describe('scopePermissionService hook', () => {
 				params: { route: { /* scopeId: team._id */ } },
 				path: `/teams/${team._id.toString()}/userPermissions/`,
 			};
-			expect(() => lookupScope(context)).to.be.rejected;
+			expect(lookupScope(context)).to.eventually.throw(BadRequest);
 			expect(context.params.scope).to.equal(undefined);
 		});
 
@@ -121,7 +125,7 @@ describe('scopePermissionService hook', () => {
 				params: { route: { scopeId: tomato._id } },
 				path: `/tomatoes/${tomato._id.toString()}/userPermissions/`, // tomato service does not exist
 			};
-			expect(() => lookupScope(context)).to.be.rejected;
+			expect(lookupScope(context)).to.eventually.throw(BadRequest);
 			expect(context.params.scope).to.equal(undefined);
 		});
 	});
