@@ -21,8 +21,7 @@ const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 
-const FILEPREVIEW_SERVICE_URI = 'http://localhost:3000/filepreview';
-const CALLBACK_URI = 'SCHULCLOUD_SERVER_URI/fileStorage/thumbnail/';
+const { FILEPREVIEW_SERVICE_URI, FILE_PREVIEW_CALLBACK_URI, ENABLE_THUMBNAIL_GENERATION } = process.env;
 
 const strategies = {
 	awsS3: AWSStrategy,
@@ -38,6 +37,38 @@ const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
 	return obj;
 };
+
+const prepareThumbnailGeneration = (file, strategy, userId, data, props) => Promise.all([
+	strategy.getSignedUrl({
+		userId,
+		flatFileName: props.storageFileName,
+		localFileName: props.storageFileName,
+		download: true,
+		Expires: 3600 * 24,
+	}),
+	strategy.generateSignedUrl({
+		userId,
+		flatFileName: props.storageFileName.replace(
+			/(\..+)$/,
+			'-thumbnail.png',
+		),
+		fileType: data.type,
+	}),
+	Promise.resolve(file),
+]).then(([downloadUrl, signedS3Url, f]) => {
+	rp.post({
+		url: FILEPREVIEW_SERVICE_URI,
+		body: {
+			downloadUrl,
+			signedS3Url,
+			callbackUrl: `${FILE_PREVIEW_CALLBACK_URI}${f.thumbnailRequestToken}`,
+			options: {
+				width: 120,
+			},
+		},
+		json: true,
+	});
+});
 
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
@@ -98,11 +129,11 @@ const fileStorageService = {
 			});
 		}
 
-		const refOwnerModel = () => {
+		const refOwnerModel = (() => {
 			if (owner && isCourse) return 'course';
 			if (owner) return 'teams';
 			return 'user';
-		};
+		})();
 
 		if (!sendPermissions && refOwnerModel === 'teams') {
 			const teamObject = await teamsModel.findOne({ _id: owner }).lean().exec();
@@ -154,38 +185,9 @@ const fileStorageService = {
 		return FileModel.findOne(props)
 			.exec()
 			.then(modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-			.then(file => Promise.all([
-				strategy.getSignedUrl({
-					userId,
-					flatFileName: props.storageFileName,
-					localFileName: props.storageFileName,
-					download: true,
-					Expires: 3600 * 24,
-				}),
-				strategy.generateSignedUrl({
-					userId,
-					flatFileName: props.storageFileName.replace(
-						/(\..+)$/,
-						'-thumbnail$1',
-					),
-					fileType: data.type,
-				}),
-				Promise.resolve(file),
-			]))
-			.then(([downloadUrl, signedS3Url, file]) => {
-				rp.post({
-					url: FILEPREVIEW_SERVICE_URI,
-					body: {
-						downloadUrl,
-						signedS3Url,
-						callback_url: CALLBACK_URI + file.thumbnailRequestToken,
-						options: {
-							width: 120,
-						},
-					},
-					json: true,
-				});
-			});
+			.then(file => (ENABLE_THUMBNAIL_GENERATION
+				? prepareThumbnailGeneration(file, strategy, userId, data, props)
+				: Promise.resolve()));
 	},
 
 	/**

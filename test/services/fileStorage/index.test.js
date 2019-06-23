@@ -33,6 +33,10 @@ describe('fileStorage service', () => {
 		assert.ok(app.service('files'));
 	});
 
+	it('registered the thumbnail service', () => {
+		assert.ok(app.service('fileStorage/thumbnail'));
+	});
+
 	/* @deprecated by new model
     it('registered the directoryModel service', () => {
         assert.ok(app.service('directories'));
