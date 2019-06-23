@@ -22,7 +22,7 @@ class ThumbnailService {
 	}
 }
 
-module.exports = function () {
+module.exports = function service() {
 	const app = this;
 
 	// Initialize our service with any options it requires
