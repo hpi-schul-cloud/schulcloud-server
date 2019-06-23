@@ -98,7 +98,11 @@ const fileStorageService = {
 			});
 		}
 
-		const refOwnerModel = owner ? (isCourse ? 'course' : 'teams') : 'user';
+		const refOwnerModel = () => {
+			if (owner && isCourse) return 'course';
+			if (owner) return 'teams';
+			return 'user';
+		};
 
 		if (!sendPermissions && refOwnerModel === 'teams') {
 			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
@@ -275,7 +279,7 @@ const fileStorageService = {
 			if (teamObject) {
 				return new Promise((resolve, reject) => {
 					const teamMember = teamObject.userIds.find(
-						_ => _.userId.toString() === userId.toString(),
+						u => u.userId.toString() === userId.toString(),
 					);
 					if (teamMember) {
 						return resolve();
@@ -522,7 +526,11 @@ const directoryService = {
 				isDirectory: true,
 				owner: owner || userId,
 				parent,
-				refOwnerModel: owner ? (isCourse ? 'course' : 'teams') : 'user',
+				refOwnerModel: () => {
+					if (owner && isCourse) return 'course';
+					if (owner) return 'teams';
+					return 'user';
+				},
 				permissions: [...permissions, ...sendPermissions].map(setRefId),
 			}),
 		);
@@ -574,7 +582,7 @@ const directoryService = {
 	 * @param id, params
 	 * @returns {Promise}
 	 */
-	remove(_, { query, payload }) {
+	remove(u, { query, payload }) {
 		const { userId } = payload;
 		const { _id } = query;
 		const fileInstance = FileModel.findOne({ _id });
