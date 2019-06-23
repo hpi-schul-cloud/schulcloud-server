@@ -251,8 +251,6 @@ const fileStorageService = {
 		let fieldsToSet = {};
 		let fieldsToUnset = {};
 
-		console.log(data);
-
 		if (fileObject) {
 			owner = fileObject.owner;
 			refOwnerModel = fileObject.refOwnerModel;
