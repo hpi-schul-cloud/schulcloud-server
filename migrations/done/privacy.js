@@ -3,10 +3,10 @@
 const ran = true; // set to true to exclude migration
 const name = 'Add privacy access rights for users.';
 
-const database = require('../src/utils/database');
+const database = require('../../src/utils/database');
 
-const RoleModel = require('../src/services/role/model');
-const { ConsentVersionModel } = require('../src/services/consent/model');
+const RoleModel = require('../../src/services/role/model');
+const { ConsentVersionModel } = require('../../src/services/consent/model');
 
 
 const run = async () => {
@@ -31,12 +31,12 @@ const run = async () => {
 	}))));
 
 	// add chat information to consentversions
-	const publishedAt = new Date('2019-05-13').getUTCDate();
+	const publishedAt = new Date('2019-05-13');
 	// use static id to not add this entry again on possible second run
 	const exist = await ConsentVersionModel
 		.findOne({ publishedAt, consentTypes: 'privacy' }).exec();
 	if (!exist) {
-		console.log('add sample consent version');
+		console.log('add consent version for chat');
 		chain.push(new ConsentVersionModel({
 			title: 'Neue Chatfunktion',
 			consentTypes: ['privacy'],
