@@ -670,8 +670,8 @@ const newFileService = {
 	docs: swaggerDocs.newFileService,
 
 	/**
-     * @param data, contains path, key, name
-     * @returns new File
+     * @param data, contains filename, owner, parent and studentCanEdit
+     * @returns {Promise}
      */
 	create(data, params) {
 		const {
