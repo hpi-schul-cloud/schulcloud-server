@@ -12,11 +12,16 @@ const getCurrentUser = id => userModel.findById(id)
 	.lean()
 	.exec();
 
-const getAllUsers = (schoolId, roles, sortObject) => userModel.find({ schoolId, roles })
-	.select('firstName lastName email createdAt')
-	.sort(sortObject)
-	.lean()
-	.exec();
+const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('users').find({
+	query: {
+		schoolId,
+		roles: role.toString(),
+		$limit: sortObject.$limit,
+		$skip: sortObject.$skip,
+		$sort: sortObject.$sort,
+		$select: ['firstName', 'lastName', 'email', 'createdAt'],
+	},
+});
 
 const getRoles = () => roleModel.find()
 	.select('name')
@@ -36,10 +41,11 @@ const getClasses = (app, schoolId) => app.service('classes')
 		return err;
 	});
 
-const findConsents = (ref, userIds) => ref.app.service('/consents')
+const findConsents = (ref, userIds, $limit) => ref.app.service('/consents')
 	.find({
 		query: {
 			userId: { $in: userIds },
+			$limit,
 			$select: [
 				'userId',
 				'userConsent.form',
@@ -74,15 +80,16 @@ class AdminUsers {
 			}
 			// fetch data that are scoped to schoolId
 			const studentRole = (roles.filter(role => role.name === this.role))[0];
-			const [users, classes] = await Promise.all(
+			const [usersData, classes] = await Promise.all(
 				[
-					getAllUsers(schoolId, studentRole._id, (params.query || {}).$sort),
+					getAllUsers(this, schoolId, studentRole._id, (params.query || {})),
 					getClasses(this.app, schoolId),
 				],
 			);
-
+			const { total } = usersData;
+			const users = usersData.data;
 			const userIds = users.map(user => user._id.toString());
-			const consents = await findConsents(this, userIds).then((data) => {
+			const consents = await findConsents(this, userIds, (params.query || {}).$limit).then((data) => {
 				// rebuild consent to object for faster sorting
 				const out = {};
 				data.forEach((e) => {
@@ -117,7 +124,12 @@ class AdminUsers {
 				}
 				return true;
 			});
-			return filteredUsers;
+			return {
+				total,
+				limit: (params.query || {}).$limit,
+				skip: (params.query || {}).$skip,
+				data: filteredUsers,
+			};
 		} catch (err) {
 			logger.warn(err);
 			if ((err || {}).code === 403) {
