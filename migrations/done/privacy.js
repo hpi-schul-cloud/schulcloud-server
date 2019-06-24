@@ -3,10 +3,10 @@
 const ran = true; // set to true to exclude migration
 const name = 'Add privacy access rights for users.';
 
-const database = require('../src/utils/database');
+const database = require('../../src/utils/database');
 
-const RoleModel = require('../src/services/role/model');
-const { ConsentVersionModel } = require('../src/services/consent/model');
+const RoleModel = require('../../src/services/role/model');
+const { ConsentVersionModel } = require('../../src/services/consent/model');
 
 
 const run = async () => {
