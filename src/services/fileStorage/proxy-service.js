@@ -95,8 +95,22 @@ const fileStorageService = {
 		const refOwnerModel = owner ? (isCourse ? 'course' : 'teams') : 'user';
 
 		if (!sendPermissions && refOwnerModel === 'teams') {
-			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
-			sendPermissions = teamObject.filePermission;
+			const teamObject = await teamsModel.findOne({ _id: owner }).lean().exec();
+			const teamRoles = await RoleModel.find({ name: /^team/ }).lean().exec();
+			const { filePermission: defaultPermissions } = teamObject;
+
+			sendPermissions = teamRoles.map(({ _id: roleId }) => {
+				const defaultPerm = defaultPermissions.find(({ refId }) => roleId.equals(refId));
+
+				return defaultPerm || {
+					refId: roleId,
+					refPermModel: 'role',
+					write: true,
+					read: true,
+					create: true,
+					delete: true,
+				};
+			});
 		} else {
 			sendPermissions = [];
 		}
@@ -178,48 +192,19 @@ const fileStorageService = {
 				return new Forbidden();
 			});
 	},
-
 	/**
-     * @param id, the file-id in the proxy-db
-     * @param data, contains fileName, path and destination.
-     * Path and destination have to have a slash at the end!
-     */
+	* Move file from one parent to another
+	* @param _id, Object-ID of file to be patched
+	* @param data, contains destination parent Object-ID
+	* @param params contains payload with userId, set by middleware
+	* @returns {Promise}
+	*/
 	async patch(_id, data, params) {
 		const { payload: { userId } } = params;
 		const { parent } = data;
+		const update = { $set: {} };
 		const fileObject = await FileModel.findOne({ _id: parent }).exec();
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
-		let owner;
-		let refOwnerModel;
-		let fieldsToSet = {};
-		let fieldsToUnset = {};
-
-		if (fileObject) {
-			owner = fileObject.owner;
-			refOwnerModel = fileObject.refOwnerModel;
-			fieldsToSet = {
-				parent,
-				owner,
-				refOwnerModel,
-			};
-		} else if (parent === userId.toString()) {
-			owner = userId;
-			refOwnerModel = 'user';
-			fieldsToSet = {
-				owner,
-				refOwnerModel,
-			};
-			fieldsToUnset = {
-				parent: '',
-			};
-		} else {
-			owner = parent;
-			refOwnerModel = teamObject ? 'teams' : 'course';
-			fieldsToSet = {
-				owner,
-				refOwnerModel,
-			};
-		}
 
 		const permissionPromise = () => {
 			if (fileObject) {
@@ -229,7 +214,7 @@ const fileStorageService = {
 			if (teamObject) {
 				return new Promise((resolve, reject) => {
 					const teamMember = teamObject.userIds.find(
-						_ => _.userId.toString() === userId.toString(),
+						u => u.userId.toString() === userId.toString(),
 					);
 					if (teamMember) {
 						return resolve();
@@ -241,19 +226,28 @@ const fileStorageService = {
 			return Promise.resolve();
 		};
 
+		if (fileObject) {
+			update.$set = {
+				parent,
+				owner: fileObject.owner,
+				refOwnerModel: fileObject.refOwnerModel,
+			};
+		} else if (parent === userId.toString()) {
+			update.$set = {
+				owner: userId,
+				refOwnerModel: 'user',
+			};
+			update.$unset = { parent: '' };
+		} else {
+			update.$set = {
+				owner: parent,
+				refOwnerModel: teamObject ? 'teams' : 'course',
+			};
+			update.$unset = { parent: '' };
+		}
+
 		return permissionPromise()
-			.then(() => {
-				if (_.isEmpty(fieldsToUnset)) {
-					FileModel.update({ _id }, {
-						$set: fieldsToSet,
-					}).exec();
-				} else {
-					FileModel.update({ _id }, {
-						$set: fieldsToSet,
-						$unset: fieldsToUnset,
-					}).exec();
-				}
-			})
+			.then(() => FileModel.update({ _id }, update).exec())
 			.catch((e) => {
 				logger.error(e);
 				return new Forbidden();
@@ -451,7 +445,7 @@ const directoryService = {
 				refPermModel: 'role',
 				write: false,
 				read: true, // students can always read course files
-				create: false,
+				create: true,
 				delete: false,
 			});
 		}
@@ -549,9 +543,11 @@ const renameService = {
      */
 	create(data, params) {
 		const { payload: { userId } } = params;
-		const { newName, _id } = data;
+		const { newName, id } = data;
 
-		if (!_id || !newName) return Promise.reject(new BadRequest('Missing parameters'));
+		if (!id || !newName) return Promise.reject(new BadRequest('Missing parameters'));
+
+		const _id = id;
 
 		return canWrite(userId, _id)
 			.then(() => FileModel.findOne({ _id }).exec())

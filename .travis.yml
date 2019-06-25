@@ -6,7 +6,7 @@ sudo: required
 
 services:
 - docker
-- mongodb
+#- mongodb
 
 env:
   global:
@@ -21,6 +21,8 @@ before_install:
 - curl https://raw.githubusercontent.com/schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
 - curl https://raw.githubusercontent.com/schul-cloud/schulcloud-authorization-server/master/.env.example > .env
 - docker-compose -f docker-compose-oauthserver.yml up -d
+- sudo docker pull mongo:4.0
+- sudo docker run -d -p 27017:27017 mongo:4.0
 script:
 #- pwd
 - npm test
@@ -29,16 +31,16 @@ script:
 
 after_success:
   # because Skipping a deployment with the script provider because the current build is a pull request.
-  - bash ./deploy.sh
+  #- bash ./deploy.sh
   # Check code coverage by codecov
-  - bash <(curl -s https://codecov.io/bash)
+  #- bash <(curl -s https://codecov.io/bash)
   #- bash <(curl -X POST --data "apiKey=$apiKey&branch=$BRANCH" http://$url/update)
 
-#deploy:
-#  provider: script
-#  script: bash ./deploy.sh
-#  on:
-#   all_branches: true
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+   all_branches: true
 #   condition: $TRAVIS_BRANCH =~ ^development|N21/merge$
 
 notifications:

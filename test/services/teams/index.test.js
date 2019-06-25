@@ -7,18 +7,20 @@ const T = require('../helpers/testObjects')(app);
 
 const teamService = app.service('/teams');
 
+
 describe('Test team basic methods', () => {
 	describe('teams create', () => {
 		let team;
 		let teamId;
+		let userId;
 
 		before(async () => {
-			const user = await T.createTestUser().catch((err) => {
+			const user = await T.createTestUser({ roles: ['administrator'] }).catch((err) => {
 				logger.warn('Can not create test user', err);
 			});
 
 			const schoolId = user.schoolId.toString();
-			const userId = user._id.toString();
+			userId = user._id.toString();
 			const fakeLoginParams = T.fakeLoginParams({ userId });
 
 			team = await teamService.create({
@@ -49,6 +51,16 @@ describe('Test team basic methods', () => {
 			expect(ObjectId.isValid(filePermission[1].refId)).to.be.true;
 		});
 
+		it('should find created test team for user', async () => {
+			const result = await app.service('teams').find(userId);
+			const elements = [];
+			result.data.forEach((element) => {
+				elements.push(element._id);
+			});
+			const testTeam = elements.pop();
+			expect(testTeam.toString()).to.equal(teamId);
+		});
+
 		it('is allowed for superheroes', async () => {
 			const hero = await T.createTestUser({ roles: ['superhero'] });
 			const username = hero.email;
@@ -68,6 +80,29 @@ describe('Test team basic methods', () => {
 
 				const { userIds } = await teamService.get(slimteam._id);
 				expect(userIds.some(item => item.userId.toString() === hero._id.toString())).to.equal(true);
+			} finally {
+				T.cleanup();
+			}
+		});
+
+		it('is not allowed for demoStudent', async () => {
+			const demoStudent = await T.createTestUser({ roles: ['demoStudent'] });
+			const username = demoStudent.email;
+			const password = 'Schulcloud1!';
+			await T.createTestAccount({ username, password }, 'local', demoStudent);
+			const params = await T.generateRequestParams({ username, password });
+
+			try {
+				const record = {
+					name: 'test',
+					schoolId: demoStudent.schoolId,
+					schoolIds: [demoStudent.schoolId],
+					userIds: [demoStudent._id],
+				};
+				await teamService.create(record, { ...params, query: {} }).catch((e) => {
+					expect(e.name).to.equal('Forbidden');
+					expect(e.message).to.equal('Only administrator, teacher and students can create teams.');
+				});
 			} finally {
 				T.cleanup();
 			}
