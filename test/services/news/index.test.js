@@ -378,6 +378,18 @@ describe('news service', () => {
 				expect(result.length).to.equal(2);
 			});
 
+			it('should paginate unpublished news, even if empty', async () => {
+				const schoolId = new ObjectId();
+				const user = await createTestUser({ schoolId, roles: 'student' });
+				const params = await generateRequestParamsFromUser(user);
+				params.query = { unpublished: true };
+
+				const paginatedResult = await newsService.find(params);
+				expect(paginatedResult).not.to.deep.equal([]);
+				expect(paginatedResult.data).to.deep.equal([]);
+				expect(paginatedResult.total).to.equal(0);
+			});
+
 			it('should handle sorting if requested', async () => {
 				const schoolId = (await createTestSchool())._id;
 				await News.create([
