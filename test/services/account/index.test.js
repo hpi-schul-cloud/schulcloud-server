@@ -263,7 +263,7 @@ describe('Account Service', () => {
 			chai.request(app)
 				.get('/accounts')
 				.query({ username: { $gte: 0 } })
-				.end((err) => {
+				.end((response, err) => {
 					expect(err).to.have.status(400);
 					done();
 				});
