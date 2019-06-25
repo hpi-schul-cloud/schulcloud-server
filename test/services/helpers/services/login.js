@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 const accountsHelper = require('./accounts');
 
->>>>>>> develop
 const generateJWT = app => async ({ username, password }) => {
 	const result = await app.service('authentication').create({
 		strategy: 'local',
@@ -28,11 +25,6 @@ const generateRequestParams = app => async ({ username, password }) => {
 	};
 };
 
-<<<<<<< HEAD
-module.exports = app => ({
-	generateJWT: generateJWT(app),
-	generateRequestParams: generateRequestParams(app),
-=======
 const generateRequestParamsFromUser = app => async (user) => {
 	const credentials = { username: user.email, password: user.email };
 	await accountsHelper(app).create(credentials, 'local', user);
@@ -65,5 +57,4 @@ module.exports = app => ({
 	generateRequestParams: generateRequestParams(app),
 	generateRequestParamsFromUser: generateRequestParamsFromUser(app),
 	fakeLoginParams: fakeLoginParams(app),
->>>>>>> develop
 });
