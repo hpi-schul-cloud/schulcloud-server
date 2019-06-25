@@ -8,5 +8,5 @@ if (options.username) {
 
 module.exports = {
 	d: url, // database connection url
-	es6: true, // use ES6 migration template
+	t: './migrations/template.js', // use custom migration template
 };
