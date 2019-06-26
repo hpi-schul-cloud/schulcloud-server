@@ -21,33 +21,34 @@ const hashId = (hook) => {
 	}
 };
 
-const sendInfo = (hook) => {
-	if (hook.path === 'passwordRecovery') {
-		hook.app.service('/accounts').get(hook.data.account, {
+const sendInfo = (context) => {
+	if (context.path === 'passwordRecovery') {
+		return context.app.service('/accounts').get(context.data.account, {
 			query: {
 				$populate: ['userId'],
 			},
 		}).then((account) => {
-			const recoveryLink = `${process.env.HOST}/pwrecovery/${hook.result._id}`;
+			const recoveryLink = `${process.env.HOST}/pwrecovery/${context.result._id}`;
 			const mailContent = `Sehr geehrte/r " ${account.userId.firstName} ${account.userId.lastName}, \n\n
 				Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:\n
 				${recoveryLink}\n\n
 				Mit Freundlichen Grüßen\n
 				Ihr ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'} Team`;
 
-			globalHooks.sendEmail(hook, {
+			globalHooks.sendEmail(context, {
 				subject: `Passwort zurücksetzen für die ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'}`,
 				emails: [account.userId.email],
 				content: {
 					text: mailContent,
 				},
 			});
-			return hook;
+			return context;
 		}).catch((err) => {
 			logger.warn(err);
 			throw new NotFound('User Account Not Found');
 		});
 	}
+	return context;
 };
 
 exports.before = {
