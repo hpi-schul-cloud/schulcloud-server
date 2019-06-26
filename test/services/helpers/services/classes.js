@@ -9,7 +9,6 @@ const createTestClass = (app, opt) => ({
 	nameFormat = 'static',
 	gradeLevel = undefined,
 }) => app.service('classes').create({
-	// required fields for user
 	name,
 	schoolId,
 	userIds,
