@@ -1,4 +1,3 @@
-const rolesModel = require('../../../../../src/services/role/model.js');
 const { userModel } = require('../../../../../src/services/user/model.js');
 const accountModel = require('../../../../../src/services/account/model.js');
 
@@ -73,10 +72,8 @@ class MockEmailService {
 		this.eventHandler = eventHandler;
 	}
 
-	create({
-		headers, email, subject, content,
-	}, params) {
-		this.eventHandler({ subject, content });
+	create({ subject, content }, params) {
+		this.eventHandler({ subject, content, params });
 		return Promise.resolve();
 	}
 }
