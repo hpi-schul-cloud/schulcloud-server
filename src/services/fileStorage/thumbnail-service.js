@@ -1,10 +1,6 @@
 const { FileModel } = require('./model');
 
 class ThumbnailService {
-	constructor() {
-		this.app = null;
-	}
-
 	patch(id, data) {
 		return FileModel.updateOne(
 			{ thumbnailRequestToken: id },

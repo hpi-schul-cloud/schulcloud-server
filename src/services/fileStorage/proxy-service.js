@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const logger = require('winston');
 const _ = require('lodash');
 const rp = require('request-promise-native');
@@ -21,7 +22,11 @@ const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 
-const { FILEPREVIEW_SERVICE_URI, FILE_PREVIEW_CALLBACK_URI, ENABLE_THUMBNAIL_GENERATION } = process.env;
+const FILEPREVIEW_SERVICE_URI = process.env.FILEPREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
+const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI
+|| 'http://localhost:3030/fileStorage/thumbnail';
+const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || false;
+
 
 const strategies = {
 	awsS3: AWSStrategy,
@@ -61,7 +66,7 @@ const prepareThumbnailGeneration = (file, strategy, userId, data, props) => Prom
 		body: {
 			downloadUrl,
 			signedS3Url,
-			callbackUrl: `${FILE_PREVIEW_CALLBACK_URI}${f.thumbnailRequestToken}`,
+			callbackUrl: path.resolve(FILE_PREVIEW_CALLBACK_URI, f.thumbnailRequestToken),
 			options: {
 				width: 120,
 			},
@@ -79,7 +84,7 @@ const fileStorageService = {
      * @returns {Promise}
      */
 	async create(data, params) {
-		const { payload: { userId } } = params;
+		const { payload: { userId, fileStorageType } } = params;
 		const { owner, parent, studentCanEdit } = data;
 		const permissions = [{
 			refId: userId,
@@ -95,7 +100,7 @@ const fileStorageService = {
 			}
 			return perm;
 		};
-		const strategy = createCorrectStrategy('awsS3');
+		const strategy = createCorrectStrategy(fileStorageType);
 
 		let { permissions: sendPermissions } = data;
 		let isCourse = true;
@@ -386,7 +391,10 @@ const signedUrlService = {
 		return canRead(userId, file)
 			.then(() => strategy.getSignedUrl(
 				{
-					userId: creatorId, flatFileName: fileObject.storageFileName, localFileName: fileObject.name, download,
+					userId: creatorId,
+					flatFileName: fileObject.storageFileName,
+					localFileName: fileObject.name,
+					download,
 				},
 			))
 			.then(res => ({
@@ -411,7 +419,11 @@ const signedUrlService = {
 		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
 		return canRead(userId, _id)
-			.then(() => strategy.getSignedUrl({ userId: creatorId, flatFileName: fileObject.storageFileName, action: 'putObject' }))
+			.then(() => strategy.getSignedUrl({
+				userId: creatorId,
+				flatFileName: fileObject.storageFileName,
+				action: 'putObject',
+			}))
 			.then(res => ({
 				url: res,
 			}))
@@ -502,11 +514,11 @@ const directoryService = {
 				isDirectory: true,
 				owner: owner || userId,
 				parent,
-				refOwnerModel: () => {
+				refOwnerModel: (() => {
 					if (owner && isCourse) return 'course';
 					if (owner) return 'teams';
 					return 'user';
-				},
+				})(),
 				permissions: [...permissions, ...sendPermissions].map(setRefId),
 			}),
 		);
@@ -562,7 +574,7 @@ const directoryService = {
      * @param id, params
      * @returns {Promise}
      */
-	remove(_, { query, payload }) {
+	remove(__, { query, payload }) {
 		const { userId } = payload;
 		const { _id } = query;
 		const fileInstance = FileModel.findOne({ _id });
@@ -969,9 +981,9 @@ module.exports = function () {
 		'/fileStorage/copy',
 		'/fileStorage/files/new',
 		'/fileStorage/permission',
-	].forEach((path) => {
+	].forEach((apiPath) => {
 		// Get our initialize service to that we can bind hooks
-		const service = app.service(path);
+		const service = app.service(apiPath);
 		service.hooks(hooks);
 	});
 };
