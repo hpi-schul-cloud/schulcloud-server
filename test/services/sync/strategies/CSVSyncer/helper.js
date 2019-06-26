@@ -4,47 +4,6 @@ const accountModel = require('../../../../../src/services/account/model.js');
 
 const app = require('../../../../../src/app');
 
-const PASSWORD = 'Todd.Test123';
-
-let account;
-let user;
-
-const setupAdmin = async (email = 'foo@bar.baz', schoolId = '0000d186816abba584714c5f') => {
-	const [administrator] = await rolesModel.find({
-		name: 'administrator',
-	});
-	user = await userModel.create({
-		email,
-		schoolId,
-		firstName: 'Authenticated',
-		lastName: 'User',
-		roles: [
-			administrator._id,
-		],
-	});
-
-	account = await app.service('accounts').create({
-		username: email,
-		password: PASSWORD,
-		userId: user._id,
-		activated: true,
-	});
-};
-
-const getAdminToken = async () => {
-	const result = await app.service('authentication').create({
-		strategy: 'local',
-		username: account.username,
-		password: PASSWORD,
-	}, {
-		headers: {
-			'content-type': 'application/json',
-		},
-		provider: 'rest',
-	});
-	return result.accessToken;
-};
-
 const deleteUser = async (email = 'foo@bar.baz') => {
 	await userModel.deleteOne({ email });
 	await accountModel.deleteOne({ username: email });
@@ -123,8 +82,6 @@ class MockEmailService {
 }
 
 module.exports = {
-	setupAdmin,
-	getAdminToken,
 	deleteUser,
 	createClass,
 	findClass,
