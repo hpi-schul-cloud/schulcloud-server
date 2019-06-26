@@ -814,10 +814,10 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await testObjects.cleanup();
 			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
 			await deleteClass([undefined, 'Jeffersonian Institute']);
 			await deleteClass([undefined, 'FBI']);
+			await testObjects.cleanup();
 		});
 
 		it('should be accepted for execution', () => {
@@ -920,10 +920,10 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await testObjects.cleanup();
 			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
 			await deleteClass([undefined, 'Easy Company']);
 			await deleteClass([undefined, 'Best Company']);
+			await testObjects.cleanup();
 		});
 
 		it('should be accepted for execution', () => {
