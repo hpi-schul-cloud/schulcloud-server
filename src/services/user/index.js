@@ -71,7 +71,7 @@ module.exports = function setup() {
 	const adminTeachersService = app.service(adminTeachersRoute);
 	adminTeachersService.hooks(adminHook);
 
-	app.use('/users/:id/skipregistration', new SkipRegistrationService());
-	const skipRegistrationService = app.service(adminStudentsRoute);
+	app.use('/users/:userid/skipregistration', new SkipRegistrationService());
+	const skipRegistrationService = app.service('/users/:userid/skipregistration');
 	skipRegistrationService.hooks(skipRegistrationHooks);
 };
