@@ -5,11 +5,14 @@ const roleModel = require('../../../../../src/services/role/model.js');
 const { userModel } = require('../../../../../src/services/user/model.js');
 const MailService = require('../../../../../src/services/helpers/service.js');
 
+const testObjects = require('../../../helpers/testObjects')(app);
+const { generateRequestParamsFromUser } = require('../../../helpers/services/login')(app);
+const { create: createUser } = require('../../../helpers/services/users')(app);
+
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
 const {
-	setupAdmin, getAdminToken, deleteUser, createClass, findClass, deleteClass,
-	MockEmailService,
+	deleteUser, createClass, findClass, deleteClass, MockEmailService,
 } = require('./helper');
 
 describe('CSVSyncer Integration', () => {
@@ -24,12 +27,10 @@ describe('CSVSyncer Integration', () => {
 	});
 
 	describe('Scenario 0 - Missing authentication', () => {
-		const SCHOOL_ID = '0000d186816abba584714c5f';
-
 		const scenarioParams = {
 			query: {
 				target: 'csv',
-				school: SCHOOL_ID,
+				school: '0000d186816abba584714c5f',
 				role: 'student',
 			},
 			provider: 'rest',
@@ -62,32 +63,22 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const SCENARIO_EMAIL = 'peter@pan.de';
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
-
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'student',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'student',
 			};
 			scenarioData = {
 				data: `firstName,lastName,email\nPeter,Pan,${SCENARIO_EMAIL}`,
 			};
 		});
 
-		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
-			await deleteUser(SCENARIO_EMAIL);
-		});
+		after(testObjects.cleanup);
 
 		it('should be accepted for execution', () => {
 			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
@@ -126,7 +117,6 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const TEACHER_EMAILS = [
 			'a@b.de',
 			'b@c.de',
@@ -134,18 +124,12 @@ describe('CSVSyncer Integration', () => {
 		];
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
-
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'teacher',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email\n'
@@ -156,7 +140,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
+			await testObjects.cleanup();
 			await deleteUser(TEACHER_EMAILS[0]);
 			await deleteUser(TEACHER_EMAILS[1]);
 			await deleteUser(TEACHER_EMAILS[2]);
@@ -199,22 +183,15 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
-
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'student',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'student',
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
@@ -227,7 +204,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
+			await testObjects.cleanup();
 			await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
 			await Promise.all([['1', 'a'], ['1', 'b'], ['2', 'b'], ['2', 'c']].map(klass => deleteClass(klass)));
 		});
@@ -303,23 +280,17 @@ describe('CSVSyncer Integration', () => {
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
 		const EXISTING_CLASSES = [['1', 'a'], [undefined, 'SG1'], ['12', '/3']];
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
 			await Promise.all(EXISTING_CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
 
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'teacher',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
@@ -332,7 +303,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
+			await testObjects.cleanup();
 			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
 			await Promise.all(EXISTING_CLASSES.map(klass => deleteClass(klass)));
 			await deleteClass([undefined, 'Archeology']);
@@ -406,25 +377,19 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
 		const CLASSES = [[undefined, 'NSA'], [undefined, 'CIA'], [undefined, 'BuyMore']];
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
 			await Promise.all(CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
 
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'teacher',
-					sendEmails: 'true',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
+				sendEmails: 'true',
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
@@ -435,7 +400,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
+			await testObjects.cleanup();
 			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
 			await Promise.all(CLASSES.map(klass => deleteClass(klass)));
 			app.use('/mails', new MailService());
@@ -483,23 +448,17 @@ describe('CSVSyncer Integration', () => {
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
 		const EXISTING_CLASSES = [['1', 'a'], ['2', 'b']];
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
 			await Promise.all(EXISTING_CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
 
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'student',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'student',
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
@@ -510,7 +469,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
+			await testObjects.cleanup();
 			await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
 			await Promise.all(EXISTING_CLASSES.map(klass => deleteClass(klass)));
 		});
@@ -572,24 +531,17 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const TEACHER_EMAILS = [
 			'a@b.de',
 		];
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
-
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'teacher',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email\n'
@@ -600,7 +552,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
+			await testObjects.cleanup();
 			await deleteUser(TEACHER_EMAILS[0]);
 		});
 
@@ -652,25 +604,19 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
 		const CLASSES = [[undefined, 'NSA'], [undefined, 'CIA'], [undefined, 'BuyMore']];
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
 			await Promise.all(CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
 
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'teacher',
-					sendEmails: 'true',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
+				sendEmails: 'true',
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
@@ -681,7 +627,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
+			await testObjects.cleanup();
 			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
 			await Promise.all(CLASSES.map(klass => deleteClass(klass)));
 			app.use('/mails', new MailService());
@@ -717,25 +663,18 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const TEACHER_EMAILS = [
 			'a@b.de',
 		];
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
-
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'teacher',
-					sendEmails: 'true',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
+				sendEmails: 'true',
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email\n'
@@ -746,7 +685,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
+			await testObjects.cleanup();
 			await deleteUser(TEACHER_EMAILS[0]);
 			app.use('/mails', new MailService());
 		});
@@ -798,22 +737,15 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const SCENARIO_EMAIL = 'peterpan.de';
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
-
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'student',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'student',
 			};
 			scenarioData = {
 				data: `firstName,lastName,email\nPeter,Pan,${SCENARIO_EMAIL}`,
@@ -821,7 +753,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
+			await testObjects.cleanup();
 			await deleteUser(SCENARIO_EMAIL);
 		});
 
@@ -856,22 +788,15 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
-
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'teacher',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
@@ -884,7 +809,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
+			await testObjects.cleanup();
 			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
 			await deleteClass([undefined, 'Jeffersonian Institute']);
 			await deleteClass([undefined, 'FBI']);
@@ -965,22 +890,15 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData2;
 
 		const SCHOOL_ID = '0000d186816abba584714c5f';
-		const ADMIN_EMAIL = 'foo@bar.baz';
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de'];
 
 		before(async () => {
-			await setupAdmin(ADMIN_EMAIL, SCHOOL_ID);
-
-			scenarioParams = {
-				query: {
-					target: 'csv',
-					school: SCHOOL_ID,
-					role: 'teacher',
-				},
-				headers: {
-					authorization: `Bearer ${await getAdminToken()}`,
-				},
-				provider: 'rest',
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
 			};
 			scenarioData1 = {
 				data: 'firstName,lastName,email,class\n'
@@ -997,7 +915,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await deleteUser(ADMIN_EMAIL);
+			await testObjects.cleanup();
 			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
 			await deleteClass([undefined, 'Easy Company']);
 			await deleteClass([undefined, 'Best Company']);
