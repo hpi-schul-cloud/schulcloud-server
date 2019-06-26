@@ -8,11 +8,16 @@ const MailService = require('../../../../../src/services/helpers/service.js');
 const testObjects = require('../../../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../../../helpers/services/login')(app);
 const { create: createUser } = require('../../../helpers/services/users')(app);
+const {
+	createByName: createClass,
+	findByName: findClass,
+	deleteByName: deleteClass,
+} = require('../../../helpers/services/classes')(app);
 
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
 const {
-	deleteUser, createClass, findClass, deleteClass, MockEmailService,
+	deleteUser, MockEmailService,
 } = require('./helper');
 
 describe('CSVSyncer Integration', () => {
@@ -204,9 +209,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await testObjects.cleanup();
 			await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
 			await Promise.all([['1', 'a'], ['1', 'b'], ['2', 'b'], ['2', 'c']].map(klass => deleteClass(klass)));
+			await testObjects.cleanup();
 		});
 
 		it('should be accepted for execution', () => {
@@ -303,10 +308,10 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await testObjects.cleanup();
 			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
 			await Promise.all(EXISTING_CLASSES.map(klass => deleteClass(klass)));
 			await deleteClass([undefined, 'Archeology']);
+			await testObjects.cleanup();
 		});
 
 		it('should be accepted for execution', () => {
@@ -400,9 +405,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await testObjects.cleanup();
 			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
 			await Promise.all(CLASSES.map(klass => deleteClass(klass)));
+			await testObjects.cleanup();
 			app.use('/mails', new MailService());
 		});
 
@@ -469,9 +474,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await testObjects.cleanup();
 			await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
 			await Promise.all(EXISTING_CLASSES.map(klass => deleteClass(klass)));
+			await testObjects.cleanup();
 		});
 
 		it('should be accepted for execution', () => {
