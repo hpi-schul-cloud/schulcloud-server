@@ -632,9 +632,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await testObjects.cleanup();
 			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
 			await Promise.all(CLASSES.map(klass => deleteClass(klass)));
+			await testObjects.cleanup();
 			app.use('/mails', new MailService());
 		});
 
