@@ -27,11 +27,40 @@ const validateRequest = (data, targetUser, actingUser) => {
 	return Promise.resolve(true);
 };
 
-const createAccount = (data, targetUser) => Promise.resolve(data, targetUser);
+const createAccount = async function createAccount(data, targetUser, app) {
+	const existingAccount = await app.service('accounts').find({ query: { userId: targetUser._id } });
+	if (existingAccount.length === 0) {
+		app.service('accounts').create({
+			userId: targetUser._id,
+			password: data.password,
+			username: targetUser.email,
+			active: true,
+		});
+	}
+	// what in case of SSO users?
+	return Promise.resolve();
+};
 
-const updateConsent = (data, targetUser) => Promise.resolve(data, targetUser);
+const updateConsent = (data, targetUser, app) => {
+	const consent = { userId: targetUser._id };
+	if (data.parent_privacyConsent || data.parent_termsOfUseConsent) {
+		consent.parentConsents = [{
+			form: 'analog',
+			privacyConsent: data.parent_privacyConsent,
+			termsOfUseConsent: data.parent_termsOfUseConsent,
+		}];
+	}
+	if (data.privacyConsent || data.termsOfUseConsent) {
+		consent.userConsent = {
+			form: 'analog',
+			privacyConsent: data.privacyConsent,
+			termsOfUseConsent: data.termsOfUseConsent,
+		};
+	}
+	return app.service('consents').create(consent);
+};
 
-const updateUserBirthdate = (data, targetUser) => Promise.resolve(data, targetUser);
+const updateUserBirthdate = (data, targetUser, app) => app.service('users').patch({ birthday: data.birthday });
 
 class SkipRegistrationService {
 	constructor() {
@@ -42,19 +71,19 @@ class SkipRegistrationService {
 		try {
 			const targetUser = await this.app.service('users').get(params.route.userid,
 				{ query: { $populate: 'roles' } });
-			const actingUser = await this.app.service('users').get(params.route.userid);
+			const actingUser = await this.app.service('users').get(params.account.userId);
 			await validateRequest(data, targetUser, actingUser);
 
-			await Promise.all(createAccount, updateConsent, updateUserBirthdate);
+			await Promise.all([
+				createAccount(data, targetUser, this.app),
+				updateConsent(data, targetUser, this.app),
+				updateUserBirthdate(data, targetUser, this.app),
+			]);
 
-			return Promise.resolve(data);
+			return Promise.resolve('success');
 		} catch (err) {
 			throw err;
 		}
-
-		// create account
-		// set consents
-		// update birthdate
 	}
 
 	setup(app) {
