@@ -6,7 +6,7 @@ const pseudonymService = app.service('pseudonym');
 const toolService = app.service('ltiTools');
 const { expect } = chai;
 
-describe('pseudonym service', function () {
+describe('pseudonym service', function pseudonymTest() {
 	this.timeout(10000);
 
 	const testTool1 = {
@@ -67,28 +67,28 @@ describe('pseudonym service', function () {
 		assert.ok(app.service('pseudonym'));
 	});
 
-	it('throws MethodNotAllowed on GET', () => pseudonymService.get(testTool1._id).then((_) => {
+	it('throws MethodNotAllowed on GET', () => pseudonymService.get(testTool1._id).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((err) => {
 		assert(err.name, 'MethodNotAllowed');
 		assert(err.code, 405);
 	}));
 
-	it('throws MethodNotAllowed on UPDATE', () => pseudonymService.update(testTool1._id, {}).then((_) => {
+	it('throws MethodNotAllowed on UPDATE', () => pseudonymService.update(testTool1._id, {}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((err) => {
 		assert(err.name, 'MethodNotAllowed');
 		assert(err.code, 405);
 	}));
 
-	it('throws MethodNotAllowed on PATCH', () => pseudonymService.patch(testTool1._id, {}).then((_) => {
+	it('throws MethodNotAllowed on PATCH', () => pseudonymService.patch(testTool1._id, {}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((err) => {
 		assert(err.name, 'MethodNotAllowed');
 		assert(err.code, 405);
 	}));
 
-	it('throws MethodNotAllowed on REMOVE', () => pseudonymService.remove(testTool1._id).then((_) => {
+	it('throws MethodNotAllowed on REMOVE', () => pseudonymService.remove(testTool1._id).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((err) => {
 		assert(err.name, 'MethodNotAllowed');
@@ -102,7 +102,7 @@ describe('pseudonym service', function () {
 			toolId: testTool2._id,
 		},
 	}).then((result) => {
-		pseudonym = result.data[0].pseudonym;
+		pseudonym = result.data[0].pseudonym; // eslint-disable-line prefer-destructuring
 		expect(result.data[0].pseudonym).to.be.a('String');
 	}));
 
@@ -141,7 +141,7 @@ describe('pseudonym service', function () {
 			userId: '599ec1688e4e364ac18ff46e', // not existing userId
 			toolId: testTool1._id,
 		},
-	}).then((result) => {
+	}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((error) => {
 		assert(error.name, 'NotFound');
@@ -153,7 +153,7 @@ describe('pseudonym service', function () {
 			userId: '599ec1688e4e364ec18ff46e',
 			toolId: '599ec1688e4e364ec18ff46e', // not existing toolId
 		},
-	}).then((result) => {
+	}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((error) => {
 		assert(error.name, 'NotFound');

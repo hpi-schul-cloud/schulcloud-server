@@ -1,5 +1,8 @@
 const auth = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
+const { NotFound } = require('@feathersjs/errors');
+const logger = require('winston');
+
 const globalHooks = require('../../../hooks');
 
 const hashId = (hook) => {
@@ -16,6 +19,36 @@ const hashId = (hook) => {
 			hook.data.account = account._id;
 		});
 	}
+};
+
+const sendInfo = (context) => {
+	if (context.path === 'passwordRecovery') {
+		return context.app.service('/accounts').get(context.data.account, {
+			query: {
+				$populate: ['userId'],
+			},
+		}).then((account) => {
+			const recoveryLink = `${process.env.HOST}/pwrecovery/${context.result._id}`;
+			const mailContent = `Sehr geehrte/r " ${account.userId.firstName} ${account.userId.lastName}, \n\n
+				Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:\n
+				${recoveryLink}\n\n
+				Mit Freundlichen Grüßen\n
+				Ihr ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'} Team`;
+
+			globalHooks.sendEmail(context, {
+				subject: `Passwort zurücksetzen für die ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'}`,
+				emails: [account.userId.email],
+				content: {
+					text: mailContent,
+				},
+			});
+			return context;
+		}).catch((err) => {
+			logger.warn(err);
+			throw new NotFound('User Account Not Found');
+		});
+	}
+	return context;
 };
 
 exports.before = {
@@ -49,7 +82,7 @@ exports.after = {
 	all: [],
 	find: [],
 	get: [],
-	create: [],
+	create: [sendInfo],
 	update: [],
 	patch: [],
 	remove: [],

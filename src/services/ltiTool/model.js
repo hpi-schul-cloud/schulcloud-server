@@ -24,6 +24,8 @@ const ltiTool = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 	originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
+	oAuthClientId: { type: String },
+	useIframePseudonym: { type: Boolean },
 });
 
 const ltiToolModel = mongoose.model('ltiTool', ltiTool);
