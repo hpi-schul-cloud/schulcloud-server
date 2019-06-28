@@ -132,7 +132,7 @@ const fileStorageService = {
 				))
 				.catch((e) => {
 					logger.error(e);
-					return new Forbidden();
+					return Promise.reject(new Forbidden());
 				});
 		}
 
@@ -149,11 +149,17 @@ const fileStorageService = {
 	find({ query, payload }) {
 		const { owner, parent } = query;
 		const { userId } = payload;
-		const parentPromise = parent ? canRead(userId, parent) : Promise.resolve();
+		const parentPromise = parent
+			? canRead(userId, parent).catch(() => Promise.reject(new Forbidden()))
+			: Promise.resolve();
 
 		return parentPromise
 			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).exec())
 			.then((files) => {
+				if (!files.length) {
+					return Promise.reject(new NotFound());
+				}
+
 				const permissionPromises = files.map(
 					f => canRead(userId, f)
 						.then(() => f)
@@ -164,14 +170,14 @@ const fileStorageService = {
 			.then((allowedFiles) => {
 				const files = allowedFiles.filter(f => f);
 				if (!files.length) {
-					return new Forbidden();
+					return Promise.reject(new Forbidden());
 				}
 
 				return files;
 			})
 			.catch((e) => {
 				logger.error(e);
-				return Promise.reject(new Forbidden());
+				return Promise.reject(e);
 			});
 	},
 
@@ -185,19 +191,22 @@ const fileStorageService = {
 		const { _id = id } = query;
 		const fileInstance = FileModel.findOne({ _id });
 
-		return canDelete(userId, _id)
-			.then(() => fileInstance.exec())
+		return fileInstance.exec()
 			.then((file) => {
 				if (!file) {
-					return new NotFound();
+					return Promise.reject(new NotFound());
 				}
 
-				return createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName);
+				return Promise.all([
+					file,
+					canDelete(userId, _id).catch(() => Promise.reject(new Forbidden())),
+				]);
 			})
+			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
 			.then(() => fileInstance.remove().exec())
 			.catch((e) => {
 				logger.error(e);
-				return new Forbidden();
+				return e;
 			});
 	},
 	/**

@@ -13,7 +13,7 @@ const {
 	canDelete,
 } = require('../../../../src/services/fileStorage/utils/filePermissionHelper');
 
-const fixtures = require('./fixtures');
+const fixtures = require('../fixtures');
 
 describe('filePermissionHelper', () => {
 	describe('checkPermissions function should', () => {
