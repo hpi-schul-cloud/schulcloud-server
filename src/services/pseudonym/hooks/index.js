@@ -23,7 +23,7 @@ const createMissingPseudonyms = (hook) => {
 		for (const toolId of toolIds) {
 			if (!hook.result.data.find(entry => (
 				entry.userId.toString() === userId.toString()
-                && entry.toolId.toString() === toolId.toString()))) {
+				&& entry.toolId.toString() === toolId.toString()))) {
 				missingPseudonyms.push({ userId, toolId });
 			}
 		}
@@ -48,56 +48,45 @@ const filterValidUsers = (context) => {
 	}).then((courses) => {
 		for (const course of courses.data) {
 			validUserIds = validUserIds.concat(course.userIds);
-			for (const _class of course.classIds) {
-				validUserIds = validUserIds.concat(_class.userIds);
+			for (const classInstance of course.classIds) {
+				validUserIds = validUserIds.concat(classInstance.userIds);
 			}
 		}
 		validUserIds = validUserIds.map(element => element.toString());
-		context.result.data = context.result.data.filter(pseudonym => validUserIds.includes(pseudonym.userId.toString()));
+		context.result.data = context.result.data
+			.filter(pseudonym => validUserIds.includes(pseudonym.userId.toString()));
 		return context;
 	});
 };
 
+const populateUsername = (context) => {
+	if (!context.result.data[0]) return context;
+	return context.app.service('users').get(context.result.data[0].userId)
+		.then((response) => {
+			context.result.data[0] = {
+				...context.result.data[0]._doc, // eslint-disable-line no-underscore-dangle
+				user: {
+					firstName: response.firstName,
+					lastName: response.lastName,
+				},
+			};
+			return context;
+		});
+};
+
 exports.before = {
-	all: [
-		auth.hooks.authenticate('jwt'),
-	],
-	find: [
-		replaceToolWithOrigin,
-	],
-	get: [
-		() => {
-			throw new errors.MethodNotAllowed();
-		},
-	],
-	create: [
-		globalHooks.ifNotLocal(() => {
-			throw new errors.MethodNotAllowed();
-		}),
-	],
-	update: [
-		() => {
-			throw new errors.MethodNotAllowed();
-		},
-	],
-	patch: [
-		() => {
-			throw new errors.MethodNotAllowed();
-		},
-	],
-	remove: [
-		globalHooks.ifNotLocal(() => {
-			throw new errors.MethodNotAllowed();
-		}),
-	],
+	all: [auth.hooks.authenticate('jwt')],
+	find: [replaceToolWithOrigin],
+	get: [() => { throw new errors.MethodNotAllowed(); }],
+	create: [globalHooks.ifNotLocal(() => { throw new errors.MethodNotAllowed(); })],
+	update: [() => { throw new errors.MethodNotAllowed(); }],
+	patch: [() => { throw new errors.MethodNotAllowed(); }],
+	remove: [globalHooks.ifNotLocal(() => { throw new errors.MethodNotAllowed(); })],
 };
 
 exports.after = {
 	all: [],
-	find: [
-		createMissingPseudonyms,
-		globalHooks.ifNotLocal(filterValidUsers),
-	],
+	find: [createMissingPseudonyms, globalHooks.ifNotLocal(filterValidUsers), populateUsername],
 	get: [],
 	create: [],
 	update: [],
