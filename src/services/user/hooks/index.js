@@ -3,6 +3,7 @@ const errors = require('@feathersjs/errors');
 const logger = require('winston');
 const globalHooks = require('../../../hooks');
 const { sortRoles } = require('../../role/utils/rolesHelper');
+const { mailToLowerCase } = require('./global');
 
 const constants = require('../../../utils/constants');
 
@@ -185,21 +186,6 @@ const pinIsVerified = (hook) => {
 			return Promise.reject(new errors.BadRequest('Der Pin wurde noch nicht bei der Registrierung eingetragen.'));
 		});
 };
-
-const mailToLowerCase = hook => {
-	if(hook.data){
-		if(hook.data.email){
-			hook.data.email = hook.data.email.toLowerCase()
-		}
-		if(hook.data.parent_email){
-			hook.data.parent_email = hook.data.parent_email.toLowerCase()
-		}
-		if(hook.data.student_email){
-			hook.data.student_email = hook.data.student_email.toLowerCase()
-		}
-		return Promise.resolve(hook);
-	}
-}
 
 // student administrator helpdesk superhero teacher parent
 // eslint-disable-next-line no-unused-vars
@@ -420,6 +406,7 @@ exports.before = {
 	get: [auth.hooks.authenticate('jwt')],
 	create: [
 		checkJwt(),
+		mailToLowerCase,
 		pinIsVerified,
 		sanitizeData,
 		checkUnique,
@@ -428,6 +415,7 @@ exports.before = {
 	],
 	update: [
 		auth.hooks.authenticate('jwt'),
+		mailToLowerCase,
 		globalHooks.hasPermission('USER_EDIT'),
 		// TODO only local for LDAP
 		sanitizeData,
@@ -435,6 +423,7 @@ exports.before = {
 	],
 	patch: [
 		auth.hooks.authenticate('jwt'),
+		mailToLowerCase,
 		globalHooks.hasPermission('USER_EDIT'),
 		globalHooks.ifNotLocal(securePatching),
 		globalHooks.permitGroupOperation,

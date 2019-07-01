@@ -3,6 +3,8 @@ const auth = require('@feathersjs/authentication');
 const logger = require('winston');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
+const { mailToLowerCase } = require('./global');
+
 
 const removeOldPins = hook => pinModel.deleteMany({ email: hook.data.email })
 	.then(pins => Promise.resolve(hook));
@@ -56,24 +58,6 @@ const checkAndVerifyPin = (hook) => {
 	return Promise.resolve(hook);
 };
 
-const mailToLowerCase = (hook) => {
-	if (hook.data) {
-		if (hook.data.email) {
-			hook.data.email = hook.data.email.toLowerCase();
-		}
-
-		if (hook.data.parent_email) {
-			hook.data.parent_email = hook.data.parent_email.toLowerCase();
-		}
-
-		if (hook.data.student_email) {
-			hook.data.student_email = hook.data.student_email.toLowerCase();
-		}
-	}
-	return Promise.resolve(hook);
-};
-
-
 const mailPin = (hook) => {
 	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
@@ -107,10 +91,10 @@ const returnPinOnlyToSuperHero = async (hook) => {
 };
 
 exports.before = {
-	all: [globalHooks.forceHookResolve(auth.hooks.authenticate('jwt'))],
+	all: [globalHooks.forceHookResolve(auth.hooks.authenticate('jwt')), mailToLowerCase],
 	find: commonHooks.disable('external'),
 	get: commonHooks.disable('external'),
-	create: [mailToLowerCase, removeOldPins, generatePin, mailPin],
+	create: [removeOldPins, generatePin, mailPin],
 	update: commonHooks.disable('external'),
 	patch: commonHooks.disable('external'),
 	remove: commonHooks.disable('external'),
