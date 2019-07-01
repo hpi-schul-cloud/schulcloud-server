@@ -120,7 +120,7 @@ module.exports = function setup() {
 				if (email) {
 					// generate import hash
 					const user = (await app.service('users').find({ query: { email: data.toHash } }) || {}).data[0];
-					if (user.importHash) linkInfo.hash = user.importHash;
+					if (user && user.importHash) linkInfo.hash = user.importHash;
 					else {
 						await hashService.create({
 							toHash: email,
