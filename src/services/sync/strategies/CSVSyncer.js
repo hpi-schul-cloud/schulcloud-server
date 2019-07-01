@@ -37,15 +37,15 @@ class CSVSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#respondsTo}
-	 */
+     * @see {Syncer#respondsTo}
+     */
 	static respondsTo(target) {
 		return target === 'csv';
 	}
 
 	/**
-	 * @see {Syncer#params}
-	 */
+     * @see {Syncer#params}
+     */
 	static params(params, data = {}) {
 		const query = (params || {}).query || {};
 		if (query.school && query.role && data.data) {
@@ -61,18 +61,19 @@ class CSVSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#steps}
-	 */
+     * @see {Syncer#steps}
+     */
 	async steps() {
 		await super.steps();
 		const records = this.parseCsvData();
+		const importClasses = CSVSyncer.needsToImportClasses(records);
 		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
 		const actions = Object.values(clusteredRecords).map(record => async () => {
 			const enrichedRecord = await this.enrichUserData(record);
 			const user = await this.createOrUpdateUser(enrichedRecord);
-			if (this.importClasses) {
+			if (importClasses) {
 				await this.createClasses(enrichedRecord, user);
 			}
 		});
@@ -135,11 +136,11 @@ class CSVSyncer extends Syncer {
 				throw new Error(`Parsing failed. Expected attribute "${param}"`);
 			}
 		});
-		// validate optional params:
-		if (records[0].class !== undefined) {
-			this.importClasses = true;
-		}
 		return records;
+	}
+
+	static needsToImportClasses(records) {
+		return records[0].class !== undefined;
 	}
 
 	static sanitizeRecords(records) {
@@ -157,7 +158,7 @@ class CSVSyncer extends Syncer {
 					type: 'user',
 					entity: `${record.firstName},${record.lastName},${record.email}`,
 					message: `Mehrfachnutzung der E-Mail-Adresse "${record.email}". `
-						+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+						+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 				});
 				this.stats.users.failed += 1;
 			} else {
@@ -235,10 +236,10 @@ class CSVSyncer extends Syncer {
 			};
 			const params = {
 				/*
-				query and payload need to be deleted, so that feathers doesn't want to update
-				multiple database objects (or none in this case). We still need the rest of
-				the requestParams to authenticate as Admin
-				*/
+                query and payload need to be deleted, so that feathers doesn't want to update
+                multiple database objects (or none in this case). We still need the rest of
+                the requestParams to authenticate as Admin
+                */
 				...this.requestParams,
 				query: undefined,
 				payload: undefined,

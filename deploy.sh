@@ -1,6 +1,10 @@
 #! /bin/bash
 
-export TESTDEPLOY=$( cat testdeploy )
+# automatically rolls out new versions on brandenburg, demo, open and test
+# develop-Branch goes to test, Master-Branch goes to productive systems
+
+# decrypt key 
+openssl aes-256-cbc -K $encrypted_2709882c490b_key -iv $encrypted_2709882c490b_iv -in travis_rsa.enc -out travis_rsa -d
 
 if [ "$TRAVIS_BRANCH" = "master" ]
 then
@@ -23,27 +27,63 @@ function buildandpush {
 }
 
 function deploytotest {
+  # only develop should be on test
+  # compose-file is distributed by the ansible
+
   # screw together config file for docker swarm
-  eval "echo \"$( cat compose-server-test.dummy )\"" > docker-compose-server.yml
+#  eval "echo \"$( cat compose-server-test.dummy )\"" > docker-compose-server.yml
 
   # copy config-file to server and execute mit travis_rsa
   chmod 600 travis_rsa
-  scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa docker-compose-server.yml linux@test.schul-cloud.org:~
-  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker stack deploy -c /home/linux/docker-compose-server.yml test-schul-cloud
-  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker service update --force test-schul-cloud_server
+#  scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa docker-compose-server.yml linux@test.schul-cloud.org:~
+#  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker stack deploy -c /home/linux/docker-compose-server.yml test-schul-cloud
+#  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker service update --force test-schul-cloud_server
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:develop test-schul-cloud_server
 }
+
+function deploytoprods {
+  # Deploys new masters on the instances brandenburg, open, demo
+  # compose-files are distributed via Ansible, many different secrets, Mongo_URIs etc.
+
+  # copy config-file to server and execute mit travis_rsa
+  chmod 600 travis_rsa
+
+  # brandenburg
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@open.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest brabu_server
+  # open
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@open.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest open_server
+  # thueringen
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@schulcloud-thueringen.de /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest thueringen_server
+  # demo
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@demo.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest demo_server
+}
+
+function deploytostaging {
+  # Deploys new masters on the instances brandenburg, open, demo
+  # compose-files are distributed via Ansible, many different secrets, Mongo_URIs etc.
+
+  # copy config-file to server and execute mit travis_rsa
+  chmod 600 travis_rsa
+
+  # staging
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@staging.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG staging_server
+}
+
 
 if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
   buildandpush
-elif [ "$TESTDEPLOY" = "true" ]
+  deploytoprods
+elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
   buildandpush	
   deploytotest
+elif [[ $TRAVIS_BRANCH = release* ]]
+then
+  buildandpush
+  deploytostaging
 else
   echo "Nix wird deployt"
 fi
 
 exit 0
-
-

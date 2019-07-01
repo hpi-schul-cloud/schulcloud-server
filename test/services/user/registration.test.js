@@ -27,7 +27,6 @@ describe('registration service', () => {
 					firstName: 'Max',
 					lastName: 'Mustermann',
 					privacyConsent: true,
-					thirdPartyConsent: true,
 					termsOfUseConsent: true,
 				};
 				return registrationService.create(registrationInput);
@@ -55,7 +54,6 @@ describe('registration service', () => {
 					firstName: 'Max',
 					lastName: 'Mustermann',
 					privacyConsent: true,
-					thirdPartyConsent: true,
 					termsOfUseConsent: true,
 					parent_email: email,
 					parent_firstName: 'Moritz',
@@ -116,7 +114,6 @@ describe('registration service', () => {
 					firstName: 'Max',
 					lastName: 'Mustermann',
 					privacyConsent: true,
-					thirdPartyConsent: true,
 					termsOfUseConsent: true,
 				};
 				return registrationService.create(registrationInput).catch((err) => {
@@ -166,7 +163,6 @@ describe('registration service', () => {
 					importHash: hash,
 					userId: user._id,
 					privacyConsent: true,
-					thirdPartyConsent: true,
 					termsOfUseConsent: true,
 				};
 				return registrationService.create(registrationInput).then((response) => {

@@ -6,9 +6,7 @@ const Syncer = require('../../../../../src/services/sync/strategies/Syncer');
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
 describe('CSVSyncer', () => {
-	it('works', () => {
-		return new CSVSyncer();
-	});
+	it('works', () => new CSVSyncer());
 
 	it('implements the Syncer interface', () => {
 		expect(Object.getPrototypeOf(CSVSyncer)).to.equal(Syncer);
@@ -57,7 +55,6 @@ describe('CSVSyncer', () => {
 			const out = new CSVSyncer();
 			out.csvData = 'firstName,lastName,email,class\n1,2,test,4a';
 			const result = out.parseCsvData();
-			expect(out.importClasses).to.equal(true);
 			expect(result).to.not.equal(undefined);
 			expect(result[0].class).to.equal('4a');
 		});
@@ -71,7 +68,6 @@ describe('CSVSyncer', () => {
 				'foo,bar,baz@gmail.com,2b',
 			].join('\n');
 			const result = out.parseCsvData();
-			expect(out.importClasses).to.equal(true);
 			expect(result).to.not.equal(undefined);
 			expect(result[0].class).to.equal('1a');
 			expect(result[1].class).to.equal('');

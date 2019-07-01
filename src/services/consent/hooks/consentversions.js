@@ -1,17 +1,15 @@
-'use strict';
+const auth = require('@feathersjs/authentication');
+const hooks = require('feathers-hooks-common');
 
-const globalHooks = require('../../../hooks');
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
-
+// todo check userId
 exports.before = {
-	all: [],
+	all: [auth.hooks.authenticate('jwt')],
 	find: [],
 	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: []
+	create: [hooks.disallow()],
+	update: [hooks.disallow()],
+	patch: [hooks.disallow()],
+	remove: [hooks.disallow()],
 };
 
 exports.after = {
@@ -21,5 +19,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

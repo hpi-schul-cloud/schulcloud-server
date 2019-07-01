@@ -1,15 +1,11 @@
-
-
-const commonHooks = require('feathers-hooks-common');
+const hooks = require('feathers-hooks-common');
+const auth = require('@feathersjs/authentication');
 const logger = require('winston');
-const auth = require('feathers-authentication');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
 
-const removeOldPins = (hook) => pinModel.deleteMany({email:hook.data.email})
-		.then(pins => {
-			return Promise.resolve(hook);
-		});
+const removeOldPins = hook => pinModel.deleteMany({ email: hook.data.email })
+	.then(pins => Promise.resolve(hook));
 
 const generatePin = (hook) => {
 	const pin = Math.floor((Math.random() * 8999) + 1000);
@@ -20,7 +16,7 @@ const generatePin = (hook) => {
 function createinfoText(hook) {
 	let text;
 	const role = hook.data.mailTextForRole;
-	const pin = hook.data.pin;
+	const { pin } = hook.data;
 	const shortTitle = process.env.SC_SHORT_TITLE || 'Schul-Cloud*';
 	const longTitle = process.env.SC_TITLE || 'HPI Schul-Cloud*';
 	if (!role || !pin) {
@@ -50,27 +46,25 @@ Dein ${shortTitle} Team`;
 	return text;
 }
 
+const checkAndVerifyPin = (hook) => {
+	if (hook.result.data.length === 1 && hook.result.data[0].verified === false) {
+		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, { verified: true }).then(() => Promise.resolve(hook));
 const mailToLowerCase = (hook) => {
 	if (hook.data) {
-		if (hook.data.email) {
 			hook.data.email = hook.data.email.toLowerCase();
+		if (hook.data.email) {
 		}
-		if (hook.data.parent_email) {
 			hook.data.parent_email = hook.data.parent_email.toLowerCase();
+		if (hook.data.parent_email) {
 		}
-		if (hook.data.student_email) {
 			hook.data.student_email = hook.data.student_email.toLowerCase();
+		if (hook.data.student_email) {
 		}
 	}
 	return Promise.resolve(hook);
 };
-
-const checkAndVerifyPin = (hook) => {
-	if (hook.result.data.length === 1 && hook.result.data[0].verified === false) {
-		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, { verified: true }).then(() => Promise.resolve(hook));
-	} else {
-		return Promise.resolve(hook);
 	}
+	return Promise.resolve(hook);
 };
 
 const mailPin = (hook) => {
@@ -95,7 +89,7 @@ const returnPinOnlyToSuperHero = async (hook) => {
 	if (((hook.params || {}).account || {}).userId) {
 		const userService = hook.app.service('/users/');
 		const currentUser = await userService.get(hook.params.account.userId, { query: { $populate: 'roles' } });
-		const userRoles = currentUser.roles.map((role) => role.name);
+		const userRoles = currentUser.roles.map(role => role.name);
 		if (userRoles.includes('superhero')) {
 			return Promise.resolve(hook);
 		}

@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
@@ -18,9 +18,7 @@ const addWholeClassToCourse = (hook) => {
 		return hook;
 	}
 	if ((requestBody.classIds || []).length > 0) { // just courses do have a property "classIds"
-		return Promise.all(requestBody.classIds.map((classId) => {
-			return ClassModel.findById(classId).exec().then(c => c.userIds);
-		})).then(async (studentIds) => {
+		return Promise.all(requestBody.classIds.map(classId => ClassModel.findById(classId).exec().then(c => c.userIds))).then(async (studentIds) => {
 			// flatten deep arrays and remove duplicates
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
@@ -51,9 +49,7 @@ const deleteWholeClassFromCourse = (hook) => {
 
 		const removedClasses = _.differenceBy(course.classIds, requestBody.classIds, v => JSON.stringify(v));
 		if (removedClasses.length < 1) return hook;
-		return Promise.all(removedClasses.map((classId) => {
-			return ClassModel.findById(classId).exec().then(c => (c || []).userIds);
-		})).then(async (studentIds) => {
+		return Promise.all(removedClasses.map(classId => ClassModel.findById(classId).exec().then(c => (c || []).userIds))).then(async (studentIds) => {
 			// flatten deep arrays and remove duplicates
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
@@ -69,7 +65,7 @@ const deleteWholeClassFromCourse = (hook) => {
 	});
 };
 
-const courseInviteHook = async context => {
+const courseInviteHook = async (context) => {
 	if (context.path === 'courses' && context.params.query && context.params.query.link) {
 		const dbLink = await context.app.service('link').get(context.params.query.link); // link is used as "authorization"
 		delete context.params.query.link;
@@ -77,11 +73,12 @@ const courseInviteHook = async context => {
 	}
 
 	return restrictToUsersOwnCourses(context);
-}
+};
 
-const patchPermissionHook = async context => {
+const patchPermissionHook = async (context) => {
 	const query = context.params.query || {};
-	const defaultPermissionHook = globalHooks.hasPermission('USERGROUP_EDIT');
+	const defaultPermissionHook = ctx => Promise.resolve(globalHooks.hasPermission('USERGROUP_EDIT')(ctx))
+		.then(_ctx => restrictToUsersOwnCourses(_ctx));
 
 	if (query.link) {
 		const dbLink = await context.app.service('link').get(query.link); // link is used as "authorization"
@@ -90,30 +87,53 @@ const patchPermissionHook = async context => {
 	}
 
 	return defaultPermissionHook(context);
-}
+};
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
-	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool, restrictToUsersOwnCourses],
+	all: [
+		auth.hooks.authenticate('jwt'),
+	],
+	find: [
+		globalHooks.hasPermission('USERGROUP_VIEW'),
+		restrictToCurrentSchool,
+		restrictToUsersOwnCourses,
+	],
 	get: [courseInviteHook],
-	create: [globalHooks.injectUserId, globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
-	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, restrictToUsersOwnCourses],
+	create: [
+		globalHooks.injectUserId,
+		globalHooks.hasPermission('USERGROUP_CREATE'),
+		restrictToCurrentSchool,
+	],
+	update: [
+		globalHooks.hasPermission('USERGROUP_EDIT'),
+		restrictToCurrentSchool,
+		restrictToUsersOwnCourses,
+	],
 	patch: [
 		patchPermissionHook,
 		restrictToCurrentSchool,
 		globalHooks.permitGroupOperation,
-		restrictToUsersOwnCourses,
 		deleteWholeClassFromCourse,
 	],
-	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, restrictToUsersOwnCourses, globalHooks.permitGroupOperation],
+	remove: [
+		globalHooks.hasPermission('USERGROUP_CREATE'),
+		restrictToCurrentSchool,
+		restrictToUsersOwnCourses,
+		globalHooks.permitGroupOperation,
+	],
 };
 
 exports.after = {
 	all: [],
 	find: [],
-	get: [globalHooks.ifNotLocal(globalHooks.denyIfNotCurrentSchool({ errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!' }))],
+	get: [
+		globalHooks.ifNotLocal(
+			globalHooks.denyIfNotCurrentSchool({
+				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
+			}),
+		)],
 	create: [addWholeClassToCourse],
 	update: [],
 	patch: [addWholeClassToCourse],
-	remove: []
+	remove: [],
 };

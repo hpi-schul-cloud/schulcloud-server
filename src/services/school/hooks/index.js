@@ -1,5 +1,5 @@
-const hooks = require('feathers-hooks');
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
+const hooks = require('feathers-hooks-common');
 
 const globalHooks = require('../../../hooks');
 const { fileStorageTypes } = require('../model');
@@ -41,13 +41,23 @@ exports.before = {
 	all: [],
 	find: [],
 	get: [],
-	create: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE'), setDefaultFileStorageType],
-	update: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_EDIT')],
-	patch: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_EDIT')],
+	create: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('SCHOOL_CREATE'),
+		setDefaultFileStorageType,
+	],
+	update: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('SCHOOL_EDIT'),
+	],
+	patch: [
+		auth.hooks.authenticate('jwt'),
+		globalHooks.hasPermission('SCHOOL_EDIT'),
+	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
-	remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
-	*/
-	remove: [hooks.disable()],
+    remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
+    */
+	remove: [hooks.disallow()],
 };
 
 exports.after = {
@@ -57,5 +67,5 @@ exports.after = {
 	create: [createDefaultStorageOptions],
 	update: [createDefaultStorageOptions],
 	patch: [createDefaultStorageOptions],
-	remove: []
+	remove: [],
 };

@@ -1,4 +1,4 @@
-const auth = require('feathers-authentication');
+const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const mapRoleFilterQuery = (hook) => {
@@ -17,7 +17,10 @@ const filterForPublicTeacher = (hook) => {
 
 	// Limit accessible user (only teacher which are discoverable)
 	hook.params.query.roles = ['teacher'];
-	// hook.params.query.discoverable = true;
+
+	if (process.env.IGNORE_DISCOVERABILITY !== 'true') {
+		hook.params.query.discoverable = true;
+	}
 
 	return Promise.resolve(hook);
 };
@@ -27,7 +30,8 @@ exports.before = {
 	find: [
 		globalHooks.mapPaginationQuery.bind(this),
 		filterForPublicTeacher,
-		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),	// resolve ids for role strings (e.g. 'TEACHER')
+		// resolve ids for role strings (e.g. 'TEACHER')
+		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
 		auth.hooks.authenticate('jwt'),
 		mapRoleFilterQuery,
 	],
