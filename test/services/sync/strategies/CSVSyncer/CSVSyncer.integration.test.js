@@ -35,7 +35,7 @@ describe('CSVSyncer Integration', () => {
 		const scenarioParams = {
 			query: {
 				target: 'csv',
-				school: '0000d186816abba584714c5f',
+				school: testObjects.options.schoolId,
 				role: 'student',
 			},
 			provider: 'rest',
@@ -67,7 +67,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioParams;
 		let scenarioData;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const SCENARIO_EMAIL = 'peter@pan.de';
 
 		before(async () => {
@@ -121,7 +121,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioParams;
 		let scenarioData;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const TEACHER_EMAILS = [
 			'a@b.de',
 			'b@c.de',
@@ -187,7 +187,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioParams;
 		let scenarioData;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
 
 		before(async () => {
@@ -283,7 +283,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioParams;
 		let scenarioData;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const EXISTING_CLASSES = [['1', 'a'], [undefined, 'SG1'], ['12', '/3']];
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
 
@@ -381,7 +381,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioParams;
 		let scenarioData;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
 		const CLASSES = [[undefined, 'NSA'], [undefined, 'CIA'], [undefined, 'BuyMore']];
 
@@ -451,7 +451,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioParams;
 		let scenarioData;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const EXISTING_CLASSES = [['1', 'a'], ['2', 'b']];
 		const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
 
@@ -535,7 +535,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioParams;
 		let scenarioData;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const TEACHER_EMAILS = [
 			'a@b.de',
 		];
@@ -608,7 +608,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioParams;
 		let scenarioData;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
 		const CLASSES = [[undefined, 'NSA'], [undefined, 'CIA'], [undefined, 'BuyMore']];
 
@@ -667,7 +667,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioParams;
 		let scenarioData;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const TEACHER_EMAILS = [
 			'a@b.de',
 		];
@@ -741,7 +741,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioParams;
 		let scenarioData;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const SCENARIO_EMAIL = 'peterpan.de';
 
 		before(async () => {
@@ -792,7 +792,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioParams;
 		let scenarioData;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
 
 		before(async () => {
@@ -894,7 +894,7 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData1;
 		let scenarioData2;
 
-		const SCHOOL_ID = '0000d186816abba584714c5f';
+		const SCHOOL_ID = testObjects.options.schoolId;
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de'];
 
 		before(async () => {
