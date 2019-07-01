@@ -28,6 +28,15 @@ app.configure(config);
 setupSwagger(app);
 
 app.set('secrets', secrets);
+
+// set custom response header for ha proxy
+if (process.env.KEEP_ALIVE) {
+	app.use((req, res, next) => {
+		res.setHeader('Connection', 'Keep-Alive');
+		next();
+	});
+}
+
 app.use(compress())
 	.options('*', cors())
 	.use(cors())

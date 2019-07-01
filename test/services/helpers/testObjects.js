@@ -18,36 +18,27 @@ module.exports = (app, opt = {
 		users,
 		courses,
 		accounts,
+		roles,
+		schools,
 	} = serviceHelpers(app, opt);
 
-	const cleanup = () => {
-		const accountDeletions = accounts.cleanup(); // createdAccountIds.map(id => accountService.remove(id));
-		const userDeletions = users.cleanup();
-		const systemDeletions = testSystem.cleanup();
-		const classDeletions = classes.cleanup();
-		const courseDeletions = courses.cleanup(); // createdCourses.map(id => coursesService.remove(id));
-		const teamsDeletion = teams.cleanup();
-
-		return Promise.all([teamsDeletion]
-			.concat(accountDeletions)
-			.concat(userDeletions)
-			.concat(systemDeletions)
-			.concat(classDeletions)
-			.concat(courseDeletions))
-			.then((res) => {
-				logger.info('[TestObjects] cleanup data.');
-				return res;
-			})
-			.catch((err) => {
-				logger.warn('[TestObjects] Can not cleanup.', err);
-				return err;
-			});
-	};
-
-	function findRoles(query = {}) {
-		const roleService = app.service('roles');
-		return roleService.find({ query });
-	}
+	const cleanup = () => Promise.all([]
+		.concat(accounts.cleanup())
+		.concat(users.cleanup())
+		.concat(testSystem.cleanup())
+		.concat(classes.cleanup())
+		.concat(courses.cleanup())
+		.concat(teams.cleanup())
+		.concat(roles.cleanup())
+		.concat(schools.cleanup()))
+		.then((res) => {
+			logger.info('[TestObjects] cleanup data.');
+			return res;
+		})
+		.catch((err) => {
+			logger.warn('[TestObjects] Can not cleanup.', err);
+			return err;
+		});
 
 	const info = () => ({
 		teams: teams.info,
@@ -57,6 +48,7 @@ module.exports = (app, opt = {
 		tempPins: users.tempPinIds,
 		courses: courses.info,
 		accounts: accounts.info,
+		schools: schools.info,
 	});
 
 	const createTestTeamWithOwner = async () => {
@@ -81,16 +73,17 @@ module.exports = (app, opt = {
 		createTestUser: users.create,
 		createTestClass: classes.create,
 		createTestCourse: courses.create,
+		createTestRole: roles.create,
+		createTestSchool: schools.create,
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
 		fakeLoginParams: login.fakeLoginParams,
-		createdUserIds: warn('@deprecated use info() instat', users.info),
+		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
 		createTestTeamWithOwner,
 		info,
 		setupUser: warn('@implement should finished', setupUser),
 		options: opt,
-		findRoles,
 	};
 };

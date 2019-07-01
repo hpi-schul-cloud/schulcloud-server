@@ -27,6 +27,8 @@ const statistic = require('./statistic');
 const wopi = require('./wopi');
 const pseudonym = require('./pseudonym');
 const consent = require('./consent');
+const oauth2 = require('./oauth2');
+const roster = require('./roster');
 const ldap = require('./ldap');
 const sync = require('./sync');
 const rocketChat = require('./rocketChat');
@@ -82,6 +84,8 @@ module.exports = function initializeServices() {
 	app.configure(rocketChat);
 	app.configure(editor);
 	app.configure(nexboard);
+	app.configure(oauth2);
+	app.configure(roster);
 
 	// initialize events
 	newsEvents.configure(app);
