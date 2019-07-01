@@ -1,7 +1,6 @@
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
-const newsEvents = require('./news/events');
 const content = require('./content');
 const calendar = require('./calendar');
 const ltiTool = require('./ltiTool');
