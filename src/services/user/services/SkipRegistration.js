@@ -34,7 +34,7 @@ const createAccount = async function createAccount(data, targetUser, app) {
 			userId: targetUser._id,
 			password: data.password,
 			username: targetUser.email,
-			active: true,
+			activated: true,
 		});
 	}
 	// what in case of SSO users?
