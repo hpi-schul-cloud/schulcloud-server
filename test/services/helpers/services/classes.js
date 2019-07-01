@@ -48,8 +48,8 @@ const createByName = app => async ([gradeLevelName, className, schoolId]) => {
 			name: className,
 		};
 	}
-	const klass = await app.service('classes').create(classObject);
-	createdClassesIds.push(klass._id);
+	const createdClass = await app.service('classes').create(classObject);
+	createdClassesIds.push(createdClass._id);
 };
 
 const findByName = app => async ([gradeLevelName, className]) => {
