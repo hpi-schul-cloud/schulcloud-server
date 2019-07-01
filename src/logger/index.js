@@ -9,11 +9,11 @@ const logger = winston.createLogger({
 	),
 	transports: [
 		new winston.transports.Console({
-			handleExceptions: true
-		  })
-  ],
-  exitOnError: false
-})
+			handleExceptions: true,
+		}),
+	],
+	exitOnError: false,
+});
 
 
 module.exports = logger;
