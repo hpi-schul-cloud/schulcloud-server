@@ -60,7 +60,8 @@ const updateConsent = (data, targetUser, app) => {
 	return app.service('consents').create(consent);
 };
 
-const updateUserBirthdate = (data, targetUser, app) => app.service('users').patch({ birthday: data.birthday });
+const updateUserBirthdate = (data, targetUser, app) => app.service('users')
+	.patch(targetUser._id, { birthday: data.birthday });
 
 class SkipRegistrationService {
 	constructor() {
