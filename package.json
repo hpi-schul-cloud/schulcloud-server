@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "",
-  "version": "18.1.0",
+  "version": "18.1.1",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -110,6 +110,7 @@
     "mocha": "^6.1.4",
     "mockery": "^2.0.0",
     "nodemailer-mock": "^1.1.10",
-    "nyc": "^13.0.1"
+    "nyc": "^13.0.1",
+    "simple-oauth2": "^2.2.1"
   }
 }
