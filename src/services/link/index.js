@@ -52,7 +52,7 @@ module.exports = function setup() {
 			const linkData = {};
 			if (data.toHash) {
 				try {
-					const user = (await app.service('users').find({ query: { email: data.toHash } })).data[0];
+					const user = (await app.service('users').find({ query: { email: data.toHash } }) || {}).data[0];
 					if (user.importHash) linkData.hash = user.importHash;
 					else {
 						await app.service('hash').create(data).then((generatedHash) => {
@@ -119,7 +119,7 @@ module.exports = function setup() {
 
 				if (email) {
 					// generate import hash
-					const user = (await app.service('users').find({ query: { email: data.toHash } })).data[0];
+					const user = (await app.service('users').find({ query: { email: data.toHash } }) || {}).data[0];
 					if (user.importHash) linkInfo.hash = user.importHash;
 					else {
 						await hashService.create({
