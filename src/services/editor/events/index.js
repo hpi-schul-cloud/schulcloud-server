@@ -1,8 +1,12 @@
 const { coursesPatch } = require('./coursePatch');
 const { topicsCreate, topicsRemove } = require('./topics');
 
-module.exports = (app) => {
+const configure = (app) => {
 	topicsCreate(app);
 	topicsRemove(app);
 	coursesPatch(app);
+};
+
+module.exports = {
+	configure,
 };
