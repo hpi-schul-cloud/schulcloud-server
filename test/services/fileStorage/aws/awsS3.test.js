@@ -21,7 +21,7 @@ describe('AWS file storage strategy', () => {
 
 		// mock aws functions
 		mockery.registerMock('aws-sdk', mockAws);
-		mockery.registerMock('../../../../config/secrets.js', {
+		mockery.registerMock('../../../../config/secrets.json', {
 			aws: {
 				endpointUrl: 'test.url/',
 			},
