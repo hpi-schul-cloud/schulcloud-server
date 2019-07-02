@@ -393,7 +393,7 @@ class CSVSyncer extends Syncer {
 			lean: true,
 		});
 		if (existing.length === 0) {
-			const newClass = this.app.service('/classes').create(classObject);
+			const newClass = await this.app.service('/classes').create(classObject);
 			this.stats.classes.created += 1;
 			return newClass;
 		}
