@@ -72,12 +72,12 @@ describe('fileStorage services', () => {
 		mockery.disable();
 
 		const promises = [
-			...fixtures.teams.map(_ => teamsModel.findByIdAndRemove(_._id)),
-			...fixtures.schools.map(_ => schoolModel.findByIdAndRemove(_._id)),
-			...fixtures.files.map(_ => FileModel.findByIdAndRemove(_._id)),
-			...fixtures.users.map(_ => userModel.findByIdAndRemove(_._id)),
-			...fixtures.roles.map(_ => RoleModel.findByIdAndRemove(_._id)),
-			...fixtures.courses.map(_ => courseModel.findByIdAndRemove(_._id)),
+			...fixtures.teams.map(_ => teamsModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.schools.map(_ => schoolModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.files.map(_ => FileModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.users.map(_ => userModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.roles.map(_ => RoleModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.courses.map(_ => courseModel.findByIdAndRemove(_._id).exec()),
 		];
 
 		return Promise.all(promises);
