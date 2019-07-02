@@ -2,27 +2,27 @@ const mongoose = require('mongoose');
 
 const teamRoles = [
 	{
-		refId: mongoose.mongo.ObjectId('6bb5c190fb457b1c3c0c7e0f'),
+		_id: mongoose.mongo.ObjectId('6bb5c190fb457b1c3c0c7e0f'),
 		name: 'teammember',
 		roles: [],
 	},
 	{
-		refId: mongoose.mongo.ObjectId('6bb5c391fb457b1c3c0c7e10'),
+		_id: mongoose.mongo.ObjectId('6bb5c391fb457b1c3c0c7e10'),
 		name: 'teamexpert',
 		roles: [],
 	},
 	{
-		refId: mongoose.mongo.ObjectId('6bb5c49efb457b1c3c0c7e11'),
+		_id: mongoose.mongo.ObjectId('6bb5c49efb457b1c3c0c7e11'),
 		name: 'teamleader',
 		roles: ['6bb5c190fb457b1c3c0c7e0f'],
 	},
 	{
-		refId: mongoose.mongo.ObjectId('6bb5c545fb457b1c3c0c7e13'),
+		_id: mongoose.mongo.ObjectId('6bb5c545fb457b1c3c0c7e13'),
 		name: 'teamadministrator',
 		roles: ['6bb5c49efb457b1c3c0c7e11'],
 	},
 	{
-		refId: mongoose.mongo.ObjectId('6bb5c62bfb457b1c3c0c7e14'),
+		_id: mongoose.mongo.ObjectId('6bb5c62bfb457b1c3c0c7e14'),
 		name: 'teamowner',
 		roles: ['6bb5c545fb457b1c3c0c7e13'],
 	},
