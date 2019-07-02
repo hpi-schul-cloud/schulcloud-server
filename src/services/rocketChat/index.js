@@ -264,7 +264,20 @@ class RocketChatLogin {
 					user: rcAccount.username,
 					password: rcAccount.password,
 				};
-				const loginResponse = await request(getRequestOptions('/api/v1/login', login));
+				const loginResponse = await request(getRequestOptions('/api/v1/login', login))
+					.catch(async (err) => {
+						if (err.error.error === 'Unauthorized') {
+							const updatePasswordBody = {
+								username: rcAccount.username,
+								data: {
+									password: rcAccount.password,
+								},
+							};
+							await request(getRequestOptions('/api/v1/users.update', updatePasswordBody, true));
+							return request(getRequestOptions('/api/v1/login', login));
+						}
+						throw new BadRequest('Login to rocketchat failed', err);
+					});
 				const newToken = (loginResponse.data || {}).authToken;
 				authToken = newToken;
 				if (loginResponse.status === 'success' && authToken !== undefined) {
