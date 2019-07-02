@@ -34,22 +34,27 @@ class AWSStrategy {
 	}
 }
 
-mockery.enable({
-	warnOnUnregistered: false,
-	useCleanCache: false,
-});
-
-mockery.registerMock('./strategies/awsS3', AWSStrategy);
-delete require.cache[require.resolve('../../../src/app')];
-
-const app = require('../../../src/app');
-
-const fileStorageService = app.service('/fileStorage/');
-const signedUrlService = app.service('/fileStorage/signedUrl');
-const directoryService = app.service('/fileStorage/directories');
-
 describe('fileStorage services', () => {
-	before((done) => {
+	let app;
+	let fileStorageService;
+	let signedUrlService;
+	let directoryService;
+
+	before(() => {
+		mockery.enable({
+			warnOnUnregistered: false,
+			useCleanCache: true,
+		});
+
+		mockery.registerMock('./strategies/awsS3', AWSStrategy);
+
+		// eslint-disable-next-line global-require
+		app = require('../../../src/app');
+
+		fileStorageService = app.service('/fileStorage/');
+		signedUrlService = app.service('/fileStorage/signedUrl');
+		directoryService = app.service('/fileStorage/directories');
+
 		const promises = [
 			teamsModel.create(fixtures.teams),
 			schoolModel.create(fixtures.schools),
@@ -59,12 +64,10 @@ describe('fileStorage services', () => {
 			courseModel.create(fixtures.courses),
 		];
 
-		Promise.all(promises)
-			.then(() => done())
-			.catch(() => done());
+		return Promise.all(promises);
 	});
 
-	after((done) => {
+	after(() => {
 		mockery.deregisterAll();
 		mockery.disable();
 
@@ -77,9 +80,7 @@ describe('fileStorage services', () => {
 			...fixtures.courses.map(_ => courseModel.findByIdAndRemove(_._id)),
 		];
 
-		Promise.all(promises)
-			.then(() => done())
-			.catch(() => done());
+		return Promise.all(promises);
 	});
 
 	describe('file service', () => {
@@ -290,19 +291,17 @@ describe('fileStorage services', () => {
 			assert.ok(app.service('/fileStorage/signedUrl'));
 		});
 
-		it('return a signed url for putting blobs to', (done) => {
+		it('return a signed url for putting blobs to', async () => {
 			const context = setContext('0000d224816abba584714c8e');
 
-			signedUrlService.create({
+			const { url, header } = await signedUrlService.create({
 				filename: 'test.txt',
 				fileType: 'text/plain',
-			}, context)
-				.then(({ url, header }) => {
-					expect(url).to.be.equal('https://something.com');
-					expect(header['Content-Type']).to.be.equal('text/plain');
-					expect(header['x-amz-meta-name']).to.be.equal('test.txt');
-					done();
-				});
+			}, context);
+
+			expect(url).to.be.equal('https://something.com');
+			expect(header['Content-Type']).to.be.equal('text/plain');
+			expect(header['x-amz-meta-name']).to.be.equal('test.txt');
 		});
 
 		it('return a signed url for putting blobs to a folder', (done) => {
