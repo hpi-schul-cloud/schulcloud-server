@@ -125,7 +125,7 @@ class RocketChatUser {
 				userId, pass, username, rcId,
 			});
 		}).catch((err) => {
-			logger.warn(new BadRequest('Can not create RocketChat Account', err));
+			logger.warn(new BadRequest(`Can not create RocketChat Account for user ${userId}`, err));
 			throw new BadRequest('Can not create RocketChat Account', err);
 		});
 	}
