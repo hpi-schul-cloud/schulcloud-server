@@ -16,4 +16,4 @@ const mailToLowerCase = (hook) => {
 
 module.exports = {
 	mailToLowerCase,
-}
+};
