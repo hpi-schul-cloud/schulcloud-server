@@ -1,3 +1,5 @@
+const logger = require('winston');
+
 let createdClassesIds = [];
 
 const createTestClass = (app, opt) => ({
@@ -83,8 +85,12 @@ const findByName = app => async ([gradeLevelName, className]) => {
 
 const deleteByName = app => async ([gradeLevelName, className]) => {
 	const classObject = await findByName(app)([gradeLevelName, className]);
-	await app.service('classes').remove(classObject._id);
-	createdClassesIds.splice(createdClassesIds.find(i => i.toString() === classObject._id.toString()));
+	if (classObject && classObject._id) {
+		await app.service('classes').remove(classObject._id);
+		createdClassesIds.splice(createdClassesIds.find(i => i.toString() === classObject._id.toString()));
+	} else {
+		logger.warn(`Trying to delete a class by name that does not exist: "${gradeLevelName}${className}"`);
+	}
 };
 
 module.exports = (app, opt) => ({
