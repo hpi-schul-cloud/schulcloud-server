@@ -92,12 +92,12 @@ const returnPinOnlyToSuperHero = async (hook) => {
 
 exports.before = {
 	all: [globalHooks.forceHookResolve(auth.hooks.authenticate('jwt')), mailToLowerCase],
-	find: commonHooks.disable('external'),
-	get: commonHooks.disable('external'),
+	find: hooks.disable('external'),
+	get: hooks.disable('external'),
 	create: [removeOldPins, generatePin, mailPin],
-	update: commonHooks.disable('external'),
-	patch: commonHooks.disable('external'),
-	remove: commonHooks.disable('external'),
+	update: hooks.disable('external'),
+	patch: hooks.disable('external'),
+	remove: hooks.disable('external'),
 };
 
 exports.after = {
