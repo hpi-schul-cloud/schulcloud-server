@@ -183,7 +183,6 @@ describe('registration service', () => {
 				console.log(x._id);
 				x.model.findByIdAndRemove(x._id).exec();
 			}
-			
 		});
 
 		it('camel case email', () => {
