@@ -68,6 +68,7 @@ class CSVSyncer extends Syncer {
      */
 	async steps() {
 		await super.steps();
+		this.options.schoolYear = await this.determineSchoolYear();
 		const records = this.parseCsvData();
 		const importClasses = CSVSyncer.needsToImportClasses(records);
 		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
@@ -91,6 +92,22 @@ class CSVSyncer extends Syncer {
 
 	static requiredAttributes() {
 		return ['firstName', 'lastName', 'email'];
+	}
+
+	async determineSchoolYear() {
+		try {
+			if (this.options.schoolYear) {
+				return this.app.service('years').get(this.options.schoolYear);
+			}
+			const school = await this.app.service('schools').get(this.options.schoolId);
+			return this.app.service('years').get(school.currentYear);
+		} catch (err) {
+			this.logError('Cannot determine school year to import from params', {
+				paramSchoolYear: this.options.schoolYear,
+				paramSchool: this.options.school,
+			});
+		}
+		return undefined;
 	}
 
 	parseCsvData() {
@@ -356,9 +373,14 @@ class CSVSyncer extends Syncer {
 		];
 		const classNameFormat = formats.find(format => format.regex.test(klass));
 		if (classNameFormat !== undefined) {
-			return Object.assign(await classNameFormat.values(klass), {
+			const result = {
+				...await classNameFormat.values(klass),
 				schoolId: this.options.schoolId,
-			});
+			};
+			if (this.options.schoolYear) {
+				result.year = this.options.schoolYear._id;
+			}
+			return result;
 		}
 		throw new Error('Class name does not match any format:', klass);
 	}

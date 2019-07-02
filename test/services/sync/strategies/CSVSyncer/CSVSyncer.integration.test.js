@@ -289,7 +289,8 @@ describe('CSVSyncer Integration', () => {
 		const EXISTING_CLASSES = [['1', 'a'], [undefined, 'SG1'], ['12', '/3']];
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
 
-		before(async () => {
+		before(async function before() {
+			this.timeout(5000);
 			await Promise.all(EXISTING_CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
 
 			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
@@ -1064,10 +1065,10 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.classes.failed).to.equal(0);
 
 			const class1a = await findClass(['1', 'a']);
-			expect(class1a.year.toString()).to.equal(scenario1.school.currentYear.toString());
+			expect(class1a.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
 
 			const class1b = await findClass(['1', 'b']);
-			expect(class1b.year.toString()).to.equal(scenario1.school.currentYear.toString());
+			expect(class1b.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
 
 			// scenario 2
 			const [stats2] = await app.service('sync').create(scenario2.data, scenario2.params);
@@ -1082,10 +1083,10 @@ describe('CSVSyncer Integration', () => {
 			expect(stats2.classes.failed).to.equal(0);
 
 			const class2a = await findClass(['2', 'a']);
-			expect(class2a.year.toString()).to.equal(scenario2.school.currentYear.toString());
+			expect(class2a.year.toString()).to.equal(scenario2.school.currentYear._id.toString());
 
 			const class2b = await findClass(['2', 'b']);
-			expect(class2b.year.toString()).to.equal(scenario2.school.currentYear.toString());
+			expect(class2b.year.toString()).to.equal(scenario2.school.currentYear._id.toString());
 		});
 	});
 });

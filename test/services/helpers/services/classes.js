@@ -29,6 +29,8 @@ const cleanup = app => () => {
 };
 
 const createByName = app => async ([gradeLevelName, className, schoolId]) => {
+	const school = await app.service('schools').get(schoolId);
+	const year = await app.service('years').get(school.currentYear);
 	const gradeLevels = await app.service('gradeLevels').find({
 		query: {
 			name: gradeLevelName,
@@ -39,6 +41,7 @@ const createByName = app => async ([gradeLevelName, className, schoolId]) => {
 	if (gradeLevels.length > 0) {
 		classObject = {
 			schoolId,
+			year,
 			nameFormat: 'gradeLevel+name',
 			gradeLevel: gradeLevels[0]._id,
 			name: className,
@@ -46,6 +49,7 @@ const createByName = app => async ([gradeLevelName, className, schoolId]) => {
 	} else {
 		classObject = {
 			schoolId,
+			year,
 			nameFormat: 'static',
 			name: className,
 		};
