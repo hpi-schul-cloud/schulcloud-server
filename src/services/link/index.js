@@ -4,7 +4,7 @@ const service = require('feathers-mongoose');
 const link = require('./link-model');
 const hooks = require('./hooks');
 
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 
 	const options = {
@@ -52,9 +52,13 @@ module.exports = function () {
 			const linkData = {};
 			if (data.toHash) {
 				try {
-					await app.service('hash').create(data).then((generatedHash) => {
-						linkData.hash = generatedHash;
-					});
+					const user = (await app.service('users').find({ query: { email: data.toHash } }) || {}).data[0];
+					if (user && user.importHash) linkData.hash = user.importHash;
+					else {
+						await app.service('hash').create(data).then((generatedHash) => {
+							linkData.hash = generatedHash;
+						});
+					}
 				} catch (err) {
 					logger.warn(err);
 					return Promise.reject(new Error(`Fehler beim Generieren des Hashes. ${err}`));
@@ -115,16 +119,20 @@ module.exports = function () {
 
 				if (email) {
 					// generate import hash
-					await hashService.create({
-						toHash: email,
-						save: true,
-						patchUser: true,
-					}).then((generatedHash) => {
-						linkInfo.hash = generatedHash;
-					}).catch((err) => {
-						logger.warn(err);
-						return Promise.resolve('Success!');
-					});
+					const user = (await app.service('users').find({ query: { email: data.toHash } }) || {}).data[0];
+					if (user && user.importHash) linkInfo.hash = user.importHash;
+					else {
+						await hashService.create({
+							toHash: email,
+							save: true,
+							patchUser: true,
+						}).then((generatedHash) => {
+							linkInfo.hash = generatedHash;
+						}).catch((err) => {
+							logger.warn(err);
+							return Promise.resolve('Success!');
+						});
+					}
 				}
 
 				// build final link and remove possible double-slashes in url except the protocol ones
