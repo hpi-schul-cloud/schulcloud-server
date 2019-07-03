@@ -44,7 +44,7 @@ const getSessionUser = (refClass, params, userId) => {
 	const sesessionUserId = userId || bsonIdToString((params.account || {}).userId);
 
 	return refClass.app.service('users').get(sesessionUserId).catch((err) => {
-		warn(err);
+		warning(err);
 		throw new Forbidden('You have not the permission.');
 	});
 };
@@ -61,7 +61,7 @@ exports.patchTeam = (refClass, teamId, data, params) => {
 		.service('teams')
 		.patch(teamId, data, local(params))
 		.catch((err) => {
-			warn(err);
+			warning(err);
 			throw new BadRequest('Can not patch team.');
 		});
 };
@@ -77,7 +77,7 @@ const getTeam = (refClass, teamId) => { // todo: app to this -> this.app
 		},
 	};
 	return refClass.app.service('teams').get(teamId, populateParams).catch((err) => {
-		warn(err);
+		warning(err);
 		throw new Forbidden('You have not the permission.');
 	});
 };
