@@ -1114,5 +1114,28 @@ describe('CSVSyncer Integration', () => {
 			expect(class1b.year.toString()).not.to.equal(scenario1.school.currentYear._id.toString());
 			expect(class1b.year.toString()).to.equal(year._id.toString());
 		});
+
+		it('should create new classes if classes of the same name exist only for another year', async () => {
+			const oldYear = await createYear(); // oldYear is different from school.currentYear
+			const existingClass1a = await createClass(['1', 'a', scenario1.school._id], { year: oldYear._id });
+
+			const [stats] = await app.service('sync').create(scenario1.data, scenario1.params);
+
+			expect(stats.success).to.equal(true);
+			expect(stats.users.successful).to.equal(2);
+			expect(stats.users.failed).to.equal(0);
+			expect(stats.invitations.successful).to.equal(0);
+			expect(stats.invitations.failed).to.equal(0);
+			expect(stats.classes.successful).to.equal(2);
+			expect(stats.classes.created).to.equal(2);
+			expect(stats.classes.failed).to.equal(0);
+
+			const classes1a = await findClasses(['1', 'a']);
+			expect(classes1a.length).to.equal(2);
+
+			// there is no existing class 1b:
+			const class1b = await findClass(['1', 'b']);
+			expect(class1b.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
+		});
 	});
 });
