@@ -87,7 +87,8 @@ const getClassDisplayName = (aclass) => {
 	if (!aclass.nameFormat) {
 		logger.warning(`unknown nameFormat in class${aclass._id}`);
 	} else {
-		logger.warning(`The gradeLevel in class ${aclass._id} do not exist, or is is not populated.`, aclass.nameFormat);
+		logger
+			.warning(`The gradeLevel in class ${aclass._id} do not exist, or is is not populated.`, aclass.nameFormat);
 	}
 
 	return aclass;
