@@ -102,7 +102,9 @@ class CourseShareService {
 						.then((lessons) => {
 							for (let i = 0; i < lessons.data.length; i++) {
 								if (!lessons.data[i].shareToken) {
-									lessonsModel.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) });
+									lessonsModel
+										.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) })
+										.exec();
 								}
 							}
 						});
