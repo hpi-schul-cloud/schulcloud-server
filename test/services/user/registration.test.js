@@ -180,7 +180,6 @@ describe('registration service', () => {
 
 		afterEach(() => {
 			for (const x of toDelte) {
-				console.log(x._id);
 				x.model.findByIdAndRemove(x._id).exec();
 			}
 		});
