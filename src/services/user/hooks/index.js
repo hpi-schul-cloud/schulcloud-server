@@ -249,6 +249,12 @@ const securePatching = hook => Promise.all([
 		return Promise.resolve(hook);
 	});
 
+const getUserStatus = (user) => {
+	if (user.importHash) return 'unregistered';
+	if (!user.preferences.firstLogin) return 'registered';
+	return 'active';
+};
+
 /**
  *
  * @param user {object} - the user the display name has to be generated
@@ -281,6 +287,7 @@ const decorateUser = hook => getDisplayName(hook.result, hook.app)
 	.then((displayName) => {
 		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 		hook.result.displayName = displayName;
+		hook.result.status = getUserStatus(hook.result);
 	})
 	.then(() => Promise.resolve(hook));
 
@@ -334,6 +341,7 @@ const decorateUsers = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 	const userPromises = (hook.result.data || []).map(user => getDisplayName(user, hook.app).then((displayName) => {
 		user.displayName = displayName;
+		user.status = getUserStatus(user);
 		return user;
 	}));
 
