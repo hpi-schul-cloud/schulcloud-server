@@ -56,7 +56,7 @@ module.exports = function setup() {
 	const RegistrationService = require('./registration')(app);
 	app.use('/registration', new RegistrationService());
 	const registationService = app.service('registration');
-	registationService.before(registrationHook.before);
+	registationService.hooks(registrationHook);
 
 	const FirstLoginService = require('./firstLogin')(app);
 	app.use('/firstLogin', new FirstLoginService());

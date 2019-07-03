@@ -3,7 +3,7 @@ const { mailToLowerCase } = require('../../../../src/services/user/hooks/global'
 
 describe('global functions for user service', () => {
 	describe('email to lowercase', () => {
-		it('email, parent_mail, student_mail to lowercase', () => {
+		it('email, parent_mail, student_mail to lowercase', async () => {
 			const hook = {
 				data: {
 					email: 'kdjafJhIKkli123@web.de',
@@ -12,7 +12,7 @@ describe('global functions for user service', () => {
 				},
 			};
 
-			const mails = mailToLowerCase(hook);
+			const mails = await mailToLowerCase(hook);
 
 			expect(mails.data.email).to.equal(hook.data.email.toLowerCase());
 			expect(mails.data.parent_email).to.equal(hook.data.parent_email.toLowerCase());
