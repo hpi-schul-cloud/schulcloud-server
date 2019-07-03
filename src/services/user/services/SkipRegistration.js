@@ -12,6 +12,7 @@ const validateRequest = (data, targetUser, actingUser) => {
 	if (targetIsTeacher && actingUser.permissions.includes('TEACHER_SKIP_REGISTRATION')) {
 		hasPermission = true;
 	}
+	// school
 	if (!hasPermission) return Promise.reject(new Forbidden('you do not have permission to do this!'));
 
 	// sanitize
@@ -60,8 +61,8 @@ const updateConsent = (data, targetUser, app) => {
 	return app.service('consents').create(consent);
 };
 
-const updateUserBirthdate = (data, targetUser, app) => app.service('users')
-	.patch(targetUser._id, { birthday: data.birthday });
+const updateUser = (data, targetUser, app) => app.service('users')
+	.patch(targetUser._id, { birthday: data.birthday, $unset: { importHash: '' } });
 
 class SkipRegistrationService {
 	constructor() {
@@ -78,7 +79,7 @@ class SkipRegistrationService {
 			await Promise.all([
 				createAccount(data, targetUser, this.app),
 				updateConsent(data, targetUser, this.app),
-				updateUserBirthdate(data, targetUser, this.app),
+				updateUser(data, targetUser, this.app),
 			]);
 
 			return Promise.resolve('success');
