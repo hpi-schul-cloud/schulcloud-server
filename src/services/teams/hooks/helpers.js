@@ -262,7 +262,7 @@ exports.getTeam = hook => new Promise((resolve, reject) => {
 		throw new NotImplemented('It should not run into this case.');
 	}
 }).catch((err) => {
-	logger.warn(err);
+	logger.warning(err);
 	throw new NotFound('Can not found this team.');
 });
 
@@ -505,7 +505,7 @@ exports.populateUsersForEachUserIdinHookData = hook => new Promise((resolve, rej
 		}).then((users) => {
 			resolve(users.data);
 		}).catch((err) => {
-			logger.warn(err);
+			logger.warning(err);
 			reject(new BadRequest('Can not search users.'));
 		});
 	} else {

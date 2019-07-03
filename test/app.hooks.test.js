@@ -271,7 +271,7 @@ describe('removeObjectIdInData hook', () => {
 				return res;
 			})
 			.catch((err) => {
-				logger.warn('Can not create test User.', err);
+				logger.warning('Can not create test User.', err);
 			});
 
 		expect(_id).to.not.equal(user._id.toString());

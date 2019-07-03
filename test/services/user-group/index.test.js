@@ -15,12 +15,12 @@ describe('user-group service', () => {
 		await testObjects.createTestClass({
 			name: 'a',
 		}).catch((err) => {
-			logger.warn('Can not create test class.', err);
+			logger.warning('Can not create test class.', err);
 		});
 		await testObjects.createTestClass({
 			name: 'B',
 		}).catch((err) => {
-			logger.warn('Can not create test class.', err);
+			logger.warning('Can not create test class.', err);
 		});
 
 		const params = {

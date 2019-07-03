@@ -21,7 +21,7 @@ class Service {
 			},
 		};
 		return this.app.service('/users').get(userId, userServiceParams).catch((err) => {
-			logger.warn(err);
+			logger.warning(err);
 			throw new Forbidden('Your access token is not valid.');
 		});
 	}

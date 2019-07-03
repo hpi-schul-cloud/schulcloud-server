@@ -9,7 +9,7 @@ const removeTeamNews = app => async (deletedTeam) => {
 			},
 		});
 	} catch (e) {
-		logger.warn(`Cannot remove news for team ${deletedTeam._id}`, e);
+		logger.warning(`Cannot remove news for team ${deletedTeam._id}`, e);
 	}
 };
 

@@ -16,7 +16,7 @@ describe('Test team basic methods', () => {
 
 		before(async () => {
 			const user = await T.createTestUser({ roles: ['administrator'] }).catch((err) => {
-				logger.warn('Can not create test user', err);
+				logger.warning('Can not create test user', err);
 			});
 
 			const schoolId = user.schoolId.toString();
@@ -28,7 +28,7 @@ describe('Test team basic methods', () => {
 				schoolId,
 				userIds: [userId],
 			}, fakeLoginParams).catch((err) => {
-				logger.warn('Can not create test team', err);
+				logger.warning('Can not create test team', err);
 			});
 
 			teamId = team._id.toString();

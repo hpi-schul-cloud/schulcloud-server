@@ -44,7 +44,7 @@ const sendInfo = (context) => {
 			});
 			return context;
 		}).catch((err) => {
-			logger.warn(err);
+			logger.warning(err);
 			throw new NotFound('User Account Not Found');
 		});
 	}

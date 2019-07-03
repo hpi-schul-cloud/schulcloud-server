@@ -25,10 +25,10 @@ describe('AdminUsersService', () => {
 
 	it('builds class display names correctly', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
-			logger.warn('Can not create teacher', err);
+			logger.warning('Can not create teacher', err);
 		});
 		const student = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
-			logger.warn('Can not create student', err);
+			logger.warning('Can not create student', err);
 		});
 
 		expect(teacher).to.not.be.undefined;
@@ -44,7 +44,7 @@ describe('AdminUsersService', () => {
 		const gradeLevel = await gradeLevelService.find({
 			query: { name: '2' },
 		}).then(gradeLevels => gradeLevels.data[0]).catch((err) => {
-			logger.warn('Can not find gradeLevel', err);
+			logger.warning('Can not find gradeLevel', err);
 		});
 		expect(gradeLevel).to.not.be.undefined;
 
@@ -55,7 +55,7 @@ describe('AdminUsersService', () => {
 			nameFormat: 'gradeLevel+name',
 			gradeLevel: gradeLevel._id,
 		}).catch((err) => {
-			logger.warn('Can not create test class.', err);
+			logger.warning('Can not create test class.', err);
 		});
 		expect(gradeLevelClass).to.not.be.undefined;
 
@@ -66,7 +66,7 @@ describe('AdminUsersService', () => {
 		};
 
 		const result = await adminStudentsService.find(params).catch((err) => {
-			logger.warn('Can not execute adminStudentsService.find.', err);
+			logger.warning('Can not execute adminStudentsService.find.', err);
 		});
 
 		const searchClass = (users, name) => users.some(
