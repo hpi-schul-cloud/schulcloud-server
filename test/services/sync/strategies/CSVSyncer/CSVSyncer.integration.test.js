@@ -994,7 +994,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe('Scenario 13 - Importing classes assigns them to the school\'s current year', () => {
+	describe('Scenario 13 - Importing classes optionally assigns them to a school year', () => {
 		let scenario1;
 		let scenario2;
 		const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de'];
@@ -1042,13 +1042,14 @@ describe('CSVSyncer Integration', () => {
 			};
 		});
 
-		after(async () => {
+		afterEach(async () => {
 			await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
 			await Promise.all([['1', 'a'], ['1', 'b'], ['2', 'a'], ['2', 'b']].map(klass => deleteClass(klass)));
-			await testObjects.cleanup();
 		});
 
-		it('should create classes based on the current school year', async () => {
+		after(testObjects.cleanup);
+
+		it('should create classes based on the current school year by default', async () => {
 			expect(scenario1.school.currentYear._id.toString())
 				.to.not.equal(scenario2.school.currentYear._id.toString());
 
@@ -1087,6 +1088,31 @@ describe('CSVSyncer Integration', () => {
 
 			const class2b = await findClass(['2', 'b']);
 			expect(class2b.year.toString()).to.equal(scenario2.school.currentYear._id.toString());
+		});
+
+		it('should asign a created class to a school year if specified in the request', async () => {
+			// modified scenario 1
+			const year = await createYear();
+			const [stats] = await app.service('sync').create(scenario1.data, {
+				...scenario1.params,
+				query: {
+					...scenario1.params.query,
+					schoolYear: year._id,
+				},
+			});
+
+			expect(stats.success).to.equal(true);
+			expect(stats.classes.successful).to.equal(2);
+			expect(stats.classes.created).to.equal(2);
+			expect(stats.classes.failed).to.equal(0);
+
+			const class1a = await findClass(['1', 'a']);
+			expect(class1a.year.toString()).not.to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1a.year.toString()).to.equal(year._id.toString());
+
+			const class1b = await findClass(['1', 'b']);
+			expect(class1b.year.toString()).not.to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1b.year.toString()).to.equal(year._id.toString());
 		});
 	});
 });
