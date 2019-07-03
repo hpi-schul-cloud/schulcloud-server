@@ -251,7 +251,7 @@ const securePatching = hook => Promise.all([
 
 const getUserStatus = (user) => {
 	if (user.importHash) return 'unregistered';
-	if (!user.preferences.firstLogin) return 'registered';
+	if (!(user.preferences || {}).firstLogin) return 'registered';
 	return 'active';
 };
 
