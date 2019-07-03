@@ -1,5 +1,5 @@
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
-const { warn } = require('../../logger/index');
+const { warning } = require('../../logger/index');
 const { teamRolesToHook } = require('./hooks');
 const { isArrayWithElement, isDefined, bsonIdToString } = require('./hooks/collection');
 
