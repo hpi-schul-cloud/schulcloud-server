@@ -51,13 +51,12 @@ const populateUser = (app, data) => {
 	return Promise.resolve({ user, oldUser });
 };
 
-const insertUserToDB = (app,data,user)=> {
-	if(user._id){
-		return app.service('users').remove(user._id).then( ()=>{
-			return app
+const insertUserToDB = (app, data, user) => {
+	if (user._id) {
+		return app.service('users').remove(user._id).then(() => app
 			.service('users')
-			.create(user, { _additional:{parentEmail:data.parent_email, asTask:'student'} })
-			.catch(err=> { 	
+			.create(user, { _additional: { parentEmail: data.parent_email, asTask: 'student' } })
+			.catch((err) => {
 				logger.warn(err);
 				throw new errors.BadRequest('Fehler beim Updaten der Nutzerdaten.');
 			}));
