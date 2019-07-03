@@ -19,7 +19,7 @@ const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('users'
 		$limit: sortObject.$limit,
 		$skip: sortObject.$skip,
 		$sort: sortObject.$sort,
-		$select: ['firstName', 'lastName', 'email', 'createdAt'],
+		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash'],
 	},
 });
 
