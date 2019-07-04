@@ -12,7 +12,8 @@ const { create: createSchool } = require('../../../helpers/services/schools')(ap
 const { create: createYear } = require('../../../helpers/services/years');
 const {
 	createByName: createClass,
-	findByName: findClass,
+	findOneByName: findClass,
+	findByName: findClasses,
 	deleteByName: deleteClass,
 } = require('../../../helpers/services/classes')(app);
 
@@ -1090,7 +1091,7 @@ describe('CSVSyncer Integration', () => {
 			expect(class2b.year.toString()).to.equal(scenario2.school.currentYear._id.toString());
 		});
 
-		it('should asign a created class to a school year if specified in the request', async () => {
+		it('should assign a created class to a school year if specified in the request', async () => {
 			// modified scenario 1
 			const year = await createYear();
 			const [stats] = await app.service('sync').create(scenario1.data, {
@@ -1117,7 +1118,7 @@ describe('CSVSyncer Integration', () => {
 
 		it('should create new classes if classes of the same name exist only for another year', async () => {
 			const oldYear = await createYear(); // oldYear is different from school.currentYear
-			const existingClass1a = await createClass(['1', 'a', scenario1.school._id], { year: oldYear._id });
+			await createClass(['1', 'a', scenario1.school._id], { year: oldYear._id });
 
 			const [stats] = await app.service('sync').create(scenario1.data, scenario1.params);
 
@@ -1132,6 +1133,9 @@ describe('CSVSyncer Integration', () => {
 
 			const classes1a = await findClasses(['1', 'a']);
 			expect(classes1a.length).to.equal(2);
+			expect(classes1a.some(c => c.year.toString() === oldYear._id.toString())).to.equal(true);
+			expect(classes1a.some(c => c.year.toString() === scenario1.school.currentYear._id.toString()))
+				.to.equal(true);
 
 			// there is no existing class 1b:
 			const class1b = await findClass(['1', 'b']);
