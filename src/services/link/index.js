@@ -16,6 +16,8 @@ module.exports = function setup() {
 		lean: true,
 	};
 
+	const registrationLinkTimeoutDays = 30; 
+
 	let linkService = service(options);
 
 	function redirectToTarget(req, res, next) {
@@ -27,7 +29,14 @@ module.exports = function setup() {
 						const [url, query] = data.target.split('?');
 						const queryObject = queryString.parse(query || '');
 						queryObject.link = data._id;
-						res.redirect(`${url}?${queryString.stringify(queryObject)}`);
+						if(url.includes('/registration/') && !(verifyDate(data.createdAt))){
+							res.status(500).send({
+								error: 'This link has expired. Registration links are only valid for ' + registrationLinkTimeoutDays + ' days. Please request a new link from your teacher/administrator. ', 
+								fehler: 'Dieser Link ist abgelaufen. Registrierungslinks sind nur ' + registrationLinkTimeoutDays + ' Tage lang gültig. Bitte frage bei deinem Lehrer oder Administrator nach einem neuen.'
+						});
+						} else {
+							res.redirect(`${url}?${queryString.stringify(queryObject)}`);
+						}
 					} else {
 						res.redirect(data.target);
 					}
@@ -40,6 +49,15 @@ module.exports = function setup() {
 			delete req.query.includeShortId;
 			next();
 		}
+	}
+
+	function verifyDate(date){
+		date = new Date(date);
+		const currentDate = new Date();
+		const diff = currentDate.getTime() - date.getTime();
+		console.log(diff/3600/1000/24)
+		if(diff < registrationLinkTimeoutDays * 1000 * 3600 * 24) return true;
+		return false;
 	}
 
 	class RegistrationLinkService {
