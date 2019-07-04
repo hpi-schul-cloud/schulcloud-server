@@ -13,6 +13,7 @@ const validateRequest = (data, targetUser, actingUser) => {
 		hasPermission = true;
 	}
 	// school
+	if (targetUser.schoolId !== actingUser.schoolId) hasPermission = false;
 	if (!hasPermission) return Promise.reject(new Forbidden('you do not have permission to do this!'));
 
 	// sanitize
