@@ -17,7 +17,7 @@ const validateRequest = (data, targetUser) => {
 const createAccount = async function createAccount(data, targetUser, app) {
 	const existingAccount = await app.service('accounts').find({ query: { userId: targetUser._id } });
 	if (existingAccount.length === 0) {
-		app.service('accounts').create({
+		return app.service('accounts').create({
 			userId: targetUser._id,
 			password: data.password,
 			username: targetUser.email,
