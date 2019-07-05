@@ -12,6 +12,7 @@ const {
 	canRead,
 	canCreate,
 	canDelete,
+	checkTeamPermissionsNew,
 } = require('./utils/filePermissionHelper');
 const { returnFileType, generateFileNameSuffix: generateFlatFileName } = require('./utils/filePathHelper');
 const { FileModel } = require('./model');
@@ -44,6 +45,10 @@ const fileStorageService = {
      * @param params,
      * @returns {Promise}
      */
+	setup(app) {
+		this.app = app;
+	},
+
 	async create(data, params) {
 		const { payload: { userId } } = params;
 		const { owner, parent, studentCanEdit } = data;
@@ -153,22 +158,28 @@ const fileStorageService = {
 		const parentPromise = parent ? canRead(userId, parent) : Promise.resolve();
 
 		return parentPromise
-			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).exec())
+			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).populate('owner').exec())
 			.then((files) => {
 				const permissionPromises = files.map(
 					f => canRead(userId, f)
 						.then(() => f)
 						.catch(() => undefined),
 				);
-				return Promise.all(permissionPromises);
+				const teamPermissions = checkTeamPermissionsNew(userId, files, 'read', this.app);
+				return Promise.all([teamPermissions, ...permissionPromises]);
 			})
-			.then((allowedFiles) => {
-				const files = allowedFiles.filter(f => f);
-				if (!files.length) {
+			.then(([allowedFilesTeam, ...allowedFiles]) => {
+				const teamFiles = allowedFilesTeam
+					.filter(teamFile => !allowedFiles
+						.some(file => file._id.toString() === teamFile._id.toString()));
+
+				const allFiles = [...allowedFiles, ...teamFiles];
+
+				if (!allFiles.length) {
 					return new Forbidden();
 				}
 
-				return files;
+				return allFiles;
 			})
 			.catch((e) => {
 				logger.error(e);

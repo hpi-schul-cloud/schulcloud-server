@@ -90,8 +90,30 @@ class ScopeListService extends ScopeService {
 	}
 }
 
+class ScopeFileService extends ScopeService {
+	async find(params) {
+		return this.handler.apply(this, [
+			params.userId,
+			params.scope,
+			params.files,
+		]);
+	}
+
+	static hooks() {
+		return {
+			before: {
+				all: [
+					globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
+					lookupScope,
+				],
+			},
+		};
+	}
+}
+
 module.exports = {
 	ScopeService,
 	ScopePermissionService,
 	ScopeListService,
+	ScopeFileService,
 };
