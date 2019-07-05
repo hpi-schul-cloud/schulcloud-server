@@ -163,7 +163,7 @@ describe('skipRegistration service', () => {
 		expect(consent.parentConsents[0].termsOfUseConsent).to.equal(true);
 	});
 
-	it.only('correctly updates the user', async () => {
+	it('correctly updates the user', async () => {
 		let user = await testObjects.createTestUser({
 			roles: ['student'],
 		});

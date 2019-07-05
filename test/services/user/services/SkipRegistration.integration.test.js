@@ -23,10 +23,6 @@ describe('SkipRegistration integration', () => {
 		const user = await testObjects.createTestUser({
 			roles: ['student'],
 		});
-		const scenarioParams = {
-			route: { userid: user._id },
-			provider: 'rest',
-		};
 
 		try {
 			await app.service('/users/:userid/skipregistration').create({
