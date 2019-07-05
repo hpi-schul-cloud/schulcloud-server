@@ -20,7 +20,7 @@ const checkPermissions = async (hook) => {
 	if (targetIsTeacher && actingUser.permissions.includes('TEACHER_SKIP_REGISTRATION')) {
 		hasPermission = true;
 	}
-	if (targetUser.schoolId !== actingUser.schoolId) hasPermission = false;
+	if (targetUser.schoolId.toString() !== actingUser.schoolId.toString()) hasPermission = false;
 	if (!hasPermission) return Promise.reject(new Forbidden('you do not have permission to do this!'));
 
 	return Promise.resolve(hook);
