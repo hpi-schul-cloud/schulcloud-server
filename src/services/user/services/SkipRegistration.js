@@ -1,22 +1,7 @@
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { BadRequest } = require('@feathersjs/errors');
 
-const validateRequest = (data, targetUser, actingUser) => {
-	// check persmissison
+const validateRequest = (data, targetUser) => {
 	const targetIsStudent = targetUser.roles[0].name === 'student';
-	const targetIsTeacher = targetUser.roles[0].name === 'teacher';
-	let hasPermission = false;
-
-	if (targetIsStudent && actingUser.permissions.includes('STUDENT_SKIP_REGISTRATION')) {
-		hasPermission = true;
-	}
-	if (targetIsTeacher && actingUser.permissions.includes('TEACHER_SKIP_REGISTRATION')) {
-		hasPermission = true;
-	}
-	// school
-	if (targetUser.schoolId !== actingUser.schoolId) hasPermission = false;
-	if (!hasPermission) return Promise.reject(new Forbidden('you do not have permission to do this!'));
-
-	// sanitize
 	if (!((data.parent_privacyConsent && data.parent_termsOfUseConsent)
 		|| (data.privacyConsent && data.termsOfUseConsent))) {
 		return Promise.reject(new BadRequest('you have to set valid consents!'));
@@ -74,8 +59,7 @@ class SkipRegistrationService {
 		try {
 			const targetUser = await this.app.service('users').get(params.route.userid,
 				{ query: { $populate: 'roles' } });
-			const actingUser = await this.app.service('users').get(params.account.userId);
-			await validateRequest(data, targetUser, actingUser);
+			await validateRequest(data, targetUser);
 
 			await Promise.all([
 				createAccount(data, targetUser, this.app),
