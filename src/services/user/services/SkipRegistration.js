@@ -7,7 +7,7 @@ const validateRequest = (data, targetUser) => {
 		return Promise.reject(new BadRequest('you have to set valid consents!'));
 	}
 	if (!data.password) return Promise.reject(new BadRequest('you have to set a password!'));
-	if (targetIsStudent && !data.birthday) return Promise.reject(new BadRequest('students require a birtdate'));
+	if (targetIsStudent && !data.birthday) return Promise.reject(new BadRequest('students require a birthdate'));
 
 	// todo: what status code?
 	if (!targetUser.importHash) return Promise.reject(new BadRequest('this user is not viable for registration'));

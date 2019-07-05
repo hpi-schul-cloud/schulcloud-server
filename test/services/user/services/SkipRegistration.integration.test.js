@@ -8,7 +8,7 @@ const { create: createUser } = require('../../helpers/services/users')(app);
 
 const skipRegistrationService = app.service('/users/:userid/skipregistration');
 
-describe.only('SkipRegistration integration', () => {
+describe('SkipRegistration integration', () => {
 	let server;
 
 	before((done) => {
