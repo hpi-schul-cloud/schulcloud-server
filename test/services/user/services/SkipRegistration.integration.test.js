@@ -98,6 +98,37 @@ describe.only('SkipRegistration integration', () => {
 		}
 	});
 
+	it('fails for user on different schools', async () => {
+		const usersSchool = await testObjects.createTestSchool();
+		const differentSchool = await testObjects.createTestSchool();
+		const targetUser = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: differentSchool._id,
+		});
+		const actingUser = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId: usersSchool._id,
+		});
+		const scenarioParams = await generateRequestParamsFromUser(actingUser);
+		scenarioParams.route = { userid: targetUser._id };
+
+		try {
+			await app.service('/users/:userid/skipregistration').create({
+				parent_privacyConsent: true,
+				parent_termsOfUseConsent: true,
+				privacyConsent: true,
+				termsOfUseConsent: true,
+				birthday: '2014-12-19T00:00:00Z',
+				password: 'password1',
+			}, scenarioParams);
+			throw new Error('should fail');
+		} catch (err) {
+			expect(err).to.not.equal('undefined');
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal('you do not have permission to do this!');
+		}
+	});
+
 	it('succeeds for teacher skipping student registration', async () => {
 		let targetUser = await testObjects.createTestUser({
 			roles: ['student'],
