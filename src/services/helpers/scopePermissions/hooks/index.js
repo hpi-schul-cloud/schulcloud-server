@@ -38,7 +38,17 @@ const lookupScope = async (context) => {
 	return context;
 };
 
+const checkMemberStatus = (context) => {
+	const { files } = context.params;
+
+	// TODO
+
+	return context;
+};
+
+
 module.exports = {
 	lookupScope,
 	rejectQueryingOtherUsers,
+	checkMemberStatus,
 };
