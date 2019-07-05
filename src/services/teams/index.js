@@ -1,4 +1,5 @@
 const service = require('feathers-mongoose');
+const logger = require('winston');
 const {
 	BadRequest,
 	Forbidden,
@@ -9,6 +10,9 @@ const hooks = require('./hooks');
 const { warn } = require('../../logger/index');
 const { teamsModel } = require('./model');
 const { userModel } = require('../user/model');
+const { FileModel } = require('../fileStorage/model');
+const RoleModel = require('../role/model');
+
 const {
 	createUserWithRole,
 	removeDuplicatedTeamUsers,
@@ -31,7 +35,12 @@ const {
 	bsonIdToString,
 	isSameId,
 } = require('./hooks/collection');
-const { ScopePermissionService, ScopeListService } = require('../helpers/scopePermissions');
+const {
+	ScopePermissionService,
+	ScopeListService,
+	ScopeFileService,
+} = require('../helpers/scopePermissions');
+const { sortRoles } = require('../role/utils/rolesHelper');
 // const {teamRolesToHook} = require('./hooks');
 // todo docs require
 
@@ -510,4 +519,59 @@ module.exports = function setup() {
 		}))).filter(e => e);
 		return teams;
 	});
+	ScopeFileService.initialize(
+		app,
+		'/teams/:scopeId/files',
+		async (userId, team, files) => {
+			// check if user is in team before hook
+			// console.log(userId, team, files);
+			let teamRoles;
+			try {
+				teamRoles = sortRoles(
+					await RoleModel.find({ name: /^team/ }).exec(),
+				);
+			} catch (error) {
+				logger.error(error);
+				return Promise.reject();
+			}
+
+			const { role } = team.userIds.find(teamUser => String(userId) === String(teamUser.userId));
+
+			const fileMap = files.map((file) => {
+				const { permissions } = file;
+
+				const rolePermissions = permissions.find(
+					perm => perm.refId.toString() === role.toString(),
+				);
+
+				const { role: creatorRole } = file.owner.userIds.find(
+					_ => _.userId.toString()
+						=== file.permissions[0].refId.toString(), // fileCreator
+				);
+
+				const findRole = roleId => roles => roles.findIndex(
+					r => r._id.toString() === roleId.toString(),
+				) > -1;
+
+				const userPos = teamRoles.findIndex(findRole(role));
+				const creatorPos = teamRoles.findIndex(
+					findRole(creatorRole),
+				);
+
+				const canDelete = userPos > creatorPos;
+
+				return {
+					file,
+					permissions: {
+						read: rolePermissions.read,
+						write: rolePermissions.write,
+						create: rolePermissions.create,
+						delete: canDelete,
+					},
+				};
+			});
+
+			return fileMap;
+		},
+	);
 };
