@@ -78,7 +78,7 @@ elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
   buildandpush	
   deploytotest
-elif [[ $TRAVIS_BRANCH = release* ]]
+elif [[ $TRAVIS_BRANCH = release* || $TRAVIS_BRANCH = hotfix* ]]
 then
   buildandpush
   deploytostaging

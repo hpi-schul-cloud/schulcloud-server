@@ -66,13 +66,14 @@ class CSVSyncer extends Syncer {
 	async steps() {
 		await super.steps();
 		const records = this.parseCsvData();
+		const importClasses = CSVSyncer.needsToImportClasses(records);
 		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
 		const actions = Object.values(clusteredRecords).map(record => async () => {
 			const enrichedRecord = await this.enrichUserData(record);
 			const user = await this.createOrUpdateUser(enrichedRecord);
-			if (this.importClasses) {
+			if (importClasses) {
 				await this.createClasses(enrichedRecord, user);
 			}
 		});
@@ -135,11 +136,11 @@ class CSVSyncer extends Syncer {
 				throw new Error(`Parsing failed. Expected attribute "${param}"`);
 			}
 		});
-		// validate optional params:
-		if (records[0].class !== undefined) {
-			this.importClasses = true;
-		}
 		return records;
+	}
+
+	static needsToImportClasses(records) {
+		return records[0].class !== undefined;
 	}
 
 	static sanitizeRecords(records) {
