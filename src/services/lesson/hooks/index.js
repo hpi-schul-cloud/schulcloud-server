@@ -3,9 +3,15 @@ const nanoid = require('nanoid');
 const globalHooks = require('../../../hooks');
 const lesson = require('../model');
 
-const checkIfCourseGroupLesson = (permission1, permission2, isCreating, hook) => {
-	// find courseGroupId in different ways (POST, FIND ...)
-	const groupPromise = isCreating ? Promise.resolve({ courseGroupId: hook.data.courseGroupId }) : lesson.findOne({ _id: hook.id }).then(lesson => (JSON.stringify(lesson.courseGroupId) ? globalHooks.hasPermission(permission1)(hook) : globalHooks.hasPermission(permission2)(hook)));
+const checkIfCourseGroupLesson = async (permission1, permission2, isCreate, context) => {
+	const isCourseGroup = isCreate
+		? context.data.courseGroupId
+		: await lesson.findOne({ _id: context.id }).then(_lesson => (JSON.stringify(_lesson.courseGroupId)));
+
+	if (isCourseGroup) {
+		return globalHooks.hasPermission(permission1)(context);
+	}
+	return globalHooks.hasPermission(permission2)(context);
 };
 
 // add a shareToken to a lesson if course has a shareToken
@@ -13,14 +19,13 @@ const checkIfCourseShareable = (hook) => {
 	if (hook.result.courseId && hook.result.courseId !== 'undefined') {
 		const { courseId } = hook.result;
 		const courseService = hook.app.service('courses');
-		const lessonsService = hook.app.service('lessons');
 
 		return courseService.get(courseId)
 			.then((course) => {
 				if (!course.shareToken) return hook;
 
 				return lesson.findByIdAndUpdate(hook.result._id, { shareToken: nanoid(12) })
-					.then(lesson => hook);
+					.then(() => hook);
 			});
 	}
 	return hook;
