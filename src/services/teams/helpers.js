@@ -61,7 +61,7 @@ exports.patchTeam = (refClass, teamId, data, params) => refClass.app
 	.service('teams')
 	.patch(teamId, data, local(params))
 	.catch((err) => {
-		warn(err);
+		warning(err);
 		throw new BadRequest('Can not patch team.');
 	});
 

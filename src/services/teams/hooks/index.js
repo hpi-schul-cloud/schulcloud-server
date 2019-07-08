@@ -591,7 +591,11 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 			u => isSameId(u.userId._id || u.userId, userId),
 		));
 		if (isUndefined([user, user.role], 'OR')) {
-			logger.warning('Can not execute addCurrentUser for unknown user. Or user execute a patch with the result that he has left the team.', { userId });
+			logger.warning(
+				'Can not execute addCurrentUser for unknown user. '
+				+ 'Or user execute a patch with the result that he has left the team.',
+				{ userId },
+			);
 			return hook;
 		}
 		const roleId = (user.role || {})._id || user.role; // first populated, second only id;
