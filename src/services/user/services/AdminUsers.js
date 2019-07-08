@@ -5,7 +5,6 @@ const logger = require('winston');
 
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
-const { consentModel } = require('../../consent/model');
 
 const getCurrentUser = id => userModel.findById(id)
 	.select('schoolId')
@@ -13,10 +12,16 @@ const getCurrentUser = id => userModel.findById(id)
 	.lean()
 	.exec();
 
-const getAllUsers = (schoolId, roles) => userModel.find({ schoolId, roles })
-	.select('firstName lastName email createdAt')
-	.lean()
-	.exec();
+const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('users').find({
+	query: {
+		schoolId,
+		roles: role.toString(),
+		$limit: sortObject.$limit,
+		$skip: sortObject.$skip,
+		$sort: sortObject.$sort,
+		$select: ['firstName', 'lastName', 'email', 'createdAt'],
+	},
+});
 
 const getRoles = () => roleModel.find()
 	.select('name')
@@ -36,23 +41,27 @@ const getClasses = (app, schoolId) => app.service('classes')
 		return err;
 	});
 
-const findConsent = userIds => consentModel.find({ userId: { $in: userIds } })
-	.select({
-		'userConsent.dateOfPrivacyConsent': 0,
-		'userConsent.dateOfTermsOfUseConsent': 0,
-		'userConsent.dateOfResearchConsent': 0,
-		'userConsent.researchConsent': 0,
-		'parentConsents.dateOfPrivacyConsent': 0,
-		'parentConsents.dateOfTermsOfUseConsent': 0,
-		'parentConsents.dateOfResearchConsent': 0,
-		'parentConsents.researchConsent': 0,
+const findConsents = (ref, userIds, $limit) => ref.app.service('/consents')
+	.find({
+		query: {
+			userId: { $in: userIds },
+			$limit,
+			$select: [
+				'userId',
+				'userConsent.form',
+				'userConsent.privacyConsent',
+				'userConsent.termsOfUseConsent',
+				'parentConsents.parentId',
+				'parentConsents.form',
+				'parentConsents.privacyConsent',
+				'parentConsents.termsOfUseConsent'],
+		},
 	})
-	.lean()
-	.exec();
+	.then(consents => consents.data);
 
-class AdminStudents {
-	constructor(options) {
-		this.options = options || {};
+class AdminUsers {
+	constructor(role) {
+		this.role = role || {};
 		this.docs = {};
 	}
 
@@ -70,17 +79,17 @@ class AdminStudents {
 				throw new Forbidden();
 			}
 			// fetch data that are scoped to schoolId
-			const studentRole = (roles.filter(role => role.name === 'student'))[0];
-
-			const [users, classes] = await Promise.all(
+			const studentRole = (roles.filter(role => role.name === this.role))[0];
+			const [usersData, classes] = await Promise.all(
 				[
-					getAllUsers(schoolId, studentRole._id),
+					getAllUsers(this, schoolId, studentRole._id, (params.query || {})),
 					getClasses(this.app, schoolId),
 				],
 			);
-
+			const { total } = usersData;
+			const users = usersData.data;
 			const userIds = users.map(user => user._id.toString());
-			const consents = await findConsent(userIds).then((data) => {
+			const consents = await findConsents(this, userIds, (params.query || {}).$limit).then((data) => {
 				// rebuild consent to object for faster sorting
 				const out = {};
 				data.forEach((e) => {
@@ -94,13 +103,10 @@ class AdminStudents {
 			});
 
 			// patch classes and consent into user
-			return users.map((user) => {
+			users.map((user) => {
 				user.classes = [];
 				const userId = user._id.toString();
-				const con = consents[userId];
-				if (con) {
-					user.consent = con;
-				}
+				user.consent = consents[userId] || {};
 				classes.forEach((c) => {
 					if (c.userIds.includes(userId)) {
 						user.classes.push(c.displayName);
@@ -108,6 +114,22 @@ class AdminStudents {
 				});
 				return user;
 			});
+
+			const filteredUsers = users.filter((user) => {
+				const { consentStatus } = params.query || {};
+
+				if ((consentStatus || {}).$in) {
+					const userStatus = user.consent.consentStatus || 'missing';
+					return consentStatus.$in.includes(userStatus);
+				}
+				return true;
+			});
+			return {
+				total,
+				limit: (params.query || {}).$limit,
+				skip: (params.query || {}).$skip,
+				data: filteredUsers,
+			};
 		} catch (err) {
 			logger.warn(err);
 			if ((err || {}).code === 403) {
@@ -122,4 +144,4 @@ class AdminStudents {
 	}
 }
 
-module.exports = AdminStudents;
+module.exports = AdminUsers;

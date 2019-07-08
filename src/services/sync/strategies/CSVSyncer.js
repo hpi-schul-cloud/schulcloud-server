@@ -66,13 +66,14 @@ class CSVSyncer extends Syncer {
 	async steps() {
 		await super.steps();
 		const records = this.parseCsvData();
+		const importClasses = CSVSyncer.needsToImportClasses(records);
 		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
 		const actions = Object.values(clusteredRecords).map(record => async () => {
 			const enrichedRecord = await this.enrichUserData(record);
 			const user = await this.createOrUpdateUser(enrichedRecord);
-			if (this.importClasses) {
+			if (importClasses) {
 				await this.createClasses(enrichedRecord, user);
 			}
 		});
@@ -135,11 +136,11 @@ class CSVSyncer extends Syncer {
 				throw new Error(`Parsing failed. Expected attribute "${param}"`);
 			}
 		});
-		// validate optional params:
-		if (records[0].class !== undefined) {
-			this.importClasses = true;
-		}
 		return records;
+	}
+
+	static needsToImportClasses(records) {
+		return records[0].class !== undefined;
 	}
 
 	static sanitizeRecords(records) {
@@ -157,7 +158,7 @@ class CSVSyncer extends Syncer {
 					type: 'user',
 					entity: `${record.firstName},${record.lastName},${record.email}`,
 					message: `Mehrfachnutzung der E-Mail-Adresse "${record.email}". `
-                        + 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+						+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 				});
 				this.stats.users.failed += 1;
 			} else {
@@ -279,12 +280,12 @@ class CSVSyncer extends Syncer {
 					headers: {},
 					content: {
 						text: `Einladung in die ${process.env.SC_TITLE}\n`
-                            + `Hallo ${user.firstName} ${user.lastName}!\n\n`
-                            + `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
-                            + 'bitte vervollständige deine Registrierung unter folgendem Link: '
-                            + `${user.shortLink}\n\n`
-                            + 'Viel Spaß und einen guten Start wünscht dir dein '
-                            + `${process.env.SC_SHORT_TITLE}-Team`,
+							+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
+							+ `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
+							+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
+							+ `${user.shortLink}\n\n`
+							+ 'Viel Spaß und einen guten Start wünscht dir dein '
+							+ `${process.env.SC_SHORT_TITLE}-Team`,
 					},
 				});
 				this.stats.invitations.successful += 1;

@@ -1,68 +1,72 @@
 const { expect } = require('chai');
+const logger = require('winston');
 const { ObjectId } = require('mongoose').Types;
 
 const app = require('../../../src/app');
-const {
-	createTestUser,
-	createTestAccount,
-	generateRequestParams,
-	cleanup,
-} = require('../helpers/testObjects.js')(app);
+const T = require('../helpers/testObjects')(app);
 
 const teamService = app.service('/teams');
 
-describe('Team Service', () => {
-	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
-	});
+describe('Test team basic methods', () => {
+	describe('teams create', () => {
+		let team;
+		let teamId;
+		let userId;
 
-	after((done) => {
-		server.close(done);
-	});
+		before(async () => {
+			const user = await T.createTestUser({ roles: ['administrator'] }).catch((err) => {
+				logger.warn('Can not create test user', err);
+			});
 
-	describe.skip('/teams/extern/add', () => {
-		let service = {}; const
-			team = {};
-		before(() => {
-			service = app.service('/teams/extern/add');
-			team._id = ObjectId();
-			// todo create user
-			// todo create team
-			// todo expert school
+			const schoolId = user.schoolId.toString();
+			userId = user._id.toString();
+			const fakeLoginParams = T.fakeLoginParams({ userId });
+
+			team = await teamService.create({
+				name: 'TestTeam',
+				schoolId,
+				userIds: [userId],
+			}, fakeLoginParams).catch((err) => {
+				logger.warn('Can not create test team', err);
+			});
+
+			teamId = team._id.toString();
+
+			return Promise.resolve();
 		});
 
-		after(() => {
-			// remove user
-			// remove team
-			// remove school
+		after(() => Promise.all([T.cleanup(), T.teams.removeOne(teamId)]));
+
+
+		it('should for extern request only return the _id', () => {
+			expect(Object.keys(team)).to.be.an('array').to.has.lengthOf(1);
+			expect(ObjectId.isValid(team._id)).to.be.true;
 		});
 
-		it.skip('should accept emails & role', async () => {
-			const result = await service.patch(team._id, { email: 'tester@test.de', role: 'teamexpert' });
-			/*  agent.post('/authentication')
-            .send({})   Authorization:<token>, strategy:'local'
-            .end((err, response) => {
-                if(err){
-                    throw err
-                };
-                if(response===undefined){
-                    throw new Error('');
-                }
-                //do resolve
-            });
-        */
+		it('should have 2 valid filePermissions that has ref to valid roles', async () => {
+			const { filePermission } = await app.service('teams').get(teamId);
+			expect(filePermission).to.be.an('array').to.have.lengthOf(2);
+			expect(ObjectId.isValid(filePermission[0].refId)).to.be.true;
+			expect(ObjectId.isValid(filePermission[1].refId)).to.be.true;
 		});
-	});
 
-	describe('CREATE method', () => {
+		it('should find created test team for user', async () => {
+			const result = await app.service('teams').find(userId);
+			const elements = [];
+			result.data.forEach((element) => {
+				elements.push(element._id);
+			});
+			const testTeam = elements.pop();
+			expect(testTeam.toString()).to.equal(teamId);
+		});
+
 		it('is allowed for superheroes', async () => {
-			const hero = await createTestUser({ roles: ['superhero'] });
+			const hero = await T.createTestUser({ roles: ['superhero'] });
 			const username = hero.email;
 			const password = 'Schulcloud1!';
-			await createTestAccount({ username, password }, 'local', hero);
-			const params = await generateRequestParams({ username, password });
+			await T.createTestAccount({ username, password }, 'local', hero);
+			const params = await T.generateRequestParams({ username, password });
 
 			try {
 				const record = {
@@ -74,10 +78,33 @@ describe('Team Service', () => {
 				const slimteam = await teamService.create(record, { ...params, query: {} });
 				expect(slimteam).to.be.ok;
 
-				const team = await teamService.get(slimteam._id);
-				expect(team.userIds.some(item => item.userId.toString() === hero._id.toString())).to.equal(true);
+				const { userIds } = await teamService.get(slimteam._id);
+				expect(userIds.some(item => item.userId.toString() === hero._id.toString())).to.equal(true);
 			} finally {
-				cleanup();
+				T.cleanup();
+			}
+		});
+
+		it('is not allowed for demoStudent', async () => {
+			const demoStudent = await T.createTestUser({ roles: ['demoStudent'] });
+			const username = demoStudent.email;
+			const password = 'Schulcloud1!';
+			await T.createTestAccount({ username, password }, 'local', demoStudent);
+			const params = await T.generateRequestParams({ username, password });
+
+			try {
+				const record = {
+					name: 'test',
+					schoolId: demoStudent.schoolId,
+					schoolIds: [demoStudent.schoolId],
+					userIds: [demoStudent._id],
+				};
+				await teamService.create(record, { ...params, query: {} }).catch((e) => {
+					expect(e.name).to.equal('Forbidden');
+					expect(e.message).to.equal('Only administrator, teacher and students can create teams.');
+				});
+			} finally {
+				T.cleanup();
 			}
 		});
 	});

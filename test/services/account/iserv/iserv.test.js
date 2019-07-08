@@ -1,7 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const assert = require('assert');
-const promisify = require('es6-promisify');
 const IServStrategy = require('../../../../src/services/account/strategies/iserv.js');
 const iservMockServer = require('./iservMockServer');
 const config = require('./config');

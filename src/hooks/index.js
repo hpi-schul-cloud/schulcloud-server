@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
 const logger = require('winston');
@@ -168,6 +169,7 @@ exports.resolveToIds = (serviceName, path, key, hook) => {
 		});
 };
 
+// todo: Should removed
 exports.permitGroupOperation = (hook) => {
 	if (!hook.id) {
 		throw new errors.Forbidden('Operation on this service requires an id!');
@@ -187,18 +189,19 @@ const _resolveToId = (service, key, value) => {
 		});
 };
 
-
+// added next handler for save against path of undefined errors
 const deepValue = (obj, path, newValue) => {
+	// eslint-disable-next-line no-confusing-arrow
+	const next = (obj2, path2) => obj2 === undefined ? obj2 : obj2[path2];
 	path = path.split('.');
 	const len = path.length - 1;
-
 	let i;
-	for (i = 0; i < len; i++) {
-		obj = obj[path[i]];
+	for (i = 0; i < len; i += 1) {
+		obj = next(obj, path[i]);
 	}
 
 	if (newValue) obj[path[i]] = newValue;
-	return obj[path[i]];
+	return next(obj, path[i]);
 };
 
 exports.computeProperty = function (Model, functionName, variableName) {

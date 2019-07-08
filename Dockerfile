@@ -1,4 +1,4 @@
-#FROM node:8.12.0
+# if node version is changed, also adapt .nvmrc file 
 FROM node:8.15-alpine
 
 WORKDIR /schulcloud-server

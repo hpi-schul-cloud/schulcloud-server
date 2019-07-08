@@ -13,6 +13,7 @@ const rssFeedSchema = new Schema({
 		type: String,
 		required: true,
 		unique: true,
+		sparse: true,
 	},
 	description: {
 		type: String,
@@ -40,7 +41,7 @@ const schoolSchema = new Schema({
 	logo_dataUrl: { type: String },
 	purpose: { type: String },
 	rssFeeds: [{ type: rssFeedSchema }],
-	features: [{ type: String, enum: ['rocketChat'] }],
+	features: [{ type: String, enum: ['rocketChat', 'disableStudentTeamCreation'] }],
 }, {
 	timestamps: true,
 });
