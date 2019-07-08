@@ -1,6 +1,6 @@
 const hooks = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
-const logger = require('winston');
+const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
 
@@ -20,7 +20,7 @@ function createinfoText(hook) {
 	const shortTitle = process.env.SC_SHORT_TITLE || 'Schul-Cloud*';
 	const longTitle = process.env.SC_TITLE || 'HPI Schul-Cloud*';
 	if (!role || !pin) {
-		logger.warn('Role or PIN missing to define mail text.');
+		logger.warning('Role or PIN missing to define mail text.');
 		return '';
 	}
 	if (role === 'parent') {
@@ -40,7 +40,7 @@ PIN: ${pin}
 Mit freundlichen Grüßen
 Dein ${shortTitle} Team`;
 	} else {
-		logger.warn('No valid role submitted to define mail text.');
+		logger.warning('No valid role submitted to define mail text.');
 		return '';
 	}
 	return text;

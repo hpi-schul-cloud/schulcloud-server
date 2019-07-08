@@ -8,7 +8,6 @@ const configuration = require('@feathersjs/configuration');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
-const winston = require('winston');
 const middleware = require('./middleware');
 const sockets = require('./sockets');
 const services = require('./services/');
@@ -17,8 +16,6 @@ const handleResponseType = require('./middleware/handleReponseType');
 const setupSwagger = require('./swagger');
 const allHooks = require('./app.hooks');
 
-require('console-stamp')(console);
-require('console-stamp')(winston);
 
 let secrets;
 try {
@@ -76,7 +73,5 @@ app.use(compress())
 	.configure(middleware)
 	.hooks(allHooks);
 
-winston.cli(); // optimize for cli, like using colors
-winston.level = 'debug';
 
 module.exports = app;

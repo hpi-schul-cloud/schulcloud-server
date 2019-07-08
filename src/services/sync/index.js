@@ -1,5 +1,5 @@
 const errors = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../logger');
 const auth = require('@feathersjs/authentication');
 
 const Syncer = require('./strategies/Syncer');
