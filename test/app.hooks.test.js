@@ -1,6 +1,6 @@
 const assert = require('assert');
 const chai = require('chai');
-const logger = require('winston');
+const logger = require('../src/logger/index');
 const { ObjectId } = require('mongoose').Types;
 
 const { expect } = chai;

@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const logger = require('winston');
+const logger = require('../../../../src/logger/index');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 
