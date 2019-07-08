@@ -5,11 +5,16 @@ const { courseModel } = require('./model');
 const { homeworkModel } = require('../homework/model');
 const lessonsModel = require('../lesson/model');
 
-const createHomework = (homework, courseId, lessonId, userId, app, newTeacherId) => app.service('homework/copy').create({
+const createHomework = (
+	homework,
+	courseId,
+	lessonId,
+	userId,
+	app,
+	newTeacherId,
+) => app.service('homework/copy').create({
 	_id: homework._id, courseId, lessonId, userId, newTeacherId,
-})
-	.then(res => res)
-	.catch(err => Promise.reject(err));
+}).then(res => res).catch(err => Promise.reject(err));
 
 const createLesson = (lessonId, newCourseId, userId, app, shareToken) => app.service('lessons/copy').create({
 	lessonId, newCourseId, userId, shareToken,
@@ -24,56 +29,76 @@ class CourseCopyService {
 
 	/**
      * Copies a course and copies homework and lessons of that course.
-     * @param data object consisting of name, color, teacherIds, classIds, userIds, .... everything you can edit or what is required by a course.
+     * @param data object consisting of name, color, teacherIds, classIds, userIds,
+	 * .... everything you can edit or what is required by a course.
      * @param params user Object and other params.
      * @returns newly created course.
      */
-	create(data, params) {
+	async create(data, params) {
 		let tempData = JSON.parse(JSON.stringify(data));
-		tempData = _.omit(tempData, ['_id', 'courseId']);
+		tempData = _.omit(tempData, ['_id', 'courseId', 'copyCourseId']);
+		/* In the hooks some strange things happen, and the Id doesnt get here.
+		Thats why we use copyCourseId (_id works in case of import)
+		Todo: clean up different usecases */
+		const courseId = data.copyCourseId || data._id; // blub... :-)
+		const course = await courseModel.findOne({ _id: courseId });
 
-		return courseModel.findOne({ _id: data._id })
-			.then((course) => {
-				let tempCourse = JSON.parse(JSON.stringify(course));
-				tempCourse = _.omit(tempCourse, ['_id', 'createdAt', 'updatedAt', '__v', 'name', 'color', 'teacherIds', 'classIds', 'userIds', 'substitutionIds', 'shareToken', 'untilDate', 'startDate', 'times']);
+		let tempCourse = JSON.parse(JSON.stringify(course));
+		const attributs = [
+			'_id',
+			'createdAt',
+			'updatedAt',
+			'__v',
+			'name',
+			'color',
+			'teacherIds',
+			'classIds',
+			'userIds',
+			'substitutionIds',
+			'shareToken',
+			'untilDate',
+			'startDate',
+			'times',
+		];
+		tempCourse = _.omit(tempCourse, attributs);
 
-				tempCourse = Object.assign(tempCourse, tempData, { userId: (params.account || {}).userId });
+		tempCourse = Object.assign(tempCourse, tempData, { userId: (params.account || {}).userId });
 
-				return this.app.service('courses').create(tempCourse)
-					.then((res) => {
-						const homeworkPromise = homeworkModel.find({ courseId: data._id }).populate('lessonId');
-						const lessonsPromise = lessonsModel.find({ courseId: data._id });
+		const res = await this.app.service('courses').create(tempCourse);
 
-						return Promise.all([homeworkPromise, lessonsPromise])
-							.then(([homeworks, lessons]) => {
-								const createdLessons = [];
+		const [homeworks, lessons] = await Promise.all([
+			homeworkModel.find({ courseId }).populate('lessonId'),
+			lessonsModel.find({ courseId }),
+		]);
 
-								return Promise.all(lessons.map(lesson => createLesson(lesson._id, res._id, params.account.userId, this.app, lesson.shareToken)
-									.then((lessonRes) => {
-										createdLessons.push({ _id: lessonRes._id, name: lessonRes.name });
-									})))
-									.then(() => Promise.all(homeworks.map((homework) => {
-										if (homework.archived.length > 0
-                                            || (homework.teacherId.toString() !== params.account.userId.toString()
-                                            && homework.private)) return false;
-										// homeworks that are part of a lesson are copied in LessonCopyService
-										if (!homework.lessonId) {
-											return createHomework(
-												homework,
-												res._id,
-												undefined,
-												params.account.userId.toString() === homework.teacherId.toString()
-													? params.account.userId : homework.teacherId,
-												this.app,
-												params.account.userId,
-											);
-										}
-										return false;
-									}))
-										.then(() => res));
-							});
-					});
-			});
+		await Promise.all(lessons.map(lesson => createLesson(
+			lesson._id,
+			res._id,
+			params.account.userId,
+			this.app,
+			lesson.shareToken,
+		)));
+
+		await Promise.all(homeworks.map((homework) => {
+			if (homework.archived.length > 0
+				|| (homework.teacherId.toString() !== params.account.userId.toString()
+				&& homework.private)) return false;
+			// homeworks that are part of a lesson are copied in LessonCopyService
+			if (!homework.lessonId) {
+				return createHomework(
+					homework,
+					res._id,
+					undefined,
+					params.account.userId.toString() === homework.teacherId.toString()
+						? params.account.userId : homework.teacherId,
+					this.app,
+					params.account.userId,
+				);
+			}
+			return false;
+		}));
+
+		return res;
 	}
 }
 
@@ -100,7 +125,7 @@ class CourseShareService {
 				if (!course.shareToken) {
 					lessonsService.find({ query: { courseId: id } })
 						.then((lessons) => {
-							for (let i = 0; i < lessons.data.length; i++) {
+							for (let i = 0; i < lessons.data.length; i += 1) {
 								if (!lessons.data[i].shareToken) {
 									lessonsModel
 										.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) })
