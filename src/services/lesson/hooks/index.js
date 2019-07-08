@@ -1,18 +1,15 @@
 const auth = require('@feathersjs/authentication');
 const nanoid = require('nanoid');
-const globalHooks = require('../../../hooks');
+const {
+	injectUserId,
+	restrictToUsersOwnLessons,
+	hasPermission,
+	ifNotLocal,
+	permitGroupOperation,
+	checkCorrectCourseOrTeamId,
+} = require('../../../hooks');
 const lesson = require('../model');
-
-const checkIfCourseGroupLesson = async (permission1, permission2, isCreate, context) => {
-	const isCourseGroup = isCreate
-		? context.data.courseGroupId
-		: await lesson.findOne({ _id: context.id }).then(_lesson => (JSON.stringify(_lesson.courseGroupId)));
-
-	if (isCourseGroup) {
-		return globalHooks.hasPermission(permission1)(context);
-	}
-	return globalHooks.hasPermission(permission2)(context);
-};
+const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 
 // add a shareToken to a lesson if course has a shareToken
 const checkIfCourseShareable = (hook) => {
@@ -45,6 +42,21 @@ const checkIfCourseShareable = (hook) => {
         }); */
 };
 
+const setPosition = async (context) => {
+	const { courseId } = context.data;
+	if (courseId) {
+		const lessons = await context.app.service('lessons').find({
+			query: {
+				courseId,
+				$select: '_id',
+			},
+		});
+		context.data.position = lessons.total; // next free position
+	}
+
+	return context;
+};
+
 exports.before = () => ({
 	all: [auth.hooks.authenticate('jwt'), (hook) => {
 		if (hook.data && hook.data.contents) {
@@ -56,35 +68,37 @@ exports.before = () => ({
 		return hook;
 	}],
 	find: [
-		globalHooks.hasPermission('TOPIC_VIEW'),
-		globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons),
+		hasPermission('TOPIC_VIEW'),
+		ifNotLocal(restrictToUsersOwnLessons),
 	],
 	get: [
-		globalHooks.hasPermission('TOPIC_VIEW'),
-		globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons),
+		hasPermission('TOPIC_VIEW'),
+		ifNotLocal(restrictToUsersOwnLessons),
 	],
 	create: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
-		globalHooks.injectUserId,
-		globalHooks.checkCorrectCourseOrTeamId],
+		injectUserId,
+		checkCorrectCourseOrTeamId,
+		setPosition,
+	],
 	update: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 	],
 	patch: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
-		globalHooks.permitGroupOperation,
-		globalHooks.checkCorrectCourseOrTeamId,
+		permitGroupOperation,
+		checkCorrectCourseOrTeamId,
 	],
 	remove: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false),
-		globalHooks.permitGroupOperation,
+		permitGroupOperation,
 	],
 });
 
 exports.after = {
 	all: [],
-	find: [globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
-	get: [globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnLessons)],
+	find: [ifNotLocal(restrictToUsersOwnLessons)],
+	get: [ifNotLocal(restrictToUsersOwnLessons)],
 	create: [checkIfCourseShareable],
 	update: [],
 	patch: [],

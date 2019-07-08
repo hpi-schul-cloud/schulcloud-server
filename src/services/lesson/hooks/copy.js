@@ -1,20 +1,22 @@
 const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const hooks = require('feathers-hooks-common');
-const globalHooks = require('../../../hooks');
+const { injectUserId } = require('../../../hooks');
 const lesson = require('../model');
+const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 
-const checkIfCourseGroupLesson = (permission1, permission2, isCreating, hook) => {
-	// find courseGroupId in different ways (POST, FIND ...)
-	const groupPromise = isCreating ? Promise.resolve({ courseGroupId: hook.data.courseGroupId }) : lesson.findOne({ _id: hook.id }).then(lesson => (JSON.stringify(lesson.courseGroupId) ? globalHooks.hasPermission(permission1)(hook) : globalHooks.hasPermission(permission2)(hook)));
-};
 
-const checkForShareToken = (hook) => {
-	const { shareToken, lessonId } = hook.data;
-
+const checkForShareToken = (context) => {
+	const { shareToken, lessonId } = context.data;
+	const currentUserId = context.params.account.userId.toString();
 	return lesson.findOne({ _id: lessonId }).populate('courseId')
 		.then((topic) => {
-			if ((topic.shareToken == shareToken && shareToken != undefined) || topic.courseId.teacherIds.filter(t => t.toString() == hook.params.account.userId).length > 0) return hook;
+			if (
+				(topic.shareToken === shareToken && shareToken !== undefined)
+				|| topic.courseId.teacherIds.filter(t => t.toString() === currentUserId).length > 0
+			) {
+				return context;
+			}
 			throw new errors.Forbidden("The entered lesson doesn't belong to you or is not allowed to be shared!");
 		});
 };
@@ -25,7 +27,7 @@ exports.before = () => ({
 	get: [hooks.disallow()],
 	create: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
-		globalHooks.injectUserId,
+		injectUserId,
 		checkForShareToken,
 	],
 	update: [hooks.disallow()],
