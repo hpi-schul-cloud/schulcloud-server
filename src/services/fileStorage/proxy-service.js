@@ -1,5 +1,5 @@
 const fs = require('fs');
-const path = require('path');
+const url = require('url');
 const logger = require('winston');
 const _ = require('lodash');
 const rp = require('request-promise-native');
@@ -66,7 +66,7 @@ const prepareThumbnailGeneration = (file, strategy, userId, data, props) => Prom
 		body: {
 			downloadUrl,
 			signedS3Url,
-			callbackUrl: path.resolve(FILE_PREVIEW_CALLBACK_URI, f.thumbnailRequestToken),
+			callbackUrl: url.resolve(FILE_PREVIEW_CALLBACK_URI, f.thumbnailRequestToken),
 			options: {
 				width: 120,
 			},
