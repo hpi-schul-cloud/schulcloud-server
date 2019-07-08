@@ -70,6 +70,7 @@
     "jwt-decode": "^2.2.0",
     "ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
     "lodash": "^4.17.4",
+    "migrate-mongoose": "^3.2.2",
     "moment": "^2.19.2",
     "mongoose": "^4.7.6",
     "mongoose-autopopulate": "^0.9.1",
