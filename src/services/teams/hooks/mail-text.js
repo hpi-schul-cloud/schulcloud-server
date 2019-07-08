@@ -1,7 +1,7 @@
-const { warn } = require('../../../logger/index');
+const { warning } = require('../../../logger/index');
 
 if (process.env.SC_SHORT_TITLE === undefined) {
-	warn('process.env.SC_SHORT_TITLE is not defined');
+	warning('process.env.SC_SHORT_TITLE is not defined');
 }
 const cloudTitle = process.env.SC_SHORT_TITLE;
 const close = `\n\nViel Spaß und einen guten Start wünscht dir dein ${cloudTitle}-Team`;

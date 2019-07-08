@@ -1,9 +1,9 @@
-const logger = require('winston');
+const logger = require('../../../src/logger/index');
 
 const serviceHelpers = require('./services');
 
 const warn = (message, pass) => {
-	logger.warn(message);
+	logger.warning(message);
 	return pass;
 };
 
@@ -36,7 +36,7 @@ module.exports = (app, opt = {
 			return res;
 		})
 		.catch((err) => {
-			logger.warn('[TestObjects] Can not cleanup.', err);
+			logger.warning('[TestObjects] Can not cleanup.', err);
 			return err;
 		});
 

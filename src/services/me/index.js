@@ -1,5 +1,5 @@
 const { Forbidden } = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../logger');
 const hooks = require('./hooks');
 
 class Service {
@@ -21,7 +21,7 @@ class Service {
 			},
 		};
 		return this.app.service('/users').get(userId, userServiceParams).catch((err) => {
-			logger.warn(err);
+			logger.warning(err);
 			throw new Forbidden('Your access token is not valid.');
 		});
 	}
