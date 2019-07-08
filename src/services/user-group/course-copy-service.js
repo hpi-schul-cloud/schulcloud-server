@@ -1,9 +1,9 @@
+const _ = require('lodash');
+const nanoid = require('nanoid');
 const hooks = require('./hooks/copyCourseHook');
 const { courseModel } = require('./model');
 const { homeworkModel } = require('../homework/model');
 const lessonsModel = require('../lesson/model');
-const _ = require('lodash');
-const nanoid = require('nanoid');
 
 const createHomework = (homework, courseId, lessonId, userId, app, newTeacherId) => app.service('homework/copy').create({
 	_id: homework._id, courseId, lessonId, userId, newTeacherId,
@@ -102,11 +102,10 @@ class CourseShareService {
 						.then((lessons) => {
 							for (let i = 0; i < lessons.data.length; i++) {
 								if (!lessons.data[i].shareToken) {
-									lessonsModel.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) })
-										.then((_) => {
-										});
+									lessonsModel
+										.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) })
+										.exec();
 								}
-								return;
 							}
 						});
 

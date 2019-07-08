@@ -11,7 +11,7 @@ const docs = require('./docs');
 const { randomPass, randomSuffix } = require('./randomPass');
 
 
-const REQUEST_TIMEOUT = 4000; // in ms
+const REQUEST_TIMEOUT = 6000; // in ms
 
 if (ROCKET_CHAT_URI === undefined) { logger.warn('please set the environment variable ROCKET_CHAT_URI'); }
 if (ROCKET_CHAT_ADMIN_TOKEN === undefined) {
@@ -125,7 +125,7 @@ class RocketChatUser {
 				userId, pass, username, rcId,
 			});
 		}).catch((err) => {
-			logger.warn(new BadRequest('Can not create RocketChat Account', err));
+			logger.warn(new BadRequest(`Can not create RocketChat Account for user ${userId}`, err));
 			throw new BadRequest('Can not create RocketChat Account', err);
 		});
 	}
@@ -264,7 +264,23 @@ class RocketChatLogin {
 					user: rcAccount.username,
 					password: rcAccount.password,
 				};
-				const loginResponse = await request(getRequestOptions('/api/v1/login', login));
+				const loginResponse = await request(getRequestOptions('/api/v1/login', login))
+					.catch(async (err) => {
+						if (err.error.error === 'Unauthorized') {
+							const queryString = `username=${rcAccount.username}`;
+							const rcUser = await request(getRequestOptions(`/api/v1/users.info?${queryString}`,
+								{}, true, undefined, 'GET'));
+							const updatePasswordBody = {
+								userId: rcUser.user._id,
+								data: {
+									password: rcAccount.password,
+								},
+							};
+							await request(getRequestOptions('/api/v1/users.update', updatePasswordBody, true));
+							return request(getRequestOptions('/api/v1/login', login));
+						}
+						throw new BadRequest('Login to rocketchat failed', err);
+					});
 				const newToken = (loginResponse.data || {}).authToken;
 				authToken = newToken;
 				if (loginResponse.status === 'success' && authToken !== undefined) {
