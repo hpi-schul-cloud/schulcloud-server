@@ -1,4 +1,4 @@
-const logger = require('winston');
+const logger = require('../../../logger');
 
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');

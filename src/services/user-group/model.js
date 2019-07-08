@@ -1,6 +1,6 @@
 const autoPopulate = require('mongoose-autopopulate');
 const mongoose = require('mongoose');
-const logger = require('winston');
+const logger = require('../../logger');
 
 const { Schema } = mongoose;
 
@@ -85,9 +85,10 @@ const getClassDisplayName = (aclass) => {
 
 	// error handling
 	if (!aclass.nameFormat) {
-		logger.warn(`unknown nameFormat in class${aclass._id}`);
+		logger.warning(`unknown nameFormat in class${aclass._id}`);
 	} else {
-		logger.warn(`The gradeLevel in class ${aclass._id} do not exist, or is is not populated.`, aclass.nameFormat);
+		logger
+			.warning(`The gradeLevel in class ${aclass._id} do not exist, or is is not populated.`, aclass.nameFormat);
 	}
 
 	return aclass;
