@@ -1,9 +1,9 @@
 const errors = require('@feathersjs/errors');
-const logger = require('winston');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
+const logger = require('../../logger');
 
 const formatBirthdate1 = (datestamp) => {
 	if (datestamp == undefined) return false;
@@ -55,13 +55,13 @@ const insertUserToDB = (app, data, user) => {
 	if (user._id) {
 		return app.service('users').remove(user._id).then(() => app.service('users').create(user, { _additional: { parentEmail: data.parent_email, asTask: 'student' } })
 			.catch((err) => {
-				logger.warn(err);
+				logger.warning(err);
 				throw new errors.BadRequest('Fehler beim Updaten der Nutzerdaten.');
 			}));
 	}
 	return app.service('users').create(user, { _additional: { parentEmail: data.parent_email, asTask: 'student' } })
 		.catch((err) => {
-			logger.warn(err);
+			logger.warning(err);
 			throw new errors.BadRequest('Fehler beim Erstellen des Nutzers. Eventuell ist die E-Mail-Adresse bereits im System registriert.');
 		});
 };
