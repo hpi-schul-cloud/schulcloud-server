@@ -1,5 +1,19 @@
 const winston = require('winston');
 
+let logLevel;
+
+switch (process.env.NODE_ENV) {
+	case 'development':
+		logLevel = 'debug';
+		break;
+	case 'test':
+		logLevel = 'error';
+		break;
+	case 'production':
+	default:
+		logLevel = 'info';
+}
+
 const logger = winston.createLogger({
 	levels: winston.config.syslog.levels,
 	format: winston.format.combine(
@@ -9,6 +23,7 @@ const logger = winston.createLogger({
 	),
 	transports: [
 		new winston.transports.Console({
+			level: logLevel,
 			handleExceptions: true,
 		}),
 	],
