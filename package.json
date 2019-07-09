@@ -30,9 +30,7 @@
     "coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
     "mocha": "cross-env NODE_ENV=test mocha --exit test/ --recursive",
     "mocha-inspect": "cross-env NODE_ENV=test mocha --exit --debug-brk --inspect test/ --recursive",
-    "migrations": "node migrations/",
-    "migrations-local": "cross-env NODE_ENV=migration node migrations/",
-    "migrations-dry": "cross-env NODE_ENV=migration node migrations/ --dry"
+    "migration": "migrate"
   },
   "dependencies": {
     "@feathersjs/authentication": "^2.1.16",
