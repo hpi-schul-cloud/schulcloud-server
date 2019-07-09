@@ -1,5 +1,5 @@
 const auth = require('@feathersjs/authentication');
-const logger = require('winston');
+const logger = require('../../../logger');
 const {
 	Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable,
 } = require('@feathersjs/errors');
@@ -87,7 +87,7 @@ const teamMainHook = globalHooks.ifNotLocal(hook => Promise.all([
 
 	return hook;
 }).catch((err) => {
-	logger.warn(err);
+	logger.warning(err);
 	throw new BadRequest('Bad response.');
 }));
 
@@ -133,7 +133,7 @@ const updateUsersForEachClass = (hook) => {
 		hook.data.userIds = newUserList;
 		return hook;
 	}).catch((err) => {
-		logger.warn(err);
+		logger.warning(err);
 		throw new BadRequest('Wrong input. (6)');
 	});
 };
@@ -181,7 +181,7 @@ const testInputData = (hook) => {
  * @throws {errors} new errors.MethodNotAllowed('Method is not allowed!');
  */
 const blockedMethod = (hook) => {
-	logger.warn('[teams]', 'Method is not allowed!');
+	logger.warning('[teams]', 'Method is not allowed!');
 	throw new MethodNotAllowed('Method is not allowed!');
 };
 
@@ -271,7 +271,7 @@ const pushUserChangedEvent = async (hook) => {
 	const newUsers = hook.result.userIds;
 
 	if (isUndefined(oldUsers) || isUndefined(newUsers)) {
-		// logger.warn('No user infos.', { oldUsers, newUsers });
+		// logger.warning('No user infos.', { oldUsers, newUsers });
 		// todo: cheak if undefined valid situation or not
 		return hook;
 	}
@@ -323,7 +323,7 @@ const teamRolesToHook = (hook) => {
 			}
 
 			if (isUndefined(key) || isUndefined(value)) {
-				logger.warn('Bad input for findRole: ', { key, value });
+				logger.warning('Bad input for findRole: ', { key, value });
 				throw new NotFound('No team role found. (3)');
 			}
 			// is already a role ..for example if request use $populate
@@ -337,7 +337,7 @@ const teamRolesToHook = (hook) => {
 			} else if (role) {
 				out = role;
 			} else {
-				logger.warn(JSON.stringify({ role, value, resultKey }));
+				logger.warning(JSON.stringify({ role, value, resultKey }));
 				throw new NotFound('No team role found. (4)');
 			}
 			return out;
@@ -403,7 +403,7 @@ const hasTeamPermission = (permsissions, _teamId) => globalHooks.ifNotLocal((hoo
 
 		return Promise.resolve(hook);
 	}).catch((err) => {
-		logger.warn(err);
+		logger.warning(err);
 		throw new Forbidden('You have not the permission to access this. (2)');
 	});
 });
@@ -548,7 +548,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 			throw err;
 		});
 	}).catch((err) => {
-		logger.warn(err);
+		logger.warning(err);
 		throw new Forbidden('You have not the permission to access this. (4)');
 	});
 });
@@ -570,7 +570,7 @@ const sendInfo = (hook) => {
 		});
 		return hook;
 	}).catch((err) => {
-		logger.warn(err);
+		logger.warning(err);
 		throw new NotAcceptable('Errors on user detection');
 	});
 };
@@ -591,7 +591,11 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 			u => isSameId(u.userId._id || u.userId, userId),
 		));
 		if (isUndefined([user, user.role], 'OR')) {
-			logger.warn('Can not execute addCurrentUser for unknown user. Or user execute a patch with the result that he has left the team.', { userId });
+			logger.warning(
+				'Can not execute addCurrentUser for unknown user. '
+				+ 'Or user execute a patch with the result that he has left the team.',
+				{ userId },
+			);
 			return hook;
 		}
 		const roleId = (user.role || {})._id || user.role; // first populated, second only id;
@@ -617,7 +621,9 @@ const isAllowedToCreateTeams = hook => getSessionUser(hook).then(sessionUser => 
 		|| roleNames.includes('administrator')
 		|| roleNames.includes('teacher')
 		|| roleNames.includes('student')) {
-			if (roleNames.includes('student') && school.features.includes('disableStudentTeamCreation')) {
+			if (roleNames.includes('student')
+				&& school.features instanceof Array
+				&& school.features.includes('disableStudentTeamCreation')) {
 				throw new Forbidden('Your school admin does not allow team creations by students.');
 			}
 		} else {
@@ -641,7 +647,7 @@ const isTeacherDirectlyImport = (hook) => {
 			}
 			return hook;
 		}).catch((err) => {
-			logger.warn(err);
+			logger.warning(err);
 			throw new Forbidden('You have not the permission to do this.');
 		});
 	}
@@ -673,7 +679,7 @@ const isUserIsEmpty = (hook) => {
 				hook.result = {};
 				return hook;
 			}).catch((err) => {
-				logger.warn(err);
+				logger.warning(err);
 				throw new Conflict('It want to remove the team with no user, but do not found it.');
 			});
 		}

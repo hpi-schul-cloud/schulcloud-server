@@ -94,7 +94,7 @@ const firstLogin = async (data, params, app) => {
 			return consent;
 		};
 
-		updateConsentUsingVersions = app.service('consents').find({ userId: user._id }).then((consents) => {
+		updateConsentUsingVersions = app.service('consents').find({ query: { userId: user._id } }).then((consents) => {
 			if (consents.total !== 1) {
 				throw new Error('user consent not found!');
 			}

@@ -1,7 +1,8 @@
 const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
+const { sortRoles } = require('../../role/utils/rolesHelper');
 
 const constants = require('../../../utils/constants');
 
@@ -356,6 +357,38 @@ const pushRemoveEvent = (hook) => {
 	return hook;
 };
 
+const enforceRoleHierarchyOnDelete = async (hook) => {
+	try {
+		if (globalHooks.hasRoleNoHook(hook, hook.params.account.userId, 'superhero')) return hook;
+
+		const [targetIsStudent, targetIsTeacher, targetIsAdmin] = await Promise.all([
+			globalHooks.hasRoleNoHook(hook, hook.id, 'student'),
+			globalHooks.hasRoleNoHook(hook, hook.id, 'teacher'),
+			globalHooks.hasRoleNoHook(hook, hook.id, 'administrator'),
+		]);
+		let permissionChecks = [true];
+		if (targetIsStudent) {
+			permissionChecks.push(globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_DELETE'));
+		}
+		if (targetIsTeacher) {
+			permissionChecks.push(globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'TEACHER_DELETE'));
+		}
+		if (targetIsAdmin) {
+			permissionChecks.push(globalHooks.hasRoleNoHook(hook, hook.params.account.userId, 'superhero'));
+		}
+		permissionChecks = await Promise.all(permissionChecks);
+
+		if (!permissionChecks.reduce((accumulator, val) => accumulator && val)) {
+			throw new errors.Forbidden('you dont have permission to delete this user!', { hook });
+		}
+
+		return hook;
+	} catch (error) {
+		logger.error(error);
+		return Promise.reject();
+	}
+};
+
 const User = require('../model');
 
 
@@ -396,7 +429,8 @@ exports.before = {
 	],
 	remove: [
 		auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('USER_CREATE'),
+		globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
+		globalHooks.ifNotLocal(enforceRoleHierarchyOnDelete),
 		globalHooks.permitGroupOperation,
 	],
 };

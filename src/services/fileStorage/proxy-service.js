@@ -1,5 +1,5 @@
 const fs = require('fs');
-const logger = require('winston');
+const logger = require('../../logger');
 const _ = require('lodash');
 const rp = require('request-promise-native');
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
@@ -150,8 +150,10 @@ const fileStorageService = {
 	find({ query, payload }) {
 		const { owner, parent } = query;
 		const { userId } = payload;
+		const parentPromise = parent ? canRead(userId, parent) : Promise.resolve();
 
-		return FileModel.find({ owner, parent: parent || { $exists: false } }).exec()
+		return parentPromise
+			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).exec())
 			.then((files) => {
 				const permissionPromises = files.map(
 					f => canRead(userId, f)
@@ -167,6 +169,10 @@ const fileStorageService = {
 				}
 
 				return files;
+			})
+			.catch((e) => {
+				logger.error(e);
+				return Promise.reject(new Forbidden());
 			});
 	},
 
