@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "",
-  "version": "18.2.2",
+  "version": "18.2.5",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -54,7 +54,6 @@
     "chance": "^1.0.12",
     "client-oauth2": "^4.1.0",
     "compression": "^1.6.2",
-    "console-stamp": "^0.2.5",
     "cors": "^2.8.1",
     "cross-env": "^5.2.0",
     "crypto-js": "^3.1.9-1",
@@ -71,6 +70,7 @@
     "jwt-decode": "^2.2.0",
     "ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
     "lodash": "^4.17.4",
+    "migrate-mongoose": "^3.2.2",
     "moment": "^2.19.2",
     "mongoose": "^4.7.6",
     "mongoose-autopopulate": "^0.9.1",
@@ -99,7 +99,7 @@
     "strip-js": "^1.0.6",
     "universal-analytics": "^0.4.17",
     "uuid": "^3.3.2",
-    "winston": "^2.4.0"
+    "winston": "^3.2.0"
   },
   "devDependencies": {
     "codecov": "^3.5.0",

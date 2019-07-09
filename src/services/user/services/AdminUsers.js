@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../../logger');
 
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
@@ -37,7 +37,7 @@ const getClasses = (app, schoolId) => app.service('classes')
 	})
 	.then(classes => classes.data)
 	.catch((err) => {
-		logger.warn(`Can not execute app.service("classes").find for ${schoolId}`, err);
+		logger.warning(`Can not execute app.service("classes").find for ${schoolId}`, err);
 		return err;
 	});
 
@@ -131,7 +131,7 @@ class AdminUsers {
 				data: filteredUsers,
 			};
 		} catch (err) {
-			logger.warn(err);
+			logger.warning(err);
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.');
 			}

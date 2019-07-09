@@ -1,5 +1,5 @@
 const aws = require('aws-sdk');
-const logger = require('winston');
+const logger = require('../../../logger');
 
 // todo: use production config
 let awsConfig;
