@@ -67,6 +67,7 @@
     "feathers-swagger": "^1.1.0",
     "file-type": "^9.0.0",
     "freeport": "^1.0.5",
+    "git-repo-info": "^2.1.0",
     "jwt-decode": "^2.2.0",
     "ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
     "lodash": "^4.17.4",
