@@ -15,6 +15,7 @@ const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const setupSwagger = require('./swagger');
 const allHooks = require('./app.hooks');
+const version = require('./services/version');
 
 
 let secrets;
@@ -54,7 +55,7 @@ app.use(compress())
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({ extended: true }))
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
-
+	.use(version)
 	.use(defaultHeaders)
 	.get('/system_info/haproxy', (req, res) => { res.send({ timestamp: new Date().getTime() }); })
 	.get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
