@@ -670,15 +670,18 @@ const newFileService = {
 			parent,
 			filename: name,
 		}, params)
-			.then(signedUrl => rp({
-				method: 'PUT',
-				uri: signedUrl.url,
-				body: buffer,
-				headers: {
-					Connection: 'Keep-Alive',
-					...signedUrl.header,
-				},
-			}))
+			.then((signedUrl) => {
+				const headers = signedUrl.header;
+				if (process.env.KEEP_ALIVE) {
+					headers.Connection = 'Keep-Alive';
+				}
+				return rp({
+					method: 'PUT',
+					uri: signedUrl.url,
+					body: buffer,
+					headers,
+				});
+			})
 			.then(() => fileStorageService.create({
 				size: buffer.length,
 				storageFileName: flatFileName,
