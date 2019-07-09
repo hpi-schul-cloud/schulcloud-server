@@ -1,7 +1,7 @@
 const auth = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { NotFound } = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../../logger/index');
 
 const globalHooks = require('../../../hooks');
 
@@ -44,7 +44,7 @@ const sendInfo = (context) => {
 			});
 			return context;
 		}).catch((err) => {
-			logger.warn(err);
+			logger.warning(err);
 			throw new NotFound('User Account Not Found');
 		});
 	}
