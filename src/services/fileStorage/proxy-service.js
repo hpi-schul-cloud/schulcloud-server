@@ -674,6 +674,10 @@ const newFileService = {
 				method: 'PUT',
 				uri: signedUrl.url,
 				body: buffer,
+				headers: {
+					Connection: 'Keep-Alive',
+					...signedUrl.header,
+				},
 			}))
 			.then(() => fileStorageService.create({
 				size: buffer.length,
