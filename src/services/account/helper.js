@@ -1,5 +1,5 @@
 const errors = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../logger');
 const randexp = require('randexp');
 const path = require('path');
 

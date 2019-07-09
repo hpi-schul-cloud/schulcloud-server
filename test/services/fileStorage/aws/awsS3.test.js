@@ -2,7 +2,6 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const { expect } = require('chai');
 const mockery = require('mockery');
-const winston = require('winston');
 const mongoose = require('mongoose');
 const mockAws = require('./s3.mock');
 const user = require('../../../../src/services/user/model');
