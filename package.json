@@ -23,7 +23,7 @@
     "test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
     "backup": "./backup.sh -a -b export",
     "setup": "./backup.sh -p setup/ -a import",
-    "start": "(npm run migration up --autosync || exit 0) && node src/",
+    "start": "node src/",
     "startd": "nodemon src/",
     "debug": "nodemon --inspect=5959 src/",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha --exit test/**/*.test.js",
