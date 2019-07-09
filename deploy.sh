@@ -69,6 +69,9 @@ function deploytostaging {
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@staging.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG staging_server
 }
 
+# Happy SHA, wo glu:cklich macht
+echo "$GIT_SHA $DOCKERTAG" > ./public/commitsha.txt
+
 
 if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
@@ -78,7 +81,7 @@ elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
   buildandpush	
   deploytotest
-elif [[ $TRAVIS_BRANCH = release* ]]
+elif [[ $TRAVIS_BRANCH = release* || $TRAVIS_BRANCH = hotfix* ]]
 then
   buildandpush
   deploytostaging
