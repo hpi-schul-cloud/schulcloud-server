@@ -27,9 +27,7 @@ function addAuthenticationToOptions(DB_USERNAME, DB_PASSWORD, options) {
 	}
 }
 
-function connect() {
-	mongoose.Promise = global.Promise;
-
+function getConnectionOptions() {
 	// read env params
 	const {
 		DB_URL = config.mongodb,
@@ -48,13 +46,25 @@ function connect() {
 		options,
 	);
 
+	return {
+		url: DB_URL,
+		username: DB_USERNAME,
+		password: DB_PASSWORD,
+		mongooseOptions: options,
+	};
+}
+
+function connect() {
+	mongoose.Promise = global.Promise;
+	const options = getConnectionOptions();
+
 	logger.info('connect to database host',
-		DB_URL,
-		DB_USERNAME ? `with username ${DB_USERNAME}` : 'without user',
-		DB_PASSWORD ? 'and' : 'and without', 'password');
+		options.url,
+		options.username ? `with username ${options.username}` : 'without user',
+		options.password ? 'and' : 'and without', 'password');
 
 	return mongoose.connect(
-		DB_URL,
+		options.url,
 		options,
 	);
 }
@@ -66,4 +76,5 @@ function close() {
 module.exports = {
 	connect,
 	close,
+	getConnectionOptions,
 };

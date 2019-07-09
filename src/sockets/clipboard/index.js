@@ -1,6 +1,6 @@
 const socketio = require('@feathersjs/socketio');
 const siofu = require('socketio-file-upload');
-const logger = require('winston');
+const logger = require('../../logger');
 const actions = require('./actions');
 const upload = require('./upload');
 const ClipboardModel = require('./clipboard-model');

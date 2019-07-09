@@ -1,5 +1,5 @@
 const fs = require('fs');
-const logger = require('winston');
+const logger = require('../../logger');
 const _ = require('lodash');
 const rp = require('request-promise-native');
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
