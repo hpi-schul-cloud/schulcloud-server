@@ -4,9 +4,6 @@ const app = require('../../../../src/app');
 
 const testObjects = require('../../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
-const { create: createUser } = require('../../helpers/services/users')(app);
-
-const skipRegistrationService = app.service('/users/:userid/skipregistration');
 
 describe('SkipRegistration integration', () => {
 	let server;
