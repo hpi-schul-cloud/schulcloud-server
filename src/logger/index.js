@@ -9,7 +9,7 @@ switch (process.env.NODE_ENV) {
 		logLevel = 'debug';
 		break;
 	case 'test':
-		logLevel = 'error';
+		logLevel = 'emerg';
 		break;
 	case 'production':
 	default:
