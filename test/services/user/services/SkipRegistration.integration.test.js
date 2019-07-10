@@ -5,7 +5,7 @@ const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
 
-describe.only('SkipRegistration integration', () => {
+describe('SkipRegistration integration', () => {
 	let server;
 
 	before((done) => {
