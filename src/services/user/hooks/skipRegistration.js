@@ -4,7 +4,11 @@ const { Forbidden } = require('@feathersjs/errors');
 
 const globalHooks = require('../../../hooks');
 
-
+/**
+ * checks if the user has valid permissions to skip registration of the target user
+ * @param {context} hook hook context
+ * @throws {Forbidden} if user does not have correct permissions
+ */
 const checkPermissions = async (hook) => {
 	const targetUser = await hook.app.service('users').get(hook.params.route.userid,
 		{ query: { $populate: 'roles' } });
