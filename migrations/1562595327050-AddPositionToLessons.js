@@ -5,8 +5,10 @@ const lessonsModel = require('../src/services/lesson/model');
 const isUndefined = e => typeof e === 'undefined';
 const isNull = e => e === null || e === 'null';
 
-const getSortedLessons = async (self) => {
-	const lessons = await self('lesson')
+const getSortedLessons = async () => {
+	L.info('<------ AddPositionToLessons ------>');
+	L.info('fetch lessons..');
+	const lessons = await lessonsModel
 		.find({})
 		.sort({ position: 1 })
 		.sort({ createdAt: 1 })
@@ -20,7 +22,9 @@ const getSortedLessons = async (self) => {
 	return lessons;
 };
 
-const createDataTree = (lessons, map, key) => {
+const createDataTree = (lessons, key) => {
+	L.info(`create datatree ${key}`);
+	const map = {};
 	lessons.forEach((lesson) => {
 		const id = lesson[key];
 		if (isUndefined(map[id])) {
@@ -28,9 +32,12 @@ const createDataTree = (lessons, map, key) => {
 		}
 		map[id].push(lesson);
 	});
+	return map;
 };
 
-const createDatabaseTask = (datatree, databaseTasks) => {
+const createDatabaseTask = (datatree) => {
+	L.info('create database tasks');
+	const tasks = [];
 	Object.values(datatree).forEach((courseLessons) => {
 		courseLessons.forEach((lesson, index) => {
 			let { position } = lesson;
@@ -40,19 +47,21 @@ const createDatabaseTask = (datatree, databaseTasks) => {
 				modified = true;
 			}
 
-			databaseTasks.push({
+			tasks.push({
 				_id: lesson._id,
 				modified,
 				$set: { position },
 			});
 		});
 	});
+	return tasks;
 };
 
-const updateLessons = (self, databaseTasks, out) => {
+const updateLessons = (databaseTasks, out) => {
+	L.info(`update lessons in database tasks=${databaseTasks.length}`);
 	databaseTasks.forEach((task) => {
 		const { _id, $set } = task;
-		const req = self('lesson').updateOne({ _id }, { $set })
+		const req = lessonsModel.updateOne({ _id }, { $set })
 			.then(() => {
 				if (task.modified) {
 					out.modified.push(task._id);
@@ -85,24 +94,19 @@ const printResults = out => Promise.all(out.requests).then(() => {
 module.exports = {
 	up: async function up() {
 		await connect();
-		L.info('<---------------------------------->');
-		L.info('AddPositionToLessons up is starting...');
 
 		// get sorted lessons
-		const lessons = await getSortedLessons(this);
+		const lessons = await getSortedLessons();
 
 		// create course tree
-		const courseMap = {};
-		createDataTree(lessons, courseMap, 'courseId');
+		const courseMap = createDataTree(lessons, 'courseId');	
 
 		// create courseGroup tree courseMap.undefined contain all courseGroupLessons
-		const courseGroupMap = {};
-		createDataTree(courseMap.undefined, courseGroupMap, 'courseGroupId');
+		const courseGroupMap = createDataTree(courseMap.undefined, 'courseGroupId');
 		delete courseMap.undefined;
 
 		// add position if not exist, by oldest first | convert data to mongoose request
-		const databaseTasks = [];
-		createDatabaseTask(Object.assign(courseMap, courseGroupMap), databaseTasks);
+		const databaseTasks = createDatabaseTask(Object.assign(courseMap, courseGroupMap));
 
 		// update database step by step
 		const out = {
@@ -112,7 +116,7 @@ module.exports = {
 			requests: [],
 		};
 
-		updateLessons(this, databaseTasks, out);
+		updateLessons(databaseTasks, out);
 		await printResults(out);
 		await close();
 	},

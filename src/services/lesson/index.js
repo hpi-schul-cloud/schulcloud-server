@@ -38,6 +38,73 @@ class LessonCopyService {
 		this.app = app;
 	}
 
+	copyHomeworks(params, sourceLesson, newCourseId, newLesson) {
+		const userId = params.account.userId.toString();
+		return homeworkModel.find({ oldLessonId: sourceLesson._id }, (err, homeworks) => {
+			if (err) { return err; }
+
+			return Promise.all(homeworks.map(((homework) => {
+				if (homework.archived.length > 0
+					|| (homework.teacherId.toString() !== userId
+					&& homework.private)) { return false; }
+
+				const homeworkService = this.app.service('homework/copy');
+
+				return homeworkService.create({
+					_id: homework._id,
+					courseId: newCourseId,
+					lessonId: newLesson._id,
+					userId: userId === homework.teacherId.toString() ? userId : homework.teacherId,
+					newTeacherId: userId,
+				});
+			})));
+		});
+	}
+
+	copyFile(params, sourceLesson, f, newCourseId, fileChangelog) {
+		const fileData = {
+			file: f._id,
+			parent: newCourseId,
+		};
+		const fileStorageService = this.app.service('/fileStorage/copy/');
+
+		return fileStorageService.create(fileData, params)
+			.then((newFile) => {
+				fileChangelog.push({
+					old: `${sourceLesson.courseId._id}/${f.name}`,
+					new: `${newCourseId}/${newFile.name}`,
+				});
+			});
+	}
+
+	async copyFilesInLesson(params, sourceLesson, newCourseId, newLesson) {
+		const fileChangelog = [];
+		const files = await FileModel.find(
+			{ path: { $regex: sourceLesson.courseId._id.toString() } },
+		);
+
+		const lessonFiles = files.filter(f => _.some(
+			(sourceLesson.contents || []),
+			content => content.component === 'text'
+				&& content.content.text
+				&& _.includes(content.content.text, f._id),
+		));
+
+		await Promise.all(lessonFiles.map(f => this.copyFile(params, sourceLesson, f, newCourseId, fileChangelog)));
+		newLesson.contents.forEach((content) => {
+			if (content.component === 'text' && content.content.text) {
+				fileChangelog.forEach((change) => {
+					content.content.text = content.content.text.replace(
+						new RegExp(change.old, 'g'),
+						change.new,
+					);
+				});
+			}
+		});
+
+		return lessonModel.update({ _id: newLesson._id }, newLesson);
+	}
+
 	/**
      * Clones a lesson to a specified course, including files and homeworks.
      * @param data consists of lessonId and newCourseId (target, source).
@@ -45,79 +112,23 @@ class LessonCopyService {
      * @returns newly created lesson.
      */
 	create(data, params) {
-		const { lessonId, newCourseId } = data;
-		const fileChangelog = [];
+		const { newCourseId } = data;
 
-		return lessonModel.findOne({ _id: lessonId }).populate('courseId')
+		return lessonModel.findOne({ _id: data.lessonId }).populate('courseId')
 			.then((sourceLesson) => {
 				let tempLesson = JSON.parse(JSON.stringify(sourceLesson));
 				tempLesson = _.omit(tempLesson, ['_id', 'shareToken', 'courseId']);
 				tempLesson.courseId = newCourseId;
 
-				return lessonModel.create(tempLesson, (err, res) => {
+				return lessonModel.create(tempLesson, (err, newLesson) => {
 					if (err) {
 						return err;
 					}
 
-					const topic = res;
-
-					const homeworkPromise = homeworkModel.find({ lessonId }, (err, homeworks) => {
-						if (err) { return err; }
-
-						return Promise.all(homeworks.map(((homework) => {
-							if (homework.archived.length > 0
-                                || (homework.teacherId.toString() !== params.account.userId.toString()
-                                && homework.private)) { return false; }
-
-							const homeworkService = this.app.service('homework/copy');
-
-							return homeworkService.create({
-								_id: homework._id,
-								courseId: newCourseId,
-								lessonId: res._id,
-								userId: params.account.userId.toString() === homework.teacherId.toString()
-									? params.account.userId : homework.teacherId,
-								newTeacherId: params.account.userId,
-							});
-						})));
-					});
-
-					const filePromise = FileModel.find(
-						{ path: { $regex: sourceLesson.courseId._id.toString() } },
-					).then(files => Promise.all((files || []).filter(
-						// check whether the file is included in any lesson
-						f => _.some((sourceLesson.contents || []), content => content.component === 'text'
-                                && content.content.text
-                                && _.includes(content.content.text, f._id)),
-					))
-						.then(lessonFiles => Promise.all(lessonFiles.map((f) => {
-							const fileData = {
-								file: f._id,
-								parent: newCourseId,
-							};
-
-							const fileStorageService = this.app.service('/fileStorage/copy/');
-
-							return fileStorageService.create(fileData, params)
-								.then((newFile) => {
-									fileChangelog.push({
-										old: `${sourceLesson.courseId._id}/${f.name}`,
-										new: `${newCourseId}/${newFile.name}`,
-									});
-								});
-						})).then(() => Promise.all(
-							topic.contents.map((content) => {
-								if (content.component === 'text' && content.content.text) {
-									fileChangelog.map((change) => {
-										content.content.text = content.content.text.replace(
-											new RegExp(change.old, 'g'),
-											change.new,
-										);
-									});
-								}
-							}),
-						).then(() => lessonModel.update({ _id: topic._id }, topic)))));
-					return Promise.all([homeworkPromise, filePromise]);
+					return Promise.all([
+						this.copyHomeworks(params, sourceLesson, newCourseId, newLesson),
+						this.copyFilesInLesson(params, sourceLesson, newCourseId, newLesson),
+					]);
 				});
 			});
 	}
