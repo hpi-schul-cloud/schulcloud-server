@@ -1,10 +1,10 @@
 const { BadRequest } = require('@feathersjs/errors');
 
 /**
- * validate that request data is complete and valid
- * @param {object} data complete data object from the call
- * @param {User} targetUser the user that will be targeted, with populated roles
- * @throws {BadRequest} if data attributes are missing
+ * validate that request data is complete and valid.
+ * @param {object} data complete data object from the call.
+ * @param {User} targetUser the user that will be targeted, with populated roles.
+ * @throws {BadRequest} if data attributes are missing.
  */
 const validateRequest = (data, targetUser) => {
 	const targetIsStudent = targetUser.roles[0].name === 'student';
@@ -21,10 +21,10 @@ const validateRequest = (data, targetUser) => {
 };
 
 /**
- * creates an account, as if the user just went through registration
- * @param {Object} data the request data, containing a valid password
- * @param {User} targetUser the user that will be targeted, with populated roles
- * @param {App} app the app object
+ * creates an account, as if the user just went through registration.
+ * @param {Object} data the request data, containing a valid password.
+ * @param {User} targetUser the user that will be targeted, with populated roles.
+ * @param {App} app the app object.
  */
 const createAccount = async function createAccount(data, targetUser, app) {
 	const existingAccount = await app.service('accounts').find({ query: { userId: targetUser._id } });
