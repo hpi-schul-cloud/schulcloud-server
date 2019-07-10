@@ -5,7 +5,7 @@ const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
 
-describe('SkipRegistration integration', () => {
+describe.only('SkipRegistration integration', () => {
 	let server;
 
 	before((done) => {
@@ -142,7 +142,7 @@ describe('SkipRegistration integration', () => {
 			password: 'password1',
 		}, scenarioParams);
 		expect(result).to.equal('success');
-	});
+	}).timeout(6000);
 
 	it('succeeds for admin skipping teacher registration', async () => {
 		let targetUser = await testObjects.createTestUser({
@@ -163,7 +163,7 @@ describe('SkipRegistration integration', () => {
 			password: 'password1',
 		}, scenarioParams);
 		expect(result).to.equal('success');
-	});
+	}).timeout(6000);
 
 	it('succeeds for admin skipping student registration', async () => {
 		let targetUser = await testObjects.createTestUser({
@@ -185,5 +185,5 @@ describe('SkipRegistration integration', () => {
 			password: 'password1',
 		}, scenarioParams);
 		expect(result).to.equal('success');
-	});
+	}).timeout(6000);
 });
