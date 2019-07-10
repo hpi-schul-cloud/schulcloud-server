@@ -1,4 +1,5 @@
 const winston = require('winston');
+
 const SPLAT = Symbol.for('splat');
 
 let logLevel;
@@ -25,8 +26,6 @@ function formatObject(param) {
 // workaround to call log functions with multiple message parameter.
 // example: logger.info('first', 'secound', 'some other string')
 const all = winston.format((info) => {
-
-	
 	const isSplatTypeMessage = typeof info.message === 'string'
 		&& (info.message.includes('%s') || info.message.includes('%d') || info.message.includes('%j'));
 	if (isSplatTypeMessage) {
