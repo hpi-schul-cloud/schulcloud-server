@@ -1,8 +1,9 @@
 const service = require('feathers-mongoose');
 const schoolModels = require('./model');
 const hooks = require('./hooks');
+const { SchoolMaintenanceService } = require('./maintenance');
 
-module.exports = function () {
+module.exports = function schoolServices() {
 	const app = this;
 
 	const options = {
@@ -19,6 +20,8 @@ module.exports = function () {
 	app.use('/schools', service(options));
 	const schoolService = app.service('/schools');
 	schoolService.hooks(hooks);
+
+	app.use('/schools/:id/maintenance', new SchoolMaintenanceService());
 
 	/* year Service */
 	app.use('/years', service({
