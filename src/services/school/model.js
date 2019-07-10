@@ -42,9 +42,21 @@ const schoolSchema = new Schema({
 	purpose: { type: String },
 	rssFeeds: [{ type: rssFeedSchema }],
 	features: [{ type: String, enum: ['rocketChat', 'disableStudentTeamCreation'] }],
+	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below)
 }, {
 	timestamps: true,
 });
+
+/**
+ * Determine if school is in maintenance mode ("Schuljahreswechsel"):
+ * 		inMaintenanceSince not set: maintenance mode is disabled (false)
+ * 		inMaintenanceSince <  Date.now(): maintenance will be enabled at this date in the future (false)
+ * 		inMaintenanceSince >= Date.now(): maintenance mode is enabled (true)
+ */
+schoolSchema.virtual('inMaintenance').get(function get() {
+	return this.inMaintenanceSince && this.inMaintenanceSince <= Date.now();
+});
+schoolSchema.plugin(require('mongoose-lean-virtuals'));
 
 const yearSchema = new Schema({
 	name: { type: String, required: true },

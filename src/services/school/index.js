@@ -11,7 +11,9 @@ module.exports = function () {
 			default: 5,
 			max: 25,
 		},
-		lean: true,
+		lean: {
+			virtuals: true,
+		},
 	};
 
 	app.use('/schools', service(options));
