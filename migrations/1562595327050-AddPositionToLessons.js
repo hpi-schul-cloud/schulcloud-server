@@ -1,14 +1,13 @@
 const L = require('../src/logger/');
 const { connect, close } = require('../src/utils/database');
-const lessonsModel = require('../src/services/lesson/model');
+const LessonModel = require('../src/services/lesson/model');
 
 const isUndefined = e => typeof e === 'undefined';
-const isNull = e => e === null || e === 'null';
 
 const getSortedLessons = async () => {
 	L.info('<------ AddPositionToLessons ------>');
 	L.info('fetch lessons..');
-	const lessons = await lessonsModel
+	const lessons = await LessonModel
 		.find({})
 		.sort({ position: 1 })
 		.sort({ createdAt: 1 })
@@ -40,12 +39,20 @@ const createDatabaseTask = (datatree) => {
 	const tasks = [];
 	Object.values(datatree).forEach((courseLessons) => {
 		courseLessons.forEach((lesson, index) => {
+			/* is replaced
 			let { position } = lesson;
 			let modified = false;
 			if (isUndefined(position) || isNull(position)) {
 				position = index;
 				modified = true;
 			}
+			*/
+			/* In client the sorting is first null without number and after it the number from 1 to x */
+			let modified = false;
+			if (lesson.position === index) {
+				modified = true;
+			}
+			const position = index;
 
 			tasks.push({
 				_id: lesson._id,
@@ -61,7 +68,7 @@ const updateLessons = (databaseTasks, out) => {
 	L.info(`update lessons in database tasks=${databaseTasks.length}`);
 	databaseTasks.forEach((task) => {
 		const { _id, $set } = task;
-		const req = lessonsModel.updateOne({ _id }, { $set })
+		const req = LessonModel.updateOne({ _id }, { $set })
 			.then(() => {
 				if (task.modified) {
 					out.modified.push(task._id);

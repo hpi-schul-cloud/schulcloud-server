@@ -63,7 +63,7 @@ class CourseCopyService {
 		tempCourse = _.omit(tempCourse, attributs);
 
 		tempCourse = Object.assign(tempCourse, tempData, { userId: (params.account || {}).userId });
-
+		tempCourse.isCopyFrom = courseId;
 		const res = await this.app.service('courses').create(tempCourse);
 
 		const [homeworks, lessons] = await Promise.all([

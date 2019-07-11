@@ -114,13 +114,14 @@ class LessonCopyService {
      */
 	create(data, params) {
 		const { newCourseId } = data;
+		const sourceLessonId = data.lessonId;
 
-		return lessonModel.findOne({ _id: data.lessonId }).populate('courseId')
+		return lessonModel.findOne({ _id: sourceLessonId }).populate('courseId')
 			.then((sourceLesson) => {
 				let tempLesson = JSON.parse(JSON.stringify(sourceLesson));
 				tempLesson = _.omit(tempLesson, ['_id', 'shareToken', 'courseId']);
 				tempLesson.courseId = newCourseId;
-
+				tempLesson.isCopyFrom = sourceLessonId;
 				return lessonModel.create(tempLesson, (err, newLesson) => {
 					if (err) {
 						return err;

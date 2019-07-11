@@ -46,6 +46,8 @@ const courseModel = mongoose.model('course', getUserGroupSchema({
 	untilDate: { type: Date },
 	shareToken: { type: String, unique: true, sparse: true },
 	times: [timeSchema],
+	// optional information if this course is a copy from other
+	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
 }));
 
 // represents a sub-group of students inside a course, e.g. for projects etc.
