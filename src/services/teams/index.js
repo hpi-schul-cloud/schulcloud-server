@@ -7,7 +7,7 @@ const {
 	NotFound,
 } = require('@feathersjs/errors');
 const hooks = require('./hooks');
-const { warn } = require('../../logger/index');
+const { warning } = require('../../logger/index');
 const { teamsModel } = require('./model');
 const { userModel } = require('../user/model');
 const { FileModel } = require('../fileStorage/model');
@@ -209,7 +209,7 @@ class Add {
 				importHash: user.importHash,
 			};
 		}).catch((err) => {
-			warn(err);
+			warning(err);
 			throw new BadRequest('Can not resolve the user information.');
 		});
 	}
@@ -358,7 +358,7 @@ class Add {
 			}
 			return out;
 		} catch (err) {
-			warn(err);
+			warning(err);
 			return Promise.resolve('Success!');
 		}
 	}

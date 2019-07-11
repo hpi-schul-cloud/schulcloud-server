@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+const logger = require('../../../logger');
+
+>>>>>>> develop
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
 const { submissionModel } = require('../../homework/model');
@@ -31,7 +36,7 @@ const checkMemberStatus = ({ file, user }) => {
 		return false;
 	}
 
-	return userIds.find(finder) || teacherIds.find(finder);
+	return userIds.find(finder) || (teacherIds && teacherIds.find(finder));
 };
 
 const checkPermissions = permission => async (user, file) => {
@@ -60,6 +65,7 @@ const checkPermissions = permission => async (user, file) => {
 	const isSubmission = await submissionModel.findOne({ fileIds: fileObject._id });
 
 	// or legacy course model
+	// TODO: Check member status of teacher if submission
 	if (refOwnerModel === 'course' || isSubmission) {
 		const userObject = await userModel.findOne({ _id: user }).populate('roles').exec();
 		const isStudent = userObject.roles.find(role => role.name === 'student');
@@ -68,6 +74,7 @@ const checkPermissions = permission => async (user, file) => {
 			const rolePermissions = permissions.find(
 				perm => perm.refId && perm.refId.toString() === isStudent._id.toString(),
 			);
+
 			return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
 		}
 		return Promise.resolve(true);

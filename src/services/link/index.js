@@ -1,5 +1,5 @@
 const queryString = require('querystring');
-const logger = require('winston');
+const logger = require('../../logger');
 const service = require('feathers-mongoose');
 const link = require('./link-model');
 const hooks = require('./hooks');
@@ -33,7 +33,7 @@ module.exports = function setup() {
 					}
 				})
 				.catch((err) => {
-					logger.warn(err);
+					logger.warning(err);
 					res.status(500).send(err);
 				});
 		} else {
@@ -60,7 +60,7 @@ module.exports = function setup() {
 						});
 					}
 				} catch (err) {
-					logger.warn(err);
+					logger.warning(err);
 					return Promise.reject(new Error(`Fehler beim Generieren des Hashes. ${err}`));
 				}
 			}
@@ -80,7 +80,7 @@ module.exports = function setup() {
 			await app.service('link').create({ target: linkData.link }).then((generatedShortLink) => {
 				linkData.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`;
 			}).catch((err) => {
-				logger.warn(err);
+				logger.warning(err);
 				return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
 			});
 
@@ -129,7 +129,7 @@ module.exports = function setup() {
 						}).then((generatedHash) => {
 							linkInfo.hash = generatedHash;
 						}).catch((err) => {
-							logger.warn(err);
+							logger.warning(err);
 							return Promise.resolve('Success!');
 						});
 					}
@@ -143,7 +143,7 @@ module.exports = function setup() {
 					// team accept link for existing users
 					linkInfo.link = `${(data.host || process.env.HOST)}/teams/invitation/accept/${teamId}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
 				} else {
-					logger.warn('Nicht alle Daten für den Experten-Link vorhanden.');
+					logger.warning('Nicht alle Daten für den Experten-Link vorhanden.');
 					return Promise.resolve('Success!');
 				}
 
@@ -153,7 +153,7 @@ module.exports = function setup() {
 					// build final short link and remove possible double-slashes in url except the protocol ones
 					linkInfo.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
 				}).catch((err) => {
-					logger.warn('Fehler beim Erstellen des Kurzlinks.');
+					logger.warning('Fehler beim Erstellen des Kurzlinks.');
 					return Promise.resolve('Success!');
 				});
 
