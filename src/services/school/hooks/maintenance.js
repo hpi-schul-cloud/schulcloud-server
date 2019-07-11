@@ -27,10 +27,10 @@ module.exports = {
 		],
 		find: [],
 		create: [
-			globalHooks.ifNotLocal(globalHooks.hasPermission('SCHOOL_CREATE')),
+			globalHooks.ifNotLocal(globalHooks.hasPermission('SCHOOL_EDIT')),
 		],
 		update: [
-			globalHooks.ifNotLocal(globalHooks.hasPermission('SCHOOL_CREATE')),
+			globalHooks.ifNotLocal(globalHooks.hasPermission('SCHOOL_EDIT')),
 		],
 		get: [hooks.disallow()],
 		patch: [hooks.disallow()],
