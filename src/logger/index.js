@@ -44,7 +44,7 @@ const all = winston.format((info) => {
 const logger = winston.createLogger({
 	levels: winston.config.syslog.levels,
 	format: winston.format.combine(
-		//all(),
+		all(),
 		winston.format.timestamp(), // adds current timestamp
 		winston.format.ms(),	// adds time since last log
 		winston.format.prettyPrint(), // output as prettyfied Json. Use 'winston.format.simple()' for output string
