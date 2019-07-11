@@ -53,14 +53,25 @@ class SchoolMaintenanceService {
 		return Promise.resolve(getStatus(school));
 	}
 
-	update(id, data, params) {
-		return Promise.resolve({
-			purpose: '(UPDATE) nicht-ldap: ins neue Jahr setzen / ldap: transferphase beenden und ins neue Jahr setzen',
-			currentYear: {
-				_id: '42',
-				name: '2019/20',
-			},
-		});
+	/**
+	 * PUT /schools/:schoolId/maintenance
+	 * Finish transfer period (LDAP) and migrate school to next school year (LDAP and non-LDAP).
+	 *
+	 * @param {ObjectId} id unused
+	 * @param {Object} data unused
+	 * @param {Object} params feathers request params
+	 * @returns Object {currentYear, schoolUsesLdap, maintenance: {active, startDate}}
+	 * @memberof SchoolMaintenanceService
+	 */
+	async update(id, data, params) {
+		let { school } = params;
+		const patch = {};
+		if (school.inMaintenance) {
+			patch.currentYear = determineNextYear(school.currentYear);
+			patch.$unset = { inMaintenanceSince: '' };
+		}
+		school = await School.findOneAndUpdate({ _id: school._id }, patch, { new: true });
+		return Promise.resolve(getStatus(school));
 	}
 }
 
