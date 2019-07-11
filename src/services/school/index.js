@@ -21,7 +21,7 @@ module.exports = function schoolServices() {
 	const schoolService = app.service('/schools');
 	schoolService.hooks(hooks);
 
-	app.use('/schools/:id/maintenance', new SchoolMaintenanceService());
+	app.use('/schools/:schoolId/maintenance', new SchoolMaintenanceService());
 
 	/* year Service */
 	app.use('/years', service({
