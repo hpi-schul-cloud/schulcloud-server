@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
-const logger = require('winston');
+const logger = require('../logger');
 const _ = require('lodash');
 const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.
@@ -560,7 +560,7 @@ exports.sendEmail = (hook, maildata) => {
 
 				_.uniq(receipients).map((email) => {
 					if (!maildata.content.text && !maildata.content.html) {
-						logger.warn("(1) No mailcontent (text/html) was given. Don't send a mail.");
+						logger.warning("(1) No mailcontent (text/html) was given. Don't send a mail.");
 					} else {
 						mailService.create({
 							email,
@@ -571,7 +571,7 @@ exports.sendEmail = (hook, maildata) => {
 								html: '', // still todo, html template mails
 							},
 						}).catch((err) => {
-							logger.warn(err);
+							logger.warning(err);
 							throw new errors.BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
 						});
 					}
@@ -583,7 +583,7 @@ exports.sendEmail = (hook, maildata) => {
 			});
 	} else {
 		if (!maildata.content.text && !maildata.content.html) {
-			logger.warn("(2) No mailcontent (text/html) was given. Don't send a mail.");
+			logger.warning("(2) No mailcontent (text/html) was given. Don't send a mail.");
 		} else {
 			_.uniq(receipients).map((email) => {
 				mailService.create({
@@ -595,7 +595,7 @@ exports.sendEmail = (hook, maildata) => {
 						html: '', // still todo, html template mails
 					},
 				}).catch((err) => {
-					logger.warn(err);
+					logger.warning(err);
 					throw new errors.BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
 				});
 			});

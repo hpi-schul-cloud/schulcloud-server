@@ -1,6 +1,6 @@
 const service = require('feathers-mongoose');
 const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../logger/index');
 const { ObjectId } = require('mongoose').Types;
 const {
 	newsModel, targetModels, newsHistoryModel, newsPermissions,

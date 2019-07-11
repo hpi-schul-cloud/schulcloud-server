@@ -1,4 +1,4 @@
-const logger = require('winston');
+const logger = require('../../../logger');
 
 /**
  * A basic syncer that provides step-by-step execution, statistics, and logging
@@ -100,7 +100,7 @@ class Syncer {
 	}
 
 	logWarning(message, ...args) {
-		logger.warn(`[${this.prefix()}] ${message}`, ...args);
+		logger.warning(`[${this.prefix()}] ${message}`, ...args);
 	}
 
 	logError(message, ...args) {
