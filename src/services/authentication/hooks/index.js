@@ -25,11 +25,18 @@ const populateResult = (hook) => {
 	return hook;
 };
 
+/*
+const isActivated = (account) => {
+	todo account activated = true should test it | injectUserId pass the account informations
+	return account
+}
+*/
 exports.before = {
 	create: [
 		lowerCaseUsername,
 		auth.hooks.authenticate(['local', 'jwt', 'ldap', 'iserv', 'moodle', 'itslearning']),
 		injectUserId,
+		// isActivated,
 	],
 	remove: [
 		auth.hooks.authenticate('jwt'),
