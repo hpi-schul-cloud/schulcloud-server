@@ -54,7 +54,7 @@ const schoolSchema = new Schema({
  * 		inMaintenanceSince >= Date.now(): maintenance mode is enabled (true)
  */
 schoolSchema.virtual('inMaintenance').get(function get() {
-	return this.inMaintenanceSince && this.inMaintenanceSince <= Date.now();
+	return Boolean(this.inMaintenanceSince && this.inMaintenanceSince <= Date.now());
 });
 schoolSchema.plugin(require('mongoose-lean-virtuals'));
 
