@@ -6,6 +6,7 @@ const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
 const { FileModel } = require('../fileStorage/model');
 const { homeworkModel } = require('../homework/model');
+const { copyFile } = require('../fileStorage/utils/');
 
 class LessonFilesService {
 	/**
@@ -61,36 +62,36 @@ class LessonCopyService {
 		});
 	}
 
-	copyFile(params, sourceLesson, f, newCourseId, fileChangelog) {
-		const fileData = {
-			file: f._id,
-			parent: newCourseId,
-		};
-		const fileStorageService = this.app.service('/fileStorage/copy/');
-
-		return fileStorageService.create(fileData, params)
-			.then((newFile) => {
-				fileChangelog.push({
-					old: `${sourceLesson.courseId._id}/${f.name}`,
-					new: `${newCourseId}/${newFile.name}`,
-				});
-			});
-	}
-
 	async copyFilesInLesson(params, sourceLesson, newCourseId, newLesson) {
 		const fileChangelog = [];
-		const files = await FileModel.find(
-			{ path: { $regex: sourceLesson.courseId._id.toString() } },
-		);
-
+		// get all course files
+		const files = await FileModel.find({
+			owner: sourceLesson.courseId,
+		});
+		// filter files to lesson related
 		const lessonFiles = files.filter(f => _.some(
 			(sourceLesson.contents || []),
 			content => content.component === 'text'
 				&& content.content.text
-				&& _.includes(content.content.text, f._id),
+				&& _.includes(content.content.text, f._id.toString()),
 		));
+		// copy files for new course
+		await Promise.all(lessonFiles.map((sourceFile) => {
+			const fileData = {
+				file: sourceFile._id,
+				parent: newCourseId,
+			};
 
-		await Promise.all(lessonFiles.map(f => this.copyFile(params, sourceLesson, f, newCourseId, fileChangelog)));
+			return copyFile(fileData, params)
+				.then((newFile) => {
+					// /files/file?file=5d1ef687faccd3282cc94f83&amp;name=imago-images-fotos-von-voegeln.jpg\
+					fileChangelog.push({
+						old: `file=${sourceFile._id}&amp;name=${sourceFile.name}`,
+						new: `file=${newFile._id}&amp;name=${newFile.name}`,
+					});
+				});
+		}));
+		// replace file ids in lesson content
 		newLesson.contents.forEach((content) => {
 			if (content.component === 'text' && content.content.text) {
 				fileChangelog.forEach((change) => {
@@ -101,7 +102,7 @@ class LessonCopyService {
 				});
 			}
 		});
-
+		// update lesson data
 		return lessonModel.update({ _id: newLesson._id }, newLesson);
 	}
 

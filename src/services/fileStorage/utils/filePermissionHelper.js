@@ -56,6 +56,9 @@ const checkMemberStatus = ({ file, user }) => {
 
 const checkPermissions = permission => async (user, file) => {
 	const fileObject = await getFile(file);
+	if (fileObject === undefined || fileObject === null) {
+		throw new Error('File not exist.', { user, file, permission });
+	}
 	const {
 		permissions,
 		refOwnerModel,

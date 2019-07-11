@@ -1,15 +1,16 @@
 const auth = require('@feathersjs/authentication');
-const errors = require('@feathersjs/errors');
-const hooks = require('feathers-hooks-common');
+const { Forbidden } = require('@feathersjs/errors');
+const { disallow } = require('feathers-hooks-common');
 const { injectUserId } = require('../../../hooks');
 const lesson = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
-
+const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');
 
 const checkForShareToken = (context) => {
 	const { shareToken, lessonId } = context.data;
 	const currentUserId = context.params.account.userId.toString();
-	return lesson.findOne({ _id: lessonId }).populate('courseId')
+	return lesson.findOne({ _id: lessonId })
+		.populate('courseId')
 		.then((topic) => {
 			if (
 				(topic.shareToken === shareToken && shareToken !== undefined)
@@ -17,20 +18,22 @@ const checkForShareToken = (context) => {
 			) {
 				return context;
 			}
-			throw new errors.Forbidden("The entered lesson doesn't belong to you or is not allowed to be shared!");
+			throw new Forbidden("The entered lesson doesn't belong to you or is not allowed to be shared!");
 		});
 };
 
+
 exports.before = () => ({
 	all: [auth.hooks.authenticate('jwt')],
-	find: [hooks.disallow()],
-	get: [hooks.disallow()],
+	find: [disallow()],
+	get: [disallow()],
 	create: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
 		injectUserId,
 		checkForShareToken,
+		resolveStorageType,
 	],
-	update: [hooks.disallow()],
-	patch: [hooks.disallow()],
-	remove: [hooks.disallow()],
+	update: [disallow()],
+	patch: [disallow()],
+	remove: [disallow()],
 });

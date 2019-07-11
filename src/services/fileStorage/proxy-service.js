@@ -1,34 +1,27 @@
 const fs = require('fs');
-const logger = require('../../logger');
 const rp = require('request-promise-native');
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 
 const hooks = require('./hooks');
-const AWSStrategy = require('./strategies/awsS3');
 const swaggerDocs = require('./docs/');
+
 const {
 	canWrite,
 	canRead,
 	canCreate,
 	canDelete,
-} = require('./utils/filePermissionHelper');
-const { returnFileType, generateFileNameSuffix: generateFlatFileName } = require('./utils/filePathHelper');
+	returnFileType,
+	generateFlatFileName,
+	copyFile,
+	createCorrectStrategy,
+} = require('./utils/');
 const { FileModel } = require('./model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
-
-const strategies = {
-	awsS3: AWSStrategy,
-};
-
-const createCorrectStrategy = (fileStorageType) => {
-	const Strategy = strategies[fileStorageType];
-	if (!Strategy) throw new BadRequest('No file storage provided for this school');
-	return new Strategy();
-};
+const logger = require('../../logger');
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
@@ -619,64 +612,21 @@ const bucketService = {
 };
 
 const copyService = {
-
 	docs: swaggerDocs.copyService,
 
+	// todo: Make this permissions sense? Should review!
+	defaultPermissionHandler(userId, file, parent) {
+		return Promise.all([
+			canRead(userId, file),
+			canWrite(userId, parent),
+		]);
+	},
 	/**
      * @param data, contains file-Id and new parent
      * @returns {Promise}
      */
 	create(data, params) {
-		const { file, parent } = data;
-		const { payload: { userId } } = params;
-		const strategy = createCorrectStrategy(params.payload.fileStorageType);
-
-		if (!file || !parent) {
-			return Promise.reject(new BadRequest('Missing parameters'));
-		}
-
-		// first check if given file is valid
-		return FileModel.findOne({ _id: file }).exec()
-			.then((fileObject) => {
-				if (!file) throw new NotFound('The file was not found!');
-
-				// check that there's no file on 'newPath', otherwise change name of file
-				return Promise.all([
-					FileModel.findOne({ parent, name: file.name }).exec(),
-					fileObject,
-				]);
-			})
-			.then(([existingFile, fileObject]) => {
-				const newFile = {
-					parent,
-				};
-
-				if (existingFile) {
-					const [ext, name] = file.name.split('.').reverse();
-					newFile.name = `${name}_${Date.now()}.${ext}`;
-				}
-
-				return Promise.all([
-					newFile,
-					fileObject,
-					canRead(userId, file),
-					canWrite(userId, parent),
-				]);
-			})
-			.then(([newFile, fileObject]) => {
-				// copy file on external storage
-				newFile.storageFileName = generateFlatFileName(newFile.name);
-
-				return Promise.all([
-					newFile,
-					fileObject,
-					strategy.copyFile(userId, fileObject.storageFileName, newFile.storageFileName),
-				]);
-			})
-			.then(([newFile, fileObject]) => FileModel.create({
-				...fileObject,
-				...newFile,
-			}));
+		return copyFile(data, params, this.defaultPermissionHandler);
 	},
 };
 
