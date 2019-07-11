@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
-const logger = require('../logger');
 const _ = require('lodash');
+const logger = require('../logger');
 const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.
 
@@ -271,32 +271,35 @@ exports.injectUserId = (hook) => {
 	return hook;
 };
 
-exports.restrictToCurrentSchool = (hook) => {
-	const userService = hook.app.service('users');
+exports.restrictToCurrentSchool = (context) => {
+	const userService = context.app.service('users');
 	return userService.find({
 		query: {
-			_id: hook.params.account.userId,
+			_id: context.params.account.userId,
 			$populate: 'roles',
+			$limit: 1,
 		},
 	}).then((res) => {
-		let access = false;
-		res.data[0].roles.map((role) => {
-			if (role.name === 'superhero') access = true;
-		});
-		if (access) return hook;
-		if (hook.method == 'get' || hook.method == 'find') {
-			if (hook.params.query.schoolId == undefined) {
-				hook.params.query.schoolId = res.data[0].schoolId;
-			} else if (hook.params.query.schoolId != res.data[0].schoolId) {
+		const user = res.data[0];
+		const superheroAccess = user.roles.some(role => role.name === 'superhero');
+		if (superheroAccess) return context;
+		const { params } = context;
+		if (params.route && params.route.schoolId && params.route.schoolId !== user.schoolId.toString()) {
+			throw new errors.Forbidden('You do not have valid permissions to access this.');
+		}
+		if (context.method === 'get' || context.method === 'find') {
+			if (params.query.schoolId === undefined) {
+				context.params.query.schoolId = user.schoolId.toString();
+			} else if (params.query.schoolId !== user.schoolId.toString()) {
 				throw new errors.Forbidden('You do not have valid permissions to access this.');
 			}
-		} else if (hook.data.schoolId == undefined) {
-			hook.data.schoolId = res.data[0].schoolId.toString();
-		} else if (hook.data.schoolId != res.data[0].schoolId) {
+		} else if (context.data.schoolId === undefined) {
+			context.data.schoolId = user.schoolId.toString();
+		} else if (context.data.schoolId !== user.schoolId.toString()) {
 			throw new errors.Forbidden('You do not have valid permissions to access this.');
 		}
 
-		return hook;
+		return context;
 	});
 };
 
