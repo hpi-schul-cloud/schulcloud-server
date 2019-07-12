@@ -22,7 +22,7 @@ try {
 		: awsConfig = require('../../../../config/secrets.json').aws;
 	/* eslint-enable global-require, no-unused-expressions */
 } catch (e) {
-	logger.log('warn', 'The AWS config couldn\'t be read');
+	logger.log('warning', 'The AWS config couldn\'t be read');
 }
 
 const AbstractFileStorageStrategy = require('./interface.js');
