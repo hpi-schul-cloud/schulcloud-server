@@ -23,7 +23,7 @@ const { userModel } = require('../user/model');
 
 const FILEPREVIEW_SERVICE_URI = process.env.FILEPREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
 const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI
-|| 'http://localhost:3030/fileStorage/thumbnail';
+|| 'http://localhost:3030/fileStorage/thumbnail/';
 const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || false;
 
 
