@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "",
-  "version": "18.2.2",
+  "version": "18.2.5",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -30,9 +30,8 @@
     "coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
     "mocha": "cross-env NODE_ENV=test mocha --exit test/ --recursive",
     "mocha-inspect": "cross-env NODE_ENV=test mocha --exit --debug-brk --inspect test/ --recursive",
-    "migrations": "node migrations/",
-    "migrations-local": "cross-env NODE_ENV=migration node migrations/",
-    "migrations-dry": "cross-env NODE_ENV=migration node migrations/ --dry"
+    "migration": "migrate",
+    "migration-persist": "mongoexport -d schulcloud -c migrations --jsonArray --pretty > ./backup/setup/migrations.json"
   },
   "dependencies": {
     "@feathersjs/authentication": "^2.1.16",
@@ -67,9 +66,11 @@
     "feathers-swagger": "^1.1.0",
     "file-type": "^9.0.0",
     "freeport": "^1.0.5",
+    "git-repo-info": "^2.1.0",
     "jwt-decode": "^2.2.0",
     "ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.13",
+    "migrate-mongoose": "^4.0.0",
     "moment": "^2.19.2",
     "mongoose": "^4.7.6",
     "mongoose-autopopulate": "^0.9.1",
