@@ -47,7 +47,7 @@ const logger = winston.createLogger({
 		all(),
 		winston.format.timestamp(), // adds current timestamp
 		winston.format.ms(),	// adds time since last log
-		winston.format.prettyPrint(), // output as prettyfied Json. Use 'winston.format.simple()' for output string
+		winston.format.simple(), // output as string. Use 'winston.format.simple()' for output prettyfied json
 	),
 	transports: [
 		new winston.transports.Console({
