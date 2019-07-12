@@ -1,7 +1,10 @@
 const hooks = require('./hooks/maintenance');
 const { schoolModel: School } = require('./model');
 
-const schoolUsesLdap = school => school.systems.some(s => s.type === 'ldap');
+const ldapSystemFilter = s => s.type === 'ldap' && s.ldapConfig && s.ldapConfig.active === true;
+
+const schoolUsesLdap = school => school.systems.some(ldapSystemFilter);
+
 const getStatus = school => ({
 	currentYear: school.currentYear,
 	schoolUsesLdap: schoolUsesLdap(school),
