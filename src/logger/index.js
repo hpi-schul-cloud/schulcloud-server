@@ -1,6 +1,6 @@
 const winston = require('winston');
 
-//const SPLAT = Symbol.for('splat');
+const SPLAT = Symbol.for('splat');
 
 let logLevel;
 
@@ -15,7 +15,7 @@ switch (process.env.NODE_ENV) {
 	default:
 		logLevel = 'info';
 }
-/*
+
 function formatObject(param) {
 	if (typeof param === 'object') {
 		return JSON.stringify(param);
@@ -40,11 +40,11 @@ const all = winston.format((info) => {
 	info.message = `${message} ${rest}`;
 	return info;
 });
-*/
+
 const logger = winston.createLogger({
 	levels: winston.config.syslog.levels,
 	format: winston.format.combine(
-		//all(),
+		all(),
 		winston.format.timestamp(), // adds current timestamp
 		winston.format.ms(),	// adds time since last log
 		winston.format.prettyPrint(), // output as prettyfied Json. Use 'winston.format.simple()' for output string
