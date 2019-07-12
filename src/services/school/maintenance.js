@@ -36,9 +36,9 @@ class SchoolMaintenanceService {
 
 	/**
 	 * POST /schools/:schoolId/maintenance
-	 * Enter transfer period (LDAP) or migrate school to next school year (non-LDAP)
+	 * Enter/exit transfer period (LDAP) or migrate school to next school year (non-LDAP).
 	 *
-	 * @param {Object} data unused
+	 * @param {Object} data {maintenance: [true/false]}
 	 * @param {Object} params feathers request params
 	 * @returns Object {currentYear, schoolUsesLdap, maintenance: {active, startDate}}
 	 * @memberof SchoolMaintenanceService
@@ -46,33 +46,20 @@ class SchoolMaintenanceService {
 	async create(data, params) {
 		let { school } = params;
 		const patch = {};
-		if (schoolUsesLdap(school)) {
-			patch.inMaintenanceSince = Date.now();
-		} else {
+		const bumpYear = () => {
 			patch.currentYear = determineNextYear(school.currentYear);
 			patch.$unset = { inMaintenanceSince: '' };
+		};
+		if (data.maintenance === true) {
+			if (schoolUsesLdap(school)) {
+				patch.inMaintenanceSince = Date.now();
+			} else {
+				bumpYear();
+			}
+		} else if (data.maintenance === false && school.inMaintenance) {
+			bumpYear();
 		}
-		school = await School.findOneAndUpdate({ _id: school._id }, patch, { new: true });
-		return Promise.resolve(getStatus(school));
-	}
 
-	/**
-	 * PUT /schools/:schoolId/maintenance
-	 * Finish transfer period (LDAP) and migrate school to next school year (LDAP and non-LDAP).
-	 *
-	 * @param {ObjectId} id unused
-	 * @param {Object} data unused
-	 * @param {Object} params feathers request params
-	 * @returns Object {currentYear, schoolUsesLdap, maintenance: {active, startDate}}
-	 * @memberof SchoolMaintenanceService
-	 */
-	async update(id, data, params) {
-		let { school } = params;
-		const patch = {};
-		if (school.inMaintenance) {
-			patch.currentYear = determineNextYear(school.currentYear);
-			patch.$unset = { inMaintenanceSince: '' };
-		}
 		school = await School.findOneAndUpdate({ _id: school._id }, patch, { new: true });
 		return Promise.resolve(getStatus(school));
 	}
