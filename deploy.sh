@@ -69,8 +69,9 @@ function deploytostaging {
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@staging.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG staging_server
 }
 
-# Happy SHA, wo glu:cklich macht
-echo "$GIT_SHA $DOCKERTAG" > ./public/commitsha.txt
+# create version file
+npm run version
+cat version.json
 
 function inform {
   curl -X POST -H 'Content-Type: application/json' --data '{"text":":rocket: Die Produktivsysteme können aktualisiert werden: Schul-Cloud Server!"}' $WEBHOOK_URL_CHAT

@@ -45,3 +45,6 @@ config/secrets.json
 
 #clipboard uploads
 uploads/*
+
+# version info
+version.json

@@ -31,7 +31,8 @@
     "mocha": "cross-env NODE_ENV=test mocha --exit test/ --recursive",
     "mocha-inspect": "cross-env NODE_ENV=test mocha --exit --debug-brk --inspect test/ --recursive",
     "migration": "migrate",
-    "migration-persist": "mongoexport -d schulcloud -c migrations --jsonArray --pretty > ./backup/setup/migrations.json"
+    "migration-persist": "mongoexport -d schulcloud -c migrations --jsonArray --pretty > ./backup/setup/migrations.json",
+    "version": "node node_modules/version-info/ > version.json"
   },
   "dependencies": {
     "@feathersjs/authentication": "^2.1.16",
@@ -66,7 +67,7 @@
     "feathers-swagger": "^1.1.0",
     "file-type": "^9.0.0",
     "freeport": "^1.0.5",
-    "git-repo-info": "^2.1.0",
+    "html-entities": "^1.2.1",
     "jwt-decode": "^2.2.0",
     "ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
     "lodash": "^4.17.13",
@@ -99,6 +100,7 @@
     "strip-js": "^1.0.6",
     "universal-analytics": "^0.4.17",
     "uuid": "^3.3.2",
+    "version-info": "git+https://github.com/schul-cloud/version-info",
     "winston": "^3.2.0"
   },
   "devDependencies": {
