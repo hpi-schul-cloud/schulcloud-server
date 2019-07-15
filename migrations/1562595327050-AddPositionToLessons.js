@@ -106,7 +106,7 @@ module.exports = {
 		const lessons = await getSortedLessons();
 
 		// create course tree
-		const courseMap = createDataTree(lessons, 'courseId');	
+		const courseMap = createDataTree(lessons, 'courseId');
 
 		// create courseGroup tree courseMap.undefined contain all courseGroupLessons
 		const courseGroupMap = createDataTree(courseMap.undefined, 'courseGroupId');
