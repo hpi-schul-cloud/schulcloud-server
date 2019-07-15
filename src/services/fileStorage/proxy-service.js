@@ -107,10 +107,6 @@ const fileStorageService = {
 		return parentPromise
 			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).exec())
 			.then((files) => {
-				if (!files.length) {
-					return Promise.reject(new NotFound());
-				}
-
 				const permissionPromises = files.map(
 					f => canRead(userId, f)
 						.then(() => f)
@@ -120,10 +116,6 @@ const fileStorageService = {
 			})
 			.then((allowedFiles) => {
 				const files = allowedFiles.filter(f => f);
-				if (!files.length) {
-					return Promise.reject(new Forbidden());
-				}
-
 				return files;
 			})
 			.catch((e) => {

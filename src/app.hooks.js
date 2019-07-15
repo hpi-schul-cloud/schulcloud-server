@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
+const Entities = require('html-entities').AllHtmlEntities;
+const entities = new Entities();
 
 const globalHooks = require('./hooks/');
 
@@ -31,7 +33,10 @@ const sanitize = (data, options) => {
 			},
 		});
 	}
-	return data;
+	// something during sanitizeHtml() is encoding HTML Entities like & => &amp;
+	// I wasn't able to figure out which option disables this so I just decode it again.
+	// BTW: html-entities is already a dependency of sanitize-html so no new imports where done here.
+	return entities.decode(data);
 };
 
 /**
