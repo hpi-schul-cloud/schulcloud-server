@@ -1,4 +1,4 @@
-const hooks = require('./hooks/maintenance');
+const hooks = require('./hooks/maintenance.hooks');
 const { schoolModel: School } = require('./model');
 
 const ldapSystemFilter = s => s.type === 'ldap' && s.ldapConfig && s.ldapConfig.active === true;
