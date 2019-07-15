@@ -174,6 +174,7 @@ const fileStorageService = {
 				.then(() => FileModel.findOne(props).exec().then(
 					modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 				))
+				.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props))
 				.catch((e) => {
 					logger.error(e);
 					return Promise.reject(new Forbidden());
