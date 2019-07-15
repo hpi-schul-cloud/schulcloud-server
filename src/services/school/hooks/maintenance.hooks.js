@@ -14,7 +14,7 @@ module.exports = {
 		create: [
 			globalHooks.ifNotLocal(globalHooks.hasPermission('SCHOOL_EDIT')),
 		],
-		update: [hooks.disable()],
+		update: [hooks.disallow()],
 		get: [hooks.disallow()],
 		patch: [hooks.disallow()],
 		remove: [hooks.disallow()],
