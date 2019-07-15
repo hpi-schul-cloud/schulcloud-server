@@ -5,16 +5,17 @@ const ldapSystemFilter = s => s.type === 'ldap' && s.ldapConfig && s.ldapConfig.
 
 const schoolUsesLdap = school => school.systems.some(ldapSystemFilter);
 
+const determineNextYear = year => year;
+
 const getStatus = school => ({
 	currentYear: school.currentYear,
+	nextYear: determineNextYear(school.currentYear),
 	schoolUsesLdap: schoolUsesLdap(school),
 	maintenance: {
 		active: school.inMaintenance,
 		startDate: school.inMaintenanceSince,
 	},
 });
-
-const determineNextYear = year => year;
 
 class SchoolMaintenanceService {
 	setup(app) {
