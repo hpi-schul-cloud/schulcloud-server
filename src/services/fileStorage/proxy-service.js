@@ -1,6 +1,11 @@
 const fs = require('fs');
 const rp = require('request-promise-native');
-const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
+const {
+	Forbidden,
+	BadRequest,
+	NotFound,
+	GeneralError,
+} = require('@feathersjs/errors');
 
 const hooks = require('./hooks');
 const swaggerDocs = require('./docs/');
@@ -14,6 +19,7 @@ const {
 	generateFlatFileName,
 	copyFile,
 	createCorrectStrategy,
+	createDefaultPermissions,
 } = require('./utils/');
 const { FileModel } = require('./model');
 const RoleModel = require('../role/model');
@@ -38,81 +44,33 @@ const fileStorageService = {
      */
 	async create(data, params) {
 		const { payload: { userId } } = params;
-		const { owner, parent, studentCanEdit } = data;
-		const permissions = [{
-			refId: userId,
-			refPermModel: 'user',
-			write: true,
-			read: true,
-			create: true,
-			delete: true,
-		}];
-		const setRefId = (perm) => {
-			if (!perm.refId) {
-				perm.refId = perm._id;
-			}
-			return perm;
-		};
-
-		let { permissions: sendPermissions } = data;
+		const {
+			owner,
+			parent,
+			studentCanEdit,
+			permissions: sendPermissions = [],
+		} = data;
 		let isCourse = true;
+		let refOwnerModel = 'user';
 
 		if (owner) {
 			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
+			refOwnerModel = isCourse ? 'course' : 'teams';
 		}
-
-		if (isCourse) {
-			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
-			const { _id: teacherRoleId } = await RoleModel.findOne({ name: 'teacher' }).exec();
-
-			permissions.push({
-				refId: studentRoleId,
-				refPermModel: 'role',
-				write: Boolean(studentCanEdit),
-				read: true, // students can always read course files
-				create: false,
-				delete: false,
-			});
-
-			permissions.push({
-				refId: teacherRoleId,
-				refPermModel: 'role',
-				write: true,
-				read: true,
-				create: false,
-				delete: false,
-			});
-		}
-		// eslint-disable-line no-nested-ternary
-		const refOwnerModel = owner ? (isCourse ? 'course' : 'teams') : 'user';
-
-		if (!sendPermissions && refOwnerModel === 'teams') {
-			const teamObject = await teamsModel.findOne({ _id: owner }).lean().exec();
-			const teamRoles = await RoleModel.find({ name: /^team/ }).lean().exec();
-			const { filePermission: defaultPermissions } = teamObject;
-
-			sendPermissions = teamRoles.map(({ _id: roleId }) => {
-				const defaultPerm = defaultPermissions.find(({ refId }) => roleId.equals(refId));
-
-				return defaultPerm || {
-					refId: roleId,
-					refPermModel: 'role',
-					write: true,
-					read: true,
-					create: true,
-					delete: true,
-				};
-			});
-		} else {
-			sendPermissions = [];
-		}
+		const permissions = await createDefaultPermissions(
+			userId,
+			refOwnerModel,
+			{ studentCanEdit, sendPermissions, owner },
+		).catch((err) => {
+			throw new GeneralError('Can not create default Permissions', err);
+		});
 
 		const props = sanitizeObj(Object.assign(data, {
 			isDirectory: false,
 			owner: owner || userId,
 			parent,
 			refOwnerModel,
-			permissions: [...permissions, ...sendPermissions].map(setRefId),
+			permissions,
 			storageFileName: decodeURIComponent(data.storageFileName),
 		}));
 
@@ -446,9 +404,10 @@ const directoryService = {
 
 		let { permissions: sendPermissions } = data;
 		let isCourse = true;
-
+		let refOwnerModel = 'user';
 		if (owner) {
 			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
+			refOwnerModel = isCourse ? 'course' : 'teams';
 		}
 
 		if (isCourse) {
@@ -473,7 +432,7 @@ const directoryService = {
 			isDirectory: true,
 			owner: owner || userId,
 			parent,
-			refOwnerModel: owner ? (isCourse ? 'course' : 'teams') : 'user',
+			refOwnerModel,
 			permissions: [...permissions, ...sendPermissions].map(setRefId),
 		}));
 

@@ -40,8 +40,8 @@ class CourseCopyService {
 		/* In the hooks some strange things happen, and the Id doesnt get here.
 		Thats why we use copyCourseId (_id works in case of import)
 		Todo: clean up different usecases */
-		const courseId = data.copyCourseId || data._id; // blub... :-)
-		const course = await courseModel.findOne({ _id: courseId });
+		const sourceCourseId = data.copyCourseId || data._id; // blub... :-)
+		const course = await courseModel.findOne({ _id: sourceCourseId });
 
 		let tempCourse = JSON.parse(JSON.stringify(course));
 		const attributs = [
@@ -63,12 +63,12 @@ class CourseCopyService {
 		tempCourse = _.omit(tempCourse, attributs);
 
 		tempCourse = Object.assign(tempCourse, tempData, { userId: (params.account || {}).userId });
-		tempCourse.isCopyFrom = courseId;
+		tempCourse.isCopyFrom = sourceCourseId;
 		const res = await this.app.service('courses').create(tempCourse);
 
 		const [homeworks, lessons] = await Promise.all([
-			homeworkModel.find({ courseId }).populate('lessonId'),
-			lessonsModel.find({ courseId }),
+			homeworkModel.find({ courseId: sourceCourseId }).populate('lessonId'),
+			lessonsModel.find({ courseId: sourceCourseId }),
 		]);
 
 		await Promise.all(lessons.map(lesson => createLesson(
@@ -149,8 +149,8 @@ class CourseShareService {
 		const copyService = this.app.service('courses/copy');
 
 		return courseModel.find({ shareToken })
-			.then((course) => {
-				course = course[0];
+			.then((courses) => {
+				const course = courses[0];
 				let tempCourse = JSON.parse(JSON.stringify(course));
 				tempCourse = _.omit(
 					tempCourse,

@@ -57,7 +57,7 @@ const printResults = out => Promise.all(out.requests).then(() => {
 		L.info(`fail:${out.fail.length}`);
 	}
 	L.info('\n');
-	L.info('AddPositionToLessons up is finished!');
+	L.info('LessonCopyFrom up is finished!');
 	L.info('<---------------------------------->');
 });
 

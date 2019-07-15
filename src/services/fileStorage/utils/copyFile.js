@@ -2,6 +2,7 @@ const { BadRequest, NotFound } = require('@feathersjs/errors');
 const { FileModel } = require('../model');
 const createCorrectStrategy = require('./createCorrectStrategy');
 const { generateFileNameSuffix } = require('./filePathHelper');
+const { createDefaultPermissions } = require('./createDefaultPermissions');
 
 const safeOverrideAndClear = (source, override) => {
 	Object.keys(override).forEach((key) => {
@@ -12,33 +13,6 @@ const safeOverrideAndClear = (source, override) => {
 	delete source.createAt;
 	return source;
 };
-
-const createNewPermissions = userId => [
-	{
-		refId: userId,
-		refPermModel: 'user',
-		delete: true,
-		create: true,
-		read: true,
-		write: true,
-	},
-	{
-		refId: '0000d186816abba584714c99',
-		refPermModel: 'role',
-		delete: false,
-		create: false,
-		read: true,
-		write: false,
-	},
-	{
-		refId: '0000d186816abba584714c98',
-		refPermModel: 'role',
-		delete: false,
-		create: false,
-		read: true,
-		write: true,
-	},
-];
 
 const copyFile = async (data, params, permissionHandler) => {
 	// file = sourceFileId  | parent = newCourseId
@@ -74,7 +48,8 @@ const copyFile = async (data, params, permissionHandler) => {
 		await permissionHandler(userId, file, parent);
 	} else {
 		// first step for intern call, for extern must validate later
-		newFileObject.permissions = createNewPermissions(userId);
+		// todo: should studentCanCreate fetch from sourceCourse?
+		newFileObject.permissions = createDefaultPermissions(userId, 'course');
 	}
 	// copy file on external storage
 	newFileObject.storageFileName = generateFileNameSuffix(newFileObject.name || fileObject.name);

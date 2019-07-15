@@ -17,6 +17,8 @@ const permissionSchema = new Schema({
 	delete: { type: Boolean, default: true },
 }, { _id: false });
 
+
+
 /**
  * handles meta-data for a file
  * @param isDirectory {Boolean} - is this a directory
@@ -62,4 +64,5 @@ fileSchema.index({ name: 'text' });
 module.exports = {
 	FileModel: mongoose.model('file', fileSchema),
 	permissionSchema,
+	FilePermissionModel: mongoose.model('filePermissionModel', permissionSchema),
 };

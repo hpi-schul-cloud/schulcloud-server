@@ -13,6 +13,8 @@ const {
 const copyFile = require('./copyFile');
 const createCorrectStrategy = require('./createCorrectStrategy');
 
+const { createPermission, createDefaultPermissions } = require('./createDefaultPermissions');
+
 module.exports = {
 	canWrite,
 	canRead,
@@ -22,4 +24,6 @@ module.exports = {
 	generateFlatFileName,
 	copyFile,
 	createCorrectStrategy,
+	createPermission,
+	createDefaultPermissions,
 };
