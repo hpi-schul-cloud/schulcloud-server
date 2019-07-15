@@ -70,8 +70,7 @@ function deploytostaging {
 }
 
 # create version file
-npm i version-info 
-run version
+npm run version
 cat version.json
 
 function inform {
