@@ -9,6 +9,7 @@ const hooks = require('./hooks');
 const courseGroupsHooks = require('./hooks/courseGroups');
 const courseCopyService = require('./course-copy-service');
 const classHooks = require('./hooks/classes');
+const { /* ScopePermissionService, */ ScopeListService } = require('../helpers/scopePermissions');
 
 // eslint-disable-next-line func-names
 module.exports = function () {
@@ -63,4 +64,40 @@ module.exports = function () {
 	}));
 	const gradeService = app.service('/grades');
 	gradeService.hooks(hooks);
+
+	ScopeListService.initialize(app, '/users/:scopeId/courses', async (user, permissions, params) => {
+		let filter = 'active';
+		if (params.query.filter && ['active', 'archived', 'all'].includes(params.query.filter)) {
+			({ filter } = params.query);
+		}
+		const userQuery = {
+			$or: [
+				{ userIds: user._id },
+				{ teacherIds: user._id },
+				{ substitutionIds: user._id },
+			],
+		};
+		let untilQuery = {};
+
+		if (filter === 'active') {
+			untilQuery = {
+				$or: [
+					{ untilDate: { $exists: false } },
+					{ untilDate: { $gte: Date.now() } },
+				],
+			};
+		}
+		if (filter === 'archived') {
+			untilQuery = { untilDate: { $lt: Date.now() } };
+		}
+
+		return app.service('courses').find({
+			query: {
+				$and: [
+					userQuery,
+					untilQuery,
+				],
+			},
+		});
+	});
 };
