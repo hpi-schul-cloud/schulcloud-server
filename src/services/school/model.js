@@ -54,7 +54,9 @@ const schoolSchema = new Schema({
 });
 
 const yearSchema = new Schema({
-	name: { type: String, required: true, match: /^[0-9]{4}\/[0-9]{2}$/ },
+	name: {
+		type: String, required: true, match: /^[0-9]{4}\/[0-9]{2}$/, unique: true,
+	},
 	startDate: { type: Date, required: true },
 	endDate: { type: Date, required: true },
 });
