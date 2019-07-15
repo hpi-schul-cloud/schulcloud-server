@@ -9,6 +9,12 @@ const { homeworkModel } = require('../homework/model');
 const { copyFile } = require('../fileStorage/utils/');
 
 class LessonFilesService {
+	exec(files = [], lesson) {
+		return files.filter(f => _.some((lesson.contents || []), content => content.component === 'text'
+                && content.content.text
+                && _.includes(content.content.text, f.key)));
+	}
+
 	/**
      * @returns all files which are included in text-components of a given lesson
      * @param lessonId
@@ -24,12 +30,9 @@ class LessonFilesService {
 				throw new errors.NotFound('No lesson was not found for given lessonId and shareToken!');
 			}
 			// fetch files in the given course and check whether they are included in the lesson
-			return FileModel.find({ path: { $regex: lesson.courseId } }).then(files => Promise.all((files || []).filter(f =>
-
 			// check whether the file is included in any lesson
-				_.some((lesson.contents || []), content => content.component === 'text'
-                        && content.content.text
-                        && _.includes(content.content.text, f.key)))));
+			return FileModel.find({ path: { $regex: lesson.courseId } })
+				.then(files => this.exec(files, lesson));
 		});
 	}
 }
