@@ -1,4 +1,4 @@
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest, NotFound } = require('@feathersjs/errors');
 const { schoolModel: School } = require('../model');
 
 /**
@@ -11,11 +11,15 @@ module.exports = async (context) => {
 		throw new BadRequest('Missing request params');
 	}
 	const { schoolId } = context.params.route;
-	context.params.school = await School
-		.findById(schoolId)
-		.select(['name', 'currentYear', 'inMaintenanceSince', 'inMaintenance'])
-		.populate(['currentYear', 'systems'])
-		.lean({ virtuals: true })
-		.exec();
+	try {
+		context.params.school = await School
+			.findById(schoolId)
+			.select(['name', 'currentYear', 'inMaintenanceSince', 'inMaintenance'])
+			.populate(['currentYear', 'systems'])
+			.lean({ virtuals: true })
+			.exec();
+	} catch (err) {
+		throw new NotFound('School not found');
+	}
 	return context;
 };
