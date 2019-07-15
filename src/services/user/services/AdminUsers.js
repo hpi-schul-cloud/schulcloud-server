@@ -12,7 +12,7 @@ const getCurrentUser = id => userModel.findById(id)
 	.lean()
 	.exec();
 
-const getAllUsers = (schoolId, roles, sortObject, skip = 0, limit = NaN) => userModel.find({ schoolId, roles })
+const getAllUsers = (schoolId, roles, sortObject, skip = 0, limit = 0) => userModel.find({ schoolId, roles })
 	.select('firstName lastName email createdAt')
 	.skip(skip)
 	.limit(limit)
@@ -83,7 +83,7 @@ class AdminUsers {
 						studentRole._id,
 						(params.query || {}).$sort,
 						parseInt((params.query || 0).$skip, 10),
-						parseInt((params.query || NaN).$limit, 10),
+						parseInt((params.query || 0).$limit, 10),
 					),
 					getClasses(this.app, schoolId),
 				],
