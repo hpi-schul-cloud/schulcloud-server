@@ -21,7 +21,7 @@ const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 
-const FILEPREVIEW_SERVICE_URI = process.env.FILEPREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
+const FILE_PREVIEW_SERVICE_URI = process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
 const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI
 || 'http://localhost:3030/fileStorage/thumbnail/';
 const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || false;
@@ -61,7 +61,7 @@ const prepareThumbnailGeneration = (file, strategy, userId, data, props) => Prom
 	Promise.resolve(file),
 ]).then(([downloadUrl, signedS3Url, f]) => {
 	rp.post({
-		url: FILEPREVIEW_SERVICE_URI,
+		url: FILE_PREVIEW_SERVICE_URI,
 		body: {
 			downloadUrl,
 			signedS3Url,
