@@ -107,5 +107,4 @@ module.exports = {
 	canCreate: checkPermissions('create'),
 	canDelete: checkPermissions('delete'),
 	readFiles: getAllowedFiles('read'),
-	checkTeamPermissionsNew,
 };

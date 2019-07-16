@@ -12,7 +12,6 @@ const {
 	readFiles,
 	canCreate,
 	canDelete,
-	checkTeamPermissionsNew,
 } = require('./utils/filePermissionHelper');
 const { returnFileType, generateFileNameSuffix: generateFlatFileName } = require('./utils/filePathHelper');
 const { FileModel } = require('./model');
