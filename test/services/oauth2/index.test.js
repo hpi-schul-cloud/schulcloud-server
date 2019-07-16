@@ -5,6 +5,7 @@ const oauth2 = require('simple-oauth2');
 const request = require('request-promise-native');
 
 const app = require('../../../src/app');
+const logger = require('../../../src/logger/');
 
 const clientsService = app.service('oauth2/clients');
 const loginService = app.service('oauth2/loginRequest');
@@ -103,7 +104,7 @@ describe('oauth2 service', function oauthTest() {
 					followRedirect: false,
 				}).catch((res) => {
 					const position = res.error.indexOf('login_challenge=')
-						+ 'login_challenge'.length + 1;
+							+ 'login_challenge'.length + 1;
 					loginRequest1 = res.error.substr(position, 32);
 					request({
 						uri: authorizationUri,
@@ -111,21 +112,27 @@ describe('oauth2 service', function oauthTest() {
 						followRedirect: false,
 					}).catch((res2) => {
 						const position2 = res2.error.indexOf('login_challenge=')
-							+ 'login_challenge'.length + 1;
+								+ 'login_challenge'.length + 1;
 						loginRequest2 = res2.error.substr(position2, 32);
 						done();
 					});
 				});
+			}).catch((err) => {
+				logger.warning('Can not execute oauth2 before all hook.', err);
+				done();
 			});
 		});
 	});
 
 	after((done) => {
 		Promise.all([
-			toolService.remove(testTool1),
-			toolService.remove(testTool2),
+			toolService.remove(testTool1._id),
+			toolService.remove(testTool2._id),
 			clientsService.remove(testClient2.client_id),
-		]).then((results) => {
+		]).then(() => {
+			done();
+		}).catch((err) => {
+			logger.warning('Can not execute oauth2 after all hook.', err);
 			done();
 		});
 	});

@@ -18,7 +18,6 @@ const permissionSchema = new Schema({
 }, { _id: false });
 
 
-
 /**
  * handles meta-data for a file
  * @param isDirectory {Boolean} - is this a directory

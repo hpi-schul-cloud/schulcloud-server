@@ -82,10 +82,13 @@ describe('courses service', () => {
 			chai.expect(courseName).to.equal('Mathe');
 		}));
 
-	it('creates a course copy through shareToken', () => shareCourseService.create({ shareToken, courseName: 'testCourse 76', userId: testUserId })
-		.then((course) => {
-			chai.expect(course.name).to.equal('testCourse 76');
-		}));
+	it('creates a course copy through shareToken', () => shareCourseService.create({ 
+		shareToken,
+		courseName: 'testCourse 76',
+		userId: testUserId,
+	}).then((course) => {
+		chai.expect(course.name).to.equal('testCourse 76');
+	}));
 
 	it('creates a courseGroup in a course', () => {
 		testCourseGroup.courseId = courseId;
