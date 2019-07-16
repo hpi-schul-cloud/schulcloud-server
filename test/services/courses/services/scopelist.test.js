@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
 
 const courseScopeListService = app.service('/users/:scopeId/courses');
 
@@ -112,9 +113,48 @@ describe.only('courses scopelist service', () => {
 });
 
 describe.only('courses scopelist service integration', () => {
-	it('fails without authorization');
+	let server;
 
-	it('fails for other user');
+	before((done) => {
+		server = app.listen(0, done);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
+	it('fails without authorization', async () => {
+		try {
+			const user = await testObjects.createTestUser();
+			await courseScopeListService.find({
+				route: { scopeId: user._id },
+				query: {},
+				provider: 'rest',
+			});
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err).to.not.equal(undefined);
+			expect(err.name).to.equal('NotAuthenticated');
+			expect(err.message).to.equal('No auth token');
+		}
+	});
+
+	it('fails for other user'/* , async () => {
+		try {
+			const targetUser = await testObjects.createTestUser();
+			const caller = await testObjects.createTestUser();
+			const requestParams = generateRequestParamsFromUser(caller);
+			requestParams.query = {};
+			requestParams.route = { scopeId: targetUser._id };
+			await courseScopeListService.find(requestParams);
+			throw new Error('should have failed');
+		} catch (err) {
+			console.log(err);
+			expect(err).to.not.equal(undefined);
+			expect(err.name).to.equal('NotAuthenticated');
+			expect(err.message).to.equal('No auth token');
+		}
+	} */);
 
 	it('works for student of a course');
 
