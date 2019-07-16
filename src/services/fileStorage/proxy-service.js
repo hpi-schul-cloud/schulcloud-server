@@ -42,7 +42,7 @@ const sanitizeObj = (obj) => {
 	return obj;
 };
 
-const prepareThumbnailGeneration = (file, strategy, userId, data, props) => Promise.all([
+const prepareThumbnailGeneration = (file, strategy, userId, data, props) => (ENABLE_THUMBNAIL_GENERATION ? Promise.all([
 	strategy.getSignedUrl({
 		userId,
 		flatFileName: props.storageFileName,
@@ -58,21 +58,20 @@ const prepareThumbnailGeneration = (file, strategy, userId, data, props) => Prom
 		),
 		fileType: data.type,
 	}),
-	Promise.resolve(file),
-]).then(([downloadUrl, signedS3Url, f]) => {
+]).then(([downloadUrl, signedS3Url]) => {
 	rp.post({
 		url: FILE_PREVIEW_SERVICE_URI,
 		body: {
 			downloadUrl,
 			signedS3Url,
-			callbackUrl: url.resolve(FILE_PREVIEW_CALLBACK_URI, f.thumbnailRequestToken),
+			callbackUrl: url.resolve(FILE_PREVIEW_CALLBACK_URI, file.thumbnailRequestToken),
 			options: {
 				width: 120,
 			},
 		},
 		json: true,
 	});
-});
+}) : Promise.resolve());
 
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
@@ -167,6 +166,7 @@ const fileStorageService = {
 			storageFileName: decodeURIComponent(data.storageFileName),
 		}));
 
+
 		// create db entry for new file
 		// check for create permissions on parent
 		if (parent) {
@@ -184,9 +184,7 @@ const fileStorageService = {
 		return FileModel.findOne(props)
 			.exec()
 			.then(modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-			.then(file => (ENABLE_THUMBNAIL_GENERATION
-				? prepareThumbnailGeneration(file, strategy, userId, data, props)
-				: Promise.resolve()));
+			.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props));
 	},
 
 	/**
