@@ -544,6 +544,18 @@ module.exports = function setup() {
 					perm => perm.refId.toString() === role.toString(),
 				);
 
+				if (!file.owner.userIds) {
+					return {
+						file,
+						permissions: {
+							read: false,
+							write: false,
+							create: false,
+							delete: false,
+						},
+					};
+				}
+
 				const { role: creatorRole } = file.owner.userIds.find(
 					_ => _.userId.toString()
 						=== file.permissions[0].refId.toString(), // fileCreator

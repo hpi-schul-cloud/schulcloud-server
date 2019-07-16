@@ -1,22 +1,12 @@
-<<<<<<< HEAD
-=======
-const logger = require('../../../logger');
-
->>>>>>> develop
-const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
 const { submissionModel } = require('../../homework/model');
-
-const getFile = id => FileModel
-	.findOne({ _id: id })
-	.populate('owner')
-	.exec();
 
 const checkTeamPermissionsNew = async (userId, files, permission, app) => {
 	const teamListService = app.service('/users/:scopeId/teams');
 	const teams = await teamListService.find({
 		route: { scopeId: userId.toString() },
 	});
+
 
 	const fileListService = app.service('/teams/:scopeId/files');
 	const fileMap = await fileListService.find({
@@ -30,31 +20,33 @@ const checkTeamPermissionsNew = async (userId, files, permission, app) => {
 
 const checkMemberStatus = ({ file, user }) => {
 	const { owner: { userIds, teacherIds } } = file;
-	const finder = obj => user.equals(obj.userId || obj);
 
 	if (!userIds && !teacherIds) {
 		return false;
 	}
 
+	const finder = obj => user.equals(obj.userId || obj);
+
 	return userIds.find(finder) || (teacherIds && teacherIds.find(finder));
 };
 
 const checkPermissions = permission => async (user, file) => {
-	const fileObject = await getFile(file);
 	const {
 		permissions,
 		refOwnerModel,
 		owner: { _id: owner },
-	} = fileObject;
+	} = file;
+
 
 	// return always true for owner of file
 	if (user.toString() === owner.toString()) {
 		return Promise.resolve(true);
 	}
 
-	const isMember = checkMemberStatus({ file: fileObject, user });
+	const isMember = checkMemberStatus({ file, user });
+
 	const userPermissions = permissions
-		.find(perm => perm.refId && perm.refId.toString() === user.toString());
+		.find(perm => perm.refId && perm.refId.equals(user));
 
 	// User is no member of team or course
 	// and file has no explicit user permissions (sharednetz files)
@@ -62,12 +54,12 @@ const checkPermissions = permission => async (user, file) => {
 		return Promise.reject();
 	}
 
-	const isSubmission = await submissionModel.findOne({ fileIds: fileObject._id });
+	const isSubmission = await submissionModel.findOne({ fileIds: file._id }).lean().exec();
 
 	// or legacy course model
 	// TODO: Check member status of teacher if submission
 	if (refOwnerModel === 'course' || isSubmission) {
-		const userObject = await userModel.findOne({ _id: user }).populate('roles').exec();
+		const userObject = await userModel.findOne({ _id: user }).populate({ path: 'roles' }).exec();
 		const isStudent = userObject.roles.find(role => role.name === 'student');
 
 		if (isStudent) {
@@ -87,10 +79,33 @@ const checkPermissions = permission => async (user, file) => {
 	return false;
 };
 
+const getAllowedFiles = permission => (userId, files, app) => {
+	const fileCheck = checkPermissions(permission);
+
+	const permissionPromises = files.map(file => fileCheck(userId, file));
+
+	return Promise.all([checkTeamPermissionsNew(userId, files, permission, app), ...permissionPromises])
+		.then(([allowedFilesTeam, ...allowedFilesMask]) => {
+			const allowedFiles = files.filter((_, index) => allowedFilesMask[index]);
+
+			const teamFiles = allowedFilesTeam
+				.filter(teamFile => !allowedFiles
+					.some(file => file._id.toString() === teamFile._id.toString()));
+
+
+			return [...allowedFiles, ...teamFiles].map((file) => {
+				file.owner = file.owner._id;
+
+				return file;
+			});
+		});
+};
+
 module.exports = {
 	canWrite: checkPermissions('write'),
 	canRead: checkPermissions('read'),
 	canCreate: checkPermissions('create'),
 	canDelete: checkPermissions('delete'),
+	readFiles: getAllowedFiles('read'),
 	checkTeamPermissionsNew,
 };

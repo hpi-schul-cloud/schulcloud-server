@@ -1,7 +1,7 @@
 const fs = require('fs');
-const logger = require('../../logger');
 const rp = require('request-promise-native');
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
+const logger = require('../../logger');
 
 const hooks = require('./hooks');
 const AWSStrategy = require('./strategies/awsS3');
@@ -9,6 +9,7 @@ const swaggerDocs = require('./docs/');
 const {
 	canWrite,
 	canRead,
+	readFiles,
 	canCreate,
 	canDelete,
 	checkTeamPermissionsNew,
@@ -158,24 +159,11 @@ const fileStorageService = {
 			? canRead(userId, parent).catch(() => Promise.reject(new Forbidden()))
 			: Promise.resolve();
 
+
 		return parentPromise
 			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).populate('owner').exec())
-			.then((files) => {
-				const permissionPromises = files.map(
-					f => canRead(userId, f)
-						.then(() => f)
-						.catch(() => undefined),
-				);
-				const teamPermissions = checkTeamPermissionsNew(userId, files, 'read', this.app);
-				return Promise.all([teamPermissions, ...permissionPromises]);
-			})
-			.then(([allowedFilesTeam, ...allowedFiles]) => {
-				const teamFiles = allowedFilesTeam
-					.filter(teamFile => !allowedFiles
-						.some(file => file._id.toString() === teamFile._id.toString()));
-
-				const allFiles = [...allowedFiles, ...teamFiles];
-
+			.then(files => readFiles(userId, files, this.app))
+			.then((allFiles) => {
 				if (!allFiles.length) {
 					return new Forbidden();
 				}
