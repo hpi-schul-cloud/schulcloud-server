@@ -8,6 +8,8 @@ const createTestCourse = (app, opt) => ({
 	classIds = [],
 	teacherIds = [],
 	ltiToolIds = [],
+	startDate,
+	untilDate,
 }) => app.service('courses').create({
 	// required fields for user
 	name,
@@ -16,6 +18,8 @@ const createTestCourse = (app, opt) => ({
 	classIds,
 	teacherIds,
 	ltiToolIds,
+	startDate,
+	untilDate,
 }).then((course) => {
 	createdCourseIds.push(course._id.toString());
 	return course;
