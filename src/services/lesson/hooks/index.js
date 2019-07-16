@@ -29,8 +29,8 @@ const checkIfCourseShareable = (hook) => {
 };
 
 const setPosition = async (context) => {
-	const { courseId } = context.data;
-	if (courseId) {
+	const { courseId, courseGroupId } = context.data;
+	if (courseId || courseGroupId) {
 		const lessons = await context.app.service('lessons').find({
 			query: {
 				courseId,
