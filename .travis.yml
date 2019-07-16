@@ -8,6 +8,9 @@ services:
 - docker
 #- mongodb
 
+git:
+  depth: false
+
 env:
   global:
     - GIT_SHA=$( git rev-parse HEAD )
