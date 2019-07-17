@@ -67,18 +67,24 @@ module.exports = function () {
 
 	ScopeListService.initialize(app, '/users/:scopeId/courses', async (user, permissions, params) => {
 		let filter = 'active';
+		let substitution = 'false';
 		if (params.query.filter && ['active', 'archived', 'all'].includes(params.query.filter)) {
 			({ filter } = params.query);
 		}
-		const userQuery = {
-			$or: [
+		if (params.query.substitution && ['true', 'false', 'all'].includes(params.query.substitution)) {
+			({ substitution } = params.query);
+		}
+
+		const userQuery = { $or: [] };
+		if (['false', 'all'].includes(substitution)) {
+			userQuery.$or.push(
 				{ userIds: user._id },
 				{ teacherIds: user._id },
-				{ substitutionIds: user._id },
-			],
-		};
-		let untilQuery = {};
+			);
+		}
+		if (['true', 'all'].includes(substitution)) userQuery.$or.push({ substitutionIds: user._id });
 
+		let untilQuery = {};
 		if (filter === 'active') {
 			untilQuery = {
 				$or: [
