@@ -1,9 +1,5 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const assert = require('assert');
-const express = require('express');
-const { promisify } = require('es6-promisify');
-const freeport = promisify(require('freeport'));
 const app = require('../../../../src/app');
 const moodleMockServer = require('./moodleMockServer');
 
@@ -12,7 +8,6 @@ const testObjects = require('../../helpers/testObjects')(app);
 const { logger } = app;
 
 chai.use(chaiHttp);
-const should = chai.should();
 
 describe('Moodle single-sign-on', () => {
 	let mockMoodle = null;
@@ -37,7 +32,7 @@ describe('Moodle single-sign-on', () => {
 		.then((moodle) => {
 			mockMoodle = moodle;
 			return Promise.all([
-				testObjects.createTestSystem({ url: moodle.url }),
+				testObjects.createTestSystem({ url: moodle.url, type: 'moodle' }),
 				testObjects.createTestUser()]);
 		})
 		.then(([system, testUser]) => {
