@@ -68,4 +68,5 @@ class SchoolMaintenanceService {
 
 module.exports = {
 	SchoolMaintenanceService,
+	schoolUsesLdap,
 };
