@@ -101,12 +101,6 @@ describe.only('courses scopelist service', () => {
 
 	it('may fetch only courses as substitution teacher');
 
-	it('may fetch count of active courses');
-
-	it('may fetch count of archived courses');
-
-	it('may fetch count of all courses');
-
 	after(async () => {
 		await testObjects.cleanup();
 	});
@@ -139,22 +133,7 @@ describe.only('courses scopelist service integration', () => {
 		}
 	});
 
-	it('fails for other user'/* , async () => {
-		try {
-			const targetUser = await testObjects.createTestUser();
-			const caller = await testObjects.createTestUser();
-			const requestParams = generateRequestParamsFromUser(caller);
-			requestParams.query = {};
-			requestParams.route = { scopeId: targetUser._id };
-			await courseScopeListService.find(requestParams);
-			throw new Error('should have failed');
-		} catch (err) {
-			console.log(err);
-			expect(err).to.not.equal(undefined);
-			expect(err.name).to.equal('NotAuthenticated');
-			expect(err.message).to.equal('No auth token');
-		}
-	} */);
+	it('fails for other user');
 
 	it('works for student of a course');
 
