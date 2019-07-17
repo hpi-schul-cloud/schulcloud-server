@@ -28,8 +28,8 @@ const rssFeedSchema = new Schema({
 
 const customYearSchema = new Schema({
 	yearId:	{ type: Schema.Types.ObjectId, ref: 'year', required: true },
-	customStartDate: { type: Date, required: true },
-	customEndDate: { type: Date, required: true },
+	startDate: { type: Date, required: true },
+	endDate: { type: Date, required: true },
 });
 
 const schoolSchema = new Schema({
@@ -72,6 +72,7 @@ const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 module.exports = {
 	schoolModel,
 	yearModel,
+	customYearSchema,
 	gradeLevelModel,
 	fileStorageTypes,
 };

@@ -1,22 +1,30 @@
 const { yearModel: YearModel, schoolModel: SchoolModel } = require('../model');
 
 class SchoolYears {
-	constructor(years, customYears, currentYear) {
+	constructor(years, school) {
 		/** retrieves custom year for given year id
 		 * @param yearId ObjectId
 		*/
-		const customYear = yearId => customYears.filter(year => String(year._id) === String(yearId));
+		const customYearsOf = yearId => (school.customYears || [])
+			.filter(year => String(year._id) === String(yearId));
 		/** overrides year values with custom year values if they have been defined */
 		const generateSchoolYears = () => this.years.map((year) => {
-			const customYearForYear = customYear(year._id, customYears);
+			const customYearForYear = customYearsOf(year._id);
 			if (customYearForYear.length !== 0) {
-				return customYearForYear[0];
+				const customYear = year;
+				if (customYearForYear.startDate) {
+					customYear.startDate = customYearForYear.startDate;
+				}
+				if (customYearForYear.endDate) {
+					customYear.endDate = customYearForYear.endDate;
+				}
+				return customYear;
 			}
 			return year;
 		});
 		this.years = years.sort(this.yearCompare);
-		this.customYears = customYears.sort(this.yearCompare);
-		this.currentYear = currentYear;
+		this.customYears = school.customYears.sort(this.yearCompare);
+		this.currentYear = school.currentYear;
 		this.schoolYears = generateSchoolYears();
 	}
 
@@ -118,15 +126,4 @@ class SchoolYears {
 	}
 }
 
-module.exports = {
-	defaultYears: () => YearModel.find().lean().exec(),
-	schoolSettings: schoolId => SchoolModel
-		.findById(schoolId).lean().exec().then((school) => {
-			if (school == null) {
-				throw new Error('could not resolve given schoolId');
-			}
-			const { customYears, currentYear } = school;
-			return { customYears, currentYear };
-		}),
-	SchoolYears,
-};
+module.exports = SchoolYears;
