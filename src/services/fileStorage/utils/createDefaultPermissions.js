@@ -79,7 +79,11 @@ const teamHandler = async (owner) => {
 	});
 };
 
-const createDefaultPermissions = async (userId, type, { studentCanEdit, sendPermissions = [], owner }) => {
+const createDefaultPermissions = async (
+	userId,
+	type,
+	{ studentCanEdit, sendPermissions = [], owner } = { sendPermissions: [] },
+) => {
 	let permissions = [createPermission(userId)];
 	let teamDefaultPermissions = [];
 
