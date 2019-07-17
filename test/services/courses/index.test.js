@@ -1,4 +1,6 @@
 const assert = require('assert');
+const chai = require('chai');
+
 const app = require('../../../src/app');
 
 const courseService = app.service('courses');
@@ -6,9 +8,7 @@ const copyCourseService = app.service('courses/copy');
 const shareCourseService = app.service('courses/share');
 const courseGroupService = app.service('courseGroups');
 const lessonsService = app.service('lessons');
-const chai = require('chai');
 
-const { expect } = chai;
 
 const testUserId = '0000d231816abba584714c9e';
 const testCourseExample = '0000dcfbfb5c7a3f00bf21ab';
@@ -73,6 +73,7 @@ describe('courses service', () => {
 
 	it('creates a shareToken for a course', () => shareCourseService.get('0000dcfbfb5c7a3f00bf21ab')
 		.then((course) => {
+			// eslint-disable-next-line prefer-destructuring
 			shareToken = course.shareToken;
 			chai.expect(course.shareToken).to.not.be.undefined;
 		}));
@@ -82,7 +83,7 @@ describe('courses service', () => {
 			chai.expect(courseName).to.equal('Mathe');
 		}));
 
-	it('creates a course copy through shareToken', () => shareCourseService.create({ 
+	it('creates a course copy through shareToken', () => shareCourseService.create({
 		shareToken,
 		courseName: 'testCourse 76',
 		userId: testUserId,
