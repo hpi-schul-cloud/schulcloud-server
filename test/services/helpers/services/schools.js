@@ -21,7 +21,8 @@ const create = app => async ({
 	features = [],
 } = {}) => {
 	if (systems && systems.length === 0) {
-		systems.push((await app.service('systems').find({ type: 'local' })._id));
+		const localSystem = (await app.service('systems').find({ query: { type: 'local' }, paginate: false }))[0];
+		systems.push(localSystem._id);
 	}
 	const school = await School.create({
 		name,
