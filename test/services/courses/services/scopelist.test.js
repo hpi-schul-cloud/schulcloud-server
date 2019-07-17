@@ -95,18 +95,120 @@ describe.only('courses scopelist service', () => {
 		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(true);
 	});
 
-	it('may fetch only courses as student');
+	it('fetches only courses as student/teacher by default', async () => {
+		const user = await testObjects.createTestUser();
+		const courseAsStudent = await testObjects.createTestCourse({
+			userIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const courseAsTeacher = await testObjects.createTestCourse({
+			teacherIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
+			substitutionIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const response = await courseScopeListService.find({
+			route: { scopeId: user._id },
+			query: {},
+		});
+		expect(response).to.not.equal(undefined);
+		expect(response.total).to.equal(2);
+		expect(response.data).to.not.equal(undefined);
+		const courseIds = response.data.map(course => course._id.toString());
+		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(true);
+		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(true);
+		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(false);
+	});
 
-	it('may fetch only courses as teacher');
+	it('may fetch only courses as student/teacher', async () => {
+		const user = await testObjects.createTestUser();
+		const courseAsStudent = await testObjects.createTestCourse({
+			userIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const courseAsTeacher = await testObjects.createTestCourse({
+			teacherIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
+			substitutionIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const response = await courseScopeListService.find({
+			route: { scopeId: user._id },
+			query: { substitution: 'false' },
+		});
+		expect(response).to.not.equal(undefined);
+		expect(response.total).to.equal(2);
+		expect(response.data).to.not.equal(undefined);
+		const courseIds = response.data.map(course => course._id.toString());
+		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(true);
+		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(true);
+		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(false);
+	});
 
-	it('may fetch only courses as substitution teacher');
+	it('may fetch only courses as substitution teacher', async () => {
+		const user = await testObjects.createTestUser();
+		const courseAsStudent = await testObjects.createTestCourse({
+			userIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const courseAsTeacher = await testObjects.createTestCourse({
+			teacherIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
+			substitutionIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const response = await courseScopeListService.find({
+			route: { scopeId: user._id },
+			query: { substitution: 'true' },
+		});
+		expect(response).to.not.equal(undefined);
+		expect(response.total).to.equal(1);
+		expect(response.data).to.not.equal(undefined);
+		const courseIds = response.data.map(course => course._id.toString());
+		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(false);
+		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(false);
+		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(true);
+	});
+
+	it('may fetch as both substitution teacher and student/teacher', async () => {
+		const user = await testObjects.createTestUser();
+		const courseAsStudent = await testObjects.createTestCourse({
+			userIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const courseAsTeacher = await testObjects.createTestCourse({
+			teacherIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
+			substitutionIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const response = await courseScopeListService.find({
+			route: { scopeId: user._id },
+			query: { substitution: 'all' },
+		});
+		expect(response).to.not.equal(undefined);
+		expect(response.total).to.equal(3);
+		expect(response.data).to.not.equal(undefined);
+		const courseIds = response.data.map(course => course._id.toString());
+		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(true);
+		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(true);
+		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(true);
+	});
 
 	after(async () => {
 		await testObjects.cleanup();
 	});
 });
 
-describe.only('courses scopelist service integration', () => {
+describe('courses scopelist service integration', () => {
 	let server;
 
 	before((done) => {

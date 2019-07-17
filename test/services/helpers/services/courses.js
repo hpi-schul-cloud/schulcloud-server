@@ -8,6 +8,7 @@ const createTestCourse = (app, opt) => ({
 	classIds = [],
 	teacherIds = [],
 	ltiToolIds = [],
+	substitutionIds = [],
 	startDate,
 	untilDate,
 }) => app.service('courses').create({
@@ -18,6 +19,7 @@ const createTestCourse = (app, opt) => ({
 	classIds,
 	teacherIds,
 	ltiToolIds,
+	substitutionIds,
 	startDate,
 	untilDate,
 }).then((course) => {
