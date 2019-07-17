@@ -46,7 +46,8 @@ describe('fileStorage services', () => {
 			useCleanCache: true,
 		});
 
-		mockery.registerMock('./strategies/awsS3', AWSStrategy);
+		/* important mockery is match the require import strings */
+		mockery.registerMock('../strategies/awsS3', AWSStrategy);
 
 		// eslint-disable-next-line global-require
 		app = require('../../../src/app');
@@ -270,7 +271,7 @@ describe('fileStorage services', () => {
 
 			fileStorageService.patch('5ca613c4c7f5120b8c5bef37', {
 				parent: '5ca613c4c7f5120b8c5bef36',
-			}, context).then(result => done());
+			}, context).then(() => done());
 		});
 
 		it('should reject moving file without permission', (done) => {
