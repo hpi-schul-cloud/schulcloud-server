@@ -1,4 +1,4 @@
-const { yearModel: YearModel, schoolModel: SchoolModel } = require('../services/school/model');
+const { yearModel: YearModel, schoolModel: SchoolModel } = require('../model');
 
 class SchoolYears {
 	constructor(years, customYears, currentYear) {
@@ -78,6 +78,13 @@ class SchoolYears {
 		return lastYearMaxEndDate;
 	}
 
+	/**
+ *
+ *
+ * @param {ObjectId} yearId the id of a year
+ * @returns
+ * @memberof SchoolYears
+ */
 	getNextYearAfter(yearId) {
 		const indexByValue = (array, value) => {
 			for (let i = 0; i < array.length; i += 1) {
@@ -94,6 +101,20 @@ class SchoolYears {
 			return null;
 		}
 		return this.schoolYears[nextYearIndex];
+	}
+
+	static extractStartYear(yearName) {
+		return parseInt(yearName.substring(0, 4), 10);
+	}
+
+	static getDefaultEndDate(yearName) {
+		const year = SchoolYears.extractStartYear(yearName);
+		return Date.UTC((year + 1), 6, 1); // 1.7.(YEAR+1)
+	}
+
+	static getDefaultStartDate(yearName) {
+		const year = SchoolYears.extractStartYear(yearName);
+		return Date.UTC(year, 7, 1); // 1.8.YEAR
 	}
 }
 
