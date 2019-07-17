@@ -1,4 +1,5 @@
 const fs = require('fs');
+const url = require('url');
 const rp = require('request-promise-native');
 const {
 	Forbidden,
@@ -29,10 +30,46 @@ const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
 
+const FILE_PREVIEW_SERVICE_URI = process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
+const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI
+|| 'http://localhost:3030/fileStorage/thumbnail/';
+const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || false;
+
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
 	return obj;
 };
+
+const prepareThumbnailGeneration = (file, strategy, userId, data, props) => (ENABLE_THUMBNAIL_GENERATION ? Promise.all([
+	strategy.getSignedUrl({
+		userId,
+		flatFileName: props.storageFileName,
+		localFileName: props.storageFileName,
+		download: true,
+		Expires: 3600 * 24,
+	}),
+	strategy.generateSignedUrl({
+		userId,
+		flatFileName: props.storageFileName.replace(
+			/(\..+)$/,
+			'-thumbnail.png',
+		),
+		fileType: data.type,
+	}),
+]).then(([downloadUrl, signedS3Url]) => {
+	rp.post({
+		url: FILE_PREVIEW_SERVICE_URI,
+		body: {
+			downloadUrl,
+			signedS3Url,
+			callbackUrl: url.resolve(FILE_PREVIEW_CALLBACK_URI, file.thumbnailRequestToken),
+			options: {
+				width: 120,
+			},
+		},
+		json: true,
+	});
+}) : Promise.resolve());
 
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
@@ -43,7 +80,7 @@ const fileStorageService = {
      * @returns {Promise}
      */
 	async create(data, params) {
-		const { payload: { userId } } = params;
+		const { payload: { userId, fileStorageType } } = params;
 		const {
 			owner,
 			parent,
@@ -74,6 +111,7 @@ const fileStorageService = {
 			storageFileName: decodeURIComponent(data.storageFileName),
 		}));
 
+		const strategy = createCorrectStrategy(fileStorageType);
 		// create db entry for new file
 		// check for create permissions on parent
 		if (parent) {
@@ -81,15 +119,17 @@ const fileStorageService = {
 				.then(() => FileModel.findOne(props).exec().then(
 					modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 				))
+				.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props))
 				.catch((e) => {
 					logger.error(e);
 					return Promise.reject(new Forbidden());
 				});
 		}
 
-		return FileModel.findOne(props).exec().then(
-			modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
-		);
+		return FileModel.findOne(props)
+			.exec()
+			.then(modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
+			.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props));
 	},
 
 	/**
@@ -479,7 +519,7 @@ const directoryService = {
      * @param id, params
      * @returns {Promise}
      */
-	remove(_, { query, payload }) {
+	remove(__, { query, payload }) {
 		const { userId } = payload;
 		const { _id } = query;
 		const fileInstance = FileModel.findOne({ _id });
@@ -874,9 +914,9 @@ module.exports = function proxyService() {
 		'/fileStorage/copy',
 		'/fileStorage/files/new',
 		'/fileStorage/permission',
-	].forEach((path) => {
+	].forEach((apiPath) => {
 		// Get our initialize service to that we can bind hooks
-		const service = app.service(path);
+		const service = app.service(apiPath);
 		service.hooks(hooks);
 	});
 };

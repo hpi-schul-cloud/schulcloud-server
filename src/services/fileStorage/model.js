@@ -1,21 +1,25 @@
 const mongoose = require('mongoose');
+const uuid = require('uuid/v4');
 
 const { Schema } = mongoose;
 
-const permissionSchema = new Schema({
-	refId: {
-		type: Schema.Types.ObjectId,
-		refPath: 'refPermModel',
+const permissionSchema = new Schema(
+	{
+		refId: {
+			type: Schema.Types.ObjectId,
+			refPath: 'refPermModel',
+		},
+		refPermModel: {
+			type: String,
+			enum: ['user', 'role'],
+		},
+		write: { type: Boolean, default: true },
+		read: { type: Boolean, default: true },
+		create: { type: Boolean, default: true },
+		delete: { type: Boolean, default: true },
 	},
-	refPermModel: {
-		type: String,
-		enum: ['user', 'role'],
-	},
-	write: { type: Boolean, default: true },
-	read: { type: Boolean, default: true },
-	create: { type: Boolean, default: true },
-	delete: { type: Boolean, default: true },
-}, { _id: false });
+	{ _id: false },
+);
 
 
 /**
@@ -39,6 +43,7 @@ const fileSchema = new Schema({
 	type: { type: String },
 	storageFileName: { type: String },
 	thumbnail: { type: String },
+	thumbnailRequestToken: { type: String, default: uuid },
 	shareToken: { type: String },
 	parent: { type: Schema.Types.ObjectId, ref: 'file' },
 	owner: {
