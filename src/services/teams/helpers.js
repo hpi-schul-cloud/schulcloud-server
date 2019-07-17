@@ -1,5 +1,5 @@
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
-const { warn } = require('../../logger/index');
+const { warning } = require('../../logger/index');
 const { teamRolesToHook } = require('./hooks');
 const { isArrayWithElement, isDefined, bsonIdToString } = require('./hooks/collection');
 
@@ -44,7 +44,7 @@ const getSessionUser = (refClass, params, userId) => {
 	const sesessionUserId = userId || bsonIdToString((params.account || {}).userId);
 
 	return refClass.app.service('users').get(sesessionUserId).catch((err) => {
-		warn(err);
+		warning(err);
 		throw new Forbidden('You have not the permission.');
 	});
 };
@@ -56,11 +56,12 @@ exports.getSessionUser = getSessionUser;
  * @param {*} data
  * @param {*} params
  */
+
 exports.patchTeam = (refClass, teamId, data, params) => refClass.app
 	.service('teams')
 	.patch(teamId, data, local(params))
 	.catch((err) => {
-		warn(err);
+		warning(err);
 		throw new BadRequest('Can not patch team.');
 	});
 
@@ -75,7 +76,7 @@ const getTeam = (refClass, teamId) => { // todo: app to this -> this.app
 		},
 	};
 	return refClass.app.service('teams').get(teamId, populateParams).catch((err) => {
-		warn(err);
+		warning(err);
 		throw new Forbidden('You have not the permission.');
 	});
 };

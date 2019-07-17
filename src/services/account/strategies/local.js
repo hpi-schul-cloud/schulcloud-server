@@ -1,4 +1,3 @@
-const logger = require('winston');
 const errors = require('@feathersjs/errors');
 const request = require('request-promise-native');
 

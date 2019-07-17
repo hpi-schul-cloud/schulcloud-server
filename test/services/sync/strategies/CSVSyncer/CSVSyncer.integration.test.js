@@ -8,9 +8,12 @@ const MailService = require('../../../../../src/services/helpers/service.js');
 const testObjects = require('../../../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../../../helpers/services/login')(app);
 const { create: createUser } = require('../../../helpers/services/users')(app);
+const { create: createSchool } = require('../../../helpers/services/schools')(app);
+const { create: createYear } = require('../../../helpers/services/years');
 const {
 	createByName: createClass,
-	findByName: findClass,
+	findOneByName: findClass,
+	findByName: findClasses,
 	deleteByName: deleteClass,
 } = require('../../../helpers/services/classes')(app);
 
@@ -287,7 +290,8 @@ describe('CSVSyncer Integration', () => {
 		const EXISTING_CLASSES = [['1', 'a'], [undefined, 'SG1'], ['12', '/3']];
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
 
-		before(async () => {
+		before(async function before() {
+			this.timeout(5000);
 			await Promise.all(EXISTING_CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
 
 			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
@@ -988,6 +992,154 @@ describe('CSVSyncer Integration', () => {
 			expect(ecTeachers).to.include('Nixx0n'); // lastName was updated
 			expect(ecTeachers).to.include('Lipton');
 			expect(ecTeachers).to.include('Malarkey');
+		});
+	});
+
+	describe('Scenario 13 - Importing classes optionally assigns them to a school year', () => {
+		let scenario1;
+		let scenario2;
+		const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de'];
+
+		before(async function before() {
+			this.timeout(5000);
+
+			const school1 = await createSchool({ currentYear: await createYear() });
+			const school2 = await createSchool({ currentYear: await createYear() });
+
+			const user1 = await createUser({ roles: 'administrator', schoolId: school1._id });
+			const user2 = await createUser({ roles: 'administrator', schoolId: school2._id });
+
+			scenario1 = {
+				school: school1,
+				params: {
+					...await generateRequestParamsFromUser(user1),
+					query: {
+						target: 'csv',
+						school: school1._id,
+						role: 'student',
+					},
+				},
+				data: {
+					data: 'firstName,lastName,email,class\n'
+						+ `Dr. John W.,Thackery,${STUDENT_EMAILS[0]},1a\n`
+						+ `Dr. Algernon C.,Edwards,${STUDENT_EMAILS[1]},1b\n`,
+				},
+			};
+			scenario2 = {
+				school: school2,
+				params: {
+					...await generateRequestParamsFromUser(user2),
+					query: {
+						target: 'csv',
+						school: school2._id,
+						role: 'student',
+					},
+				},
+				data: {
+					data: 'firstName,lastName,email,class\n'
+						+ `Herman,Barrow,${STUDENT_EMAILS[2]},2a\n`
+						+ `Cornelia,Robertson,${STUDENT_EMAILS[3]},2b\n`,
+				},
+			};
+		});
+
+		afterEach(async () => {
+			await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
+			await Promise.all([['1', 'a'], ['1', 'b'], ['2', 'a'], ['2', 'b']].map(klass => deleteClass(klass)));
+		});
+
+		after(testObjects.cleanup);
+
+		it('should create classes based on the current school year by default', async () => {
+			expect(scenario1.school.currentYear._id.toString())
+				.to.not.equal(scenario2.school.currentYear._id.toString());
+
+			// scenario 1
+			const [stats] = await app.service('sync').create(scenario1.data, scenario1.params);
+
+			expect(stats.success).to.equal(true);
+			expect(stats.users.successful).to.equal(2);
+			expect(stats.users.failed).to.equal(0);
+			expect(stats.invitations.successful).to.equal(0);
+			expect(stats.invitations.failed).to.equal(0);
+			expect(stats.classes.successful).to.equal(2);
+			expect(stats.classes.created).to.equal(2);
+			expect(stats.classes.failed).to.equal(0);
+
+			const class1a = await findClass(['1', 'a']);
+			expect(class1a.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
+
+			const class1b = await findClass(['1', 'b']);
+			expect(class1b.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
+
+			// scenario 2
+			const [stats2] = await app.service('sync').create(scenario2.data, scenario2.params);
+
+			expect(stats2.success).to.equal(true);
+			expect(stats2.users.successful).to.equal(2);
+			expect(stats2.users.failed).to.equal(0);
+			expect(stats2.invitations.successful).to.equal(0);
+			expect(stats2.invitations.failed).to.equal(0);
+			expect(stats2.classes.successful).to.equal(2);
+			expect(stats2.classes.created).to.equal(2);
+			expect(stats2.classes.failed).to.equal(0);
+
+			const class2a = await findClass(['2', 'a']);
+			expect(class2a.year.toString()).to.equal(scenario2.school.currentYear._id.toString());
+
+			const class2b = await findClass(['2', 'b']);
+			expect(class2b.year.toString()).to.equal(scenario2.school.currentYear._id.toString());
+		});
+
+		it('should assign a created class to a school year if specified in the request', async () => {
+			// modified scenario 1
+			const year = await createYear();
+			const [stats] = await app.service('sync').create(scenario1.data, {
+				...scenario1.params,
+				query: {
+					...scenario1.params.query,
+					schoolYear: year._id,
+				},
+			});
+
+			expect(stats.success).to.equal(true);
+			expect(stats.classes.successful).to.equal(2);
+			expect(stats.classes.created).to.equal(2);
+			expect(stats.classes.failed).to.equal(0);
+
+			const class1a = await findClass(['1', 'a']);
+			expect(class1a.year.toString()).not.to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1a.year.toString()).to.equal(year._id.toString());
+
+			const class1b = await findClass(['1', 'b']);
+			expect(class1b.year.toString()).not.to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1b.year.toString()).to.equal(year._id.toString());
+		});
+
+		it('should create new classes if classes of the same name exist only for another year', async () => {
+			const oldYear = await createYear(); // oldYear is different from school.currentYear
+			await createClass(['1', 'a', scenario1.school._id], { year: oldYear._id });
+
+			const [stats] = await app.service('sync').create(scenario1.data, scenario1.params);
+
+			expect(stats.success).to.equal(true);
+			expect(stats.users.successful).to.equal(2);
+			expect(stats.users.failed).to.equal(0);
+			expect(stats.invitations.successful).to.equal(0);
+			expect(stats.invitations.failed).to.equal(0);
+			expect(stats.classes.successful).to.equal(2);
+			expect(stats.classes.created).to.equal(2);
+			expect(stats.classes.failed).to.equal(0);
+
+			const classes1a = await findClasses(['1', 'a']);
+			expect(classes1a.length).to.equal(2);
+			expect(classes1a.some(c => c.year.toString() === oldYear._id.toString())).to.equal(true);
+			expect(classes1a.some(c => c.year.toString() === scenario1.school.currentYear._id.toString()))
+				.to.equal(true);
+
+			// there is no existing class 1b:
+			const class1b = await findClass(['1', 'b']);
+			expect(class1b.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
 		});
 	});
 });
