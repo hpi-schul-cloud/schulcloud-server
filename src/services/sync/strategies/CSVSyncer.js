@@ -2,6 +2,16 @@ const parse = require('csv-parse/lib/sync');
 const stripBOM = require('strip-bom');
 const Syncer = require('./Syncer');
 
+const ATTRIBUTES = [
+	{ name: 'namePrefix', aliases: ['namePrefix', 'prefix', 'title', 'affix'] },
+	{ name: 'firstName', required: true, aliases: ['firstName', 'first'] },
+	{ name: 'middleName', aliases: ['middleName', 'middle'] },
+	{ name: 'lastName', required: true, aliases: ['lastName', 'last'] },
+	{ name: 'nameSuffix', aliases: ['nameSuffix', 'suffix'] },
+	{ name: 'email', required: true, aliases: ['email', 'mail', 'e-mail'] },
+	{ name: 'class', aliases: ['class', 'classes'] },
+];
+
 /**
  * Implements importing CSV documents based on the Syncer interface
  * @class CSVSyncer
@@ -70,8 +80,8 @@ class CSVSyncer extends Syncer {
 		await super.steps();
 		this.options.schoolYear = await this.determineSchoolYear();
 		const records = this.parseCsvData();
-		const importClasses = CSVSyncer.needsToImportClasses(records);
 		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
+		const importClasses = CSVSyncer.needsToImportClasses(sanitizedRecords);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
 		const actions = Object.values(clusteredRecords).map(record => async () => {
@@ -88,10 +98,6 @@ class CSVSyncer extends Syncer {
 		}
 
 		return this.stats;
-	}
-
-	static requiredAttributes() {
-		return ['firstName', 'lastName', 'email'];
 	}
 
 	async determineSchoolYear() {
@@ -146,14 +152,15 @@ class CSVSyncer extends Syncer {
 			throw new Error('No input data');
 		}
 
-		CSVSyncer.requiredAttributes().forEach((param) => {
-			if (!records[0][param]) {
+		ATTRIBUTES.filter(a => a.required).forEach((attr) => {
+			const attributeIsUsed = Object.keys(records[0]).some(k => attr.aliases.includes(k));
+			if (!attributeIsUsed) {
 				this.stats.errors.push({
 					type: 'file',
 					entity: 'Eingabedatei fehlerhaft',
-					message: `benötigtes Attribut "${param}" nicht gefunden`,
+					message: `benötigtes Attribut "${attr.name}" nicht gefunden`,
 				});
-				throw new Error(`Parsing failed. Expected attribute "${param}"`);
+				throw new Error(`Parsing failed. Expected attribute "${attr.name}"`);
 			}
 		});
 		return records;
