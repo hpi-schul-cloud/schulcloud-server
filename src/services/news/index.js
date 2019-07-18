@@ -70,6 +70,7 @@ class AbstractService {
 				query: {
 					permissions: [permission],
 				},
+				paginate: false,
 			});
 			return scopeItems.map(item => ({
 				targetModel: scope,

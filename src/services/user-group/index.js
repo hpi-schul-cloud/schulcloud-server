@@ -104,6 +104,7 @@ module.exports = function () {
 					untilQuery,
 				],
 			},
+			paginate: params.paginate,
 		});
 	});
 };
