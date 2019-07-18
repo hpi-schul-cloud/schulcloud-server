@@ -5,6 +5,7 @@ const { Forbidden } = require('@feathersjs/errors');
 const {
 	filterToRelated,
 	rejectDefaultFilePermissionUpdatesIfNotPermitted,
+	checkIfUserCouldLeaveTeam
 } = require('../../../../src/services/teams/hooks/index.js');
 const app = require('../../../../src/app');
 const { createHook } = require('../helper/helper.hook');
@@ -184,4 +185,10 @@ describe('Team service hook tests.', () => {
 			}
 		});
 	});
+
+	describe('check if user could leave a team', () => {
+		it('could not leave if user is the only teamowner', () => {
+			
+		})
+	})
 });

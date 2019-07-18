@@ -40,7 +40,7 @@ const {
 *   @param {Object::hook} hook
 *   @method all
 *   @ifNotLocal work only for extern requests
-**/
+* */
 const teamMainHook = globalHooks.ifNotLocal(hook => Promise.all([
 	getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook),
 ]).then(([sessionUser, team, users]) => {
@@ -203,8 +203,9 @@ const filterToRelated = (keys, path, _ifNotLocal = true, objectToFilter) => {
 	const execute = (hook) => {
 		const filter = (data) => {
 			const reducer = old => (newObject, key) => {
-				if (old[key] !== undefined) // if related key exist
-					{newObject[key] = old[key];}
+				if (old[key] !== undefined) { // if related key exist
+					newObject[key] = old[key];
+				}
 				return newObject;
 			};
 
@@ -375,7 +376,6 @@ exports.teamRolesToHook = teamRolesToHook;
 const hasTeamPermission = (permsissions, _teamId) => globalHooks.ifNotLocal((hook) => {
 	if (get(hook, 'isSuperhero') === true) {
 		return Promise.resolve(hook);
-
 	}
 	if (isString(permsissions)) {
 		permsissions = [permsissions];
@@ -518,31 +518,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 			throw new Forbidden('Can not adding users from other schools.');
 		}
 		if (isLeaveTeam) {
-			let amountOfTeamowner = 0; // only counter, do not have to be the real amount of Teamowners!
-			let isTeamowner = false;
-			for (const user of team.userIds) {
-				if (user.userId.toString() === sessionUserId) {
-					if (hook.findRole('_id', user.role, 'name') === 'teamowner') {
-						isTeamowner = true;
-					} else {
-						break;
-					}
-				}
-				if (hook.findRole('_id', user.role, 'name') === 'teamowner') {
-					amountOfTeamowner += 1;
-					if (amountOfTeamowner === 2) {
-						break;
-					}
-				}
-			}
-
-			if (!isTeamowner || amountOfTeamowner >= 2) {
-				const role = wait.push(leaveTeam(hook).catch((err) => {
-					throw new Forbidden('Permission LEAVE_TEAM is missing.');
-				}));
-			} else {
-				throw new Forbidden('There have to be an other teamowner to leave a group as teamowner');
-			}	
+			checkIfUserCouldLeaveTeam(hook, team, sessionUserId);
 		}
 
 		if (isRemoveOthers) {
@@ -600,6 +576,39 @@ const sendInfo = (hook) => {
 	});
 };
 // exports.sendInfo = sendInfo;
+
+
+const checkIfUserCouldLeaveTeam = (hook, team, sessionUserId) => {
+	let amountOfTeamowner = 0; // only counter, do not have to be the real amount of Teamowners!
+	let isTeamowner = false;
+	for (const user of team.userIds) {
+		if (user.userId.toString() === sessionUserId) {
+			if (hook.findRole('_id', user.role, 'name') === 'teamowner') {
+				isTeamowner = true;
+			} else {
+				break;
+			}
+		}
+		if (hook.findRole('_id', user.role, 'name') === 'teamowner') {
+			amountOfTeamowner += 1;
+			if (amountOfTeamowner === 2) {
+				break;
+			}
+		}
+	}
+
+	if (!isTeamowner || amountOfTeamowner >= 2) {
+		const role = wait.push(leaveTeam(hook).catch((err) => {
+			throw new Forbidden('Permission LEAVE_TEAM is missing.');
+		}));
+	} else {
+		throw new Forbidden('There have to be an other teamowner to leave a group as teamowner');
+	}
+};
+
+exports.checkIfUserCouldLeaveTeam = checkIfUserCouldLeaveTeam;
+
+
 
 /**
  * @afterHook
