@@ -240,7 +240,7 @@ describe.only('courses scopelist service integration', () => {
 			const user = await testObjects.createTestUser();
 			const targetUser = await testObjects.createTestUser();
 			const params = await generateRequestParamsFromUser(user);
-			params.route = { scopeId: user._id };
+			params.route = { scopeId: targetUser._id };
 			params.query = {};
 			await courseScopeListService.find(params);
 			throw new Error('should have failed');
