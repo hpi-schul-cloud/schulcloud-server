@@ -94,13 +94,13 @@ describe('user service', () => {
 				schoolId: '0000d186816abba584714c5f',
 			};
 
-			await new Promise((resolve, reject) => {
+			return new Promise((resolve, reject) => {
 				testObjects.createTestUser(newUser)
 					.then(() => {
 						reject(new Error('This call should fail because of an already existing user with the same email'));
 					})
 					.catch((err) => {
-						expect(err.message).to.equal('Die E-Mail Adresse ExistinG@aCCount.de ist bereits in Verwendung!');
+						expect(err.message).to.equal('Die E-Mail Adresse existing@account.de ist bereits in Verwendung!');
 						resolve();
 					});
 			});
