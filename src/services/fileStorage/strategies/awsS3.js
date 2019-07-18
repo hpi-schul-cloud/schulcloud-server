@@ -21,7 +21,7 @@ try {
 		: awsConfig = require('../../../../config/secrets.json').aws;
 	/* eslint-enable global-require, no-unused-expressions */
 } catch (e) {
-	logger.log('warning', 'The AWS config couldn\'t be read');
+	logger.warning('The AWS config couldn\'t be read');
 }
 
 const AbstractFileStorageStrategy = require('./interface.js');
@@ -112,13 +112,19 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 };
 
 class AWSS3Strategy extends AbstractFileStorageStrategy {
-	create(schoolId) {
-		if (!schoolId) return Promise.reject(new BadRequest('No school id parameter given'));
-		return schoolModel.find({ _id: schoolId }).lean().exec()
-			.then((result) => {
-				if (!result) return Promise.reject(new NotFound('school not found'));
-				const awsObject = createAWSObject(result._id);
+	async create(schoolId) {
+		if (!schoolId) {
+			throw new BadRequest('No school id parameter given');
+		}
+		return schoolModel.findOne({ _id: schoolId }).lean().exec()
+			.then((school) => {
+				if (school === undefined || school === null) {
+					throw new NotFound('School not found.');
+				}
+
+				const awsObject = createAWSObject(school._id);
 				const createBucket = promisify(awsObject.s3.createBucket.bind(awsObject.s3), awsObject.s3);
+
 				return createBucket({ Bucket: awsObject.bucket })
 					.then((res) => {
 						awsObject.s3.putBucketCors({
@@ -127,14 +133,15 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 								CORSRules: awsConfig.cors_rules,
 							},
 						}, (err) => {
-							if (err) logger.log(err);
+							if (err) {
+								logger.warning(err);
+							}
 						});
-						return Promise.resolve({ message: 'Successfully created s3-bucket!', data: res });
+						return {
+							message: 'Successfully created s3-bucket!',
+							data: res,
+						};
 					});
-			})
-			.catch((err) => {
-				logger.warning('Can not create a bucket.', err);
-				return Promise.reject(err);
 			});
 	}
 
