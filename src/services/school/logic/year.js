@@ -30,12 +30,8 @@ class SchoolYearFacade {
 		return (year.name.toString()).localeCompare(otherYear.name);
 	}
 
-	getSchoolYears() {
+	get SchoolYears() {
 		return this.schoolYears;
-	}
-
-	getCurrentYear() {
-		return this.currentYear;
 	}
 
 	getActiveYear() {

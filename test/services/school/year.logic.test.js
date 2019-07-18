@@ -1,6 +1,6 @@
 const chai = require('chai');
 const app = require('../../../src/app');
-const SchoolYears = require('../../../src/services/school/logic/year');
+const SchoolYearFacade = require('../../../src/services/school/logic/year');
 const {
 	schoolModel: School,
 	yearModel: YearModel,
@@ -40,38 +40,38 @@ describe.only('school year logic', async () => {
 		});
 		const testSchoolId = testSchool._id;
 		testSchool = await School.findById(testSchoolId).exec();
-		const schoolYears = new SchoolYears(defaultYears, testSchool);
-		const customizedYear = schoolYears.getSchoolYears().filter(year => year.name === yearToBeCustomized.name)[0];
+		const schoolYears = new SchoolYearFacade(defaultYears, testSchool);
+		const customizedYear = schoolYears.SchoolYears.filter(year => year.name === yearToBeCustomized.name)[0];
 		expect(customizedYear.startDate).equals(customYear.startDate, 'recently set start date does not match');
 		expect(customizedYear.endDate).equals(customYear.endDate, 'recently set end date does not match');
 	});
 
 	describe('school year operations', async () => {
-		let testSchool; let schoolYears;
+		let testSchool; let schoolYearFacade;
 		before('create test school', async () => {
 			testSchool = await createSchool();
-			schoolYears = new SchoolYears(defaultYears, testSchool);
+			schoolYearFacade = new SchoolYearFacade(defaultYears, testSchool);
 		});
 		it('default year, which contains current or next year', () => {
-			expect(schoolYears.getDefaultYear()).not.to.be.null;
+			expect(schoolYearFacade.getDefaultYear()).not.to.be.null;
 		});
 		it('next year exist', () => {
-			expect(schoolYears.getNextYear()).not.to.be.null;
+			expect(schoolYearFacade.getNextYear()).not.to.be.null;
 		});
 		it('last year exist', () => {
-			expect(schoolYears.getLastYear()).not.to.be.null;
+			expect(schoolYearFacade.getLastYear()).not.to.be.null;
 		});
 		it('next year after year works', () => {
 			let lastYear = 0;
-			schoolYears.getSchoolYears().forEach((year) => {
+			schoolYearFacade.SchoolYears.forEach((year) => {
 				const yearNumber = parseInt(year.name, 10);
 				expect(yearNumber).to.be.greaterThan(lastYear, 'values not in right order');
 				lastYear = yearNumber;
 			});
 
-			const nextYear = schoolYears.getNextYearAfter(schoolYears.getSchoolYears()[0]._id);
+			const nextYear = schoolYearFacade.getNextYearAfter(schoolYearFacade.SchoolYears[0]._id);
 			expect(nextYear).not.to.be.null;
-			expect(nextYear.name).to.equal(schoolYears.getSchoolYears()[1].name);
+			expect(nextYear.name).to.equal(schoolYearFacade.SchoolYears[1].name);
 		});
 	});
 
