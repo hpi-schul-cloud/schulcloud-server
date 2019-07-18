@@ -3,6 +3,7 @@ const yearLogic = require('../../../../src/services/school/logic/year');
 
 let createdYears = [];
 
+// use a not existing year name because year names must be unique
 let anyYear = new Date().getFullYear() + 100;
 const createName = ((doNotIncrease) => {
 	if (!doNotIncrease) {

@@ -22,7 +22,7 @@ describe('school year logic', async () => {
 		expect(defaultYears.length).is.greaterThan(1);
 		const nowAsYear = String(new Date().getFullYear());
 		expect(defaultYears
-			.filter(year => year.name.startsWith(nowAsYear)).length).to.be.equal(1,
+			.filter(year => year.name.startsWith(nowAsYear)).length).to.equal(1,
 			'the next school year should be added here and to all running systems');
 	});
 
