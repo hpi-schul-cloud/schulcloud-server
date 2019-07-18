@@ -53,17 +53,15 @@ describe('AWS file storage strategy', () => {
 			}));
 
 		it('rejects if no school id is given', () => aws.create()
-			.then(() => {})
+			.then(() => { throw ShouldFail; })
 			.catch((err) => {
-				console.log('err rejects if no school id is given', err);
 				expect(err).to.not.be.undefined;
-				expect(err.code).to.equal(404);
+				expect(err.code).to.equal(400);
 			}));
 
 		it('rejects if school was not found', () => aws.create('0000d186816abba584714bbb')
-			.then(() => {})
+			.then(() => { throw ShouldFail; })
 			.catch((err) => {
-				console.log('err rejects if school was not found', err);
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(404);
 			}));
@@ -80,9 +78,8 @@ describe('AWS file storage strategy', () => {
 		}));
 
 		it('rejects with missing parameters', () => aws.deleteFile()
-			.then(() => {})
+			.then(() => { throw ShouldFail; })
 			.catch((err) => {
-				console.log('err rejects with missing parameters', err);
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
 			}));
@@ -99,7 +96,7 @@ describe('AWS file storage strategy', () => {
 		}));
 
 		it('rejects with missing parameters', () => aws.generateSignedUrl({})
-			.then(() => chai.fail('it succeeded', 'should have returned an error'))
+			.then(() => { throw ShouldFail; })
 			.catch((err) => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
