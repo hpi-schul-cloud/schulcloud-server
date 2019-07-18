@@ -3,7 +3,8 @@
 # automatically rolls out new versions on brandenburg, demo, open and test
 # develop-Branch goes to test, Master-Branch goes to productive systems
 
-#export TESTDEPLOY=$( cat testdeploy )
+# decrypt key 
+openssl aes-256-cbc -K $encrypted_2709882c490b_key -iv $encrypted_2709882c490b_iv -in travis_rsa.enc -out travis_rsa -d
 
 if [ "$TRAVIS_BRANCH" = "master" ]
 then
@@ -51,18 +52,43 @@ function deploytoprods {
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@open.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest brabu_server
   # open
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@open.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest open_server
+  # thueringen
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@schulcloud-thueringen.de /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest thueringen_server
   # demo
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@demo.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest demo_server
 }
 
+function deploytostaging {
+  # Deploys new masters on the instances brandenburg, open, demo
+  # compose-files are distributed via Ansible, many different secrets, Mongo_URIs etc.
+
+  # copy config-file to server and execute mit travis_rsa
+  chmod 600 travis_rsa
+
+  # staging
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@staging.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG staging_server
+}
+
+# Happy SHA, wo glu:cklich macht
+echo "$GIT_SHA $DOCKERTAG" > ./public/commitsha.txt
+
+function inform {
+  curl -X POST -H 'Content-Type: application/json' --data '{"text":":rocket: Die Produktivsysteme können aktualisiert werden: Schul-Cloud Server!"}' $WEBHOOK_URL_CHAT
+}
+
+
 if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
   buildandpush
-  deploytoprods
-elif [ "$TRAVIS_BRANCH" = "develop" ]
+  inform
+elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
   buildandpush	
   deploytotest
+elif [[ $TRAVIS_BRANCH = release* || $TRAVIS_BRANCH = hotfix* ]]
+then
+  buildandpush
+  deploytostaging
 else
   echo "Nix wird deployt"
 fi

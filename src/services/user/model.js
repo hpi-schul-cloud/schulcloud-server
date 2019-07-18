@@ -1,5 +1,3 @@
-'use strict';
-
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
@@ -15,8 +13,8 @@ const userSchema = new Schema({
 
 	birthday: { type: Date },
 
-	importHash:{type:String},
-	//inviteHash:{type:String},
+	importHash: { type: String },
+	// inviteHash:{type:String},
 
 	children: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 	parents: [{ type: Schema.Types.ObjectId, ref: 'user' }],
@@ -46,9 +44,14 @@ const registrationPinSchema = new Schema({
 	timestamps: true,
 });
 
+/* virtual property functions */
+
+const displayName = user => `${user.firstName} ${user.lastName}`;
+
 const registrationPinModel = mongoose.model('registrationPin', registrationPinSchema);
 const userModel = mongoose.model('user', userSchema);
 module.exports = {
 	userModel,
 	registrationPinModel,
+	displayName,
 };

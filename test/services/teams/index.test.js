@@ -1,56 +1,111 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const app = require('../../../src/app');
-const { setupUser, deleteUser } = require('./helper/helper.user');
+const { expect } = require('chai');
+const logger = require('../../../src/logger/index');
 const { ObjectId } = require('mongoose').Types;
 
-const { expect } = chai;
-const host=process.env.HOST||'http://localhost:3030';
-chai.use(chaiHttp);
+const app = require('../../../src/app');
+const T = require('../helpers/testObjects')(app);
 
-describe('Test top level team services endpoints.', () => {
-	let server, agent;
+const teamService = app.service('/teams');
 
-	before((done) => {
-		const agent = chai.request.agent(host);
-		server = app.listen(0, done);
-	});
 
-	after((done) => {
-		server.close(done);
-	});
+describe('Test team basic methods', () => {
+	describe('teams create', () => {
+		let team;
+		let teamId;
+		let userId;
 
-	describe('/teams/extern/add', () => {
-		let service={}, team={};
-		before( ()=>{
-			service = app.service('/teams/extern/add');
-			team._id = ObjectId();
-			//todo create user
-			//todo create team
-			//todo expert school
+		before(async () => {
+			const user = await T.createTestUser({ roles: ['administrator'] }).catch((err) => {
+				logger.warning('Can not create test user', err);
+			});
+
+			const schoolId = user.schoolId.toString();
+			userId = user._id.toString();
+			const fakeLoginParams = T.fakeLoginParams({ userId });
+
+			team = await teamService.create({
+				name: 'TestTeam',
+				schoolId,
+				userIds: [userId],
+			}, fakeLoginParams).catch((err) => {
+				logger.warning('Can not create test team', err);
+			});
+
+			teamId = team._id.toString();
+
+			return Promise.resolve();
 		});
 
-		after(()=>{
-			//remove user
-			//remove team
-			//remove school
+		after(() => Promise.all([T.cleanup(), T.teams.removeOne(teamId)]));
+
+
+		it('should for extern request only return the _id', () => {
+			expect(Object.keys(team)).to.be.an('array').to.has.lengthOf(1);
+			expect(ObjectId.isValid(team._id)).to.be.true;
 		});
 
-		it.skip('should accept emails & role', async ()=>{
-			const result = await service.patch(team._id,{email:'tester@test.de', role:'teamexpert'});
-		/*	agent.post('/authentication')
-			.send({})	Authorization:<token>, strategy:'local'
-			.end((err, response) => {
-                if(err){ 
-					throw err	
+		it('should have 2 valid filePermissions that has ref to valid roles', async () => {
+			const { filePermission } = await app.service('teams').get(teamId);
+			expect(filePermission).to.be.an('array').to.have.lengthOf(2);
+			expect(ObjectId.isValid(filePermission[0].refId)).to.be.true;
+			expect(ObjectId.isValid(filePermission[1].refId)).to.be.true;
+		});
+
+		it('should find created test team for user', async () => {
+			const result = await app.service('teams').find(userId);
+			const elements = [];
+			result.data.forEach((element) => {
+				elements.push(element._id);
+			});
+			const testTeam = elements.pop();
+			expect(testTeam.toString()).to.equal(teamId);
+		});
+
+		it('is allowed for superheroes', async () => {
+			const hero = await T.createTestUser({ roles: ['superhero'] });
+			const username = hero.email;
+			const password = 'Schulcloud1!';
+			await T.createTestAccount({ username, password }, 'local', hero);
+			const params = await T.generateRequestParams({ username, password });
+
+			try {
+				const record = {
+					name: 'test',
+					schoolId: hero.schoolId,
+					schoolIds: [hero.schoolId],
+					userIds: [hero._id],
 				};
-				if(response===undefined){
-					throw new Error('');
-				}
-                //do resolve
-            });
-		*/
+				const slimteam = await teamService.create(record, { ...params, query: {} });
+				expect(slimteam).to.be.ok;
+
+				const { userIds } = await teamService.get(slimteam._id);
+				expect(userIds.some(item => item.userId.toString() === hero._id.toString())).to.equal(true);
+			} finally {
+				T.cleanup();
+			}
 		});
 
+		it('is not allowed for demoStudent', async () => {
+			const demoStudent = await T.createTestUser({ roles: ['demoStudent'] });
+			const username = demoStudent.email;
+			const password = 'Schulcloud1!';
+			await T.createTestAccount({ username, password }, 'local', demoStudent);
+			const params = await T.generateRequestParams({ username, password });
+
+			try {
+				const record = {
+					name: 'test',
+					schoolId: demoStudent.schoolId,
+					schoolIds: [demoStudent.schoolId],
+					userIds: [demoStudent._id],
+				};
+				await teamService.create(record, { ...params, query: {} }).catch((e) => {
+					expect(e.name).to.equal('Forbidden');
+					expect(e.message).to.equal('Only administrator, teacher and students can create teams.');
+				});
+			} finally {
+				T.cleanup();
+			}
+		});
 	});
 });

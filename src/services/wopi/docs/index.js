@@ -8,10 +8,10 @@ module.exports = {
 					required: true,
 					name: 'fileId',
 					in: 'path',
-					type: 'string'
-				}
+					type: 'string',
+				},
 			],
-			summary: 'Return wopi-specific file information for a given file'
+			summary: 'Return wopi-specific file information for a given file',
 		},
 		create: {
 			parameters: [
@@ -20,18 +20,18 @@ module.exports = {
 					required: true,
 					name: 'fileId',
 					in: 'path',
-					type: 'string'
+					type: 'string',
 				},
 				{
 					description: 'the action which should be triggered',
 					required: true,
 					name: 'X-WOPI-OVERRIDE',
 					in: 'header',
-					type: 'string'
-				}
+					type: 'string',
+				},
 			],
-			summary: 'Triggers a specific wopi action for a given X-WOPI-OVERRIDE value'
-		}
+			summary: 'Triggers a specific wopi action for a given X-WOPI-OVERRIDE value',
+		},
 	},
 	wopiFilesContentsService: {
 		description: 'A service for handling the wopi GetFile & PutFile operation',
@@ -42,10 +42,10 @@ module.exports = {
 					required: true,
 					name: 'fileId',
 					in: 'path',
-					type: 'string'
-				}
+					type: 'string',
+				},
 			],
-			summary: 'uploads the binary data to the file storage'
+			summary: 'uploads the binary data to the file storage',
 		},
 		find: {
 			parameters: [
@@ -54,10 +54,10 @@ module.exports = {
 					required: true,
 					name: 'fileId',
 					in: 'path',
-					type: 'string'
-				}
+					type: 'string',
+				},
 			],
-			summary: 'Retrieves the binary data of the requested file'
-		}
-	}
+			summary: 'Retrieves the binary data of the requested file',
+		},
+	},
 };
