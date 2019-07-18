@@ -1,4 +1,4 @@
-class SchoolYears {
+class SchoolYearFacade {
 	constructor(years, school) {
 		/** retrieves custom year for given year id
 		 * @param yearId ObjectId
@@ -109,14 +109,14 @@ class SchoolYears {
 	}
 
 	static getDefaultEndDate(yearName) {
-		const year = SchoolYears.extractStartYear(yearName);
+		const year = SchoolYearFacade.extractStartYear(yearName);
 		return Date.UTC((year + 1), 6, 1); // 1.7.(YEAR+1)
 	}
 
 	static getDefaultStartDate(yearName) {
-		const year = SchoolYears.extractStartYear(yearName);
+		const year = SchoolYearFacade.extractStartYear(yearName);
 		return Date.UTC(year, 7, 1); // 1.8.YEAR
 	}
 }
 
-module.exports = SchoolYears;
+module.exports = SchoolYearFacade;
