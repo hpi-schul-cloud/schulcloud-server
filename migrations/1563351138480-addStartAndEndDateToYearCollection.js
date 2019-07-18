@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+const { info } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 const { yearModel: Year } = require('../src/services/school/model');
 
@@ -6,7 +6,6 @@ const yearLogic = require('../src/services/school/logic/year');
 
 module.exports = {
 	up: async function up() {
-		// eslint-disable-next-line global-require
 		await connect();
 		// add startDate and endDate to all years if not defined
 		const years = await Year.find().exec();
@@ -15,13 +14,13 @@ module.exports = {
 			let updated = false;
 
 			if (!year.startDate) {
-				year.startDate = yearLogic.SchoolYears.getDefaultStartDate(year.name);
-				console.log('startDate of year "', year.name, '" will be set to', year.startDate);
+				year.startDate = yearLogic.getDefaultStartDate(year.name);
+				info('startDate of year "', year.name, '" will be set to', year.startDate);
 				updated = true;
 			}
 			if (!year.endDate) {
-				year.endDate = yearLogic.SchoolYears.getDefaultEndDate(year.name);
-				console.log('endDate of year "', year.name, '" will be set to', year.endDate);
+				year.endDate = yearLogic.getDefaultEndDate(year.name);
+				info('endDate of year "', year.name, '" will be set to', year.endDate);
 				updated = true;
 			}
 			if (updated) {
