@@ -17,7 +17,9 @@ module.exports = function setup() {
 			default: 1000,
 			max: 1000,
 		},
-		lean: true,
+		lean: {
+			virtuals: true,
+		},
 	};
 
 	app.use('/users', service(options));
