@@ -208,7 +208,7 @@ describe.only('courses scopelist service', () => {
 	});
 });
 
-describe('courses scopelist service integration', () => {
+describe.only('courses scopelist service integration', () => {
 	let server;
 
 	before((done) => {
@@ -235,7 +235,21 @@ describe('courses scopelist service integration', () => {
 		}
 	});
 
-	it('fails for other user');
+	it('fails for other user', async () => {
+		try {
+			const user = await testObjects.createTestUser();
+			const targetUser = await testObjects.createTestUser();
+			const params = await generateRequestParamsFromUser(user);
+			params.route = { scopeId: user._id };
+			params.query = {};
+			await courseScopeListService.find(params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err).to.not.equal(undefined);
+			expect(err.name).to.equal('Forbidden');
+			expect(err.message).to.equal('Requested and requesting userIds do not match.');
+		}
+	});
 
 	it('works for student of a course');
 

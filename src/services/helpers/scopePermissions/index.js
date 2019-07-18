@@ -77,17 +77,6 @@ class ScopeListService extends ScopeService {
 		}
 		return this.getUserScopes(params.scope, list, params);
 	}
-
-	static hooks() {
-		return {
-			before: {
-				all: [
-					globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
-					lookupScope,
-				],
-			},
-		};
-	}
 }
 
 module.exports = {
