@@ -1,5 +1,3 @@
-const { yearModel: YearModel, schoolModel: SchoolModel } = require('../model');
-
 class SchoolYears {
 	constructor(years, school) {
 		/** retrieves custom year for given year id
@@ -24,18 +22,12 @@ class SchoolYears {
 		});
 		this.years = years.sort(this.yearCompare);
 		this.customYears = school.customYears.sort(this.yearCompare);
-		this.currentYear = school.currentYear;
 		this.schoolYears = generateSchoolYears();
 	}
 
 	/** sorts years by their name value */
-	static yearCompare(year, otherYear) {
+	yearCompare(year, otherYear) {
 		return (year.name.toString()).localeCompare(otherYear.name);
-	}
-
-	/** reduce a date to day, month, and year value */
-	static removeHours(date) {
-		date.setHours(0, 0, 0, 0);
 	}
 
 	getSchoolYears() {
@@ -47,10 +39,10 @@ class SchoolYears {
 	}
 
 	getActiveYear() {
-		const today = this.removeHours(new Date());
+		const now = Date.now();
 		const activeYears = this.schoolYears
-			.filter(year => this.removeHours(year.startDate) <= today
-			&& this.removeHours(year.endDate) >= today);
+			.filter(year => year.startDate <= now
+			&& year.endDate >= now);
 		if (activeYears.length !== 0) {
 			return activeYears[0];
 		}
@@ -65,8 +57,9 @@ class SchoolYears {
 	}
 
 	getNextYear() {
-		const today = this.removeHours(new Date());
-		const nextYears = this.schoolYears.filter(year => this.removeHours(year.startDate) >= today);
+		const now = Date.now();
+		const nextYears = this.schoolYears
+			.filter(year => year.startDate >= now);
 		if (nextYears.length === 1) {
 			return nextYears[0];
 		}
@@ -76,8 +69,8 @@ class SchoolYears {
 	}
 
 	getLastYear() {
-		const today = this.removeHours(new Date());
-		const lastYears = this.schoolYears.filter(year => this.removeHours(year.endDate) < today);
+		const now = Date.now();
+		const lastYears = this.schoolYears.filter(year => year.endDate < now);
 		if (lastYears.length === 1) {
 			return lastYears[0];
 		}

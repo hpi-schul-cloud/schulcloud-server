@@ -1,18 +1,15 @@
 const chai = require('chai');
-// const app = require('../../../src/app');
+const app = require('../../../src/app');
 const SchoolYears = require('../../../src/services/school/logic/year');
 const {
 	schoolModel: School,
-	customYearSchema: CustomYear,
 	yearModel: YearModel,
 } = require('../../../src/services/school/model');
 
+const { cleanup } = require('../helpers/testObjects')(app);
+const { create: createSchool } = require('./../helpers/services/schools')(app);
+
 const { expect } = chai;
-
-const testSchoolId = '0000d186816abba584714c5f';
-
-const customStartDate = new Date('2019-09-01');
-const customEndDate = new Date('2020-05-01');
 
 let defaultYears;
 
@@ -30,23 +27,53 @@ describe.only('school year logic', async () => {
 	});
 
 	it('set custom year dates for testSchool', async () => {
-		const testSchool = await School.findById(testSchoolId).exec();
-		expect(testSchool).to.not.be.null;
-		const yearToBeCustomized = defaultYears.filter(year => year.name === '2019/20')[0];
-		const customYear = {
-			yearId: yearToBeCustomized._id,
-			startDate: customStartDate,
-			endDate: customEndDate,
-		};
-		testSchool.customYears.push(customYear);
-		await testSchool.save();
+		const yearToBeCustomized = defaultYears[0];
+		const customYear = yearToBeCustomized;
+		customYear.startDate = customYear.startDate.setMonth(customYear.startDate.getMonth() + 1);
+		customYear.endDate = customYear.endDate.setMonth(customYear.endDate.getMonth() + 1);
+		let testSchool = await createSchool({
+			customYears: [{
+				yearId: yearToBeCustomized._id,
+				startDate: customYear.startDate,
+				endDate: customYear.endDate,
+			}],
+		});
+		const testSchoolId = testSchool._id;
+		testSchool = await School.findById(testSchoolId).exec();
+		const schoolYears = new SchoolYears(defaultYears, testSchool);
+		const customizedYear = schoolYears.getSchoolYears().filter(year => year.name === yearToBeCustomized.name)[0];
+		expect(customizedYear.startDate).equals(customYear.startDate, 'recently set start date does not match');
+		expect(customizedYear.endDate).equals(customYear.endDate, 'recently set end date does not match');
 	});
 
-	it('get dates for test school', async () => {
-		const testSchool = await School.findById(testSchoolId).exec();
-		const schoolYears = new SchoolYears(defaultYears, testSchool);
-		const customizedYear = schoolYears.getSchoolYears().filter(year => year.name === '2019/20')[0];
-		expect(customizedYear.startDate).equals(customStartDate, 'recently set start date does not match');
-		expect(customizedYear.endDate).equals(customEndDate, 'recently set end date does not match');
+	describe('school year operations', async () => {
+		let testSchool; let schoolYears;
+		before('create test school', async () => {
+			testSchool = await createSchool();
+			schoolYears = new SchoolYears(defaultYears, testSchool);
+		});
+		it('default year, which contains current or next year', () => {
+			expect(schoolYears.getDefaultYear()).not.to.be.null;
+		});
+		it('next year exist', () => {
+			expect(schoolYears.getNextYear()).not.to.be.null;
+		});
+		it('last year exist', () => {
+			expect(schoolYears.getLastYear()).not.to.be.null;
+		});
+		it('next year after year works', () => {
+			let lastYear = 0;
+			schoolYears.getSchoolYears().forEach((year) => {
+				const yearNumber = parseInt(year.name, 10);
+				expect(yearNumber).to.be.greaterThan(lastYear, 'values not in right order');
+				lastYear = yearNumber;
+			});
+
+			const nextYear = schoolYears.getNextYearAfter(schoolYears.getSchoolYears()[0]._id);
+			expect(nextYear).not.to.be.null;
+			expect(nextYear.name).to.equal(schoolYears.getSchoolYears()[1].name);
+		});
 	});
+
+	after(cleanup);
 });
