@@ -1,11 +1,17 @@
 const auth = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
+const logger = require('../../../logger');
 
 const globalHooks = require('../../../hooks');
 const { fileStorageTypes } = require('../model');
 const getFileStorageStrategy = require('../../fileStorage/strategies').createStrategy;
 
-const _getDefaultFileStorageType = () => {
+const { yearModel: Year } = require('../model');
+const SchoolYearFacade = require('../logic/year');
+
+let years = null;
+
+const getDefaultFileStorageType = () => {
 	if (!fileStorageTypes || !fileStorageTypes.length) {
 		return void 0;
 	}
@@ -13,7 +19,7 @@ const _getDefaultFileStorageType = () => {
 };
 
 const setDefaultFileStorageType = (hook) => {
-	const storageType = _getDefaultFileStorageType();
+	const storageType = getDefaultFileStorageType();
 	hook.data.fileStorageType = storageType;
 	return Promise.resolve(hook);
 };
@@ -23,7 +29,7 @@ const createDefaultStorageOptions = (hook) => {
 		// don't create buckets in development or test
 		return Promise.resolve(hook);
 	}
-	const storageType = _getDefaultFileStorageType();
+	const storageType = getDefaultFileStorageType();
 	const schoolId = hook.result._id;
 	const fileStorageStrategy = getFileStorageStrategy(storageType);
 	return fileStorageStrategy.create(schoolId)
@@ -37,6 +43,23 @@ const createDefaultStorageOptions = (hook) => {
 		});
 };
 
+
+const decorateSchoolYear = async (hook) => {
+	if (!years) {
+		years = await Year.find().lean().exec();
+	}
+	try {
+		hook.result.data.forEach((school) => {
+			const facade = new SchoolYearFacade(years, school);
+			school.years = facade.data;
+		});
+	} catch (error) {
+		logger.error(error);
+	}
+	return hook;
+};
+
+// fixme: resdtrict to current school
 exports.before = {
 	all: [],
 	find: [],
@@ -62,8 +85,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [],
-	get: [],
+	find: [decorateSchoolYear],
+	get: [decorateSchoolYear],
 	create: [createDefaultStorageOptions],
 	update: [createDefaultStorageOptions],
 	patch: [createDefaultStorageOptions],

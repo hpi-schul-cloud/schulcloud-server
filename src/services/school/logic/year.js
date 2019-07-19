@@ -20,13 +20,13 @@ class SchoolYearFacade {
 			}
 			return year;
 		});
-		this.years = years.sort(this.yearCompare);
-		this.customYears = school.customYears.sort(this.yearCompare);
+		this.years = years.sort(SchoolYearFacade.yearCompare);
+		this.customYears = (school.customYears || []).sort(SchoolYearFacade.yearCompare);
 		this.schoolYears = generateSchoolYears();
 	}
 
 	/** sorts years by their name value */
-	yearCompare(year, otherYear) {
+	static yearCompare(year, otherYear) {
 		return (year.name.toString()).localeCompare(otherYear.name);
 	}
 
@@ -56,23 +56,17 @@ class SchoolYearFacade {
 		const now = Date.now();
 		const nextYears = this.schoolYears
 			.filter(year => year.startDate >= now);
-		if (nextYears.length === 1) {
-			return nextYears[0];
-		}
-		const nextYearMinStartDate = nextYears
-			.reduce((min, p) => (p.startDate < min ? p.startDate : min), nextYears[0].startDate);
-		return nextYearMinStartDate;
+		// next year is in first place
+		if (nextYears.length === 0) return null;
+		return nextYears[0];
 	}
 
 	getLastYear() {
 		const now = Date.now();
-		const lastYears = this.schoolYears.filter(year => year.endDate < now);
-		if (lastYears.length === 1) {
-			return lastYears[0];
-		}
-		const lastYearMaxEndDate = lastYears
-			.reduce((max, p) => (p.endDate > max ? p.endDate : max), lastYears[0].endDate);
-		return lastYearMaxEndDate;
+		const pastYears = this.schoolYears.filter(year => year.endDate < now);
+		// last year is on last place
+		if (pastYears.length === 0) return null;
+		return pastYears[pastYears.length - 1];
 	}
 
 	/**
@@ -112,6 +106,16 @@ class SchoolYearFacade {
 	static getDefaultStartDate(yearName) {
 		const year = SchoolYearFacade.extractStartYear(yearName);
 		return Date.UTC(year, 7, 1); // 1.8.YEAR
+	}
+
+	get data() {
+		return {
+			schoolYears: this.schoolYears,
+			activeYear: this.getActiveYear(),
+			defaultYear: this.getDefaultYear(),
+			nextYear: this.getNextYear(),
+			lastYear: this.getLastYear(),
+		};
 	}
 }
 
