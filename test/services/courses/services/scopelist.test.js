@@ -225,6 +225,50 @@ describe('courses scopelist service', () => {
 		expect(Array.isArray(response)).to.equal(true);
 	});
 
+	it('may return count of active courses', async () => {
+		const user = await testObjects.createTestUser();
+		await testObjects.createTestCourse({
+			userIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		await testObjects.createTestCourse({
+			userIds: [user._id],
+			untilDate: Date.now() - 600000,
+		});
+		await testObjects.createTestCourse({
+			userIds: [user._id],
+			untilDate: Date.now() - 600000,
+		});
+		const response = await courseScopeListService.find({
+			route: { scopeId: user._id },
+			query: { count: 'true' },
+			paginate: false,
+		});
+		expect(response).to.equal(1);
+	});
+
+	it('may return count of active courses', async () => {
+		const user = await testObjects.createTestUser();
+		await testObjects.createTestCourse({
+			userIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		await testObjects.createTestCourse({
+			userIds: [user._id],
+			untilDate: Date.now() - 600000,
+		});
+		await testObjects.createTestCourse({
+			userIds: [user._id],
+			untilDate: Date.now() - 600000,
+		});
+		const response = await courseScopeListService.find({
+			route: { scopeId: user._id },
+			query: { filter: 'archived', count: 'true' },
+			paginate: false,
+		});
+		expect(response).to.equal(2);
+	});
+
 	after(async () => {
 		await testObjects.cleanup();
 	});

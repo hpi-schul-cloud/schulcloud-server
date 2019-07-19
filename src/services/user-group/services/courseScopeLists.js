@@ -1,4 +1,5 @@
 const { /* ScopePermissionService, */ ScopeListService } = require('../../helpers/scopePermissions');
+const { courseModel } = require('../model');
 
 module.exports = function setup() {
 	const app = this;
@@ -33,6 +34,15 @@ module.exports = function setup() {
 		}
 		if (filter === 'archived') {
 			untilQuery = { untilDate: { $lt: Date.now() } };
+		}
+
+		if (params.query.count === 'true') {
+			return courseModel.count({
+				$and: [
+					userQuery,
+					untilQuery,
+				],
+			});
 		}
 
 		return app.service('courses').find({
