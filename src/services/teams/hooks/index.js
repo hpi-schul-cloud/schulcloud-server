@@ -537,7 +537,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 			}
 
 			if (!isTeamowner || amountOfTeamowner >= 2) {
-				const role = wait.push(leaveTeam(hook).catch((err) => {
+				const role = wait.push(leaveTeam(hook).catch(() => {
 					throw new Forbidden('Permission LEAVE_TEAM is missing.');
 				}));
 			} else {

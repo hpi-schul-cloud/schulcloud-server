@@ -184,9 +184,4 @@ describe('Team service hook tests.', () => {
 			}
 		});
 	});
-
-	describe('check if user could leave a team', () => {
-		it('could not leave if user is the only teamowner', () => {
-		})
-	})
 });
