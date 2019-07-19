@@ -41,6 +41,8 @@ module.exports = function setup() {
 					userQuery,
 					untilQuery,
 				],
+				$skip: params.query.$skip,
+				$limit: params.query.$limit,
 			},
 			paginate: params.paginate,
 		});

@@ -203,6 +203,28 @@ describe('courses scopelist service', () => {
 		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(true);
 	});
 
+	it('passes on pagination', async () => {
+		const user = await testObjects.createTestUser();
+		const response = await courseScopeListService.find({
+			route: { scopeId: user._id },
+			query: { $limit: 23, $skip: 18 },
+		});
+		expect(response).to.not.equal(undefined);
+		expect(response.limit).to.equal(23);
+		expect(response.skip).to.equal(18);
+	});
+
+	it('allows disabling pagination', async () => {
+		const user = await testObjects.createTestUser();
+		const response = await courseScopeListService.find({
+			route: { scopeId: user._id },
+			query: {},
+			paginate: false,
+		});
+		expect(response).to.not.equal(undefined);
+		expect(Array.isArray(response)).to.equal(true);
+	});
+
 	after(async () => {
 		await testObjects.cleanup();
 	});
