@@ -7,7 +7,7 @@ const {
 } = require('./model');
 const hooks = require('./hooks');
 const courseGroupsHooks = require('./hooks/courseGroups');
-const courseCopyService = require('./course-copy-service');
+const courseCopyService = require('./services/course-copy-service');
 const courseScopelistService = require('./services/courseScopeLists');
 const classHooks = require('./hooks/classes');
 
