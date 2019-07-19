@@ -5,7 +5,7 @@ const { generateRequestParamsFromUser } = require('../../helpers/services/login'
 
 const courseScopeListService = app.service('/users/:scopeId/courses');
 
-describe.only('courses scopelist service', () => {
+describe('courses scopelist service', () => {
 	it('is properly registered', () => {
 		expect(courseScopeListService).to.not.equal(undefined);
 	});
@@ -208,7 +208,7 @@ describe.only('courses scopelist service', () => {
 	});
 });
 
-describe.only('courses scopelist service integration', () => {
+describe('courses scopelist service integration', () => {
 	let server;
 
 	before((done) => {

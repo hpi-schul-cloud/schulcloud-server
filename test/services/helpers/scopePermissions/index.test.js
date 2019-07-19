@@ -3,7 +3,7 @@ const {
 	ScopeService, ScopePermissionService, ScopeListService,
 } = require('../../../../src/services/helpers/scopePermissions');
 
-describe.only('ScopeService', () => {
+describe('ScopeService', () => {
 	it('should work', () => expect(ScopeService).to.be.ok);
 
 	describe('#initialize', () => {

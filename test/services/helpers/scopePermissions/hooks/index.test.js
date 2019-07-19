@@ -10,7 +10,7 @@ const {
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe.only('scopePermissionService hook', () => {
+describe('scopePermissionService hook', () => {
 	describe('rejectQueryingOtherUsers', () => {
 		const fut = rejectQueryingOtherUsers;
 

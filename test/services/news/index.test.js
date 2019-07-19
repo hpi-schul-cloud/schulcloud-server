@@ -23,7 +23,7 @@ const {
 
 const newsService = app.service('news');
 
-describe.only('news service', () => {
+describe('news service', () => {
 	it('registers correctly', () => {
 		expect(app.service('news')).to.not.equal(undefined);
 	});
