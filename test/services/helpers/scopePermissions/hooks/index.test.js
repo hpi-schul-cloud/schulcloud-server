@@ -31,6 +31,16 @@ describe('scopePermissionService hook', () => {
 			expect(() => fut({ method: 'find', params })).to.throw(Forbidden);
 		});
 
+		it('should fail if a user requests a different user id on user scope', () => {
+			const userId = new ObjectId();
+			const id = new ObjectId().toString();
+			const params = {
+				account: { userId },
+				route: { scopeId: id },
+			};
+			expect(() => fut({ method: 'find', params, path: `users/${id}/courses` })).to.throw(Forbidden);
+		});
+
 		it('should fail if no user id is requested', () => {
 			const userId = new ObjectId();
 			const params = { account: { userId } };
@@ -52,6 +62,11 @@ describe('scopePermissionService hook', () => {
 			};
 			expect(() => fut({ method: 'find', params: { ...params, query: { userId: id } } })).not.to.throw();
 			expect(() => fut({ method: 'get', id, params })).not.to.throw();
+			expect(() => fut({
+				method: 'find',
+				params: { ...params, route: { scopeId: id } },
+				path: `users/${id}/courses`,
+			})).not.to.throw();
 		});
 	});
 
