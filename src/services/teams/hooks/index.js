@@ -518,7 +518,31 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 			throw new Forbidden('Can not adding users from other schools.');
 		}
 		if (isLeaveTeam) {
-			checkIfUserCouldLeaveTeam(hook, team, sessionUserId);
+			let amountOfTeamowner = 0; // only counter, do not have to be the real amount of Teamowners!
+			let isTeamowner = false;
+			for (const user of team.userIds) {
+				if (user.userId.toString() === sessionUserId) {
+					if (hook.findRole('_id', user.role, 'name') === 'teamowner') {
+						isTeamowner = true;
+					} else {
+						break;
+					}
+				}
+				if (hook.findRole('_id', user.role, 'name') === 'teamowner') {
+					amountOfTeamowner += 1;
+					if (amountOfTeamowner === 2) {
+						break;
+					}
+				}
+			}
+
+			if (!isTeamowner || amountOfTeamowner >= 2) {
+				const role = wait.push(leaveTeam(hook).catch((err) => {
+					throw new Forbidden('Permission LEAVE_TEAM is missing.');
+				}));
+			} else {
+				throw new Forbidden('There have to be an other teamowner to leave a group as teamowner');
+			}
 		}
 
 		if (isRemoveOthers) {
@@ -576,39 +600,6 @@ const sendInfo = (hook) => {
 	});
 };
 // exports.sendInfo = sendInfo;
-
-
-const checkIfUserCouldLeaveTeam = (hook, team, sessionUserId) => {
-	let amountOfTeamowner = 0; // only counter, do not have to be the real amount of Teamowners!
-	let isTeamowner = false;
-	for (const user of team.userIds) {
-		if (user.userId.toString() === sessionUserId) {
-			if (hook.findRole('_id', user.role, 'name') === 'teamowner') {
-				isTeamowner = true;
-			} else {
-				break;
-			}
-		}
-		if (hook.findRole('_id', user.role, 'name') === 'teamowner') {
-			amountOfTeamowner += 1;
-			if (amountOfTeamowner === 2) {
-				break;
-			}
-		}
-	}
-
-	if (!isTeamowner || amountOfTeamowner >= 2) {
-		const role = wait.push(leaveTeam(hook).catch((err) => {
-			throw new Forbidden('Permission LEAVE_TEAM is missing.');
-		}));
-	} else {
-		throw new Forbidden('There have to be an other teamowner to leave a group as teamowner');
-	}
-};
-
-exports.checkIfUserCouldLeaveTeam = checkIfUserCouldLeaveTeam;
-
-
 
 /**
  * @afterHook
