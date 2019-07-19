@@ -44,7 +44,7 @@ const createDefaultStorageOptions = (hook) => {
 };
 
 
-const decorateSchoolYear = async (hook) => {
+const decorateYears = async (hook) => {
 	if (!years) {
 		years = await Year.find().lean().exec();
 	}
@@ -85,8 +85,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [decorateSchoolYear],
-	get: [decorateSchoolYear],
+	find: [decorateYears],
+	get: [decorateYears],
 	create: [createDefaultStorageOptions],
 	update: [createDefaultStorageOptions],
 	patch: [createDefaultStorageOptions],
