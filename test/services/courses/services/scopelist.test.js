@@ -257,7 +257,7 @@ describe('courses scopelist service integration', () => {
 		}
 	});
 
-	it('fails for other user', async () => {
+	it('fails for different users', async () => {
 		try {
 			const user = await testObjects.createTestUser();
 			const targetUser = await testObjects.createTestUser();
@@ -273,7 +273,19 @@ describe('courses scopelist service integration', () => {
 		}
 	});
 
-	it('works for student of a course');
-
-	it('works for teacher');
+	it('succeeds for authenticated user', async () => {
+		const user = await testObjects.createTestUser();
+		const course = await testObjects.createTestCourse({
+			userIds: [user._id],
+			untilDate: Date.now() + 600000,
+		});
+		const params = await generateRequestParamsFromUser(user);
+		params.route = { scopeId: user._id };
+		params.query = {};
+		const response = await courseScopeListService.find(params);
+		expect(response).to.not.equal(undefined);
+		expect(response.total).to.equal(1);
+		expect(response.data).to.not.equal(undefined);
+		expect(response.data[0]._id.toString()).to.equal(course._id.toString());
+	});
 });

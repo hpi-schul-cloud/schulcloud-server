@@ -18,7 +18,7 @@ const rejectQueryingOtherUsers = (context) => {
 	const { scopeName, scopeId } = resolveScope(context);
 	let targetUserId;
 	if (scopeName === 'users') {
-		targetUserId = scopeId;
+		targetUserId = scopeId.toString();
 	} else {
 		if (context.method === 'get' && context.id === undefined) {
 			throw new BadRequest('Expected userId.');
