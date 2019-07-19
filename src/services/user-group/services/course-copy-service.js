@@ -1,9 +1,9 @@
 const _ = require('lodash');
 const nanoid = require('nanoid');
-const hooks = require('./hooks/copyCourseHook');
-const { courseModel } = require('./model');
-const { homeworkModel } = require('../homework/model');
-const lessonsModel = require('../lesson/model');
+const hooks = require('../hooks/copyCourseHook');
+const { courseModel } = require('../model');
+const { homeworkModel } = require('../../homework/model');
+const lessonsModel = require('../../lesson/model');
 
 const createHomework = (homework, courseId, lessonId, userId, app, newTeacherId) => app.service('homework/copy').create({
 	_id: homework._id, courseId, lessonId, userId, newTeacherId,
