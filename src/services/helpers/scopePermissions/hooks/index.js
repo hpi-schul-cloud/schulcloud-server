@@ -1,8 +1,8 @@
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 
 const resolveScope = (context) => {
-	const scopeName = (context.path || '').match(/^\/?(\w+)\//)[1];
-	const { scopeId } = context.params.route;
+	const scopeName = (((context.path || '').match(/^\/?(\w+)\//)) || [])[1];
+	const { scopeId } = context.params.route || {};
 
 	return { scopeName, scopeId };
 };
