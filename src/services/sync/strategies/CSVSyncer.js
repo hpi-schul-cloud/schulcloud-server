@@ -137,6 +137,7 @@ class CSVSyncer extends Syncer {
 			records = parse(strippedData, {
 				columns: true,
 				delimiter: ',',
+				trim: true,
 			});
 		} catch (error) {
 			if (error.message && error.message.match(/Invalid Record Length/)) {
