@@ -1,26 +1,45 @@
 const hooks = require('./hooks/maintenance.hooks');
-const { schoolModel: School } = require('./model');
+const { schoolModel: School, yearModel: Years } = require('./model');
+const SchoolYearFacade = require('./logic/year');
 
 const ldapSystemFilter = s => s.type === 'ldap' && s.ldapConfig && s.ldapConfig.active === true;
 
 const schoolUsesLdap = school => school.systems.some(ldapSystemFilter);
 
-const determineNextYear = year => year;
-
-const getStatus = school => ({
-	currentYear: school.currentYear,
-	nextYear: determineNextYear(school.currentYear),
-	schoolUsesLdap: schoolUsesLdap(school),
-	maintenance: {
-		active: school.inMaintenance,
-		startDate: school.inMaintenanceSince,
-	},
-});
-
 class SchoolMaintenanceService {
-	setup(app) {
+	async setup(app) {
 		this.app = app;
 		this.hooks(hooks);
+		this.years = await Years.find().lean().exec();
+	}
+
+	/**
+	 * Returns the next school year for a given school
+	 * @param {School} school
+	 * @returns {Year} the next school year
+	 * @memberof SchoolMaintenanceService
+	 */
+	determineNextYear(school) {
+		const facade = new SchoolYearFacade(this.years, school);
+		return facade.getNextYearAfter(school.currentYear._id);
+	}
+
+	/**
+	 * Returns the maintenance status for a given school
+	 * @param {School} school
+	 * @returns {Object} { currentYear, nextYear, schoolUsesLdap, maintenance: { active, startDate } }
+	 * @memberof SchoolMaintenanceService
+	 */
+	getStatus(school) {
+		return {
+			currentYear: school.currentYear,
+			nextYear: this.determineNextYear(school),
+			schoolUsesLdap: schoolUsesLdap(school),
+			maintenance: {
+				active: school.inMaintenance,
+				startDate: school.inMaintenanceSince,
+			},
+		};
 	}
 
 	/**
@@ -32,7 +51,7 @@ class SchoolMaintenanceService {
 	 * @memberof SchoolMaintenanceService
 	 */
 	async find(params) {
-		return Promise.resolve(getStatus(params.school));
+		return Promise.resolve(this.getStatus(params.school));
 	}
 
 	/**
@@ -48,7 +67,7 @@ class SchoolMaintenanceService {
 		let { school } = params;
 		const patch = {};
 		const bumpYear = () => {
-			patch.currentYear = determineNextYear(school.currentYear);
+			patch.currentYear = this.determineNextYear(school);
 			patch.$unset = { inMaintenanceSince: '' };
 		};
 		if (data.maintenance === true) {
@@ -62,7 +81,7 @@ class SchoolMaintenanceService {
 		}
 
 		school = await School.findOneAndUpdate({ _id: school._id }, patch, { new: true });
-		return Promise.resolve(getStatus(school));
+		return Promise.resolve(this.getStatus(school));
 	}
 }
 
