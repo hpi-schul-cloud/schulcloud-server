@@ -56,7 +56,7 @@ class OutputLogTempalte {
 			self.l.info('fail: 0');
 		}
 		self.l.info(self.LF);
-		self.l.info(`...${self.name} up is finished!`);
+		self.l.info(`...${self.name} is finished!`);
 		self.l.info('<---------------------------------->');
 	}
 }
