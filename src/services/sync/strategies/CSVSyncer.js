@@ -12,10 +12,21 @@ const ATTRIBUTES = [
 	{ name: 'class', aliases: ['class', 'classes'] },
 ];
 
-const buildMappingFunction = (schema) => {
+/**
+ * Returns a function that transforms objects of the source schema to the target schema
+ * @param {Object} sourceSchema Object representing the source schema
+ * @param {Array<Object>} targetSchema Target schema as array of attribute properties
+ * `[{name: String, Aliases: Array<String>}, ...]`
+ * @example
+ * const mf = buildMappingFunction({foo: 'bar'}, {name: 'test', aliases: ['foo', 'baz']});
+ * mf({foo: 'bar'}) === {test: 'bar'} // true
+ * mf({foo: 'hello'}) === {test: 'hello'} // true
+ * mf({baz: 42}) === {} // baz is an alias of test, but is not in the source schema
+ */
+const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
 	const mapping = {};
-	Object.keys(schema).forEach((key) => {
-		const attribute = ATTRIBUTES.find(a => a.aliases.includes(key.toLowerCase()));
+	Object.keys(sourceSchema).forEach((key) => {
+		const attribute = targetSchema.find(a => a.aliases.includes(key.toLowerCase()));
 		if (attribute !== undefined) {
 			mapping[key] = attribute.name;
 		}
