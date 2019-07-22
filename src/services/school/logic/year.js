@@ -30,11 +30,14 @@ class SchoolYearFacade {
 		return (year.name.toString()).localeCompare(otherYear.name);
 	}
 
-	get SchoolYears() {
-		return this.schoolYears;
-	}
-
-	getActiveYear() {
+	/**
+	 * shows the current year which may return null if there is currently summerbreak.
+	 * to always get a value use defaultYear
+	 *
+	 * @readonly
+	 * @memberof SchoolYearFacade
+	 */
+	get activeYear() {
 		const now = Date.now();
 		const activeYears = this.schoolYears
 			.filter(year => year.startDate <= now
@@ -45,14 +48,21 @@ class SchoolYearFacade {
 		return null;
 	}
 
-	/** returns the active or otherwise the next year.
+	/**
+	 * returns the active or otherwise (in summerbreak) the next school year.
 	 * this may fail if no next year is available!
 	 */
-	getDefaultYear() {
-		return this.getActiveYear() || this.getNextYear();
+	get defaultYear() {
+		return this.activeYear || this.nextYear;
 	}
 
-	getNextYear() {
+	/**
+	 * shows the next year that currently has not started yet
+	 *
+	 * @readonly
+	 * @memberof SchoolYearFacade
+	 */
+	get nextYear() {
 		const now = Date.now();
 		const nextYears = this.schoolYears
 			.filter(year => year.startDate >= now);
@@ -61,7 +71,13 @@ class SchoolYearFacade {
 		return nextYears[0];
 	}
 
-	getLastYear() {
+	/**
+	 * shows the last year that is already ended
+	 *
+	 * @readonly
+	 * @memberof SchoolYearFacade
+	 */
+	get lastYear() {
 		const now = Date.now();
 		const pastYears = this.schoolYears.filter(year => year.endDate < now);
 		// last year is on last place
@@ -108,13 +124,19 @@ class SchoolYearFacade {
 		return Date.UTC(year, 7, 1); // 1.8.YEAR
 	}
 
-	get data() {
+	/**
+	 *converts the class into a JSON Object having schoolYears and all calculated get properties
+	 *
+	 * @returns
+	 * @memberof SchoolYearFacade
+	 */
+	toJSON() {
 		return {
 			schoolYears: this.schoolYears,
-			activeYear: this.getActiveYear(),
-			defaultYear: this.getDefaultYear(),
-			nextYear: this.getNextYear(),
-			lastYear: this.getLastYear(),
+			activeYear: this.activeYear,
+			defaultYear: this.defaultYear,
+			nextYear: this.nextYear,
+			lastYear: this.lastYear,
 		};
 	}
 }
