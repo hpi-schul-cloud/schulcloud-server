@@ -26,6 +26,12 @@ const rssFeedSchema = new Schema({
 	},
 });
 
+const customYearSchema = new Schema({
+	yearId:	{ type: Schema.Types.ObjectId, ref: 'year', required: true },
+	startDate: { type: Date, required: true },
+	endDate: { type: Date, required: true },
+});
+
 const schoolSchema = new Schema({
 	name: { type: String, required: true },
 	address: { type: Object },
@@ -38,6 +44,7 @@ const schoolSchema = new Schema({
 	experimental: { type: Boolean, default: false },
 	pilot: { type: Boolean, default: false },
 	currentYear: { type: Schema.Types.ObjectId, ref: 'year' },
+	customYears: [{ type: customYearSchema }],
 	logo_dataUrl: { type: String },
 	purpose: { type: String },
 	rssFeeds: [{ type: rssFeedSchema }],
@@ -59,7 +66,11 @@ schoolSchema.virtual('inMaintenance').get(function get() {
 schoolSchema.plugin(require('mongoose-lean-virtuals'));
 
 const yearSchema = new Schema({
-	name: { type: String, required: true },
+	name: {
+		type: String, required: true, match: /^[0-9]{4}\/[0-9]{2}$/, unique: true,
+	},
+	startDate: { type: Date, required: true },
+	endDate: { type: Date, required: true },
 });
 
 const gradeLevelSchema = new Schema({
@@ -73,6 +84,7 @@ const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 module.exports = {
 	schoolModel,
 	yearModel,
+	customYearSchema,
 	gradeLevelModel,
 	fileStorageTypes,
 };

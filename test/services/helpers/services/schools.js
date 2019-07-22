@@ -19,6 +19,7 @@ const create = app => async ({
 	purpose = 'test',
 	rssFeeds = [],
 	features = [],
+	customYears = [],
 } = {}) => {
 	if (systems && systems.length === 0) {
 		const localSystem = (await app.service('systems').find({ query: { type: 'local' }, paginate: false }))[0];
@@ -32,6 +33,7 @@ const create = app => async ({
 		federalState,
 		ldapSchoolIdentifier,
 		createdAt,
+		customYears,
 		updatedAt,
 		experimental,
 		pilot,
