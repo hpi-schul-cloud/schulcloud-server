@@ -616,7 +616,6 @@ const bucketService = {
 const copyService = {
 	docs: swaggerDocs.copyService,
 
-	// todo: Make this permissions sense? Should review!
 	defaultPermissionHandler(userId, file, parent) {
 		return Promise.all([
 			canRead(userId, file),

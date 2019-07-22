@@ -5,20 +5,12 @@ const { OutputLogTemplate, DatabaseTaskTemplate } = require('./helpers/');
 
 const isUndefined = e => typeof e === 'undefined';
 
-const getSortedLessons = async () => {
-	const lessons = await LessonModel
-		.find({})
-		.sort({ position: 1 })
-		.sort({ createdAt: 1 })
-		.lean()
-		.exec();
-
-	// test sorting, it is important!
-	if (lessons[0].createdAt > lessons[lessons.length - 1].createdAt) {
-		throw new Error('please show sorting');
-	}
-	return lessons;
-};
+const getSortedLessons = async () => LessonModel
+	.find({})
+	.sort({ position: 1 })
+	.sort({ createdAt: 1 })
+	.lean()
+	.exec();
 
 const createDataTree = (lessons, key) => {
 	logger.info(`create datatree ${key}`);
@@ -52,7 +44,6 @@ module.exports = {
 	up: async function up() {
 		await connect();
 
-		// get sorted lessons
 		const lessons = await getSortedLessons();
 
 		// create course tree

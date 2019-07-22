@@ -7,7 +7,7 @@ const testLogger = (log) => {
 	return log;
 };
 
-class DatabaseTaskTempalte {
+class DatabaseTaskTemplate {
 	constructor({
 		id,
 		_id,
@@ -76,4 +76,4 @@ class DatabaseTaskTempalte {
 	}
 }
 
-module.exports = DatabaseTaskTempalte;
+module.exports = DatabaseTaskTemplate;

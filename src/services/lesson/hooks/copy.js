@@ -13,8 +13,8 @@ const checkForShareToken = (context) => {
 		.populate('courseId')
 		.then((topic) => {
 			if (
-				(topic.shareToken === shareToken && shareToken !== undefined)
-				|| topic.courseId.teacherIds.filter(t => t.toString() === currentUserId).length > 0
+				(shareToken !== undefined && topic.shareToken === shareToken)
+				|| topic.courseId.teacherIds.some(t => t.toString() === currentUserId)
 			) {
 				return context;
 			}
