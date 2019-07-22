@@ -1,3 +1,5 @@
+const { NotFound } = require('@feathersjs/errors');
+
 const resolveStorageType = (context) => {
 	const { params: { payload } } = context;
 
@@ -6,11 +8,16 @@ const resolveStorageType = (context) => {
 			_id: payload.userId,
 			$populate: ['schoolId'],
 		},
-	}).then((res) => {
-		const [{ schoolId: { _id, fileStorageType } }] = res.data;
+	}).then((users) => {
+		if (users.length === 1) {
+			throw new NotFound('Can not match user.');
+		}
+		const [{ schoolId: { _id, fileStorageType } }] = users.data;
 		payload.schoolId = _id;
 		payload.fileStorageType = fileStorageType;
 		return context;
+	}).catch((err) => {
+		throw new Error(err);
 	});
 };
 
