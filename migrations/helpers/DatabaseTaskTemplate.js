@@ -6,10 +6,16 @@ class DatabaseTaskTempalte {
 		set,
 		$unset,
 		unset,
+		isModified = true,
 	}) {
 		this.id = _id || id;
 		this.set = $set || set || {};
 		this.unset = $unset || unset || {};
+		this.isModified = isModified;
+	}
+
+	setLog(log) {
+		this.log = log;
 	}
 
 	getId() {
@@ -17,10 +23,14 @@ class DatabaseTaskTempalte {
 	}
 
 	get() {
-		return {
-			$set: this.set,
-			$unset: this.unset,
-		};
+		const req = {};
+		if (Object.keys(this.set).length > 0) {
+			req.$set = this.set;
+		}
+		if (Object.keys(this.unset).length > 0) {
+			req.$unset = this.unset;
+		}
+		return req;
 	}
 
 	pushSet(key, value) {
@@ -31,8 +41,13 @@ class DatabaseTaskTempalte {
 		this.unset[key] = 1;
 	}
 
-	exec(model, operation, log) {
-		// LessonModel.updateOne(task.getId(), task.get()
+	exec(model, operation, _log) {
+		const log = _log || this.log;
+
+		if (this.isModified === false) {
+			return Promise.resolve(true);
+		}
+
 		return model[operation](this.getId(), this.get())
 			.then(() => {
 				if (log) {
@@ -40,9 +55,9 @@ class DatabaseTaskTempalte {
 				}
 				return true;
 			})
-			.catch(() => {
+			.catch((err) => {
 				if (log) {
-					return log.pushFail(this.id);
+					return log.pushFail(this.id, err);
 				}
 				return false;
 			});
