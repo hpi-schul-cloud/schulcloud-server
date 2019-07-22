@@ -4,9 +4,9 @@ const Syncer = require('./Syncer');
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
-	{ name: 'firstName', required: true, aliases: ['firstname', 'first'] },
+	{ name: 'firstName', required: true, aliases: ['firstname', 'first', 'first-name', 'fn'] },
 	{ name: 'middleName', aliases: ['middlename', 'middle'] },
-	{ name: 'lastName', required: true, aliases: ['lastname', 'last'] },
+	{ name: 'lastName', required: true, aliases: ['lastname', 'last', 'last-name', 'n'] },
 	{ name: 'nameSuffix', aliases: ['namesuffix', 'suffix'] },
 	{ name: 'email', required: true, aliases: ['email', 'mail', 'e-mail'] },
 	{ name: 'class', aliases: ['class', 'classes'] },
