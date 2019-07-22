@@ -1,4 +1,4 @@
-const { BadRequest, NotFound } = require('@feathersjs/errors');
+const { BadRequest, NotFound, NotAcceptable } = require('@feathersjs/errors');
 const { FileModel } = require('../model');
 const createCorrectStrategy = require('./createCorrectStrategy');
 const { generateFileNameSuffix } = require('./filePathHelper');
@@ -14,9 +14,26 @@ const safeOverrideAndClear = (source, override) => {
 	return source;
 };
 
-const copyFile = async (data, params, permissionHandler) => {
-	// file = sourceFileId  | parent = newCourseId
-	const { file, parent } = data;
+// check that there's no file with this name in course
+const renameFileIfAlreadyExistInParent = (existingFile, newFileObject) => {
+	if (existingFile !== null) {
+		if (!existingFile.name) {
+			throw new NotAcceptable('File name test is fail.');
+		}
+		const [name, extension, others] = existingFile.name.split('.');
+		if (!others) { // found more then 2 elements after split
+			throw new NotAcceptable('File with points in name is not valid file name.');
+		}
+		newFileObject.name = `${name}_${Date.now()}.${extension}`;
+	}
+};
+
+/**
+ * @param {Object} {file, parent} file = sourceFileId  | parent = newCourseId
+ * @param {Object} params
+ * @param {Function} [ permissionHandler ] <optional> permissionHandler(userId, file, parent)
+ */
+const copyFile = async ({ file, parent }, params, permissionHandler) => {
 	const { payload: { userId } } = params;
 	const strategy = createCorrectStrategy(params.payload.fileStorageType);
 
@@ -26,7 +43,8 @@ const copyFile = async (data, params, permissionHandler) => {
 
 	// existingFile must rename
 	const [existingFile, fileObject] = await Promise.all([
-		FileModel.findOne({ parent, name: file.name }).lean().exec(),
+		// only select name to reduce traffic
+		FileModel.findOne({ parent, name: file.name }).select('name').lean().exec(),
 		FileModel.findOne({ _id: file }).lean().exec(),
 	]);
 
@@ -37,11 +55,8 @@ const copyFile = async (data, params, permissionHandler) => {
 	const newFileObject = {
 		owner: parent,
 	};
-	// check that there's no file with this name in course
-	if (existingFile !== null) {
-		const [ext, name] = file.name.split('.').reverse();
-		newFileObject.name = `${name}_${Date.now()}.${ext}`;
-	}
+
+	renameFileIfAlreadyExistInParent(existingFile, newFileObject);
 
 	// check permissions
 	if (permissionHandler) {

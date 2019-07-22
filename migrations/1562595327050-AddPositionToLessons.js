@@ -62,14 +62,13 @@ module.exports = {
 		const courseGroupMap = createDataTree(courseMap.undefined, 'courseGroupId');
 		delete courseMap.undefined;
 
-		// add position if not exist, by oldest first | convert data to mongoose request
-		const databaseTasks = createDatabaseTask(Object.assign(courseMap, courseGroupMap));
-
 		// update database step by step
 		const out = new OutputLogTemplate({
 			total: lessons.length,
 			name: 'AddPositionToLessons',
 		});
+		// add position if not exist, by oldest first | convert data to mongoose request
+		const databaseTasks = createDatabaseTask(Object.assign(courseMap, courseGroupMap));
 
 		await Promise.all(databaseTasks.map(task => task.exec(LessonModel, 'updateOne', out)));
 		out.printResults();

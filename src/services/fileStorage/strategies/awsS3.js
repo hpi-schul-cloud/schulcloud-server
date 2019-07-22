@@ -118,7 +118,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		}
 		return schoolModel.findOne({ _id: schoolId }).lean().exec()
 			.then((school) => {
-				if (school === undefined || school === null) {
+				if (school === null) {
 					throw new NotFound('School not found.');
 				}
 
@@ -127,12 +127,13 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 				return createBucket({ Bucket: awsObject.bucket })
 					.then((res) => {
+						/* Sets the CORS configuration for a bucket. */
 						awsObject.s3.putBucketCors({
 							Bucket: awsObject.bucket,
 							CORSConfiguration: {
 								CORSRules: awsConfig.cors_rules,
 							},
-						}, (err) => {
+						}, (err) => {	// define and pass error handler
 							if (err) {
 								logger.warning(err);
 							}

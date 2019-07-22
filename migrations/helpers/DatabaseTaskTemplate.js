@@ -1,3 +1,12 @@
+const ifNotFunction = e => !typeof e === 'function';
+
+const testLogger = (log) => {
+	if (ifNotFunction(log.pushModified) || ifNotFunction(log.pushFail)) {
+		throw new Error('Is not a valid logger. It need the methods pushModified and pushFail.');
+	}
+	return log;
+};
+
 class DatabaseTaskTempalte {
 	constructor({
 		id,
@@ -7,15 +16,18 @@ class DatabaseTaskTempalte {
 		$unset,
 		unset,
 		isModified = true,
+		log,
 	}) {
 		this.id = _id || id;
 		this.set = $set || set || {};
 		this.unset = $unset || unset || {};
 		this.isModified = isModified;
+
+		this.log = testLogger(log);
 	}
 
 	setLog(log) {
-		this.log = log;
+		this.log = testLogger(log);
 	}
 
 	getId() {
@@ -51,13 +63,13 @@ class DatabaseTaskTempalte {
 		return model[operation](this.getId(), this.get())
 			.then(() => {
 				if (log) {
-					return log.pushModified(this.id);
+					return testLogger(log).pushModified(this.id);
 				}
 				return true;
 			})
 			.catch((err) => {
 				if (log) {
-					return log.pushFail(this.id, err);
+					return testLogger(log).pushFail(this.id, err);
 				}
 				return false;
 			});
