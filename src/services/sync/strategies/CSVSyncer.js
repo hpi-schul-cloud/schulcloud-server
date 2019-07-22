@@ -188,10 +188,8 @@ class CSVSyncer extends Syncer {
 		const mappingFunction = buildMappingFunction(records[0]);
 		return records.map((record) => {
 			const mappedRecord = mappingFunction(record);
-			return {
-				...mappedRecord,
-				email: mappedRecord.email.trim().toLowerCase(),
-			};
+			mappedRecord.email = mappedRecord.email.trim().toLowerCase();
+			return mappedRecord;
 		});
 	}
 
