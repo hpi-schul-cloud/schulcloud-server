@@ -3,14 +3,28 @@ const stripBOM = require('strip-bom');
 const Syncer = require('./Syncer');
 
 const ATTRIBUTES = [
-	{ name: 'namePrefix', aliases: ['namePrefix', 'prefix', 'title', 'affix'] },
-	{ name: 'firstName', required: true, aliases: ['firstName', 'first'] },
-	{ name: 'middleName', aliases: ['middleName', 'middle'] },
-	{ name: 'lastName', required: true, aliases: ['lastName', 'last'] },
-	{ name: 'nameSuffix', aliases: ['nameSuffix', 'suffix'] },
+	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
+	{ name: 'firstName', required: true, aliases: ['firstname', 'first'] },
+	{ name: 'middleName', aliases: ['middlename', 'middle'] },
+	{ name: 'lastName', required: true, aliases: ['lastname', 'last'] },
+	{ name: 'nameSuffix', aliases: ['namesuffix', 'suffix'] },
 	{ name: 'email', required: true, aliases: ['email', 'mail', 'e-mail'] },
 	{ name: 'class', aliases: ['class', 'classes'] },
 ];
+
+const buildMappingFunction = (schema) => {
+	const mapping = {};
+	Object.keys(schema).forEach((key) => {
+		const attribute = ATTRIBUTES.find(a => a.aliases.includes(key.toLowerCase()));
+		if (attribute !== undefined) {
+			mapping[key] = attribute.name;
+		}
+	});
+	return record => Object.keys(mapping).reduce((res, key) => {
+		res[mapping[key]] = record[key];
+		return res;
+	}, {});
+};
 
 /**
  * Implements importing CSV documents based on the Syncer interface
@@ -153,7 +167,7 @@ class CSVSyncer extends Syncer {
 		}
 
 		ATTRIBUTES.filter(a => a.required).forEach((attr) => {
-			const attributeIsUsed = Object.keys(records[0]).some(k => attr.aliases.includes(k));
+			const attributeIsUsed = Object.keys(records[0]).some(k => attr.aliases.includes(k.toLowerCase()));
 			if (!attributeIsUsed) {
 				this.stats.errors.push({
 					type: 'file',
@@ -171,10 +185,14 @@ class CSVSyncer extends Syncer {
 	}
 
 	static sanitizeRecords(records) {
-		return records.map(record => ({
-			...record,
-			email: record.email.trim().toLowerCase(),
-		}));
+		const mappingFunction = buildMappingFunction(records[0]);
+		return records.map((record) => {
+			const mappedRecord = mappingFunction(record);
+			return {
+				...mappedRecord,
+				email: mappedRecord.email.trim().toLowerCase(),
+			};
+		});
 	}
 
 	clusterByEmail(records) {
