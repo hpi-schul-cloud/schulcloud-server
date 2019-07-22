@@ -13,7 +13,7 @@ const { expect } = chai;
 
 let defaultYears;
 
-describe.only('school year logic', async () => {
+describe('school year logic', async () => {
 	before('load data', async () => {
 		defaultYears = await YearModel.find().lean().exec();
 	});
