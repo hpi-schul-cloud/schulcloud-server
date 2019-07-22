@@ -4,6 +4,7 @@ const L = require('../src/logger/');
 const { Schema } = mongoose;
 
 const { connect, close } = require('../src/utils/database');
+const { OutputLogTemplate } = require('./helpers/');
 
 const LessonModel = mongoose.model('lesson', new mongoose.Schema({
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
@@ -15,7 +16,7 @@ const isNotEmpty = e => !(e === undefined || e === null);
 const createDatabaseTask = (collectionData, sourceKey, targetKey) => {
 	const tasks = [];
 	collectionData.forEach((lesson) => {
-		if (isNotEmpty(lesson.originalTopic)) {
+		if (isNotEmpty(lesson[sourceKey])) {
 			tasks.push({
 				_id: lesson._id,
 				$set: {
@@ -32,16 +33,15 @@ const createDatabaseTask = (collectionData, sourceKey, targetKey) => {
 
 const updateLessons = (databaseTasks, out) => {
 	L.info(`update lessons in database tasks=${databaseTasks.length}`);
-	databaseTasks.forEach((task) => {
+	return databaseTasks.map((task) => {
 		const { _id, $set, $unset } = task;
-		const req = LessonModel.updateOne({ _id }, { $set, $unset })
+		return LessonModel.updateOne({ _id }, { $set, $unset })
 			.then(() => {
-				out.modified.push(task._id);
+				return out.pushModified(task._id);
 			})
 			.catch(() => {
-				out.fail.push(task._id);
+				return out.pushFail(task._id);
 			});
-		out.requests.push(req);
 	});
 };
 
@@ -67,16 +67,14 @@ module.exports = {
 		const lessons = await LessonModel.find({}).lean().exec();
 		const tasks = createDatabaseTask(lessons, 'originalTopic', 'isCopyFrom');
 
-		// update database step by step
-		const out = {
-			modified: [],
-			notModified: [],
-			fail: [],
-			requests: [],
-		};
+		const out = new OutputLogTemplate({
+			total: lessons.length,
+			name: 'LessonCopyFrom',
+		});
 
-		await updateLessons(tasks, out);
-		await printResults(out);
+		const requests = await updateLessons(tasks, out);
+		await Promise.all(requests);
+		out.printResults();
 		await close();
 	},
 
@@ -84,14 +82,15 @@ module.exports = {
 		await connect();
 		const lessons = await LessonModel.find({}).lean().exec();
 		const tasks = createDatabaseTask(lessons, 'isCopyFrom', 'originalTopic');
-		const out = {
-			modified: [],
+
+		const out = new OutputLogTemplate({
 			total: lessons.length,
-			fail: [],
-			requests: [],
-		};
-		await updateLessons(tasks, out);
-		await printResults(out);
+			name: 'LessonCopyFrom',
+		});
+
+		const requests = await updateLessons(tasks, out);
+		await Promise.all(requests);
+		out.printResults();
 		await close();
 	},
 };

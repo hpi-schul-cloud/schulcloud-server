@@ -8,7 +8,7 @@
 	"time" : { "$date": "2017-09-17T22:00:00.000Z" },
 	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
 	"__v" : 0,
-	"originalTopic" : { "$oid": "59a3c6c5a2049554a93fec43" },
+	"isCopyFrom" : { "$oid": "59a3c6c5a2049554a93fec43" },
 	"position" : 0,
 	"materialIds" : [],
 	"contents" : [
@@ -88,7 +88,7 @@
 	"time" : { "$date": "2017-08-29T22:00:00.000Z" },
 	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
 	"__v" : 0,
-	"originalTopic" : { "$oid": "593a6b44a5896d0515fbf42e" },
+	"isCopyFrom" : { "$oid": "593a6b44a5896d0515fbf42e" },
 	"position" : 2,
 	"materialIds" : [],
 	"contents" : [
@@ -121,7 +121,7 @@
 	"time" : { "$date": "2017-08-27T22:00:00.000Z" },
 	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
 	"__v" : 0,
-	"originalTopic" : { "$oid": "59a3c6dba2049554a93fec44" },
+	"isCopyFrom" : { "$oid": "59a3c6dba2049554a93fec44" },
 	"position" : 4,
 	"materialIds" : [],
 	"contents" : [
@@ -153,7 +153,7 @@
 	"name" : "Strahlengang im menschlichen Auge",
 	"time" : { "$date": "2017-09-05T22:00:00.000Z" },
 	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"position" : null,
+	"position" : 0,
 	"materialIds" : [],
 	"contents" : [
 		{
@@ -196,7 +196,7 @@
 	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
 	"__v" : 0,
 	"hidden" : false,
-	"originalTopic" : { "$oid": "59256b2e64d87543e48310d6" },
+	"isCopyFrom" : { "$oid": "59256b2e64d87543e48310d6" },
 	"position" : 1,
 	"materialIds" : [
 		{ "$oid": "59b6bdc75c9ec20c6f083659" },
@@ -274,7 +274,7 @@
 	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
 	"__v" : 0,
 	"hidden" : false,
-	"originalTopic" : { "$oid": "59a3c69aa2049554a93fec41" },
+	"isCopyFrom" : { "$oid": "59a3c69aa2049554a93fec41" },
 	"position" : 2,
 	"materialIds" : [],
 	"contents" : [
@@ -339,7 +339,7 @@
 	"time" : { "$date": "2017-08-27T22:00:00.000Z" },
 	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
 	"__v" : 0,
-	"originalTopic" : { "$oid": "593a8721a5896d0515fbf476" },
+	"isCopyFrom" : { "$oid": "593a8721a5896d0515fbf476" },
 	"position" : 0,
 	"materialIds" : [],
 	"contents" : [
@@ -406,7 +406,7 @@
 	"time" : { "$date": "2017-09-20T22:00:00.000Z" },
 	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
 	"__v" : 0,
-	"originalTopic" : { "$oid": "5937cca1a5896d0515fbf2b2" },
+	"isCopyFrom" : { "$oid": "5937cca1a5896d0515fbf2b2" },
 	"position" : 0,
 	"materialIds" : [],
 	"contents" : [
@@ -440,7 +440,7 @@
 	"name" : "Das Nervensystem",
 	"time" : { "$date": "2017-09-10T22:00:00.000Z" },
 	"date" : { "$date": "1999-12-31T23:00:00.000Z" },
-	"position" : null,
+	"position" : 0,
 	"materialIds" : [],
 	"contents" : [
 		{

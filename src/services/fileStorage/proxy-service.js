@@ -75,6 +75,21 @@ const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
 
 	/**
+	 * @param {*} owner
+	 * @returns 'user' || 'course' || 'teams'
+	 */
+	async getRefOwnerModel(owner) {
+		let refOwnerModel = 'user';
+
+		if (owner) {
+			const isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
+			refOwnerModel = isCourse ? 'course' : 'teams';
+		}
+
+		return refOwnerModel;
+	},
+
+	/**
      * @param data, file data
      * @param params,
      * @returns {Promise}
@@ -87,13 +102,9 @@ const fileStorageService = {
 			studentCanEdit,
 			permissions: sendPermissions = [],
 		} = data;
-		let isCourse = true;
-		let refOwnerModel = 'user';
 
-		if (owner) {
-			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
-			refOwnerModel = isCourse ? 'course' : 'teams';
-		}
+		const refOwnerModel = await this.getRefOwnerModel(owner);
+
 		const permissions = await createDefaultPermissions(
 			userId,
 			refOwnerModel,
