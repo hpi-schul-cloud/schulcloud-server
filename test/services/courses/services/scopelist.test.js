@@ -244,7 +244,9 @@ describe('courses scopelist service', () => {
 			query: { count: 'true' },
 			paginate: false,
 		});
-		expect(response).to.equal(1);
+		expect(response).to.equal({
+			total: 1,
+		});
 	});
 
 	it('may return count of active courses', async () => {
@@ -266,7 +268,9 @@ describe('courses scopelist service', () => {
 			query: { filter: 'archived', count: 'true' },
 			paginate: false,
 		});
-		expect(response).to.equal(2);
+		expect(response).to.equal({
+			total: 2,
+		});
 	});
 
 	after(async () => {
