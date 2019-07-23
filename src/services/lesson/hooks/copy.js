@@ -1,5 +1,5 @@
 const auth = require('@feathersjs/authentication');
-const { Forbidden } = require('@feathersjs/errors');
+const { Forbidden, NotFound } = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
 const { injectUserId } = require('../../../hooks');
 const lesson = require('../model');
@@ -11,14 +11,20 @@ const checkForShareToken = (context) => {
 	const currentUserId = context.params.account.userId.toString();
 	return lesson.findOne({ _id: lessonId })
 		.populate('courseId')
-		.then((topic) => {
+		.select('shareToken courseId')
+		.lean()
+		.exec()
+		.then((_lesson) => {
 			if (
-				(shareToken !== undefined && topic.shareToken === shareToken)
-				|| topic.courseId.teacherIds.some(t => t.toString() === currentUserId)
+				(shareToken !== undefined && _lesson.shareToken === shareToken)
+				|| _lesson.courseId.teacherIds.some(t => t.toString() === currentUserId)
 			) {
 				return context;
 			}
 			throw new Forbidden("The entered lesson doesn't belong to you or is not allowed to be shared!");
+		})
+		.catch((err) => {
+			throw new NotFound('Lesson not found.', err);
 		});
 };
 
