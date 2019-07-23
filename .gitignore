@@ -47,4 +47,4 @@ config/secrets.json
 uploads/*
 
 # version info
-version.json
+version

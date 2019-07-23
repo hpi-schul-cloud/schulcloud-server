@@ -1,5 +1,9 @@
 const express = require('express');
 const fs = require('fs');
+const { posix: pathUtil } = require('path');
+
+const logger = require('../../logger');
+const { version } = require('../../../package.json');
 
 const router = express.Router();
 
@@ -7,15 +11,13 @@ router.get('/version', (req, res, next) => {
 	if (!process.env.SHOW_VERSION) {
 		return res.sendStatus(403);
 	}
+	let sha = false;
 	try {
-		return res.json(
-			JSON.parse(
-				fs.readFileSync('version.json', 'utf8'),
-			),
-		);
+		sha = fs.readFileSync(pathUtil.join(__dirname, '../../../', 'version'), 'utf8').trim();
 	} catch (error) {
-		return res.send(404, error);
+		logger.error(error);
 	}
+	return res.json({ sha, version });
 });
 
 module.exports = router;
