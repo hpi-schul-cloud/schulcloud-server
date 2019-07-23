@@ -37,12 +37,15 @@ module.exports = function setup() {
 		}
 
 		if (params.query.count === 'true') {
-			return courseModel.count({
+			const courseCount = await courseModel.count({
 				$and: [
 					userQuery,
 					untilQuery,
 				],
 			});
+			return {
+				total: courseCount,
+			};
 		}
 
 		return app.service('courses').find({
