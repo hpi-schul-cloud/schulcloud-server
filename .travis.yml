@@ -8,9 +8,6 @@ services:
 - docker
 #- mongodb
 
-git:
-  depth: false
-
 env:
   global:
     - GIT_SHA=$( git rev-parse HEAD )
@@ -28,7 +25,7 @@ before_install:
 - sudo docker run -d -p 27017:27017 mongo:4.0
 script:
 #- pwd
-- npm run version && cat version.json
+- npm run version
 - npm test
 - npm run coverage-codecov
 #- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
