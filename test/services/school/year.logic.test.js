@@ -40,8 +40,8 @@ describe('school year logic', async () => {
 		});
 		const testSchoolId = testSchool._id;
 		testSchool = await School.findById(testSchoolId).exec();
-		const schoolYears = new SchoolYearFacade(defaultYears, testSchool);
-		const customizedYear = schoolYears.SchoolYears.filter(year => year.name === yearToBeCustomized.name)[0];
+		const facade = new SchoolYearFacade(defaultYears, testSchool);
+		const customizedYear = facade.schoolYears.filter(year => year.name === yearToBeCustomized.name)[0];
 		expect(customizedYear.startDate).equals(customYear.startDate, 'recently set start date does not match');
 		expect(customizedYear.endDate).equals(customYear.endDate, 'recently set end date does not match');
 	});
@@ -53,25 +53,25 @@ describe('school year logic', async () => {
 			schoolYearFacade = new SchoolYearFacade(defaultYears, testSchool);
 		});
 		it('default year, which contains current or next year', () => {
-			expect(schoolYearFacade.getDefaultYear()).not.to.be.null;
+			expect(schoolYearFacade.defaultYear).not.to.be.null;
 		});
 		it('next year exist', () => {
-			expect(schoolYearFacade.getNextYear()).not.to.be.null;
+			expect(schoolYearFacade.nextYear).not.to.be.null;
 		});
 		it('last year exist', () => {
-			expect(schoolYearFacade.getLastYear()).not.to.be.null;
+			expect(schoolYearFacade.lastYear).not.to.be.null;
 		});
 		it('next year after year works', () => {
 			let lastYear = 0;
-			schoolYearFacade.SchoolYears.forEach((year) => {
+			schoolYearFacade.schoolYears.forEach((year) => {
 				const yearNumber = parseInt(year.name, 10);
 				expect(yearNumber).to.be.greaterThan(lastYear, 'values not in right order');
 				lastYear = yearNumber;
 			});
 
-			const nextYear = schoolYearFacade.getNextYearAfter(schoolYearFacade.SchoolYears[0]._id);
+			const nextYear = schoolYearFacade.getNextYearAfter(schoolYearFacade.schoolYears[0]._id);
 			expect(nextYear).not.to.be.null;
-			expect(nextYear.name).to.equal(schoolYearFacade.SchoolYears[1].name);
+			expect(nextYear.name).to.equal(schoolYearFacade.schoolYears[1].name);
 		});
 	});
 

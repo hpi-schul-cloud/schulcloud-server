@@ -44,19 +44,32 @@ const createDefaultStorageOptions = (hook) => {
 };
 
 
-const decorateYears = async (hook) => {
+const decorateYears = async (context) => {
 	if (!years) {
+		// default years will be cached after first call
 		years = await Year.find().lean().exec();
 	}
+	const addYearsToSchool = (school) => {
+		const facade = new SchoolYearFacade(years, school);
+		school.years = facade.toJSON();
+	};
 	try {
-		hook.result.data.forEach((school) => {
-			const facade = new SchoolYearFacade(years, school);
-			school.years = facade.data;
-		});
+		switch (context.method) {
+			case 'find':
+				context.result.data.forEach((school) => {
+					addYearsToSchool(school);
+				});
+				break;
+			case 'get':
+				addYearsToSchool(context.result);
+				break;
+			default:
+				throw new Error('method not supported');
+		}
 	} catch (error) {
 		logger.error(error);
 	}
-	return hook;
+	return context;
 };
 
 // fixme: resdtrict to current school

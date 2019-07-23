@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "",
-  "version": "18.2.5",
+  "version": "18.2.7",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -26,12 +26,14 @@
     "start": "node src/",
     "startd": "nodemon src/",
     "debug": "nodemon --inspect=5959 src/",
+    "debug:container": "nodemon --inspect=0.0.0.0:5959 src/",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha --exit test/**/*.test.js",
     "coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
     "mocha": "cross-env NODE_ENV=test mocha --exit test/ --recursive",
     "mocha-inspect": "cross-env NODE_ENV=test mocha --exit --debug-brk --inspect test/ --recursive",
     "migration": "migrate",
-    "migration-persist": "mongoexport -d schulcloud -c migrations --jsonArray --pretty > ./backup/setup/migrations.json"
+    "migration-persist": "mongoexport -d schulcloud -c migrations --jsonArray --pretty > ./backup/setup/migrations.json",
+    "version": "git rev-parse HEAD > version"
   },
   "dependencies": {
     "@feathersjs/authentication": "^2.1.16",
@@ -67,7 +69,6 @@
     "file-type": "^9.0.0",
     "freeport": "^1.0.5",
     "html-entities": "^1.2.1",
-    "git-repo-info": "^2.1.0",
     "jwt-decode": "^2.2.0",
     "ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
     "lodash": "^4.17.13",
