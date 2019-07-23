@@ -1,9 +1,9 @@
 const { promisify } = require('es6-promisify');
 const errors = require('@feathersjs/errors');
 const aws = require('aws-sdk');
-const { posix: pathUtil } = require('path');
-const logger = require('../../../logger');
+const pathUtil = require('path');
 const fs = require('fs');
+const logger = require('../../../logger');
 
 
 const SchoolModel = require('../../school/model');
