@@ -1,6 +1,6 @@
 const express = require('express');
 const fs = require('fs');
-const { posix: pathUtil } = require('path');
+const path = require('path');
 
 const logger = require('../../logger');
 const { version } = require('../../../package.json');
@@ -13,7 +13,7 @@ router.get('/version', (req, res, next) => {
 	}
 	let sha = false;
 	try {
-		sha = fs.readFileSync(pathUtil.join(__dirname, '../../../', 'version'), 'utf8').trim();
+		sha = fs.readFileSync(path.join(__dirname, '../../../', 'version'), 'utf8').trim();
 	} catch (error) {
 		logger.error(error);
 	}
