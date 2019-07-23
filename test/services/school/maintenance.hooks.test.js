@@ -12,7 +12,7 @@ const { expect } = chai;
 const lookupSchool = require('./../../../src/services/school/hooks/lookupSchool');
 
 describe('lookupSchool hook', () => {
-	it('should add the referened school to the request params', async () => {
+	it('should add the referenced school to the request params', async () => {
 		const currentYear = await createYear();
 		const school = await createSchool({
 			currentYear,
