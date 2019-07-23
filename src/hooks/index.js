@@ -222,13 +222,10 @@ exports.mapPaginationQuery = (hook) => {
 };
 
 exports.checkCorrectCourseOrTeamId = async (context) => {
-	if (!context.data) {
-		return context;
-	}
-	const userId = context.params.account.userId.toString();
-	const { courseId, courseGroupId, teamId } = context.data;
+	const { courseId, courseGroupId, teamId } = context.data || {};
 
 	if (teamId) {
+		const userId = context.params.account.userId.toString();
 		const query = {
 			userIds: {
 				$elemMatch: { userId },
@@ -245,26 +242,32 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 	}
 
 	if (courseGroupId || courseId) {
+		const userId = context.params.account.userId.toString();
 		// make it sense?
-		const validateCourseId = (context.data.courseId || '').toString() || (context.id || '').toString();
-		let query = { teacherIds: { $in: [userId] }, $select: ['_id'] };
+		const validatedCourseId = (courseId || '').toString() || (context.id || '').toString();
+		let query = {
+			teacherIds: {
+				$in: [userId],
+			},
+			$select: ['_id'],
+		};
 
-		if (context.data.courseGroupId) {
+		if (courseGroupId) {
 			delete context.data.courseId;
 			query = {
 				$or: [
 					{ teacherIds: { $in: [userId] } },
 					{ userIds: { $in: [userId] } },
 				],
+				$select: ['_id'],
 			};
 		}
 
-		const course = await context.app.service('courses').get(validateCourseId, { query });
+		const course = await context.app.service('courses').get(validatedCourseId, { query });
 
 		if (course === null) {
 			throw new Forbidden("The entered course doesn't belong to you!");
 		}
-
 		return context;
 	}
 
