@@ -1,4 +1,8 @@
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const { ObjectId } = require('mongoose').Types;
+const { Forbidden } = require('@feathersjs/errors');
+
 const app = require('./../../../src/app');
 const { cleanup } = require('../helpers/testObjects')(app);
 const { create: createSchool } = require('./../helpers/services/schools')(app);
@@ -6,6 +10,9 @@ const { generateRequestParamsFromUser } = require('./../helpers/services/login')
 const { create: createUser } = require('./../helpers/services/users')(app);
 const { create: createSystem } = require('./../helpers/services/testSystem')(app);
 const { create: createYear } = require('./../helpers/services/years');
+
+chai.use(chaiAsPromised);
+const { expect } = chai;
 
 describe('school maintenance mode', () => {
 	const maintenanceService = app.service('schools/:schoolId/maintenance');
@@ -97,6 +104,37 @@ describe('school maintenance mode', () => {
 				expect(result.schoolUsesLdap).to.equal(false);
 				expect(result.maintenance.active).to.equal(false);
 			});
+
+			it('should allow status requests for all users', async () => {
+				const currentYear = await createYear();
+				const nextYear = await createYear();
+				maintenanceService.years = [currentYear, nextYear];
+				const school = await createSchool({ currentYear });
+				const user = await createUser({ schoolId: school._id, roles: 'teacher' });
+				const params = await generateRequestParamsFromUser(user);
+				params.route = { schoolId: school._id.toString() };
+				params.query = {};
+
+				const result = await maintenanceService.find(params);
+				expect(result).to.not.equal(undefined);
+				expect(result.currentYear._id.toString()).to.equal(currentYear._id.toString());
+				expect(result.nextYear._id.toString()).to.equal(nextYear._id.toString());
+				expect(result.schoolUsesLdap).to.equal(false);
+				expect(result.maintenance.active).to.equal(false);
+			});
+
+			it('should not allow status requests for other schools', async () => {
+				const currentYear = await createYear();
+				const nextYear = await createYear();
+				maintenanceService.years = [currentYear, nextYear];
+				const school = await createSchool({ currentYear });
+				const user = await createUser({ schoolId: new ObjectId(), roles: 'teacher' });
+				const params = await generateRequestParamsFromUser(user);
+				params.route = { schoolId: school._id.toString() };
+				params.query = {};
+
+				await expect(maintenanceService.find(params)).to.eventually.be.rejectedWith(Forbidden);
+			});
 		});
 
 		describe('for LDAP schools', () => {
@@ -149,7 +187,42 @@ describe('school maintenance mode', () => {
 				expect(result.schoolUsesLdap).to.equal(true);
 				expect(result.maintenance.active).to.equal(false);
 			});
+
+			it('should only allow administrators to start the new school year', async () => {
+				const currentYear = await createYear();
+				const nextYear = await createYear();
+				maintenanceService.years = [currentYear, nextYear];
+				const school = await createSchool({ currentYear });
+
+				const teacher = await createUser({ schoolId: school._id, roles: 'student' });
+				const teacherParams = await generateRequestParamsFromUser(teacher);
+				teacherParams.route = { schoolId: school._id.toString() };
+				teacherParams.query = {};
+
+				const admin = await createUser({ schoolId: school._id, roles: 'administrator' });
+				const adminParams = await generateRequestParamsFromUser(admin);
+				adminParams.route = { schoolId: school._id.toString() };
+				adminParams.query = {};
+
+				const nodeEnv = process.env.NODE_ENV;
+				process.env.NODE_ENV = 'foo'; // the global hook #hasPermission will not enforce permissions in tests
+				await expect(maintenanceService.create({ maintenance: true }, teacherParams))
+					.to.eventually.be.rejectedWith(Forbidden);
+
+				await expect(maintenanceService.create({ maintenance: true }, adminParams))
+					.to.eventually.be.fulfilled;
+				process.env.NODE_ENV = nodeEnv;
+			}).timeout(5000);
 		});
+	});
+
+	it('should only allow find and create', async () => {
+		for (const method of ['find', 'create']) {
+			expect(maintenanceService[method]).to.exist;
+		}
+		for (const method of ['get', 'update', 'patch', 'remove']) {
+			expect(maintenanceService[method]).to.not.exist;
+		}
 	});
 
 	afterEach(async () => {
