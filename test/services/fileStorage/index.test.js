@@ -400,6 +400,10 @@ describe('fileStorage services', () => {
 		});
 	});
 
+	it('registered the thumbnail service', () => {
+		assert.ok(app.service('fileStorage/thumbnail'));
+	});
+
 	describe('directory service', () => {
 		it('registered the directory service', () => {
 			assert.ok(app.service('fileStorage/directories'));

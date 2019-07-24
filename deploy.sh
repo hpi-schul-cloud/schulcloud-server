@@ -69,14 +69,18 @@ function deploytostaging {
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@staging.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG staging_server
 }
 
-# Happy SHA, wo glu:cklich macht
-echo "$GIT_SHA $DOCKERTAG" > ./public/commitsha.txt
+function inform {
+  if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
+  then
+    curl -X POST -H 'Content-Type: application/json' --data '{"text":":rocket: Die Produktivsysteme können aktualisiert werden: Schul-Cloud Server!"}' $WEBHOOK_URL_CHAT
+  fi
+}
 
 
 if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
   buildandpush
-  deploytoprods
+  inform
 elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
   buildandpush	

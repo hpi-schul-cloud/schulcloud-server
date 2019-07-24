@@ -9,9 +9,13 @@ const User = mongoose.model('user', new mongoose.Schema({
 	timestamps: true,
 }));
 
+// How to use more than one schema per collection on mongodb
+// https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
+
 module.exports = {
 	up: async function up() {
 		await connect();
+		// ////////////////////////////////////////////////////
 		// Make changes to the database here.
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
@@ -21,11 +25,13 @@ module.exports = {
 		}, {
 			firstName: 'Max',
 		}).lean().exec();
+		// ////////////////////////////////////////////////////
 		await close();
 	},
 
 	down: async function down() {
 		await connect();
+		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
 		await User.findOneAndUpdate({
 			firstName: 'Max',
@@ -33,6 +39,7 @@ module.exports = {
 		}, {
 			firstName: 'Marla',
 		}).lean().exec();
+		// ////////////////////////////////////////////////////
 		await close();
 	},
 };
