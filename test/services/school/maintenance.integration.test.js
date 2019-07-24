@@ -82,6 +82,28 @@ describe('school maintenance mode', () => {
 		});
 	});
 
+	describe('transfer route', () => {
+		describe('for non-LDAP schools', () => {
+			it('should directly migrate the school to the next school year', async () => {
+				const currentYear = await createYear();
+				const nextYear = await createYear();
+				maintenanceService.years = [currentYear, nextYear];
+				const school = await createSchool({ currentYear });
+				const user = await createUser({ schoolId: school._id, roles: 'administrator' });
+				const params = await generateRequestParamsFromUser(user);
+				params.route = { schoolId: school._id.toString() };
+				params.query = {};
+
+				const result = await maintenanceService.create({ maintenance: true }, params);
+				expect(result).to.not.equal(undefined);
+				expect(result.currentYear._id.toString()).to.equal(nextYear._id.toString());
+				expect(result.nextYear).to.equal(undefined);
+				expect(result.schoolUsesLdap).to.equal(false);
+				expect(result.maintenance.active).to.equal(false);
+			});
+		});
+	});
+
 	afterEach(async () => {
 		maintenanceService.years = [];
 		await cleanup();
