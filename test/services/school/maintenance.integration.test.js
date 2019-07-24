@@ -27,10 +27,9 @@ describe('school maintenance mode', () => {
 				const nextYear = await createYear();
 				maintenanceService.years = [currentYear, nextYear];
 				const school = await createSchool({ currentYear });
-				const user = await createUser({ schoolId: school._id, roles: 'administrator' });
-				const params = await generateRequestParamsFromUser(user);
-				params.route = { schoolId: school._id.toString() };
-				params.query = {};
+				const params = {
+					route: { schoolId: school._id.toString() },
+				};
 
 				const result = await maintenanceService.find(params);
 				expect(result).to.not.equal(undefined);
@@ -43,10 +42,9 @@ describe('school maintenance mode', () => {
 			it('should react to the school being in maintenance mode', async () => {
 				const currentYear = await createYear();
 				const school = await createSchool({ currentYear, inMaintenanceSince: new Date() });
-				const user = await createUser({ schoolId: school._id, roles: 'administrator' });
-				const params = await generateRequestParamsFromUser(user);
-				params.route = { schoolId: school._id.toString() };
-				params.query = {};
+				const params = {
+					route: { schoolId: school._id.toString() },
+				};
 
 				const result = await maintenanceService.find(params);
 				expect(result).to.not.equal(undefined);
@@ -67,10 +65,9 @@ describe('school maintenance mode', () => {
 					},
 				});
 				const school = await createSchool({ currentYear, systems: [ldapSystem] });
-				const user = await createUser({ schoolId: school._id, roles: 'administrator' });
-				const params = await generateRequestParamsFromUser(user);
-				params.route = { schoolId: school._id.toString() };
-				params.query = {};
+				const params = {
+					route: { schoolId: school._id.toString() },
+				};
 
 				const result = await maintenanceService.find(params);
 				expect(result).to.not.equal(undefined);
@@ -89,10 +86,9 @@ describe('school maintenance mode', () => {
 				const nextYear = await createYear();
 				maintenanceService.years = [currentYear, nextYear];
 				const school = await createSchool({ currentYear });
-				const user = await createUser({ schoolId: school._id, roles: 'administrator' });
-				const params = await generateRequestParamsFromUser(user);
-				params.route = { schoolId: school._id.toString() };
-				params.query = {};
+				const params = {
+					route: { schoolId: school._id.toString() },
+				};
 
 				const result = await maintenanceService.create({ maintenance: true }, params);
 				expect(result).to.not.equal(undefined);
@@ -115,10 +111,9 @@ describe('school maintenance mode', () => {
 					},
 				});
 				const school = await createSchool({ currentYear, systems: [ldapSystem] });
-				const user = await createUser({ schoolId: school._id, roles: 'administrator' });
-				const params = await generateRequestParamsFromUser(user);
-				params.route = { schoolId: school._id.toString() };
-				params.query = {};
+				const params = {
+					route: { schoolId: school._id.toString() },
+				};
 
 				const result = await maintenanceService.create({ maintenance: true }, params);
 				expect(result).to.not.equal(undefined);
@@ -143,10 +138,9 @@ describe('school maintenance mode', () => {
 					systems: [ldapSystem],
 					inMaintenanceSince: new Date(),
 				});
-				const user = await createUser({ schoolId: school._id, roles: 'administrator' });
-				const params = await generateRequestParamsFromUser(user);
-				params.route = { schoolId: school._id.toString() };
-				params.query = {};
+				const params = {
+					route: { schoolId: school._id.toString() },
+				};
 
 				const result = await maintenanceService.create({ maintenance: false }, params);
 				expect(result).to.not.equal(undefined);
