@@ -5,12 +5,12 @@ let createdYears = [];
 
 // use a not existing year name because year names must be unique
 let anyYear = new Date().getFullYear() + 100;
-const createName = ((doNotIncrease) => {
-	if (!doNotIncrease) {
+const createName = (increase = true) => {
+	if (increase) {
 		anyYear += 1;
 	}
 	return `${anyYear}/${String(anyYear + 1).substring(2, 4)}`;
-});
+};
 
 const create = async (data = {
 	name: createName(),
