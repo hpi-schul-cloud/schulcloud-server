@@ -102,6 +102,60 @@ describe('school maintenance mode', () => {
 				expect(result.maintenance.active).to.equal(false);
 			});
 		});
+
+		describe('for LDAP schools', () => {
+			it('should enable administrators to start maintenance mode', async () => {
+				const currentYear = await createYear();
+				const nextYear = await createYear();
+				maintenanceService.years = [currentYear, nextYear];
+				const ldapSystem = await createSystem({
+					type: 'ldap',
+					ldapConfig: {
+						active: true,
+					},
+				});
+				const school = await createSchool({ currentYear, systems: [ldapSystem] });
+				const user = await createUser({ schoolId: school._id, roles: 'administrator' });
+				const params = await generateRequestParamsFromUser(user);
+				params.route = { schoolId: school._id.toString() };
+				params.query = {};
+
+				const result = await maintenanceService.create({ maintenance: true }, params);
+				expect(result).to.not.equal(undefined);
+				expect(result.currentYear._id.toString()).to.equal(currentYear._id.toString());
+				expect(result.nextYear._id.toString()).to.equal(nextYear._id.toString());
+				expect(result.schoolUsesLdap).to.equal(true);
+				expect(result.maintenance.active).to.equal(true);
+			});
+
+			it('should enable administrators to finish maintenance mode', async () => {
+				const currentYear = await createYear();
+				const nextYear = await createYear();
+				maintenanceService.years = [currentYear, nextYear];
+				const ldapSystem = await createSystem({
+					type: 'ldap',
+					ldapConfig: {
+						active: true,
+					},
+				});
+				const school = await createSchool({
+					currentYear,
+					systems: [ldapSystem],
+					inMaintenanceSince: new Date(),
+				});
+				const user = await createUser({ schoolId: school._id, roles: 'administrator' });
+				const params = await generateRequestParamsFromUser(user);
+				params.route = { schoolId: school._id.toString() };
+				params.query = {};
+
+				const result = await maintenanceService.create({ maintenance: false }, params);
+				expect(result).to.not.equal(undefined);
+				expect(result.currentYear._id.toString()).to.equal(nextYear._id.toString());
+				expect(result.nextYear).to.equal(undefined);
+				expect(result.schoolUsesLdap).to.equal(true);
+				expect(result.maintenance.active).to.equal(false);
+			});
+		});
 	});
 
 	afterEach(async () => {
