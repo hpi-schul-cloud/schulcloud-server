@@ -39,6 +39,20 @@ describe('school maintenance mode', () => {
 				expect(result.schoolUsesLdap).to.equal(false);
 				expect(result.maintenance.active).to.equal(false);
 			});
+
+			it('should react to the school being in maintenance mode', async () => {
+				const currentYear = await createYear();
+				const school = await createSchool({ currentYear, inMaintenanceSince: new Date() });
+				const user = await createUser({ schoolId: school._id, roles: 'administrator' });
+				const params = await generateRequestParamsFromUser(user);
+				params.route = { schoolId: school._id.toString() };
+				params.query = {};
+
+				const result = await maintenanceService.find(params);
+				expect(result).to.not.equal(undefined);
+				expect(result.schoolUsesLdap).to.equal(false);
+				expect(result.maintenance.active).to.equal(true);
+			});
 		});
 
 		describe('for LDAP schools', () => {
