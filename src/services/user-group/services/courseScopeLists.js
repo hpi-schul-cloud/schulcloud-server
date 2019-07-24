@@ -19,6 +19,7 @@ module.exports = function setup() {
 			userQuery.$or.push(
 				{ userIds: user._id },
 				{ teacherIds: user._id },
+				{ substitutionIds: user._id },
 			);
 		}
 		if (['true', 'all'].includes(substitution)) userQuery.$or.push({ substitutionIds: user._id });
@@ -42,7 +43,7 @@ module.exports = function setup() {
 					userQuery,
 					untilQuery,
 				],
-			});
+			}).exec();
 			return {
 				total: courseCount,
 			};
