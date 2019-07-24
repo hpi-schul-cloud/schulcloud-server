@@ -80,7 +80,10 @@ class SchoolMaintenanceService {
 			bumpYear();
 		}
 
-		school = await School.findOneAndUpdate({ _id: school._id }, patch, { new: true });
+		school = await School.findOneAndUpdate({ _id: school._id }, patch, { new: true })
+			.select(['name', 'currentYear', 'inMaintenanceSince', 'inMaintenance'])
+			.populate(['currentYear', 'systems'])
+			.lean({ virtuals: true });
 		return Promise.resolve(this.getStatus(school));
 	}
 }
