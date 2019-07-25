@@ -8,13 +8,11 @@ const Syncer = require('./Syncer');
  * @implements {Syncer}
  */
 class CSVSyncer extends Syncer {
-	constructor(app, stats = {}, school, role = 'student', sendEmails, csvData, params) {
+	constructor(app, stats = {}, options = {}, requestParams = {}) {
 		super(app, stats);
-		this.schoolId = school;
-		this.role = role;
-		this.sendEmails = sendEmails;
-		this.csvData = csvData;
-		this.requestParams = params;
+
+		this.options = options;
+		this.requestParams = requestParams;
 
 		Object.assign(this.stats, {
 			users: {
@@ -37,23 +35,28 @@ class CSVSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#respondsTo}
-	 */
+     * @see {Syncer#respondsTo}
+     */
 	static respondsTo(target) {
 		return target === 'csv';
 	}
 
 	/**
-	 * @see {Syncer#params}
-	 */
+     * @see {Syncer#params}
+     */
 	static params(params, data = {}) {
 		const query = (params || {}).query || {};
-		if (query.school && query.role && data.data) {
+		if (query.school && data.data) {
 			return [
-				query.school,
-				query.role,
-				query.sendEmails === 'true',
-				data.data,
+				{
+					// required
+					schoolId: query.school,
+					csvData: data.data,
+					// optional
+					role: query.role || 'student',
+					sendEmails: query.sendEmails === 'true',
+					schoolYear: query.schoolYear,
+				},
 				params,
 			];
 		}
@@ -61,18 +64,20 @@ class CSVSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#steps}
-	 */
+     * @see {Syncer#steps}
+     */
 	async steps() {
 		await super.steps();
+		this.options.schoolYear = await this.determineSchoolYear();
 		const records = this.parseCsvData();
+		const importClasses = CSVSyncer.needsToImportClasses(records);
 		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
 		const actions = Object.values(clusteredRecords).map(record => async () => {
 			const enrichedRecord = await this.enrichUserData(record);
 			const user = await this.createOrUpdateUser(enrichedRecord);
-			if (this.importClasses) {
+			if (importClasses) {
 				await this.createClasses(enrichedRecord, user);
 			}
 		});
@@ -89,10 +94,26 @@ class CSVSyncer extends Syncer {
 		return ['firstName', 'lastName', 'email'];
 	}
 
+	async determineSchoolYear() {
+		try {
+			if (this.options.schoolYear) {
+				return this.app.service('years').get(this.options.schoolYear);
+			}
+			const school = await this.app.service('schools').get(this.options.schoolId);
+			return this.app.service('years').get(school.currentYear);
+		} catch (err) {
+			this.logError('Cannot determine school year to import from params', {
+				paramSchoolYear: this.options.schoolYear,
+				paramSchool: this.options.school,
+			});
+		}
+		return undefined;
+	}
+
 	parseCsvData() {
 		let records = [];
 		try {
-			const strippedData = stripBOM(this.csvData);
+			const strippedData = stripBOM(this.options.csvData);
 			records = parse(strippedData, {
 				columns: true,
 				delimiter: ',',
@@ -135,11 +156,11 @@ class CSVSyncer extends Syncer {
 				throw new Error(`Parsing failed. Expected attribute "${param}"`);
 			}
 		});
-		// validate optional params:
-		if (records[0].class !== undefined) {
-			this.importClasses = true;
-		}
 		return records;
+	}
+
+	static needsToImportClasses(records) {
+		return records[0].class !== undefined;
 	}
 
 	static sanitizeRecords(records) {
@@ -157,7 +178,7 @@ class CSVSyncer extends Syncer {
 					type: 'user',
 					entity: `${record.firstName},${record.lastName},${record.email}`,
 					message: `Mehrfachnutzung der E-Mail-Adresse "${record.email}". `
-						+ 'Nur der erste Eintrag wird importiert, alle weiteren ignoriert.',
+						+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 				});
 				this.stats.users.failed += 1;
 			} else {
@@ -169,14 +190,14 @@ class CSVSyncer extends Syncer {
 
 	async enrichUserData(record) {
 		const linkData = await this.generateRegistrationLink({
-			role: this.role,
-			schoolId: this.schoolId,
+			role: this.options.role,
+			schoolId: this.options.schoolId,
 			save: true,
 			toHash: record.email,
 		});
 		const enrichedUser = Object.assign(record, {
-			schoolId: this.schoolId,
-			roles: [this.role],
+			schoolId: this.options.schoolId,
+			roles: [this.options.role],
 			sendRegistration: true,
 		});
 		enrichedUser.importHash = linkData.hash;
@@ -216,7 +237,7 @@ class CSVSyncer extends Syncer {
 			userObject = await this.app.service('users').create(record, this.requestParams);
 			this.stats.users.created += 1;
 			this.stats.users.successful += 1;
-			if (this.sendEmails) {
+			if (this.options.sendEmails) {
 				await this.emailUser(record);
 			}
 		} catch (err) {
@@ -235,10 +256,10 @@ class CSVSyncer extends Syncer {
 			};
 			const params = {
 				/*
-				query and payload need to be deleted, so that feathers doesn't want to update
-				multiple database objects (or none in this case). We still need the rest of
-				the requestParams to authenticate as Admin
-				*/
+                query and payload need to be deleted, so that feathers doesn't want to update
+                multiple database objects (or none in this case). We still need the rest of
+                the requestParams to authenticate as Admin
+                */
 				...this.requestParams,
 				query: undefined,
 				payload: undefined,
@@ -311,7 +332,7 @@ class CSVSyncer extends Syncer {
 			const classObject = classMapping[klass];
 			if (classObject === undefined) return;
 
-			const collection = this.role === 'teacher' ? 'teacherIds' : 'userIds';
+			const collection = this.options.role === 'teacher' ? 'teacherIds' : 'userIds';
 			const importIds = classObject[collection].map(uid => uid.toString());
 			if (!importIds.includes(user._id.toString())) {
 				const patchData = {};
@@ -352,9 +373,14 @@ class CSVSyncer extends Syncer {
 		];
 		const classNameFormat = formats.find(format => format.regex.test(klass));
 		if (classNameFormat !== undefined) {
-			return Object.assign(await classNameFormat.values(klass), {
-				schoolId: this.schoolId,
-			});
+			const result = {
+				...await classNameFormat.values(klass),
+				schoolId: this.options.schoolId,
+			};
+			if (this.options.schoolYear) {
+				result.year = this.options.schoolYear._id;
+			}
+			return result;
 		}
 		throw new Error('Class name does not match any format:', klass);
 	}
@@ -389,7 +415,7 @@ class CSVSyncer extends Syncer {
 			lean: true,
 		});
 		if (existing.length === 0) {
-			const newClass = this.app.service('/classes').create(classObject);
+			const newClass = await this.app.service('/classes').create(classObject);
 			this.stats.classes.created += 1;
 			return newClass;
 		}

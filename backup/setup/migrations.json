@@ -1,0 +1,23 @@
+[{
+	"_id": {
+		"$oid": "5d26e8c1d0c346ac5bf59bb5"
+	},
+	"state": "up",
+	"name": "schoolyear_19_20_added",
+	"createdAt": {
+		"$date": "2019-07-11T07:44:01.252Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d2ee2a8526cce83a8834d4a"
+	},
+	"state": "up",
+	"name": "addStartAndEndDateToYearCollection",
+	"createdAt": {
+		"$date": "2019-07-17T08:12:18.480Z"
+	},
+	"__v": 0
+}]
+

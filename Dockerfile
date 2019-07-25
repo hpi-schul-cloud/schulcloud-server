@@ -1,4 +1,4 @@
-#FROM node:8.12.0
+# if node version is changed, also adapt .nvmrc file 
 FROM node:8.15-alpine
 
 WORKDIR /schulcloud-server
@@ -15,4 +15,5 @@ COPY . .
 ENV TZ=Europe/Berlin
 
 #ENTRYPOINT crontab ./crontab && crond
-CMD npm start
+#CMD npm start
+CMD ./startup.sh

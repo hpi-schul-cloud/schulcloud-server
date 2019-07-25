@@ -1,21 +1,20 @@
-const logger = require('winston');
+const logger = require('../../../logger');
 
-const removeTeamNews = (app, newsService) => async (deletedTeam) => {
+const removeTeamNews = app => async (deletedTeam) => {
 	try {
-		await newsService.remove(null, {
+		await app.service('/newsModel').remove(null, {
 			query: {
 				target: deletedTeam._id,
 				targetModel: 'teams',
 			},
 		});
 	} catch (e) {
-		logger.warn(`Cannot remove news for team ${deletedTeam._id}`, e);
+		logger.warning(`Cannot remove news for team ${deletedTeam._id}`, e);
 	}
 };
 
 const configure = (app) => {
-	const newsService = app.service('news');
-	app.service('teams').on('removed', removeTeamNews(app, newsService));
+	app.service('teams').on('removed', removeTeamNews(app));
 };
 
 module.exports = {

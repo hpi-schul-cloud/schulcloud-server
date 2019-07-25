@@ -1,13 +1,10 @@
-'use strict';
-
 const ua = require('universal-analytics');
 const hooks = require('./hooks');
-const logger = require('winston');
+const logger = require('../../logger');
 
 const AnalyticsModel = require('./model');
 
 class Service {
-
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
@@ -49,18 +46,17 @@ class Service {
 			});
 	}
 
-    setup(app, path) {
-        this.app = app;
-    }
-
+	setup(app, path) {
+		this.app = app;
+	}
 }
 
 module.exports = function () {
-    const app = this;
+	const app = this;
 
-    app.use('/analytics', new Service());
-    const contentService = app.service('/analytics');
-    contentService.hooks(hooks);
+	app.use('/analytics', new Service());
+	const contentService = app.service('/analytics');
+	contentService.hooks(hooks);
 };
 
 module.exports.Service = Service;

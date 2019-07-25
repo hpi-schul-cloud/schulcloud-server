@@ -8,7 +8,6 @@ const configuration = require('@feathersjs/configuration');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
-const winston = require('winston');
 const middleware = require('./middleware');
 const sockets = require('./sockets');
 const services = require('./services/');
@@ -16,9 +15,8 @@ const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const setupSwagger = require('./swagger');
 const allHooks = require('./app.hooks');
+const version = require('./services/version');
 
-require('console-stamp')(console);
-require('console-stamp')(winston);
 
 let secrets;
 try {
@@ -41,6 +39,14 @@ setupSwagger(app);
 
 app.set('secrets', secrets);
 
+// set custom response header for ha proxy
+if (process.env.KEEP_ALIVE) {
+	app.use((req, res, next) => {
+		res.setHeader('Connection', 'Keep-Alive');
+		next();
+	});
+}
+
 app.use(compress())
 	.options('*', cors())
 	.use(cors())
@@ -49,7 +55,7 @@ app.use(compress())
 	.use(bodyParser.json())
 	.use(bodyParser.urlencoded({ extended: true }))
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
-
+	.use(version)
 	.use(defaultHeaders)
 	.get('/system_info/haproxy', (req, res) => { res.send({ timestamp: new Date().getTime() }); })
 	.get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
@@ -68,7 +74,5 @@ app.use(compress())
 	.configure(middleware)
 	.hooks(allHooks);
 
-winston.cli();	// optimize for cli, like using colors
-winston.level = 'debug';
 
 module.exports = app;

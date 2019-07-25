@@ -1,5 +1,5 @@
 const errors = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../logger');
 const auth = require('@feathersjs/authentication');
 
 const Syncer = require('./strategies/Syncer');
@@ -9,7 +9,6 @@ const CSVSyncer = require('./strategies/CSVSyncer');
 const syncers = [LDAPSystemSyncer, CSVSyncer];
 
 module.exports = function () {
-
 	const app = this;
 
 	class SyncService {
@@ -24,12 +23,12 @@ module.exports = function () {
 		}
 
 		async respond(data, params) {
-			if (! params.query || ! params.query.target) {
+			if (!params.query || !params.query.target) {
 				throw new errors.BadRequest('No target supplied');
 			}
-			const target = params.query.target;
+			const { target } = params.query;
 			const instances = [];
-			syncers.forEach(syncer => {
+			syncers.forEach((syncer) => {
 				if (syncer.respondsTo(target)) {
 					const args = syncer.params(params, data);
 					if (args) {
