@@ -1,2 +1,5 @@
-# fu:r RSS
-0	*	*	*	* 	/usr/local/bin/node ./src/jobs/rss-news.js  >> /dev/stdout 2>&1
+# for regular jobs
+# RSS feed, once per hour
+0	*	*	*	* 	/usr/local/bin/node ./src/jobs/rss-news.js >> /dev/stdout 2>&1
+# WebUntis import, each 4 hours
+0   */4 *   *   *   /usr/local/bin/node ./src/jobs/webuntis-import.js >> /dev/stdout 2>&1
