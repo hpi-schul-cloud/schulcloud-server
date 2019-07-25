@@ -61,7 +61,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	createOrUpdateUser(idmUser) {
 		return this.app.service('users').find({ query: { ldapId: idmUser.ldapUUID } })
 			.then((users) => {
-				if (users.total != 0) {
+				if (users.total !== 0) {
 					this.stats.users.updated += 1;
 					return this.checkForUserChangesAndUpdate(idmUser, users.data[0]);
 				}
@@ -102,17 +102,17 @@ class LDAPSchoolSyncer extends SystemSyncer {
 
 	checkForUserChangesAndUpdate(idmUser, user) {
 		const updateObject = { $set: {} };
-		if (user.firstName != idmUser.firstName) {
+		if (user.firstName !== idmUser.firstName) {
 			updateObject.$set.firstName = idmUser.firstName || ' ';
 		}
-		if (user.lastName != idmUser.lastName) {
+		if (user.lastName !== idmUser.lastName) {
 			updateObject.$set.lastName = idmUser.lastName;
 		}
 		// Updating SchoolId will cause an issue. We need to discuss about it
-		if (user.email != idmUser.email) {
+		if (user.email !== idmUser.email) {
 			updateObject.$set.email = idmUser.email;
 		}
-		if (user.ldapDn != idmUser.ldapDn) {
+		if (user.ldapDn !== idmUser.ldapDn) {
 			updateObject.$set.ldapDn = idmUser.ldapDn;
 		}
 
@@ -129,7 +129,8 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	}
 
 	createClassesFromLdapData(data) {
-		const res = Promise.all(data.map(ldapClass => this.getOrCreateClassFromLdapData(ldapClass)
+		const classes = data.filter(d => 'uniqueMembers' in d && d.uniqueMembers !== undefined);
+		const res = Promise.all(classes.map(ldapClass => this.getOrCreateClassFromLdapData(ldapClass)
 			.then(currentClass => this.populateClassUsers(ldapClass, currentClass))));
 		return res;
 	}
@@ -137,7 +138,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	getOrCreateClassFromLdapData(data) {
 		return this.app.service('classes').find({ query: { ldapDN: data.ldapDn } })
 			.then((res) => {
-				if (res.total == 0) {
+				if (res.total === 0) {
 					const newClass = {
 						name: data.className,
 						schoolId: this.school._id,
@@ -154,25 +155,33 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	populateClassUsers(ldapClass, currentClass) {
 		const students = []; const
 			teachers = [];
-		if (!('uniqueMembers' in ldapClass)) {
-			return Promise.resolve();
-		}
 		if (Array.isArray(ldapClass.uniqueMembers) === false) {
 			ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 		}
-		return Promise.all(ldapClass.uniqueMembers.map(ldapUserDn => this.app.service('users').find({ query: { ldapDn: ldapUserDn, $populate: ['roles'] } })
+		return Promise.all(ldapClass.uniqueMembers.map(ldapUserDn => this.app.service('users').find(
+			{
+				query:
+				{
+					ldapDn: ldapUserDn,
+					$populate: ['roles'],
+				},
+			},
+		)
 			.then((user) => {
 				if (user.total > 0) {
 					user = user.data[0];
 					user.roles.map((role) => {
-						if (role.name == 'student') students.push(user._id);
-						if (role.name == 'teacher') teachers.push(user._id);
+						if (role.name === 'student') students.push(user._id);
+						if (role.name === 'teacher') teachers.push(user._id);
 					});
 				}
 				return Promise.resolve();
 			}))).then((_) => {
-			if (students.length == 0 && teachers.length == 0) return Promise.resolve();
-			return this.app.service('classes').patch(currentClass._id, { $set: { userIds: students, teacherIds: teachers } });
+			if (students.length === 0 && teachers.length === 0) return Promise.resolve();
+			return this.app.service('classes').patch(
+				currentClass._id,
+				{ $set: { userIds: students, teacherIds: teachers } },
+			);
 		}).catch(err => Promise.reject(err));
 	}
 }
