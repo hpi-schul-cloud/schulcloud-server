@@ -6,7 +6,7 @@ module.exports = function setup() {
 
 	ScopeListService.initialize(app, '/users/:scopeId/courses', async (user, permissions, params) => {
 		let filter = 'active';
-		let substitution = 'false';
+		let substitution = 'all';
 		if (params.query.filter && ['active', 'archived', 'all'].includes(params.query.filter)) {
 			({ filter } = params.query);
 		}
@@ -19,7 +19,6 @@ module.exports = function setup() {
 			userQuery.$or.push(
 				{ userIds: user._id },
 				{ teacherIds: user._id },
-				{ substitutionIds: user._id },
 			);
 		}
 		if (['true', 'all'].includes(substitution)) userQuery.$or.push({ substitutionIds: user._id });

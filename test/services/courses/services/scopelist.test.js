@@ -95,7 +95,7 @@ describe('courses scopelist service', () => {
 		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(true);
 	});
 
-	it('fetches only courses as student/teacher by default', async () => {
+	it('fetches all courses by default', async () => {
 		const user = await testObjects.createTestUser();
 		const courseAsStudent = await testObjects.createTestCourse({
 			userIds: [user._id],
@@ -114,12 +114,12 @@ describe('courses scopelist service', () => {
 			query: {},
 		});
 		expect(response).to.not.equal(undefined);
-		expect(response.total).to.equal(2);
+		expect(response.total).to.equal(3);
 		expect(response.data).to.not.equal(undefined);
 		const courseIds = response.data.map(course => course._id.toString());
 		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(true);
 		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(true);
-		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(false);
+		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(true);
 	});
 
 	it('may fetch only courses as student/teacher', async () => {
@@ -244,7 +244,7 @@ describe('courses scopelist service', () => {
 			query: { count: 'true' },
 			paginate: false,
 		});
-		expect(response).to.equal({
+		expect(response).to.deep.equal({
 			total: 1,
 		});
 	});
@@ -268,14 +268,12 @@ describe('courses scopelist service', () => {
 			query: { filter: 'archived', count: 'true' },
 			paginate: false,
 		});
-		expect(response).to.equal({
+		expect(response).to.deep.equal({
 			total: 2,
 		});
 	});
 
-	after(async () => {
-		await testObjects.cleanup();
-	});
+	afterEach(testObjects.cleanup);
 });
 
 describe('courses scopelist service integration', () => {
@@ -336,4 +334,6 @@ describe('courses scopelist service integration', () => {
 		expect(response.data).to.not.equal(undefined);
 		expect(response.data[0]._id.toString()).to.equal(course._id.toString());
 	});
+
+	afterEach(testObjects.cleanup);
 });
