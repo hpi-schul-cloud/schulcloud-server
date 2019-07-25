@@ -2,6 +2,41 @@ const parse = require('csv-parse/lib/sync');
 const stripBOM = require('strip-bom');
 const Syncer = require('./Syncer');
 
+const ATTRIBUTES = [
+	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
+	{ name: 'firstName', required: true, aliases: ['firstname', 'first', 'first-name', 'fn'] },
+	{ name: 'middleName', aliases: ['middlename', 'middle'] },
+	{ name: 'lastName', required: true, aliases: ['lastname', 'last', 'last-name', 'n'] },
+	{ name: 'nameSuffix', aliases: ['namesuffix', 'suffix'] },
+	{ name: 'email', required: true, aliases: ['email', 'mail', 'e-mail'] },
+	{ name: 'class', aliases: ['class', 'classes'] },
+];
+
+/**
+ * Returns a function that transforms objects of the source schema to the target schema
+ * @param {Object} sourceSchema Object representing the source schema
+ * @param {Array<Object>} targetSchema Target schema as array of attribute properties
+ * `[{name: String, Aliases: Array<String>}, ...]`
+ * @example
+ * const mf = buildMappingFunction({foo: 'bar'}, {name: 'test', aliases: ['foo', 'baz']});
+ * mf({foo: 'bar'}) === {test: 'bar'} // true
+ * mf({foo: 'hello'}) === {test: 'hello'} // true
+ * mf({baz: 42}) === {} // baz is an alias of test, but is not in the source schema
+ */
+const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
+	const mapping = {};
+	Object.keys(sourceSchema).forEach((key) => {
+		const attribute = targetSchema.find(a => a.aliases.includes(key.toLowerCase()));
+		if (attribute !== undefined) {
+			mapping[key] = attribute.name;
+		}
+	});
+	return record => Object.keys(mapping).reduce((res, key) => {
+		res[mapping[key]] = record[key];
+		return res;
+	}, {});
+};
+
 /**
  * Implements importing CSV documents based on the Syncer interface
  * @class CSVSyncer
@@ -70,8 +105,8 @@ class CSVSyncer extends Syncer {
 		await super.steps();
 		this.options.schoolYear = await this.determineSchoolYear();
 		const records = this.parseCsvData();
-		const importClasses = CSVSyncer.needsToImportClasses(records);
 		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
+		const importClasses = CSVSyncer.needsToImportClasses(sanitizedRecords);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
 		const actions = Object.values(clusteredRecords).map(record => async () => {
@@ -88,10 +123,6 @@ class CSVSyncer extends Syncer {
 		}
 
 		return this.stats;
-	}
-
-	static requiredAttributes() {
-		return ['firstName', 'lastName', 'email'];
 	}
 
 	async determineSchoolYear() {
@@ -117,6 +148,7 @@ class CSVSyncer extends Syncer {
 			records = parse(strippedData, {
 				columns: true,
 				delimiter: ',',
+				trim: true,
 			});
 		} catch (error) {
 			if (error.message && error.message.match(/Invalid Record Length/)) {
@@ -146,14 +178,15 @@ class CSVSyncer extends Syncer {
 			throw new Error('No input data');
 		}
 
-		CSVSyncer.requiredAttributes().forEach((param) => {
-			if (!records[0][param]) {
+		ATTRIBUTES.filter(a => a.required).forEach((attr) => {
+			const attributeIsUsed = Object.keys(records[0]).some(k => attr.aliases.includes(k.toLowerCase()));
+			if (!attributeIsUsed) {
 				this.stats.errors.push({
 					type: 'file',
 					entity: 'Eingabedatei fehlerhaft',
-					message: `benötigtes Attribut "${param}" nicht gefunden`,
+					message: `benötigtes Attribut "${attr.name}" nicht gefunden`,
 				});
-				throw new Error(`Parsing failed. Expected attribute "${param}"`);
+				throw new Error(`Parsing failed. Expected attribute "${attr.name}"`);
 			}
 		});
 		return records;
@@ -164,10 +197,12 @@ class CSVSyncer extends Syncer {
 	}
 
 	static sanitizeRecords(records) {
-		return records.map(record => ({
-			...record,
-			email: record.email.trim().toLowerCase(),
-		}));
+		const mappingFunction = buildMappingFunction(records[0]);
+		return records.map((record) => {
+			const mappedRecord = mappingFunction(record);
+			mappedRecord.email = mappedRecord.email.trim().toLowerCase();
+			return mappedRecord;
+		});
 	}
 
 	clusterByEmail(records) {
