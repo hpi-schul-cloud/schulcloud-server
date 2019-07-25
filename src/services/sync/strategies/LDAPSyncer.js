@@ -55,7 +55,7 @@ class LDAPSyncer extends SystemSyncer {
 					new Error('Database should contain at least one year and one valid federal state'),
 				);
 			}
-			const currentYear = new SchoolYearFacade(years).activeYear;
+			const currentYear = new SchoolYearFacade(years).defaultYear;
 			return Promise.resolve({ currentYear, federalState: states.data[0]._id });
 		});
 	}
