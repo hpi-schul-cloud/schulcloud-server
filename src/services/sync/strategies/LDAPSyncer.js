@@ -1,6 +1,8 @@
 const SystemSyncer = require('./SystemSyncer');
 const LDAPSchoolSyncer = require('./LDAPSchoolSyncer');
 
+const SchoolYearFacade = require('../../school/logic/year.js');
+
 /**
  * Implements syncing from LDAP servers based on the Syncer interface for a
  * given system / LDAP Config
@@ -45,13 +47,16 @@ class LDAPSyncer extends SystemSyncer {
 
 	getCurrentYearAndFederalState() {
 		return Promise.all([
-			this.app.service('years').find({ $orderby: { name: -1 } }),
+			this.app.service('years').find(),
 			this.app.service('federalStates').find({ query: { abbreviation: 'NI' } }),
 		]).then(([years, states]) => {
-			if (years.total == 0 || states.total == 0) {
-				return Promise.reject('Database should contain at least one year and one valid federal state');
+			if (years.total === 0 || states.total === 0) {
+				return Promise.reject(
+					new Error('Database should contain at least one year and one valid federal state'),
+				);
 			}
-			return Promise.resolve({ currentYear: years.data[0]._id, federalState: states.data[0]._id });
+			const currentYear = new SchoolYearFacade(years).activeYear;
+			return Promise.resolve({ currentYear, federalState: states.data[0]._id });
 		});
 	}
 
