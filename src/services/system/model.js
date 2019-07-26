@@ -52,6 +52,13 @@ const systemSchema = new Schema({
 			},
 		},
 	},
+	webuntisConfig: {
+		active: { type: Boolean },
+		url: { type: String },
+		user: { type: String },
+		password: { type: String },
+		schoolname: { type: String }
+	}
 }, {
 	timestamps: true,
 });
