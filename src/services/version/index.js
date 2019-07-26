@@ -15,7 +15,7 @@ router.get('/version', (req, res, next) => {
 	try {
 		sha = fs.readFileSync(path.join(__dirname, '../../../', 'version'), 'utf8').trim();
 	} catch (error) {
-		logger.error(error);
+		logger.error('version missing', error);
 	}
 	return res.json({ sha, version });
 });

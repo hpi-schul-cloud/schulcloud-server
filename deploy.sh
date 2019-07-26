@@ -76,6 +76,7 @@ function inform {
   fi
 }
 
+echo "$TRAVIS_COMMIT\n$TRAVIS_BRANCH\n$TRAVIS_COMMIT_MESSAGE" > ./version
 
 if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
