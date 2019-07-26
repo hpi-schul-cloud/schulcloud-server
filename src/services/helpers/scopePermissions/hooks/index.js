@@ -1,10 +1,14 @@
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 
 const resolveScope = (context) => {
-	const scopeName = (((context.path || '').match(/^\/?(\w+)\//)) || [])[1];
-	const { scopeId } = context.params.route || {};
+	try {
+		const scopeName = context.path.match(/^\/?(\w+)\//)[1];
+		const { scopeId } = context.params.route;
 
-	return { scopeName, scopeId };
+		return { scopeName, scopeId };
+	} catch (e) {
+		throw new Error('scope route do not match scope Requiments');
+	}
 };
 
 const rejectQueryingOtherUsers = (context) => {

@@ -43,6 +43,7 @@ module.exports = function setup() {
 					untilQuery,
 				],
 			}).exec();
+
 			return {
 				total: courseCount,
 			};
