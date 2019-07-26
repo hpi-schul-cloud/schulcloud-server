@@ -17,20 +17,20 @@ describe('scopePermissionService hook', () => {
 		it('should fail if a user requests a different user id on GET', () => {
 			const userId = new ObjectId();
 			const id = new ObjectId().toString();
-			const otherId = new ObjectId.toString();
 			const params = { account: { userId } };
-			expect(() => fut({ method: 'get', id, params, path: `users/${otherId}/courses` })).to.throw(Forbidden);
+			expect(() => fut({
+				method: 'get', id, params,
+			})).to.throw(Forbidden);
 		});
 
 		it('should fail if a user requests a different user id on FIND', () => {
 			const userId = new ObjectId();
 			const id = new ObjectId().toString();
-			const otherId = new ObjectId.toString();
 			const params = {
 				account: { userId },
 				query: { userId: id },
 			};
-			expect(() => fut({ method: 'find', params, path: `users/${otherId}/courses` })).to.throw(Forbidden);
+			expect(() => fut({ method: 'find', params })).to.throw(Forbidden);
 		});
 
 		it('should fail if a user requests a different user id on user scope', () => {

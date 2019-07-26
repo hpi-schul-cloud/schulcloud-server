@@ -7,7 +7,7 @@ const resolveScope = (context) => {
 
 		return { scopeName, scopeId };
 	} catch (e) {
-		throw new BadRequest('scope route do not match scope Requiments');
+		return {};
 	}
 };
 
