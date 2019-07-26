@@ -1,5 +1,6 @@
 const auth = require('@feathersjs/authentication');
 const { hasPermission, injectUserId } = require('../../../hooks');
+const resolveStorageType = require('./resolveStorageType');
 
 const resolveUserId = (hook) => {
 	// local workaround if authentication is disabled
@@ -8,22 +9,6 @@ const resolveUserId = (hook) => {
 	hook.params.payload.userId = hook.params.account.userId || '';
 
 	return hook;
-};
-
-const resolveStorageType = (hook) => {
-	const { params: { payload } } = hook;
-
-	return hook.app.service('users').find({
-		query: {
-			_id: payload.userId,
-			$populate: ['schoolId'],
-		},
-	}).then((res) => {
-		const [{ schoolId: { _id, fileStorageType } }] = res.data;
-		payload.schoolId = _id;
-		payload.fileStorageType = fileStorageType;
-		return hook;
-	});
 };
 
 exports.before = {

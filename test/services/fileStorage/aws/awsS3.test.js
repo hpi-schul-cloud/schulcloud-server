@@ -3,8 +3,10 @@ const chaiHttp = require('chai-http');
 const { expect } = require('chai');
 const mockery = require('mockery');
 const mockAws = require('./s3.mock');
+const logger = require('../../../../src/logger');
 
 chai.use(chaiHttp);
+
 
 describe('AWS file storage strategy', () => {
 	let aws;
@@ -12,6 +14,8 @@ describe('AWS file storage strategy', () => {
 	const options = {
 		schoolId: '0000d186816abba584714c5f',
 	};
+
+	const ShouldFail = new Error('It succeeded but should have returned an error.');
 
 	before((done) => {
 		// Enable mockery to mock objects
@@ -30,7 +34,6 @@ describe('AWS file storage strategy', () => {
 		delete require.cache[require.resolve('../../../../src/services/fileStorage/strategies/awsS3')];
 		const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
 		aws = new AWSStrategy();
-
 		done();
 	});
 
@@ -40,20 +43,24 @@ describe('AWS file storage strategy', () => {
 	});
 
 	describe('create', () => {
-		it('creates a bucket for the given school', () => aws.create(options.schoolId).then((res) => {
-			expect(res).to.not.be.undefined;
-			expect(res.message).to.be.equal('Successfully created s3-bucket!');
-		}));
+		it('creates a bucket for the given school', () => aws.create(options.schoolId)
+			.then((res) => {
+				expect(res).to.not.be.undefined;
+				expect(res.message).to.be.equal('Successfully created s3-bucket!');
+			})
+			.catch((err) => {
+				logger.warning('aws.create error', err);
+			}));
 
 		it('rejects if no school id is given', () => aws.create()
-			.then(res => chai.fail('it succeeded', 'should have returned an error'))
+			.then(() => { throw ShouldFail; })
 			.catch((err) => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
 			}));
 
 		it('rejects if school was not found', () => aws.create('0000d186816abba584714bbb')
-			.then(res => chai.fail('it succeeded', 'should have returned an error'))
+			.then(() => { throw ShouldFail; })
 			.catch((err) => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(404);
@@ -71,7 +78,7 @@ describe('AWS file storage strategy', () => {
 		}));
 
 		it('rejects with missing parameters', () => aws.deleteFile()
-			.then(res => chai.fail('it succeeded', 'should have returned an error'))
+			.then(() => { throw ShouldFail; })
 			.catch((err) => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
@@ -89,7 +96,7 @@ describe('AWS file storage strategy', () => {
 		}));
 
 		it('rejects with missing parameters', () => aws.generateSignedUrl({})
-			.then(() => chai.fail('it succeeded', 'should have returned an error'))
+			.then(() => { throw ShouldFail; })
 			.catch((err) => {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
