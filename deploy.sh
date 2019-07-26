@@ -69,9 +69,6 @@ function deploytostaging {
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@staging.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG staging_server
 }
 
-# Happy SHA, wo glu:cklich macht
-echo "$GIT_SHA $DOCKERTAG" > ./public/commitsha.txt
-
 function inform {
   if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
   then
