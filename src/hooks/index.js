@@ -14,8 +14,8 @@ const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.
 
 // don't require authentication for internal requests
-exports.ifNotLocal = function (hookForRemoteRequests) {
-	return function (hook) {
+exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
+	return (hook) => {
 		// meaning it's a local call and pass it without execute hookForRemoteRequests
 		if (typeof (hook.params.provider) === 'undefined') {
 			return hook;
@@ -38,18 +38,16 @@ exports.isAdmin = () => (hook) => {
 	return Promise.resolve(hook);
 };
 
-exports.isSuperHero = () => {
-	return (hook) => {
-		const userService = hook.app.service('/users/');
-		return userService.find({ query: { _id: (hook.params.account.userId || ''), $populate: 'roles' } })
-			.then((user) => {
-				user.data[0].roles = Array.from(user.data[0].roles);
-				if (!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
-					throw new Forbidden('you are not a superhero, sorry...');
-				}
-				return Promise.resolve(hook);
-			});
-	};
+exports.isSuperHero = () => (hook) => {
+	const userService = hook.app.service('/users/');
+	return userService.find({ query: { _id: (hook.params.account.userId || ''), $populate: 'roles' } })
+		.then((user) => {
+			user.data[0].roles = Array.from(user.data[0].roles);
+			if (!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
+				throw new Forbidden('you are not a superhero, sorry...');
+			}
+			return Promise.resolve(hook);
+		});
 };
 
 exports.hasRole = (hook, userId, roleName) => {
@@ -59,7 +57,7 @@ exports.hasRole = (hook, userId, roleName) => {
 		.then((user) => {
 			user.roles = Array.from(user.roles);
 
-			return (_.some(user.roles, u => u.name == roleName));
+			return (_.some(user.roles, u => u.name === roleName));
 		});
 };
 
@@ -174,14 +172,14 @@ const deepValue = (obj, path, newValue) => {
 };
 
 // resolves IDs of objects from serviceName specified by *key* instead of their *_id*
-exports.resolveToIds = (serviceName, path, key, hook) => {
+exports.resolveToIds = (serviceName, path, key, context) => {
 	// get ids from a probably really deep nested path
-	const service = hook.app.service(serviceName);
+	const service = context.app.service(serviceName);
 
-	let values = deepValue(hook, path) || [];
+	let values = deepValue(context, path) || [];
 	if (typeof values === 'string') values = [values];
 
-	if (!values.length) return;
+	if (!values.length) return Promise.resolve();
 
 	const resolved = values.map((value) => {
 		if (!mongoose.Types.ObjectId.isValid(value)) {
@@ -191,8 +189,9 @@ exports.resolveToIds = (serviceName, path, key, hook) => {
 	});
 
 	return Promise.all(resolved)
-		.then((values) => {
-			deepValue(hook, path, values);
+		.then((_values) => {
+			deepValue(context, path, _values);
+			return context;
 		});
 };
 
@@ -205,20 +204,21 @@ exports.permitGroupOperation = (hook) => {
 };
 
 // get the model instance to call functions etc  TODO make query results not lean
-exports.computeProperty = (Model, functionName, variableName) => hook => Model.findById(hook.result._id) 
+exports.computeProperty = (Model, functionName, variableName) => hook => Model.findById(hook.result._id)
 	.then(modelInstance => modelInstance[functionName]()) // compute that property
 	.then((result) => {
 		hook.result[variableName] = Array.from(result); // save it in the resulting object
 	})
 	.catch(e => logger.error(e))
-	.then(_ => Promise.resolve(hook));
+	.then(() => Promise.resolve(hook));
 
-exports.mapPaginationQuery = (hook) => {
-	if ((hook.params.query || {}).$limit === '-1') {
-		hook.params.paginate = false;
-		delete hook.params.query.$limit;
-		return Promise.resolve(hook);
+exports.mapPaginationQuery = (context) => {
+	if ((context.params.query || {}).$limit === '-1') {
+		context.params.paginate = false;
+		delete context.params.query.$limit;
+		return Promise.resolve(context);
 	}
+	return Promise.resolve(context);
 };
 
 exports.checkCorrectCourseOrTeamId = async (context) => {
@@ -286,32 +286,48 @@ exports.injectUserId = (hook) => {
 	return hook;
 };
 
-exports.restrictToCurrentSchool = (hook) => {
-	const userService = hook.app.service('users');
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId,
-			$populate: 'roles',
-		},
-	}).then((res) => {
-		let access = false;
-		res.data[0].roles.map((role) => {
-			if (role.name === 'superhero') access = true;
-		});
-		if (access) return hook;
-		if (hook.method == 'get' || hook.method == 'find') {
-			if (hook.params.query.schoolId == undefined) {
-				hook.params.query.schoolId = res.data[0].schoolId;
-			} else if (hook.params.query.schoolId != res.data[0].schoolId) {
+const getUser = context => context.app.service('users').get(context.params.account.userId, {
+	query: {
+		$populate: 'roles',
+	},
+}).then((user) => {
+	if (user === null) {
+		throw new Error('User not found.');
+	}
+	return user;
+}).catch((err) => {
+	throw new NotFound('Can not fetch user.', err);
+});
+
+const testIfRoleNameExist = (user, roleNames) => {
+	if (typeof roleNames === 'string') {
+		roleNames = [roleNames];
+	}
+	if ((user.roles[0] || {}).name === undefined) {
+		throw new Error('Role is not populated.');
+	}
+	return user.roles.some(role => roleNames.includes(role));
+};
+
+exports.restrictToCurrentSchool = (context) => {
+	getUser(context).then((user) => {
+		if (testIfRoleNameExist(user, 'superhero')) {
+			return context;
+		}
+		const currentSchoolId = user.schoolId.toString();
+		if (context.method === 'get' || context.method === 'find') {
+			if (context.params.query.schoolId === undefined) {
+				context.params.query.schoolId = user.schoolId;
+			} else if (context.params.query.schoolId !== currentSchoolId) {
 				throw new Forbidden('You do not have valid permissions to access this.');
 			}
-		} else if (hook.data.schoolId == undefined) {
-			hook.data.schoolId = res.data[0].schoolId.toString();
-		} else if (hook.data.schoolId != res.data[0].schoolId) {
+		} else if (context.data.schoolId === undefined) {
+			context.data.schoolId = currentSchoolId;
+		} else if (context.data.schoolId !== currentSchoolId) {
 			throw new Forbidden('You do not have valid permissions to access this.');
 		}
 
-		return hook;
+		return context;
 	});
 };
 
@@ -326,62 +342,37 @@ const userIsInThatCourse = (user, course, isCourse) => {
         || user.roles.some(role => role.name === 'teacher');
 };
 
-exports.restrictToUsersOwnCourses = (hook) => {
-	const userService = hook.app.service('users');
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId,
-			$populate: 'roles',
-		},
-	}).then((res) => {
-		let access = false;
-		res.data[0].roles.map((role) => {
-			if (role.name === 'administrator' || role.name === 'superhero') {
-				access = true;
-			}
-		});
-		if (access) {
-			return hook;
+exports.restrictToUsersOwnCourses = (context) => {
+	getUser(context).then((user) => {
+		if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
+			return context;
 		}
-
-		if (hook.method === 'find') {
-			hook.params.query.$and = (hook.params.query.$and || []);
-			hook.params.query.$and.push({
+		const { _id } = user;
+		if (context.method === 'find') {
+			context.params.query.$and = (context.params.query.$and || []);
+			context.params.query.$and.push({
 				$or: [
-					{ userIds: res.data[0]._id },
-					{ teacherIds: res.data[0]._id },
-					{ substitutionIds: res.data[0]._id },
+					{ userIds: _id },
+					{ teacherIds: _id },
+					{ substitutionIds: _id },
 				],
 			});
 		} else {
-			const courseService = hook.app.service('courses');
-			return courseService.get(hook.id).then((course) => {
-				if (!userIsInThatCourse(res.data[0], course, true)) {
+			const courseService = context.app.service('courses');
+			return courseService.get(context.id).then((course) => {
+				if (!userIsInThatCourse(user, course, true)) {
 					throw new Forbidden('You are not in that course.');
 				}
 			});
 		}
 
-		return hook;
+		return context;
 	});
 };
 
 exports.restrictToUsersOwnLessons = (hook) => {
-	const userService = hook.app.service('users');
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId,
-			$populate: 'roles',
-		},
-	}).then((userResult) => {
-		let access = false;
-		const user = userResult.data[0];
-		user.roles.forEach((role) => {
-			if (role.name === 'administrator' || role.name === 'superhero') {
-				access = true;
-			}
-		});
-		if (access) {
+	getUser(context).then((user) => {
+		if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
 			return hook;
 		}
 		// before-hook
@@ -442,63 +433,48 @@ exports.restrictToUsersOwnLessons = (hook) => {
 	});
 };
 
-exports.restrictToUsersOwnClasses = (hook) => {
-	const userService = hook.app.service('users');
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId,
-			$populate: 'roles',
-		},
-	}).then((res) => {
-		let access = false;
-		res.data[0].roles.map((role) => {
-			if (['administrator', 'superhero'].includes(role.name)) access = true;
-		});
-		if (access) return hook;
-
-		if (hook.method === 'get') {
-			const classService = hook.app.service('classes');
-			return classService.get(hook.id).then((result) => {
-				if (!(_.some(result.userIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))
-                    && !(_.some(result.teacherIds, u => JSON.stringify(u) === JSON.stringify(hook.params.account.userId)))) {
+exports.restrictToUsersOwnClasses = (context) => {
+	getUser(context).then((user) => {
+		if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
+			return context;
+		}
+		if (context.method === 'get') {
+			const classService = context.app.service('classes');
+			return classService.get(context.id).then((result) => {
+				const userId = context.params.account.userId.toString();
+				if (!(_.some(result.userIds, u => JSON.stringify(u) === userId))
+                    && !(_.some(result.teacherIds, u => JSON.stringify(u) === userId))) {
 					throw new Forbidden('You are not in that class.');
 				}
 			});
-		} if (hook.method === 'find') {
-			if (typeof (hook.params.query.$or) === 'undefined') {
-				hook.params.query.$or = [
-					{ userIds: res.data[0]._id },
-					{ teacherIds: res.data[0]._id },
-					{ substitutionIds: res.data[0]._id },
+		} if (context.method === 'find') {
+			const { _id } = user;
+			if (typeof (context.params.query.$or) === 'undefined') {
+				context.params.query.$or = [
+					{ userIds: _id },
+					{ teacherIds: _id },
+					{ substitutionIds: _id },
 				];
 			}
 		}
-		return hook;
+		return context;
 	});
 };
 
 // meant to be used as an after hook
 exports.denyIfNotCurrentSchool = (
-	{ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' }
-) => (hook) => {
-	const userService = hook.app.service('users');
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId,
-			$populate: 'roles',
-		},
-	}).then((res) => {
-		let access = false;
-		res.data[0].roles.map((role) => {
-			if (role.name === 'superhero') access = true;
-		});
-		if (access) return hook;
-		const requesterSchoolId = res.data[0].schoolId;
-		const requestedUserSchoolId = (hook.result || {}).schoolId;
-		if (!requesterSchoolId.equals(requestedUserSchoolId)) {
-			return Promise.reject(new Forbidden(errorMessage));
+	{ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' },
+) => (context) => {
+	getUser(context).then((user) => {
+		if (testIfRoleNameExist(user, 'superhero')) {
+			return context;
 		}
-		return hook;
+		const requesterSchoolId = user.schoolId;
+		const requestedUserSchoolId = (context.result || {}).schoolId;
+		if (!requesterSchoolId.equals(requestedUserSchoolId)) {
+			throw new Forbidden(errorMessage);
+		}
+		return context;
 	});
 };
 
@@ -518,12 +494,13 @@ exports.checkSchoolOwnership = (hook) => {
 };
 
 // TODO: later: Template building
-// z.B.: maildata.template = { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
+// z.B.: maildata.template =
+//   { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
 // if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
 // mail.html = generatedHtml || "";
-exports.sendEmail = (hook, maildata) => {
-	const userService = hook.app.service('/users');
-	const mailService = hook.app.service('/mails');
+exports.sendEmail = (context, maildata) => {
+	const userService = context.app.service('/users');
+	const mailService = context.app.service('/mails');
 
 	const roles = (typeof maildata.roles === 'string' ? [maildata.roles] : maildata.roles) || [];
 	const emails = (typeof maildata.emails === 'string' ? [maildata.emails] : maildata.emails) || [];
@@ -537,7 +514,7 @@ exports.sendEmail = (hook, maildata) => {
 			userService.find({
 				query: {
 					roles,
-					schoolId: hook.data.schoolId,
+					schoolId: context.data.schoolId,
 					$populate: ['roles'],
 					$limit: 1000,
 				},
@@ -546,7 +523,7 @@ exports.sendEmail = (hook, maildata) => {
 	}
 
 	if (userIds.length > 0) {
-		userIds.map((id) => {
+		userIds.forEach((id) => {
 			promises.push(
 				userService.get(id),
 			);
@@ -554,7 +531,7 @@ exports.sendEmail = (hook, maildata) => {
 	}
 
 	if (emails.length > 0) {
-		emails.map((email) => {
+		emails.forEach((email) => {
 			const re = /\S+@\S+\.\S+/;
 			if (re.test(email)) {
 				receipients.push(email);
@@ -565,9 +542,9 @@ exports.sendEmail = (hook, maildata) => {
 	if (promises.length > 0) {
 		Promise.all(promises)
 			.then((promise) => {
-				promise.map((result) => {
+				promise.forEach((result) => {
 					if (result.data) {
-						result.data.map((user) => {
+						result.data.forEach((user) => {
 							receipients.push(user.email);
 						});
 					} else if (result.email) {
@@ -575,7 +552,7 @@ exports.sendEmail = (hook, maildata) => {
 					}
 				});
 
-				_.uniq(receipients).map((email) => {
+				_.uniq(receipients).forEach((email) => {
 					if (!maildata.content.text && !maildata.content.html) {
 						logger.warning("(1) No mailcontent (text/html) was given. Don't send a mail.");
 					} else {
@@ -584,16 +561,22 @@ exports.sendEmail = (hook, maildata) => {
 							subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 							headers: maildata.headers || {},
 							content: {
-								text: maildata.content.text || 'No alternative mailtext provided. Expected: HTML Template Mail.',
+								text: maildata.content.text
+									|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
 								html: '', // still todo, html template mails
 							},
 						}).catch((err) => {
 							logger.warning(err);
-							throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
+							throw new BadRequest(
+								(err.error || {}).message
+								|| err.message
+								|| err
+								|| 'Unknown mailing error',
+							);
 						});
 					}
 				});
-				return hook;
+				return context;
 			})
 			.catch((err) => {
 				throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
@@ -602,13 +585,14 @@ exports.sendEmail = (hook, maildata) => {
 		if (!maildata.content.text && !maildata.content.html) {
 			logger.warning("(2) No mailcontent (text/html) was given. Don't send a mail.");
 		} else {
-			_.uniq(receipients).map((email) => {
+			_.uniq(receipients).forEach((email) => {
 				mailService.create({
 					email,
 					subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 					headers: maildata.headers || {},
 					content: {
-						text: maildata.content.text || 'No alternative mailtext provided. Expected: HTML Template Mail.',
+						text: maildata.content.text
+							|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
 						html: '', // still todo, html template mails
 					},
 				}).catch((err) => {
@@ -617,12 +601,14 @@ exports.sendEmail = (hook, maildata) => {
 				});
 			});
 		}
-		return hook;
+		return context;
 	}
+
+	return context;
 };
 
 exports.getAge = (dateString) => {
-	if (dateString == undefined) {
+	if (dateString === undefined) {
 		return undefined;
 	}
 	const today = new Date();
