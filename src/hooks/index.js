@@ -289,6 +289,8 @@ exports.injectUserId = (context) => {
 const getUser = context => context.app.service('users').get(context.params.account.userId, {
 	query: {
 		$populate: 'roles',
+		// todo select in roles only role name
+		// test which keys from user should selected
 	},
 }).then((user) => {
 	if (user === null) {
@@ -306,7 +308,7 @@ const testIfRoleNameExist = (user, roleNames) => {
 	if ((user.roles[0] || {}).name === undefined) {
 		throw new Error('Role is not populated.');
 	}
-	return user.roles.some(role => roleNames.includes(role));
+	return user.roles.some(({ name }) => roleNames.includes(name));
 };
 
 exports.restrictToCurrentSchool = context => getUser(context).then((user) => {

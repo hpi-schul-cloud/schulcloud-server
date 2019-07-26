@@ -159,7 +159,7 @@ class LessonCopyService {
 		return Promise.all([
 			this.copyHomeworks(params, sourceLesson, newCourseId, newLesson),
 			this.copyFilesInLesson(params, sourceLesson, newCourseId, newLesson),
-		]);
+		]).then(() => newLesson);
 	}
 }
 
