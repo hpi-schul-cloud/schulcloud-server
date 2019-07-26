@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "",
-  "version": "18.2.7",
+  "version": "19.0.0",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
