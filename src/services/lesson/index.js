@@ -88,7 +88,7 @@ class LessonCopyService {
 		// get all course files
 		const files = await FileModel.find({
 			owner: sourceLesson.courseId,
-		});
+		}).lean().exec();
 		// filter files to lesson related
 		const lessonFiles = files.filter(f => _.some(
 			(sourceLesson.contents || []),
@@ -97,21 +97,21 @@ class LessonCopyService {
 				&& _.includes(content.content.text, f._id.toString()),
 		));
 		// copy files for new course
-		await Promise.all(lessonFiles.map((sourceFile) => {
-			const fileData = {
-				file: sourceFile._id,
-				parent: newCourseId,
-			};
-
-			return copyFile(fileData, params)
-				.then((newFile) => {
-					// /files/file?file=5d1ef687faccd3282cc94f83&amp;name=imago-images-fotos-von-voegeln.jpg\
-					fileChangelog.push({
-						old: `file=${sourceFile._id}&amp;name=${sourceFile.name}`,
-						new: `file=${newFile._id}&amp;name=${newFile.name}`,
-					});
-				});
-		}));
+		await Promise.all(lessonFiles.map(sourceFile => copyFile({
+			file: sourceFile,
+			parent: newCourseId,
+		}, params).then((newFile) => {
+			// /files/file?file=5d1ef687faccd3282cc94f83&amp;name=imago-images-fotos-von-voegeln.jpg\
+			fileChangelog.push({
+				old: `file=${sourceFile._id}&amp;name=${sourceFile.name}`,
+				new: `file=${newFile._id}&amp;name=${newFile.name}`,
+			});
+			// bad fix & and &amp; is change from time to time...
+			fileChangelog.push({
+				old: `file=${sourceFile._id}&name=${sourceFile.name}`,
+				new: `file=${newFile._id}&name=${newFile.name}`,
+			});
+		})));
 		// replace file ids in lesson content
 		newLesson.contents.forEach((content) => {
 			if (content.component === 'text' && content.content.text) {
@@ -124,7 +124,7 @@ class LessonCopyService {
 			}
 		});
 		// update lesson data
-		return lessonModel.update({ _id: newLesson._id }, newLesson);
+		return lessonModel.update({ _id: newLesson._id }, newLesson).lean().exec();
 	}
 
 	createTempLesson(sourceLesson, newCourseId) {
