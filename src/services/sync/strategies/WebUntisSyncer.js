@@ -1,5 +1,7 @@
 const Syncer = require('./Syncer');
 
+const Lesson = require('../../services/lesson/model');
+
 const WebUntisApi = require('../../webuntis/services/WebUntisApi');
 
 /**
@@ -68,7 +70,7 @@ class WebUntisSyncer extends Syncer {
                 system.webuntisConfig.user,
                 system.webuntisConfig.password
             ))
-            .then(this.syncFromAPI(api, stats, app))
+            .then(() => this.syncFromAPI(api, stats, app))
             .then(() => {
                 stats.success = true;
                 api.logout();
@@ -76,7 +78,30 @@ class WebUntisSyncer extends Syncer {
     }
 
     async syncFromAPI(api, stats, app) {
-        return Promise.resolve();
+        // const students = await api.getStudents();
+		// const teachers = await api.getTeachers();
+        const classes = await api.getClasses();
+        
+        stats.classes = [];
+        for (let klass of classes) {
+            klass.timetable = await api.getTimetableForClass(klass.id);
+            stats.classes.push(klass);
+        }
+
+        /*return Promise.all([
+            api.getStudents()
+                .then((students) => {
+                    stats.students = students;
+                }),
+            api.getTeachers()
+                .then((teachers) => {
+                    stats.teachers = teachers;
+                }),
+            api.getClasses()
+                .then((classes) => {
+                    stats.classes = classes;
+                })
+        ]);*/
     }
 }
 
