@@ -1,6 +1,6 @@
 const { BadRequest, Forbidden, NotFound } = require('@feathersjs/errors');
 const hooks = require('../hooks');
-const { warn } = require('../../../logger/index');
+const { warning } = require('../../../logger/index');
 
 const { createUserWithRole } = require('../hooks/helpers');
 const { getBasic, patchTeam, getSessionUser } = require('../helpers');
@@ -19,7 +19,7 @@ class AdminOverview {
 		this.docs = {};
 
 		if (process.env.SC_SHORT_TITLE === undefined) {
-			warn('SC_SHORT_TITLE is not defined.');
+			warning('SC_SHORT_TITLE is not defined.');
 		}
 	}
 
@@ -292,7 +292,7 @@ class AdminOverview {
 					});
 			})
 			.catch((err) => {
-				warn(err);
+				warning(err);
 				throw new BadRequest(
 					'It exists no teams with access rights, to send this message.',
 				);

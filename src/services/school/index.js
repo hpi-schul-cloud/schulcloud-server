@@ -2,7 +2,7 @@ const service = require('feathers-mongoose');
 const schoolModels = require('./model');
 const hooks = require('./hooks');
 
-module.exports = function () {
+module.exports = function services() {
 	const app = this;
 
 	const options = {

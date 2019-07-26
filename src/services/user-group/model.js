@@ -1,6 +1,6 @@
 const autoPopulate = require('mongoose-autopopulate');
 const mongoose = require('mongoose');
-const logger = require('winston');
+const logger = require('../../logger');
 
 const { Schema } = mongoose;
 
@@ -60,7 +60,7 @@ const classSchema = getUserGroupSchema({
 	invitationLink: { type: String },
 	name: { type: String, required: false },
 	year: { type: Schema.Types.ObjectId, ref: 'year' },
-	gradeLevel: { type: Schema.Types.ObjectId, ref: 'gradeLevel', autoPopulate: true },
+	gradeLevel: { type: Schema.Types.ObjectId, ref: 'gradeLevel', autopopulate: true },
 	nameFormat: { type: String, enum: nameFormats, default: 'static' },
 	ldapDN: { type: String },
 });
@@ -85,9 +85,10 @@ const getClassDisplayName = (aclass) => {
 
 	// error handling
 	if (!aclass.nameFormat) {
-		logger.warn(`unknown nameFormat in class${aclass._id}`);
+		logger.warning(`unknown nameFormat in class${aclass._id}`);
 	} else {
-		logger.warn(`The gradeLevel in class ${aclass._id} do not exist, or is is not populated.`, aclass.nameFormat);
+		logger
+			.warning(`The gradeLevel in class ${aclass._id} do not exist, or is is not populated.`, aclass.nameFormat);
 	}
 
 	return aclass;
@@ -100,7 +101,7 @@ classSchema.virtual('displayName').get(function () {
 });
 
 classSchema.set('toObject', { virtuals: true });
-classSchema.set('toJSON', { virtuals: true });
+classSchema.set('toJSON', { virtuals: false }); // virtuals could not call with autopopulate for toJSON
 
 const classModel = mongoose.model('class', classSchema);
 const gradeModel = mongoose.model('grade', getUserGroupSchema());

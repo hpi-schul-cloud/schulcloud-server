@@ -3,7 +3,7 @@
  */
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const rp = require('request-promise-native');
-const logger = require('winston');
+const logger = require('../../logger');
 const hooks = require('./hooks');
 const { FileModel } = require('../fileStorage/model');
 const {
@@ -78,7 +78,7 @@ class WopiFilesInfoService {
 				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), capabilities));
 			})
 			.catch((err) => {
-				logger.warn(new Error(err));
+				logger.warning(new Error(err));
 				return new Forbidden();
 			});
 	}
@@ -137,15 +137,15 @@ class WopiFilesContentsService {
 						encoding: null,
 					};
 					return rp(opt).catch((err) => {
-						logger.warn(new Error(err));
+						logger.warning(new Error(err));
 					});
 				}).catch((err) => {
-					logger.warn(new Error(err));
+					logger.warning(new Error(err));
 					return 'Die Datei konnte leider nicht geladen werden!';
 				});
 			})
 			.catch((err) => {
-				logger.warn(err);
+				logger.warning(err);
 				throw new NotFound('The requested file was not found! (4)');
 			});
 	}
@@ -194,15 +194,15 @@ class WopiFilesContentsService {
 							{ _id: file._id },
 							{ $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length },
 						).exec().catch((err) => {
-							logger.warn(new Error(err));
+							logger.warning(new Error(err));
 						}),
 					)
 					.then(() => Promise.resolve({ lockId: file.lockId }))
 					.catch((err) => {
-						logger.warn(err);
+						logger.warning(err);
 					});
 			}).catch((err) => {
-				logger.warn(new Error(err));
+				logger.warning(new Error(err));
 			});
 		});
 	}

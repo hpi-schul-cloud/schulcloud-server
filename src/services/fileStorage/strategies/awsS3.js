@@ -2,7 +2,7 @@ const { promisify } = require('es6-promisify');
 const errors = require('@feathersjs/errors');
 const aws = require('aws-sdk');
 const { posix: pathUtil } = require('path');
-const logger = require('winston');
+const logger = require('../../../logger');
 const fs = require('fs');
 
 
@@ -22,7 +22,7 @@ try {
 		: awsConfig = require('../../../../config/secrets.json').aws;
 	/* eslint-enable global-require, no-unused-expressions */
 } catch (e) {
-	logger.log('warn', 'The AWS config couldn\'t be read');
+	logger.log('warning', 'The AWS config couldn\'t be read');
 }
 
 const AbstractFileStorageStrategy = require('./interface.js');
