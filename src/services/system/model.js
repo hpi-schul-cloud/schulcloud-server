@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const types = ['moodle', 'itslearning', 'lernsax', 'iserv', 'local', 'ldap'];
+const types = ['moodle', 'itslearning', 'lernsax', 'iserv', 'local', 'ldap', 'webuntis'];
 
 const systemSchema = new Schema({
 	type: { type: String, required: true, enum: types },

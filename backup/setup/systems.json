@@ -2,6 +2,7 @@
 	"_id": {
 		"$oid": "0000d186816abba584714c90"
 	},
+	"alias": "Test Moodle",
 	"type": "moodle",
 	"url": "http://moodle.schul.tech/",
 	"__v": 0
@@ -10,6 +11,7 @@
 	"_id": {
 		"$oid": "0000d186816abba584714c91"
 	},
+	"alias": "Test itsLearning",
 	"type": "itslearning",
 	"__v": 0
 },
@@ -17,7 +19,23 @@
 	"_id": {
 		"$oid": "0000d186816abba584714c92"
 	},
+	"alias": "Test Local",
 	"type": "local",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d186816abba584714c93"
+	},
+	"alias": "Test WebUntis",
+	"type": "webuntis",
+    "webuntisConfig": {
+        "active": true,
+        "url": "https://demo.webuntis.com",
+        "schoolname": "demo_inf",
+        "user": "api",
+        "password": "api"
+    },
 	"__v": 0
 }]
 

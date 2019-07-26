@@ -1,5 +1,7 @@
 const Syncer = require('./Syncer');
 
+const WebUntisApi = require('../../webuntis/services/WebUntisApi');
+
 /**
  * Implements syncing from WebUntis API based on the Syncer interface
  * @class WebUntisSyncer
@@ -10,7 +12,7 @@ class WebUntisSyncer extends Syncer {
 	constructor(app, stats) {
 		super(app, stats);
 		Object.assign(this.stats, {
-//			systems: {},
+			systems: {},
 		});
 	}
 
@@ -29,20 +31,53 @@ class WebUntisSyncer extends Syncer {
 	 * @see {Syncer#steps}
 	 */
 	steps() {
+        /* Why not
+        return this.getWebUntisSystems().then(
+            systems => {
+                // ...
+            }
+        );
+        ? */
 		return super.steps()
-			.then(() => this.getSystems())
+			.then(() => this.getWebUntisSystems())
 			.then(systems => {
 				return Promise.all(systems.map(system => {
-                                        // TODO: implement
 					this.stats.systems[system.alias] = {};
-					return new LDAPSyncer(this.app, this.stats.systems[system.alias], system).sync();
+					return this.syncFromSystem(system, this.stats.systems[system.alias], this.app);
 				}));
 			});
 	}
 
-	async getFoo() {
-		return { foo: 'bar' };
-	}
+	async getWebUntisSystems() {
+        // { query: { type: 'webuntis', 'webuntisConfig.active': true } }
+		return this.app.service('systems').find({ query: { type: 'webuntis' }, paginate: false })
+			.then((systems) => {
+				this.logInfo(`Found ${systems.length} WebUntis configurations.`);
+				return systems;
+			});
+    }
+
+    async syncFromSystem(system, stats, app) {
+        var api = new WebUntisApi(
+            system.webuntisConfig.url,
+            system.webuntisConfig.schoolname
+        );
+
+        return Promise.resolve()
+            .then(() => api.login(
+                system.webuntisConfig.user,
+                system.webuntisConfig.password
+            ))
+            .then(this.syncFromAPI(api, stats, app))
+            .then(() => {
+                stats.success = true;
+                api.logout();
+            });
+    }
+
+    async syncFromAPI(api, stats, app) {
+        return Promise.resolve();
+    }
 }
 
 module.exports = WebUntisSyncer;
