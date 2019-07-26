@@ -274,10 +274,15 @@ const signedUrlService = {
      * @param action the AWS action, e.g. putObject
      * @returns {Promise}
      */
-	create({ parent, filename, fileType }, params) {
+	create({
+		parent,
+		filename,
+		fileType,
+		flatFileName: _flatFileName,
+	}, params) {
 		const { payload: { userId } } = params;
 		const strategy = createCorrectStrategy(params.payload.fileStorageType);
-		const flatFileName = generateFlatFileName(filename);
+		const flatFileName = _flatFileName || generateFlatFileName(filename);
 
 		const parentPromise = parent
 			? FileModel.findOne({ parent, name: filename }).exec()
@@ -650,7 +655,8 @@ const newFileService = {
 		return signedUrlService.create({
 			fileType: returnFileType(name),
 			parent,
-			filename: name,
+			// filename: name,
+			flatFileName,
 		}, params)
 			.then((signedUrl) => {
 				const headers = signedUrl.header;

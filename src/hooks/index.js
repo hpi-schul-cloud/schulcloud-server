@@ -15,43 +15,43 @@ const KeysModel = require('../services/keys/model');
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
-	return (hook) => {
+	return (context) => {
 		// meaning it's a local call and pass it without execute hookForRemoteRequests
-		if (typeof (hook.params.provider) === 'undefined') {
-			return hook;
+		if (typeof (context.params.provider) === 'undefined') {
+			return context;
 		}
-		return hookForRemoteRequests.call(this, hook);
+		return hookForRemoteRequests.call(this, context);
 	};
 };
 
-exports.forceHookResolve = forcedHook => (hook) => {
-	forcedHook(hook)
-		.then(() => Promise.resolve(hook))
-		.catch(() => Promise.resolve(hook));
+exports.forceHookResolve = forcedHook => (context) => {
+	forcedHook(context)
+		.then(() => Promise.resolve(context))
+		.catch(() => Promise.resolve(context));
 };
 
-exports.isAdmin = () => (hook) => {
-	if (!(hook.params.user.permissions || []).includes('ADMIN')) {
+exports.isAdmin = () => (context) => {
+	if (!(context.params.user.permissions || []).includes('ADMIN')) {
 		throw new Forbidden('you are not an administrator');
 	}
 
-	return Promise.resolve(hook);
+	return Promise.resolve(context);
 };
 
-exports.isSuperHero = () => (hook) => {
-	const userService = hook.app.service('/users/');
-	return userService.find({ query: { _id: (hook.params.account.userId || ''), $populate: 'roles' } })
+exports.isSuperHero = () => (context) => {
+	const userService = context.app.service('/users/');
+	return userService.find({ query: { _id: (context.params.account.userId || ''), $populate: 'roles' } })
 		.then((user) => {
 			user.data[0].roles = Array.from(user.data[0].roles);
 			if (!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
 				throw new Forbidden('you are not a superhero, sorry...');
 			}
-			return Promise.resolve(hook);
+			return Promise.resolve(context);
 		});
 };
 
-exports.hasRole = (hook, userId, roleName) => {
-	const userService = hook.app.service('/users/');
+exports.hasRole = (context, userId, roleName) => {
+	const userService = context.app.service('/users/');
 
 	return userService.get((userId || ''), { query: { $populate: 'roles' } })
 		.then((user) => {
@@ -61,36 +61,36 @@ exports.hasRole = (hook, userId, roleName) => {
 		});
 };
 
-exports.hasPermission = permissionName => (hook) => {
-	// If it was an internal call then skip this hook
-	if (!hook.params.provider) {
-		return hook;
+exports.hasPermission = permissionName => (context) => {
+	// If it was an internal call then skip this context
+	if (!context.params.provider) {
+		return context;
 	}
 
 	// If an api key was provided, skip
-	if ((hook.params.headers || {})['x-api-key']) {
-		return KeysModel.findOne({ key: hook.params.headers['x-api-key'] })
+	if ((context.params.headers || {})['x-api-key']) {
+		return KeysModel.findOne({ key: context.params.headers['x-api-key'] })
 			.then((res) => {
 				if (!res) throw new NotAuthenticated('API Key is invalid');
-				return Promise.resolve(hook);
+				return Promise.resolve(context);
 			})
 			.catch(() => {
 				throw new NotAuthenticated('API Key is invalid.');
 			});
 	}
 	// If test then skip too
-	if (process.env.NODE_ENV === 'test') return Promise.resolve(hook);
+	if (process.env.NODE_ENV === 'test') return Promise.resolve(context);
 
 	// Otherwise check for user permissions
-	const service = hook.app.service('/users/');
-	return service.get({ _id: (hook.params.account.userId || '') })
+	const service = context.app.service('/users/');
+	return service.get({ _id: (context.params.account.userId || '') })
 		.then((user) => {
 			user.permissions = Array.from(user.permissions);
 
 			if (!(user.permissions || []).includes(permissionName)) {
 				throw new Forbidden(`You don't have the permission ${permissionName}.`);
 			}
-			return Promise.resolve(hook);
+			return Promise.resolve(context);
 		});
 };
 
@@ -99,25 +99,25 @@ exports.hasPermission = permissionName => (hook) => {
     excludeOptions = undefined => remove response when not GET or FIND request
     excludeOptions = ['get', ...] => remove when method not in array
  */
-exports.removeResponse = excludeOptions => (hook) => {
-	// If it was an internal call then skip this hook
-	if (!hook.params.provider) {
-		return hook;
+exports.removeResponse = excludeOptions => (context) => {
+	// If it was an internal call then skip this context
+	if (!context.params.provider) {
+		return context;
 	}
 
 	if (excludeOptions === undefined) {
 		excludeOptions = ['get', 'find'];
 	}
-	if (Array.isArray(excludeOptions) && excludeOptions.includes(hook.method)) {
-		return Promise.resolve(hook);
+	if (Array.isArray(excludeOptions) && excludeOptions.includes(context.method)) {
+		return Promise.resolve(context);
 	}
-	hook.result = { status: 200 };
-	return Promise.resolve(hook);
+	context.result = { status: 200 };
+	return Promise.resolve(context);
 };
 
 // non hook releated function
-exports.hasPermissionNoHook = (hook, userId, permissionName) => {
-	const service = hook.app.service('/users/');
+exports.hasPermissionNoHook = (context, userId, permissionName) => {
+	const service = context.app.service('/users/');
 	return service.get({ _id: (userId || '') })
 		.then((user) => {
 			user.permissions = Array.from(user.permissions);
@@ -125,9 +125,9 @@ exports.hasPermissionNoHook = (hook, userId, permissionName) => {
 		});
 };
 
-exports.hasRoleNoHook = (hook, userId, roleName, account = false) => {
-	const userService = hook.app.service('/users/');
-	const accountService = hook.app.service('/accounts/');
+exports.hasRoleNoHook = (context, userId, roleName, account = false) => {
+	const userService = context.app.service('/users/');
+	const accountService = context.app.service('/accounts/');
 	if (account) {
 		return accountService.get(userId)
 			.then(_account => userService.find({ query: { _id: (_account.userId || ''), $populate: 'roles' } })
@@ -196,21 +196,21 @@ exports.resolveToIds = (serviceName, path, key, context) => {
 };
 
 // todo: Should removed
-exports.permitGroupOperation = (hook) => {
-	if (!hook.id) {
+exports.permitGroupOperation = (context) => {
+	if (!context.id) {
 		throw new Forbidden('Operation on this service requires an id!');
 	}
-	return Promise.resolve(hook);
+	return Promise.resolve(context);
 };
 
 // get the model instance to call functions etc  TODO make query results not lean
-exports.computeProperty = (Model, functionName, variableName) => hook => Model.findById(hook.result._id)
+exports.computeProperty = (Model, functionName, variableName) => context => Model.findById(context.result._id)
 	.then(modelInstance => modelInstance[functionName]()) // compute that property
 	.then((result) => {
-		hook.result[variableName] = Array.from(result); // save it in the resulting object
+		context.result[variableName] = Array.from(result); // save it in the resulting object
 	})
 	.catch(e => logger.error(e))
-	.then(() => Promise.resolve(hook));
+	.then(() => Promise.resolve(context));
 
 exports.mapPaginationQuery = (context) => {
 	if ((context.params.query || {}).$limit === '-1') {
@@ -274,16 +274,16 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 	return context;
 };
 
-exports.injectUserId = (hook) => {
-	if (typeof (hook.params.provider) === 'undefined') {
-		if (hook.data && hook.data.userId) {
-			hook.params.account = { userId: hook.data.userId };
-			hook.params.payload = { userId: hook.data.userId };
-			delete hook.data.userId;
+exports.injectUserId = (context) => {
+	if (typeof (context.params.provider) === 'undefined') {
+		if (context.data && context.data.userId) {
+			context.params.account = { userId: context.data.userId };
+			context.params.payload = { userId: context.data.userId };
+			delete context.data.userId;
 		}
 	}
 
-	return hook;
+	return context;
 };
 
 const getUser = context => context.app.service('users').get(context.params.account.userId, {
@@ -309,186 +309,179 @@ const testIfRoleNameExist = (user, roleNames) => {
 	return user.roles.some(role => roleNames.includes(role));
 };
 
-exports.restrictToCurrentSchool = (context) => {
-	getUser(context).then((user) => {
-		if (testIfRoleNameExist(user, 'superhero')) {
-			return context;
-		}
-		const currentSchoolId = user.schoolId.toString();
-		if (context.method === 'get' || context.method === 'find') {
-			if (context.params.query.schoolId === undefined) {
-				context.params.query.schoolId = user.schoolId;
-			} else if (context.params.query.schoolId !== currentSchoolId) {
-				throw new Forbidden('You do not have valid permissions to access this.');
-			}
-		} else if (context.data.schoolId === undefined) {
-			context.data.schoolId = currentSchoolId;
-		} else if (context.data.schoolId !== currentSchoolId) {
+exports.restrictToCurrentSchool = context => getUser(context).then((user) => {
+	if (testIfRoleNameExist(user, 'superhero')) {
+		return context;
+	}
+	const currentSchoolId = user.schoolId.toString();
+	if (context.method === 'get' || context.method === 'find') {
+		if (context.params.query.schoolId === undefined) {
+			context.params.query.schoolId = user.schoolId;
+		} else if (context.params.query.schoolId !== currentSchoolId) {
 			throw new Forbidden('You do not have valid permissions to access this.');
 		}
-
-		return context;
-	});
-};
-
-const userIsInThatCourse = (user, course, isCourse) => {
-	if (isCourse) {
-		return course.userIds.some(u => u.toString() === user._id.toString())
-            || course.teacherIds.some(u => u.toString() === user._id.toString())
-            || (course.substitutionIds || []).some(u => u.toString() === user._id.toString());
+	} else if (context.data.schoolId === undefined) {
+		context.data.schoolId = currentSchoolId;
+	} else if (context.data.schoolId !== currentSchoolId) {
+		throw new Forbidden('You do not have valid permissions to access this.');
 	}
 
-	return course.userIds.some(u => u.toString() === user._id.toString())
-        || user.roles.some(role => role.name === 'teacher');
+	return context;
+});
+
+/* todo: Many request pass id as second parameter, but it is confused with the logic that should pass.
+	It should evaluate and make clearly.
+ */
+const userIsInThatCourse = (user, { userIds = [], teacherIds = [], substitutionIds = [] }, isCourse) => {
+	const userId = user._id.toString();
+	if (isCourse) {
+		return userIds.some(u => u.toString() === userId)
+            || teacherIds.some(u => u.toString() === userId)
+            || substitutionIds.some(u => u.toString() === userId);
+	}
+
+	return userIds.some(u => u.toString() === userId) || testIfRoleNameExist(user, 'teacher');
 };
 
-exports.restrictToUsersOwnCourses = (context) => {
-	getUser(context).then((user) => {
-		if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
-			return context;
-		}
-		const { _id } = user;
-		if (context.method === 'find') {
-			context.params.query.$and = (context.params.query.$and || []);
-			context.params.query.$and.push({
-				$or: [
-					{ userIds: _id },
-					{ teacherIds: _id },
-					{ substitutionIds: _id },
-				],
-			});
-		} else {
-			const courseService = context.app.service('courses');
-			return courseService.get(context.id).then((course) => {
-				if (!userIsInThatCourse(user, course, true)) {
-					throw new Forbidden('You are not in that course.');
-				}
-			});
-		}
-
+exports.restrictToUsersOwnCourses = context => getUser(context).then((user) => {
+	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
 		return context;
-	});
-};
-
-exports.restrictToUsersOwnLessons = (hook) => {
-	getUser(context).then((user) => {
-		if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
-			return hook;
-		}
-		// before-hook
-		if (hook.type === 'before') {
-			let populate = hook.params.query.$populate;
-			if (typeof (populate) === 'undefined') {
-				populate = ['courseId', 'courseGroupId'];
-			} else if (Array.isArray(populate) && !populate.includes('courseId')) {
-				populate.push('courseId');
-				populate.push('courseGroupId');
+	}
+	const { _id } = user;
+	if (context.method === 'find') {
+		context.params.query.$and = (context.params.query.$and || []);
+		context.params.query.$and.push({
+			$or: [
+				{ userIds: _id },
+				{ teacherIds: _id },
+				{ substitutionIds: _id },
+			],
+		});
+	} else {
+		const courseService = context.app.service('courses');
+		return courseService.get(context.id).then((course) => {
+			if (!userIsInThatCourse(user, course, true)) {
+				throw new Forbidden('You are not in that course.');
 			}
-			hook.params.query.$populate = populate;
-		} else {
-			// after-hook
-			if (hook.method === 'get' && (hook.result || {})._id) {
-				let tempLesson = [hook.result];
-				tempLesson = tempLesson.filter((lesson) => {
-					if ('courseGroupId' in lesson) {
-						return userIsInThatCourse(user, lesson.courseGroupId, false);
-					}
-					return userIsInThatCourse(user, lesson.courseId, true)
-                        || (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
-				});
-				if (tempLesson.length === 0) {
-					throw new Forbidden("You don't have access to that lesson.");
+		});
+	}
+
+	return context;
+});
+
+exports.restrictToUsersOwnLessons = context => getUser(context).then((user) => {
+	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
+		return context;
+	}
+	// before-hook
+	if (context.type === 'before') {
+		let populate = context.params.query.$populate;
+		if (typeof (populate) === 'undefined') {
+			populate = ['courseId', 'courseGroupId'];
+		} else if (Array.isArray(populate) && !populate.includes('courseId')) {
+			populate.push('courseId');
+			populate.push('courseGroupId');
+		}
+		context.params.query.$populate = populate;
+	} else {
+		// after-hook
+		if (context.method === 'get' && (context.result || {})._id) {
+			let tempLesson = [context.result];
+			tempLesson = tempLesson.filter((lesson) => {
+				if ('courseGroupId' in lesson) {
+					return userIsInThatCourse(user, lesson.courseGroupId, false);
 				}
-				if ('courseGroupId' in hook.result) {
-					hook.result.courseGroupId = hook.result.courseGroupId._id;
+				return userIsInThatCourse(user, lesson.courseId, true)
+                        || (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+			});
+			if (tempLesson.length === 0) {
+				throw new Forbidden("You don't have access to that lesson.");
+			}
+			if ('courseGroupId' in context.result) {
+				context.result.courseGroupId = context.result.courseGroupId._id;
+			} else {
+				context.result.courseId = context.result.courseId._id;
+			}
+		}
+
+		if (context.method === 'find' && ((context.result || {}).data || []).length > 0) {
+			context.result.data = context.result.data.filter((lesson) => {
+				if ('courseGroupId' in lesson) {
+					return userIsInThatCourse(user, lesson.courseGroupId, false);
+				}
+				return userIsInThatCourse(user, lesson.courseId, true)
+                        || (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+			});
+
+			if (context.result.data.length === 0) {
+				throw new NotFound('There are no lessons that you have access to.');
+			} else {
+				context.result.total = context.result.data.length;
+			}
+			context.result.data.forEach((lesson) => {
+				if ('courseGroupId' in lesson) {
+					lesson.courseGroupId = lesson.courseGroupId._id;
 				} else {
-					hook.result.courseId = hook.result.courseId._id;
+					lesson.courseId = lesson.courseId._id;
 				}
-			}
-
-			if (hook.method === 'find' && ((hook.result || {}).data || []).length > 0) {
-				hook.result.data = hook.result.data.filter((lesson) => {
-					if ('courseGroupId' in lesson) {
-						return userIsInThatCourse(user, lesson.courseGroupId, false);
-					}
-					return userIsInThatCourse(user, lesson.courseId, true)
-                        || (hook.params.query.shareToken || {}) === (lesson.shareToken || {});
-				});
-
-				if (hook.result.data.length === 0) {
-					throw new NotFound('There are no lessons that you have access to.');
-				} else {
-					hook.result.total = hook.result.data.length;
-				}
-				hook.result.data.forEach((lesson) => {
-					if ('courseGroupId' in lesson) {
-						lesson.courseGroupId = lesson.courseGroupId._id;
-					} else {
-						lesson.courseId = lesson.courseId._id;
-					}
-				});
-			}
+			});
 		}
-		return hook;
-	});
-};
+	}
+	return context;
+});
 
-exports.restrictToUsersOwnClasses = (context) => {
-	getUser(context).then((user) => {
-		if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
-			return context;
-		}
-		if (context.method === 'get') {
-			const classService = context.app.service('classes');
-			return classService.get(context.id).then((result) => {
-				const userId = context.params.account.userId.toString();
-				if (!(_.some(result.userIds, u => JSON.stringify(u) === userId))
+exports.restrictToUsersOwnClasses = context => getUser(context).then((user) => {
+	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
+		return context;
+	}
+	if (context.method === 'get') {
+		const classService = context.app.service('classes');
+		return classService.get(context.id).then((result) => {
+			const userId = context.params.account.userId.toString();
+			if (!(_.some(result.userIds, u => JSON.stringify(u) === userId))
                     && !(_.some(result.teacherIds, u => JSON.stringify(u) === userId))) {
-					throw new Forbidden('You are not in that class.');
-				}
-			});
-		} if (context.method === 'find') {
-			const { _id } = user;
-			if (typeof (context.params.query.$or) === 'undefined') {
-				context.params.query.$or = [
-					{ userIds: _id },
-					{ teacherIds: _id },
-					{ substitutionIds: _id },
-				];
+				throw new Forbidden('You are not in that class.');
 			}
+		});
+	} if (context.method === 'find') {
+		const { _id } = user;
+		if (typeof (context.params.query.$or) === 'undefined') {
+			context.params.query.$or = [
+				{ userIds: _id },
+				{ teacherIds: _id },
+				{ substitutionIds: _id },
+			];
 		}
-		return context;
-	});
-};
+	}
+	return context;
+});
 
-// meant to be used as an after hook
+// meant to be used as an after context
 exports.denyIfNotCurrentSchool = (
 	{ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' },
-) => (context) => {
-	getUser(context).then((user) => {
-		if (testIfRoleNameExist(user, 'superhero')) {
-			return context;
-		}
-		const requesterSchoolId = user.schoolId;
-		const requestedUserSchoolId = (context.result || {}).schoolId;
-		if (!requesterSchoolId.equals(requestedUserSchoolId)) {
-			throw new Forbidden(errorMessage);
-		}
+) => context => getUser(context).then((user) => {
+	if (testIfRoleNameExist(user, 'superhero')) {
 		return context;
-	});
-};
+	}
+	const requesterSchoolId = user.schoolId;
+	const requestedUserSchoolId = (context.result || {}).schoolId;
+	if (!requesterSchoolId.equals(requestedUserSchoolId)) {
+		throw new Forbidden(errorMessage);
+	}
+	return context;
+});
 
-exports.checkSchoolOwnership = (hook) => {
-	const { userId } = hook.params.account;
-	const objectId = hook.id;
-	const service = hook.path;
+exports.checkSchoolOwnership = (context) => {
+	const { userId } = context.params.account;
+	const objectId = context.id;
+	const service = context.path;
 
-	const genericService = hook.app.service(service);
-	const userService = hook.app.service('users');
+	const genericService = context.app.service(service);
+	const userService = context.app.service('users');
 
 	return Promise.all([userService.get(userId), genericService.get(objectId)])
 		.then((res) => {
-			if (res[0].schoolId.equals(res[1].schoolId)) return hook;
+			if (res[0].schoolId.equals(res[1].schoolId)) return context;
 			throw new Forbidden('You do not have valid permissions to access this.');
 		});
 };
