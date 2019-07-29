@@ -1,6 +1,7 @@
 const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const logger = require('winston');
+const search = require('feathers-mongodb-fuzzy-search');
 const globalHooks = require('../../../hooks');
 const { sortRoles } = require('../../role/utils/rolesHelper');
 
@@ -393,7 +394,12 @@ const User = require('../model');
 
 
 exports.before = {
-	all: [],
+	all: [
+		search(),
+		search({
+			fields: ['firstName', 'lastName'],
+		}),
+	],
 	find: [
 		globalHooks.mapPaginationQuery.bind(this),
 		// resolve ids for role strings (e.g. 'TEACHER')

@@ -12,16 +12,18 @@ const getCurrentUser = id => userModel.findById(id)
 	.lean()
 	.exec();
 
-const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('users').find({
-	query: {
-		schoolId,
-		roles: role.toString(),
-		$limit: sortObject.$limit,
-		$skip: sortObject.$skip,
-		$sort: sortObject.$sort,
-		$select: ['firstName', 'lastName', 'email', 'createdAt'],
-	},
-});
+const getAllUsers = (ref, schoolId, role, query) => {
+	const params = {
+		query: {
+			schoolId,
+			roles: role.toString(),
+			$select: ['firstName', 'lastName', 'email', 'createdAt'],
+			...query,
+			consentStatus: undefined,
+		},
+	};
+	return ref.app.service('users').find(params);
+};
 
 const getRoles = () => roleModel.find()
 	.select('name')
@@ -87,7 +89,7 @@ class AdminUsers {
 				],
 			);
 			const { total } = usersData;
-			const users = usersData.data;
+			let users = usersData.data;
 			const userIds = users.map(user => user._id.toString());
 			const consents = await findConsents(this, userIds, (params.query || {}).$limit).then((data) => {
 				// rebuild consent to object for faster sorting
@@ -115,20 +117,19 @@ class AdminUsers {
 				return user;
 			});
 
-			const filteredUsers = users.filter((user) => {
-				const { consentStatus } = params.query || {};
+			const { consentStatus = {} } = params.query || {};
 
-				if ((consentStatus || {}).$in) {
+			if (consentStatus.$in) {
+				users = users.filter((user) => {
 					const userStatus = user.consent.consentStatus || 'missing';
 					return consentStatus.$in.includes(userStatus);
-				}
-				return true;
-			});
+				});
+			}
 			return {
 				total,
 				limit: (params.query || {}).$limit,
 				skip: (params.query || {}).$skip,
-				data: filteredUsers,
+				data: users,
 			};
 		} catch (err) {
 			logger.warn(err);

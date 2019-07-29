@@ -7,9 +7,9 @@ const firstLoginHooks = require('./hooks/firstLogin');
 const { AdminUsers, UserLinkImportService } = require('./services');
 const adminHook = require('./hooks/admin');
 
-
 module.exports = function setup() {
 	const app = this;
+	const whitelist = app.get('whitelist');
 
 	const options = {
 		Model: userModel,
@@ -18,6 +18,7 @@ module.exports = function setup() {
 			max: 1000,
 		},
 		lean: true,
+		whitelist,
 	};
 
 	app.use('/users', service(options));

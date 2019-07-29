@@ -65,6 +65,7 @@
     "es6-promisify": "^6.0.1",
     "express": "^4.14.0",
     "feathers-hooks-common": "^4.20.7",
+    "feathers-mongodb-fuzzy-search": "^1.1.1",
     "feathers-mongoose": "^3.6.2",
     "feathers-swagger": "^1.1.0",
     "file-type": "^9.0.0",
