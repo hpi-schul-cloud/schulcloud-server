@@ -6,7 +6,7 @@ let createdYears = [];
 // use a not existing year name because year names must be unique
 let anyYear = new Date().getFullYear() + 100;
 const createName = (increase = true) => {
-	if (increase) {
+	if (increase === true) {
 		anyYear += 1;
 	}
 	return `${anyYear}/${String(anyYear + 1).substring(2, 4)}`;
