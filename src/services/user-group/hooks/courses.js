@@ -96,7 +96,7 @@ const patchPermissionHook = async (context) => {
  */
 const restrictChangesToArchivedCourse = async (context) => {
 	const course = await context.app.service('courses').get(context.id);
-	if (course.untilDate >= Date.now()) {
+	if (course.untilDate === undefined || course.untilDate >= Date.now()) {
 		return context;
 	}
 	// course is expired

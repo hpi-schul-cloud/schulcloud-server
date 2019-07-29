@@ -7,10 +7,19 @@ describe('course hooks', () => {
 	describe('restrict changes to archived course', () => {
 		const fut = restrictChangesToArchivedCourse;
 
-		it('returns for active courses', async () => {
+		it('returns for course that is not expired', async () => {
 			const activeCourse = await testObjects.createTestCourse({
 				untilDate: Date.now() + 600000,
 			});
+			const result = await fut({ app, method: 'update', id: activeCourse._id });
+			expect(result).to.not.equal(undefined);
+			expect(result.app).to.not.equal(undefined);
+			expect(result.method).to.not.equal(undefined);
+			expect(result.id).to.not.equal(undefined);
+		});
+
+		it('returns for course without end date', async () => {
+			const activeCourse = await testObjects.createTestCourse({});
 			const result = await fut({ app, method: 'update', id: activeCourse._id });
 			expect(result).to.not.equal(undefined);
 			expect(result.app).to.not.equal(undefined);
