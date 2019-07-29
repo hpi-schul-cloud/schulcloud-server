@@ -72,7 +72,7 @@ describe('courses service', () => {
 			});
 	});
 
-	it.only('creates a shareToken for a course', async () => {
+	it('creates a shareToken for a course', async () => {
 		const course = await testObjects.createTestCourse({});
 		const sharedCourse = await shareCourseService.get(course._id);
 		chai.expect(sharedCourse.shareToken).to.not.be.undefined;
