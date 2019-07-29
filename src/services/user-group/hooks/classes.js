@@ -1,22 +1,27 @@
 const auth = require('@feathersjs/authentication');
+const { BadRequest } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
 
-const populateGradeLevel = (hook) => {
-	// Add populate to query to be able to show year in displayName
-	if ((hook.params.query || {}).$populate) {
-		if (!hook.params.query.$populate.includes('gradeLevel')) {
-			hook.params.query.$populate.push('gradeLevel');
-		}
-	} else {
-		if (!hook.params.query) {
-			hook.params.query = {};
-		}
-		hook.params.query.$populate = ['gradeLevel'];
+const validateInput = (context) => {
+
+	if(!(context.data.gradeLevel || (context.data.name && context.data.name.trim())) {
+		throw new BadRequest('If grade level is not set, a name have to be');
 	}
-	return Promise.resolve(hook);
+
+	return context;
+}
+
+const prepareGradeLevelUnset = (context) => {
+	if (!context.data.gradeLevel) {
+		const unset = context.data.$unset || {};
+		unset.gradeLevel = '';
+		context.data.$unset = unset;
+	}
+
+	return context;
 };
 
 exports.before = {
@@ -25,12 +30,16 @@ exports.before = {
 		globalHooks.hasPermission('USERGROUP_VIEW'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnClasses,
-		populateGradeLevel,
 	],
-	get: [restrictToUsersOwnClasses, populateGradeLevel],
+	get: [restrictToUsersOwnClasses],
 	create: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
-	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
-	patch: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
+	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, prepareGradeLevelUnset],
+	patch: [
+		globalHooks.hasPermission('USERGROUP_EDIT'),
+		restrictToCurrentSchool,
+		globalHooks.permitGroupOperation,
+		prepareGradeLevelUnset,
+	],
 	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
 };
 
