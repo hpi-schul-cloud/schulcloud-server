@@ -7,9 +7,9 @@ module.exports = function (app) {
 		docsPath: '/docs',
 		version: '0.0.1',
 		basePath: '/',
-		host: 'schul.tech:3030',
+		host: '',
 		uiIndex: path.join(__dirname, 'swagger.html'),
-		schemes: ['https'],
+		schemes: ['http', 'https'],
 		securityDefinitions: {
 			bearer: {
 				type: 'apiKey',
@@ -26,7 +26,7 @@ module.exports = function (app) {
 			title: 'Schul-Cloud API',
 			description: 'This is the Schul-Cloud API.',
 			termsOfServiceUrl: 'https://github.com/schulcloud/schulcloud-server/blob/master/LICENSE',
-			contact: 'team@schul.tech',
+			contact: 'info@schul-cloud.org',
 			license: 'GPL-3.0',
 			licenseUrl: 'https://github.com/schulcloud/schulcloud-server/blob/master/LICENSE',
 		},

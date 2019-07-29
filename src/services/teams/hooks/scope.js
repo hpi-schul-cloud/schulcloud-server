@@ -1,4 +1,4 @@
-const scope = 'additionalInfosTeam'
+const scope = 'additionalInfosTeam';
 exports.scope = scope;
 
 exports.set = (hook, key, value) => {
@@ -8,6 +8,4 @@ exports.set = (hook, key, value) => {
 	hook[scope][key] = value;
 };
 
-exports.get = (hook, key) => {
-	return (hook[scope] || {})[key];
-};
+exports.get = (hook, key) => (hook[scope] || {})[key];

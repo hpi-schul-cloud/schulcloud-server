@@ -1,35 +1,33 @@
 const errors = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../logger');
 const randexp = require('randexp');
 const path = require('path');
+
 const templateDir = path.join(__dirname, 'templates', 'signup');
-const EmailTemplate = require('email-templates').EmailTemplate;
+const { EmailTemplate } = require('email-templates');
 
 module.exports = function (app) {
+	const externals = {};
 
-	let externals = {};
-
-	externals.capitalizeFirstLetter = (string) => {
-		return string.charAt(0).toUpperCase() + string.slice(1);
-	};
+	externals.capitalizeFirstLetter = string => string.charAt(0).toUpperCase() + string.slice(1);
 
 	externals.sendEmail = (firstName, lastName, email, username) => {
-		var template = new EmailTemplate(templateDir);
-		var user = {
+		const template = new EmailTemplate(templateDir);
+		const user = {
 			firstName: firstName.toLowerCase().split(' ').map(externals.capitalizeFirstLetter).join(' '),
 			lastName: lastName.toLowerCase().split(' ').map(externals.capitalizeFirstLetter).join(' '),
-			username: username
+			username,
 		};
 
-		template.render(user, function (err, results) {
+		template.render(user, (err, results) => {
 			if (err) {
 				return logger.error(err);
 			}
 
 			const mailService = app.service('/mails');
-			mailService.create({email: email, subject: 'Anmeldedaten Schul-Cloud', content: results});
+			mailService.create({ email, subject: 'Anmeldedaten Schul-Cloud', content: results });
 		});
 	};
 
-	return {externals};
+	return { externals };
 };

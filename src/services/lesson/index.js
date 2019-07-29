@@ -1,39 +1,46 @@
 const _ = require('lodash');
-const errors = require('@feathersjs/errors');
+const { NotFound, GeneralError, BadRequest } = require('@feathersjs/errors');
 const service = require('feathers-mongoose');
 const lessonModel = require('./model');
 const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
 const { FileModel } = require('../fileStorage/model');
 const { homeworkModel } = require('../homework/model');
+const { copyFile } = require('../fileStorage/utils/');
 
 class LessonFilesService {
+	isTextContent(content) {
+		return content.component === 'text' && content.content.text;
+	}
+
+	includeFileKey(content, fileKey) {
+		return _.includes(content.content.text, fileKey);
+	}
+
+	replaceFileLinksByFileId(files = [], lesson) {
+		const contents = lesson.contents || [];
+		return files.filter(file => _.some(contents,
+			c => this.isTextContent(c) && this.includeFileKey(c, file.key)));
+	}
+
 	/**
-	 * @returns all files which are included in text-components of a given lesson
-	 * @param lessonId
-	 * @param query contains shareToken
-	 */
+     * @returns all files which are included in text-components of a given lesson
+     * @param lessonId
+     * @param query contains shareToken
+     */
 	find({ lessonId, query }) {
 		const { shareToken } = query;
-		if (!lessonId || !shareToken) throw new errors.BadRequest('Missing parameters!');
+		if (!lessonId || !shareToken) throw new BadRequest('Missing parameters!');
 
 		// first fetch lesson from given id
 		return lessonModel.findOne({ _id: lessonId, shareToken }).then((lesson) => {
 			if (!lesson) {
-				throw new errors.NotFound('No lesson was not found for given lessonId and shareToken!');
+				throw new NotFound('No lesson was not found for given lessonId and shareToken!');
 			}
 			// fetch files in the given course and check whether they are included in the lesson
-			return FileModel.find({ path: { $regex: lesson.courseId } }).then((files) => {
-				return Promise.all((files || []).filter((f) => {
-
-					// check whether the file is included in any lesson
-					return _.some((lesson.contents || []), (content) => {
-						return content.component === 'text'
-						&& content.content.text
-						&& _.includes(content.content.text, f.key);
-					});
-				}));
-			});
+			// check whether the file is included in any lesson
+			return FileModel.find({ path: { $regex: lesson.courseId } })
+				.then(files => this.replaceFileLinksByFileId(files, lesson));
 		});
 	}
 }
@@ -43,95 +50,116 @@ class LessonCopyService {
 		this.app = app;
 	}
 
-	/**
-	 * Clones a lesson to a specified course, including files and homeworks.
-	 * @param data consists of lessonId and newCourseId (target, source).
-	 * @param params user Object and other params.
-	 * @returns newly created lesson.
-	 */
-	create(data, params) {
-		const { lessonId, newCourseId } = data;
-		const fileChangelog = [];
+	testIfHomeworkShouldCopy(homework, userId) {
+		const isArchived = homework.archived.length > 0;
+		const isNotTeacher = homework.teacherId.toString() !== userId;
+		const isPrivate = homework.private;
+		return isArchived || (isNotTeacher && isPrivate);
+	}
 
-		return lessonModel.findOne({ _id: lessonId }).populate('courseId')
-			.then((sourceLesson) => {
-				let tempLesson = JSON.parse(JSON.stringify(sourceLesson));
-				tempLesson = _.omit(tempLesson, ['_id', 'shareToken', 'courseId']);
-				tempLesson.courseId = newCourseId;
+	createHomeworkCopyTask(homework, userId, newCourseId, newLesson) {
+		if (this.testIfHomeworkShouldCopy(homework, userId)) {
+			return false;
+		}
 
-				return lessonModel.create(tempLesson, (err, res) => {
-					if (err) {
-						return err;
-					}
+		return this.app.service('homework/copy').create({
+			_id: homework._id,
+			courseId: newCourseId,
+			lessonId: newLesson._id,
+			userId: userId === homework.teacherId.toString() ? userId : homework.teacherId,
+			newTeacherId: userId,
+		});
+	}
 
-					const topic = res;
-
-					const homeworkPromise = homeworkModel.find({ lessonId }, (err, homeworks) => {
-						if (err) { return err; }
-
-						return Promise.all(homeworks.map(((homework) => {
-							if (homework.archived.length > 0
-								|| (homework.teacherId.toString() !== params.account.userId.toString()
-								&& homework.private)) { return false; }
-
-							const homeworkService = this.app.service('homework/copy');
-
-							return homeworkService.create({
-								_id: homework._id,
-								courseId: newCourseId,
-								lessonId: res._id,
-								userId: params.account.userId.toString() === homework.teacherId.toString()
-									? params.account.userId : homework.teacherId,
-								newTeacherId: params.account.userId,
-							});
-						})));
-					});
-
-					const filePromise = FileModel.find(
-						{ path: { $regex: sourceLesson.courseId._id } },
-					).then(files => Promise.all((files || []).filter(
-						// check whether the file is included in any lesson
-						f => _.some((sourceLesson.contents || []), content => content.component === 'text'
-								&& content.content.text
-								&& _.includes(content.content.text, f._id)),
-					))
-							.then((lessonFiles) => {
-								return Promise.all(lessonFiles.map((f) => {
-
-									const fileData = {
-										file: f._id,
-										parent: newCourseId,
-									};
-
-									const fileStorageService = this.app.service('/fileStorage/copy/');
-
-									return fileStorageService.create(fileData, params)
-										.then((newFile) => {
-											fileChangelog.push({
-												old: `${sourceLesson.courseId._id}/${f.name}`,
-												new: `${newCourseId}/${newFile.name}`,
-											});
-										});
-								})).then(() => {
-									return Promise.all(
-										topic.contents.map((content) => {
-											if (content.component === 'text' && content.content.text) {
-												fileChangelog.map((change) => {
-													content.content.text = content.content.text.replace(
-														new RegExp(change.old, 'g'),
-														change.new,
-													);
-												});
-											}
-										}),
-									).then(() => {
-										return lessonModel.update({ _id: topic._id }, topic);
-									});
-								});
-						}));
-					return Promise.all([homeworkPromise, filePromise]);
-				});
+	async copyHomeworks(params, { _id: oldLessonId }, newCourseId, newLesson) {
+		const userId = params.account.userId.toString();
+		const homeworks = await homeworkModel.find({ oldLessonId })
+			.lean()
+			.exec()
+			.catch((err) => {
+				throw new NotFound('Can not fetch homework data.', err);
 			});
+		const tasks = homeworks.map(h => this.createHomeworkCopyTask(h, userId, newCourseId, newLesson));
+		return Promise.all(tasks);
+	}
+
+	async copyFilesInLesson(params, sourceLesson, newCourseId, newLesson) {
+		const fileChangelog = [];
+		// get all course files
+		const files = await FileModel.find({
+			owner: sourceLesson.courseId,
+		}).lean().exec();
+		// filter files to lesson related
+		const lessonFiles = files.filter(f => _.some(
+			(sourceLesson.contents || []),
+			content => content.component === 'text'
+				&& content.content.text
+				&& _.includes(content.content.text, f._id.toString()),
+		));
+		// copy files for new course
+		await Promise.all(lessonFiles.map(sourceFile => copyFile({
+			file: sourceFile,
+			parent: newCourseId,
+		}, params).then((newFile) => {
+			// /files/file?file=5d1ef687faccd3282cc94f83&amp;name=imago-images-fotos-von-voegeln.jpg\
+			fileChangelog.push({
+				old: `file=${sourceFile._id}&amp;name=${sourceFile.name}`,
+				new: `file=${newFile._id}&amp;name=${newFile.name}`,
+			});
+			// bad fix & and &amp; is change from time to time...
+			fileChangelog.push({
+				old: `file=${sourceFile._id}&name=${sourceFile.name}`,
+				new: `file=${newFile._id}&name=${newFile.name}`,
+			});
+		})));
+		// replace file ids in lesson content
+		newLesson.contents.forEach((content) => {
+			if (content.component === 'text' && content.content.text) {
+				fileChangelog.forEach((change) => {
+					content.content.text = content.content.text.replace(
+						new RegExp(change.old, 'g'),
+						change.new,
+					);
+				});
+			}
+		});
+		// update lesson data
+		return lessonModel.update({ _id: newLesson._id }, newLesson).lean().exec();
+	}
+
+	createTempLesson(sourceLesson, newCourseId) {
+		let tempLesson = sourceLesson;
+		tempLesson = _.omit(tempLesson, ['_id', 'shareToken', 'courseId']);
+		tempLesson.courseId = newCourseId;
+		tempLesson.isCopyFrom = sourceLesson._id;
+		return tempLesson;
+	}
+
+	/**
+     * Clones a lesson to a specified course, including files and homeworks.
+     * @param data consists of lessonId and newCourseId (target, source).
+     * @param params user Object and other params.
+     * @returns newly created lesson.
+     */
+	async create(data, params) {
+		const { newCourseId, lessonId: _id } = data;
+		const sourceLesson = await lessonModel.findOne({ _id })
+			.populate('courseId')
+			.lean()
+			.exec()
+			.catch((err) => {
+				throw new NotFound('Can not fetch lesson.', err);
+			});
+		const tempLesson = this.createTempLesson(sourceLesson, newCourseId);
+		const newLesson = await lessonModel.create(tempLesson)
+			.catch((err) => {
+				throw new GeneralError('Can not create new lesson.', err);
+			});
+
+		return Promise.all([
+			this.copyHomeworks(params, sourceLesson, newCourseId, newLesson),
+			this.copyFilesInLesson(params, sourceLesson, newCourseId, newLesson),
+		]).then(() => newLesson);
 	}
 }
 

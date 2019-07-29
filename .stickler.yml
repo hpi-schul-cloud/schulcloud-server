@@ -1,3 +1,0 @@
-linters:
-    eslint:
-        config: './.eslintci.json'

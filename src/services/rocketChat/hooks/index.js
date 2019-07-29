@@ -1,4 +1,4 @@
-const logger = require('winston');
+const logger = require('../../../logger');
 const hooks = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
@@ -24,7 +24,7 @@ const checkTeam = async (hook) => {
 
 const ensureCurrentUserInChannel = (hook) => {
 	hook.app.service('rocketChat/channel').addUsersToChannel([hook.params.account.userId], hook.id)
-		.catch(err => logger.warn(err));
+		.catch(err => logger.warning(err));
 	return hook;
 };
 
