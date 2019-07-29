@@ -3,6 +3,7 @@ const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
+const { BadRequest } = require('@feathersjs/errors');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
@@ -89,6 +90,24 @@ const patchPermissionHook = async (context) => {
 	return defaultPermissionHook(context);
 };
 
+/**
+ * If the course is expired (archived), only the untilDate may be changed.
+ * @param context contains the feathers context of the request
+ */
+const restrictChangesToArchivedCourse = async (context) => {
+	const course = await context.app.service('courses').get(context.id);
+	if (course.untilDate >= Date.now()) {
+		return context;
+	}
+	// course is expired
+	let allowed = true;
+	Object.keys(context.data).forEach(((key) => {
+		if (key !== 'untilDate' && key !== 'startDate') allowed = false;
+	}));
+	if (!allowed) return Promise.reject(new BadRequest('This course is archived. To activate it, please change the end date.'));
+	return context;
+};
+
 exports.before = {
 	all: [
 		auth.hooks.authenticate('jwt'),
@@ -108,10 +127,12 @@ exports.before = {
 		globalHooks.hasPermission('USERGROUP_EDIT'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnCourses,
+		restrictChangesToArchivedCourse,
 	],
 	patch: [
 		patchPermissionHook,
 		restrictToCurrentSchool,
+		restrictChangesToArchivedCourse,
 		globalHooks.permitGroupOperation,
 		deleteWholeClassFromCourse,
 	],
