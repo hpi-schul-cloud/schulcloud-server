@@ -1,6 +1,6 @@
 const ifNotFunction = e => !typeof e === 'function';
 
-const testLogger = (log) => {
+const testLogger = (log = {}) => {
 	if (ifNotFunction(log.pushModified) || ifNotFunction(log.pushFail)) {
 		throw new Error('Is not a valid logger. It need the methods pushModified and pushFail.');
 	}

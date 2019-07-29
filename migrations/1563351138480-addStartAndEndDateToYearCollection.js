@@ -1,4 +1,4 @@
-const { info } = require('../src/logger');
+const { info, warning } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 const { yearModel: Year } = require('../src/services/school/model');
 
@@ -32,6 +32,6 @@ module.exports = {
 	},
 
 	down: async function down() {
-		throw new Error('down is not supported for this migration');
+		warning('down is not supported for this migration');
 	},
 };

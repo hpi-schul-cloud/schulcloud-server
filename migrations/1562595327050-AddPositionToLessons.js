@@ -50,7 +50,7 @@ module.exports = {
 		const courseMap = createDataTree(lessons, 'courseId');
 
 		// create courseGroup tree courseMap.undefined contain all courseGroupLessons
-		const courseGroupMap = createDataTree(courseMap.undefined, 'courseGroupId');
+		const courseGroupMap = createDataTree(courseMap.undefined = [], 'courseGroupId');
 		delete courseMap.undefined;
 
 		// update database step by step
