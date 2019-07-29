@@ -1,6 +1,5 @@
 const { BadRequest, NotFound } = require('@feathersjs/errors');
 const { schoolModel: School } = require('../model');
-const { error } = require('../../../logger');
 
 /**
  * Add school object referenced in route to params
@@ -20,8 +19,7 @@ module.exports = async (context) => {
 			.lean({ virtuals: true })
 			.exec();
 	} catch (err) {
-		error('lookupSchool: School not found', err);
-		throw new NotFound('School not found');
+		throw new NotFound('School not found', err);
 	}
 	return context;
 };

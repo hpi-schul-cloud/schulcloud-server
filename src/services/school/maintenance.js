@@ -50,7 +50,7 @@ class SchoolMaintenanceService {
 	 * @returns Object {currentYear, schoolUsesLdap, maintenance: {active, startDate}}
 	 * @memberof SchoolMaintenanceService
 	 */
-	async find(params) {
+	find(params) {
 		return Promise.resolve(this.getStatus(params.school));
 	}
 
