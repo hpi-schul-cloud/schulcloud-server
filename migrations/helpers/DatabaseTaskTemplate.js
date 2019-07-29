@@ -23,11 +23,11 @@ class DatabaseTaskTemplate {
 		this.unset = $unset || unset || {};
 		this.isModified = isModified;
 
-		this.log = testLogger(log);
+		this.log = log;
 	}
 
 	setLog(log) {
-		this.log = testLogger(log);
+		this.log = log;
 	}
 
 	getId() {
