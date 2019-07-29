@@ -32,6 +32,7 @@ describe('school maintenance mode', () => {
 			it('should give information about the current and next school year', async () => {
 				const currentYear = await createYear();
 				const nextYear = await createYear();
+				// override years cache  (created on service initialization) with mock years:
 				maintenanceService.years = [currentYear, nextYear];
 				const school = await createSchool({ currentYear });
 				const params = {
