@@ -167,16 +167,16 @@ class LDAPSchoolSyncer extends SystemSyncer {
 				},
 			},
 		)
-			.then((user) => {
-				if (user.total > 0) {
-					user = user.data[0];
-					user.roles.map((role) => {
+			.then((userData) => {
+				if (userData.total > 0) {
+					const user = userData.data[0];
+					user.roles.forEach((role) => {
 						if (role.name === 'student') students.push(user._id);
 						if (role.name === 'teacher') teachers.push(user._id);
 					});
 				}
 				return Promise.resolve();
-			}))).then((_) => {
+			}))).then(() => {
 			if (students.length === 0 && teachers.length === 0) return Promise.resolve();
 			return this.app.service('classes').patch(
 				currentClass._id,
