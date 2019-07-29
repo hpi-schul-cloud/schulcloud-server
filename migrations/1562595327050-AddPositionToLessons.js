@@ -12,7 +12,7 @@ const getSortedLessons = async () => LessonModel
 	.lean()
 	.exec();
 
-const createDataTree = (lessons, key) => {
+const createDataTree = (lessons = [], key) => {
 	logger.info(`create datatree ${key}`);
 	const map = {};
 	lessons.forEach((lesson) => {
@@ -25,7 +25,7 @@ const createDataTree = (lessons, key) => {
 	return map;
 };
 
-const createDatabaseTask = (datatree) => {
+const createDatabaseTask = (datatree = []) => {
 	const tasks = [];
 	Object.values(datatree).forEach((courseLessons) => {
 		courseLessons.forEach((lesson, index) => {
@@ -50,7 +50,7 @@ module.exports = {
 		const courseMap = createDataTree(lessons, 'courseId');
 
 		// create courseGroup tree courseMap.undefined contain all courseGroupLessons
-		const courseGroupMap = createDataTree(courseMap.undefined = [], 'courseGroupId');
+		const courseGroupMap = createDataTree(courseMap.undefined, 'courseGroupId');
 		delete courseMap.undefined;
 
 		// update database step by step
