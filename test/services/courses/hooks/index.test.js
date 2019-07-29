@@ -3,7 +3,7 @@ const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 const { restrictChangesToArchivedCourse } = require('../../../../src/services/user-group/hooks/courses');
 
-describe.only('course hooks', () => {
+describe('course hooks', () => {
 	describe('restrict changes to archived course', () => {
 		const fut = restrictChangesToArchivedCourse;
 
