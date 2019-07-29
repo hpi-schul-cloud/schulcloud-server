@@ -32,6 +32,6 @@ module.exports = {
 	},
 
 	down: async function down() {
-		warning('down is not supported for this migration');
+		throw new Error('down is not supported for this migration');
 	},
 };
