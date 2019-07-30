@@ -18,7 +18,7 @@ describe('courses scopelist service', () => {
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - 172800000,
 		});
 		const response = await courseScopeListService.find({ route: { scopeId: user._id }, query: {} });
 		expect(response).to.not.equal(undefined);
@@ -37,7 +37,7 @@ describe('courses scopelist service', () => {
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - 172800000,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -59,7 +59,7 @@ describe('courses scopelist service', () => {
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - 172800000,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -81,7 +81,7 @@ describe('courses scopelist service', () => {
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - 172800000,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -233,11 +233,11 @@ describe('courses scopelist service', () => {
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - 172800000,
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - 172800000,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -257,11 +257,11 @@ describe('courses scopelist service', () => {
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - 172800000,
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - 172800000,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
