@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { makeStringRCConform } = require('../../../src/services/rocketChat/helpers');
 
-describe.only('makeStringRCConform', () => {
+describe('makeStringRCConform', () => {
 	it('replaces german umlaute', () => {
 		expect(makeStringRCConform('öÖüÜäÄß')).to.equal('oeOeueUeaeAess');
 	});
