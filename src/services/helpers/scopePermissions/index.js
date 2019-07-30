@@ -65,8 +65,8 @@ class ScopePermissionService extends ScopeService {
 }
 
 class ScopeListService extends ScopeService {
-	async getUserScopes(userId, permissions = []) {
-		const scopes = await this.handler.apply(this, [userId, permissions]);
+	async getUserScopes(userId, permissions = [], params) {
+		const scopes = await this.handler.apply(this, [userId, permissions, params]);
 		return scopes || [];
 	}
 
@@ -75,18 +75,7 @@ class ScopeListService extends ScopeService {
 		if (params.query && params.query.permissions) {
 			list = params.query.permissions;
 		}
-		return this.getUserScopes(params.scope, list);
-	}
-
-	static hooks() {
-		return {
-			before: {
-				all: [
-					globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
-					lookupScope,
-				],
-			},
-		};
+		return this.getUserScopes(params.scope, list, params);
 	}
 }
 

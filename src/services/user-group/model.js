@@ -46,6 +46,8 @@ const courseModel = mongoose.model('course', getUserGroupSchema({
 	untilDate: { type: Date },
 	shareToken: { type: String, unique: true, sparse: true },
 	times: [timeSchema],
+	// optional information if this course is a copy from other
+	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
 }));
 
 // represents a sub-group of students inside a course, e.g. for projects etc.
@@ -60,7 +62,7 @@ const classSchema = getUserGroupSchema({
 	invitationLink: { type: String },
 	name: { type: String, required: false },
 	year: { type: Schema.Types.ObjectId, ref: 'year' },
-	gradeLevel: { type: Schema.Types.ObjectId, ref: 'gradeLevel', autoPopulate: true },
+	gradeLevel: { type: Schema.Types.ObjectId, ref: 'gradeLevel', autopopulate: true },
 	nameFormat: { type: String, enum: nameFormats, default: 'static' },
 	ldapDN: { type: String },
 });
@@ -101,7 +103,7 @@ classSchema.virtual('displayName').get(function () {
 });
 
 classSchema.set('toObject', { virtuals: true });
-classSchema.set('toJSON', { virtuals: true });
+classSchema.set('toJSON', { virtuals: false }); // virtuals could not call with autopopulate for toJSON
 
 const classModel = mongoose.model('class', classSchema);
 const gradeModel = mongoose.model('grade', getUserGroupSchema());
