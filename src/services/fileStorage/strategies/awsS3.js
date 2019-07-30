@@ -216,7 +216,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		}
 		return UserModel.userModel.findById(userId).exec()
 			.then((result) => {
-				if (!result || !result.schoolId) { 
+				if (!result || !result.schoolId) {
 					return new NotFound('User not found');
 				}
 
