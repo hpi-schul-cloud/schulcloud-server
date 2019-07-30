@@ -1,5 +1,4 @@
 const auth = require('@feathersjs/authentication');
-const { BadRequest } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
