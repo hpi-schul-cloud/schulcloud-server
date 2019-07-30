@@ -131,14 +131,12 @@ const checkPermissionsNew = permission => async (user, file) => {
 const getAllowedFiles = permission => (userId, files, app) => {
 	const fileCheck = checkPermissionsNew(permission);
 
-	const permissionPromises = files.map(file => fileCheck(userId, file));
+	const otherPermissionsPromises = files.map(file => fileCheck(userId, file));
 
-	return Promise.all([checkTeamPermissionsNew(userId, files, permission, app), ...permissionPromises])
+	return Promise.all([checkTeamPermissionsNew(userId, files, permission, app), ...otherPermissionsPromises])
 		.then(([allowedFilesTeam, ...allowedFiles]) => {
 			const teamFiles = allowedFilesTeam
-				.filter(teamFile => !allowedFiles
-					.some(file => file._id.toString() === teamFile._id.toString()));
-
+				.filter(teamFile => !allowedFiles.some(file => file._id.toString() === teamFile._id.toString()));
 
 			return [...allowedFiles, ...teamFiles].map((file) => {
 				file.owner = file.owner._id;
