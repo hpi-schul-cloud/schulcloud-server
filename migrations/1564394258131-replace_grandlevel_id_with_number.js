@@ -44,13 +44,11 @@ module.exports = {
 			.lean()
 			.exec();
 
-			await Promise.all(data.map(element => 
-			NewClass.update({
-				_id: element._id,
-			}, {
-				gradeLevel: element.gradeLevel.name,
-			})
-		));
+		await Promise.all(data.map(element => NewClass.update({
+			_id: element._id,
+		}, {
+			gradeLevel: element.gradeLevel.name,
+		})));
 
 		await OldClass.updateMany({}, {
 			$unset: { nameFormat: '' },

@@ -58,7 +58,7 @@ const classSchema = getUserGroupSchema({
 	invitationLink: { type: String },
 	name: { type: String, required: false },
 	year: { type: Schema.Types.ObjectId, ref: 'year' },
-	gradeLevel: { 
+	gradeLevel: {
 		type: Number,
 		required: false,
 		min: 1,
