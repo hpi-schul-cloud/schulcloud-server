@@ -45,7 +45,6 @@ const createByName = app => async ([gradeLevel, className, schoolId], overrides 
 };
 
 const findByName = app => async ([gradeLevel, className]) => {
-
 	const classObjects = await app.service('classes').find({
 		query: {
 			gradeLevel,
