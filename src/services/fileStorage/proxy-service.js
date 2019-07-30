@@ -14,6 +14,7 @@ const swaggerDocs = require('./docs/');
 const {
 	canWrite,
 	canRead,
+	readFiles,
 	canCreate,
 	canDelete,
 	returnFileType,
@@ -89,6 +90,10 @@ const fileStorageService = {
 		return refOwnerModel;
 	},
 
+	setup(app) {
+		this.app = app;
+	},
+
 	/**
      * @param data, file data
      * @param params,
@@ -156,19 +161,8 @@ const fileStorageService = {
 			: Promise.resolve();
 
 		return parentPromise
-			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).exec())
-			.then((files) => {
-				const permissionPromises = files.map(
-					f => canRead(userId, f)
-						.then(() => f)
-						.catch(() => undefined),
-				);
-				return Promise.all(permissionPromises);
-			})
-			.then((allowedFiles) => {
-				const files = allowedFiles.filter(f => f);
-				return files;
-			})
+			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).populate('owner').lean().exec())
+			.then(files => readFiles(userId, files, this.app))
 			.catch((e) => {
 				logger.error(e);
 				return Promise.reject(e);

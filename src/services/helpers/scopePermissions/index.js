@@ -1,6 +1,6 @@
 const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
-const { lookupScope, rejectQueryingOtherUsers } = require('./hooks');
+const { lookupScope, rejectQueryingOtherUsers, checkMemberStatus } = require('./hooks');
 
 class ScopeService {
 	constructor(handler) {
@@ -79,8 +79,31 @@ class ScopeListService extends ScopeService {
 	}
 }
 
+class ScopeFileService extends ScopeService {
+	async find(params) {
+		return this.handler.apply(this, [
+			params.userId,
+			params.scope,
+			params.files,
+		]);
+	}
+
+	static hooks() {
+		return {
+			before: {
+				all: [
+					globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
+					checkMemberStatus,
+					lookupScope,
+				],
+			},
+		};
+	}
+}
+
 module.exports = {
 	ScopeService,
 	ScopePermissionService,
 	ScopeListService,
+	ScopeFileService,
 };

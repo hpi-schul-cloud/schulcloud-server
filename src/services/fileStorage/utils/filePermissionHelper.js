@@ -109,10 +109,104 @@ const checkPermissions = permission => async (user, file) => {
 	});
 };
 
+const checkScopePermissions = async (scopeName, userId, files, permission, app) => {
+	const listService = app.service(`/users/:scopeId/${scopeName}`);
+	const scope = await listService.find({
+		route: { scopeId: userId.toString() },
+	});
+
+	const fileListService = app.service(`/${scopeName}/:scopeId/files`);
+	const fileMap = await fileListService.find({
+		route: { scopeId: scope[0]._id },
+		userId,
+		files,
+	});
+
+	return fileMap.filter(file => file.permissions[permission]).map(file => file.file);
+};
+
+const checkPermissionsLegacy = permission => async (user, file) => {
+	const {
+		permissions,
+		refOwnerModel,
+	} = file;
+
+	const isMember = checkMemberStatus({ file, user });
+
+	// User is no member of team or course
+	if (!isMember) {
+		return Promise.reject();
+	}
+
+	const isSubmission = await submissionModel.findOne({ fileIds: file._id }).lean().exec();
+
+	// or legacy course model
+	// TODO: Check member status of teacher if submission
+	if (refOwnerModel === 'course' || isSubmission) {
+		const userObject = await userModel.findOne({ _id: user }).populate({ path: 'roles' }).exec();
+		const isStudent = userObject.roles.find(role => role.name === 'student');
+
+		if (isStudent) {
+			const rolePermissions = permissions.find(
+				perm => perm.refId && perm.refId.toString() === isStudent._id.toString(),
+			);
+
+			return rolePermissions[permission] ? file : Promise.reject();
+		}
+		return file;
+	}
+
+	return Promise.reject();
+};
+
+const mapOwner = fn => (...args) => fn(...args).then(allFiles => allFiles.map((file) => {
+	file.owner = file.owner._id;
+	return file;
+}));
+
+const getAllowedFiles = permission => mapOwner(async (userId, files, app) => {
+	const [directPermissionFiles, noDirectPermissionFiles] = files.reduce(([allowedF, otherF], currentFile) => {
+		// check if is owner of file (allowed to do anything)
+		if (userId.equals(currentFile.owner._id)) {
+			allowedF.push(currentFile);
+		} else {
+			// check if user has the required permission explicitly
+			const userPermissions = currentFile.permissions.find(perm => perm.refId && perm.refId.equals(userId));
+			if (userPermissions) {
+				allowedF.push(currentFile);
+			} else {
+				otherF.push(currentFile);
+			}
+		}
+		return [allowedF, otherF];
+	}, [[], []]);
+
+	if (noDirectPermissionFiles.length === 0) return directPermissionFiles;
+
+	const [teamFiles, otherFiles] = noDirectPermissionFiles.reduce(([teamF, noTeamF], currentFile) => {
+		if (currentFile.refOwnerModel === 'teams') {
+			teamF.push(currentFile);
+		} else {
+			noTeamF.push(currentFile);
+		}
+		return [teamF, noTeamF];
+	}, [[], []]);
+
+	const teamPermissionFiles = await checkScopePermissions('teams', userId, teamFiles, permission, app);
+
+	if (otherFiles.length === 0) return [...directPermissionFiles, ...teamPermissionFiles];
+
+	const fileCheck = checkPermissionsLegacy(permission);
+	const legacyPermissionFiles = files.map(file => fileCheck(userId, file));
+
+	return [...directPermissionFiles, ...teamPermissionFiles, ...await Promise.all(legacyPermissionFiles)];
+});
+
 module.exports = {
 	checkPermissions,
 	canWrite: checkPermissions('write'),
 	canRead: checkPermissions('read'),
 	canCreate: checkPermissions('create'),
 	canDelete: checkPermissions('delete'),
+	readFiles: getAllowedFiles('read'),
 };
