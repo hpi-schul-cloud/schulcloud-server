@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const leanVirtuals = require('mongoose-lean-virtuals');
+const roleModel = require('../role/model');
 
 const { Schema } = mongoose;
 
@@ -9,7 +11,10 @@ const userSchema = new Schema({
 	schoolId: { type: Schema.Types.ObjectId, ref: 'school', required: true },
 
 	firstName: { type: String, required: true },
+	middleName: { type: String },
 	lastName: { type: String, required: true },
+	namePrefix: { type: String },
+	nameSuffix: { type: String },
 
 	birthday: { type: Date },
 
@@ -31,8 +36,18 @@ const userSchema = new Schema({
 	timestamps: true,
 });
 
-userSchema.methods.getPermissions = function () {
-	const roleModel = require('../role/model');
+userSchema.virtual('fullName').get(function get() {
+	return [
+		this.namePrefix,
+		this.firstName,
+		this.middleName,
+		this.lastName,
+		this.nameSuffix,
+	].join(' ').trim().replace(/\s+/g, ' ');
+});
+userSchema.plugin(leanVirtuals);
+
+userSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions(this.roles);
 };
 
