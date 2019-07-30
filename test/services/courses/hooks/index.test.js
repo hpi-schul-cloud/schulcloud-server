@@ -29,14 +29,14 @@ describe('course hooks', () => {
 
 		it('returns when changing untilDate on expired course', async () => {
 			const archivedCourse = await testObjects.createTestCourse({
-				untilDate: Date.now() - 600000,
+				untilDate: Date.now() - 172800000,
 			});
 			const result = await fut({
 				app,
 				method: 'update',
 				id: archivedCourse._id,
 				data: {
-					startDate: Date.now() - 600000,
+					startDate: Date.now() - 172800000,
 					untilDate: Date.now() + 600000,
 				},
 			});
@@ -49,14 +49,14 @@ describe('course hooks', () => {
 		it('fails when changing other fields of expired course', async () => {
 			try {
 				const archivedCourse = await testObjects.createTestCourse({
-					untilDate: Date.now() - 600000,
+					untilDate: Date.now() - 172800000,
 				});
 				await fut({
 					app,
 					method: 'update',
 					id: archivedCourse._id,
 					data: {
-						startDate: Date.now() - 600000,
+						startDate: Date.now() - 172800000,
 						untilDate: Date.now() + 600000,
 						otherField: 'this is set',
 					},
