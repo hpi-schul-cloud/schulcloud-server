@@ -84,7 +84,7 @@ describe('CSVSyncer', () => {
 
 		it('should split classes and grade levels if applicable', async () => {
 			const result = await new CSVSyncer(app).getClassObject('1a');
-			expect(result.gradeLevel.name).to.equal('1');
+			expect(result.gradeLevel).to.equal('1');
 			expect(result.name).to.equal('a');
 		});
 
@@ -92,7 +92,7 @@ describe('CSVSyncer', () => {
 			for (let i = -5; i <= 20; i += 1) {
 				const result = await new CSVSyncer(app).getClassObject(`${i}b`);
 				if (i >= 1 && i <= 13) {
-					expect(result.gradeLevel.name).to.equal(String(i));
+					expect(result.gradeLevel).to.equal(String(i));
 					expect(result.name).to.equal('b');
 				} else {
 					expect(result.gradeLevel).to.be.undefined;
