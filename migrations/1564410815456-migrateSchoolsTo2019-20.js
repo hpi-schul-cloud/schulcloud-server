@@ -15,7 +15,11 @@ module.exports = {
 		info('=>', nextYear);
 
 		info('Fetching schools...');
-		const schools = await School.find({}).select(['name']).populate(['systems']);
+		const schools = await School.find({})
+			.select(['name'])
+			.populate(['systems'])
+			.lean()
+			.exec();
 		info(`Got ${schools.length} schools.`);
 
 		for (const school of schools) {
@@ -23,12 +27,12 @@ module.exports = {
 			if (schoolUsesLdap(school)) {
 				info('School uses LDAP');
 				// schools with active LDAP systems are set into maintenance mode effective immediately
-				const result = await School.updateOne({ _id: school._id }, { inMaintenanceSince: Date.now() });
+				const result = await School.updateOne({ _id: school._id }, { inMaintenanceSince: Date.now() }).exec();
 				info(result);
 			} else {
 				info('School does not use LDAP');
 				// all other schools are migrated to the next year directly
-				const result = await School.updateOne({ _id: school._id }, { currentYear: nextYear._id });
+				const result = await School.updateOne({ _id: school._id }, { currentYear: nextYear._id }).exec();
 				info(result);
 			}
 		}
