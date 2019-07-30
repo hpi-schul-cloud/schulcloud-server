@@ -549,20 +549,21 @@ const renameService = {
 		const { payload: { userId } } = params;
 		const { newName, id } = data;
 
-		if (!id || !newName) return Promise.reject(new BadRequest('Missing parameters'));
+		if (!id || !newName) {
+			return Promise.reject(new BadRequest('Missing parameters'));
+		}
 
 		const _id = id;
 
 		return canWrite(userId, _id)
 			.then(() => FileModel.findOne({ _id }).exec())
 			.then((obj) => {
-				if (!obj) return Promise.reject(new NotFound('The given directory/file was not found!'));
+				if (!obj) {
+					return new NotFound('The given directory/file was not found!');
+				}
 				return FileModel.update({ _id }, { name: newName }).exec();
 			})
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.catch(err => new Forbidden(err));
 	},
 };
 
@@ -697,7 +698,7 @@ const filePermissionService = {
 			]))
 			.then(([fileObject, refModels]) => {
 				if (!fileObject) {
-					return Promise.reject(new NotFound(`File with ID ${_id} not found`));
+					return new NotFound(`File with ID ${_id} not found`);
 				}
 
 				let { permissions } = fileObject;
