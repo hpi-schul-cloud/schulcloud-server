@@ -23,17 +23,18 @@ module.exports = function setup() {
 		}
 		if (['true', 'all'].includes(substitution)) userQuery.$or.push({ substitutionIds: user._id });
 
+		const oneDayInMilliseconds = 86400000;
 		let untilQuery = {};
 		if (filter === 'active') {
 			untilQuery = {
 				$or: [
 					{ untilDate: { $exists: false } },
-					{ untilDate: { $gte: Date.now() } },
+					{ untilDate: { $gte: Date.now() + oneDayInMilliseconds } },
 				],
 			};
 		}
 		if (filter === 'archived') {
-			untilQuery = { untilDate: { $lt: Date.now() } };
+			untilQuery = { untilDate: { $lt: Date.now() + oneDayInMilliseconds } };
 		}
 
 		if (params.query.count === 'true') {
