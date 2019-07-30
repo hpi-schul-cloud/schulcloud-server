@@ -529,7 +529,7 @@ module.exports = function setup() {
 			let teamRoles;
 			try {
 				teamRoles = sortRoles(
-					await RoleModel.find({ name: /^team/ }).exec(),
+					await RoleModel.find({ name: /^team/ }).lean().exec(),
 				);
 			} catch (error) {
 				logger.error(error);
@@ -544,18 +544,6 @@ module.exports = function setup() {
 				const rolePermissions = permissions.find(
 					perm => perm.refId.toString() === role.toString(),
 				);
-
-				if (!file.owner.userIds) {
-					return {
-						file,
-						permissions: {
-							read: false,
-							write: false,
-							create: false,
-							delete: false,
-						},
-					};
-				}
 
 				const { role: creatorRole } = file.owner.userIds.find(
 					_ => _.userId.toString()
