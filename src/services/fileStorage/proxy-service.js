@@ -194,8 +194,8 @@ const fileStorageService = {
 				]);
 			})
 			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
-			.then(() => fileInstance.remove().lean().exec());
-		// .catch(err => err);
+			.then(() => fileInstance.remove().lean().exec())
+			.catch(err => err);
 	},
 	/**
 	 * Move file from one parent to another
