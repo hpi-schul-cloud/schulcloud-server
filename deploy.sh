@@ -76,6 +76,13 @@ function inform {
   fi
 }
 
+function inform_staging {
+  if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
+  then
+    curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Staging-System wurde aktualisiert: Schul-Cloud Server! https://api.staging.schul-cloud.org/version"}' $WEBHOOK_URL_CHAT
+  fi
+}
+
 # write version file
 printf "%s\n%s\n%s" $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_COMMIT_MESSAGE > ./version
 
@@ -91,6 +98,7 @@ elif [[ $TRAVIS_BRANCH = release* || $TRAVIS_BRANCH = hotfix* ]]
 then
   buildandpush
   deploytostaging
+  inform_staging
 else
   echo "Nix wird deployt"
 fi
