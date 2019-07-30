@@ -440,8 +440,8 @@ exports.restrictToUsersOwnClasses = context => getUser(context).then((user) => {
 		const classService = context.app.service('classes');
 		return classService.get(context.id).then((result) => {
 			const userId = context.params.account.userId.toString();
-			if (!(_.some(result.userIds, u => JSON.stringify(u) === userId))
-                    && !(_.some(result.teacherIds, u => JSON.stringify(u) === userId))) {
+			if (!(_.some(result.userIds, u => u.toString() === userId))
+					&& !(_.some(result.teacherIds, u => u.toString() === userId))) {
 				throw new Forbidden('You are not in that class.');
 			}
 		});
