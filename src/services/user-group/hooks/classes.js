@@ -5,17 +5,8 @@ const globalHooks = require('../../../hooks');
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
 
-const validateInput = (context) => {
-
-	if(!(context.data.gradeLevel || (context.data.name && context.data.name.trim())) {
-		throw new BadRequest('If grade level is not set, a name have to be');
-	}
-
-	return context;
-}
-
 const prepareGradeLevelUnset = (context) => {
-	if (!context.data.gradeLevel) {
+	if (!context.data.gradeLevel && context.data.name) {
 		const unset = context.data.$unset || {};
 		unset.gradeLevel = '';
 		context.data.$unset = unset;
@@ -32,8 +23,15 @@ exports.before = {
 		restrictToUsersOwnClasses,
 	],
 	get: [restrictToUsersOwnClasses],
-	create: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
-	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, prepareGradeLevelUnset],
+	create: [
+		globalHooks.hasPermission('USERGROUP_CREATE'),
+		restrictToCurrentSchool,
+	],
+	update: [
+		globalHooks.hasPermission('USERGROUP_EDIT'),
+		restrictToCurrentSchool,
+		prepareGradeLevelUnset,
+	],
 	patch: [
 		globalHooks.hasPermission('USERGROUP_EDIT'),
 		restrictToCurrentSchool,
