@@ -9,6 +9,7 @@ const {
 } = require('./hooks');
 const docs = require('./docs');
 const { randomPass, randomSuffix } = require('./randomPass');
+const { makeStringRCConform } = require('./helpers');
 
 
 const REQUEST_TIMEOUT = 6000; // in ms
@@ -49,14 +50,6 @@ const getRequestOptions = (shortUri, body, asAdmin, auth, method) => {
 		json: true,
 		timeout: REQUEST_TIMEOUT,
 	};
-};
-
-const makeStringRCConform = (input) => {
-	const dict = {
-		ä: 'ae', Ä: 'Ae', ö: 'oe', Ö: 'Oe', ü: 'ue', Ü: 'Ue', ' ': '-', ß: 'ss',
-	};
-	const inputResolvedUmlauts = input.replace(/[äÄöÖüÜß ]/g, match => dict[match]);
-	return inputResolvedUmlauts.replace(/[^\w\d.\-_]/g, '_');
 };
 
 /**
