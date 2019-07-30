@@ -4,7 +4,7 @@ const { connect, close } = require('../src/utils/database');
 const System = require('../src/services/system/model');
 const { schoolModel: School, yearModel: Year } = require('../src/services/school/model');
 const { schoolUsesLdap } = require('../src/services/school/maintenance');
-const { info } = require('../src/logger');
+const { info, warning } = require('../src/logger');
 
 module.exports = {
 	up: async function up() {
@@ -16,18 +16,24 @@ module.exports = {
 
 		info('Fetching schools...');
 		const schools = await School.find({})
-			.select(['name'])
+			.select(['name', 'inMaintenance', 'inMaintenanceSince'])
 			.populate(['systems'])
-			.lean()
+			.lean({ virtuals: true })
 			.exec();
 		info(`Got ${schools.length} schools.`);
 
+		const today = Date.now();
+		info('Maintenance mode for LDAP schools will be effective', today);
+
 		for (const school of schools) {
 			info(`Migrating ${school.name} (${school._id})...`);
+			if (school.inMaintenance) {
+				warning(`School is already in maintenance mode (since ${school.inMaintenanceSince})!`);
+			}
 			if (schoolUsesLdap(school)) {
 				info('School uses LDAP');
 				// schools with active LDAP systems are set into maintenance mode effective immediately
-				const result = await School.updateOne({ _id: school._id }, { inMaintenanceSince: Date.now() }).exec();
+				const result = await School.updateOne({ _id: school._id }, { inMaintenanceSince: today }).exec();
 				info(result);
 			} else {
 				info('School does not use LDAP');
