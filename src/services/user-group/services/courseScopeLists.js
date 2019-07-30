@@ -29,12 +29,12 @@ module.exports = function setup() {
 			untilQuery = {
 				$or: [
 					{ untilDate: { $exists: false } },
-					{ untilDate: { $gte: Date.now() + oneDayInMilliseconds } },
+					{ untilDate: { $gte: Date.now() - oneDayInMilliseconds } },
 				],
 			};
 		}
 		if (filter === 'archived') {
-			untilQuery = { untilDate: { $lt: Date.now() + oneDayInMilliseconds } };
+			untilQuery = { untilDate: { $lt: Date.now() - oneDayInMilliseconds } };
 		}
 
 		if (params.query.count === 'true') {
