@@ -316,10 +316,14 @@ exports.restrictToCurrentSchool = context => getUser(context).then((user) => {
 		return context;
 	}
 	const currentSchoolId = user.schoolId.toString();
+	const { params } = context;
+	if (params.route && params.route.schoolId && params.route.schoolId !== currentSchoolId) {
+		throw new Forbidden('You do not have valid permissions to access this.');
+	}
 	if (context.method === 'get' || context.method === 'find') {
-		if (context.params.query.schoolId === undefined) {
-			context.params.query.schoolId = user.schoolId;
-		} else if (context.params.query.schoolId !== currentSchoolId) {
+		if (params.query.schoolId === undefined) {
+			params.query.schoolId = user.schoolId;
+		} else if (params.query.schoolId !== currentSchoolId) {
 			throw new Forbidden('You do not have valid permissions to access this.');
 		}
 	} else if (context.data.schoolId === undefined) {
