@@ -11,17 +11,6 @@
 },
 {
 	"_id": {
-		"$oid": "5d272916b1e0904635b01282"
-	},
-	"state": "up",
-	"name": "lessonIsCopyFrom",
-	"createdAt": {
-		"$date": "2019-07-10T12:18:30.503Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5d25cf6ddf5c9947bc014236"
 	},
 	"state": "up",
@@ -41,6 +30,15 @@
 		"$date": "2019-07-11T07:44:01.252Z"
 	},
 	"__v": 0
+},
+{
+	"_id" : {
+		"$oid": "5d3e97e02d1b0f2c2cc7ec18"
+	}, 
+    "state" : "up", 
+    "name" : "lessonIsCopyFrom", 
+    "createdAt" : "2019-07-11T12:18:30.503+0000", 
+    "__v" : 0
 },
 {
 	"_id": {

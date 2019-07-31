@@ -3,7 +3,8 @@ const { getConnectionOptions } = require('./src/utils/database');
 const options = getConnectionOptions();
 let { url } = options;
 if (options.username) {
-	url = `${options.username}:${options.password}@${url}`;
+	url = url.replace(/^mongodb:\/\//i, '');
+	url = `mongodb://${options.username}:${options.password}@${url}`;
 }
 
 module.exports = {
