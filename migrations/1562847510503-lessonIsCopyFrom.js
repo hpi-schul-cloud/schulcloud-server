@@ -5,10 +5,10 @@ const { Schema } = mongoose;
 const { connect, close } = require('../src/utils/database');
 const { OutputLogTemplate, DatabaseTaskTemplate } = require('./helpers/');
 
-const LessonModel = mongoose.model('lesson', new mongoose.Schema({
+const LessonModel = mongoose.model('lessonNew', new mongoose.Schema({
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
 	originalTopic: { type: Schema.Types.ObjectId, ref: 'topic' },
-}));
+}), 'lesson');
 
 const isNotEmpty = e => !(e === undefined || e === null);
 
