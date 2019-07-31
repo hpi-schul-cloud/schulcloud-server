@@ -112,6 +112,7 @@ const displayInternRequests = level => (context) => {
 	console.log(`${before}<intern ${type}>${after}`);
 	// eslint-disable-next-line no-console
 	console.log(out);
+	// eslint-disable-next-line no-console
 	console.log(' ');
 
 	return context;
