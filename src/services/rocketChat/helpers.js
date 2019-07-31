@@ -3,5 +3,5 @@ exports.makeStringRCConform = (input) => {
 		ä: 'ae', Ä: 'Ae', ö: 'oe', Ö: 'Oe', ü: 'ue', Ü: 'Ue', ' ': '-', ß: 'ss',
 	};
 	const inputResolvedUmlauts = input.replace(/[äÄöÖüÜß ]/g, match => dict[match]);
-	return inputResolvedUmlauts.replace(/[^\w\d.\-_]/g, '_');
+	return inputResolvedUmlauts.replace(/[^\w\d\.\-_]/g, '_');
 };
