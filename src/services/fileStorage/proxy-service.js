@@ -135,7 +135,7 @@ const fileStorageService = {
 				.then(() => FileModel.findOne(props).lean().exec().then(
 					modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 				))
-				.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props))
+				.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file))
 				.catch((err) => {
 					throw new Forbidden(err);
 				});
@@ -144,7 +144,7 @@ const fileStorageService = {
 		return FileModel.findOne(props)
 			.exec()
 			.then(modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-			.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props));
+			.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file));
 	},
 
 	/**
