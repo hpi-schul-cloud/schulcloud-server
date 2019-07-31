@@ -151,6 +151,7 @@ module.exports = function setup() {
 
 	const app = this;
 	// DISPLAY_REQUEST_LEVEL is set by requestLogger middleware in production it is force to 0
+	// level 2+ adding intern request
 	if (app.get('DISPLAY_REQUEST_LEVEL') > 1) {
 		before.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
 		after.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
