@@ -23,7 +23,7 @@ module.exports = function setup() {
 		}
 		if (['true', 'all'].includes(substitution)) userQuery.$or.push({ substitutionIds: user._id });
 
-		const oneDayInMilliseconds = 864e5;
+		const oneDayInMilliseconds = 86400000;
 		let untilQuery = {};
 		if (filter === 'active') {
 			untilQuery = {

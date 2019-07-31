@@ -96,7 +96,7 @@ const patchPermissionHook = async (context) => {
  */
 const restrictChangesToArchivedCourse = async (context) => {
 	const course = await context.app.service('courses').get(context.id);
-	const oneDayInMilliseconds = 864e5;
+	const oneDayInMilliseconds = 86400000;
 	if (course.untilDate === undefined || course.untilDate >= Date.now() - oneDayInMilliseconds) {
 		return context;
 	}
