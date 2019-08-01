@@ -28,12 +28,19 @@ const setSubject = (hook) => {
 			hook.data.force_subject_identifier = iframeSubject(pseudonym, hook.app.settings.services.web);
 		} else {
 			hook.data.force_subject_identifier = pseudonym;
-			hook.data.id_token = {
-				iframe: iframePattern(hook.app.settings.services.web),
-			};
 		}
 		return hook;
 	}));
+};
+
+const setIdToken = (hook) => {
+	if (!hook.params.query.accept) return hook;
+	hook.data.session = {
+		id_token: {
+			iframe: iframePattern(hook.app.settings.services.web),
+		},
+	};
+	return hook;
 };
 
 const injectLoginRequest = hook => Hydra(hook.app.settings.services.hydra).getLoginRequest(hook.id)
@@ -75,7 +82,7 @@ exports.hooks = {
 	consentRequest: {
 		before: {
 			all: [auth.hooks.authenticate('jwt')],
-			patch: [injectConsentRequest, validateSubject],
+			patch: [injectConsentRequest, validateSubject, setIdToken],
 		},
 	},
 	introspect: {
