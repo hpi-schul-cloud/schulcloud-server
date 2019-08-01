@@ -50,11 +50,17 @@ const addDates = (hook) => {
 	}
 };
 
-const mapInObjectToArray = (hook) => {
-	if (((hook.params.query || {}).userId || {}).$in && !Array.isArray(((hook.params.query || {}).userId || {}).$in)) {
-		hook.params.query.userId.$in = Object.values(hook.params.query.userId.$in);
+const mapInObjectToArray = (context) => {
+	if (!context.params.query) {
+		context.params.query = {};
 	}
-	return hook;
+	if (!context.params.query.userId) {
+		context.params.query.userId = {};
+		context.params.query.userId.$in = [];
+	} else if ( !Array.isArray(context.params.query.userId.$in)) {
+		context.params.query.userId.$in = Object.values(context.params.query.userId.$in);
+	}
+	return context;
 };
 
 const checkExisting = hook => hook.app.service('consents').find({ query: { userId: hook.data.userId } })
