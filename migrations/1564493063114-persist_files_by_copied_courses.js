@@ -15,8 +15,9 @@ const createDataTree = (courses = []) => {
 		if (isUndefined(map[_id])) {
 			map[_id] = {
 				lessons: {},
-				files: {},
+				files: [],
 				courseGroups: [],
+				realFiles: [],
 			};
 		}
 	});
@@ -77,12 +78,35 @@ const addCourseGroupLessons = (datatree, courseGroupdLessons) => {
 
 const filterCourseFiles = files => files.filter(f => f.refOwnerModel === 'course');
 
-const extracFileIdsFromContent = (content) => {
-	const files = [];
-	// `file=${sourceFile._id}&amp;name=${sourceFile.name}`,
-	// `file=${sourceFile._id}&name=${sourceFile.name}
-	// => helper with regex
-	return files;
+const extracFileIdsFromContents = (contents, courseId, lessonId) => {
+	let list = [];
+	const regexFileImports = new RegExp('file=.*(&amp;|&)name=[^"]*', 'g');
+	const regexSplit = new RegExp('(file=|&amp;|&|name=)', 'g');
+
+	contents.forEach((content) => {
+		if (isTextContent(content)) {
+			// `file=${file._id}&amp;name=${file.name}`
+			// `file=${file._id}&name=${file.name}
+			const fileStrings = content.content.text.match(regexFileImports);
+
+			if (fileStrings !== null && fileStrings.length > 0) {
+				const files = [];
+				fileStrings.forEach((string) => {
+					const data = string.split(regexSplit);
+					files.push({
+						string,
+						id: data[2],
+						name: data[6],
+						courseId,
+						lessonId,
+					});
+				});
+				list = [...list, ...files];
+			}
+		}
+	});
+
+	return list;
 };
 
 const extractAndAddFile = (datatree) => {
@@ -91,8 +115,8 @@ const extractAndAddFile = (datatree) => {
 		const { lessons } = datatree[courseId];
 		Object.keys(lessons).forEach((lessonId) => {
 			const contents = lessons[lessonId];
-			if (isTextContent(contents)) {
-				const files = extracFileIdsFromContent(contents);
+			const files = extracFileIdsFromContents(contents, courseId, lessonId);
+			if (files.length > 0) {
 				datatree[courseId].files = [...datatree[courseId].files, ...files];
 			}
 		});
@@ -102,10 +126,52 @@ const extractAndAddFile = (datatree) => {
 
 const detectNotExistingFiles = (datatree, files) => {
 	const fileIds = files.map(f => f._id);
+	const notExists = [];
 	// test via include all files in datatree
+	Object.keys(datatree).forEach((courseId) => {
+		datatree[courseId].files.forEach((infos) => {
+			if (!fileIds.includes(infos.id)) {
+				notExists.push(infos);
+			}
+		});
+	});
+	logger.warning(
+		'Files that are added in lessons, but not exist as meta data in file collection with targetModel="course"',
+		notExists,
+	);
 };
 
-const createLessonTask = (content, file) => {
+
+const addRealFilesToCourse = (datatree, files) => {
+	files.forEach((file) => {
+		datatree[file.owner].realFiles.push(file);
+	});
+	return datatree;
+};
+
+const collectInfos = (collectionFiles, datatree, courseId) => {
+	const data = datatree[courseId];
+	data.courseId = courseId;
+	data.realFile = collectionFiles.some(f => f._id.toString() === data.id.toString());
+	return data;
+};
+
+const foundMissingFiles = (datatree, collectionFiles) => {
+	const missingFiles = [];
+	Object.keys(datatree).forEach((courseId) => {
+		const { files, realFiles } = datatree[courseId];
+		files.forEach((file) => {
+			if (!realFiles.some(rf => rf._id.toString() === file._id.toString())) {
+				missingFiles.push(
+					collectInfos(collectionFiles, datatree, courseId),
+				);
+			}
+		});
+	});
+	return missingFiles;
+};
+
+const createLessonContentPatchTask = (content, file) => {
 	const task = {};
 	return task;
 };
@@ -113,17 +179,6 @@ const createLessonTask = (content, file) => {
 const createCopyFileTask = (file, lesson) => {
 	const task = {};
 	return task;
-};
-
-
-const foundMissingFilesAndCreateTasks = (datatree, files) => {
-	const tasks = [];
-	const alreadyUsedFileIds = []; // in other courses
-	/*
-	files.forEach((file) => {
-		file
-	});
-	return tasks; */
 };
 
 module.exports = {
@@ -141,13 +196,14 @@ module.exports = {
 		[datatree, courseGroupdLessons] = addCourseLessons(datatree, lessons);
 		datatree = addCourseGroupLessons(datatree, courseGroupdLessons);
 
-		datatree = extractAndAddFile(datatree, filterCourseFiles(files));
-		detectNotExistingFiles(datatree, files);
+		const courseFiles = filterCourseFiles(files);
+		datatree = extractAndAddFile(datatree, courseFiles);
+		detectNotExistingFiles(datatree, courseFiles);
+		datatree = addRealFilesToCourse(datatree, courseFiles);
+		const missingFileInfos = foundMissingFiles(datatree);
 		await close();
 	},
 	down: async function down() {
 		logger.warning('Down is not implemented.');
-		await connect();
-		await close();
 	},
 };
