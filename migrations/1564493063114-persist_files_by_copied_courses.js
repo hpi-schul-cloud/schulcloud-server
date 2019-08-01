@@ -85,8 +85,19 @@ const extracFileIdsFromContent = (content) => {
 	return files;
 };
 
-const extractAndAddFileFromContent = (datatree) => {
+const extractAndAddFile = (datatree) => {
 	// search content to found linked files
+	Object.keys(datatree).forEach((courseId) => {
+		const { lessons } = datatree[courseId];
+		Object.keys(lessons).forEach((lessonId) => {
+			const contents = lessons[lessonId];
+			if (isTextContent(contents)) {
+				const files = extracFileIdsFromContent(contents);
+				datatree[courseId].files = [...datatree[courseId].files, ...files];
+			}
+		});
+	});
+	return datatree;
 };
 
 const detectNotExistingFiles = (datatree, files) => {
@@ -130,7 +141,7 @@ module.exports = {
 		[datatree, courseGroupdLessons] = addCourseLessons(datatree, lessons);
 		datatree = addCourseGroupLessons(datatree, courseGroupdLessons);
 
-		datatree = extractAndAddFileFromContent(datatree, filterCourseFiles(files));
+		datatree = extractAndAddFile(datatree, filterCourseFiles(files));
 		detectNotExistingFiles(datatree, files);
 		await close();
 	},
