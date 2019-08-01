@@ -50,7 +50,13 @@ const addDates = (hook) => {
 	}
 };
 
-const mapInObjectToArray = (context) => {
+/**
+ * check if userId is set and set it to an empty $in clause if not
+ * if userId.$in is an object confert it to an array
+ * 
+ * @param {*} context 
+ */
+const setUserIdToCorrectForm = (context) => {
 	if (!context.params.query) {
 		context.params.query = {};
 	}
@@ -226,7 +232,7 @@ exports.before = {
 	find: [
 		auth.hooks.authenticate('jwt'),
 		globalHooks.ifNotLocal(restrictToUserOrRole),
-		mapInObjectToArray,
+		setUserIdToCorrectForm,
 	],
 	get: [auth.hooks.authenticate('jwt')],
 	create: [addDates, checkExisting],
