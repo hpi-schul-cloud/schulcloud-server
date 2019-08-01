@@ -52,7 +52,6 @@ const addDates = (hook) => {
 /**
  * check if userId is set and set it to an empty $in clause if not
  * if userId.$in is an object confert it to an array
- * 
  * @param {*} context 
  */
 const setUserIdToCorrectForm = (context) => {
