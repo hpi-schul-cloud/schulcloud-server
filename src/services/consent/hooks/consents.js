@@ -56,7 +56,7 @@ const mapInObjectToArray = (context) => {
 	if (!context.params.query.userId) {
 		context.params.query.userId = {};
 		context.params.query.userId.$in = [];
-	} else if ( !Array.isArray(context.params.query.userId.$in)) {
+	} else if (!Array.isArray(context.params.query.userId.$in)) {
 		context.params.query.userId.$in = Object.values(context.params.query.userId.$in);
 	}
 	return context;
