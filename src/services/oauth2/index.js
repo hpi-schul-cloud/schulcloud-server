@@ -13,12 +13,22 @@ module.exports = function oauth2() {
 		find(params) {
 			return hydra.listOAuth2Clients(params);
 		},
+		get(id) {
+			return hydra.getOAuth2Client(id);
+		},
 		create(data) {
 			data.scope = data.scope || 'openid offline';
 			data.grant_types = data.grant_types || ['authorization_code', 'refresh_token'];
 			data.response_types = data.response_types || ['code', 'token', 'id_token'];
 			data.redirect_uris = data.redirect_uris || [];
 			return hydra.createOAuth2Client(data);
+		},
+		update(id, data) {
+			data.scope = data.scope || 'openid offline';
+			data.grant_types = data.grant_types || ['authorization_code', 'refresh_token'];
+			data.response_types = data.response_types || ['code', 'token', 'id_token'];
+			data.redirect_uris = data.redirect_uris || [];
+			return hydra.updateOAuth2Client(id, data);
 		},
 		remove(id) {
 			return hydra.deleteOAuth2Client(id);
