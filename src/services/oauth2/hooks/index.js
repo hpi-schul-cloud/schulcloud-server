@@ -37,7 +37,7 @@ const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
 	hook.data.session = {
 		id_token: {
-			iframe: iframePattern(hook.app.settings.services.web),
+			iframe: iframeSubject(hook.params.consentRequest.subject, hook.app.settings.services.web),
 		},
 	};
 	return hook;
