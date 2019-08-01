@@ -78,10 +78,12 @@ describe('courses service', () => {
 		chai.expect(sharedCourse.shareToken).to.not.be.undefined;
 	});
 
-	it('find name of course through shareToken', () => shareCourseService.find({ query: { shareToken } })
-		.then((courseName) => {
-			chai.expect(courseName).to.equal('Mathe');
-		}));
+	it('find name of course through shareToken', async () => {
+		const course = await testObjects.createTestCourse({ name: 'Deutsch 10a' });
+		const sharedCourse = await shareCourseService.get(course._id);
+		const courseName = await shareCourseService.find({ query: { shareToken: sharedCourse.shareToken } });
+		chai.expect(courseName).to.equal('Deutsch 10a');
+	});
 
 	it('creates a course copy through shareToken', () => shareCourseService.create({
 		shareToken,
