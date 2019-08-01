@@ -91,7 +91,7 @@ const patchPermissionHook = async (context) => {
 };
 
 /**
- * If the course is expired (archived), only the untilDate may be changed.
+ * If the course is expired (archived), only the untilDate and startDate may be changed.
  * @param context contains the feathers context of the request
  */
 const restrictChangesToArchivedCourse = async (context) => {
@@ -101,11 +101,8 @@ const restrictChangesToArchivedCourse = async (context) => {
 		return context;
 	}
 	// course is expired
-	let allowed = true;
-	Object.keys(context.data).forEach(((key) => {
-		if (key !== 'untilDate' && key !== 'startDate') allowed = false;
-	}));
-	if (!allowed) {
+	const disallowedKeys = Object.keys(context.data).filter(key => !['untilDate', 'startDate'].includes(key));
+	if (disallowedKeys.length > 0) {
 		return Promise.reject(new BadRequest('This course is archived. To activate it, please change the end date.'));
 	}
 	return context;
