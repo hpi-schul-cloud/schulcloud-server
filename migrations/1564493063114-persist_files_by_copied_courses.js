@@ -5,6 +5,9 @@ const { courseGroupModel, courseModel } = require('../src/services/user-group/mo
 const { connect, close } = require('../src/utils/database');
 const logger = require('../src/logger/');
 
+const DETAIL_LOGS = false;
+const EXECUTE_FIX = true;
+
 const isUndefined = e => typeof e === 'undefined';
 const isTextContent = content => content.component === 'text' && content.content.text;
 
@@ -25,14 +28,26 @@ const createDataTree = (courses = []) => {
 };
 
 const addCourseGroupIds = (datatree, courseGroups) => {
+	const courseGroupWithoutCourse = [];
 	courseGroups.forEach((cg) => {
 		const { _id, courseId } = cg;
 		if (datatree[courseId]) {
 			datatree[courseId].courseGroups.push(_id);
 		} else {
-			logger.warning(`A courseGroup ${_id} without existing course ${courseId} found.`);
+			courseGroupWithoutCourse.push({
+				type: 'courseGroup',
+				error: 'no course exist',
+				_id,
+				courseId,
+			});
 		}
 	});
+	if (courseGroupWithoutCourse.length > 0) {
+		logger.warning(`It exist ${courseGroupWithoutCourse.length} courseGroups without course`);
+		if (DETAIL_LOGS) {
+			logger.warning(courseGroupWithoutCourse);
+		}
+	}
 	return datatree;
 };
 
@@ -52,6 +67,7 @@ const addCourseLessons = (datatree, lessons) => {
 };
 
 const addCourseGroupLessons = (datatree, courseGroupdLessons) => {
+	const lessonsWithoutCourse = [];
 	courseGroupdLessons.forEach((lesson) => {
 		const {
 			_id, courseId, contents, courseGroupId,
@@ -68,11 +84,21 @@ const addCourseGroupLessons = (datatree, courseGroupdLessons) => {
 			}
 		});
 		if (found === false) {
-			logger.warning(
-				`A lesson ${_id} without existing course ${courseId}, or courseGroup ${courseGroupId} found.`,
-			);
+			lessonsWithoutCourse.push({
+				type: 'lesson',
+				error: 'no course exist',
+				_id,
+				courseId,
+				courseGroupId,
+			});
 		}
 	});
+	if (lessonsWithoutCourse.length > 0) {
+		logger.warning(`It exist ${lessonsWithoutCourse.length} lessons without course or courseGroup:`);
+		if (DETAIL_LOGS) {
+			logger.warning(lessonsWithoutCourse);
+		}
+	}
 	return datatree;
 };
 
@@ -95,7 +121,7 @@ const extracFileIdsFromContents = (contents, courseId, lessonId) => {
 					const data = string.split(regexSplit);
 					files.push({
 						string,
-						id: data[2],
+						_id: data[2].toString(),
 						name: data[6],
 						courseId,
 						lessonId,
@@ -125,34 +151,65 @@ const extractAndAddFile = (datatree) => {
 };
 
 const detectNotExistingFiles = (datatree, files) => {
-	const fileIds = files.map(f => f._id);
+	const fileIds = files.map(f => f._id.toString());
 	const notExists = [];
 	// test via include all files in datatree
 	Object.keys(datatree).forEach((courseId) => {
-		datatree[courseId].files.forEach((infos) => {
-			if (!fileIds.includes(infos.id)) {
-				notExists.push(infos);
+		datatree[courseId].files.forEach((fileInfo) => {
+			if (!fileIds.includes(fileInfo._id)) {
+				fileInfo.type = 'linked file content';
+				fileInfo.error = 'file not exist';
+				notExists.push(fileInfo);
 			}
 		});
 	});
-	logger.warning(
-		'Files that are added in lessons, but not exist as meta data in file collection with targetModel="course"',
-		notExists,
-	);
+	if (notExists.length > 0) {
+		logger.warning(
+			`The are ${notExists.length} Files that are added in lessons, 
+			but not exist as meta data in file collection with targetModel="course"`,
+		);
+		if (DETAIL_LOGS) {
+			logger.warning(notExists);
+		}
+	}
 };
 
 
 const addRealFilesToCourse = (datatree, files) => {
+	const courseFilesWithoutCourse = [];
 	files.forEach((file) => {
-		datatree[file.owner].realFiles.push(file);
+		const courseId = file.owner.toString();
+		if (!datatree[courseId]) {
+			courseFilesWithoutCourse.push({
+				type: 'file with targetModel=course',
+				error: 'course not exist',
+				_id: file._id,
+				owner: courseId,
+				targetModel: file.targetModel,
+			});
+		} else {
+			datatree[courseId].realFiles.push(file);
+		}
 	});
+	if (courseFilesWithoutCourse.length > 0) {
+		logger.warning(`It exist ${courseFilesWithoutCourse.length} Course files without course:`);
+		if (DETAIL_LOGS) {
+			logger.warning(courseFilesWithoutCourse);
+		}
+	}
 	return datatree;
 };
 
-const collectInfos = (collectionFiles, datatree, courseId) => {
+const collectInfos = (datatree, collectionFiles, courseId) => {
 	const data = datatree[courseId];
 	data.courseId = courseId;
-	data.realFile = collectionFiles.some(f => f._id.toString() === data.id.toString());
+	const realFile = collectionFiles.filter(f => f._id.toString() === data._id);
+	if (realFile.length === 0) {
+		data.realFile = realFile[0];
+	} else {
+		logger.warning('No source file found for :', data);
+		data.realFile = null;
+	}
 	return data;
 };
 
@@ -161,9 +218,9 @@ const foundMissingFiles = (datatree, collectionFiles) => {
 	Object.keys(datatree).forEach((courseId) => {
 		const { files, realFiles } = datatree[courseId];
 		files.forEach((file) => {
-			if (!realFiles.some(rf => rf._id.toString() === file._id.toString())) {
+			if (!realFiles.some(rf => rf._id.toString() === file._id)) {
 				missingFiles.push(
-					collectInfos(collectionFiles, datatree, courseId),
+					collectInfos(datatree, collectionFiles, courseId),
 				);
 			}
 		});
@@ -171,12 +228,12 @@ const foundMissingFiles = (datatree, collectionFiles) => {
 	return missingFiles;
 };
 
-const createLessonContentPatchTask = (content, file) => {
+const createLessonContentPatchTask = (lesson, info) => {
 	const task = {};
 	return task;
 };
 
-const createCopyFileTask = (file, lesson) => {
+const createCopyFileTask = (info) => {
 	const task = {};
 	return task;
 };
@@ -200,7 +257,13 @@ module.exports = {
 		datatree = extractAndAddFile(datatree, courseFiles);
 		detectNotExistingFiles(datatree, courseFiles);
 		datatree = addRealFilesToCourse(datatree, courseFiles);
-		const missingFileInfos = foundMissingFiles(datatree);
+		const missingFileInfos = foundMissingFiles(datatree, courseFiles);
+		if (missingFileInfos.length > 0) {
+			logger.info(`It found ${missingFileInfos.length} to start fixing with this script.`);
+		}
+		if (EXECUTE_FIX) {
+			// do stuff to fix it
+		}
 		await close();
 	},
 	down: async function down() {
