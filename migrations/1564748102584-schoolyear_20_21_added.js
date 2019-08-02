@@ -12,7 +12,7 @@ module.exports = {
 		await connect();
 		const existingYear = await Year.findOne({ name: YEAR_2020_21 }).exec();
 		if (existingYear) {
-			logger.warn('the year already has been created');
+			logger.warning('the year already has been created');
 		} else {
 			const year = new Year({
 				name: YEAR_2020_21,
