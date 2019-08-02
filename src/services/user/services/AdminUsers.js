@@ -28,10 +28,11 @@ const getRoles = () => roleModel.find()
 	.lean()
 	.exec();
 
-const getClasses = (app, schoolId) => app.service('classes')
+const getClasses = (app, schoolId, schoolYear) => app.service('classes')
 	.find({
 		query: {
 			schoolId,
+			year: schoolYear,
 			$limit: 1000,
 		},
 	})
@@ -73,6 +74,8 @@ class AdminUsers {
 			// fetch base data
 			const [currentUser, roles] = await Promise.all([getCurrentUser(currentUserId), getRoles()]);
 			const { schoolId } = currentUser;
+			const currentSchool = await this.app.service('schools').get(schoolId);
+			const currentYear = currentSchool.years.activeYear._id;
 
 			// permission check
 			if (!currentUser.roles.some(role => ['teacher', 'administrator', 'superhero'].includes(role.name))) {
@@ -83,7 +86,7 @@ class AdminUsers {
 			const [usersData, classes] = await Promise.all(
 				[
 					getAllUsers(this, schoolId, studentRole._id, (params.query || {})),
-					getClasses(this.app, schoolId),
+					getClasses(this.app, schoolId, currentYear),
 				],
 			);
 			const { total } = usersData;
