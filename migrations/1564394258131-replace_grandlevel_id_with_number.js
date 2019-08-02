@@ -13,6 +13,10 @@ const NewClass = mongoose.model('newClass', {
 	ldapDN: { type: String },
 }, 'classes');
 
+const GradeLevel = mongoose.model('gradelevels', {
+	name: { type: String },
+});
+
 const OldClass = mongoose.model('oldClass', {
 	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
 	invitationLink: { type: String },
@@ -40,15 +44,23 @@ module.exports = {
 				nameFormat: 'gradeLevel+name',
 			})
 			.select(['_id', 'gradeLevel'])
-			.populate('gradeLevel')
 			.lean()
 			.exec();
 
-		await Promise.all(data.map(element => NewClass.update({
-			_id: element._id,
-		}, {
-			gradeLevel: element.gradeLevel.name,
-		})));
+		await Promise.all(data.map(async (element) => {
+			let newGradeLevel;
+			if (typeof element.gradeLevel === 'number') {
+				newGradeLevel = element.gradeLevel;
+			} else {
+				const gradeLevel = await GradeLevel.get(element.gradeLevel);
+				newGradeLevel = gradeLevel.name;
+			}
+			return NewClass.update({
+				_id: element._id,
+			}, {
+				gradeLevel: newGradeLevel,
+			});
+		}));
 
 		await OldClass.updateMany({}, {
 			$unset: { nameFormat: '' },
@@ -62,19 +74,20 @@ module.exports = {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
-
+		console.log('hello World');
 		const data = await NewClass
 			.find({
 				gradeLevel: { $exist: true },
 			}).select('_id gradeLevel')
 			.lean()
 			.exec();
-
+		
+		console.log(data);
 		await data.map(async (element) => {
 			const grand = await gradeLevelModel.findOne({
 				name: element.gradeLevel,
 			}).lean().exec();
-
+			console.log(grand);
 			return OldClass.update({
 				_id: element._id,
 			}, {
