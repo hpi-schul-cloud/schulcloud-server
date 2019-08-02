@@ -4,8 +4,6 @@ const aws = require('aws-sdk');
 const pathUtil = require('path');
 const fs = require('fs');
 const logger = require('../../../logger');
-
-const logger = require('../../../logger');
 const { schoolModel } = require('../../school/model');
 const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
