@@ -52,7 +52,7 @@ module.exports = {
 			if (typeof element.gradeLevel === 'number') {
 				newGradeLevel = element.gradeLevel;
 			} else {
-				const gradeLevel = await GradeLevel.get(element.gradeLevel);
+				const gradeLevel = await GradeLevel.findOne(element.gradeLevel);
 				newGradeLevel = gradeLevel.name;
 			}
 			return NewClass.update({
@@ -74,20 +74,18 @@ module.exports = {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
-		console.log('hello World');
+
 		const data = await NewClass
 			.find({
 				gradeLevel: { $exist: true },
 			}).select('_id gradeLevel')
 			.lean()
 			.exec();
-		
-		console.log(data);
+
 		await data.map(async (element) => {
 			const grand = await gradeLevelModel.findOne({
 				name: element.gradeLevel,
 			}).lean().exec();
-			console.log(grand);
 			return OldClass.update({
 				_id: element._id,
 			}, {
