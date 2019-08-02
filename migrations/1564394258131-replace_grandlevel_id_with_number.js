@@ -18,7 +18,7 @@ const OldClass = mongoose.model('oldClass', {
 	invitationLink: { type: String },
 	name: { type: String, required: false },
 	year: { type: Schema.Types.ObjectId, ref: 'year' },
-	gradeFormat: { type: String, enum: ['static', 'gradeLevel+name'] },
+	nameFormat: { type: String, enum: ['static', 'gradeLevel+name'], default: 'static' },
 	gradeLevel: { type: Schema.Types.ObjectId, ref: 'gradeLevel' },
 	ldapDN: { type: String },
 }, 'classes');
@@ -78,7 +78,7 @@ module.exports = {
 			return OldClass.update({
 				_id: element._id,
 			}, {
-				gradeFormat: 'gradeLevel+name',
+				nameFormat: 'gradeLevel+name',
 				gradeLevel: grand._id,
 			});
 		});
