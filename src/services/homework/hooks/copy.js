@@ -1,19 +1,19 @@
 const hooks = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
-const errors = require('@feathersjs/errors');
+const { Forbidden } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const HomeworkModel = require('../model').homeworkModel;
 
-const hasViewPermissionBefore = (hook) => {
-	const { account } = hook.params;
-	const homeworkId = hook.id || hook.data._id;
+const hasViewPermissionBefore = (context) => {
+	const currentUser = context.params.account.userId.toString();
+	const _id = context.id || context.data._id;
 
-	return HomeworkModel.findOne({ _id: homeworkId }).exec()
-		.then((res) => {
-			if (res.teacherId.equals(account.userId)) {
-				return Promise.resolve(hook);
+	return HomeworkModel.findOne({ _id }).lean().exec()
+		.then((homework) => {
+			if (homework.teacherId.equals(currentUser)) {
+				return context;
 			}
-			return Promise.reject(new errors.Forbidden("The homework doesn't belong to you!"));
+			throw new Forbidden("The homework doesn't belong to you!");
 		});
 };
 
