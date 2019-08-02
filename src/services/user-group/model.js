@@ -56,9 +56,9 @@ const getCourseIsArchived = (aCourse) => {
 	const oneDayInMilliseconds = 864e5;
 
 	if (aCourse.untilDate === undefined || aCourse.untilDate >= Date.now() - oneDayInMilliseconds) {
-		return true;
+		return false;
 	}
-	return false;
+	return true;
 };
 
 // => has no access to this
