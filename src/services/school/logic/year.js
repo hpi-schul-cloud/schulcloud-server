@@ -1,4 +1,8 @@
 class SchoolYearFacade {
+	/**
+	 * @param [years] whole years collection
+	 * @param school optional school having customYears
+	 */
 	constructor(years, school) {
 		/** retrieves custom year for given year id
 		 * @param yearId ObjectId
@@ -21,8 +25,14 @@ class SchoolYearFacade {
 			return year;
 		});
 		this.years = years.sort(SchoolYearFacade.yearCompare);
-		this.customYears = (school.customYears || []).sort(SchoolYearFacade.yearCompare);
-		this.schoolYears = generateSchoolYears();
+		if (school) {
+			this.customYears = (school.customYears || []).sort(SchoolYearFacade.yearCompare);
+			this.schoolYears = generateSchoolYears();
+		} else {
+			// use defaults if there is no school present to give access to default getters
+			this.customYears = [];
+			this.schoolYears = this.years;
+		}
 	}
 
 	/** sorts years by their name value */
