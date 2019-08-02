@@ -1,6 +1,14 @@
 const hooks = require('./hooks');
 const Hydra = require('./hydra.js');
 
+const setClientDefaults = (data) => {
+	data.scope = data.scope || 'openid offline';
+	data.grant_types = data.grant_types || ['authorization_code', 'refresh_token'];
+	data.response_types = data.response_types || ['code', 'token', 'id_token'];
+	data.redirect_uris = data.redirect_uris || [];
+	return data;
+};
+
 module.exports = function oauth2() {
 	const app = this;
 	const hydra = Hydra(app.settings.services.hydra);
@@ -17,18 +25,10 @@ module.exports = function oauth2() {
 			return hydra.getOAuth2Client(id);
 		},
 		create(data) {
-			data.scope = data.scope || 'openid offline';
-			data.grant_types = data.grant_types || ['authorization_code', 'refresh_token'];
-			data.response_types = data.response_types || ['code', 'token', 'id_token'];
-			data.redirect_uris = data.redirect_uris || [];
-			return hydra.createOAuth2Client(data);
+			return hydra.createOAuth2Client(setClientDefaults(data));
 		},
 		update(id, data) {
-			data.scope = data.scope || 'openid offline';
-			data.grant_types = data.grant_types || ['authorization_code', 'refresh_token'];
-			data.response_types = data.response_types || ['code', 'token', 'id_token'];
-			data.redirect_uris = data.redirect_uris || [];
-			return hydra.updateOAuth2Client(id, data);
+			return hydra.updateOAuth2Client(id, setClientDefaults(data));
 		},
 		remove(id) {
 			return hydra.deleteOAuth2Client(id);

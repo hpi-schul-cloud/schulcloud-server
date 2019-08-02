@@ -5,7 +5,6 @@ const Hydra = require('../hydra.js');
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
-const iframePattern = url => `<iframe src="${url}/oauth2/username/{{sub}}" ${properties}></iframe>`;
 
 exports.getSubject = iframeSubject;
 
