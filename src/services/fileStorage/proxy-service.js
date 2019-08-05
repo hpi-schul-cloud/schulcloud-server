@@ -168,8 +168,6 @@ const fileStorageService = {
 				? readFiles(userId, [parent]).catch(() => Promise.reject(new Forbidden()))
 				: Promise.resolve();
 
-			// TODO: check sort, pagination
-
 			return parentPromise
 				.then(() => FileModel
 					.find({ owner, parent: parent || { $exists: false } })
@@ -219,14 +217,19 @@ const fileStorageService = {
 		const { parent } = data;
 		const update = { $set: {} };
 
-		const file = await FileModel.findOne({ _id: parent }).lean().exec();
-		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
+		const fileObject = await FileModel.findById(parent)
+			.lean()
+			.exec();
+		const teamObject = await teamsModel.findOne({ _id: parent })
+			.lean()
+			.exec();
 
-		if (file) {
+
+		if (fileObject) {
 			update.$set = {
 				parent,
-				owner: file.owner,
-				refOwnerModel: file.refOwnerModel,
+				owner: fileObject.owner,
+				refOwnerModel: fileObject.refOwnerModel,
 			};
 		} else if (parent === userId.toString()) {
 			update.$set = {
@@ -242,7 +245,27 @@ const fileStorageService = {
 			update.$unset = { parent: '' };
 		}
 
-		return writeFiles(userId, [file], this.app)
+		const permissionPromise = () => {
+			if (fileObject) {
+				return writeFiles(userId, [fileObject], this.app);
+			}
+
+			if (teamObject) {
+				return new Promise((resolve, reject) => {
+					const teamMember = teamObject.userIds.find(
+						u => u.userId.toString() === userId.toString(),
+					);
+					if (teamMember) {
+						return resolve();
+					}
+					return reject();
+				});
+			}
+
+			return Promise.resolve();
+		};
+
+		return permissionPromise()
 			.then(() => FileModel.update({ _id }, update).exec())
 			.catch((e) => {
 				logger.error(e);
