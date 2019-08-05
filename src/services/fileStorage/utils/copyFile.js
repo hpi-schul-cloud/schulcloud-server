@@ -34,7 +34,7 @@ const renameFileIfAlreadyExistInParent = (existingFile, newFileObject) => {
  * @param {Object} params
  * @param {Function} [ permissionHandler ] <optional> permissionHandler(userId, file, parent)
  */
-const copyFile = async ({ file, parent, destinationSchoolId }, { payload, account }, permissionHandler) => {
+const copyFile = async ({ file, parent, sourceSchoolId }, { payload, account }, permissionHandler) => {
 	const userId = payload.userId || account.userId;
 	const strategy = createCorrectStrategy(payload.fileStorageType);
 
@@ -70,7 +70,7 @@ const copyFile = async ({ file, parent, destinationSchoolId }, { payload, accoun
 	// copy file on external storage
 	newFileObject.storageFileName = generateFileNameSuffix(newFileObject.name || fileObject.name);
 	// copy file into bucket from user schoolId
-	await strategy.copyFile(userId, fileObject.storageFileName, newFileObject.storageFileName, destinationSchoolId);
+	await strategy.copyFile(userId, fileObject.storageFileName, newFileObject.storageFileName, sourceSchoolId);
 	return FileModel.create(safeOverrideAndClear(fileObject, newFileObject));
 };
 

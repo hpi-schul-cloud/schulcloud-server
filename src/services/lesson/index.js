@@ -103,7 +103,7 @@ class LessonCopyService {
 		await Promise.all(lessonFiles.map(sourceFile => copyFile({
 			file: sourceFile,
 			parent: newCourseId,
-			destinationSchoolId: course.schoolId,
+			sourceSchoolId: course.schoolId,
 		}, params).then((newFile) => {
 			// /files/file?file=5d1ef687faccd3282cc94f83&amp;name=imago-images-fotos-von-voegeln.jpg\
 			fileChangelog.push({
@@ -146,7 +146,7 @@ class LessonCopyService {
      * @returns newly created lesson.
      */
 	async create(data, params) {
-		const { newCourseId, lessonId: _id, shareToken } = data;
+		const { newCourseId, lessonId: _id } = data;
 		const sourceLesson = await lessonModel.findOne({ _id })
 			.populate('courseId')
 			.lean()
