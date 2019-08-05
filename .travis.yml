@@ -26,7 +26,6 @@ before_install:
 script:
 #- pwd
 - npm test
-- sudo docker logs hydra-host
 - npm run coverage-codecov
 #- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 
