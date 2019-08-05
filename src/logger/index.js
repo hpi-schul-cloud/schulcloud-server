@@ -5,6 +5,7 @@ const SPLAT = Symbol.for('splat');
 let logLevel;
 
 switch (process.env.NODE_ENV) {
+	case 'default':
 	case 'development':
 		logLevel = 'debug';
 		break;
