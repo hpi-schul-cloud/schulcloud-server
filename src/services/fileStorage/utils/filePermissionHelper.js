@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const logger = require('../../../logger');
 
 const { FileModel } = require('../model');
@@ -183,6 +184,7 @@ const getAllowedFiles = permission => mapOwner(async (userId, files, app) => {
 
 	if (noDirectPermissionFiles.length === 0) return directPermissionFiles;
 
+	// scoped file check
 	const fileMap = noDirectPermissionFiles.reduce((acc, currentFile) => {
 		if (!acc[currentFile.refOwnerModel]) {
 			acc[currentFile.refOwnerModel] = [];
@@ -205,7 +207,9 @@ const getAllowedFiles = permission => mapOwner(async (userId, files, app) => {
 		}
 	}
 
-	return Object.values(scopeFiles).reduce((acc, cur) => [...acc, cur], []);
+	// restore file input order
+	const allFiles = Object.values(scopeFiles).reduce((acc, cur) => [...acc, cur], []);
+	return _.sortBy(allFiles, curFile => files.findIndex(file => file.equals(curFile)));
 });
 
 module.exports = {
