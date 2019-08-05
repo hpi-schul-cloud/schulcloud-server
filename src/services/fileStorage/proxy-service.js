@@ -14,6 +14,7 @@ const swaggerDocs = require('./docs/');
 const {
 	canWrite,
 	canRead,
+	writeFiles,
 	readFiles,
 	createFiles,
 	deleteFiles,
@@ -133,15 +134,18 @@ const fileStorageService = {
 		// create db entry for new file
 		// check for create permissions on parent
 		if (parent) {
-			return FileModel.findById(parent).lean().exec().then(parentFile => createFiles(userId, [parentFile], this.app)
-				.then(() => FileModel.findOne(props).exec().then(
-					modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
-				))
-				.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props))
-				.catch((e) => {
-					logger.error(e);
-					return Promise.reject(new Forbidden());
-				}));
+			return FileModel.findById(parent)
+				.lean()
+				.exec()
+				.then(parentFile => createFiles(userId, [parentFile], this.app)
+					.then(() => FileModel.findOne(props).exec().then(
+						modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
+					))
+					.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props))
+					.catch((e) => {
+						logger.error(e);
+						return Promise.reject(new Forbidden());
+					}));
 		}
 
 		return FileModel.findOne(props)
@@ -214,34 +218,15 @@ const fileStorageService = {
 		const { payload: { userId } } = params;
 		const { parent } = data;
 		const update = { $set: {} };
-		const fileObject = await FileModel.findOne({ _id: parent }).exec();
+
+		const file = await FileModel.findOne({ _id: parent }).lean().exec();
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
 
-		const permissionPromise = () => {
-			if (fileObject) {
-				return canWrite(userId, parent);
-			}
-
-			if (teamObject) {
-				return new Promise((resolve, reject) => {
-					const teamMember = teamObject.userIds.find(
-						u => u.userId.toString() === userId.toString(),
-					);
-					if (teamMember) {
-						return resolve();
-					}
-					return reject();
-				});
-			}
-
-			return Promise.resolve();
-		};
-
-		if (fileObject) {
+		if (file) {
 			update.$set = {
 				parent,
-				owner: fileObject.owner,
-				refOwnerModel: fileObject.refOwnerModel,
+				owner: file.owner,
+				refOwnerModel: file.refOwnerModel,
 			};
 		} else if (parent === userId.toString()) {
 			update.$set = {
@@ -257,7 +242,7 @@ const fileStorageService = {
 			update.$unset = { parent: '' };
 		}
 
-		return permissionPromise()
+		return writeFiles(userId, [file], this.app)
 			.then(() => FileModel.update({ _id }, update).exec())
 			.catch((e) => {
 				logger.error(e);

@@ -3,6 +3,7 @@ const {
 	canRead,
 	canCreate,
 	canDelete,
+	writeFiles,
 	readFiles,
 	createFiles,
 	deleteFiles,
@@ -19,6 +20,7 @@ const createCorrectStrategy = require('./createCorrectStrategy');
 const { createPermission, createDefaultPermissions } = require('./createDefaultPermissions');
 
 module.exports = {
+	writeFiles,
 	readFiles,
 	createFiles,
 	deleteFiles,
