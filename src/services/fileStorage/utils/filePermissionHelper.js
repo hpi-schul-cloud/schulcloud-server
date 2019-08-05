@@ -197,7 +197,7 @@ const getAllowedFiles = permission => mapOwner(async (userId, files, app) => {
 	if (otherFiles.length === 0) return [...directPermissionFiles, ...teamPermissionFiles];
 
 	const fileCheck = checkPermissionsLegacy(permission);
-	const legacyPermissionFiles = files.map(file => fileCheck(userId, file));
+	const legacyPermissionFiles = otherFiles.map(file => fileCheck(userId, file));
 
 	return [...directPermissionFiles, ...teamPermissionFiles, ...await Promise.all(legacyPermissionFiles)];
 });
@@ -208,5 +208,8 @@ module.exports = {
 	canRead: checkPermissions('read'),
 	canCreate: checkPermissions('create'),
 	canDelete: checkPermissions('delete'),
+
 	readFiles: getAllowedFiles('read'),
+	createFiles: getAllowedFiles('create'),
+	deleteFiles: getAllowedFiles('delete'),
 };

@@ -4,6 +4,8 @@ const {
 	canCreate,
 	canDelete,
 	readFiles,
+	createFiles,
+	deleteFiles,
 } = require('./filePermissionHelper');
 
 const {
@@ -18,6 +20,8 @@ const { createPermission, createDefaultPermissions } = require('./createDefaultP
 
 module.exports = {
 	readFiles,
+	createFiles,
+	deleteFiles,
 	canWrite,
 	canRead,
 	canCreate,

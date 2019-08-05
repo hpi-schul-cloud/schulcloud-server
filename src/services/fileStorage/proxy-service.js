@@ -15,6 +15,8 @@ const {
 	canWrite,
 	canRead,
 	readFiles,
+	createFiles,
+	deleteFiles,
 	canCreate,
 	canDelete,
 	returnFileType,
@@ -131,7 +133,7 @@ const fileStorageService = {
 		// create db entry for new file
 		// check for create permissions on parent
 		if (parent) {
-			return canCreate(userId, parent)
+			return FileModel.findById(parent).lean().exec().then(parentFile => createFiles(userId, [parentFile], this.app)
 				.then(() => FileModel.findOne(props).exec().then(
 					modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 				))
@@ -139,7 +141,7 @@ const fileStorageService = {
 				.catch((e) => {
 					logger.error(e);
 					return Promise.reject(new Forbidden());
-				});
+				}));
 		}
 
 		return FileModel.findOne(props)
@@ -192,10 +194,7 @@ const fileStorageService = {
 					return Promise.reject(new NotFound());
 				}
 
-				return Promise.all([
-					file,
-					canDelete(userId, _id).catch(() => Promise.reject(new Forbidden())),
-				]);
+				return deleteFiles(userId, [file], this.app);
 			})
 			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
 			.then(() => fileInstance.remove().exec())
