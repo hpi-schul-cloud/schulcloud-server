@@ -1142,4 +1142,69 @@ describe('CSVSyncer Integration', () => {
 			expect(class1b.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
 		});
 	});
+
+	describe('Scenario 14 - Attribute aliases', () => {
+		let scenarioParams;
+		let scenarioData;
+
+		const SCHOOL_ID = testObjects.options.schoolId;
+		const TEACHER_EMAILS = [
+			'a@b.de',
+			'b@c.de',
+			'c@d.de',
+		];
+
+		before(async () => {
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
+			};
+			scenarioData = {
+				data: 'affix,first,middle,last,eMail\n'
+					+ `Dr.,Peter,F.,Pan,${TEACHER_EMAILS[0]}\n`
+					+ `Mr.,Peter,,Lustig,${TEACHER_EMAILS[1]}\n`
+					+ `HM,Test,T.,Testington,${TEACHER_EMAILS[2]}\n`,
+			};
+		});
+
+		after(async () => {
+			await testObjects.cleanup();
+			await deleteUser(TEACHER_EMAILS[0]);
+			await deleteUser(TEACHER_EMAILS[1]);
+			await deleteUser(TEACHER_EMAILS[2]);
+		});
+
+		it('should be accepted for execution', () => {
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+		});
+
+		it('should initialize without errors', () => {
+			const params = CSVSyncer.params(scenarioParams, scenarioData);
+			const instance = new CSVSyncer(app, {}, ...params);
+			expect(instance).to.not.equal(undefined);
+		});
+
+		it('should import three teachers without a class', async () => {
+			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+			expect(stats.success).to.equal(true);
+			expect(stats.users.successful).to.equal(3);
+			expect(stats.users.failed).to.equal(0);
+			expect(stats.invitations.successful).to.equal(0);
+			expect(stats.invitations.failed).to.equal(0);
+			expect(stats.classes.successful).to.equal(0);
+			expect(stats.classes.failed).to.equal(0);
+
+			const users = await userModel.find({
+				email: { $in: TEACHER_EMAILS },
+			});
+			expect(users.length).to.equal(3);
+			expect(users.some(u => u.fullName === 'Dr. Peter F. Pan')).to.equal(true);
+			expect(users.some(u => u.fullName === 'Mr. Peter Lustig')).to.equal(true);
+			expect(users.some(u => u.fullName === 'HM Test T. Testington')).to.equal(true);
+		});
+	});
 });
