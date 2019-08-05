@@ -154,19 +154,26 @@ const fileStorageService = {
 	 * @returns { Promise }
 	 */
 	find({ query, payload }) {
-		const { owner, parent } = query;
+		const { owner } = query;
 		const { userId } = payload;
-		const parentPromise = parent
-			? canRead(userId, parent).catch(() => Promise.reject(new Forbidden()))
-			: Promise.resolve();
 
-		return parentPromise
-			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).populate('owner').lean().exec())
-			.then(files => readFiles(userId, files, this.app))
-			.catch((e) => {
-				logger.error(e);
-				return Promise.reject(e);
-			});
+		return FileModel.findById(query.parent).lean().exec().then((parent) => {
+			const parentPromise = parent
+				? readFiles(userId, [parent]).catch(() => Promise.reject(new Forbidden()))
+				: Promise.resolve();
+
+			// TODO: check sort, pagination
+
+			return parentPromise
+				.then(() => FileModel
+					.find({ owner, parent: parent || { $exists: false } })
+					.populate('owner').lean().exec())
+				.then(files => readFiles(userId, files, this.app))
+				.catch((e) => {
+					logger.error(e);
+					return Promise.reject(e);
+				});
+		});
 	},
 
 	/**
