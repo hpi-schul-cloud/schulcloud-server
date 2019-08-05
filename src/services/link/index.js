@@ -1,6 +1,6 @@
 const queryString = require('querystring');
-const logger = require('../../logger');
 const service = require('feathers-mongoose');
+const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
 
@@ -21,15 +21,16 @@ module.exports = function setup() {
 	let linkService = service(options);
 
 	function verifyDate(date) {
-		date = new Date(date);
+		const targetDate = new Date(date);
 		const currentDate = new Date();
-		const diff = currentDate.getTime() - date.getTime();
+		const diff = currentDate.getTime() - targetDate.getTime();
 		if (diff < registrationLinkTimeoutDays * 1000 * 3600 * 24) return true;
 		return false;
 	}
 
 	function redirectToTarget(req, res, next) {
 		if (req.method === 'GET' && !req.query.target) { // capture these requests and issue a redirect
+			/* eslint-disable-next-line no-underscore-dangle */
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then((data) => {
@@ -39,8 +40,12 @@ module.exports = function setup() {
 						queryObject.link = data._id;
 						if (url.includes('/registration/') && !(verifyDate(data.createdAt))) {
 							res.status(500).send({
-								error: `This link has expired. Registration links are only valid for ${registrationLinkTimeoutDays} days. Please request a new link from your teacher/administrator. `,
-								fehler: `Dieser Link ist abgelaufen. Registrierungslinks sind nur ${registrationLinkTimeoutDays} Tage lang gültig. Bitte frage bei deinem Lehrer oder Administrator nach einem neuen.`,
+								error: 'This link has expired. Registration links are only valid '
+									+ `for ${registrationLinkTimeoutDays} days. Please request a `
+									+ 'new link from your teacher/administrator.',
+								fehler: 'Dieser Link ist abgelaufen. Registrierungslinks sind '
+									+ `nur ${registrationLinkTimeoutDays} Tage lang gültig. Bitte `
+									+ 'frage bei deinem Lehrer oder Administrator nach einem neuen Link.',
 							});
 						} else {
 							res.redirect(`${url}?${queryString.stringify(queryObject)}`);
