@@ -22,6 +22,7 @@ before_install:
 - curl https://raw.githubusercontent.com/schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
 - curl https://raw.githubusercontent.com/schul-cloud/schulcloud-authorization-server/master/.env.example > .env
 - source .env ; envsubst < "docker-compose-oauthserver.yml" > "docker-compose.yml"
+- cat docker-compose.yml
 - sudo systemctl stop postgresql
 - docker-compose up -d
 - sudo docker pull mongo:4.0
