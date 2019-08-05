@@ -2,7 +2,6 @@ const service = require('feathers-mongoose');
 const logger = require('winston');
 const {
 	BadRequest,
-	Forbidden,
 	GeneralError,
 	NotFound,
 } = require('@feathersjs/errors');
@@ -10,7 +9,6 @@ const hooks = require('./hooks');
 const { warning } = require('../../logger/index');
 const { teamsModel } = require('./model');
 const { userModel } = require('../user/model');
-const { FileModel } = require('../fileStorage/model');
 const RoleModel = require('../role/model');
 
 const {

@@ -1,6 +1,6 @@
 const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
-const { lookupScope, rejectQueryingOtherUsers, checkMemberStatus } = require('./hooks');
+const { lookupScope, rejectQueryingOtherUsers } = require('./hooks');
 
 class ScopeService {
 	constructor(handler) {
