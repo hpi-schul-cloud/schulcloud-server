@@ -37,7 +37,7 @@ module.exports = function setup() {
 						const queryObject = queryString.parse(query || '');
 						queryObject.link = data._id;
 						if (url.includes('/registration/') && !(verifyDate(data.createdAt))) {
-							res.status(500).send({
+							res.status(400).send({
 								error: 'This link has expired. Registration links are only valid '
 									+ `for ${registrationLinkExpirationDays} days. Please request a `
 									+ 'new link from your teacher/administrator.',
@@ -53,7 +53,7 @@ module.exports = function setup() {
 					}
 				})
 				.catch((err) => {
-					logger.warning(err);
+					logger.error(err);
 					res.status(500).send(err);
 				});
 		} else {
