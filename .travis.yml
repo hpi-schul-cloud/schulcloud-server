@@ -28,7 +28,7 @@ before_install:
 - sudo docker run -d -p 27017:27017 mongo:4.0
 script:
 #- pwd
-- docker-compose ps
+- docker-compose -f docker-compose-oauthserver.yml ps
 - npm test
 - npm run coverage-codecov
 #- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
