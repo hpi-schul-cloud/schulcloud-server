@@ -183,23 +183,29 @@ const getAllowedFiles = permission => mapOwner(async (userId, files, app) => {
 
 	if (noDirectPermissionFiles.length === 0) return directPermissionFiles;
 
-	const [teamFiles, otherFiles] = noDirectPermissionFiles.reduce(([teamF, noTeamF], currentFile) => {
-		if (currentFile.refOwnerModel === 'teams') {
-			teamF.push(currentFile);
-		} else {
-			noTeamF.push(currentFile);
+	const fileMap = noDirectPermissionFiles.reduce((acc, currentFile) => {
+		if (!acc[currentFile.refOwnerModel]) {
+			acc[currentFile.refOwnerModel] = [];
 		}
-		return [teamF, noTeamF];
-	}, [[], []]);
 
-	const teamPermissionFiles = await checkScopePermissions('teams', userId, teamFiles, permission, app);
+		acc[currentFile.refOwnerModel].push(currentFile);
+		return acc;
+	}, {});
 
-	if (otherFiles.length === 0) return [...directPermissionFiles, ...teamPermissionFiles];
-
+	const scopeFiles = {};
 	const fileCheck = checkPermissionsLegacy(permission);
-	const legacyPermissionFiles = otherFiles.map(file => fileCheck(userId, file));
 
-	return [...directPermissionFiles, ...teamPermissionFiles, ...await Promise.all(legacyPermissionFiles)];
+	for (const scope of Object.keys(fileMap)) {
+		try {
+			scopeFiles[scope] = await checkScopePermissions(scope, userId, fileMap[scope], permission, app);
+		} catch (e) {
+			const legacyPermissionFiles = fileMap[scope].map(file => fileCheck(userId, file));
+
+			scopeFiles[scope] = (await Promise.all(legacyPermissionFiles));
+		}
+	}
+
+	return Object.values(scopeFiles).reduce((acc, cur) => [...acc, cur], []);
 });
 
 module.exports = {
