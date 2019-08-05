@@ -55,7 +55,7 @@ describe('school year logic', async () => {
 		it('default year, which contains current or next year', () => {
 			expect(schoolYearFacade.defaultYear).not.to.be.null;
 		});
-		it('next year exist', () => {
+		it('next year exist, add migration for next year if this fails!', () => {
 			expect(schoolYearFacade.nextYear).not.to.be.null;
 		});
 		it('last year exist', () => {
