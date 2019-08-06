@@ -102,5 +102,20 @@ describe('schoolUsesLdap', () => {
 		expect(schoolUsesLdap(school)).to.equal(true);
 	});
 
+	it('should work if no systems are registered', async () => {
+		const school = await createSchool({
+			systems: [],
+		});
+		expect(() => schoolUsesLdap(school)).not.to.throw();
+		expect(schoolUsesLdap(school)).to.equal(false);
+	});
+
+	it('should work if systems are undefined', async () => {
+		const school = await createSchool();
+		delete school.systems;
+		expect(() => schoolUsesLdap(school)).not.to.throw();
+		expect(schoolUsesLdap(school)).to.equal(false);
+	});
+
 	afterEach(cleanup);
 });

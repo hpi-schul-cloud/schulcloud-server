@@ -24,7 +24,7 @@ before_install:
 - sed -i 's/\"/\\"/g' docker-compose-oauthserver.yml
 - source .env ; eval "echo \"$( cat docker-compose-oauthserver.yml )\"" > docker-compose.yml
 - sudo systemctl stop postgresql
-- docker-compose up -d
+- sudo docker-compose up -d
 - sudo docker pull mongo:4.0
 - sudo docker run -d -p 27017:27017 mongo:4.0
 script:
