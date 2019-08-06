@@ -6,7 +6,7 @@ const logger = require('../../../logger');
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
 
-const getCurrentUser = id => userModel.findById(id)
+const getCurrentUserInfo = id => userModel.findById(id)
 	.select('schoolId')
 	.populate('roles')
 	.lean()
@@ -75,7 +75,7 @@ class AdminUsers {
 			const currentUserId = params.account.userId.toString();
 
 			// fetch base data
-			const [currentUser, roles] = await Promise.all([getCurrentUser(currentUserId), getRoles()]);
+			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles()]);
 			const { schoolId } = currentUser;
 
 			const currentSchool = await this.app.service('schools').get(schoolId);
