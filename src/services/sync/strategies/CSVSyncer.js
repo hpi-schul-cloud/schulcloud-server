@@ -453,7 +453,6 @@ class CSVSyncer extends Syncer {
 		this.stats.classes.updated += 1;
 		return existing[0];
 	}
-
 }
 
 module.exports = CSVSyncer;

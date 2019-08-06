@@ -1,6 +1,6 @@
 const moodleClient = require('moodle-client');
-const logger = require('../../../logger');
 const errors = require('@feathersjs/errors');
+const logger = require('../../../logger');
 
 const AbstractLoginStrategy = require('./interface');
 
