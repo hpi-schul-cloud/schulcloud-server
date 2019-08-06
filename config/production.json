@@ -11,6 +11,6 @@
 		"content": "CONTENT_URI",
 		"notification": "NOTIFICATION_URI",
 		"hydra": "HYDRA_URI",
-		"web": "FRONTEND_URI"
+		"web": "HOST"
 	}
 }
