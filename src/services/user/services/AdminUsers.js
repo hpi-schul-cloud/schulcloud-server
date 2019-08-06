@@ -28,11 +28,14 @@ const getRoles = () => roleModel.find()
 	.lean()
 	.exec();
 
-const getClasses = (app, schoolId, schoolYear) => app.service('classes')
+const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
 	.find({
 		query: {
 			schoolId,
-			year: schoolYear,
+			$or: [
+				{ year: schoolYearId },
+				{ year: { $exists: false } },
+			],
 			$limit: 1000,
 		},
 	})
