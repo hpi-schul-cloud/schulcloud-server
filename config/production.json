@@ -10,7 +10,7 @@
 		"calendar": "CALENDAR_URI",
 		"content": "CONTENT_URI",
 		"notification": "NOTIFICATION_URI",
-		"hydra": "https://hydra-host:4445",
-		"web": "https://schul-cloud.org"
+		"hydra": "HYDRA_URI",
+		"web": "FRONTEND_URI"
 	}
 }
