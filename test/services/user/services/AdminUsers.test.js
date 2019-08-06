@@ -70,6 +70,47 @@ describe('AdminUsersService', () => {
 		expect(searchClass(result.data, '2A')).to.be.true;
 	});
 
+	it('only shows current classes', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const student = await testObjects.createTestUser({ firstName: 'Max', roles: ['student'] });
+		const currentSchool = await app.service('schools').get(teacher.schoolId);
+
+		const activeYear = currentSchool.years.activeYear._id;
+		const lastYear = currentSchool.years.lastYear._id;
+
+		const classFromThisYear = await testObjects.createTestClass({
+			name: 'someClass',
+			userIds: [student._id],
+			teacherIds: [teacher._id],
+			year: activeYear,
+		});
+		const classWithoutYear = await testObjects.createTestClass({
+			name: 'anotherClass',
+			userIds: [student._id],
+			teacherIds: [teacher._id],
+			year: lastYear,
+		});
+		const classFromLastYear = await testObjects.createTestClass({
+			name: 'thirdClass',
+			userIds: [student._id],
+			teacherIds: [teacher._id],
+		});
+
+		const params = {
+			account: {
+				userId: teacher._id,
+			},
+		};
+
+		const result = await adminStudentsService.find(params);
+
+		expect(result.data).to.not.be.undefined;
+		const studentResult = result.data.filter(u => u._id.toString() === student._id.toString())[0];
+		expect(studentResult.classes).to.include('someClass');
+		expect(studentResult.classes).to.not.include('anotherClass');
+		expect(studentResult.classes).to.include('thirdClass');
+	});
+
 	it('sorts students correctly', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		await testObjects.createTestUser({ firstName: 'Max', roles: ['student'] });
