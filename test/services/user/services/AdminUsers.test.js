@@ -78,23 +78,26 @@ describe('AdminUsersService', () => {
 		const activeYear = currentSchool.years.activeYear._id;
 		const lastYear = currentSchool.years.lastYear._id;
 
-		const classFromThisYear = await testObjects.createTestClass({
-			name: 'someClass',
+		const classPromises = [];
+		classPromises.push(testObjects.createTestClass({
+			name: 'classFromThisYear',
 			userIds: [student._id],
 			teacherIds: [teacher._id],
 			year: activeYear,
-		});
-		const classWithoutYear = await testObjects.createTestClass({
-			name: 'anotherClass',
+		}));
+		classPromises.push(testObjects.createTestClass({
+			name: 'classFromLastYear',
 			userIds: [student._id],
 			teacherIds: [teacher._id],
 			year: lastYear,
-		});
-		const classFromLastYear = await testObjects.createTestClass({
-			name: 'thirdClass',
+		}));
+		classPromises.push(testObjects.createTestClass({
+			name: 'classWithoutYear',
 			userIds: [student._id],
 			teacherIds: [teacher._id],
-		});
+		}));
+
+		await Promise.all(classPromises);
 
 		const params = {
 			account: {
@@ -106,9 +109,9 @@ describe('AdminUsersService', () => {
 
 		expect(result.data).to.not.be.undefined;
 		const studentResult = result.data.filter(u => u._id.toString() === student._id.toString())[0];
-		expect(studentResult.classes).to.include('someClass');
-		expect(studentResult.classes).to.not.include('anotherClass');
-		expect(studentResult.classes).to.include('thirdClass');
+		expect(studentResult.classes).to.include('classFromThisYear');
+		expect(studentResult.classes).to.not.include('classFromLastYear');
+		expect(studentResult.classes).to.include('classWithoutYear');
 	});
 
 	it('sorts students correctly', async () => {
