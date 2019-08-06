@@ -1,7 +1,5 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const assert = require('assert');
-const express = require('express');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 const moodleMockServer = require('../account/moodle/moodleMockServer');
@@ -14,8 +12,6 @@ const jwt = require('jsonwebtoken');
 const { logger } = app;
 
 chai.use(chaiHttp);
-const should = chai.should();
-const { expect } = chai;
 
 describe('General login service', () => {
 	const testAccount = {
@@ -37,7 +33,7 @@ describe('General login service', () => {
 		.then((moodle) => {
 			mockMoodle = moodle;
 			return Promise.all([
-				testObjects.createTestSystem({ url: moodle.url }),
+				testObjects.createTestSystem({ url: moodle.url, type: 'moodle' }),
 				testObjects.createTestUser()]);
 		})
 		.then(([system, testUser]) => {

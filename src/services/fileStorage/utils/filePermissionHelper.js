@@ -51,11 +51,14 @@ const checkMemberStatus = ({ file, user }) => {
 		return false;
 	}
 
-	return userIds.find(finder) || teacherIds.find(finder);
+	return userIds.find(finder) || (teacherIds && teacherIds.find(finder));
 };
 
 const checkPermissions = permission => async (user, file) => {
 	const fileObject = await getFile(file);
+	if (fileObject === undefined || fileObject === null) {
+		throw new Error('File does not exist.', { user, file, permission });
+	}
 	const {
 		permissions,
 		refOwnerModel,
@@ -80,6 +83,7 @@ const checkPermissions = permission => async (user, file) => {
 	const isSubmission = await submissionModel.findOne({ fileIds: fileObject._id });
 
 	// or legacy course model
+	// TODO: Check member status of teacher if submission
 	if (refOwnerModel === 'course' || isSubmission) {
 		const userObject = await userModel.findOne({ _id: user }).populate('roles').exec();
 		const isStudent = userObject.roles.find(role => role.name === 'student');
@@ -88,6 +92,7 @@ const checkPermissions = permission => async (user, file) => {
 			const rolePermissions = permissions.find(
 				perm => perm.refId && perm.refId.toString() === isStudent._id.toString(),
 			);
+
 			return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
 		}
 		return Promise.resolve(true);

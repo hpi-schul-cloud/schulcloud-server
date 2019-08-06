@@ -37,6 +37,7 @@ const clipboard = require('./clipboard');
 const me = require('./me');
 const database = require('../utils/database');
 
+
 module.exports = function initializeServices() {
 	const app = this;
 
@@ -79,6 +80,7 @@ module.exports = function initializeServices() {
 	app.configure(rocketChat);
 	app.configure(oauth2);
 	app.configure(roster);
+
 
 	// initialize events
 	newsEvents.configure(app);

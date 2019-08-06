@@ -6,7 +6,7 @@ let awsConfig;
 try {
 	awsConfig = require('../../../../config/secrets.json').aws;
 } catch (e) {
-	logger.log('warn', 'The AWS config couldn\'t be read');
+	logger.log('warning', 'The AWS config couldn\'t be read');
 	awsConfig = {};
 }
 

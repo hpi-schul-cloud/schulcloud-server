@@ -20,6 +20,7 @@ module.exports = (app, opt = {
 		accounts,
 		roles,
 		schools,
+		years,
 	} = serviceHelpers(app, opt);
 
 	const cleanup = () => Promise.all([]
@@ -30,7 +31,8 @@ module.exports = (app, opt = {
 		.concat(courses.cleanup())
 		.concat(teams.cleanup())
 		.concat(roles.cleanup())
-		.concat(schools.cleanup()))
+		.concat(schools.cleanup())
+		.concat(years.cleanup()))
 		.then((res) => {
 			logger.info('[TestObjects] cleanup data.');
 			return res;
@@ -49,6 +51,7 @@ module.exports = (app, opt = {
 		courses: courses.info,
 		accounts: accounts.info,
 		schools: schools.info,
+		years: years.info,
 	});
 
 	const createTestTeamWithOwner = async () => {
