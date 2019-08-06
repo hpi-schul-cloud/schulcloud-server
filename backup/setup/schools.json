@@ -12,7 +12,7 @@
 	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"__v": 0,
-	"currentYear": { "$oid": "5b7de0021a3a07c20a1c165e"},
+	"currentYear": { "$oid": "5d2ee323d14ce9844e33f51e"},
 	"purpose": "demo"
 },
 {
@@ -38,7 +38,7 @@
 	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"__v": 0,
-	"currentYear": { "$oid": "5b7de0021a3a07c20a1c165e"},
+	"currentYear": { "$oid": "5d2ee323d14ce9844e33f51e"},
 	"purpose": "demo",
 	"features" : [
         "rocketChat"
@@ -53,7 +53,7 @@
 	"systems" : [],
 	"__v" : 0,
 	"fileStorageType" : "awsS3",
-	"currentYear": { "$oid": "5b7de0021a3a07c20a1c165e"},
+	"currentYear": { "$oid": "5d2ee323d14ce9844e33f51e"},
 	"purpose": "demo"
 },
 {
@@ -65,6 +65,6 @@
 	"systems" : [],
 	"__v" : 0,
 	"fileStorageType" : "awsS3",
-	"currentYear": { "$oid": "5b7de0021a3a07c20a1c165e"},
+	"currentYear": { "$oid": "5d2ee323d14ce9844e33f51e"},
 	"purpose": "expert"
 }]
