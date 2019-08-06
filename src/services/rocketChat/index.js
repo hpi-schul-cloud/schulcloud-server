@@ -9,48 +9,13 @@ const {
 } = require('./hooks');
 const docs = require('./docs');
 const { randomPass, randomSuffix } = require('./randomPass');
-const { makeStringRCConform } = require('./helpers');
-
-
-const REQUEST_TIMEOUT = 6000; // in ms
+const { getRequestOptions, makeStringRCConform } = require('./helpers');
 
 if (ROCKET_CHAT_URI === undefined) { logger.warning('please set the environment variable ROCKET_CHAT_URI'); }
 if (ROCKET_CHAT_ADMIN_TOKEN === undefined) {
 	logger.warning('please set the environment variable ROCKET_CHAT_ADMIN_TOKEN');
 }
 if (ROCKET_CHAT_ADMIN_ID === undefined) { logger.warning('please set the environment variable ROCKET_CHAT_ADMIN_ID'); }
-
-/**
- * create a valid options object to call a rocketChat request.
- * @param {String} shortUri Uri of the Rocket.Chat endpoint. Example: '/api/v1/users.register'
- * @param {Object} body Body of the request, as required by the rocket.chat API
- * @param {Boolean} asAdmin If true, request will be sent with admin privileges,
- * and auth field will be ignored.
- * @param {Object} auth optional, object of the form {authToken, userId}.
- * @param {String} method the REST method to be called. Example: 'POST'.
- */
-const getRequestOptions = (shortUri, body, asAdmin, auth, method) => {
-	let headers;
-	if (asAdmin) {
-		headers = {
-			'X-Auth-Token': ROCKET_CHAT_ADMIN_TOKEN,
-			'X-User-ID': ROCKET_CHAT_ADMIN_ID,
-		};
-	} else if (auth) {
-		headers = {
-			'X-Auth-Token': auth.authToken,
-			'X-User-ID': auth.userId,
-		};
-	}
-	return {
-		uri: ROCKET_CHAT_URI + shortUri,
-		method: method || 'POST',
-		body,
-		headers,
-		json: true,
-		timeout: REQUEST_TIMEOUT,
-	};
-};
 
 /**
  * service that maps schulcloud users to rocketChat users.
