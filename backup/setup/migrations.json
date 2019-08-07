@@ -36,8 +36,8 @@
 		"$oid": "5d3e97e02d1b0f2c2cc7ec18"
 	},
 	"state": "up",
-    "name" : "lessonIsCopyFrom", 
-    "createdAt" : "2019-07-11T12:18:30.503+0000", 
+    "name" : "lessonIsCopyFrom",
+    "createdAt" : "2019-07-11T12:18:30.503+0000",
 	"__v": 0
 },
 {
@@ -92,4 +92,15 @@
 		"$date": "2019-08-05T16:15:12.225Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d4a99ccb17be734506b855b"
+	},
+	"state" : "up",
+	"name" : "addPortfolioToLtitools",
+	"createdAt": {
+		"$date": "2019-08-07T09:28:44.060Z"
+	},
+	"__v" : 0
 }]
