@@ -2,6 +2,7 @@
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
 const Entities = require('html-entities').AllHtmlEntities;
+
 const entities = new Entities();
 
 const globalHooks = require('./hooks/');
