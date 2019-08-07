@@ -1,18 +1,12 @@
-const { NotFound } = require('@feathersjs/errors');
-
 const resolveStorageType = (context) => {
-	const { params: { payload } } = context;
-
-	return context.app.service('users').find({
+	const { params: { payload, account } } = context;
+	const userId = payload.userId || (account || {}).userId;
+	return context.app.service('users').get(userId, {
 		query: {
-			_id: payload.userId,
 			$populate: ['schoolId'],
 		},
-	}).then((users) => {
-		if (users.length === 1) {
-			throw new NotFound('Can not match user.');
-		}
-		const [{ schoolId: { _id, fileStorageType } }] = users.data;
+	}).then((user) => {
+		const { schoolId: { _id, fileStorageType } } = user;
 		payload.schoolId = _id;
 		payload.fileStorageType = fileStorageType;
 		return context;

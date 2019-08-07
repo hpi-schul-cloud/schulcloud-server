@@ -1,6 +1,8 @@
 const _ = require('lodash');
 const { NotFound, GeneralError, BadRequest } = require('@feathersjs/errors');
 const service = require('feathers-mongoose');
+
+const logger = require('../../logger/');
 const lessonModel = require('./model');
 const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
@@ -86,8 +88,9 @@ class LessonCopyService {
 	async copyFilesInLesson(params, sourceLesson, newCourseId, newLesson) {
 		const fileChangelog = [];
 		// get all course files
+		const course = sourceLesson.courseId;
 		const files = await FileModel.find({
-			owner: sourceLesson.courseId,
+			owner: course,
 		}).lean().exec();
 		// filter files to lesson related
 		const lessonFiles = files.filter(f => _.some(
@@ -100,6 +103,7 @@ class LessonCopyService {
 		await Promise.all(lessonFiles.map(sourceFile => copyFile({
 			file: sourceFile,
 			parent: newCourseId,
+			sourceSchoolId: course.schoolId,
 		}, params).then((newFile) => {
 			// /files/file?file=5d1ef687faccd3282cc94f83&amp;name=imago-images-fotos-von-voegeln.jpg\
 			fileChangelog.push({
@@ -159,7 +163,10 @@ class LessonCopyService {
 		return Promise.all([
 			this.copyHomeworks(params, sourceLesson, newCourseId, newLesson),
 			this.copyFilesInLesson(params, sourceLesson, newCourseId, newLesson),
-		]).then(() => newLesson);
+		]).then(() => newLesson).catch((err) => {
+			logger.warning(err);
+			throw err;
+		});
 	}
 }
 
