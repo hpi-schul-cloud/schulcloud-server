@@ -106,10 +106,9 @@ const displayInternRequests = level => (context) => {
 		if (params.key) { out[key] = params.key; }
 	});
 	if (data) { out.data = data; }
-	const before = type === 'before' ? '<--' : '';
-	const after = type === 'after' ? '-->' : '';
+	
 	// eslint-disable-next-line no-console
-	console.log(`${before}<intern ${type}>${after}`);
+	console.log('[intern]');
 	// eslint-disable-next-line no-console
 	console.log(out);
 	// eslint-disable-next-line no-console
@@ -154,7 +153,6 @@ module.exports = function setup() {
 	// level 2+ adding intern request
 	if (app.get('DISPLAY_REQUEST_LEVEL') > 1) {
 		before.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
-		after.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
 	}
 	app.hooks({ before, after, error });
 };
