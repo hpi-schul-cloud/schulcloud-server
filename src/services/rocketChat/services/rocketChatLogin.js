@@ -17,53 +17,40 @@ class RocketChatLogin {
      * @param {*} userId Id of a user in the schulcloud
      * @param {*} params
      */
-	get(userId, params) {
+	async get(userId, params) {
 		if (userId.toString() !== params.account.userId.toString()) {
 			return Promise.reject(new Forbidden('you may only log into your own rocketChat account'));
 		}
-		return this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params)
-			.then(async (rcAccount) => {
-				let { authToken } = rcAccount;
-				if (authToken !== '') {
-					try {
-						const res = await request(getRequestOptions('/api/v1/me',
-							{}, false, { authToken, userId: rcAccount.rcId }, 'GET'));
-						if (res.success) return { authToken };
-					} catch (err) {
-						authToken = '';
-					}
+		try {
+			const rcAccount = await this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params);
+
+			let { authToken } = rcAccount;
+			// user already logged in
+			if (authToken !== '') {
+				try {
+					const res = await request(getRequestOptions('/api/v1/me',
+						{}, false, { authToken, userId: rcAccount.rcId }, 'GET'));
+					if (res.success) return { authToken };
+				} catch (err) {
+					authToken = '';
 				}
-				const login = {
-					user: rcAccount.username,
-					password: rcAccount.password,
-				};
-				const loginResponse = await request(getRequestOptions('/api/v1/login', login))
-					.catch(async (err) => {
-						if (err.error.error === 'Unauthorized') {
-							const queryString = `username=${rcAccount.username}`;
-							const rcUser = await request(getRequestOptions(`/api/v1/users.info?${queryString}`,
-								{}, true, undefined, 'GET'));
-							const updatePasswordBody = {
-								userId: rcUser.user._id,
-								data: {
-									password: rcAccount.password,
-								},
-							};
-							await request(getRequestOptions('/api/v1/users.update', updatePasswordBody, true));
-							return request(getRequestOptions('/api/v1/login', login));
-						}
-						throw new BadRequest('Login to rocketchat failed', err);
-					});
-				const newToken = (loginResponse.data || {}).authToken;
-				authToken = newToken;
-				if (loginResponse.status === 'success' && authToken !== undefined) {
-					await userModel.update({ username: rcAccount.username }, { authToken });
-					return Promise.resolve({ authToken });
-				} return Promise.reject(new BadRequest('False response data from rocketChat'));
-			}).catch((err) => {
-				logger.warning(new Forbidden('Can not create token.', err));
-				throw new Forbidden('Can not create token.', err);
-			});
+			}
+
+			// log in user
+			const response = await request(getRequestOptions(
+				'/api/v1/users.createToken',
+				{ userId: rcAccount.rcId },
+				true,
+			));
+			({ authToken } = response.data);
+			if (response.success === true && authToken !== undefined) {
+				await userModel.update({ username: rcAccount.username }, { authToken });
+				return Promise.resolve({ authToken });
+			} return Promise.reject(new BadRequest('False response data from rocketChat'));
+		} catch (err) {
+			logger.warning(new Forbidden('Can not create token.', err));
+			throw new Forbidden('Can not create token.', err);
+		}
 	}
 
 	setup(app) {
