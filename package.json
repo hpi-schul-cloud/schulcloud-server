@@ -1,6 +1,6 @@
 {
   "name": "schulcloud-server",
-  "description": "",
+  "description": "hpi schulcloud server",
   "version": "19.0.0",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
@@ -84,7 +84,6 @@
     "nodemailer": "^6.2.1",
     "passport": "^0.4.0",
     "passport-strategy": "^1.0.0",
-    "phantomjs-prebuilt": "^2.1.14",
     "pretty-error": "^2.0.3",
     "querystring": "^0.2.0",
     "randexp": "^0.5.3",
