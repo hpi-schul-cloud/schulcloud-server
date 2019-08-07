@@ -81,5 +81,15 @@
 		"$date": "2019-08-02T12:15:02.584Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d4858fc8f66f50964686467"
+	},
+	"state": "up",
+	"name": "addToolPermissionsToSuperheroRole",
+	"createdAt": {
+		"$date": "2019-08-05T16:15:12.225Z"
+	},
+	"__v": 0
 }]
-
