@@ -1,12 +1,12 @@
 const aws = require('aws-sdk');
-const logger = require('winston');
+const logger = require('../../../logger');
 
 // todo: use production config
 let awsConfig;
 try {
 	awsConfig = require('../../../../config/secrets.json').aws;
 } catch (e) {
-	logger.log('warn', 'The AWS config couldn\'t be read');
+	logger.log('warning', 'The AWS config couldn\'t be read');
 	awsConfig = {};
 }
 

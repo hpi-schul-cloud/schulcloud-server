@@ -1,10 +1,10 @@
 const errors = require('@feathersjs/errors');
-const logger = require('winston');
 const randexp = require('randexp');
 const path = require('path');
 
 const templateDir = path.join(__dirname, 'templates', 'signup');
 const { EmailTemplate } = require('email-templates');
+const logger = require('../../logger');
 
 module.exports = function (app) {
 	const externals = {};

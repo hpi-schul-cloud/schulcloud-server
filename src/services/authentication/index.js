@@ -1,7 +1,6 @@
 const auth = require('@feathersjs/authentication');
 const jwt = require('@feathersjs/authentication-jwt');
 const local = require('@feathersjs/authentication-local');
-const logger = require('winston');
 
 const extractors = require('passport-jwt').ExtractJwt;
 
@@ -100,11 +99,6 @@ module.exports = function () {
 	app.configure(system({
 		name: 'moodle',
 		loginStrategy: require('../account/strategies/moodle'),
-	}));
-
-	app.configure(system({
-		name: 'itslearning',
-		loginStrategy: require('../account/strategies/itslearning'),
 	}));
 
 	app.configure(system({

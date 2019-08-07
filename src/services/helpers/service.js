@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const logger = require('winston');
+const logger = require('../../logger');
 
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {
@@ -34,10 +34,11 @@ module.exports = function setup(app) {
 					// send mail with defined transport object in production mode
 					if (process.env.NODE_ENV === 'production' || process.env.FORCE_SEND_EMAIL) {
 						const info = await transporter.sendMail(mail);
-						return logger.info('E-Mail Message sent: %s', info.messageId);
+						logger.info(`E-Mail Message sent: ${info.messageId}`);
+						return;
 					}
 					// otherwise print email message object on console
-					return logger.debug('E-Mail Message not sent (not in production mode):', mail);
+					logger.debug('E-Mail Message not sent (not in production mode):', mail);
 				}).catch(err => Promise.reject(err));
 		}
 	}

@@ -17,6 +17,11 @@ fi
 function buildandpush {
   # build containers
   docker build -t schulcloud/schulcloud-server:$DOCKERTAG -t schulcloud/schulcloud-server:$GIT_SHA .
+ 
+  if [[ "$?" != "0" ]] 
+  then 
+  exit $? 
+  fi
 
   # Log in to the docker CLI
   echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
@@ -76,6 +81,15 @@ function inform {
   fi
 }
 
+function inform_staging {
+  if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
+  then
+    curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Staging-System wurde aktualisiert: Schul-Cloud Server! https://api.staging.schul-cloud.org/version"}' $WEBHOOK_URL_CHAT
+  fi
+}
+
+# write version file
+printf "%s\n%s\n%s" $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_COMMIT_MESSAGE > ./version
 
 if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
@@ -83,12 +97,13 @@ then
   inform
 elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
-  buildandpush	
+  buildandpush
   deploytotest
 elif [[ $TRAVIS_BRANCH = release* || $TRAVIS_BRANCH = hotfix* ]]
 then
   buildandpush
   deploytostaging
+  inform_staging
 else
   echo "Nix wird deployt"
 fi

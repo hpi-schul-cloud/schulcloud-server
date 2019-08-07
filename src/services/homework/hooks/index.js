@@ -1,6 +1,6 @@
 const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../../logger');
 
 const globalHooks = require('../../../hooks');
 
@@ -181,7 +181,7 @@ const hasPatchPermission = (hook) => {
 		return Promise.reject(new errors.Forbidden());
 	})
 		.catch((err) => {
-			logger.warn(err);
+			logger.warning(err);
 			return Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" }));
 		});
 };
