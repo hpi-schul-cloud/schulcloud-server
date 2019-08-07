@@ -86,6 +86,22 @@ module.exports = (hydraUrl) => {
 			},
 			json: true,
 		}),
+		getOAuth2Client: id => request({
+			uri: `${hydraUrl}/clients/${id}`,
+			method: 'GET',
+			headers: {
+				...mockTlsTermination,
+			},
+		}),
+		updateOAuth2Client: (id, data) => request({
+			uri: `${hydraUrl}/clients/${id}`,
+			method: 'PUT',
+			body: data,
+			json: true,
+			headers: {
+				...mockTlsTermination,
+			},
+		}),
 		deleteOAuth2Client: id => request({
 			uri: `${hydraUrl}/clients/${id}`,
 			method: 'DELETE',
