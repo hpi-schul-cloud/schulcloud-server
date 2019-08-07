@@ -1,6 +1,6 @@
+const { ObjectId } = require('mongoose').Types;
 const { expect } = require('chai');
 const logger = require('../../../src/logger/index');
-const { ObjectId } = require('mongoose').Types;
 
 const app = require('../../../src/app');
 const T = require('../helpers/testObjects')(app);
