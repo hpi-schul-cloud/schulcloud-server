@@ -9,6 +9,8 @@
 	"services": {
 		"calendar": "CALENDAR_URI",
 		"content": "CONTENT_URI",
-		"notification": "NOTIFICATION_URI"
+		"notification": "NOTIFICATION_URI",
+		"hydra": "HYDRA_URI",
+		"web": "HOST"
 	}
 }
