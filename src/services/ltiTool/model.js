@@ -35,7 +35,7 @@ const ltiTool = new Schema({
 	originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
 	oAuthClientId: { type: String },
 	useIframePseudonym: { type: Boolean },
-	friendlyUrl: { type: String, unique: true },
+	friendlyUrl: { type: String, unique: true, sparse: true },
 });
 
 const ltiToolModel = mongoose.model('ltiTool', ltiTool);
