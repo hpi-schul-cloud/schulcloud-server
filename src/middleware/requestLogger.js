@@ -10,9 +10,7 @@ const queryString = require('querystring');
 */
 module.exports = function requstLogger(_app) {
 	const app = _app || this;
-	const level = process.env.NODE_ENV === 'production'
-		? 0
-		: Number(process.env.DISPLAY_REQUEST_LEVEL || 0);
+	const level = Number(process.env.DISPLAY_REQUEST_LEVEL || 0);
 	app.set('DISPLAY_REQUEST_LEVEL', level);
 
 	if (level > 0) {
