@@ -91,8 +91,7 @@ const displayInternRequests = level => (context) => {
 		return context;
 	}
 	const {
-		// eslint-disable-next-line no-unused-vars
-		id, type, params, path, data, method,
+		id, params, path, data, method,
 	} = context;
 
 	if (['accounts'].includes(path) && level < 4) {
