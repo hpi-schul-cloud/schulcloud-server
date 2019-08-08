@@ -72,7 +72,7 @@ classSchema.plugin(require('mongoose-lean-virtuals'));
 
 const getClassDisplayName = (aClass) => {
 	if (aClass.gradeLevel) {
-		return `${aClass.gradeLevel}${aClass.name}`;
+		return `${aClass.gradeLevel}${aClass.name || ''}`;
 	}
 
 	return aClass.name;

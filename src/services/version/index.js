@@ -17,7 +17,7 @@ const getLine = (stringArr, i) => {
 
 const getLines = (stringArr, start, end) => {
 	if (!end) {
-	// response with single line
+		// response with single line
 		return getLine(stringArr, start);
 	}
 	// response with multiline
@@ -36,16 +36,20 @@ router.get('/version', (req, res, next) => {
 	let sha = false;
 	let branch = false;
 	let message = false;
+	let stat = {};
 	try {
-		const versionFileLines = fs.readFileSync(path.join(__dirname, '../../../', 'version'), 'utf8').split('\n');
+		const filePath = path.join(__dirname, '../../../', 'version');
+		const versionFileLines = fs.readFileSync(filePath, 'utf8').split('\n');
+		stat = fs.statSync(filePath);
 		sha = getLines(versionFileLines, 0);
 		branch = getLines(versionFileLines, 1);
 		message = getLines(versionFileLines, 2, versionFileLines.length);
 	} catch (error) {
 		logger.error('version file missing', error);
 	}
+	const { birthtime } = stat;
 	return res.json({
-		sha, version, branch, message,
+		sha, version, branch, message, birthtime,
 	});
 });
 

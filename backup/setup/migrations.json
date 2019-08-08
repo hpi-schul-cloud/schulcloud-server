@@ -36,8 +36,8 @@
 		"$oid": "5d3e97e02d1b0f2c2cc7ec18"
 	},
 	"state": "up",
-    "name" : "lessonIsCopyFrom",
-    "createdAt" : "2019-07-11T12:18:30.503+0000",
+    "name" : "lessonIsCopyFrom", 
+    "createdAt" : "2019-07-11T12:18:30.503+0000", 
 	"__v": 0
 },
 {
