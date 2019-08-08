@@ -2,18 +2,21 @@ const winston = require('winston');
 
 const SPLAT = Symbol.for('splat');
 
-let logLevel;
+let logLevel = process.env.LOG_LEVEL;
 
-switch (process.env.NODE_ENV) {
-	case 'development':
-		logLevel = 'debug';
-		break;
-	case 'test':
-		logLevel = 'emerg';
-		break;
-	case 'production':
-	default:
-		logLevel = 'info';
+if (!logLevel) {
+	switch (process.env.NODE_ENV) {
+		case 'default':
+		case 'development':
+			logLevel = 'debug';
+			break;
+		case 'test':
+			logLevel = 'emerg';
+			break;
+		case 'production':
+		default:
+			logLevel = 'info';
+	}
 }
 
 function formatObject(param) {
@@ -28,11 +31,13 @@ function formatObject(param) {
 const all = winston.format((info) => {
 	const isSplatTypeMessage = typeof info.message === 'string'
 		&& (info.message.includes('%s') || info.message.includes('%d') || info.message.includes('%j'));
-	if (isSplatTypeMessage) {
+
+	const splat = info[SPLAT] || [];
+
+	if (isSplatTypeMessage || splat.length === 0) {
 		return info;
 	}
 
-	const splat = info[SPLAT] || [];
 	const message = formatObject(info.message);
 	const rest = splat
 		.map(formatObject)

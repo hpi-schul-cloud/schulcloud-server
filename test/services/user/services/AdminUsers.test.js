@@ -5,7 +5,6 @@ const testObjects = require('../../helpers/testObjects')(app);
 
 const adminStudentsService = app.service('/users/admin/students');
 const adminTeachersService = app.service('/users/admin/teachers');
-const gradeLevelService = app.service('/gradeLevels');
 const consentService = app.service('consents');
 
 describe('AdminUsersService', () => {
@@ -41,19 +40,12 @@ describe('AdminUsersService', () => {
 		});
 		expect(testClass).to.not.be.undefined;
 
-		const gradeLevel = await gradeLevelService.find({
-			query: { name: '2' },
-		}).then(gradeLevels => gradeLevels.data[0]).catch((err) => {
-			logger.warning('Can not find gradeLevel', err);
-		});
-		expect(gradeLevel).to.not.be.undefined;
-
 		const gradeLevelClass = await testObjects.createTestClass({
 			name: 'A',
 			userIds: [student._id],
 			teacherIds: [teacher._id],
 			nameFormat: 'gradeLevel+name',
-			gradeLevel: gradeLevel._id,
+			gradeLevel: 2,
 		}).catch((err) => {
 			logger.warning('Can not create test class.', err);
 		});

@@ -78,14 +78,13 @@ describe('CSVSyncer', () => {
 	describe('getClassObject method', () => {
 		it('should default to the `static` scheme', async () => {
 			const result = await new CSVSyncer().getClassObject('foobar');
-			expect(result.nameFormat).to.equal('static');
+			expect(result.gradeLevel).to.be.undefined;
 			expect(result.name).to.equal('foobar');
 		});
 
 		it('should split classes and grade levels if applicable', async () => {
 			const result = await new CSVSyncer(app).getClassObject('1a');
-			expect(result.nameFormat).to.equal('gradeLevel+name');
-			expect(result.gradeLevel.name).to.equal('1');
+			expect(result.gradeLevel).to.equal('1');
 			expect(result.name).to.equal('a');
 		});
 
@@ -93,11 +92,10 @@ describe('CSVSyncer', () => {
 			for (let i = -5; i <= 20; i += 1) {
 				const result = await new CSVSyncer(app).getClassObject(`${i}b`);
 				if (i >= 1 && i <= 13) {
-					expect(result.nameFormat).to.equal('gradeLevel+name');
-					expect(result.gradeLevel.name).to.equal(String(i));
+					expect(result.gradeLevel).to.equal(String(i));
 					expect(result.name).to.equal('b');
 				} else {
-					expect(result.nameFormat).to.equal('static');
+					expect(result.gradeLevel).to.be.undefined;
 					expect(result.name).to.equal(`${i}b`);
 				}
 			}

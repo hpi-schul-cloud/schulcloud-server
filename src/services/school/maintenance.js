@@ -4,7 +4,7 @@ const SchoolYearFacade = require('./logic/year');
 
 const ldapSystemFilter = s => s.type === 'ldap' && s.ldapConfig && s.ldapConfig.active === true;
 
-const schoolUsesLdap = school => school.systems.some(ldapSystemFilter);
+const schoolUsesLdap = school => (school.systems || []).some(ldapSystemFilter);
 
 class SchoolMaintenanceService {
 	async setup(app) {

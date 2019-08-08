@@ -32,6 +32,16 @@ const setSubject = (hook) => {
 	}));
 };
 
+const setIdToken = (hook) => {
+	if (!hook.params.query.accept) return hook;
+	hook.data.session = {
+		id_token: {
+			iframe: iframeSubject('{{sub}}', hook.app.settings.services.web),
+		},
+	};
+	return hook;
+};
+
 const injectLoginRequest = hook => Hydra(hook.app.settings.services.hydra).getLoginRequest(hook.id)
 	.then((loginRequest) => {
 		hook.params.loginRequest = loginRequest;
@@ -71,7 +81,7 @@ exports.hooks = {
 	consentRequest: {
 		before: {
 			all: [auth.hooks.authenticate('jwt')],
-			patch: [injectConsentRequest, validateSubject],
+			patch: [injectConsentRequest, validateSubject, setIdToken],
 		},
 	},
 	introspect: {
