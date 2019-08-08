@@ -28,6 +28,7 @@ module.exports = function setup() {
 			untilQuery = {
 				$or: [
 					{ untilDate: { $exists: false } },
+					{ untilDate: null },
 					{ untilDate: { $gte: Date.now() } },
 				],
 			};
