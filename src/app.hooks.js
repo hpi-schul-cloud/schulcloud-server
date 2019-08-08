@@ -91,6 +91,7 @@ const displayInternRequests = level => (context) => {
 		return context;
 	}
 	const {
+		// eslint-disable-next-line no-unused-vars
 		id, type, params, path, data, method,
 	} = context;
 
@@ -106,7 +107,7 @@ const displayInternRequests = level => (context) => {
 		if (params.key) { out[key] = params.key; }
 	});
 	if (data) { out.data = data; }
-	
+
 	// eslint-disable-next-line no-console
 	console.log('[intern]');
 	// eslint-disable-next-line no-console
