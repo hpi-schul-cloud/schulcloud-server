@@ -8,7 +8,6 @@ const { ObjectId } = require('mongoose').Types;
 const globalHooks = require('../../../hooks');
 
 const MoodleLoginStrategy = require('../strategies/moodle');
-const ITSLearningLoginStrategy = require('../strategies/itslearning');
 const IServLoginStrategy = require('../strategies/iserv');
 const LocalLoginStrategy = require('../strategies/local');
 const LdapLoginStrategy = require('../strategies/ldap');
@@ -17,7 +16,6 @@ const LdapLoginStrategy = require('../strategies/ldap');
 // TODO: initialize all strategies here once
 const strategies = {
 	moodle: MoodleLoginStrategy,
-	itslearning: ITSLearningLoginStrategy,
 	iserv: IServLoginStrategy,
 	local: LocalLoginStrategy,
 	ldap: LdapLoginStrategy,
@@ -99,9 +97,9 @@ const validatePassword = (hook) => {
 			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
 			if (
 				(hasStudentCreate && isStudent)
-                || (hasAdminView && (isStudent || isTeacher))
-                || isSuperHero
-                || editsOwnAccount) {
+				|| (hasAdminView && (isStudent || isTeacher))
+				|| isSuperHero
+				|| editsOwnAccount) {
 				return hook;
 			}
 			if (password && !passwordVerification) {
