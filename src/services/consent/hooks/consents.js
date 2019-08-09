@@ -1,6 +1,7 @@
 const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../config');
 
 // TODO: after hook for get that checks access.
 // TODO: rethink security, due to no schoolId we can't restrict anything.
@@ -109,7 +110,7 @@ const accessCheck = (consent, app) => {
 			}
 			const { age } = user;
 
-			if (age < 16) {
+			if (age < CONSENT_WITHOUT_PARENTS_AGE) {
 				const parentConsent = (consent.parentConsents || [])[0] || {};
 				// check parent consents
 				if (!(parentConsent.privacyConsent && parentConsent.termsOfUseConsent)) {
