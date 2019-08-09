@@ -17,6 +17,11 @@ fi
 function buildandpush {
   # build containers
   docker build -t schulcloud/schulcloud-server:$DOCKERTAG -t schulcloud/schulcloud-server:$GIT_SHA .
+ 
+  if [[ "$?" != "0" ]] 
+  then 
+  exit $? 
+  fi
 
   # Log in to the docker CLI
   echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
@@ -92,7 +97,7 @@ then
   inform
 elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
-  buildandpush	
+  buildandpush
   deploytotest
 elif [[ $TRAVIS_BRANCH = release* || $TRAVIS_BRANCH = hotfix* ]]
 then
