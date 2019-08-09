@@ -79,7 +79,7 @@ class AdminUsers {
 			const { schoolId } = currentUser;
 
 			const currentSchool = await this.app.service('schools').get(schoolId);
-			const currentYear = currentSchool.years.activeYear._id;
+			const currentYear = currentSchool.years.defaultYear._id;
 
 			// permission check
 			if (!currentUser.roles.some(role => ['teacher', 'administrator', 'superhero'].includes(role.name))) {

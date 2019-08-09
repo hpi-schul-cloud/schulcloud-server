@@ -75,7 +75,7 @@ describe('AdminUsersService', () => {
 		const student = await testObjects.createTestUser({ firstName: 'Max', roles: ['student'] });
 		const currentSchool = await app.service('schools').get(teacher.schoolId);
 
-		const activeYear = currentSchool.years.activeYear._id;
+		const activeYear = currentSchool.years.defaultYear._id;
 		const lastYear = currentSchool.years.lastYear._id;
 
 		const classPromises = [];
