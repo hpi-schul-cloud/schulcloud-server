@@ -75,7 +75,7 @@ describe('AdminUsersService', () => {
 		const student = await testObjects.createTestUser({ firstName: 'Max', roles: ['student'] });
 		const currentSchool = await app.service('schools').get(teacher.schoolId);
 
-		const activeYear = currentSchool.years.defaultYear._id;
+		const { currentYear } = currentSchool;
 		const lastYear = currentSchool.years.lastYear._id;
 
 		const classPromises = [];
@@ -83,7 +83,7 @@ describe('AdminUsersService', () => {
 			name: 'classFromThisYear',
 			userIds: [student._id],
 			teacherIds: [teacher._id],
-			year: activeYear,
+			year: currentYear,
 		}));
 		classPromises.push(testObjects.createTestClass({
 			name: 'classFromLastYear',
