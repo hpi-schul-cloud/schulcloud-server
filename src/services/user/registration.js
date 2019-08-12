@@ -5,7 +5,7 @@ const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 const logger = require('../../logger');
 
-const CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS = parseInt(process.env.CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS || 16, 10);
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../consent/config');
 
 const formatBirthdate1 = (datestamp) => {
 	if (datestamp == undefined) return false;
