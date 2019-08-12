@@ -124,7 +124,7 @@ const registerUser = function (data, params, app) {
 		// identical emails?
 		if (data.parent_email && data.parent_email === data.email) {
 			return Promise.reject(new errors.BadRequest(
-				'Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.'
+				'Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.',
 			));
 		}
 
