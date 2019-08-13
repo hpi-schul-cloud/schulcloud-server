@@ -158,10 +158,11 @@ describe('AdminUsersService', () => {
 		});
 
 		const resultSortedByFirstName = await adminStudentsService.find(createParams({ firstName: -1 }));
-		expect(resultSortedByFirstName[0].firstName > resultSortedByFirstName[1].firstName);
+		expect(resultSortedByFirstName.data.lenght > 1);
+		expect(resultSortedByFirstName.data[0].firstName > resultSortedByFirstName.data[1].firstName);
 
 		const resultSortedByClass = await adminStudentsService.find(createParams({ class: -1 }));
-		expect(resultSortedByClass[0].class > resultSortedByClass[1].class);
+		expect(resultSortedByClass.data[0].class > resultSortedByClass.data[1].class);
 
 
 		const sortOrder = {
@@ -171,9 +172,8 @@ describe('AdminUsersService', () => {
 		};
 
 		const resultSortedByConsent = await adminStudentsService.find(createParams({ consent: -1 }));
-		expect(sortOrder[resultSortedByConsent[0].consent.consentStatus])
-			.to.be.at.least(sortOrder[resultSortedByConsent[1].consent.consentStatus]);
-
+		expect(sortOrder[resultSortedByConsent.data[0].consent.consentStatus])
+			.to.be.at.least(sortOrder[resultSortedByConsent.data[1].consent.consentStatus]);
 	});
 
 	it('filters students correctly', async () => {
