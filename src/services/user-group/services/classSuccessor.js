@@ -3,8 +3,9 @@ const { BadRequest } = require('@feathersjs/errors');
 // private functions
 
 class ClassSuccessorService {
-	constructor() {
+	constructor(app) {
 		this.docs = {};
+		this.app = app;
 	}
 
 	/**
@@ -31,10 +32,6 @@ class ClassSuccessorService {
 		} catch (err) {
 			throw err;
 		}
-	}
-
-	setup(app) {
-		this.app = app;
 	}
 }
 
