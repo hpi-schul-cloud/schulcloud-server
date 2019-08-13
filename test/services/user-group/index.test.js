@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const logger = require('winston');
+const logger = require('../../../src/logger/index');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 
@@ -15,29 +15,22 @@ describe('user-group service', () => {
 		await testObjects.createTestClass({
 			name: 'a',
 		}).catch((err) => {
-			logger.warn('Can not create test class.', err);
+			logger.warning('Can not create test class.', err);
 		});
 		await testObjects.createTestClass({
 			name: 'B',
 		}).catch((err) => {
-			logger.warn('Can not create test class.', err);
+			logger.warning('Can not create test class.', err);
 		});
 
 		const params = {
 			account: {
 				userId: teacher._id,
 			},
-			query: {
-				$sort: {
-					displayName: -1,
-				},
-			},
 		};
 
-		const result = await classesService.find(params);
-		const classes = result.data;
-		expect(classes).to.not.be.undefined;
-		expect(classes[0].displayName).to.be.greaterThan(classes[1].displayName);
+		const { data } = await classesService.find(params);
+		expect(data.length).to.be.greaterThan(1);
 	});
 
 	after(async () => {

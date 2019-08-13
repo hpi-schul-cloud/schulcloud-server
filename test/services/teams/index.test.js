@@ -1,24 +1,26 @@
-const { expect } = require('chai');
-const logger = require('winston');
 const { ObjectId } = require('mongoose').Types;
+const { expect } = require('chai');
+const logger = require('../../../src/logger/index');
 
 const app = require('../../../src/app');
 const T = require('../helpers/testObjects')(app);
 
 const teamService = app.service('/teams');
 
+
 describe('Test team basic methods', () => {
 	describe('teams create', () => {
 		let team;
 		let teamId;
+		let userId;
 
 		before(async () => {
 			const user = await T.createTestUser({ roles: ['administrator'] }).catch((err) => {
-				logger.warn('Can not create test user', err);
+				logger.warning('Can not create test user', err);
 			});
 
 			const schoolId = user.schoolId.toString();
-			const userId = user._id.toString();
+			userId = user._id.toString();
 			const fakeLoginParams = T.fakeLoginParams({ userId });
 
 			team = await teamService.create({
@@ -26,7 +28,7 @@ describe('Test team basic methods', () => {
 				schoolId,
 				userIds: [userId],
 			}, fakeLoginParams).catch((err) => {
-				logger.warn('Can not create test team', err);
+				logger.warning('Can not create test team', err);
 			});
 
 			teamId = team._id.toString();
@@ -47,6 +49,16 @@ describe('Test team basic methods', () => {
 			expect(filePermission).to.be.an('array').to.have.lengthOf(2);
 			expect(ObjectId.isValid(filePermission[0].refId)).to.be.true;
 			expect(ObjectId.isValid(filePermission[1].refId)).to.be.true;
+		});
+
+		it('should find created test team for user', async () => {
+			const result = await app.service('teams').find(userId);
+			const elements = [];
+			result.data.forEach((element) => {
+				elements.push(element._id);
+			});
+			const testTeam = elements.pop();
+			expect(testTeam.toString()).to.equal(teamId);
 		});
 
 		it('is allowed for superheroes', async () => {

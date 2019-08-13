@@ -1,47 +1,55 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../../logger');
 
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
 
-const getCurrentUser = id => userModel.findById(id)
+const getCurrentUserInfo = id => userModel.findById(id)
 	.select('schoolId')
 	.populate('roles')
 	.lean()
 	.exec();
 
-const getAllUsers = (schoolId, roles, sortObject, skip = 0, limit = 0) => userModel.find({ schoolId, roles })
-	.select('firstName lastName email createdAt')
-	.skip(skip)
-	.limit(limit)
-	.sort(sortObject)
-	.lean()
-	.exec();
+const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('users').find({
+	query: {
+		schoolId,
+		roles: role.toString(),
+		$limit: sortObject.$limit,
+		$skip: sortObject.$skip,
+		$sort: sortObject.$sort,
+		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash'],
+	},
+});
 
 const getRoles = () => roleModel.find()
 	.select('name')
 	.lean()
 	.exec();
 
-const getClasses = (app, schoolId) => app.service('classes')
+const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
 	.find({
 		query: {
 			schoolId,
+			$or: [
+				{ year: schoolYearId },
+				{ year: { $exists: false } },
+			],
 			$limit: 1000,
 		},
 	})
 	.then(classes => classes.data)
 	.catch((err) => {
-		logger.warn(`Can not execute app.service("classes").find for ${schoolId}`, err);
+		logger.warning(`Can not execute app.service("classes").find for ${schoolId}`, err);
 		return err;
 	});
 
-const findConsents = (ref, userIds) => ref.app.service('/consents')
+const findConsents = (ref, userIds, $limit) => ref.app.service('/consents')
 	.find({
 		query: {
 			userId: { $in: userIds },
+			$limit,
 			$select: [
 				'userId',
 				'userConsent.form',
@@ -67,8 +75,11 @@ class AdminUsers {
 			const currentUserId = params.account.userId.toString();
 
 			// fetch base data
-			const [currentUser, roles] = await Promise.all([getCurrentUser(currentUserId), getRoles()]);
+			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles()]);
 			const { schoolId } = currentUser;
+
+			const currentSchool = await this.app.service('schools').get(schoolId);
+			const { currentYear } = currentSchool;
 
 			// permission check
 			if (!currentUser.roles.some(role => ['teacher', 'administrator', 'superhero'].includes(role.name))) {
@@ -76,21 +87,16 @@ class AdminUsers {
 			}
 			// fetch data that are scoped to schoolId
 			const studentRole = (roles.filter(role => role.name === this.role))[0];
-			const [users, classes] = await Promise.all(
+			const [usersData, classes] = await Promise.all(
 				[
-					getAllUsers(
-						schoolId,
-						studentRole._id,
-						(params.query || {}).$sort,
-						parseInt((params.query || 0).$skip, 10),
-						parseInt((params.query || 0).$limit, 10),
-					),
-					getClasses(this.app, schoolId),
+					getAllUsers(this, schoolId, studentRole._id, (params.query || {})),
+					getClasses(this.app, schoolId, currentYear),
 				],
 			);
-
+			const { total } = usersData;
+			const users = usersData.data;
 			const userIds = users.map(user => user._id.toString());
-			const consents = await findConsents(this, userIds).then((data) => {
+			const consents = await findConsents(this, userIds, (params.query || {}).$limit).then((data) => {
 				// rebuild consent to object for faster sorting
 				const out = {};
 				data.forEach((e) => {
@@ -148,9 +154,14 @@ class AdminUsers {
 				}
 				return true;
 			});
-			return filteredUsers;
+			return {
+				total,
+				limit: (params.query || {}).$limit,
+				skip: (params.query || {}).$skip,
+				data: filteredUsers,
+			};
 		} catch (err) {
-			logger.warn(err);
+			logger.warning(err);
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.');
 			}

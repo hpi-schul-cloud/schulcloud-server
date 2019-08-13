@@ -3,7 +3,7 @@ const chai = require('chai');
 
 const { expect } = chai;
 const mockery = require('mockery');
-const promisify = require('es6-promisify');
+const { promisify } = require('es6-promisify');
 const fs = require('fs');
 
 const readFile = promisify(fs.readFile);

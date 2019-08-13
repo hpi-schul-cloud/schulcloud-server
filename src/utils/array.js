@@ -133,4 +133,5 @@ module.exports = {
 	flatten,
 	paginate,
 	sort,
+	convertToSortOrderObject,
 };

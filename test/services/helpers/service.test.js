@@ -1,6 +1,5 @@
 const { expect } = require('chai');
 const mockery = require('mockery');
-const winston = require('winston');
 const nodemailerMock = require('nodemailer-mock');
 
 describe('Mail Service', () => {

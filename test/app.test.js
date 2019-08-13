@@ -5,7 +5,7 @@ const { expect } = chai;
 const chaiHttp = require('chai-http');
 
 chai.use(chaiHttp);
-const logger = require('winston');
+const logger = require('../src/logger');
 const app = require('../src/app');
 
 describe('Feathers application tests', () => {
@@ -57,7 +57,7 @@ describe('Feathers application tests', () => {
 				.get('/docs')
 				.end((err, res) => {
 					assert.equal(res.statusCode, 200);
-					expect(res.body.info.description).to.contain('Schul-Cloud');
+					expect(res.text).to.contain('#/definitions/users');
 					resolve();
 				});
 		}));

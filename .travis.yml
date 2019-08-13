@@ -1,4 +1,5 @@
 ---
+dist: bionic
 language: node_js
 node_js: '8.15'
 
@@ -6,7 +7,7 @@ sudo: required
 
 services:
 - docker
-- mongodb
+#- mongodb
 
 env:
   global:
@@ -16,26 +17,41 @@ env:
 cache:
   directories:
   - node_modules
+  - travis_phantomjs
+
 before_install:
+# Upgrade PhantomJS to v2.1.1.
+- "export PHANTOMJS_VERSION=2.1.1"
+- "export PATH=$PWD/travis_phantomjs/phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin:$PATH"
+- "if [ $(phantomjs --version) != $PHANTOMJS_VERSION ]; then rm -rf $PWD/travis_phantomjs; mkdir -p $PWD/travis_phantomjs; fi"
+- "if [ $(phantomjs --version) != $PHANTOMJS_VERSION ]; then wget https://github.com/Medium/phantomjs/releases/download/v$PHANTOMJS_VERSION/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 -O $PWD/travis_phantomjs/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2; fi"
+- "if [ $(phantomjs --version) != $PHANTOMJS_VERSION ]; then tar -xvf $PWD/travis_phantomjs/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 -C $PWD/travis_phantomjs; fi"
+- "phantomjs --version"
+# end of phantomjs
 - openssl aes-256-cbc -K $encrypted_2709882c490b_key -iv $encrypted_2709882c490b_iv -in travis_rsa.enc -out travis_rsa -d
+- curl https://raw.githubusercontent.com/schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
+- curl https://raw.githubusercontent.com/schul-cloud/schulcloud-authorization-server/master/.env.example > .env
+- sudo docker-compose -f docker-compose-oauthserver.yml up -d
+- sudo docker pull mongo:4.0
+- sudo docker run -d -p 27017:27017 mongo:4.0
 script:
 #- pwd
 - npm test
-- npm run coverage-codacy
+- npm run coverage-codecov
 #- export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 
 after_success:
   # because Skipping a deployment with the script provider because the current build is a pull request.
-  - bash ./deploy.sh
+  #- bash ./deploy.sh
   # Check code coverage by codecov
-  # - bash <(curl -s https://codecov.io/bash)
+  #- bash <(curl -s https://codecov.io/bash)
   #- bash <(curl -X POST --data "apiKey=$apiKey&branch=$BRANCH" http://$url/update)
 
-#deploy:
-#  provider: script
-#  script: bash ./deploy.sh
-#  on:
-#   all_branches: true
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+   all_branches: true
 #   condition: $TRAVIS_BRANCH =~ ^development|N21/merge$
 
 notifications:

@@ -1,6 +1,9 @@
 /* eslint-disable no-param-reassign */
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
+const Entities = require('html-entities').AllHtmlEntities;
+
+const entities = new Entities();
 
 const globalHooks = require('./hooks/');
 
@@ -31,7 +34,10 @@ const sanitize = (data, options) => {
 			},
 		});
 	}
-	return data;
+	// something during sanitizeHtml() is encoding HTML Entities like & => &amp;
+	// I wasn't able to figure out which option disables this so I just decode it again.
+	// BTW: html-entities is already a dependency of sanitize-html so no new imports where done here.
+	return entities.decode(data);
 };
 
 /**
@@ -47,7 +53,7 @@ const sanitizeDeep = (data, path) => {
 				if (['password'].includes(key)) return data;
 				// enable html for all current editors
 				const needsHtml = ['content', 'text', 'comment', 'gradeComment', 'description'].includes(key)
-                    && ['lessons', 'newsModel', 'homework', 'submissions'].includes(path);
+                    && ['lessons', 'news', 'newsModel', 'homework', 'submissions'].includes(path);
 				data[key] = sanitize(value, { html: needsHtml });
 			} else {
 				sanitizeDeep(value, path);
@@ -81,8 +87,39 @@ const removeObjectIdInData = (context) => {
 	return context;
 };
 
-module.exports = {
-	before: {
+const displayInternRequests = level => (context) => {
+	if (context.params.provider === 'rest') {
+		return context;
+	}
+	const {
+		id, params, path, data, method,
+	} = context;
+
+	if (['accounts'].includes(path) && level < 4) {
+		return context;
+	}
+	const out = {
+		path,
+		method,
+	};
+	if (id) { out.id = id; }
+	Object.keys(params).forEach((key) => {
+		if (params.key) { out[key] = params.key; }
+	});
+	if (data) { out.data = data; }
+
+	// eslint-disable-next-line no-console
+	console.log('[intern]');
+	// eslint-disable-next-line no-console
+	console.log(out);
+	// eslint-disable-next-line no-console
+	console.log(' ');
+
+	return context;
+};
+
+module.exports = function setup() {
+	const before = {
 		all: [],
 		find: [],
 		get: [],
@@ -90,9 +127,9 @@ module.exports = {
 		update: [sanitizeData],
 		patch: [sanitizeData],
 		remove: [],
-	},
+	};
 
-	after: {
+	const after = {
 		all: [],
 		find: [],
 		get: [],
@@ -100,9 +137,9 @@ module.exports = {
 		update: [],
 		patch: [],
 		remove: [],
-	},
+	};
 
-	error: {
+	const error = {
 		all: [],
 		find: [],
 		get: [],
@@ -110,5 +147,13 @@ module.exports = {
 		update: [],
 		patch: [],
 		remove: [],
-	},
+	};
+
+	const app = this;
+	// DISPLAY_REQUEST_LEVEL is set by requestLogger middleware in production it is force to 0
+	// level 2+ adding intern request
+	if (app.get('DISPLAY_REQUEST_LEVEL') > 1) {
+		before.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
+	}
+	app.hooks({ before, after, error });
 };

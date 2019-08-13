@@ -1,0 +1,19 @@
+[
+{
+	"_id" : { "$oid" : "5d4aa4bdc4d8d047f850ca31" },
+	"name" : "Portfolio",
+	"url" : "https://portfolio.niedersachsen.cloud/login",
+	"isLocal" : true,
+	"isTemplate" : false,
+	"key" : "none",
+	"secret" : "none",
+	"oAuthClientId" : "portfolio",
+	"friendlyUrl" : "portfolio",
+	"updatedAt" : { "$date" : "2019-08-07T10:15:25.054+0000" },
+	"createdAt" : { "$date" : "2019-08-07T10:15:25.053+0000" },
+	"customs" : [  ],
+	"privacy_permission" : "pseudonymous",
+	"roles" : [  ],
+	"__v" : 0
+}
+]

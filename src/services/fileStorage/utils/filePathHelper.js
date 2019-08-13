@@ -12,6 +12,13 @@ const returnFileType = fileName => ({
 	odt: 'application/vnd.oasis.opendocument.text',
 	txt: 'text/plain',
 	pdf: 'application/pdf',
+	png: 'image/png',
+	jpg: 'image/jpeg',
+	jpeg: 'image/jpeg',
+	jpe: 'image/jpeg',
+	gif: 'image/gif',
+	tiff: 'image/tiff',
+	tif: 'image/tiff',
 }[fileName.split('.').pop()]);
 
 module.exports = {

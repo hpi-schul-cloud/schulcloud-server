@@ -6,7 +6,6 @@ const userService = app.service('users');
 const chai = require('chai');
 const loginHelper = require('./../helpers/login');
 const testObjects = require('./../helpers/testObjects')(app);
-const promisify = require('es6-promisify');
 const _ = require('lodash');
 
 const { expect } = chai;
