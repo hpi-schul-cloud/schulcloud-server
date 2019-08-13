@@ -10,6 +10,7 @@ module.exports = function () {
 			default: 1000,
 			max: 1000,
 		},
+		lean: true,
 	};
 
 	app.use('/pseudonym', service(options));
