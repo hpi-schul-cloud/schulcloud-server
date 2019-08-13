@@ -45,8 +45,8 @@ function isTeacher(userId, homework) {
 	const user = userId.toString();
 	let isTeacherCheck = (homework.teacherId.toString() === user);
 	if (!isTeacherCheck && !homework.private) {
-		const isCourseTeacher = homework.courseId.teacherIds.includes(user);
-		const isCourseSubstitution = homework.courseId.substitutionIds.includes(user);
+		const isCourseTeacher = (homework.courseId.teacherIds || []).includes(user);
+		const isCourseSubstitution = (homework.courseId.substitutionIds || []).includes(user);
 		isTeacherCheck = isCourseTeacher || isCourseSubstitution;
 	}
 	return isTeacherCheck;
