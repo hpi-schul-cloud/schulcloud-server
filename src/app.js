@@ -70,7 +70,6 @@ app.use(compress())
 		next();
 	})
 	.configure(services)
-	.configure(socketio())
 	.configure(sockets)
 	.configure(middleware)
 	.configure(allHooks);
