@@ -13,7 +13,6 @@ const createTestUser = (app, opt) => ({
 	discoverable = false,
 	// manual cleanup, e.g. when testing delete:
 	manualCleanup = false,
-	consentStatus = 'missing',
 } = {}) => app.service('registrationPins').create({ email })
 	.then((registrationPin) => {
 		tempPinIds.push(registrationPin);
@@ -33,36 +32,10 @@ const createTestUser = (app, opt) => ({
 		discoverable,
 	}))
 	.then((user) => {
-		const consentPromises = [];
-		if (consentStatus === 'parentsAgreed' && roles.includes('student')) {
-			consentPromises.push(app.service('consents').create({
-				userId: user._id,
-				parentConsents: [{
-					privacyConsent: true,
-					termsOfUseConsent: true,
-				}],
-			}));
-		} else if (consentStatus === 'ok') {
-			consentPromises.push(app.service('consents').create({
-				userId: user._id,
-				userConsent: {
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
-				},
-				parentConsents: [{
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
-				}],
-			}));
+		if (!manualCleanup) {
+			createdUserIds.push(user._id.toString());
 		}
-		return Promise.all(consentPromises).then(() => {
-			if (!manualCleanup) {
-				createdUserIds.push(user._id.toString());
-			}
-			return user;
-		});
+		return user;
 	});
 
 const cleanup = app => () => {

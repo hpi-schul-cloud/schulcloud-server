@@ -121,16 +121,28 @@ describe('AdminUsersService', () => {
 		const student1 = await testObjects.createTestUser({
 			firstName: 'Max',
 			roles: ['student'],
-			consentStatus: 'ok',
 		}).catch((err) => {
 			logger.warn('Can not create student', err);
 		});
 		const student2 = await testObjects.createTestUser({
 			firstName: 'Moritz',
 			roles: ['student'],
-			consentStatus: 'missing',
 		}).catch((err) => {
 			logger.warn('Can not create student', err);
+		});
+
+		await testObjects.createTestConsent({
+			userId: student1._id,
+			userConsent: {
+				form: 'digital',
+				privacyConsent: true,
+				termsOfUseConsent: true,
+			},
+			parentConsents: [{
+				form: 'digital',
+				privacyConsent: true,
+				termsOfUseConsent: true,
+			}],
 		});
 
 		expect(teacher).to.not.be.undefined;
@@ -182,9 +194,32 @@ describe('AdminUsersService', () => {
 		const studentWithParentConsent = await testObjects.createTestUser({
 			roles: ['student'],
 			birthday: '2010-01-01',
-			consentStatus: 'parentsAgreed',
 		});
-		const studentWithConsents = await testObjects.createTestUser({ roles: ['student'], consentStatus: 'ok' });
+
+		await testObjects.createTestConsent({
+			userId: studentWithParentConsent._id,
+			parentConsents: [{
+				form: 'digital',
+				privacyConsent: true,
+				termsOfUseConsent: true,
+			}],
+		});
+
+		const studentWithConsents = await testObjects.createTestUser({ roles: ['student'] });
+
+		await testObjects.createTestConsent({
+			userId: studentWithConsents._id,
+			userConsent: {
+				form: 'digital',
+				privacyConsent: true,
+				termsOfUseConsent: true,
+			},
+			parentConsents: [{
+				form: 'digital',
+				privacyConsent: true,
+				termsOfUseConsent: true,
+			}],
+		});
 
 		const createParams = status => ({
 			account: {
