@@ -27,7 +27,7 @@ const rssFeedSchema = new Schema({
 });
 
 const customYearSchema = new Schema({
-	yearId:	{ type: Schema.Types.ObjectId, ref: 'year', required: true },
+	yearId: { type: Schema.Types.ObjectId, ref: 'year', required: true },
 	startDate: { type: Date, required: true },
 	endDate: { type: Date, required: true },
 });
@@ -36,6 +36,7 @@ const schoolSchema = new Schema({
 	name: { type: String, required: true },
 	address: { type: Object },
 	fileStorageType: { type: String, enum: fileStorageTypes },
+	schoolGroup: { type: Schema.Types.ObjectId, ref: 'schoolGroup' },
 	systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
 	federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
 	createdAt: { type: Date, default: Date.now },
@@ -51,8 +52,12 @@ const schoolSchema = new Schema({
 	features: [{ type: String, enum: ['rocketChat', 'disableStudentTeamCreation'] }],
 	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below)
 }, {
-	timestamps: true,
-});
+		timestamps: true,
+	});
+
+const schoolGroupSchema = new Schema({
+	name: { type: String, required: true }
+}, { timestamps: true });
 
 /**
  * Determine if school is in maintenance mode ("Schuljahreswechsel"):
@@ -60,10 +65,23 @@ const schoolSchema = new Schema({
  * 		inMaintenanceSince <  Date.now(): maintenance will be enabled at this date in the future (false)
  * 		inMaintenanceSince >= Date.now(): maintenance mode is enabled (true)
  */
+schoolSchema.plugin(require('mongoose-lean-virtuals'));
+
 schoolSchema.virtual('inMaintenance').get(function get() {
 	return Boolean(this.inMaintenanceSince && this.inMaintenanceSince <= Date.now());
 });
-schoolSchema.plugin(require('mongoose-lean-virtuals'));
+
+schoolSchema.virtual('documentBaserDir').get(function get(){
+	let documentBaserDir;
+	if(this.schoolGroup){
+		// parse id eventually from populated schoolGroup if defined
+		documentBaserDir = this.schoolGroup._id || this.schoolGroup;
+	} else {
+		// otherwise use school id
+		documentBaserDir = this._id;
+	}
+	return String(documentBaserDir);
+})
 
 const yearSchema = new Schema({
 	name: {
@@ -78,11 +96,13 @@ const gradeLevelSchema = new Schema({
 });
 
 const schoolModel = mongoose.model('school', schoolSchema);
+const schoolGroupModel = mongoose.model('schoolGroup', schoolGroupSchema);
 const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
 	schoolModel,
+	schoolGroupModel,
 	yearModel,
 	customYearSchema,
 	gradeLevelModel,
