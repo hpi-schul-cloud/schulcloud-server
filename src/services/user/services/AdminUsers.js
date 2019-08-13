@@ -6,7 +6,7 @@ const logger = require('../../../logger');
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
 
-const getCurrentUser = id => userModel.findById(id)
+const getCurrentUserInfo = id => userModel.findById(id)
 	.select('schoolId')
 	.populate('roles')
 	.lean()
@@ -28,10 +28,14 @@ const getRoles = () => roleModel.find()
 	.lean()
 	.exec();
 
-const getClasses = (app, schoolId) => app.service('classes')
+const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
 	.find({
 		query: {
 			schoolId,
+			$or: [
+				{ year: schoolYearId },
+				{ year: { $exists: false } },
+			],
 			$limit: 1000,
 		},
 	})
@@ -71,8 +75,11 @@ class AdminUsers {
 			const currentUserId = params.account.userId.toString();
 
 			// fetch base data
-			const [currentUser, roles] = await Promise.all([getCurrentUser(currentUserId), getRoles()]);
+			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles()]);
 			const { schoolId } = currentUser;
+
+			const currentSchool = await this.app.service('schools').get(schoolId);
+			const { currentYear } = currentSchool;
 
 			// permission check
 			if (!currentUser.roles.some(role => ['teacher', 'administrator', 'superhero'].includes(role.name))) {
@@ -83,7 +90,7 @@ class AdminUsers {
 			const [usersData, classes] = await Promise.all(
 				[
 					getAllUsers(this, schoolId, studentRole._id, (params.query || {})),
-					getClasses(this.app, schoolId),
+					getClasses(this.app, schoolId, currentYear),
 				],
 			);
 			const { total } = usersData;
