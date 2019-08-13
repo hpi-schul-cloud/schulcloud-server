@@ -17,9 +17,19 @@ class ClassSuccessorService {
 	async get(id, params) {
 		try {
 			const currentClass = await this.app.service('classes').get(id);
+
 			const successor = {
 				name: currentClass.name,
+				schoolId: currentClass.schoolId,
+				teacherIds: currentClass.teacherIds,
+				userIds: currentClass.userIds,
 			};
+
+			// ToDO warning if gradelevel too high
+			if (currentClass.gradeLevel && currentClass.gradeLevel < 12) {
+				successor.gradeLevel = currentClass.gradeLevel + 1;
+			}
+
 			return { successor };
 		} catch (err) {
 			throw err;

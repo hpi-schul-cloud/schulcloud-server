@@ -10,7 +10,7 @@ describe.only('classSuccessor service', () => {
 	});
 
 	it('generates data for a single successor class', async () => {
-		const newClass = await testObjects.createTestClass({ name: 'a2' });
+		const newClass = await testObjects.createTestClass({ name: 'a', gradeLevel: 4 });
 		const response = await classSuccessorService.get(newClass._id);
 		expect(response).to.not.equal(undefined);
 	});
