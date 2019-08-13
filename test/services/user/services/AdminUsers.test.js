@@ -70,6 +70,50 @@ describe('AdminUsersService', () => {
 		expect(searchClass(result.data, '2A')).to.be.true;
 	});
 
+	it('only shows current classes', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const student = await testObjects.createTestUser({ firstName: 'Max', roles: ['student'] });
+		const currentSchool = await app.service('schools').get(teacher.schoolId);
+
+		const { currentYear } = currentSchool;
+		const lastYear = currentSchool.years.lastYear._id;
+
+		const classPromises = [];
+		classPromises.push(testObjects.createTestClass({
+			name: 'classFromThisYear',
+			userIds: [student._id],
+			teacherIds: [teacher._id],
+			year: currentYear,
+		}));
+		classPromises.push(testObjects.createTestClass({
+			name: 'classFromLastYear',
+			userIds: [student._id],
+			teacherIds: [teacher._id],
+			year: lastYear,
+		}));
+		classPromises.push(testObjects.createTestClass({
+			name: 'classWithoutYear',
+			userIds: [student._id],
+			teacherIds: [teacher._id],
+		}));
+
+		await Promise.all(classPromises);
+
+		const params = {
+			account: {
+				userId: teacher._id,
+			},
+		};
+
+		const result = await adminStudentsService.find(params);
+
+		expect(result.data).to.not.be.undefined;
+		const studentResult = result.data.filter(u => u._id.toString() === student._id.toString())[0];
+		expect(studentResult.classes).to.include('classFromThisYear');
+		expect(studentResult.classes).to.not.include('classFromLastYear');
+		expect(studentResult.classes).to.include('classWithoutYear');
+	});
+
 	it('sorts students correctly', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		await testObjects.createTestUser({ firstName: 'Max', roles: ['student'] });
