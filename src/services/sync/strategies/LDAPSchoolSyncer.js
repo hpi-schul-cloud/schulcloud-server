@@ -51,31 +51,36 @@ class LDAPSchoolSyncer extends SystemSyncer {
 
 	getClassData() {
 		this.logInfo('Getting classes...');
-		return this.app.service('ldap').getClasses(this.system.ldapConfig, this.school)
+		const currentSchool = this.school;
+		return this.app.service('ldap').getClasses(this.system.ldapConfig, currentSchool)
 			.then((data) => {
 				this.logInfo('Creating classes');
-				return this.createClassesFromLdapData(data);
+				return this.createClassesFromLdapData(data, currentSchool);
 			});
 	}
 
 	createOrUpdateUser(idmUser) {
-		return this.app.service('users').find({ query: { ldapId: idmUser.ldapUUID } })
-			.then((users) => {
-				if (users.total !== 0) {
-					this.stats.users.updated += 1;
-					return this.checkForUserChangesAndUpdate(idmUser, users.data[0]);
-				}
-				return this.createUserAndAccount(idmUser)
-					.then((res) => {
-						this.stats.users.created += 1;
-						return res;
-					})
-					.catch((err) => {
-						this.stats.users.errors += 1;
-						this.logError('User creation error', err);
-						return {};
-					});
-			});
+		return this.app.service('users').find({
+			query: {
+				// schoolId: school._id, //Could be issue for LDAP with multiple schools
+				ldapId: idmUser.ldapUUID,
+			},
+		}).then((users) => {
+			if (users.total !== 0) {
+				this.stats.users.updated += 1;
+				return this.checkForUserChangesAndUpdate(idmUser, users.data[0]);
+			}
+			return this.createUserAndAccount(idmUser)
+				.then((res) => {
+					this.stats.users.created += 1;
+					return res;
+				})
+				.catch((err) => {
+					this.stats.users.errors += 1;
+					this.logError('User creation error', err);
+					return {};
+				});
+		});
 	}
 
 	createUserAndAccount(idmUser) {
@@ -128,28 +133,42 @@ class LDAPSchoolSyncer extends SystemSyncer {
 		));
 	}
 
-	createClassesFromLdapData(data) {
+	createClassesFromLdapData(data, school) {
 		const classes = data.filter(d => 'uniqueMembers' in d && d.uniqueMembers !== undefined);
-		const res = Promise.all(classes.map(ldapClass => this.getOrCreateClassFromLdapData(ldapClass)
-			.then(currentClass => this.populateClassUsers(ldapClass, currentClass))));
+		const res = Promise.all(classes.map(ldapClass => this.getOrCreateClassFromLdapData(ldapClass, school)
+			.then(currentClass => this.populateClassUsers(ldapClass, currentClass, school))));
 		return res;
 	}
 
-	getOrCreateClassFromLdapData(data) {
-		return this.app.service('classes').find({ query: { ldapDN: data.ldapDn } })
-			.then((res) => {
-				if (res.total === 0) {
-					const newClass = {
-						name: data.className,
-						schoolId: this.school._id,
-						nameFormat: 'static',
-						ldapDN: data.ldapDn,
-						year: this.school.currentYear,
-					};
-					return this.app.service('classes').create(newClass);
-				}
-				return res.data[0];
-			});
+	getOrCreateClassFromLdapData(data, school) {
+		return this.app.service('classes').find({
+			query: {
+				// schoolId: school._id, //Could be issue for LDAP with multiple schools
+				year: school.currentYear,
+				ldapDN: data.ldapDn,
+			},
+		}).then((res) => {
+			if (res.total === 0) {
+				const newClass = {
+					name: data.className,
+					schoolId: this.school._id,
+					nameFormat: 'static',
+					ldapDN: data.ldapDn,
+					year: this.school.currentYear,
+				};
+				return this.app.service('classes').create(newClass);
+			}
+			const updateObject = {
+				$set: {
+					name: data.className,
+				},
+			};
+			this.app.service('classes').update(
+				{ _id: res.data[0]._id },
+				updateObject,
+			);
+			return res.data[0];
+		});
 	}
 
 	populateClassUsers(ldapClass, currentClass) {

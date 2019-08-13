@@ -387,12 +387,9 @@ class CSVSyncer extends Syncer {
 			{
 				regex: /^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/,
 				values: async (string) => {
-					const gradeLevelName = string.match(/^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/)[1];
-					const gradeLevel = await this.findGradeLevel({
-						name: gradeLevelName,
-					});
+					const gradeLevel = string.match(/^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/)[1];
+
 					return {
-						nameFormat: 'gradeLevel+name',
 						name: string.match(/^(?:0)*(?:(?:1[0-3])|[1-9])(\D.*)$/)[1],
 						gradeLevel,
 					};
@@ -401,7 +398,6 @@ class CSVSyncer extends Syncer {
 			{
 				regex: /(.*)/,
 				values: string => ({
-					nameFormat: 'static',
 					name: string,
 				}),
 			},
@@ -456,18 +452,6 @@ class CSVSyncer extends Syncer {
 		}
 		this.stats.classes.updated += 1;
 		return existing[0];
-	}
-
-	async findGradeLevel(query) {
-		const existing = await this.app.service('/gradeLevels').find({
-			query,
-			paginate: false,
-			lean: true,
-		});
-		if (existing.length >= 0) {
-			return existing[0];
-		}
-		throw new Error('Invalid grade level');
 	}
 }
 

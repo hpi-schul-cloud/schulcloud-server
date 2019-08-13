@@ -29,7 +29,8 @@ module.exports = function setup() {
 			untilQuery = {
 				$or: [
 					{ untilDate: { $exists: false } },
-					{ untilDate: { $gte: Date.now() - oneDayInMilliseconds } },
+					{ untilDate: null },
+					{ untilDate: { $gte: Date.now() - oneDayInMilliseconds } } },
 				],
 			};
 		}
