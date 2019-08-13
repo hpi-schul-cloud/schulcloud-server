@@ -122,6 +122,29 @@ class AdminUsers {
 				return user;
 			});
 
+			// sorting by class and by consent is implemented manually,
+			// as classes and consents are fetched from seperate db collection
+			const classSortParam = (((params.query || {}).$sort || {}).class || {}).toString();
+			if (classSortParam === '1') {
+				users.sort((a, b) => (a.classes[0] || '').toLowerCase() > (b.classes[0] || '').toLowerCase());
+			} else if (classSortParam === '-1') {
+				users.sort((a, b) => (a.classes[0] || '').toLowerCase() < (b.classes[0] || '').toLowerCase());
+			}
+
+			const sortOrder = {
+				ok: 1,
+				parentsAgreed: 2,
+				missing: 3,
+			};
+			const consentSortParam = (((params.query || {}).$sort || {}).consent || {}).toString();
+			if (consentSortParam === '1') {
+				users.sort((a, b) => (sortOrder[a.consent.consentStatus || 'missing']
+					- sortOrder[b.consent.consentStatus || 'missing']));
+			} else if (consentSortParam === '-1') {
+				users.sort((a, b) => (sortOrder[b.consent.consentStatus || 'missing']
+					- sortOrder[a.consent.consentStatus || 'missing']));
+			}
+
 			const filteredUsers = users.filter((user) => {
 				const { consentStatus } = params.query || {};
 
