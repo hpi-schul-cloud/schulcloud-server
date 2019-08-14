@@ -9,6 +9,7 @@ const shareCourseService = app.service('courses/share');
 const courseGroupService = app.service('courseGroups');
 const lessonsService = app.service('lessons');
 
+const testObjects = require('../helpers/testObjects')(app);
 
 const testUserId = '0000d231816abba584714c9e';
 const testCourseExample = '0000dcfbfb5c7a3f00bf21ab';
@@ -71,17 +72,18 @@ describe('courses service', () => {
 			});
 	});
 
-	it('creates a shareToken for a course', () => shareCourseService.get('0000dcfbfb5c7a3f00bf21ab')
-		.then((course) => {
-			// eslint-disable-next-line prefer-destructuring
-			shareToken = course.shareToken;
-			chai.expect(course.shareToken).to.not.be.undefined;
-		}));
+	it('creates a shareToken for a course', async () => {
+		const course = await testObjects.createTestCourse({});
+		const sharedCourse = await shareCourseService.get(course._id);
+		chai.expect(sharedCourse.shareToken).to.not.be.undefined;
+	});
 
-	it('find name of course through shareToken', () => shareCourseService.find({ query: { shareToken } })
-		.then((courseName) => {
-			chai.expect(courseName).to.equal('Mathe');
-		}));
+	it('find name of course through shareToken', async () => {
+		const course = await testObjects.createTestCourse({ name: 'Deutsch 10a' });
+		const sharedCourse = await shareCourseService.get(course._id);
+		const courseName = await shareCourseService.find({ query: { shareToken: sharedCourse.shareToken } });
+		chai.expect(courseName).to.equal('Deutsch 10a');
+	});
 
 	it('creates a course copy through shareToken', () => shareCourseService.create({
 		shareToken,
