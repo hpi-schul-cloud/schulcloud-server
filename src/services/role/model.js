@@ -59,7 +59,7 @@ roleSchema.statics.resolvePermissions = function (roleIds) {
 };
 
 roleSchema.virtual('displayName').get(function get() {
-	return rolesDisplayName[this.name];
+	return rolesDisplayName[this.name] || '';
 });
 roleSchema.plugin(leanVirtuals);
 
