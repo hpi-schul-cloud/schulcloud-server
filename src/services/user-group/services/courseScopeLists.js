@@ -30,7 +30,7 @@ module.exports = function setup() {
 				$or: [
 					{ untilDate: { $exists: false } },
 					{ untilDate: null },
-					{ untilDate: { $gte: Date.now() - oneDayInMilliseconds } } },
+					{ untilDate: { $gte: Date.now() - oneDayInMilliseconds } },
 				],
 			};
 		}
