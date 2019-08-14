@@ -157,7 +157,7 @@ class WebUntisHourlySyncer extends Syncer {
         for (let index in data.rooms) {
             let timetable = await api.getCustomizableTimeTableFor(4, data.rooms[index].id, {
                 "startDate": data.currentSchoolYear.startDate,
-                "endDate": data.currentSchoolYear.startDate+4,
+                "endDate": data.currentSchoolYear.endDate,
                 "onlyBaseTimetable": true,
                 "klasseFields": [ "id", "longname" ],
                 "subjectFields": [ "id", "longname" ],
