@@ -58,7 +58,7 @@ roleSchema.statics.resolvePermissions = function (roleIds) {
 		.then(() => permissions);
 };
 
-roleSchema.virtual('displayName').get(function () {
+roleSchema.virtual('displayName').get(function get() {
 	return rolesDisplayName[this.name];
 });
 roleSchema.plugin(leanVirtuals);
