@@ -19,6 +19,6 @@ describe('role model', () => {
 				roles: [],
 			});
 			expect(role.displayName).to.equal('');
-		}); 
+		});
 	});
 });
