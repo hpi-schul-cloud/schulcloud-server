@@ -3,7 +3,8 @@
 # automatically rolls out new versions on brandenburg, demo, open and test
 # develop-Branch goes to test, Master-Branch goes to productive systems
 
-#export TESTDEPLOY=$( cat testdeploy )
+# decrypt key 
+openssl aes-256-cbc -K $encrypted_2709882c490b_key -iv $encrypted_2709882c490b_iv -in travis_rsa.enc -out travis_rsa -d
 
 if [ "$TRAVIS_BRANCH" = "master" ]
 then
@@ -16,6 +17,11 @@ fi
 function buildandpush {
   # build containers
   docker build -t schulcloud/schulcloud-server:$DOCKERTAG -t schulcloud/schulcloud-server:$GIT_SHA .
+ 
+  if [[ "$?" != "0" ]] 
+  then 
+  exit $? 
+  fi
 
   # Log in to the docker CLI
   echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
@@ -51,6 +57,8 @@ function deploytoprods {
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@open.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest brabu_server
   # open
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@open.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest open_server
+  # thueringen
+  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@schulcloud-thueringen.de /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest thueringen_server
   # demo
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@demo.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest demo_server
 }
@@ -66,19 +74,36 @@ function deploytostaging {
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@staging.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG staging_server
 }
 
+function inform {
+  if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
+  then
+    curl -X POST -H 'Content-Type: application/json' --data '{"text":":rocket: Die Produktivsysteme können aktualisiert werden: Schul-Cloud Server!"}' $WEBHOOK_URL_CHAT
+  fi
+}
+
+function inform_staging {
+  if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
+  then
+    curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Staging-System wurde aktualisiert: Schul-Cloud Server! https://api.staging.schul-cloud.org/version"}' $WEBHOOK_URL_CHAT
+  fi
+}
+
+# write version file
+printf "%s\n%s\n%s" $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_COMMIT_MESSAGE > ./version
 
 if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
   buildandpush
-  deploytoprods
+  inform
 elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
-  buildandpush	
+  buildandpush
   deploytotest
-elif [[ $TRAVIS_BRANCH = release* ]]
+elif [[ $TRAVIS_BRANCH = release* || $TRAVIS_BRANCH = hotfix* ]]
 then
   buildandpush
   deploytostaging
+  inform_staging
 else
   echo "Nix wird deployt"
 fi

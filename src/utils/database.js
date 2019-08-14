@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const logger = require('../logger/index');
 
-const configurations = ['test', 'production', 'default'];
+const configurations = ['test', 'production', 'default', 'migration'];
 const env = process.env.NODE_ENV || 'default';
 
 if (!(configurations.includes(env))) {
@@ -14,27 +14,58 @@ if (!(configurations.includes(env))) {
 
 const config = require(`../../config/${env}.json`);
 
-function connect() {
-	mongoose.Promise = global.Promise;
+function addAuthenticationToOptions(DB_USERNAME, DB_PASSWORD, options) {
+	const auth = {};
+	if (DB_USERNAME) {
+		auth.user = DB_USERNAME;
+	}
+	if (DB_PASSWORD) {
+		auth.password = DB_PASSWORD;
+	}
+	if (DB_USERNAME || DB_PASSWORD) {
+		options.auth = auth;
+	}
+}
 
+function getConnectionOptions() {
+	// read env params
 	const {
 		DB_URL = config.mongodb,
 		DB_USERNAME,
 		DB_PASSWORD,
 	} = process.env;
 
+	// set default options
+	const options = {
+		useMongoClient: true,
+	};
+
+	addAuthenticationToOptions(
+		DB_USERNAME,
+		DB_PASSWORD,
+		options,
+	);
+
+	return {
+		url: DB_URL,
+		username: DB_USERNAME,
+		password: DB_PASSWORD,
+		...options,
+	};
+}
+
+function connect() {
+	mongoose.Promise = global.Promise;
+	const options = getConnectionOptions();
+
 	logger.info('connect to database host',
-		DB_URL,
-		DB_USERNAME ? `with username ${DB_USERNAME}` : 'without user',
-		DB_PASSWORD ? 'and' : 'and without', 'password');
+		options.url,
+		options.username ? `with username ${options.username}` : 'without user',
+		options.password ? 'and' : 'and without', 'password');
 
 	return mongoose.connect(
-		DB_URL,
-		{
-			user: DB_USERNAME,
-			pass: DB_PASSWORD,
-			useMongoClient: true,
-		},
+		options.url,
+		options,
 	);
 }
 
@@ -45,4 +76,5 @@ function close() {
 module.exports = {
 	connect,
 	close,
+	getConnectionOptions,
 };

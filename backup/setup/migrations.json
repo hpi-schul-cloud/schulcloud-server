@@ -1,0 +1,95 @@
+[{
+	"_id": {
+		"$oid": "5d234fff63e4a27b68aceff0"
+	},
+	"name": "AddPositionToLessons",
+	"createdAt": {
+		"$date": "2019-07-08T14:15:27.050Z"
+	},
+	"state": "up",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d25cf6ddf5c9947bc014236"
+	},
+	"state": "up",
+	"name": "skipRegistrationPermissions",
+	"createdAt": {
+		"$date": "2019-07-10T11:43:41.464Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d26e8c1d0c346ac5bf59bb5"
+	},
+	"state": "up",
+	"name": "schoolyear_19_20_added",
+	"createdAt": {
+		"$date": "2019-07-11T07:44:01.252Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d3e97e02d1b0f2c2cc7ec18"
+	},
+	"state": "up",
+    "name" : "lessonIsCopyFrom", 
+    "createdAt" : "2019-07-11T12:18:30.503+0000", 
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d2ee2a8526cce83a8834d4a"
+	},
+	"state": "up",
+	"name": "addStartAndEndDateToYearCollection",
+	"createdAt": {
+		"$date": "2019-07-17T08:12:18.480Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d3ef5f4bd2cdb2075fc7e54"
+	},
+	"state": "up",
+	"name": "replace_grandlevel_id_with_number",
+	"createdAt": "2019-07-29T09:57:38.131Z",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d3f03bf50c3d44bb83b93f8"
+	},
+	"state": "up",
+	"name": "migrateSchoolsTo2019-20",
+	"createdAt": {
+		"$date": "2019-07-29T14:33:35.456Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d442946c6c8392ba30b96a0"
+	},
+	"state": "up",
+	"name": "schoolyear_20_21_added",
+	"createdAt": {
+		"$date": "2019-08-02T12:15:02.584Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d4858fc8f66f50964686467"
+	},
+	"state": "up",
+	"name": "addToolPermissionsToSuperheroRole",
+	"createdAt": {
+		"$date": "2019-08-05T16:15:12.225Z"
+	},
+	"__v": 0
+}]

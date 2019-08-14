@@ -1,5 +1,3 @@
-'use strict';
-
 const service = require('feathers-mongoose');
 const passwordRecovery = require('./model');
 const hooks = require('./hooks');
@@ -10,15 +8,9 @@ class ChangePasswordService {
 	}
 
 	create(data) {
-		return AccountModel.update({"_id": data.accountId}, {"password": data.password})
-			.then((account) => {
-				return passwordRecovery.update({"_id": data.resetId}, {"changed": true})
-					.then((_ => {
-						return account;
-					}));
-			}).catch((error) => {
-				return error;
-			});
+		return AccountModel.update({ _id: data.accountId }, { password: data.password })
+			.then(account => passwordRecovery.update({ _id: data.resetId }, { changed: true })
+				.then((_ => account))).catch(error => error);
 	}
 }
 

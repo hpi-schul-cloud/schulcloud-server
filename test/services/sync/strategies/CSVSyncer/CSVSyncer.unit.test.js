@@ -6,9 +6,7 @@ const Syncer = require('../../../../../src/services/sync/strategies/Syncer');
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
 describe('CSVSyncer', () => {
-	it('works', () => {
-		return new CSVSyncer();
-	});
+	it('works', () => new CSVSyncer());
 
 	it('implements the Syncer interface', () => {
 		expect(Object.getPrototypeOf(CSVSyncer)).to.equal(Syncer);
@@ -17,7 +15,7 @@ describe('CSVSyncer', () => {
 	describe('parseCsvData', () => {
 		it('should fail for empty data', () => {
 			const out = new CSVSyncer();
-			out.csvData = '';
+			out.options.csvData = '';
 			try {
 				out.parseCsvData();
 			} catch (err) {
@@ -27,7 +25,7 @@ describe('CSVSyncer', () => {
 
 		it('should fail if only a header is given', () => {
 			const out = new CSVSyncer();
-			out.csvData = 'firstName,lastName,email,class\n';
+			out.options.csvData = 'firstName,lastName,email,class\n';
 			try {
 				out.parseCsvData();
 			} catch (err) {
@@ -37,7 +35,7 @@ describe('CSVSyncer', () => {
 
 		it('should require firstName, lastName, and email', () => {
 			const out = new CSVSyncer();
-			out.csvData = 'firstName,lastName,Emil\n1,2,3';
+			out.options.csvData = 'firstName,lastName,Emil\n1,2,3';
 			try {
 				out.parseCsvData();
 				assert.fail();
@@ -48,30 +46,28 @@ describe('CSVSyncer', () => {
 
 		it('should work with all required arguments', () => {
 			const out = new CSVSyncer();
-			out.csvData = 'firstName,lastName,email\n1,2,3';
+			out.options.csvData = 'firstName,lastName,email\n1,2,3';
 			const result = out.parseCsvData();
 			expect(result).to.not.equal(undefined);
 		});
 
 		it('should support the optional class attribute', () => {
 			const out = new CSVSyncer();
-			out.csvData = 'firstName,lastName,email,class\n1,2,test,4a';
+			out.options.csvData = 'firstName,lastName,email,class\n1,2,test,4a';
 			const result = out.parseCsvData();
-			expect(out.importClasses).to.equal(true);
 			expect(result).to.not.equal(undefined);
 			expect(result[0].class).to.equal('4a');
 		});
 
 		it('should support importing records with incomplete class data', () => {
 			const out = new CSVSyncer();
-			out.csvData = [
+			out.options.csvData = [
 				'firstName,lastName,email,class',
 				'test,testington,test@example.org,1a',
 				'toast,testington,toast@example.org,',
 				'foo,bar,baz@gmail.com,2b',
 			].join('\n');
 			const result = out.parseCsvData();
-			expect(out.importClasses).to.equal(true);
 			expect(result).to.not.equal(undefined);
 			expect(result[0].class).to.equal('1a');
 			expect(result[1].class).to.equal('');
@@ -82,14 +78,13 @@ describe('CSVSyncer', () => {
 	describe('getClassObject method', () => {
 		it('should default to the `static` scheme', async () => {
 			const result = await new CSVSyncer().getClassObject('foobar');
-			expect(result.nameFormat).to.equal('static');
+			expect(result.gradeLevel).to.be.undefined;
 			expect(result.name).to.equal('foobar');
 		});
 
 		it('should split classes and grade levels if applicable', async () => {
 			const result = await new CSVSyncer(app).getClassObject('1a');
-			expect(result.nameFormat).to.equal('gradeLevel+name');
-			expect(result.gradeLevel.name).to.equal('1');
+			expect(result.gradeLevel).to.equal('1');
 			expect(result.name).to.equal('a');
 		});
 
@@ -97,11 +92,10 @@ describe('CSVSyncer', () => {
 			for (let i = -5; i <= 20; i += 1) {
 				const result = await new CSVSyncer(app).getClassObject(`${i}b`);
 				if (i >= 1 && i <= 13) {
-					expect(result.nameFormat).to.equal('gradeLevel+name');
-					expect(result.gradeLevel.name).to.equal(String(i));
+					expect(result.gradeLevel).to.equal(String(i));
 					expect(result.name).to.equal('b');
 				} else {
-					expect(result.nameFormat).to.equal('static');
+					expect(result.gradeLevel).to.be.undefined;
 					expect(result.name).to.equal(`${i}b`);
 				}
 			}

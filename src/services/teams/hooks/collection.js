@@ -9,7 +9,7 @@ const { ObjectId } = require('mongoose').Types;
  * @private
  * @collection
  */
-const mapToArray = e => isArray(e) ? e : (isObject(e) ? Object.values(e) : [e]);
+const mapToArray = e => (isArray(e) ? e : (isObject(e) ? Object.values(e) : [e]));
 
 /**
  * @private
@@ -147,7 +147,7 @@ const isObjectIdWithTryToCast = id => isObjectId(id) || !isNull(tryToCastToObjec
 /**
 *   @collection
 *   @throws {BadRequest} If input is no typeof moongose Schema.Types.ObjectId
-*						or a String that can cast to this schema, it is throw an error
+*                       or a String that can cast to this schema, it is throw an error
 */
 const throwErrorIfNotObjectId = (id) => {
 	if (!isObjectIdWithTryToCast(id)) {
@@ -227,7 +227,7 @@ module.exports = {
 	isObjectId,
 	isObjectIdWithTryToCast,
 	throwErrorIfNotObjectId,
-	bsonIdToString,	// todo: rename  ?toIdString ?
+	bsonIdToString, // todo: rename  ?toIdString ?
 	isSameId,
 	isFunction,
 };

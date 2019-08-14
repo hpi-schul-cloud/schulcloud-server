@@ -1,6 +1,6 @@
-'use strict';
-
 const mongoose = require('mongoose');
+const leanVirtuals = require('mongoose-lean-virtuals');
+const roleModel = require('../role/model');
 
 const { Schema } = mongoose;
 
@@ -11,12 +11,15 @@ const userSchema = new Schema({
 	schoolId: { type: Schema.Types.ObjectId, ref: 'school', required: true },
 
 	firstName: { type: String, required: true },
+	middleName: { type: String },
 	lastName: { type: String, required: true },
+	namePrefix: { type: String },
+	nameSuffix: { type: String },
 
 	birthday: { type: Date },
 
-	importHash:{type:String},
-	//inviteHash:{type:String},
+	importHash: { type: String },
+	// inviteHash:{type:String},
 
 	children: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 	parents: [{ type: Schema.Types.ObjectId, ref: 'user' }],
@@ -33,8 +36,18 @@ const userSchema = new Schema({
 	timestamps: true,
 });
 
-userSchema.methods.getPermissions = function () {
-	const roleModel = require('../role/model');
+userSchema.virtual('fullName').get(function get() {
+	return [
+		this.namePrefix,
+		this.firstName,
+		this.middleName,
+		this.lastName,
+		this.nameSuffix,
+	].join(' ').trim().replace(/\s+/g, ' ');
+});
+userSchema.plugin(leanVirtuals);
+
+userSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions(this.roles);
 };
 
@@ -46,9 +59,14 @@ const registrationPinSchema = new Schema({
 	timestamps: true,
 });
 
+/* virtual property functions */
+
+const displayName = user => `${user.firstName} ${user.lastName}`;
+
 const registrationPinModel = mongoose.model('registrationPin', registrationPinSchema);
 const userModel = mongoose.model('user', userSchema);
 module.exports = {
 	userModel,
 	registrationPinModel,
+	displayName,
 };

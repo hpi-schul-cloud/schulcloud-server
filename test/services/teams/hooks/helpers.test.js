@@ -51,24 +51,25 @@ describe('hook helpers', () => {
 	});
 
 	describe('removeDuplicatedTeamUsers', () => {
-		let userList = [], populatedUserList;
+		const userList = []; let
+			populatedUserList;
 		before(() => {
-			let schoolId = ObjectId();
-			let role = ObjectId();
-			let data = [
+			const schoolId = ObjectId();
+			const role = ObjectId();
+			const data = [
 				{ schoolId, role, userId: ObjectId() },
 				{ schoolId, role, userId: ObjectId() },
-				{ schoolId, role, userId: ObjectId() }
+				{ schoolId, role, userId: ObjectId() },
 			];
 			userList.push((new teamUserModel(data[0]))._doc);
 			userList.push((new teamUserModel(data[1]))._doc);
 			userList.push((new teamUserModel(data[2]))._doc);
 
 			populatedUserList = userList.slice();
-			//fake populate 
-			populatedUserList[0].userId = { '_id': data[0].userId };
-			populatedUserList[1].userId = { '_id': data[1].userId };
-			populatedUserList[2].userId = { '_id': data[2].userId };
+			// fake populate
+			populatedUserList[0].userId = { _id: data[0].userId };
+			populatedUserList[1].userId = { _id: data[1].userId };
+			populatedUserList[2].userId = { _id: data[2].userId };
 		});
 
 		it('should work for empty array', () => {
@@ -99,7 +100,7 @@ describe('hook helpers', () => {
 
 	describe('arrayRemoveAddDiffs', () => {
 		it('should work for empty arrays', () => {
-			expect(arrayRemoveAddDiffs([], [])).to.deep.equal({add: [], remove: []});
+			expect(arrayRemoveAddDiffs([], [])).to.deep.equal({ add: [], remove: [] });
 		});
 
 		it('should work for plain arrays', () => {
@@ -177,7 +178,7 @@ describe('hook helpers', () => {
 				expect(userId).to.not.equal(undefined);
 				const hook = {
 					app,
-					method: method,
+					method,
 					data: {
 						userIds: [
 							userId,
@@ -225,7 +226,7 @@ describe('hook helpers', () => {
 				expect(userId).to.not.equal(undefined);
 				const hook = {
 					app,
-					method: method,
+					method,
 					data: {
 						userIds: [
 							userId,
@@ -252,7 +253,7 @@ describe('hook helpers', () => {
 
 				const hook = {
 					app,
-					method: method,
+					method,
 					data: {
 						userIds: [
 							userId1,
@@ -369,6 +370,5 @@ describe('hook helpers', () => {
 
 			await deleteUser(user._id);
 		});
-
 	});
 });

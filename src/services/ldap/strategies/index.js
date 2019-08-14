@@ -22,7 +22,6 @@ module.exports = function (app, config) {
 	if (config && config.provider && strategies[config.provider]) {
 		const LDAPStrategy = strategies[config.provider];
 		return new LDAPStrategy(app, config);
-	} else {
-		throw new Error('Invalid configuration object');
 	}
+	throw new Error('Invalid configuration object');
 };

@@ -13,8 +13,8 @@ describe('registration service', () => {
 	});
 
 	it('processes registration by student correctly', () => {
-		const email = 'max' + Date.now() + '@mustermann.de';
-		return registrationPinService.create({'email': email})
+		const email = `max${Date.now()}@mustermann.de`;
+		return registrationPinService.create({ email })
 			.then((registrationPin) => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
@@ -72,8 +72,8 @@ describe('registration service', () => {
 	});
 
 	it('fails with invalid pin', () => {
-		const email = 'max' + Date.now() + '@mustermann.de';
-		return registrationPinService.create({'email': email})
+		const email = `max${Date.now()}@mustermann.de`;
+		return registrationPinService.create({ email })
 			.then((registrationPin) => {
 				let pin = Number(registrationPin.pin);
 				pin = pin === 9999 ? 1000 : pin + 1;
@@ -92,16 +92,14 @@ describe('registration service', () => {
 			});
 	});
 
-	it('fails if parent and student email are the same', () => {
-		return registrationService.create({
-			classOrSchoolId: '0000d186816abba584714c5f',
-			email: 'max.sameadress@mustermann.de',
-			parent_email: 'max.sameadress@mustermann.de',
-			birthDate: '18.02.2015',
-		}).catch((err) => {
-			chai.expect(err.message).to.equal('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.');
-		});
-	});
+	it('fails if parent and student email are the same', () => registrationService.create({
+		classOrSchoolId: '0000d186816abba584714c5f',
+		email: 'max.sameadress@mustermann.de',
+		parent_email: 'max.sameadress@mustermann.de',
+		birthDate: '18.02.2015',
+	}).catch((err) => {
+		chai.expect(err.message).to.equal('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.');
+	}));
 
 	it('undoes changes on fail', () => {
 		const email = `max${Date.now()}@mustermann.de`;

@@ -1,4 +1,4 @@
-const logger = require('winston');
+const logger = require('../../../logger');
 
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
@@ -9,13 +9,14 @@ const { submissionModel } = require('../../homework/model');
 const getFile = id => FileModel
 	.findOne({ _id: id })
 	.populate('owner')
+	.lean()
 	.exec();
 
 const checkTeamPermission = async ({ user, file, permission }) => {
 	let teamRoles;
 
 	try {
-		teamRoles = sortRoles(await RoleModel.find({ name: /^team/ }).exec());
+		teamRoles = sortRoles(await RoleModel.find({ name: /^team/ }).lean().exec());
 	} catch (error) {
 		logger.error(error);
 		return Promise.reject();
@@ -24,7 +25,7 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 	return new Promise((resolve, reject) => {
 		const { role } = user;
 		const { permissions } = file;
-		const rolePermissions = permissions.find(perm => perm.refId.toString() === role.toString());
+		const rolePermissions = permissions.find(perm => perm.refId.toString() === role.toString()) || [];
 
 		const { role: creatorRole } = file.owner.userIds
 			.find(_ => _.userId.toString() === file.permissions[0].refId.toString());
@@ -32,14 +33,13 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 		const findRole = roleId => roles => roles
 			.findIndex(r => r._id.toString() === roleId.toString()) > -1;
 
-		if (permission === 'delete') {
-			const userPos = teamRoles.findIndex(findRole(role));
-			const creatorPos = teamRoles.findIndex(findRole(creatorRole));
+		const userPos = teamRoles.findIndex(findRole(role));
+		const creatorPos = teamRoles.findIndex(findRole(creatorRole));
 
-			return userPos > creatorPos ? resolve(true) : reject();
+		if (userPos > creatorPos || rolePermissions[permission]) {
+			resolve(true);
 		}
-
-		return rolePermissions[permission] ? resolve(true) : reject();
+		reject();
 	});
 };
 
@@ -51,11 +51,14 @@ const checkMemberStatus = ({ file, user }) => {
 		return false;
 	}
 
-	return userIds.find(finder) || teacherIds.find(finder);
+	return userIds.find(finder) || (teacherIds && teacherIds.find(finder));
 };
 
 const checkPermissions = permission => async (user, file) => {
 	const fileObject = await getFile(file);
+	if (fileObject === undefined || fileObject === null) {
+		throw new Error('File does not exist.', { user, file, permission });
+	}
 	const {
 		permissions,
 		refOwnerModel,
@@ -80,14 +83,16 @@ const checkPermissions = permission => async (user, file) => {
 	const isSubmission = await submissionModel.findOne({ fileIds: fileObject._id });
 
 	// or legacy course model
+	// TODO: Check member status of teacher if submission
 	if (refOwnerModel === 'course' || isSubmission) {
-		const userObject = await userModel.findOne({ _id: user }).populate('roles').exec();
+		const userObject = await userModel.findOne({ _id: user }).populate('roles').lean().exec();
 		const isStudent = userObject.roles.find(role => role.name === 'student');
 
 		if (isStudent) {
 			const rolePermissions = permissions.find(
 				perm => perm.refId && perm.refId.toString() === isStudent._id.toString(),
 			);
+
 			return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
 		}
 		return Promise.resolve(true);

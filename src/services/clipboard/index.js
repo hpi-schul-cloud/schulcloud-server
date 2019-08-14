@@ -8,7 +8,7 @@ module.exports = function () {
 		'/clipboard/uploads',
 		auth.express.authenticate(
 			'jwt',
-			{ exposeCookies: true, exposeHeaders: true }
+			{ exposeCookies: true, exposeHeaders: true },
 		),
 	);
 	app.use('/clipboard/uploads', express.static(path.join(__dirname, '/../../../uploads')));

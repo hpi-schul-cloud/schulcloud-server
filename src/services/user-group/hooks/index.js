@@ -18,9 +18,7 @@ const addWholeClassToCourse = (hook) => {
 		return hook;
 	}
 	if ((requestBody.classIds || []).length > 0) { // just courses do have a property "classIds"
-		return Promise.all(requestBody.classIds.map((classId) => {
-			return ClassModel.findById(classId).exec().then(c => c.userIds);
-		})).then(async (studentIds) => {
+		return Promise.all(requestBody.classIds.map(classId => ClassModel.findById(classId).exec().then(c => c.userIds))).then(async (studentIds) => {
 			// flatten deep arrays and remove duplicates
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
@@ -51,9 +49,7 @@ const deleteWholeClassFromCourse = (hook) => {
 
 		const removedClasses = _.differenceBy(course.classIds, requestBody.classIds, v => JSON.stringify(v));
 		if (removedClasses.length < 1) return hook;
-		return Promise.all(removedClasses.map((classId) => {
-			return ClassModel.findById(classId).exec().then(c => (c || []).userIds);
-		})).then(async (studentIds) => {
+		return Promise.all(removedClasses.map(classId => ClassModel.findById(classId).exec().then(c => (c || []).userIds))).then(async (studentIds) => {
 			// flatten deep arrays and remove duplicates
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 

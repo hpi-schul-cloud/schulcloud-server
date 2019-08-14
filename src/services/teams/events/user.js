@@ -1,4 +1,4 @@
-const logger = require('winston');
+const logger = require('../../../logger/index');
 
 const { teamsModel } = require('../model');
 
@@ -30,7 +30,7 @@ const deleteUser = (app) => {
 				const teamIds = teams.map(team => team._id);
 				logger.info(
 					`Remove user ${userId} from the teams ${teamIds},`
-					+ 'if team.userIds empty then removed the team too.',
+                    + 'if team.userIds empty then removed the team too.',
 				);
 			})
 			.catch((err) => {
@@ -38,9 +38,9 @@ const deleteUser = (app) => {
 					team => team.userIds.some(teamUser => teamUser.userId.toString() === userId),
 				);
 
-				logger.warn(
+				logger.warning(
 					`Can not remove user ${userId} from the teams ${notRemovedFromTeams},`
-					+ 'if team.userIds empty then removed the team too.',
+                    + 'if team.userIds empty then removed the team too.',
 					err,
 				);
 			});

@@ -28,12 +28,15 @@ const statistic = require('./statistic');
 const wopi = require('./wopi');
 const pseudonym = require('./pseudonym');
 const consent = require('./consent');
+const oauth2 = require('./oauth2');
+const roster = require('./roster');
 const ldap = require('./ldap');
 const sync = require('./sync');
 const rocketChat = require('./rocketChat');
 const clipboard = require('./clipboard');
 const me = require('./me');
 const database = require('../utils/database');
+
 
 module.exports = function initializeServices() {
 	const app = this;
@@ -75,6 +78,9 @@ module.exports = function initializeServices() {
 	app.configure(sync);
 	app.configure(me);
 	app.configure(rocketChat);
+	app.configure(oauth2);
+	app.configure(roster);
+
 
 	// initialize events
 	newsEvents.configure(app);

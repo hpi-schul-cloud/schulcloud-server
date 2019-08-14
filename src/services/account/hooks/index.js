@@ -8,7 +8,6 @@ const { ObjectId } = require('mongoose').Types;
 const globalHooks = require('../../../hooks');
 
 const MoodleLoginStrategy = require('../strategies/moodle');
-const ITSLearningLoginStrategy = require('../strategies/itslearning');
 const IServLoginStrategy = require('../strategies/iserv');
 const LocalLoginStrategy = require('../strategies/local');
 const LdapLoginStrategy = require('../strategies/ldap');
@@ -17,7 +16,6 @@ const LdapLoginStrategy = require('../strategies/ldap');
 // TODO: initialize all strategies here once
 const strategies = {
 	moodle: MoodleLoginStrategy,
-	itslearning: ITSLearningLoginStrategy,
 	iserv: IServLoginStrategy,
 	local: LocalLoginStrategy,
 	ldap: LdapLoginStrategy,
@@ -107,7 +105,7 @@ const validatePassword = (hook) => {
 			if (password && !passwordVerification) {
 				throw new Forbidden(
 					`Du darfst das Passwort dieses Nutzers nicht ändern oder die
-					Passwortfelder wurden falsch ausgefüllt.`,
+                    Passwortfelder wurden falsch ausgefüllt.`,
 				);
 			}
 

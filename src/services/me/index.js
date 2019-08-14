@@ -1,5 +1,5 @@
-const { Forbidden } = require('@feathersjs/errors');
-const logger = require('winston');
+const { Forbidden, GeneralError } = require('@feathersjs/errors');
+const logger = require('../../logger');
 const hooks = require('./hooks');
 
 class Service {
@@ -7,22 +7,33 @@ class Service {
 		this.options = options || {};
 		this.docs = {};
 	}
+
 	/**
-	 * request headers
-	 * set Content-Type = application/json
-	 * set Authorization = Bearer [jwt]
-	 */
-	find(params) {
-		const userId = params.account.userId;
+     * request headers
+     * set Content-Type = application/json
+     * set Authorization = Bearer [jwt]
+     */
+	async find(params) {
+		const { userId } = params.account;
 		const userServiceParams = {
 			query: {
-				$populate: ['roles']
-			}
+				$populate: ['roles'],
+			},
 		};
-		return this.app.service('/users').get(userId, userServiceParams).catch(err => {
-			logger.warn(err);
+		let user = {};
+		try {
+			user = await this.app.service('/users').get(userId, userServiceParams);
+		} catch (err) {
+			logger.warning(err);
 			throw new Forbidden('Your access token is not valid.');
-		})
+		}
+		try {
+			user.schoolName = (await this.app.service('/schools').get(user.schoolId)).name;
+		} catch (err) {
+			logger.warning(err);
+			throw new GeneralError('Can\'t find connected school.');
+		}
+		return user;
 	}
 
 	setup(app, path) {
