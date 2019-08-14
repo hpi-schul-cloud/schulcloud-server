@@ -40,7 +40,7 @@ exports.before = {
 	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
 };
 
-const addDisplayName = (hook) => {
+const sortByDisplayName = (hook) => {
 	let data = hook.result.data || hook.result;
 	const arrayed = !(Array.isArray(data));
 	data = (Array.isArray(data)) ? (data) : ([data]);
@@ -63,9 +63,9 @@ const addDisplayName = (hook) => {
 
 exports.after = {
 	all: [],
-	find: [addDisplayName],
+	find: [sortByDisplayName],
 	get: [
-		addDisplayName,
+		sortByDisplayName,
 		globalHooks.ifNotLocal(
 			globalHooks.denyIfNotCurrentSchool({
 				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
