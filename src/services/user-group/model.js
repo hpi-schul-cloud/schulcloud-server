@@ -53,10 +53,10 @@ courseSchema.plugin(require('mongoose-lean-virtuals'));
 const getCourseIsArchived = (aCourse) => {
 	const oneDayInMilliseconds = 864e5;
 
-	if (aCourse.untilDate === undefined || aCourse.untilDate >= Date.now() - oneDayInMilliseconds) {
-		return false;
+	if (aCourse.untilDate >= Date.now() + oneDayInMilliseconds) {
+		return true;
 	}
-	return true;
+	return false;
 };
 
 // => has no access to this
