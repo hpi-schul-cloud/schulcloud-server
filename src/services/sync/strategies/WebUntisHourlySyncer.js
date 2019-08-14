@@ -114,42 +114,46 @@ class WebUntisHourlySyncer extends Syncer {
         );
 
         return Promise.resolve()
-            .then(() => api.login(
-                system.webuntisConfig.user,
-                system.webuntisConfig.password
-            ))
-            .then(() => this.syncFromAPI(api, stats, app))
+            .then(() => api.login(system.webuntisConfig.user, system.webuntisConfig.password))
+            .then(() => this.fetchInformation(api, stats, app))
+            .then((data) => {
+                api.logout();
+                return Promise.resolve(data)
+            })
+            .then((data) => {
+                this.migrateData(data, stats);
+            })
             .then(() => {
                 stats.success = true;
-                api.logout();
             });
     }
 
-    async syncFromAPI(api, stats, app) {
+    async fetchInformation(api, stats, app) {
+        let intermediateData = {};
         let data = {};
         data.currentSchoolYear = await api.getCurrentSchoolyear();
-        // data.holidays = await api.getHolidays();
-        // data.subjects = await api.getSubjects(); // Ignore subjects for now
-        data.timeGrid = await api.getTimegrid();
-        data.classes = await api.getClasses(data.currentSchoolYear.id);
-        data.rooms = await api.getRooms();
+        // intermediateData.holidays = await api.getHolidays();
+        data.subjects = await api.getSubjects(); // Ignore subjects for now
+        intermediateData.timeGrid = await api.getTimegrid();
+        intermediateData.classes = await api.getClasses(data.currentSchoolYear.id);
+        intermediateData.rooms = await api.getRooms();
 
-        // stats.holidayRanges = data.holidays.map(holiday => [ holiday.startDate, holiday.endDate ]);
-        stats.classes = data.classes.map(klass => {
+        // data.holidayRanges = data.holidays.map(holiday => [ holiday.startDate, holiday.endDate ]);
+        data.classes = intermediateData.classes.map(klass => {
             return {
                 "id": klass.id,
                 "name": klass.longName,
                 "timetable": []
             };
         });
-        stats.timeGrid = data.timeGrid.map(day => {
+        data.timeGrid = intermediateData.timeGrid.map(day => {
             return {
                 "day": api.dayLookUp(day.day),
                 "timeUnits": day.timeUnits
             }
         });
 
-        data.rooms = data.rooms.map(room => { return {
+        data.rooms = intermediateData.rooms.map(room => { return {
             "id": room.id,
             "name": room.name + " (" + room.longName + (room.building !== "" ? ", " + room.building : "") + ")"
         }; });
@@ -174,7 +178,7 @@ class WebUntisHourlySyncer extends Syncer {
             for (let entryIndex in timetable) {
                 let entry = timetable[entryIndex];
                 for (let klassIndex in entry.kl) {
-                    let klass = stats.classes.find(k => {
+                    let klass = data.classes.find(k => {
                         return k.id === entry.kl[klassIndex].id;
                     });
 
@@ -193,6 +197,40 @@ class WebUntisHourlySyncer extends Syncer {
                 }
             }
         }
+
+        return Promise.resolve(data);
+    }
+
+    async migrateData(data, stats) {
+        /**
+         * Mapping:
+         * 
+         * Schul-Cloud: class, course (per class), lesson
+         * WebUntis: class, subject
+         * German: Klasse, Kurs, Fach, Schulstunde
+         */
+
+        /**
+         * Obtain classes
+         */
+
+        /** Obtain courses for subjects:
+         * 
+         * - class
+         * - (teacher)
+         * - time series
+         * - room
+        */
+
+        /** Derive course dates:
+         * 
+         * Time conversion: int(HHMM) to int(milliseconds)
+         * Weekday conversion: int(So-Sa) to int(Mo-So)
+        */
+
+        /* Create Calendar Series */
+
+        /* Populate stats */
 
         return Promise.resolve();
     }
