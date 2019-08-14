@@ -13,6 +13,16 @@ const EntityType = {
 	STUDENT: 5
 };
 
+const DayMapping = {
+	1: "Sonntag",
+	2: "Montag",
+	3: "Dienstag",
+	4: "Mittwoch",
+	5: "Donnerstag",
+	6: "Freitag",
+	7: "Samstag"
+};
+
 /**
  * Client for the WebUntis API.
  * @class
@@ -41,6 +51,10 @@ s	 */
 				'X-Requested-With': 'XMLHttpRequest'
 			}
 		});
+	}
+
+	dayLookUp(day) {
+		return DayMapping[day];
 	}
 
 	/**
@@ -258,6 +272,18 @@ s	 */
 	}
 
 	/**
+	 * Get customizable timetable for a class.
+	 *
+	 * @param {number} classId - Class ID
+	 * @param {object} options - Additional options for request
+	 *
+	 * @return {Promise<Array>} List of timetable entries
+	 */
+	async getCustomizableTimeTableForClass(classId, options) {
+		return this.getCustomizableTimeTableFor(EntityType.CLASS, classId, options);
+	}
+
+	/**
 	 * Get timetable for a teacher.
 	 *
 	 * @param {number} teacherId - Teacher ID
@@ -338,6 +364,30 @@ s	 */
 
 		// Send request
 		const response = await this.sendRequest('getTimetable', params);
+		return response.data.result;
+	}
+
+	/**
+	 * Get timetable for any entity.
+	 *
+	 * @param {EntityType} type - Type of entity
+	 * @param {number} id - ID of entity
+	 * @param {object} options - Additional options for request
+	 *
+	 * @return {Promise<Array>} List of timetable entries
+	 */
+	async getCustomizableTimeTableFor(type, id, options) {
+		// Create parameters
+		var params = {
+			"element": { type: type, id: id }
+		};
+
+		Object.assign(params, options);
+
+		// [TODO] Check optional parameters, see 15) Request timetable for an element (customizable)
+
+		// Send request
+		const response = await this.sendRequest('getTimetable', { "options": params });
 		return response.data.result;
 	}
 

@@ -1,6 +1,6 @@
 const Syncer = require('./Syncer');
 
-const Lesson = require('../../services/lesson/model');
+const Lesson = require('../../lesson/model');
 
 const WebUntisApi = require('../../webuntis/services/WebUntisApi');
 
@@ -9,7 +9,7 @@ const WebUntisApi = require('../../webuntis/services/WebUntisApi');
  * @class WebUntisSyncer
  * @implements {Syncer}
  */
-class WebUntisSyncer extends Syncer {
+class WebUntisSchoolyearSyncer extends Syncer {
 
 	constructor(app, stats) {
 		super(app, stats);
@@ -22,7 +22,7 @@ class WebUntisSyncer extends Syncer {
 	 * @see {Syncer#respondsTo}
 	 */
 	static respondsTo(target) {
-		return target === 'webuntis';
+		return target === 'webuntis-schoolyear';
 	}
 
 	static params(params, data) {
@@ -31,6 +31,17 @@ class WebUntisSyncer extends Syncer {
 
 	/**
 	 * @see {Syncer#steps}
+     * 
+     * Steps:
+     * * Check for WebUntis system (may have configured none)
+     * * Login to WebUntis
+     * * Fetch initial Rooms, Classes, Timetables, for next school year
+     * * Migrate the changes
+     * * Assign current user as initial class teacher
+     * 
+     * Assumptions:
+     * * Each school has one WebUntis system at most
+     * * This syncer has to be triggered for each school individually
 	 */
 	steps() {
         /* Why not
@@ -105,4 +116,4 @@ class WebUntisSyncer extends Syncer {
     }
 }
 
-module.exports = WebUntisSyncer;
+module.exports = WebUntisSchoolyearSyncer;

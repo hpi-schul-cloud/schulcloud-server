@@ -5,9 +5,10 @@ const auth = require('@feathersjs/authentication');
 const Syncer = require('./strategies/Syncer');
 const LDAPSystemSyncer = require('./strategies/LDAPSystemSyncer');
 const CSVSyncer = require('./strategies/CSVSyncer');
-const WebUntisSyncer = require('./strategies/WebUntisSyncer');
+const WebUntisHourlySyncer = require('./strategies/WebUntisHourlySyncer');
+const WebUntisSchoolyearSyncer = require('./strategies/WebUntisSchoolyearSyncer');
 
-const syncers = [LDAPSystemSyncer, CSVSyncer, WebUntisSyncer];
+const syncers = [LDAPSystemSyncer, CSVSyncer, WebUntisHourlySyncer, WebUntisSchoolyearSyncer];
 
 module.exports = function () {
 	const app = this;
