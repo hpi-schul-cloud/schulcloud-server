@@ -45,7 +45,16 @@ describe.only('classSuccessor service', () => {
 		expect(successor.schoolId.toString()).to.equal(newClass.schoolId.toString());
 	});
 
-	it('fails when gradeLevel is too high');
+	it('fails when gradeLevel is too high', async () => {
+		try {
+			const newClass = await testObjects.createTestClass({ name: 'b', gradeLevel: 13 });
+			await classSuccessorService.get(newClass._id);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.message).to.equal('there is no grade level higher than 13!');
+		}
+	});
 
 	it('GET works for class with year and gradeLevel', async () => {
 		const newSchool = await testObjects.createTestSchool();
@@ -55,7 +64,7 @@ describe.only('classSuccessor service', () => {
 		const yearAfter = await schoolYears.getNextYearAfter(classYear);
 
 		const newClass = await testObjects.createTestClass({
-			name: 'b',
+			name: 'c',
 			gradeLevel: 6,
 			schoolId: school._id,
 			year: classYear,

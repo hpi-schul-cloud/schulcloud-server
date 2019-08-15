@@ -1,6 +1,7 @@
 const { BadRequest } = require('@feathersjs/errors');
 
 const SchoolYearFacade = require('../../school/logic/year');
+const logger = require('../../../logger');
 
 // private functions
 
@@ -28,7 +29,10 @@ class ClassSuccessorService {
 			};
 
 			// ToDO warning if gradelevel too high
-			if (currentClass.gradeLevel && currentClass.gradeLevel < 12) {
+			if (currentClass.gradeLevel) {
+				if (currentClass.gradeLevel >= 13) {
+					throw new BadRequest('there is no grade level higher than 13!');
+				}
 				successor.gradeLevel = currentClass.gradeLevel + 1;
 			}
 
@@ -40,6 +44,7 @@ class ClassSuccessorService {
 
 			return successor;
 		} catch (err) {
+			logger.log('warn', err);
 			throw err;
 		}
 	}
