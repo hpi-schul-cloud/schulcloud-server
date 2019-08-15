@@ -92,4 +92,16 @@
 		"$date": "2019-08-05T16:15:12.225Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d552b8bc1658a0682fc834a"
+	},
+	"state": "up",
+	"name": "set schoolspecific documentbasedir for instance open",
+	"createdAt": {
+		"$date": "2019-08-15T09:34:59.243Z"
+	},
+	"__v": 0
 }]
+
