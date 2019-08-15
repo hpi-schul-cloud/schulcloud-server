@@ -48,8 +48,10 @@ class ClassSuccessorService {
 				successor.gradeLevel ? { gradeLevel: successor.gradeLevel } : { gradeLevel: { $exists: false } }
 			);
 			query.$and.push(
-				successor.year ? { year: successor.year } : { year: { $exists: false } }
+				successor.year ? { year: successor.year } : { year: { $exists: false } },
 			);
+			// for some reason this only works via the model, the service always returns all classes on the school.
+			// eventually, this should go over the service
 			const duplicatesResponse = await classModel.find(query);
 			successor.duplicates = duplicatesResponse.map(c => c._id);
 
