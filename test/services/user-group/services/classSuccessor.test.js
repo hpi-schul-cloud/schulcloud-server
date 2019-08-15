@@ -78,7 +78,55 @@ describe.only('classSuccessor service', () => {
 		expect(successor.schoolId.toString()).to.equal(newClass.schoolId.toString());
 	});
 
-	it('GET warns about duplicates');
+	it('GET informs about duplicates', async () => {
+		const name = `klasse ${Date.now}`;
+		const oldClass = await testObjects.createTestClass({ name });
+		const newClass = await testObjects.createTestClass({ name });
+
+		const successor = await classSuccessorService.get(newClass._id);
+		expect(successor).to.not.equal(undefined);
+		expect(successor.gradeLevel).to.equal(undefined);
+		expect(successor.name).to.equal(newClass.name);
+		expect(successor.schoolId.toString()).to.equal(newClass.schoolId.toString());
+		expect(successor.duplicates.map(d => d.toString())).to.include(oldClass._id.toString());
+	});
+
+	it('only includes duplicates in the same year', async () => {
+		const newSchool = await testObjects.createTestSchool();
+		const school = await app.service('schools').get(newSchool._id); // necessary to get valid years
+		const schoolYears = new SchoolYearFacade(school.years.schoolYears, school);
+		const classYear = school.years.lastYear._id;
+		const yearAfter = await schoolYears.getNextYearAfter(classYear);
+
+		const name = `klasse ${Date.now}`;
+		const classThisYear	= await testObjects.createTestClass({ name, schoolId: school._id, year: classYear });
+		const classYearAfter = await testObjects.createTestClass({ name, schoolId: school._id, year: yearAfter });
+		const newClass = await testObjects.createTestClass({ name, schoolId: school._id, year: classYear });
+		const successor = await classSuccessorService.get(newClass._id);
+
+		expect(successor).to.not.equal(undefined);
+		expect(successor.name).to.equal(newClass.name);
+		expect(successor.year.toString()).to.equal(yearAfter._id.toString());
+		const duplicates = successor.duplicates.map(d => d.toString());
+		expect(duplicates).to.include(classYearAfter._id.toString());
+		expect(duplicates).not.to.include(classThisYear._id.toString());
+	});
+
+	it('only includes duplicates with equal grade level', async () => {
+		const name = `klasse ${Date.now}`;
+		const classoldGrade = await testObjects.createTestClass({ name, gradeLevel: 1 });
+		const classNextGrade = await testObjects.createTestClass({ name, gradeLevel: 2 });
+		const newClass = await testObjects.createTestClass({ name, gradeLevel: 1 });
+
+		const successor = await classSuccessorService.get(newClass._id);
+		expect(successor).to.not.equal(undefined);
+		expect(successor.gradeLevel).to.equal(2);
+		expect(successor.name).to.equal(newClass.name);
+		expect(successor.schoolId.toString()).to.equal(newClass.schoolId.toString());
+		const duplicates = successor.duplicates.map(d => d.toString());
+		expect(duplicates).to.include(classNextGrade._id.toString());
+		expect(duplicates).not.to.include(classoldGrade._id.toString());
+	});
 
 	it('FIND generates multiple successors');
 

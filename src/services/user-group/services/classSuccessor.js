@@ -2,6 +2,7 @@ const { BadRequest } = require('@feathersjs/errors');
 
 const SchoolYearFacade = require('../../school/logic/year');
 const logger = require('../../../logger');
+const { classModel } = require('../model');
 
 // private functions
 
@@ -41,6 +42,16 @@ class ClassSuccessorService {
 				const schoolYears = new SchoolYearFacade(school.years.schoolYears, school);
 				successor.year = await schoolYears.getNextYearAfter(currentClass.year)._id;
 			}
+
+			const query = { $and: [{ name: successor.name }] };
+			query.$and.push(
+				successor.gradeLevel ? { gradeLevel: successor.gradeLevel } : { gradeLevel: { $exists: false } }
+			);
+			query.$and.push(
+				successor.year ? { year: successor.year } : { year: { $exists: false } }
+			);
+			const duplicatesResponse = await classModel.find(query);
+			successor.duplicates = duplicatesResponse.map(c => c._id);
 
 			return successor;
 		} catch (err) {
