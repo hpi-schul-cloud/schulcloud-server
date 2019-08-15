@@ -4,6 +4,7 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const { getDocumentBaseDir } = require('./logic/school');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
@@ -37,6 +38,12 @@ const schoolSchema = new Schema({
 	address: { type: Object },
 	fileStorageType: { type: String, enum: fileStorageTypes },
 	schoolGroup: { type: Schema.Types.ObjectId, ref: 'schoolGroup' },
+	documentBaseDirType: {
+		type: String,
+		required: false,
+		default: '',
+		enum: ['', 'school', 'schoolGroup'],
+	},
 	systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
 	federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
 	createdAt: { type: Date, default: Date.now },
@@ -71,16 +78,9 @@ schoolSchema.virtual('inMaintenance').get(function get() {
 	return Boolean(this.inMaintenanceSince && this.inMaintenanceSince <= Date.now());
 });
 
-schoolSchema.virtual('documentBaserDir').get(function get() {
-	let documentBaserDir;
-	if (this.schoolGroup) {
-		// parse id eventually from populated schoolGroup if defined
-		documentBaserDir = this.schoolGroup._id || this.schoolGroup;
-	} else {
-		// otherwise use school id
-		documentBaserDir = this._id;
-	}
-	return String(documentBaserDir);
+schoolSchema.virtual('documentBaseDir').get(function get() {
+	const school = this;
+	return getDocumentBaseDir(school);
 });
 
 const yearSchema = new Schema({
