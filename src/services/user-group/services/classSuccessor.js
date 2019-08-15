@@ -1,5 +1,7 @@
 const { BadRequest } = require('@feathersjs/errors');
 
+const SchoolYearFacade = require('../../school/logic/year');
+
 // private functions
 
 class ClassSuccessorService {
@@ -30,7 +32,13 @@ class ClassSuccessorService {
 				successor.gradeLevel = currentClass.gradeLevel + 1;
 			}
 
-			return { successor };
+			if (currentClass.year) {
+				const school = await (this.app.service('schools').get(currentClass.schoolId));
+				const schoolYears = new SchoolYearFacade(school.years.schoolYears, school);
+				successor.year = await schoolYears.getNextYearAfter(currentClass.year)._id;
+			}
+
+			return successor;
 		} catch (err) {
 			throw err;
 		}
