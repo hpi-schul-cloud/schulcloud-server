@@ -24,7 +24,7 @@ module.exports = function () {
 			default: 25,
 			max: 100,
 		},
-		lean: true,
+		lean: { virtuals: true },
 	}));
 	const courseService = app.service('/courses');
 	courseService.hooks(hooks);

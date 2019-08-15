@@ -68,7 +68,7 @@ const insertUserToDB = (app, data, user) => {
 		});
 };
 
-const registerUser = function (data, params, app) {
+const registerUser = function register(data, params, app) {
 	let parent = null; let user = null; let oldUser = null; let account = null; let consent = null; let
 		consentPromise = null;
 
@@ -187,13 +187,16 @@ const registerUser = function (data, params, app) {
 						if (err.message.startsWith('parentCreatePatch')) {
 							return Promise.resolve(err.data);
 						}
-						return Promise.reject(new Error('Fehler beim Erstellen des Elternaccounts.'));
+						return Promise.reject(new Error(`Fehler beim Erstellen des Elternaccounts. ${err}`));
 					}).then((newParent) => {
 						parent = newParent;
 						return userModel.userModel.findByIdAndUpdate(user._id, { parents: [parent._id] }, { new: true }).exec()
 							.then(updatedUser => user = updatedUser);
 					})
-					.catch(err => Promise.reject('Fehler beim Verknüpfen der Eltern.'));
+					.catch((err) => {
+						logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
+						return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.'));
+					});
 			}
 			return Promise.resolve();
 		})
