@@ -13,9 +13,9 @@ const ltiTool = new Schema({
 	key: { type: String, required: true },
 	secret: { type: String, required: true },
 	logo_url: { type: String },
-	lti_message_type: { type: String, required: true },
-	lti_version: { type: String, required: true },
-	resource_link_id: { type: String, required: true },
+	lti_message_type: { type: String },
+	lti_version: { type: String },
+	resource_link_id: { type: String },
 	roles: {
 		type: [{
 			type: String,
@@ -35,6 +35,7 @@ const ltiTool = new Schema({
 	originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
 	oAuthClientId: { type: String },
 	useIframePseudonym: { type: Boolean },
+	friendlyUrl: { type: String, unique: true, sparse: true },
 });
 
 const ltiToolModel = mongoose.model('ltiTool', ltiTool);
