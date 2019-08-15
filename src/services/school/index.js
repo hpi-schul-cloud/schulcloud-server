@@ -29,8 +29,8 @@ module.exports = function schoolServices() {
 		Model: schoolModels.schoolGroupModel,
 		paginate: {
 			default: 500,
-			max: 5000
-		}
+			max: 5000,
+		},
 	}));
 	const schoolGroupService = app.service('/schoolGroup');
 	schoolGroupService.hooks(schoolGroupHooks);

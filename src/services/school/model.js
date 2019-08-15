@@ -52,11 +52,11 @@ const schoolSchema = new Schema({
 	features: [{ type: String, enum: ['rocketChat', 'disableStudentTeamCreation'] }],
 	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below)
 }, {
-		timestamps: true,
-	});
+	timestamps: true,
+});
 
 const schoolGroupSchema = new Schema({
-	name: { type: String, required: true }
+	name: { type: String, required: true },
 }, { timestamps: true });
 
 /**
@@ -71,9 +71,9 @@ schoolSchema.virtual('inMaintenance').get(function get() {
 	return Boolean(this.inMaintenanceSince && this.inMaintenanceSince <= Date.now());
 });
 
-schoolSchema.virtual('documentBaserDir').get(function get(){
+schoolSchema.virtual('documentBaserDir').get(function get() {
 	let documentBaserDir;
-	if(this.schoolGroup){
+	if (this.schoolGroup) {
 		// parse id eventually from populated schoolGroup if defined
 		documentBaserDir = this.schoolGroup._id || this.schoolGroup;
 	} else {
@@ -81,7 +81,7 @@ schoolSchema.virtual('documentBaserDir').get(function get(){
 		documentBaserDir = this._id;
 	}
 	return String(documentBaserDir);
-})
+});
 
 const yearSchema = new Schema({
 	name: {
