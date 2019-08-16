@@ -395,7 +395,6 @@ const User = require('../model');
 
 exports.before = {
 	all: [
-		search(),
 		search({
 			fields: ['firstName', 'lastName'],
 		}),
