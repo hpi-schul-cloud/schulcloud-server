@@ -13,12 +13,16 @@ const NewClass = mongoose.model('newClass', {
 	ldapDN: { type: String },
 }, 'classes');
 
+const GradeLevel = mongoose.model('gradelevels', {
+	name: { type: String },
+});
+
 const OldClass = mongoose.model('oldClass', {
 	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
 	invitationLink: { type: String },
 	name: { type: String, required: false },
 	year: { type: Schema.Types.ObjectId, ref: 'year' },
-	gradeFormat: { type: String, enum: ['static', 'gradeLevel+name'] },
+	nameFormat: { type: String, enum: ['static', 'gradeLevel+name'], default: 'static' },
 	gradeLevel: { type: Schema.Types.ObjectId, ref: 'gradeLevel' },
 	ldapDN: { type: String },
 }, 'classes');
@@ -40,15 +44,23 @@ module.exports = {
 				nameFormat: 'gradeLevel+name',
 			})
 			.select(['_id', 'gradeLevel'])
-			.populate('gradeLevel')
 			.lean()
 			.exec();
 
-		await Promise.all(data.map(element => NewClass.update({
-			_id: element._id,
-		}, {
-			gradeLevel: element.gradeLevel.name,
-		})));
+		await Promise.all(data.map(async (element) => {
+			let newGradeLevel;
+			if (typeof element.gradeLevel === 'number') {
+				newGradeLevel = element.gradeLevel;
+			} else {
+				const gradeLevel = await GradeLevel.findOne(element.gradeLevel);
+				newGradeLevel = gradeLevel.name;
+			}
+			return NewClass.update({
+				_id: element._id,
+			}, {
+				gradeLevel: newGradeLevel,
+			});
+		}));
 
 		await OldClass.updateMany({}, {
 			$unset: { nameFormat: '' },
@@ -74,11 +86,10 @@ module.exports = {
 			const grand = await gradeLevelModel.findOne({
 				name: element.gradeLevel,
 			}).lean().exec();
-
 			return OldClass.update({
 				_id: element._id,
 			}, {
-				gradeFormat: 'gradeLevel+name',
+				nameFormat: 'gradeLevel+name',
 				gradeLevel: grand._id,
 			});
 		});

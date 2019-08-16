@@ -1,9 +1,8 @@
 const { promisify } = require('es6-promisify');
 const { BadRequest, NotFound, GeneralError } = require('@feathersjs/errors');
 const aws = require('aws-sdk');
-const { posix: pathUtil } = require('path');
+const pathUtil = require('path');
 const fs = require('fs');
-
 const logger = require('../../../logger');
 const { schoolModel } = require('../../school/model');
 const UserModel = require('../../user/model');
@@ -214,7 +213,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		if (!userId || !oldPath || !newPath) {
 			return Promise.reject(new BadRequest('Missing parameters by copyFile.', { userId, oldPath, newPath }));
 		}
-		return UserModel.userModel.findById(userId).exec()
+		return UserModel.userModel.findById(userId).lean().exec()
 			.then((result) => {
 				if (!result || !result.schoolId) {
 					return new NotFound('User not found');
@@ -229,8 +228,11 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					CopySource: `/${sourceBucket}/${encodeURIComponent(oldPath)}`, // full source path (with bucket)
 					Key: newPath, // destination path
 				};
-
 				return promisify(awsObject.s3.copyObject.bind(awsObject.s3), awsObject.s3)(params);
+			})
+			.catch((err) => {
+				logger.warning(err);
+				throw err;
 			});
 	}
 

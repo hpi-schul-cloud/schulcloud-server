@@ -8,11 +8,13 @@ const configuration = require('@feathersjs/configuration');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
+
 const middleware = require('./middleware');
 const sockets = require('./sockets');
 const services = require('./services/');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
+const requestLogger = require('./middleware/requestLogger');
 const setupSwagger = require('./swagger');
 const allHooks = require('./app.hooks');
 const version = require('./services/version');
@@ -61,18 +63,16 @@ app.use(compress())
 	.get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
 	.configure(rest(handleResponseType))
 	.configure(socketio())
-
+	.configure(requestLogger)
 	.use((req, res, next) => {
 		// pass header into hooks.params
 		req.feathers.headers = req.headers;
 		next();
 	})
 	.configure(services)
-
 	.configure(socketio())
 	.configure(sockets)
 	.configure(middleware)
-	.hooks(allHooks);
-
+	.configure(allHooks);
 
 module.exports = app;
