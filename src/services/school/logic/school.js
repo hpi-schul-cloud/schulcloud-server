@@ -9,19 +9,19 @@ const getDocumentBaseDir = (school) => {
 	switch (school.documentBaseDirType) {
 		case 'school':
 			//  use school id
-			schoolBaseDir = `${SC_THEME}/${school._id}`;
+			schoolBaseDir = `${SC_THEME}/${school._id}/`;
 			break;
 		case 'schoolGroup':
 			// use schoolGroup id
 			if (!groupId) {
 				logger.error('school group id requested but not defined', school);
-				schoolBaseDir = `${SC_THEME}`;
+				schoolBaseDir = `${SC_THEME}/`;
 				break;
 			}
-			schoolBaseDir = `${SC_THEME}/${groupId}`;
+			schoolBaseDir = `${SC_THEME}/${groupId}/`;
 			break;
 		default:
-			schoolBaseDir = `${SC_THEME}`;
+			schoolBaseDir = `${SC_THEME}/`;
 			break;
 	}
 	return String(new URL(schoolBaseDir, DOCUMENT_BASE_DIR));
