@@ -31,9 +31,7 @@ const Role = require('../model');
 
 exports.after = {
 	all: [],
-	find: [(context) => {
-		console.log(context);
-	}],
+	find: [],
 	get: [
 		globalHooks.computeProperty(Role, 'getPermissions', 'permissions'),
 	],
