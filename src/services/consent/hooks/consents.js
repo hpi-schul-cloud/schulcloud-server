@@ -53,7 +53,7 @@ const addDates = (hook) => {
 /**
  * check if userId is set and set it to an empty $in clause if not
  * if userId.$in is an object confert it to an array
- * @param {*} context 
+ * @param {*} context
  */
 const setUserIdToCorrectForm = (context) => {
 	if (!context.params.query) {
@@ -62,7 +62,7 @@ const setUserIdToCorrectForm = (context) => {
 	if (!context.params.query.userId) {
 		context.params.query.userId = {};
 		context.params.query.userId.$in = [];
-	} else if (!Array.isArray(context.params.query.userId.$in)) {
+	} else if (context.params.query.userId.$in && !Array.isArray(context.params.query.userId.$in)) {
 		context.params.query.userId.$in = Object.values(context.params.query.userId.$in);
 	}
 	return context;
