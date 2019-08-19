@@ -5,6 +5,8 @@ const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 const logger = require('../../logger');
 
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../consent/config');
+
 const formatBirthdate1 = (datestamp) => {
 	if (datestamp == undefined) return false;
 
@@ -66,7 +68,7 @@ const insertUserToDB = (app, data, user) => {
 		});
 };
 
-const registerUser = function (data, params, app) {
+const registerUser = function register(data, params, app) {
 	let parent = null; let user = null; let oldUser = null; let account = null; let consent = null; let
 		consentPromise = null;
 
@@ -99,20 +101,31 @@ const registerUser = function (data, params, app) {
 		if ((user.roles || []).includes('student')) {
 			// wrong birthday object?
 			if (user.birthday instanceof Date && isNaN(user.birthday)) {
-				return Promise.reject(new errors.BadRequest('Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut.'));
+				return Promise.reject(new errors.BadRequest(
+					'Fehler bei der Erkennung des ausgewählten Geburtstages.'
+					+ ' Bitte lade die Seite neu und starte erneut.',
+				));
 			}
 			// wrong age?
 			const age = globalHooks.getAge(user.birthday);
-			if (data.parent_email && age >= 16) {
-				return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 16 Jahre oder älter sein.`));
-			} if (!data.parent_email && age < 16) {
-				return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 16 Jahre sein.`));
+			if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+				return Promise.reject(new errors.BadRequest(
+					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
+					+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
+				));
+			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+				return Promise.reject(new errors.BadRequest(
+					`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
+					+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
+				));
 			}
 		}
 
 		// identical emails?
 		if (data.parent_email && data.parent_email === data.email) {
-			return Promise.reject(new errors.BadRequest('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.'));
+			return Promise.reject(new errors.BadRequest(
+				'Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.',
+			));
 		}
 
 		if (data.password_1 && data.passwort_1 !== data.passwort_2) {
@@ -134,7 +147,7 @@ const registerUser = function (data, params, app) {
 			});
 		})
 		.then(() =>
-		// create user
+			// create user
 			insertUserToDB(app, data, user)
 				.then((newUser) => {
 					user = newUser;
@@ -174,13 +187,16 @@ const registerUser = function (data, params, app) {
 						if (err.message.startsWith('parentCreatePatch')) {
 							return Promise.resolve(err.data);
 						}
-						return Promise.reject(new Error('Fehler beim Erstellen des Elternaccounts.'));
+						return Promise.reject(new Error(`Fehler beim Erstellen des Elternaccounts. ${err}`));
 					}).then((newParent) => {
 						parent = newParent;
 						return userModel.userModel.findByIdAndUpdate(user._id, { parents: [parent._id] }, { new: true }).exec()
 							.then(updatedUser => user = updatedUser);
 					})
-					.catch(err => Promise.reject('Fehler beim Verknüpfen der Eltern.'));
+					.catch((err) => {
+						logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
+						return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.'));
+					});
 			}
 			return Promise.resolve();
 		})

@@ -5,6 +5,7 @@ const globalHooks = require('../../../hooks');
 const { sortRoles } = require('../../role/utils/rolesHelper');
 
 const constants = require('../../../utils/constants');
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../consent/config');
 
 /**
  *
@@ -176,7 +177,7 @@ const pinIsVerified = (hook) => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
 				const age = globalHooks.getAge(hook.data.birthday);
 
-				if (!((hook.data.roles || []).includes('student') && age < 16)) {
+				if (!((hook.data.roles || []).includes('student') && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS)) {
 					hook.app.service('/registrationPins').remove(pins.data[0]._id);
 				}
 
