@@ -26,11 +26,13 @@ const MOCK = [
   ]
 
 class HelpDocumentsService {
-	async get(id, params) {
-		return MOCK;
-	}
-
 	async find(params) {
+		/*
+		TODO
+			- check if Documents with schoolId = currentUser.schoolId exist and send them out
+			- if not check for theme based documents (theme can be accessed from `params.query.theme` ) and send those
+		*/
+		console.log(params.query.theme)
 		return MOCK;
 	}
 }
