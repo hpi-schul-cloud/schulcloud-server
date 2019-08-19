@@ -1,15 +1,23 @@
-const { authenticate } = require('@feathersjs/authentication').hooks;
+const { authenticate } = require("@feathersjs/authentication").hooks;
 // is admin
 // restricted to current school
 
 exports.before = {
-	all: [authenticate('jwt')],
-	find: [],
+	all: [authenticate("jwt")],
+	find: [
+		(hook) => {
+			if (hook.params.query.$limit === '-1') {
+				hook.params.paginate = false;
+				delete hook.params.query.$limit;
+			}
+			return hook;
+		}
+	],
 	get: [],
 	create: [],
 	update: [],
 	patch: [],
-	remove: [],
+	remove: []
 };
 
 exports.after = {
@@ -19,5 +27,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: [],
+	remove: []
 };
