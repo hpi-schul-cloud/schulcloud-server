@@ -16,7 +16,7 @@ switch (process.env.NODE_ENV) {
 		break;
 }
 
-const prefix = 'MS_EDTR_';
+const prefix = 'SC_';
 
 const camelCase = input => input.toLowerCase().replace(/_(.)/g, (match, group1) => group1.toUpperCase());
 
