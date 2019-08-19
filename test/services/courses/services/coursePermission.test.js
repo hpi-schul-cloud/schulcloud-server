@@ -1,7 +1,6 @@
 const { expect } = require('chai');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
 
 const coursePermissionService = app.service('/courses/:scopeId/userPermissions');
 
@@ -211,12 +210,10 @@ describe('PermissionService', async () => {
 				query: {
 					userId: '599ec14d8e4e364ec18ff46d',
 				},
-
 			});
 		} catch (err) {
 			expect(err).to.not.equal(undefined);
 			expect(err.name).to.equal('Forbidden');
 		}
-
 	});
 });
