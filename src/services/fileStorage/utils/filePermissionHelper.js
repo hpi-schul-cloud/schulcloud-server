@@ -219,8 +219,8 @@ module.exports = {
 	canCreate: checkPermissions('create'),
 	canDelete: checkPermissions('delete'),
 
-	writeFiles: getAllowedFiles('write'),
-	readFiles: getAllowedFiles('read'),
-	createFiles: getAllowedFiles('create'),
-	deleteFiles: getAllowedFiles('delete'),
+	canWriteFiles: getAllowedFiles('write'),
+	canReadFiles: getAllowedFiles('read'),
+	canCreateFiles: getAllowedFiles('create'),
+	canDeleteFiles: getAllowedFiles('delete'),
 };

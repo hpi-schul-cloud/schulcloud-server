@@ -14,10 +14,10 @@ const swaggerDocs = require('./docs/');
 const {
 	canWrite,
 	canRead,
-	writeFiles,
-	readFiles,
-	createFiles,
-	deleteFiles,
+	canWriteFiles,
+	canReadFiles,
+	canCreateFiles,
+	canDeleteFiles,
 	canCreate,
 	canDelete,
 	returnFileType,
@@ -143,7 +143,7 @@ const fileStorageService = {
 			return FileModel.findById(parent)
 				.lean()
 				.exec()
-				.then(parentFile => createFiles(userId, [parentFile], this.app)
+				.then(parentFile => canCreateFiles(userId, [parentFile], this.app)
 					.then(() => FileModel.findOne(props).exec().then(
 						modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 					))
@@ -171,14 +171,14 @@ const fileStorageService = {
 
 		return FileModel.findById(query.parent).lean().exec().then((parent) => {
 			const parentPromise = parent
-				? readFiles(userId, [parent]).catch(() => Promise.reject(new Forbidden()))
+				? canReadFiles(userId, [parent]).catch(() => Promise.reject(new Forbidden()))
 				: Promise.resolve();
 
 			return parentPromise
 				.then(() => FileModel
 					.find({ owner, parent: parent || { $exists: false } })
 					.populate('owner').lean().exec())
-				.then(files => readFiles(userId, files, this.app))
+				.then(files => canReadFiles(userId, files, this.app))
 				.catch((e) => {
 					logger.error(e);
 					return Promise.reject(e);
@@ -202,7 +202,7 @@ const fileStorageService = {
 					throw new NotFound();
 				}
 
-				return deleteFiles(userId, [file], this.app);
+				return canDeleteFiles(userId, [file], this.app);
 			})
 			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
 			.then(() => fileInstance.remove().lean().exec())
@@ -250,7 +250,7 @@ const fileStorageService = {
 
 		const permissionPromise = () => {
 			if (fileObject) {
-				return writeFiles(userId, [fileObject], this.app);
+				return canWriteFiles(userId, [fileObject], this.app);
 			}
 
 			if (teamObject) {
