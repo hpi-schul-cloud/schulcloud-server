@@ -16,7 +16,7 @@ const { expect } = chai;
 
 let defaultSchool;
 
-describe.only('school logic', async () => {
+describe('school logic', async () => {
 	before('create school with group', async () => {
 		const schoolGroup = await new SchoolGroup({ name: 'defaultSchoolGroup' }).save();
 		defaultSchool = await createSchool({ schoolGroup });
