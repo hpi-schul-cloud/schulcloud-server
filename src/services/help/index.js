@@ -5,6 +5,11 @@ const { helpDocumentsModel } = require('./model');
 
 class HelpDocumentsService {
 	async find(params) {
+		if (!(params.query || {}).theme) {
+			return Promise.reject(new errors.BadRequest(
+				'this method requires querying for a theme - query:{theme:"themename"}',
+			));
+		}
 		const promises = [helpDocumentsModel.find({ theme: params.query.theme })];
 		if (params.account) {
 			const school = await this.app.service('users').get(params.account.userId)

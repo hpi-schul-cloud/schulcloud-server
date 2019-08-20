@@ -24,6 +24,17 @@ describe.only('help documents service', () => {
 		assert.ok(helpDocumentService);
 	});
 
+	it('FIND throws an error if no theme is set', async () => {
+		try {
+			await helpDocumentService.find({});
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err).to.not.equal('should have failed');
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('this method requires querying for a theme - query:{theme:"themename"}');
+		}
+	});
+
 	it('FIND throws an error if no documents are found', async () => {
 		try {
 			await helpDocumentService.find({ query: { theme: 'thisThemeDoesntExist' } });
@@ -31,6 +42,7 @@ describe.only('help documents service', () => {
 		} catch (err) {
 			expect(err).to.not.equal('should have failed');
 			expect(err.code).to.equal(404);
+			expect(err.message).to.equal('could not find help documents for this user or theme.');
 		}
 	});
 
