@@ -23,12 +23,7 @@ const setSubject = (hook) => {
 		const { pseudonym } = pseudonyms.data[0];
 		if (!hook.data) hook.data = {};
 		hook.data.subject = hook.params.account.userId;
-		if (tools.data[0].useIframePseudonym) {
-			hook.data.force_subject_identifier = iframeSubject(pseudonym, hook.app.settings.services.web);
-		} else {
-			hook.data.force_subject_identifier = pseudonym;
-		}
-		return hook;
+		hook.data.force_subject_identifier = pseudonym;
 	}));
 };
 
