@@ -20,7 +20,7 @@ module.exports = function oauth2() {
 	app.use('/oauth2/baseUrl', {
 		find() {
 			return Promise.resolve(app.settings.services.hydra);
-		}
+		},
 	});
 
 	app.use('/oauth2/clients', {
