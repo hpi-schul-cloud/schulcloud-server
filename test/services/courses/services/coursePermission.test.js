@@ -1,10 +1,12 @@
 const { expect } = require('chai');
+const { Forbidden } = require('@feathersjs/errors');
+
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 
 const coursePermissionService = app.service('/courses/:scopeId/userPermissions');
 
-describe('PermissionService', async () => {
+describe.only('PermissionService', async () => {
 	const userPermissions = [
 		'BASE_VIEW',
 		'DASHBOARD_VIEW',
@@ -202,8 +204,7 @@ describe('PermissionService', async () => {
 				},
 			});
 		} catch (err) {
-			expect(err).to.not.equal(undefined);
-			expect(err.name).to.equal('Forbidden');
+			expect(err).to.be.instanceOf(Forbidden);
 		}
 	});
 });
