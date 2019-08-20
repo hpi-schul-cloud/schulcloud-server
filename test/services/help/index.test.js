@@ -9,7 +9,7 @@ const { expect } = chai;
 
 const helpDocumentService = app.service('/help/documents');
 
-describe.only('help documents service', () => {
+describe('help documents service', () => {
 	let server;
 
 	before((done) => {
