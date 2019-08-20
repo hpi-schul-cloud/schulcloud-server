@@ -203,6 +203,7 @@ describe('PermissionService', async () => {
 					userId: '599ec14d8e4e364ec18ff46d',
 				},
 			});
+			expect.fail('The previous call should have failed');
 		} catch (err) {
 			expect(err).to.be.instanceOf(Forbidden);
 		}
