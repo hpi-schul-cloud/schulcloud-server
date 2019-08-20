@@ -33,7 +33,7 @@
 	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"birthday": { "$date": "2000-01-01T11:25:43.556Z" },
-	"preferences": {"firstLogin": true},
+	"preferences": {},
 	"schoolId": { "$oid": "0000d186816abba584714c5f" },
 	"roles": [ { "$oid": "0000d186816abba584714c99" } ]
 },
@@ -123,7 +123,7 @@
 	"firstName" : "Paula",
 	"lastName" : "Meyer",
 	"birthday": { "$date": "2000-09-05T11:25:43.556Z" },
-	"preferences": {"firstLogin": true},
+	"preferences": {},
 	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
 	"roles" : [ { "$oid": "0000d186816abba584714c99" } ],
 	"__v" : 0
