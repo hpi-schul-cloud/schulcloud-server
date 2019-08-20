@@ -2,11 +2,7 @@ const { Forbidden } = require('@feathersjs/errors');
 
 const { ScopePermissionService } = require('../../helpers/scopePermissions');
 
-const compareIds = s => (f) => {
-	if (f.toString() === s.toString()) return true;
-
-	return false;
-};
+const compareIds = s => f => f.toString() === s.toString();
 
 module.exports = function setup() {
 	const app = this;
@@ -20,7 +16,7 @@ module.exports = function setup() {
 		} else if (course.userIds.some(compareIds(userId))) {
 			roleName = 'student';
 		} else {
-			throw new Forbidden(`User ${userId} ist nicht teil des Kurses`);
+			throw new Forbidden(`User ${userId} ist nicht Teil des Kurses`);
 		}
 
 		const permissions = await app.service('roles/:roleName/permissions').find({
