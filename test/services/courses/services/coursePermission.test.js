@@ -6,7 +6,7 @@ const testObjects = require('../../helpers/testObjects')(app);
 
 const coursePermissionService = app.service('/courses/:scopeId/userPermissions');
 
-describe.only('PermissionService', async () => {
+describe('PermissionService', async () => {
 	const userPermissions = [
 		'BASE_VIEW',
 		'DASHBOARD_VIEW',
