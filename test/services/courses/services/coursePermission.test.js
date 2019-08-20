@@ -93,7 +93,6 @@ describe('PermissionService', async () => {
 	const schoolId = '0000d186816abba584714c5f';
 
 	before(async () => {
-
 		const studentOne = await testObjects.createTestUser({
 			firstName: 'Hans',
 			lastName: 'Wurst',
