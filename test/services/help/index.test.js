@@ -1,7 +1,7 @@
 const assert = require('assert');
 const chai = require('chai');
 const app = require('../../../src/app');
-const { createTestSchool, createTestUser } = require('../helpers/testObjects')(app);
+const { createTestSchool, createTestUser, cleanup } = require('../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
 const { helpDocumentsModel } = require('../../../src/services/help/model');
 
@@ -18,6 +18,7 @@ describe.only('help documents service', () => {
 
 	after((done) => {
 		server.close(done);
+		cleanup;
 	});
 
 	it('registered the help documents service', () => {
@@ -74,7 +75,7 @@ describe.only('help documents service', () => {
 				content: 'another link',
 			},
 		];
-		await helpDocumentsModel.create({ schoolId, data });
+		const helpDocument = await helpDocumentsModel.create({ schoolId, data });
 
 		const response = await helpDocumentService.find(params);
 		expect(response).to.not.equal(undefined);
@@ -86,5 +87,6 @@ describe.only('help documents service', () => {
 			expect(element.content).to.equal(data[element.__index].content);
 			/* eslint-enable no-underscore-dangle */
 		});
+		await helpDocumentsModel.remove({ _id: helpDocument._id });
 	});
 });
