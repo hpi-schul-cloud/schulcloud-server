@@ -4,12 +4,12 @@ const { Schema } = mongoose;
 
 const helpDocumentsSchema = new Schema({
 	schoolId: { type: Schema.Types.ObjectId, ref: 'school' },
-	themeName: { type: String },
+	theme: { type: String },
 	data: [{
 		title: { type: String, required: true },
 		content: { type: String, required: true },
 	}],
-});
+}, { timestamps: true });
 
 const helpDocumentsModel = mongoose.model('helpdocument', helpDocumentsSchema);
 
