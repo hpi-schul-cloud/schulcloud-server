@@ -14,9 +14,13 @@ const getFile = id => FileModel
 
 const checkTeamPermission = async ({ user, file, permission }) => {
 	let teamRoles;
+	let sortedTeamRoles;
+	const roleIndex = {};
 
 	try {
-		teamRoles = sortRoles(await RoleModel.find({ name: /^team/ }).lean().exec());
+		teamRoles = await RoleModel.find({ name: /^team/ }).lean().exec();
+		teamRoles.forEach((role) => { roleIndex[role._id] = role; });
+		sortedTeamRoles = sortRoles(teamRoles);
 	} catch (error) {
 		logger.error(error);
 		return Promise.reject();
@@ -25,7 +29,14 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 	return new Promise((resolve, reject) => {
 		const { role } = user;
 		const { permissions } = file;
-		const rolePermissions = permissions.find(perm => perm.refId.toString() === role.toString()) || [];
+		let rolePermissions;
+
+		let rolesToTest = [role];
+		while (rolesToTest.length > 0 && rolePermissions === undefined) {
+			const roleId = rolesToTest.pop().toString();
+			rolePermissions = permissions.find(perm => perm.refId.toString() === roleId);
+			rolesToTest = rolesToTest.concat(roleIndex[roleId].roles || []);
+		}
 
 		const { role: creatorRole } = file.owner.userIds
 			.find(_ => _.userId.toString() === file.permissions[0].refId.toString());
@@ -33,8 +44,8 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 		const findRole = roleId => roles => roles
 			.findIndex(r => r._id.toString() === roleId.toString()) > -1;
 
-		const userPos = teamRoles.findIndex(findRole(role));
-		const creatorPos = teamRoles.findIndex(findRole(creatorRole));
+		const userPos = sortedTeamRoles.findIndex(findRole(role));
+		const creatorPos = sortedTeamRoles.findIndex(findRole(creatorRole));
 
 		if (userPos > creatorPos || rolePermissions[permission]) {
 			resolve(true);
