@@ -34,12 +34,24 @@ const setSubject = (hook) => {
 
 const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
-	hook.data.session = {
-		id_token: {
-			iframe: iframeSubject(hook.params.consentRequest.subject, hook.app.settings.services.web),
+	return hook.app.service('ltiTools').find({
+		query: {
+			oAuthClientId: hook.params.consentRequest.client.client_id,
 		},
-	};
-	return hook;
+	}).then(tools => hook.app.service('pseudonym').find({
+		query: {
+			toolId: tools.data[0]._id,
+			userId: hook.params.account.userId,
+		},
+	}).then((pseudonyms) => {
+		const { pseudonym } = pseudonyms.data[0];
+		hook.data.session = {
+			id_token: {
+				iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
+			},
+		};
+		return hook;
+	}));
 };
 
 const injectLoginRequest = hook => Hydra(hook.app.settings.services.hydra).getLoginRequest(hook.id)
