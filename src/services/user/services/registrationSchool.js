@@ -1,5 +1,7 @@
 const { BadRequest, GeneralError } = require('@feathersjs/errors');
 
+
+
 class RegistrationSchoolService {
 	constructor() {
 		this.docs = {};
@@ -18,24 +20,37 @@ class RegistrationSchoolService {
 	https://staging.schul-cloud.org/registration/598e10068e4e364ec18ff46d/byexpert/?importHash=...&link=CMouh
  	*/
 
+	async getExpertSchoolId() {
+		if (!this.expertSchoolId) {
+			try {
+				this.expertSchoolId = await this.app.service('schools').find({ query: { purpose: 'expert' } })
+					.then(schools => schools.data[0]._id);
+			} catch (err) {
+				throw new GeneralError('Experte: Fehler beim Abfragen der Expertenschule.', err);
+			}
+		}
+		return this.expertSchoolId;
+	}
+
 	async get(id, params) {
 		const promises = [
 			this.app.service('schools').get(id).catch(() => undefined),
 			this.app.service('classes').get(id).catch(() => undefined),
+			this.app.service('teams').get(id).catch(() => undefined),
 		];
-		const [schoolResponse, classResponse] = await Promise.all(promises);
+		const [schoolResponse, classResponse, teamResponse] = await Promise.all(promises);
 		let response = schoolResponse;
 		if (classResponse) response = this.app.service('schools').get(classResponse.schoolId);
+		if (teamResponse) {
+			const expertSchoolId = await this.getExpertSchoolId();
+			response = this.app.service('schools').get(expertSchoolId);
+		}
 		return response;
 	}
 
-	setup(app) {
+	async setup(app) {
 		this.app = app;
-		this.expertSchool = this.app.service('schools').find({ query: { purpose: 'expert' } })
-			.then(schools => schools.data[0]._id)
-			.catch((err) => {
-				throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
-			});
+
 	}
 }
 
