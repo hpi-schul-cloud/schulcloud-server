@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const app = require('../../../../src/app');
-const { createTestSchool, cleanup } = require('../../helpers/testObjects')(app);
+const { createTestSchool, createTestClass, cleanup } = require('../../helpers/testObjects')(app);
 
 const registrationSchoolService = app.service('/registrationSchool');
 
@@ -19,9 +19,16 @@ describe.only('registrationSchool service', () => {
 		expect(registrationSchoolService).to.not.equal(undefined);
 	});
 
-	it('registered the registrationSchoolService', async () => {
+	it('get school', async () => {
 		const school = await createTestSchool();
 		const result = await registrationSchoolService.get(school._id);
+		expect(result._id.toString()).to.equal(school._id.toString());
+	});
+
+	it('get school from classId', async () => {
+		const school = await createTestSchool();
+		const klass = await createTestClass({ schoolId: school._id });
+		const result = await registrationSchoolService.get(klass._id);
 		expect(result._id.toString()).to.equal(school._id.toString());
 	});
 

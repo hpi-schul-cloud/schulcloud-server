@@ -19,8 +19,14 @@ class RegistrationSchoolService {
  	*/
 
 	async get(id, params) {
-		const schoolResponse = await this.app.service('schools').get(id);
-		return schoolResponse;
+		const promises = [
+			this.app.service('schools').get(id).catch(() => undefined),
+			this.app.service('classes').get(id).catch(() => undefined),
+		];
+		const [schoolResponse, classResponse] = await Promise.all(promises);
+		let response = schoolResponse;
+		if (classResponse) response = this.app.service('schools').get(classResponse.schoolId);
+		return response;
 	}
 
 	setup(app) {
