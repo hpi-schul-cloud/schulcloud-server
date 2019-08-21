@@ -1,7 +1,6 @@
 const { expect } = require('chai');
 const app = require('../../../../src/app');
 const {
-	createTestUser,
 	createTestSchool,
 	createTestClass,
 	createTestTeamWithOwner,

@@ -1,25 +1,17 @@
-const { BadRequest, GeneralError } = require('@feathersjs/errors');
+const { NotFound, GeneralError } = require('@feathersjs/errors');
 
-
-
+/**
+ * Service to find a school belonging an id of unknown type, like from a registration link.
+ * supports school, class, and teamIds.
+ */
 class RegistrationSchoolService {
 	constructor() {
 		this.docs = {};
 	}
 
-
-	/* persönlicher einladungslink + schul id:
-	http://localhost:3100/registration/0000d186816abba584714c5f?importHash=...&link=3RZXH
-	allgemeiner schülereinladungslink + schul id:
-	https://staging.schul-cloud.org/registration/00001006816abba584714c5f?link=axG5z
-	allgemeine lehrereinladung + schul id:
-	https://staging.schul-cloud.org/registration/00001006816abba584714c5f/byemployee?importHash=...&link=ZrkQy
-	klasseneinladung + klassen id:
-	https://staging.schul-cloud.org/registration/5cd017c6855a6700155e45b3?link=g2HaA
-	experteneinladung + team id:
-	https://staging.schul-cloud.org/registration/598e10068e4e364ec18ff46d/byexpert/?importHash=...&link=CMouh
- 	*/
-
+	/**
+	 * singleton expertSchoolId
+	 */
 	async getExpertSchoolId() {
 		if (!this.expertSchoolId) {
 			try {
@@ -32,6 +24,12 @@ class RegistrationSchoolService {
 		return this.expertSchoolId;
 	}
 
+	/**
+	 * returns the school for given Id. For a schoolId it returns the school itself,
+	 * for a classId the school the class belongs to, for a teamId the expert school.
+	 * @param {ObjectId} id school, class, or team id.
+	 * @param {Object} params reserved for future use.
+	 */
 	async get(id, params) {
 		const promises = [
 			this.app.service('schools').get(id).catch(() => undefined),
@@ -39,18 +37,21 @@ class RegistrationSchoolService {
 			this.app.service('teams').get(id).catch(() => undefined),
 		];
 		const [schoolResponse, classResponse, teamResponse] = await Promise.all(promises);
-		let response = schoolResponse;
+		let response;
+		if (schoolResponse) response = schoolResponse;
 		if (classResponse) response = this.app.service('schools').get(classResponse.schoolId);
 		if (teamResponse) {
 			const expertSchoolId = await this.getExpertSchoolId();
 			response = this.app.service('schools').get(expertSchoolId);
+		}
+		if (!response) {
+			throw new NotFound('Id not found.');
 		}
 		return response;
 	}
 
 	async setup(app) {
 		this.app = app;
-
 	}
 }
 
