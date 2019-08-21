@@ -1,12 +1,14 @@
 const service = require('feathers-mongoose');
-const role = require('./model');
+const Role = require('./model');
 const hooks = require('./hooks');
+const { PermissionService, permissionHooks } = require('./services/permissions');
+
 
 module.exports = function setup() {
 	const app = this;
 
 	const options = {
-		Model: role,
+		Model: Role,
 		paginate: {
 			default: 10,
 			max: 25,
@@ -20,4 +22,8 @@ module.exports = function setup() {
 		before: hooks.before(),
 		after: hooks.after,
 	});
+
+	app.use('/roles/:roleName/permissions', new PermissionService());
+	const permissionService = app.service('/roles/:roleName/permissions');
+	permissionService.hooks(permissionHooks);
 };
