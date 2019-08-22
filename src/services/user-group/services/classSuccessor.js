@@ -57,7 +57,7 @@ class ClassSuccessorService {
 
 			return successor;
 		} catch (err) {
-			logger.log('warn', err);
+			logger.warning(err);
 			throw err;
 		}
 	}
@@ -70,7 +70,7 @@ class ClassSuccessorService {
 
 			return params.query.classIds.map(classId => this.get(classId));
 		} catch (err) {
-			logger.log('warn', err);
+			logger.warning(err);
 			throw err;
 		}
 	}
