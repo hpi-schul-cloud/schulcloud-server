@@ -64,8 +64,13 @@ class ClassSuccessorService {
 
 	async find(params) {
 		try {
-			return [params];
+			if (!((params.query || {}).classIds && Array.isArray(params.query.classIds))) {
+				throw new BadRequest('please pass an array of classIds in query.classIds');
+			}
+
+			return params.query.classIds.map(classId => this.get(classId));
 		} catch (err) {
+			logger.log('warn', err);
 			throw err;
 		}
 	}

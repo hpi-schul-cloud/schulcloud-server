@@ -26,7 +26,9 @@ describe.only('classSuccessor service', () => {
 		const classYear = school.years.lastYear._id;
 		const yearAfter = await schoolYears.getNextYearAfter(classYear);
 
-		const newClass = await testObjects.createTestClass({ name: 'mondklasse', schoolId: school._id, year: classYear });
+		const newClass = await testObjects.createTestClass({
+			name: 'mondklasse', schoolId: school._id, year: classYear,
+		});
 		const successor = await classSuccessorService.get(newClass._id);
 
 		expect(successor).to.not.equal(undefined);
@@ -128,7 +130,24 @@ describe.only('classSuccessor service', () => {
 		expect(duplicates).not.to.include(classoldGrade._id.toString());
 	});
 
-	it('FIND generates multiple successors');
+	it('FIND generates multiple successors', async () => {
+		const gClass = await testObjects.createTestClass({ name: 'g', gradeLevel: 7 });
+		const eClass = await testObjects.createTestClass({ name: 'e', gradeLevel: 6 });
+		const result = await classSuccessorService.find({ query: { classIds: [gClass._id, eClass._id] } });
+		expect(Array.isArray(result)).to.equal(true);
+		expect(result.length).to.equal(2);
+	});
+
+	it('FIND should return an error if no array of classIds is passed', async () => {
+		try {
+			await classSuccessorService.find({ query: {} });
+			throw new Error('should have failed');
+		} catch (error) {
+			expect(error.message).to.not.equal('should have failed');
+			expect(error.message).to.equal('please pass an array of classIds in query.classIds');
+			expect(error.code).to.equal(400);
+		}
+	});
 
 	it('is accessible as teacher');
 
