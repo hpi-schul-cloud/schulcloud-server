@@ -205,14 +205,11 @@ describe('school maintenance mode', () => {
 				adminParams.route = { schoolId: school._id.toString() };
 				adminParams.query = {};
 
-				const nodeEnv = process.env.NODE_ENV;
-				process.env.NODE_ENV = 'foo'; // the global hook #hasPermission will not enforce permissions in tests
 				await expect(maintenanceService.create({ maintenance: true }, teacherParams))
 					.to.eventually.be.rejectedWith(Forbidden);
 
 				await expect(maintenanceService.create({ maintenance: true }, adminParams))
 					.to.eventually.be.fulfilled;
-				process.env.NODE_ENV = nodeEnv;
 			}).timeout(5000);
 		});
 	});
