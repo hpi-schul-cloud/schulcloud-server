@@ -1,11 +1,22 @@
 const { expect } = require('chai');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
 const SchoolYearFacade = require('../../../../src/services/school/logic/year');
 
 const classSuccessorService = app.service('classSuccessor');
 
 describe.only('classSuccessor service', () => {
+	let server;
+
+	before((done) => {
+		server = app.listen(0, done);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
 	it('is properly registered the class successor service', () => {
 		expect(classSuccessorService).to.not.equal(undefined);
 	});
@@ -149,11 +160,41 @@ describe.only('classSuccessor service', () => {
 		}
 	});
 
-	it('is accessible as teacher');
+	it('is accessible as teacher', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const params = await generateRequestParamsFromUser(teacher);
+		const newClass = await testObjects.createTestClass({ name: 'lieblingsklasse' });
+		const successor = await classSuccessorService.get(newClass._id, params);
+		expect(successor).to.not.equal(undefined);
+		expect(successor.gradeLevel).to.equal(undefined);
+		expect(successor.name).to.equal(newClass.name);
+		expect(successor.schoolId.toString()).to.equal(newClass.schoolId.toString());
+	});
 
-	it('is accessible as admin');
+	it('is accessible as admin', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await generateRequestParamsFromUser(admin);
+		const newClass = await testObjects.createTestClass({ name: 'problemklasse' });
+		const successor = await classSuccessorService.get(newClass._id, params);
+		expect(successor).to.not.equal(undefined);
+		expect(successor.gradeLevel).to.equal(undefined);
+		expect(successor.name).to.equal(newClass.name);
+		expect(successor.schoolId.toString()).to.equal(newClass.schoolId.toString());
+	});
 
-	it('fails as student');
+	it('fails as student', async () => {
+		try {
+			const admin = await testObjects.createTestUser({ roles: ['student'] });
+			const params = await generateRequestParamsFromUser(admin);
+			const newClass = await testObjects.createTestClass({ name: 'cooleklasse' });
+			const successor = await classSuccessorService.get(newClass._id, params);
+			throw new Error('should have failed');
+		} catch (error) {
+			expect(error.message).to.not.equal('should have failed');
+			expect(error.message).to.equal("You don't have the permission USERGROUP_CREATE.");
+			expect(error.code).to.equal(403);
+		}
+	});
 
 	it('fails for class on different school');
 
