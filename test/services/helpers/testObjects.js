@@ -16,6 +16,7 @@ module.exports = (app, opt = {
 		login,
 		classes,
 		users,
+		consents,
 		courses,
 		accounts,
 		roles,
@@ -26,6 +27,7 @@ module.exports = (app, opt = {
 	const cleanup = () => Promise.all([]
 		.concat(accounts.cleanup())
 		.concat(users.cleanup())
+		.concat(consents.cleanup())
 		.concat(testSystem.cleanup())
 		.concat(classes.cleanup())
 		.concat(courses.cleanup())
@@ -74,6 +76,7 @@ module.exports = (app, opt = {
 		createTestSystem: testSystem.create,
 		createTestAccount: warn('@implement should rewrite', accounts.create),
 		createTestUser: users.create,
+		createTestConsent: consents.create,
 		createTestClass: classes.create,
 		createTestCourse: courses.create,
 		createTestRole: roles.create,

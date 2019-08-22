@@ -92,4 +92,16 @@
 		"$date": "2019-08-05T16:15:12.225Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d52a066a595714c04d763fb"
+	},
+	"state": "up",
+	"name": "AddClassAdministrationPermissionToAdminRole",
+	"createdAt": {
+		"$date": "2019-08-13T11:35:02.253Z"
+	},
+	"__v": 0
 }]
+
