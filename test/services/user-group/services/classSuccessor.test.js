@@ -92,7 +92,7 @@ describe.only('classSuccessor service', () => {
 	});
 
 	it('GET informs about duplicates', async () => {
-		const name = `klasse ${Date.now}`;
+		const name = `klasse ${Date.now()}`;
 		const oldClass = await testObjects.createTestClass({ name });
 		const newClass = await testObjects.createTestClass({ name });
 
@@ -111,7 +111,7 @@ describe.only('classSuccessor service', () => {
 		const classYear = school.years.lastYear._id;
 		const yearAfter = await schoolYears.getNextYearAfter(classYear);
 
-		const name = `klasse ${Date.now}`;
+		const name = `klasse ${Date.now()}`;
 		const classThisYear	= await testObjects.createTestClass({ name, schoolId: school._id, year: classYear });
 		const classYearAfter = await testObjects.createTestClass({ name, schoolId: school._id, year: yearAfter });
 		const newClass = await testObjects.createTestClass({ name, schoolId: school._id, year: classYear });
@@ -126,7 +126,7 @@ describe.only('classSuccessor service', () => {
 	});
 
 	it('only includes duplicates with equal grade level', async () => {
-		const name = `klasse ${Date.now}`;
+		const name = `klasse ${Date.now()}`;
 		const classoldGrade = await testObjects.createTestClass({ name, gradeLevel: 1 });
 		const classNextGrade = await testObjects.createTestClass({ name, gradeLevel: 2 });
 		const newClass = await testObjects.createTestClass({ name, gradeLevel: 1 });
