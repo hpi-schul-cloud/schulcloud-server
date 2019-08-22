@@ -9,7 +9,7 @@ const {
 
 const registrationSchoolService = app.service('/registrationSchool');
 
-describe.only('registrationSchool service', () => {
+describe('registrationSchool service', () => {
 	let server;
 
 	before((done) => {
