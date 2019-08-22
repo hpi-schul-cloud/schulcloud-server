@@ -5,6 +5,20 @@ const logger = require('../../../logger');
 const { classModel } = require('../model');
 
 // private functions
+const findDuplicates = async (successor, app) => {
+	const query = { $and: [{ name: successor.name }] };
+	query.$and.push(
+		successor.gradeLevel ? { gradeLevel: successor.gradeLevel } : { gradeLevel: { $exists: false } },
+	);
+	query.$and.push(
+		successor.year ? { year: successor.year } : { year: { $exists: false } },
+	);
+	query.$and.push({ schoolId: successor.schoolId });
+	// for some reason this only works via the model, the service always returns all classes on the school.
+	// eventually, this should go over the service
+	const duplicatesResponse = await classModel.find(query);
+	return duplicatesResponse.map(c => c._id);
+};
 
 class ClassSuccessorService {
 	constructor(app) {
@@ -50,18 +64,7 @@ class ClassSuccessorService {
 				successor.year = await schoolYears.getNextYearAfter(currentClass.year)._id;
 			}
 
-			const query = { $and: [{ name: successor.name }] };
-			query.$and.push(
-				successor.gradeLevel ? { gradeLevel: successor.gradeLevel } : { gradeLevel: { $exists: false } }
-			);
-			query.$and.push(
-				successor.year ? { year: successor.year } : { year: { $exists: false } },
-			);
-			query.$and.push({ schoolId: successor.schoolId });
-			// for some reason this only works via the model, the service always returns all classes on the school.
-			// eventually, this should go over the service
-			const duplicatesResponse = await classModel.find(query);
-			successor.duplicates = duplicatesResponse.map(c => c._id);
+			successor.duplicates = await findDuplicates(successor, this.app);
 
 			return successor;
 		} catch (err) {
