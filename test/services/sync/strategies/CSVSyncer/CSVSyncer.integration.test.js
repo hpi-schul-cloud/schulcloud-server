@@ -257,6 +257,8 @@ describe('CSVSyncer Integration', () => {
 			expect(classes[2].length).to.equal(1);
 			expect(classes[2][0].gradeLevel).to.equal(1);
 			expect(classes[2][0].name).to.equal('a');
+			expect(classes[1][0]._id).not.to.equal(undefined);
+			expect(classes[1][0]._id.toString()).to.equal(classes[2][0]._id.toString());
 			expect(classes[3].length).to.equal(2);
 			expect(classes[4].length).to.equal(2);
 
