@@ -15,9 +15,36 @@ const findDuplicates = async (successor, app) => {
 	);
 	query.$and.push({ schoolId: successor.schoolId });
 	// for some reason this only works via the model, the service always returns all classes on the school.
-	// eventually, this should go over the service
+	// eventually, this should go against the class service
 	const duplicatesResponse = await classModel.find(query);
 	return duplicatesResponse.map(c => c._id);
+};
+
+const constructSuccessor = async (currentClass, app) => {
+	const successor = {
+		name: currentClass.name,
+		schoolId: currentClass.schoolId,
+		teacherIds: currentClass.teacherIds,
+		userIds: currentClass.userIds,
+	};
+
+	// ToDO warning if gradelevel too high
+	if (currentClass.gradeLevel) {
+		if (currentClass.gradeLevel >= 13) {
+			throw new BadRequest('there is no grade level higher than 13!');
+		}
+		successor.gradeLevel = currentClass.gradeLevel + 1;
+	}
+
+	if (currentClass.year) {
+		const school = await (app.service('schools').get(currentClass.schoolId));
+		const schoolYears = new SchoolYearFacade(school.years.schoolYears, school);
+		successor.year = await schoolYears.getNextYearAfter(currentClass.year)._id;
+	}
+
+	successor.duplicates = await findDuplicates(successor, app);
+
+	return successor;
 };
 
 class ClassSuccessorService {
@@ -43,30 +70,7 @@ class ClassSuccessorService {
 				}
 			}
 
-			const successor = {
-				name: currentClass.name,
-				schoolId: currentClass.schoolId,
-				teacherIds: currentClass.teacherIds,
-				userIds: currentClass.userIds,
-			};
-
-			// ToDO warning if gradelevel too high
-			if (currentClass.gradeLevel) {
-				if (currentClass.gradeLevel >= 13) {
-					throw new BadRequest('there is no grade level higher than 13!');
-				}
-				successor.gradeLevel = currentClass.gradeLevel + 1;
-			}
-
-			if (currentClass.year) {
-				const school = await (this.app.service('schools').get(currentClass.schoolId));
-				const schoolYears = new SchoolYearFacade(school.years.schoolYears, school);
-				successor.year = await schoolYears.getNextYearAfter(currentClass.year)._id;
-			}
-
-			successor.duplicates = await findDuplicates(successor, this.app);
-
-			return successor;
+			return constructSuccessor(currentClass, this.app);
 		} catch (err) {
 			logger.warning(err);
 			throw err;
@@ -79,7 +83,18 @@ class ClassSuccessorService {
 				throw new BadRequest('please pass an array of classIds in query.classIds');
 			}
 
-			return params.query.classIds.map(classId => this.get(classId));
+			const classIds = params.query.classIds.map(classId => classId.toString());
+			const classesQuery = { _id: { $in: classIds } };
+			if (params.account) {
+				const { schoolId } = await this.app.service('users').get(params.account.userId);
+				classesQuery.schoolId = schoolId;
+			}
+
+			// for some reason this only works via the model, the service always returns all classes on the school.
+			// eventually, this should go against the class service
+			const classes = await classModel.find(classesQuery);
+			const result = await Promise.all(classes.map(c => constructSuccessor(c, this.app)));
+			return result;
 		} catch (err) {
 			logger.warning(err);
 			throw err;
