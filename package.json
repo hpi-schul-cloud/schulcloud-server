@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "hpi schulcloud server",
-  "version": "19.3.0",
+  "version": "19.3.1",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -109,6 +109,7 @@
     "mockery": "^2.0.0",
     "nodemailer-mock": "^1.1.10",
     "nyc": "^14.1.1",
+    "nodemon": "^1.19.1",
     "simple-oauth2": "^2.2.1"
   }
 }
