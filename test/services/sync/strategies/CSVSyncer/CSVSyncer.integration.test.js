@@ -204,7 +204,7 @@ describe('CSVSyncer Integration', () => {
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
 					+ `Turanga,Leela,${STUDENT_EMAILS[0]},\n`
-					+ `Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1a\n`
+					+ `Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1a+1a\n`
 					+ `Amy,Wong,${STUDENT_EMAILS[2]},1a\n`
 					+ `Philip J.,Fry,${STUDENT_EMAILS[3]},1b+2b\n`
 					+ `Bender Bending,Rodriguez,${STUDENT_EMAILS[4]},2b+2c\n`,
