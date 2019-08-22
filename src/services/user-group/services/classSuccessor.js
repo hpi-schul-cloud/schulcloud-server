@@ -1,4 +1,4 @@
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest, Forbidden } = require('@feathersjs/errors');
 
 const SchoolYearFacade = require('../../school/logic/year');
 const logger = require('../../../logger');
@@ -21,6 +21,13 @@ class ClassSuccessorService {
 	async get(id, params) {
 		try {
 			const currentClass = await this.app.service('classes').get(id);
+
+			if (params.account) {
+				const user = await this.app.service('users').get(params.account.userId);
+				if (user.schoolId.toString() !== currentClass.schoolId.toString()) {
+					throw new Forbidden('You do not have valid permissions to access this.');
+				}
+			}
 
 			const successor = {
 				name: currentClass.name,
@@ -50,6 +57,7 @@ class ClassSuccessorService {
 			query.$and.push(
 				successor.year ? { year: successor.year } : { year: { $exists: false } },
 			);
+			query.$and.push({ schoolId: successor.schoolId });
 			// for some reason this only works via the model, the service always returns all classes on the school.
 			// eventually, this should go over the service
 			const duplicatesResponse = await classModel.find(query);

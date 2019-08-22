@@ -3,8 +3,6 @@ const hooks = require('feathers-hooks-common');
 const _ = require('lodash');
 const globalHooks = require('../../../hooks');
 
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
 	find: [globalHooks.hasPermission('USERGROUP_CREATE')],

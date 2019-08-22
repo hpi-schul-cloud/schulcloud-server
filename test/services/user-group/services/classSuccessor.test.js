@@ -187,7 +187,7 @@ describe.only('classSuccessor service', () => {
 			const admin = await testObjects.createTestUser({ roles: ['student'] });
 			const params = await generateRequestParamsFromUser(admin);
 			const newClass = await testObjects.createTestClass({ name: 'cooleklasse' });
-			const successor = await classSuccessorService.get(newClass._id, params);
+			await classSuccessorService.get(newClass._id, params);
 			throw new Error('should have failed');
 		} catch (error) {
 			expect(error.message).to.not.equal('should have failed');
@@ -196,7 +196,21 @@ describe.only('classSuccessor service', () => {
 		}
 	});
 
-	it('fails for class on different school');
+	it('fails for class on different school', async () => {
+		try {
+			const userSchool = await testObjects.createTestSchool();
+			const classSchool = await testObjects.createTestSchool();
+			const teacher = await testObjects.createTestUser({ schoolId: userSchool._id, roles: ['teacher'] });
+			const params = await generateRequestParamsFromUser(teacher);
+			const newClass = await testObjects.createTestClass({ name: 'fremdenklasse', schoolId: classSchool._id });
+			await classSuccessorService.get(newClass._id, params);
+			throw new Error('should have failed');
+		} catch (error) {
+			expect(error.message).to.not.equal('should have failed');
+			expect(error.message).to.equal('You do not have valid permissions to access this.');
+			expect(error.code).to.equal(403);
+		}
+	});
 
 	after(async () => {
 		await testObjects.cleanup();
