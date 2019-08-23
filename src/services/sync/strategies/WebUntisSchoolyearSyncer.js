@@ -60,7 +60,18 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
 			.then(([systems, school]) => {
                 /* TODO: Remove later */
                 // if (systems.length === 0) {
-                    
+                    // Configure test environment until configuration is available via GUI
+                    systems[0] = {
+                        "alias": "Test WebUntis",
+                        "type": "webuntis",
+                        "webuntisConfig": {
+                            "active": true,
+                            "url": "[URL]",
+                            "schoolname": "[schoolname]",
+                            "user": "[username]",
+                            "password": "[password]"
+                        },
+                    };
                 // }
 
                 if (systems.length === 0) {
