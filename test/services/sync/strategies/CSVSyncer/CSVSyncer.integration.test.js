@@ -204,7 +204,7 @@ describe('CSVSyncer Integration', () => {
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
 					+ `Turanga,Leela,${STUDENT_EMAILS[0]},\n`
-					+ `Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1a\n`
+					+ `Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1a+1a\n`
 					+ `Amy,Wong,${STUDENT_EMAILS[2]},1a\n`
 					+ `Philip J.,Fry,${STUDENT_EMAILS[3]},1b+2b\n`
 					+ `Bender Bending,Rodriguez,${STUDENT_EMAILS[4]},2b+2c\n`,
@@ -257,6 +257,8 @@ describe('CSVSyncer Integration', () => {
 			expect(classes[2].length).to.equal(1);
 			expect(classes[2][0].gradeLevel).to.equal(1);
 			expect(classes[2][0].name).to.equal('a');
+			expect(classes[1][0]._id).not.to.equal(undefined);
+			expect(classes[1][0]._id.toString()).to.equal(classes[2][0]._id.toString());
 			expect(classes[3].length).to.equal(2);
 			expect(classes[4].length).to.equal(2);
 
