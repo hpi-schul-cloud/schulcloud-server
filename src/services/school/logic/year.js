@@ -126,7 +126,7 @@ class SchoolYearFacade {
 
 	static getDefaultEndDate(yearName) {
 		const year = SchoolYearFacade.extractStartYear(yearName);
-		return Date.UTC((year + 1), 6, 1); // 1.7.(YEAR+1)
+		return Date.UTC((year + 1), 6, 31); // 1.7.(YEAR+1)
 	}
 
 	static getDefaultStartDate(yearName) {

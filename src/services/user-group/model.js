@@ -33,7 +33,7 @@ const timeSchema = new Schema({
 	room: { type: String },
 });
 
-const courseModel = mongoose.model('course', getUserGroupSchema({
+const courseSchema = getUserGroupSchema({
 	description: { type: String },
 	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
 	teacherIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
@@ -46,7 +46,29 @@ const courseModel = mongoose.model('course', getUserGroupSchema({
 	times: [timeSchema],
 	// optional information if this course is a copy from other
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
-}));
+});
+
+courseSchema.plugin(require('mongoose-lean-virtuals'));
+
+const getCourseIsArchived = (aCourse) => {
+	const oneDayInMilliseconds = 864e5;
+
+	if (aCourse.untilDate <= Date.now() - oneDayInMilliseconds) {
+		return true;
+	}
+	return false;
+};
+
+// => has no access to this
+// eslint-disable-next-line func-names
+courseSchema.virtual('isArchived').get(function () {
+	return getCourseIsArchived(this);
+});
+
+courseSchema.set('toObject', { virtuals: true });
+courseSchema.set('toJSON', { virtuals: false }); // virtuals could not call with autopopulate for toJSON
+
+const courseModel = mongoose.model('course', courseSchema);
 
 // represents a sub-group of students inside a course, e.g. for projects etc.
 const courseGroupModel = mongoose.model('courseGroup', getUserGroupSchema({
