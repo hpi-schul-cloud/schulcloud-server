@@ -6,26 +6,21 @@ const logger = require('../../logger');
 
 const findDocuments = async (app, params) => {
 	if (!(params.query || {}).theme) {
-		return Promise.reject(new errors.BadRequest(
-			'this method requires querying for a theme - query:{theme:"themename"}',
-		));
+		throw new errors.BadRequest('this method requires querying for a theme - query:{theme:"themename"}');
 	}
-	const promises = [helpDocumentsModel.find({ theme: params.query.theme })];
+
+	let query = { theme: params.query.theme };
 	if (params.account) {
 		const school = await app.service('users').get(params.account.userId)
 			.then(user => app.service('schools').get(user.schoolId));
-		promises.push(helpDocumentsModel.find({ schoolId: school._id }));
+
+		if (school.documentBaseDirType === 'school') query = { schoolId: school._id };
+		if (school.documentBaseDirType === 'schoolGroup') query = { schoolGroupId: school.schoolGroup };
 	}
-	const [themeResult, schoolResult] = await Promise.all(promises);
-	let result;
-	if (schoolResult && schoolResult.length > 0) {
-		result = schoolResult[0].data;
-	} else if (themeResult && themeResult.length > 0) {
-		result = themeResult[0].data;
-	} else {
-		return Promise.reject(new errors.NotFound('could not find help documents for this user or theme.'));
-	}
-	return result;
+	const result = await helpDocumentsModel.find(query);
+
+	if (result.length < 1) throw new errors.NotFound('could not find help documents for this user or theme.');
+	return result[0].data;
 };
 
 class HelpDocumentsService {

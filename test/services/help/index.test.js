@@ -1,7 +1,12 @@
 const assert = require('assert');
 const chai = require('chai');
 const app = require('../../../src/app');
-const { createTestSchool, createTestUser, cleanup } = require('../helpers/testObjects')(app);
+const {
+	createTestSchoolGroup,
+	createTestSchool,
+	createTestUser,
+	cleanup,
+} = require('../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
 const { helpDocumentsModel } = require('../../../src/services/help/model');
 
@@ -9,7 +14,7 @@ const { expect } = chai;
 
 const helpDocumentService = app.service('/help/documents');
 
-describe('help documents service', () => {
+describe.only('help documents service', () => {
 	let server;
 
 	before((done) => {
@@ -61,7 +66,7 @@ describe('help documents service', () => {
 	});
 
 	it('FIND returns valid school document links', async () => {
-		const schoolId = (await createTestSchool())._id;
+		const schoolId = (await createTestSchool({ documentBaseDirType: 'school' }))._id;
 		const user = await createTestUser({ schoolId, roles: 'student' });
 		const params = await generateRequestParamsFromUser(user);
 		params.query = { theme: 'default' };
@@ -81,6 +86,41 @@ describe('help documents service', () => {
 		expect(response).to.not.equal(undefined);
 		expect(Array.isArray(response)).to.equal(true);
 		expect(response.length).to.equal(2);
+		response.forEach((element) => {
+			/* eslint-disable no-underscore-dangle */
+			expect(element.title).to.equal(data[element.__index].title);
+			expect(element.content).to.equal(data[element.__index].content);
+			/* eslint-enable no-underscore-dangle */
+		});
+		await helpDocumentsModel.remove({ _id: helpDocument._id });
+	});
+
+	it('FIND returns valid schoolgroup document links', async () => {
+		const schoolGroup = (await createTestSchoolGroup({ name: 'FBI-schools' }))._id;
+		const schoolId = (await createTestSchool({ documentBaseDirType: 'schoolGroup', schoolGroup }))._id;
+		const user = await createTestUser({ schoolId, roles: 'student' });
+		const params = await generateRequestParamsFromUser(user);
+		params.query = { theme: 'default' };
+		const data = [
+			{
+				title: 'the first rule',
+				content: 'the first rule of the FBI-schools: you dont talk about the FBI-schools',
+			},
+			{
+				title: 'the second rule',
+				content: 'the second rule of the FBI-schools: you dont talk about the FBI-schools',
+			},
+			{
+				title: 'the third rule',
+				content: 'the third rule of the FBI-schools: these strings are actually used as links',
+			},
+		];
+		const helpDocument = await helpDocumentsModel.create({ schoolGroupId: schoolGroup, data });
+
+		const response = await helpDocumentService.find(params);
+		expect(response).to.not.equal(undefined);
+		expect(Array.isArray(response)).to.equal(true);
+		expect(response.length).to.equal(3);
 		response.forEach((element) => {
 			/* eslint-disable no-underscore-dangle */
 			expect(element.title).to.equal(data[element.__index].title);
