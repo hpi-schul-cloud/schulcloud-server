@@ -9,6 +9,7 @@ const hooks = require('./hooks');
 const courseGroupsHooks = require('./hooks/courseGroups');
 const courseCopyService = require('./services/course-copy-service');
 const courseScopelistService = require('./services/courseScopeLists');
+const coursePermissionService = require('./services/coursePermission');
 const classHooks = require('./hooks/classes');
 
 // eslint-disable-next-line func-names
@@ -24,7 +25,7 @@ module.exports = function () {
 			default: 25,
 			max: 100,
 		},
-		lean: true,
+		lean: { virtuals: true },
 	}));
 	const courseService = app.service('/courses');
 	courseService.hooks(hooks);
@@ -66,4 +67,5 @@ module.exports = function () {
 	gradeService.hooks(hooks);
 
 	app.configure(courseScopelistService);
+	app.configure(coursePermissionService);
 };

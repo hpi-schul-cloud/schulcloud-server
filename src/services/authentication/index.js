@@ -102,11 +102,6 @@ module.exports = function () {
 	}));
 
 	app.configure(system({
-		name: 'itslearning',
-		loginStrategy: require('../account/strategies/itslearning'),
-	}));
-
-	app.configure(system({
 		name: 'iserv',
 		loginStrategy: require('../account/strategies/iserv'),
 	}));

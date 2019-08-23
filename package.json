@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
-  "description": "",
-  "version": "19.0.0",
+  "description": "hpi schulcloud server",
+  "version": "19.3.1",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -85,7 +85,6 @@
     "nodemailer": "^6.2.1",
     "passport": "^0.4.0",
     "passport-strategy": "^1.0.0",
-    "phantomjs-prebuilt": "^2.1.14",
     "pretty-error": "^2.0.3",
     "querystring": "^0.2.0",
     "randexp": "^0.5.3",
@@ -111,6 +110,7 @@
     "mockery": "^2.0.0",
     "nodemailer-mock": "^1.1.10",
     "nyc": "^14.1.1",
+    "nodemon": "^1.19.1",
     "simple-oauth2": "^2.2.1"
   }
 }
