@@ -14,7 +14,7 @@ const findDocuments = async (app, userId, theme) => {
 			.then(user => app.service('schools').get(user.schoolId));
 
 		if (school.documentBaseDirType === 'school') query = { schoolId: school._id };
-		if (school.documentBaseDirType === 'schoolGroup') query = { schoolGroupId: school.schoolGroup };
+		if (school.documentBaseDirType === 'schoolGroup') query = { schoolGroupId: school.schoolGroupId };
 	}
 	const result = await helpDocumentsModel.find(query);
 

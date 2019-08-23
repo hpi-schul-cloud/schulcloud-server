@@ -16,10 +16,10 @@ const { expect } = chai;
 
 let defaultSchool;
 
-describe('school logic', async () => {
+describe.only('school logic', async () => {
 	before('create school with group', async () => {
-		const schoolGroup = await new SchoolGroup({ name: 'defaultSchoolGroup' }).save();
-		defaultSchool = await createSchool({ schoolGroup });
+		const schoolGroupId = await new SchoolGroup({ name: 'defaultSchoolGroup' }).save();
+		defaultSchool = await createSchool({ schoolGroupId });
 	});
 
 	it('get default documentBaseDir', async () => {
@@ -47,7 +47,7 @@ describe('school logic', async () => {
 		const school = await School.findById(defaultSchool._id);
 		school.documentBaseDirType = 'schoolGroup';
 		await school.save();
-		const path = `default/${String(school.schoolGroup)}/`;
+		const path = `default/${String(school.schoolGroupId)}/`;
 		const baseDir = String(new URL(path, new URL(globals.DOCUMENT_BASE_DIR)));
 		expect(baseDir).contains(globals.DOCUMENT_BASE_DIR);
 		expect(baseDir).contains(String(path));

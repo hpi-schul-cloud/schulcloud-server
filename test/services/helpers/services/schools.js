@@ -14,7 +14,7 @@ const create = app => async ({
 	experimental = false,
 	pilot = false,
 	currentYear,
-	schoolGroup,
+	schoolGroupId,
 	documentBaseDirType,
 	// eslint-disable-next-line camelcase
 	logo_dataUrl,
@@ -37,7 +37,7 @@ const create = app => async ({
 		ldapSchoolIdentifier,
 		documentBaseDirType,
 		createdAt,
-		schoolGroup,
+		schoolGroupId,
 		customYears,
 		updatedAt,
 		experimental,

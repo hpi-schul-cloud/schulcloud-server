@@ -96,8 +96,8 @@ describe('help documents service', () => {
 	});
 
 	it('FIND returns valid schoolgroup document links', async () => {
-		const schoolGroup = (await createTestSchoolGroup({ name: 'FBI-schools' }))._id;
-		const schoolId = (await createTestSchool({ documentBaseDirType: 'schoolGroup', schoolGroup }))._id;
+		const schoolGroupId = (await createTestSchoolGroup({ name: 'FBI-schools' }))._id;
+		const schoolId = (await createTestSchool({ documentBaseDirType: 'schoolGroup', schoolGroupId }))._id;
 		const user = await createTestUser({ schoolId, roles: 'student' });
 		const params = await generateRequestParamsFromUser(user);
 		params.query = { theme: 'default' };
@@ -115,7 +115,7 @@ describe('help documents service', () => {
 				content: 'the third rule of the FBI-schools: these strings are actually used as links',
 			},
 		];
-		const helpDocument = await helpDocumentsModel.create({ schoolGroupId: schoolGroup, data });
+		const helpDocument = await helpDocumentsModel.create({ schoolGroupId, data });
 
 		const response = await helpDocumentService.find(params);
 		expect(response).to.not.equal(undefined);
