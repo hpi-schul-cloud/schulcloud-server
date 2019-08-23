@@ -1,6 +1,5 @@
 const auth = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
-const _ = require('lodash');
 const globalHooks = require('../../../hooks');
 
 exports.before = {

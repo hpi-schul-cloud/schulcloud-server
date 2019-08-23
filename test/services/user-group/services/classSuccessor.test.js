@@ -6,7 +6,7 @@ const SchoolYearFacade = require('../../../../src/services/school/logic/year');
 
 const classSuccessorService = app.service('classSuccessor');
 
-describe.only('classSuccessor service', () => {
+describe('classSuccessor service', () => {
 	let server;
 
 	before((done) => {
