@@ -2,19 +2,21 @@ const winston = require('winston');
 
 const SPLAT = Symbol.for('splat');
 
-let logLevel;
+let logLevel = process.env.LOG_LEVEL;
 
-switch (process.env.NODE_ENV) {
-	case 'default':
-	case 'development':
-		logLevel = 'debug';
-		break;
-	case 'test':
-		logLevel = 'emerg';
-		break;
-	case 'production':
-	default:
-		logLevel = 'info';
+if (!logLevel) {
+	switch (process.env.NODE_ENV) {
+		case 'default':
+		case 'development':
+			logLevel = 'debug';
+			break;
+		case 'test':
+			logLevel = 'emerg';
+			break;
+		case 'production':
+		default:
+			logLevel = 'info';
+	}
 }
 
 function formatObject(param) {
