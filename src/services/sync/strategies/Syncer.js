@@ -61,7 +61,8 @@ class Syncer {
 			})
 			.catch((err) => {
 				this.stats.success = false;
-				this.logError('Error while syncing', err);
+				this.logError('Error while syncing');
+				this.logError(err);
 				return Promise.resolve(this.stats);
 			});
 	}

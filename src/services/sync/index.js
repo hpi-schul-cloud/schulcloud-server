@@ -5,8 +5,9 @@ const logger = require('../../logger');
 const Syncer = require('./strategies/Syncer');
 const LDAPSystemSyncer = require('./strategies/LDAPSystemSyncer');
 const CSVSyncer = require('./strategies/CSVSyncer');
+const WebUntisSchoolyearSyncer = require('./strategies/WebUntisSchoolyearSyncer');
 
-const syncers = [LDAPSystemSyncer, CSVSyncer];
+const syncers = [LDAPSystemSyncer, CSVSyncer, WebUntisSchoolyearSyncer];
 
 module.exports = function () {
 	const app = this;
