@@ -103,8 +103,8 @@
   },
   "devDependencies": {
     "codecov": "^3.5.0",
-    "eslint": "^6.1.0",
-    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint": "^6.2.0",
+    "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-react": "^7.11.1",
     "mocha": "^6.1.4",
