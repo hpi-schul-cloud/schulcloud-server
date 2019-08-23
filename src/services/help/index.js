@@ -41,7 +41,7 @@ class HelpDocumentsService {
 			const { theme } = params.query || {};
 			return findDocuments(this.app, userId, theme);
 		} catch (err) {
-			logger.log('warn', err);
+			logger.warn(err);
 			throw err;
 		}
 	}
