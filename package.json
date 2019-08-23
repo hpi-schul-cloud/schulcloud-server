@@ -17,6 +17,14 @@
   "engines": {
     "node": "^8.15.0"
   },
+  "greenkeeper": {
+    "ignore": [
+      "feathers-mongoose",
+      "mongoose",
+      "mongoose-id-validator",
+      "mongoose-lean-virtuals"
+    ]
+  },
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
     "seed": "./backup.sh -p setup/ -D schulcloud-test -a import",
