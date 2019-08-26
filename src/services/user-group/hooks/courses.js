@@ -85,6 +85,7 @@ const resolveMembers = async (context) => {
 
 
 module.exports = {
+	computeMembers,
 	resolveMembersOnce,
 	resolveMembers,
 	courseInviteHook,
