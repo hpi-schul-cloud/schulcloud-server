@@ -68,8 +68,8 @@ module.exports = function () {
 	const gradeService = app.service('/grades');
 	gradeService.hooks(hooks);
 
-	app.use('/classSuccessor', new ClassSuccessorService(app));
-	const classSuccessorService = app.service('/classSuccessor');
+	app.use('/classes/successor', new ClassSuccessorService(app));
+	const classSuccessorService = app.service('/classes/successor');
 	classSuccessorService.hooks(classSuccessorHooks);
 
 	app.configure(courseScopelistService);

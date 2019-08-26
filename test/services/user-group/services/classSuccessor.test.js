@@ -4,7 +4,7 @@ const testObjects = require('../../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
 const SchoolYearFacade = require('../../../../src/services/school/logic/year');
 
-const classSuccessorService = app.service('classSuccessor');
+const classSuccessorService = app.service('classes/successor');
 
 describe('classSuccessor service', () => {
 	let server;
