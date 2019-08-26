@@ -4,7 +4,7 @@ const { SC_THEME, DOCUMENT_BASE_DIR } = require('../../../../config/globals');
 
 const getDocumentBaseDir = (school) => {
 	// parse id eventually from populated schoolGroup if defined, otherwise set false
-	const groupId = school.schoolGroup ? school.schoolGroup._id || school.schoolGroup : false;
+	const groupId = school.schoolGroupId ? school.schoolGroupId._id || school.schoolGroupId : false;
 	let schoolBaseDir;
 	switch (school.documentBaseDirType) {
 		case 'school':

@@ -37,7 +37,7 @@ const schoolSchema = new Schema({
 	name: { type: String, required: true },
 	address: { type: Object },
 	fileStorageType: { type: String, enum: fileStorageTypes },
-	schoolGroup: { type: Schema.Types.ObjectId, ref: 'schoolGroup' },
+	schoolGroupId: { type: Schema.Types.ObjectId, ref: 'schoolGroup' },
 	documentBaseDirType: {
 		type: String,
 		required: false,
