@@ -9,11 +9,16 @@ const WebUntisSchoolyearSyncer = require('./strategies/WebUntisSchoolyearSyncer'
 
 const syncers = [LDAPSystemSyncer, CSVSyncer, WebUntisSchoolyearSyncer];
 
-module.exports = function () {
+module.exports = function syncServiceSetup() {
 	const app = this;
 
 	class SyncService {
-		constructor() {}
+		/**
+		 * Constructor
+		 *
+		 * Disabled because of ESlint
+		 */
+		/* constructor() {} */
 
 		find(params) {
 			return this.respond(null, params);
@@ -29,13 +34,13 @@ module.exports = function () {
 			}
 			const { target } = params.query;
 			const instances = [];
-			syncers.forEach((syncer) => {
-				if (syncer.respondsTo(target)) {
-					const args = syncer.params(params, data);
+			syncers.forEach((SyncerClass) => {
+				if (SyncerClass.respondsTo(target)) {
+					const args = SyncerClass.params(params, data);
 					if (args) {
-						instances.push(new syncer(app, {}, ...args));
+						instances.push(new SyncerClass(app, {}, ...args));
 					} else {
-						throw new Error(`Invalid params for ${syncer.name}: "${JSON.stringify(params)}"`);
+						throw new Error(`Invalid params for ${SyncerClass.name}: "${JSON.stringify(params)}"`);
 					}
 				}
 			});

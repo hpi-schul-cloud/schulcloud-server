@@ -1,8 +1,7 @@
-const Syncer = require('./Syncer');
-
 const assert = require('assert');
 const axios = require('axios');
 const cookie = require('cookie');
+const Syncer = require('./Syncer');
 
 /**
  * Type of entities.
@@ -13,17 +12,17 @@ const EntityType = {
 	TEACHER: 2,
 	SUBJECT: 3,
 	ROOM: 4,
-	STUDENT: 5
+	STUDENT: 5,
 };
 
 const DayMapping = {
-	1: "Sonntag",
-	2: "Montag",
-	3: "Dienstag",
-	4: "Mittwoch",
-	5: "Donnerstag",
-	6: "Freitag",
-	7: "Samstag"
+	1: 'Sonntag',
+	2: 'Montag',
+	3: 'Dienstag',
+	4: 'Mittwoch',
+	5: 'Donnerstag',
+	6: 'Freitag',
+	7: 'Samstag',
 };
 
 
@@ -33,35 +32,32 @@ const DayMapping = {
  * @implements {Syncer}
  */
 class WebUntisSyncer extends Syncer {
+	constructor(app, stats, account) {
+		super(app, stats);
 
-    constructor(app, stats, account) {
-        super(app, stats);
-
-        this.account = account;
+		this.account = account;
 
 		Object.assign(this.stats, {
 			systems: {},
-        });
-        
-        // Save configuration
+		});
+
+		// Save configuration
 		this.clientId = 'schulcloud';
 		this.session = {};
-    }
+	}
 
-    async getUser() {
-        return this.app.service('users').get(this.account.userId);
-    }
+	async getUser() {
+		return this.app.service('users').get(this.account.userId);
+	}
 
 	async getWebUntisSystems(user) {
-        this.logInfo(`Get Systems for user ${user}, ${user.id}, ${user.schoolId}.`);
-        return this.app.service('schools').get(user.schoolId)
-            .then((school) => {
-                return [
-                    school.systems.filter(system => system.type == 'webuntis'),
-                    school
-                ];
-            });
-    }
+		this.logInfo(`Get Systems for user ${user}, ${user.id}, ${user.schoolId}.`);
+		return this.app.service('schools').get(user.schoolId)
+			.then(school => [
+				school.systems.filter(system => system.type === 'webuntis'),
+				school,
+			]);
+	}
 
 
 	dayLookUp(day) {
@@ -77,21 +73,20 @@ class WebUntisSyncer extends Syncer {
 	 * @return {Promise<Object>} Session data
 	 */
 	async login(url, school, username, password) {
-
 		this.url = url;
 		this.school = school;
-		
+
 		// Create REST client
 		this.rpc = axios.create({
 			baseURL: this.url,
 			maxRedirects: 0,
 			headers: {
 				'Cache-Control': 'no-cache',
-				'Pragma': 'no-cache',
-				'X-Requested-With': 'XMLHttpRequest'
-			}
+				Pragma: 'no-cache',
+				'X-Requested-With': 'XMLHttpRequest',
+			},
 		});
-        
+
 		// Send login request
 		const response = await this.rpc.post(`/WebUntis/jsonrpc.do?school=${this.school}`, {
 			jsonrpc: '2.0',
@@ -100,17 +95,17 @@ class WebUntisSyncer extends Syncer {
 			params: {
 				client: this.clientId,
 				user: username,
-				password: password
-			}
+				password,
+			},
 		});
 
 		// Check result
-		if (typeof(response.data) !== 'object') {
+		if (typeof (response.data) !== 'object') {
 			throw new Error('Invalid response.');
 		}
 
 		if (!response.data.result || (response.data.result.code || !response.data.result.sessionId)) {
-			throw new Error('Unable to log in. Result: ' + JSON.stringify(response.data));
+			throw new Error(`Unable to log in. Result: ${JSON.stringify(response.data)}`);
 		}
 
 		// Save session data
@@ -122,10 +117,10 @@ class WebUntisSyncer extends Syncer {
 			maxRedirects: 0,
 			headers: {
 				'Cache-Control': 'no-cache',
-				'Pragma': 'no-cache',
+				Pragma: 'no-cache',
 				'X-Requested-With': 'XMLHttpRequest',
-				'Cookie': cookie.serialize('JSESSIONID', this.session.sessionId)
-			}
+				Cookie: cookie.serialize('JSESSIONID', this.session.sessionId),
+			},
 		});
 
 		// Return result
@@ -141,13 +136,13 @@ class WebUntisSyncer extends Syncer {
 			jsonrpc: '2.0',
 			id: 'logout',
 			method: 'logout',
-			params: {}
+			params: {},
 		});
 
 		// Reset session data
-        this.session = null;
-        this.url = "";
-        this.school = "";
+		this.session = null;
+		this.url = '';
+		this.school = '';
 
 		// Return result
 		return response.data.result;
@@ -186,7 +181,7 @@ class WebUntisSyncer extends Syncer {
 	 */
 	async getClasses(schoolyearId = null) {
 		// Create parameters
-		var params = {};
+		const params = {};
 		if (schoolyearId) {
 			params.schoolyearId = schoolyearId;
 		}
@@ -375,16 +370,16 @@ class WebUntisSyncer extends Syncer {
 	 */
 	async getTimetableFor(type, id, startDate = 0, endDate = 0) {
 		// Create parameters
-		var params = {
-			type: type,
-			id: id
+		const params = {
+			type,
+			id,
 		};
 
-		if (startDate != 0) {
+		if (startDate !== 0) {
 			params.startDate = startDate;
 		}
 
-		if (endDate != 0) {
+		if (endDate !== 0) {
 			params.endDate = endDate;
 		}
 
@@ -406,8 +401,8 @@ class WebUntisSyncer extends Syncer {
 	 */
 	async getCustomizableTimeTableFor(type, id, options) {
 		// Create parameters
-		var params = {
-			"element": { type: type, id: id }
+		const params = {
+			element: { type, id },
 		};
 
 		Object.assign(params, options);
@@ -415,7 +410,7 @@ class WebUntisSyncer extends Syncer {
 		// [TODO] Check optional parameters, see 15) Request timetable for an element (customizable)
 
 		// Send request
-		const response = await this.sendRequest('getTimetable', { "options": params });
+		const response = await this.sendRequest('getTimetable', { options: params });
 		return response.data.result;
 	}
 
@@ -472,12 +467,12 @@ class WebUntisSyncer extends Syncer {
 		// [TODO] Could not be tested due to empty test data
 
 		// Create parameters
-		var params = {
-			type: type,
+		const params = {
+			type,
 			sn: surname,
 			fn: forename,
 			dob: birthDate || 0,
-			id: id
+			// id, // TODO: reenable id
 		};
 
 		// Send request
@@ -496,10 +491,10 @@ class WebUntisSyncer extends Syncer {
 	 */
 	async getSubstitutions(startDate, endDate, departmentId = 0) {
 		// Create parameters
-		var params = {
-			startDate: startDate,
-			endDate: endDate,
-			departmentId: departmentId
+		const params = {
+			startDate,
+			endDate,
+			departmentId,
 		};
 
 		// Send request
@@ -545,9 +540,9 @@ class WebUntisSyncer extends Syncer {
 		// [TODO] Returns empty data on current test account
 
 		// Create parameters
-		var params = {
-			startDate: startDate,
-			endDate: endDate
+		const params = {
+			startDate,
+			endDate,
 		};
 
 		// Send request
@@ -595,14 +590,14 @@ class WebUntisSyncer extends Syncer {
 		// [TODO] Returns empty data on current test account
 
 		// Create parameters
-		var params = {
-			startDate: startDate,
-			endDate: endDate,
+		const params = {
+			startDate,
+			endDate,
 			element: {
 				keyType: 'id',
-				type: type,
-				id: id
-			}
+				type,
+				id,
+			},
 		};
 
 		// Send request
@@ -636,10 +631,10 @@ class WebUntisSyncer extends Syncer {
 		// [TODO] Could not be tested due to empty test data
 
 		// Create parameters
-		var params = {
-			startDate: startDate,
-			endDate: endDate,
-			examTypeId: examType
+		const params = {
+			startDate,
+			endDate,
+			examTypeId: examType,
 		};
 
 		// Send request
@@ -659,9 +654,9 @@ class WebUntisSyncer extends Syncer {
 		// [TODO] Returns empty data on current test account
 
 		// Create parameters
-		var params = {
-			startDate: startDate,
-			endDate: endDate
+		const params = {
+			startDate,
+			endDate,
 		};
 
 		// Send request
@@ -682,89 +677,92 @@ class WebUntisSyncer extends Syncer {
 		return this.rpc.post(`/WebUntis/jsonrpc.do?school=${this.school}`, {
 			jsonrpc: '2.0',
 			id: method,
-			method: method,
-			params: params
+			method,
+			params,
 		});
 	}
 
-    /**
+	/**
      * Convert a WebUntis-encoded date to a Schul-Cloud-encoded weekday
-     * 
+     *
      * @param {int} date - A date encoded in YYYYMMDD
-     * 
-     * @return Corresponding weekday - from 0 to 6, the weekday the course take place (e.g. 0 = monday, 1 = tuesday ... )
+     *
+     * @return Corresponding weekday - from 0 to 6, the weekday the course take place
+	 *     (e.g. 0 = monday, 1 = tuesday ... )
      */
-    getWeekDay(date) {
-        assert.ok(date > 0);
-        assert.ok(Math.floor(date / 10000) > 0); // year, should be greather than 1900, 2000 and probably even greater than 2010
-        assert.ok(Math.floor(date / 100) % 100 >= 1); // month
-        assert.ok(Math.floor(date / 100) % 100 <= 12); // month
-        assert.ok(date % 100 >= 1); // day
-        assert.ok(date % 100 <= 31); // day
+	getWeekDay(date) {
+		assert.ok(date > 0);
+		assert.ok(Math.floor(date / 10000) > 0); // year, should be greather than 1900,
+		// 2000 and probably even greater than 2010
+		assert.ok(Math.floor(date / 100) % 100 >= 1); // month
+		assert.ok(Math.floor(date / 100) % 100 <= 12); // month
+		assert.ok(date % 100 >= 1); // day
+		assert.ok(date % 100 <= 31); // day
 
-        const jsDate = new Date(
-            Math.floor(date / 10000), /* year */
-            Math.floor(date / 100) % 100 - 1, /* month to month index */
-            date % 100, /* day */
-            0, /* hour */
-            0, /* minute */
-            0, /* second */
-            0); // remainder
-        
-        // TODO: handle time zone differences between server and client?
-        return (jsDate.getDay() + 7 - 1 /* monday offset */) % 7;
-    }
+		const jsDate = new Date(
+			Math.floor(date / 10000), /* year */
+			(Math.floor(date / 100) % 100) - 1, /* month to month index */
+			date % 100, /* day */
+			0, /* hour */
+			0, /* minute */
+			0, /* second */
+			0,
+		); // remainder
 
-    /**
+		// TODO: handle time zone differences between server and client?
+		return (jsDate.getDay() + 7 - 1 /* monday offset */) % 7;
+	}
+
+	/**
      * Convert a WebUntis-encoded timestamp to a Schul-Cloud-encoded timestamp
-     * 
+     *
      * @param {int} startTime - A time encoded in HHMM
-     * 
+     *
      * @return Schul-Cloud-encoded timestamp
      */
-    getStartTime(startTime) {
-        assert.ok(startTime >= 0);
-        assert.ok(startTime < 2400);
-        assert.ok(startTime % 100 >= 0);
-        assert.ok(startTime % 100 < 60);
+	getStartTime(startTime) {
+		assert.ok(startTime >= 0);
+		assert.ok(startTime < 2400);
+		assert.ok(startTime % 100 >= 0);
+		assert.ok(startTime % 100 < 60);
 
-        return 1000 /* milliseconds per second */
+		return 1000 /* milliseconds per second */
             * 60 /* seconds per minute */
             * (60 /* minutes per hour */ * Math.floor(startTime / 100)
-              + startTime % 100 /* minutes */) /* minutes */;
-    }
+              + (startTime % 100) /* minutes */);
+	}
 
-    /**
+	/**
      * Convert a WebUntis-encoded start and end timestamp to a Schul-Cloud-encoded duration
-     * 
+     *
      * @param {int} startTime - A time encoded in HHMM
      * @param {int} endTimeTime  - A time encoded in HHMM
-     * 
+     *
      * @return Schul-Cloud-encoded duration
      */
-    getDuration(startTime, endTime) {
-        assert.ok(startTime >= 0);
-        assert.ok(startTime < 2400);
-        assert.ok(startTime % 100 >= 0);
-        assert.ok(startTime % 100 < 60);
-        assert.ok(endTime >= 0);
-        assert.ok(endTime < 2400);
-        assert.ok(endTime % 100 >= 0);
-        assert.ok(endTime % 100 < 60);
-        assert.ok(endTime >= startTime);
+	getDuration(startTime, endTime) {
+		assert.ok(startTime >= 0);
+		assert.ok(startTime < 2400);
+		assert.ok(startTime % 100 >= 0);
+		assert.ok(startTime % 100 < 60);
+		assert.ok(endTime >= 0);
+		assert.ok(endTime < 2400);
+		assert.ok(endTime % 100 >= 0);
+		assert.ok(endTime % 100 < 60);
+		assert.ok(endTime >= startTime);
 
-        const durationHours = Math.floor(endTime / 100) - Math.floor(startTime / 100);
-        assert.ok(durationHours >= 0);
-        const durationMinutes = (endTime % 100) - (startTime % 100);
-        assert.ok(durationHours > 0 || durationMinutes > 0);
-        const duration = 60 * durationHours + durationMinutes;
+		const durationHours = Math.floor(endTime / 100) - Math.floor(startTime / 100);
+		assert.ok(durationHours >= 0);
+		const durationMinutes = (endTime % 100) - (startTime % 100);
+		assert.ok(durationHours > 0 || durationMinutes > 0);
+		const duration = 60 * durationHours + durationMinutes;
 
-        assert.ok(duration > 0);
+		assert.ok(duration > 0);
 
-        return 1000 /* milliseconds per second */
+		return 1000 /* milliseconds per second */
             * 60 /* seconds per minute */
             * duration/* minutes */;
-    }
+	}
 }
 
 module.exports = WebUntisSyncer;

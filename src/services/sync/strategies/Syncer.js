@@ -19,7 +19,7 @@ class Syncer {
      * @param {String} target the sync target requested by the caller
      * @returns {Boolean} true if the syncer accepts the target, false otherwise
      */
-	static respondsTo(target) {
+	static respondsTo(/* target */) {
 		throw new TypeError('Method has to be implemented.');
 	}
 
@@ -32,7 +32,7 @@ class Syncer {
      * @returns {iterableObj} iterable object to be spread as constructor
      * arguments or falsy value if the parameters are not valid
      */
-	static params(params, data) {
+	static params(/* params, data */) {
 		throw new TypeError('Method has to be implemented.');
 	}
 
@@ -83,9 +83,9 @@ class Syncer {
 	static aggregateStats(stats) {
 		if (Array.isArray(stats)) {
 			return stats.reduce((agg, cur) => {
-				cur = this.aggregateStats(cur);
-				agg.successful += cur.successful;
-				agg.failed += cur.failed;
+				const curAggregated = this.aggregateStats(cur);
+				agg.successful += curAggregated.successful;
+				agg.failed += curAggregated.failed;
 				return agg;
 			}, { successful: 0, failed: 0 });
 		}
