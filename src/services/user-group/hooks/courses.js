@@ -51,8 +51,10 @@ const restrictChangesToArchivedCourse = async (context) => {
 };
 
 /**
- * adds memberIds to courses which represents the list of userIds and the userIds of related classes
- * @param {*} course
+ * Adds memberIds to courses.
+ * `memberIds` represents the combined list of course members (userIds) and class members
+ * of course classes (classes belonging to the course).
+ * @param {Course} course
  */
 const computeMembers = async (course) => {
 	// resolve class users
@@ -93,6 +95,7 @@ const resolveMembers = async (context) => {
 
 
 module.exports = {
+	computeMembers,
 	resolveMembersOnce,
 	resolveMembers,
 	courseInviteHook,
