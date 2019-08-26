@@ -27,7 +27,7 @@ class OutputLogTempalte {
 	}
 
 	pushFail(id, error) {
-		return this.push('fail', error ? { id, error } : id);
+		return this.push('fail', error ? { id: id.toString(), error } : id.toString());
 	}
 
 	pushModified(id) {

@@ -30,12 +30,12 @@ const renameFileIfAlreadyExistInParent = (existingFile, newFileObject) => {
 
 /**
  * @param {Object} {file, parent} file = sourceFileId  | parent = newCourseId
- * @param {Object} params
+ * @param {Object} { payload: {userId, fileStorageType}}
  * @param {Function} [ permissionHandler ] <optional> permissionHandler(userId, file, parent)
  */
-const copyFile = async ({ file, parent }, params, permissionHandler) => {
-	const { payload: { userId } } = params;
-	const strategy = createCorrectStrategy(params.payload.fileStorageType);
+const copyFile = async ({ file, parent }, { payload }, permissionHandler) => {
+	const { userId, fileStorageType } = payload;
+	const strategy = createCorrectStrategy(fileStorageType);
 
 	if (!file || !parent) {
 		return Promise.reject(new BadRequest('Missing parameters'));
