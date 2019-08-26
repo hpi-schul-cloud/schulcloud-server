@@ -68,9 +68,16 @@ const computeMembers = async (course) => {
 	return [...new Set(userIds.map(userId => userId.toString()))];
 };
 
+const populateMembers = async (context, userIds) => context.app.service('/users')
+	.find({
+		paginate: false,
+		query: { _id: { $in: userIds } },
+	}).then(user => ({ fullName: user.fullName, _id: user._id }));
+
 const resolveMembersOnce = async (context) => {
 	if (context && context.result) {
 		context.result.memberIds = await computeMembers(context.result);
+		context.result.members = await populateMembers(context, context.result.memberIds);
 	}
 };
 
@@ -78,6 +85,7 @@ const resolveMembers = async (context) => {
 	if (context && context.result && Array.isArray(context.result.data)) {
 		context.result.data = await Promise.all(context.result.data.map(async (course) => {
 			course.memberIds = await computeMembers(course);
+			course.members = await populateMembers(context, course.memberIds);
 			return course;
 		}));
 	}
