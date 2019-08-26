@@ -2,68 +2,10 @@ const _ = require('lodash');
 const { BadRequest } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
-const CourseModel = require('../model').courseModel;
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
-/**
- * adds all students to a course when a class is added to the course
- * @param hook - contains created/patched object and request body
- */
-const addWholeClassToCourse = (hook) => {
-	const requestBody = hook.data;
-	const course = hook.result;
-	if (requestBody.classIds === undefined) {
-		return hook;
-	}
-	if ((requestBody.classIds || []).length > 0) { // just courses do have a property "classIds"
-		return Promise.all(requestBody.classIds.map(classId => ClassModel.findById(classId).exec().then(c => c.userIds))).then(async (studentIds) => {
-			// flatten deep arrays and remove duplicates
-			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
-
-			await CourseModel.update(
-				{ _id: course._id },
-				{ $addToSet: { userIds: { $each: studentIds } } },
-			).exec();
-			return hook;
-		});
-	}
-	return hook;
-};
-
-/**
- * deletes all students from a course when a class is removed from the course
- * this function goes into a before hook before we have to check whether there is a class missing
- * in the patch-body which was in the course before
- * @param hook - contains and request body
- */
-const deleteWholeClassFromCourse = (hook) => {
-	const requestBody = hook.data;
-	const courseId = hook.id;
-	if (requestBody.classIds === undefined && requestBody.user === undefined) {
-		return hook;
-	}
-	return CourseModel.findById(courseId).exec().then((course) => {
-		if (!course) return hook;
-
-		const removedClasses = _.differenceBy(course.classIds, requestBody.classIds, v => JSON.stringify(v));
-		if (removedClasses.length < 1) return hook;
-		return Promise.all(removedClasses.map(classId => ClassModel.findById(classId).exec().then(c => (c || []).userIds))).then(async (studentIds) => {
-			// flatten deep arrays and remove duplicates
-			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
-
-			// remove class students from course DB and from hook body to not patch them back
-			await CourseModel.update(
-				{ _id: course._id },
-				{ $pull: { userIds: { $in: studentIds } } },
-				{ multi: true },
-			).exec();
-			hook.data.userIds = hook.data.userIds.filter(value => !studentIds.some(id => id.toString() === value));
-			return hook;
-		});
-	});
-};
 
 const courseInviteHook = async (context) => {
 	if (context.path === 'courses' && context.params.query && context.params.query.link) {
@@ -108,9 +50,39 @@ const restrictChangesToArchivedCourse = async (context) => {
 	return context;
 };
 
+/**
+ * adds memberIds to courses which represents the list of userIds and the userIds of related classes
+ * @param {*} course
+ */
+const computeMembers = async (course) => {
+	// resolve class users
+	const userIdsInClasses = await ClassModel
+		.find({ _id: { $in: course.classIds || [] } }, { userIds: 1, _id: 0 })
+		.lean().exec(); // todo use aggregate instead
+	// combine userIds with userIds from classes
+	const userIds = userIdsInClasses.reduce(
+		(result, element) => result.concat(element.userIds || []),
+		course.userIds || [],
+	);
+	// return as array but remove duplicates before
+	return [...new Set(userIds.map(userId => userId.toString()))];
+};
+
+const resolveMembersOnce = async (context) => {
+	context.result.memberIds = await computeMembers(context.result);
+};
+
+const resolveMembers = async (context) => {
+	context.result.data = await Promise.all(context.result.data.map(async (course) => {
+		course.memberIds = await computeMembers(course);
+		return course;
+	}));
+};
+
+
 module.exports = {
-	addWholeClassToCourse,
-	deleteWholeClassFromCourse,
+	resolveMembersOnce,
+	resolveMembers,
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
