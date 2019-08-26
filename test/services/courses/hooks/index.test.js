@@ -70,5 +70,7 @@ describe('course hooks', () => {
 				expect(err.message).to.not.equal('should have failed');
 			}
 		});
+
+		after(testObjects.cleanup);
 	});
 });
