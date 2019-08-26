@@ -16,22 +16,26 @@ module.exports = (app, opt = {
 		login,
 		classes,
 		users,
+		consents,
 		courses,
 		accounts,
 		roles,
 		schools,
 		years,
+		schoolGroups,
 	} = serviceHelpers(app, opt);
 
 	const cleanup = () => Promise.all([]
 		.concat(accounts.cleanup())
 		.concat(users.cleanup())
+		.concat(consents.cleanup())
 		.concat(testSystem.cleanup())
 		.concat(classes.cleanup())
 		.concat(courses.cleanup())
 		.concat(teams.cleanup())
 		.concat(roles.cleanup())
 		.concat(schools.cleanup())
+		.concat(schoolGroups.cleanup())
 		.concat(years.cleanup()))
 		.then((res) => {
 			logger.info('[TestObjects] cleanup data.');
@@ -51,6 +55,7 @@ module.exports = (app, opt = {
 		courses: courses.info,
 		accounts: accounts.info,
 		schools: schools.info,
+		schoolGroups: schoolGroups.info,
 		years: years.info,
 	});
 
@@ -74,10 +79,12 @@ module.exports = (app, opt = {
 		createTestSystem: testSystem.create,
 		createTestAccount: warn('@implement should rewrite', accounts.create),
 		createTestUser: users.create,
+		createTestConsent: consents.create,
 		createTestClass: classes.create,
 		createTestCourse: courses.create,
 		createTestRole: roles.create,
 		createTestSchool: schools.create,
+		createTestSchoolGroup: schoolGroups.create,
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,

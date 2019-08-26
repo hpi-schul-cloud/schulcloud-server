@@ -418,7 +418,8 @@ class CSVSyncer extends Syncer {
 
 	async buildClassMapping(classes) {
 		const classMapping = {};
-		await Promise.all(classes.map(async (klass) => {
+		const uniqueClasses = [...new Set(classes)];
+		await Promise.all(uniqueClasses.map(async (klass) => {
 			try {
 				if (classMapping[klass] === undefined) {
 					const classObject = await this.getClassObject(klass);
@@ -453,7 +454,6 @@ class CSVSyncer extends Syncer {
 		this.stats.classes.updated += 1;
 		return existing[0];
 	}
-
 }
 
 module.exports = CSVSyncer;

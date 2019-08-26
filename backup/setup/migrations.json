@@ -36,8 +36,8 @@
 		"$oid": "5d3e97e02d1b0f2c2cc7ec18"
 	},
 	"state": "up",
-    "name" : "lessonIsCopyFrom", 
-    "createdAt" : "2019-07-11T12:18:30.503+0000", 
+    "name" : "lessonIsCopyFrom",
+    "createdAt" : "2019-07-11T12:18:30.503+0000",
 	"__v": 0
 },
 {
@@ -81,5 +81,37 @@
 		"$date": "2019-08-02T12:15:02.584Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d4858fc8f66f50964686467"
+	},
+	"state": "up",
+	"name": "addToolPermissionsToSuperheroRole",
+	"createdAt": {
+		"$date": "2019-08-05T16:15:12.225Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d552b8bc1658a0682fc834a"
+	},
+	"state": "up",
+	"name": "set schoolspecific documentbasedir for instance open",
+	"createdAt": {
+		"$date": "2019-08-15T09:34:59.243Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d52a066a595714c04d763fb"
+	},
+	"state": "up",
+	"name": "AddClassAdministrationPermissionToAdminRole",
+	"createdAt": {
+		"$date": "2019-08-13T11:35:02.253Z"
+	},
+	"__v": 0
 }]
-
