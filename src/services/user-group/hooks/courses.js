@@ -69,14 +69,18 @@ const computeMembers = async (course) => {
 };
 
 const resolveMembersOnce = async (context) => {
-	context.result.memberIds = await computeMembers(context.result);
+	if (context && context.result) {
+		context.result.memberIds = await computeMembers(context.result);
+	}
 };
 
 const resolveMembers = async (context) => {
-	context.result.data = await Promise.all(context.result.data.map(async (course) => {
-		course.memberIds = await computeMembers(course);
-		return course;
-	}));
+	if (context && context.result && Array.isArray(context.result.data)) {
+		context.result.data = await Promise.all(context.result.data.map(async (course) => {
+			course.memberIds = await computeMembers(course);
+			return course;
+		}));
+	}
 };
 
 
