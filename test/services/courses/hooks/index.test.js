@@ -90,6 +90,12 @@ describe('course hooks', () => {
 			classes.push(await testObjects.createTestClass({ userIds: [users[1]._id, users[2]._id] }));
 		});
 
+		it('should work for empty courses', async () => {
+			const course = await testObjects.createTestCourse();
+			const result = await computeMembers(course);
+			expect(result.length).to.equal(0);
+		});
+
 		it('merges users from classes and the additional users list', async () => {
 			const course = await testObjects.createTestCourse({
 				userIds: [users[3]._id],

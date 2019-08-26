@@ -11,7 +11,7 @@ const createTestCourse = (app, opt) => ({
 	substitutionIds = [],
 	startDate,
 	untilDate,
-}) => app.service('courses').create({
+} = {}) => app.service('courses').create({
 	// required fields for user
 	name,
 	schoolId,
