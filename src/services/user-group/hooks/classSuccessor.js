@@ -1,15 +1,15 @@
 const auth = require('@feathersjs/authentication');
-const hooks = require('feathers-hooks-common');
-const globalHooks = require('../../../hooks');
+const { disallow } = require('feathers-hooks-common');
+const { hasPermission } = require('../../../hooks');
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
-	find: [globalHooks.hasPermission('USERGROUP_CREATE')],
-	get: [globalHooks.hasPermission('USERGROUP_CREATE')],
-	create: [hooks.disallow()],
-	update: [hooks.disallow()],
-	patch: [hooks.disallow()],
-	remove: [hooks.disallow()],
+	find: [hasPermission('USERGROUP_CREATE')],
+	get: [hasPermission('USERGROUP_CREATE')],
+	create: [disallow()],
+	update: [disallow()],
+	patch: [disallow()],
+	remove: [disallow()],
 };
 
 exports.after = {
