@@ -16,7 +16,7 @@ const findDuplicates = async (successor, app) => {
 	query.$and.push({ schoolId: successor.schoolId });
 	// for some reason this only works via the model, the service always returns all classes on the school.
 	// eventually, this should go against the class service
-	const duplicatesResponse = await classModel.find(query);
+	const duplicatesResponse = await classModel.find(query).lean();
 	return duplicatesResponse.map(c => c._id);
 };
 
@@ -92,7 +92,7 @@ class ClassSuccessorService {
 
 			// for some reason this only works via the model, the service always returns all classes on the school.
 			// eventually, this should go against the class service
-			const classes = await classModel.find(classesQuery);
+			const classes = await classModel.find(classesQuery).lean();
 			const result = await Promise.all(classes.map(c => constructSuccessor(c, this.app)));
 			return result;
 		} catch (err) {
