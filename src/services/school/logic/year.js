@@ -1,4 +1,8 @@
 class SchoolYearFacade {
+	/**
+	 * @param [years] whole years collection
+	 * @param school optional school having customYears
+	 */
 	constructor(years, school) {
 		/** retrieves custom year for given year id
 		 * @param yearId ObjectId
@@ -21,8 +25,14 @@ class SchoolYearFacade {
 			return year;
 		});
 		this.years = years.sort(SchoolYearFacade.yearCompare);
-		this.customYears = (school.customYears || []).sort(SchoolYearFacade.yearCompare);
-		this.schoolYears = generateSchoolYears();
+		if (school) {
+			this.customYears = (school.customYears || []).sort(SchoolYearFacade.yearCompare);
+			this.schoolYears = generateSchoolYears();
+		} else {
+			// use defaults if there is no school present to give access to default getters
+			this.customYears = [];
+			this.schoolYears = this.years;
+		}
 	}
 
 	/** sorts years by their name value */
@@ -116,7 +126,7 @@ class SchoolYearFacade {
 
 	static getDefaultEndDate(yearName) {
 		const year = SchoolYearFacade.extractStartYear(yearName);
-		return Date.UTC((year + 1), 6, 1); // 1.7.(YEAR+1)
+		return Date.UTC((year + 1), 6, 31); // 1.7.(YEAR+1)
 	}
 
 	static getDefaultStartDate(yearName) {

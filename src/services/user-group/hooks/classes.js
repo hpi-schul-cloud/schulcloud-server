@@ -4,19 +4,14 @@ const globalHooks = require('../../../hooks');
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
 
-const populateGradeLevel = (hook) => {
-	// Add populate to query to be able to show year in displayName
-	if ((hook.params.query || {}).$populate) {
-		if (!hook.params.query.$populate.includes('gradeLevel')) {
-			hook.params.query.$populate.push('gradeLevel');
-		}
-	} else {
-		if (!hook.params.query) {
-			hook.params.query = {};
-		}
-		hook.params.query.$populate = ['gradeLevel'];
+const prepareGradeLevelUnset = (context) => {
+	if (!context.data.gradeLevel && context.data.name) {
+		const unset = context.data.$unset || {};
+		unset.gradeLevel = '';
+		context.data.$unset = unset;
 	}
-	return Promise.resolve(hook);
+
+	return context;
 };
 
 exports.before = {
@@ -25,16 +20,30 @@ exports.before = {
 		globalHooks.hasPermission('USERGROUP_VIEW'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnClasses,
-		populateGradeLevel,
 	],
-	get: [restrictToUsersOwnClasses, populateGradeLevel],
-	create: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool],
-	update: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool],
-	patch: [globalHooks.hasPermission('USERGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
+	get: [
+		restrictToCurrentSchool,
+		restrictToUsersOwnClasses,
+	],
+	create: [
+		globalHooks.hasPermission('USERGROUP_CREATE'),
+		restrictToCurrentSchool,
+	],
+	update: [
+		globalHooks.hasPermission('USERGROUP_EDIT'),
+		restrictToCurrentSchool,
+		prepareGradeLevelUnset,
+	],
+	patch: [
+		globalHooks.hasPermission('USERGROUP_EDIT'),
+		restrictToCurrentSchool,
+		globalHooks.permitGroupOperation,
+		prepareGradeLevelUnset,
+	],
 	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
 };
 
-const addDisplayName = (hook) => {
+const sortByDisplayName = (hook) => {
 	let data = hook.result.data || hook.result;
 	const arrayed = !(Array.isArray(data));
 	data = (Array.isArray(data)) ? (data) : ([data]);
@@ -57,9 +66,9 @@ const addDisplayName = (hook) => {
 
 exports.after = {
 	all: [],
-	find: [addDisplayName],
+	find: [sortByDisplayName],
 	get: [
-		addDisplayName,
+		sortByDisplayName,
 		globalHooks.ifNotLocal(
 			globalHooks.denyIfNotCurrentSchool({
 				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',

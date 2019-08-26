@@ -1,4 +1,3 @@
-const logger = require('../../../logger');
 const { promisify } = require('es6-promisify');
 const errors = require('@feathersjs/errors');
 const path = require('path');
@@ -6,6 +5,7 @@ const childProcess = require('child_process');
 
 const execFile = promisify(childProcess.execFile.bind(childProcess));
 const phantomjs = require('phantomjs-prebuilt');
+const logger = require('../../../logger');
 
 const binPath = phantomjs.path;
 

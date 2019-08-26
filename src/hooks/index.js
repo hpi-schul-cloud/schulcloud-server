@@ -78,8 +78,6 @@ exports.hasPermission = permissionName => (context) => {
 				throw new NotAuthenticated('API Key is invalid.');
 			});
 	}
-	// If test then skip too
-	if (process.env.NODE_ENV === 'test') return Promise.resolve(context);
 
 	// Otherwise check for user permissions
 	const service = context.app.service('/users/');
@@ -437,15 +435,15 @@ exports.restrictToUsersOwnLessons = context => getUser(context).then((user) => {
 });
 
 exports.restrictToUsersOwnClasses = context => getUser(context).then((user) => {
-	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
+	if (testIfRoleNameExist(user, ['superhero', 'administrator', 'teacher'])) {
 		return context;
 	}
 	if (context.method === 'get') {
 		const classService = context.app.service('classes');
 		return classService.get(context.id).then((result) => {
 			const userId = context.params.account.userId.toString();
-			if (!(_.some(result.userIds, u => JSON.stringify(u) === userId))
-                    && !(_.some(result.teacherIds, u => JSON.stringify(u) === userId))) {
+			if (!(_.some(result.userIds, u => u.toString() === userId))
+					&& !(_.some(result.teacherIds, u => u.toString() === userId))) {
 				throw new Forbidden('You are not in that class.');
 			}
 		});

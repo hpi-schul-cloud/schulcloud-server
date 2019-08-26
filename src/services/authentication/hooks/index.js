@@ -34,7 +34,7 @@ const isActivated = (account) => {
 exports.before = {
 	create: [
 		lowerCaseUsername,
-		auth.hooks.authenticate(['local', 'jwt', 'ldap', 'iserv', 'moodle', 'itslearning']),
+		auth.hooks.authenticate(['local', 'jwt', 'ldap', 'iserv', 'moodle']),
 		injectUserId,
 		// isActivated,
 	],

@@ -1,4 +1,5 @@
 const { BadRequest, NotFound, NotAcceptable } = require('@feathersjs/errors');
+
 const { FileModel } = require('../model');
 const createCorrectStrategy = require('./createCorrectStrategy');
 const { generateFileNameSuffix } = require('./filePathHelper');
@@ -33,15 +34,15 @@ const renameFileIfAlreadyExistInParent = (existingFile, newFileObject) => {
  * @param {Object} { payload: {userId, fileStorageType}}
  * @param {Function} [ permissionHandler ] <optional> permissionHandler(userId, file, parent)
  */
-const copyFile = async ({ file, parent }, { payload }, permissionHandler) => {
-	const { userId, fileStorageType } = payload;
-	const strategy = createCorrectStrategy(fileStorageType);
+const copyFile = async ({ file, parent, sourceSchoolId }, { payload, account }, permissionHandler) => {
+	const userId = payload.userId || account.userId;
+	const strategy = createCorrectStrategy(payload.fileStorageType);
 
-	if (!file || !parent) {
+	if (!file || !parent || !userId) {
 		return Promise.reject(new BadRequest('Missing parameters'));
 	}
 
-	// existingFile must rename
+	// if existingFile in this directory === parent exist, then rename it
 	const [existingFile, fileObject] = await Promise.all([
 		// only select name to reduce traffic
 		FileModel.findOne({ parent, name: file.name }).select('name').lean().exec(),
@@ -69,7 +70,7 @@ const copyFile = async ({ file, parent }, { payload }, permissionHandler) => {
 	// copy file on external storage
 	newFileObject.storageFileName = generateFileNameSuffix(newFileObject.name || fileObject.name);
 	// copy file into bucket from user schoolId
-	await strategy.copyFile(userId, fileObject.storageFileName, newFileObject.storageFileName);
+	await strategy.copyFile(userId, fileObject.storageFileName, newFileObject.storageFileName, sourceSchoolId);
 	return FileModel.create(safeOverrideAndClear(fileObject, newFileObject));
 };
 

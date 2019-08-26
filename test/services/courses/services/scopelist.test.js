@@ -5,6 +5,9 @@ const { generateRequestParamsFromUser } = require('../../helpers/services/login'
 
 const courseScopeListService = app.service('/users/:scopeId/courses');
 
+const oneHour = 600000;
+const twoDays = 172800000;
+
 describe('courses scopelist service', () => {
 	it('is properly registered', () => {
 		expect(courseScopeListService).to.not.equal(undefined);
@@ -14,11 +17,11 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const activeCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({ route: { scopeId: user._id }, query: {} });
 		expect(response).to.not.equal(undefined);
@@ -33,11 +36,11 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const activeCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -55,11 +58,11 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const activeCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -77,11 +80,11 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const activeCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -99,15 +102,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const courseAsStudent = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsTeacher = await testObjects.createTestCourse({
 			teacherIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
 			substitutionIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -126,15 +129,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const courseAsStudent = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsTeacher = await testObjects.createTestCourse({
 			teacherIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
 			substitutionIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -153,15 +156,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const courseAsStudent = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsTeacher = await testObjects.createTestCourse({
 			teacherIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
 			substitutionIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -180,15 +183,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const courseAsStudent = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsTeacher = await testObjects.createTestCourse({
 			teacherIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
 			substitutionIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -229,15 +232,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -253,15 +256,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -323,7 +326,7 @@ describe('courses scopelist service integration', () => {
 		const user = await testObjects.createTestUser();
 		const course = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const params = await generateRequestParamsFromUser(user);
 		params.route = { scopeId: user._id };
