@@ -37,24 +37,25 @@ class RocketChatUser {
 		};
 		return this.app.service('users').get(userId, internalParams).then(async (user) => {
 			const { email } = user;
-			const pass = randomPass();
+			const password = randomPass();
 			let username = await this.generateUserName(user);
 			const name = [user.firstName, user.lastName].join(' ');
 
 			const body = {
-				email, pass, username, name,
+				email, password, username, name, verified: true,
 			};
 
-			const createdUser = await request(getRequestOptions('/api/v1/users.register', body))
+			const createdUser = await request(getRequestOptions('/api/v1/users.create', body, true))
 				.catch(async (err) => {
-					if (err.error.error === 'Email already exists. [403]') {
+					if (err.error.error.includes('is already in use :(')) {
+						// email already in use
 						const queryString = `query={"emails.address":"${email}"}`;
 						const rcUser = await request(getRequestOptions(`/api/v1/users.list?${queryString}`,
 							{}, true, undefined, 'GET'));
 						const updatePasswordBody = {
 							userId: rcUser.users[0]._id,
 							data: {
-								password: pass,
+								password,
 							},
 						};
 						return request(getRequestOptions('/api/v1/users.update', updatePasswordBody, true));
@@ -64,10 +65,9 @@ class RocketChatUser {
 			const rcId = createdUser.user._id;
 			({ username } = createdUser.user);
 			return userModel.create({
-				userId, pass, username, rcId,
+				userId, username, rcId,
 			});
 		}).catch((err) => {
-			logger.warning(new BadRequest(`Can not create RocketChat Account for user ${userId}`, err));
 			throw new BadRequest('Can not create RocketChat Account', err);
 		});
 	}
@@ -90,7 +90,6 @@ class RocketChatUser {
 			}
 			return {
 				username: rcUser.username,
-				password: rcUser.pass,
 				authToken: rcUser.authToken,
 				rcId: rcUser.rcId,
 			};
