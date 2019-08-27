@@ -5,6 +5,7 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const {
+	populateIds,
 	resolveMembers,
 	resolveMembersOnce,
 	courseInviteHook,
@@ -21,7 +22,10 @@ exports.before = {
 		restrictToCurrentSchool,
 		restrictToUsersOwnCourses,
 	],
-	get: [courseInviteHook],
+	get: [
+		courseInviteHook,
+		populateIds,
+	],
 	create: [
 		globalHooks.injectUserId,
 		globalHooks.hasPermission('USERGROUP_CREATE'),
