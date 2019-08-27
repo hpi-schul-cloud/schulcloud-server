@@ -25,6 +25,23 @@ class RocketChatUser {
 			});
 	}
 
+	async handleEmailInUse(err, email, password) {
+		if (err.error.error.includes('is already in use :(')) {
+			// email already in use
+			const queryString = `query={"emails.address":"${email}"}`;
+			const rcUser = await request(getRequestOptions(`/api/v1/users.list?${queryString}`,
+				{}, true, undefined, 'GET'));
+			const updatePasswordBody = {
+				userId: rcUser.users[0]._id,
+				data: {
+					password,
+				},
+			};
+			return request(getRequestOptions('/api/v1/users.update', updatePasswordBody, true));
+		}
+		throw new BadRequest('Can not write user informations to rocketChat.', err);
+	}
+
 	/**
      * creates an account, should only be called by getOrCreateRocketChatAccount
      * @param {object} data
@@ -46,22 +63,7 @@ class RocketChatUser {
 			};
 
 			const createdUser = await request(getRequestOptions('/api/v1/users.create', body, true))
-				.catch(async (err) => {
-					if (err.error.error.includes('is already in use :(')) {
-						// email already in use
-						const queryString = `query={"emails.address":"${email}"}`;
-						const rcUser = await request(getRequestOptions(`/api/v1/users.list?${queryString}`,
-							{}, true, undefined, 'GET'));
-						const updatePasswordBody = {
-							userId: rcUser.users[0]._id,
-							data: {
-								password,
-							},
-						};
-						return request(getRequestOptions('/api/v1/users.update', updatePasswordBody, true));
-					}
-					throw new BadRequest('Can not write user informations to rocketChat.', err);
-				});
+				.catch(async err => this.handleEmailInUse(err, email, password));
 			const rcId = createdUser.user._id;
 			({ username } = createdUser.user);
 			return userModel.create({
