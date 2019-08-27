@@ -26,8 +26,24 @@ class OutputLogTempalte {
 		return false;
 	}
 
+	convertToErrorOutput(_id, error) {
+		const id = _id.toString();
+
+		if (typeof errorType === 'object') {
+			return Object.assign({}, id, error);
+		}
+
+		if (typeof errorType === 'string') {
+			return {
+				id,
+				message: error,
+			};
+		}
+		return error;
+	}
+
 	pushFail(id, error) {
-		return this.push('fail', error ? { id: id.toString(), error } : id.toString());
+		return this.push('fail', this.convertToErrorOutput(id, error));
 	}
 
 	pushModified(id) {
@@ -51,7 +67,7 @@ class OutputLogTempalte {
 		self.l.info(`notModified: ${notModified}`);
 		if (self.fail.length > 0) {
 			self.l.warning(`fail: ${fail}`);
-			self.l.warning(self.fail);
+			self.l.warning(JSON.stringify(self.fail));
 		} else {
 			self.l.info('fail: 0');
 		}

@@ -34,7 +34,7 @@ const createDataTree = (courses = []) => {
 		}
 	});
 	if (courseWithoutTeachers.length > 0) {
-		logger.warning(`It exist ${courseWithoutTeachers.length} without teachers, also no owner exist.`);
+		logger.warning(`It exist ${courseWithoutTeachers.length} courses without teachers, also no owner exist.`);
 		if (DETAIL_LOGS) {
 			logger.warning(courseWithoutTeachers);
 		}
@@ -182,7 +182,7 @@ const detectNotExistingFiles = (datatree, files) => {
 	});
 	if (notExists.length > 0) {
 		logger.warning(
-			`The are ${notExists.length} Files that are added in lessons,`
+			`They are ${notExists.length} Files that are added in lessons,`
 			+ 'but not exist as meta data in file collection with targetModel="course".',
 		);
 		if (DETAIL_LOGS) {
@@ -315,8 +315,8 @@ const cloneMissingFilesAndUpdateLessons = (missingFileInfos, out) => {
 				});
 			})
 			.catch((err) => {
-				const { message } = err;
-				out.pushFail(lessonId, message);
+				const { message, code, name } = err;
+				out.pushFail(lessonId, { message, code, name });
 			});
 		tasks.push(task);
 	});
