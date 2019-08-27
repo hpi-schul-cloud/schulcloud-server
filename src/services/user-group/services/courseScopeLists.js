@@ -1,5 +1,5 @@
 const { /* ScopePermissionService, */ ScopeListService } = require('../../helpers/scopePermissions');
-const { courseModel } = require('../model');
+const { courseModel, classModel: ClassModel } = require('../model');
 
 module.exports = function setup() {
 	const app = this;
@@ -14,11 +14,15 @@ module.exports = function setup() {
 			({ substitution } = params.query);
 		}
 
+		const userClasses = await ClassModel.find({ userIds: user._id }, {}).lean().exec();
+		const classIds = userClasses.map(c => c._id);
+
 		const userQuery = { $or: [] };
 		if (['false', 'all'].includes(substitution)) {
 			userQuery.$or.push(
 				{ userIds: user._id },
 				{ teacherIds: user._id },
+				{ classIds: { $in: classIds } },
 			);
 		}
 		if (['true', 'all'].includes(substitution)) userQuery.$or.push({ substitutionIds: user._id });

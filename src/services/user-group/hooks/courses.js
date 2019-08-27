@@ -1,69 +1,52 @@
 const _ = require('lodash');
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
-const ClassModel = require('../model').classModel;
-const CourseModel = require('../model').courseModel;
+const { classModel: ClassModel, courseModel: CourseModel } = require('../model');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
+
 
 /**
- * adds all students to a course when a class is added to the course
- * @param hook - contains created/patched object and request body
+ * Adds memberIds to courses.
+ * `memberIds` represents the combined list of course members (userIds) and class members
+ * of course classes (classes belonging to the course).
+ * @param {Course} course
  */
-const addWholeClassToCourse = (hook) => {
-	const requestBody = hook.data;
-	const course = hook.result;
-	if (requestBody.classIds === undefined) {
-		return hook;
-	}
-	if ((requestBody.classIds || []).length > 0) { // just courses do have a property "classIds"
-		return Promise.all(requestBody.classIds.map(classId => ClassModel.findById(classId).exec().then(c => c.userIds))).then(async (studentIds) => {
-			// flatten deep arrays and remove duplicates
-			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
-
-			await CourseModel.update(
-				{ _id: course._id },
-				{ $addToSet: { userIds: { $each: studentIds } } },
-			).exec();
-			return hook;
-		});
-	}
-	return hook;
+const computeMembers = async (course) => {
+	// resolve class users
+	const userIdsInClasses = await ClassModel
+		.find({ _id: { $in: course.classIds || [] } }, { userIds: 1, _id: 0 })
+		.lean().exec(); // todo use aggregate instead
+	// combine userIds with userIds from classes
+	const userIds = userIdsInClasses.reduce(
+		(result, element) => result.concat(element.userIds || []),
+		(course.userIds || []).map(elem => (elem._id ? elem._id : elem)),
+	);
+	// return as array but remove duplicates before
+	return [...new Set(userIds.map(userId => userId.toString()))];
 };
 
 /**
- * deletes all students from a course when a class is removed from the course
- * this function goes into a before hook before we have to check whether there is a class missing
- * in the patch-body which was in the course before
- * @param hook - contains and request body
+ * checks if a userId is member of a given course
+ * @param {string} userId
+ * @param {Course} course with optionally populated userIds
  */
-const deleteWholeClassFromCourse = (hook) => {
-	const requestBody = hook.data;
-	const courseId = hook.id;
-	if (requestBody.classIds === undefined && requestBody.user === undefined) {
-		return hook;
+const isCourseMember = (userId,
+	{ memberIds = [], teacherIds = [], substitutionIds = [] }) => memberIds.some(u => u.toString() === userId)
+            || teacherIds.some(u => (u._id ? u._id : u).toString() === userId)
+						|| substitutionIds.some(u => (u._id ? u._id : u).toString() === userId);
+
+
+const allowForCourseMembersOnly = globalHooks.ifNotLocal(async (context) => {
+	const course = await CourseModel.findById(context.id).lean().exec();
+	course.memberIds = await computeMembers(course);
+	const { userId } = context.params.account;
+	const isMember = await isCourseMember(userId.toString(), course);
+	if (!isMember) {
+		throw new Forbidden('You are not a member of that course.');
 	}
-	return CourseModel.findById(courseId).exec().then((course) => {
-		if (!course) return hook;
-
-		const removedClasses = _.differenceBy(course.classIds, requestBody.classIds, v => JSON.stringify(v));
-		if (removedClasses.length < 1) return hook;
-		return Promise.all(removedClasses.map(classId => ClassModel.findById(classId).exec().then(c => (c || []).userIds))).then(async (studentIds) => {
-			// flatten deep arrays and remove duplicates
-			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
-
-			// remove class students from course DB and from hook body to not patch them back
-			await CourseModel.update(
-				{ _id: course._id },
-				{ $pull: { userIds: { $in: studentIds } } },
-				{ multi: true },
-			).exec();
-			hook.data.userIds = hook.data.userIds.filter(value => !studentIds.some(id => id.toString() === value));
-			return hook;
-		});
-	});
-};
+	return context;
+});
 
 const courseInviteHook = async (context) => {
 	if (context.path === 'courses' && context.params.query && context.params.query.link) {
@@ -73,13 +56,13 @@ const courseInviteHook = async (context) => {
 		if (dbLink) return restrictToCurrentSchool(context);
 	}
 
-	return restrictToUsersOwnCourses(context);
+	return allowForCourseMembersOnly(context);
 };
 
 const patchPermissionHook = async (context) => {
 	const query = context.params.query || {};
 	const defaultPermissionHook = ctx => Promise.resolve(globalHooks.hasPermission('USERGROUP_EDIT')(ctx))
-		.then(_ctx => restrictToUsersOwnCourses(_ctx));
+		.then(_ctx => allowForCourseMembersOnly(_ctx));
 
 	if (query.link) {
 		const dbLink = await context.app.service('link').get(query.link); // link is used as "authorization"
@@ -108,10 +91,60 @@ const restrictChangesToArchivedCourse = async (context) => {
 	return context;
 };
 
+
+const populateMembers = (context, userIds) => context.app.service('/users')
+	.find({
+		paginate: false,
+		query: { _id: { $in: userIds } },
+	})
+	.then(users => users.map(user => ({ fullName: user.fullName, _id: user._id })));
+
+
+const resolveMembersOnce = async (context) => {
+	if (context && context.result) {
+		context.result.memberIds = await computeMembers(context.result);
+		context.result.members = await populateMembers(context, context.result.memberIds);
+	}
+	return context;
+};
+
+const resolveMembers = async (context) => {
+	if (context && context.result && Array.isArray(context.result.data)) {
+		context.result.data = await Promise.all(context.result.data.map(async (course) => {
+			course.memberIds = await computeMembers(course);
+			course.members = await populateMembers(context, course.memberIds);
+			return course;
+		}));
+	}
+	return context;
+};
+
+
+const populateIds = (context) => {
+	if (!context.params) {
+		context.params = { };
+	}
+	if (!context.params.query) {
+		context.params.query = { };
+	}
+	context.params.query.$populate = 	[
+		'ltiToolIds',
+		'classIds',
+		'teacherIds',
+		'userIds',
+		'substitutionIds',
+	];
+	return context;
+};
+
+
 module.exports = {
-	addWholeClassToCourse,
-	deleteWholeClassFromCourse,
+	populateIds,
+	computeMembers,
+	resolveMembersOnce,
+	resolveMembers,
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
+	allowForCourseMembersOnly,
 };

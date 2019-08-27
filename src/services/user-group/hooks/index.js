@@ -5,8 +5,9 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const {
-	addWholeClassToCourse,
-	deleteWholeClassFromCourse,
+	populateIds,
+	resolveMembers,
+	resolveMembersOnce,
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
@@ -21,7 +22,10 @@ exports.before = {
 		restrictToCurrentSchool,
 		restrictToUsersOwnCourses,
 	],
-	get: [courseInviteHook],
+	get: [
+		courseInviteHook,
+		populateIds,
+	],
 	create: [
 		globalHooks.injectUserId,
 		globalHooks.hasPermission('USERGROUP_CREATE'),
@@ -38,7 +42,6 @@ exports.before = {
 		restrictToCurrentSchool,
 		restrictChangesToArchivedCourse,
 		globalHooks.permitGroupOperation,
-		deleteWholeClassFromCourse,
 	],
 	remove: [
 		globalHooks.hasPermission('USERGROUP_CREATE'),
@@ -50,15 +53,17 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [],
+	find: [resolveMembers],
 	get: [
 		globalHooks.ifNotLocal(
 			globalHooks.denyIfNotCurrentSchool({
 				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
 			}),
-		)],
-	create: [addWholeClassToCourse],
-	update: [],
-	patch: [addWholeClassToCourse],
+		),
+		resolveMembersOnce,
+	],
+	create: [resolveMembers],
+	update: [resolveMembers],
+	patch: [resolveMembers],
 	remove: [],
 };
