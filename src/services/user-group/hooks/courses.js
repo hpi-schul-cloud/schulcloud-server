@@ -51,15 +51,19 @@ const isSchoolsAdminOrSuperhero = async (context, course) => {
 	return false;
 };
 
+const hasAccessToCourse = async (userId, course) => {
+	const memberIds = await computeMembers(course);
+	return isCourseMember(userId.toString(), { ...course, memberIds });
+};
+
 const allowForCourseMembersOnly = globalHooks.ifNotLocal(async (context) => {
 	const course = await CourseModel.findById(context.id).lean().exec();
 	const schoolsAdminOrSuperhero = await isSchoolsAdminOrSuperhero(context, course);
 	if (schoolsAdminOrSuperhero) {
 		return context;
 	}
-	course.memberIds = await computeMembers(course);
 	const { userId } = context.params.account;
-	const isMember = await isCourseMember(userId.toString(), course);
+	const isMember = await hasAccessToCourse(userId, course);
 	if (!isMember) {
 		throw new Forbidden('You are not a member of that course.');
 	}
@@ -158,6 +162,7 @@ const populateIds = (context) => {
 
 module.exports = {
 	populateIds,
+	hasAccessToCourse,
 	computeMembers,
 	resolveMembersOnce,
 	resolveMembers,

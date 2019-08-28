@@ -298,7 +298,6 @@ const getUser = context => context.app.service('users').get(context.params.accou
 }).catch((err) => {
 	throw new NotFound('Can not fetch user.', err);
 });
-
 exports.getUser = getUser;
 
 const testIfRoleNameExist = (user, roleNames) => {
@@ -310,6 +309,7 @@ const testIfRoleNameExist = (user, roleNames) => {
 	}
 	return user.roles.some(({ name }) => roleNames.includes(name));
 };
+exports.testIfRoleNameExist = testIfRoleNameExist;
 
 exports.restrictToCurrentSchool = context => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, 'superhero')) {
@@ -332,107 +332,6 @@ exports.restrictToCurrentSchool = context => getUser(context).then((user) => {
 		throw new Forbidden('You do not have valid permissions to access this.');
 	}
 
-	return context;
-});
-
-/* todo: Many request pass id as second parameter, but it is confused with the logic that should pass.
-	It should evaluate and make clearly.
- */
-const userIsInThatCourse = (user, { userIds = [], teacherIds = [], substitutionIds = [] }, isCourse) => {
-	const userId = user._id.toString();
-	if (isCourse) {
-		return userIds.some(u => u.toString() === userId)
-            || teacherIds.some(u => u.toString() === userId)
-            || substitutionIds.some(u => u.toString() === userId);
-	}
-
-	return userIds.some(u => u.toString() === userId) || testIfRoleNameExist(user, 'teacher');
-};
-
-exports.restrictToUsersOwnCourses = context => getUser(context).then((user) => {
-	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
-		return context;
-	}
-	const { _id } = user;
-	if (context.method === 'find') {
-		context.params.query.$and = (context.params.query.$and || []);
-		context.params.query.$and.push({
-			$or: [
-				{ userIds: _id },
-				{ teacherIds: _id },
-				{ substitutionIds: _id },
-			],
-		});
-	} else {
-		const courseService = context.app.service('courses');
-		return courseService.get(context.id).then((course) => {
-			if (!userIsInThatCourse(user, course, true)) {
-				throw new Forbidden('You are not in that course.');
-			}
-		});
-	}
-
-	return context;
-});
-
-exports.restrictToUsersOwnLessons = context => getUser(context).then((user) => {
-	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
-		return context;
-	}
-	// before-hook
-	if (context.type === 'before') {
-		let populate = context.params.query.$populate;
-		if (typeof (populate) === 'undefined') {
-			populate = ['courseId', 'courseGroupId'];
-		} else if (Array.isArray(populate) && !populate.includes('courseId')) {
-			populate.push('courseId');
-			populate.push('courseGroupId');
-		}
-		context.params.query.$populate = populate;
-	} else {
-		// after-hook
-		if (context.method === 'get' && (context.result || {})._id) {
-			let tempLesson = [context.result];
-			tempLesson = tempLesson.filter((lesson) => {
-				if ('courseGroupId' in lesson) {
-					return userIsInThatCourse(user, lesson.courseGroupId, false);
-				}
-				return userIsInThatCourse(user, lesson.courseId, true)
-                        || (context.params.query.shareToken || {}) === (lesson.shareToken || {});
-			});
-			if (tempLesson.length === 0) {
-				throw new Forbidden("You don't have access to that lesson.");
-			}
-			if ('courseGroupId' in context.result) {
-				context.result.courseGroupId = context.result.courseGroupId._id;
-			} else {
-				context.result.courseId = context.result.courseId._id;
-			}
-		}
-
-		if (context.method === 'find' && ((context.result || {}).data || []).length > 0) {
-			context.result.data = context.result.data.filter((lesson) => {
-				if ('courseGroupId' in lesson) {
-					return userIsInThatCourse(user, lesson.courseGroupId, false);
-				}
-				return userIsInThatCourse(user, lesson.courseId, true)
-                        || (context.params.query.shareToken || {}) === (lesson.shareToken || {});
-			});
-
-			if (context.result.data.length === 0) {
-				throw new NotFound('There are no lessons that you have access to.');
-			} else {
-				context.result.total = context.result.data.length;
-			}
-			context.result.data.forEach((lesson) => {
-				if ('courseGroupId' in lesson) {
-					lesson.courseGroupId = lesson.courseGroupId._id;
-				} else {
-					lesson.courseId = lesson.courseId._id;
-				}
-			});
-		}
-	}
 	return context;
 });
 

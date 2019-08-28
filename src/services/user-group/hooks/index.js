@@ -2,7 +2,6 @@ const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const {
 	populateIds,
@@ -11,6 +10,7 @@ const {
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
+	allowForCourseMembersOnly,
 } = require('./courses');
 
 exports.before = {
@@ -20,7 +20,7 @@ exports.before = {
 	find: [
 		globalHooks.hasPermission('USERGROUP_VIEW'),
 		restrictToCurrentSchool,
-		restrictToUsersOwnCourses,
+		allowForCourseMembersOnly,
 	],
 	get: [
 		courseInviteHook,
@@ -34,7 +34,7 @@ exports.before = {
 	update: [
 		globalHooks.hasPermission('USERGROUP_EDIT'),
 		restrictToCurrentSchool,
-		restrictToUsersOwnCourses,
+		allowForCourseMembersOnly,
 		restrictChangesToArchivedCourse,
 	],
 	patch: [
@@ -46,7 +46,7 @@ exports.before = {
 	remove: [
 		globalHooks.hasPermission('USERGROUP_CREATE'),
 		restrictToCurrentSchool,
-		restrictToUsersOwnCourses,
+		allowForCourseMembersOnly,
 		globalHooks.permitGroupOperation,
 	],
 };
