@@ -56,6 +56,16 @@ const hasAccessToCourse = async (userId, course) => {
 	return isCourseMember(userId.toString(), { ...course, memberIds });
 };
 
+const filterResults = async (context) => {
+	if (context.result && Array.isArray(context.result.data)) {
+		const { userId } = context.params.account;
+		const courseFilter = async course => (hasAccessToCourse(userId, course) ? course : undefined);
+		context.result.data = (await Promise.all(context.result.data.map(courseFilter))).filter(c => c);
+		context.result.toal = context.result.data.length;
+	}
+	return context;
+};
+
 const allowForCourseMembersOnly = globalHooks.ifNotLocal(async (context) => {
 	const course = await CourseModel.findById(context.id).lean().exec();
 	const schoolsAdminOrSuperhero = await isSchoolsAdminOrSuperhero(context, course);
@@ -163,6 +173,7 @@ const populateIds = (context) => {
 module.exports = {
 	populateIds,
 	hasAccessToCourse,
+	filterResults,
 	computeMembers,
 	resolveMembersOnce,
 	resolveMembers,

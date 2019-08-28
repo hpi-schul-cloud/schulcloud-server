@@ -5,6 +5,7 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 
 const {
 	populateIds,
+	filterResults,
 	resolveMembers,
 	resolveMembersOnce,
 	courseInviteHook,
@@ -20,7 +21,6 @@ exports.before = {
 	find: [
 		globalHooks.hasPermission('USERGROUP_VIEW'),
 		restrictToCurrentSchool,
-		allowForCourseMembersOnly,
 	],
 	get: [
 		courseInviteHook,
@@ -53,7 +53,10 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [resolveMembers],
+	find: [
+		resolveMembers,
+		globalHooks.ifNotLocal(filterResults),
+	],
 	get: [
 		globalHooks.ifNotLocal(
 			globalHooks.denyIfNotCurrentSchool({
