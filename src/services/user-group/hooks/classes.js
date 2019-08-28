@@ -21,7 +21,10 @@ exports.before = {
 		restrictToCurrentSchool,
 		restrictToUsersOwnClasses,
 	],
-	get: [restrictToUsersOwnClasses],
+	get: [
+		restrictToCurrentSchool,
+		restrictToUsersOwnClasses,
+	],
 	create: [
 		globalHooks.hasPermission('USERGROUP_CREATE'),
 		restrictToCurrentSchool,

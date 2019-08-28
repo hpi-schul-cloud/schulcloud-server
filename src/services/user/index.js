@@ -5,7 +5,11 @@ const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const firstLoginHooks = require('./hooks/firstLogin');
 const skipRegistrationHooks = require('./hooks/skipRegistration');
-const { AdminUsers, UserLinkImportService, SkipRegistrationService } = require('./services');
+const {
+	AdminUsers, UserLinkImportService,
+	SkipRegistrationService,
+	RegistrationSchoolService,
+} = require('./services');
 const adminHook = require('./hooks/admin');
 
 
@@ -77,4 +81,8 @@ module.exports = function setup() {
 	app.use('/users/:userid/skipregistration', new SkipRegistrationService());
 	const skipRegistrationService = app.service('/users/:userid/skipregistration');
 	skipRegistrationService.hooks(skipRegistrationHooks);
+
+	app.use('/registrationSchool', new RegistrationSchoolService());
+	// const registrationSchoolService = app.service('registrationSchool');
+	// skipRegistrationService.hooks(registrationSchoolHooks);
 };
