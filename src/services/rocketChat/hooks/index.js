@@ -22,8 +22,8 @@ const checkTeam = async (hook) => {
 	return hook;
 };
 
-const ensureCurrentUserInChannel = (hook) => {
-	hook.app.service('rocketChat/channel').addUsersToChannel([hook.params.account.userId], hook.id)
+const ensureCurrentUserInChannel = async (hook) => {
+	await hook.app.service('rocketChat/channel').addUsersToChannel([hook.params.account.userId], hook.id)
 		.catch(err => logger.warning(err));
 	return hook;
 };
