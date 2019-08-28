@@ -1,0 +1,20 @@
+{
+	"description": "description",
+	"operations": {
+		"create": {
+			"summary": "summary",
+			"description": "my description",
+			"requestBody": {
+				"description": "R B description",
+				"content": {
+					"application/json": {
+						"schema": {
+							"title": "content",
+							"type": "string"
+						}
+					}
+				}
+			}
+		}
+	}
+}

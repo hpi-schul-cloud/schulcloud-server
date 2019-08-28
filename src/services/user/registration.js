@@ -4,6 +4,7 @@ const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 const logger = require('../../logger');
+const docs = require('./docs/registration.json')
 
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../consent/config');
 
@@ -252,10 +253,10 @@ const registerUser = function register(data, params, app) {
 		});
 };
 
-module.exports = function (app) {
+module.exports = function setup(app) {
 	class RegistrationService {
 		constructor() {
-
+			this.docs = docs;
 		}
 
 		create(data, params) {
