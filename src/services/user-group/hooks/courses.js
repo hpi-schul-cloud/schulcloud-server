@@ -36,9 +36,27 @@ const isCourseMember = (userId,
             || teacherIds.some(u => (u._id ? u._id : u).toString() === userId)
 						|| substitutionIds.some(u => (u._id ? u._id : u).toString() === userId);
 
+const isSchoolsAdminOrSuperhero = async (context, course) => {
+	const { schoolId, roles } = await globalHooks.getUser(context);
+	if (!schoolId || course.schoolId.toString() !== schoolId.toString()) {
+		// not a member of school
+		return false;
+	}
+	if (roles && Array.isArray(roles)
+		&& (roles.some(role => ['administrator', 'superhero'].includes(role.name)))) {
+		// schoolmember and admin or superhero
+		return true;
+	}
+	// either admin nor superHero
+	return false;
+};
 
 const allowForCourseMembersOnly = globalHooks.ifNotLocal(async (context) => {
 	const course = await CourseModel.findById(context.id).lean().exec();
+	const schoolsAdminOrSuperhero = await isSchoolsAdminOrSuperhero(context, course);
+	if (schoolsAdminOrSuperhero) {
+		return context;
+	}
 	course.memberIds = await computeMembers(course);
 	const { userId } = context.params.account;
 	const isMember = await isCourseMember(userId.toString(), course);
