@@ -4,7 +4,6 @@ const LessonModel = require('../src/services/lesson/model');
 const { courseGroupModel, courseModel } = require('../src/services/user-group/model');
 const { connect, close } = require('../src/utils/database');
 const logger = require('../src/logger/');
-const { DatabaseTaskTemplate, OutputLogTemplate } = require('./helpers');
 const { copyFile } = require('../src/services/fileStorage/utils/');
 
 let DETAIL_LOGS = false;
