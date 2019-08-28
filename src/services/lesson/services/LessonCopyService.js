@@ -1,0 +1,149 @@
+const { NotFound, GeneralError } = require('@feathersjs/errors');
+const _ = require('lodash');
+
+const { homeworkModel } = require('../../homework/model');
+const { FileModel } = require('../../fileStorage/model');
+const lessonModel = require('../model');
+
+const { copyFile } = require('../../fileStorage/utils/');
+const logger = require('../../../logger/');
+
+class LessonCopyService {
+	constructor(app) {
+		this.app = app;
+	}
+
+	testIfHomeworkShouldCopy(homework, userId) {
+		const isArchived = homework.archived.length > 0;
+		const isNotTeacher = homework.teacherId.toString() !== userId;
+		const isPrivate = homework.private;
+		return isArchived || (isNotTeacher && isPrivate);
+	}
+
+	createHomeworkCopyTask(homework, userId, newCourseId, newLesson) {
+		if (this.testIfHomeworkShouldCopy(homework, userId)) {
+			return false;
+		}
+
+		return this.app.service('homework/copy').create({
+			_id: homework._id,
+			courseId: newCourseId,
+			lessonId: newLesson._id,
+			userId: userId === homework.teacherId.toString() ? userId : homework.teacherId,
+			newTeacherId: userId,
+		});
+	}
+
+	async copyHomeworks(params, { _id: oldLessonId }, newCourseId, newLesson) {
+		const userId = params.account.userId.toString();
+		const homeworks = await homeworkModel.find({ oldLessonId })
+			.lean()
+			.exec()
+			.catch((err) => {
+				throw new NotFound('Can not fetch homework data.', err);
+			});
+		const tasks = homeworks.map(h => this.createHomeworkCopyTask(h, userId, newCourseId, newLesson));
+		return Promise.all(tasks);
+	}
+
+	async copyFilesInLesson(params, sourceLesson, newCourseId, newLesson) {
+		const fileChangelog = [];
+		// get all course files
+		const course = sourceLesson.courseId;
+		const files = await FileModel.find({
+			owner: course,
+		}).lean().exec();
+		// filter files to lesson related
+		const lessonFiles = files.filter(f => _.some(
+			(sourceLesson.contents || []),
+			content => content.component === 'text'
+				&& content.content.text
+				&& _.includes(content.content.text, f._id.toString()),
+		));
+		// copy files for new course
+		await Promise.all(lessonFiles.map(sourceFile => copyFile({
+			file: sourceFile,
+			parent: newCourseId,
+			sourceSchoolId: course.schoolId,
+		}, params).then((newFile) => {
+			// /files/file?file=5d1ef687faccd3282cc94f83&amp;name=imago-images-fotos-von-voegeln.jpg\
+			fileChangelog.push({
+				old: `file=${sourceFile._id}&amp;name=${sourceFile.name}`,
+				new: `file=${newFile._id}&amp;name=${newFile.name}`,
+			});
+			// bad fix & and &amp; is change from time to time...
+			fileChangelog.push({
+				old: `file=${sourceFile._id}&name=${sourceFile.name}`,
+				new: `file=${newFile._id}&name=${newFile.name}`,
+			});
+		}).catch((err) => {
+			logger.warning('Can not copy file', err);
+			logger.warning({
+				sourceFile, sourceLesson, newLesson, newCourseId,
+			});
+			fileChangelog.push({
+				old: `file=${sourceFile._id}&amp;name=${sourceFile.name}`,
+				new: `file=can_not_copyed&amp;name=${sourceFile.name}`,
+			});
+			// bad fix & and &amp; is change from time to time...
+			fileChangelog.push({
+				old: `file=${sourceFile._id}&name=${sourceFile.name}`,
+				new: `file=can_not_copyed&name=${sourceFile.name}`,
+			});
+			return Promise.resolve();
+		})));
+		// replace file ids in lesson content
+		newLesson.contents.forEach((content) => {
+			if (content.component === 'text' && content.content.text) {
+				fileChangelog.forEach((change) => {
+					content.content.text = content.content.text.replace(
+						new RegExp(change.old, 'g'),
+						change.new,
+					);
+				});
+			}
+		});
+		// update lesson data
+		return lessonModel.update({ _id: newLesson._id }, newLesson).lean().exec();
+	}
+
+	createTempLesson(sourceLesson, newCourseId) {
+		let tempLesson = sourceLesson;
+		tempLesson = _.omit(tempLesson, ['_id', 'shareToken', 'courseId']);
+		tempLesson.courseId = newCourseId;
+		tempLesson.isCopyFrom = sourceLesson._id;
+		return tempLesson;
+	}
+
+	/**
+     * Clones a lesson to a specified course, including files and homeworks.
+     * @param data consists of lessonId and newCourseId (target, source).
+     * @param params user Object and other params.
+     * @returns newly created lesson.
+     */
+	async create(data, params) {
+		const { newCourseId, lessonId: _id } = data;
+		const sourceLesson = await lessonModel.findOne({ _id })
+			.populate('courseId')
+			.lean()
+			.exec()
+			.catch((err) => {
+				throw new NotFound('Can not fetch lesson.', err);
+			});
+		const tempLesson = this.createTempLesson(sourceLesson, newCourseId);
+		const newLesson = await lessonModel.create(tempLesson)
+			.catch((err) => {
+				throw new GeneralError('Can not create new lesson.', err);
+			});
+
+		return Promise.all([
+			this.copyHomeworks(params, sourceLesson, newCourseId, newLesson),
+			this.copyFilesInLesson(params, sourceLesson, newCourseId, newLesson),
+		]).then(() => newLesson).catch((err) => {
+			logger.warning(err);
+			throw err;
+		});
+	}
+}
+
+module.exports = LessonCopyService;
