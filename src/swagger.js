@@ -20,6 +20,7 @@ module.exports = function swaggerSetup(app) {
 				bearer: [],
 			},
 		],
+		openApiVersion: 3,
 		specs: {
 			schemes: ['http', 'https'],
 			info: {
