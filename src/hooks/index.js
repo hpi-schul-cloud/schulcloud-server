@@ -78,8 +78,6 @@ exports.hasPermission = permissionName => (context) => {
 				throw new NotAuthenticated('API Key is invalid.');
 			});
 	}
-	// If test then skip too
-	if (process.env.NODE_ENV === 'test') return Promise.resolve(context);
 
 	// Otherwise check for user permissions
 	const service = context.app.service('/users/');
