@@ -10,7 +10,27 @@
 					"application/json": {
 						"schema": {
 							"title": "content",
-							"type": "string"
+							"type": "object",
+							"properties": {
+								"firstName": {
+									"type": "string"
+								},
+								"lastName": {
+									"type": "string"
+								},
+								"email": {
+									"type": "string"
+								},
+								"roles": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"schoolId": {
+									"type": "string"
+								}
+							}
 						}
 					}
 				}
