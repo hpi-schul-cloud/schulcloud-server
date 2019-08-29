@@ -8,6 +8,39 @@ const lessonModel = require('../model');
 const { copyFile } = require('../../fileStorage/utils/');
 const logger = require('../../../logger/');
 
+class FileChangeLog {
+	constructor() {
+		this.logs = [];
+	}
+
+	add(oldId, newId, name, char) {
+		this.logs.push({
+			old: `file=${oldId}${char}name=${name}`,
+			new: `file=${newId}${char}name=${name}`,
+		});
+	}
+
+	push(oldId, newId, name) {
+		this.add(oldId, newId, name, '&');
+		this.add(oldId, newId, name, '&amp;');
+	}
+
+	replaceAllInContent(content) {
+		if (content.component !== 'text' || !content.content.text) {
+			return content;
+		}
+
+		this.logs.forEach((change) => {
+			content.content.text = content.content.text.replace(
+				new RegExp(change.old, 'g'),
+				change.new,
+			);
+		});
+
+		return content;
+	}
+}
+
 class LessonCopyService {
 	constructor(app) {
 		this.app = app;
@@ -47,7 +80,6 @@ class LessonCopyService {
 	}
 
 	async copyFilesInLesson(params, sourceLesson, newCourseId, newLesson) {
-		const fileChangelog = [];
 		// get all course files
 		const course = sourceLesson.courseId;
 		const files = await FileModel.find({
@@ -61,49 +93,26 @@ class LessonCopyService {
 				&& _.includes(content.content.text, f._id.toString()),
 		));
 		// copy files for new course
+		const fileChangeLog = new FileChangeLog();
 		await Promise.all(lessonFiles.map(sourceFile => copyFile({
 			file: sourceFile,
 			parent: newCourseId,
 			sourceSchoolId: course.schoolId,
 		}, params).then((newFile) => {
 			// /files/file?file=5d1ef687faccd3282cc94f83&amp;name=imago-images-fotos-von-voegeln.jpg\
-			fileChangelog.push({
-				old: `file=${sourceFile._id}&amp;name=${sourceFile.name}`,
-				new: `file=${newFile._id}&amp;name=${newFile.name}`,
-			});
-			// bad fix & and &amp; is change from time to time...
-			fileChangelog.push({
-				old: `file=${sourceFile._id}&name=${sourceFile.name}`,
-				new: `file=${newFile._id}&name=${newFile.name}`,
-			});
+			fileChangeLog.push(sourceFile._id, newFile._id, sourceFile.name);
 		}).catch((err) => {
 			logger.warning('Can not copy file', err);
 			logger.warning({
 				sourceFile, sourceLesson, newLesson, newCourseId,
 			});
-			fileChangelog.push({
-				old: `file=${sourceFile._id}&amp;name=${sourceFile.name}`,
-				new: `file=can_not_copyed&amp;name=${sourceFile.name}`,
-			});
-			// bad fix & and &amp; is change from time to time...
-			fileChangelog.push({
-				old: `file=${sourceFile._id}&name=${sourceFile.name}`,
-				new: `file=can_not_copyed&name=${sourceFile.name}`,
-			});
+			fileChangeLog.push(sourceFile._id, `can_not_copyed_${sourceFile._id}`, sourceFile.name);
 			return Promise.resolve();
 		})));
-		// replace file ids in lesson content
+
 		newLesson.contents.forEach((content) => {
-			if (content.component === 'text' && content.content.text) {
-				fileChangelog.forEach((change) => {
-					content.content.text = content.content.text.replace(
-						new RegExp(change.old, 'g'),
-						change.new,
-					);
-				});
-			}
+			fileChangeLog.replaceAllInContent(content);
 		});
-		// update lesson data
 		return lessonModel.update({ _id: newLesson._id }, newLesson).lean().exec();
 	}
 
