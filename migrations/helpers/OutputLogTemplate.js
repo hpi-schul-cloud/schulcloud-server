@@ -29,11 +29,11 @@ class OutputLogTempalte {
 	convertToErrorOutput(_id, error) {
 		const id = _id.toString();
 
-		if (typeof errorType === 'object') {
-			return Object.assign({}, id, error);
+		if (typeof error === 'object') {
+			return Object.assign({}, { id }, error);
 		}
 
-		if (typeof errorType === 'string') {
+		if (typeof error === 'string') {
 			return {
 				id,
 				message: error,
