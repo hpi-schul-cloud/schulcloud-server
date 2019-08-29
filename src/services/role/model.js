@@ -1,6 +1,20 @@
 const mongoose = require('mongoose');
+const leanVirtuals = require('mongoose-lean-virtuals');
 
 const { Schema } = mongoose;
+
+const rolesDisplayName = {
+	teacher: 'Lehrer',
+	student: 'Schüler',
+	administrator: 'Administrator',
+	superhero: 'Schul-Cloud Admin',
+	demo: 'Demo',
+	demoTeacher: 'Demo',
+	demoStudent: 'Demo',
+	helpdesk: 'Helpdesk',
+	betaTeacher: 'Beta',
+	expert: 'Experte',
+};
 
 const roleSchema = new Schema({
 	name: { type: String, required: true },
@@ -43,6 +57,11 @@ roleSchema.statics.resolvePermissions = function (roleIds) {
 	return Promise.all(roleIds.map(id => resolveSubRoles(id)))
 		.then(() => permissions);
 };
+
+roleSchema.virtual('displayName').get(function get() {
+	return rolesDisplayName[this.name] || '';
+});
+roleSchema.plugin(leanVirtuals);
 
 const roleModel = mongoose.model('role', roleSchema);
 
