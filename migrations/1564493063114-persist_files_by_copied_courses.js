@@ -4,9 +4,10 @@ const LessonModel = require('../src/services/lesson/model');
 const { courseGroupModel, courseModel } = require('../src/services/user-group/model');
 const { connect, close } = require('../src/utils/database');
 const logger = require('../src/logger/');
+const { OutputLogTemplate } = require('./helpers');
 const { copyFile } = require('../src/services/fileStorage/utils/');
 
-let DETAIL_LOGS = false;
+let DETAIL_LOGS = true;
 let EXECUTE_FIX = true;
 
 const isUndefined = e => typeof e === 'undefined';
@@ -19,7 +20,7 @@ const createDataTree = (courses = []) => {
 		const { _id, teacherIds } = course;
 		const teacher = teacherIds[0];
 		if (!teacher) {
-			courseWithoutTeachers.push({ _id });
+			courseWithoutTeachers.push({ courseId: _id, error: 'no teacher exist in course' });
 		}
 		if (isUndefined(map[_id])) {
 			map[_id] = {
@@ -35,7 +36,7 @@ const createDataTree = (courses = []) => {
 	if (courseWithoutTeachers.length > 0) {
 		logger.warning(`It exist ${courseWithoutTeachers.length} courses without teachers, also no owner exist.`);
 		if (DETAIL_LOGS) {
-			logger.warning(courseWithoutTeachers);
+			logger.warning(JSON.stringify(courseWithoutTeachers));
 		}
 	}
 	return map;
@@ -59,7 +60,7 @@ const addCourseGroupIds = (datatree, courseGroups) => {
 	if (courseGroupWithoutCourse.length > 0) {
 		logger.warning(`It exist ${courseGroupWithoutCourse.length} courseGroups without course.`);
 		if (DETAIL_LOGS) {
-			logger.warning(courseGroupWithoutCourse);
+			logger.warning(JSON.stringify(courseGroupWithoutCourse));
 		}
 	}
 	return datatree;
@@ -110,7 +111,7 @@ const addCourseGroupLessons = (datatree, courseGroupdLessons) => {
 	if (lessonsWithoutCourse.length > 0) {
 		logger.warning(`It exist ${lessonsWithoutCourse.length} lessons without course or courseGroup.`);
 		if (DETAIL_LOGS) {
-			logger.warning(lessonsWithoutCourse);
+			logger.warning(JSON.stringify(lessonsWithoutCourse));
 		}
 	}
 	return datatree;
@@ -185,7 +186,7 @@ const detectNotExistingFiles = (datatree, files) => {
 			+ 'but not exist as meta data in file collection with targetModel="course".',
 		);
 		if (DETAIL_LOGS) {
-			logger.warning(notExists);
+			logger.warning(JSON.stringify(notExists));
 		}
 	}
 };
@@ -203,7 +204,6 @@ const removeCourseWithoutFiles = (datatree) => {
 	);
 	return newDatatree;
 };
-
 
 const addRealFilesToCourse = (datatree, files) => {
 	const courseFilesWithoutCourse = [];
@@ -224,7 +224,7 @@ const addRealFilesToCourse = (datatree, files) => {
 	if (courseFilesWithoutCourse.length > 0) {
 		logger.warning(`It exist ${courseFilesWithoutCourse.length} course files without course.`);
 		if (DETAIL_LOGS) {
-			logger.warning(courseFilesWithoutCourse);
+			logger.warning(JSON.stringify(courseFilesWithoutCourse));
 		}
 	}
 	return datatree;
@@ -241,7 +241,7 @@ const foundMissingFiles = (datatree, collectionFiles) => {
 			if (!filesThatExist.some(f => f._id.toString() === id)) {
 				const sourceFile = collectionFiles.filter(f => f._id.toString() === id)[0];
 				if (sourceFile === undefined) {
-					notExistingSourceFiles.push(shouldExist);
+					notExistingSourceFiles.push({ shouldExist, error: 'Source file do not exist.' });
 				} else {
 					missingFiles.push({
 						target: shouldExist,
@@ -255,7 +255,7 @@ const foundMissingFiles = (datatree, collectionFiles) => {
 	if (notExistingSourceFiles.length > 0) {
 		logger.warning(`It exist ${notExistingSourceFiles.length} file links in lessons without source files.`);
 		if (DETAIL_LOGS) {
-			logger.warning(notExistingSourceFiles);
+			logger.warning(JSON.stringify(notExistingSourceFiles));
 		}
 	}
 	return missingFiles;
