@@ -29,11 +29,11 @@ const sendInfo = (context) => {
 			},
 		}).then((account) => {
 			const recoveryLink = `${process.env.HOST}/pwrecovery/${context.result._id}`;
-			const mailContent = `Sehr geehrte/r " ${account.userId.firstName} ${account.userId.lastName}, \n\n
-				Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:\n
-				${recoveryLink}\n\n
-				Mit Freundlichen Grüßen\n
-				Ihr ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'} Team`;
+			const mailContent = `Sehr geehrte/r ${account.userId.firstName} ${account.userId.lastName}, \n
+Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:
+${recoveryLink}\n
+Mit Freundlichen Grüßen
+Ihr ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'} Team`;
 
 			globalHooks.sendEmail(context, {
 				subject: `Passwort zurücksetzen für die ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'}`,
