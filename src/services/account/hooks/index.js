@@ -99,7 +99,7 @@ const validatePassword = (hook) => {
 				(hasStudentCreate && isStudent)
 				|| (hasAdminView && (isStudent || isTeacher))
 				|| isSuperHero
-				|| editsOwnAccount) {
+				|| !editsOwnAccount) {
 				return hook;
 			}
 			if (password && !passwordVerification) {
