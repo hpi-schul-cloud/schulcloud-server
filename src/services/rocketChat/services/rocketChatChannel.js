@@ -74,6 +74,36 @@ class RocketChatChannel {
 			});
 	}
 
+	checkRcUserInChannel(user, channelMembers) {
+		const found = channelMembers.find(e => e._id === user.rcId);
+		return !!found;
+	}
+
+	async ensureRcChannel(channel, params) {
+		const rcAccount = await this.app.service('/rocketChat/user').get(params.account.userId);
+		const rcChannelMembers = await request(getRequestOptions(
+			`/api/v1/groups.members?roomName=${channel.channelName}`, {}, true, {}, 'GET',
+		))
+			.catch((err) => {
+				// todo: move into function
+				const rcError = err.error.errorType;
+				if (rcError === 'error-room-not-found') {
+					// initialMembers?
+					return request(getRequestOptions('/api/v1/groups.create', { name: channel.channelName }, true));
+				}
+				throw err;
+			});
+		const inChannel = this.checkRcUserInChannel(rcAccount, rcChannelMembers.members);
+		if (!inChannel) {
+			const body = {
+				roomName: channel.channelName,
+				userId: rcAccount.rcId,
+			};
+			await request(getRequestOptions('/api/v1/groups.invite', body, true));
+		}
+		return Promise.resolve();
+	}
+
 	async getOrCreateRocketChatChannel(teamId, params) {
 		try {
 			let channel = await channelModel.findOne({ teamId });
@@ -81,6 +111,8 @@ class RocketChatChannel {
 				channel = await this.createChannel(teamId, params)
 					.then(() => channelModel.findOne({ teamId }));
 			}
+			// check that channel exists in rocketchat, and user is part of it.
+			await this.ensureRcChannel(channel, params);
 			return {
 				teamId: channel.teamId,
 				channelName: channel.channelName,
