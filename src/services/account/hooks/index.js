@@ -101,11 +101,15 @@ const validatePassword = (hook) => {
 			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
 
 			if (
-				(!userDidFirstLogin || !editsOwnAccount)
-				&& (
-					(hasStudentCreate && isStudent)
-					|| (hasAdminView && (isStudent || isTeacher))
-					|| isSuperHero
+				(!userDidFirstLogin && editsOwnAccount)
+				|| (
+					(!editsOwnAccount
+						&& (
+							(hasStudentCreate && isStudent)
+							|| (hasAdminView && (isStudent || isTeacher))
+							|| isSuperHero
+						)
+					)
 				)
 			) {
 				return hook;
