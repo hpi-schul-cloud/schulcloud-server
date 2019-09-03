@@ -15,7 +15,7 @@ let secrets = {
 		"cors_rules": [{
 		"AllowedHeaders": ["*"],
 		"AllowedMethods": ["PUT"],
-		"AllowedOrigins": ["https://schul-cloud.org", "https://schulcloud.org", "https://schul.tech"],
+		"AllowedOrigins": [process.env.HOST],
 		"MaxAgeSeconds": 300
 	}]
 },
