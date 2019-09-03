@@ -31,7 +31,7 @@ class RocketChatChannel {
 			});
 	}
 
-	createChannel(teamId) {
+	createChannel(teamId, name) {
 		if (teamId === undefined) { throw new BadRequest('Missing data value.'); }
 
 		let currentTeam;
@@ -49,7 +49,7 @@ class RocketChatChannel {
 					users.forEach((user) => {
 						if (user.username) userNames.push(user.username);
 					});
-					const channelName = await this.generateChannelName(currentTeam);
+					const channelName = name || await this.generateChannelName(currentTeam);
 					const body = {
 						name: channelName,
 						members: userNames,
@@ -61,13 +61,16 @@ class RocketChatChannel {
 						});
 				});
 			}).then((result) => {
+				if (name) {
+					// channel already exists in database
+					return channelModel.findOne({ teamId }).lean().exec();
+				}
 				const channelData = {
 					teamId: currentTeam._id,
 					channelName: result.group.name,
 				};
 				return channelModel.create(channelData);
 			})
-			.then(result => this.synchronizeModerators(currentTeam).then(() => result))
 			.catch((err) => {
 				logger.warning(new BadRequest('Can not create RocketChat Channel', err));
 				throw new BadRequest('Can not create RocketChat Channel', err);
@@ -79,20 +82,23 @@ class RocketChatChannel {
 		return !!found;
 	}
 
-	async ensureRcChannel(channel, params) {
+	async handleChannelMissingRcSide(err, channel, teamId) {
+		const rcError = err.error.errorType;
+		if (rcError === 'error-room-not-found') {
+			await this.createChannel(teamId, channel.channelName);
+			return request(getRequestOptions(
+				`/api/v1/groups.members?roomName=${channel.channelName}`, {}, true, {}, 'GET',
+			));
+		}
+		throw err;
+	}
+
+	async ensureRcChannel(channel, params, teamId) {
 		const rcAccount = await this.app.service('/rocketChat/user').get(params.account.userId);
 		const rcChannelMembers = await request(getRequestOptions(
 			`/api/v1/groups.members?roomName=${channel.channelName}`, {}, true, {}, 'GET',
-		))
-			.catch((err) => {
-				// todo: move into function
-				const rcError = err.error.errorType;
-				if (rcError === 'error-room-not-found') {
-					// initialMembers?
-					return request(getRequestOptions('/api/v1/groups.create', { name: channel.channelName }, true));
-				}
-				throw err;
-			});
+		)).catch(err => this.handleChannelMissingRcSide(err, channel, teamId));
+
 		const inChannel = this.checkRcUserInChannel(rcAccount, rcChannelMembers.members);
 		if (!inChannel) {
 			const body = {
@@ -108,11 +114,11 @@ class RocketChatChannel {
 		try {
 			let channel = await channelModel.findOne({ teamId });
 			if (!channel) {
-				channel = await this.createChannel(teamId, params)
+				channel = await this.createChannel(teamId)
 					.then(() => channelModel.findOne({ teamId }));
 			}
 			// check that channel exists in rocketchat, and user is part of it.
-			await this.ensureRcChannel(channel, params);
+			await this.ensureRcChannel(channel, params, teamId);
 			return {
 				teamId: channel.teamId,
 				channelName: channel.channelName,
@@ -191,37 +197,40 @@ class RocketChatChannel {
 		return Promise.resolve();
 	}
 
-	async synchronizeModerators(team) {
+	async synchronizeModerators(teamId) {
 		try {
-			const channel = await this.app.service('/rocketChat/channel').get(team._id);
-			const rcResponse = await request(getRequestOptions(
-				`/api/v1/groups.moderators?roomName=${channel.channelName}`,
-				{},
-				true,
-				undefined,
-				'GET',
-			));
-			let rcChannelModerators = rcResponse.moderators;
-			const scModeratorPromises = [];
-			team.userIds.forEach(async (user) => {
-				if (this.teamModeratorRoles.includes(user.role.toString())) {
-					scModeratorPromises.push(this.app.service('rocketChat/user').get(user.userId));
-				}
-			});
-			let scModerators = await Promise.all(scModeratorPromises);
-			rcChannelModerators = rcChannelModerators.map(mod => mod._id);
-			scModerators = scModerators.map(mod => mod.rcId);
-			const moderatorsToAdd = scModerators.filter(x => !rcChannelModerators.includes(x));
-			const moderatorsToRemove = rcChannelModerators.filter(x => !scModerators.includes(x));
-			moderatorsToAdd.forEach(x => request(getRequestOptions(
-				'/api/v1/groups.addModerator', { roomName: channel.channelName, userId: x }, true,
-			)));
-			moderatorsToRemove.forEach(x => request(getRequestOptions(
-				'/api/v1/groups.removeModerator', { roomName: channel.channelName, userId: x }, true,
-			)));
+			const team = await this.app.service('teams').get(teamId);
+			const channel = await channelModel.findOne({ teamId });
+			if (channel) {
+				const rcResponse = await request(getRequestOptions(
+					`/api/v1/groups.moderators?roomName=${channel.channelName}`,
+					{},
+					true,
+					undefined,
+					'GET',
+				));
+				let rcChannelModerators = rcResponse.moderators;
+				const scModeratorPromises = [];
+				team.userIds.forEach(async (user) => {
+					if (this.teamModeratorRoles.includes(user.role.toString())) {
+						scModeratorPromises.push(this.app.service('rocketChat/user').get(user.userId));
+					}
+				});
+				let scModerators = await Promise.all(scModeratorPromises);
+				rcChannelModerators = rcChannelModerators.map(mod => mod._id);
+				scModerators = scModerators.map(mod => mod.rcId);
+				const moderatorsToAdd = scModerators.filter(x => !rcChannelModerators.includes(x));
+				const moderatorsToRemove = rcChannelModerators.filter(x => !scModerators.includes(x));
+				moderatorsToAdd.forEach(x => request(getRequestOptions(
+					'/api/v1/groups.addModerator', { roomName: channel.channelName, userId: x }, true,
+				)));
+				moderatorsToRemove.forEach(x => request(getRequestOptions(
+					'/api/v1/groups.removeModerator', { roomName: channel.channelName, userId: x }, true,
+				)));
+			}
 			return Promise.resolve();
 		} catch (err) {
-			logger.log(`Fehler beim Synchronisieren der rocket.chat moderatoren für team ${team._id} `, err);
+			logger.warn(`Fehler beim Synchronisieren der rocket.chat moderatoren für team ${teamId} `, err);
 			return Promise.reject(err);
 		}
 	}
@@ -231,14 +240,16 @@ class RocketChatChannel {
      * @param {*} teamId Id of a Team in the schulcloud
      * @param {*} params
      */
-	get(teamId, params) {
-		return this.getOrCreateRocketChatChannel(teamId, params);
+	async get(teamId, params) {
+		const result = await this.getOrCreateRocketChatChannel(teamId, params);
+		this.synchronizeModerators(teamId);
+		return result;
 	}
 
 	async onTeamPatched(result) {
 		if (result.features.includes('rocketChat')) {
 			await RocketChatChannel.unarchiveChannel(result._id);
-			await this.synchronizeModerators(result);
+			await this.synchronizeModerators(result._id);
 		} else {
 			RocketChatChannel.archiveChannel(result._id);
 		}
