@@ -92,14 +92,22 @@ const validatePassword = (hook) => {
 		globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
 		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'ADMIN_VIEW'),
 		globalHooks.hasRoleNoHook(hook, hook.id, 'teacher', true),
-		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero')])
-		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero]) => {
+		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
+		hook.app.service('users').get(hook.params.account.userId)])
+		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero, user]) => {
+			// Check if it is own account
 			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
+			// Check if it is firstLogin
+			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
+
 			if (
-				(hasStudentCreate && isStudent)
-				|| (hasAdminView && (isStudent || isTeacher))
-				|| isSuperHero
-				|| !editsOwnAccount) {
+				(!userDidFirstLogin || !editsOwnAccount)
+				&& (
+					(hasStudentCreate && isStudent)
+					|| (hasAdminView && (isStudent || isTeacher))
+					|| isSuperHero
+				)
+			) {
 				return hook;
 			}
 			if (password && !passwordVerification) {
