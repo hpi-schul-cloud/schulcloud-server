@@ -96,7 +96,7 @@ const validatePassword = (hook) => {
 		hook.app.service('users').get(hook.params.account.userId)])
 		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero, user]) => {
 			// Check if it is own account
-			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
+			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id.toString();
 			// Check if it is firstLogin
 			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
 
