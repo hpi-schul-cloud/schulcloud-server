@@ -7,8 +7,8 @@ const logger = require('../src/logger/');
 const { OutputLogTemplate } = require('./helpers');
 const { copyFile } = require('../src/services/fileStorage/utils/');
 
-let DETAIL_LOGS = true;
-let EXECUTE_FIX = true;
+const DETAIL_LOGS = true;
+const EXECUTE_FIX = true;
 
 const isUndefined = e => typeof e === 'undefined';
 const isTextContent = content => content.component === 'text' && content.content.text;
@@ -323,10 +323,7 @@ const cloneMissingFilesAndUpdateLessons = (missingFileInfos, out) => {
 };
 
 module.exports = {
-	up: async function up({ DETAIL_LOGS: detail, EXECUTE_FIX: execute } = {}) {
-		if (execute) EXECUTE_FIX = execute;
-		if (detail) DETAIL_LOGS = detail;
-
+	up: async function up() {
 		await connect();
 		const [files, lessons, courses, courseGroups] = await Promise.all([
 			FileModel.find({}).lean().exec(),
