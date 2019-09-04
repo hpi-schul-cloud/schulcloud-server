@@ -73,7 +73,7 @@ const addCourseLessons = (datatree, lessons) => {
 			_id, contents, courseId,
 		} = lesson;
 		if (datatree[courseId]) {
-			datatree[courseId].lessons[_id] = contents; // .filter(c => isTextContent(c));
+			datatree[courseId].lessons[_id] = contents;
 		} else {
 			courseGroupdLessons.push(lesson);
 		}
