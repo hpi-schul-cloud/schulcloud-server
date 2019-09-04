@@ -53,17 +53,25 @@ const populateUser = (app, data) => {
 	return Promise.resolve({ user, oldUser });
 };
 
-const insertUserToDB = (app, data, user) => {
+const insertUserToDB = async (app, data, user) => {
 	if (user._id) {
-		return app.service('users').remove(user._id).then(() => app.service('users').create(user, { _additional: { parentEmail: data.parent_email, asTask: 'student' } })
+		user.roles = [...new Set(await app.service('roles')
+			.find({ query: { name: { $in: user.roles } } })
+			.then((roles) => {
+				const r = roles.data.map(role => role._id);
+				return r;
+			}))];
+		return app.service('users')
+			.update(user._id, user)
 			.catch((err) => {
 				logger.warning(err);
 				throw new errors.BadRequest('Fehler beim Updaten der Nutzerdaten.');
-			}));
+			});
 	}
 	return app.service('users').create(user, { _additional: { parentEmail: data.parent_email, asTask: 'student' } })
 		.catch((err) => {
 			logger.warning(err);
+			// fixme check error message is correct, check err
 			throw new errors.BadRequest('Fehler beim Erstellen des Nutzers. Eventuell ist die E-Mail-Adresse bereits im System registriert.');
 		});
 };
