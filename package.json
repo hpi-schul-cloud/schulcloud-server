@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "hpi schulcloud server",
-  "version": "19.3.1",
+  "version": "19.4.0",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -16,14 +16,6 @@
   "bugs": {},
   "engines": {
     "node": "^8.15.0"
-  },
-  "greenkeeper": {
-    "ignore": [
-      "feathers-mongoose",
-      "mongoose",
-      "mongoose-id-validator",
-      "mongoose-lean-virtuals"
-    ]
   },
   "scripts": {
     "lint": "eslint ./src ./test --ext .js --fix",
