@@ -795,6 +795,7 @@ describe('CSVSyncer Integration', () => {
 	});
 
 	describe('Scenario 11 - Importing the same data twice', () => {
+		this.timeout(4000);
 		let scenarioParams;
 		let scenarioData;
 
