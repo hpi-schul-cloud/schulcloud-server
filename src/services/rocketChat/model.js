@@ -6,7 +6,6 @@ const userSchema = new Schema({
 	userId: {
 		type: Schema.Types.ObjectId, ref: 'user', required: true, unique: true,
 	},
-	pass: { type: String, required: true },
 	username: { type: String, required: true, unique: true },
 	rcId: { type: String, required: true },
 	authToken: { type: String },
