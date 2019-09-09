@@ -84,9 +84,13 @@ describe('classes service', () => {
 			expect(data[0]._id.toString()).to.equal(classes[0]._id.toString());
 		});
 
+
 		it('CREATE patches successor ID in predecessor class', async () => {
-			const orgClass = await testObjects.createTestClass({ name: 'sonnenklasse 1');
-			const successorClass = await testObjects.createTestClass({ name: 'sonnenklasse 2', predecessor: orgClass._id });
+			const orgClass = await testObjects.createTestClass({ name: 'sonnenklasse 1' });
+			const successorClass = await testObjects.createTestClass({
+				name: 'sonnenklasse 2',
+				predecessor: orgClass._id,
+			});
 			const predecessorClass = await classesService.get(successorClass._id);
 			expect(predecessorClass.name).to.equal('sonnenklasse 1');
 			expect(successorClass.name).to.equal('sonnenklasse 2');
