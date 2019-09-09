@@ -64,6 +64,14 @@ const sortByDisplayName = (hook) => {
 	return Promise.resolve(hook);
 };
 
+const saveSuccessor = async (context) => {
+	const data = context.result.data || context.result;
+	if (context.data.predecessor) {
+		await context.app.service('classes').patch(context.data.predecessor, { successor: data._id });
+	}
+	return context;
+};
+
 exports.after = {
 	all: [],
 	find: [sortByDisplayName],
@@ -74,7 +82,9 @@ exports.after = {
 				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
 			}),
 		)],
-	create: [],
+	create: [
+		saveSuccessor,
+	],
 	update: [],
 	patch: [],
 	remove: [],
