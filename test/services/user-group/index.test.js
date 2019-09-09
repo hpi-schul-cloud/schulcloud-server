@@ -91,10 +91,10 @@ describe('classes service', () => {
 				name: 'sonnenklasse 2',
 				predecessor: orgClass._id,
 			});
-			const predecessorClass = await classesService.get(successorClass._id);
-			expect(predecessorClass.name).to.equal('sonnenklasse 1');
+			const updatedOrgClass = await classesService.get(orgClass._id);
+			expect(updatedOrgClass.name).to.equal('sonnenklasse 1');
 			expect(successorClass.name).to.equal('sonnenklasse 2');
-			expect(predecessorClass.successor).to.equal(successorClass._id);
+			expect(updatedOrgClass.successor).to.equal(successorClass._id);
 		});
 
 		afterEach(testObjects.cleanup);
