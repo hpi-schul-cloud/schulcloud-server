@@ -26,6 +26,7 @@ const constructSuccessor = async (currentClass, app) => {
 		schoolId: currentClass.schoolId,
 		teacherIds: currentClass.teacherIds,
 		userIds: currentClass.userIds,
+		predecessor: currentClass._id,
 	};
 
 	// ToDO warning if gradelevel too high
