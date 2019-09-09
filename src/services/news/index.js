@@ -303,7 +303,13 @@ class NewsService extends AbstractService {
 	async get(id, params) {
 		const news = await this.app.service('newsModel').get(id, NewsService.populateParams());
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account.userId, newsPermissions.VIEW);
+		const now = Date.now();
+		if (news.displayAt > now) {
+			await this.authorize(news, params.account.userId, newsPermissions.EDIT);
+		} else {
+			await this.authorize(news, params.account.userId, newsPermissions.VIEW);
+		}
+
 		news.permissions = await this.getPermissions(params.account.userId, news);
 		return NewsService.decorateResults(news);
 	}

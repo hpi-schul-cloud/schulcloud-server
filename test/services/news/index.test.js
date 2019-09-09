@@ -154,6 +154,39 @@ describe('news service', () => {
 				}
 			});
 
+			it('should respond with an error if a student is trying to access specific unpublished news', async () => {
+				const schoolId = (await createTestSchool())._id;
+				const now = Date.now();
+				const user = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
+
+				const user2 = await createTestUser({
+					schoolId,
+					roles: 'administrator',
+				});
+
+				const schoolNews = await News.create({
+					creatorId: user2._id,
+					schoolId,
+					title: 'hacker news',
+					content:
+						"I can't access news articles that are not public yet",
+					displayAt:
+						now + 1000 * 60 * 60 * 24 * 7,
+				});
+				const params = await generateRequestParamsFromUser(user);
+
+				try {
+					await newsService.get(schoolNews._id, params);
+					expect.fail('The previous call should have failed');
+				} catch (err) {
+					expect(err).to.be.instanceOf(Forbidden);
+					expect(err.code).to.equal(403);
+				}
+			});
+
 			after(async () => {
 				await cleanup();
 				await News.deleteMany({});
@@ -452,6 +485,276 @@ describe('news service', () => {
 				const params = await generateRequestParamsFromUser(user);
 				params.query = { sort: 'createdAt' };
 				const result = await newsService.find(params);
+				expect(result.total).to.equal(3);
+				expect(result.data[0].title).to.equal('2');
+				expect(result.data[1].title).to.equal('1');
+				expect(result.data[2].title).to.equal('3');
+			});
+
+			it('should only return any published news', async () => {
+				const schoolId = (await createTestSchool())._id;
+				const now = Date.now();
+				await News.create([
+					{
+						schoolId,
+						creatorId: (await createTestUser())._id,
+						title: 'school A news',
+						content: 'some string',
+						displayAt: Date.now(),
+					},
+					{
+						schoolId,
+						creatorId: (await createTestUser())._id,
+						title: 'Unpublished newstitle',
+						content: 'Who know what the future holds',
+						displayAt: now + 20000,
+					},
+					{
+						schoolId,
+						creatorId: (await createTestUser())._id,
+						title: 'Unpublished newstitle (2)',
+						content: 'Unkown event about to happen',
+						displayAt: new Date(now + 20000),
+					},
+					{
+						schoolId,
+						creatorId: (await createTestUser())._id,
+						title: 'school A news (2)',
+						content: 'some string',
+						displayAt: new Date('2019-09-01T10:01:58.135Z'),
+					},
+				]);
+				const user = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
+				const params = await generateRequestParamsFromUser(user);
+				// params.query = { pusblished: true }; this is deafault
+				const result = await newsService.find(params);
+				expect(result.total).to.equal(2);
+				expect(
+					result.data.every((item) => item.title.includes('school A news')),
+				).to.equal(true);
+				expect(
+					result.data.every((item) => item.title.includes('Unpublished newstitle')),
+				).to.equal(false);
+			});
+
+			it('should only return published team news', async () => {
+				const schoolId = (await createTestSchool())._id;
+				const teams = teamHelper(app, { schoolId });
+				const user = await createTestUser({
+					schoolId,
+					roles: 'administrator',
+				});
+				const user2 = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+				const teamA = await teams.create(user);
+				const teamB = await teams.create(user2);
+
+				const now = Date.now();
+				await News.create([
+					{
+						schoolId,
+						creatorId: (await createTestUser())._id,
+						title: 'school news',
+						content: 'this is the content',
+						displayAt: now + 20000,
+					},
+					{
+						schoolId,
+						creatorId: user._id,
+						title: 'team A news',
+						content: 'even more content',
+						target: teamA._id,
+						targetModel: 'teams',
+						displayAt: new Date(now + 20000),
+					},
+					{
+						schoolId: (await createTestSchool())._id, // team news created at another school
+						creatorId: (await createTestUser())._id,
+						title: 'team A news 2',
+						content: 'even more content',
+						target: teamA._id,
+						targetModel: 'teams',
+						displayAt: now,
+					},
+					{
+						schoolId,
+						creatorId: (await createTestUser())._id,
+						title: 'team B news',
+						content: 'we have content, too',
+						target: teamB._id,
+						targetModel: 'teams',
+						displayAt: new Date('2019-09-01T10:01:58.135Z'),
+					},
+				]);
+				const params = await generateRequestParamsFromUser(user);
+				const result = await newsService.find(params);
+				expect(result.total).to.equal(1);
+				expect(
+					result.data.some((item) => item.title === 'school news'),
+				).to.equal(false);
+				expect(
+					result.data.some((item) => item.title === 'team A news'),
+				).to.equal(false);
+				expect(
+					result.data.some((item) => item.title === 'team A news 2'),
+				).to.equal(true);
+			});
+
+			it('should only return unpublished news if authorized', async () => {
+				const schoolId = (await createTestSchool())._id;
+				const user = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+
+				const now = Date.now();
+				await News.create([
+					{
+						schoolId,
+						creatorId: user._id,
+						title: 'school A news',
+						content: 'some string',
+						displayAt: Date.now(),
+					},
+					{
+						schoolId,
+						creatorId: user._id,
+						title: 'Unpublished newstitle',
+						content: 'Who know what the future holds',
+						displayAt: now + 20000,
+					},
+					{
+						schoolId,
+						creatorId: user._id,
+						title: 'Unpublished newstitle (2)',
+						content: 'Unkown event about to happen',
+						displayAt: new Date(now + 20000),
+					},
+					{
+						schoolId,
+						creatorId: user._id,
+						title: 'Unpublished newstitle (3)',
+						content: 'Future event',
+						displayAt: new Date(now + 80000),
+					},
+					{
+						schoolId,
+						creatorId: user._id,
+						title: 'school A news (2)',
+						content: 'some string',
+						displayAt: new Date('2019-09-01T10:01:58.135Z'),
+					},
+				]);
+
+				const params = await generateRequestParamsFromUser(user);
+				params.query = { unpublished: true };
+				const result = await newsService.find(params);
+
+				expect(result.total).to.equal(3);
+				expect(
+					result.data.every((item) => item.title.includes('Unpublished')),
+				).to.equal(true);
+			});
+
+			it('should not return unpublished news if unauthorized', async () => {
+				const schoolId = (await createTestSchool())._id;
+				const user = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
+
+				const user2 = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+
+				const now = Date.now();
+				await News.create([
+					{
+						schoolId,
+						creatorId: user2._id,
+						title: 'school A news',
+						content: 'some string',
+						displayAt: Date.now(),
+					},
+					{
+						schoolId,
+						creatorId: user2._id,
+						title: 'Unpublished newstitle',
+						content: 'Who know what the future holds',
+						displayAt: now + 20000,
+					},
+					{
+						schoolId,
+						creatorId: user2._id,
+						title: 'Unpublished newstitle (2)',
+						content: 'Unkown event about to happen',
+						displayAt: new Date(now + 20000),
+					},
+					{
+						schoolId,
+						creatorId: user2._id,
+						title: 'Unpublished newstitle (3)',
+						content: 'Future event',
+						displayAt: new Date(now + 80000),
+					},
+					{
+						schoolId,
+						creatorId: user2._id,
+						title: 'school A news (2)',
+						content: 'some string',
+						displayAt: new Date('2019-09-01T10:01:58.135Z'),
+					},
+				]);
+
+				const params = await generateRequestParamsFromUser(user);
+				params.query = { unpublished: true };
+				const result = await newsService.find(params);
+
+				expect(result.total).to.equal(0);
+			});
+
+			it('should be able to sort unpublished news by publish date', async () => {
+				const schoolId = (await createTestSchool())._id;
+				const user = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+				const now = Date.now();
+				await News.create([
+					{
+						schoolId,
+						creatorId: user._id,
+						title: '1',
+						content: 'this is the content',
+						displayAt: now + 1000 * 30,
+					},
+					{
+						schoolId,
+						creatorId: user._id,
+						title: '2',
+						content: 'even more content',
+						displayAt: new Date(now + 1000 * 20),
+					},
+					{
+						schoolId,
+						creatorId: user._id,
+						title: '3',
+						content: 'content galore',
+						displayAt: new Date(now + 1000 * 80),
+					},
+				]);
+
+				const params = await generateRequestParamsFromUser(user);
+				params.query = { unpublished: true, sort: 'displayAt' };
+
+				const result = await newsService.find(params);
+
 				expect(result.total).to.equal(3);
 				expect(result.data[0].title).to.equal('2');
 				expect(result.data[1].title).to.equal('1');
