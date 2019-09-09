@@ -22,6 +22,7 @@ const findDuplicates = async (successor, app) => {
 
 const constructSuccessor = async (currentClass, app) => {
 	const successor = {
+		displayName: currentClass.displayName,
 		name: currentClass.name,
 		schoolId: currentClass.schoolId,
 		teacherIds: currentClass.teacherIds,
