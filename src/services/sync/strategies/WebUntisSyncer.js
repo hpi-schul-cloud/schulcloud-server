@@ -32,7 +32,15 @@ const DayMapping = {
  * @implements {Syncer}
  */
 class WebUntisSyncer extends Syncer {
-	constructor(app, stats, account) {
+	/**
+     * Constructor
+     *
+     * @param {*} app
+     * @param {*} stats
+     * @param {*} account
+	 * @param {boolean} dryrun
+     */
+	constructor(app, stats, account, dryrun) {
 		super(app, stats);
 
 		this.account = account;
@@ -44,6 +52,7 @@ class WebUntisSyncer extends Syncer {
 		// Save configuration
 		this.clientId = 'schulcloud';
 		this.session = {};
+		this.dryrun = dryrun;
 	}
 
 	async getUser() {

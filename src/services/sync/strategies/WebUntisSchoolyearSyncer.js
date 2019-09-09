@@ -1,4 +1,4 @@
-// const assert = require('assert');
+const assert = require('assert');
 
 const WebUntisSyncer = require('./WebUntisSyncer');
 
@@ -17,9 +17,10 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
      * @param {*} app
      * @param {*} stats
      * @param {*} account
+	 * @param {boolean} dryrun
      */
-	/* constructor(app, stats, account) {
-		super(app, stats, account);
+	/* constructor(app, stats, account, dryrun) {
+		super(app, stats, account, dryrun);
 	} */
 
 	/**
@@ -30,7 +31,9 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
 	}
 
 	static params(params /* , data */) {
-		return [params.account];
+		return [params.account,
+			!("dryrun" in params.query) || params.query.dryrun !== 'false'
+		];
 	}
 
 	/**
@@ -49,6 +52,8 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
      * * This syncer has to be triggered for each school individually
 	 */
 	steps() {
+		this.logInfo(`Running WebUntis Sync in dry run: ${this.dryrun}.\n`);
+
 		/* Why not
         return this.getWebUntisSystems().then(
             systems => {
@@ -80,7 +85,8 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
 						new Error('No WebUntis configuration for associated school.'),
 					);
 				}
-				this.logInfo(`Found ${systems.length} WebUntis configurations for school ${school.name}.`);
+				this.logInfo(`Found ${systems.length} WebUntis configurations for school ${school.name}.\n`);
+				
 				return Promise.all(systems.map((system) => {
 					this.stats.systems[school.name] = {};
 					return this.syncFromSystem(system, this.stats.systems[school.name], school);
@@ -96,7 +102,13 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
 				this.logout();
 				return Promise.resolve(data);
 			})
-			.then(data => this.migrateData(data, stats, school))
+			.then(data => {
+				if (this.dryrun) {
+					return this.collectData(data, stats, school);
+				} else {
+					return this.migrateData(data, stats, school);
+				}
+			})
 			.then(() => {
 				stats.success = true;
 			});
@@ -129,7 +141,7 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
 		}));
 
 		// TODO: remove
-		data.rooms.length = 2;
+		data.rooms.length = 5;
 		// END TODO: remove
 
 		for (const room of data.rooms) {
@@ -169,6 +181,8 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
 	}
 
 	async migrateData(data, stats, school) {
+		assert.ok(!this.dryrun);
+
 		const courseService = this.app.service('courses');
 		const classService = this.app.service('classes');
 
@@ -288,6 +302,139 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
 					const courseTimes = times[courseName];
 					// Update times, considered are events that occurs at least twice a year
 					scCourse.times = courseTimes.filter(entry => entry.count >= 2).map(entry => ({
+						weekday: entry.weekday,
+						startTime: entry.startTime,
+						duration: entry.duration,
+						eventId: undefined,
+						room: entry.room,
+					}));
+				}
+			}
+		}
+
+		return Promise.resolve();
+	}
+
+	async collectData(data, stats, school) {
+		assert.ok(this.dryrun);
+
+		const courseService = this.app.service('courses');
+		const classService = this.app.service('classes');
+
+		stats.classes = {};
+
+		/**
+         * Mapping:
+         *
+         * Schul-Cloud: class, course (per class), lesson
+         * WebUntis: class, subject
+         * German: Klasse, Kurs, Fach, Schulstunde
+         */
+
+		for (const klass of data.classes) {
+			/**
+             * Obtain classes
+             */
+			const className = klass.name;
+			this.logInfo(`Handle ${className}\n`);
+			const scClasses = await classService.find({ query: { name: className }, paginate: false });
+
+			let scClass = scClasses[0];
+			if (scClass === undefined) {
+				// Create Schul-Cloud class?
+				const newClass = {
+					name: className,
+					schoolId: school._id,
+					nameFormat: 'static',
+					year: school.currentYear,
+				};
+				scClass = newClass;
+				scClass._id = null;
+
+				stats.classes[className] = {
+					missing: true,
+					name: className,
+					courses: {},
+				};
+			} else {
+				stats.classes[className] = {
+					missing: true,
+					name: className,
+					courses: {},
+				};
+			}
+			const statsClass = stats.classes[className];
+
+			const times = {};
+			for (const timetableEntry of klass.timetable) {
+				/** Obtain courses for subjects:
+                 *
+                 * - class
+                 * - (teacher)
+                 * - time series
+                 * - room
+                 */
+				const subjectName = timetableEntry.subject;
+
+				let scCourse = statsClass.courses[subjectName];
+				if (scCourse === undefined) {
+					const courseName = `${subjectName} ${scClass.name}`;
+					this.logInfo(`Handle ${courseName}\n`);
+					const scCourses = await courseService.find({
+						query: {
+							name: courseName,
+							classIds: scClass._id,
+							schoolId: school._id,
+						},
+						paginate: false,
+					});
+
+					scCourse = scCourses[0];
+					if (scCourse === undefined) {
+						times[subjectName] = [];
+						
+						statsClass.courses[subjectName] = {
+							missing: true,
+							name: subjectName,
+						};
+					} else {
+						times[subjectName] = [];
+
+						statsClass.courses[subjectName] = {
+							missing: false,
+							name: subjectName,
+						};
+					}
+				}
+
+				const newEntry = {
+					weekday: this.getWeekDay(timetableEntry.date),
+					startTime: this.getStartTime(timetableEntry.startTime),
+					duration: this.getDuration(timetableEntry.startTime, timetableEntry.endTime),
+					room: timetableEntry.room,
+					count: 1,
+				};
+				let entryFound = false;
+				for (const givenEntry of times[subjectName]) {
+					if (givenEntry.weekday === newEntry.weekday
+                        && givenEntry.startTime === newEntry.startTime
+                        && givenEntry.duration === newEntry.duration
+                        && givenEntry.room === newEntry.room) {
+						givenEntry.count += 1;
+						entryFound = true;
+					}
+				}
+				if (!entryFound) {
+					times[subjectName].push(newEntry);
+				}
+			}
+
+			for (const courseName in statsClass.courses) {
+				if ({}.hasOwnProperty.call(statsClass.courses, courseName)) {
+					const statsCourse = statsClass.courses[courseName];
+					const courseTimes = times[courseName];
+					// Update times, considered are events that occurs at least twice a year
+					statsCourse.times = courseTimes.filter(entry => entry.count >= 2).map(entry => ({
 						weekday: entry.weekday,
 						startTime: entry.startTime,
 						duration: entry.duration,
