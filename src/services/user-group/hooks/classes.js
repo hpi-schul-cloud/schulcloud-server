@@ -65,9 +65,8 @@ const sortByDisplayName = (hook) => {
 };
 
 const saveSuccessor = async (context) => {
-	const data = context.result.data || context.result;
 	if (context.data.predecessor) {
-		await context.app.service('classes').patch(context.data.predecessor, { successor: data._id });
+		await context.app.service('classes').patch(context.data.predecessor, { successor: context.result._id });
 	}
 	return context;
 };

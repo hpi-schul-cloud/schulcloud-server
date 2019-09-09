@@ -87,7 +87,7 @@ const classSchema = getUserGroupSchema({
 		max: 13,
 	},
 	ldapDN: { type: String },
-	successor: { type: String },
+	successor: { type: Schema.Types.ObjectId, ref: 'classes' },
 });
 
 classSchema.plugin(require('mongoose-lean-virtuals'));
