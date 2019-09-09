@@ -126,7 +126,9 @@ const addStats = (hook) => {
 
 				const NumberOfGradedUsers = gradedSubmissions.map(e => (e.courseGroupId ? ((e.courseGroupId.userIds || []).length || 1) : ((e.teamMembers || []).length || 1))).reduce((a, b) => a + b, 0);
 				const submissionPerc = (NumberOfCourseMembers != 0) ? (NumberOfUsersWithSubmission / NumberOfCourseMembers) * 100 : 0;
-				const gradePerc = (NumberOfCourseMembers != 0) ? (NumberOfGradedUsers / NumberOfCourseMembers) * 100 : 0;
+				const gradePerc = (NumberOfCourseMembers !== 0)
+					? (NumberOfGradedUsers / NumberOfCourseMembers) * 100 
+					: 0;
 
 				c.stats = {
 					userCount: ((c.courseId || {}).userIds || []).length,
