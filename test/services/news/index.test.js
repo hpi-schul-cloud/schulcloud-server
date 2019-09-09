@@ -802,6 +802,21 @@ describe('news service', () => {
 				expect(await News.count({ schoolId })).to.equal(1);
 			});
 
+			it('should enable administrators to create school news', async () => {
+				const schoolId = (await createTestSchool())._id;
+				expect(await News.count({ schoolId })).to.equal(0);
+				const user = await createTestUser({ schoolId, roles: 'administrator' });
+				const params = await generateRequestParamsFromUser(user);
+				const result = await newsService.create({
+					schoolId,
+					title: 'admin news',
+					content: 'content from an admin',
+				}, params);
+				expect(result).to.not.equal(undefined);
+				expect(result._id).to.not.equal(undefined);
+				expect(await News.count({ schoolId })).to.equal(1);
+			});
+
 			it('should not allow news creation if the permission NEWS_CREATE is not set', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
