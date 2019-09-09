@@ -44,7 +44,7 @@
     "@feathersjs/feathers": "^3.3.1",
     "@feathersjs/socketio": "^3.2.9",
     "async": "^2.6.3",
-    "aws-sdk": "^2.306.0",
+    "aws-sdk": "^2.525.0",
     "bcryptjs": "latest",
     "body-parser": "^1.15.2",
     "chai": "^4.2.0",
