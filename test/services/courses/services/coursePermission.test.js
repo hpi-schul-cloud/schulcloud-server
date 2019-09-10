@@ -7,39 +7,15 @@ const testObjects = require('../../helpers/testObjects')(app);
 const coursePermissionService = app.service('/courses/:scopeId/userPermissions');
 
 describe('PermissionService', async () => {
-	const userPermissions = [
-		'BASE_VIEW',
-		'DASHBOARD_VIEW',
+	const studentPermissions = [
+		'COURSE_VIEW',
 		'TOOL_VIEW',
-		'PASSWORD_EDIT',
-		'FOLDER_DELETE',
-		'FOLDER_CREATE',
-		'FILE_DELETE',
-		'FILE_CREATE',
-		'FILE_MOVE',
-		'ACCOUNT_EDIT',
-		'CALENDAR_VIEW',
-		'CALENDAR_EDIT',
-		'CALENDAR_CREATE',
-		'FEDERALSTATE_VIEW',
-		'HELPDESK_CREATE',
-		'TOPIC_VIEW',
-		'LINK_CREATE',
 		'NEWS_VIEW',
-		'NOTIFICATION_VIEW',
-		'NOTIFICATION_EDIT',
-		'NOTIFICATION_CREATE',
-		'PWRECOVERY_VIEW',
-		'PWRECOVERY_EDIT',
-		'PWRECOVERY_CREATE',
-		'RELEASES_VIEW',
 		'ROLE_VIEW',
 		'USERGROUP_VIEW',
 		'COURSEGROUP_CREATE',
 		'COURSEGROUP_EDIT',
-		'SYSTEM_VIEW',
-		'USER_VIEW',
-		'USER_EDIT',
+		'LESSONS_VIEW',
 		'HOMEWORK_VIEW',
 		'COMMENTS_VIEW',
 		'COMMENTS_CREATE',
@@ -50,30 +26,20 @@ describe('PermissionService', async () => {
 		'FILESTORAGE_VIEW',
 		'FILESTORAGE_EDIT',
 		'FILESTORAGE_CREATE',
+		'FILESTORAGE_REMOVE',
 		'CONTENT_VIEW',
 		'CONTENT_NON_OER_VIEW',
-		'FILESTORAGE_REMOVE',
-		'TEAM_VIEW',
-		'TEAM_EDIT',
-		'TEAM_CREATE',
 	];
 
-	const studentPermissions = [...userPermissions];
-
 	const teacherPermissions = [
-		'ACCOUNT_CREATE',
+		'COURSE_CREATE',
 		'COURSE_EDIT',
-		'HOMEWORK_EDIT',
+		'COURSE_DELETE',
 		'HOMEWORK_CREATE',
-		'LESSONS_VIEW',
+		'HOMEWORK_EDIT',
+		'LESSONS_CREATE',
 		'NEWS_CREATE',
 		'NEWS_EDIT',
-		'SCHOOL_NEWS_EDIT',
-		'STUDENT_CREATE',
-		'STUDENT_DELETE',
-		'STUDENT_SKIP_REGISTRATION',
-		'SUBMISSIONS_SCHOOL_VIEW',
-		'TEACHER_CREATE',
 		'TOOL_CREATE',
 		'TOOL_EDIT',
 		'TOOL_NEW_VIEW',
@@ -82,8 +48,24 @@ describe('PermissionService', async () => {
 		'USER_CREATE',
 		'USERGROUP_CREATE',
 		'USERGROUP_EDIT',
-		'TEAM_INVITE_EXTERNAL',
-		...userPermissions,
+		...studentPermissions,
+	];
+
+	const substitutionTeacherPermissions = [
+		'HOMEWORK_CREATE',
+		'HOMEWORK_EDIT',
+		'LESSONS_CREATE',
+		'NEWS_CREATE',
+		'NEWS_EDIT',
+		'TOOL_CREATE',
+		'TOOL_EDIT',
+		'TOOL_NEW_VIEW',
+		'TOPIC_CREATE',
+		'TOPIC_EDIT',
+		'USER_CREATE',
+		'USERGROUP_CREATE',
+		'USERGROUP_EDIT',
+		...studentPermissions,
 	];
 
 	let course;
@@ -97,7 +79,7 @@ describe('PermissionService', async () => {
 			firstName: 'Hans',
 			lastName: 'Wurst',
 			email: 'H.Wurst@spass.toll',
-			roles: ['0000d186816abba584714c99'],
+			roles: ['student'],
 			schoolId,
 		});
 		userIds.push(studentOne._id.toString());
@@ -106,7 +88,7 @@ describe('PermissionService', async () => {
 			firstName: 'Karla',
 			lastName: 'Hansen',
 			email: 'karla-hansen@spass.toll',
-			roles: ['0000d186816abba584714c99'],
+			roles: ['student'],
 			schoolId,
 		});
 		userIds.push(studentTwo._id.toString());
@@ -115,7 +97,7 @@ describe('PermissionService', async () => {
 			firstName: 'Dorote',
 			lastName: 'Musterfrau',
 			email: 'Dorote@spass.toll',
-			roles: ['0000d186816abba584714c98'],
+			roles: ['teacher'],
 			schoolId,
 		});
 		teacherIds.push(teacher._id.toString());
@@ -124,7 +106,7 @@ describe('PermissionService', async () => {
 			firstName: 'Karl',
 			lastName: 'Musterfrau',
 			email: 'k.Musterfrau@spass.toll',
-			roles: ['0000d186816abba584714c98'],
+			roles: ['teacher'],
 			schoolId,
 		});
 		substitutionIds.push(substitution._id);
@@ -146,7 +128,8 @@ describe('PermissionService', async () => {
 	it('registered the service', () => {
 		expect(coursePermissionService).to.not.equal(undefined);
 	});
-	it('request as user', async () => {
+
+	it('request as student', async () => {
 		const permissions = await coursePermissionService.find({
 			route: {
 				scopeId: course._id,
@@ -188,7 +171,7 @@ describe('PermissionService', async () => {
 
 		});
 
-		expect(permissions[substitutionIds[0]]).to.have.members(teacherPermissions);
+		expect(permissions[substitutionIds[0]]).to.have.members(substitutionTeacherPermissions);
 	});
 
 	it('request as not part of the course', async () => {
