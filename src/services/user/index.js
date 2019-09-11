@@ -55,6 +55,7 @@ module.exports = function setup() {
 			default: 500,
 			max: 5000,
 		},
+		lean: true,
 	}));
 	const registrationPinService = app.service('/registrationPins');
 	registrationPinService.hooks(registrationPinsHooks);
