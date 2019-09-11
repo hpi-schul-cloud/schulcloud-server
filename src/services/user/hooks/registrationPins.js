@@ -4,8 +4,8 @@ const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
 
-const removeOldPins = hook => pinModel.deleteMany({ email: hook.data.email })
-	.then(pins => Promise.resolve(hook));
+const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
+	.then((pins) => Promise.resolve(hook));
 
 const generatePin = (hook) => {
 	const pin = Math.floor((Math.random() * 8999) + 1000);
@@ -75,7 +75,7 @@ const returnPinOnlyToSuperHero = async (hook) => {
 	if (((hook.params || {}).account || {}).userId) {
 		const userService = hook.app.service('/users/');
 		const currentUser = await userService.get(hook.params.account.userId, { query: { $populate: 'roles' } });
-		const userRoles = currentUser.roles.map(role => role.name);
+		const userRoles = currentUser.roles.map((role) => role.name);
 		if (userRoles.includes('superhero')) {
 			return Promise.resolve(hook);
 		}

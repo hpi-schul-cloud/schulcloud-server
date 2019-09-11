@@ -87,7 +87,7 @@ const removeObjectIdInData = (context) => {
 	return context;
 };
 
-const displayInternRequests = level => (context) => {
+const displayInternRequests = (level) => (context) => {
 	if (context.params.provider === 'rest') {
 		return context;
 	}

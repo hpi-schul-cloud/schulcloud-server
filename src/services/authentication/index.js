@@ -26,7 +26,8 @@ const authenticationSecret = (secrets.authentication) ? secrets.authentication :
 module.exports = function () {
 	const app = this;
 
-	const authConfig = Object.assign({}, app.get('auth'), {
+	const authConfig = {
+		...app.get('auth'),
 		header: 'Authorization',
 		entity: 'account',
 		service: 'accounts',
@@ -39,7 +40,7 @@ module.exports = function () {
 			expiresIn: '30d',
 		},
 		secret: authenticationSecret,
-	});
+	};
 
 
 	const localConfig = {

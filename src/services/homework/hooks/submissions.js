@@ -31,7 +31,7 @@ const filterRequestedSubmissions = (hook) => {
 						];
 					}
 				});
-			}).catch(err => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach users service" })));
+			}).catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach users service" })));
 		}
 	}
 	return hook;
@@ -43,7 +43,7 @@ const filterApplicableSubmissions = (hook) => {
 		Promise.all(data.filter((e) => {
 			const c = JSON.parse(JSON.stringify(e));
 			if (typeof c.teamMembers[0] === 'object') {
-				c.teamMembers = c.teamMembers.map(e => e._id); // map teamMembers list to _id list (if $populate(d) is used)
+				c.teamMembers = c.teamMembers.map((e) => e._id); // map teamMembers list to _id list (if $populate(d) is used)
 			}
 
 			let promise;
@@ -64,10 +64,10 @@ const filterApplicableSubmissions = (hook) => {
 				} if (c.homeworkId.courseId) {
 					const courseService = hook.app.service('/courses');
 					return courseService.get(c.homeworkId.courseId)
-						.then(course => ((course || {}).teacherIds || []).includes(hook.params.account.userId.toString()) // or user is teacher
+						.then((course) => ((course || {}).teacherIds || []).includes(hook.params.account.userId.toString()) // or user is teacher
                                 || ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString()), // or user is substitution teacher
 						)
-						.catch(err => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach course service" })));
+						.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach course service" })));
 				}
 				return false;
 			});
@@ -112,7 +112,7 @@ const insertSubmissionData = (hook) => {
 
 				return Promise.resolve(hook);
 			})
-			.catch(err => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
+			.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
 	}
 	return Promise.resolve(hook);
 };
@@ -133,7 +133,7 @@ const insertHomeworkData = (hook) => {
 				}
 				return Promise.resolve(hook);
 			})
-			.catch(err => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service" })));
+			.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service" })));
 	}
 	return Promise.reject(new errors.BadRequest());
 };
@@ -150,7 +150,7 @@ const insertSubmissionsData = (hook) => {
 		hook.data.submissions = submissions.data;
 		return Promise.resolve(hook);
 	})
-		.catch(err => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
+		.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
 };
 
 const preventNoTeamMember = (hook) => {
@@ -178,7 +178,7 @@ const setTeamMembers = (hook) => {
 
 const noSubmissionBefore = (hook) => {
 	// check that no one has already submitted for the current User
-	const submissionsForMe = hook.data.submissions.filter(submission => // is there an submission for the current user?
+	const submissionsForMe = hook.data.submissions.filter((submission) => // is there an submission for the current user?
 		(submission.teamMembers.includes(hook.params.account.userId))
             || ((submission.studentId || {})._id == hook.params.account.userId));
 	if (submissionsForMe.length > 0) {
@@ -194,7 +194,7 @@ const noDuplicateSubmissionForTeamMembers = (hook) => {
 		// check if a teamMember submitted a solution on his own => display names
 		let newTeamMembers = hook.data.teamMembers;
 		if (hook.data.submission) {
-			newTeamMembers = newTeamMembers.filter(teamMember => !hook.data.submission.teamMembers.includes(teamMember.toString()));
+			newTeamMembers = newTeamMembers.filter((teamMember) => !hook.data.submission.teamMembers.includes(teamMember.toString()));
 		}
 
 		let toRemove = '';

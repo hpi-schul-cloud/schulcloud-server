@@ -38,7 +38,7 @@ describe('General login service', () => {
 		})
 		.then(([system, testUser]) => {
 			testSystem = system;
-			return testObjects.createTestAccount(Object.assign({}, testAccount), system, testUser);
+			return testObjects.createTestAccount({ ...testAccount }, system, testUser);
 		}));
 
 	it('should get a JWT which includes accountId and userId', () => new Promise((resolve, reject) => {

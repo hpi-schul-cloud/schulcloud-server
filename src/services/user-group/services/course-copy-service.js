@@ -17,7 +17,7 @@ const createHomework = (
 	newTeacherId,
 ) => app.service('homework/copy').create({
 	_id: homework._id, courseId, lessonId, userId, newTeacherId,
-}).then(res => res).catch(err => Promise.reject(err));
+}).then((res) => res).catch((err) => Promise.reject(err));
 
 const createLesson = (app, data) => app.service('lessons/copy').create(data);
 
@@ -72,7 +72,7 @@ class CourseCopyService {
 			throw new GeneralError('Can not fetch data to copy this course.', err);
 		});
 
-		await Promise.all(lessons.map(lesson => createLesson(this.app, {
+		await Promise.all(lessons.map((lesson) => createLesson(this.app, {
 			lessonId: lesson._id,
 			newCourseId: res._id,
 			userId: params.account.userId,
@@ -115,7 +115,7 @@ class CourseShareService {
 	// If provided with param shareToken then return course name
 	find(params) {
 		return courseModel.findOne({ shareToken: params.query.shareToken })
-			.then(course => course.name);
+			.then((course) => course.name);
 	}
 
 	// otherwise create a shareToken for given courseId and the respective lessons.
@@ -140,7 +140,7 @@ class CourseShareService {
 						});
 
 					return coursesService.patch(id, { shareToken: nanoid(12) })
-						.then(res => ({ shareToken: res.shareToken }));
+						.then((res) => ({ shareToken: res.shareToken }));
 				}
 
 				return { shareToken: course.shareToken };
@@ -187,8 +187,8 @@ class CourseShareService {
 						tempCourse.userId = userId;
 
 						return copyService.create(tempCourse)
-							.then(res => res)
-							.catch(err => err);
+							.then((res) => res)
+							.catch((err) => err);
 					});
 			});
 	}

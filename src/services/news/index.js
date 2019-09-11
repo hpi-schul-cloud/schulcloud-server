@@ -72,20 +72,20 @@ class AbstractService {
 				},
 				paginate: false,
 			});
-			return scopeItems.map(item => ({
+			return scopeItems.map((item) => ({
 				targetModel: scope,
 				target: item._id,
 			}));
 		});
 		const results = await Promise.all(ops);
-		return flatten(results.filter(r => r !== null));
+		return flatten(results.filter((r) => r !== null));
 	}
 
 	/* Permissions */
 
 	async getPermissions(userId, { target, targetModel, schoolId } = {}) {
 		// target and school might be populated or not
-		const isObjectId = o => o instanceof ObjectId || typeof o === 'string';
+		const isObjectId = (o) => o instanceof ObjectId || typeof o === 'string';
 		// scope case: user role in scope must have given permission
 		if (target && targetModel) {
 			const targetId = isObjectId(target) ? target.toString() : target._id.toString();
@@ -194,7 +194,7 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	static decorateResults(result) {
-		const decorate = n => ({
+		const decorate = (n) => ({
 			...n,
 			school: n.schoolId,
 			schoolId: (n.schoolId || {})._id,
@@ -221,7 +221,7 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async decoratePermissions(result, userId) {
-		const decorate = async n => ({
+		const decorate = async (n) => ({
 			...n,
 			permissions: await this.getPermissions(userId, {
 				target: (n.target || {})._id,
@@ -287,7 +287,7 @@ class NewsService extends AbstractService {
 				));
 			}
 		}
-		return flatten(query.filter(q => q !== null));
+		return flatten(query.filter((q) => q !== null));
 	}
 
 	/**
@@ -316,7 +316,7 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async find(params) {
-		const query = Object.assign({}, { $paginate: DEFAULT_PAGINATION_OPTIONS }, params.query);
+		const query = { $paginate: DEFAULT_PAGINATION_OPTIONS, ...params.query };
 		const now = Date.now();
 		// based on params.unpublished divide between view published news and unpublished news with edit permission
 		const baseFilter = {
@@ -350,7 +350,7 @@ class NewsService extends AbstractService {
 		return this.app.service('newsModel')
 			.find(internalRequestParams)
 			.then(NewsService.decorateResults)
-			.then(result => this.decoratePermissions(result, params.account.userId));
+			.then((result) => this.decoratePermissions(result, params.account.userId));
 	}
 
 	/**
