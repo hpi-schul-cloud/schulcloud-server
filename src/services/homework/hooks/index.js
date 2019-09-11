@@ -129,7 +129,7 @@ const addStats = (hook) => {
 					? (NumberOfUsersWithSubmission / NumberOfCourseMembers) * 100
 					: 0;
 				const gradePerc = (NumberOfCourseMembers !== 0)
-					? (NumberOfGradedUsers / NumberOfCourseMembers) * 100 
+					? (NumberOfGradedUsers / NumberOfCourseMembers) * 100
 					: 0;
 
 				c.stats = {
