@@ -4,7 +4,6 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const mongooseHistory = require('mongoose-history');
 
 const { Schema } = mongoose;
 
@@ -33,8 +32,6 @@ const consentSchema = new Schema({
 		termsOfUseConsent: { type: Boolean },
 	}],
 });
-
-consentSchema.plugin(mongooseHistory);
 
 const consentTypes = {
 	PRIVACY: 'privacy',
