@@ -320,7 +320,7 @@ describe('courses scopelist service integration', () => {
 			expect(err.name).to.equal('Forbidden');
 			expect(err.message).to.equal('Requested and requesting userIds do not match.');
 		}
-	});
+	}).timeout(4000);
 
 	it('succeeds for authenticated user', async () => {
 		const user = await testObjects.createTestUser();
@@ -336,7 +336,7 @@ describe('courses scopelist service integration', () => {
 		expect(response.total).to.equal(1);
 		expect(response.data).to.not.equal(undefined);
 		expect(response.data[0]._id.toString()).to.equal(course._id.toString());
-	});
+	}).timeout(4000);
 
 	afterEach(testObjects.cleanup);
 });
