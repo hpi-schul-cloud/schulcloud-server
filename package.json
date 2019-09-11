@@ -113,6 +113,6 @@
     "nodemailer-mock": "^1.1.10",
     "nyc": "^14.1.1",
     "nodemon": "^1.19.1",
-    "simple-oauth2": "^2.2.1"
+    "simple-oauth2": "^2.3.0"
   }
 }
