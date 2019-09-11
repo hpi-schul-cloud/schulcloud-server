@@ -4,6 +4,7 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -34,6 +35,7 @@ const lessonSchema = new Schema({
 	timestamps: true,
 });
 
+enableAuditLog(lessonSchema);
 const lessonModel = mongoose.model('lesson', lessonSchema);
 
 module.exports = lessonModel;

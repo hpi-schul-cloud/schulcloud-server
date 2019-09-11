@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+const { enableAuditLog } = require('../../utils/database');
 const { Schema } = mongoose;
 const idValidator = require('mongoose-id-validator');
 const uuid = require('uuid/v4');
@@ -13,5 +14,6 @@ const Pseudonym = new Schema({
 });
 
 Pseudonym.plugin(idValidator);
+enableAuditLog(Pseudonym);
 
 module.exports = mongoose.model('Pseudonym', Pseudonym);

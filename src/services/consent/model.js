@@ -4,6 +4,7 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -32,6 +33,8 @@ const consentSchema = new Schema({
 		termsOfUseConsent: { type: Boolean },
 	}],
 });
+
+enableAuditLog(consentSchema);
 
 const consentTypes = {
 	PRIVACY: 'privacy',

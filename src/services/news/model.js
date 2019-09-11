@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
+const { enableAuditLog } = require('../../utils/database');
+
 const targetModels = ['courses', 'teams', 'class'];
 
 const newsPermissions = {
@@ -64,6 +66,7 @@ const newsSchema = new Schema({
 	},
 });
 
+enableAuditLog(newsSchema);
 const newsModel = mongoose.model('news', newsSchema);
 
 const newsHistoryModel = mongoose.model('newshistory', new Schema({
