@@ -2,11 +2,35 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 
+const mongoose = require('mongoose');
+
+const { Schema } = mongoose;
 const logger = require('../../logger');
 const { version } = require('../../../package.json');
 
 const router = express.Router();
 
+const migrateSchema = new Schema({
+	state: {
+		type: String,
+		required: true,
+	},
+	name: {
+		type: String,
+		required: true,
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now(),
+		required: true,
+	},
+	__v: {
+		type: Number,
+		required: true,
+	},
+});
+
+const migrationModel = mongoose.model('migrations', migrateSchema);
 
 const getLine = (stringArr, i) => {
 	if (stringArr && stringArr.length > i && i >= 0) {
@@ -24,12 +48,14 @@ const getLines = (stringArr, start, end) => {
 	const retValue = [];
 	for (let i = start; i <= end; i += 1) {
 		const line = getLine(stringArr, i);
-		if (line) { retValue.push(line); }
+		if (line) {
+			retValue.push(line);
+		}
 	}
 	return retValue.join('\n');
 };
 
-router.get('/version', (req, res, next) => {
+router.get('/version', async (req, res, next) => {
 	if (!process.env.SHOW_VERSION) {
 		return res.sendStatus(403);
 	}
@@ -37,6 +63,11 @@ router.get('/version', (req, res, next) => {
 	let branch = false;
 	let message = false;
 	let stat = {};
+	const migrations = await migrationModel
+		.find()
+		.lean()
+		.exec();
+
 	try {
 		const filePath = path.join(__dirname, '../../../', 'version');
 		const versionFileLines = fs.readFileSync(filePath, 'utf8').split('\n');
@@ -49,7 +80,12 @@ router.get('/version', (req, res, next) => {
 	}
 	const { birthtime } = stat;
 	return res.json({
-		sha, version, branch, message, birthtime,
+		sha,
+		version,
+		branch,
+		message,
+		birthtime,
+		migrations,
 	});
 });
 
