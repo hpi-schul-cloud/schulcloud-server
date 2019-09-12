@@ -1,7 +1,7 @@
 const socketio = require('@feathersjs/socketio');
 const clipboard = require('./clipboard');
 
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 
 	// configure your socket here
@@ -9,13 +9,15 @@ module.exports = function () {
 	app.configure(clipboard);
 
 	app.configure(socketio((io) => {
+		io.sockets.setMaxListeners(200);
+
 		io.use((socket, next) => {
 			app.passport.authenticate('jwt')(socket.handshake)
 				.then((payload) => {
 					socket.client.userId = payload.data.account.userId;
 					next();
 				})
-				.catch((error) => {
+				.catch(() => {
 					next(new Error('Authentication error'));
 				});
 		});
