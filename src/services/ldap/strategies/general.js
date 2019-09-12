@@ -55,7 +55,10 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 
 		const rawAttributes = [userAttributeNameMapping.uuid];
 
-		const searchString = `${userPathAdditions},${this.config.rootPath}`;
+		const searchString = (userPathAdditions === '')
+			? this.config.rootPath
+			: `${userPathAdditions},${this.config.rootPath}`;
+
 		return this.app.service('ldap').searchCollection(this.config, searchString, options, rawAttributes)
 			.then((data) => {
 				const results = [];

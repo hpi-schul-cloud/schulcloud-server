@@ -13,7 +13,7 @@ module.exports = function setup() {
 			default: 10,
 			max: 25,
 		},
-		lean: true,
+		lean: { virtuals: true },
 	};
 
 	app.use('/roles', service(options));
