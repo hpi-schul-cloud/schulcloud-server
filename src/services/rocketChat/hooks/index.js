@@ -22,12 +22,6 @@ const checkTeam = async (hook) => {
 	return hook;
 };
 
-const ensureCurrentUserInChannel = async (hook) => {
-	await hook.app.service('rocketChat/channel').addUsersToChannel([hook.params.account.userId], hook.id)
-		.catch(err => logger.warning(err));
-	return hook;
-};
-
 const rocketChatUserHooks = {
 	before: {
 		all: [auth.hooks.authenticate('jwt')],
@@ -95,7 +89,7 @@ const rocketChatChannelHooks = {
 	before: {
 		all: [auth.hooks.authenticate('jwt')],
 		find: [hooks.disallow()],
-		get: [checkTeam, globalHooks.ifNotLocal(ensureCurrentUserInChannel)],
+		get: [checkTeam],
 		create: [hooks.disallow()],
 		update: [hooks.disallow()],
 		patch: [hooks.disallow()],
