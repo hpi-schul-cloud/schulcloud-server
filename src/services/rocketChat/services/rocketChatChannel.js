@@ -231,7 +231,7 @@ class RocketChatChannel {
 	}
 
 	/**
-     * returns an existing or new rocketChat channel for a given Team ID
+     * returns an existing or new rocketChat channel for a given Team ID, and ensures validity of the channel first.
      * @param {*} teamId Id of a Team in the schulcloud
      * @param {*} params
      */
