@@ -77,11 +77,6 @@ class RocketChatChannel {
 			});
 	}
 
-	checkRcUserInChannel(user, channelMembers) {
-		const found = channelMembers.find(e => e._id === user.rcId);
-		return !!found;
-	}
-
 	async handleChannelMissingRcSide(err, channel, teamId) {
 		const rcError = err.error.errorType;
 		if (rcError === 'error-room-not-found') {
@@ -97,9 +92,9 @@ class RocketChatChannel {
 		const rcAccount = await this.app.service('/rocketChat/user').get(params.account.userId);
 		const rcChannelMembers = await request(getRequestOptions(
 			`/api/v1/groups.members?roomName=${channel.channelName}`, {}, true, {}, 'GET',
-		)).catch(err => this.handleChannelMissingRcSide(err, channel, teamId));
+		)).catch((err) => this.handleChannelMissingRcSide(err, channel, teamId));
 
-		const inChannel = this.checkRcUserInChannel(rcAccount, rcChannelMembers.members);
+		const inChannel = !!(rcChannelMembers.find((e) => e._id === rcAccount.rcId));
 		if (!inChannel) {
 			const body = {
 				roomName: channel.channelName,
