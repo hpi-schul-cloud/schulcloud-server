@@ -19,18 +19,29 @@ class RocketChatChannel {
 		this.docs = docs;
 	}
 
-	generateChannelName(team) {
+	/**
+	 * generate a unique channel name that doesnt exist on rocket.chat yet, by adding a suffix to the given String.
+	 * @param {String} teamName
+	 */
+	generateChannelName(teamName) {
 		// toDo: implementation with bound execution time.
-		const channelName = makeStringRCConform(`${team.name}.${randomSuffix()}`);
+		const channelName = makeStringRCConform(`${teamName}.${randomSuffix()}`);
 		// toDo: check availibility in rocketChat as well.
 		return channelModel.findOne({ channelName })
 			.then((result) => {
 				if (!result) {
 					return Promise.resolve(channelName);
-				} return this.generateChannelName(team);
+				} return this.generateChannelName(teamName);
 			});
 	}
 
+	/**
+	 * create a channel for a given teamId.
+	 * WARNING: the second parameter should only be used if you are sure that name is not taken!
+	 * @param {ObjectId} teamId
+	 * @param {String} [name] Optional - the channel will be created with this name.
+	 * Will throw an error if name is already used.
+	 */
 	createChannel(teamId, name) {
 		if (teamId === undefined) { throw new BadRequest('Missing data value.'); }
 
@@ -49,7 +60,7 @@ class RocketChatChannel {
 					users.forEach((user) => {
 						if (user.username) userNames.push(user.username);
 					});
-					const channelName = name || await this.generateChannelName(currentTeam);
+					const channelName = name || await this.generateChannelName(currentTeam.name);
 					const body = {
 						name: channelName,
 						members: userNames,
@@ -77,6 +88,12 @@ class RocketChatChannel {
 			});
 	}
 
+	/**
+	 * error handler for requesting the members of a channel, creating the channel anew if it doesnt exist on RC-side.
+	 * @param {Error} err
+	 * @param {Object} channel a channel Document from the sc-database
+	 * @param {ObjectId} teamId
+	 */
 	async handleChannelMissingRcSide(err, channel, teamId) {
 		const rcError = err.error.errorType;
 		if (rcError === 'error-room-not-found') {
@@ -88,8 +105,16 @@ class RocketChatChannel {
 		throw err;
 	}
 
-	async ensureRcChannel(channel, params, teamId) {
-		const rcAccount = await this.app.service('/rocketChat/user').get(params.account.userId);
+	/**
+	 * ensures that
+	 * - the channel exists on rocket.chat side.
+	 * - the user is in the channel on rocket.chat side.
+	 * @param {Object} channel a channel document from the sc-database
+	 * @param {ObjectId} userId
+	 * @param {ObjectId} teamId
+	 */
+	async ensureRcChannel(channel, userId, teamId) {
+		const rcAccount = await this.app.service('/rocketChat/user').get(userId);
 		const rcChannelMembers = await request(getRequestOptions(
 			`/api/v1/groups.members?roomName=${channel.channelName}`, {}, true, {}, 'GET',
 		)).catch((err) => this.handleChannelMissingRcSide(err, channel, teamId));
@@ -105,6 +130,11 @@ class RocketChatChannel {
 		return Promise.resolve();
 	}
 
+	/**
+	 * returns a channel for a given sc-teamId, creating one if it doesnt exist yet.
+	 * @param {ObjectId} teamId
+	 * @param {Object} params
+	 */
 	async getOrCreateRocketChatChannel(teamId, params) {
 		try {
 			let channel = await channelModel.findOne({ teamId });
@@ -113,7 +143,7 @@ class RocketChatChannel {
 					.then(() => channelModel.findOne({ teamId }));
 			}
 			// check that channel exists in rocketchat, and user is part of it.
-			await this.ensureRcChannel(channel, params, teamId);
+			await this.ensureRcChannel(channel, params.account.userId, teamId);
 			return {
 				teamId: channel.teamId,
 				channelName: channel.channelName,
@@ -124,6 +154,11 @@ class RocketChatChannel {
 		}
 	}
 
+	/**
+	 * adds all users in the userIds to the channel belonging to the team given by id.
+	 * @param {Array} userIds array of sc-userIds.
+	 * @param {ObjectId} teamId
+	 */
 	async addUsersToChannel(userIds, teamId) {
 		const rcUserNames = await this.app.service('/rocketChat/user').find({ userIds });
 		const channel = await this.app.service('/rocketChat/channel').get(teamId);
@@ -141,6 +176,11 @@ class RocketChatChannel {
 		return Promise.all(invitationPromises);
 	}
 
+	/**
+	 * removes all users in the userIds from the channel belonging to the sc-team given by id.
+	 * @param {Array} userIds array of sc-userIds.
+	 * @param {ObjectId} teamId
+	 */
 	async removeUsersFromChannel(userIds, teamId) {
 		const rcUserNames = await this.app.service('/rocketChat/user').find({ userIds });
 		const channel = await this.app.service('/rocketChat/channel').get(teamId);
@@ -160,7 +200,7 @@ class RocketChatChannel {
 
 	/**
      * removes the channel belonging to the team given by Id
-     * @param {*} teamId Id of a team in the schulcloud
+     * @param {objectId} teamId Id of a team in the schulcloud
      */
 	static deleteChannel(teamId) {
 		return channelModel.findOne({ teamId })
@@ -176,6 +216,10 @@ class RocketChatChannel {
 			});
 	}
 
+	/**
+	 * archives the channel belonging to a sc-teamId in rocketchat.
+	 * @param {objectId} teamId
+	 */
 	static async archiveChannel(teamId) {
 		const channel = await channelModel.findOne({ teamId });
 		if (channel) {
@@ -184,6 +228,10 @@ class RocketChatChannel {
 		return Promise.resolve();
 	}
 
+	/**
+	 * unarchives the channel belonging to a sc-teamId in rocketchat.
+	 * @param {objectId} teamId
+	 */
 	static async unarchiveChannel(teamId) {
 		const channel = await channelModel.findOne({ teamId });
 		if (channel) {
@@ -192,6 +240,10 @@ class RocketChatChannel {
 		return Promise.resolve();
 	}
 
+	/**
+	 * synchronizes channel moderators between rocketchat and schulcloud, for a give teamId.
+	 * @param {objectId} teamId
+	 */
 	async synchronizeModerators(teamId) {
 		try {
 			const team = await this.app.service('teams').get(teamId);
