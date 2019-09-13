@@ -360,7 +360,8 @@ const pushRemoveEvent = (hook) => {
 
 const enforceRoleHierarchyOnDelete = async (hook) => {
 	try {
-		if (globalHooks.hasRoleNoHook(hook, hook.params.account.userId, 'superhero')) return hook;
+		const userIsSuperhero = await globalHooks.hasRoleNoHook(hook, hook.params.account.userId, 'superhero');
+		if (userIsSuperhero) return hook;
 
 		const [targetIsStudent, targetIsTeacher, targetIsAdmin] = await Promise.all([
 			globalHooks.hasRoleNoHook(hook, hook.id, 'student'),
@@ -386,7 +387,7 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 		return hook;
 	} catch (error) {
 		logger.error(error);
-		return Promise.reject();
+		throw new errors.Forbidden('you dont have permission to delete this user!');
 	}
 };
 
