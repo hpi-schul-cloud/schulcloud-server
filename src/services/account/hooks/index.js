@@ -53,6 +53,7 @@ const validateCredentials = (hook) => {
 		.then((client) => {
 			if (client.token) {
 				hook.data.token = client.token;
+				hook.data.activated = true;
 			}
 			return hook;
 		});
