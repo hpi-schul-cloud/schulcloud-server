@@ -7,7 +7,7 @@ const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 
 
-describe('homework service', function () {
+describe('homework service', function test() {
 	this.timeout(10000);
 
 	it('registered the homework service', () => {

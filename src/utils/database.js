@@ -35,22 +35,10 @@ function getConnectionOptions() {
 		DB_PASSWORD,
 	} = process.env;
 
-	// set default options
-	const options = {
-		useMongoClient: true,
-	};
-
-	addAuthenticationToOptions(
-		DB_USERNAME,
-		DB_PASSWORD,
-		options,
-	);
-
 	return {
 		url: DB_URL,
 		username: DB_USERNAME,
 		password: DB_PASSWORD,
-		...options,
 	};
 }
 
@@ -63,9 +51,20 @@ function connect() {
 		options.username ? `with username ${options.username}` : 'without user',
 		options.password ? 'and' : 'and without', 'password');
 
+	// initialize mongoose
+	const mongooseOptions = {
+		useMongoClient: true,
+	};
+
+	addAuthenticationToOptions(
+		options.username,
+		options.password,
+		mongooseOptions,
+	);
+
 	return mongoose.connect(
 		options.url,
-		options,
+		mongooseOptions,
 	);
 }
 
