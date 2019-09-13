@@ -94,8 +94,8 @@ class RocketChatChannel {
 			`/api/v1/groups.members?roomName=${channel.channelName}`, {}, true, {}, 'GET',
 		)).catch((err) => this.handleChannelMissingRcSide(err, channel, teamId));
 
-		const inChannel = !!(rcChannelMembers.find((e) => e._id === rcAccount.rcId));
-		if (!inChannel) {
+		const userInChannel = !!(rcChannelMembers.find((e) => e._id === rcAccount.rcId));
+		if (!userInChannel) {
 			const body = {
 				roomName: channel.channelName,
 				userId: rcAccount.rcId,
