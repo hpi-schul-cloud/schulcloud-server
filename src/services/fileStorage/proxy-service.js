@@ -644,6 +644,7 @@ const newFileService = {
 		}, params)
 			.then((signedUrl) => {
 				const headers = signedUrl.header;
+				if (signedUrl instanceof Error) throw new GeneralError('No file service available.');
 				if (process.env.KEEP_ALIVE) {
 					headers.Connection = 'Keep-Alive';
 				}
