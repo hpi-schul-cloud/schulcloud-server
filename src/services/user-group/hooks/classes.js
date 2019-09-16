@@ -41,7 +41,7 @@ exports.before = {
 exports.after = {
 	all: [],
 	find: [],
-	get: [,
+	get: [
 		globalHooks.ifNotLocal(
 			globalHooks.denyIfNotCurrentSchool({
 				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',

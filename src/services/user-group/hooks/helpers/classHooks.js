@@ -8,7 +8,6 @@ const prepareGradeLevelUnset = (context) => {
 };
 
 const sortByGradeAndOrName = (context) => {
-	console.log('laskmflkasmfkasmflkasmflaslfm');
 	const defaultQuery = { gradeLevel: 1, name: 1 };
 	if (!context.params
 	|| !context.params.query
