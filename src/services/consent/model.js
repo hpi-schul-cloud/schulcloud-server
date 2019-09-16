@@ -5,6 +5,7 @@
 
 const mongoose = require('mongoose');
 const { enableAuditLog } = require('../../utils/database');
+const mongooseHistory = require('mongoose-history');
 
 const { Schema } = mongoose;
 
@@ -35,6 +36,7 @@ const consentSchema = new Schema({
 });
 
 enableAuditLog(consentSchema);
+consentSchema.plugin(mongooseHistory);
 
 const consentTypes = {
 	PRIVACY: 'privacy',
