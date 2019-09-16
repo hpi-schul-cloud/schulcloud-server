@@ -84,6 +84,62 @@ describe('classes service', () => {
 			expect(data[0]._id.toString()).to.equal(classes[0]._id.toString());
 		});
 
+		it('should allow students to only find classes they participate in', async () => {
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+
+			const classes = [
+				await testObjects.createTestClass({
+					name: 'C',
+				}),
+				await testObjects.createTestClass({
+					name: 'B',
+				}),
+				await testObjects.createTestClass({
+					name: 'A',
+				}),
+			];
+
+			const params = {
+				query: {},
+				...await generateRequestParamsFromUser(admin),
+			};
+			const { data } = await classesService.find(params);
+			expect(data.length).to.equal(3);
+			expect(data[0].displayName).to.equal(classes[2].displayName);
+			expect(data[1].displayName).to.equal(classes[1].displayName);
+			expect(data[2].displayName).to.equal(classes[0].displayName);
+		});
+
+		it('should allow students to only find classes they participate in', async () => {
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+
+			const classes = [
+				await testObjects.createTestClass({
+					name: 'C',
+					gradeLevel: 2,
+				}),
+				await testObjects.createTestClass({
+					name: 'B',
+					gradeLevel: 9,
+				}),
+				await testObjects.createTestClass({
+					name: 'A',
+					gradeLevel: 7,
+				}),
+			];
+
+			const params = {
+				query: {},
+				...await generateRequestParamsFromUser(admin),
+			};
+			const { data } = await classesService.find(params);
+
+			expect(data.length).to.equal(3);
+			expect(data[0].displayName).to.equal(classes[0].displayName);
+			expect(data[1].displayName).to.equal(classes[2].displayName);
+			expect(data[2].displayName).to.equal(classes[1].displayName);
+		});
+
 		afterEach(testObjects.cleanup);
 	});
 });
