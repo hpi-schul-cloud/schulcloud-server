@@ -157,6 +157,7 @@ describe('news service', () => {
 			it('should respond with an error if a student is trying to access specific unpublished news', async () => {
 				const schoolId = (await createTestSchool())._id;
 				const now = Date.now();
+				const weekInMilSeconds = 604800000; // 1000 * 60 * 60 * 24 * 7
 				const user = await createTestUser({
 					schoolId,
 					roles: 'student',
@@ -174,7 +175,7 @@ describe('news service', () => {
 					content:
 						"I can't access news articles that are not public yet",
 					displayAt:
-						now + 1000 * 60 * 60 * 24 * 7,
+						now + weekInMilSeconds,
 				});
 				const params = await generateRequestParamsFromUser(user);
 
@@ -491,7 +492,7 @@ describe('news service', () => {
 				expect(result.data[2].title).to.equal('3');
 			});
 
-			it('should only return any published news', async () => {
+			it('should only return any published school news', async () => {
 				const schoolId = (await createTestSchool())._id;
 				const now = Date.now();
 				await News.create([
