@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
@@ -257,7 +257,7 @@ const filterToRelated = keys => globalHooks.ifNotLocal((hook) => {
 
 const testIfJWTExist = (context) => {
 	if ((context.params.headers || {}).authorization) {
-		return auth.hooks.authenticate('jwt')(context);
+		return authenticate('jwt')(context);
 	}
 	return context;
 };
@@ -265,7 +265,7 @@ const testIfJWTExist = (context) => {
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
 	// otherwise we cannot get the accounts required for login
-	find: [testIfJWTExist, restrictAccess],
+	find: [testIfJWTExist, globalHooks.ifNotLocal(restrictAccess)],
 	get: [hooks.disallow('external')],
 	create: [
 		sanitizeUsername,
@@ -277,12 +277,12 @@ exports.before = {
 		removePassword,
 	],
 	update: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.hasPermission('ACCOUNT_EDIT'),
 		sanitizeUsername,
 	],
 	patch: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		sanitizeUsername,
 		globalHooks.ifNotLocal(securePatching),
 		protectUserId,
@@ -292,7 +292,7 @@ exports.before = {
 		local.hooks.hashPassword({ passwordField: 'password' }),
 	],
 	remove: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.hasPermission('ACCOUNT_CREATE'),
 		globalHooks.permitGroupOperation,
 	],

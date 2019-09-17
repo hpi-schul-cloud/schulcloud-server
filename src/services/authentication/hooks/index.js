@@ -1,15 +1,24 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 
-const injectUserId = (hook) => {
-	const { accountId } = hook.params.payload;
-	return hook.app.service('/accounts').get(accountId).then((account) => {
-		if (account.userId) {
-			hook.params.payload.userId = account.userId;
+const injectUserId = (context) => {
+	const { systemId, username } = context.data;
+	return context.app.service('/accounts').find({
+		query: {
+			username,
+			systemId,
+		},
+		paginate: false,
+	}).then(([account]) => {
+		if (account) {
+			context.params.payload = {};
+			if (account.userId) {
+				context.params.payload.userId = account.userId;
+			}
+			if (account.systemId) {
+				context.params.payload.systemId = account.systemId;
+			}
 		}
-		if (account.systemId) {
-			hook.params.payload.systemId = account.systemId;
-		}
-		return hook;
+		return context;
 	});
 };
 
@@ -21,7 +30,7 @@ const lowerCaseUsername = (hook) => {
 };
 
 const populateResult = (hook) => {
-	hook.result.userId = hook.params.account.userId; // required by event listeners
+	hook.result.userId = hook.result.account.userId; // required by event listeners
 	return hook;
 };
 
@@ -34,13 +43,11 @@ const isActivated = (account) => {
 exports.before = {
 	create: [
 		lowerCaseUsername,
-		auth.hooks.authenticate(['local', 'jwt', 'ldap', 'iserv', 'moodle']),
 		injectUserId,
+		(context) => { delete context.params.provider; return context; },
 		// isActivated,
 	],
-	remove: [
-		auth.hooks.authenticate('jwt'),
-	],
+	remove: [(context) => { delete context.params.provider; return context; }],
 };
 
 exports.after = {
