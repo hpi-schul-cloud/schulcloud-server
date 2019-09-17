@@ -22,6 +22,7 @@ describe.only('datasources hooks', () => {
 			const result = fut({
 				data: {
 					config: { type: 'csv', otherconfigdata: 'here is more stuff' },
+					name: `validationTest${Date.now()}`,
 					invalidContent: 'this shouldnt be here',
 					schoolId: admin.schoolId,
 				},
@@ -35,6 +36,7 @@ describe.only('datasources hooks', () => {
 			expect(result.data.invalidContent).to.be.undefined;
 			expect(result.data.createdBy.toString()).to.equal(admin._id.toString());
 			expect(result.data.schoolId.toString()).to.equal(admin.schoolId.toString());
+			expect(result.data.name).to.exist;
 		});
 
 		it('throws when type is missing', async () => {
@@ -43,6 +45,7 @@ describe.only('datasources hooks', () => {
 				const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 				fut({
 					data: {
+						name: `testValidationFail${Date.now()}`,
 						config: { otherconfigdata: 'here is stuff, but no type' },
 						invalidContent: 'this shouldnt be here',
 						schoolId: admin.schoolId,

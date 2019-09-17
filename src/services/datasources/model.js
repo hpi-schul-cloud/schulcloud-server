@@ -3,12 +3,13 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const dataSourceSchema = new Schema({
+	name: { type: String, required: true },
+	config: { type: Object },
+	schoolId: { type: Schema.Types.ObjectId, ref: 'school' },
 	createdBy: { type: Schema.Types.ObjectId, ref: 'user' },
 	updatedBy: { type: Schema.Types.ObjectId, ref: 'user' },
 	lastRun: { type: Date },
 	lastStatus: { type: String, enum: ['Success', 'Warning', 'Error'] },
-	config: { type: Object },
-	schoolId: { type: Schema.Types.ObjectId, ref: 'school' },
 }, { timestamps: true });
 
 const datasourceModel = mongoose.model('datasource', dataSourceSchema);

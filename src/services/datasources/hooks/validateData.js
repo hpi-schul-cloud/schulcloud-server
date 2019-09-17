@@ -5,6 +5,7 @@ module.exports = (context) => {
 		throw new BadRequest('config should contain a type');
 	}
 	context.data = {
+		name: context.data.name,
 		config: context.data.config,
 		schoolId: context.data.schoolId,
 		createdBy: context.params.account.userId,

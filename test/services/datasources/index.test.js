@@ -23,10 +23,15 @@ describe.only('datasources service', () => {
 	it('creates a new datasource', async () => {
 		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await generateRequestParamsFromUser(admin);
-		const result = await datasourcesService.create({ config: { type: 'csv' } }, params);
+		const data = {
+			config: { type: 'csv' },
+			name: `test${Date.now()}`,
+		};
+		const result = await datasourcesService.create(data, params);
 		expect(result).to.not.be.undefined;
 		expect(result.config).to.exist;
 		expect(result.config).to.haveOwnProperty('type');
+		expect(result.name).to.exist;
 		expect(result.createdBy.toString()).to.equal(admin._id.toString());
 		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
 	});
