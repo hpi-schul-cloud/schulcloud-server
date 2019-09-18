@@ -1,8 +1,9 @@
 const auth = require('@feathersjs/authentication');
+const hooks = require('feathers-hooks-common');
 const service = require('feathers-mongoose');
 
 const globalHooks = require('../../hooks');
-const { validateData, updatedBy } = require('./hooks');
+const { validateData, updatedBy, createdBy } = require('./hooks');
 const { datasourceModel/* , datasourceRunModel */ } = require('./model');
 
 module.exports = function setup() {
@@ -27,9 +28,14 @@ module.exports = function setup() {
 			create: [
 				globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_CREATE')),
 				globalHooks.ifNotLocal(validateData),
+				globalHooks.ifNotLocal(createdBy),
 			],
-			update: [globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_EDIT')), updatedBy],
-			patch: [globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_EDIT')), updatedBy],
+			update: [hooks.disallow()],
+			patch: [
+				globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_EDIT')),
+				globalHooks.ifNotLocal(validateData),
+				globalHooks.ifNotLocal(updatedBy),
+			],
 			remove: [globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_DELETE'))],
 		},
 		after: {

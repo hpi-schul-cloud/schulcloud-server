@@ -1,14 +1,16 @@
 const { BadRequest } = require('@feathersjs/errors');
 
 module.exports = (context) => {
-	if (!((context.data || {}).config || {}).type) {
+	if (context.method === 'create' && !(context.data.config)) {
+		throw new BadRequest('this requires a config object.');
+	}
+	if (context.data.config && !context.data.config.type) {
 		throw new BadRequest('config should contain a type');
 	}
-	context.data = {
-		name: context.data.name,
-		config: context.data.config,
-		schoolId: context.data.schoolId,
-		createdBy: context.params.account.userId,
-	};
+	Object.keys(context.data).forEach((key) => {
+		if (!['schoolId', 'name', 'config'].includes(key)) {
+			delete context.data[key];
+		}
+	});
 	return context;
 };
