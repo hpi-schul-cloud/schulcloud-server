@@ -20,7 +20,7 @@ describe.only('datasources service', () => {
 		expect(datasourcesService).to.not.be.undefined;
 	});
 
-	it('creates a new datasource', async () => {
+	it('CREATE a new datasource', async () => {
 		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await generateRequestParamsFromUser(admin);
 		const data = {
@@ -35,4 +35,13 @@ describe.only('datasources service', () => {
 		expect(result.createdBy.toString()).to.equal(admin._id.toString());
 		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
 	});
+
+	it('GET a datasource');
+	it('FIND all datasources of the users school');
+	it('PATCH a datasource');
+	it('UPDATE a datasource');
+	it('REMOVE a datasource');
+	it('fails for student');
+	it('fails for teacher');
+	it('fails for different school');
 });
