@@ -21,27 +21,40 @@ module.exports = function setup() {
 		before: {
 			all: [
 				auth.hooks.authenticate('jwt'),
-				globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
 			],
-			find: [globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_VIEW'))],
+			find: [
+				globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
+				globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_VIEW')),
+			],
 			get: [globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_VIEW'))],
 			create: [
 				globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_CREATE')),
+				globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
 				globalHooks.ifNotLocal(validateData),
 				globalHooks.ifNotLocal(createdBy),
 			],
 			update: [hooks.disallow()],
 			patch: [
+				globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
 				globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_EDIT')),
 				globalHooks.ifNotLocal(validateData),
 				globalHooks.ifNotLocal(updatedBy),
 			],
-			remove: [globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_DELETE'))],
+			remove: [
+				globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
+				globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_DELETE'))
+			],
 		},
 		after: {
 			all: [],
 			find: [],
-			get: [],
+			get: [
+				globalHooks.ifNotLocal(
+					globalHooks.denyIfNotCurrentSchool({
+						errorMessage: 'You do not have valid permissions to access this.',
+					}),
+				),
+			],
 			create: [],
 			update: [],
 			patch: [],

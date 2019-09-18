@@ -134,9 +134,67 @@ describe.only('datasources service', () => {
 		}
 	});
 
-	it('fails for student');
+	it('fails for student', async () => {
+		try {
+			const admin = await testObjects.createTestUser({ roles: ['student'] });
+			const params = await generateRequestParamsFromUser(admin);
+			params.query = {};
+			const data = {
+				config: { type: 'csv' },
+				name: `test${Date.now()}`,
+			};
+			await datasourcesService.create(data, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal("You don't have the permission DATASOURCES_CREATE.");
+		}
+	});
 
-	it('fails for teacher');
+	it('fails for teacher', async () => {
+		try {
+			const admin = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await generateRequestParamsFromUser(admin);
+			params.query = {};
+			const data = {
+				config: { type: 'csv' },
+				name: `test${Date.now()}`,
+			};
+			await datasourcesService.create(data, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal("You don't have the permission DATASOURCES_CREATE.");
+		}
+	});
 
-	it('fails for different school');
+	it('fails for different school', async () => {
+		try {
+			const firstSchool = await testObjects.createTestSchool();
+			const otherSchool = await testObjects.createTestSchool();
+			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: firstSchool._id });
+			const otherAdmin = await testObjects.createTestUser({
+				roles: ['administrator'],
+				schoolId: otherSchool._id,
+			});
+			const adminParams = await generateRequestParamsFromUser(admin);
+			adminParams.query = {};
+			const data = {
+				config: { type: 'csv' },
+				name: `test${Date.now()}`,
+			};
+			const datasource = await datasourcesService.create(data, adminParams);
+
+			const otherAdminParams = await generateRequestParamsFromUser(otherAdmin);
+			otherAdminParams.query = {};
+			await datasourcesService.get(datasource._id, otherAdminParams);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal('You do not have valid permissions to access this.');
+		}
+	});
 });
