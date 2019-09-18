@@ -42,6 +42,7 @@ module.exports = function schoolServices() {
 			default: 500,
 			max: 5000,
 		},
+		lean: true,
 	}));
 	const yearService = app.service('/years');
 	yearService.hooks(hooks);
@@ -53,6 +54,7 @@ module.exports = function schoolServices() {
 			default: 500,
 			max: 5000,
 		},
+		lean: true,
 	}));
 	const gradeLevelService = app.service('/gradeLevels');
 	gradeLevelService.hooks(hooks);
