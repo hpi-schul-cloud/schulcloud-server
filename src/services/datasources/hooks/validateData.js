@@ -1,4 +1,4 @@
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
+const { BadRequest } = require('@feathersjs/errors');
 
 module.exports = (context) => {
 	if (!((context.data || {}).config || {}).type) {

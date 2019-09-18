@@ -2,7 +2,6 @@ const { expect } = require('chai');
 
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
 const { validateData } = require('../../../src/services/datasources/hooks');
 
 describe.only('datasources hooks', () => {
