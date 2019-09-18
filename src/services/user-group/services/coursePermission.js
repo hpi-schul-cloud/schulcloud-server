@@ -21,9 +21,7 @@ const userIsSuperhero = (u) => u.roles.some((role) => role.name === 'superhero')
 /**
  * Setup the userPermissions service for the course scope
  */
-const setup = function setup() {
-	const app = this;
-
+const setup = (app) => {
 	const getPermissions = async (roleName) => {
 		const permissions = await app.service('roles/:roleName/permissions').find({
 			route: {
