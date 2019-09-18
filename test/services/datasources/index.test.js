@@ -96,9 +96,43 @@ describe.only('datasources service', () => {
 		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
 	});
 
-	it('UPDATE a datasource');
+	it('disallow UPDATE on a datasource', async () => {
+		try {
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const params = await generateRequestParamsFromUser(admin);
+			const data = {
+				config: { type: 'csv' },
+				name: `test${Date.now()}`,
+			};
+			const datasource = await datasourcesService.create(data, params);
+			await datasourcesService.update(datasource._id, data, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(405);
+			expect(err.className).to.equal('method-not-allowed');
+		}
+	});
 
-	it('REMOVE a datasource');
+	it('REMOVE a datasource', async () => {
+		try {
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const params = await generateRequestParamsFromUser(admin);
+			params.query = {};
+			const data = {
+				config: { type: 'csv' },
+				name: `test${Date.now()}`,
+			};
+			const datasource = await datasourcesService.create(data, params);
+			const removeResult = await datasourcesService.remove(datasource._id, params);
+			expect(removeResult).to.not.be.undefined;
+			await datasourcesService.get(datasource._id, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(404);
+		}
+	});
 
 	it('fails for student');
 
