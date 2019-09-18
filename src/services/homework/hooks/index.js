@@ -45,8 +45,8 @@ function isTeacher(userId, homework) {
 	const user = userId.toString();
 	let isTeacherCheck = (homework.teacherId.toString() === user);
 	if (!isTeacherCheck && !homework.private) {
-		const isCourseTeacher = homework.courseId.teacherIds.includes(user);
-		const isCourseSubstitution = homework.courseId.substitutionIds.includes(user);
+		const isCourseTeacher = (homework.courseId.teacherIds || []).includes(user);
+		const isCourseSubstitution = (homework.courseId.substitutionIds || []).includes(user);
 		isTeacherCheck = isCourseTeacher || isCourseSubstitution;
 	}
 	return isTeacherCheck;
@@ -125,8 +125,12 @@ const addStats = (hook) => {
 				const NumberOfUsersWithSubmission = validSubmissions.map(e => (e.courseGroupId ? ((e.courseGroupId.userIds || []).length || 1) : ((e.teamMembers || []).length || 1))).reduce((a, b) => a + b, 0);
 
 				const NumberOfGradedUsers = gradedSubmissions.map(e => (e.courseGroupId ? ((e.courseGroupId.userIds || []).length || 1) : ((e.teamMembers || []).length || 1))).reduce((a, b) => a + b, 0);
-				const submissionPerc = (NumberOfUsersWithSubmission / NumberOfCourseMembers) * 100;
-				const gradePerc = (NumberOfGradedUsers / NumberOfCourseMembers) * 100;
+				const submissionPerc = (NumberOfCourseMembers !== 0)
+					? (NumberOfUsersWithSubmission / NumberOfCourseMembers) * 100
+					: 0;
+				const gradePerc = (NumberOfCourseMembers !== 0)
+					? (NumberOfGradedUsers / NumberOfCourseMembers) * 100
+					: 0;
 
 				c.stats = {
 					userCount: ((c.courseId || {}).userIds || []).length,
