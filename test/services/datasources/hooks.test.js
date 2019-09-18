@@ -2,7 +2,7 @@ const { expect } = require('chai');
 
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
-const { validateData } = require('../../../src/services/datasources/hooks');
+const { validateData, updatedBy } = require('../../../src/services/datasources/hooks');
 
 describe.only('datasources hooks', () => {
 	describe('validateData', () => {
@@ -57,6 +57,29 @@ describe.only('datasources hooks', () => {
 				expect(err.code).to.equal(400);
 				expect(err.message).to.equal('config should contain a type');
 			}
+		});
+	});
+
+	describe('updatedBy', () => {
+		let server;
+		before((done) => {
+			server = app.listen(0, done);
+		});
+
+		after((done) => {
+			server.close(done);
+		});
+		it('adds the updatedBy field', async () => {
+			const fut = updatedBy;
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const result = fut({
+				data: {
+					config: { type: 'csv', otherconfigdata: 'here is more stuff' },
+				},
+				params: { account: { userId: admin._id } },
+			});
+			expect(result).to.not.be.undefined;
+			expect(result.data.updatedBy.toString()).to.equal(admin._id.toString());
 		});
 	});
 });
