@@ -36,12 +36,57 @@ describe.only('datasources service', () => {
 		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
 	});
 
-	it('GET a datasource');
-	it('FIND all datasources of the users school');
+	it('GET a datasource', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await generateRequestParamsFromUser(admin);
+		const data = {
+			config: { type: 'csv' },
+			name: `test${Date.now()}`,
+		};
+		const datasource = await datasourcesService.create(data, params);
+		params.query = {};
+		const result = await datasourcesService.get(datasource._id, params);
+		expect(result).to.not.be.undefined;
+		expect(result.config).to.exist;
+		expect(result.config).to.haveOwnProperty('type');
+		expect(result.name).to.exist;
+		expect(result.createdBy.toString()).to.equal(admin._id.toString());
+		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
+	});
+
+	it('FIND all datasources of the users school', async () => {
+		const school = await testObjects.createTestSchool();
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const params = await generateRequestParamsFromUser(admin);
+
+		const datasource01 = await datasourcesService.create({
+			config: { type: 'csv' },
+			name: `onetest${Date.now()}`,
+		}, params);
+		const datasource02 = await datasourcesService.create({
+			config: { type: 'csv' },
+			name: `othertest${Date.now()}`,
+		}, params);
+
+		params.query = {};
+		const result = await datasourcesService.find(params);
+		expect(result).to.not.be.undefined;
+		expect(Array.isArray(result.data)).to.equal(true);
+		expect(result.total).to.equal(2);
+		const Ids = result.data.map((ds) => ds._id.toString());
+		expect(Ids).to.include(datasource01._id.toString());
+		expect(Ids).to.include(datasource02._id.toString());
+	});
+
 	it('PATCH a datasource');
+
 	it('UPDATE a datasource');
+
 	it('REMOVE a datasource');
+
 	it('fails for student');
+
 	it('fails for teacher');
+
 	it('fails for different school');
 });
