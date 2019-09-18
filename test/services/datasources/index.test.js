@@ -78,7 +78,23 @@ describe.only('datasources service', () => {
 		expect(Ids).to.include(datasource02._id.toString());
 	});
 
-	it('PATCH a datasource');
+	it('PATCH a datasource', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await generateRequestParamsFromUser(admin);
+		const data = {
+			config: { type: 'csv' },
+			name: `test${Date.now()}`,
+		};
+		const datasource = await datasourcesService.create(data, params);
+		const name = `renamedTest${Date.now()}`;
+		const result = await datasourcesService.patch(datasource._id, { name }, params);
+		expect(result).to.not.be.undefined;
+		expect(result.config).to.exist;
+		expect(result.config).to.haveOwnProperty('type');
+		expect(result.name).to.equal(name);
+		expect(result.createdBy.toString()).to.equal(admin._id.toString());
+		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
+	});
 
 	it('UPDATE a datasource');
 
