@@ -19,26 +19,25 @@ const buildArchiveQuery = (query) => {
 		({ filter } = query);
 	}
 
-	const oneDayInMilliseconds = 864e5;
+	const yesterday = new Date();
+	yesterday.setDate(yesterday.getDate() - 1);
 	let untilQuery = {};
 	if (filter === 'active') {
 		untilQuery = {
 			$or: [
 				{ untilDate: { $exists: false } },
 				{ untilDate: null },
-				{ untilDate: { $gte: Date.now() - oneDayInMilliseconds } },
+				{ untilDate: { $gte: yesterday } },
 			],
 		};
 	}
 	if (filter === 'archived') {
-		untilQuery = { untilDate: { $lt: Date.now() - oneDayInMilliseconds } };
+		untilQuery = { untilDate: { $lt: yesterday } };
 	}
 	return untilQuery;
 };
 
-module.exports = function setup() {
-	const app = this;
-
+module.exports = (app) => {
 	ScopeListService.initialize(app, '/users/:scopeId/courses', async (user, permissions, params) => {
 		const userQuery = buildUnpreviledgedUserQuery(params.query, user._id);
 		const untilQuery = buildArchiveQuery(params.query);
