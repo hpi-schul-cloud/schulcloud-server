@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const dataSourceSchema = new Schema({
 	name: { type: String, required: true },
-	config: { type: Object },
+	config: { type: Object, required: true },
 	schoolId: { type: Schema.Types.ObjectId, ref: 'school' },
 	createdBy: { type: Schema.Types.ObjectId, ref: 'user' },
 	updatedBy: { type: Schema.Types.ObjectId, ref: 'user' },

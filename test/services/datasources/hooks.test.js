@@ -37,7 +37,26 @@ describe.only('datasources hooks', () => {
 			expect(result.data.name).to.exist;
 		});
 
-		it('requires a config for CREATE');
+		it('requires a config for CREATE', async () => {
+			try {
+				const fut = validateData;
+				const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+				fut({
+					data: {
+						name: `testValidationFail${Date.now()}`,
+						invalidContent: 'this shouldnt be here',
+						schoolId: admin.schoolId,
+					},
+					params: { account: { userId: admin._id } },
+					method: 'create',
+				});
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal('this requires a config object.');
+			}
+		});
 
 		it('throws when type is missing', async () => {
 			try {
