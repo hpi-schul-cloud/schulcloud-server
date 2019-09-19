@@ -42,6 +42,9 @@ const filterApplicableSubmissions = (hook) => {
 	if (hook.params.account) {
 		Promise.all(data.filter((e) => {
 			const c = JSON.parse(JSON.stringify(e));
+			if (!c.teamMembers) {
+				c.teamMembers = [];
+			}
 			if (typeof c.teamMembers[0] === 'object') {
 				c.teamMembers = c.teamMembers.map(e => e._id); // map teamMembers list to _id list (if $populate(d) is used)
 			}
