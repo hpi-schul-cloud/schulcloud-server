@@ -17,7 +17,7 @@ class ScopeService {
 	}
 
 	/**
-     * Will be called by feathers upon initialization of this service.	 *
+     * Will be called by feathers upon initialization of this service.
      * @param {App} app
      * @memberof ScopeService
      */
