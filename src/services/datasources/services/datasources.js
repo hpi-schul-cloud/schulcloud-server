@@ -6,6 +6,9 @@ const { validateData, updatedBy, createdBy } = require('../hooks');
 
 const globalHooks = require('../../../hooks');
 
+/**
+ * the datasources service manages the datasources collection.
+ */
 const datasourceService = service({
 	Model: datasourceModel,
 	paginate: {
