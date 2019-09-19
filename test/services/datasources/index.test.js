@@ -3,6 +3,7 @@ const { expect } = require('chai');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const { datasourceModel } = require('../../../src/services/datasources/model');
 
 const datasourcesService = app.service('datasources');
 
@@ -34,6 +35,7 @@ describe.only('datasources service', () => {
 		expect(result.name).to.exist;
 		expect(result.createdBy.toString()).to.equal(admin._id.toString());
 		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
+		datasourceModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
 	it('GET a datasource', async () => {
@@ -52,6 +54,7 @@ describe.only('datasources service', () => {
 		expect(result.name).to.exist;
 		expect(result.createdBy.toString()).to.equal(admin._id.toString());
 		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
+		datasourceModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
 	it('FIND all datasources of the users school', async () => {
@@ -76,6 +79,8 @@ describe.only('datasources service', () => {
 		const Ids = result.data.map((ds) => ds._id.toString());
 		expect(Ids).to.include(datasource01._id.toString());
 		expect(Ids).to.include(datasource02._id.toString());
+		datasourceModel.deleteOne({ _id: datasource01._id }).lean().exec();
+		datasourceModel.deleteOne({ _id: datasource02._id }).lean().exec();
 	});
 
 	it('PATCH a datasource', async () => {
@@ -94,9 +99,11 @@ describe.only('datasources service', () => {
 		expect(result.name).to.equal(name);
 		expect(result.createdBy.toString()).to.equal(admin._id.toString());
 		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
+		datasourceModel.deleteOne({ _id: datasource._id }).lean().exec();
 	});
 
 	it('disallow UPDATE on a datasource', async () => {
+		let datasource;
 		try {
 			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 			const params = await generateRequestParamsFromUser(admin);
@@ -104,13 +111,14 @@ describe.only('datasources service', () => {
 				config: { type: 'csv' },
 				name: `test${Date.now()}`,
 			};
-			const datasource = await datasourcesService.create(data, params);
+			datasource = await datasourcesService.create(data, params);
 			await datasourcesService.update(datasource._id, data, params);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(405);
 			expect(err.className).to.equal('method-not-allowed');
+			datasourceModel.deleteOne({ _id: datasource }).lean().exec();
 		}
 	});
 
@@ -171,6 +179,7 @@ describe.only('datasources service', () => {
 	});
 
 	it('fails for different school', async () => {
+		let datasource;
 		try {
 			const firstSchool = await testObjects.createTestSchool();
 			const otherSchool = await testObjects.createTestSchool();
@@ -185,7 +194,7 @@ describe.only('datasources service', () => {
 				config: { type: 'csv' },
 				name: `test${Date.now()}`,
 			};
-			const datasource = await datasourcesService.create(data, adminParams);
+			datasource = await datasourcesService.create(data, adminParams);
 
 			const otherAdminParams = await generateRequestParamsFromUser(otherAdmin);
 			otherAdminParams.query = {};
@@ -195,6 +204,7 @@ describe.only('datasources service', () => {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
 			expect(err.message).to.equal('You do not have valid permissions to access this.');
+			datasourceModel.deleteOne({ _id: datasource._id }).lean().exec();
 		}
 	});
 });
