@@ -114,5 +114,13 @@
     "nyc": "^14.1.1",
     "nodemon": "^1.19.1",
     "simple-oauth2": "^2.3.0"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "eslint",
+      "eslint-config-airbnb-base",
+      "eslint-plugin-import",
+      "eslint-plugin-react"
+    ]
   }
 }
