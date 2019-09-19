@@ -42,7 +42,7 @@ module.exports = function setup() {
 			],
 			remove: [
 				globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
-				globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_DELETE'))
+				globalHooks.ifNotLocal(globalHooks.hasPermission('DATASOURCES_DELETE')),
 			],
 		},
 		after: {
