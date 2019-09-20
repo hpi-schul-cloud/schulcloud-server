@@ -103,7 +103,7 @@
     "winston": "^3.2.0"
   },
   "devDependencies": {
-    "codecov": "^3.5.0",
+    "codecov": "^3.6.1",
     "eslint": "^6.2.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
