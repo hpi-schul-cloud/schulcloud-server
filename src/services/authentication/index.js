@@ -7,26 +7,11 @@ const extractors = require('passport-jwt').ExtractJwt;
 const system = require('./strategies/system');
 const hooks = require('./hooks');
 
+const { authenticationSecret } = require('./logic/secrets');
 
-let secrets;
-try {
-	if (['production', 'lokal'].includes(process.env.NODE_ENV)) {
-		// eslint-disable-next-line global-require
-		secrets = require('../../../config/secrets.js');
-	} else {
-		// eslint-disable-next-line global-require
-		secrets = require('../../../config/secrets.json');
-	}
-} catch (error) {
-	secrets = {};
-}
-
-const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
-
-module.exports = function () {
-	const app = this;
-
-	const authConfig = Object.assign({}, app.get('auth'), {
+module.exports = (app) => {
+	const authConfig = {
+		...app.get('auth'),
 		header: 'Authorization',
 		entity: 'account',
 		service: 'accounts',
@@ -39,7 +24,7 @@ module.exports = function () {
 			expiresIn: '30d',
 		},
 		secret: authenticationSecret,
-	});
+	};
 
 
 	const localConfig = {
