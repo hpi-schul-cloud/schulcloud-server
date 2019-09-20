@@ -3,6 +3,7 @@ const hooks = require('./hooks');
 const logger = require('../../logger');
 
 const AnalyticsModel = require('./model');
+const { hash } = require('../authentication/logic/secrets');
 
 class Service {
 	constructor(options) {
@@ -32,18 +33,25 @@ class Service {
 			path: data.dp,
 			dl: data.dl,
 			qt: data.qt,
-			cid: data.cid,
+			cid: this.getCid(params, data.cid),
 			swOffline: data.cd3,
 			swEnabled: data.cd4,
 			school: data.cd5,
 			networkProtocol: data.cd6,
 		});
 		return model.save()
-			.then(_ => Promise.resolve())
+			.then((_) => Promise.resolve())
 			.catch((err) => {
 				logger.error(err);
 				return Promise.reject();
 			});
+	}
+
+	getCid(params, fallback) {
+		if (params.account && params.account.userId) {
+			return hash(params.account.userId);
+		}
+		return fallback;
 	}
 
 	setup(app, path) {
