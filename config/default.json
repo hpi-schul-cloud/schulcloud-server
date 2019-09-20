@@ -18,6 +18,9 @@
 		"local": {
 			"usernameField": "username",
 			"passwordField": "password"
+		},
+		"ldap": {
+			"usernameField": "username"
 		}
 	},
 	"services": {

@@ -30,7 +30,7 @@ const firstLogin = async (data, params, app) => {
 		return Promise.reject('Die neuen Passwörter stimmen nicht überein.');
 	}
 
-	const { accountId } = params.payload;
+	const { accountId } = params.authentication.payload;
 	const accountUpdate = {};
 	let accountPromise = Promise.resolve();
 	const userUpdate = {};

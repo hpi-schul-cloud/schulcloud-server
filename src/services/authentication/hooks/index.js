@@ -1,5 +1,3 @@
-const { authenticate } = require('@feathersjs/authentication');
-
 const injectUserId = async (context) => {
 	const { systemId, schoolId, strategy } = context.data;
 
@@ -20,6 +18,7 @@ const injectUserId = async (context) => {
 	}).then(([account]) => {
 		if (account) {
 			context.params.payload = {};
+			context.params.payload.accountId = account._id;
 			if (account.userId) {
 				context.params.payload.userId = account.userId;
 			}

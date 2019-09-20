@@ -38,11 +38,13 @@ const authConfig = {
 		usernameField: 'username',
 		passwordField: 'password',
 	},
+	ldap: {
+		usernameField: 'username',
+	},
 };
 
 module.exports = (app) => {
 	// Configure feathers-authentication
-	console.log(authConfig);
 	app.set('authentication', authConfig);
 	const authentication = new AuthenticationService(app);
 
