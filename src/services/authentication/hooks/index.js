@@ -1,10 +1,19 @@
 const { authenticate } = require('@feathersjs/authentication');
 
-const injectUserId = (context) => {
-	const { systemId, username } = context.data;
+const injectUserId = async (context) => {
+	const { systemId, schoolId, strategy } = context.data;
+
+	if (schoolId) {
+		await context.app.service('schools').get(schoolId).then((school) => {
+			if (strategy === 'ldap') {
+				context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
+			}
+		});
+	}
+
 	return context.app.service('/accounts').find({
 		query: {
-			username,
+			username: context.data.username,
 			systemId,
 		},
 		paginate: false,

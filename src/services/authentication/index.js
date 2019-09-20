@@ -3,7 +3,7 @@ const { LocalStrategy } = require('@feathersjs/authentication-local');
 
 // const extractors = require('passport-jwt').ExtractJwt;
 
-const system = require('./strategies/system');
+const { LdapStrategy } = require('./strategies');
 const hooks = require('./hooks');
 
 
@@ -20,14 +20,13 @@ try {
 	secrets = {};
 }
 
-// TODO auswerten!
 const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
 
 const authConfig = {
 	entity: 'account',
 	service: 'accounts',
 	secret: authenticationSecret,
-	authStrategies: ['jwt', 'local'],
+	authStrategies: ['jwt', 'local', 'ldap'],
 	jwtOptions: {
 		header: { typ: 'access' },
 		audience: 'https://schul-cloud.org',
@@ -43,11 +42,13 @@ const authConfig = {
 
 module.exports = (app) => {
 	// Configure feathers-authentication
+	console.log(authConfig);
 	app.set('authentication', authConfig);
 	const authentication = new AuthenticationService(app);
 
 	authentication.register('jwt', new JWTStrategy());
 	authentication.register('local', new LocalStrategy());
+	authentication.register('ldap', new LdapStrategy());
 
 	app.use('/authentication', authentication);
 
