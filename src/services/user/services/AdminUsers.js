@@ -6,7 +6,7 @@ const logger = require('../../../logger');
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
 
-const getCurrentUserInfo = id => userModel.findById(id)
+const getCurrentUserInfo = (id) => userModel.findById(id)
 	.select('schoolId')
 	.populate('roles')
 	.lean()
@@ -39,7 +39,7 @@ const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
 			$limit: 1000,
 		},
 	})
-	.then(classes => classes.data)
+	.then((classes) => classes.data)
 	.catch((err) => {
 		logger.warning(`Can not execute app.service("classes").find for ${schoolId}`, err);
 		return err;
@@ -61,7 +61,7 @@ const findConsents = (ref, userIds, $limit) => ref.app.service('/consents')
 				'parentConsents.termsOfUseConsent'],
 		},
 	})
-	.then(consents => consents.data);
+	.then((consents) => consents.data);
 
 class AdminUsers {
 	constructor(role) {
@@ -82,11 +82,11 @@ class AdminUsers {
 			const { currentYear } = currentSchool;
 
 			// permission check
-			if (!currentUser.roles.some(role => ['teacher', 'administrator', 'superhero'].includes(role.name))) {
+			if (!currentUser.roles.some((role) => ['teacher', 'administrator', 'superhero'].includes(role.name))) {
 				throw new Forbidden();
 			}
 			// fetch data that are scoped to schoolId
-			const studentRole = (roles.filter(role => role.name === this.role))[0];
+			const studentRole = (roles.filter((role) => role.name === this.role))[0];
 			const [usersData, classes] = await Promise.all(
 				[
 					getAllUsers(this, schoolId, studentRole._id, (params.query || {})),
@@ -95,7 +95,7 @@ class AdminUsers {
 			);
 			const { total } = usersData;
 			const users = usersData.data;
-			const userIds = users.map(user => user._id.toString());
+			const userIds = users.map((user) => user._id.toString());
 			const consents = await findConsents(this, userIds, (params.query || {}).$limit).then((data) => {
 				// rebuild consent to object for faster sorting
 				const out = {};
@@ -106,7 +106,7 @@ class AdminUsers {
 			});
 			// bsonId to stringId that it can use .includes for is in test
 			classes.forEach((c) => {
-				c.userIds = c.userIds.map(id => id.toString());
+				c.userIds = c.userIds.map((id) => id.toString());
 			});
 
 			// patch classes and consent into user

@@ -25,7 +25,7 @@ const lessonSchema = new Schema({
 	courseId: { type: Schema.Types.ObjectId, ref: 'course' },
 	courseGroupId: { type: Schema.Types.ObjectId, ref: 'courseGroup' },
 	teamId: { type: Schema.Types.ObjectId, ref: 'team' },
-	hidden: { type: Boolean },
+	hidden: { type: Boolean, default: true },
 	// token for topic sharing
 	shareToken: { type: String, unique: true, sparse: true },
 	// if current topic was copied from another, for later fancy stuff

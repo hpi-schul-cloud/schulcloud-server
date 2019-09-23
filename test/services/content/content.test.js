@@ -12,7 +12,7 @@ const path = require('path');
 
 describe('content service', function () {
 	this.timeout(10000); // for slow require(app) call
-	const requestMock = options => readFile(requestToFilename(options)).then(data => JSON.parse(data));
+	const requestMock = (options) => readFile(requestToFilename(options)).then((data) => JSON.parse(data));
 
 	let app = null;
 	let resourcesService = null;

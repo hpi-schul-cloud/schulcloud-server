@@ -62,7 +62,7 @@ describe('AdminUsersService', () => {
 		});
 
 		const searchClass = (users, name) => users.some(
-			user => student._id.toString() === user._id.toString() && user.classes.includes(name),
+			(user) => student._id.toString() === user._id.toString() && user.classes.includes(name),
 		);
 
 		expect(result.data).to.not.be.undefined;
@@ -108,7 +108,7 @@ describe('AdminUsersService', () => {
 		const result = await adminStudentsService.find(params);
 
 		expect(result.data).to.not.be.undefined;
-		const studentResult = result.data.filter(u => u._id.toString() === student._id.toString())[0];
+		const studentResult = result.data.filter((u) => u._id.toString() === student._id.toString())[0];
 		expect(studentResult.classes).to.include('classFromThisYear');
 		expect(studentResult.classes).to.not.include('classFromLastYear');
 		expect(studentResult.classes).to.include('classWithoutYear');
@@ -162,7 +162,7 @@ describe('AdminUsersService', () => {
 		});
 		expect(testClass2).to.not.be.undefined;
 
-		const createParams = sortObject => ({
+		const createParams = (sortObject) => ({
 			account: {
 				userId: teacher._id,
 			},
@@ -221,7 +221,7 @@ describe('AdminUsersService', () => {
 			}],
 		});
 
-		const createParams = status => ({
+		const createParams = (status) => ({
 			account: {
 				userId: teacher._id,
 			},
@@ -233,12 +233,12 @@ describe('AdminUsersService', () => {
 		});
 
 		const resultMissing = (await adminStudentsService.find(createParams('missing'))).data;
-		const idsMissing = resultMissing.map(e => e._id.toString());
+		const idsMissing = resultMissing.map((e) => e._id.toString());
 		expect(idsMissing).to.include(studentWithoutConsents._id.toString());
 		expect(idsMissing).to.not.include(studentWithParentConsent._id.toString(), studentWithConsents._id.toString());
 
 		const resultParentsAgreed = (await adminStudentsService.find(createParams('parentsAgreed'))).data;
-		const idsParentsAgreed = resultParentsAgreed.map(e => e._id.toString());
+		const idsParentsAgreed = resultParentsAgreed.map((e) => e._id.toString());
 		expect(idsParentsAgreed).to.include(studentWithParentConsent._id.toString());
 		expect(idsParentsAgreed).to.not.include(
 			studentWithoutConsents._id.toString(),
@@ -246,7 +246,7 @@ describe('AdminUsersService', () => {
 		);
 
 		const resultOk = (await adminStudentsService.find(createParams('ok'))).data;
-		const idsOk = resultOk.map(e => e._id.toString());
+		const idsOk = resultOk.map((e) => e._id.toString());
 		expect(idsOk).to.include(studentWithConsents._id.toString());
 		expect(idsOk).to.not.include(studentWithoutConsents._id.toString(), studentWithParentConsent._id.toString());
 	});
@@ -284,7 +284,7 @@ describe('AdminTeachersService', () => {
 			},
 		});
 
-		const createParams = status => ({
+		const createParams = (status) => ({
 			account: {
 				userId: teacherWithoutConsent._id,
 			},
@@ -296,7 +296,7 @@ describe('AdminTeachersService', () => {
 		});
 
 		const resultMissing = (await adminTeachersService.find(createParams('missing'))).data;
-		const idsMissing = resultMissing.map(e => e._id.toString());
+		const idsMissing = resultMissing.map((e) => e._id.toString());
 		expect(idsMissing).to.include(teacherWithoutConsent._id.toString());
 		expect(idsMissing).to.not.include(teacherWithConsent._id.toString());
 
@@ -304,7 +304,7 @@ describe('AdminTeachersService', () => {
 		expect(resultParentsAgreed).to.be.empty;
 
 		const resultOk = (await adminTeachersService.find(createParams('ok'))).data;
-		const idsOk = resultOk.map(e => e._id.toString());
+		const idsOk = resultOk.map((e) => e._id.toString());
 		expect(idsOk).to.include(teacherWithConsent._id.toString());
 		expect(idsOk).to.not.include(teacherWithoutConsent._id.toString());
 	});

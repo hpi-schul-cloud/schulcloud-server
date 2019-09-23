@@ -81,7 +81,7 @@ const courseGroupModel = mongoose.model('courseGroup', courseGroupSchema);
 const classSchema = getUserGroupSchema({
 	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
 	invitationLink: { type: String },
-	name: { type: String, required: false },
+	name: { type: String },
 	year: { type: Schema.Types.ObjectId, ref: 'year' },
 	gradeLevel: {
 		type: Number,
@@ -90,6 +90,7 @@ const classSchema = getUserGroupSchema({
 		max: 13,
 	},
 	ldapDN: { type: String },
+	successor: { type: Schema.Types.ObjectId, ref: 'classes' },
 });
 
 classSchema.plugin(require('mongoose-lean-virtuals'));
