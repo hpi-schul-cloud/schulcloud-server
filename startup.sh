@@ -1,3 +1,3 @@
 crontab ./crontab && crond
-migrate list --autosync 
+npm run migration:sync
 npm start
