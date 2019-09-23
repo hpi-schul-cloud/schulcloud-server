@@ -212,8 +212,8 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
-			await Promise.all([['1', 'a'], ['1', 'b'], ['2', 'b'], ['2', 'c']].map(klass => deleteClass(klass)));
+			await Promise.all(STUDENT_EMAILS.map((email) => deleteUser(email)));
+			await Promise.all([['1', 'a'], ['1', 'b'], ['2', 'b'], ['2', 'c']].map((klass) => deleteClass(klass)));
 			await testObjects.cleanup();
 		});
 
@@ -294,7 +294,7 @@ describe('CSVSyncer Integration', () => {
 
 		before(async function before() {
 			this.timeout(5000);
-			await Promise.all(EXISTING_CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
+			await Promise.all(EXISTING_CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])));
 
 			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
 			scenarioParams = await generateRequestParamsFromUser(user);
@@ -314,8 +314,8 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
-			await Promise.all(EXISTING_CLASSES.map(klass => deleteClass(klass)));
+			await Promise.all(TEACHER_EMAILS.map((email) => deleteUser(email)));
+			await Promise.all(EXISTING_CLASSES.map((klass) => deleteClass(klass)));
 			await deleteClass([undefined, 'Archeology']);
 			await testObjects.cleanup();
 		});
@@ -392,7 +392,7 @@ describe('CSVSyncer Integration', () => {
 		const CLASSES = [[undefined, 'NSA'], [undefined, 'CIA'], [undefined, 'BuyMore']];
 
 		before(async () => {
-			await Promise.all(CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
+			await Promise.all(CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])));
 
 			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
 			scenarioParams = await generateRequestParamsFromUser(user);
@@ -411,8 +411,8 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
-			await Promise.all(CLASSES.map(klass => deleteClass(klass)));
+			await Promise.all(TEACHER_EMAILS.map((email) => deleteUser(email)));
+			await Promise.all(CLASSES.map((klass) => deleteClass(klass)));
 			await testObjects.cleanup();
 			app.use('/mails', new MailService());
 		});
@@ -462,7 +462,7 @@ describe('CSVSyncer Integration', () => {
 		const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
 
 		before(async () => {
-			await Promise.all(EXISTING_CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
+			await Promise.all(EXISTING_CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])));
 
 			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
 			scenarioParams = await generateRequestParamsFromUser(user);
@@ -480,8 +480,8 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
-			await Promise.all(EXISTING_CLASSES.map(klass => deleteClass(klass)));
+			await Promise.all(STUDENT_EMAILS.map((email) => deleteUser(email)));
+			await Promise.all(EXISTING_CLASSES.map((klass) => deleteClass(klass)));
 			await testObjects.cleanup();
 		});
 
@@ -619,7 +619,7 @@ describe('CSVSyncer Integration', () => {
 		const CLASSES = [[undefined, 'NSA'], [undefined, 'CIA'], [undefined, 'BuyMore']];
 
 		before(async () => {
-			await Promise.all(CLASSES.map(klass => createClass([...klass, SCHOOL_ID])));
+			await Promise.all(CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])));
 
 			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
 			scenarioParams = await generateRequestParamsFromUser(user);
@@ -638,8 +638,8 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
-			await Promise.all(CLASSES.map(klass => deleteClass(klass)));
+			await Promise.all(TEACHER_EMAILS.map((email) => deleteUser(email)));
+			await Promise.all(CLASSES.map((klass) => deleteClass(klass)));
 			await testObjects.cleanup();
 			app.use('/mails', new MailService());
 		});
@@ -665,7 +665,7 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.invitations.successful).to.equal(0);
 			expect(stats.invitations.failed).to.equal(3);
 
-			expect(stats.errors.filter(e => e.type === 'invitation').length).to.equal(3);
+			expect(stats.errors.filter((e) => e.type === 'invitation').length).to.equal(3);
 		});
 	});
 
@@ -739,7 +739,7 @@ describe('CSVSyncer Integration', () => {
 			// only one email should ever be sent, as the second and third user are never
 			// created in the first place
 			expect(emails.length).to.equal(1);
-			expect(stats.errors.filter(e => e.type === 'invitation').length).to.equal(0);
+			expect(stats.errors.filter((e) => e.type === 'invitation').length).to.equal(0);
 		});
 	});
 
@@ -821,7 +821,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
+			await Promise.all(TEACHER_EMAILS.map((email) => deleteUser(email)));
 			await deleteClass([undefined, 'Jeffersonian Institute']);
 			await deleteClass([undefined, 'FBI']);
 			await testObjects.cleanup();
@@ -927,7 +927,7 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		after(async () => {
-			await Promise.all(TEACHER_EMAILS.map(email => deleteUser(email)));
+			await Promise.all(TEACHER_EMAILS.map((email) => deleteUser(email)));
 			await deleteClass([undefined, 'Easy Company']);
 			await deleteClass([undefined, 'Best Company']);
 			await testObjects.cleanup();
@@ -1047,8 +1047,8 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		afterEach(async () => {
-			await Promise.all(STUDENT_EMAILS.map(email => deleteUser(email)));
-			await Promise.all([['1', 'a'], ['1', 'b'], ['2', 'a'], ['2', 'b']].map(klass => deleteClass(klass)));
+			await Promise.all(STUDENT_EMAILS.map((email) => deleteUser(email)));
+			await Promise.all([['1', 'a'], ['1', 'b'], ['2', 'a'], ['2', 'b']].map((klass) => deleteClass(klass)));
 		});
 
 		after(testObjects.cleanup);
@@ -1136,8 +1136,8 @@ describe('CSVSyncer Integration', () => {
 
 			const classes1a = await findClasses(['1', 'a']);
 			expect(classes1a.length).to.equal(2);
-			expect(classes1a.some(c => c.year.toString() === oldYear._id.toString())).to.equal(true);
-			expect(classes1a.some(c => c.year.toString() === scenario1.school.currentYear._id.toString()))
+			expect(classes1a.some((c) => c.year.toString() === oldYear._id.toString())).to.equal(true);
+			expect(classes1a.some((c) => c.year.toString() === scenario1.school.currentYear._id.toString()))
 				.to.equal(true);
 
 			// there is no existing class 1b:
@@ -1205,9 +1205,9 @@ describe('CSVSyncer Integration', () => {
 				email: { $in: TEACHER_EMAILS },
 			});
 			expect(users.length).to.equal(3);
-			expect(users.some(u => u.fullName === 'Dr. Peter F. Pan')).to.equal(true);
-			expect(users.some(u => u.fullName === 'Mr. Peter Lustig')).to.equal(true);
-			expect(users.some(u => u.fullName === 'HM Test T. Testington')).to.equal(true);
+			expect(users.some((u) => u.fullName === 'Dr. Peter F. Pan')).to.equal(true);
+			expect(users.some((u) => u.fullName === 'Mr. Peter Lustig')).to.equal(true);
+			expect(users.some((u) => u.fullName === 'HM Test T. Testington')).to.equal(true);
 		});
 	});
 });

@@ -20,6 +20,6 @@ describe('resolve/users service', () => {
 	it('return users if scope is found', () => service.get('0000dcfbfb5c7a3f00bf21ab').then((data) => {
 		assert(data.data.length > 0);
 		assert(data.data[0].type === 'user');
-		assert(_.find(data.data, user => user.id === '0000d213816abba584714c0a' || '0000d231816abba584714c9e'));
+		assert(_.find(data.data, (user) => user.id === '0000d213816abba584714c0a' || '0000d231816abba584714c9e'));
 	}));
 });

@@ -2,7 +2,7 @@ const School = require('../../../../src/services/school/model').schoolModel;
 
 let createdSchoolIds = [];
 
-const create = app => async ({
+const create = (app) => async ({
 	name = `HPI-Testschule-${new Date().getTime()}`,
 	address = {},
 	fileStorageType,
@@ -59,7 +59,7 @@ const cleanup = async () => {
 	createdSchoolIds = [];
 };
 
-module.exports = app => ({
+module.exports = (app) => ({
 	create: create(app),
 	cleanup,
 	info: createdSchoolIds,
