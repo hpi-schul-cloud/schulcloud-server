@@ -15,7 +15,6 @@ const toolService = app.service('ltiTools');
 
 chai.use(chaiHttp);
 
-// todo enable if that works on travis
 describe('oauth2 service', function oauthTest() {
 	this.timeout(10000);
 
