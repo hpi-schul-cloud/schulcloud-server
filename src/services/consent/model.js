@@ -4,8 +4,8 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const { enableAuditLog } = require('../../utils/database');
 const mongooseHistory = require('mongoose-history');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 

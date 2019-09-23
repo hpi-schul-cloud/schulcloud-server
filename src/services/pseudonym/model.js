@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-const { enableAuditLog } = require('../../utils/database');
 const { Schema } = mongoose;
 const idValidator = require('mongoose-id-validator');
 const uuid = require('uuid/v4');
+const { enableAuditLog } = require('../../utils/database');
 
 const Pseudonym = new Schema({
 	userId: { type: Schema.Types.ObjectId, ref: 'user' },

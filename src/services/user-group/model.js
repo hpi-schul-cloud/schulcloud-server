@@ -50,6 +50,7 @@ const courseSchema = getUserGroupSchema({
 });
 
 courseSchema.plugin(require('mongoose-lean-virtuals'));
+
 enableAuditLog(courseSchema);
 
 const getCourseIsArchived = (aCourse) => {
@@ -94,6 +95,7 @@ const classSchema = getUserGroupSchema({
 });
 
 classSchema.plugin(require('mongoose-lean-virtuals'));
+
 enableAuditLog(classSchema);
 
 const getClassDisplayName = (aClass) => {
