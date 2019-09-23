@@ -14,9 +14,9 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 		const lowerUsername = username.toLowerCase();
 
 		return app.service('schools').get(schoolId)
-			.then(school => app.service('accounts').find({ query: { username: lowerUsername } })
+			.then((school) => app.service('accounts').find({ query: { username: lowerUsername } })
 				.then(([account]) => app.service('users').get(account.userId))
-				.then(user => ldapService.authenticate(system, user.ldapDn, password)));
+				.then((user) => ldapService.authenticate(system, user.ldapDn, password)));
 	}
 }
 

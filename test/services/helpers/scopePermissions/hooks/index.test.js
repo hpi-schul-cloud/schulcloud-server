@@ -73,7 +73,7 @@ describe('scopePermissionService hook', () => {
 	});
 
 	describe('lookupScope', () => {
-		const fakeApp = teamToReturn => ({
+		const fakeApp = (teamToReturn) => ({
 			service: (serviceName) => {
 				if (serviceName.match(/^\/?teams\/?$/i)) {
 					return {

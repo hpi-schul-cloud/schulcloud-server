@@ -41,6 +41,7 @@
 - [ ] Neue Verarbeitung von personenbezogene Daten wurde mit der Datenschutz-Gruppe besprochen
 
 ## Freigabe zum Review
+- [ ] Die Änderungen wurden mit dem Ticket-Ersteller, Support-Team oder PO besprochen und erfüllen die Ticket-Anforderungen
 - [ ] WIP PR-Label entfernt, wenn die Checkliste abgearbeitet wurde
 
 ## Mehr

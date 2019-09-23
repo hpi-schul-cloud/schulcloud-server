@@ -25,7 +25,7 @@ const otherSchool = {
 
 let authenticator;
 
-const testAccess = endpoint => () => {
+const testAccess = (endpoint) => () => {
 	const request = chai.request(app)
 		.get(endpoint)
 		.set('Accept', 'application/json')
@@ -35,7 +35,7 @@ const testAccess = endpoint => () => {
 			const { data } = response.body;
 			expect(data).to.have.lengthOf(1);
 
-			const schoolIds = data.map(d => d.schoolId);
+			const schoolIds = data.map((d) => d.schoolId);
 			expect(schoolIds).to.not.contain(otherSchool.id);
 		});
 };

@@ -7,7 +7,7 @@ const globalHooks = require('../../../hooks');
 
 
 const userIsInTeam = (userId, team) => {
-	const user = team.userIds.find(el => el.userId.toString() === userId.toString());
+	const user = team.userIds.find((el) => el.userId.toString() === userId.toString());
 	return (user !== undefined);
 };
 
@@ -19,12 +19,6 @@ const checkTeam = async (hook) => {
 	if (typeof (hook.params.provider) !== 'undefined' && !userIsInTeam(hook.params.account.userId, team)) {
 		throw new Forbidden('you are not in this team');
 	}
-	return hook;
-};
-
-const ensureCurrentUserInChannel = (hook) => {
-	hook.app.service('rocketChat/channel').addUsersToChannel([hook.params.account.userId], hook.id)
-		.catch(err => logger.warning(err));
 	return hook;
 };
 
@@ -95,7 +89,7 @@ const rocketChatChannelHooks = {
 	before: {
 		all: [auth.hooks.authenticate('jwt')],
 		find: [hooks.disallow()],
-		get: [checkTeam, globalHooks.ifNotLocal(ensureCurrentUserInChannel)],
+		get: [checkTeam],
 		create: [hooks.disallow()],
 		update: [hooks.disallow()],
 		patch: [hooks.disallow()],

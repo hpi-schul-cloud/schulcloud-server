@@ -101,13 +101,12 @@ describe('CSVSyncer', () => {
 			}
 		});
 
-		it('should trim leading zeros for grade levels', () => {
-			['02a', '05b', '09c', '012d', '007e', '0000010f'].forEach(async (input) => {
+		it('should trim leading zeros for grade levels', async () => {
+			await Promise.all(['02a', '05b', '09c', '012d', '007e', '0000010f'].map(async (input) => {
 				const result = await new CSVSyncer(app).getClassObject(input);
-				expect(result.nameFormat).to.equal('gradeLevel+name');
-				expect(result.gradeLevel.name).to.equal(input.match(/^0*(\d+)./)[1]);
+				expect(result.gradeLevel).to.equal(input.match(/^0*(\d+)./)[1]);
 				expect(result.name).to.equal(input.replace(/\d*/, ''));
-			});
+			}));
 		});
 	});
 });

@@ -76,10 +76,10 @@ const promises = [
 const fetchStatistics = () => {
 	const statistics = {};
 
-	return Promise.all(promises.map(p => p.promise.then((res) => {
+	return Promise.all(promises.map((p) => p.promise.then((res) => {
 		statistics[p.name] = res;
 		return res;
-	}))).then(_ => statistics);
+	}))).then((_) => statistics);
 };
 
 class StatisticsService {
@@ -89,13 +89,13 @@ class StatisticsService {
 
 	find({ query, payload }) {
 		return fetchStatistics()
-			.then(statistics => statistics);
+			.then((statistics) => statistics);
 	}
 
 	get(id, params) {
 		return _.find(promises, { name: id }).model
 			.then((generic) => {
-				const stats = generic.map(gen => moment(gen.createdAt).format('YYYY-MM-DD'));
+				const stats = generic.map((gen) => moment(gen.createdAt).format('YYYY-MM-DD'));
 
 				const counts = {};
 				stats.forEach((x) => { counts[x] = (counts[x] || 0) + 1; });

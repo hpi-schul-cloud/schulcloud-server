@@ -24,7 +24,7 @@ exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
 	};
 };
 
-exports.forceHookResolve = forcedHook => (context) => {
+exports.forceHookResolve = (forcedHook) => (context) => {
 	forcedHook(context)
 		.then(() => Promise.resolve(context))
 		.catch(() => Promise.resolve(context));
@@ -43,7 +43,7 @@ exports.isSuperHero = () => (context) => {
 	return userService.find({ query: { _id: (context.params.account.userId || ''), $populate: 'roles' } })
 		.then((user) => {
 			user.data[0].roles = Array.from(user.data[0].roles);
-			if (!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
+			if (!(user.data[0].roles.filter((u) => (u.name === 'superhero')).length > 0)) {
 				throw new Forbidden('you are not a superhero, sorry...');
 			}
 			return Promise.resolve(context);
@@ -57,11 +57,11 @@ exports.hasRole = (context, userId, roleName) => {
 		.then((user) => {
 			user.roles = Array.from(user.roles);
 
-			return (_.some(user.roles, u => u.name === roleName));
+			return (_.some(user.roles, (u) => u.name === roleName));
 		});
 };
 
-exports.hasPermission = permissionName => (context) => {
+exports.hasPermission = (permissionName) => (context) => {
 	// If it was an internal call then skip this context
 	if (!context.params.provider) {
 		return context;
@@ -78,8 +78,6 @@ exports.hasPermission = permissionName => (context) => {
 				throw new NotAuthenticated('API Key is invalid.');
 			});
 	}
-	// If test then skip too
-	if (process.env.NODE_ENV === 'test') return Promise.resolve(context);
 
 	// Otherwise check for user permissions
 	const service = context.app.service('/users/');
@@ -99,7 +97,7 @@ exports.hasPermission = permissionName => (context) => {
     excludeOptions = undefined => remove response when not GET or FIND request
     excludeOptions = ['get', ...] => remove when method not in array
  */
-exports.removeResponse = excludeOptions => (context) => {
+exports.removeResponse = (excludeOptions) => (context) => {
 	// If it was an internal call then skip this context
 	if (!context.params.provider) {
 		return context;
@@ -130,18 +128,18 @@ exports.hasRoleNoHook = (context, userId, roleName, account = false) => {
 	const accountService = context.app.service('/accounts/');
 	if (account) {
 		return accountService.get(userId)
-			.then(_account => userService.find({ query: { _id: (_account.userId || ''), $populate: 'roles' } })
+			.then((_account) => userService.find({ query: { _id: (_account.userId || ''), $populate: 'roles' } })
 				.then((user) => {
 					user.data[0].roles = Array.from(user.data[0].roles);
 
-					return (user.data[0].roles.filter(u => (u.name === roleName)).length > 0);
+					return (user.data[0].roles.filter((u) => (u.name === roleName)).length > 0);
 				}));
 	}
 	return userService.find({ query: { _id: (userId || ''), $populate: 'roles' } })
 		.then((user) => {
 			user.data[0].roles = Array.from(user.data[0].roles);
 
-			return (user.data[0].roles.filter(u => (u.name === roleName)).length > 0);
+			return (user.data[0].roles.filter((u) => (u.name === roleName)).length > 0);
 		});
 };
 
@@ -204,12 +202,12 @@ exports.permitGroupOperation = (context) => {
 };
 
 // get the model instance to call functions etc  TODO make query results not lean
-exports.computeProperty = (Model, functionName, variableName) => context => Model.findById(context.result._id)
-	.then(modelInstance => modelInstance[functionName]()) // compute that property
+exports.computeProperty = (Model, functionName, variableName) => (context) => Model.findById(context.result._id)
+	.then((modelInstance) => modelInstance[functionName]()) // compute that property
 	.then((result) => {
 		context.result[variableName] = Array.from(result); // save it in the resulting object
 	})
-	.catch(e => logger.error(e))
+	.catch((e) => logger.error(e))
 	.then(() => Promise.resolve(context));
 
 exports.mapPaginationQuery = (context) => {
@@ -286,7 +284,7 @@ exports.injectUserId = (context) => {
 	return context;
 };
 
-const getUser = context => context.app.service('users').get(context.params.account.userId, {
+const getUser = (context) => context.app.service('users').get(context.params.account.userId, {
 	query: {
 		$populate: 'roles',
 		// todo select in roles only role name
@@ -311,7 +309,7 @@ const testIfRoleNameExist = (user, roleNames) => {
 	return user.roles.some(({ name }) => roleNames.includes(name));
 };
 
-exports.restrictToCurrentSchool = context => getUser(context).then((user) => {
+exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, 'superhero')) {
 		return context;
 	}
@@ -341,15 +339,15 @@ exports.restrictToCurrentSchool = context => getUser(context).then((user) => {
 const userIsInThatCourse = (user, { userIds = [], teacherIds = [], substitutionIds = [] }, isCourse) => {
 	const userId = user._id.toString();
 	if (isCourse) {
-		return userIds.some(u => u.toString() === userId)
-            || teacherIds.some(u => u.toString() === userId)
-            || substitutionIds.some(u => u.toString() === userId);
+		return userIds.some((u) => u.toString() === userId)
+            || teacherIds.some((u) => u.toString() === userId)
+            || substitutionIds.some((u) => u.toString() === userId);
 	}
 
-	return userIds.some(u => u.toString() === userId) || testIfRoleNameExist(user, 'teacher');
+	return userIds.some((u) => u.toString() === userId) || testIfRoleNameExist(user, 'teacher');
 };
 
-exports.restrictToUsersOwnCourses = context => getUser(context).then((user) => {
+exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
 		return context;
 	}
@@ -375,7 +373,7 @@ exports.restrictToUsersOwnCourses = context => getUser(context).then((user) => {
 	return context;
 });
 
-exports.restrictToUsersOwnLessons = context => getUser(context).then((user) => {
+exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
 		return context;
 	}
@@ -436,7 +434,7 @@ exports.restrictToUsersOwnLessons = context => getUser(context).then((user) => {
 	return context;
 });
 
-exports.restrictToUsersOwnClasses = context => getUser(context).then((user) => {
+exports.restrictToUsersOwnClasses = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, ['superhero', 'administrator', 'teacher'])) {
 		return context;
 	}
@@ -444,8 +442,8 @@ exports.restrictToUsersOwnClasses = context => getUser(context).then((user) => {
 		const classService = context.app.service('classes');
 		return classService.get(context.id).then((result) => {
 			const userId = context.params.account.userId.toString();
-			if (!(_.some(result.userIds, u => u.toString() === userId))
-					&& !(_.some(result.teacherIds, u => u.toString() === userId))) {
+			if (!(_.some(result.userIds, (u) => u.toString() === userId))
+					&& !(_.some(result.teacherIds, (u) => u.toString() === userId))) {
 				throw new Forbidden('You are not in that class.');
 			}
 		});
@@ -465,7 +463,7 @@ exports.restrictToUsersOwnClasses = context => getUser(context).then((user) => {
 // meant to be used as an after context
 exports.denyIfNotCurrentSchool = (
 	{ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' },
-) => context => getUser(context).then((user) => {
+) => (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, 'superhero')) {
 		return context;
 	}
