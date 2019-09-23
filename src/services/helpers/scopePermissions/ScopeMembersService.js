@@ -1,4 +1,7 @@
+const auth = require('@feathersjs/authentication');
+const globalHooks = require('../../../hooks');
 const { ScopeService } = require('./ScopeService');
+const { lookupScope, checkScopePermission } = require('./hooks');
 
 /**
  * Implements retrieving a list of all users who are associated with a scope.
