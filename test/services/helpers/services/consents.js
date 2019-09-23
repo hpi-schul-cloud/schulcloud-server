@@ -16,10 +16,10 @@ const createTestConsent = (app, opt) => ({
 	return consent;
 });
 
-const cleanup = app => () => {
+const cleanup = (app) => () => {
 	const ids = createdConsentIds;
 	createdConsentIds = [];
-	return ids.map(id => app.service('consents').remove(id));
+	return ids.map((id) => app.service('consents').remove(id));
 };
 
 module.exports = (app, opt) => ({

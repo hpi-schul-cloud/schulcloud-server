@@ -145,7 +145,7 @@ const checkUnique = (hook) => {
 	return accountService.find({ query: { username, systemId } })
 		.then((result) => {
 			// systemId might be null. In that case, accounts with any systemId will be returned
-			const filtered = result.filter(a => a.systemId === systemId);
+			const filtered = result.filter((a) => a.systemId === systemId);
 			if (filtered.length > 0) {
 				return Promise.reject(new BadRequest('Der Benutzername ist bereits vergeben!'));
 			}
@@ -171,7 +171,7 @@ const restrictAccess = async (context) => {
 				$populate: { path: 'roles' },
 			},
 		});
-		if (roles.some(role => role.name === 'superhero')) {
+		if (roles.some((role) => role.name === 'superhero')) {
 			return context;
 		}
 	}
@@ -204,7 +204,7 @@ const checkExistence = (hook) => {
 	return accountService.find({ query: { userId } })
 		.then((result) => {
 			// systemId might be null. In that case, accounts with any systemId will be returned
-			const filtered = result.filter(a => a.systemId === systemId);
+			const filtered = result.filter((a) => a.systemId === systemId);
 			if (filtered.length > 0) return Promise.reject(new BadRequest('Der Account existiert bereits!'));
 			return Promise.resolve(hook);
 		});
@@ -223,7 +223,7 @@ const protectUserId = (hook) => {
 	return hook;
 };
 
-const securePatching = hook => Promise.all([
+const securePatching = (hook) => Promise.all([
 	globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
@@ -244,7 +244,7 @@ const securePatching = hook => Promise.all([
  * @afterHook
  * @notLocal
  */
-const filterToRelated = keys => globalHooks.ifNotLocal((hook) => {
+const filterToRelated = (keys) => globalHooks.ifNotLocal((hook) => {
 	const newResult = {};
 	keys.forEach((key) => {
 		if (hook.result[key] !== undefined) {

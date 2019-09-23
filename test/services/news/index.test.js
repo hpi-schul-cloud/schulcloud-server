@@ -245,7 +245,7 @@ describe('news service', () => {
 				const studentParams = await generateRequestParamsFromUser(studentUser);
 				const result = await newsService.find(studentParams);
 				expect(result.total).to.equal(2);
-				expect(result.data.every(item => item.title.includes('school A news'))).to.equal(true);
+				expect(result.data.every((item) => item.title.includes('school A news'))).to.equal(true);
 			});
 
 			it('should not return any news items if the user has no NEWS_VIEW permission', async () => {
@@ -318,9 +318,9 @@ describe('news service', () => {
 				const adminParams = await generateRequestParamsFromUser(adminUser);
 				const result = await newsService.find(adminParams);
 				expect(result.total).to.equal(3);
-				expect(result.data.some(item => item.title === 'school news')).to.equal(true);
-				expect(result.data.some(item => item.title === 'team A news')).to.equal(true);
-				expect(result.data.some(item => item.title === 'team A news 2')).to.equal(true);
+				expect(result.data.some((item) => item.title === 'school news')).to.equal(true);
+				expect(result.data.some((item) => item.title === 'team A news')).to.equal(true);
+				expect(result.data.some((item) => item.title === 'team A news 2')).to.equal(true);
 			});
 
 			it('should return team news of non-school teams the user is in', async () => {
@@ -358,9 +358,9 @@ describe('news service', () => {
 				const adminParams = await generateRequestParamsFromUser(adminUser);
 				const result = await newsService.find(adminParams);
 				expect(result.total).to.equal(2);
-				expect(result.data.some(item => item.title === 'school news')).to.equal(false);
-				expect(result.data.some(item => item.title === 'team news')).to.equal(true);
-				expect(result.data.some(item => item.title === 'team news 2')).to.equal(true);
+				expect(result.data.some((item) => item.title === 'school news')).to.equal(false);
+				expect(result.data.some((item) => item.title === 'team news')).to.equal(true);
+				expect(result.data.some((item) => item.title === 'team news 2')).to.equal(true);
 			});
 
 			it('should not return team news if the user has no NEWS_VIEW permission inside the team', async () => {
@@ -408,7 +408,7 @@ describe('news service', () => {
 				// default: $paginate=true
 				const paginatedResult = await newsService.find(studentParams);
 				expect(paginatedResult.total).to.equal(2);
-				expect(paginatedResult.data.every(item => item.title.includes('school news'))).to.equal(true);
+				expect(paginatedResult.data.every((item) => item.title.includes('school news'))).to.equal(true);
 
 				// query param:
 				studentParams.query = { $paginate: false };

@@ -31,7 +31,7 @@ const ifSuperhero = (roles) => {
 		if (isString(roles[0])) {
 			isSuperhero = roles.includes('superhero'); // todo: make no sense at the moment roles includes only the ids of the roles
 		} else if (isObject(roles[0])) {
-			if (isDefined(roles.find(_role => _role.name === 'superhero'))) {
+			if (isDefined(roles.find((_role) => _role.name === 'superhero'))) {
 				isSuperhero = true;
 			}
 		}
@@ -45,7 +45,7 @@ exports.ifSuperhero = ifSuperhero;
 * @param {hook} hook
 * @return {Object::User}
 */
-exports.getSessionUser = hook => new Promise((resolve, reject) => {
+exports.getSessionUser = (hook) => new Promise((resolve, reject) => {
 	const sessionUserId = bsonIdToString(hook.params.account.userId);
 	const sessionUser = get(hook, 'sessionUser');
 	if (isDefined(sessionUser)) {
@@ -195,8 +195,8 @@ const isAcceptWay = (hook, teamId, oldTeam, users) => {
 		let out;
 		if (isDefined([oldTeam, users, acceptUserId], 'AND')) {
 			// try the second test that user must be in invite
-			const addingUser = users.find(user => isSameId(user._id, acceptUserId));
-			const addingTeamUser = hook.data.userIds.find(_user => isSameId(_user.userId, acceptUserId));
+			const addingUser = users.find((user) => isSameId(user._id, acceptUserId));
+			const addingTeamUser = hook.data.userIds.find((_user) => isSameId(_user.userId, acceptUserId));
 			// todo add addingUser role ==== 'expert' test
 			if (isUndefined([addingUser, addingTeamUser], 'OR')) {
 				out = false;
@@ -222,7 +222,7 @@ exports.isAcceptWay = isAcceptWay;
 * @param {Object::hook} hook
 * @return {Promise::Object::team}
 */
-exports.getTeam = hook => new Promise((resolve, reject) => {
+exports.getTeam = (hook) => new Promise((resolve, reject) => {
 	const { method } = hook;
 	const teamId = hook.id || (hook.result || {})._id || hook.teamId || get(hook, 'teamId');
 	const sessionUserId = bsonIdToString(hook.params.account.userId);
@@ -297,8 +297,8 @@ const arrayDiff = (oldArray, newArray, key) => {
 	};
 
 	const diff = (a1, a2) => {
-		a2 = a2.map(e => getV(e));
-		return a1.filter(x => !a2.includes(getV(x))); // pass element from a1 if it is not in a2
+		a2 = a2.map((e) => getV(e));
+		return a1.filter((x) => !a2.includes(getV(x))); // pass element from a1 if it is not in a2
 	};
 
 	return diff(oldArray, newArray);
@@ -332,7 +332,7 @@ const mappedInputUserIdsToTeamUsers = (hook, teamUsers, oldTeam, sessionSchoolId
 		throw new BadRequest('param teamUsers must be an array', teamUsers);
 	}
 
-	const getFirstUserByRoleId = (teamUserArray, roleId) => teamUserArray.find(_user => isSameId(_user.role, roleId));
+	const getFirstUserByRoleId = (teamUserArray, roleId) => teamUserArray.find((_user) => isSameId(_user.role, roleId));
 	const teamownerRoleId = hook.findRole('name', 'teamowner', '_id');
 	const teamowner = hook.method === 'create' ? getFirstUserByRoleId(teamUsers, teamownerRoleId) : getFirstUserByRoleId(oldTeam.userIds, teamownerRoleId);
 
@@ -398,7 +398,7 @@ const removeTeamUsers = (teamUsers, userIds) => {
         return list;
     }, []);
     */
-	return teamUsers.filter(user => !userIds.includes(user.userId));
+	return teamUsers.filter((user) => !userIds.includes(user.userId));
 };
 
 /**
@@ -416,7 +416,7 @@ const removeNotValidUsersBySchoolIds = (schoolIds, teamUsers, users) => {
 	schoolIds = bsonIdToString(schoolIds);
 
 	teamUsers.map((teamUser) => {
-		const user = (users.find(u => isSameId(u._id, teamUser.userId)) || {});
+		const user = (users.find((u) => isSameId(u._id, teamUser.userId)) || {});
 		const schoolId = bsonIdToString(user.schoolId);
 		if (schoolIds.includes(schoolId) === false) {
 			removeList.push(user._id);
@@ -493,7 +493,7 @@ exports.getTeamUsers = (hook, team, users, sessionSchoolId) => {
  * @method all - but return for no hook.data or !patch || !create an empty array
  * @return {Array::Object::User default:[]}
  */
-exports.populateUsersForEachUserIdinHookData = hook => new Promise((resolve, reject) => {
+exports.populateUsersForEachUserIdinHookData = (hook) => new Promise((resolve, reject) => {
 	if (['create', 'patch'].includes(hook.method) && hasKey(hook, 'data') && isArrayWithElement(hook.data.userIds)) {
 		hook.app.service('users').find({
 			query: {
