@@ -86,9 +86,10 @@ describe('classes service', () => {
 
 
 		it('CREATE patches successor ID in predecessor class', async () => {
-			const orgClass = await testObjects.createTestClass({ name: 'sonnenklasse 1' });
-			const successorClass = await testObjects.createTestClass({
+			const orgClass = await app.service('classes').create({ name: 'sonnenklasse 1', schoolId: '0000d186816abba584714c5f' });
+			const successorClass = await app.service('classes').create({
 				name: 'sonnenklasse 2',
+				schoolId: '0000d186816abba584714c5f',
 				predecessor: orgClass._id,
 			});
 			const updatedOrgClass = await classesService.get(orgClass._id);
