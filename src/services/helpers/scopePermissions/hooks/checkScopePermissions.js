@@ -9,7 +9,7 @@ const getScope = async (context) => {
 	return { scopeName, scopeId };
 };
 
-const getPermissionService = async (context, scopeName) => {
+const getPermissionService = (context, scopeName) => {
 	const permissionServicePath = `/${scopeName}/:scopeId/userPermissions`;
 	const permissionService = context.app.service(permissionServicePath);
 	if (permissionService === undefined) {
