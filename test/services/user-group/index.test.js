@@ -94,7 +94,7 @@ describe('classes service', () => {
 			const updatedOrgClass = await classesService.get(orgClass._id);
 			expect(updatedOrgClass.name).to.equal('sonnenklasse 1');
 			expect(successorClass.name).to.equal('sonnenklasse 2');
-			expect(updatedOrgClass.successor).to.equal(successorClass._id);
+			expect(updatedOrgClass.successor.toString()).to.equal(successorClass._id.toString());
 		});
 
 		afterEach(testObjects.cleanup);
