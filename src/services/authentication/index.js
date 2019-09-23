@@ -3,7 +3,7 @@ const { LocalStrategy } = require('@feathersjs/authentication-local');
 
 // const extractors = require('passport-jwt').ExtractJwt;
 
-const { LdapStrategy } = require('./strategies');
+const { LdapStrategy, MoodleStrategy } = require('./strategies');
 const hooks = require('./hooks');
 
 
@@ -26,7 +26,7 @@ const authConfig = {
 	entity: 'account',
 	service: 'accounts',
 	secret: authenticationSecret,
-	authStrategies: ['jwt', 'local', 'ldap'],
+	authStrategies: ['jwt', 'local', 'ldap', 'moodle'],
 	jwtOptions: {
 		header: { typ: 'access' },
 		audience: 'https://schul-cloud.org',
@@ -41,6 +41,9 @@ const authConfig = {
 	ldap: {
 		usernameField: 'username',
 	},
+	moodle: {
+		usernameField: 'username',
+	},
 };
 
 module.exports = (app) => {
@@ -51,6 +54,7 @@ module.exports = (app) => {
 	authentication.register('jwt', new JWTStrategy());
 	authentication.register('local', new LocalStrategy());
 	authentication.register('ldap', new LdapStrategy());
+	authentication.register('moodle', new MoodleStrategy());
 
 	app.use('/authentication', authentication);
 
