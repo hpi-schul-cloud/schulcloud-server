@@ -11,7 +11,7 @@ module.exports = function MoodleMockServer({
 }) {
 	const findFreePort = port ? Promise.resolve(port) : freeport();
 
-	return findFreePort.then(freePort => new Promise((resolve) => {
+	return findFreePort.then((freePort) => new Promise((resolve) => {
 		const mockMoodle = express();
 		mockMoodle.use(bodyParser.json()); // for parsing application/json
 		mockMoodle.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
@@ -23,7 +23,7 @@ module.exports = function MoodleMockServer({
 				res.send(`{"error": "Web service ${res.body.service} is not available (it doesn't exist or might be disabled)"}`);
 				return;
 			}
-			if (acceptUsers.find(user => user.username === req.body.username && user.password === req.body.password)) {
+			if (acceptUsers.find((user) => user.username === req.body.username && user.password === req.body.password)) {
 				res.json({ token: responseToken });
 			} else {
 				res.send('{"error": "Invalid login, please try again"}'); // HTTP response code is 200 in any case

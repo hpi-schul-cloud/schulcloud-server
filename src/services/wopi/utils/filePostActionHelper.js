@@ -28,12 +28,12 @@ const lock = (file) => {
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/GetLock.html */
-const getLock = file => FileModel.findOne({ _id: file._id })
+const getLock = (file) => FileModel.findOne({ _id: file._id })
 	.exec()
 	.then(() => Promise.resolve({ lockId: file.lockId }));
 
 /** https://wopirest.readthedocs.io/en/latest/files/Unlock.html */
-const unlock = file => FileModel.update({ _id: file._id }, { $unset: { lockId: 1 } }).exec();
+const unlock = (file) => FileModel.update({ _id: file._id }, { $unset: { lockId: 1 } }).exec();
 
 
 /** https://wopirest.readthedocs.io/en/latest/files/RenameFile.html */
@@ -69,4 +69,4 @@ const actionHeaderMap = {
 	PUT_USER_INFO: putUserInfo,
 };
 
-module.exports = header => actionHeaderMap[header];
+module.exports = (header) => actionHeaderMap[header];

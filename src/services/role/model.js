@@ -43,9 +43,9 @@ roleSchema.statics.resolvePermissions = function (roleIds) {
 				if (Array.isArray(role.permissions) === false) {
 					role.permissions = [];
 				}
-				role.permissions.forEach(p => permissions.add(p));
+				role.permissions.forEach((p) => permissions.add(p));
 				const promises = role.roles
-					.filter(id => !processedRoleIds.includes(id))
+					.filter((id) => !processedRoleIds.includes(id))
 					.map((id) => {
 						processedRoleIds.push(id);
 						return resolveSubRoles(id); // recursion
@@ -54,7 +54,7 @@ roleSchema.statics.resolvePermissions = function (roleIds) {
 			});
 	}
 
-	return Promise.all(roleIds.map(id => resolveSubRoles(id)))
+	return Promise.all(roleIds.map((id) => resolveSubRoles(id)))
 		.then(() => permissions);
 };
 
