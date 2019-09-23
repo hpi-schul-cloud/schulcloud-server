@@ -1,6 +1,6 @@
 const logger = require('../../../logger');
 
-const removeTeamNews = app => async (deletedTeam) => {
+const removeTeamNews = (app) => async (deletedTeam) => {
 	try {
 		await app.service('/newsModel').remove(null, {
 			query: {

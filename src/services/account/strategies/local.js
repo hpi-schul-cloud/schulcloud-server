@@ -11,7 +11,7 @@ const acceptedCredentials = [
 
 class LocalLoginStrategy extends AbstractLoginStrategy {
 	login({ username, password }, system) {
-		const found = acceptedCredentials.find(credentials => credentials.username == username
+		const found = acceptedCredentials.find((credentials) => credentials.username == username
 			&& credentials.password == password);
 		if (found) {
 			return Promise.resolve(found);

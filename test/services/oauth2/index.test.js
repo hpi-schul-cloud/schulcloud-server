@@ -153,7 +153,7 @@ describe('oauth2 service', function oauthTest() {
 
 	it('FIND Clients', () => clientsService.find().then((result) => {
 		const foundTestClient = JSON.parse(result)
-			.find(client => (client.client_id === testClient.client_id));
+			.find((client) => (client.client_id === testClient.client_id));
 		assert(foundTestClient);
 	}));
 

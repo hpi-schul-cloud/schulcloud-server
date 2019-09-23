@@ -18,14 +18,14 @@ const createPermission = (refId, refPermModel = 'user', permissions = null) => {
 };
 
 const getRoles = (names = []) => RoleModel.find({
-	$or: names.map(name => ({ name })),
+	$or: names.map((name) => ({ name })),
 })
 	.lean()
 	.exec();
 
 
 const getRoleIdByName = (roles, name) => {
-	const role = roles.find(r => r.name === name);
+	const role = roles.find((r) => r.name === name);
 	return role._id;
 };
 
