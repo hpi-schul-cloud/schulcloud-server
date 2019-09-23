@@ -643,11 +643,11 @@ exports.decorateWithCurrentUserId = (context) => {
 		if (!context.params.account) {
 			context.params.account = {};
 		}
-		let { userId } = context.params.account;
+		const { userId } = context.params.account;
 		// if user not defined, try extract userId from jwt
 		if (!userId && (context.params.headers || {}).authorization) {
-			const jwt = extractTokenFromBearerHeader(context.params.headers.authorization);
-			userId = 'jwt'; // fixme
+			// const jwt = extractTokenFromBearerHeader(context.params.headers.authorization);
+			// userId = 'jwt'; // fixme
 		}
 		// eslint-disable-next-line no-underscore-dangle
 		if (userId && context.data && !context.data.__user) {
