@@ -23,7 +23,7 @@ const getPermissionService = async (context, scopeName) => {
  * @param {Array<Permission>} requiredPermissions an array of strings identifying permissions in the scope
  * @requires auth.hooks.authenticate('jwt')
  */
-const checkScopePermission = (requiredPermissions) => async (context) => {
+const checkScopePermissions = (requiredPermissions) => async (context) => {
 	const { scopeName, scopeId } = await getScope(context);
 	const permissionService = getPermissionService(context, scopeName);
 	const { userId } = context.params.account;
@@ -41,5 +41,5 @@ const checkScopePermission = (requiredPermissions) => async (context) => {
 };
 
 module.exports = {
-	checkScopePermission,
+	checkScopePermissions,
 };

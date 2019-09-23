@@ -1,7 +1,7 @@
 const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const { ScopeService } = require('./ScopeService');
-const { lookupScope, checkScopePermission } = require('./hooks');
+const { lookupScope, checkScopePermissions } = require('./hooks');
 
 /**
  * Implements retrieving a list of all users who are associated with a scope.
@@ -22,7 +22,7 @@ class ScopeMemberService extends ScopeService {
 				all: [
 					globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
 					lookupScope,
-					checkScopePermission('SCOPE_PERMISSIONS_VIEW'),
+					checkScopePermissions(['SCOPE_PERMISSIONS_VIEW']),
 				],
 			},
 		};

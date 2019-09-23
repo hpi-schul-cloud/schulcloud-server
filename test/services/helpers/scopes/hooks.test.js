@@ -5,4 +5,5 @@
 describe('ScopeService hooks', () => {
 	require('./hooks/lookupScope');
 	require('./hooks/rejectQueryingForOtherUsers');
+	require('./hooks/checkScopePermissions');
 });
