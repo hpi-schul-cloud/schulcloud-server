@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -62,6 +63,8 @@ roleSchema.virtual('displayName').get(function get() {
 	return rolesDisplayName[this.name] || '';
 });
 roleSchema.plugin(leanVirtuals);
+
+enableAuditLog(roleSchema);
 
 const roleModel = mongoose.model('role', roleSchema);
 

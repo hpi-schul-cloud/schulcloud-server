@@ -69,7 +69,7 @@ const newsSchema = new Schema({
 enableAuditLog(newsSchema);
 const newsModel = mongoose.model('news', newsSchema);
 
-const newsHistoryModel = mongoose.model('newshistory', new Schema({
+const newsHistorySchema = new Schema({
 	title: { type: String, required: true },
 	content: { type: String, required: true },
 	displayAt: { type: Date, default: Date.now },
@@ -77,7 +77,11 @@ const newsHistoryModel = mongoose.model('newshistory', new Schema({
 	creatorId: { type: Schema.Types.ObjectId, ref: 'user' },
 	createdAt: { type: Date, default: Date.now },
 	parentId: { type: Schema.Types.ObjectId, ref: 'news' },
-}));
+});
+
+const newsHistoryModel = mongoose.model('newshistory', newsHistorySchema);
+
+enableAuditLog(newsHistorySchema);
 
 
 module.exports = {
