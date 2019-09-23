@@ -58,7 +58,7 @@ class CustomJWTService {
 				signature = base64url(signature);
 
 				return `${encodedHeader}.${encodedData}.${signature}`;
-			}).catch(error => error);
+			}).catch((error) => error);
 	}
 }
 
@@ -66,7 +66,7 @@ function randomGen(arr) {
 	const pos = Math.floor(Math.random() * arr.length);
 	const tempEle = arr[pos];
 
-	arr = arr.filter(item => item !== tempEle);
+	arr = arr.filter((item) => item !== tempEle);
 
 	if (arr.length === 0) return tempEle;
 
@@ -87,7 +87,7 @@ class PasswordGenService {
 				resolve(randomGen(arr));
 			});
 
-			return p2.then(res => res);
+			return p2.then((res) => res);
 		}
 
 		const length = (query.length) ? query.length : 255;
@@ -97,7 +97,7 @@ class PasswordGenService {
 			resolve(new RandExp(`^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\-_!<>§$%&\/()=?\\;:,.#+*~']).{${minLength},${length}}$`).gen());
 		});
 
-		return p1.then(res => res);
+		return p1.then((res) => res);
 	}
 }
 

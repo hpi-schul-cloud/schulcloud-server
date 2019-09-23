@@ -14,7 +14,7 @@ const setSubject = (hook) => {
 		query: {
 			oAuthClientId: hook.params.loginRequest.client.client_id,
 		},
-	}).then(tools => hook.app.service('pseudonym').find({
+	}).then((tools) => hook.app.service('pseudonym').find({
 		query: {
 			toolId: tools.data[0]._id,
 			userId: hook.params.account.userId,
@@ -33,7 +33,7 @@ const setIdToken = (hook) => {
 		query: {
 			oAuthClientId: hook.params.consentRequest.client.client_id,
 		},
-	}).then(tools => hook.app.service('pseudonym').find({
+	}).then((tools) => hook.app.service('pseudonym').find({
 		query: {
 			toolId: tools.data[0]._id,
 			userId: hook.params.account.userId,
@@ -49,13 +49,13 @@ const setIdToken = (hook) => {
 	}));
 };
 
-const injectLoginRequest = hook => Hydra(hook.app.settings.services.hydra).getLoginRequest(hook.id)
+const injectLoginRequest = (hook) => Hydra(hook.app.settings.services.hydra).getLoginRequest(hook.id)
 	.then((loginRequest) => {
 		hook.params.loginRequest = loginRequest;
 		return hook;
 	});
 
-const injectConsentRequest = hook => Hydra(hook.app.settings.services.hydra).getConsentRequest(hook.id)
+const injectConsentRequest = (hook) => Hydra(hook.app.settings.services.hydra).getConsentRequest(hook.id)
 	.then((consentRequest) => {
 		hook.params.consentRequest = consentRequest;
 		return hook;

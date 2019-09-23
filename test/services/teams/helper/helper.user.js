@@ -1,8 +1,8 @@
+const { BadRequest } = require('@feathersjs/errors');
 const rolesModel = require('../../../../src/services/role/model.js');
 const { userModel } = require('../../../../src/services/user/model.js');
 const accountModel = require('../../../../src/services/account/model.js');
 // const app = require(SRC + 'app');
-const { BadRequest } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
 const app = require('../../../../src/app');
 const { warning } = require('../../../../src/logger');
@@ -49,7 +49,7 @@ const createUser = async (userId, roleName = 'student', schoolId = '0000d186816a
 	});
 };
 
-const createAccount = userId => accountModel.create({
+const createAccount = (userId) => accountModel.create({
 	username: userId + AT,
 	password: PASSWORD_HASH,
 	userId,
