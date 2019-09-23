@@ -795,7 +795,6 @@ describe('CSVSyncer Integration', () => {
 	});
 
 	describe('Scenario 11 - Importing the same data twice', () => {
-		this.timeout(4000);
 		let scenarioParams;
 		let scenarioData;
 
@@ -812,13 +811,13 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data: 'firstName,lastName,email,class\n'
-					+ `Dr. Temperance,Brennan,${TEACHER_EMAILS[0]},Jeffersonian Institute\n`
-					+ `Seeley,Booth,${TEACHER_EMAILS[1]},FBI\n`
-					+ `Lance,Sweets,${TEACHER_EMAILS[2]},FBI\n`
-					+ `Camille,Saroyan,${TEACHER_EMAILS[3]},Jeffersonian Institute\n`
-					+ `Zack,Addy,${TEACHER_EMAILS[4]},\n`,
+				+ `Dr. Temperance,Brennan,${TEACHER_EMAILS[0]},Jeffersonian Institute\n`
+				+ `Seeley,Booth,${TEACHER_EMAILS[1]},FBI\n`
+				+ `Lance,Sweets,${TEACHER_EMAILS[2]},FBI\n`
+				+ `Camille,Saroyan,${TEACHER_EMAILS[3]},Jeffersonian Institute\n`
+				+ `Zack,Addy,${TEACHER_EMAILS[4]},\n`,
 			};
-		});
+		}).timeout(4000);
 
 		after(async () => {
 			await Promise.all(TEACHER_EMAILS.map((email) => deleteUser(email)));
