@@ -61,7 +61,7 @@ const registrationPinSchema = new Schema({
 
 /* virtual property functions */
 
-const displayName = user => `${user.firstName} ${user.lastName}`;
+const displayName = (user) => `${user.firstName} ${user.lastName}`;
 
 const registrationPinModel = mongoose.model('registrationPin', registrationPinSchema);
 const userModel = mongoose.model('user', userSchema);

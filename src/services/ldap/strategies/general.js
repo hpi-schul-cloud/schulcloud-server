@@ -149,7 +149,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 			};
 			const searchString = `${classPathAdditions},${this.config.rootPath}`;
 			return this.app.service('ldap').searchCollection(this.config, searchString, options)
-				.then(data => data.map(obj => ({
+				.then((data) => data.map((obj) => ({
 					className: obj[classAttributeNameMapping.description],
 					ldapDn: obj[classAttributeNameMapping.dn],
 					uniqueMembers: obj[classAttributeNameMapping.uniqueMember],

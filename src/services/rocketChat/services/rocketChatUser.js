@@ -63,7 +63,7 @@ class RocketChatUser {
 			};
 
 			const createdUser = await request(getRequestOptions('/api/v1/users.create', body, true))
-				.catch(async err => this.handleEmailInUse(err, email, password));
+				.catch(async (err) => this.handleEmailInUse(err, email, password));
 			const rcId = createdUser.user._id;
 			({ username } = createdUser.user);
 			return userModel.create({
@@ -152,9 +152,9 @@ class RocketChatUser {
 		if (!Array.isArray(userIds || {})) {
 			return Promise.reject(new Forbidden('requires an array of userIds'));
 		}
-		return Promise.all(userIds.map(userId => this.getOrCreateRocketChatAccount(userId)))
+		return Promise.all(userIds.map((userId) => this.getOrCreateRocketChatAccount(userId)))
 			.then((accounts) => {
-				const result = accounts.map(account => account.username);
+				const result = accounts.map((account) => account.username);
 				return Promise.resolve(result);
 			})
 			.catch((err) => {
