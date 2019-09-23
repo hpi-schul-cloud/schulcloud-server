@@ -2,7 +2,7 @@ const { Forbidden } = require('@feathersjs/errors');
 
 const { ScopePermissionService } = require('../../helpers/scopePermissions');
 
-const compareIds = s => f => f.toString() === s.toString();
+const compareIds = (s) => (f) => f.toString() === s.toString();
 
 module.exports = function setup() {
 	const app = this;

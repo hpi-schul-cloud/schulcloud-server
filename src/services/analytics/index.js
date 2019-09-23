@@ -39,7 +39,7 @@ class Service {
 			networkProtocol: data.cd6,
 		});
 		return model.save()
-			.then(_ => Promise.resolve())
+			.then((_) => Promise.resolve())
 			.catch((err) => {
 				logger.error(err);
 				return Promise.reject();

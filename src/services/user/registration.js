@@ -44,7 +44,7 @@ const populateUser = (app, data) => {
 				}
 			});
 
-			user.roles = user.roles.map(role => (typeof role === 'object' ? role.name : role));
+			user.roles = user.roles.map((role) => (typeof role === 'object' ? role.name : role));
 
 			delete user.importHash;
 			return { user, oldUser };
@@ -58,7 +58,7 @@ const insertUserToDB = async (app, data, user) => {
 		user.roles = [...new Set(await app.service('roles')
 			.find({ query: { name: { $in: user.roles } } })
 			.then((roles) => {
-				const r = roles.data.map(role => role._id);
+				const r = roles.data.map((role) => role._id);
 				return r;
 			}))];
 		return app.service('users')
@@ -173,11 +173,11 @@ const registerUser = function register(data, params, app) {
 					.then((accountResponse) => {
 						account = accountResponse;
 					})
-					.catch(err => Promise.reject(new Error('Fehler der Account existiert nicht.')));
+					.catch((err) => Promise.reject(new Error('Fehler der Account existiert nicht.')));
 			}
 			return app.service('accounts').create(account)
 				.then((newAccount) => { account = newAccount; })
-				.catch(err => Promise.reject(new Error('Fehler beim Erstellen des Accounts.')));
+				.catch((err) => Promise.reject(new Error('Fehler beim Erstellen des Accounts.')));
 		})
 		.then((res) => {
 			// add parent if necessary
@@ -199,7 +199,7 @@ const registerUser = function register(data, params, app) {
 					}).then((newParent) => {
 						parent = newParent;
 						return userModel.userModel.findByIdAndUpdate(user._id, { parents: [parent._id] }, { new: true }).exec()
-							.then(updatedUser => user = updatedUser);
+							.then((updatedUser) => user = updatedUser);
 					})
 					.catch((err) => {
 						logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
@@ -230,7 +230,7 @@ const registerUser = function register(data, params, app) {
 				.then((newConsent) => {
 					consent = newConsent;
 					return Promise.resolve();
-				}).catch(err => Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.')));
+				}).catch((err) => Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.')));
 		})
 		.then(() => Promise.resolve({
 			user, parent, account, consent,
@@ -255,7 +255,7 @@ const registerUser = function register(data, params, app) {
 				rollbackPromises.push(consentModel.consentModel.findOneAndRemove({ _id: consent._id }).exec());
 			}
 			return Promise.all(rollbackPromises)
-				.catch(err => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator.')))
+				.catch((err) => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator.')))
 				.then(() => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Fehler bei der Registrierung.')));
 		});
 };

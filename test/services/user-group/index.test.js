@@ -51,7 +51,7 @@ describe('classes service', () => {
 				expect(data.length).to.equal(classes.length);
 				// all created classes should be in the response:
 				expect(classes.reduce(
-					(agg, cur) => agg && data.some(d => d._id.toString() === cur._id.toString()),
+					(agg, cur) => agg && data.some((d) => d._id.toString() === cur._id.toString()),
 					true,
 				)).to.equal(true);
 			}));
@@ -82,6 +82,23 @@ describe('classes service', () => {
 			const { data } = await classesService.find(params);
 			expect(data.length).to.equal(1);
 			expect(data[0]._id.toString()).to.equal(classes[0]._id.toString());
+		});
+
+
+		it('CREATE patches successor ID in predecessor class', async () => {
+			const orgClass = await app.service('classes').create({
+				name: 'sonnenklasse 1',
+				schoolId: '0000d186816abba584714c5f',
+			});
+			const successorClass = await app.service('classes').create({
+				name: 'sonnenklasse 2',
+				schoolId: '0000d186816abba584714c5f',
+				predecessor: orgClass._id,
+			});
+			const updatedOrgClass = await classesService.get(orgClass._id);
+			expect(updatedOrgClass.name).to.equal('sonnenklasse 1');
+			expect(successorClass.name).to.equal('sonnenklasse 2');
+			expect(updatedOrgClass.successor.toString()).to.equal(successorClass._id.toString());
 		});
 
 		afterEach(testObjects.cleanup);
