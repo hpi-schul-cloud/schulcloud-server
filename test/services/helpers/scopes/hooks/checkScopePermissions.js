@@ -3,10 +3,22 @@ const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
 
 const {
+	getScopePermissions,
 	checkScopePermissions,
 } = require('../../../../../src/services/helpers/scopePermissions/hooks/checkScopePermissions');
 
 const ALLOWED_USER_ID = (new ObjectId()).toString();
+const ALLOWED_USER_PERMISSIONS = ['EAT', 'THROW_AWAY'];
+const getApp = (omitHandler) => ({
+	service: (name) => {
+		if (name === '/chocolateBars/:scopeId/userPermissions') {
+			return omitHandler ? undefined : {
+				get: (id) => (id === ALLOWED_USER_ID ? ALLOWED_USER_PERMISSIONS : []),
+			};
+		}
+		return undefined;
+	},
+});
 const getContext = ({ userId, omitHandler }) => ({
 	path: '/chocolateBars/42/members',
 	params: {
@@ -17,16 +29,43 @@ const getContext = ({ userId, omitHandler }) => ({
 			scopeId: 42,
 		},
 	},
-	app: {
-		service: (name) => {
-			if (name === '/chocolateBars/:scopeId/userPermissions') {
-				return omitHandler ? undefined : {
-					get: (id) => (id === ALLOWED_USER_ID ? ['EAT', 'THROW_AWAY'] : []),
-				};
-			}
-			return undefined;
-		},
-	},
+	app: getApp(omitHandler),
+});
+
+describe('getScopePermissions', () => {
+	const fut = getScopePermissions;
+
+	it('should return an empty permissions array for users not in the scope', async () => {
+		const app = getApp();
+		const result = await fut(app, new ObjectId(), { id: 42, name: 'chocolateBars' });
+		expect(result).to.deep.equal([]);
+	});
+
+	it('should return the user\'s permissions in the given scope', async () => {
+		const app = getApp();
+		const result = await fut(app, ALLOWED_USER_ID, { id: 42, name: 'chocolateBars' });
+		expect(result).to.deep.equal(ALLOWED_USER_PERMISSIONS);
+	});
+
+	it('should fail if userId is not valid', async () => {
+		const app = getApp();
+		const examples = ['hjfsut34ruzgu', undefined, null, 672476734677374376434, []];
+		const results = await Promise.all(examples.map(
+			(example) => fut(app, example, { id: 824, name: 'chocolateBars' }),
+		));
+		expect(results).to.deep.equal([[], [], [], [], []]);
+	});
+
+	it('should throw an error if the scope does not exist', async () => {
+		const app = getApp();
+		try {
+			await fut(app, new ObjectId(), { id: 823634, name: 'jellyBeans' });
+			throw new Error('This should never happen');
+		} catch (err) {
+			expect(err).to.be.instanceOf(BadRequest);
+			expect(err.message).to.include('no userPermission service for the scope \'jellyBeans\'.');
+		}
+	});
 });
 
 describe('checkScopePermissions', () => {
