@@ -6,7 +6,7 @@ const { canRead } = require('../utils/filePermissionHelper');
 
 const restrictToCurrentUser = (hook) => {
 	const { params: { account: { userId } }, result: { data: files } } = hook;
-	const permissionPromises = files.map(f => canRead(userId, f)
+	const permissionPromises = files.map((f) => canRead(userId, f)
 		.then(() => f)
 		.catch(() => undefined));
 
