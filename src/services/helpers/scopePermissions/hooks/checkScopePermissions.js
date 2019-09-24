@@ -18,6 +18,18 @@ const getPermissionService = (app, scopeName) => {
 	return permissionService;
 };
 
+/**
+ * Retrieve permissions of a user in a given scope
+ * @param {FeathersApp} app Feathers app object
+ * @param {ObjectId|String} userId A userId as ObjectId or String
+ * @param {Object} scope A scope in the format {id, name}
+ * @example
+ * await getScopePermissions(app, new ObjectId(), {name: 'teams', id: new ObjectId()}) ==> []
+ * await getScopePermissions(app, aRealUserId, {name: 'teams', id: aTeamId}) ==> [
+ * 	'FILE_CREATE',
+ * 	'TEAM_EDIT',
+ * ]
+ */
 const getScopePermissions = async (app, userId, scope) => {
 	const permissionService = getPermissionService(app, scope.name);
 	return permissionService.get(userId, {
