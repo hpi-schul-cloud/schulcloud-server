@@ -1,18 +1,11 @@
 const auth = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
+const { sortByGradeAndOrName, prepareGradeLevelUnset } = require('./helpers/classHooks');
+
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
 
-const prepareGradeLevelUnset = (context) => {
-	if (!context.data.gradeLevel && context.data.name) {
-		const unset = context.data.$unset || {};
-		unset.gradeLevel = '';
-		context.data.$unset = unset;
-	}
-
-	return context;
-};
 
 exports.before = {
 	all: [auth.hooks.authenticate('jwt')],
@@ -20,6 +13,7 @@ exports.before = {
 		globalHooks.hasPermission('USERGROUP_VIEW'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnClasses,
+		sortByGradeAndOrName,
 	],
 	get: [
 		restrictToCurrentSchool,
@@ -43,26 +37,6 @@ exports.before = {
 	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
 };
 
-const sortByDisplayName = (hook) => {
-	let data = hook.result.data || hook.result;
-	const arrayed = !(Array.isArray(data));
-	data = (Array.isArray(data)) ? (data) : ([data]);
-	if ((((hook.params.query || {}).$sort || {}).displayName || {}).toString() === '1') {
-		data.sort((a, b) => a.displayName.toLowerCase() > b.displayName.toLowerCase());
-	} else if ((((hook.params.query || {}).$sort || {}).displayName || {}).toString() === '-1') {
-		data.sort((a, b) => a.displayName.toLowerCase() < b.displayName.toLowerCase());
-	}
-
-	if (arrayed) {
-		data = data[0];
-	}
-	if (hook.result.data) {
-		hook.result.data = data;
-	} else {
-		(hook.result = data);
-	}
-	return Promise.resolve(hook);
-};
 
 const saveSuccessor = async (context) => {
 	if (context.data.predecessor) {
@@ -73,9 +47,8 @@ const saveSuccessor = async (context) => {
 
 exports.after = {
 	all: [],
-	find: [sortByDisplayName],
+	find: [],
 	get: [
-		sortByDisplayName,
 		globalHooks.ifNotLocal(
 			globalHooks.denyIfNotCurrentSchool({
 				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
