@@ -157,7 +157,7 @@ describe('news service', () => {
 			it('should respond with an error if a student is trying to access specific unpublished news', async () => {
 				const schoolId = (await createTestSchool())._id;
 				const now = Date.now();
-				const weekInMilSeconds = 1000 * 60 * 60 * 24 * 7 // 604800000
+				const weekInMilSeconds = 1000 * 60 * 60 * 24 * 7; // 604800000
 				const studentUser = await createTestUser({
 					schoolId,
 					roles: 'student',
@@ -186,10 +186,9 @@ describe('news service', () => {
 				} catch (err) {
 					expect(err).to.be.instanceOf(Forbidden);
 					expect(err.code).to.equal(403);
-				}
-				finally {
+				} finally {
 					const result = await newsService.get(schoolNews._id, adminParams);
-					expect(result.title).to.be.equal('hacker news')
+					expect(result.title).to.be.equal('hacker news');
 				}
 			});
 
@@ -725,12 +724,13 @@ describe('news service', () => {
 
 				const teacherParams = await generateRequestParamsFromUser(teacherUser);
 				teacherParams.query = { unpublished: true };
-				const teacherResult2 = await newsService.find(teacherParams)
+				const teacherResult2 = await newsService.find(teacherParams);
 				// filter out any news that have display date in the past or now for testing purpose.
-				const filteredResult = teacherResult2.data.filter(a => a.displayAt > Date.now())
+				const filteredResult = teacherResult2.data.filter((a) => a.displayAt > Date.now());
 
 				expect(teacherResult2.total).to.equal(3);
-				expect(teacherResult2.data.length).to.be.equal(filteredResult.length, 'something is wrong with the query')
+				expect(teacherResult2.data.length).to.be.equal(filteredResult.length,
+					'something is wrong with the query');
 				expect(studentResult.total).to.equal(0);
 			});
 
@@ -776,51 +776,50 @@ describe('news service', () => {
 				expect(result.data[2].title).to.equal('3');
 			});
 
-			//generates 100 news and manipulates one random news to ensure display order
+			// generates 100 news and manipulates one random news to ensure display order
 			it('should be able to sort unpublished news by REVERSED publish date', async () => {
 				const schoolId = (await createTestSchool())._id;
 				const teacherUser = await createTestUser({
 					schoolId,
 					roles: 'teacher',
 				});
-				const now = new Date(Date.now())
-				const newsArray = []
+				const newsArray = [];
 
 				// returns a random string
 				function titleAndContentGenerator() {
-					const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-					let result = ''
-					for (let i = 0; i < 8; i++) {
-						result += characters[Math.floor(Math.random() * characters.length)]
+					const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+					let result = '';
+					for (let i = 0; i < 8; i += 1) {
+						result += characters[Math.floor(Math.random() * characters.length)];
 					}
-					return result
+					return result;
 				}
 
 				// returns a random number that simulates a datenumber
 				function displayAtGenerator() {
-					let result = ''
-					for (let i = 0; i < 13; i++) {
-						result += Math.floor(Math.random() * 10)
+					let result = '';
+					for (let i = 0; i < 13; i += 1) {
+						result += Math.floor(Math.random() * 10);
 					}
-					return parseInt(result)
+					return parseInt(result, 10);
 				}
 
-				for (let i = 0; i < 100; i++) {
+				for (let i = 0; i < 100; i += 1) {
 					newsArray.push({
 						schoolId,
 						creatorId: teacherUser._id,
 						title: titleAndContentGenerator(),
 						content: titleAndContentGenerator(),
 						displayAt: displayAtGenerator(),
-					})
+					});
 				}
 
-				const randomNumber = Math.floor(Math.random() * newsArray.length)
-				newsArray[randomNumber].content = `I will always be first`
-				newsArray[randomNumber].displayAt = 31415926535897
+				const randomNumber = Math.floor(Math.random() * newsArray.length);
+				newsArray[randomNumber].content = 'I will always be first';
+				newsArray[randomNumber].displayAt = 31415926535897;
 
 
-				await News.create(newsArray)
+				await News.create(newsArray);
 
 				const teacherParams = await generateRequestParamsFromUser(teacherUser);
 				teacherParams.query = { unpublished: true, sort: '-displayAt' };
@@ -890,7 +889,9 @@ describe('news service', () => {
 			it('should not allow news creation if the permission NEWS_CREATE is not set', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const studentUser = await createTestUser({ schoolId, roles: 'student' }); // student lacks the permission
+				const studentUser = await createTestUser({
+					schoolId, roles: 'student',
+				}); // student lacks the permission
 				const studentParams = await generateRequestParamsFromUser(studentUser);
 				try {
 					await newsService.create({
@@ -1021,7 +1022,9 @@ describe('news service', () => {
 			it('should not allow news deletion if the permission NEWS_CREATE is not set', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const studentUser = await createTestUser({ schoolId, roles: 'student' }); // student lacks the permission
+				const studentUser = await createTestUser({
+					schoolId, roles: 'student',
+				}); // student lacks the permission
 				const news = await News.create({
 					title: 'Old news',
 					content: 'Please delete',
@@ -1155,7 +1158,9 @@ describe('news service', () => {
 			it('should not allow patching news if the permission NEWS_EDIT is not set', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const studentUser = await createTestUser({ schoolId, roles: 'student' }); // student lacks the permission
+				const studentUser = await createTestUser({
+					schoolId, roles: 'student',
+				}); // student lacks the permission
 				const studentParams = await generateRequestParamsFromUser(studentUser);
 				const news = await News.create({
 					title: 'school news',
@@ -1323,7 +1328,9 @@ describe('news service', () => {
 			it('should not allow updating news if the permission NEWS_EDIT is not set', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const studentUser = await createTestUser({ schoolId, roles: 'student' }); // student lacks the permission
+				const studentUser = await createTestUser({
+					schoolId, roles: 'student',
+				}); // student lacks the permission
 				const studentParams = await generateRequestParamsFromUser(studentUser);
 				const news = await News.create({
 					title: 'school news',
