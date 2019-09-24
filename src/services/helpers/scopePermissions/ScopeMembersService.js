@@ -5,16 +5,16 @@ const { lookupScope, checkScopePermissions } = require('./hooks');
 
 /**
  * Implements retrieving a list of all users who are associated with a scope.
- * @class ScopeMemberService
+ * @class ScopeMembersService
  * @extends {ScopeService}
  */
-class ScopeMemberService extends ScopeService {
+class ScopeMembersService extends ScopeService {
 	/**
      * Custom set of hooks.
      * @static
      * @returns Object<FeathersHooksCollection>
 	 * @override ScopeService#hooks
-     * @memberof ScopeMemberService
+     * @memberof ScopeMembersService
      */
 	static hooks() {
 		return {
@@ -32,7 +32,7 @@ class ScopeMemberService extends ScopeService {
      * Implements the route
      * @param {Object} params Feathers request params
      * @returns {Array<ObjectId>} a list of userIds
-     * @memberof ScopeMemberService
+     * @memberof ScopeMembersService
      */
 	async find(params) {
 		const members = await this.handler.apply(this, [params]) || [];
@@ -41,5 +41,5 @@ class ScopeMemberService extends ScopeService {
 }
 
 module.exports = {
-	ScopeMemberService,
+	ScopeMembersService,
 };
