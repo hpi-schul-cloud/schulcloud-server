@@ -141,6 +141,22 @@ describe('classes service', () => {
 			expect(data[0].displayName).to.equal(classes[0].displayName);
 			expect(data[1].displayName).to.equal(classes[2].displayName);
 			expect(data[2].displayName).to.equal(classes[1].displayName);
+    });
+    
+		it('CREATE patches successor ID in predecessor class', async () => {
+			const orgClass = await app.service('classes').create({
+				name: 'sonnenklasse 1',
+				schoolId: '0000d186816abba584714c5f',
+			});
+			const successorClass = await app.service('classes').create({
+				name: 'sonnenklasse 2',
+				schoolId: '0000d186816abba584714c5f',
+				predecessor: orgClass._id,
+			});
+			const updatedOrgClass = await classesService.get(orgClass._id);
+			expect(updatedOrgClass.name).to.equal('sonnenklasse 1');
+			expect(successorClass.name).to.equal('sonnenklasse 2');
+			expect(updatedOrgClass.successor.toString()).to.equal(successorClass._id.toString());
 		});
 
 		afterEach(testObjects.cleanup);

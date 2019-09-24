@@ -15,8 +15,8 @@ class LessonFilesService {
 
 	replaceFileLinksByFileId(files = [], lesson) {
 		const contents = lesson.contents || [];
-		return files.filter(file => _.some(contents,
-			c => this.isTextContent(c) && this.includeFileKey(c, file.key)));
+		return files.filter((file) => _.some(contents,
+			(c) => this.isTextContent(c) && this.includeFileKey(c, file.key)));
 	}
 
 	/**
@@ -36,7 +36,7 @@ class LessonFilesService {
 			// fetch files in the given course and check whether they are included in the lesson
 			// check whether the file is included in any lesson
 			return FileModel.find({ path: { $regex: lesson.courseId } })
-				.then(files => this.replaceFileLinksByFileId(files, lesson));
+				.then((files) => this.replaceFileLinksByFileId(files, lesson));
 		});
 	}
 }

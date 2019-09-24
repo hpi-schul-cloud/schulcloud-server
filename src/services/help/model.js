@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { enableAuditLog } = require('../../utils/database');
+
 const { Schema } = mongoose;
 
 const helpDocumentsSchema = new Schema({
@@ -11,6 +13,8 @@ const helpDocumentsSchema = new Schema({
 		content: { type: String, required: true },
 	}],
 }, { timestamps: true });
+
+enableAuditLog(helpDocumentsSchema);
 
 const helpDocumentsModel = mongoose.model('helpdocument', helpDocumentsSchema);
 
