@@ -12,7 +12,7 @@ chai.use(chaiHttp);
  */
 exports.authenticateWithCredentials = ({ username, password }) => {
 	const accessTokenPromise = getAccessToken({ username, password });
-	const authenticate = request => accessTokenPromise
+	const authenticate = (request) => accessTokenPromise
 		.then((accessToken) => {
 			request
 				.set('Authorization', accessToken);

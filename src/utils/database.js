@@ -1,6 +1,8 @@
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable global-require */
 const mongoose = require('mongoose');
+const diffHistory = require('mongoose-diff-history/diffHistory');
+const GLOBALS = require('../../config/globals');
 const logger = require('../logger/index');
 
 const configurations = ['test', 'production', 'default', 'migration'];
@@ -13,6 +15,17 @@ if (!(configurations.includes(env))) {
 }
 
 const config = require(`../../config/${env}.json`);
+
+if (GLOBALS.DATABASE_AUDIT === 'true') {
+	logger.info('database audit log enabled');
+}
+
+function enableAuditLog(schema, options) {
+	if (GLOBALS.DATABASE_AUDIT === 'true') {
+		// set database audit
+		schema.plugin(diffHistory.plugin, options);
+	}
+}
 
 function addAuthenticationToOptions(DB_USERNAME, DB_PASSWORD, options) {
 	const auth = {};
@@ -35,22 +48,10 @@ function getConnectionOptions() {
 		DB_PASSWORD,
 	} = process.env;
 
-	// set default options
-	const options = {
-		useMongoClient: true,
-	};
-
-	addAuthenticationToOptions(
-		DB_USERNAME,
-		DB_PASSWORD,
-		options,
-	);
-
 	return {
 		url: DB_URL,
 		username: DB_USERNAME,
 		password: DB_PASSWORD,
-		...options,
 	};
 }
 
@@ -63,9 +64,20 @@ function connect() {
 		options.username ? `with username ${options.username}` : 'without user',
 		options.password ? 'and' : 'and without', 'password');
 
+	// initialize mongoose
+	const mongooseOptions = {
+		useMongoClient: true,
+	};
+
+	addAuthenticationToOptions(
+		options.username,
+		options.password,
+		mongooseOptions,
+	);
+
 	return mongoose.connect(
 		options.url,
-		options,
+		mongooseOptions,
 	);
 }
 
@@ -77,4 +89,5 @@ module.exports = {
 	connect,
 	close,
 	getConnectionOptions,
+	enableAuditLog,
 };

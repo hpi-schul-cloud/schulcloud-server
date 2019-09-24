@@ -11,7 +11,7 @@ module.exports = function RocketChatMockServer({
 
 	let idCounter = 0;
 
-	return findFreePort.then(freePort => new Promise((resolve) => {
+	return findFreePort.then((freePort) => new Promise((resolve) => {
 		const mockRocketChat = express();
 		mockRocketChat.use(bodyParser.json()); // for parsing application/json
 		mockRocketChat.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies

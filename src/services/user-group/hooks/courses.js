@@ -18,7 +18,7 @@ const addWholeClassToCourse = (hook) => {
 		return hook;
 	}
 	if ((requestBody.classIds || []).length > 0) { // just courses do have a property "classIds"
-		return Promise.all(requestBody.classIds.map(classId => ClassModel.findById(classId).exec().then(c => c.userIds))).then(async (studentIds) => {
+		return Promise.all(requestBody.classIds.map((classId) => ClassModel.findById(classId).exec().then((c) => c.userIds))).then(async (studentIds) => {
 			// flatten deep arrays and remove duplicates
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
@@ -47,9 +47,9 @@ const deleteWholeClassFromCourse = (hook) => {
 	return CourseModel.findById(courseId).exec().then((course) => {
 		if (!course) return hook;
 
-		const removedClasses = _.differenceBy(course.classIds, requestBody.classIds, v => JSON.stringify(v));
+		const removedClasses = _.differenceBy(course.classIds, requestBody.classIds, (v) => JSON.stringify(v));
 		if (removedClasses.length < 1) return hook;
-		return Promise.all(removedClasses.map(classId => ClassModel.findById(classId).exec().then(c => (c || []).userIds))).then(async (studentIds) => {
+		return Promise.all(removedClasses.map((classId) => ClassModel.findById(classId).exec().then((c) => (c || []).userIds))).then(async (studentIds) => {
 			// flatten deep arrays and remove duplicates
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
@@ -59,7 +59,7 @@ const deleteWholeClassFromCourse = (hook) => {
 				{ $pull: { userIds: { $in: studentIds } } },
 				{ multi: true },
 			).exec();
-			hook.data.userIds = hook.data.userIds.filter(value => !studentIds.some(id => id.toString() === value));
+			hook.data.userIds = hook.data.userIds.filter((value) => !studentIds.some((id) => id.toString() === value));
 			return hook;
 		});
 	});
@@ -78,8 +78,8 @@ const courseInviteHook = async (context) => {
 
 const patchPermissionHook = async (context) => {
 	const query = context.params.query || {};
-	const defaultPermissionHook = ctx => Promise.resolve(globalHooks.hasPermission('USERGROUP_EDIT')(ctx))
-		.then(_ctx => restrictToUsersOwnCourses(_ctx));
+	const defaultPermissionHook = (ctx) => Promise.resolve(globalHooks.hasPermission('USERGROUP_EDIT')(ctx))
+		.then((_ctx) => restrictToUsersOwnCourses(_ctx));
 
 	if (query.link) {
 		const dbLink = await context.app.service('link').get(query.link); // link is used as "authorization"
@@ -101,7 +101,7 @@ const restrictChangesToArchivedCourse = async (context) => {
 	}
 	// course is expired
 	const disallowedKeys = Object.keys(context.data)
-		.filter(key => !['untilDate', 'startDate', 'schoolId'].includes(key));
+		.filter((key) => !['untilDate', 'startDate', 'schoolId'].includes(key));
 	if (disallowedKeys.length > 0) {
 		return Promise.reject(new BadRequest('This course is archived. To activate it, please change the end date.'));
 	}
