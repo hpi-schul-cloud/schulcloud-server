@@ -123,9 +123,9 @@ module.exports = function setup(app) {
 		all: [],
 		find: [],
 		get: [],
-		create: [sanitizeData, globalHooks.ifNotLocal(removeObjectIdInData), globalHooks.decorateWithCurrentUserId],
-		update: [sanitizeData, globalHooks.decorateWithCurrentUserId],
-		patch: [sanitizeData, globalHooks.decorateWithCurrentUserId],
+		create: [sanitizeData, globalHooks.ifNotLocal(removeObjectIdInData)],
+		update: [sanitizeData],
+		patch: [sanitizeData],
 		remove: [],
 	};
 
