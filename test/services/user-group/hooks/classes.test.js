@@ -21,7 +21,7 @@ describe('sorting method', () => {
 	it('is returning a value when not provided query', () => {
 		const context = {
 			params: {
-				query: { },
+				query: {},
 			},
 		};
 		const result = sortByGradeAndOrName(context);
@@ -35,46 +35,6 @@ describe('sorting method', () => {
 		};
 		const result = sortByGradeAndOrName(context);
 		expect(typeof result).to.equal('object');
-		expect(result.params.query.$sort).to.deep.equal(defaultQuery);
-	});
-
-	it('is returning an object', () => {
-		const context = {
-			params: {},
-		};
-		const result = sortByGradeAndOrName(context);
-		expect(typeof result).to.equal('object');
-		expect(result.params.query.$sort).to.deep.equal(defaultQuery);
-	});
-
-	it('is returning the default value when not given a sortQuery', () => {
-		const context = {
-			params: {
-				query: { $sort: {} },
-			},
-		};
-		const result = sortByGradeAndOrName(context);
-		expect(result.params.query.$sort).to.deep.equal(defaultQuery);
-	});
-
-	it('is returning the default value when not given a sortQuery', () => {
-		const context = {
-			params: {
-				query: { $sort: {} },
-			},
-		};
-		const result = sortByGradeAndOrName(context);
-		expect(result.params.query.$sort).to.deep.equal(defaultQuery);
-	});
-
-	it('is returning the default value when provided as sortQuery that matches the defaultquery', () => {
-		const sortQuery = { gradeLevel: 1, name: 1 };
-		const context = {
-			params: {
-				query: { $sort: sortQuery },
-			},
-		};
-		const result = sortByGradeAndOrName(context);
 		expect(result.params.query.$sort).to.deep.equal(defaultQuery);
 	});
 
