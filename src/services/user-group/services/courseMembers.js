@@ -13,8 +13,8 @@ const setup = (app) => {
 			.concat(params.scope.userIds || [])
 			.concat(params.scope.teacherIds || [])
 			.concat(params.scope.substitutionIds || []);
-		for (const id of ids) {
-			members[id] = await getPermissions(params.scope.id, id);
+		for (const userId of ids) {
+			members[userId] = await getPermissions(params.scope.id, userId);
 		}
 		return members;
 	};
