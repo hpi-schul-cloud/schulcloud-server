@@ -211,8 +211,59 @@ describe('Account Service', () => {
 			}
 		});
 
+		it('should fail to patch the password if the password verfication is wrong', async () => {
+			const userObject = {
+				firstName: 'Max',
+				lastName: 'Mustermann',
+				email: `max${Date.now()}@mustermann.de`,
+				schoolId: '0000d186816abba584714c5f',
+				preferences: {
+					firstLogin: true,
+				},
+			};
+
+			const registrationPin = await registrationPinsService.create({
+				email: userObject.email,
+			});
+			// verify registration pin:
+			await registrationPinsService.find({
+				query: {
+					pin: registrationPin.pin,
+					email: registrationPin.email,
+					verified: false,
+				},
+			});
+			const user = await userService.create(userObject);
+
+			const accountDetails = {
+				username: userObject.email,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				await accountService.patch(account._id, {
+					password: 'Schul&Cluedo76',
+					password_verification: 'wrongpassword',
+				}, {
+					account: {
+						_id: account._id,
+						userId: user._id,
+						password: '$2a$13$R.BId/6E931SqbncoNsg7Onn9zkWZ5BdEiAuqktPfkXs5yOSgO4yi',
+					},
+				});
+				throw new Error('This should not happen.');
+			} catch (exception) {
+				assert.equal(exception.message, 'Dein Passwort ist nicht korrekt!');
+			} finally {
+				await accountService.remove(account._id);
+				await userService.remove(user._id);
+			}
+		});
+
 		it('should successfully patch activated to true', async () => {
-			const user = await testObjects.createTestUser();
+			let user = await testObjects.createTestUser();
+			user = await testObjects.createTestUser();
 			const accountDetails = {
 				username: user.email,
 				password: 'ca4t9fsfr3dsd',

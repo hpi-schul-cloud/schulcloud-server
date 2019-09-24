@@ -37,7 +37,7 @@
 	},
 	"state": "up",
     "name" : "lessonIsCopyFrom",
-    "createdAt" : "2019-07-11T12:18:30.503+0000",
+    "createdAt" : "2019-07-11T07:44:37.148Z",
 	"__v": 0
 },
 {
@@ -145,6 +145,16 @@
 	"name": "remove-research-and-dateofresearchconsent",
 	"createdAt": {
 		"$date": "2019-09-17T14:43:38.288Z"
+  }
+},
+{
+	"_id": {
+		"$oid": "5d80a25a92de001d94db5046"
+	},
+	"state": "up",
+	"name": "addUserDeletePermissions",
+	"createdAt": {
+		"$date": "2019-09-17T09:07:38.792Z"
 	},
 	"__v": 0
 }]

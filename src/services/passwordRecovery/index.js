@@ -4,13 +4,11 @@ const hooks = require('./hooks');
 const AccountModel = require('./../account/model');
 
 class ChangePasswordService {
-	constructor() {
-	}
-
 	create(data) {
-		return AccountModel.update({ _id: data.accountId }, { password: data.password })
-			.then(account => passwordRecovery.update({ _id: data.resetId }, { changed: true })
-				.then((_ => account))).catch(error => error);
+		return passwordRecovery.findOne({ _id: data.resetId, changed: false })
+			.then((pwrecover) => AccountModel.update({ _id: pwrecover.account }, { password: data.password })
+				.then((account) => passwordRecovery.update({ _id: data.resetId }, { changed: true })
+					.then(((_) => account)))).catch((error) => error);
 	}
 }
 

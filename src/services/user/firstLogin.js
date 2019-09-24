@@ -40,6 +40,12 @@ const firstLogin = async (data, params, app) => {
 	let updateConsentUsingVersions = Promise.resolve();
 	const user = await app.service('users').get(params.account.userId);
 
+	if (data['password-1']) {
+		accountUpdate.password_verification = data.password_verification;
+		accountUpdate.password = data['password-1'];
+		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
+	}
+
 	if (data.parent_email) {
 		await createParent(data, params, user, app)
 			.then((parent) => {
@@ -128,15 +134,9 @@ const firstLogin = async (data, params, app) => {
 	}
 	if (consentUpdate.userId) consentPromise = app.service('consents').create(consentUpdate);
 
-	if (data['password-1']) {
-		accountUpdate.password_verification = data.password_verification;
-		accountUpdate.password = data['password-1'];
-		accountPromise = app.service('accounts').patch(accountId, accountUpdate, params);
-	}
-
 	return Promise.all([accountPromise, userPromise, consentPromise, updateConsentUsingVersions])
-		.then(result => Promise.resolve(result))
-		.catch(err => Promise.reject(err));
+		.then((result) => Promise.resolve(result))
+		.catch((err) => Promise.reject(err));
 };
 
 module.exports = function setup(app) {

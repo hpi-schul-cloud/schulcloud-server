@@ -2,7 +2,7 @@ const errors = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
 const { userModel } = require('../user/model');
 
-const rnd = max => Math.floor(Math.random() * Math.floor(max));
+const rnd = (max) => Math.floor(Math.random() * Math.floor(max));
 
 const rndChar = () => {
 	const chars = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];

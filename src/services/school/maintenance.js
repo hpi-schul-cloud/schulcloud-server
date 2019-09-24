@@ -2,9 +2,9 @@ const hooks = require('./hooks/maintenance.hooks');
 const { schoolModel: School, yearModel: Years } = require('./model');
 const SchoolYearFacade = require('./logic/year');
 
-const ldapSystemFilter = s => s.type === 'ldap' && s.ldapConfig && s.ldapConfig.active === true;
+const ldapSystemFilter = (s) => s.type === 'ldap' && s.ldapConfig && s.ldapConfig.active === true;
 
-const schoolUsesLdap = school => (school.systems || []).some(ldapSystemFilter);
+const schoolUsesLdap = (school) => (school.systems || []).some(ldapSystemFilter);
 
 class SchoolMaintenanceService {
 	async setup(app) {
