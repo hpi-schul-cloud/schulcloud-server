@@ -78,6 +78,7 @@
     "moment": "^2.19.2",
     "mongoose": "^4.7.6",
     "mongoose-autopopulate": "^0.9.1",
+    "mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
     "mongoose-history": "^0.8.0",
     "mongoose-id-validator": "^0.4.3",
     "mongoose-lean-virtuals": "^0.3.5",
@@ -121,7 +122,7 @@
       "eslint",
       "eslint-config-airbnb-base",
       "eslint-plugin-import",
-      "eslint-plugin-react" 
+      "eslint-plugin-react"
     ]
   }
 }

@@ -4,6 +4,7 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -18,6 +19,6 @@ const releaseSchema = new Schema({
 	publishedAt: { type: Date, required: true },
 	zipUrl: { type: String },
 });
-
+enableAuditLog(releaseSchema);
 const releaseModel = mongoose.model('release', releaseSchema);
 module.exports = releaseModel;
