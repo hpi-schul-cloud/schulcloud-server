@@ -13,6 +13,8 @@ const logger = require('../logger');
 const KeysModel = require('../services/keys/model');
 // Add any common hooks you want to share across services in here.
 
+const { extractTokenFromBearerHeader } = require('../services/authentication/logic');
+
 // don't require authentication for internal requests
 exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
 	return (context) => {
@@ -631,4 +633,29 @@ exports.arrayIncludes = (array, includesList, excludesList) => {
 		}
 	}
 	return true;
+};
+
+/** used for user decoration of create, update, patch requests for mongoose-diff-history */
+exports.decorateWithCurrentUserId = (context) => {
+	// todo decorate document removal
+	// todo simplify user extraction to do this only once
+	try {
+		if (!context.params.account) {
+			context.params.account = {};
+		}
+		const { userId } = context.params.account;
+		// if user not defined, try extract userId from jwt
+		if (!userId && (context.params.headers || {}).authorization) {
+			// const jwt = extractTokenFromBearerHeader(context.params.headers.authorization);
+			// userId = 'jwt'; // fixme
+		}
+		// eslint-disable-next-line no-underscore-dangle
+		if (userId && context.data && !context.data.__user) {
+			// eslint-disable-next-line no-underscore-dangle
+			context.data.__user = userId;
+		}
+	} catch (err) {
+		logger.error(err);
+	}
+	return context;
 };

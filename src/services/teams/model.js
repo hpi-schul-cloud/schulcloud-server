@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { permissionSchema } = require('../fileStorage/model');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -71,6 +72,8 @@ const teamsSchema = getUserGroupSchema({
 	features: [{ type: String, enum: ['isTeam', 'rocketChat'] }],
 	filePermission: [permissionSchema],
 });
+
+enableAuditLog(teamsSchema);
 
 const teamsModel = mongoose.model('teams', teamsSchema);
 

@@ -5,6 +5,7 @@
 
 const mongoose = require('mongoose');
 const ShortId = require('mongoose-shortid-nodeps');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 const linkLength = 5;
@@ -21,6 +22,7 @@ const linkSchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 });
 
+enableAuditLog(linkSchema);
 const linkModel = mongoose.model('link', linkSchema);
 linkModel.linkLength = linkLength;
 module.exports = linkModel;

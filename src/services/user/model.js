@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
 const roleModel = require('../role/model');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -63,8 +64,12 @@ const registrationPinSchema = new Schema({
 
 const displayName = (user) => `${user.firstName} ${user.lastName}`;
 
+enableAuditLog(registrationPinSchema);
 const registrationPinModel = mongoose.model('registrationPin', registrationPinSchema);
+
+enableAuditLog(userSchema);
 const userModel = mongoose.model('user', userSchema);
+
 module.exports = {
 	userModel,
 	registrationPinModel,
