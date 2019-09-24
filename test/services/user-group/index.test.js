@@ -59,7 +59,7 @@ describe('classes service', () => {
 			}));
 		}).timeout(4000);
 
-		it('should allow admin to only find classes they participate in', async () => {
+		it('should allow students to only find classes they participate in', async () => {
 			const studentUser = await testObjects.createTestUser({ roles: ['student'] });
 
 			const classes = [
