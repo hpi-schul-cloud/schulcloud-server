@@ -191,7 +191,9 @@
 				"$oid": "0000d186816abba584714c95"
 			}
 		],
-		"permissions": [],
+		"permissions": [
+			"HOMEWORK_CREATE"
+		],
 		"__v": 0
 	},
 	{
