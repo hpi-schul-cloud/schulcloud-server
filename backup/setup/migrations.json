@@ -158,5 +158,15 @@
 		"$date": "2019-09-17T09:07:38.792Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d8b80ca723a1b53dc43172e"
+	},
+	"state": "up",
+	"name": "AddScopePermissionsViewPermissionToCourseTeachers",
+	"createdAt": {
+		"$date": "2019-09-25T14:59:22.19Z"
+	},
+	"__v": 0
 }]
-
