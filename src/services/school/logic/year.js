@@ -96,12 +96,12 @@ class SchoolYearFacade {
 	}
 
 	/**
- *
- *
- * @param {ObjectId} yearId the id of a year
- * @returns
- * @memberof SchoolYears
- */
+	 *
+	 *
+	 * @param {ObjectId} yearId the id of a year
+	 * @returns
+	 * @memberof SchoolYears
+	 */
 	getNextYearAfter(yearId) {
 		const indexByValue = (array, value) => {
 			for (let i = 0; i < array.length; i += 1) {

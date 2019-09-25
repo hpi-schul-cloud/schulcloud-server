@@ -118,7 +118,7 @@ const displayInternRequests = (level) => (context) => {
 	return context;
 };
 
-module.exports = function setup() {
+module.exports = function setup(app) {
 	const before = {
 		all: [],
 		find: [],
@@ -149,7 +149,6 @@ module.exports = function setup() {
 		remove: [],
 	};
 
-	const app = this;
 	// DISPLAY_REQUEST_LEVEL is set by requestLogger middleware in production it is force to 0
 	// level 2+ adding intern request
 	if (app.get('DISPLAY_REQUEST_LEVEL') > 1) {

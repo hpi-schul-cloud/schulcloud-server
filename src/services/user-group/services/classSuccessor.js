@@ -22,10 +22,12 @@ const findDuplicates = async (successor, app) => {
 
 const constructSuccessor = async (currentClass, app) => {
 	const successor = {
+		displayName: currentClass.displayName,
 		name: currentClass.name,
 		schoolId: currentClass.schoolId,
 		teacherIds: currentClass.teacherIds,
 		userIds: currentClass.userIds,
+		predecessor: currentClass._id,
 	};
 
 	// ToDO warning if gradelevel too high
@@ -39,7 +41,11 @@ const constructSuccessor = async (currentClass, app) => {
 	if (currentClass.year) {
 		const school = await (app.service('schools').get(currentClass.schoolId));
 		const schoolYears = new SchoolYearFacade(school.years.schoolYears, school);
-		successor.year = await schoolYears.getNextYearAfter(currentClass.year)._id;
+		const successorYear = await schoolYears.getNextYearAfter(currentClass.year);
+		if (!successorYear) {
+			throw new BadRequest('class is already in latest year.');
+		}
+		successor.year = successorYear._id;
 	}
 
 	successor.duplicates = await findDuplicates(successor, app);

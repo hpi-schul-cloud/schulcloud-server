@@ -11,6 +11,7 @@ const createTestClass = (app, opt) => ({
 	nameFormat = 'static',
 	gradeLevel = undefined,
 	year = undefined,
+	predecessor = undefined,
 }) => app.service('classes').create({
 	name,
 	schoolId,
@@ -19,6 +20,7 @@ const createTestClass = (app, opt) => ({
 	nameFormat,
 	gradeLevel,
 	year,
+	predecessor,
 }).then((res) => {
 	createdClassesIds.push(res._id.toString());
 	return res;
