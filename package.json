@@ -120,7 +120,7 @@
       "eslint",
       "eslint-config-airbnb-base",
       "eslint-plugin-import",
-      "eslint-plugin-react" 
+      "eslint-plugin-react"
     ]
   }
 }
