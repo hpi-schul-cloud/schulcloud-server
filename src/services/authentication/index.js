@@ -4,8 +4,10 @@ const local = require('@feathersjs/authentication-local');
 
 const extractors = require('passport-jwt').ExtractJwt;
 
+const { jwtFromCookieString, authHeaderExtractor } = require('./logic');
 const system = require('./strategies/system');
 const hooks = require('./hooks');
+const logger = require('../../logger');
 
 
 let secrets;
@@ -22,11 +24,15 @@ try {
 }
 
 const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
+if (process.env.NODE_ENV === 'production' && !secrets.authentication) {
+	logger.error('use default authentication secret');
+}
 
 module.exports = function () {
 	const app = this;
 
-	const authConfig = Object.assign({}, app.get('auth'), {
+	const authConfig = {
+		...app.get('auth'),
 		header: 'Authorization',
 		entity: 'account',
 		service: 'accounts',
@@ -39,7 +45,7 @@ module.exports = function () {
 			expiresIn: '30d',
 		},
 		secret: authenticationSecret,
-	});
+	};
 
 
 	const localConfig = {
@@ -54,28 +60,8 @@ module.exports = function () {
 	};
 
 	const cookieExtractor = function (req) {
-		let cookies = req.headers.cookie;
-		try {
-			cookies = cookies.split(';');
-			let jwt;
-			cookies.map((cookie) => {
-				if (cookie.includes('jwt')) {
-					cookie = cookie.split('=');
-					if (cookie[0] === 'jwt') {
-						jwt = cookie[1];
-					}
-				}
-			});
-			return jwt;
-		} catch (e) {
-			return undefined;
-		}
-	};
-
-	const authHeaderExtractor = function (req) {
-		const authHeader = req.headers.authorization;
-		if (!authHeader) { return undefined; }
-		return authHeader.replace('Bearer ', '');
+		const cookieString = req.headers.cookie;
+		return jwtFromCookieString(cookieString);
 	};
 
 	const jwtConfig = {

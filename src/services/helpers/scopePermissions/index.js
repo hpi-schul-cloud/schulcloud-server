@@ -118,7 +118,7 @@ class ScopePermissionService extends ScopeService {
 		// for each user get the scope permissions and add them to a dictionary {userId: [permissions]}
 		const ops = userIds.map(async userId => [userId, await this.getUserPermissions(userId, params.scope)]);
 		return Promise.all(ops)
-			.then(results => results.reduce((agg, [key, value]) => {
+			.then((results) => results.reduce((agg, [key, value]) => {
 				const newAgg = agg;
 				newAgg[key] = value;
 				return newAgg;
