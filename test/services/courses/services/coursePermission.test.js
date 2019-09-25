@@ -41,6 +41,8 @@ describe('PermissionService', async () => {
 		'USER_VIEW',
 		'USER_EDIT',
 		'HOMEWORK_VIEW',
+		'HOMEWORK_CREATE',
+		'HOMEWORK_EDIT',
 		'COMMENTS_VIEW',
 		'COMMENTS_CREATE',
 		'COMMENTS_EDIT',
