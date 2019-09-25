@@ -8,7 +8,7 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 	verifyConfiguration() {
 		const config = this.configuration;
 
-		['usernameField'].forEach((prop) => {
+		['usernameField', 'systemIdField'].forEach((prop) => {
 			if (typeof config[prop] !== 'string') {
 				throw new Error(`'${this.name}' authentication strategy requires a '${prop}' setting`);
 			}
@@ -25,6 +25,7 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 			entityId: authConfig.entityId,
 			errorMessage: 'Invalid login',
 			entityUsernameField: config.usernameField,
+			entitySystemIdField: config.systemIdField,
 			...config,
 		};
 	}
@@ -36,10 +37,16 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 		};
 	}
 
-	async findEntity(username, params) {
-		const { entityUsernameField, service, errorMessage } = this.configuration;
+	async findEntity(username, password, strategy, systemId, params) {
+		const {
+			entityUsernameField,
+			entitySystemIdField,
+			service,
+			errorMessage,
+		} = this.configuration;
 		const query = await this.getEntityQuery({
 			[entityUsernameField]: username,
+			[entitySystemIdField]: systemId,
 		}, params);
 
 		const findParams = { ...params, query };
@@ -49,7 +56,15 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 		const list = Array.isArray(result) ? result : result.data;
 
 		if (!Array.isArray(list) || list.length === 0) {
-			throw new NotAuthenticated(errorMessage);
+			const accountParameters = {
+				username,
+				password,
+				strategy,
+				systemId,
+			};
+			await this.app.service('accounts').create(accountParameters);
+			return this.findEntity(username, password, strategy, systemId, params);
+			// throw new NotAuthenticated(errorMessage);
 		}
 
 		const [entity] = list;
@@ -75,13 +90,10 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 		});
 	}
 
-	async authenticate(authentication, params) {
-		const { app } = this;
-
-		const system = await app.service('systems').get(authentication.systemId);
+	async credentialCheck(username, password, system) {
 		const moodleOptions = {
-			username: authentication.username,
-			password: authentication.password,
+			username,
+			password,
 			wwwroot: system.url,
 			logger,
 		};
@@ -97,9 +109,39 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 
 		const client = await moodleClient.init(moodleOptions);
 		if (client) {
+			return client;
+		}
+		return false;
+	}
+
+	async authenticate(authentication, params) {
+		const { app } = this;
+
+		const system = await app.service('systems').get(authentication.systemId);
+
+		const client = await this.credentialCheck(authentication.username, authentication.password, system);
+
+		if (client) {
 			if (client.token) {
 				const { entity } = this.configuration;
-				const result = await this.findEntity(authentication.username, omit(params, 'provider'));
+				const result = await this.findEntity(
+					authentication.username,
+					authentication.password,
+					authentication.strategy,
+					authentication.systemId,
+					omit(params, 'provider'),
+				);
+
+				// Update payload if account is created
+				if (!params.payload) {
+					params.payload = {};
+					if (result._id) {
+						params.payload.accountId = result._id;
+					}
+					if (result.systemId) {
+						params.payload.systemId = result.systemId;
+					}
+				}
 				return {
 					authentication: { strategy: this.name },
 					[entity]: await this.getEntity(result, params),

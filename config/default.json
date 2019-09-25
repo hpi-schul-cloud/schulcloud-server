@@ -23,7 +23,8 @@
 			"usernameField": "username"
 		},
 		"moodle": {
-			"usernameField": "username"
+			"usernameField": "username",
+			"systemIdField": "systemId"
 		}
 	},
 	"services": {

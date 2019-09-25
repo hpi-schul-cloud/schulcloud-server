@@ -43,6 +43,7 @@ const authConfig = {
 	},
 	moodle: {
 		usernameField: 'username',
+		systemIdField: 'systemId',
 	},
 };
 

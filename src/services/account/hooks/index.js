@@ -7,18 +7,11 @@ const { ObjectId } = require('mongoose').Types;
 
 const globalHooks = require('../../../hooks');
 
-const MoodleLoginStrategy = require('../strategies/moodle');
-const IServLoginStrategy = require('../strategies/iserv');
-const LocalLoginStrategy = require('../strategies/local');
-const LdapLoginStrategy = require('../strategies/ldap');
+const { LdapStrategy, MoodleStrategy } = require('../../authentication/strategies');
 
-// don't initialize strategies here - otherwise massive overhead
-// TODO: initialize all strategies here once
 const strategies = {
-	moodle: MoodleLoginStrategy,
-	iserv: IServLoginStrategy,
-	local: LocalLoginStrategy,
-	ldap: LdapLoginStrategy,
+	moodle: MoodleStrategy,
+	ldap: LdapStrategy,
 };
 
 const sanitizeUsername = (hook) => {
@@ -29,7 +22,7 @@ const sanitizeUsername = (hook) => {
 };
 
 // This is only for SSO
-const validateCredentials = (hook) => {
+const validateCredentials = async (hook) => {
 	const {
 		username, password, systemId, schoolId,
 	} = hook.data;
@@ -41,22 +34,15 @@ const validateCredentials = (hook) => {
 
 	const { app } = hook;
 	const systemService = app.service('/systems');
-	return systemService.get(systemId)
-		.then((system) => {
-			const Strategy = strategies[system.type];
-			return {
-				strategy: new Strategy(app),
-				system,
-			};
-		})
-		.then(({ strategy, system }) => strategy.login({ username, password }, system, schoolId))
-		.then((client) => {
-			if (client.token) {
-				hook.data.token = client.token;
-				hook.data.activated = true;
-			}
-			return hook;
-		});
+	const system = await systemService.get(systemId);
+
+	const Strategy = strategies[system.type];
+	const systemStrategy = new Strategy();
+	const client = await systemStrategy.credentialCheck(username, password, system);
+	if (client) {
+		return hook;
+	}
+	return Promise.reject();
 };
 
 const trimPassword = (hook) => {
@@ -154,8 +140,10 @@ const checkUnique = (hook) => {
 };
 
 const removePassword = (hook) => {
+	const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
+
 	const { strategy } = hook.data;
-	if (strategy === 'ldap') {
+	if (noPasswordStrategies.includes(strategy)) {
 		hook.data.password = '';
 	}
 	return Promise.resolve(hook);
