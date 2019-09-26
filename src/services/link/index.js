@@ -28,6 +28,22 @@ module.exports = function setup() {
 		return false;
 	}
 
+	function getFrontendUrl(){
+		let backendUrl = process.env.HOST
+		if(backendUrl){
+			backendUrl = backendUrl.replace('api','')
+		} else {
+			return 'http://localhost:3100'
+		}
+	}
+
+	function isLocalRegistrationLink(link) {
+		let linkPrefix = getFrontendUrl() + '/registration/'
+		console.log(linkPrefix);
+		if(link.startsWith(linkPrefix)) return true;
+		return false;
+	}
+
 	function redirectToTarget(req, res, next) {
 		if (req.method === 'GET' && !req.query.target) { // capture these requests and issue a redirect
 			const linkId = req.params.__feathersId;
@@ -37,11 +53,8 @@ module.exports = function setup() {
 						const [url, query] = data.target.split('?');
 						const queryObject = queryString.parse(query || '');
 						queryObject.link = data._id;
-						if (url.includes('/registration/') && !(verifyDate(data.createdAt))) {
-							res.status(500).send({
-								error: `This link has expired. Registration links are only valid for ${registrationLinkTimeoutDays} days. Please request a new link from your teacher/administrator. `,
-								fehler: `Dieser Link ist abgelaufen. Registrierungslinks sind nur ${registrationLinkTimeoutDays} Tage lang gültig. Bitte frage bei deinem Lehrer oder Administrator nach einem neuen.`,
-							});
+						if (isLocalRegistrationLink(url) && !(verifyDate(data.createdAt))) {
+							res.redirect(`${getFrontendUrl()}/link/expired`)
 						} else {
 							res.redirect(`${url}?${queryString.stringify(queryObject)}`);
 						}
