@@ -15,7 +15,7 @@ const injectUserId = async (context) => {
 			systemId,
 		},
 		paginate: false,
-	}).then(([account]) => {
+	}).then(async ([account]) => {
 		if (account) {
 			context.params.payload = {};
 			context.params.payload.accountId = account._id;
@@ -24,6 +24,19 @@ const injectUserId = async (context) => {
 			}
 			if (account.systemId) {
 				context.params.payload.systemId = account.systemId;
+			}
+		} else if (['moodle'].includes(strategy)) {
+			const accountParameters = {
+				username: context.data.username,
+				password: context.data.password,
+				strategy,
+				systemId,
+			};
+			const newAccount = await context.app.service('accounts').create(accountParameters);
+			context.params.payload = {};
+			context.params.payload.accountId = newAccount._id;
+			if (newAccount.systemId) {
+				context.params.payload.systemId = newAccount.systemId;
 			}
 		}
 		return context;

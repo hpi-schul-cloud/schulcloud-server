@@ -56,15 +56,7 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 		const list = Array.isArray(result) ? result : result.data;
 
 		if (!Array.isArray(list) || list.length === 0) {
-			const accountParameters = {
-				username,
-				password,
-				strategy,
-				systemId,
-			};
-			await this.app.service('accounts').create(accountParameters);
-			return this.findEntity(username, password, strategy, systemId, params);
-			// throw new NotAuthenticated(errorMessage);
+			throw new NotAuthenticated(errorMessage);
 		}
 
 		const [entity] = list;
