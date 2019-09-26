@@ -1,6 +1,6 @@
 const queryString = require('querystring');
-const logger = require('winston');
 const service = require('feathers-mongoose');
+const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
 
@@ -16,17 +16,15 @@ module.exports = function setup() {
 		lean: true,
 	};
 
-	const registrationLinkTimeoutDays = 30;
+	const registrationLinkExpirationDays = app.get('registrationLinkExpirationDays') || 30;
 
 	let linkService = service(options);
 
-	function verifyDate(date) {
-		date = new Date(date);
-		const currentDate = new Date();
-		const diff = currentDate.getTime() - date.getTime();
-		if (diff < registrationLinkTimeoutDays * 1000 * 3600 * 24) return true;
-		return false;
-	}
+	const verifyDate = (date) => {
+		const expirationDate = new Date(date);
+		expirationDate.setDate(expirationDate.getDate() + registrationLinkExpirationDays);
+		return expirationDate >= Date.now();
+	};
 
 	function getFrontendUrl(){
 		let backendUrl = process.env.HOST
@@ -46,6 +44,7 @@ module.exports = function setup() {
 
 	function redirectToTarget(req, res, next) {
 		if (req.method === 'GET' && !req.query.target) { // capture these requests and issue a redirect
+			/* eslint-disable-next-line no-underscore-dangle */
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then((data) => {
@@ -63,7 +62,7 @@ module.exports = function setup() {
 					}
 				})
 				.catch((err) => {
-					logger.warn(err);
+					logger.error(err);
 					res.status(500).send(err);
 				});
 		} else {
@@ -90,7 +89,7 @@ module.exports = function setup() {
 						});
 					}
 				} catch (err) {
-					logger.warn(err);
+					logger.warning(err);
 					return Promise.reject(new Error(`Fehler beim Generieren des Hashes. ${err}`));
 				}
 			}
@@ -110,7 +109,7 @@ module.exports = function setup() {
 			await app.service('link').create({ target: linkData.link }).then((generatedShortLink) => {
 				linkData.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`;
 			}).catch((err) => {
-				logger.warn(err);
+				logger.warning(err);
 				return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
 			});
 
@@ -159,7 +158,7 @@ module.exports = function setup() {
 						}).then((generatedHash) => {
 							linkInfo.hash = generatedHash;
 						}).catch((err) => {
-							logger.warn(err);
+							logger.warning(err);
 							return Promise.resolve('Success!');
 						});
 					}
@@ -173,7 +172,7 @@ module.exports = function setup() {
 					// team accept link for existing users
 					linkInfo.link = `${(data.host || process.env.HOST)}/teams/invitation/accept/${teamId}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
 				} else {
-					logger.warn('Nicht alle Daten für den Experten-Link vorhanden.');
+					logger.warning('Nicht alle Daten für den Experten-Link vorhanden.');
 					return Promise.resolve('Success!');
 				}
 
@@ -183,7 +182,7 @@ module.exports = function setup() {
 					// build final short link and remove possible double-slashes in url except the protocol ones
 					linkInfo.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
 				}).catch((err) => {
-					logger.warn('Fehler beim Erstellen des Kurzlinks.');
+					logger.warning('Fehler beim Erstellen des Kurzlinks.');
 					return Promise.resolve('Success!');
 				});
 

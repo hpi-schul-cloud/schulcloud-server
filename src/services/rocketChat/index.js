@@ -1,6 +1,6 @@
 const request = require('request-promise-native');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
-const logger = require('winston');
+const logger = require('../../logger');
 const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = require('./rocketChatConfig');
 
 const rocketChatModels = require('./model'); // toDo: deconstruct
@@ -9,15 +9,16 @@ const {
 } = require('./hooks');
 const docs = require('./docs');
 const { randomPass, randomSuffix } = require('./randomPass');
+const { makeStringRCConform } = require('./helpers');
 
 
 const REQUEST_TIMEOUT = 6000; // in ms
 
-if (ROCKET_CHAT_URI === undefined) { logger.warn('please set the environment variable ROCKET_CHAT_URI'); }
+if (ROCKET_CHAT_URI === undefined) { logger.warning('please set the environment variable ROCKET_CHAT_URI'); }
 if (ROCKET_CHAT_ADMIN_TOKEN === undefined) {
-	logger.warn('please set the environment variable ROCKET_CHAT_ADMIN_TOKEN');
+	logger.warning('please set the environment variable ROCKET_CHAT_ADMIN_TOKEN');
 }
-if (ROCKET_CHAT_ADMIN_ID === undefined) { logger.warn('please set the environment variable ROCKET_CHAT_ADMIN_ID'); }
+if (ROCKET_CHAT_ADMIN_ID === undefined) { logger.warning('please set the environment variable ROCKET_CHAT_ADMIN_ID'); }
 
 /**
  * create a valid options object to call a rocketChat request.
@@ -49,14 +50,6 @@ const getRequestOptions = (shortUri, body, asAdmin, auth, method) => {
 		json: true,
 		timeout: REQUEST_TIMEOUT,
 	};
-};
-
-const makeStringRCConform = (input) => {
-	const dict = {
-		ä: 'ae', Ä: 'Ae', ö: 'oe', Ö: 'Oe', ü: 'ue', Ü: 'Ue', ' ': '-', ß: 'ss',
-	};
-	const inputResolvedUmlauts = input.replace(/[äÄöÖüÜß ]/g, match => dict[match]);
-	return inputResolvedUmlauts.replace(/[^\w\d.-_]/g, '_');
 };
 
 /**
@@ -125,7 +118,7 @@ class RocketChatUser {
 				userId, pass, username, rcId,
 			});
 		}).catch((err) => {
-			logger.warn(new BadRequest(`Can not create RocketChat Account for user ${userId}`, err));
+			logger.warning(new BadRequest(`Can not create RocketChat Account for user ${userId}`, err));
 			throw new BadRequest('Can not create RocketChat Account', err);
 		});
 	}
@@ -179,7 +172,7 @@ class RocketChatUser {
 				return Promise.resolve();
 			})
 			.catch((err) => {
-				logger.warn(new BadRequest('deleteUser', err));
+				logger.warning(new BadRequest('deleteUser', err));
 			});
 	}
 
@@ -195,7 +188,7 @@ class RocketChatUser {
 				delete result.password;
 				return Promise.resolve(result);
 			}).catch((err) => {
-				logger.warn('encountered an error while fetching a rocket.chat user.', err);
+				logger.warning('encountered an error while fetching a rocket.chat user.', err);
 				throw err;
 			});
 	}
@@ -288,7 +281,7 @@ class RocketChatLogin {
 					return Promise.resolve({ authToken });
 				} return Promise.reject(new BadRequest('False response data from rocketChat'));
 			}).catch((err) => {
-				logger.warn(new Forbidden('Can not create token.', err));
+				logger.warning(new Forbidden('Can not create token.', err));
 				throw new Forbidden('Can not create token.', err);
 			});
 	}
@@ -410,7 +403,7 @@ class RocketChatChannel {
 			})
 			.then(result => this.synchronizeModerators(currentTeam).then(() => result))
 			.catch((err) => {
-				logger.warn(new BadRequest('Can not create RocketChat Channel', err));
+				logger.warning(new BadRequest('Can not create RocketChat Channel', err));
 				throw new BadRequest('Can not create RocketChat Channel', err);
 			});
 	}
@@ -427,7 +420,7 @@ class RocketChatChannel {
 				channelName: channel.channelName,
 			};
 		} catch (err) {
-			logger.warn(new BadRequest('error initializing the rocketchat channel', err));
+			logger.warning(new BadRequest('error initializing the rocketchat channel', err));
 			return new BadRequest('error initializing the rocketchat channel', err);
 		}
 	}
@@ -443,7 +436,7 @@ class RocketChatChannel {
 			};
 			return request(getRequestOptions('/api/v1/groups.invite', body, true))
 				.catch((err) => {
-					logger.warn(new BadRequest('addUsersToChannel', err));
+					logger.warning(new BadRequest('addUsersToChannel', err));
 				});
 		});
 		return Promise.all(invitationPromises);
@@ -460,7 +453,7 @@ class RocketChatChannel {
 			};
 			return request(getRequestOptions('/api/v1/groups.kick', body, true))
 				.catch((err) => {
-					logger.warn(new BadRequest('removeUsersFromChannel', err));
+					logger.warning(new BadRequest('removeUsersFromChannel', err));
 				});
 		});
 		return Promise.all(kickPromises);
@@ -480,7 +473,7 @@ class RocketChatChannel {
 				return Promise.resolve();
 			})
 			.catch((err) => {
-				logger.warn(new BadRequest('deleteChannel', err));
+				logger.warning(new BadRequest('deleteChannel', err));
 			});
 	}
 

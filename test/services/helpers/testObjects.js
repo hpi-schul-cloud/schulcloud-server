@@ -1,9 +1,9 @@
-const logger = require('winston');
+const logger = require('../../../src/logger/index');
 
 const serviceHelpers = require('./services');
 
 const warn = (message, pass) => {
-	logger.warn(message);
+	logger.warning(message);
 	return pass;
 };
 
@@ -20,6 +20,7 @@ module.exports = (app, opt = {
 		accounts,
 		roles,
 		schools,
+		years,
 	} = serviceHelpers(app, opt);
 
 	const cleanup = () => Promise.all([]
@@ -30,13 +31,14 @@ module.exports = (app, opt = {
 		.concat(courses.cleanup())
 		.concat(teams.cleanup())
 		.concat(roles.cleanup())
-		.concat(schools.cleanup()))
+		.concat(schools.cleanup())
+		.concat(years.cleanup()))
 		.then((res) => {
 			logger.info('[TestObjects] cleanup data.');
 			return res;
 		})
 		.catch((err) => {
-			logger.warn('[TestObjects] Can not cleanup.', err);
+			logger.warning('[TestObjects] Can not cleanup.', err);
 			return err;
 		});
 
@@ -49,6 +51,7 @@ module.exports = (app, opt = {
 		courses: courses.info,
 		accounts: accounts.info,
 		schools: schools.info,
+		years: years.info,
 	});
 
 	const createTestTeamWithOwner = async () => {

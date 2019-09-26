@@ -2,7 +2,7 @@ const path = require('path');
 const siofu = require('socketio-file-upload');
 const fileType = require('file-type');
 const readChunk = require('read-chunk');
-const logger = require('winston');
+const logger = require('../../logger');
 
 module.exports = (socket) => {
 	initUploadSocket(socket, (uploadedFile) => {
