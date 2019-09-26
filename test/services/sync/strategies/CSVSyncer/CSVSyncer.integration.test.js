@@ -61,7 +61,7 @@ describe('CSVSyncer Integration', () => {
 			try {
 				await app.service('sync').create(scenarioData, scenarioParams);
 			} catch (err) {
-				expect(err.message).to.equal('No auth token');
+				expect(err.message).to.equal('Not authenticated');
 			}
 		});
 	});
