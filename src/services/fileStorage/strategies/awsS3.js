@@ -63,7 +63,7 @@ const splitFilesAndDirectories = (_path, data) => {
 	});
 
 	// remove .scfake fake file
-	files = files.filter(f => f.name !== '.scfake');
+	files = files.filter((f) => f.name !== '.scfake');
 
 	return {
 		files,
@@ -97,8 +97,8 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 		e.Key = removeLeadingSlash(e.Key);
 	});
 
-	return Promise.all(awsObjects.map(object => headObject({ Bucket: bucketName, Key: object.Key })
-		.then(res => ({
+	return Promise.all(awsObjects.map((object) => headObject({ Bucket: bucketName, Key: object.Key })
+		.then((res) => ({
 			key: object.Key,
 			name: getFileName(object.Key),
 			path: getPath(res.Metadata.path),
@@ -107,7 +107,7 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 			type: res.ContentType,
 			thumbnail: res.Metadata.thumbnail,
 		}))))
-		.then(data => splitFilesAndDirectories(storageContext, data));
+		.then((data) => splitFilesAndDirectories(storageContext, data));
 };
 
 class AWSS3Strategy extends AbstractFileStorageStrategy {
@@ -190,7 +190,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			return Promise.reject(new BadRequest('Missing parameters by getFiles.'));
 		}
 		return filePermissionHelper.checkPermissions(userId, path)
-			.then(res => UserModel.userModel.findById(userId).exec())
+			.then((res) => UserModel.userModel.findById(userId).exec())
 			.then((result) => {
 				if (!result) {
 					return new NotFound('User not found');
@@ -205,7 +205,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					Prefix: path,
 				};
 				return promisify(awsObject.s3.listObjectsV2.bind(awsObject.s3), awsObject.s3)(params)
-					.then(res => Promise.resolve(getFileMetadata(path, res.Contents, awsObject.bucket, awsObject.s3)));
+					.then((res) => Promise.resolve(getFileMetadata(path, res.Contents, awsObject.bucket, awsObject.s3)));
 			});
 	}
 
@@ -355,7 +355,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			return Promise.reject(new BadRequest('Missing parameters by deleteDirectory.'));
 		}
 		return filePermissionHelper.checkPermissions(userId, path)
-			.then(res => UserModel.userModel.findById(userId).exec())
+			.then((res) => UserModel.userModel.findById(userId).exec())
 			.then((result) => {
 				if (!result || !result.schoolId) {
 					return new NotFound('User not found');
@@ -380,7 +380,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				}
 
 				const deleteParams = { Bucket: params.Bucket, Delete: {} };
-				deleteParams.Delete.Objects = data.Contents.map(c => ({ Key: c.Key }));
+				deleteParams.Delete.Objects = data.Contents.map((c) => ({ Key: c.Key }));
 
 				return promisify(awsObject.s3.deleteObjects.bind(awsObject.s3), awsObject.s3)(deleteParams);
 			})

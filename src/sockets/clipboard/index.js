@@ -12,7 +12,7 @@ module.exports = function () {
 	app.configure(socketio((io) => {
 		const courses = {};
 
-		const joinCourse = socket => new Promise((resolve, reject) => {
+		const joinCourse = (socket) => new Promise((resolve, reject) => {
 			const { courseId } = socket.request._query;
 			socket.meta.courseId = courseId;
 			socket.join(courseId, (err) => {
@@ -21,7 +21,7 @@ module.exports = function () {
 			});
 		});
 
-		const initCourse = socket => () => {
+		const initCourse = (socket) => () => {
 			const { courseId } = socket.meta;
 			if (!courses[courseId]) {
 				courses[courseId] = {
@@ -64,7 +64,7 @@ module.exports = function () {
 		};
 
 
-		const initModel = socket => () => new Promise((resolve, reject) => {
+		const initModel = (socket) => () => new Promise((resolve, reject) => {
 			const query = {
 				course: socket.meta.courseId,
 			};
@@ -82,7 +82,7 @@ module.exports = function () {
 			});
 		});
 
-		const getUser = socket => () => app.service('users').get(socket.client.userId).then((result, err) => {
+		const getUser = (socket) => () => app.service('users').get(socket.client.userId).then((result, err) => {
 			const user = {
 				id: result._id,
 				role: result.permissions.indexOf('USERGROUP_EDIT') >= 0 ? 'teacher' : 'student',
@@ -92,7 +92,7 @@ module.exports = function () {
 			socket.meta.user = user;
 		});
 
-		const initUserInCourse = socket => () => {
+		const initUserInCourse = (socket) => () => {
 			const { user, course } = socket.meta;
 			course.users[user.bucket][user.id] = user;
 			if (!course.desks[user.bucket][user.id]) {
@@ -109,7 +109,7 @@ module.exports = function () {
 			course.broadcastUpdate('users', 'desks');
 		};
 
-		const sendFullState = socket => () => {
+		const sendFullState = (socket) => () => {
 			socket.emit('clipboardState', {
 				...socket.meta.course,
 				me: socket.meta.user,

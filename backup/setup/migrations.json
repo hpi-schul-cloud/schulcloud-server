@@ -37,7 +37,7 @@
 	},
 	"state": "up",
     "name" : "lessonIsCopyFrom",
-    "createdAt" : "2019-07-11T12:18:30.503+0000",
+    "createdAt" : "2019-07-11T07:44:37.148Z",
 	"__v": 0
 },
 {
@@ -139,6 +139,17 @@
 },
 {
 	"_id": {
+		"$oid": "5d6fd5e8353b8668562740f3"
+	},
+	"state": "up",
+	"name": "addNewsCreateToAdmin",
+	"createdAt": {
+		"$date": "2019-09-04T15:19:04.053Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5d80a25a92de001d94db5046"
 	},
 	"state": "up",
@@ -148,3 +159,4 @@
 	},
 	"__v": 0
 }]
+

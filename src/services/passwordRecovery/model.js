@@ -5,6 +5,7 @@
 
 const mongoose = require('mongoose');
 const ShortId = require('mongoose-shortid-nodeps');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -20,6 +21,8 @@ const passwordRecoverySchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
+
+enableAuditLog(passwordRecoverySchema);
 
 const passwordRecoveryModel = mongoose.model('passwordRecovery', passwordRecoverySchema);
 

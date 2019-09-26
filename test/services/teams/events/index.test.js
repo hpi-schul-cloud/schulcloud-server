@@ -40,7 +40,7 @@ describe('Test user remove events for teams.', () => {
 
 			const teamWithRemovedUser = await testObjects.teams.getById(team._id.toString());
 			const found = teamWithRemovedUser.userIds.some(
-				teamUser => teamUser.userId.toString() === user._id.toString(),
+				(teamUser) => teamUser.userId.toString() === user._id.toString(),
 			);
 			expect(found).to.equal(false);
 			expect(teamWithRemovedUser.userIds).to.be.an('array').with.lengthOf(1);

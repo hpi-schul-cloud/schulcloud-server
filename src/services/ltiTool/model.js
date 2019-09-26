@@ -4,6 +4,7 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -37,6 +38,8 @@ const ltiTool = new Schema({
 	useIframePseudonym: { type: Boolean },
 	friendlyUrl: { type: String, unique: true, sparse: true },
 });
+
+enableAuditLog(ltiTool);
 
 const ltiToolModel = mongoose.model('ltiTool', ltiTool);
 
