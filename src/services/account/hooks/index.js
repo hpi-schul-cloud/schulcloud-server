@@ -251,7 +251,7 @@ const testIfJWTExist = (context) => {
 };
 
 exports.before = {
-	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
+	// find, get and create cannot be protected by authenticate('jwt')
 	// otherwise we cannot get the accounts required for login
 	find: [testIfJWTExist, globalHooks.ifNotLocal(restrictAccess)],
 	get: [hooks.disallow('external')],
@@ -260,7 +260,7 @@ exports.before = {
 		checkExistence,
 		validateCredentials,
 		trimPassword,
-		local.hooks.hashPassword({ passwordField: 'password' }),
+		local.hooks.hashPassword('password'),
 		checkUnique,
 		removePassword,
 	],
@@ -277,7 +277,7 @@ exports.before = {
 		globalHooks.permitGroupOperation,
 		trimPassword,
 		validatePassword,
-		local.hooks.hashPassword({ passwordField: 'password' }),
+		local.hooks.hashPassword('password'),
 	],
 	remove: [
 		authenticate('jwt'),

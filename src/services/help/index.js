@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
 const errors = require('@feathersjs/errors');
 const { helpDocumentsModel } = require('./model');
@@ -59,7 +59,7 @@ module.exports = function news() {
 
 	service.hooks({
 		before: {
-			all: [auth.hooks.authenticate('jwt')],
+			all: [authenticate('jwt')],
 			find: [],
 			get: [hooks.disallow()],
 			create: [hooks.disallow()],

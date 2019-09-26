@@ -1,11 +1,11 @@
 const { disallow } = require('feathers-hooks-common');
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { lookupSchool } = require('./news.hooks');
 
 exports.before = {
 	all: [],
 	find: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		lookupSchool,
 	],
 	get: [disallow()],

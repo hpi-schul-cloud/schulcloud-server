@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const { lookupScope, rejectQueryingOtherUsers } = require('./hooks');
 
@@ -15,7 +15,7 @@ class ScopeService {
 		return {
 			before: {
 				all: [
-					globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
+					globalHooks.ifNotLocal(authenticate('jwt')),
 					globalHooks.ifNotLocal(rejectQueryingOtherUsers),
 					lookupScope,
 				],

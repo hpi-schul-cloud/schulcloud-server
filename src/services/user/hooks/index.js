@@ -115,7 +115,7 @@ const removeStudentFromClasses = (hook) => {
 	const query = { userIds: userId };
 
 	return classesService.find({ query })
-		.then(classes => Promise.all(
+		.then((classes) => Promise.all(
 			classes.data.map((myClass) => {
 				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
 				return classesService.patch(myClass._id, myClass);
@@ -131,7 +131,7 @@ const removeStudentFromCourses = (hook) => {
 	const query = { userIds: userId };
 
 	return coursesService.find({ query })
-		.then(courses => Promise.all(
+		.then((courses) => Promise.all(
 			courses.data.map((course) => {
 				course.userIds.splice(course.userIds.indexOf(userId), 1);
 				return coursesService.patch(course._id, course);
@@ -161,7 +161,7 @@ const sanitizeData = (hook) => {
 
 const checkJwt = () => function checkJwtfnc(hook) {
 	if (((hook.params || {}).headers || {}).authorization !== undefined) {
-		return (auth.hooks.authenticate('jwt')).call(this, hook);
+		return (authenticate('jwt')).call(this, hook);
 	}
 	return Promise.resolve(hook);
 };
@@ -204,7 +204,7 @@ const permissionRoleCreate = async (hook) => {
 		isLoggedIn = true;
 		const userService = hook.app.service('/users/');
 		const currentUser = await userService.get(hook.params.account.userId, { query: { $populate: 'roles' } });
-		const userRoles = currentUser.roles.map(role => role.name);
+		const userRoles = currentUser.roles.map((role) => role.name);
 		if (userRoles.includes('superhero')) {
 			// call from superhero Dashboard
 			return Promise.resolve(hook);
@@ -227,7 +227,7 @@ const permissionRoleCreate = async (hook) => {
 	return Promise.reject(new errors.BadRequest('You have not the permissions to create this roles.'));
 };
 
-const securePatching = hook => Promise.all([
+const securePatching = (hook) => Promise.all([
 	globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
@@ -262,8 +262,8 @@ const getDisplayName = (user, app) => app.service('/roles').find({
 		name: ['teacher', 'admin'],
 	},
 }).then((protectedRoles) => {
-	const protectedRoleIds = (protectedRoles.data || []).map(role => role._id);
-	const isProtectedUser = protectedRoleIds.find(role => (user.roles || []).includes(role));
+	const protectedRoleIds = (protectedRoles.data || []).map((role) => role._id);
+	const isProtectedUser = protectedRoleIds.find((role) => (user.roles || []).includes(role));
 
 	user.age = globalHooks.getAge(user.birthday);
 
@@ -278,7 +278,7 @@ const getDisplayName = (user, app) => app.service('/roles').find({
  * @param hook {object} - the hook of the server-request
  * @returns {object} - the hook with the decorated user
  */
-const decorateUser = hook => getDisplayName(hook.result, hook.app)
+const decorateUser = (hook) => getDisplayName(hook.result, hook.app)
 	.then((displayName) => {
 		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 		hook.result.displayName = displayName;
@@ -316,7 +316,7 @@ const setAvatarData = (user) => {
 const decorateAvatar = (hook) => {
 	if (hook.result.total) {
 		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-		(hook.result.data || []).forEach(user => setAvatarData(user));
+		(hook.result.data || []).forEach((user) => setAvatarData(user));
 	} else {
 		// run and find with only one user
 		hook.result = setAvatarData(hook.result);
@@ -333,7 +333,7 @@ const decorateAvatar = (hook) => {
  */
 const decorateUsers = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-	const userPromises = (hook.result.data || []).map(user => getDisplayName(user, hook.app).then((displayName) => {
+	const userPromises = (hook.result.data || []).map((user) => getDisplayName(user, hook.app).then((displayName) => {
 		user.displayName = displayName;
 		return user;
 	}));
