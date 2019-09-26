@@ -26,19 +26,18 @@ module.exports = function setup() {
 		return expirationDate >= Date.now();
 	};
 
-	function getFrontendUrl(){
-		let backendUrl = process.env.HOST
-		if(backendUrl){
-			backendUrl = backendUrl.replace('api','')
+	const getFrontendUrl = () => {
+		let backendUrl = process.env.HOST;
+		if (backendUrl){
+			return backendUrl.replace('api', '');
 		} else {
-			return 'http://localhost:3100'
+			return 'http://localhost:3100';
 		}
 	}
 
-	function isLocalRegistrationLink(link) {
-		let linkPrefix = getFrontendUrl() + '/registration/'
-		console.log(linkPrefix);
-		if(link.startsWith(linkPrefix)) return true;
+	const isLocalRegistrationLink = (url) => {
+		const linkPrefix = `${getFrontendUrl()}/registration/`;
+		if (url.startsWith(linkPrefix)) return true;
 		return false;
 	}
 
@@ -53,7 +52,7 @@ module.exports = function setup() {
 						const queryObject = queryString.parse(query || '');
 						queryObject.link = data._id;
 						if (isLocalRegistrationLink(url) && !(verifyDate(data.createdAt))) {
-							res.redirect(`${getFrontendUrl()}/link/expired`)
+							res.redirect(`${getFrontendUrl()}/link/expired`);
 						} else {
 							res.redirect(`${url}?${queryString.stringify(queryObject)}`);
 						}
