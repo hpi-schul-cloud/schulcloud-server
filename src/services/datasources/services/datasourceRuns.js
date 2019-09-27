@@ -10,7 +10,7 @@ const { hasPermission } = require('../../../hooks');
 const createSchema = require('../schemas/datasourceRuns.create.schema');
 const { datasourceRunModel } = require('../model');
 
-class datasourceRun {
+class DatasourceRuns {
 	constructor(options) {
 		this.options = options || {};
 	}
@@ -78,4 +78,4 @@ const datasourceRunsHooks = {
 	},
 };
 
-module.exports = { datasourceRun, datasourceRunsHooks };
+module.exports = { DatasourceRuns, datasourceRunsHooks };

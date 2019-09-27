@@ -1,5 +1,5 @@
 const { datasourceService, datasourceHooks } = require('./services/datasources');
-const { datasourceRuns, datasourceRunsHooks } = require('./services/datasourceRuns');
+const { DatasourceRuns, datasourceRunsHooks } = require('./services/datasourceRuns');
 
 module.exports = function setup() {
 	const app = this;
@@ -9,7 +9,7 @@ module.exports = function setup() {
 	const datasourcesService = app.service('/datasources');
 	datasourcesService.hooks(datasourceHooks);
 
-	app.use('/datasourceRuns', datasourceRuns);
+	app.use('/datasourceRuns', new DatasourceRuns());
 	const datasourcesRunsService = app.service('/datasourceRuns');
 	datasourcesRunsService.hooks(datasourceRunsHooks);
 };
