@@ -20,6 +20,7 @@ exports.before = {
 		globalHooks.hasPermission('USERGROUP_VIEW'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnCourses,
+		globalHooks.mapPaginationQuery,
 	],
 	get: [courseInviteHook],
 	create: [
