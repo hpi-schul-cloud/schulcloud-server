@@ -4,45 +4,52 @@ const globalHooks = require('../../../hooks');
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
 function createInfoText(user, data) {
-	return `
-    Ein neues Problem wurde gemeldet.\n
-    User: ${user}\n
-    Kategorie: ${data.category}\n
-    Betreff: ${data.subject}\n
-    Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der ${data.cloud}.\n\n
-    Mit freundlichen Grüßen\n
-    Deine ${data.cloud}`;
+    return `
+Ein neues Problem wurde gemeldet.
+User: ${user}
+Kategorie: ${data.category}
+Betreff: ${data.subject}
+Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der ${data.cloud}.\n
+Mit freundlichen Grüßen
+Deine ${data.cloud}
+    `;
 }
 
 function createFeedbackText(user, data) {
 	let text = `
-    User: ${user}\n
-    Schule: ${data.schoolName}\n
-    Instanz: ${data.cloud}\n
-    Bereich ausgewählt: ${data.category}\n
+ReplyEmail: ${data.replyEmail}
+User: ${user}
+User-ID: ${data.userId}
+Schule: ${data.schoolName}
+Schule-ID: ${data.schoolId}
+Instanz: ${data.cloud}
+Bereich ausgewählt: ${data.category}
+Browser: ${data.browserName}
+Browser Version: ${data.browserVersion}
+Betriebssystem: ${data.os}
     `;
 
 	if (data.desire && data.desire !== '') {
 		text = `
-        ${text}
-        User schrieb folgendes:\n
-        Als ${data.role}\n
-        möchte ich ${data.desire},\n
-        um ${data.benefit}.\n
-        Akzeptanzkriterien: ${data.acceptanceCriteria}
+${text}
+User schrieb folgendes:
+Als ${data.role}
+möchte ich ${data.desire},
+um ${data.benefit}.
+Akzeptanzkriterien: ${data.acceptanceCriteria}
         `;
 	} else {
 		text = `
-        ${text}
-        User meldet folgendes:\n
-        Problem Kurzbeschreibung: ${data.subject}\n
-        IST-Zustand: ${data.currentState}\n
-        SOLL-Zustand: ${data.targetState}
+${text}
+User meldet folgendes:
+Problem Kurzbeschreibung: ${data.subject}
+IST-Zustand: ${data.currentState}
+SOLL-Zustand: ${data.targetState}
         `;
 		if (data.notes) {
 			text = `
-            ${text}\n
-            Anmerkungen: ${data.notes}
+${text}
+Anmerkungen: ${data.notes}
             `;
 		}
 	}
@@ -72,7 +79,8 @@ const feedback = () => (hook) => {
 	} else {
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
-			emails: ['ticketsystem@schul-cloud.org'],
+            emails: ['ticketsystem2@schul-cloud.org'],
+            replyEmail: data.replyEmail,
 			content: {
 				text: createFeedbackText(
 					(hook.params.account || {}).username || 'nouser',

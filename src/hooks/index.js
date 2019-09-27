@@ -503,6 +503,7 @@ exports.sendEmail = (context, maildata) => {
 
 	const roles = (typeof maildata.roles === 'string' ? [maildata.roles] : maildata.roles) || [];
 	const emails = (typeof maildata.emails === 'string' ? [maildata.emails] : maildata.emails) || [];
+	const replyEmail = (maildata.replyEmail) ? maildata.replyEmail : null;
 	const userIds = (typeof maildata.userIds === 'string' ? [maildata.userIds] : maildata.userIds) || [];
 	const receipients = [];
 
@@ -557,6 +558,7 @@ exports.sendEmail = (context, maildata) => {
 					} else {
 						mailService.create({
 							email,
+							replyEmail,
 							subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 							headers: maildata.headers || {},
 							content: {
@@ -587,6 +589,7 @@ exports.sendEmail = (context, maildata) => {
 			_.uniq(receipients).forEach((email) => {
 				mailService.create({
 					email,
+					replyEmail,
 					subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 					headers: maildata.headers || {},
 					content: {
