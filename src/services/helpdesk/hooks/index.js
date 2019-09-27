@@ -12,7 +12,7 @@ Betreff: ${data.subject}
 Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der ${data.cloud}.\n
 Mit freundlichen Grüßen
 Deine ${data.cloud}
-    `;
+	`;
 }
 
 function createFeedbackText(user, data) {
@@ -79,8 +79,8 @@ const feedback = () => (hook) => {
 	} else {
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
-            emails: ['ticketsystem2@schul-cloud.org'],
-            replyEmail: data.replyEmail,
+			emails: ['ticketsystem2@schul-cloud.org'],
+			replyEmail: data.replyEmail,
 			content: {
 				text: createFeedbackText(
 					(hook.params.account || {}).username || 'nouser',
