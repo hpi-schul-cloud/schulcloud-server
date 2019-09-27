@@ -25,7 +25,7 @@ describe('consent service', () => {
 				termsOfUseConsent: true,
 			}],
 		})
-		.then(consent => consentService.get(consent._id))
+		.then((consent) => consentService.get(consent._id))
 		.then((consent) => {
 			chai.expect(consent).to.exist;
 			chai.expect(consent.parentConsents[0]).to.have.property('dateOfPrivacyConsent');
@@ -36,7 +36,7 @@ describe('consent service', () => {
 		.create({
 			userId: '0000d213816abba584714c0b',
 		})
-		.then(consent => consentService.patch(consent._id, {
+		.then((consent) => consentService.patch(consent._id, {
 			userConsent: {
 				privacyConsent: true,
 				termsOfUseConsent: true,
@@ -64,14 +64,14 @@ describe('consent service', () => {
 			.create({
 				userId,
 			})
-			.then(consent => consentService.create({
+			.then((consent) => consentService.create({
 				userId,
 				userConsent: {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 				},
 			}))
-			.then(consent => consentService.find({ query: { userId } }))
+			.then((consent) => consentService.find({ query: { userId } }))
 			.then((results) => {
 				chai.expect(results.total).to.equal(1);
 				chai.expect(results.data[0]).to.have.property('userConsent');

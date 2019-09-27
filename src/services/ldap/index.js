@@ -29,12 +29,12 @@ module.exports = function () {
 			return app.service('systems').find({ query: { _id: id }, paginate: false })
 				.then((system) => {
 					if (system[0].ldapConfig.providerOptions.classPathAdditions === '') {
-						return this.getUsers(system[0].ldapConfig, '').then(userData => ({
+						return this.getUsers(system[0].ldapConfig, '').then((userData) => ({
 							users: userData,
 							classes: [],
 						}));
 					}
-					return this.getUsers(system[0].ldapConfig, '').then(userData => this.getClasses(system[0].ldapConfig, '').then(classData => ({
+					return this.getUsers(system[0].ldapConfig, '').then((userData) => this.getClasses(system[0].ldapConfig, '').then((classData) => ({
 						users: userData,
 						classes: classData,
 					})));
@@ -158,7 +158,7 @@ module.exports = function () {
 				},
 			};
 
-			return this._getClient(config).then(client => new Promise((resolve, reject) => {
+			return this._getClient(config).then((client) => new Promise((resolve, reject) => {
 				const objects = [];
 				client.search(searchString, optionsWithPaging, (err, res) => {
 					if (err) {
@@ -293,7 +293,7 @@ module.exports = function () {
          * ldapConfig), and the team role
          */
 		_populateUsers(users) {
-			const userIds = users.map(u => u.userId);
+			const userIds = users.map((u) => u.userId);
 			const roleMap = users.reduce((m, u) => {
 				m[u.userId] = u.role;
 				return m;
@@ -304,12 +304,12 @@ module.exports = function () {
 					$populate: ['systemId', 'userId'],
 				},
 			})
-				.then(accounts =>
+				.then((accounts) =>
 				// the LDAP service should only attempt to change LDAP users
-					Promise.resolve(accounts.filter(account => account.systemId
+					Promise.resolve(accounts.filter((account) => account.systemId
                     && account.systemId.type === 'ldap'
                     && account.systemId.ldapConfig)))
-				.then(accounts => accounts.map(account => ({
+				.then((accounts) => accounts.map((account) => ({
 					user: account.userId,
 					system: account.systemId,
 					role: roleMap[account.userId._id],

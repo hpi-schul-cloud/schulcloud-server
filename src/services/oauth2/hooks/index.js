@@ -14,7 +14,7 @@ const setSubject = (hook) => {
 		query: {
 			oAuthClientId: hook.params.loginRequest.client.client_id,
 		},
-	}).then(tools => hook.app.service('pseudonym').find({
+	}).then((tools) => hook.app.service('pseudonym').find({
 		query: {
 			toolId: tools.data[0]._id,
 			userId: hook.params.account.userId,
@@ -23,32 +23,39 @@ const setSubject = (hook) => {
 		const { pseudonym } = pseudonyms.data[0];
 		if (!hook.data) hook.data = {};
 		hook.data.subject = hook.params.account.userId;
-		if (tools.data[0].useIframePseudonym) {
-			hook.data.force_subject_identifier = iframeSubject(pseudonym, hook.app.settings.services.web);
-		} else {
-			hook.data.force_subject_identifier = pseudonym;
-		}
-		return hook;
+		hook.data.force_subject_identifier = pseudonym;
 	}));
 };
 
 const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
-	hook.data.session = {
-		id_token: {
-			iframe: iframeSubject('{{sub}}', hook.app.settings.services.web),
+	return hook.app.service('ltiTools').find({
+		query: {
+			oAuthClientId: hook.params.consentRequest.client.client_id,
 		},
-	};
-	return hook;
+	}).then((tools) => hook.app.service('pseudonym').find({
+		query: {
+			toolId: tools.data[0]._id,
+			userId: hook.params.account.userId,
+		},
+	}).then((pseudonyms) => {
+		const { pseudonym } = pseudonyms.data[0];
+		hook.data.session = {
+			id_token: {
+				iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
+			},
+		};
+		return hook;
+	}));
 };
 
-const injectLoginRequest = hook => Hydra(hook.app.settings.services.hydra).getLoginRequest(hook.id)
+const injectLoginRequest = (hook) => Hydra(hook.app.settings.services.hydra).getLoginRequest(hook.id)
 	.then((loginRequest) => {
 		hook.params.loginRequest = loginRequest;
 		return hook;
 	});
 
-const injectConsentRequest = hook => Hydra(hook.app.settings.services.hydra).getConsentRequest(hook.id)
+const injectConsentRequest = (hook) => Hydra(hook.app.settings.services.hydra).getConsentRequest(hook.id)
 	.then((consentRequest) => {
 		hook.params.consentRequest = consentRequest;
 		return hook;

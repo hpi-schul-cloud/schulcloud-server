@@ -7,7 +7,7 @@ const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 
 
-describe('homework service', function () {
+describe('homework service', function test() {
 	this.timeout(10000);
 
 	it('registered the homework service', () => {
@@ -41,7 +41,7 @@ describe('homework service', function () {
 	}).then((result) => {
 		expect(result.data.length).to.be.above(0);
 		return homeworkService.remove(result.data[0]._id)
-			.then(result => true);
+			.then((result) => true);
 	}));
 
 	// PERMISSION TESTS
@@ -50,7 +50,7 @@ describe('homework service', function () {
 		account: { userId: '0000d231816abba584714c9e' },
 	}).then((result) => {
 		expect(result.total).to.be.above(0);
-		expect(result.data.filter(e => e.teacherId != '0000d231816abba584714c9e').length).to.equal(0);
+		expect(result.data.filter((e) => e.teacherId != '0000d231816abba584714c9e').length).to.equal(0);
 	}));
 
 	it('try to FIND tasks of others', () => homeworkService.find({

@@ -74,8 +74,8 @@ class Add {
      */
 	_getExpertSchoolId() {
 		return this.app.service('schools').find({ query: { purpose: 'expert' } })
-			.then(schools => extractOne(schools, '_id')
-				.then(id => bsonIdToString(id)))
+			.then((schools) => extractOne(schools, '_id')
+				.then((id) => bsonIdToString(id)))
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
 			});
@@ -88,8 +88,8 @@ class Add {
 	_getExpertRoleId() {
 		return this.app.service('roles')
 			.find({ query: { name: 'expert' } })
-			.then(roles => extractOne(roles, '_id')
-				.then(id => bsonIdToString(id)))
+			.then((roles) => extractOne(roles, '_id')
+				.then((id) => bsonIdToString(id)))
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', err);
 			});
@@ -107,7 +107,7 @@ class Add {
 				$populate: [{ path: 'roles' }],
 			},
 		})
-			.then(users => extractOne(users))
+			.then((users) => extractOne(users))
 			.catch((err) => {
 				throw err;
 			});
@@ -177,7 +177,7 @@ class Add {
 			if (isUserCreated || isDefined(role)) {
 				userRoleName = role;
 			} else {
-				const teamUser = team.invitedUserIds.find(invited => invited.email === email);
+				const teamUser = team.invitedUserIds.find((invited) => invited.email === email);
 				isResend = true;
 				userRoleName = (teamUser || {}).role || role;
 			}
@@ -268,7 +268,7 @@ class Add {
 		if (isUndefined(userIds[0].userId.email)) {
 			throw new BadRequest('UserIds must be populated.');
 		}
-		if (userIds.some(user => user.userId.email === email)) {
+		if (userIds.some((user) => user.userId.email === email)) {
 			throw new BadRequest('User already inside the team.');
 		}
 		return true;
@@ -312,7 +312,7 @@ class Add {
 		Add._throwErrorIfUserExistByEmail(team, email);
 
 		// if not already in invite list
-		if (!invitedUserIds.some(teamUser => teamUser.email === email)) {
+		if (!invitedUserIds.some((teamUser) => teamUser.email === email)) {
 			invitedUserIds.push({ email, role });
 		}
 		return Promise.all([
@@ -369,7 +369,7 @@ class Accept {
 	}
 
 	static findInvitedUserByEmail(team, email) {
-		return team.invitedUserIds.find(element => element.email === email);
+		return team.invitedUserIds.find((element) => element.email === email);
 	}
 
 	/**
@@ -483,7 +483,7 @@ module.exports = function setup() {
 
 	ScopePermissionService.initialize(app, '/teams/:scopeId/userPermissions', async (userId, team) => {
 		// Return all permissions of the user's team role within the given team
-		const [teamUser] = team.userIds.filter(u => u.userId.toString() === userId.toString());
+		const [teamUser] = team.userIds.filter((u) => u.userId.toString() === userId.toString());
 		if (teamUser !== undefined) {
 			const role = await app.service('roles').get(teamUser.role.toString());
 			return role.permissions;
@@ -503,11 +503,11 @@ module.exports = function setup() {
 		// We need to use map+filter here, because the role-lookup is async and cannot
 		// be handled by array#filter (which is inherently synchronous) alone.
 		const teams = (await Promise.all(result.data.map(async (t) => {
-			const [u] = t.userIds.filter(i => i.userId.toString() === user._id.toString());
+			const [u] = t.userIds.filter((i) => i.userId.toString() === user._id.toString());
 			if (!u.role) return false;
 			const role = await app.service('roles').get(u.role);
-			return permissions.every(p => role.permissions.includes(p)) ? t : undefined;
-		}))).filter(e => e);
+			return permissions.every((p) => role.permissions.includes(p)) ? t : undefined;
+		}))).filter((e) => e);
 		return teams;
 	});
 };
