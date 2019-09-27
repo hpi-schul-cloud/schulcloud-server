@@ -4,7 +4,7 @@ const globalHooks = require('../../../hooks');
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
 function createInfoText(user, data) {
-    return `
+	return `
 Ein neues Problem wurde gemeldet.
 User: ${user}
 Kategorie: ${data.category}
