@@ -1,4 +1,5 @@
 const { datasourceService, datasourceHooks } = require('./services/datasources');
+const { datasourceRuns, datasourceRunsHooks } = require('./services/datasourceRuns');
 
 module.exports = function setup() {
 	const app = this;
@@ -8,13 +9,7 @@ module.exports = function setup() {
 	const datasourcesService = app.service('/datasources');
 	datasourcesService.hooks(datasourceHooks);
 
-	/* app.use('/datasourceRuns', service({
-		// Model: datasourceRunModel,
-		paginate: {
-			default: 10,
-			max: 50,
-		},
-	})); */
-	// const datasourcesService = app.service('/datasources');
-	// hooks
+	app.use('/datasourceRuns', datasourceRuns);
+	const datasourcesRunsService = app.service('/datasourceRuns');
+	datasourcesRunsService.hooks(datasourceRunsHooks);
 };
