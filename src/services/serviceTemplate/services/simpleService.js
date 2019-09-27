@@ -45,13 +45,10 @@ const simpleServiceHooks = {
 			]),
 		],
 		update: [
-			customHook,
-			iff(isProvider('external'), [
-				validateSchema(createSchema, Ajv),
-				hasPermission('SERVICE_TEMPLATE_EDIT'),
-			]),
+			disallow(),
 		],
 		patch: [
+			customHook,
 			iff(isProvider('external'), [
 				validateSchema(patchSchema, Ajv),
 				hasPermission('SERVICE_TEMPLATE_EDIT'),
