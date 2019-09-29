@@ -110,7 +110,7 @@
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-react": "^7.11.1",
-    "mocha": "^6.1.4",
+    "mocha": "^6.2.1",
     "mockery": "^2.0.0",
     "nodemailer-mock": "^1.1.10",
     "nyc": "^14.1.1",
