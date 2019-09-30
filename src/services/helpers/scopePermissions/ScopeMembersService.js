@@ -22,7 +22,7 @@ class ScopeMembersService extends ScopeService {
 				all: [
 					globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
 					lookupScope,
-					checkScopePermissions(['SCOPE_PERMISSIONS_VIEW']),
+					globalHooks.ifNotLocal(checkScopePermissions(['SCOPE_PERMISSIONS_VIEW'])),
 				],
 			},
 		};
