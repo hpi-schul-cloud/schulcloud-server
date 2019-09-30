@@ -5,7 +5,7 @@ const Role = require('../model');
 const hooks = {
 	before: {
 		all: [
-			auth.hooks.authenticate('jwt'),
+			authenticate('jwt'),
 		],
 		find: [
 			globalHooks.hasPermission('ROLE_VIEW'),

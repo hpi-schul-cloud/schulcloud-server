@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../config');
@@ -218,15 +218,15 @@ const addConsentsStatus = (hook) => {
 exports.before = {
 	all: [],
 	find: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.ifNotLocal(restrictToUserOrRole),
 		mapInObjectToArray,
 	],
-	get: [auth.hooks.authenticate('jwt')],
+	get: [authenticate('jwt')],
 	create: [addDates, checkExisting],
-	update: [auth.hooks.authenticate('jwt'), addDates],
-	patch: [auth.hooks.authenticate('jwt'), addDates],
-	remove: [auth.hooks.authenticate('jwt')],
+	update: [authenticate('jwt'), addDates],
+	patch: [authenticate('jwt'), addDates],
+	remove: [authenticate('jwt')],
 };
 
 exports.after = {
