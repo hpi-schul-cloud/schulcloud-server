@@ -53,6 +53,7 @@ const validateCredentials = (hook) => {
 		.then((client) => {
 			if (client.token) {
 				hook.data.token = client.token;
+				hook.data.activated = true;
 			}
 			return hook;
 		});
@@ -92,14 +93,26 @@ const validatePassword = (hook) => {
 		globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
 		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'ADMIN_VIEW'),
 		globalHooks.hasRoleNoHook(hook, hook.id, 'teacher', true),
-		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero')])
-		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero]) => {
-			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
+		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
+		hook.app.service('users').get(hook.params.account.userId)])
+		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero, user]) => {
+			// Check if it is own account
+			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id.toString();
+			// Check if it is firstLogin
+			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
+
 			if (
-				(hasStudentCreate && isStudent)
-				|| (hasAdminView && (isStudent || isTeacher))
-				|| isSuperHero
-				|| editsOwnAccount) {
+				(!userDidFirstLogin && editsOwnAccount)
+				|| (
+					(!editsOwnAccount
+						&& (
+							(hasStudentCreate && isStudent)
+							|| (hasAdminView && (isStudent || isTeacher))
+							|| isSuperHero
+						)
+					)
+				)
+			) {
 				return hook;
 			}
 			if (password && !passwordVerification) {
@@ -132,7 +145,7 @@ const checkUnique = (hook) => {
 	return accountService.find({ query: { username, systemId } })
 		.then((result) => {
 			// systemId might be null. In that case, accounts with any systemId will be returned
-			const filtered = result.filter(a => a.systemId === systemId);
+			const filtered = result.filter((a) => a.systemId === systemId);
 			if (filtered.length > 0) {
 				return Promise.reject(new BadRequest('Der Benutzername ist bereits vergeben!'));
 			}
@@ -158,7 +171,7 @@ const restrictAccess = async (context) => {
 				$populate: { path: 'roles' },
 			},
 		});
-		if (roles.some(role => role.name === 'superhero')) {
+		if (roles.some((role) => role.name === 'superhero')) {
 			return context;
 		}
 	}
@@ -191,7 +204,7 @@ const checkExistence = (hook) => {
 	return accountService.find({ query: { userId } })
 		.then((result) => {
 			// systemId might be null. In that case, accounts with any systemId will be returned
-			const filtered = result.filter(a => a.systemId === systemId);
+			const filtered = result.filter((a) => a.systemId === systemId);
 			if (filtered.length > 0) return Promise.reject(new BadRequest('Der Account existiert bereits!'));
 			return Promise.resolve(hook);
 		});
@@ -210,7 +223,7 @@ const protectUserId = (hook) => {
 	return hook;
 };
 
-const securePatching = hook => Promise.all([
+const securePatching = (hook) => Promise.all([
 	globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
@@ -231,7 +244,7 @@ const securePatching = hook => Promise.all([
  * @afterHook
  * @notLocal
  */
-const filterToRelated = keys => globalHooks.ifNotLocal((hook) => {
+const filterToRelated = (keys) => globalHooks.ifNotLocal((hook) => {
 	const newResult = {};
 	keys.forEach((key) => {
 		if (hook.result[key] !== undefined) {

@@ -14,6 +14,7 @@ module.exports = function setup() {
 			default: 100000,
 			max: 100000,
 		},
+		lean: true,
 	}));
 	const hwService = app.service('/homework');
 	hwService.hooks({
@@ -28,6 +29,7 @@ module.exports = function setup() {
 			default: 500,
 			max: 5000,
 		},
+		lean: true,
 	}));
 	const submissionService = app.service('/submissions');
 	submissionService.hooks({
@@ -42,6 +44,7 @@ module.exports = function setup() {
 			default: 500,
 			max: 5000,
 		},
+		lean: true,
 	}));
 	const commentService = app.service('/comments');
 	commentService.hooks({

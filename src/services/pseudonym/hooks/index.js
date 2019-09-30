@@ -2,7 +2,7 @@ const auth = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 
-const toArray = data => (Array.isArray(data) ? data : [data]);
+const toArray = (data) => (Array.isArray(data) ? data : [data]);
 
 // rewrite tool id if there is a origin tool (content-specific pseudonym)
 const replaceToolWithOrigin = (hook) => {
@@ -21,7 +21,7 @@ const createMissingPseudonyms = (hook) => {
 	const missingPseudonyms = [];
 	for (const userId of userIds) {
 		for (const toolId of toolIds) {
-			if (!hook.result.data.find(entry => (
+			if (!hook.result.data.find((entry) => (
 				entry.userId.toString() === userId.toString()
 				&& entry.toolId.toString() === toolId.toString()))) {
 				missingPseudonyms.push({ userId, toolId });
@@ -52,9 +52,9 @@ const filterValidUsers = (context) => {
 				validUserIds = validUserIds.concat(classInstance.userIds);
 			}
 		}
-		validUserIds = validUserIds.map(element => element.toString());
+		validUserIds = validUserIds.map((element) => element.toString());
 		context.result.data = context.result.data
-			.filter(pseudonym => validUserIds.includes(pseudonym.userId.toString()));
+			.filter((pseudonym) => validUserIds.includes(pseudonym.userId.toString()));
 		return context;
 	});
 };

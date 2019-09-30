@@ -9,7 +9,7 @@ const logger = require('../../logger');
 module.exports = function (app) {
 	const externals = {};
 
-	externals.capitalizeFirstLetter = string => string.charAt(0).toUpperCase() + string.slice(1);
+	externals.capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
 	externals.sendEmail = (firstName, lastName, email, username) => {
 		const template = new EmailTemplate(templateDir);

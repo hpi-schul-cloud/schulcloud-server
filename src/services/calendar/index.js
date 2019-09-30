@@ -6,7 +6,7 @@ const REQUEST_TIMEOUT = 4000; // in ms
 function toQueryString(paramsObject) {
 	return Object
 		.keys(paramsObject)
-		.map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
+		.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
 		.join('&');
 }
 
@@ -36,7 +36,7 @@ const convertJsonApiToEvent = (event) => {
  * @param body
  * @returns {object} - valid json-api body for calendar-service
  */
-const convertEventToJsonApi = body => ({
+const convertEventToJsonApi = (body) => ({
 	data: [
 		{
 			type: 'event',
@@ -191,7 +191,7 @@ class Service {
 		};
 
 		return request(options).then((events) => {
-			events = (events.data || []).map(event => Object.assign(event, {
+			events = (events.data || []).map((event) => Object.assign(event, {
 				title: event.summary,
 				allDay: false, // TODO: find correct value
 				start: Date.parse(event.dtstart),
@@ -215,7 +215,7 @@ class Service {
 		};
 
 		return request(options).then((events) => {
-			events = (params.query || {}).userId || (events.data || events || []).map(event => Object.assign(event, {
+			events = (params.query || {}).userId || (events.data || events || []).map((event) => Object.assign(event, {
 				title: event.summary,
 				allDay: false, // TODO: find correct value
 				start: Date.parse(event.dtstart),
