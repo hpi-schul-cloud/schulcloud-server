@@ -3,10 +3,7 @@ const auth = require('@feathersjs/authentication');
 const logger = require('../../logger');
 
 const Syncer = require('./strategies/Syncer');
-const LDAPSystemSyncer = require('./strategies/LDAPSystemSyncer');
-const CSVSyncer = require('./strategies/CSVSyncer');
-
-const syncers = [LDAPSystemSyncer, CSVSyncer];
+const syncers = require('./strategies');
 
 module.exports = function () {
 	const app = this;
