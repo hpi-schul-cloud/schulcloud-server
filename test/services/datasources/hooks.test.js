@@ -4,7 +4,7 @@ const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 const { validateData, updatedBy, createdBy } = require('../../../src/services/datasources/hooks');
 
-describe.only('datasources hooks', () => {
+describe('datasources hooks', () => {
 	describe('validateData', () => {
 		let server;
 		before((done) => {

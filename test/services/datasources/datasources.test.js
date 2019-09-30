@@ -7,7 +7,7 @@ const { datasourceModel } = require('../../../src/services/datasources/model');
 
 const datasourcesService = app.service('datasources');
 
-describe.only('datasources service', () => {
+describe('datasources service', () => {
 	let server;
 	before((done) => {
 		server = app.listen(0, done);
