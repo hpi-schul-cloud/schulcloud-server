@@ -32,8 +32,11 @@ class DatasourceRuns {
 		return {};
 	}
 
-	create(data, params) {
-
+	async create(data, params) {
+		const datasource = await this.app.service('datasources').get(data.datasourceId);
+		const result = await this.app.service('sync').find({ query: datasource.config });
+		// run a sync
+		return Promise.resolve(result);
 	}
 }
 
