@@ -120,7 +120,7 @@ const removeStudentFromClasses = (hook) => {
 				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
 				return classesService.patch(myClass._id, myClass);
 			}),
-		).then(_ => hook).catch((err) => { throw new errors.Forbidden('No Permission', err); }));
+		).then((_) => hook).catch((err) => { throw new errors.Forbidden('No Permission', err); }));
 };
 
 const removeStudentFromCourses = (hook) => {
@@ -350,7 +350,7 @@ const handleClassId = (hook) => {
 	}
 	return hook.app.service('/classes').patch(hook.data.classId, {
 		$push: { userIds: hook.result._id },
-	}).then(res => Promise.resolve(hook));
+	}).then((res) => Promise.resolve(hook));
 };
 
 const pushRemoveEvent = (hook) => {

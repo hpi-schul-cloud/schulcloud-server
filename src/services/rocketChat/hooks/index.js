@@ -7,7 +7,7 @@ const globalHooks = require('../../../hooks');
 
 
 const userIsInTeam = (userId, team) => {
-	const user = team.userIds.find(el => el.userId.toString() === userId.toString());
+	const user = team.userIds.find((el) => el.userId.toString() === userId.toString());
 	return (user !== undefined);
 };
 

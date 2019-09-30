@@ -42,7 +42,7 @@ const {
 *   @method all
 *   @ifNotLocal work only for extern requests
 *   */
-const teamMainHook = globalHooks.ifNotLocal(hook => Promise.all([
+const teamMainHook = globalHooks.ifNotLocal((hook) => Promise.all([
 	getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook),
 ]).then(([sessionUser, team, users]) => {
 	const userId = bsonIdToString(hook.params.account.userId);
@@ -490,7 +490,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 		});
 
 		changes.add.forEach((e) => {
-			const user = users.find(u => isSameId(e.userId, u._id));
+			const user = users.find((u) => isSameId(e.userId, u._id));
 			if (isSameId(user.schoolId, sessionSchoolId)) {
 				isAddingFromOwnSchool = true;
 			} else {
@@ -538,7 +538,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 				throw new Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
 			}));
 
-			const sessionUserTeamUser = team.userIds.find(user => user.userId.toString() === sessionUserId);
+			const sessionUserTeamUser = team.userIds.find((user) => user.userId.toString() === sessionUserId);
 			const sessionUserTeamRole = ((sessionUserTeamUser || {}).role).toString();
 			if (!isHigherOrEqualTeamrole(hook, sessionUserTeamRole, highestChangedRole)) {
 				wait.push(Promise.reject(new Forbidden('You cant change a Permission higher than yours')));
@@ -589,7 +589,7 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 		const userId = bsonIdToString(hook.params.account.userId);
 		const { userIds } = hook.result;
 		const user = Object.assign({}, userIds.find(
-			u => isSameId(u.userId._id || u.userId, userId),
+			(u) => isSameId(u.userId._id || u.userId, userId),
 		));
 		if (isUndefined([user, user.role], 'OR')) {
 			logger.warning(
@@ -642,7 +642,7 @@ const isTeacherDirectlyImport = (hook) => {
 	const { userId } = hook.data;
 	if (userId) {
 		return hook.app.service('users').get(userId, { query: { $populate: 'roles' } }).then((user) => {
-			const roleNames = user.roles.map(role => role.name);
+			const roleNames = user.roles.map((role) => role.name);
 			if (!roleNames.includes('teacher')) {
 				throw new BadRequest('Is no teacher');
 			}

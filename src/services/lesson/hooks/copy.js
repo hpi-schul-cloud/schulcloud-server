@@ -21,7 +21,7 @@ const checkForShareToken = (context) => {
 			if (
 				_lesson.shareToken === shareToken
 				|| course.shareToken === shareToken
-				|| course.teacherIds.some(t => t.toString() === currentUserId)
+				|| course.teacherIds.some((t) => t.toString() === currentUserId)
 			) {
 				return context;
 			}

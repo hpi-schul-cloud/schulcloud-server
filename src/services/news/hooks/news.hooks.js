@@ -24,7 +24,7 @@ const lookupSchool = async (context) => {
 	throw new BadRequest('Authentication is required.');
 };
 
-const getBoolean = value => value === true || value === 'true';
+const getBoolean = (value) => value === true || value === 'true';
 
 /**
  * Convert pagination parameter to boolean if it exists

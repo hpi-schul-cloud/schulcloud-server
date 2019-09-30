@@ -135,8 +135,8 @@ const firstLogin = async (data, params, app) => {
 	if (consentUpdate.userId) consentPromise = app.service('consents').create(consentUpdate);
 
 	return Promise.all([accountPromise, userPromise, consentPromise, updateConsentUsingVersions])
-		.then(result => Promise.resolve(result))
-		.catch(err => Promise.reject(err));
+		.then((result) => Promise.resolve(result))
+		.catch((err) => Promise.reject(err));
 };
 
 module.exports = function setup(app) {

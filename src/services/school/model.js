@@ -5,6 +5,7 @@
 
 const mongoose = require('mongoose');
 const { getDocumentBaseDir } = require('./logic/school');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
@@ -26,6 +27,7 @@ const rssFeedSchema = new Schema({
 		enum: ['pending', 'success', 'error'],
 	},
 });
+enableAuditLog(rssFeedSchema);
 
 const customYearSchema = new Schema({
 	yearId: { type: Schema.Types.ObjectId, ref: 'year', required: true },
@@ -62,9 +64,14 @@ const schoolSchema = new Schema({
 	timestamps: true,
 });
 
+enableAuditLog(schoolSchema);
+
+
 const schoolGroupSchema = new Schema({
 	name: { type: String, required: true },
 }, { timestamps: true });
+
+enableAuditLog(schoolGroupSchema);
 
 /**
  * Determine if school is in maintenance mode ("Schuljahreswechsel"):
@@ -91,9 +98,13 @@ const yearSchema = new Schema({
 	endDate: { type: Date, required: true },
 });
 
+enableAuditLog(yearSchema);
+
 const gradeLevelSchema = new Schema({
 	name: { type: String, required: true },
 });
+
+enableAuditLog(gradeLevelSchema);
 
 const schoolModel = mongoose.model('school', schoolSchema);
 const schoolGroupModel = mongoose.model('schoolGroup', schoolGroupSchema);

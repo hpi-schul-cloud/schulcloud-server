@@ -1,6 +1,6 @@
 const accountsHelper = require('./accounts');
 
-const generateJWT = app => async ({ username, password }) => {
+const generateJWT = (app) => async ({ username, password }) => {
 	const result = await app.service('authentication').create({
 		strategy: 'local',
 		username,
@@ -14,7 +14,7 @@ const generateJWT = app => async ({ username, password }) => {
 	return result.accessToken;
 };
 
-const generateRequestParams = app => async ({ username, password }) => {
+const generateRequestParams = (app) => async ({ username, password }) => {
 	const fetchJwt = generateJWT(app);
 	const jwt = await fetchJwt({ username, password });
 	return {
@@ -26,14 +26,14 @@ const generateRequestParams = app => async ({ username, password }) => {
 	};
 };
 
-const generateRequestParamsFromUser = app => async (user) => {
+const generateRequestParamsFromUser = (app) => async (user) => {
 	const credentials = { username: user.email, password: user.email };
 	await accountsHelper(app).create(credentials, 'local', user);
 	return generateRequestParams(app)(credentials);
 };
 
 // hook.params.account.userId
-const fakeLoginParams = app => ({
+const fakeLoginParams = (app) => ({
 	userId,
 	account,
 	headers = {},
@@ -53,7 +53,7 @@ const fakeLoginParams = app => ({
 	},
 });
 
-module.exports = app => ({
+module.exports = (app) => ({
 	generateJWT: generateJWT(app),
 	generateRequestParams: generateRequestParams(app),
 	generateRequestParamsFromUser: generateRequestParamsFromUser(app),

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -18,6 +19,8 @@ const accountSchema = new Schema({
 }, {
 	timestamps: true,
 });
+
+enableAuditLog(accountSchema);
 
 const accountModel = mongoose.model('account', accountSchema);
 

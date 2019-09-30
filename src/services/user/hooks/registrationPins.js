@@ -4,8 +4,8 @@ const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
 
-const removeOldPins = hook => pinModel.deleteMany({ email: hook.data.email })
-	.then(pins => Promise.resolve(hook));
+const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
+	.then((pins) => Promise.resolve(hook));
 
 const generatePin = (hook) => {
 	const pin = Math.floor((Math.random() * 8999) + 1000);

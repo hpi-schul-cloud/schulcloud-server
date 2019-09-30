@@ -1,8 +1,8 @@
-const removeLeadingSlash = path => (path[0] === '/' ? path.substring(1) : path);
+const removeLeadingSlash = (path) => (path[0] === '/' ? path.substring(1) : path);
 
-const generateFileNameSuffix = fileName => `${Date.now()}-${fileName}`;
+const generateFileNameSuffix = (fileName) => `${Date.now()}-${fileName}`;
 
-const returnFileType = fileName => ({
+const returnFileType = (fileName) => ({
 	docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 	xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 	pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',

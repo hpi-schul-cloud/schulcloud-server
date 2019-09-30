@@ -22,27 +22,29 @@ describe('classes service', () => {
 		});
 
 		it('should allow teachers and admins to find all classes', async () => {
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: teacher.schoolId });
+			const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
+			const adminUser = await testObjects.createTestUser({
+				roles: ['administrator'], schoolId: teacherUser.schoolId,
+			});
 
 			const classes = [
 				await testObjects.createTestClass({
 					name: Math.random(),
-					teacherIds: [teacher._id],
-					schoolId: teacher.schoolId,
+					teacherIds: [adminUser._id],
+					schoolId: teacherUser.schoolId,
 				}),
 				await testObjects.createTestClass({
 					name: Math.random(),
-					teacherIds: [admin._id],
-					schoolId: teacher.schoolId,
+					teacherIds: [adminUser._id],
+					schoolId: teacherUser.schoolId,
 				}),
 				await testObjects.createTestClass({
 					name: Math.random(),
-					schoolId: teacher.schoolId,
+					schoolId: teacherUser.schoolId,
 				}),
 			];
 
-			await Promise.all([teacher, admin].map(async (role) => {
+			await Promise.all([teacherUser, adminUser].map(async (role) => {
 				const params = {
 					query: {},
 					...await generateRequestParamsFromUser(role),
@@ -51,24 +53,24 @@ describe('classes service', () => {
 				expect(data.length).to.equal(classes.length);
 				// all created classes should be in the response:
 				expect(classes.reduce(
-					(agg, cur) => agg && data.some(d => d._id.toString() === cur._id.toString()),
+					(agg, cur) => agg && data.some((d) => d._id.toString() === cur._id.toString()),
 					true,
 				)).to.equal(true);
 			}));
 		}).timeout(4000);
 
 		it('should allow students to only find classes they participate in', async () => {
-			const student = await testObjects.createTestUser({ roles: ['student'] });
+			const studentUser = await testObjects.createTestUser({ roles: ['student'] });
 
 			const classes = [
 				await testObjects.createTestClass({
 					name: Math.random(),
-					schoolId: student.schoolId,
-					userIds: [student._id],
+					schoolId: studentUser.schoolId,
+					userIds: [studentUser._id],
 				}),
 				await testObjects.createTestClass({
 					name: Math.random(),
-					schoolId: student.schoolId,
+					schoolId: studentUser.schoolId,
 				}),
 				await testObjects.createTestClass({
 					name: Math.random(),
@@ -77,11 +79,84 @@ describe('classes service', () => {
 
 			const params = {
 				query: {},
-				...await generateRequestParamsFromUser(student),
+				...await generateRequestParamsFromUser(studentUser),
 			};
 			const { data } = await classesService.find(params);
 			expect(data.length).to.equal(1);
 			expect(data[0]._id.toString()).to.equal(classes[0]._id.toString());
+		});
+
+		it('should display the classes in correct order', async () => {
+			const adminUser = await testObjects.createTestUser({ roles: ['administrator'] });
+
+			const classes = [
+				await testObjects.createTestClass({
+					name: 'C',
+				}),
+				await testObjects.createTestClass({
+					name: 'B',
+				}),
+				await testObjects.createTestClass({
+					name: 'A',
+				}),
+			];
+
+			const adminParams = {
+				query: {},
+				...await generateRequestParamsFromUser(adminUser),
+			};
+
+			const { data } = await classesService.find(adminParams);
+			expect(data.length).to.equal(3);
+			expect(data[0].displayName).to.equal(classes[2].displayName);
+			expect(data[1].displayName).to.equal(classes[1].displayName);
+			expect(data[2].displayName).to.equal(classes[0].displayName);
+		});
+
+		it('should display the classes in correct order when gradelevel is included', async () => {
+			const adminUser = await testObjects.createTestUser({ roles: ['administrator'] });
+
+			const classes = [
+				await testObjects.createTestClass({
+					name: 'C',
+					gradeLevel: 2,
+				}),
+				await testObjects.createTestClass({
+					name: 'B',
+					gradeLevel: 9,
+				}),
+				await testObjects.createTestClass({
+					name: 'A',
+					gradeLevel: 7,
+				}),
+			];
+
+			const adminParams = {
+				query: {},
+				...await generateRequestParamsFromUser(adminUser),
+			};
+			const { data } = await classesService.find(adminParams);
+
+			expect(data.length).to.equal(3);
+			expect(data[0].displayName).to.equal(classes[0].displayName);
+			expect(data[1].displayName).to.equal(classes[2].displayName);
+			expect(data[2].displayName).to.equal(classes[1].displayName);
+    });
+    
+		it('CREATE patches successor ID in predecessor class', async () => {
+			const orgClass = await app.service('classes').create({
+				name: 'sonnenklasse 1',
+				schoolId: '0000d186816abba584714c5f',
+			});
+			const successorClass = await app.service('classes').create({
+				name: 'sonnenklasse 2',
+				schoolId: '0000d186816abba584714c5f',
+				predecessor: orgClass._id,
+			});
+			const updatedOrgClass = await classesService.get(orgClass._id);
+			expect(updatedOrgClass.name).to.equal('sonnenklasse 1');
+			expect(successorClass.name).to.equal('sonnenklasse 2');
+			expect(updatedOrgClass.successor.toString()).to.equal(successorClass._id.toString());
 		});
 
 		afterEach(testObjects.cleanup);

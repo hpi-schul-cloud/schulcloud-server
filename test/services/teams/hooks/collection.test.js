@@ -217,7 +217,7 @@ describe('collection helpers', () => {
 
 		it('should convert arrays of Ids', () => {
 			const oids = new Array(5).fill(new ObjectId());
-			const expectedResult = oids.map(i => i.toString());
+			const expectedResult = oids.map((i) => i.toString());
 			expect(bsonIdToString(oids)).to.deep.equal(expectedResult);
 		});
 

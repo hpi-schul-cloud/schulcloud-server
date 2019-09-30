@@ -10,7 +10,7 @@ function randomGen(arr) {
 	const pos = Math.floor(Math.random() * arr.length);
 	const tempEle = arr[pos];
 
-	arr = arr.filter(item => item !== tempEle);
+	arr = arr.filter((item) => item !== tempEle);
 
 	if (arr.length === 0) return tempEle;
 

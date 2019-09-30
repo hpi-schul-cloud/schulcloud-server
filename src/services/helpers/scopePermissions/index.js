@@ -54,9 +54,9 @@ class ScopePermissionService extends ScopeService {
 				userIds.push(query);
 			}
 		}
-		const ops = userIds.map(async userId => [userId, await this.getUserPermissions(userId, params.scope)]);
+		const ops = userIds.map(async (userId) => [userId, await this.getUserPermissions(userId, params.scope)]);
 		return Promise.all(ops)
-			.then(results => results.reduce((agg, [key, value]) => {
+			.then((results) => results.reduce((agg, [key, value]) => {
 				const newAgg = agg;
 				newAgg[key] = value;
 				return newAgg;

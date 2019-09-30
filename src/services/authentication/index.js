@@ -1,10 +1,9 @@
 const { AuthenticationService, JWTStrategy } = require('@feathersjs/authentication');
 const { LocalStrategy } = require('@feathersjs/authentication-local');
 
-// const extractors = require('passport-jwt').ExtractJwt;
-
 const { LdapStrategy, MoodleStrategy } = require('./strategies');
 const hooks = require('./hooks');
+const logger = require('../../logger');
 
 
 let secrets;
@@ -21,6 +20,9 @@ try {
 }
 
 const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
+if (process.env.NODE_ENV === 'production' && !secrets.authentication) {
+	logger.error('use default authentication secret');
+}
 
 const authConfig = {
 	entity: 'account',
