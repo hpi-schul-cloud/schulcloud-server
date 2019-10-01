@@ -66,27 +66,6 @@ module.exports = (app) => {
 
 	app.use('/authentication', authentication);
 
-
-	/* app.configure(auth(authConfig));
-	app.configure(jwt(jwtConfig));
-	app.configure(local(localConfig)); */
-
-	/* app.configure(system({
-		name: 'moodle',
-		loginStrategy: require('../account/strategies/moodle'),
-	}));
-
-	app.configure(system({
-		name: 'iserv',
-		loginStrategy: require('../account/strategies/iserv'),
-	}));
-
-	app.configure(system({
-		name: 'ldap',
-		loginStrategy: require('../account/strategies/ldap'),
-	})); */
-
-
 	const authenticationService = app.service('authentication');
 
 	// TODO: feathers-swagger
