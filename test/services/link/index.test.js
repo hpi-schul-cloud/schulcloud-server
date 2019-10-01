@@ -5,7 +5,12 @@ const app = require('../../../src/app');
 
 chai.use(chaiHttp);
 
-describe('link service', () => {
+Date.prototype.subtractDays = function(d) {
+	this.setTime(this.getTime() - ( d * 24 * 60 * 60 * 1000 ));
+	return this;
+};
+
+describe.only('link service', () => {
 	const service = app.service('link');
 	it('registered the links service', () => {
 		assert.ok(service);
@@ -31,4 +36,94 @@ describe('link service', () => {
 					});
 			}));
 	});
+
+	it('generates a valid link from 29 days ago', function () {
+		this.timeout(10000);
+		const createdAt = new Date().subtractDays(29);
+
+		const url = 'http://localhost:3100/registration/';
+		return service.create({ target: url, createdAt })
+			.then((data) => {
+				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
+				chai.expect(data.target).to.equal(url);
+				return Promise.resolve(data.id);
+			})
+			.then(id => new Promise((resolve, reject) => {
+				chai.request(app)
+					.get(`/link/${id}`)
+					.end((error, result) => {
+						if (error) return reject(error);
+						chai.expect(result.redirects[0]).to.equal(url);
+						resolve();
+					});
+			}));
+	});
+
+	it('generates an expired link from 30 days ago', function () {
+		this.timeout(10000);
+		const createdAt = new Date().subtractDays(30);
+
+		const url = 'http://localhost:3100/registration/';
+		return service.create({ target: url, createdAt })
+			.then((data) => {
+				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
+				chai.expect(data.target).to.equal(url);
+				return Promise.resolve(data.id);
+			})
+			.then(id => new Promise((resolve, reject) => {
+				chai.request(app)
+					.get(`/link/${id}`)
+					.end((error, result) => {
+						if (error) return reject(error);
+						chai.expect(result.redirects[0]).to.equal('http://localhost:3100/link/expired');
+						resolve();
+					});
+			}));
+	});
+
+	it('generates an external link from 29 days ago', function () {
+		this.timeout(10000);
+		const createdAt = new Date().subtractDays(29);
+
+		const url = 'https://google.de/registration/';
+		return service.create({ target: url, createdAt })
+			.then((data) => {
+				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
+				chai.expect(data.target).to.equal(url);
+				return Promise.resolve(data.id);
+			})
+			.then(id => new Promise((resolve, reject) => {
+				chai.request(app)
+					.get(`/link/${id}`)
+					.end((error, result) => {
+						if (error) return reject(error);
+						chai.expect(result.redirects[0]).to.equal(url);
+						resolve();
+					});
+			}));
+	});
+
+	it('generates an external link from 30 days ago', function () {
+		this.timeout(10000);
+		const createdAt = new Date().subtractDays(30);
+
+		const url = 'https://google.de/registration/';
+		return service.create({ target: url, createdAt })
+			.then((data) => {
+				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
+				chai.expect(data.target).to.equal(url);
+				return Promise.resolve(data.id);
+			})
+			.then(id => new Promise((resolve, reject) => {
+				chai.request(app)
+					.get(`/link/${id}`)
+					.end((error, result) => {
+						if (error) return reject(error);
+						chai.expect(result.redirects[0]).to.equal(url);
+						resolve();
+					});
+			}));
+	});
+
+	
 });
