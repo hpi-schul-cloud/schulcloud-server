@@ -33,7 +33,7 @@
 	},
 	"services": {
 		"calendar": "http://localhost:3000",
-		"content": "https://schul-cloud.org:8090",
+		"content": "https://schul-cloud.org:4040",
 		"notification": "http://localhost:3031",
 		"hydra": "http://localhost:9001",
 		"web": "http://localhost:3100"
