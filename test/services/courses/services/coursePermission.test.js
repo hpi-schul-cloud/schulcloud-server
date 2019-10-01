@@ -41,6 +41,8 @@ describe('PermissionService', async () => {
 		'USER_VIEW',
 		'USER_EDIT',
 		'HOMEWORK_VIEW',
+		'HOMEWORK_EDIT',
+		'HOMEWORK_CREATE',
 		'COMMENTS_VIEW',
 		'COMMENTS_CREATE',
 		'COMMENTS_EDIT',
@@ -63,8 +65,6 @@ describe('PermissionService', async () => {
 	const teacherPermissions = [
 		'ACCOUNT_CREATE',
 		'COURSE_EDIT',
-		'HOMEWORK_EDIT',
-		'HOMEWORK_CREATE',
 		'LESSONS_VIEW',
 		'NEWS_CREATE',
 		'NEWS_EDIT',
