@@ -1,7 +1,7 @@
 const { AuthenticationService, JWTStrategy } = require('@feathersjs/authentication');
 const { LocalStrategy } = require('@feathersjs/authentication-local');
 
-const { LdapStrategy, MoodleStrategy } = require('./strategies');
+const { LdapStrategy, MoodleStrategy, IservStrategy } = require('./strategies');
 const hooks = require('./hooks');
 const logger = require('../../logger');
 
@@ -28,7 +28,7 @@ const authConfig = {
 	entity: 'account',
 	service: 'accounts',
 	secret: authenticationSecret,
-	authStrategies: ['jwt', 'local', 'ldap', 'moodle'],
+	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv'],
 	jwtOptions: {
 		header: { typ: 'access' },
 		audience: 'https://schul-cloud.org',
@@ -47,6 +47,10 @@ const authConfig = {
 		usernameField: 'username',
 		systemIdField: 'systemId',
 	},
+	iserv: {
+		usernameField: 'username',
+		systemIdField: 'systemId',
+	},
 };
 
 module.exports = (app) => {
@@ -58,6 +62,7 @@ module.exports = (app) => {
 	authentication.register('local', new LocalStrategy());
 	authentication.register('ldap', new LdapStrategy());
 	authentication.register('moodle', new MoodleStrategy());
+	authentication.register('iserv', new IservStrategy());
 
 	app.use('/authentication', authentication);
 

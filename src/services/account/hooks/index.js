@@ -7,11 +7,12 @@ const { ObjectId } = require('mongoose').Types;
 
 const globalHooks = require('../../../hooks');
 
-const { LdapStrategy, MoodleStrategy } = require('../../authentication/strategies');
+const { LdapStrategy, MoodleStrategy, IservStrategy } = require('../../authentication/strategies');
 
 const strategies = {
 	moodle: MoodleStrategy,
 	ldap: LdapStrategy,
+	iserv: IservStrategy,
 };
 
 const sanitizeUsername = (hook) => {

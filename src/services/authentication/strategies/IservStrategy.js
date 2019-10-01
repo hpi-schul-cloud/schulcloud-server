@@ -1,10 +1,10 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
 const { NotAuthenticated } = require('@feathersjs/errors');
 const { omit } = require('lodash');
-const moodleClient = require('moodle-client');
+const ClientOAuth2 = require('client-oauth2');
 const logger = require('../../../logger');
 
-class MoodleStrategy extends AuthenticationBaseStrategy {
+class IservStrategy extends AuthenticationBaseStrategy {
 	verifyConfiguration() {
 		const config = this.configuration;
 
@@ -69,7 +69,7 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 		const { entityId = entityService.id, entity } = this.configuration;
 
 		if (!entityId || result[entityId] === undefined) {
-			throw new NotAuthenticated('Could not get moodle entity');
+			throw new NotAuthenticated('Could not get iserv entity');
 		}
 
 		if (!params.provider) {
@@ -83,27 +83,32 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 	}
 
 	async credentialCheck(username, password, system) {
-		const moodleOptions = {
-			username,
-			password,
-			wwwroot: system.url,
-			logger,
-		};
-		if (!moodleOptions.username) {
+        
+		if (!username) {
 			throw new NotAuthenticated('No username is set.');
 		}
-		if (!moodleOptions.password) {
+		if (!password) {
 			throw new NotAuthenticated('No password is set.');
 		}
-		if (!moodleOptions.wwwroot) {
+		if (!system.url) {
 			throw new NotAuthenticated('No moodle URL is provided.');
 		}
 
-		const client = await moodleClient.init(moodleOptions);
-		if (client) {
-			return client;
+		const iservAuth = new ClientOAuth2({
+			clientId: system.oaClientId,
+			clientSecret: system.oaClientSecret,
+			accessTokenUri: `${system.url}/iserv/oauth/v2/token`,
+			authorizationUri: `${system.url}/iserv/oauth/v2/auth`,
+		});
+
+		logger.debug('[iserv]: Trying to connect to IServ-Server');
+		const client = await iservAuth.owner.getToken(username, password);
+
+		if (!client.accessToken && !client.data.accessToken) {
+			return false;
 		}
-		return false;
+		logger.debug('[iserv]: Successfully connect to IServ-Server');
+		return client;
 	}
 
 	async authenticate(authentication, params) {
@@ -114,22 +119,20 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 		const client = await this.credentialCheck(authentication.username, authentication.password, system);
 
 		if (client) {
-			if (client.token) {
-				const { entity } = this.configuration;
-				const result = await this.findEntity(
-					authentication.username,
-					authentication.systemId,
-					omit(params, 'provider'),
-				);
+			const { entity } = this.configuration;
+			const result = await this.findEntity(
+				authentication.username,
+				authentication.systemId,
+				omit(params, 'provider'),
+			);
 
-				return {
-					authentication: { strategy: this.name },
-					[entity]: await this.getEntity(result, params),
-				};
-			}
+			return {
+				authentication: { strategy: this.name },
+				[entity]: await this.getEntity(result, params),
+			};
 		}
 		throw new NotAuthenticated('Wrong Credentials - Unable to obtain token');
 	}
 }
 
-module.exports = MoodleStrategy;
+module.exports = IservStrategy;

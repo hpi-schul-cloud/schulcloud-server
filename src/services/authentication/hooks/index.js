@@ -25,7 +25,7 @@ const injectUserId = async (context) => {
 			if (account.systemId) {
 				context.params.payload.systemId = account.systemId;
 			}
-		} else if (['moodle'].includes(strategy)) {
+		} else if (['moodle', 'iserv'].includes(strategy)) {
 			const accountParameters = {
 				username: context.data.username,
 				password: context.data.password,
