@@ -100,15 +100,16 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
 			.then(() => this.fetchInformation())
 			.then((data) => {
 				this.logout();
+				stats.temp = data;
 				return Promise.resolve(data);
 			})
-			.then(data => {
+			/*.then(data => {
 				if (this.dryrun) {
 					return this.collectData(data, stats, school);
 				} else {
 					return this.migrateData(data, stats, school);
 				}
-			})
+			})*/
 			.then(() => {
 				stats.success = true;
 			});
@@ -120,9 +121,9 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
 		data.currentSchoolYear = await this.getCurrentSchoolyear();
 		// intermediateData.holidays = await this.getHolidays();
 		// data.subjects = await this.getSubjects(); // Ignore subjects for now
-		intermediateData.timeGrid = await this.getTimegrid();
 		intermediateData.classes = await this.getClasses(data.currentSchoolYear.id);
-		intermediateData.rooms = await this.getRooms();
+		intermediateData.timeGrid = await this.getTimegrid();
+		intermediateData.teachers = await this.getTeachers();
 
 		// data.holidayRanges = data.holidays.map(holiday => [ holiday.startDate, holiday.endDate ]);
 		data.classes = intermediateData.classes.map(klass => ({
@@ -135,43 +136,93 @@ class WebUntisSchoolyearSyncer extends WebUntisSyncer {
 			timeUnits: day.timeUnits,
 		}));
 
-		data.rooms = intermediateData.rooms.map(room => ({
-			id: room.id,
-			name: `${room.name} (${room.longName}${room.building !== '' ? `, ${room.building}` : ''})`,
-		}));
+		if (intermediateData.teachers !== undefined) { // Iterate over teachers
 
-		// TODO: remove
-		data.rooms.length = 5;
-		// END TODO: remove
+			data.teachers = intermediateData.teachers.map(teacher => ({
+				id: teacher.id,
+				name: `${teacher.foreName} ${teacher.longName}`
+			}));
 
-		for (const room of data.rooms) {
-			let timetable = await this.getCustomizableTimeTableFor(4, room.id, {
-				startDate: data.currentSchoolYear.startDate,
-				endDate: data.currentSchoolYear.endDate,
-				onlyBaseTimetable: true,
-				klasseFields: ['id', 'longname'],
-				subjectFields: ['id', 'longname'],
-				teacherFields: ['id', 'longname'],
-			});
-			timetable = timetable.filter(entry => entry.ro.length === 1
-                && entry.ro[0].id === room.id
-                && entry.kl.length > 0
-                && entry.te.length === 1
-                && entry.su.length === 1);
+			// TODO: remove
+			data.teachers.length = 3;
+			// END TODO: remove
 
-			for (const entry of timetable) {
-				for (const classEntry of entry.kl) {
-					const klass = data.classes.find(k => k.id === classEntry.id);
+			for (const teacher of data.teachers) {
+				let timetable = await this.getCustomizableTimeTableFor(2, teacher.id, {
+					startDate: data.currentSchoolYear.startDate,
+					endDate: data.currentSchoolYear.endDate,
+					onlyBaseTimetable: true,
+					klasseFields: ['id', 'longname'],
+					subjectFields: ['id', 'longname'],
+					roomFields: ['id', 'longname'],
+				});
 
-					if (klass !== undefined) {
-						klass.timetable.push({
-							date: entry.date,
-							startTime: entry.startTime,
-							endTime: entry.endTime,
-							teacher: entry.te[0].longname,
-							subject: entry.su[0].longname,
-							room: room.name,
-						});
+				/* TODO: Check for change */
+				timetable = timetable.filter(entry => entry.te.length === 1
+					&& entry.te[0].id === teacher.id
+					&& entry.kl.length > 0
+					&& entry.ro.length === 1
+					&& entry.su.length === 1);
+				/* END TODO: Check for change */
+	
+				for (const entry of timetable) {
+					for (const classEntry of entry.kl) {
+						const klass = data.classes.find(k => k.id === classEntry.id);
+	
+						if (klass !== undefined) {
+							klass.timetable.push({
+								date: entry.date,
+								startTime: entry.startTime,
+								endTime: entry.endTime,
+								teacher: teacher.name,
+								subject: entry.su[0].longname,
+								room: entry.ro[0].longname,
+							});
+						}
+					}
+				}
+			}
+		} else { // Iterate over rooms
+			intermediateData.rooms = await this.getRooms();
+
+			data.rooms = intermediateData.rooms.map(room => ({
+				id: room.id,
+				name: `${room.name} (${room.longName}${room.building !== '' ? `, ${room.building}` : ''})`,
+			}));
+	
+			// TODO: remove
+			data.rooms.length = 5;
+			// END TODO: remove
+	
+			for (const room of data.rooms) {
+				let timetable = await this.getCustomizableTimeTableFor(4, room.id, {
+					startDate: data.currentSchoolYear.startDate,
+					endDate: data.currentSchoolYear.endDate,
+					onlyBaseTimetable: true,
+					klasseFields: ['id', 'longname'],
+					subjectFields: ['id', 'longname'],
+					teacherFields: ['id', 'longname'],
+				});
+				timetable = timetable.filter(entry => entry.ro.length === 1
+					&& entry.ro[0].id === room.id
+					&& entry.kl.length > 0
+					&& entry.te.length === 1
+					&& entry.su.length === 1);
+	
+				for (const entry of timetable) {
+					for (const classEntry of entry.kl) {
+						const klass = data.classes.find(k => k.id === classEntry.id);
+	
+						if (klass !== undefined) {
+							klass.timetable.push({
+								date: entry.date,
+								startTime: entry.startTime,
+								endTime: entry.endTime,
+								teacher: entry.te[0].longname,
+								subject: entry.su[0].longname,
+								room: room.name,
+							});
+						}
 					}
 				}
 			}
