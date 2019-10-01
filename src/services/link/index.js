@@ -47,17 +47,17 @@ module.exports = function setup() {
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then((data) => {
-					if (data.data || req.query.includeShortId) {
-						const [url, query] = data.target.split('?');
-						const queryObject = queryString.parse(query || '');
-						queryObject.link = data._id;
-						if (isLocalRegistrationLink(url) && !(verifyDate(data.createdAt))) {
-							res.redirect(`${getFrontendUrl()}/link/expired`);
-						} else {
-							res.redirect(`${url}?${queryString.stringify(queryObject)}`);
-						}
+					if (isLocalRegistrationLink(data.target) && !(verifyDate(data.createdAt))) {
+						res.redirect(`${getFrontendUrl()}/link/expired`);
 					} else {
-						res.redirect(data.target);
+						if (data.data || req.query.includeShortId) {
+							const [url, query] = data.target.split('?');
+							const queryObject = queryString.parse(query || '');
+							queryObject.link = data._id;
+							res.redirect(`${url}?${queryString.stringify(queryObject)}`);
+						} else {
+							res.redirect(data.target);
+						}
 					}
 				})
 				.catch((err) => {
