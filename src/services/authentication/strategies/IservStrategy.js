@@ -83,7 +83,6 @@ class IservStrategy extends AuthenticationBaseStrategy {
 	}
 
 	async credentialCheck(username, password, system) {
-        
 		if (!username) {
 			throw new NotAuthenticated('No username is set.');
 		}
