@@ -1,4 +1,3 @@
-const service = require('feathers-mongoose');
 const Ajv = require('ajv');
 const auth = require('@feathersjs/authentication');
 const {
@@ -34,9 +33,26 @@ class DatasourceRuns {
 
 	async create(data, params) {
 		const datasource = await this.app.service('datasources').get(data.datasourceId);
+		// write document to database.
+		const startTime = Date.now();
 		const result = await this.app.service('sync').find({ query: datasource.config });
-		// run a sync
-		return Promise.resolve(result);
+		const endTime = Date.now();
+
+		let status = 'Success';
+		result.forEach((e) => {
+			if (!e.success) status = 'Error';
+		});
+
+		const dsrData = {
+			datasourceId: data.datasourceId,
+			status,
+			config: datasource.config,
+			dryrun: data.dryrun || false,
+			createdBy: (params.account || {}).userId,
+			duration: endTime - startTime,
+		};
+		const modelResult = await datasourceRunModel.create(dsrData);
+		return Promise.resolve(modelResult);
 	}
 }
 

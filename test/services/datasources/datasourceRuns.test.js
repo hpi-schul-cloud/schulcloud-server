@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
-const { datasourceModel } = require('../../../src/services/datasources/model');
+const { datasourceRunModel } = require('../../../src/services/datasources/model');
 const Syncer = require('../../../src/services/sync/strategies/Syncer');
 
 const datasourcesService = app.service('datasources');
@@ -20,7 +20,7 @@ class MockSyncer extends Syncer {
 	}
 }
 
-describe('datasourceRuns service', () => {
+describe.only('datasourceRuns service', () => {
 	let server;
 	before((done) => {
 		server = app.listen(0, done);
@@ -51,6 +51,8 @@ describe('datasourceRuns service', () => {
 		});
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id });
 		expect(result).to.not.equal(undefined);
-		expect(Array.isArray(result)).to.equal(true);
+		expect(result.status).to.equal('Success');
+
+		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 });

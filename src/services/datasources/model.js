@@ -15,8 +15,8 @@ const dataSourceSchema = new Schema({
 const datasourceModel = mongoose.model('datasource', dataSourceSchema);
 
 const dataSourceRunSchema = new Schema({
-	datasource: { type: Schema.Types.ObjectId, ref: 'datasource', required: true },
-	createdBy: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+	datasourceId: { type: Schema.Types.ObjectId, ref: 'datasource', required: true },
+	createdBy: { type: Schema.Types.ObjectId, ref: 'user' },
 	duration: { type: Number },
 	status: { type: String, enum: ['Success', 'Warning', 'Error'] },
 	dryrun: { type: Boolean },
