@@ -27,19 +27,16 @@ module.exports = function setup() {
 	};
 
 	const getFrontendUrl = () => {
-		let backendUrl = process.env.HOST;
-		if (backendUrl){
-			return backendUrl.replace('api', '');
-		} else {
-			return 'http://localhost:3100';
-		}
-	}
+		const backendUrl = process.env.HOST;
+		if (backendUrl) return backendUrl.replace('api', '');
+		return 'http://localhost:3100';
+	};
 
 	const isLocalRegistrationLink = (url) => {
 		const linkPrefix = `${getFrontendUrl()}/registration/`;
 		if (url.startsWith(linkPrefix)) return true;
 		return false;
-	}
+	};
 
 	function redirectToTarget(req, res, next) {
 		if (req.method === 'GET' && !req.query.target) { // capture these requests and issue a redirect
@@ -49,15 +46,13 @@ module.exports = function setup() {
 				.then((data) => {
 					if (isLocalRegistrationLink(data.target) && !(verifyDate(data.createdAt))) {
 						res.redirect(`${getFrontendUrl()}/link/expired`);
+					} else if (data.data || req.query.includeShortId) {
+						const [url, query] = data.target.split('?');
+						const queryObject = queryString.parse(query || '');
+						queryObject.link = data._id;
+						res.redirect(`${url}?${queryString.stringify(queryObject)}`);
 					} else {
-						if (data.data || req.query.includeShortId) {
-							const [url, query] = data.target.split('?');
-							const queryObject = queryString.parse(query || '');
-							queryObject.link = data._id;
-							res.redirect(`${url}?${queryString.stringify(queryObject)}`);
-						} else {
-							res.redirect(data.target);
-						}
+						res.redirect(data.target);
 					}
 				})
 				.catch((err) => {
