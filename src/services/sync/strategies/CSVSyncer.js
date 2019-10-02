@@ -43,8 +43,8 @@ const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
  * @implements {Syncer}
  */
 class CSVSyncer extends Syncer {
-	constructor(app, stats = {}, options = {}, requestParams = {}) {
-		super(app, stats);
+	constructor(app, stats = {}, logger, options = {}, requestParams = {}) {
+		super(app, stats, logger);
 
 		this.options = options;
 		this.requestParams = requestParams;

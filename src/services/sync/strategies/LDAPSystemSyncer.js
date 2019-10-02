@@ -7,8 +7,8 @@ const LDAPSyncer = require('./LDAPSyncer');
  * @implements {Syncer}
  */
 class LDAPSystemSyncer extends Syncer {
-	constructor(app, stats) {
-		super(app, stats);
+	constructor(app, stats, logger) {
+		super(app, stats, logger);
 		Object.assign(this.stats, {
 			systems: {},
 		});

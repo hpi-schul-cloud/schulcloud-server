@@ -6,8 +6,8 @@ const Syncer = require('./Syncer');
  * @implements {Syncer}
  */
 class SystemSyncer extends Syncer {
-	constructor(app, stats, system) {
-		super(app, stats);
+	constructor(app, stats, logger, system) {
+		super(app, stats, logger);
 		this.system = system;
 	}
 

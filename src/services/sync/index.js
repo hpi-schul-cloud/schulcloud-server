@@ -1,9 +1,10 @@
 const errors = require('@feathersjs/errors');
 const auth = require('@feathersjs/authentication');
-const logger = require('../../logger');
+// const logger = require('../../logger');
 
 const Syncer = require('./strategies/Syncer');
 const syncers = require('./strategies');
+const getSyncLogger = require('./logger');
 
 module.exports = function () {
 	const app = this;
@@ -24,12 +25,13 @@ module.exports = function () {
 				throw new errors.BadRequest('No target supplied');
 			}
 			const { target } = params.query;
+			const logger = getSyncLogger();
 			const instances = [];
 			syncers.forEach((syncer) => {
 				if (syncer.respondsTo(target)) {
 					const args = syncer.params(params, data);
 					if (args) {
-						instances.push(new syncer(app, {}, ...args));
+						instances.push(new syncer(app, {}, logger, ...args));
 					} else {
 						throw new Error(`Invalid params for ${syncer.name}: "${JSON.stringify(params)}"`);
 					}
