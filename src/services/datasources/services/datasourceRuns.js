@@ -33,9 +33,10 @@ class DatasourceRuns {
 
 	async create(data, params) {
 		const datasource = await this.app.service('datasources').get(data.datasourceId);
-		// write document to database.
 		const startTime = Date.now();
-		const result = await this.app.service('sync').find({ query: datasource.config });
+		const result = data.data
+			? await this.app.service('sync').create({ data: data.data }, { query: datasource.config })
+			: await this.app.service('sync').find({ query: datasource.config });
 		const endTime = Date.now();
 
 		let status = 'Success';
