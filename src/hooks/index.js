@@ -503,9 +503,11 @@ exports.sendEmail = (context, maildata) => {
 
 	const roles = (typeof maildata.roles === 'string' ? [maildata.roles] : maildata.roles) || [];
 	const emails = (typeof maildata.emails === 'string' ? [maildata.emails] : maildata.emails) || [];
-	const replyEmail = (maildata.replyEmail) ? maildata.replyEmail : null;
 	const userIds = (typeof maildata.userIds === 'string' ? [maildata.userIds] : maildata.userIds) || [];
 	const receipients = [];
+
+	const re = /\S+@\S+\.\S+/;
+	const replyEmail = ((maildata.replyEmail) && re.test(maildata.replyEmail)) ? maildata.replyEmail : null;
 
 	const promises = [];
 
@@ -532,7 +534,6 @@ exports.sendEmail = (context, maildata) => {
 
 	if (emails.length > 0) {
 		emails.forEach((email) => {
-			const re = /\S+@\S+\.\S+/;
 			if (re.test(email)) {
 				receipients.push(email);
 			}
