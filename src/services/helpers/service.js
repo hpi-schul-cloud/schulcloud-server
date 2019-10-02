@@ -26,6 +26,7 @@ module.exports = function setup(app) {
 					const transporter = nodemailer.createTransport(options);
 					const mail = {
 						from: process.env.SMTP_SENDER || (!!replyEmail) ? replyEmail : 'noreply@schul-cloud.org' || 'noreply@schul-cloud.org',
+						replyTo: (!!replyEmail) ? replyEmail : process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 						headers,
 						to: user ? user.email : email,
 						subject,
