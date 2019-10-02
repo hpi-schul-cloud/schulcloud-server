@@ -58,7 +58,7 @@ describe('General login service', () => {
 			});
 	}));
 
-	it.only('should not get a JWT with wrong credentials', () => new Promise((resolve, reject) => {
+	it('should not get a JWT with wrong credentials', () => new Promise((resolve, reject) => {
 		chai.request(app)
 			.post('/authentication')
 			.set('Accept', 'application/json')
