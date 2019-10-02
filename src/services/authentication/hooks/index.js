@@ -55,20 +55,20 @@ const populateResult = (hook) => {
 	return hook;
 };
 
-/*
-const isActivated = (account) => {
-	todo account activated = true should test it | injectUserId pass the account informations
-	return account
-}
-*/
+// Requests need to be used after authentication as inner server calls
+// Provider is not allowed to be set to detect it as inner server call
+const removeProvider = (context) => {
+	delete context.params.provider;
+	return context;
+};
+
 exports.before = {
 	create: [
 		lowerCaseUsername,
 		injectUserId,
-		(context) => { delete context.params.provider; return context; },
-		// isActivated,
+		removeProvider,
 	],
-	remove: [(context) => { delete context.params.provider; return context; }],
+	remove: [removeProvider],
 };
 
 exports.after = {
