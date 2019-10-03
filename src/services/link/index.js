@@ -57,7 +57,7 @@ module.exports = function setup() {
 				})
 				.catch((err) => {
 					logger.error(err);
-					res.status(500).send(err);
+					res.status(500).redirect(`${getFrontendUrl()}/link/invalid`);
 				});
 		} else {
 			delete req.query.includeShortId;
