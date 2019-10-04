@@ -35,6 +35,17 @@ class DatasourceRuns {
 	 */
 	async get(id, params) {
 		const datasourceRun = await datasourceRunModel.findById(id);
+
+		if (params.account) {
+			const [user, datasource] = await Promise.all([
+				this.app.service('users').get(params.account.userId),
+				this.app.service('datasources').get(datasourceRun.datasourceId),
+			]);
+			if (user.schoolId.toString() !== datasource.schoolId.toString()) {
+				throw new Forbidden('You do not have valid permission to access this.');
+			}
+		}
+
 		return datasourceRun;
 	}
 
