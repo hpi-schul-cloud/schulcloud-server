@@ -69,6 +69,8 @@ describe.only('datasourceRuns service', () => {
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id });
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Success');
+		expect(result.log instanceof String).to.equal(true);
+		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
@@ -83,6 +85,8 @@ describe.only('datasourceRuns service', () => {
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id, data: 'datakraken-food' });
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Success');
+		expect(result.log instanceof String).to.equal(true);
+		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});

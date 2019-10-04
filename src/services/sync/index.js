@@ -25,7 +25,7 @@ module.exports = function () {
 				throw new errors.BadRequest('No target supplied');
 			}
 			const { target } = params.query;
-			const logger = getSyncLogger();
+			const logger = getSyncLogger(params.logStream);
 			const instances = [];
 			syncers.forEach((syncer) => {
 				if (syncer.respondsTo(target)) {

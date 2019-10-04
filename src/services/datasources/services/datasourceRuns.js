@@ -1,4 +1,5 @@
 const Ajv = require('ajv');
+const { Writable } = require('stream');
 const auth = require('@feathersjs/authentication');
 const {
 	iff, isProvider, validateSchema, disallow,
@@ -33,20 +34,34 @@ class DatasourceRuns {
 
 	async create(data, params) {
 		const datasource = await this.app.service('datasources').get(data.datasourceId);
+
+		// set up stream for the sync log
+		let logString = '';
+		const logStream = new Writable({
+			write(chunk, encoding, callback) {
+				logString += chunk.toString();
+				callback();
+			},
+		});
+
+		// run a syncer
 		const startTime = Date.now();
 		const result = data.data
-			? await this.app.service('sync').create({ data: data.data }, { query: datasource.config })
-			: await this.app.service('sync').find({ query: datasource.config });
+			? await this.app.service('sync').create({ data: data.data }, { logStream, query: datasource.config })
+			: await this.app.service('sync').find({ logStream, query: datasource.config });
 		const endTime = Date.now();
 
+		// determine status
 		let status = 'Success';
 		result.forEach((e) => {
 			if (!e.success) status = 'Error';
 		});
 
+		// save to database
 		const dsrData = {
 			datasourceId: data.datasourceId,
 			status,
+			log: logString,
 			config: datasource.config,
 			dryrun: data.dryrun || false,
 			createdBy: (params.account || {}).userId,
