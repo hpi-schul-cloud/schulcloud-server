@@ -173,4 +173,36 @@ describe.only('datasourceRuns service', () => {
 			expect(err.className).to.equal('forbidden');
 		}
 	});
+
+	it('FIND fetches all runs for a datasource', async () => {
+		const testSchool = await testObjects.createTestSchool();
+		const datasource = await datasourcesService.create({
+			schoolId: testSchool._id,
+			config: { target: 'mock' },
+			name: 'beautiful datasource',
+		});
+		const datasourceRunIds = (await Promise.all([
+			datasourceRunsService.create({ datasourceId: datasource._id }),
+			datasourceRunsService.create({ datasourceId: datasource._id }),
+			datasourceRunsService.create({ datasourceId: datasource._id }),
+		])).map(ds => ds._id.toString());
+		const result = await datasourceRunsService.find({ datasourceId: datasource._id });
+		expect(result).to.not.equal(undefined);
+		result.forEach((res) => {
+			expect(res.status).to.equal('Success');
+			expect(res.log).to.not.exist;
+			expect(datasourceRunIds.includes(res._id.toString())).to.equal(true);
+		});
+		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
+	});
+
+	it('FIND fetches all runs for a school');
+
+	it('FIND can be sorted');
+
+	it('FIND can be paginated');
+
+	it('FIND doesnt include filtered results');
+
+	it('FIND cant fetch runs from a different school');
 });

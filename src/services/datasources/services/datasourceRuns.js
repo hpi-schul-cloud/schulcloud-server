@@ -24,8 +24,17 @@ class DatasourceRuns {
 		this.registerEventListeners();
 	}
 
-	find(params) {
-		return {};
+	async find(params) {
+		let schoolId;
+		if (params.account) {
+			({ schoolId } = await this.app.service('users').get(params.account.userId));
+		}
+		const query = params.query || {};
+		const result = await datasourceRunModel.find(
+			{ schoolId: schoolId || params.schoolId, datasourceId: params.datasourceId },
+			'datasourceId _id status dryrun duration',
+		);
+		return result;
 	}
 
 	/**
