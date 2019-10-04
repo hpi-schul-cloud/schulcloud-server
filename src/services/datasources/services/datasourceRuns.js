@@ -29,9 +29,11 @@ class DatasourceRuns {
 		if (params.account) {
 			({ schoolId } = await this.app.service('users').get(params.account.userId));
 		}
-		const query = params.query || {};
+		// const query = params.query || {};
+		const filter = { schoolId: schoolId || params.schoolId };
+		if (params.datasourceId) filter.datasourceId = params.datasourceId;
 		const result = await datasourceRunModel.find(
-			{ schoolId: schoolId || params.schoolId, datasourceId: params.datasourceId },
+			filter,
 			'datasourceId _id status dryrun duration',
 		);
 		return result;

@@ -196,13 +196,84 @@ describe.only('datasourceRuns service', () => {
 		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
 	});
 
-	it('FIND fetches all runs for a school');
+	it('FIND fetches all runs for a school'/* , async () => {
+		const testSchool = await testObjects.createTestSchool();
+		const datasource = await datasourcesService.create({
+			schoolId: testSchool._id,
+			config: { target: 'mock' },
+			name: 'first datasource',
+		});
+		const otherDatasource = await datasourcesService.create({
+			schoolId: testSchool._id,
+			config: { target: 'mock' },
+			name: 'second datasource',
+		});
+		const datasourceRunIds = (await Promise.all([
+			datasourceRunsService.create({ datasourceId: datasource._id }),
+			datasourceRunsService.create({ datasourceId: otherDatasource._id }),
+		])).map(ds => ds._id.toString());
+		const result = await datasourceRunsService.find({ schoolId: testSchool._id });
+		expect(result).to.not.equal(undefined);
+		result.forEach((res) => {
+			expect(res.status).to.equal('Success');
+			expect(res.log).to.not.exist;
+			expect(datasourceRunIds.includes(res._id.toString())).to.equal(true);
+		});
+		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
+	} */);
 
 	it('FIND can be sorted');
 
 	it('FIND can be paginated');
 
-	it('FIND doesnt include filtered results');
+	it('FIND doesnt include filtered results', async () => {
+		const testSchool = await testObjects.createTestSchool();
+		const datasource = await datasourcesService.create({
+			schoolId: testSchool._id,
+			config: { target: 'mock' },
+			name: 'correct datasource',
+		});
+		const otherDatasource = await datasourcesService.create({
+			schoolId: testSchool._id,
+			config: { target: 'mock' },
+			name: 'other datasource',
+		});
+		const datasourceRunIds = (await Promise.all([
+			datasourceRunsService.create({ datasourceId: datasource._id }),
+			datasourceRunsService.create({ datasourceId: otherDatasource._id }),
+		])).map(ds => ds._id.toString());
+		const result = await datasourceRunsService.find({ datasourceId: datasource._id });
+		expect(result).to.not.equal(undefined);
+		expect(result.length).to.equal(1);
+		expect(result[0]._id.toString()).to.equal(datasourceRunIds[0].toString());
 
-	it('FIND cant fetch runs from a different school');
+		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
+	});
+
+	it('FIND cant fetch runs from a different school'/* , async () => {
+		const testSchool = await testObjects.createTestSchool();
+		const otherSchool = await testObjects.createTestSchool();
+		const datasource = await datasourcesService.create({
+			schoolId: testSchool._id,
+			config: { target: 'mock' },
+			name: 'correct datasource',
+		});
+		const otherDatasource = await datasourcesService.create({
+			schoolId: otherSchool._id,
+			config: { target: 'mock' },
+			name: 'other datasource',
+		});
+		const datasourceRunIds = (await Promise.all([
+			datasourceRunsService.create({ datasourceId: datasource._id }),
+			datasourceRunsService.create({ datasourceId: otherDatasource._id }),
+		])).map(ds => ds._id.toString());
+		const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: testSchool._id });
+		const params = await generateRequestParamsFromUser(user);
+		const result = await datasourceRunsService.find(params);
+		expect(result).to.not.equal(undefined);
+		expect(result.length).to.equal(1);
+		expect(result[0]._id.toString()).to.equal(datasourceRunIds[0].toString());
+
+		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
+	} */);
 });
