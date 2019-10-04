@@ -1,10 +1,10 @@
 const Ajv = require('ajv');
 const { Writable } = require('stream');
+const {	Forbidden } = require('@feathersjs/errors');
 const auth = require('@feathersjs/authentication');
 const {
 	iff, isProvider, validateSchema, disallow,
 } = require('feathers-hooks-common');
-const { customHook } = require('../hooks');
 const { hasPermission } = require('../../../hooks');
 
 const createSchema = require('../schemas/datasourceRuns.create.schema');
@@ -45,6 +45,13 @@ class DatasourceRuns {
 	 */
 	async create(data, params) {
 		const datasource = await this.app.service('datasources').get(data.datasourceId);
+
+		if (params.account) {
+			const user = await this.app.service('users').get(params.account.userId);
+			if (user.schoolId.toString() !== datasource.schoolId) {
+				throw new Forbidden('You do not have valid permissions to access this.');
+			}
+		}
 
 		// set up stream for the sync log
 		let logString = '';

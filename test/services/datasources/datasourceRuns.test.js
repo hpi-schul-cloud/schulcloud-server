@@ -69,7 +69,7 @@ describe.only('datasourceRuns service', () => {
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id });
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Success');
-		expect(result.log instanceof String).to.equal(true);
+		expect(typeof result.log).to.equal('string');
 		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
@@ -85,9 +85,32 @@ describe.only('datasourceRuns service', () => {
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id, data: 'datakraken-food' });
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Success');
-		expect(result.log instanceof String).to.equal(true);
+		expect(typeof result.log).to.equal('string');
 		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
+	});
+
+	it('CREATE fails for a different school', async () => {
+		try {
+			const userSchool = await testObjects.createTestSchool();
+			const datasourceSchool = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: userSchool._id });
+			const datasource = await datasourcesService.create({
+				schoolId: datasourceSchool._id,
+				config: { target: 'mockwithdata' },
+				name: 'datahungry source',
+			});
+			const params = await generateRequestParamsFromUser(user);
+			await datasourceRunsService.create(
+				{ datasourceId: datasource._id.toString(), data: 'datakraken-food' },
+				params,
+			);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(403);
+			expect(err.className).to.equal('forbidden');
+		}
 	});
 });
