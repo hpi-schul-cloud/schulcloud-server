@@ -33,8 +33,9 @@ class DatasourceRuns {
 	 * @param {ObjectId} id id of a datasourceRun
 	 * @param {Object} params feathers params object.
 	 */
-	get(id, params) {
-		return {};
+	async get(id, params) {
+		const datasourceRun = await datasourceRunModel.findById(id);
+		return datasourceRun;
 	}
 
 	/**
@@ -48,7 +49,7 @@ class DatasourceRuns {
 
 		if (params.account) {
 			const user = await this.app.service('users').get(params.account.userId);
-			if (user.schoolId.toString() !== datasource.schoolId) {
+			if (user.schoolId.toString() !== datasource.schoolId.toString()) {
 				throw new Forbidden('You do not have valid permissions to access this.');
 			}
 		}

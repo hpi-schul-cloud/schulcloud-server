@@ -59,7 +59,7 @@ describe.only('datasourceRuns service', () => {
 		expect(datasourceRunsService).to.not.be.undefined;
 	});
 
-	it('starts a datasource run', async () => {
+	it('CREATE starts a datasource run without data', async () => {
 		const testSchool = await testObjects.createTestSchool();
 		const datasource = await datasourcesService.create({
 			schoolId: testSchool._id,
@@ -75,7 +75,7 @@ describe.only('datasourceRuns service', () => {
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
-	it('passes data', async () => {
+	it('CREATE starts a datasource run with data', async () => {
 		const testSchool = await testObjects.createTestSchool();
 		const datasource = await datasourcesService.create({
 			schoolId: testSchool._id,
@@ -83,6 +83,27 @@ describe.only('datasourceRuns service', () => {
 			name: 'datahungry source',
 		});
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id, data: 'datakraken-food' });
+		expect(result).to.not.equal(undefined);
+		expect(result.status).to.equal('Success');
+		expect(typeof result.log).to.equal('string');
+		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
+
+		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
+	});
+
+	it('CREATE works for an authorized user', async () => {
+		const school = await testObjects.createTestSchool();
+		const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const datasource = await datasourcesService.create({
+			schoolId: school._id,
+			config: { target: 'mock' },
+			name: 'datahungry source',
+		});
+		const params = await generateRequestParamsFromUser(user);
+		const result = await datasourceRunsService.create(
+			{ datasourceId: datasource._id.toString() },
+			params,
+		);
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Success');
 		expect(typeof result.log).to.equal('string');
@@ -112,5 +133,22 @@ describe.only('datasourceRuns service', () => {
 			expect(err.code).to.equal(403);
 			expect(err.className).to.equal('forbidden');
 		}
+	});
+
+	it('GET fetches a run including log', async () => {
+		const testSchool = await testObjects.createTestSchool();
+		const datasource = await datasourcesService.create({
+			schoolId: testSchool._id,
+			config: { target: 'mock' },
+			name: 'awesome datasource',
+		});
+		const datasourceRun = await datasourceRunsService.create({ datasourceId: datasource._id });
+		const result = await datasourceRunsService.get(datasourceRun._id);
+		expect(result).to.not.equal(undefined);
+		expect(result.status).to.equal('Success');
+		expect(typeof result.log).to.equal('string');
+		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
+
+		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 });
