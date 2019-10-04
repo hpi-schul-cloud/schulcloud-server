@@ -19,7 +19,7 @@ const dataSourceRunSchema = new Schema({
 	createdBy: { type: Schema.Types.ObjectId, ref: 'user' },
 	duration: { type: Number },
 	status: { type: String, enum: ['Success', 'Warning', 'Error'] },
-	dryrun: { type: Boolean },
+	dryrun: { type: Boolean, default: false },
 	log: { type: String },
 	config: { type: Object },
 }, { timestamps: true });
