@@ -28,10 +28,21 @@ class DatasourceRuns {
 		return {};
 	}
 
+	/**
+	 * returns detailed informaton about a specific run of a datasource, including complete logs.
+	 * @param {ObjectId} id id of a datasourceRun
+	 * @param {Object} params feathers params object.
+	 */
 	get(id, params) {
 		return {};
 	}
 
+	/**
+	 * Run a sync for a specific datasource, with its current config and passed data.
+	 * The results and logs of the run get saved and can be reviewed later.
+	 * @param {Object} data userdata, has to conform to the datasourceRuns.create.schema.json.
+	 * @param {Object} params feathers params object.
+	 */
 	async create(data, params) {
 		const datasource = await this.app.service('datasources').get(data.datasourceId);
 
