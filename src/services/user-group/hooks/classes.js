@@ -14,6 +14,7 @@ exports.before = {
 		restrictToCurrentSchool,
 		restrictToUsersOwnClasses,
 		sortByGradeAndOrName,
+		globalHooks.mapPaginationQuery,
 	],
 	get: [
 		restrictToCurrentSchool,
