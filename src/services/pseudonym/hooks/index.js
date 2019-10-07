@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 
@@ -75,7 +75,7 @@ const populateUsername = (context) => {
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [authenticate('jwt')],
 	find: [replaceToolWithOrigin],
 	get: [() => { throw new errors.MethodNotAllowed(); }],
 	create: [globalHooks.ifNotLocal(() => { throw new errors.MethodNotAllowed(); })],
