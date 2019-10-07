@@ -25,6 +25,8 @@ const permissionSchema = new Schema(
 
 enableAuditLog(permissionSchema);
 
+const SecurityCheckStatusTypes = ['pending', 'verified', 'blocked', 'wont-check'];
+
 /**
  * handles meta-data for a file
  * @param isDirectory {Boolean} - is this a directory
@@ -33,6 +35,11 @@ enableAuditLog(permissionSchema);
  * @param type {String} - the type of the file, e.g. mime/image
  * @param storageFileName {String} - the name of the real file on the storage
  * @param thumbnail {String} - the url of the file's thumbnail image
+ * @param thumbnailRequestToken {String} - a UUID to be used to identify a file to a thumbnail generation service
+ * @param securityCheck.status {String} - status of the check (see SecurityCheckStatusTypes)
+ * @param securityCheck.requestToken {String} - a UUID to be used to identify the file
+ * @param securityCheck.createdAt {Date} - when the security check was requested (usually the file creation date)
+ * @param securityCheck.updatedAt {Date} - timestamp of last status change (if any)
  * @param shareToken {String} - hash for enabling sharing. if undefined than sharing is disabled
  * @param parent {File} - parent directory
  * @param owner {User|Course|Team} - owner Object of file
@@ -47,6 +54,16 @@ const fileSchema = new Schema({
 	storageFileName: { type: String },
 	thumbnail: { type: String },
 	thumbnailRequestToken: { type: String, default: uuid },
+	securityCheck: {
+		status: {
+			type: String,
+			enum: SecurityCheckStatusTypes,
+			default: 'pending',
+		},
+		requestToken: { type: String, default: uuid },
+		createdAt: { type: Date },
+		updatedAt: { type: Date },
+	},
 	shareToken: { type: String },
 	parent: { type: Schema.Types.ObjectId, ref: 'file' },
 	owner: {
@@ -72,6 +89,7 @@ fileSchema.index({ name: 'text' });
 
 module.exports = {
 	FileModel: mongoose.model('file', fileSchema),
+	SecurityCheckStatusTypes,
 	permissionSchema,
 	FilePermissionModel: mongoose.model('filePermissionModel', permissionSchema),
 };
