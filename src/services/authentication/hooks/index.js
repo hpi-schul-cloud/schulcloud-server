@@ -1,3 +1,41 @@
+const { TooManyRequests } = require('@feathersjs/errors');
+
+const bruteForceCheck = async (context) => {
+	const { systemId, schoolId, strategy } = context.data;
+
+	if (strategy !== 'jwt') {
+		if (schoolId) {
+			await context.app.service('schools').get(schoolId).then((school) => {
+				if (strategy === 'ldap') {
+					context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
+				}
+			});
+		}
+
+		const [account] = await context.app.service('/accounts').find({
+			query: {
+				username: context.data.username,
+				systemId,
+			},
+			paginate: false,
+		});
+
+
+		if (account.lastTriedLogin) {
+			const allowedTimeDifference = process.env.LOGIN_BLOCK_TIME || 20;
+			const timeDifference = (Date.now() - account.lastTriedLogin) / 1000;
+			if (timeDifference < allowedTimeDifference) {
+				throw new TooManyRequests(
+					'Brute Force Prevention!', {
+						timeToWait: timeDifference,
+					},
+				);
+			}
+		}
+	}
+	return context;
+};
+
 const injectUserId = async (context) => {
 	const { systemId, schoolId, strategy } = context.data;
 
@@ -64,6 +102,7 @@ const removeProvider = (context) => {
 
 exports.before = {
 	create: [
+		bruteForceCheck,
 		lowerCaseUsername,
 		injectUserId,
 		removeProvider,

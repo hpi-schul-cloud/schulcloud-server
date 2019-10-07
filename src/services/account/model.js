@@ -13,6 +13,7 @@ const accountSchema = new Schema({
 	userId: { type: Schema.Types.ObjectId, ref: 'user' },
 	systemId: { type: Schema.Types.ObjectId, ref: 'system' }, // if systemId => SSO
 
+	lastTriedLogin: { type: Date, default: 0 },
 	expiresAt: { type: Date },
 
 	activated: { type: Boolean, default: false },
