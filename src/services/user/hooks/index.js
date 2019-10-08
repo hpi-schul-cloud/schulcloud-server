@@ -168,7 +168,7 @@ const checkJwt = () => function checkJwtfnc(hook) {
 
 const pinIsVerified = (hook) => {
 	if ((hook.params || {}).account && hook.params.account.userId) {
-		return (globalHooks.hasPermission('USER_CREATE')).call(this, hook);
+		return (globalHooks.hasPermission(['STUDENT_CREATE', 'TEACHER_CREATE', 'ADMIN_CREATE'])).call(this, hook);
 	}
 	// eslint-disable-next-line no-underscore-dangle
 	const email = (hook.params._additional || {}).parentEmail || hook.data.email;
@@ -415,14 +415,14 @@ exports.before = {
 	],
 	update: [
 		authenticate('jwt'),
-		globalHooks.hasPermission('USER_EDIT'),
+		globalHooks.hasPermission(['STUDENT_EDIT', 'TEACHER_EDIT', 'ADMIN_EDIT']),
 		// TODO only local for LDAP
 		sanitizeData,
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
 	],
 	patch: [
 		authenticate('jwt'),
-		globalHooks.hasPermission('USER_EDIT'),
+		globalHooks.hasPermission(['STUDENT_EDIT', 'TEACHER_EDIT', 'ADMIN_EDIT']),
 		globalHooks.ifNotLocal(securePatching),
 		globalHooks.permitGroupOperation,
 		sanitizeData,

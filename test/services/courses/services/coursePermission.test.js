@@ -79,7 +79,6 @@ describe('PermissionService', async () => {
 		'TOOL_NEW_VIEW',
 		'TOPIC_CREATE',
 		'TOPIC_EDIT',
-		'USER_CREATE',
 		'USERGROUP_CREATE',
 		'USERGROUP_EDIT',
 		...userPermissions,
