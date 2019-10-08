@@ -63,36 +63,54 @@ exports.hasRole = (context, userId, roleName) => {
 		});
 };
 
-exports.hasPermission = (permissionName) => (context) => {
-	// If it was an internal call then skip this context
-	if (!context.params.provider) {
-		return context;
-	}
+// if mulitple permissions are defined, just one need to match
+const hasPermission = (permissions) => {
+	const permissionNames = (typeof permissions === 'string') ? permissions : [permissions];
 
-	// If an api key was provided, skip
-	if ((context.params.headers || {})['x-api-key']) {
-		return KeysModel.findOne({ key: context.params.headers['x-api-key'] })
-			.then((res) => {
-				if (!res) throw new NotAuthenticated('API Key is invalid');
+	return (context) => {
+		// If it was an internal call then skip this context
+		if (!context.params.provider) {
+			return context;
+		}
+
+		// If an api key was provided, skip
+		if ((context.params.headers || {})['x-api-key']) {
+			return KeysModel.findOne({ key: context.params.headers['x-api-key'] })
+				.then((res) => {
+					if (!res) throw new NotAuthenticated('API Key is invalid');
+					return Promise.resolve(context);
+				})
+				.catch(() => {
+					throw new NotAuthenticated('API Key is invalid.');
+				});
+		}
+
+		// Otherwise check for user permissions
+		const service = context.app.service('/users/');
+		return service.get({ _id: (context.params.account.userId || '') })
+			.then((user) => {
+				user.permissions = Array.from(user.permissions);
+
+				const userHasPermission = (permission) => (user.permissions || []).includes(permission)
+				const hasAnyPermission = permissionNames.some(userHasPermission);
+				if (!hasAnyPermission) {
+					throw new Forbidden(`You don't have one of the permission ${permissionNames.concat(',')}.`);
+				}
 				return Promise.resolve(context);
-			})
-			.catch(() => {
-				throw new NotAuthenticated('API Key is invalid.');
 			});
-	}
-
-	// Otherwise check for user permissions
-	const service = context.app.service('/users/');
-	return service.get({ _id: (context.params.account.userId || '') })
-		.then((user) => {
-			user.permissions = Array.from(user.permissions);
-
-			if (!(user.permissions || []).includes(permissionName)) {
-				throw new Forbidden(`You don't have the permission ${permissionName}.`);
-			}
-			return Promise.resolve(context);
-		});
+	};
 };
+
+// resolves if the user has all defined permissions
+exports.hasPermissions = (permissions) => {
+	const permissionNames = (typeof permissions === 'string') ? permissions : [permissions];
+	return (context) => {
+		const hasPermissions = permissionNames.every((permission) => hasPermission(permission)(context));
+		return Promise.all(hasPermissions);
+	};
+};
+
+exports.hasPermission = hasPermission;
 
 /*
     excludeOptions = false => allways remove response
