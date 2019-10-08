@@ -58,7 +58,6 @@
 			"TEAM_EDIT",
 			"TEAM_VIEW",
 			"TOOL_VIEW",
-			"TOOL_VIEW",
 			"TOPIC_VIEW",
 			"USERGROUP_VIEW"
 		],
@@ -83,8 +82,6 @@
 		"permissions": [
 			"ACCOUNT_CREATE",
 			"COURSE_EDIT",
-			"HOMEWORK_CREATE",
-			"HOMEWORK_EDIT",
 			"LESSONS_VIEW",
 			"NEWS_CREATE",
 			"NEWS_EDIT",

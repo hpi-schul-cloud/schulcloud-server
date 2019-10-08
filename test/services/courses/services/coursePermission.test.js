@@ -55,7 +55,6 @@ describe('PermissionService', async () => {
 		'TEAM_VIEW',
 		'TOOL_VIEW',
 		'TOPIC_VIEW',
-		'USER_VIEW',
 		'USERGROUP_VIEW',
 	];
 
@@ -70,9 +69,12 @@ describe('PermissionService', async () => {
 		'SCHOOL_NEWS_EDIT',
 		'STUDENT_CREATE',
 		'STUDENT_DELETE',
+		'STUDENT_EDIT',
+		'STUDENT_LIST',
 		'STUDENT_SKIP_REGISTRATION',
 		'SUBMISSIONS_SCHOOL_VIEW',
 		'TEACHER_CREATE',
+		'TEACHER_LIST',
 		'TEAM_INVITE_EXTERNAL',
 		'TOOL_CREATE',
 		'TOOL_EDIT',
