@@ -34,13 +34,13 @@ module.exports = function setup(app) {
 						text: content.text,
 					};
 					// send mail with defined transport object in production mode
-					//if (process.env.NODE_ENV === 'production' || process.env.FORCE_SEND_EMAIL) {
+					if (process.env.NODE_ENV === 'production' || process.env.FORCE_SEND_EMAIL) {
 						const info = await transporter.sendMail(mail);
 						logger.info(`E-Mail Message sent: ${info.messageId}`);
-					//	return;
-					//}
-					// otherwise print email message object on console
-					//logger.debug('E-Mail Message not sent (not in production mode):', mail);
+						return;
+					}
+					 otherwise print email message object on console
+					logger.debug('E-Mail Message not sent (not in production mode):', mail);
 				}).catch((err) => Promise.reject(err));
 		}
 	}
