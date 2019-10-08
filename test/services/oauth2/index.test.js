@@ -1,8 +1,10 @@
 const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const oauth2 = require('simple-oauth2');
-const request = require('request-promise-native');
+// const oauth2 = require('simple-oauth2');
+// const request = require('request-promise-native');
+// proxyserver
+const oauth2Server = require('./oauth2MockServer');
 
 const app = require('../../../src/app');
 const logger = require('../../../src/logger/');
@@ -72,58 +74,20 @@ describe('oauth2 service', function oauthTest() {
 		key: '1',
 	};
 
-	let loginRequest1 = null;
-	let loginRequest2 = null;
+	const loginRequest1 = null;
+	const loginRequest2 = null;
 	// let redirectTo = null;
 
-	before((done) => {
+	before(async () => {
 		this.timeout(10000);
-		Promise.all([
-			toolService.create(testTool1),
-			toolService.create(testTool2),
-		]).then(() => {
-			clientsService.create(testClient2).then((client) => {
-				const oauth = oauth2.create({
-					client: {
-						id: client.client_id,
-						secret: client.client_secret,
-					},
-					auth: {
-						tokenHost: 'http://localhost:9000',
-						tokenPath: '/oauth2/token',
-						authorizePath: '/oauth2/auth',
-					},
-				});
-				const authorizationUri = oauth.authorizationCode.authorizeURL({
-					redirect_uri: client.redirect_uris[0],
-					scope: 'openid',
-					state: '12345678',
-				});
-				request({
-					uri: authorizationUri,
-					method: 'GET',
-					followRedirect: false,
-				}).catch((res) => {
-					const position = res.error.indexOf('login_challenge=')
-							+ 'login_challenge'.length + 1;
-					loginRequest1 = res.error.substr(position, 32);
-					request({
-						uri: authorizationUri,
-						method: 'GET',
-						followRedirect: false,
-					}).catch((res2) => {
-						const position2 = res2.error.indexOf('login_challenge=')
-								+ 'login_challenge'.length + 1;
-						loginRequest2 = res2.error.substr(position2, 32);
-						done();
-					});
-				});
-			}).catch((err) => {
-				logger.warning('Can not execute oauth2 before all hook.', err);
-				done();
-			});
-		});
+
+		const o2mock = await oauth2Server({});
+		app.settings.services.hydra = o2mock.url; // revert to old value do this in after hook
+
+		const oauth2 = require('../../../src/services/oauth2/index.js');
+		app.configure(oauth2);
 	});
+
 
 	after((done) => {
 		Promise.all([
@@ -141,31 +105,33 @@ describe('oauth2 service', function oauthTest() {
 	it('is registered', () => {
 		assert.ok(clientsService);
 		assert.ok(loginService);
+		assert.ok(introspectService);
+		assert.ok(consentService);
 	});
 
 	it('GET BaseUrl', () => baseUrlService.find().then((response) => {
 		assert.ok(response);
 	}));
 
-	it('CREATE Client', () => clientsService.create(testClient).then((result) => {
+	it('CREATE Client', () => app.service('oauth2/clients').create(testClient).then((result) => {
 		assert.strictEqual(result.client_id, testClient.client_id);
 	}));
 
-	it('FIND Clients', () => clientsService.find().then((result) => {
+	it('FIND Clients', () => app.service('oauth2/clients/').find().then((result) => {
 		const foundTestClient = JSON.parse(result)
 			.find((client) => (client.client_id === testClient.client_id));
-		assert(foundTestClient);
+		assert(foundTestClient, foundTestClient.toString());
 	}));
 
-	it('DELETE Client', () => clientsService.remove(testClient.client_id).then((result) => {
+	it('DELETE Client', () => app.service('oauth2/clients/').remove(testClient.client_id).then((result) => {
 		assert(true);
 	}));
 
-	it('GET Login Request', () => loginService.get(loginRequest1).then((result) => {
+	it('GET Login Request', () => app.service('oauth2/loginRequest').get(loginRequest1).then((result) => {
 		assert.strictEqual(result.challenge, loginRequest1);
 	}));
 
-	it('PATCH Login Request Accept', () => loginService.patch(loginRequest1, {}, {
+	it('PATCH Login Request Accept', () => app.service('oauth2/loginRequest').patch(loginRequest1, {}, {
 		query: { accept: 1 },
 		account: { userId: testUser2._id },
 	}).then((result) => {
@@ -173,7 +139,7 @@ describe('oauth2 service', function oauthTest() {
 		assert.ok(result.redirect_to.indexOf(testClient2.client_id) !== -1);
 	}));
 
-	it('PATCH Login Request Reject', () => loginService.patch(loginRequest2, {}, {
+	it('PATCH Login Request Reject', () => app.service('oauth2/loginRequest').patch(loginRequest2, {}, {
 		query: { accept: 0 },
 		account: { userId: '0000d224816abba584714c9c' },
 	}).then(() => {
@@ -194,17 +160,17 @@ describe('oauth2 service', function oauthTest() {
 	// 	});
 	// });
 
-	it('Introspect Inactive Token', () => introspectService.create({ token: 'xxx' }).then((res) => {
+	it('Introspect Inactive Token', () => app.service('oauth2/introspect').create({ token: 'xxx' }).then((res) => {
 		assert((res.active === false));
 	}));
 
-	it('GET Consent', () => consentService.get(testUser2._id, {
+	it('GET Consent', () => app.service('oauth2/auth/sessions/consent').get(testUser2._id, {
 		account: { userId: testUser2._id },
 	}).then((consents) => {
 		assert.ok(consents);
 	}));
 
-	it('REMOVE Consent', () => consentService.remove(testUser2._id, {
+	it('REMOVE Consent', () => app.service('oauth2/auth/sessions/consent').remove(testUser2._id, {
 		account: { userId: testUser2._id },
 		query: { client: testClient.client_id },
 	}).then(() => {
@@ -213,3 +179,5 @@ describe('oauth2 service', function oauthTest() {
 		assert.strictEqual(404, err.statusCode);
 	}));
 });
+
+// TODO reset values and fix last patch. issues in hooks?
