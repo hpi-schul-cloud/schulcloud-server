@@ -16,6 +16,7 @@ Deine ${data.cloud}
 }
 
 function createFeedbackText(user, data) {
+	let device = data.deviceUserAgent ? `${data.device} [auto detection: ${data.deviceUserAgent}]` : data.device;
 	let text = `
 ReplyEmail: ${data.replyEmail}
 User: ${user}
@@ -23,10 +24,10 @@ User-ID: ${data.userId}
 Schule: ${data.schoolName}
 Schule-ID: ${data.schoolId}
 Instanz: ${data.cloud}
-Bereich ausgewählt: ${data.category}
 Browser: ${data.browserName}
 Browser Version: ${data.browserVersion}
 Betriebssystem: ${data.os}
+Gerät: ${device}
     `;
 
 	if (data.desire && data.desire !== '') {
