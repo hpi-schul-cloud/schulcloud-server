@@ -1,5 +1,5 @@
 const hooks = require('feathers-hooks-common');
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
@@ -86,7 +86,7 @@ const returnPinOnlyToSuperHero = async (hook) => {
 };
 
 exports.before = {
-	all: [globalHooks.forceHookResolve(auth.hooks.authenticate('jwt'))],
+	all: [globalHooks.forceHookResolve(authenticate('jwt'))],
 	find: hooks.disallow('external'),
 	get: hooks.disallow('external'),
 	create: [
