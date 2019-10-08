@@ -2,7 +2,7 @@ const School = require('../../../../src/services/school/model').schoolModel;
 
 let createdSchoolIds = [];
 
-const create = app => async ({
+const create = (app) => async ({
 	name = `HPI-Testschule-${new Date().getTime()}`,
 	address = {},
 	fileStorageType,
@@ -14,6 +14,8 @@ const create = app => async ({
 	experimental = false,
 	pilot = false,
 	currentYear,
+	schoolGroupId,
+	documentBaseDirType,
 	// eslint-disable-next-line camelcase
 	logo_dataUrl,
 	purpose = 'test',
@@ -33,7 +35,9 @@ const create = app => async ({
 		systems,
 		federalState,
 		ldapSchoolIdentifier,
+		documentBaseDirType,
 		createdAt,
+		schoolGroupId,
 		customYears,
 		updatedAt,
 		experimental,
@@ -55,7 +59,7 @@ const cleanup = async () => {
 	createdSchoolIds = [];
 };
 
-module.exports = app => ({
+module.exports = (app) => ({
 	create: create(app),
 	cleanup,
 	info: createdSchoolIds,

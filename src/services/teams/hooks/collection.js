@@ -9,7 +9,7 @@ const { ObjectId } = require('mongoose').Types;
  * @private
  * @collection
  */
-const mapToArray = e => (isArray(e) ? e : (isObject(e) ? Object.values(e) : [e]));
+const mapToArray = (e) => (isArray(e) ? e : (isObject(e) ? Object.values(e) : [e]));
 
 /**
  * @private
@@ -18,7 +18,7 @@ const mapToArray = e => (isArray(e) ? e : (isObject(e) ? Object.values(e) : [e])
  * @param {Function} execute
  * @param {*} additional Is a value that is pass as second parameter to the executed function.
  */
-const batch = (array, execute, additional) => (mapToArray(array)).map(e => execute(e, additional));
+const batch = (array, execute, additional) => (mapToArray(array)).map((e) => execute(e, additional));
 
 
 /**
@@ -28,7 +28,7 @@ const batch = (array, execute, additional) => (mapToArray(array)).map(e => execu
  * @param {Array::Boolean} arrayOfBools
  * @return {Boolean}
  */
-const allTrue = arrayOfBools => !arrayOfBools.some(b => b === false);
+const allTrue = (arrayOfBools) => !arrayOfBools.some((b) => b === false);
 
 
 /**
@@ -38,12 +38,12 @@ const allTrue = arrayOfBools => !arrayOfBools.some(b => b === false);
  * @param {Array::Boolean} arrayOfBools
  * @return {Boolean}
  */
-const oneTrue = arrayOfBools => arrayOfBools.some(b => b === true);
+const oneTrue = (arrayOfBools) => arrayOfBools.some((b) => b === true);
 
 /**
  * @collection
  */
-const isArray = array => Array.isArray(array);
+const isArray = (array) => Array.isArray(array);
 
 /**
  * @collection
@@ -59,17 +59,17 @@ const isArrayWithElement = (array) => {
 /**
  * @collection
  * */
-const isObject = e => typeof e === 'object' && !isArray(e);
+const isObject = (e) => typeof e === 'object' && !isArray(e);
 
 /**
  * @collection
  * */
-const isString = e => typeof e === 'string';
+const isString = (e) => typeof e === 'string';
 
 /**
  * @collection
  * */
-const isFunction = e => typeof e === 'function';
+const isFunction = (e) => typeof e === 'function';
 
 /**
  * @collection
@@ -80,42 +80,42 @@ const hasKey = (e, key) => isObject(e) && e[key] !== undefined;
  * @private
  * @collection
  */
-const isDefined = e => e !== undefined;
+const isDefined = (e) => e !== undefined;
 
 /**
  * @private
  * @collection
  */
-const isAllDefined = e => allTrue(batch(e, isDefined));
+const isAllDefined = (e) => allTrue(batch(e, isDefined));
 
 /**
  * @private
  * @collection
  */
-const isOneDefined = e => oneTrue(batch(e, isDefined));
+const isOneDefined = (e) => oneTrue(batch(e, isDefined));
 
 /**
  * @private
  * @collection
  */
-const isUndefined = e => e === undefined;
+const isUndefined = (e) => e === undefined;
 
 /**
  * @private
  * @collection
  */
-const isAllUndefined = e => allTrue(batch(e, isUndefined));
+const isAllUndefined = (e) => allTrue(batch(e, isUndefined));
 
 /**
  * @private
  * @collection
  */
-const isOneUndefined = e => oneTrue(batch(e, isUndefined));
+const isOneUndefined = (e) => oneTrue(batch(e, isUndefined));
 
 /**
  * @collection
  */
-const isNull = e => e === null;
+const isNull = (e) => e === null;
 
 /**
  * Can be also used to test if string is a valid id
@@ -136,13 +136,13 @@ const tryToCastToObjectId = (id) => {
  * @collection
  * @requires const Schema = require('mongoose').Schema;
  */
-const isObjectId = id => id instanceof ObjectId && id !== undefined;
+const isObjectId = (id) => id instanceof ObjectId && id !== undefined;
 
 /**
  * @collection
  * @requires const Schema = require('mongoose').Schema;
  */
-const isObjectIdWithTryToCast = id => isObjectId(id) || !isNull(tryToCastToObjectId((id || '').toString()));
+const isObjectIdWithTryToCast = (id) => isObjectId(id) || !isNull(tryToCastToObjectId((id || '').toString()));
 
 /**
 *   @collection
@@ -164,7 +164,7 @@ const throwErrorIfNotObjectId = (id) => {
 const bsonIdToString = (input) => {
 	let out;
 	if (isArray(input)) {
-		out = input.map(id => id.toString());
+		out = input.map((id) => id.toString());
 	} else if (isDefined(input)) {
 		out = input.toString();
 	} else {

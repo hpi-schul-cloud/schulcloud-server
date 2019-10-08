@@ -5,6 +5,8 @@
 
 const mongoose = require('mongoose');
 
+const { enableAuditLog } = require('../../utils/database');
+
 const { Schema } = mongoose;
 
 const keySchema = new Schema({
@@ -15,6 +17,8 @@ const keySchema = new Schema({
 }, {
 	timestamps: true,
 });
+
+enableAuditLog(keySchema);
 
 const keyModel = mongoose.model('key', keySchema);
 

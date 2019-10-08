@@ -39,7 +39,7 @@ module.exports = function setup(app) {
 					}
 					// otherwise print email message object on console
 					logger.debug('E-Mail Message not sent (not in production mode):', mail);
-				}).catch(err => Promise.reject(err));
+				}).catch((err) => Promise.reject(err));
 		}
 	}
 

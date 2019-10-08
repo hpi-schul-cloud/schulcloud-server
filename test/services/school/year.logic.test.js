@@ -22,7 +22,7 @@ describe('school year logic', async () => {
 		expect(defaultYears.length).is.greaterThan(1);
 		const nowAsYear = String(new Date().getFullYear());
 		expect(defaultYears
-			.filter(year => year.name.startsWith(nowAsYear)).length).to.equal(1,
+			.filter((year) => year.name.startsWith(nowAsYear)).length).to.equal(1,
 			'the next school year should be added here and to all running systems');
 	});
 
@@ -41,7 +41,7 @@ describe('school year logic', async () => {
 		const testSchoolId = testSchool._id;
 		testSchool = await School.findById(testSchoolId).exec();
 		const facade = new SchoolYearFacade(defaultYears, testSchool);
-		const customizedYear = facade.schoolYears.filter(year => year.name === yearToBeCustomized.name)[0];
+		const customizedYear = facade.schoolYears.filter((year) => year.name === yearToBeCustomized.name)[0];
 		expect(customizedYear.startDate).equals(customYear.startDate, 'recently set start date does not match');
 		expect(customizedYear.endDate).equals(customYear.endDate, 'recently set end date does not match');
 	});
