@@ -455,7 +455,6 @@ const directoryService = {
 		const permissions = [createPermission(userId)];
 
 		if (this.folderRegexCheck(name)) {
-			z;
 			throw new BadRequest(`Der Ordner '${name}' ist nicht erlaubt!`);
 		}
 		// todo: move permissions for directorys to createDefaultPermissions.js

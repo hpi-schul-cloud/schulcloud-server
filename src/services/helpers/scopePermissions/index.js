@@ -92,7 +92,7 @@ class ScopeFileService extends ScopeService {
 		return {
 			before: {
 				all: [
-					globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
+					globalHooks.ifNotLocal(authenticate('jwt')),
 					lookupScope,
 				],
 			},
