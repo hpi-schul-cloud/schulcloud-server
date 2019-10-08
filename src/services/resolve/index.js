@@ -80,7 +80,7 @@ class ScopeResolver {
 					scopes.forEach((scope) => {
 						const authorities = ['can-read'];
 
-						const isTeacher = scope.teacherIds.filter(teacherId => JSON.stringify(teacherId) === JSON.stringify(user._id));
+						const isTeacher = scope.teacherIds.filter((teacherId) => JSON.stringify(teacherId) === JSON.stringify(user._id));
 						if (isTeacher.length > 0) {
 							authorities.push('can-write', 'can-send-notifications');
 						}
@@ -127,9 +127,9 @@ class UserResolver {
 			userService.get(id, { headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }).then((data) => {
 				data.type = 'user';
 				return data;
-			}).catch(_ => undefined),
-			courseService.get(id, { headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }).then(data => data).catch(_ => undefined),
-			classService.get(id, { headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }).then(data => data).catch(_ => undefined),
+			}).catch((_) => undefined),
+			courseService.get(id, { headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }).then((data) => data).catch((_) => undefined),
+			classService.get(id, { headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }).then((data) => data).catch((_) => undefined),
 		]).then(([userData, courseData, classData]) => userData || courseData || classData);
 
 
@@ -163,7 +163,7 @@ class UserResolver {
 
 				response.data = users.map((user) => {
 					const authorities = ['can-read'];
-					const isTeacher = user.roles.filter(role => role.name === 'teacher');
+					const isTeacher = user.roles.filter((role) => role.name === 'teacher');
 					if (isTeacher.length > 0) {
 						authorities.push('can-write', 'can-send-notifications');
 					}

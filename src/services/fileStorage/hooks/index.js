@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { hasPermission, injectUserId } = require('../../../hooks');
 const resolveStorageType = require('./resolveStorageType');
 
@@ -13,7 +13,7 @@ const resolveUserId = (hook) => {
 
 exports.before = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		injectUserId,
 		resolveUserId,
 		resolveStorageType,

@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 
 const globalHooks = require('../../../hooks');
@@ -31,7 +31,7 @@ const filterRequestedSubmissions = (hook) => {
 						];
 					}
 				});
-			}).catch(err => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach users service" })));
+			}).catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach users service" })));
 		}
 	}
 	return hook;
@@ -42,8 +42,11 @@ const filterApplicableSubmissions = (hook) => {
 	if (hook.params.account) {
 		Promise.all(data.filter((e) => {
 			const c = JSON.parse(JSON.stringify(e));
+			if (!c.teamMembers) {
+				c.teamMembers = [];
+			}
 			if (typeof c.teamMembers[0] === 'object') {
-				c.teamMembers = c.teamMembers.map(e => e._id); // map teamMembers list to _id list (if $populate(d) is used)
+				c.teamMembers = c.teamMembers.map((e) => e._id); // map teamMembers list to _id list (if $populate(d) is used)
 			}
 
 			let promise;
@@ -57,17 +60,17 @@ const filterApplicableSubmissions = (hook) => {
 			return promise.then((courseGroup) => {
 				if (c.homeworkId.publicSubmissions // publicSubmissions allowes (everyone can see)
                     || (c.homeworkId.teacherId || {}).toString() == hook.params.account.userId.toString() // or user is teacher
-                    || c.studentId.toString() == hook.params.account.userId.toString() // or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
+					|| (c.studentId._id ? c.studentId._id.toString() == hook.params.account.userId.toString() : c.studentId.toString() == hook.params.account.userId.toString())// or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
                     || c.teamMembers && c.teamMembers.includes(hook.params.account.userId.toString()) // or is a teamMember
                     || courseGroup && courseGroup.userIds && courseGroup.userIds.includes(hook.params.account.userId.toString())) { // or in the courseGroup
 					return true;
 				} if (c.homeworkId.courseId) {
 					const courseService = hook.app.service('/courses');
 					return courseService.get(c.homeworkId.courseId)
-						.then(course => ((course || {}).teacherIds || []).includes(hook.params.account.userId.toString()) // or user is teacher
+						.then((course) => ((course || {}).teacherIds || []).includes(hook.params.account.userId.toString()) // or user is teacher
                                 || ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString()), // or user is substitution teacher
 						)
-						.catch(err => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach course service" })));
+						.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach course service" })));
 				}
 				return false;
 			});
@@ -112,7 +115,7 @@ const insertSubmissionData = (hook) => {
 
 				return Promise.resolve(hook);
 			})
-			.catch(err => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
+			.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
 	}
 	return Promise.resolve(hook);
 };
@@ -133,7 +136,7 @@ const insertHomeworkData = (hook) => {
 				}
 				return Promise.resolve(hook);
 			})
-			.catch(err => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service" })));
+			.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service" })));
 	}
 	return Promise.reject(new errors.BadRequest());
 };
@@ -150,7 +153,7 @@ const insertSubmissionsData = (hook) => {
 		hook.data.submissions = submissions.data;
 		return Promise.resolve(hook);
 	})
-		.catch(err => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
+		.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
 };
 
 const preventNoTeamMember = (hook) => {
@@ -178,7 +181,7 @@ const setTeamMembers = (hook) => {
 
 const noSubmissionBefore = (hook) => {
 	// check that no one has already submitted for the current User
-	const submissionsForMe = hook.data.submissions.filter(submission => // is there an submission for the current user?
+	const submissionsForMe = hook.data.submissions.filter((submission) => // is there an submission for the current user?
 		(submission.teamMembers.includes(hook.params.account.userId))
             || ((submission.studentId || {})._id == hook.params.account.userId));
 	if (submissionsForMe.length > 0) {
@@ -194,7 +197,7 @@ const noDuplicateSubmissionForTeamMembers = (hook) => {
 		// check if a teamMember submitted a solution on his own => display names
 		let newTeamMembers = hook.data.teamMembers;
 		if (hook.data.submission) {
-			newTeamMembers = newTeamMembers.filter(teamMember => !hook.data.submission.teamMembers.includes(teamMember.toString()));
+			newTeamMembers = newTeamMembers.filter((teamMember) => !hook.data.submission.teamMembers.includes(teamMember.toString()));
 		}
 
 		let toRemove = '';
@@ -291,7 +294,7 @@ const hasDeletePermission = (hook) => {
 };
 
 exports.before = () => ({
-	all: [auth.hooks.authenticate('jwt'), stringifyUserId],
+	all: [authenticate('jwt'), stringifyUserId],
 	find: [
 		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
 		filterRequestedSubmissions,

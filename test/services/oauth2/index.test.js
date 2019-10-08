@@ -7,6 +7,7 @@ const request = require('request-promise-native');
 const app = require('../../../src/app');
 const logger = require('../../../src/logger/');
 
+const baseUrlService = app.service('oauth2/baseUrl');
 const clientsService = app.service('oauth2/clients');
 const loginService = app.service('oauth2/loginRequest');
 const introspectService = app.service('oauth2/introspect');
@@ -142,13 +143,17 @@ describe('oauth2 service', function oauthTest() {
 		assert.ok(loginService);
 	});
 
+	it('GET BaseUrl', () => baseUrlService.find().then((response) => {
+		assert.ok(response);
+	}));
+
 	it('CREATE Client', () => clientsService.create(testClient).then((result) => {
 		assert.strictEqual(result.client_id, testClient.client_id);
 	}));
 
 	it('FIND Clients', () => clientsService.find().then((result) => {
 		const foundTestClient = JSON.parse(result)
-			.find(client => (client.client_id === testClient.client_id));
+			.find((client) => (client.client_id === testClient.client_id));
 		assert(foundTestClient);
 	}));
 

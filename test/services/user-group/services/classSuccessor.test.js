@@ -101,7 +101,7 @@ describe('classSuccessor service', () => {
 		expect(successor.gradeLevel).to.equal(undefined);
 		expect(successor.name).to.equal(newClass.name);
 		expect(successor.schoolId.toString()).to.equal(newClass.schoolId.toString());
-		expect(successor.duplicates.map(d => d.toString())).to.include(oldClass._id.toString());
+		expect(successor.duplicates.map((d) => d.toString())).to.include(oldClass._id.toString());
 	});
 
 	it('only includes duplicates in the same year', async () => {
@@ -120,7 +120,7 @@ describe('classSuccessor service', () => {
 		expect(successor).to.not.equal(undefined);
 		expect(successor.name).to.equal(newClass.name);
 		expect(successor.year.toString()).to.equal(yearAfter._id.toString());
-		const duplicates = successor.duplicates.map(d => d.toString());
+		const duplicates = successor.duplicates.map((d) => d.toString());
 		expect(duplicates).to.include(classYearAfter._id.toString());
 		expect(duplicates).not.to.include(classThisYear._id.toString());
 	});
@@ -136,7 +136,7 @@ describe('classSuccessor service', () => {
 		expect(successor.gradeLevel).to.equal(2);
 		expect(successor.name).to.equal(newClass.name);
 		expect(successor.schoolId.toString()).to.equal(newClass.schoolId.toString());
-		const duplicates = successor.duplicates.map(d => d.toString());
+		const duplicates = successor.duplicates.map((d) => d.toString());
 		expect(duplicates).to.include(classNextGrade._id.toString());
 		expect(duplicates).not.to.include(classoldGrade._id.toString());
 	});
