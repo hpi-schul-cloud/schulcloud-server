@@ -30,7 +30,7 @@ const bruteForceCheck = async (context) => {
 		// if account doesn't exist we can not update (e.g. iserv, moodle)
 		if (account) {
 			if (account.lastTriedLogin) {
-				const allowedTimeDifference = process.env.LOGIN_BLOCK_TIME || 20;
+				const allowedTimeDifference = process.env.LOGIN_BLOCK_TIME || 15;
 				const timeDifference = (Date.now() - account.lastTriedLogin) / 1000;
 				if (timeDifference < allowedTimeDifference) {
 					throw new TooManyRequests(

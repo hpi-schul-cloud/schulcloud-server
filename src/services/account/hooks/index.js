@@ -218,7 +218,7 @@ const securePatching = (hook) => Promise.all([
 	globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
 	globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
 ]).then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
-	const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
+	const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id.toString();
 	if (hook.params.account._id !== hook.id) {
 		if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent) || editsOwnAccount)) {
 			return Promise.reject(new BadRequest('You have not the permissions to change other users'));
