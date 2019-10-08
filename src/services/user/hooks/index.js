@@ -391,8 +391,29 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 	}
 };
 
-const User = require('../model');
+/**
+ *
+ * @param hook {object} - the hook of the server-request
+ * @returns {object} - the same hook
+ */
+const hasEditPermissionForUser = async (hook) => {
+	const userService = hook.service;
+	const requestedUser = await userService.get(hook.id, { query: { $populate: 'roles' } });
+	const newRoles = hook.data.roles || [];
+	const roles = requestedUser.roles.map((r) => r.name).concat(newRoles);
+	if (roles.includes('adminstrator')) {
+		await globalHooks.hasPermission(['ADMIN_EDIT'])(hook);
+	}
+	if (roles.includes('adminstrator')) {
+		await globalHooks.hasPermission(['TEACHER_EDIT'])(hook);
+	}
+	if (roles.includes('student')) {
+		await globalHooks.hasPermission(['STUDENT_EDIT'])(hook);
+	}
+	return hook;
+};
 
+const User = require('../model');
 
 exports.before = {
 	all: [],
@@ -415,14 +436,14 @@ exports.before = {
 	],
 	update: [
 		authenticate('jwt'),
-		globalHooks.hasPermission(['STUDENT_EDIT', 'TEACHER_EDIT', 'ADMIN_EDIT']),
+		hasEditPermissionForUser,
 		// TODO only local for LDAP
 		sanitizeData,
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
 	],
 	patch: [
 		authenticate('jwt'),
-		globalHooks.hasPermission(['STUDENT_EDIT', 'TEACHER_EDIT', 'ADMIN_EDIT']),
+		hasEditPermissionForUser,
 		globalHooks.ifNotLocal(securePatching),
 		globalHooks.permitGroupOperation,
 		sanitizeData,
