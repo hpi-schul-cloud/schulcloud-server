@@ -40,10 +40,17 @@ const bruteForceCheck = async (context) => {
 					);
 				}
 			}
-			// set current time to last tries login
+			// set current time to last tried login
 			await context.app.service('/accounts').patch(account._id, { lastTriedLogin: Date.now() });
 		}
 	}
+	return context;
+};
+
+// Invalid Login will not call this function
+const bruteForceSet = async (context) => {
+	// if successful login enable next login try directly
+	await context.app.service('/accounts').patch(context.result.account._id, { lastTriedLogin: 0 });
 	return context;
 };
 
@@ -118,6 +125,6 @@ exports.before = {
 };
 
 exports.after = {
-	create: [],
+	create: [bruteForceSet],
 	remove: [populateResult],
 };
