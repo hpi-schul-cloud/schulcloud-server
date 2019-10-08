@@ -65,7 +65,7 @@ exports.hasRole = (context, userId, roleName) => {
 
 // if mulitple permissions are defined, just one need to match
 const hasPermission = (permissions) => {
-	const permissionNames = (typeof permissions === 'string') ? permissions : [permissions];
+	const permissionNames = (typeof permissions === 'string') ? [permissions] : permissions;
 
 	return (context) => {
 		// If it was an internal call then skip this context
