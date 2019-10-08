@@ -151,7 +151,7 @@ const checkPermissionsLegacy = (permission) => async (user, file) => {
 		return Promise.reject();
 	}
 
-	const isSubmission = await submissionModel.findOne({ fileIds: file._id }).lean().exec();
+	const isSubmission = await Submission.findOne({ fileIds: file._id }).lean().exec();
 
 	// or legacy course model
 	// TODO: Check member status of teacher if submission
