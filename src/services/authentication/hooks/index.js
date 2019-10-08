@@ -1,7 +1,7 @@
 const { TooManyRequests } = require('@feathersjs/errors');
 
-const bruteForceCheck = async (context) => {
-	const { systemId, schoolId, strategy } = context.data;
+const updateUsernameForLDAP = async (context) => {
+	const { schoolId, strategy } = context.data;
 
 	if (strategy !== 'jwt') {
 		if (schoolId) {
@@ -11,7 +11,14 @@ const bruteForceCheck = async (context) => {
 				}
 			});
 		}
+	}
+	return context;
+};
 
+const bruteForceCheck = async (context) => {
+	const { systemId, strategy } = context.data;
+
+	if (strategy !== 'jwt') {
 		const [account] = await context.app.service('/accounts').find({
 			query: {
 				username: context.data.username,
@@ -20,65 +27,64 @@ const bruteForceCheck = async (context) => {
 			paginate: false,
 		});
 
-
-		if (account.lastTriedLogin) {
-			const allowedTimeDifference = process.env.LOGIN_BLOCK_TIME || 20;
-			const timeDifference = (Date.now() - account.lastTriedLogin) / 1000;
-			if (timeDifference < allowedTimeDifference) {
-				throw new TooManyRequests(
-					'Brute Force Prevention!', {
-						timeToWait: timeDifference,
-					},
-				);
+		// if account doesn't exist we can not update (e.g. iserv, moodle)
+		if (account) {
+			if (account.lastTriedLogin) {
+				const allowedTimeDifference = process.env.LOGIN_BLOCK_TIME || 20;
+				const timeDifference = (Date.now() - account.lastTriedLogin) / 1000;
+				if (timeDifference < allowedTimeDifference) {
+					throw new TooManyRequests(
+						'Brute Force Prevention!', {
+							timeToWait: Math.ceil(timeDifference),
+						},
+					);
+				}
 			}
+			// set current time to last tries login
+			await context.app.service('/accounts').patch(account._id, { lastTriedLogin: Date.now() });
 		}
 	}
 	return context;
 };
 
 const injectUserId = async (context) => {
-	const { systemId, schoolId, strategy } = context.data;
+	const { systemId, strategy } = context.data;
 
-	if (schoolId) {
-		await context.app.service('schools').get(schoolId).then((school) => {
-			if (strategy === 'ldap') {
-				context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
+	if (strategy !== 'jwt') {
+		return context.app.service('/accounts').find({
+			query: {
+				username: context.data.username,
+				systemId,
+			},
+			paginate: false,
+		}).then(async ([account]) => {
+			if (account) {
+				context.params.payload = {};
+				context.params.payload.accountId = account._id;
+				if (account.userId) {
+					context.params.payload.userId = account.userId;
+				}
+				if (account.systemId) {
+					context.params.payload.systemId = account.systemId;
+				}
+			} else if (['moodle', 'iserv'].includes(strategy)) {
+				const accountParameters = {
+					username: context.data.username,
+					password: context.data.password,
+					strategy,
+					systemId,
+				};
+				const newAccount = await context.app.service('accounts').create(accountParameters);
+				context.params.payload = {};
+				context.params.payload.accountId = newAccount._id;
+				if (newAccount.systemId) {
+					context.params.payload.systemId = newAccount.systemId;
+				}
 			}
+			return context;
 		});
 	}
-
-	return context.app.service('/accounts').find({
-		query: {
-			username: context.data.username,
-			systemId,
-		},
-		paginate: false,
-	}).then(async ([account]) => {
-		if (account) {
-			context.params.payload = {};
-			context.params.payload.accountId = account._id;
-			if (account.userId) {
-				context.params.payload.userId = account.userId;
-			}
-			if (account.systemId) {
-				context.params.payload.systemId = account.systemId;
-			}
-		} else if (['moodle', 'iserv'].includes(strategy)) {
-			const accountParameters = {
-				username: context.data.username,
-				password: context.data.password,
-				strategy,
-				systemId,
-			};
-			const newAccount = await context.app.service('accounts').create(accountParameters);
-			context.params.payload = {};
-			context.params.payload.accountId = newAccount._id;
-			if (newAccount.systemId) {
-				context.params.payload.systemId = newAccount.systemId;
-			}
-		}
-		return context;
-	});
+	return context;
 };
 
 const lowerCaseUsername = (hook) => {
@@ -102,8 +108,9 @@ const removeProvider = (context) => {
 
 exports.before = {
 	create: [
-		bruteForceCheck,
 		lowerCaseUsername,
+		updateUsernameForLDAP,
+		bruteForceCheck,
 		injectUserId,
 		removeProvider,
 	],

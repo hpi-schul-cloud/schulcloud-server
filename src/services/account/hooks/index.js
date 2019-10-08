@@ -277,7 +277,7 @@ exports.before = {
 		protectUserId,
 		globalHooks.permitGroupOperation,
 		trimPassword,
-		validatePassword,
+		globalHooks.ifNotLocal(validatePassword),
 		local.hooks.hashPassword('password'),
 	],
 	remove: [
