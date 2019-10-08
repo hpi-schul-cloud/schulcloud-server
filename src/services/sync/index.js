@@ -1,5 +1,5 @@
 const errors = require('@feathersjs/errors');
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const logger = require('../../logger');
 
 const Syncer = require('./strategies/Syncer');
@@ -12,8 +12,6 @@ module.exports = function () {
 	const app = this;
 
 	class SyncService {
-		constructor() {}
-
 		find(params) {
 			return this.respond(null, params);
 		}
@@ -41,7 +39,7 @@ module.exports = function () {
 			if (instances.length === 0) {
 				throw new Error(`No syncer responds to target "${target}"`);
 			} else {
-				const stats = await Promise.all(instances.map(instance => instance.sync()));
+				const stats = await Promise.all(instances.map((instance) => instance.sync()));
 				const aggregated = Syncer.aggregateStats(stats);
 				logger.info(`Sync finished. Successful: ${aggregated.successful}, Errors: ${aggregated.failed}`);
 				return Promise.resolve(stats);
@@ -55,7 +53,7 @@ module.exports = function () {
 	syncService.hooks({
 		before: {
 			create: [
-				auth.hooks.authenticate('jwt'),
+				authenticate('jwt'),
 			],
 		},
 	});

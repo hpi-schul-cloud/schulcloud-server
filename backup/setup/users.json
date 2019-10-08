@@ -32,8 +32,8 @@
 	"email" : "marla.mathe@schul-cloud.org",
 	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
 	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"birthday": { "$date": "2010-01-01T11:25:43.556Z" },
-	"preferences": {"firstLogin": true},
+	"birthday": { "$date": "2000-01-01T11:25:43.556Z" },
+	"preferences": {},
 	"schoolId": { "$oid": "0000d186816abba584714c5f" },
 	"roles": [ { "$oid": "0000d186816abba584714c99" } ]
 },
@@ -99,8 +99,8 @@
 	"preferences": {"firstLogin": true},
 	"firstName" : "Erika",
 	"lastName" : "Meier",
-	"roles" : [ { "$oid": "0000d186816abba584714d03" } ], 
-	"__v" : 0 
+	"roles" : [ { "$oid": "0000d186816abba584714d03" } ],
+	"__v" : 0
 },
 {
 	"_id" : { "$oid": "59ad4c412b442b7f81810285" },
@@ -112,8 +112,8 @@
 	"preferences": {"firstLogin": true},
 	"firstName" : "Klara",
 	"lastName" : "Fall",
-	"roles" : [ { "$oid": "0000d186816abba584714c98"} ], 
-	"__v" : 0 
+	"roles" : [ { "$oid": "0000d186816abba584714c98"} ],
+	"__v" : 0
 },
 {
 	"_id" : { "$oid": "59ae89b71f513506904e1cc9" },
@@ -122,9 +122,9 @@
 	"email" : "paula.meyer@schul-cloud.org",
 	"firstName" : "Paula",
 	"lastName" : "Meyer",
-	"birthday": { "$date": "2010-09-05T11:25:43.556Z" },
-	"preferences": {"firstLogin": true},
+	"birthday": { "$date": "2000-09-05T11:25:43.556Z" },
+	"preferences": {},
 	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
-	"roles" : [ { "$oid": "0000d186816abba584714c99" } ], 
-	"__v" : 0 
+	"roles" : [ { "$oid": "0000d186816abba584714c99" } ],
+	"__v" : 0
 }]

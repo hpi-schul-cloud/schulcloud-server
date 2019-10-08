@@ -7,8 +7,8 @@ class SchoolYearFacade {
 		/** retrieves custom year for given year id
 		 * @param yearId ObjectId
 		*/
-		const customYearsOf = yearId => (school.customYears || [])
-			.filter(year => String(year._id) === String(yearId));
+		const customYearsOf = (yearId) => (school.customYears || [])
+			.filter((year) => String(year._id) === String(yearId));
 		/** overrides year values with custom year values if they have been defined */
 		const generateSchoolYears = () => this.years.map((year) => {
 			const customYearForYear = customYearsOf(year._id);
@@ -50,7 +50,7 @@ class SchoolYearFacade {
 	get activeYear() {
 		const now = Date.now();
 		const activeYears = this.schoolYears
-			.filter(year => year.startDate <= now
+			.filter((year) => year.startDate <= now
 			&& year.endDate >= now);
 		if (activeYears.length !== 0) {
 			return activeYears[0];
@@ -75,7 +75,7 @@ class SchoolYearFacade {
 	get nextYear() {
 		const now = Date.now();
 		const nextYears = this.schoolYears
-			.filter(year => year.startDate >= now);
+			.filter((year) => year.startDate >= now);
 		// next year is in first place
 		if (nextYears.length === 0) return null;
 		return nextYears[0];
@@ -89,19 +89,19 @@ class SchoolYearFacade {
 	 */
 	get lastYear() {
 		const now = Date.now();
-		const pastYears = this.schoolYears.filter(year => year.endDate < now);
+		const pastYears = this.schoolYears.filter((year) => year.endDate < now);
 		// last year is on last place
 		if (pastYears.length === 0) return null;
 		return pastYears[pastYears.length - 1];
 	}
 
 	/**
- *
- *
- * @param {ObjectId} yearId the id of a year
- * @returns
- * @memberof SchoolYears
- */
+	 *
+	 *
+	 * @param {ObjectId} yearId the id of a year
+	 * @returns
+	 * @memberof SchoolYears
+	 */
 	getNextYearAfter(yearId) {
 		const indexByValue = (array, value) => {
 			for (let i = 0; i < array.length; i += 1) {

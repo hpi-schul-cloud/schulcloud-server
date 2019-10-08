@@ -11,7 +11,7 @@ const deleteNewsHistory = async (context) => {
 /**
  * Decorates context.params.account with the user's schoolId
  * @param {context} context Hook context
- * @requires auth.hooks.authenticate('jwt')
+ * @requires authenticate('jwt')
  * @throws {BadRequest} if not authenticated or userId is missing.
  * @throws {NotFound} if user cannot be found
  */
@@ -24,7 +24,7 @@ const lookupSchool = async (context) => {
 	throw new BadRequest('Authentication is required.');
 };
 
-const getBoolean = value => value === true || value === 'true';
+const getBoolean = (value) => value === true || value === 'true';
 
 /**
  * Convert pagination parameter to boolean if it exists
