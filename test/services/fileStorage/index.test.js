@@ -40,7 +40,9 @@ describe('fileStorage services', () => {
 	let signedUrlService;
 	let directoryService;
 
-	before(() => {
+	before(function before() {
+		this.timeout(4000);
+
 		mockery.enable({
 			warnOnUnregistered: false,
 			useCleanCache: true,

@@ -1,11 +1,7 @@
-const auth = require('@feathersjs/authentication');
-const jwt = require('@feathersjs/authentication-jwt');
-const local = require('@feathersjs/authentication-local');
+const { AuthenticationService, JWTStrategy } = require('@feathersjs/authentication');
+const { LocalStrategy } = require('@feathersjs/authentication-local');
 
-const extractors = require('passport-jwt').ExtractJwt;
-
-const { jwtFromCookieString, authHeaderExtractor } = require('./logic');
-const system = require('./strategies/system');
+const { LdapStrategy, MoodleStrategy, IservStrategy } = require('./strategies');
 const hooks = require('./hooks');
 const logger = require('../../logger');
 
@@ -28,75 +24,47 @@ if (process.env.NODE_ENV === 'production' && !secrets.authentication) {
 	logger.error('use default authentication secret');
 }
 
-module.exports = function () {
-	const app = this;
-
-	const authConfig = {
-		...app.get('auth'),
-		header: 'Authorization',
-		entity: 'account',
-		service: 'accounts',
-		jwt: {
-			header: { typ: 'access' },
-			audience: 'https://schul-cloud.org',
-			subject: 'anonymous',
-			issuer: 'feathers',
-			algorithm: 'HS256',
-			expiresIn: '30d',
-		},
-		secret: authenticationSecret,
-	};
-
-
-	const localConfig = {
-		name: 'local',
-		entity: 'account',
-		service: 'accounts',
-
-		// TODO: change username to unique identifier as multiple
-		// users can have same username in different services
+const authConfig = {
+	entity: 'account',
+	service: 'accounts',
+	secret: authenticationSecret,
+	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv'],
+	jwtOptions: {
+		header: { typ: 'access' },
+		audience: 'https://schul-cloud.org',
+		issuer: 'feathers',
+		algorithm: 'HS256',
+		expiresIn: '30d',
+	},
+	local: {
 		usernameField: 'username',
 		passwordField: 'password',
-	};
+	},
+	ldap: {
+		usernameField: 'username',
+	},
+	moodle: {
+		usernameField: 'username',
+		systemIdField: 'systemId',
+	},
+	iserv: {
+		usernameField: 'username',
+		systemIdField: 'systemId',
+	},
+};
 
-	const cookieExtractor = function (req) {
-		const cookieString = req.headers.cookie;
-		return jwtFromCookieString(cookieString);
-	};
-
-	const jwtConfig = {
-		name: 'jwt',
-		entity: 'account',
-		service: 'accounts',
-		header: 'Authorization',
-		jwtFromRequest: extractors.fromExtractors([
-			cookieExtractor,
-			authHeaderExtractor,
-		]),
-		secretOrKey: authenticationSecret,
-	};
-
-
+module.exports = (app) => {
 	// Configure feathers-authentication
-	app.configure(auth(authConfig));
-	app.configure(jwt(jwtConfig));
-	app.configure(local(localConfig));
+	app.set('authentication', authConfig);
+	const authentication = new AuthenticationService(app);
 
-	app.configure(system({
-		name: 'moodle',
-		loginStrategy: require('../account/strategies/moodle'),
-	}));
+	authentication.register('jwt', new JWTStrategy());
+	authentication.register('local', new LocalStrategy());
+	authentication.register('ldap', new LdapStrategy());
+	authentication.register('moodle', new MoodleStrategy());
+	authentication.register('iserv', new IservStrategy());
 
-	app.configure(system({
-		name: 'iserv',
-		loginStrategy: require('../account/strategies/iserv'),
-	}));
-
-	app.configure(system({
-		name: 'ldap',
-		loginStrategy: require('../account/strategies/ldap'),
-	}));
-
+	app.use('/authentication', authentication);
 
 	const authenticationService = app.service('authentication');
 
