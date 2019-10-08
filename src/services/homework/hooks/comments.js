@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 
@@ -10,7 +10,7 @@ const addToSubmission = (hook) => {
 };
 
 exports.before = () => ({
-	all: [auth.hooks.authenticate('jwt')],
+	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('COMMENTS_VIEW'), globalHooks.mapPaginationQuery.bind(this)],
 	get: [globalHooks.hasPermission('COMMENTS_VIEW')],
 	create: [globalHooks.hasPermission('COMMENTS_CREATE')],

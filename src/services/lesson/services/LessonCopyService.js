@@ -75,7 +75,7 @@ class LessonCopyService {
 			.catch((err) => {
 				throw new NotFound('Can not fetch homework data.', err);
 			});
-		const tasks = homeworks.map(h => this.createHomeworkCopyTask(h, userId, newCourseId, newLesson));
+		const tasks = homeworks.map((h) => this.createHomeworkCopyTask(h, userId, newCourseId, newLesson));
 		return Promise.all(tasks);
 	}
 
@@ -86,15 +86,15 @@ class LessonCopyService {
 			owner: course,
 		}).lean().exec();
 		// filter files to lesson related
-		const lessonFiles = files.filter(f => _.some(
+		const lessonFiles = files.filter((f) => _.some(
 			(sourceLesson.contents || []),
-			content => content.component === 'text'
+			(content) => content.component === 'text'
 				&& content.content.text
 				&& _.includes(content.content.text, f._id.toString()),
 		));
 		// copy files for new course
 		const fileChangeLog = new FileChangeLog();
-		await Promise.all(lessonFiles.map(sourceFile => copyFile({
+		await Promise.all(lessonFiles.map((sourceFile) => copyFile({
 			file: sourceFile,
 			parent: newCourseId,
 			sourceSchoolId: course.schoolId,

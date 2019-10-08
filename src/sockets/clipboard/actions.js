@@ -23,7 +23,7 @@ module.exports = (socket) => {
 			Object.keys(course.desks[deskType]).forEach((desk) => {
 				desk = course.desks[deskType][desk];
 				if (desk.media) {
-					desk.media = desk.media.filter(medium => medium.id !== id);
+					desk.media = desk.media.filter((medium) => medium.id !== id);
 				}
 			});
 		});
@@ -40,7 +40,7 @@ module.exports = (socket) => {
 		board.layout = key;
 		board.maxElements = maxElements;
 		board.media = Object.values(board.media)
-			.filter(media => !!media)
+			.filter((media) => !!media)
 			.slice(0, maxElements || 1)
 			.reduce((acc, media, i) => {
 				acc[i] = media;

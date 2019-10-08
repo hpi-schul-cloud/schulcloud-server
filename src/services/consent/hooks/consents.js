@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../config');
@@ -57,7 +57,7 @@ const mapInObjectToArray = (hook) => {
 	return hook;
 };
 
-const checkExisting = hook => hook.app.service('consents').find({ query: { userId: hook.data.userId } })
+const checkExisting = (hook) => hook.app.service('consents').find({ query: { userId: hook.data.userId } })
 	.then((consents) => {
 		if (consents.data.length > 0) {
 			// merge existing consent with submitted one, submitted data is primary and overwrites databse
@@ -65,13 +65,13 @@ const checkExisting = hook => hook.app.service('consents').find({ query: { userI
 			return hook.app.service('consents').remove(consents.data[0]._id).then(() => hook);
 		}
 		return hook;
-	}).catch(err => Promise.reject(err));
+	}).catch((err) => Promise.reject(err));
 
 const userHasOneRole = (user, roles) => {
 	if (!(roles instanceof Array)) {
 		roles = [roles];
 	}
-	const value = user.roles.some(role => roles.includes(role.name));
+	const value = user.roles.some((role) => roles.includes(role.name));
 	return value;
 };
 
@@ -150,10 +150,10 @@ const accessCheck = (consent, app) => {
 			consent.requiresParentConsent = requiresParentConsent;
 			return consent;
 		})
-		.catch(err => Promise.reject(err));
+		.catch((err) => Promise.reject(err));
 };
 
-const decorateConsent = hook => accessCheck(hook.result, hook.app)
+const decorateConsent = (hook) => accessCheck(hook.result, hook.app)
 	.then((consent) => {
 		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 		hook.result = consent;
@@ -162,8 +162,8 @@ const decorateConsent = hook => accessCheck(hook.result, hook.app)
 const decorateConsents = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 	const consentPromises = (hook.result.data || [])
-		.map(consent => accessCheck(consent, hook.app)
-			.then(result => result));
+		.map((consent) => accessCheck(consent, hook.app)
+			.then((result) => result));
 
 	return Promise.all(consentPromises).then((users) => {
 		hook.result.data = users;
@@ -180,7 +180,7 @@ const getConsentStatus = (consent) => {
 
 	const isNOTparentConsent = (c = {}) => {
 		const pCs = c.parentConsents || [];
-		return pCs.length === 0 || !(pCs.some(pC => pC.privacyConsent && pC.termsOfUseConsent));
+		return pCs.length === 0 || !(pCs.some((pC) => pC.privacyConsent && pC.termsOfUseConsent));
 	};
 
 	if (consent.requiresParentConsent) {
@@ -218,15 +218,15 @@ const addConsentsStatus = (hook) => {
 exports.before = {
 	all: [],
 	find: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.ifNotLocal(restrictToUserOrRole),
 		mapInObjectToArray,
 	],
-	get: [auth.hooks.authenticate('jwt')],
+	get: [authenticate('jwt')],
 	create: [addDates, checkExisting],
-	update: [auth.hooks.authenticate('jwt'), addDates],
-	patch: [auth.hooks.authenticate('jwt'), addDates],
-	remove: [auth.hooks.authenticate('jwt')],
+	update: [authenticate('jwt'), addDates],
+	patch: [authenticate('jwt'), addDates],
+	remove: [authenticate('jwt')],
 };
 
 exports.after = {

@@ -11,6 +11,7 @@ const createTestClass = (app, opt) => ({
 	nameFormat = 'static',
 	gradeLevel = undefined,
 	year = undefined,
+	predecessor = undefined,
 }) => app.service('classes').create({
 	name,
 	schoolId,
@@ -19,18 +20,19 @@ const createTestClass = (app, opt) => ({
 	nameFormat,
 	gradeLevel,
 	year,
+	predecessor,
 }).then((res) => {
 	createdClassesIds.push(res._id.toString());
 	return res;
 });
 
-const cleanup = app => () => {
+const cleanup = (app) => () => {
 	const ids = createdClassesIds;
 	createdClassesIds = [];
-	return ids.map(id => app.service('classes').remove(id));
+	return ids.map((id) => app.service('classes').remove(id));
 };
 
-const createByName = app => async ([gradeLevel, className, schoolId], overrides = {}) => {
+const createByName = (app) => async ([gradeLevel, className, schoolId], overrides = {}) => {
 	const school = await app.service('schools').get(schoolId);
 	const year = await app.service('years').get(school.currentYear);
 
@@ -46,7 +48,7 @@ const createByName = app => async ([gradeLevel, className, schoolId], overrides 
 	createdClassesIds.push(createdClass._id);
 };
 
-const findByName = app => async ([gradeLevel, className]) => {
+const findByName = (app) => async ([gradeLevel, className]) => {
 	const classObjects = await app.service('classes').find({
 		query: {
 			gradeLevel,
@@ -58,17 +60,17 @@ const findByName = app => async ([gradeLevel, className]) => {
 	return classObjects;
 };
 
-const findOneByName = app => async ([gradeLevel, className]) => {
+const findOneByName = (app) => async ([gradeLevel, className]) => {
 	const classes = await (findByName(app)([gradeLevel, className]));
 	return classes[0];
 };
 
-const deleteByName = app => async ([gradeLevel, className]) => {
+const deleteByName = (app) => async ([gradeLevel, className]) => {
 	const classObjects = await findByName(app)([gradeLevel, className]);
 	const promises = classObjects.map(async (classObject) => {
 		if (classObject && classObject._id) {
 			await app.service('classes').remove(classObject._id);
-			createdClassesIds.splice(createdClassesIds.find(i => i.toString() === classObject._id.toString()));
+			createdClassesIds.splice(createdClassesIds.find((i) => i.toString() === classObject._id.toString()));
 		} else {
 			logger.warn(`Trying to delete a class by name that does not exist: "${gradeLevel}${className}"`);
 		}
