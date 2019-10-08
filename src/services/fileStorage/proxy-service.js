@@ -201,13 +201,18 @@ const fileStorageService = {
 				if (!file) {
 					throw new NotFound();
 				}
-
-				return canDeleteFiles(userId, [file], this.app);
+				return Promise.all([
+					file,
+					canDeleteFiles(userId, [file], this.app).catch(() => {
+						throw new Forbidden();
+					}),
+				]);
 			})
 			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
 			.then(() => fileInstance.remove().lean().exec())
 			.catch((err) => err);
 	},
+
 	/**
 	 * Move file from one parent to another
 	 * @param _id, Object-ID of file to be patched
