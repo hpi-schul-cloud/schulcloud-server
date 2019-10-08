@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const nanoid = require('nanoid');
 const {
 	injectUserId,
@@ -55,7 +55,7 @@ const mapUsers = (context) => {
 };
 
 exports.before = () => ({
-	all: [auth.hooks.authenticate('jwt'), mapUsers],
+	all: [authenticate('jwt'), mapUsers],
 	find: [
 		hasPermission('TOPIC_VIEW'),
 		ifNotLocal(restrictToUsersOwnLessons),

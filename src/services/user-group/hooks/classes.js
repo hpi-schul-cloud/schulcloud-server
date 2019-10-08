@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const { sortByGradeAndOrName, prepareGradeLevelUnset } = require('./helpers/classHooks');
@@ -8,12 +8,13 @@ const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToU
 
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [authenticate('jwt')],
 	find: [
 		globalHooks.hasPermission('USERGROUP_VIEW'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnClasses,
 		sortByGradeAndOrName,
+		globalHooks.mapPaginationQuery,
 	],
 	get: [
 		restrictToCurrentSchool,
