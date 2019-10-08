@@ -534,22 +534,22 @@ module.exports = function setup() {
 				return Promise.reject();
 			}
 
-			const { role } = team.userIds.find(teamUser => String(userId) === String(teamUser.userId));
+			const { role } = team.userIds.find((teamUser) => String(userId) === String(teamUser.userId));
 
 			const fileMap = files.map((file) => {
 				const { permissions } = file;
 
 				const rolePermissions = permissions.find(
-					perm => perm.refId.toString() === role.toString(),
+					(perm) => perm.refId.toString() === role.toString(),
 				);
 
 				const { role: creatorRole } = file.owner.userIds.find(
-					_ => _.userId.toString()
+					(_) => _.userId.toString()
 						=== file.permissions[0].refId.toString(), // fileCreator
 				);
 
-				const findRole = roleId => roles => roles.findIndex(
-					r => r._id.toString() === roleId.toString(),
+				const findRole = (roleId) => (roles) => roles.findIndex(
+					(r) => r._id.toString() === roleId.toString(),
 				) > -1;
 
 				const userPos = teamRoles.findIndex(findRole(role));

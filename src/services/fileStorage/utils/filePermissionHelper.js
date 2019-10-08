@@ -135,10 +135,10 @@ const checkScopePermissions = async (scopeName, userId, files, permission, app) 
 		files,
 	});
 
-	return fileMap.filter(file => file.permissions[permission]).map(file => file.file);
+	return fileMap.filter((file) => file.permissions[permission]).map((file) => file.file);
 };
 
-const checkPermissionsLegacy = permission => async (user, file) => {
+const checkPermissionsLegacy = (permission) => async (user, file) => {
 	const {
 		permissions,
 		refOwnerModel,
@@ -157,11 +157,11 @@ const checkPermissionsLegacy = permission => async (user, file) => {
 	// TODO: Check member status of teacher if submission
 	if (refOwnerModel === 'course' || isSubmission) {
 		const userObject = await userModel.findOne({ _id: user }).populate({ path: 'roles' }).exec();
-		const isStudent = userObject.roles.find(role => role.name === 'student');
+		const isStudent = userObject.roles.find((role) => role.name === 'student');
 
 		if (isStudent) {
 			const rolePermissions = permissions.find(
-				perm => perm.refId && perm.refId.toString() === isStudent._id.toString(),
+				(perm) => perm.refId && perm.refId.toString() === isStudent._id.toString(),
 			);
 
 			return rolePermissions[permission] ? file : Promise.reject();
@@ -172,19 +172,19 @@ const checkPermissionsLegacy = permission => async (user, file) => {
 	return Promise.reject();
 };
 
-const mapOwner = fn => (...args) => fn(...args).then(allFiles => allFiles.map((file) => {
+const mapOwner = (fn) => (...args) => fn(...args).then((allFiles) => allFiles.map((file) => {
 	file.owner = file.owner._id;
 	return file;
 }));
 
-const getAllowedFiles = permission => mapOwner(async (userId, files, app) => {
+const getAllowedFiles = (permission) => mapOwner(async (userId, files, app) => {
 	const [directPermissionFiles, noDirectPermissionFiles] = files.reduce(([allowedF, otherF], currentFile) => {
 		// check if is owner of file (allowed to do anything)
 		if (userId.equals(currentFile.owner._id)) {
 			allowedF.push(currentFile);
 		} else {
 			// check if user has the required permission explicitly
-			const userPermissions = currentFile.permissions.find(perm => perm.refId && perm.refId.equals(userId));
+			const userPermissions = currentFile.permissions.find((perm) => perm.refId && perm.refId.equals(userId));
 			if (userPermissions) {
 				allowedF.push(currentFile);
 			} else {
@@ -213,7 +213,7 @@ const getAllowedFiles = permission => mapOwner(async (userId, files, app) => {
 		try {
 			scopeFiles[scope] = await checkScopePermissions(scope, userId, fileMap[scope], permission, app);
 		} catch (e) {
-			const legacyPermissionFiles = fileMap[scope].map(file => fileCheck(userId, file));
+			const legacyPermissionFiles = fileMap[scope].map((file) => fileCheck(userId, file));
 
 			scopeFiles[scope] = (await Promise.all(legacyPermissionFiles));
 		}
@@ -221,7 +221,7 @@ const getAllowedFiles = permission => mapOwner(async (userId, files, app) => {
 
 	// restore file input order
 	const allFiles = Object.values(scopeFiles).reduce((acc, cur) => [...acc, cur], []);
-	return _.sortBy(allFiles, curFile => files.findIndex(file => file.equals(curFile)));
+	return _.sortBy(allFiles, (curFile) => files.findIndex((file) => file.equals(curFile)));
 });
 
 module.exports = {
