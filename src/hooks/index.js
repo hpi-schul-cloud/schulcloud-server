@@ -94,7 +94,7 @@ const hasPermission = (permissions) => {
 				const userHasPermission = (permission) => (user.permissions || []).includes(permission)
 				const hasAnyPermission = permissionNames.some(userHasPermission);
 				if (!hasAnyPermission) {
-					throw new Forbidden(`You don't have one of the permission ${permissionNames.concat(',')}.`);
+					throw new Forbidden(`You don't have one of the permissions: ${permissionNames.join(', ')}.`);
 				}
 				return Promise.resolve(context);
 			});
