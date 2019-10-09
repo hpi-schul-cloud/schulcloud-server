@@ -25,12 +25,13 @@ class DatasourceRuns {
 	}
 
 	async find(params) {
-		let schoolId;
+		let { schoolId } = params;
 		if (params.account) {
 			({ schoolId } = await this.app.service('users').get(params.account.userId));
 		}
 		// const query = params.query || {};
-		const filter = { schoolId: schoolId || params.schoolId };
+		const filter = {};
+		if (schoolId) filter.schoolId = schoolId;
 		if (params.datasourceId) filter.datasourceId = params.datasourceId;
 		const result = await datasourceRunModel.find(
 			filter,
@@ -104,6 +105,7 @@ class DatasourceRuns {
 			status,
 			log: logString,
 			config: datasource.config,
+			schoolId: datasource.schoolId,
 			dryrun: data.dryrun || false,
 			createdBy: (params.account || {}).userId,
 			duration: endTime - startTime,

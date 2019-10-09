@@ -22,6 +22,7 @@ const dataSourceRunSchema = new Schema({
 	dryrun: { type: Boolean, default: false },
 	log: { type: String },
 	config: { type: Object },
+	schoolId: { type: Schema.Types.ObjectId, ref: 'school' },
 }, { timestamps: true });
 
 

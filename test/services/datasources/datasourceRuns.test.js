@@ -196,7 +196,7 @@ describe.only('datasourceRuns service', () => {
 		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
 	});
 
-	it('FIND fetches all runs for a school'/* , async () => {
+	it('FIND fetches all runs for a school', async () => {
 		const testSchool = await testObjects.createTestSchool();
 		const datasource = await datasourcesService.create({
 			schoolId: testSchool._id,
@@ -220,7 +220,7 @@ describe.only('datasourceRuns service', () => {
 			expect(datasourceRunIds.includes(res._id.toString())).to.equal(true);
 		});
 		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
-	} */);
+	});
 
 	it('FIND can be sorted');
 
@@ -250,7 +250,7 @@ describe.only('datasourceRuns service', () => {
 		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
 	});
 
-	it('FIND cant fetch runs from a different school'/* , async () => {
+	it('FIND cant fetch runs from a different school', async () => {
 		const testSchool = await testObjects.createTestSchool();
 		const otherSchool = await testObjects.createTestSchool();
 		const datasource = await datasourcesService.create({
@@ -275,5 +275,5 @@ describe.only('datasourceRuns service', () => {
 		expect(result[0]._id.toString()).to.equal(datasourceRunIds[0].toString());
 
 		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
-	} */);
+	});
 });
