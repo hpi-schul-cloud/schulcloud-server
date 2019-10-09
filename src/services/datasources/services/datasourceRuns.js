@@ -1,7 +1,7 @@
 const Ajv = require('ajv');
 const { Writable } = require('stream');
 const {	Forbidden } = require('@feathersjs/errors');
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const {
 	iff, isProvider, validateSchema, disallow,
 } = require('feathers-hooks-common');
@@ -124,7 +124,7 @@ class DatasourceRuns {
 const datasourceRunsHooks = {
 	before: {
 		all: [
-			auth.hooks.authenticate('jwt'),
+			authenticate('jwt'),
 		],
 		find: [
 			iff(isProvider('external'), hasPermission('DATASOURCES_VIEW')),
