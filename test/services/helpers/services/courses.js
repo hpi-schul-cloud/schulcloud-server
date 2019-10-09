@@ -27,10 +27,10 @@ const createTestCourse = (app, opt) => ({
 	return course;
 });
 
-const cleanup = app => () => {
+const cleanup = (app) => () => {
 	const ids = createdCourseIds;
 	createdCourseIds = [];
-	return ids.map(id => app.service('classes').remove(id));
+	return ids.map((id) => app.service('classes').remove(id));
 };
 
 module.exports = (app, opt) => ({

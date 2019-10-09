@@ -31,7 +31,7 @@ class LDAPSystemSyncer extends Syncer {
 	steps() {
 		return super.steps()
 			.then(() => this.getSystems())
-			.then(systems => Promise.all(systems.map((system) => {
+			.then((systems) => Promise.all(systems.map((system) => {
 				this.stats.systems[system.alias] = {};
 				return new LDAPSyncer(this.app, this.stats.systems[system.alias], system).sync();
 			})));

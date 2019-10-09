@@ -97,7 +97,8 @@
 				],
 				"ignoreComments": false
 			}
-		]
+		],
+		"arrow-parens": ["error", "always"]
 	},
 	"plugins": [
 		"import"

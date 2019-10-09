@@ -32,10 +32,10 @@ describe('filePermissionHelper', () => {
 
 		after((done) => {
 			const promises = [
-				...fixtures.files.map(_ => FileModel.findByIdAndRemove(_._id).exec()),
-				...fixtures.users.map(_ => userModel.findByIdAndRemove(_._id).exec()),
-				...fixtures.roles.map(_ => RoleModel.findByIdAndRemove(_._id).exec()),
-				...fixtures.courses.map(_ => courseModel.findByIdAndRemove(_._id).exec()),
+				...fixtures.files.map((_) => FileModel.findByIdAndRemove(_._id).exec()),
+				...fixtures.users.map((_) => userModel.findByIdAndRemove(_._id).exec()),
+				...fixtures.roles.map((_) => RoleModel.findByIdAndRemove(_._id).exec()),
+				...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
 			];
 
 			Promise.all(promises)

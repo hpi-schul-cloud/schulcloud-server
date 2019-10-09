@@ -1,4 +1,4 @@
-const rnd = m => Math.floor(Math.random() * Math.floor(m));
+const rnd = (m) => Math.floor(Math.random() * Math.floor(m));
 
 const rnd36 = () => (rnd(36)).toString(36);
 
@@ -32,6 +32,6 @@ const generateSuffix = (m) => {
 };
 
 
-exports.randomPass = max => generatePass(max || 36);
+exports.randomPass = (max) => generatePass(max || 36);
 
-exports.randomSuffix = max => generateSuffix(max || 4);
+exports.randomSuffix = (max) => generateSuffix(max || 4);

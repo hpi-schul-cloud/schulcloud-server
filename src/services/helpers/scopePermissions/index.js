@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const { lookupScope, rejectQueryingOtherUsers } = require('./hooks');
 
@@ -15,7 +15,7 @@ class ScopeService {
 		return {
 			before: {
 				all: [
-					globalHooks.ifNotLocal(auth.hooks.authenticate('jwt')),
+					globalHooks.ifNotLocal(authenticate('jwt')),
 					globalHooks.ifNotLocal(rejectQueryingOtherUsers),
 					lookupScope,
 				],
@@ -54,9 +54,9 @@ class ScopePermissionService extends ScopeService {
 				userIds.push(query);
 			}
 		}
-		const ops = userIds.map(async userId => [userId, await this.getUserPermissions(userId, params.scope)]);
+		const ops = userIds.map(async (userId) => [userId, await this.getUserPermissions(userId, params.scope)]);
 		return Promise.all(ops)
-			.then(results => results.reduce((agg, [key, value]) => {
+			.then((results) => results.reduce((agg, [key, value]) => {
 				const newAgg = agg;
 				newAgg[key] = value;
 				return newAgg;

@@ -26,12 +26,12 @@ const ATTRIBUTES = [
 const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
 	const mapping = {};
 	Object.keys(sourceSchema).forEach((key) => {
-		const attribute = targetSchema.find(a => a.aliases.includes(key.toLowerCase()));
+		const attribute = targetSchema.find((a) => a.aliases.includes(key.toLowerCase()));
 		if (attribute !== undefined) {
 			mapping[key] = attribute.name;
 		}
 	});
-	return record => Object.keys(mapping).reduce((res, key) => {
+	return (record) => Object.keys(mapping).reduce((res, key) => {
 		res[mapping[key]] = record[key];
 		return res;
 	}, {});
@@ -109,7 +109,7 @@ class CSVSyncer extends Syncer {
 		const importClasses = CSVSyncer.needsToImportClasses(sanitizedRecords);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
-		const actions = Object.values(clusteredRecords).map(record => async () => {
+		const actions = Object.values(clusteredRecords).map((record) => async () => {
 			const enrichedRecord = await this.enrichUserData(record);
 			const user = await this.createOrUpdateUser(enrichedRecord);
 			if (importClasses) {
@@ -178,8 +178,8 @@ class CSVSyncer extends Syncer {
 			throw new Error('No input data');
 		}
 
-		ATTRIBUTES.filter(a => a.required).forEach((attr) => {
-			const attributeIsUsed = Object.keys(records[0]).some(k => attr.aliases.includes(k.toLowerCase()));
+		ATTRIBUTES.filter((a) => a.required).forEach((attr) => {
+			const attributeIsUsed = Object.keys(records[0]).some((k) => attr.aliases.includes(k.toLowerCase()));
 			if (!attributeIsUsed) {
 				this.stats.errors.push({
 					type: 'file',
@@ -368,7 +368,7 @@ class CSVSyncer extends Syncer {
 			if (classObject === undefined) return;
 
 			const collection = this.options.role === 'teacher' ? 'teacherIds' : 'userIds';
-			const importIds = classObject[collection].map(uid => uid.toString());
+			const importIds = classObject[collection].map((uid) => uid.toString());
 			if (!importIds.includes(user._id.toString())) {
 				const patchData = {};
 				patchData[collection] = [...importIds, user._id.toString()];
@@ -379,7 +379,7 @@ class CSVSyncer extends Syncer {
 	}
 
 	static splitClasses(classes) {
-		return classes.split('+').filter(name => name !== '');
+		return classes.split('+').filter((name) => name !== '');
 	}
 
 	async getClassObject(klass) {
@@ -397,12 +397,12 @@ class CSVSyncer extends Syncer {
 			},
 			{
 				regex: /(.*)/,
-				values: string => ({
+				values: (string) => ({
 					name: string,
 				}),
 			},
 		];
-		const classNameFormat = formats.find(format => format.regex.test(klass));
+		const classNameFormat = formats.find((format) => format.regex.test(klass));
 		if (classNameFormat !== undefined) {
 			const result = {
 				...await classNameFormat.values(klass),
