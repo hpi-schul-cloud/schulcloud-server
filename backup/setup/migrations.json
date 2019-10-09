@@ -146,7 +146,7 @@
 	"createdAt": {
 		"$date": "2019-09-17T14:43:38.288Z"
   },
-	"__v": 0  
+	"__v": 0
 },
 {
 	"_id": {
@@ -178,6 +178,17 @@
     "name": "removeUnusedTeamAttributes",
     "createdAt": {
 		"$date": "2019-09-30T07:46:22.613Z"
+	},
+    "__v": 0
+},
+{
+    "_id": {
+		"$oid": "5d9db0a97bd9ad01a1734817"
+	},
+    "state": "up",
+    "name": "granular_user_permissions",
+    "createdAt": {
+		"$date": "2019-10-09T12:46:22.613Z"
 	},
     "__v": 0
 }]
