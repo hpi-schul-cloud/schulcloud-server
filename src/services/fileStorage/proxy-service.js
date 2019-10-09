@@ -114,7 +114,7 @@ const prepareSecurityCheck = (file, strategy, userId, storageFileName) => {
 			{ _id: file._id },
 			{
 				$set: {
-					'securityCheck.status': SecurityCheckStatusTypes.wontCheck,
+					'securityCheck.status': SecurityCheckStatusTypes.WONTCHECK,
 				},
 			},
 		).exec();
