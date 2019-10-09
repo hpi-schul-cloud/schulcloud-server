@@ -35,15 +35,10 @@ class DatasourceRuns {
 		if (schoolId) filter.schoolId = schoolId;
 		if (params.datasourceId) filter.datasourceId = params.datasourceId;
 
-		let sortObject = {};
-		if (query.sort && /^-?\w{1,50}$/.test(query.sort)) {
-			sortObject = convertToSortOrderObject(query.sort);
-		}
-
 		const result = await datasourceRunModel.find(
 			filter,
 			'datasourceId _id status dryrun duration',
-		).sort(sortObject);
+		).sort(query.sort);
 		return result;
 	}
 
