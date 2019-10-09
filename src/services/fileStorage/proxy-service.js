@@ -41,6 +41,8 @@ const FILE_SECURITY_CHECK_SERVICE_URI = process.env.FILE_SECURITY_CHECK_SERVICE_
 const FILE_SECURITY_CHECK_CALLBACK_URI = process.env.FILE_SECURITY_CHECK_CALLBACK_URI
 	|| 'http://localhost:3030/fileStorage/securityCheck/';
 const FILE_SECURITY_CHECK_MAX_FILE_SIZE = parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10) || 50000000;
+const FILE_SECURITY_SERVICE_USERNAME = process.env.FILE_SECURITY_SERVICE_USERNAME || '';
+const FILE_SECURITY_SERVICE_PASSWORD = process.env.FILE_SECURITY_SERVICE_PASSWORD || '';
 const ENABLE_FILE_SECURITY_CHECK = process.env.ENABLE_FILE_SECURITY_CHECK || 'false';
 
 const sanitizeObj = (obj) => {
@@ -96,8 +98,8 @@ const prepareSecurityCheck = (file, strategy, userId, storageFileName) => {
 			}).then((signedUrl) => rp.post({
 				url: FILE_SECURITY_CHECK_SERVICE_URI,
 				auth: {
-					user: 'antivirus',
-					pass: 'password',
+					user: FILE_SECURITY_SERVICE_USERNAME,
+					pass: FILE_SECURITY_SERVICE_PASSWORD,
 				},
 				body: {
 					download_uri: signedUrl,
