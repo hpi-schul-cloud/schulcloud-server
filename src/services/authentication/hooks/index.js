@@ -29,9 +29,9 @@ const bruteForceCheck = async (context) => {
 
 		// if account doesn't exist we can not update (e.g. iserv, moodle)
 		if (account) {
-			if (account.lastTriedLogin) {
+			if (account.lasttriedFailedLogin) {
 				const allowedTimeDifference = process.env.LOGIN_BLOCK_TIME || 15;
-				const timeDifference = (Date.now() - account.lastTriedLogin) / 1000;
+				const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
 				if (timeDifference < allowedTimeDifference) {
 					throw new TooManyRequests(
 						'Brute Force Prevention!', {
@@ -41,7 +41,7 @@ const bruteForceCheck = async (context) => {
 				}
 			}
 			// set current time to last tried login
-			await context.app.service('/accounts').patch(account._id, { lastTriedLogin: Date.now() });
+			await context.app.service('/accounts').patch(account._id, { lasttriedFailedLogin: Date.now() });
 		}
 	}
 	return context;
@@ -50,7 +50,7 @@ const bruteForceCheck = async (context) => {
 // Invalid Login will not call this function
 const bruteForceReset = async (context) => {
 	// if successful login enable next login try directly
-	await context.app.service('/accounts').patch(context.result.account._id, { lastTriedLogin: 0 });
+	await context.app.service('/accounts').patch(context.result.account._id, { lasttriedFailedLogin: 0 });
 	return context;
 };
 
