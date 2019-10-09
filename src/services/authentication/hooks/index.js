@@ -48,7 +48,7 @@ const bruteForceCheck = async (context) => {
 };
 
 // Invalid Login will not call this function
-const bruteForceSet = async (context) => {
+const bruteForceReset = async (context) => {
 	// if successful login enable next login try directly
 	await context.app.service('/accounts').patch(context.result.account._id, { lastTriedLogin: 0 });
 	return context;
@@ -125,6 +125,6 @@ exports.before = {
 };
 
 exports.after = {
-	create: [bruteForceSet],
+	create: [bruteForceReset],
 	remove: [populateResult],
 };
