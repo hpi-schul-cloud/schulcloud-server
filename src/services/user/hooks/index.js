@@ -416,17 +416,17 @@ exports.before = {
 	],
 	update: [
 		authenticate('jwt'),
-		hasEditPermissionForUser,
 		// TODO only local for LDAP
 		sanitizeData,
+		hasEditPermissionForUser,
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
 	],
 	patch: [
 		authenticate('jwt'),
-		hasEditPermissionForUser,
 		globalHooks.ifNotLocal(securePatching),
 		globalHooks.permitGroupOperation,
 		sanitizeData,
+		hasEditPermissionForUser,
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		updateAccountUsername,
 	],
