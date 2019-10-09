@@ -46,6 +46,7 @@ describe('PermissionService', async () => {
 		'PWRECOVERY_VIEW',
 		'RELEASES_VIEW',
 		'ROLE_VIEW',
+		'STUDENT_EDIT',
 		'SUBMISSIONS_CREATE',
 		'SUBMISSIONS_EDIT',
 		'SUBMISSIONS_VIEW',
