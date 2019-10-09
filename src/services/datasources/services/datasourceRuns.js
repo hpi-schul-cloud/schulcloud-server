@@ -6,6 +6,7 @@ const {
 	iff, isProvider, validateSchema, disallow,
 } = require('feathers-hooks-common');
 const { hasPermission } = require('../../../hooks');
+const { flatten, paginate, convertToSortOrderObject } = require('../../../utils/array');
 
 const createSchema = require('../schemas/datasourceRuns.create.schema');
 const { datasourceRunModel } = require('../model');
@@ -29,14 +30,20 @@ class DatasourceRuns {
 		if (params.account) {
 			({ schoolId } = await this.app.service('users').get(params.account.userId));
 		}
-		// const query = params.query || {};
+		const query = params.query || {};
 		const filter = {};
 		if (schoolId) filter.schoolId = schoolId;
 		if (params.datasourceId) filter.datasourceId = params.datasourceId;
+
+		let sortObject = {};
+		if (query.sort && /^-?\w{1,50}$/.test(query.sort)) {
+			sortObject = convertToSortOrderObject(query.sort);
+		}
+
 		const result = await datasourceRunModel.find(
 			filter,
 			'datasourceId _id status dryrun duration',
-		);
+		).sort(sortObject);
 		return result;
 	}
 
