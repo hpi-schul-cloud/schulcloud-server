@@ -23,7 +23,7 @@ const {
 	createDefaultPermissions,
 	createPermission,
 } = require('./utils/');
-const { FileModel } = require('./model');
+const { FileModel, SecurityCheckStatusTypes } = require('./model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
@@ -40,7 +40,8 @@ const FILE_SECURITY_CHECK_SERVICE_URI = process.env.FILE_SECURITY_CHECK_SERVICE_
 	|| 'http://localhost:8081/scan/file';
 const FILE_SECURITY_CHECK_CALLBACK_URI = process.env.FILE_SECURITY_CHECK_CALLBACK_URI
 	|| 'http://localhost:3030/fileStorage/securityCheck/';
-const ENABLE_FILE_SECURITY_CHECK = process.env.ENABLE_FILE_SECURITY_CHECK || false;
+const FILE_SECURITY_CHECK_MAX_FILE_SIZE = parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10) || 50000000;
+const ENABLE_FILE_SECURITY_CHECK = process.env.ENABLE_FILE_SECURITY_CHECK || 'false';
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
@@ -84,21 +85,37 @@ const prepareThumbnailGeneration = (file, strategy, userId, { name: dataName },
 );
 
 const prepareSecurityCheck = (file, strategy, userId, storageFileName) => {
-	if (ENABLE_FILE_SECURITY_CHECK) {
-		return strategy.getSignedUrl({
-			userId,
-			flatFileName: storageFileName,
-			localFileName: storageFileName,
-			download: true,
-			Expires: 3600 * 24,
-		}).then((signedUrl) => rp.post({
-			url: FILE_SECURITY_CHECK_SERVICE_URI,
-			body: {
-				download_uri: signedUrl,
-				callback_uri: url.resolve(FILE_SECURITY_CHECK_CALLBACK_URI, file.securityCheck.requestToken),
+	if (ENABLE_FILE_SECURITY_CHECK === 'true') {
+		if (file.size <= FILE_SECURITY_CHECK_MAX_FILE_SIZE) {
+			return strategy.getSignedUrl({
+				userId,
+				flatFileName: storageFileName,
+				localFileName: storageFileName,
+				download: true,
+				Expires: 3600 * 24,
+			}).then((signedUrl) => rp.post({
+				url: FILE_SECURITY_CHECK_SERVICE_URI,
+				auth: {
+					user: 'antivirus',
+					pass: 'password',
+				},
+				body: {
+					download_uri: signedUrl,
+					callback_uri: url.resolve(FILE_SECURITY_CHECK_CALLBACK_URI, file.securityCheck.requestToken),
+				},
+				json: true,
+			})).catch((err) => {
+				logger.error(err);
+			});
+		}
+		return FileModel.updateOne(
+			{ _id: file._id },
+			{
+				$set: {
+					'securityCheck.status': SecurityCheckStatusTypes.wontCheck,
+				},
 			},
-			json: true,
-		}));
+		).exec();
 	}
 	return Promise.resolve();
 };
