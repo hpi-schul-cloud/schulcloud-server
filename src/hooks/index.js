@@ -63,7 +63,10 @@ exports.hasRole = (context, userId, roleName) => {
 		});
 };
 
-// if mulitple permissions are defined, just one need to match
+/**
+ * @param  {string, array[string]} permissions
+ * @returns resolves if the current user has ANY of the given permissions
+ */
 const hasPermission = (permissions) => {
 	const permissionNames = (typeof permissions === 'string') ? [permissions] : permissions;
 
@@ -100,9 +103,11 @@ const hasPermission = (permissions) => {
 			});
 	};
 };
-
-// resolves if the user has all defined permissions
-exports.hasPermissions = (permissions) => {
+/**
+ * @param  {string, array[string]} permissions
+ * @returns resolves if the current user has ALL of the given permissions
+ */
+exports.hasAllPermissions = (permissions) => {
 	const permissionNames = (typeof permissions === 'string') ? permissions : [permissions];
 	return (context) => {
 		const hasPermissions = permissionNames.every((permission) => hasPermission(permission)(context));
