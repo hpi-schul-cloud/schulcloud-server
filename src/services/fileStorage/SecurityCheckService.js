@@ -9,8 +9,8 @@ class SecurityCheckService {
 			return Promise.resolve();
 		}
 		const status = data.virus_detected === true
-			? SecurityCheckStatusTypes.blocked
-			: SecurityCheckStatusTypes.verified;
+			? SecurityCheckStatusTypes.BLOCKED
+			: SecurityCheckStatusTypes.VERIFIED;
 		await FileModel.updateOne(
 			{ 'securityCheck.requestToken': id },
 			{
