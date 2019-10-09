@@ -9,7 +9,6 @@ const publicTeachersService = app.service('publicTeachers');
 const classesService = app.service('classes');
 const coursesService = app.service('courses');
 const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
 
 let testUserId;
 
@@ -106,34 +105,6 @@ describe('user service', () => {
 					});
 			});
 		});
-	});
-
-	it('user needs permissions to edit users', async () => {
-		const targetStudent = testObjects.createTestUser({
-			roles: ['student'],
-		});
-		const targetTeacher = testObjects.createTestUser({
-			roles: ['teacher'],
-		});
-		const targetAdmin = testObjects.createTestUser({
-			roles: ['administrator'],
-		});
-		const expectedToFailForStudent = await Promise.all([targetStudent, targetTeacher, targetAdmin]);
-
-		const actingStudent = await testObjects.createTestUser({
-			roles: ['student'],
-		});
-		const scenarioParams = await generateRequestParamsFromUser(actingStudent);
-
-		const testCases = expectedToFailForStudent.map(async (target) => {
-			try {
-				await app.service(`/users/${target._id}`).patch({ firstName: 'New' }, scenarioParams);
-				throw new Error('should fail');
-			} catch (err) {
-				expect(err.message.startsWith('You don\'t have')).to.be(true);
-			}
-		});
-		return Promise.all(testCases);
 	});
 
 	after(async () => {

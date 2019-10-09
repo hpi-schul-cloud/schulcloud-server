@@ -7,6 +7,8 @@ const { sortRoles } = require('../../role/utils/rolesHelper');
 const constants = require('../../../utils/constants');
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../consent/config');
 
+const { hasEditPermissionForUser } = require('./index.hooks');
+
 /**
  *
  * @param {object} hook - The hook of the server-request, containing req.params.query.roles as role-filter
@@ -389,27 +391,6 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 		logger.error(error);
 		throw new errors.Forbidden('you dont have permission to delete this user!');
 	}
-};
-
-/**
- * Warning: Role Changes are not handled yet.
- * @param hook {object} - the hook of the server-request
- * @returns {object} - the same hook
- */
-const hasEditPermissionForUser = async (hook) => {
-	const { id, service: userService } = hook;
-	const requestedUser = await userService.get(id, { query: { $populate: 'roles' } });
-	const roles = requestedUser.roles.map((r) => r.name);
-	if (roles.includes('adminstrator')) {
-		await globalHooks.hasPermission(['ADMIN_EDIT'])(hook);
-	}
-	if (roles.includes('adminstrator')) {
-		await globalHooks.hasPermission(['TEACHER_EDIT'])(hook);
-	}
-	if (roles.includes('student')) {
-		await globalHooks.hasPermission(['STUDENT_EDIT'])(hook);
-	}
-	return hook;
 };
 
 const User = require('../model');
