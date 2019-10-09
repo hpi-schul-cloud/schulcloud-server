@@ -392,15 +392,14 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 };
 
 /**
- *
+ * Warning: Role Changes are not handled yet.
  * @param hook {object} - the hook of the server-request
  * @returns {object} - the same hook
  */
 const hasEditPermissionForUser = async (hook) => {
-	const userService = hook.service;
-	const requestedUser = await userService.get(hook.id, { query: { $populate: 'roles' } });
-	const newRoles = hook.data.roles || [];
-	const roles = requestedUser.roles.map((r) => r.name).concat(newRoles);
+	const { id, service: userService } = hook;
+	const requestedUser = await userService.get(id, { query: { $populate: 'roles' } });
+	const roles = requestedUser.roles.map((r) => r.name);
 	if (roles.includes('adminstrator')) {
 		await globalHooks.hasPermission(['ADMIN_EDIT'])(hook);
 	}
