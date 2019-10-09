@@ -25,7 +25,12 @@ const permissionSchema = new Schema(
 
 enableAuditLog(permissionSchema);
 
-const SecurityCheckStatusTypes = ['pending', 'verified', 'blocked', 'wont-check'];
+const SecurityCheckStatusTypes = {
+	pending: 'pending',
+	verified: 'verified',
+	blocked: 'blocked',
+	wontCheck: 'wont-check',
+};
 
 /**
  * handles meta-data for a file
@@ -57,7 +62,7 @@ const fileSchema = new Schema({
 	securityCheck: {
 		status: {
 			type: String,
-			enum: SecurityCheckStatusTypes,
+			enum: Object.values(SecurityCheckStatusTypes),
 			default: 'pending',
 		},
 		requestToken: { type: String, default: uuid },
