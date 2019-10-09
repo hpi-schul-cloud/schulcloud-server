@@ -115,7 +115,5 @@ describe('user index hooks', () => {
 		mockery.disable();
 	});
 
-	after(async () => {
-		await testObjects.cleanup();
-	});
+	after(testObjects.cleanup);
 });
