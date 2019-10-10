@@ -66,13 +66,13 @@ class DatasourceRuns {
 	async find(params) {
 		const query = this.injectPaginationQuery(params.query, this.options);
 
-		let { schoolId } = params;
+		let { schoolId } = query;
 		if (params.account) {
 			({ schoolId } = await this.app.service('users').get(params.account.userId));
 		}
 		const filter = {};
 		if (schoolId) filter.schoolId = schoolId;
-		if (params.datasourceId) filter.datasourceId = params.datasourceId;
+		if (query.datasourceId) filter.datasourceId = query.datasourceId;
 
 		const result = await datasourceRunModel.find(
 			filter,

@@ -186,7 +186,7 @@ describe.only('datasourceRuns service', () => {
 			datasourceRunsService.create({ datasourceId: datasource._id }),
 			datasourceRunsService.create({ datasourceId: datasource._id }),
 		])).map(ds => ds._id.toString());
-		const result = await datasourceRunsService.find({ datasourceId: datasource._id });
+		const result = await datasourceRunsService.find({ query: { datasourceId: datasource._id } });
 		expect(result).to.not.equal(undefined);
 		result.data.forEach((res) => {
 			expect(res.status).to.equal('Success');
@@ -212,7 +212,7 @@ describe.only('datasourceRuns service', () => {
 			datasourceRunsService.create({ datasourceId: datasource._id }),
 			datasourceRunsService.create({ datasourceId: otherDatasource._id }),
 		])).map(ds => ds._id.toString());
-		const result = await datasourceRunsService.find({ schoolId: testSchool._id });
+		const result = await datasourceRunsService.find({ query: { schoolId: testSchool._id } });
 		expect(result).to.not.equal(undefined);
 		result.data.forEach((res) => {
 			expect(res.status).to.equal('Success');
@@ -238,8 +238,8 @@ describe.only('datasourceRuns service', () => {
 			datasourceRunsService.create({ datasourceId: datasource._id }),
 			datasourceRunsService.create({ datasourceId: otherDatasource._id }),
 		])).map((ds) => ds._id.toString());
-		const ascResult = await datasourceRunsService.find({ schoolId: testSchool._id, query: { sort: '_id' } });
-		const descResult = await datasourceRunsService.find({ schoolId: testSchool._id, query: { sort: '-_id' } });
+		const ascResult = await datasourceRunsService.find({ query: { schoolId: testSchool._id, sort: '_id' } });
+		const descResult = await datasourceRunsService.find({ query: { schoolId: testSchool._id, sort: '-_id' } });
 		expect(ascResult).to.not.equal(undefined);
 		expect(ascResult.total).to.equal(2);
 		expect(descResult).to.not.equal(undefined);
@@ -266,7 +266,7 @@ describe.only('datasourceRuns service', () => {
 			datasourceRunsService.create({ datasourceId: datasource._id }),
 			datasourceRunsService.create({ datasourceId: otherDatasource._id }),
 		])).map((ds) => ds._id.toString());
-		const result = await datasourceRunsService.find({ schoolId: testSchool._id, query: { $skip: 1, $limit: 1 } });
+		const result = await datasourceRunsService.find({ query: { schoolId: testSchool._id, $skip: 1, $limit: 1 } });
 		expect(result).to.not.equal(undefined);
 		expect(result.skip).to.equal(1);
 		expect(result.limit).to.equal(1);
@@ -292,7 +292,7 @@ describe.only('datasourceRuns service', () => {
 			datasourceRunsService.create({ datasourceId: datasource._id }),
 			datasourceRunsService.create({ datasourceId: otherDatasource._id }),
 		])).map(ds => ds._id.toString());
-		const result = await datasourceRunsService.find({ datasourceId: datasource._id });
+		const result = await datasourceRunsService.find({ query: { datasourceId: datasource._id } });
 		expect(result).to.not.equal(undefined);
 		expect(result.total).to.equal(1);
 		expect(result.data[0]._id.toString()).to.equal(datasourceRunIds[0].toString());
