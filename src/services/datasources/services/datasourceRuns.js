@@ -7,7 +7,7 @@ const {
 } = require('feathers-hooks-common');
 const { hasPermission } = require('../../../hooks');
 
-const createSchema = require('../schemas/datasourceRuns.create.schema');
+const { datasourceRunCreateSchema } = require('../schemas');
 const { datasourceRunModel } = require('../model');
 
 class DatasourceRuns {
@@ -183,7 +183,7 @@ const datasourceRunsHooks = {
 		],
 		create: [
 			iff(isProvider('external'), [
-				validateSchema(createSchema, Ajv),
+				validateSchema(datasourceRunCreateSchema, Ajv),
 				hasPermission('DATASOURCES_RUN'),
 			]),
 		],

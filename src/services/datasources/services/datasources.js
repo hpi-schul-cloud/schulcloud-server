@@ -1,12 +1,14 @@
+const Ajv = require('ajv');
 const service = require('feathers-mongoose');
 const { authenticate } = require('@feathersjs/authentication');
 const {
 	iff, isProvider, validateSchema, disallow,
 } = require('feathers-hooks-common');
 const { datasourceModel } = require('../model');
-const { validateData, updatedBy, createdBy } = require('../hooks');
+const { updatedBy, createdBy } = require('../hooks');
 
 const { restrictToCurrentSchool, hasPermission, denyIfNotCurrentSchool } = require('../../../hooks');
+const { datasourcesCreateSchema, datasourcesPatchSchema } = require('../schemas');
 
 /**
  * the datasources service manages the datasources collection.
@@ -35,7 +37,7 @@ const datasourceHooks = {
 			iff(isProvider('external'), [
 				hasPermission('DATASOURCES_CREATE'),
 				restrictToCurrentSchool,
-				validateData,
+				validateSchema(datasourcesCreateSchema, Ajv),
 				createdBy,
 			]),
 		],
@@ -44,7 +46,7 @@ const datasourceHooks = {
 			iff(isProvider('external'), [
 				restrictToCurrentSchool,
 				hasPermission('DATASOURCES_EDIT'),
-				validateData,
+				validateSchema(datasourcesPatchSchema, Ajv),
 				updatedBy,
 			]),
 		],
