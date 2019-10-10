@@ -20,7 +20,7 @@ const testObjects = require('../helpers/testObjects')(app);
 
 chai.use(chaiHttp);
 
-describe.only('oauth2 service', function oauthTest() {
+describe('oauth2 service', function oauthTest() {
 	this.timeout(10000);
 
 	const testUser2 = {
