@@ -7,7 +7,6 @@ function createInfoText(user, data) {
 	return `
 Ein neues Problem wurde gemeldet.
 User: ${user}
-Kategorie: ${data.category}
 Betreff: ${data.subject}
 Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der ${data.cloud}.\n
 Mit freundlichen Grüßen
@@ -16,7 +15,7 @@ Deine ${data.cloud}
 }
 
 function createFeedbackText(user, data) {
-	let device = data.deviceUserAgent ? `${data.device} [auto detection: ${data.deviceUserAgent}]` : data.device;
+	const device = data.deviceUserAgent ? `${data.device} [auto-detection: ${data.deviceUserAgent}]` : data.device;
 	let text = `
 ReplyEmail: ${data.replyEmail}
 User: ${user}
