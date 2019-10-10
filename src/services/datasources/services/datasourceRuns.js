@@ -24,6 +24,12 @@ class DatasourceRuns {
 		this.registerEventListeners();
 	}
 
+	/**
+	 * sets pagination parameters for further use, imitating feathers.
+	 * Handles defaults and max values set by the service.
+	 * @param {Object} query feathers Query
+	 * @param {Object} serviceOptions Service options, potentially containing pagination settings
+	 */
 	injectPaginationQuery(query, serviceOptions) {
 		if (typeof (serviceOptions || {}).paginate === 'object') {
 			const resultQuery = Object.assign({}, { $paginate: true }, query);
@@ -34,6 +40,12 @@ class DatasourceRuns {
 		return query;
 	}
 
+	/**
+	 * Formats an array of data as an object containing pagination infos.
+	 * DOES NOT PAGINATE! data is expected to already be the paginated results.
+	 * @param {Array} data pre-paginated data
+	 * @param {Object} query feathers query containing $limit and $skip
+	 */
 	paginationLikeFormat(data, query) {
 		if (query.$paginate) {
 			return {
@@ -46,6 +58,11 @@ class DatasourceRuns {
 		return data;
 	}
 
+	/**
+	 * returns basic information on all datasource runs for the school of a user, or a specified datasource.
+	 * for internal users, may also return runs for a specified school, or all of them.
+	 * @param {Object} params feathers params object
+	 */
 	async find(params) {
 		const query = this.injectPaginationQuery(params.query, this.options);
 
