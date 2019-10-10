@@ -14,7 +14,7 @@ module.exports = function oauth2MockServer({
 		mockOauth.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 		mockOauth.port = freePort;
 		mockOauth.url = `http://localhost:${mockOauth.port}`;
-
+		mockOauth.ltiTool = '';
 		mockOauth.post('/clients', (req, res) => res.send({
 			client_id: 'unit_test',
 		}));
@@ -30,10 +30,16 @@ module.exports = function oauth2MockServer({
 			});
 		});
 
+		mockOauth.post('/oauth2/setLtiTools', (req, res) => {
+			mockOauth.ltiTool = req.body.ltiTool;
+		});
+
 		mockOauth.get('/oauth2/auth/requests/login', (req, res) => {
-			res.send({
+			const loginRequest = {
 				challenge: null,
-			});
+				client: { client_id: 'thethingwearelookingfor' },
+			};
+			res.send(loginRequest);
 		});
 
 		mockOauth.put('/oauth2/auth/requests/login/accept', (req, res) => {

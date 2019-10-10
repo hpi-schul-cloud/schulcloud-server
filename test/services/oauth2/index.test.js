@@ -16,9 +16,11 @@ const introspectService = app.service('oauth2/introspect');
 const consentService = app.service('oauth2/auth/sessions/consent');
 const toolService = app.service('ltiTools');
 
+const testObjects = require('../helpers/testObjects')(app);
+
 chai.use(chaiHttp);
 
-describe('oauth2 service', function oauthTest() {
+describe.only('oauth2 service', function oauthTest() {
 	this.timeout(10000);
 
 	const testUser2 = {
@@ -77,7 +79,7 @@ describe('oauth2 service', function oauthTest() {
 	const loginRequest1 = null;
 	const loginRequest2 = null;
 	// let redirectTo = null;
-
+	const hydraUri = app.settings.services.hydra;
 	before(async () => {
 		this.timeout(10000);
 
@@ -90,6 +92,8 @@ describe('oauth2 service', function oauthTest() {
 
 
 	after((done) => {
+		// sets uri back to original uri
+		app.settings.services.hydra = hydraUri;
 		Promise.all([
 			toolService.remove(testTool1._id),
 			toolService.remove(testTool2._id),
@@ -131,13 +135,28 @@ describe('oauth2 service', function oauthTest() {
 		assert.strictEqual(result.challenge, loginRequest1);
 	}));
 
-	it('PATCH Login Request Accept', () => app.service('oauth2/loginRequest').patch(loginRequest1, {}, {
-		query: { accept: 1 },
-		account: { userId: testUser2._id },
-	}).then((result) => {
+	it('PATCH Login Request Accept', async () => {
+		const user = await testObjects.createTestUser();
+		const ltiTool = await app.service('ltiTools').create({
+			oAuthClientId: 'thethingwearelookingfor',
+			url: 'someUrl',
+			key: 'someKey',
+			secret: 'someSecret',
+		});
+		const pseudonym = await app.service('pseudonym').create({
+			userId: user._id,
+			tooldId: ltiTool._id,
+			pseudonym: 'somePseudonym',
+		});
+		const results = await app.service('oauth2/loginRequest').patch(loginRequest1, {}, {
+			query: { accept: 1 },
+			account: { userId: testUser2._id },
+		});
 		// redirectTo = result.redirect_to;
-		assert.ok(result.redirect_to.indexOf(testClient2.client_id) !== -1);
-	}));
+		assert.ok(results.redirect_to.indexOf(testClient2.client_id) !== -1);
+		app.service('pseudonym').remove(pseudonym._id);
+		app.service('ltiTools').remove(ltiTool._id);
+	});
 
 	it('PATCH Login Request Reject', () => app.service('oauth2/loginRequest').patch(loginRequest2, {}, {
 		query: { accept: 0 },
