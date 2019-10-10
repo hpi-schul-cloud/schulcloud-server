@@ -5,6 +5,7 @@ const chaiHttp = require('chai-http');
 // const request = require('request-promise-native');
 // proxyserver
 const oauth2Server = require('./oauth2MockServer');
+const oauth2 = require('../../../src/services/oauth2/index.js');
 
 const app = require('../../../src/app');
 const logger = require('../../../src/logger/');
@@ -86,7 +87,6 @@ describe('oauth2 service', function oauthTest() {
 		const o2mock = await oauth2Server({});
 		app.settings.services.hydra = o2mock.url; // revert to old value do this in after hook
 
-		const oauth2 = require('../../../src/services/oauth2/index.js');
 		app.configure(oauth2);
 	});
 
