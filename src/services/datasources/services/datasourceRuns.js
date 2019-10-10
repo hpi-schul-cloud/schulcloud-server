@@ -6,7 +6,6 @@ const {
 	iff, isProvider, validateSchema, disallow,
 } = require('feathers-hooks-common');
 const { hasPermission } = require('../../../hooks');
-const { flatten, paginate, convertToSortOrderObject } = require('../../../utils/array');
 
 const createSchema = require('../schemas/datasourceRuns.create.schema');
 const { datasourceRunModel } = require('../model');
@@ -25,12 +24,35 @@ class DatasourceRuns {
 		this.registerEventListeners();
 	}
 
+	injectPaginationQuery(query, serviceOptions) {
+		if (typeof (serviceOptions || {}).paginate === 'object') {
+			const resultQuery = Object.assign({}, { $paginate: true }, query);
+			if (!resultQuery.$limit) resultQuery.$limit = serviceOptions.paginate.default;
+			if (resultQuery.$limit > serviceOptions.max) resultQuery.$limit = serviceOptions.paginate.max;
+			return resultQuery;
+		}
+		return query;
+	}
+
+	paginationLikeFormat(data, query) {
+		if (query.$paginate) {
+			return {
+				total: data.length,
+				limit: query.$limit,
+				skip: query.$skip,
+				data,
+			};
+		}
+		return data;
+	}
+
 	async find(params) {
+		const query = this.injectPaginationQuery(params.query, this.options);
+
 		let { schoolId } = params;
 		if (params.account) {
 			({ schoolId } = await this.app.service('users').get(params.account.userId));
 		}
-		const query = params.query || {};
 		const filter = {};
 		if (schoolId) filter.schoolId = schoolId;
 		if (params.datasourceId) filter.datasourceId = params.datasourceId;
@@ -38,8 +60,9 @@ class DatasourceRuns {
 		const result = await datasourceRunModel.find(
 			filter,
 			'datasourceId _id status dryrun duration',
-		).sort(query.sort);
-		return result;
+		).sort(query.sort).skip(query.$skip).limit(query.$limit || query.$paginate.default);
+
+		return this.paginationLikeFormat(result, query);
 	}
 
 	/**
@@ -117,6 +140,13 @@ class DatasourceRuns {
 	}
 }
 
+const datasourceRunService = new DatasourceRuns({
+	paginate: {
+		default: 50,
+		max: 500,
+	},
+});
+
 /**
  * hooks should be used for validation and authorisation, and very simple logic.
  * If your service requires more complicated logic, implement a custom service.
@@ -158,4 +188,4 @@ const datasourceRunsHooks = {
 	},
 };
 
-module.exports = { DatasourceRuns, datasourceRunsHooks };
+module.exports = { datasourceRunService, datasourceRunsHooks };

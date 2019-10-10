@@ -188,7 +188,7 @@ describe.only('datasourceRuns service', () => {
 		])).map(ds => ds._id.toString());
 		const result = await datasourceRunsService.find({ datasourceId: datasource._id });
 		expect(result).to.not.equal(undefined);
-		result.forEach((res) => {
+		result.data.forEach((res) => {
 			expect(res.status).to.equal('Success');
 			expect(res.log).to.not.exist;
 			expect(datasourceRunIds.includes(res._id.toString())).to.equal(true);
@@ -214,7 +214,7 @@ describe.only('datasourceRuns service', () => {
 		])).map(ds => ds._id.toString());
 		const result = await datasourceRunsService.find({ schoolId: testSchool._id });
 		expect(result).to.not.equal(undefined);
-		result.forEach((res) => {
+		result.data.forEach((res) => {
 			expect(res.status).to.equal('Success');
 			expect(res.log).to.not.exist;
 			expect(datasourceRunIds.includes(res._id.toString())).to.equal(true);
@@ -241,16 +241,40 @@ describe.only('datasourceRuns service', () => {
 		const ascResult = await datasourceRunsService.find({ schoolId: testSchool._id, query: { sort: '_id' } });
 		const descResult = await datasourceRunsService.find({ schoolId: testSchool._id, query: { sort: '-_id' } });
 		expect(ascResult).to.not.equal(undefined);
-		expect(ascResult.length).to.equal(2);
+		expect(ascResult.total).to.equal(2);
 		expect(descResult).to.not.equal(undefined);
-		expect(descResult.length).to.equal(2);
-		expect(ascResult[0]._id.toString()).to.equal(descResult[1]._id.toString());
-		expect(ascResult[1]._id.toString()).to.equal(descResult[0]._id.toString());
+		expect(descResult.total).to.equal(2);
+		expect(ascResult.data[0]._id.toString()).to.equal(descResult.data[1]._id.toString());
+		expect(ascResult.data[1]._id.toString()).to.equal(descResult.data[0]._id.toString());
 
 		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
 	});
 
-	it('FIND can be paginated');
+	it('FIND can be paginated', async () => {
+		const testSchool = await testObjects.createTestSchool();
+		const datasource = await datasourcesService.create({
+			schoolId: testSchool._id,
+			config: { target: 'mock' },
+			name: 'first datasource',
+		});
+		const otherDatasource = await datasourcesService.create({
+			schoolId: testSchool._id,
+			config: { target: 'mock' },
+			name: 'second datasource',
+		});
+		const datasourceRunIds = (await Promise.all([
+			datasourceRunsService.create({ datasourceId: datasource._id }),
+			datasourceRunsService.create({ datasourceId: otherDatasource._id }),
+		])).map((ds) => ds._id.toString());
+		const result = await datasourceRunsService.find({ schoolId: testSchool._id, query: { $skip: 1, $limit: 1 } });
+		expect(result).to.not.equal(undefined);
+		expect(result.skip).to.equal(1);
+		expect(result.limit).to.equal(1);
+		expect(Array.isArray(result.data)).to.equal(true);
+		expect(result.data.length).to.equal(1);
+
+		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
+	});
 
 	it('FIND doesnt include filtered results', async () => {
 		const testSchool = await testObjects.createTestSchool();
@@ -270,8 +294,8 @@ describe.only('datasourceRuns service', () => {
 		])).map(ds => ds._id.toString());
 		const result = await datasourceRunsService.find({ datasourceId: datasource._id });
 		expect(result).to.not.equal(undefined);
-		expect(result.length).to.equal(1);
-		expect(result[0]._id.toString()).to.equal(datasourceRunIds[0].toString());
+		expect(result.total).to.equal(1);
+		expect(result.data[0]._id.toString()).to.equal(datasourceRunIds[0].toString());
 
 		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
 	});
@@ -297,8 +321,8 @@ describe.only('datasourceRuns service', () => {
 		const params = await generateRequestParamsFromUser(user);
 		const result = await datasourceRunsService.find(params);
 		expect(result).to.not.equal(undefined);
-		expect(result.length).to.equal(1);
-		expect(result[0]._id.toString()).to.equal(datasourceRunIds[0].toString());
+		expect(result.total).to.equal(1);
+		expect(result.data[0]._id.toString()).to.equal(datasourceRunIds[0].toString());
 
 		await datasourceRunModel.remove({ _id: { $in: datasourceRunIds } }).lean().exec();
 	});
