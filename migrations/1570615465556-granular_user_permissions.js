@@ -21,6 +21,7 @@ module.exports = {
 		// Make changes to the database here.
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
+		// User
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'user',
@@ -36,8 +37,7 @@ module.exports = {
 			},
 		).lean().exec();
 
-
-
+		// Teacher
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'teacher',
@@ -53,8 +53,7 @@ module.exports = {
 			},
 		).lean().exec();
 
-
-
+		// Administrator
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'administrator',
@@ -77,8 +76,7 @@ module.exports = {
 			},
 		).lean().exec();
 
-
-
+		// Superhero
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'superhero',
@@ -100,6 +98,7 @@ module.exports = {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
+		// User
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'user',
@@ -115,8 +114,7 @@ module.exports = {
 			},
 		).lean().exec();
 
-
-
+		// Teacher
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'teacher',
@@ -132,8 +130,7 @@ module.exports = {
 			},
 		).lean().exec();
 
-
-
+		// Administrator
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'administrator',
@@ -156,8 +153,7 @@ module.exports = {
 			},
 		).lean().exec();
 
-
-
+		// Superhero
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'superhero',

@@ -1,5 +1,4 @@
 const assert = require('assert');
-const { expect } = require('chai');
 const mockery = require('mockery');
 
 const app = require('../../../../src/app');
@@ -15,7 +14,7 @@ const userService = app.service('users');
 const hasPermissionHookMockGenerator = (loggedinUserPermissions = []) => {
 	const globalHookMock = ({
 		hasPermission: (permissions) => () => permissions.some(
-			(permission) => loggedinUserPermissions.includes(permission)
+			(permission) => loggedinUserPermissions.includes(permission),
 		),
 	});
 	mockery.enable({

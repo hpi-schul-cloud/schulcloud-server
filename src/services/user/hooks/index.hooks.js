@@ -20,4 +20,3 @@ exports.hasEditPermissionForUser = async (context) => {
 	}
 	return context;
 };
-
