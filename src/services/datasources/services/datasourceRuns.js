@@ -176,10 +176,10 @@ const datasourceRunsHooks = {
 			authenticate('jwt'),
 		],
 		find: [
-			iff(isProvider('external'), hasPermission('DATASOURCES_VIEW')),
+			iff(isProvider('external'), hasPermission('DATASOURCES_RUN_VIEW')),
 		],
 		get: [
-			iff(isProvider('external'), hasPermission('DATASOURCES_VIEW')),
+			iff(isProvider('external'), hasPermission('DATASOURCES_RUN_VIEW')),
 		],
 		create: [
 			iff(isProvider('external'), [
