@@ -37,7 +37,7 @@ class MockSyncerWithData extends Syncer {
 	}
 }
 
-describe.only('datasourceRuns service', () => {
+describe('datasourceRuns service', () => {
 	let server;
 	before((done) => {
 		server = app.listen(0, done);
