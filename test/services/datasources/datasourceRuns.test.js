@@ -188,7 +188,7 @@ describe('datasourceRuns service', () => {
 			datasourceRunsService.create({ datasourceId: datasource._id }),
 			datasourceRunsService.create({ datasourceId: datasource._id }),
 			datasourceRunsService.create({ datasourceId: datasource._id }),
-		])).map(ds => ds._id.toString());
+		])).map((ds) => ds._id.toString());
 		const result = await datasourceRunsService.find({ query: { datasourceId: datasource._id } });
 		expect(result).to.not.equal(undefined);
 		result.data.forEach((res) => {
@@ -214,7 +214,7 @@ describe('datasourceRuns service', () => {
 		const datasourceRunIds = (await Promise.all([
 			datasourceRunsService.create({ datasourceId: datasource._id }),
 			datasourceRunsService.create({ datasourceId: otherDatasource._id }),
-		])).map(ds => ds._id.toString());
+		])).map((ds) => ds._id.toString());
 		const result = await datasourceRunsService.find({ query: { schoolId: testSchool._id } });
 		expect(result).to.not.equal(undefined);
 		result.data.forEach((res) => {
@@ -294,7 +294,7 @@ describe('datasourceRuns service', () => {
 		const datasourceRunIds = (await Promise.all([
 			datasourceRunsService.create({ datasourceId: datasource._id }),
 			datasourceRunsService.create({ datasourceId: otherDatasource._id }),
-		])).map(ds => ds._id.toString());
+		])).map((ds) => ds._id.toString());
 		const result = await datasourceRunsService.find({ query: { datasourceId: datasource._id } });
 		expect(result).to.not.equal(undefined);
 		expect(result.total).to.equal(1);
@@ -319,7 +319,7 @@ describe('datasourceRuns service', () => {
 		const datasourceRunIds = (await Promise.all([
 			datasourceRunsService.create({ datasourceId: datasource._id }),
 			datasourceRunsService.create({ datasourceId: otherDatasource._id }),
-		])).map(ds => ds._id.toString());
+		])).map((ds) => ds._id.toString());
 		const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: testSchool._id });
 		const params = await generateRequestParamsFromUser(user);
 		const result = await datasourceRunsService.find(params);
