@@ -118,7 +118,7 @@ describe('datasources service', () => {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(405);
 			expect(err.className).to.equal('method-not-allowed');
-			datasourceModel.deleteOne({ _id: datasource }).lean().exec();
+			datasourceModel.deleteOne({ _id: datasource._id }).lean().exec();
 		}
 	});
 

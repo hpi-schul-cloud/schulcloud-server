@@ -42,10 +42,10 @@ describe('datasourceRuns service', () => {
 	before((done) => {
 		server = app.listen(0, done);
 		mockery.enable({
+			useCleanCache: true,
 			warnOnUnregistered: false,
 		});
 		mockery.registerMock('./strategies', [MockSyncer, MockSyncerWithData]);
-		delete require.cache[require.resolve('../../../src/services/sync/index.js')];
 		// eslint-disable-next-line global-require
 		const sync = require('../../../src/services/sync');
 		app.configure(sync);
