@@ -7,8 +7,7 @@ function dataMassager(cubeJsData, totalUsers) {
 
 	// filtering out the roles from mongodb
 	const teacherUsers = totalUsers[0] ? totalUsers[0].roles.filter((el) => el.name === 'teacher').length : null;
-	// const studentUsers = totalUsers[0] ? totalUsers[0].roles.filter((el) => el.name === 'student').length : null;
-	const studentUsers = 102;
+	const studentUsers = totalUsers[0] ? totalUsers[0].roles.filter((el) => el.name === 'student').length : null;
 
 	// grabbing the active users from cubejs or null
 	const activeStudents = parsed.data[0] ? parsed.data[0]['Events.activeUsers'] : null;

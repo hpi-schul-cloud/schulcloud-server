@@ -3,9 +3,9 @@ const hooks = require('../hooks');
 
 function dataMassager(cubeJsData) {
 	const parsed = JSON.parse(cubeJsData);
-
+	const dauToMau = parsed.data[0] ? parsed.data[0]['Events.dauToMau'] : null;
 	const data = {
-
+		dauToMau,
 	};
 	return data;
 }
