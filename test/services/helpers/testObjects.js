@@ -37,8 +37,8 @@ module.exports = (app, opt = {
 		.concat(roles.cleanup())
 		.concat(schools.cleanup())
 		.concat(schoolGroups.cleanup())
-		.concat(years.cleanup()))
-		.concat(datasources.cleanup())
+		.concat(years.cleanup())
+		.concat(datasources.cleanup()))
 		.then((res) => {
 			logger.info('[TestObjects] cleanup data.');
 			return res;

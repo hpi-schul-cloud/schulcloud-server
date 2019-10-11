@@ -15,6 +15,7 @@ describe('datasources service', () => {
 
 	after((done) => {
 		server.close(done);
+		testObjects.cleanup();
 	});
 
 	it('registered the datasources service', () => {
