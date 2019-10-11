@@ -7,7 +7,6 @@ const { generateRequestParamsFromUser } = require('../helpers/services/login')(a
 const { datasourceRunModel } = require('../../../src/services/datasources/model');
 const Syncer = require('../../../src/services/sync/strategies/Syncer');
 
-const datasourcesService = app.service('datasources');
 const datasourceRunsService = app.service('datasourceRuns');
 
 /**
