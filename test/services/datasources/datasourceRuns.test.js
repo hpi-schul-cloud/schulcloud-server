@@ -123,10 +123,12 @@ describe('datasourceRuns service', () => {
 				name: 'datahungry source',
 			});
 			const params = await generateRequestParamsFromUser(user);
-			await datasourceRunsService.create(
+			const result = await datasourceRunsService.create(
 				{ datasourceId: datasource._id.toString(), data: 'datakraken-food' },
 				params,
 			);
+			// this should not be reached, but in case it does: clean up
+			await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
