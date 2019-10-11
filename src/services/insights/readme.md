@@ -1,5 +1,5 @@
 # Insights API
-
+[Official API docs](http://localhost:3030/docs/#/insights)
 ### Allowed HTTPs requests:
 ``GET ``
 ### Description Of Usual Server Responses:
