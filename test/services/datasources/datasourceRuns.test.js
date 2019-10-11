@@ -53,6 +53,8 @@ describe('datasourceRuns service', () => {
 
 	after((done) => {
 		server.close(done);
+		mockery.deregisterAll();
+		mockery.disable();
 	});
 
 	it('registered the datasourceRuns service', () => {
