@@ -19,7 +19,7 @@ function dataMassager(cubeJsData) {
 }
 
 function generateUri() {
-	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?'; // || .env.cubejsuri
+	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
 	const query = `query={
   "measures": [
     "Events.count"
@@ -62,8 +62,8 @@ class WeeklyActivity {
 }
 
 module.exports = (app) => {
-	const weekActiveUsersRoute = '/insights/weeklyActivity';
-	app.use(weekActiveUsersRoute, new WeeklyActivity());
+	const insightRoute = '/insights/weeklyActivity';
+	app.use(insightRoute, new WeeklyActivity());
 	const insightsService = app.service('/insights/weeklyActivity');
 	insightsService.hooks(hooks);
 };

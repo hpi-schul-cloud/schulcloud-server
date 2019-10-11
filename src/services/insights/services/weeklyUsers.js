@@ -14,7 +14,7 @@ function dataMassager(cubeJsDataThis, cubeJsDataLast) {
 }
 
 function generateUri(querySort) {
-	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?'; // || .env.cubejsuri
+	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
 	const query = `query={
 			"measures": [
 			"Events.activeUsers"
@@ -50,8 +50,8 @@ class WeeklyUsers {
 }
 
 module.exports = (app) => {
-	const weekActiveUsersRoute = '/insights/weeklyUsers';
-	app.use(weekActiveUsersRoute, new WeeklyUsers());
+	const insightRoute = '/insights/weeklyUsers';
+	app.use(insightRoute, new WeeklyUsers());
 	const insightsService = app.service('/insights/weeklyUsers');
 	insightsService.hooks(hooks);
 };
