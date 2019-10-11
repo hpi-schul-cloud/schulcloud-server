@@ -61,7 +61,7 @@ describe('datasourceRuns service', () => {
 
 	it('CREATE starts a datasource run without data', async () => {
 		const testSchool = await testObjects.createTestSchool();
-		const datasource = await datasourcesService.create({
+		const datasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'cool datasource',
@@ -77,7 +77,7 @@ describe('datasourceRuns service', () => {
 
 	it('CREATE starts a datasource run with data', async () => {
 		const testSchool = await testObjects.createTestSchool();
-		const datasource = await datasourcesService.create({
+		const datasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mockwithdata' },
 			name: 'datahungry source',
@@ -94,7 +94,7 @@ describe('datasourceRuns service', () => {
 	it('CREATE works for an authorized user', async () => {
 		const school = await testObjects.createTestSchool();
 		const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-		const datasource = await datasourcesService.create({
+		const datasource = await testObjects.createTestDatasource({
 			schoolId: school._id,
 			config: { target: 'mock' },
 			name: 'datahungry source',
@@ -117,7 +117,7 @@ describe('datasourceRuns service', () => {
 			const userSchool = await testObjects.createTestSchool();
 			const datasourceSchool = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: userSchool._id });
-			const datasource = await datasourcesService.create({
+			const datasource = await testObjects.createTestDatasource({
 				schoolId: datasourceSchool._id,
 				config: { target: 'mockwithdata' },
 				name: 'datahungry source',
@@ -137,7 +137,7 @@ describe('datasourceRuns service', () => {
 
 	it('GET fetches a run including log', async () => {
 		const testSchool = await testObjects.createTestSchool();
-		const datasource = await datasourcesService.create({
+		const datasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'awesome datasource',
@@ -157,7 +157,7 @@ describe('datasourceRuns service', () => {
 			const userSchool = await testObjects.createTestSchool();
 			const datasourceSchool = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: userSchool._id });
-			const datasource = await datasourcesService.create({
+			const datasource = await testObjects.createTestDatasource({
 				schoolId: datasourceSchool._id,
 				config: { target: 'mockwithdata' },
 				name: 'datahungry source',
@@ -176,7 +176,7 @@ describe('datasourceRuns service', () => {
 
 	it('FIND fetches all runs for a datasource', async () => {
 		const testSchool = await testObjects.createTestSchool();
-		const datasource = await datasourcesService.create({
+		const datasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'beautiful datasource',
@@ -198,12 +198,12 @@ describe('datasourceRuns service', () => {
 
 	it('FIND fetches all runs for a school', async () => {
 		const testSchool = await testObjects.createTestSchool();
-		const datasource = await datasourcesService.create({
+		const datasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'first datasource',
 		});
-		const otherDatasource = await datasourcesService.create({
+		const otherDatasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'second datasource',
@@ -224,12 +224,12 @@ describe('datasourceRuns service', () => {
 
 	it('FIND can be sorted', async () => {
 		const testSchool = await testObjects.createTestSchool();
-		const datasource = await datasourcesService.create({
+		const datasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'first datasource',
 		});
-		const otherDatasource = await datasourcesService.create({
+		const otherDatasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'second datasource',
@@ -252,12 +252,12 @@ describe('datasourceRuns service', () => {
 
 	it('FIND can be paginated', async () => {
 		const testSchool = await testObjects.createTestSchool();
-		const datasource = await datasourcesService.create({
+		const datasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'first datasource',
 		});
-		const otherDatasource = await datasourcesService.create({
+		const otherDatasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'second datasource',
@@ -278,12 +278,12 @@ describe('datasourceRuns service', () => {
 
 	it('FIND doesnt include filtered results', async () => {
 		const testSchool = await testObjects.createTestSchool();
-		const datasource = await datasourcesService.create({
+		const datasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'correct datasource',
 		});
-		const otherDatasource = await datasourcesService.create({
+		const otherDatasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'other datasource',
@@ -303,12 +303,12 @@ describe('datasourceRuns service', () => {
 	it('FIND cant fetch runs from a different school', async () => {
 		const testSchool = await testObjects.createTestSchool();
 		const otherSchool = await testObjects.createTestSchool();
-		const datasource = await datasourcesService.create({
+		const datasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
 			config: { target: 'mock' },
 			name: 'correct datasource',
 		});
-		const otherDatasource = await datasourcesService.create({
+		const otherDatasource = await testObjects.createTestDatasource({
 			schoolId: otherSchool._id,
 			config: { target: 'mock' },
 			name: 'other datasource',
