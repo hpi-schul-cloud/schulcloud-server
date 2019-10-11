@@ -15,8 +15,8 @@ function dataMassager(cubeJsDataThis, cubeJsDataLast) {
 }
 
 function generateUri(querySort) {
-	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load';
-	const query = `?query={
+	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
+	const query = `query={
 			"measures": [
 			"Events.activeUsers"
 			],
