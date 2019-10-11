@@ -28,6 +28,7 @@ const statistic = require('./statistic');
 const wopi = require('./wopi');
 const pseudonym = require('./pseudonym');
 const consent = require('./consent');
+const insights = require('./insights');
 const oauth2 = require('./oauth2');
 const roster = require('./roster');
 const ldap = require('./ldap');
@@ -63,6 +64,7 @@ module.exports = function initializeServices() {
 	app.configure(fileStorage);
 	app.configure(link);
 	app.configure(news);
+	app.configure(insights);
 	app.configure(helpers);
 	app.configure(homework);
 	app.configure(federalState);
