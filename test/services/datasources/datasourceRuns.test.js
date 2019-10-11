@@ -17,6 +17,7 @@ class MockSyncer extends Syncer {
 		return target === 'mock';
 	}
 
+	// eslint-disable-next-line no-unused-vars
 	static params(params, data) {
 		return [true];
 	}

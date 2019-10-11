@@ -25,13 +25,13 @@ module.exports = function () {
 			const { target } = params.query;
 			const logger = getSyncLogger(params.logStream);
 			const instances = [];
-			syncers.forEach((syncer) => {
-				if (syncer.respondsTo(target)) {
-					const args = syncer.params(params, data);
+			syncers.forEach((StrategySyncer) => {
+				if (StrategySyncer.respondsTo(target)) {
+					const args = StrategySyncer.params(params, data);
 					if (args) {
-						instances.push(new syncer(app, {}, logger, ...args));
+						instances.push(new StrategySyncer(app, {}, logger, ...args));
 					} else {
-						throw new Error(`Invalid params for ${syncer.name}: "${JSON.stringify(params)}"`);
+						throw new Error(`Invalid params for ${StrategySyncer.name}: "${JSON.stringify(params)}"`);
 					}
 				}
 			});
