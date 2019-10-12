@@ -387,7 +387,6 @@ const signedUrlService = {
 
 	async find({ query, payload: { userId, fileStorageType } }) {
 		const { file, download } = query;
-		// const { userId } = payload;
 		const strategy = createCorrectStrategy(fileStorageType);
 		const fileObject = await FileModel.findOne({ _id: file }).lean().exec();
 
@@ -396,6 +395,12 @@ const signedUrlService = {
 		}
 
 		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
+
+		if (download
+			&& fileObject.securityCheck
+			&& fileObject.securityCheck.status === SecurityCheckStatusTypes.BLOCKED) {
+			throw new Forbidden('File access blocked by security check.');
+		}
 
 		return canRead(userId, file)
 			.then(() => strategy.getSignedUrl({
