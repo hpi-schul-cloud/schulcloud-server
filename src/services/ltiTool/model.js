@@ -35,7 +35,6 @@ const ltiTool = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 	originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
 	oAuthClientId: { type: String },
-	useIframePseudonym: { type: Boolean },
 	friendlyUrl: { type: String, unique: true, sparse: true },
 });
 
