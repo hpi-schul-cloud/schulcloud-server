@@ -24,6 +24,7 @@ const {
 	createPermission,
 } = require('./utils/');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
+const { SERVICE_PATH: FILE_SECURITY_SERVICE_PATH } = require('./SecurityCheckService');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
@@ -38,8 +39,10 @@ const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || f
 
 const FILE_SECURITY_CHECK_SERVICE_URI = process.env.FILE_SECURITY_CHECK_SERVICE_URI
 	|| 'http://localhost:8081/scan/file';
-const FILE_SECURITY_CHECK_CALLBACK_URI = process.env.FILE_SECURITY_CHECK_CALLBACK_URI
-	|| 'http://localhost:3030/fileStorage/securityCheck/';
+const FILE_SECURITY_CHECK_CALLBACK_URI = url.resolve(
+	process.env.HOST || 'http://localhost:3030',
+	FILE_SECURITY_SERVICE_PATH,
+);
 const FILE_SECURITY_CHECK_MAX_FILE_SIZE = parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10)
 	|| 512 * 1024 * 1024;
 const FILE_SECURITY_SERVICE_USERNAME = process.env.FILE_SECURITY_SERVICE_USERNAME || '';

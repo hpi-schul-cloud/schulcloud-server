@@ -2,6 +2,8 @@ const { FileModel, SecurityCheckStatusTypes } = require('./model');
 const hooks = require('./hooks/SecurityCheckService.hooks.js');
 const logger = require('../../logger');
 
+const SERVICE_PATH = '/fileStorage/securityCheck/';
+
 class SecurityCheckService {
 	async update(id, data) {
 		if (data.error) {
@@ -30,8 +32,11 @@ class SecurityCheckService {
 	}
 }
 
-module.exports = (app) => {
-	app.use('/fileStorage/securityCheck', new SecurityCheckService());
-	const securityCheckService = app.service('/fileStorage/securityCheck');
-	securityCheckService.hooks(hooks);
+module.exports = {
+	service: (app) => {
+		app.use(SERVICE_PATH, new SecurityCheckService());
+		const securityCheckService = app.service(SERVICE_PATH);
+		securityCheckService.hooks(hooks);
+	},
+	SERVICE_PATH,
 };
