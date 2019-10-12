@@ -42,6 +42,7 @@ const SecurityCheckStatusTypes = Object.freeze({
  * @param thumbnail {String} - the url of the file's thumbnail image
  * @param thumbnailRequestToken {String} - a UUID to be used to identify a file to a thumbnail generation service
  * @param securityCheck.status {String} - status of the check (see SecurityCheckStatusTypes)
+ * @param securityCheck.reason {String} - reason for the status
  * @param securityCheck.requestToken {String} - a UUID to be used to identify the file
  * @param securityCheck.createdAt {Date} - when the security check was requested (usually the file creation date)
  * @param securityCheck.updatedAt {Date} - timestamp of last status change (if any)
@@ -65,6 +66,7 @@ const fileSchema = new Schema({
 			enum: Object.values(SecurityCheckStatusTypes),
 			default: SecurityCheckStatusTypes.PENDING,
 		},
+		reason: { type: String, default: 'not yet scanned' },
 		requestToken: { type: String, default: uuid },
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },

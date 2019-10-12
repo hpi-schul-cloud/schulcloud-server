@@ -17,6 +17,7 @@ class SecurityCheckService {
 				$set: {
 					'securityCheck.requestToken': null,
 					'securityCheck.status':	status,
+					'securityCheck.reason': data.virus_signature || 'Clean',
 					'securityCheck.updatedAt': Date.now(),
 				},
 			},

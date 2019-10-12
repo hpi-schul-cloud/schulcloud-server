@@ -116,6 +116,7 @@ const prepareSecurityCheck = (file, strategy, userId, storageFileName) => {
 			{
 				$set: {
 					'securityCheck.status': SecurityCheckStatusTypes.WONTCHECK,
+					'securityCheck.reason': `File is larger than ${FILE_SECURITY_CHECK_MAX_FILE_SIZE} bytes`,
 				},
 			},
 		).exec();
