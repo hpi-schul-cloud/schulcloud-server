@@ -11,6 +11,7 @@ const createTestUser = (app, opt) => ({
 	accounts = [], // test if it has a effect
 	roles = [],
 	discoverable = false,
+	firstLogin = false,
 	// manual cleanup, e.g. when testing delete:
 	manualCleanup = false,
 } = {}) => app.service('registrationPins').create({ email })
@@ -30,6 +31,9 @@ const createTestUser = (app, opt) => ({
 		accounts,
 		roles,
 		discoverable,
+		preferences: {
+			firstLogin,
+		},
 	}))
 	.then((user) => {
 		if (!manualCleanup) {
