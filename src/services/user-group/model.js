@@ -45,6 +45,7 @@ const courseSchema = getUserGroupSchema({
 	untilDate: { type: Date },
 	shareToken: { type: String, unique: true, sparse: true },
 	times: [timeSchema],
+	externalId: { type: String, unique: true, sparse: true },
 	// optional information if this course is a copy from other
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
 });
