@@ -42,14 +42,19 @@ const filterValidUsers = (context) => {
 	let validUserIds = [context.params.account.userId];
 	return context.app.service('courses').find({
 		query: {
-			teacherIds: context.params.account.userId,
+			$or: [
+				{ teacherIds: context.params.account.userId },
+				{ userIds: context.params.account.userId },
+			],
 			$populate: 'classIds',
 		},
 	}).then((courses) => {
 		for (const course of courses.data) {
 			validUserIds = validUserIds.concat(course.userIds);
+			validUserIds = validUserIds.concat(course.teacherIds);
 			for (const classInstance of course.classIds) {
 				validUserIds = validUserIds.concat(classInstance.userIds);
+				validUserIds = validUserIds.concat(classInstance.teacherIds);
 			}
 		}
 		validUserIds = validUserIds.map((element) => element.toString());
