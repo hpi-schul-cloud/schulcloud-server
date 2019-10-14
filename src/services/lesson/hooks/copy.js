@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden, NotFound } = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
 
@@ -21,7 +21,7 @@ const checkForShareToken = (context) => {
 			if (
 				_lesson.shareToken === shareToken
 				|| course.shareToken === shareToken
-				|| course.teacherIds.some(t => t.toString() === currentUserId)
+				|| course.teacherIds.some((t) => t.toString() === currentUserId)
 			) {
 				return context;
 			}
@@ -35,7 +35,7 @@ const checkForShareToken = (context) => {
 
 
 exports.before = () => ({
-	all: [auth.hooks.authenticate('jwt')],
+	all: [authenticate('jwt')],
 	find: [disallow()],
 	get: [disallow()],
 	create: [

@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const uuid = require('uuid/v4');
 
+const { enableAuditLog } = require('../../utils/database');
+
 const { Schema } = mongoose;
 
 const permissionSchema = new Schema(
@@ -21,6 +23,7 @@ const permissionSchema = new Schema(
 	{ _id: false },
 );
 
+enableAuditLog(permissionSchema);
 
 /**
  * handles meta-data for a file
@@ -61,6 +64,8 @@ const fileSchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
+
+enableAuditLog(fileSchema);
 
 // make file-model searchable
 fileSchema.index({ name: 'text' });

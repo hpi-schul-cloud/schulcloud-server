@@ -16,7 +16,7 @@ class RegistrationSchoolService {
 		if (!this.expertSchoolId) {
 			try {
 				this.expertSchoolId = await this.app.service('schools').find({ query: { purpose: 'expert' } })
-					.then(schools => schools.data[0]._id);
+					.then((schools) => schools.data[0]._id);
 			} catch (err) {
 				throw new GeneralError('Experte: Fehler beim Abfragen der Expertenschule.', err);
 			}

@@ -1,7 +1,7 @@
 let createdaccountsIds = [];
 
 // should rewrite
-const createTestAccount = app => (accountParameters, system, user) => {
+const createTestAccount = (app) => (accountParameters, system, user) => {
 	if (system) {
 		accountParameters.systemId = system.id;
 	}
@@ -13,10 +13,10 @@ const createTestAccount = app => (accountParameters, system, user) => {
 		});
 };
 
-const cleanup = app => () => {
+const cleanup = (app) => () => {
 	const ids = createdaccountsIds;
 	createdaccountsIds = [];
-	return ids.map(id => app.service('accounts').remove(id));
+	return ids.map((id) => app.service('accounts').remove(id));
 };
 
 module.exports = (app, opt) => ({

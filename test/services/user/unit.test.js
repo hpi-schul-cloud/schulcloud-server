@@ -51,8 +51,8 @@ describe('user service', () => {
 		}
 
 		return createTestBase()
-			.then(testBase => createTestSubrole(testBase))
-			.then(testSubrole => testObjects.createTestUser({
+			.then((testBase) => createTestSubrole(testBase))
+			.then((testSubrole) => testObjects.createTestUser({
 				id: '0000d231816abba584714d01',
 				accounts: [],
 				schoolId: '0000d186816abba584714c5f',
@@ -64,7 +64,7 @@ describe('user service', () => {
 				],
 				manualCleanup: true,
 			}))
-			.then(user => userService.get(user._id))
+			.then((user) => userService.get(user._id))
 			.then((user) => {
 				testUserId = user._id;
 				expect(user.avatarInitials).to.eq('MT');
@@ -120,12 +120,12 @@ describe('registrationPin Service', () => {
 	it('creates pins correctly', () => registrationPinService
 		.create({ email: 'test.adresse@schul-cloud.org' })
 		.then(() => registrationPinService.find({ query: { email: 'test.adresse@schul-cloud.org' } }))
-		.then(pinObjects => expect(pinObjects.data[0]).to.have.property('pin')));
+		.then((pinObjects) => expect(pinObjects.data[0]).to.have.property('pin')));
 
 	it('overwrites old pins', () => registrationPinService.create({ email: 'test.adresse@schul-cloud.org' })
 		.then(() => registrationPinService.create({ email: 'test.adresse@schul-cloud.org' }))
 		.then(() => registrationPinService.find({ query: { email: 'test.adresse@schul-cloud.org' } }))
-		.then(pinObjects => expect(pinObjects.data).to.have.lengthOf(1)));
+		.then((pinObjects) => expect(pinObjects.data).to.have.lengthOf(1)));
 });
 
 describe('publicTeachers service', () => {
