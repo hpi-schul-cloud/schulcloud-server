@@ -93,6 +93,22 @@ describe('datasourceRuns service', () => {
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
+	it('CREATE updates lastrun of the datasource', async () => {
+		const testSchool = await testObjects.createTestSchool();
+		const datasource = await testObjects.createTestDatasource({
+			schoolId: testSchool._id,
+			config: { target: 'mock' },
+			name: 'lastrun datasource',
+		});
+		const beforeRun = Date.now();
+		const run = await datasourceRunsService.create({ datasourceId: datasource._id });
+		const updatedDatasource = await app.service('datasources').get(datasource._id);
+		expect(updatedDatasource).to.not.equal(undefined);
+		expect(updatedDatasource.lastRun.getTime()).to.be.greaterThan(beforeRun);
+
+		await datasourceRunModel.deleteOne({ _id: run._id }).lean().exec();
+	});
+
 	it('CREATE works for an authorized user', async () => {
 		const school = await testObjects.createTestSchool();
 		const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
