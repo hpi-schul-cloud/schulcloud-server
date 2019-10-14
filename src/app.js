@@ -15,6 +15,7 @@ const sockets = require('./sockets');
 const services = require('./services/');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
+const handleAutoLogout = require('./middleware/handleAutoLogout');
 const requestLogger = require('./middleware/requestLogger');
 const setupSwagger = require('./swagger');
 const allHooks = require('./app.hooks');
@@ -97,6 +98,7 @@ app.use(compress())
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 	.use(versionService)
 	.use(defaultHeaders)
+	.use(handleAutoLogout)
 	.get('/system_info/haproxy', (req, res) => { res.send({ timestamp: new Date().getTime() }); })
 	.get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
 	.configure(rest(handleResponseType))
