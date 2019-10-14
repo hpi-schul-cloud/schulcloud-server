@@ -33,7 +33,7 @@ function generateUri(querySort, schoolId = '') {
 
 class WeeklyUsers {
 	async find(data, params) {
-		const { schoolId } = data;
+		const { schoolId } = data.query;
 		const thisOptions = {
 			uri: generateUri('This', schoolId),
 			method: 'GET',

@@ -12,8 +12,8 @@
 expected result:
 ```
 {
-thisWeek: String, // eg: "42"
-lastWeek: String
+thisMonth: String, // eg: "42"
+lastMonth: String
 }
 ```
 Status 200 `OK`
@@ -64,7 +64,7 @@ activeTeacherPercentage: String
 }
 ```
 Status 200 `OK`
-NB:  `activeStudentPercentage` and `activeTeacherPercentage` will return `NaN` if trying to calculate percentage of 0.
+NB:  `activeStudentPercentage` and `activeTeacherPercentage` will return `NaN` or `Infinity` if trying to calculate percentage of 0.
 
 ## Role Activity 
 ##### One sentence explanation here
