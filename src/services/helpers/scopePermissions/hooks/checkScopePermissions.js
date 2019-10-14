@@ -1,6 +1,12 @@
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { resolveScope } = require('./util/resolveScope');
 
+/**
+ * Returns the name and id for the scope of the requested resource
+ * @param {Context} context Feathers hook context
+ * @returns {Object} { scopeName, scopeId }
+ * @throws {BadRequest} if the scope cannot be found
+ */
 const getScope = async (context) => {
 	const { scopeName, scopeId } = await resolveScope(context);
 	if (scopeName === undefined || scopeId === undefined) {
@@ -9,6 +15,13 @@ const getScope = async (context) => {
 	return { scopeName, scopeId };
 };
 
+/**
+ * Returns the service instance of the user permission service for the given scope
+ * @param {FeathersApp} app Feathers app object
+ * @param {String} scopeName scope name
+ * @returns {Service} permissionService
+ * @throws {BadRequest} if no user permission service exists for the scope
+ */
 const getPermissionService = (app, scopeName) => {
 	const permissionServicePath = `/${scopeName}/:scopeId/userPermissions`;
 	const permissionService = app.service(permissionServicePath);
@@ -40,9 +53,12 @@ const getScopePermissions = async (app, userId, scope) => {
 };
 
 /**
- * Resolves the context if the (authenticated) user has the required permissions inside the scope.
+ * Returns a hook that resolves the context if the (authenticated) user has the required permissions inside the scope.
  * @param {Array<Permission>} requiredPermissions an array of strings identifying permissions in the scope
  * @requires auth.hooks.authenticate('jwt')
+ * @returns {Function} Hook function: (context) => context
+ * @throws {BadRequest} if the scope cannot be found or has no user permission service
+ * @throws {Forbidden} if the user does not have the required permissions
  */
 const checkScopePermissions = (requiredPermissions) => async (context) => {
 	const { scopeName, scopeId } = await getScope(context);
