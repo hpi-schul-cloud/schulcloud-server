@@ -1,4 +1,4 @@
-const errors = require('feathers-errors');
+const errors = require('@feathersjs/errors');
 
 const AbstractLoginStrategy = require('./interface.js');
 
@@ -9,20 +9,14 @@ class LdapLoginStrategy extends AbstractLoginStrategy {
 	}
 
 	login({ username, password }, system, schoolId) {
-		const app = this.app;
+		const { app } = this;
 		const ldapService = app.service('ldap');
 		const lowerUsername = username.toLowerCase();
 
 		return app.service('schools').get(schoolId)
-			.then(school => {
-				return app.service('accounts').find({ query: {username: lowerUsername }})
-				.then(([account]) => {
-					return app.service('users').get(account.userId);
-				})
-				.then(user => {
-					return ldapService.authenticate(system, user.ldapDn, password);
-				});
-			});
+			.then(school => app.service('accounts').find({ query: { username: lowerUsername } })
+				.then(([account]) => app.service('users').get(account.userId))
+				.then(user => ldapService.authenticate(system, user.ldapDn, password)));
 	}
 }
 

@@ -1,30 +1,29 @@
-'use strict';
-
 const service = require('feathers-mongoose');
-const role = require('./model');
+const Role = require('./model');
 const hooks = require('./hooks');
+const { PermissionService, permissionHooks } = require('./services/permissions');
 
-module.exports = function () {
+
+module.exports = function setup() {
 	const app = this;
 
 	const options = {
-		Model: role,
+		Model: Role,
 		paginate: {
 			default: 10,
-			max: 25
+			max: 25,
 		},
-		lean: true
+		lean: { virtuals: true },
 	};
 
-	// Initialize our service with any options it requires
 	app.use('/roles', service(options));
-
-	// Get our initialize service to that we can bind hooks
 	const roleService = app.service('/roles');
+	roleService.hooks({
+		before: hooks.before(),
+		after: hooks.after,
+	});
 
-	// Set up our before hooks
-	roleService.before(hooks.before(app));
-
-	// Set up our after hooks
-	roleService.after(hooks.after);
+	app.use('/roles/:roleName/permissions', new PermissionService());
+	const permissionService = app.service('/roles/:roleName/permissions');
+	permissionService.hooks(permissionHooks);
 };

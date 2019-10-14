@@ -1,10 +1,10 @@
 module.exports = {
 	testIServUserFail: {
 		username: 'username',
-		password: 'password'
+		password: 'password',
 	},
 	testIServUser: {
 		username: 'schul-cloud',
-		password: 'schul-cloud'
-	}
+		password: 'schul-cloud',
+	},
 };

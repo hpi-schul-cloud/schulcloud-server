@@ -1,11 +1,13 @@
-const auth = require('feathers-authentication');
-const local = require('feathers-authentication-local');
-const errors = require('feathers-errors');
+const auth = require('@feathersjs/authentication');
+const local = require('@feathersjs/authentication-local');
+const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
+const hooks = require('feathers-hooks-common');
+const { ObjectId } = require('mongoose').Types;
+
 const globalHooks = require('../../../hooks');
 
 const MoodleLoginStrategy = require('../strategies/moodle');
-const ITSLearningLoginStrategy = require('../strategies/itslearning');
 const IServLoginStrategy = require('../strategies/iserv');
 const LocalLoginStrategy = require('../strategies/local');
 const LdapLoginStrategy = require('../strategies/ldap');
@@ -14,7 +16,6 @@ const LdapLoginStrategy = require('../strategies/ldap');
 // TODO: initialize all strategies here once
 const strategies = {
 	moodle: MoodleLoginStrategy,
-	itslearning: ITSLearningLoginStrategy,
 	iserv: IServLoginStrategy,
 	local: LocalLoginStrategy,
 	ldap: LdapLoginStrategy,
@@ -33,8 +34,8 @@ const validateCredentials = (hook) => {
 		username, password, systemId, schoolId,
 	} = hook.data;
 
-	if (!username) throw new errors.BadRequest('no username specified');
-	if (!password) throw new errors.BadRequest('no password specified');
+	if (!username) throw new BadRequest('no username specified');
+	if (!password) throw new BadRequest('no password specified');
 
 	if (!systemId) return hook;
 
@@ -78,7 +79,7 @@ const validatePassword = (hook) => {
 
 	// only check result if also a password was really given
 	if (!patternResult && password) {
-		throw new errors.BadRequest('Dein Passwort stimmt mit dem Pattern nicht überein.');
+		throw new BadRequest('Dein Passwort stimmt mit dem Pattern nicht überein.');
 	}
 
 	// in case sso created account skip
@@ -91,28 +92,43 @@ const validatePassword = (hook) => {
 		globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
 		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'ADMIN_VIEW'),
 		globalHooks.hasRoleNoHook(hook, hook.id, 'teacher', true),
-		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero')])
-		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero]) => {
-			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
+		globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
+		hook.app.service('users').get(hook.params.account.userId)])
+		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero, user]) => {
+			// Check if it is own account
+			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id.toString();
+			// Check if it is firstLogin
+			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
+
 			if (
-				(hasStudentCreate && isStudent)
-				|| (hasAdminView && (isStudent || isTeacher))
-				|| isSuperHero
-				|| editsOwnAccount) {
+				(!userDidFirstLogin && editsOwnAccount)
+				|| (
+					(!editsOwnAccount
+						&& (
+							(hasStudentCreate && isStudent)
+							|| (hasAdminView && (isStudent || isTeacher))
+							|| isSuperHero
+						)
+					)
+				)
+			) {
 				return hook;
 			}
 			if (password && !passwordVerification) {
-				throw new errors.Forbidden('Du darfst das Passwort dieses Nutzers nicht ändern oder die Passwortfelder wurden falsch ausgefüllt.');
+				throw new Forbidden(
+					`Du darfst das Passwort dieses Nutzers nicht ändern oder die
+                    Passwortfelder wurden falsch ausgefüllt.`,
+				);
 			}
 
 			if (passwordVerification) {
 				return new Promise((resolve, reject) => {
 					bcrypt.compare(passwordVerification, hook.params.account.password, (err, res) => {
 						if (err) {
-							reject(new errors.BadRequest('Ups, bcrypt ran into an error.'));
+							reject(new BadRequest('Ups, bcrypt ran into an error.'));
 						}
 						if (!res) {
-							reject(new errors.BadRequest('Dein Passwort ist nicht korrekt!'));
+							reject(new BadRequest('Dein Passwort ist nicht korrekt!'));
 						}
 						resolve();
 					});
@@ -129,7 +145,9 @@ const checkUnique = (hook) => {
 		.then((result) => {
 			// systemId might be null. In that case, accounts with any systemId will be returned
 			const filtered = result.filter(a => a.systemId === systemId);
-			if (filtered.length > 0) return Promise.reject(new errors.BadRequest('Der Benutzername ist bereits vergeben!'));
+			if (filtered.length > 0) {
+				return Promise.reject(new BadRequest('Der Benutzername ist bereits vergeben!'));
+			}
 			return Promise.resolve(hook);
 		});
 };
@@ -142,14 +160,36 @@ const removePassword = (hook) => {
 	return Promise.resolve(hook);
 };
 
-const restrictAccess = (hook) => {
-	const queries = hook.params.query;
+const NotAllowed = new BadRequest('Not allowed');
+const restrictAccess = async (context) => {
+	// superhero can pass it
+	const user = (context.params.account || {}).userId;
+	if (user) {
+		const { roles } = await context.app.service('users').get(user, {
+			query: {
+				$populate: { path: 'roles' },
+			},
+		});
+		if (roles.some(role => role.name === 'superhero')) {
+			return context;
+		}
+	}
 
-	return new Promise((resolve, reject) => {
-		if (!queries.username && !queries.userId) {
-			return reject(new errors.BadRequest('Not allowed'));
-		} return resolve();
-	});
+	// other restrict operations
+	const { username, userId } = context.params.query || {};
+	if (!userId && !username) { throw NotAllowed; }
+	const query = {};
+	if (userId) {
+		if (!ObjectId.isValid(userId)) { throw NotAllowed; }
+		query.userId = userId;
+	}
+	if (username) {
+		if (typeof username !== 'string') { throw NotAllowed; }
+		query.username = username;
+	}
+	// @override
+	context.params.query = query;
+	return context;
 };
 
 const checkExistence = (hook) => {
@@ -164,7 +204,7 @@ const checkExistence = (hook) => {
 		.then((result) => {
 			// systemId might be null. In that case, accounts with any systemId will be returned
 			const filtered = result.filter(a => a.systemId === systemId);
-			if (filtered.length > 0) return Promise.reject(new errors.BadRequest('Der Account existiert bereits!'));
+			if (filtered.length > 0) return Promise.reject(new BadRequest('Der Account existiert bereits!'));
 			return Promise.resolve(hook);
 		});
 };
@@ -176,7 +216,7 @@ const protectUserId = (hook) => {
 			.then((res) => {
 				if (res.systemId) {
 					return Promise.resolve(hook);
-				} return Promise.reject(new errors.Forbidden('Die userId kann nicht geändert werden.'));
+				} return Promise.reject(new Forbidden('Die userId kann nicht geändert werden.'));
 			});
 	}
 	return hook;
@@ -191,18 +231,11 @@ const securePatching = hook => Promise.all([
 	const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
 	if (hook.params.account._id !== hook.id) {
 		if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent) || editsOwnAccount)) {
-			return Promise.reject(new errors.BadRequest('You have not the permissions to change other users'))
+			return Promise.reject(new BadRequest('You have not the permissions to change other users'));
 		}
 	}
 	return Promise.resolve(hook);
 });
-
-const clearPwHash = (hook) => {
-	if (hook.result.password) {
-		delete hook.result.password;
-	}
-	return hook;
-};
 
 /**
  * @method get
@@ -210,24 +243,29 @@ const clearPwHash = (hook) => {
  * @afterHook
  * @notLocal
  */
-const filterToRelated = (keys) => {
-	return globalHooks.ifNotLocal((hook) => {
-		const newResult = {};
-		keys.forEach((key) => {
-			if (hook.result[key] !== undefined) {
-				newResult[key] = hook.result[key];
-			}
-		});
-		hook.result = newResult;
-		return hook;
+const filterToRelated = keys => globalHooks.ifNotLocal((hook) => {
+	const newResult = {};
+	keys.forEach((key) => {
+		if (hook.result[key] !== undefined) {
+			newResult[key] = hook.result[key];
+		}
 	});
+	hook.result = newResult;
+	return hook;
+});
+
+const testIfJWTExist = (context) => {
+	if ((context.params.headers || {}).authorization) {
+		return auth.hooks.authenticate('jwt')(context);
+	}
+	return context;
 };
 
 exports.before = {
 	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
 	// otherwise we cannot get the accounts required for login
-	find: [restrictAccess],
-	get: [],
+	find: [testIfJWTExist, restrictAccess],
+	get: [hooks.disallow('external')],
 	create: [
 		sanitizeUsername,
 		checkExistence,
@@ -260,7 +298,7 @@ exports.before = {
 };
 
 exports.after = {
-	all: [clearPwHash],
+	all: [local.hooks.protect('password')],
 	find: [],
 	get: [filterToRelated(['_id', 'username', 'userId', 'systemId'])],
 	create: [],

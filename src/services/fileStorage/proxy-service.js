@@ -1,206 +1,215 @@
 const fs = require('fs');
-const logger = require('winston');
+const url = require('url');
 const rp = require('request-promise-native');
-const { Forbidden, BadRequest, NotFound } = require('feathers-errors');
+const {
+	Forbidden,
+	BadRequest,
+	NotFound,
+	GeneralError,
+} = require('@feathersjs/errors');
 
-const { before, after } = require('./hooks');
-const AWSStrategy = require('./strategies/awsS3');
+const hooks = require('./hooks');
 const swaggerDocs = require('./docs/');
+
 const {
 	canWrite,
 	canRead,
 	canCreate,
 	canDelete,
-} = require('./utils/filePermissionHelper');
-const { returnFileType, generateFileNameSuffix: generateFlatFileName } = require('./utils/filePathHelper');
+	returnFileType,
+	generateFlatFileName,
+	copyFile,
+	createCorrectStrategy,
+	createDefaultPermissions,
+	createPermission,
+} = require('./utils/');
 const { FileModel } = require('./model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
+const { sortRoles } = require('../role/utils/rolesHelper');
+const { userModel } = require('../user/model');
+const logger = require('../../logger');
 
-const strategies = {
-	awsS3: AWSStrategy,
-};
-
-const createCorrectStrategy = (fileStorageType) => {
-	const Strategy = strategies[fileStorageType];
-	if (!Strategy) throw new BadRequest('No file storage provided for this school');
-	return new Strategy();
-};
+const FILE_PREVIEW_SERVICE_URI = process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
+const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI
+|| 'http://localhost:3030/fileStorage/thumbnail/';
+const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || false;
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
 	return obj;
 };
 
+const prepareThumbnailGeneration = (file, strategy, userId, { name: dataName },
+	{ storageFileName, name: propName }) => (
+	ENABLE_THUMBNAIL_GENERATION
+		? Promise.all([
+			strategy.getSignedUrl({
+				userId,
+				flatFileName: storageFileName,
+				localFileName: storageFileName,
+				download: true,
+				Expires: 3600 * 24,
+			}),
+			strategy.generateSignedUrl({
+				userId,
+				flatFileName: storageFileName.replace(
+					/(\..+)$/,
+					'-thumbnail.png',
+				),
+				fileType: returnFileType(dataName || propName), // data.type
+			}),
+		]).then(([downloadUrl, signedS3Url]) => rp.post({
+			url: FILE_PREVIEW_SERVICE_URI,
+			body: {
+				downloadUrl,
+				signedS3Url,
+				callbackUrl: url.resolve(FILE_PREVIEW_CALLBACK_URI, file.thumbnailRequestToken),
+				options: {
+					width: 120,
+				},
+			},
+			json: true,
+		}).catch((err) => {
+			logger.warning(new Error('Can not create tumbnail', err)); // todo err message is lost and throw error
+		}))
+		: Promise.resolve()
+);
+
+/**
+* @param {*} owner
+* @returns 'user' || 'course' || 'teams'
+*/
+const getRefOwnerModel = async (owner) => {
+	let refOwnerModel = 'user';
+
+	if (owner) {
+		const isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
+		refOwnerModel = isCourse ? 'course' : 'teams';
+	}
+
+	return refOwnerModel;
+};
+
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
-
 	/**
-	 * @param data, file data
-	 * @param params,
-	 * @returns {Promise}
-	 */
+     * @param data, file data
+     * @param params,
+     * @returns {Promise}
+     */
 	async create(data, params) {
-		const { payload: { userId } } = params;
-		const { owner, parent, studentCanEdit } = data;
-		const permissions = [{
-			refId: userId,
-			refPermModel: 'user',
-			write: true,
-			read: true,
-			create: true,
-			delete: true,
-		}];
-		const setRefId = (perm) => {
-			if (!perm.refId) {
-				perm.refId = perm._id;
-			}
-			return perm;
-		};
+		const { payload: { userId, fileStorageType } } = params;
+		const {
+			owner,
+			parent,
+			studentCanEdit,
+			permissions: sendPermissions = [],
+		} = data;
 
-		let { permissions: sendPermissions } = data;
-		let isCourse = true;
+		const refOwnerModel = await getRefOwnerModel(owner);
 
-		if (owner) {
-			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
-		}
-
-		if (isCourse) {
-			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
-
-			permissions.push({
-				refId: studentRoleId,
-				refPermModel: 'role',
-				write: Boolean(studentCanEdit),
-				read: true, // students can always read course files
-				create: false,
-				delete: false,
-			});
-		}
-
-		const refOwnerModel = owner ? (isCourse ? 'course' : 'teams') : 'user';
-
-		if (!sendPermissions && refOwnerModel === 'teams') {
-			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
-			sendPermissions = teamObject.filePermission;
-		} else {
-			sendPermissions = [];
-		}
+		const permissions = await createDefaultPermissions(
+			userId,
+			refOwnerModel,
+			{ studentCanEdit, sendPermissions, owner },
+		).catch((err) => {
+			throw new GeneralError('Can not create default Permissions', err);
+		});
 
 		const props = sanitizeObj(Object.assign(data, {
 			isDirectory: false,
 			owner: owner || userId,
 			parent,
 			refOwnerModel,
-			permissions: [...permissions, ...sendPermissions].map(setRefId),
+			permissions,
 			storageFileName: decodeURIComponent(data.storageFileName),
 		}));
 
+		const strategy = createCorrectStrategy(fileStorageType);
 		// create db entry for new file
 		// check for create permissions on parent
 		if (parent) {
 			return canCreate(userId, parent)
-				.then(() => FileModel.findOne(props).exec().then(
-					modelData => modelData ? Promise.resolve(modelData) : FileModel.create(props)
+				.then(() => FileModel.findOne(props).lean().exec().then(
+					modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 				))
-				.catch((e) => {
-					logger.error(e);
-					return new Forbidden();
+				.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file))
+				.catch((err) => {
+					throw new Forbidden(err);
 				});
 		}
 
-		return FileModel.findOne(props).exec().then(
-			modelData => modelData ? Promise.resolve(modelData) : FileModel.create(props)
-		);
+		return FileModel.findOne(props)
+			.exec()
+			.then(modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
+			.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file));
 	},
 
 	/**
-	 * @returns {Promise}
-	 * @param query contains the file path
-	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
+	 * @param query contains the owner id and parent id
+	 * @param payload contains userId, set by middleware
+	 * @returns { Promise }
 	 */
 	find({ query, payload }) {
 		const { owner, parent } = query;
 		const { userId } = payload;
+		const parentPromise = parent
+			? canRead(userId, parent).catch(() => Promise.reject(new Forbidden()))
+			: Promise.resolve();
 
-		return FileModel.find({ owner, parent: parent || { $exists: false } }).exec()
-			.then((files) => {
-				const permissionPromises = files.map(
-					f => canRead(userId, f)
-						.then(() => f)
-						.catch(() => undefined),
-				);
-				return Promise.all(permissionPromises);
-			})
-			.then((allowedFiles) => {
-				const files = allowedFiles.filter(f => f);
-				if (!files.length) {
-					return new Forbidden();
-				}
-
-				return files;
-			});
+		return parentPromise
+			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).exec())
+			.then(files => Promise.all(files.map(
+				f => canRead(userId, f)
+					.then(() => f)
+					.catch(() => undefined),
+			)))
+			.then(allowedFiles => allowedFiles.filter(f => f))
+			.catch(err => Promise.reject(err));
 	},
 
 	/**
-	 * @param params, contains storageContext and fileName in query
+	 * @param id, Object-ID of file to be removed (optional)
+	 * @param requestData, contains query parameters and userId/storageType set by middleware
 	 * @returns {Promise}
 	 */
 	remove(id, { query, payload }) {
 		const { userId, fileStorageType } = payload;
-		const { _id } = query;
+		const { _id = id } = query;
 		const fileInstance = FileModel.findOne({ _id });
 
-		return canDelete(userId, _id)
-			.then(() => fileInstance.exec())
+		return fileInstance.lean().exec()
 			.then((file) => {
-				if (!file) return Promise.resolve({});
+				if (!file) {
+					throw new NotFound();
+				}
 
-				return createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName);
+				return Promise.all([
+					file,
+					canDelete(userId, _id).catch(() => {
+						throw new Forbidden();
+					}),
+				]);
 			})
-			.then(() => fileInstance.remove().exec())
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
+			.then(() => fileInstance.remove().lean().exec())
+			.catch(err => err);
 	},
-
 	/**
-	 * @param id, the file-id in the proxy-db
-	 * @param data, contains fileName, path and destination.
-	 * Path and destination have to have a slash at the end!
+	 * Move file from one parent to another
+	 * @param _id, Object-ID of file to be patched
+	 * @param data, contains destination parent Object-ID
+	 * @param params contains payload with userId, set by middleware
+	 * @returns {Promise}
 	 */
 	async patch(_id, data, params) {
 		const { payload: { userId } } = params;
 		const { parent } = data;
+		const update = { $set: {} };
 		const fileObject = await FileModel.findOne({ _id: parent }).exec();
 		const teamObject = await teamsModel.findOne({ _id: parent }).exec();
-		let owner, refOwnerModel, update = {};
-
-		if (fileObject) {
-			owner = fileObject.owner;
-			refOwnerModel = fileObject.refOwnerModel;
-			update = {
-				parent,
-				owner,
-				refOwnerModel,
-			};
-		} else if (parent === userId.toString()) {
-			owner = userId;
-			refOwnerModel = 'user';
-			update = {
-				owner,
-				refOwnerModel,
-			};
-		} else {
-			owner = parent;
-			refOwnerModel = teamObject ? 'teams' : 'course';
-			update = {
-				owner,
-				refOwnerModel,
-			};
-		}
 
 		const permissionPromise = () => {
 			if (fileObject) {
@@ -210,7 +219,7 @@ const fileStorageService = {
 			if (teamObject) {
 				return new Promise((resolve, reject) => {
 					const teamMember = teamObject.userIds.find(
-						_ => _.userId.toString() === userId.toString(),
+						u => u.userId.toString() === userId.toString(),
 					);
 					if (teamMember) {
 						return resolve();
@@ -222,35 +231,37 @@ const fileStorageService = {
 			return Promise.resolve();
 		};
 
+		if (fileObject) {
+			update.$set = {
+				parent,
+				owner: fileObject.owner,
+				refOwnerModel: fileObject.refOwnerModel,
+			};
+		} else if (parent === userId.toString()) {
+			update.$set = {
+				owner: userId,
+				refOwnerModel: 'user',
+			};
+			update.$unset = { parent: '' };
+		} else {
+			update.$set = {
+				owner: parent,
+				refOwnerModel: teamObject ? 'teams' : 'course',
+			};
+			update.$unset = { parent: '' };
+		}
+
 		return permissionPromise()
-			.then(() => FileModel.update({ _id }, {
-				$set: update,
-			}).exec())
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.then(() => FileModel.update({ _id }, update).exec())
+			.catch(err => new Forbidden(err));
 	},
 };
 
 const signedUrlService = {
 	docs: swaggerDocs.signedUrlService,
-	/**
-	 * @param path where to store the file
-	 * @param fileType MIME type
-	 * @param action the AWS action, e.g. putObject
-	 * @returns {Promise}
-	 */
-	create({ parent, filename, fileType }, params) {
-		const { payload: { userId } } = params;
-		const strategy = createCorrectStrategy(params.payload.fileStorageType);
-		const flatFileName = generateFlatFileName(filename);
 
-		const parentPromise = parent
-			? FileModel.findOne({ parent, name: filename }).exec()
-			: Promise.resolve({});
-
-		const fileRegexCheck = fileName => [
+	fileRegexCheck(fileName) {
+		return [
 			/^[dD]esktop\.ini$/,
 			/^ehthumbs_vista\.db$/,
 			/^ehthumbs\.db$/,
@@ -278,13 +289,32 @@ const signedUrlService = {
 			/^\.fuse_hidden.*$/,
 			/^\..*$/,
 		].some(rx => rx.test(fileName));
+	},
+
+	/**
+     * @param path where to store the file
+     * @param fileType MIME type
+     * @param action the AWS action, e.g. putObject
+     * @returns {Promise}
+     */
+	create({
+		parent,
+		filename,
+		fileType,
+		flatFileName: _flatFileName,
+	}, params) {
+		const { payload: { userId } } = params;
+		const strategy = createCorrectStrategy(params.payload.fileStorageType);
+		const flatFileName = _flatFileName || generateFlatFileName(filename);
+
+		const parentPromise = parent
+			? FileModel.findOne({ parent, name: filename }).exec()
+			: Promise.resolve({});
 
 		return parentPromise
+			.then(() => (parent ? canCreate(userId, parent) : Promise.resolve({})))
 			.then(() => {
-				return parent ? canCreate(userId, parent) : Promise.resolve({});
-			})
-			.then(() => {
-				if (fileRegexCheck(flatFileName)) {
+				if (this.fileRegexCheck(flatFileName)) {
 					throw new BadRequest(`Die Datei '${flatFileName}' ist nicht erlaubt!`);
 				}
 
@@ -303,17 +333,14 @@ const signedUrlService = {
 					header,
 				};
 			})
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.catch(err => new Forbidden(err));
 	},
 
-	async find({ query, payload }) {
+	async find({ query, payload: { userId, fileStorageType } }) {
 		const { file, download } = query;
-		const { userId } = payload;
-		const strategy = createCorrectStrategy(payload.fileStorageType);
-		const fileObject = await FileModel.findOne({ _id: file }).exec();
+		// const { userId } = payload;
+		const strategy = createCorrectStrategy(fileStorageType);
+		const fileObject = await FileModel.findOne({ _id: file }).lean().exec();
 
 		if (!fileObject) {
 			throw new NotFound('File seems not to be there.');
@@ -322,23 +349,23 @@ const signedUrlService = {
 		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
 		return canRead(userId, file)
-			.then(() => strategy.getSignedUrl(
-				{ userId: creatorId, flatFileName: fileObject.storageFileName, download },
-			))
+			.then(() => strategy.getSignedUrl({
+				userId: creatorId,
+				flatFileName: fileObject.storageFileName,
+				localFileName: fileObject.name,
+				download,
+			}))
 			.then(res => ({
 				url: res,
 			}))
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.catch(err => new Forbidden(err));
 	},
 
-	async patch(_id, data, params) {
+	async patch(id, data, params) {
 		const { payload } = params;
 		const { userId } = payload;
 		const strategy = createCorrectStrategy(payload.fileStorageType);
-		const fileObject = await FileModel.findOne({ _id }).exec();
+		const fileObject = await FileModel.findOne({ _id: id }).lean().exec();
 
 		if (!fileObject) {
 			throw new NotFound('File seems not to be there.');
@@ -346,15 +373,16 @@ const signedUrlService = {
 
 		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
-		return canRead(userId, _id)
-			.then(() => strategy.getSignedUrl({ userId: creatorId, flatFileName: fileObject.storageFileName, action: 'putObject' }))
-			.then(res => ({
-				url: res,
+		return canRead(userId, id)
+			.then(() => strategy.getSignedUrl({
+				userId: creatorId,
+				flatFileName: fileObject.storageFileName,
+				action: 'putObject',
 			}))
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.then(signedUrl => ({
+				url: signedUrl,
+			}))
+			.catch(err => new Forbidden(err));
 	},
 };
 
@@ -362,39 +390,26 @@ const directoryService = {
 
 	docs: swaggerDocs.directoryService,
 
-	/**
-	 * @param { name, owner and parent }, params
-	 * @returns {Promise}
-	 * @param query contains the file path
-	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
-	 */
-	async create(data, params) {
-		const { payload: { userId } } = params;
-		const { owner, parent } = data;
-		const permissions = [{
-			refId: userId,
-			refPermModel: 'user',
-			write: true,
-			read: true,
-			create: true,
-			delete: true,
-		}];
+	setRefId(perm) {
+		if (!perm.refId) {
+			perm.refId = perm._id;
+		}
+		return perm;
+	},
 
-		const setRefId = (perm) => {
-			if (!perm.refId) {
-				perm.refId = perm._id;
-			}
-			return perm;
-		};
-
-		const directoryExists = () => FileModel.findOne({
-			owner,
+	directoryExists({
+		name, owner, parent, userId,
+	}) {
+		return FileModel.findOne({
+			owner: owner || userId,
 			parent,
 			isDirectory: true,
-			name: data.name,
-		}).exec();
+			name,
+		}).lean().exec();
+	},
 
-		const folderRegexCheck = fileName => [
+	folderRegexCheck(fileName) {
+		return [
 			/^[a-zA-Z]{1}_drive$/,
 			/^Windows$/,
 			/^\$.*$/,
@@ -403,33 +418,45 @@ const directoryService = {
 			/^Network Trash Folder$/,
 			/^ *$/,
 		].some(rx => rx.test(fileName));
+	},
 
-		if (folderRegexCheck(data.name)) {
-			throw new BadRequest(`Der Ordner '${data.name}' ist nicht erlaubt!`);
+	getStudentRoleId() {
+		return RoleModel.findOne({ name: 'student' })
+			.select('_id')
+			.lean()
+			.exec()
+			.then(role => role._id);
+	},
+
+	/**
+	 * @param data, directory data containing name, parent, owner
+	 * @param params,
+	 * @returns {Promise}
+	 */
+	async create(data, params) {
+		const { payload: { userId } } = params;
+		const { owner, parent, name } = data;
+		const permissions = [createPermission(userId)];
+
+		if (this.folderRegexCheck(name)) {
+			throw new BadRequest(`Der Ordner '${name}' ist nicht erlaubt!`);
 		}
-
+		// todo: move permissions for directorys to createDefaultPermissions.js
 		let { permissions: sendPermissions } = data;
-		let isCourse = true;
+		const refOwnerModel = await getRefOwnerModel(owner);
 
-		if (owner) {
-			isCourse = Boolean(await courseModel.findOne({ _id: owner }).exec());
-		}
-
-		if (isCourse) {
-			const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
-
-			permissions.push({
-				refId: studentRoleId,
-				refPermModel: 'role',
-				write: false,
-				read: true, // students can always read course files
-				create: false,
-				delete: false,
-			});
+		if (refOwnerModel === 'course') {
+			const studentRoleId = await this.getStudentRoleId();
+			// students can always read course files
+			permissions.push(createPermission(
+				studentRoleId,
+				'role',
+				{ write: false, delete: false },
+			));
 		}
 
 		if (!sendPermissions) {
-			const teamObject = await teamsModel.findOne({ _id: owner }).exec();
+			const teamObject = await teamsModel.findOne({ _id: owner }).lean().exec();
 			sendPermissions = teamObject ? teamObject.filePermission : [];
 		}
 
@@ -437,8 +464,8 @@ const directoryService = {
 			isDirectory: true,
 			owner: owner || userId,
 			parent,
-			refOwnerModel: owner ? (isCourse ? 'course' : 'teams') : 'user',
-			permissions: [...permissions, ...sendPermissions].map(setRefId),
+			refOwnerModel,
+			permissions: [...permissions, ...sendPermissions].map(this.setRefId),
 		}));
 
 		// create db entry for new directory
@@ -446,49 +473,53 @@ const directoryService = {
 
 		if (parent) {
 			return canCreate(userId, parent)
-				.then(() => directoryExists().then(
-					data_ => data_ ? Promise.resolve(data_) : FileModel.create(props)
-				)).catch((e) => {
-					logger.error(e);
-					return new Forbidden();
-				});
+				.then(() => this.directoryExists({
+					name, owner, parent, userId,
+				}).then(
+					_data => (_data ? Promise.resolve(_data) : FileModel.create(props)),
+				)).catch(err => new Forbidden(err));
 		}
 
-		return directoryExists().then(
-			data_ => data_ ? Promise.resolve(data_) : FileModel.create(props)
+		return this.directoryExists({
+			name, owner, parent, userId,
+		}).then(
+			_data => (_data ? Promise.resolve(_data) : FileModel.create(props)),
 		);
 	},
 
 	/**
-	 * @returns {Promise}
-	 * @param query contains the file path
-	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
-	 */
+     * @returns {Promise}
+     * @param query contains the ID of parent folder (optional)
+     * @param payload contains userId set by middleware
+     */
 	find({ query, payload }) {
 		const { parent } = query;
 		const { userId } = payload;
 
 		const params = sanitizeObj({
 			isDirectory: true,
-			parent: parent || { $exists: false },
+			parent,
 		});
 
 		return FileModel.find(params).exec()
-			.then((files) => {
-				const permissionPromises = files.map(
-					f => canRead(userId, f)
-						.then(() => f)
-						.catch(() => undefined),
-				);
-				return Promise.all(permissionPromises);
+			.then(files => Promise.all(files.map(
+				f => canRead(userId, f)
+					.then(() => f)
+					.catch(() => undefined),
+			)))
+			.then((allowedFiles) => {
+				const files = allowedFiles.filter(f => f);
+				return files.length
+					? files
+					: new NotFound();
 			});
 	},
 
 	/**
-	 * @param id, params
-	 * @returns {Promise}
-	 */
-	remove(_, { query, payload }) {
+     * @param id, params
+     * @returns {Promise}
+     */
+	remove(id, { query, payload }) {
 		const { userId } = payload;
 		const { _id } = query;
 		const fileInstance = FileModel.findOne({ _id });
@@ -496,48 +527,57 @@ const directoryService = {
 		return canDelete(userId, _id)
 			.then(() => fileInstance.exec())
 			.then((file) => {
-				if (!file) return Promise.resolve({});
-				return FileModel.find({ parent: _id }).remove().exec();
+				if (!file) {
+					return Promise.resolve({});
+				}
+				return FileModel.find({ parent: _id }).remove().lean().exec();
 			})
-			.then(() => fileInstance.remove().exec())
-			.catch((e) => {
-				logger.error(e);
-				return new Forbidden();
-			});
+			.then(() => fileInstance.remove().lean().exec())
+			.catch(err => new Forbidden(err));
 	},
 };
 
 const renameService = {
 
-	docs: swaggerDocs.directoryRenameService,
+	docs: swaggerDocs.renameService,
 
 	/**
-	 * @param data, contains newName
-	 * @returns {Promise}
-	 */
+     * @param data, contains id of fileObject and newName
+     * @returns {Promise}
+     */
 	create(data, params) {
 		const { payload: { userId } } = params;
-		const { newName, _id } = data;
+		const { newName, id } = data;
 
-		if (!_id || !newName) return Promise.reject(new BadRequest('Missing parameters'));
+		if (!id || !newName) {
+			return Promise.reject(new BadRequest('Missing parameters'));
+		}
+
+		const _id = id;
 
 		return canWrite(userId, _id)
 			.then(() => FileModel.findOne({ _id }).exec())
-			.then((directory) => {
-				if (!directory) return Promise.reject(new NotFound('The given directory/file was not found!'));
+			.then((obj) => {
+				if (!obj) {
+					return new NotFound('The given directory/file was not found!');
+				}
 				return FileModel.update({ _id }, { name: newName }).exec();
-			});
+			})
+			.catch(err => new Forbidden(err));
 	},
 };
 
 const fileTotalSizeService = {
 
+	docs: swaggerDocs.fileTotalSizeService,
+
 	/**
-	 * @returns total file size and amount of files
-	 * @param payload contains fileStorageType and userId and schoolId, set by middleware
-	 */
-	find({ payload }) {
-		return FileModel.find({ owner: payload.schoolId }).exec()
+     * @returns total file size and amount of files
+	 * FIX-ME:
+	 * - Check if user in payload is administrator
+     */
+	find() {
+		return FileModel.find({}).exec()
 			.then(files => ({
 				total: files.length,
 				totalSize: files.reduce((sum, file) => sum + file.size, 0),
@@ -546,83 +586,48 @@ const fileTotalSizeService = {
 };
 
 const bucketService = {
+	docs: swaggerDocs.bucketService,
+
 	/**
-	 * @param data, contains schoolId
-	 * @returns {Promise}
-	 */
+     * @param data, contains schoolId
+	 * FIX-ME:
+	 * - Check if user in payload is administrator
+     * @returns {Promise}
+     */
 	create(data, params) {
-		return createCorrectStrategy(params.payload.fileStorageType).create(data.schoolId);
+		const { schoolId } = data;
+		const { payload: { fileStorageType } } = params;
+
+		return createCorrectStrategy(fileStorageType).create(schoolId);
 	},
 };
 
 const copyService = {
-
 	docs: swaggerDocs.copyService,
 
+	defaultPermissionHandler(userId, file, parent) {
+		return Promise.all([
+			canRead(userId, file),
+			canWrite(userId, parent),
+		]);
+	},
 	/**
-	 * @param data, contains oldPath, newPath and externalSchoolId (optional).
-	 * @returns {Promise}
-	 */
+     * @param data, contains file-Id and new parent
+     * @returns {Promise}
+     */
 	create(data, params) {
-		const { file, parent } = data;
-		const { payload: { userId } } = params;
-		const strategy = createCorrectStrategy(params.payload.fileStorageType);
-
-		if (!file || !parent) {
-			return Promise.reject(new BadRequest('Missing parameters'));
-		}
-
-		// first check if given file is valid
-		return FileModel.findOne({ _id: file }).exec()
-			.then((fileObject) => {
-				if (!file) throw new NotFound('The file was not found!');
-
-				// check that there's no file on 'newPath', otherwise change name of file
-				return Promise.all([
-					FileModel.findOne({ parent, name: file.name }).exec(),
-					fileObject,
-				]);
-			})
-			.then(([existingFile, fileObject]) => {
-				const newFile = {
-					parent,
-				};
-
-				if (existingFile) {
-					const [ext, name] = file.name.split('.').reverse();
-					newFile.name = `${name}_${Date.now()}.${ext}`;
-				}
-
-				return Promise.all([
-					newFile,
-					fileObject,
-					canRead(userId, file),
-					canWrite(userId, parent),
-				]);
-			})
-			.then(([newFile, fileObject]) => {
-				// copy file on external storage
-				newFile.storageFileName = generateFlatFileName(newFile.name);
-
-				return Promise.all([
-					newFile,
-					fileObject,
-					strategy.copyFile(userId, fileObject.storageFileName, newFile.storageFileName),
-				]);
-			})
-			.then(([newFile, fileObject]) => FileModel.create({
-				...fileObject,
-				...newFile,
-			}));
+		return copyFile(data, params, this.defaultPermissionHandler);
 	},
 };
 
 const newFileService = {
 
+	docs: swaggerDocs.newFileService,
+
 	/**
-	 * @param data, contains path, key, name
-	 * @returns new File
-	 */
+     * @param data, contains filename, owner, parent and studentCanEdit
+     * @returns {Promise}
+     */
 	create(data, params) {
 		const {
 			name, owner, parent, studentCanEdit,
@@ -634,13 +639,21 @@ const newFileService = {
 		return signedUrlService.create({
 			fileType: returnFileType(name),
 			parent,
-			filename: name,
+			// filename: name,
+			flatFileName,
 		}, params)
-			.then(signedUrl => rp({
-				method: 'PUT',
-				uri: signedUrl.url,
-				body: buffer,
-			}))
+			.then((signedUrl) => {
+				const headers = signedUrl.header;
+				if (process.env.KEEP_ALIVE) {
+					headers.Connection = 'Keep-Alive';
+				}
+				return rp({
+					method: 'PUT',
+					uri: signedUrl.url,
+					body: buffer,
+					headers,
+				});
+			})
 			.then(() => fileStorageService.create({
 				size: buffer.length,
 				storageFileName: flatFileName,
@@ -655,51 +668,80 @@ const newFileService = {
 };
 
 const filePermissionService = {
+
+	docs: swaggerDocs.permissionService,
+
+	/**
+	* @param _id, Object-ID of file obejct to be altered
+	* @param data, contains new permissions
+	* @returns {Promise}
+	*/
 	async patch(_id, data, params) {
 		const { payload: { userId } } = params;
-		const {
-			role,
-			write,
-			read,
-			create,
-		} = data;
+		const { permissions: commitedPerms } = data;
+
+		const permissionPromises = commitedPerms.map(({ refId }) => Promise.all([
+			RoleModel.findOne({ _id: refId }).lean().exec(),
+			userModel.findOne({ _id: refId }).lean().exec(),
+		])
+			.then(([role, user]) => {
+				if (role) {
+					return 'role';
+				}
+				return user ? 'user' : '';
+			}));
 
 		return canWrite(userId, _id)
 			.then(() => Promise.all([
 				FileModel.findOne({ _id }).exec(),
-				RoleModel.findOne({ name: role }).exec(),
+				permissionPromises,
 			]))
-			.then(([fileObject, roleObject]) => {
-				if (!roleObject) {
-					return Promise.reject(new NotFound(`Unknown role ${role}`));
-				}
-
+			.then(([fileObject, refModels]) => {
 				if (!fileObject) {
-					return Promise.reject(new NotFound(`File with ID ${_id} not found`));
+					return new NotFound(`File with ID ${_id} not found`);
 				}
 
-				const { permissions } = fileObject;
-				let permission = permissions.find(
-					perm => perm.refId.toString() === roleObject._id.toString(),
-				);
+				let { permissions } = fileObject;
 
-				if (!permission) {
-					permissions.push(sanitizeObj({
-						refId: roleObject._id,
-						refPermModel: 'role',
-						write,
-						read,
-						create,
-						delete: data.delete,
-					}));
-				} else {
-					permission = Object.assign(permission, sanitizeObj({
-						write,
-						read,
-						create,
-						delete: data.delete,
-					}));
-				}
+				permissions = permissions.map((perm) => {
+					const update = commitedPerms.find(({ refId }) => perm.refId.equals(refId));
+
+					if (update) {
+						const { write, read, create } = update;
+
+						return Object.assign(perm, sanitizeObj({
+							write,
+							read,
+							create,
+							delete: update.delete,
+						}));
+					}
+
+					return perm;
+				});
+
+				permissions = [
+					...permissions,
+					...commitedPerms
+						.filter(({ refId }) => permissions.findIndex(({ refId: id }) => id.equals(refId)) === -1)
+						.map((perm, idx) => {
+							const {
+								write,
+								read,
+								create,
+								refId,
+							} = perm;
+
+							return sanitizeObj({
+								refId,
+								refOwnerModel: refModels[idx],
+								write,
+								read,
+								create,
+								delete: perm.delete,
+							});
+						}),
+				];
 
 				return FileModel.update({ _id }, {
 					$set: { permissions },
@@ -710,9 +752,143 @@ const filePermissionService = {
 				return new Forbidden();
 			});
 	},
+	/**
+     * Returns the permissions of a file filtered by owner model
+     * and permissions based on the role of the user
+     * @returns {Promise}
+     * @param query contains the file id
+     * @param payload contains userId
+     */
+	async find({ query, payload }) {
+		const { file: fileId } = query;
+		const { userId } = payload;
+		const fileObj = await FileModel.findOne({ _id: fileId }).populate('owner').lean().exec();
+		const userObject = await userModel.findOne({ _id: userId }).populate('roles').lean().exec();
+
+		const { refOwnerModel, owner } = fileObj;
+		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
+		const rolePromises = rolePermissions
+			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
+		const isFileCreator = fileObj.permissions[0].refId.toString() === userId.toString();
+
+		const actionMap = {
+			user: () => {
+				const userPermission = fileObj.permissions
+					.filter(({ refPermModel }) => refPermModel === 'user')
+					.filter(({ refId }) => !refId.equals(userId));
+
+				return Promise.all(
+					userPermission.map(({ refId }) => userModel.findOne({ _id: refId }).exec()),
+				)
+					.then((result) => {
+						const users = result ? result.filter(u => u) : [];
+						if (users.length) {
+							return userPermission.map((perm) => {
+								const { firstName, lastName, _id } = users
+									.find(({ _id: id }) => id.equals(perm.refId));
+
+								return {
+									refId: _id,
+									name: `${firstName} ${lastName}`,
+									...perm,
+								};
+							});
+						}
+
+						return Promise.resolve([]);
+					});
+			},
+			course() {
+				const isStudent = userObject.roles.some(({ name }) => name === 'student');
+
+				return Promise.all(rolePromises)
+					.then(roles => rolePermissions
+						.map((perm) => {
+							const { name } = roles.find(({ _id }) => _id.equals(perm.refId));
+							const { read, write, refId } = perm;
+
+							const nameMap = {
+								student() {
+									return isStudent ? {
+										read,
+										write: isFileCreator ? write : undefined,
+									} : { write, read };
+								},
+								teacher() {
+									return isStudent ? {} : {
+										read,
+										write: isFileCreator ? write : undefined,
+									};
+								},
+							};
+
+							return {
+								...sanitizeObj(nameMap[name]()),
+								refId,
+								name,
+							};
+						})
+						.filter(({ name }) => {
+							if (isStudent) {
+								return name === 'student';
+							}
+							return true;
+						}));
+			},
+			teams() {
+				const { role: userRole } = owner.userIds.find(u => userId.equals(u.userId));
+
+				return Promise.all(rolePromises)
+					.then(sortRoles)
+					.then((sortedRoles) => {
+						const userPos = sortedRoles
+							.findIndex(roles => roles.findIndex(({ _id }) => _id.equals(userRole)) > -1);
+
+						return sortedRoles
+							.reduce((flat, roles, index) => {
+								if (index <= userPos) {
+									return [
+										...flat,
+										...roles.map(({ name, _id }) => ({
+											name,
+											_id,
+											sibling: index === userPos,
+										})),
+									];
+								}
+
+								return flat;
+							}, [])
+							.map(({ _id, name, sibling }) => {
+								const { read, write, refId } = rolePermissions
+									.find(({ refId: id }) => id.equals(_id));
+								const reWrite = isFileCreator ? write : undefined;
+
+								const permissions = {
+									read: sibling ? undefined : read,
+									write: sibling ? reWrite : write,
+								};
+
+								return {
+									refId,
+									name,
+									...sanitizeObj(permissions),
+								};
+							});
+					});
+			},
+		};
+
+		return canRead(userId, fileId)
+			.then(actionMap[refOwnerModel])
+			.catch((e) => {
+				logger.error(e);
+				return new Forbidden();
+			});
+	},
 };
 
-module.exports = function () {
+module.exports = function proxyService() {
 	const app = this;
 
 	// Initialize our service with any options it requires
@@ -738,10 +914,9 @@ module.exports = function () {
 		'/fileStorage/copy',
 		'/fileStorage/files/new',
 		'/fileStorage/permission',
-	].forEach((path) => {
+	].forEach((apiPath) => {
 		// Get our initialize service to that we can bind hooks
-		const service = app.service(path);
-		service.before(before);
-		service.after(after);
+		const service = app.service(apiPath);
+		service.hooks(hooks);
 	});
 };

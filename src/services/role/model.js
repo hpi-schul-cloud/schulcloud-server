@@ -1,41 +1,54 @@
-'use strict';
-
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const leanVirtuals = require('mongoose-lean-virtuals');
+
+const { Schema } = mongoose;
+
+const rolesDisplayName = {
+	teacher: 'Lehrer',
+	student: 'Schüler',
+	administrator: 'Administrator',
+	superhero: 'Schul-Cloud Admin',
+	demo: 'Demo',
+	demoTeacher: 'Demo',
+	demoStudent: 'Demo',
+	helpdesk: 'Helpdesk',
+	betaTeacher: 'Beta',
+	expert: 'Experte',
+};
 
 const roleSchema = new Schema({
-	name: {type: String, required: true},
-	permissions: [{type: String}],
+	name: { type: String, required: true },
+	permissions: [{ type: String }],
 
 	// inheritance
-	roles: [{type: Schema.Types.ObjectId}],
-},{
-	timestamps: true
+	roles: [{ type: Schema.Types.ObjectId }],
+}, {
+	timestamps: true,
 });
 
-roleSchema.methods.getPermissions = function() {
+roleSchema.methods.getPermissions = function () {
 	return roleModel.resolvePermissions([this._id]);
 };
 
-roleSchema.statics.resolvePermissions = function(roleIds) {
-	let processedRoleIds = [];
-	let permissions = new Set();
+roleSchema.statics.resolvePermissions = function (roleIds) {
+	const processedRoleIds = [];
+	const permissions = new Set();
 
 	function resolveSubRoles(roleId) {
 		return roleModel.findById(roleId)
-			.then(role => {
-				if(typeof role !== 'object'){
+			.then((role) => {
+				if (typeof role !== 'object') {
 					role = {};
 				}
-				if(Array.isArray(role.permissions)===false){
-					role.permissions=[];
+				if (Array.isArray(role.permissions) === false) {
+					role.permissions = [];
 				}
 				role.permissions.forEach(p => permissions.add(p));
-				let promises = role.roles
+				const promises = role.roles
 					.filter(id => !processedRoleIds.includes(id))
-					.map(id => {
+					.map((id) => {
 						processedRoleIds.push(id);
-						return resolveSubRoles(id);	// recursion
+						return resolveSubRoles(id); // recursion
 					});
 				return Promise.all(promises);
 			});
@@ -44,6 +57,11 @@ roleSchema.statics.resolvePermissions = function(roleIds) {
 	return Promise.all(roleIds.map(id => resolveSubRoles(id)))
 		.then(() => permissions);
 };
+
+roleSchema.virtual('displayName').get(function get() {
+	return rolesDisplayName[this.name] || '';
+});
+roleSchema.plugin(leanVirtuals);
 
 const roleModel = mongoose.model('role', roleSchema);
 

@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const { BadRequest } = require('feathers-errors');
+const { BadRequest } = require('@feathersjs/errors');
 const { setupUser, deleteUser } = require('../helper/helper.user');
 const { createHook, createHookStack } = require('../helper/helper.hook');
 const createEmailText = require('../../../../src/services/teams/hooks/mail-text.js');
@@ -19,7 +19,8 @@ describe('Team mail-text helper', () => {
 	});
 
 	describe('createEmailText', () => {
-		let hook, user;
+		let hook; let
+			user;
 		before(() => {
 			hook = createHook(app, {
 				method: 'patch',
@@ -38,10 +39,10 @@ describe('Team mail-text helper', () => {
 			};
 
 			const linkData = {
-				link:'<link>',
+				link: '<link>',
 				target: '<target>',
-				hash:'<hash>',
-				shortLink:'<shortLink>'
+				hash: '<hash>',
+				shortLink: '<shortLink>',
 			};
 
 			hookCopy.result = formatResult({
@@ -57,7 +58,7 @@ describe('Team mail-text helper', () => {
 			expect(createEmailText(hookCopy, user)).to.equal({
 
 			});
-			//todo check all results ..
+			// todo check all results ..
 		});
 	});
 });

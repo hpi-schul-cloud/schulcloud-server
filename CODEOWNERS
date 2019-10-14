@@ -1,7 +1,0 @@
-# This file defines code owners for the repository.
-# Each PR that includes changes to any file managed by a code owner will
-# require the code owner's review.
-
-CODEOWNERS              @schul-cloud/data-protection
-*model.js               @schul-cloud/data-protection
-/backup/setup/*.json    @schul-cloud/data-protection

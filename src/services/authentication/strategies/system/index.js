@@ -8,14 +8,14 @@ const defaults = {
 	passwort: '',
 	systemId: '',
 	loginStrategy: '',
-	passReqToCallback: true
+	passReqToCallback: true,
 };
 
 const KEYS = [
 	'entity',
 	'service',
 	'session',
-	'passReqToCallback'
+	'passReqToCallback',
 ];
 
 
@@ -25,21 +25,21 @@ function init(options = {}) {
 		const _super = app.setup;
 
 		if (!app.passport) {
-			throw new Error(`Can not find app.passport. Did you initialize feathers-authentication?`);
+			throw new Error('Can not find app.passport. Did you initialize feathers-authentication?');
 		}
 
-		let name = options.name || defaults.name;
-		let authOptions = app.get('auth') || {};
-		let systemOptions = authOptions[name] || {};
+		const name = options.name || defaults.name;
+		const authOptions = app.get('auth') || {};
+		const systemOptions = authOptions[name] || {};
 
 		const systemSettings = _.merge({}, defaults, _.pick(authOptions, KEYS), systemOptions, _.omit(options, ['Verifier']));
 
 		app.setup = function () {
-			let result = _super.apply(this, arguments);
-			let verifier = new Verifier(app, systemSettings);
+			const result = _super.apply(this, arguments);
+			const verifier = new Verifier(app, systemSettings);
 
 			if (!verifier.verify) {
-				throw new Error(`Your verifier must implement a 'verify' function. It should have the same signature as a local passport verify callback.`);
+				throw new Error('Your verifier must implement a \'verify\' function. It should have the same signature as a local passport verify callback.');
 			}
 
 			// Register 'system' strategy with passport
@@ -54,8 +54,8 @@ function init(options = {}) {
 // Exposed Modules
 Object.assign(init, {
 	defaults,
-	Verifier
+	Verifier,
 });
 
 exports.default = init;
-module.exports = exports['default'];
+module.exports = exports.default;

@@ -35,7 +35,7 @@ class AbstractLDAPStrategy {
      * get provider-specific search string and options to find all schools in
      * the LDAP directory
      * @abstract
-     * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName 
+     * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
      */
 	getSchools() {
 		throw new TypeError('Method has to be implemented.');

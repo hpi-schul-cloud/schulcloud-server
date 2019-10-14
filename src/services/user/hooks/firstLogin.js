@@ -1,17 +1,14 @@
-'use strict';
-
-const commonHooks = require('feathers-hooks-common');
-const globalHooks = require('../../../hooks');
-const auth = require('feathers-authentication');
+const hooks = require('feathers-hooks-common');
+const auth = require('@feathersjs/authentication');
 
 exports.before = {
 	all: [],
-	find: commonHooks.disable('external'),
-	get: commonHooks.disable('external'),
+	find: hooks.disallow('external'),
+	get: hooks.disallow('external'),
 	create: [auth.hooks.authenticate('jwt')],
-	update: commonHooks.disable('external'),
-	patch: commonHooks.disable('external'),
-	remove: commonHooks.disable('external'),
+	update: hooks.disallow('external'),
+	patch: hooks.disallow('external'),
+	remove: hooks.disallow('external'),
 };
 
 exports.after = {
@@ -21,5 +18,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: []
+	remove: [],
 };

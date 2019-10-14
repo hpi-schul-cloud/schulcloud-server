@@ -1,0 +1,66 @@
+const { /* ScopePermissionService, */ ScopeListService } = require('../../helpers/scopePermissions');
+const { courseModel } = require('../model');
+
+module.exports = function setup() {
+	const app = this;
+
+	ScopeListService.initialize(app, '/users/:scopeId/courses', async (user, permissions, params) => {
+		let filter = 'active';
+		let substitution = 'all';
+		if (params.query.filter && ['active', 'archived', 'all'].includes(params.query.filter)) {
+			({ filter } = params.query);
+		}
+		if (params.query.substitution && ['true', 'false', 'all'].includes(params.query.substitution)) {
+			({ substitution } = params.query);
+		}
+
+		const userQuery = { $or: [] };
+		if (['false', 'all'].includes(substitution)) {
+			userQuery.$or.push(
+				{ userIds: user._id },
+				{ teacherIds: user._id },
+			);
+		}
+		if (['true', 'all'].includes(substitution)) userQuery.$or.push({ substitutionIds: user._id });
+
+		const oneDayInMilliseconds = 864e5;
+		let untilQuery = {};
+		if (filter === 'active') {
+			untilQuery = {
+				$or: [
+					{ untilDate: { $exists: false } },
+					{ untilDate: null },
+					{ untilDate: { $gte: Date.now() - oneDayInMilliseconds } },
+				],
+			};
+		}
+		if (filter === 'archived') {
+			untilQuery = { untilDate: { $lt: Date.now() - oneDayInMilliseconds } };
+		}
+
+		if (params.query.count === 'true') {
+			const courseCount = await courseModel.count({
+				$and: [
+					userQuery,
+					untilQuery,
+				],
+			}).exec();
+
+			return {
+				total: courseCount,
+			};
+		}
+
+		return app.service('courses').find({
+			query: {
+				$and: [
+					userQuery,
+					untilQuery,
+				],
+				$skip: params.query.$skip,
+				$limit: params.query.$limit,
+			},
+			paginate: params.paginate,
+		});
+	});
+};
