@@ -6,6 +6,7 @@ const {
 	iff, isProvider, validateSchema, disallow,
 } = require('feathers-hooks-common');
 const { hasPermission } = require('../../../hooks');
+const { getDatasource, restrictToDatasourceSchool } = require('../hooks');
 
 const { datasourceRunCreateSchema } = require('../schemas');
 const { datasourceRunModel } = require('../model');
@@ -77,7 +78,7 @@ class DatasourceRuns {
 		const result = await datasourceRunModel.find(
 			filter,
 			'datasourceId _id status dryrun duration',
-		).sort(query.sort).skip(query.$skip).limit(query.$limit || query.$paginate.default);
+		).sort(query.sort).skip(query.$skip).limit(query.$limit);
 
 		return this.paginationLikeFormat(result, query);
 	}
@@ -110,15 +111,6 @@ class DatasourceRuns {
 	 * @param {Object} params feathers params object.
 	 */
 	async create(data, params) {
-		const datasource = await this.app.service('datasources').get(data.datasourceId);
-
-		if (params.account) {
-			const user = await this.app.service('users').get(params.account.userId);
-			if (user.schoolId.toString() !== datasource.schoolId.toString()) {
-				throw new Forbidden('You do not have valid permissions to access this.');
-			}
-		}
-
 		// set up stream for the sync log
 		let logString = '';
 		const logStream = new Writable({
@@ -131,11 +123,12 @@ class DatasourceRuns {
 		// run a syncer
 		const startTime = Date.now();
 		const result = data.data
-			? await this.app.service('sync').create({ data: data.data }, { logStream, query: datasource.config })
-			: await this.app.service('sync').find({ logStream, query: datasource.config });
+			? await this.app.service('sync').create({ data: data.data }, { logStream, query: params.datasource.config })
+			: await this.app.service('sync').find({ logStream, query: params.datasource.config });
 		const endTime = Date.now();
 
 		// determine status
+		// ToDo: status into constants
 		let status = 'Success';
 		result.forEach((e) => {
 			if (!e.success) status = 'Error';
@@ -146,8 +139,8 @@ class DatasourceRuns {
 			datasourceId: data.datasourceId,
 			status,
 			log: logString,
-			config: datasource.config,
-			schoolId: datasource.schoolId,
+			config: params.datasource.config,
+			schoolId: params.datasource.schoolId,
 			dryrun: data.dryrun || false,
 			createdBy: (params.account || {}).userId,
 			duration: endTime - startTime,
@@ -164,12 +157,6 @@ const datasourceRunService = new DatasourceRuns({
 	},
 });
 
-/**
- * hooks should be used for validation and authorisation, and very simple logic.
- * If your service requires more complicated logic, implement a custom service.
- * use disallow() to disable any methods that are not supposed to be used.
- * more hooks can be found at https://feathers-plus.github.io/v1/feathers-hooks-common/index.html#Hooks.
- */
 const datasourceRunsHooks = {
 	before: {
 		all: [
@@ -186,6 +173,8 @@ const datasourceRunsHooks = {
 				validateSchema(datasourceRunCreateSchema, Ajv),
 				hasPermission('DATASOURCES_RUN'),
 			]),
+			getDatasource,
+			iff(isProvider('external'), restrictToDatasourceSchool),
 		],
 		update: [
 			disallow(),
