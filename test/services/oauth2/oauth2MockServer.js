@@ -30,10 +30,6 @@ module.exports = function oauth2MockServer({
 			});
 		});
 
-		mockOauth.post('/oauth2/setLtiTools', (req, res) => {
-			mockOauth.ltiTool = req.body.ltiTool;
-		});
-
 		mockOauth.get('/oauth2/auth/requests/login', (req, res) => {
 			const loginRequest = {
 				challenge: null,
