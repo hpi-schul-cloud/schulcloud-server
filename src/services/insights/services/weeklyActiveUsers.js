@@ -29,7 +29,7 @@ function dataMassager(cubeJsData, totalUsers) {
 	return data;
 }
 
-function generateUri() {
+function generateUri(schoolId = '') {
 	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
 	const query = `query={
         "measures": [
@@ -45,7 +45,7 @@ function generateUri() {
           {
             "dimension": "Actor.school_id",
             "operator": "contains",
-            "values": []
+            "values": [${schoolId}]
           }
         ],
         "dimensions": [
@@ -63,6 +63,7 @@ function generateUri() {
 
 class WeeklyActiveUsers {
 	async find(data, params) {
+		const { schoolId } = data;
 		const options = {
 			uri: generateUri(),
 			method: 'GET',

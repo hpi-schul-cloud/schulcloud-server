@@ -13,7 +13,7 @@ function dataMassager(cubeJsDataThis, cubeJsDataLast) {
 	return data;
 }
 
-function generateUri(querySort) {
+function generateUri(querySort, schoolId = '') {
 	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
 	const query = `query={
 			"measures": [
@@ -25,7 +25,7 @@ function generateUri(querySort) {
 			"dateRange": "${querySort} week"
 			}
 			],
-			"filters": []
+			"values": [${schoolId}]
 			}`;
 	return `${cubeJsUri}${query}`;
 }
@@ -33,12 +33,13 @@ function generateUri(querySort) {
 
 class WeeklyUsers {
 	async find(data, params) {
+		const { schoolId } = data;
 		const thisOptions = {
-			uri: generateUri('This'),
+			uri: generateUri('This', schoolId),
 			method: 'GET',
 		};
 		const lastOptions = {
-			uri: generateUri('Last'),
+			uri: generateUri('Last', schoolId),
 			method: 'GET',
 		};
 		const cubeJsDataThis = await request(thisOptions);
