@@ -76,7 +76,7 @@ describe('oauth2 service', function oauthTest() {
 	};
 
 	// let redirectTo = null;
-	const hydraUri = app.settings.services.hydra;
+	const beforeHydraUri = app.settings.services.hydra;
 	before(async () => {
 		this.timeout(10000);
 
