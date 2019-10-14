@@ -63,7 +63,6 @@ function generateUri(schoolId = '') {
 
 class WeeklyActiveUsers {
 	async find(data, params) {
-		console.log(data, 'data');
 		const { schoolId } = data.query;
 		const options = {
 			uri: generateUri(),

@@ -37,7 +37,7 @@ function generateUri(schoolId = '') {
 
 class DauOverMau {
 	async find(data, params) {
-		const { schoolId } = data;
+		const { schoolId } = data.query;
 		const options = {
 			uri: generateUri(),
 			method: 'GET',

@@ -50,7 +50,7 @@ function generateUri(schoolId = '') {
 
 class WeeklyActivity {
 	async find(data, params) {
-		const { schoolId } = data;
+		const { schoolId } = data.query;
 		const options = {
 			uri: generateUri(schoolId),
 			method: 'GET',
