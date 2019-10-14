@@ -18,8 +18,9 @@ const generateRequestParams = (app) => async ({ username, password }) => {
 	const fetchJwt = generateJWT(app);
 	const jwt = await fetchJwt({ username, password });
 	return {
-		headers: {
-			authorization: `Bearer ${jwt}`,
+		authentication: {
+			accessToken: jwt,
+			strategy: 'jwt',
 		},
 		provider: 'rest',
 	};

@@ -1,5 +1,5 @@
 const hooks = require('feathers-hooks-common');
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
 
 const globalHooks = require('../../../hooks');
@@ -31,7 +31,7 @@ const checkPermissions = async (hook) => {
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [authenticate('jwt')],
 	find: [hooks.disallow()],
 	get: [hooks.disallow()],
 	create: [globalHooks.ifNotLocal(checkPermissions)],
