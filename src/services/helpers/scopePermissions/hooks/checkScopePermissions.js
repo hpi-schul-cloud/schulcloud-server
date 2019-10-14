@@ -1,5 +1,5 @@
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
-const { resolveScope } = require('./resolveScope');
+const { resolveScope } = require('./util/resolveScope');
 
 const getScope = async (context) => {
 	const { scopeName, scopeId } = await resolveScope(context);

@@ -1,5 +1,5 @@
 const { BadRequest } = require('@feathersjs/errors');
-const { resolveScope } = require('./resolveScope');
+const { resolveScope } = require('./util/resolveScope');
 
 const lookupScope = async (context) => {
 	if (context.params === undefined || context.params.route === undefined || context.path === undefined) {
