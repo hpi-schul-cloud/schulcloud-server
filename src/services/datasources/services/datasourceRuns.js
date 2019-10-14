@@ -10,6 +10,7 @@ const { getDatasource, restrictToDatasourceSchool } = require('../hooks');
 
 const { datasourceRunCreateSchema } = require('../schemas');
 const { datasourceRunModel } = require('../model');
+const { SUCCESS, ERROR } = require('../constants');
 
 class DatasourceRuns {
 	constructor(options) {
@@ -129,9 +130,9 @@ class DatasourceRuns {
 
 		// determine status
 		// ToDo: status into constants
-		let status = 'Success';
+		let status = SUCCESS;
 		result.forEach((e) => {
-			if (!e.success) status = 'Error';
+			if (!e.success) status = ERROR;
 		});
 
 		// save to database
