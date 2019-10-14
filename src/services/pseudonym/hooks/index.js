@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
+const oauth2 = require('../../oauth2/hooks');
 
 const toArray = (data) => (Array.isArray(data) ? data : [data]);
 
@@ -68,6 +69,9 @@ const populateUsername = (context) => {
 				user: {
 					firstName: response.firstName,
 					lastName: response.lastName,
+					iframe: oauth2.getSubject(context.result.data[0].pseudonym,
+						context.app.settings.services.web
+					),
 				},
 			};
 			return context;
