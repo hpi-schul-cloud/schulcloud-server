@@ -4,7 +4,7 @@ const chaiHttp = require('chai-http');
 
 // proxyserver
 const oauth2Server = require('./oauth2MockServer');
-const oauth2 = require('../../../src/services/oauth2/index.js');
+const oauth2 = require('../../../src/services/oauth2');
 
 const app = require('../../../src/app');
 const logger = require('../../../src/logger/');
