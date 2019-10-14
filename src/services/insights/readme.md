@@ -87,7 +87,7 @@ Status 200 `OK`
 expected result:
 ```
 {
-teacher: String, // eg: "42"
+dauToMau: String, // eg: "42"
 }
 ```
 Status 200 `OK`
