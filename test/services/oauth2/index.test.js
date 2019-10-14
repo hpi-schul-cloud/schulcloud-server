@@ -140,7 +140,7 @@ describe('oauth2 service', function oauthTest() {
 			account: { userId: testUser2._id },
 		});
 		// redirectTo = result.redirect_to;
-		assert.ok(results.redirect_to.indexOf(testClient2.client_id) !== -1);
+		assert.ok(results.redirect_to.includes(testClient2.client_id));
 		app.service('pseudonym').remove(pseudonym._id);
 		app.service('ltiTools').remove(ltiTool._id);
 	});
