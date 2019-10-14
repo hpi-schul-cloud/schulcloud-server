@@ -35,8 +35,8 @@ const datasourceHooks = {
 		get: [iff(isProvider('external'), hasPermission('DATASOURCES_VIEW'))],
 		create: [
 			iff(isProvider('external'), [
-				hasPermission('DATASOURCES_CREATE'),
 				restrictToCurrentSchool,
+				hasPermission('DATASOURCES_CREATE'),
 				validateSchema(datasourcesCreateSchema, Ajv),
 				createdBy,
 			]),
