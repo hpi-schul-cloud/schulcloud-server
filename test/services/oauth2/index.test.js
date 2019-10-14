@@ -89,7 +89,7 @@ describe('oauth2 service', function oauthTest() {
 
 	after((done) => {
 		// sets uri back to original uri
-		app.settings.services.hydra = hydraUri;
+		app.settings.services.hydra = beforeHydraUri;
 		done();
 	});
 
