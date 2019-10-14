@@ -76,7 +76,7 @@ describe('oauth2 service', function oauthTest() {
 	};
 
 	// let redirectTo = null;
-	const hydraUri = app.settings.services.hydra;
+	const beforeHydraUri = app.settings.services.hydra;
 	before(async () => {
 		this.timeout(10000);
 
@@ -89,7 +89,7 @@ describe('oauth2 service', function oauthTest() {
 
 	after((done) => {
 		// sets uri back to original uri
-		app.settings.services.hydra = hydraUri;
+		app.settings.services.hydra = beforeHydraUri;
 		done();
 	});
 
@@ -140,7 +140,7 @@ describe('oauth2 service', function oauthTest() {
 			account: { userId: testUser2._id },
 		});
 		// redirectTo = result.redirect_to;
-		assert.ok(results.redirect_to.indexOf(testClient2.client_id) !== -1);
+		assert.ok(results.redirect_to.includes(testClient2.client_id));
 		app.service('pseudonym').remove(pseudonym._id);
 		app.service('ltiTools').remove(ltiTool._id);
 	});
