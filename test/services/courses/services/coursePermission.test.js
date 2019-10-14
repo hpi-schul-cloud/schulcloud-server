@@ -48,6 +48,7 @@ describe('PermissionService', async () => {
 		'USER_CREATE',
 		'USERGROUP_CREATE',
 		'USERGROUP_EDIT',
+		'SCOPE_PERMISSIONS_VIEW',
 		...studentPermissions,
 	];
 
@@ -65,6 +66,7 @@ describe('PermissionService', async () => {
 		'USER_CREATE',
 		'USERGROUP_CREATE',
 		'USERGROUP_EDIT',
+		'SCOPE_PERMISSIONS_VIEW',
 		...studentPermissions,
 	];
 

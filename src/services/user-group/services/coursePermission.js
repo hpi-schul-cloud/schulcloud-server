@@ -48,13 +48,13 @@ const setup = (app) => {
 			return getPermissions(courseRoles.administrator);
 		}
 
-		if (course.teacherIds.some(compareIds(userId))) {
+		if ((course.teacherIds || []).some(compareIds(userId))) {
 			return getPermissions(courseRoles.teacher);
 		}
-		if (course.substitutionIds.some(compareIds(userId))) {
+		if ((course.substitutionIds || []).some(compareIds(userId))) {
 			return getPermissions(courseRoles.substitutionTeacher);
 		}
-		if (course.userIds.some(compareIds(userId))) {
+		if ((course.userIds || []).some(compareIds(userId))) {
 			return getPermissions(courseRoles.student);
 		}
 		throw new Forbidden(`User ${userId} ist nicht Teil des Kurses`);

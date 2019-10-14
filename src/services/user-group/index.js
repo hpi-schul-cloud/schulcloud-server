@@ -11,6 +11,7 @@ const courseCopyService = require('./services/course-copy-service');
 const courseScopelistService = require('./services/courseScopeLists');
 const ClassSuccessorService = require('./services/classSuccessor');
 const { setup: coursePermissionService } = require('./services/coursePermission');
+const { setup: courseMembersService } = require('./services/courseMembers');
 const classHooks = require('./hooks/classes');
 const classSuccessorHooks = require('./hooks/classSuccessor');
 
@@ -74,4 +75,5 @@ module.exports = function () {
 
 	app.configure(courseScopelistService);
 	app.configure(coursePermissionService);
+	app.configure(courseMembersService);
 };
