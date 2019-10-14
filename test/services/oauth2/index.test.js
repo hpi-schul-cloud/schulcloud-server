@@ -1,8 +1,7 @@
 const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-// const oauth2 = require('simple-oauth2');
-// const request = require('request-promise-native');
+
 // proxyserver
 const oauth2Server = require('./oauth2MockServer');
 const oauth2 = require('../../../src/services/oauth2/index.js');
@@ -15,7 +14,6 @@ const clientsService = app.service('oauth2/clients');
 const loginService = app.service('oauth2/loginRequest');
 const introspectService = app.service('oauth2/introspect');
 const consentService = app.service('oauth2/auth/sessions/consent');
-const toolService = app.service('ltiTools');
 
 const testObjects = require('../helpers/testObjects')(app);
 
@@ -77,15 +75,13 @@ describe('oauth2 service', function oauthTest() {
 		key: '1',
 	};
 
-	const loginRequest1 = null;
-	const loginRequest2 = null;
 	// let redirectTo = null;
 	const hydraUri = app.settings.services.hydra;
 	before(async () => {
 		this.timeout(10000);
 
 		const o2mock = await oauth2Server({});
-		app.settings.services.hydra = o2mock.url; // revert to old value do this in after hook
+		app.settings.services.hydra = o2mock.url;
 
 		app.configure(oauth2);
 	});
@@ -94,16 +90,7 @@ describe('oauth2 service', function oauthTest() {
 	after((done) => {
 		// sets uri back to original uri
 		app.settings.services.hydra = hydraUri;
-		Promise.all([
-			toolService.remove(testTool1._id),
-			toolService.remove(testTool2._id),
-			clientsService.remove(testClient2.client_id),
-		]).then(() => {
-			done();
-		}).catch((err) => {
-			logger.warning('Can not execute oauth2 after all hook.', err);
-			done();
-		});
+		done();
 	});
 
 	it('is registered', () => {
@@ -131,8 +118,8 @@ describe('oauth2 service', function oauthTest() {
 		assert(true);
 	}));
 
-	it('GET Login Request', () => app.service('oauth2/loginRequest').get(loginRequest1).then((result) => {
-		assert.strictEqual(result.challenge, loginRequest1);
+	it('GET Login Request', () => app.service('oauth2/loginRequest').get(null).then((result) => {
+		assert.strictEqual(result.challenge, null);
 	}));
 
 	it('PATCH Login Request Accept', async () => {
@@ -148,7 +135,7 @@ describe('oauth2 service', function oauthTest() {
 			tooldId: ltiTool._id,
 			pseudonym: 'somePseudonym',
 		});
-		const results = await app.service('oauth2/loginRequest').patch(loginRequest1, {}, {
+		const results = await app.service('oauth2/loginRequest').patch(null, {}, {
 			query: { accept: 1 },
 			account: { userId: testUser2._id },
 		});
@@ -158,7 +145,7 @@ describe('oauth2 service', function oauthTest() {
 		app.service('ltiTools').remove(ltiTool._id);
 	});
 
-	it('PATCH Login Request Reject', () => app.service('oauth2/loginRequest').patch(loginRequest2, {}, {
+	it('PATCH Login Request Reject', () => app.service('oauth2/loginRequest').patch(null, {}, {
 		query: { accept: 0 },
 		account: { userId: '0000d224816abba584714c9c' },
 	}).then(() => {
@@ -198,5 +185,3 @@ describe('oauth2 service', function oauthTest() {
 		assert.strictEqual(404, err.statusCode);
 	}));
 });
-
-// TODO reset values and fix last patch. issues in hooks?
