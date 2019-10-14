@@ -121,11 +121,16 @@ class DatasourceRuns {
 			},
 		});
 
+		const dryrun = data.dryrun || false;
+
 		// run a syncer
 		const startTime = Date.now();
 		const result = data.data
-			? await this.app.service('sync').create({ data: data.data }, { logStream, query: params.datasource.config })
-			: await this.app.service('sync').find({ logStream, query: params.datasource.config });
+			? await this.app.service('sync').create(
+				{ data: data.data },
+				{ logStream, query: params.datasource.config, dryrun },
+			)
+			: await this.app.service('sync').find({ logStream, query: params.datasource.config, dryrun });
 		const endTime = Date.now();
 
 		// determine status
@@ -142,7 +147,7 @@ class DatasourceRuns {
 			log: logString,
 			config: params.datasource.config,
 			schoolId: params.datasource.schoolId,
-			dryrun: data.dryrun || false,
+			dryrun,
 			createdBy: (params.account || {}).userId,
 			duration: endTime - startTime,
 		};
