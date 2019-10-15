@@ -34,7 +34,7 @@ exports.getUpdatedSchoolIdArray = (team, user) => {
  * @param {*} team
  * @param {*} email
  */
-exports.removeInvitedUserByEmail = (team, email) => team.invitedUserIds.filter(user => user.email !== email);
+exports.removeInvitedUserByEmail = (team, email) => team.invitedUserIds.filter((user) => user.email !== email);
 
 /**
  * @param {*} app

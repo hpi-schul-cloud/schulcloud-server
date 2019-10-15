@@ -53,7 +53,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 						roles.push('administrator');
 					}
 					if (roles.length === 0) {
-						const ignoredUser = obj.memberOf.some(item => this.config.providerOptions.IgnoreMembershipPath.includes(item));
+						const ignoredUser = obj.memberOf.some((item) => this.config.providerOptions.IgnoreMembershipPath.includes(item));
 						if (ignoredUser || !obj.mail || !obj.givenName || !obj.sn || !obj.uuid || !obj.uid) {
 							return;
 						}

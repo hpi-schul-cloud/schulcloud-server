@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -10,6 +11,7 @@ const userSchema = new Schema({
 	rcId: { type: String, required: true },
 	authToken: { type: String },
 }, { timestamps: true });
+enableAuditLog(userSchema);
 
 const channelSchema = new Schema({
 	teamId: {
@@ -17,6 +19,7 @@ const channelSchema = new Schema({
 	}, // toDo: make flexible reference, example see fileStorage
 	channelName: { type: String, required: true },
 }, { timestamps: true });
+enableAuditLog(channelSchema);
 
 const userModel = mongoose.model('rocketChatUser', userSchema);
 const channelModel = mongoose.model('rocketChatChannel', channelSchema);

@@ -1,5 +1,5 @@
 const hooks = require('feathers-hooks-common');
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 
@@ -7,7 +7,7 @@ const globalHooks = require('../../../hooks');
 
 
 const userIsInTeam = (userId, team) => {
-	const user = team.userIds.find(el => el.userId.toString() === userId.toString());
+	const user = team.userIds.find((el) => el.userId.toString() === userId.toString());
 	return (user !== undefined);
 };
 
@@ -22,15 +22,9 @@ const checkTeam = async (hook) => {
 	return hook;
 };
 
-const ensureCurrentUserInChannel = async (hook) => {
-	await hook.app.service('rocketChat/channel').addUsersToChannel([hook.params.account.userId], hook.id)
-		.catch(err => logger.warning(err));
-	return hook;
-};
-
 const rocketChatUserHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [authenticate('jwt')],
 		find: [],
 		get: [],
 		create: [hooks.disallow()],
@@ -51,7 +45,7 @@ const rocketChatUserHooks = {
 
 const rocketChatLoginHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [authenticate('jwt')],
 		find: [hooks.disallow()],
 		get: [],
 		create: [hooks.disallow()],
@@ -72,7 +66,7 @@ const rocketChatLoginHooks = {
 
 const rocketChatLogoutHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [authenticate('jwt')],
 		find: [hooks.disallow()],
 		get: [],
 		create: [hooks.disallow()],
@@ -93,9 +87,9 @@ const rocketChatLogoutHooks = {
 
 const rocketChatChannelHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [authenticate('jwt')],
 		find: [hooks.disallow()],
-		get: [checkTeam, globalHooks.ifNotLocal(ensureCurrentUserInChannel)],
+		get: [checkTeam],
 		create: [hooks.disallow()],
 		update: [hooks.disallow()],
 		patch: [hooks.disallow()],

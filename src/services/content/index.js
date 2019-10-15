@@ -18,7 +18,7 @@ class ResourcesService {
 			json: true,
 			timeout: REQUEST_TIMEOUT,
 		};
-		return request(options).then(message => message);
+		return request(options).then((message) => message);
 	}
 
 	get(id) {
@@ -28,7 +28,7 @@ class ResourcesService {
 			json: true,
 			timeout: REQUEST_TIMEOUT,
 		};
-		return request(options).then(message => message);
+		return request(options).then((message) => message);
 	}
 
 	setup(app, path) {
@@ -49,7 +49,7 @@ class SearchService {
 			json: true,
 			timeout: REQUEST_TIMEOUT,
 		};
-		return request(options).then(message => message);
+		return request(options).then((message) => message);
 	}
 
 	setup(app, path) {

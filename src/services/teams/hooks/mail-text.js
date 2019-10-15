@@ -29,10 +29,10 @@ const isNewRegistration = (linkData, user) => {
 	return link.includes(`?importHash=${user.importHash || linkData.hash}`);
 };
 
-const err = str => `[Fehler: ${str}]`;
+const err = (str) => `[Fehler: ${str}]`;
 const getName = (user = {}) => `${user.firstName} ${user.lastName}`;
 const getEmail = ({ email, user, usernameInviter }) => email || (user || {}).email || usernameInviter || err('Eingeladener');
-const getTeamName = team => team.name || err('Teamname');
+const getTeamName = (team) => team.name || err('Teamname');
 const getShortLink = (linkData = {}) => linkData.shortLink || err('Link');
 
 module.exports = (hook, inviter) => {

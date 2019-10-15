@@ -37,7 +37,7 @@ const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI
 const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || false;
 
 const sanitizeObj = (obj) => {
-	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
+	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
 	return obj;
 };
 
@@ -133,9 +133,9 @@ const fileStorageService = {
 		if (parent) {
 			return canCreate(userId, parent)
 				.then(() => FileModel.findOne(props).lean().exec().then(
-					modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
+					(modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 				))
-				.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file))
+				.then((file) => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file))
 				.catch((err) => {
 					throw new Forbidden(err);
 				});
@@ -143,8 +143,8 @@ const fileStorageService = {
 
 		return FileModel.findOne(props)
 			.exec()
-			.then(modelData => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-			.then(file => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file));
+			.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
+			.then((file) => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file));
 	},
 
 	/**
@@ -161,13 +161,13 @@ const fileStorageService = {
 
 		return parentPromise
 			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).exec())
-			.then(files => Promise.all(files.map(
-				f => canRead(userId, f)
+			.then((files) => Promise.all(files.map(
+				(f) => canRead(userId, f)
 					.then(() => f)
 					.catch(() => undefined),
 			)))
-			.then(allowedFiles => allowedFiles.filter(f => f))
-			.catch(err => Promise.reject(err));
+			.then((allowedFiles) => allowedFiles.filter((f) => f))
+			.catch((err) => Promise.reject(err));
 	},
 
 	/**
@@ -195,7 +195,7 @@ const fileStorageService = {
 			})
 			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
 			.then(() => fileInstance.remove().lean().exec())
-			.catch(err => err);
+			.catch((err) => err);
 	},
 	/**
 	 * Move file from one parent to another
@@ -219,7 +219,7 @@ const fileStorageService = {
 			if (teamObject) {
 				return new Promise((resolve, reject) => {
 					const teamMember = teamObject.userIds.find(
-						u => u.userId.toString() === userId.toString(),
+						(u) => u.userId.toString() === userId.toString(),
 					);
 					if (teamMember) {
 						return resolve();
@@ -253,7 +253,7 @@ const fileStorageService = {
 
 		return permissionPromise()
 			.then(() => FileModel.update({ _id }, update).exec())
-			.catch(err => new Forbidden(err));
+			.catch((err) => new Forbidden(err));
 	},
 };
 
@@ -288,7 +288,7 @@ const signedUrlService = {
 			/^\.Trash-.*$/,
 			/^\.fuse_hidden.*$/,
 			/^\..*$/,
-		].some(rx => rx.test(fileName));
+		].some((rx) => rx.test(fileName));
 	},
 
 	/**
@@ -333,7 +333,7 @@ const signedUrlService = {
 					header,
 				};
 			})
-			.catch(err => new Forbidden(err));
+			.catch((err) => new Forbidden(err));
 	},
 
 	async find({ query, payload: { userId, fileStorageType } }) {
@@ -355,10 +355,10 @@ const signedUrlService = {
 				localFileName: fileObject.name,
 				download,
 			}))
-			.then(res => ({
+			.then((res) => ({
 				url: res,
 			}))
-			.catch(err => new Forbidden(err));
+			.catch((err) => new Forbidden(err));
 	},
 
 	async patch(id, data, params) {
@@ -379,10 +379,10 @@ const signedUrlService = {
 				flatFileName: fileObject.storageFileName,
 				action: 'putObject',
 			}))
-			.then(signedUrl => ({
+			.then((signedUrl) => ({
 				url: signedUrl,
 			}))
-			.catch(err => new Forbidden(err));
+			.catch((err) => new Forbidden(err));
 	},
 };
 
@@ -417,7 +417,7 @@ const directoryService = {
 			/^Temporary Items$/,
 			/^Network Trash Folder$/,
 			/^ *$/,
-		].some(rx => rx.test(fileName));
+		].some((rx) => rx.test(fileName));
 	},
 
 	getStudentRoleId() {
@@ -425,7 +425,7 @@ const directoryService = {
 			.select('_id')
 			.lean()
 			.exec()
-			.then(role => role._id);
+			.then((role) => role._id);
 	},
 
 	/**
@@ -476,14 +476,14 @@ const directoryService = {
 				.then(() => this.directoryExists({
 					name, owner, parent, userId,
 				}).then(
-					_data => (_data ? Promise.resolve(_data) : FileModel.create(props)),
-				)).catch(err => new Forbidden(err));
+					(_data) => (_data ? Promise.resolve(_data) : FileModel.create(props)),
+				)).catch((err) => new Forbidden(err));
 		}
 
 		return this.directoryExists({
 			name, owner, parent, userId,
 		}).then(
-			_data => (_data ? Promise.resolve(_data) : FileModel.create(props)),
+			(_data) => (_data ? Promise.resolve(_data) : FileModel.create(props)),
 		);
 	},
 
@@ -502,13 +502,13 @@ const directoryService = {
 		});
 
 		return FileModel.find(params).exec()
-			.then(files => Promise.all(files.map(
-				f => canRead(userId, f)
+			.then((files) => Promise.all(files.map(
+				(f) => canRead(userId, f)
 					.then(() => f)
 					.catch(() => undefined),
 			)))
 			.then((allowedFiles) => {
-				const files = allowedFiles.filter(f => f);
+				const files = allowedFiles.filter((f) => f);
 				return files.length
 					? files
 					: new NotFound();
@@ -533,7 +533,7 @@ const directoryService = {
 				return FileModel.find({ parent: _id }).remove().lean().exec();
 			})
 			.then(() => fileInstance.remove().lean().exec())
-			.catch(err => new Forbidden(err));
+			.catch((err) => new Forbidden(err));
 	},
 };
 
@@ -563,7 +563,7 @@ const renameService = {
 				}
 				return FileModel.update({ _id }, { name: newName }).exec();
 			})
-			.catch(err => new Forbidden(err));
+			.catch((err) => new Forbidden(err));
 	},
 };
 
@@ -578,7 +578,7 @@ const fileTotalSizeService = {
      */
 	find() {
 		return FileModel.find({}).exec()
-			.then(files => ({
+			.then((files) => ({
 				total: files.length,
 				totalSize: files.reduce((sum, file) => sum + file.size, 0),
 			}));
@@ -781,7 +781,7 @@ const filePermissionService = {
 					userPermission.map(({ refId }) => userModel.findOne({ _id: refId }).exec()),
 				)
 					.then((result) => {
-						const users = result ? result.filter(u => u) : [];
+						const users = result ? result.filter((u) => u) : [];
 						if (users.length) {
 							return userPermission.map((perm) => {
 								const { firstName, lastName, _id } = users
@@ -802,7 +802,7 @@ const filePermissionService = {
 				const isStudent = userObject.roles.some(({ name }) => name === 'student');
 
 				return Promise.all(rolePromises)
-					.then(roles => rolePermissions
+					.then((roles) => rolePermissions
 						.map((perm) => {
 							const { name } = roles.find(({ _id }) => _id.equals(perm.refId));
 							const { read, write, refId } = perm;
@@ -836,13 +836,13 @@ const filePermissionService = {
 						}));
 			},
 			teams() {
-				const { role: userRole } = owner.userIds.find(u => userId.equals(u.userId));
+				const { role: userRole } = owner.userIds.find((u) => userId.equals(u.userId));
 
 				return Promise.all(rolePromises)
 					.then(sortRoles)
 					.then((sortedRoles) => {
 						const userPos = sortedRoles
-							.findIndex(roles => roles.findIndex(({ _id }) => _id.equals(userRole)) > -1);
+							.findIndex((roles) => roles.findIndex(({ _id }) => _id.equals(userRole)) > -1);
 
 						return sortedRoles
 							.reduce((flat, roles, index) => {

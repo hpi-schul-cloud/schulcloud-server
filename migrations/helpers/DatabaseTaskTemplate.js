@@ -63,13 +63,13 @@ class DatabaseTaskTemplate {
 		return model[operation](this.getId(), this.get())
 			.then(() => {
 				if (log) {
-					return testLogger(log).pushModified(this.id);
+					return testLogger(log).pushModified(this.getId());
 				}
 				return true;
 			})
 			.catch((err) => {
 				if (log) {
-					return testLogger(log).pushFail(this.id, err);
+					return testLogger(log).pushFail(this.getId(), err);
 				}
 				return false;
 			});
