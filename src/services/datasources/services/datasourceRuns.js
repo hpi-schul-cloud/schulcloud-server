@@ -153,7 +153,7 @@ class DatasourceRuns {
 		};
 		const modelResult = await datasourceRunModel.create(dsrData);
 
-		await this.app.service('datasources').patch(params.datasource._id, { lastRun: Date.now() });
+		await this.app.service('datasources').patch(params.datasource._id, { lastRun: endTime, lastStatus: status });
 
 		return Promise.resolve(modelResult);
 	}

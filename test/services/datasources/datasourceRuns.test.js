@@ -105,6 +105,7 @@ describe('datasourceRuns service', () => {
 		const updatedDatasource = await app.service('datasources').get(datasource._id);
 		expect(updatedDatasource).to.not.equal(undefined);
 		expect(updatedDatasource.lastRun.getTime()).to.be.greaterThan(beforeRun);
+		expect(updatedDatasource.lastStatus).to.equal(run.status);
 
 		await datasourceRunModel.deleteOne({ _id: run._id }).lean().exec();
 	});
