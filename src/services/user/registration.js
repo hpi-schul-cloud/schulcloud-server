@@ -264,7 +264,7 @@ const registerUser = function register(data, params, app) {
 module.exports = function setup(app) {
 	class RegistrationService {
 		constructor() {
-			this.docs = docs;
+
 		}
 
 		create(data, params) {
