@@ -8,20 +8,11 @@ module.exports = function swaggerSetup(app) {
 		basePath: '/',
 		host: '',
 		uiIndex: path.join(__dirname, 'swagger.html'),
-		securityDefinitions: {
-			bearer: {
-				type: 'apiKey',
-				name: 'Authorization',
-				in: 'header',
-			},
-		},
-		security: [
-			{
-				bearer: [],
-			},
-		],
 		openApiVersion: 3,
 		specs: {
+			security: [
+				{ jwtBearer: [] },
+			],
 			schemes: ['http', 'https'],
 			info: {
 				title: 'Schul-Cloud API',
@@ -36,6 +27,15 @@ module.exports = function swaggerSetup(app) {
 					url: 'https://github.com/schulcloud/schulcloud-server/blob/master/LICENSE',
 				},
 				version: '0.0.1',
+			},
+			components: {
+				securitySchemes: {
+					jwtBearer: {
+						type: 'http',
+						scheme: 'bearer',
+						bearerFormat: 'JWT',
+					},
+				},
 			},
 		},
 	}));
