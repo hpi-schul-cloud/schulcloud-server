@@ -34,7 +34,7 @@ describe('SkipRegistration integration', () => {
 		} catch (err) {
 			expect(err).to.not.equal('undefined');
 			expect(err.code).to.equal(401);
-			expect(err.message).to.equal('No auth token');
+			expect(err.message).to.equal('Not authenticated');
 		}
 	});
 

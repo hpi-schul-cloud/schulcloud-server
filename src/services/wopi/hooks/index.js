@@ -1,6 +1,6 @@
 /* eslint-disable no-multi-spaces */
 const { BadRequest, Conflict, NotFound } = require('@feathersjs/errors');
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { FileModel } = require('../../fileStorage/model');
 
 /**
@@ -28,7 +28,7 @@ const wopiAuthentication = (hook) => {
 		jwt = jwt.slice(0, jwt.indexOf('?permission'));
 	}
 	hook.params.headers.authorization = jwt.replace('Bearer ', '');
-	return auth.hooks.authenticate('jwt')(hook);
+	return authenticate('jwt')(hook);
 };
 /**
  * All editing (POST, PATCH, DELETE) actions should include the wopi-override header!

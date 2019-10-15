@@ -1,5 +1,5 @@
 const hooks = require('feathers-hooks-common');
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 
@@ -24,7 +24,7 @@ const checkTeam = async (hook) => {
 
 const rocketChatUserHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [authenticate('jwt')],
 		find: [],
 		get: [],
 		create: [hooks.disallow()],
@@ -45,7 +45,7 @@ const rocketChatUserHooks = {
 
 const rocketChatLoginHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [authenticate('jwt')],
 		find: [hooks.disallow()],
 		get: [],
 		create: [hooks.disallow()],
@@ -66,7 +66,7 @@ const rocketChatLoginHooks = {
 
 const rocketChatLogoutHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [authenticate('jwt')],
 		find: [hooks.disallow()],
 		get: [],
 		create: [hooks.disallow()],
@@ -87,7 +87,7 @@ const rocketChatLogoutHooks = {
 
 const rocketChatChannelHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [authenticate('jwt')],
 		find: [hooks.disallow()],
 		get: [checkTeam],
 		create: [hooks.disallow()],
