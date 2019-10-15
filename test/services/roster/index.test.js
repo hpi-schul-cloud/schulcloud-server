@@ -11,14 +11,14 @@ const pseudonymService = app.service('pseudonym');
 const toolService = app.service('ltiTools');
 const coursesService = app.service('courses');
 
+const { cleanup, createTestUser } = require('../helpers/testObjects')(app);
+
 chai.use(chaiHttp);
 
-describe('roster service', function oauth() {
+describe('roster service', async function oauth() {
 	this.timeout(10000);
 
-	const testUser1 = {
-		_id: '0000d231816abba584714c9e',
-	};
+	const testUser1 = await createTestUser();
 
 	const testTool1 = {
 		_id: '5a79cb15c3874f9aea14daa5',
@@ -74,6 +74,7 @@ describe('roster service', function oauth() {
 			pseudonymService.remove(null, { query: {} }),
 			toolService.remove(testTool1),
 			coursesService.remove(testCourse),
+			cleanup(),
 		]).then((results) => {
 			done();
 		});
