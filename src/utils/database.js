@@ -27,19 +27,6 @@ function enableAuditLog(schema, options) {
 	}
 }
 
-function addAuthenticationToOptions(DB_USERNAME, DB_PASSWORD, options) {
-	const auth = {};
-	if (DB_USERNAME) {
-		auth.user = DB_USERNAME;
-	}
-	if (DB_PASSWORD) {
-		auth.password = DB_PASSWORD;
-	}
-	if (DB_USERNAME || DB_PASSWORD) {
-		options.auth = auth;
-	}
-}
-
 function getConnectionOptions() {
 	// read env params
 	const {
@@ -69,11 +56,6 @@ function connect() {
 		options.url,
 		options.username ? `with username ${options.username}` : 'without user',
 		options.password ? 'and' : 'and without', 'password');
-
-	addAuthenticationToOptions(
-		options.username,
-		options.password,
-	);
 
 	return mongoose.connect(
 		options.url,
