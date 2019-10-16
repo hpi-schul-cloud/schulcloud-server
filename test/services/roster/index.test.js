@@ -11,8 +11,6 @@ const pseudonymService = app.service('pseudonym');
 const toolService = app.service('ltiTools');
 const coursesService = app.service('courses');
 
-const { cleanup, createTestUser } = require('../helpers/testObjects')(app);
-
 chai.use(chaiHttp);
 
 describe('roster service', function oauth() {
@@ -25,9 +23,8 @@ describe('roster service', function oauth() {
 
 	let pseudonym1 = null;
 
-	before(async (done) => {
-		this.timeout(10000);
-		testUser1 = await createTestUser();
+	before(() => {
+		testUser1 = { _id: '0000d231816abba584714c9e' }; // cord carl
 		testTool1 = {
 			_id: '5a79cb15c3874f9aea14daa5',
 			name: 'test1',
@@ -55,27 +52,24 @@ describe('roster service', function oauth() {
 			],
 			shareToken: 'xxx',
 		};
-		Promise.all([
+		return Promise.all([
 			toolService.create(testTool1),
 			coursesService.create(testCourse),
-		]).then(() => {
-			pseudonymService.find({
-				query: {
-					userId: testUser1._id,
-					toolId: testTool1._id,
-				},
-			}).then((pseudonym) => {
-				pseudonym1 = pseudonym.data[0].pseudonym;
-				done();
-			});
-		});
+		]).then(() => pseudonymService.find({
+			query: {
+				userId: testUser1._id,
+				toolId: testTool1._id,
+			},
+		}).then((pseudonym) => {
+			pseudonym1 = pseudonym.data[0].pseudonym;
+			return Promise.resolve();
+		}));
 	});
 
 	after(() => Promise.all([
 		pseudonymService.remove(null, { query: {} }),
 		toolService.remove(testTool1),
 		coursesService.remove(testCourse),
-		cleanup(),
 	]));
 
 	it('is registered', () => {
@@ -84,13 +78,12 @@ describe('roster service', function oauth() {
 		assert.ok(groupsService);
 	});
 
-	it('GET metadata', (done) => {
-		metadataService.find({ route: { user: pseudonym1 } }).then((metadata) => {
+	it('GET metadata', () => metadataService
+		.find({ route: { user: pseudonym1 } })
+		.then((metadata) => {
 			assert.strictEqual(pseudonym1, metadata.data.user_id);
 			assert.strictEqual('teacher', metadata.data.type);
-			done();
-		});
-	});
+		}));
 
 	it('GET user groups', (done) => {
 		userGroupsService.find({
