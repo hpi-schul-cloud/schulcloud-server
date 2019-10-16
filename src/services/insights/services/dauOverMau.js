@@ -3,14 +3,14 @@ const hooks = require('../hooks');
 
 function dataMassager(cubeJsData) {
 	const parsed = JSON.parse(cubeJsData);
-	const dauToMau = parsed.data[0] ? parsed.data[0]['Events.dauToMau'] : null;
+	const dauOverMau = parsed.data[0] ? parsed.data[0]['Events.dauToMau'] : null;
 	const data = {
-		dauToMau,
+		dauOverMau,
 	};
 	return data;
 }
 
-function generateUri(schoolId = '') {
+function generateUri(schoolId = 'school_id') {
 	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
 	const query = `query={
         "measures": [
@@ -25,9 +25,9 @@ function generateUri(schoolId = '') {
         ],
         "filters": [
           {
-            "dimension": "Actor.school_id",
+            "dimension": "Actor.${schoolId}",
             "operator": "contains",
-            "values": [${schoolId}]
+            "values": []
           }
         ]
       }`;
@@ -37,9 +37,12 @@ function generateUri(schoolId = '') {
 
 class DauOverMau {
 	async find(data, params) {
+		if (!data.query || !data.query.schoolId) {
+			return 'query required: schoolId';
+		}
 		const { schoolId } = data.query;
 		const options = {
-			uri: generateUri(),
+			uri: generateUri(schoolId),
 			method: 'GET',
 		};
 		const cubeJsData = await request(options);

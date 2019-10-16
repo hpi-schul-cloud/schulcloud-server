@@ -11,14 +11,14 @@ function dataMassager(cubeJsData) {
 		friday: null,
 		saturday: null,
 		sunday: null,
-	}; // better with "0" instead of null?
+	};
 	for (const i of parsed.data) {
 		data[i['Events.dayOfWeek'].toLowerCase()] = i['Events.count'];
 	}
 	return data;
 }
 
-function generateUri(schoolId = '') {
+function generateUri(schoolId = 'school_id') {
 	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
 	const query = `query={
   "measures": [
@@ -36,20 +36,19 @@ function generateUri(schoolId = '') {
   "segments": [],
   "filters": [
     {
-      "dimension": "Actor.school_id",
+      "dimension": "Actor.${schoolId}",
       "operator": "contains",
-      "values": [${schoolId}]
+      "values": []
     }
   ]
 }`;
-
-
 	return `${cubeJsUri}${query}`;
 }
-
-
 class WeeklyActivity {
 	async find(data, params) {
+		if (!data.query || !data.query.schoolId) {
+			return 'query required: schoolId';
+		}
 		const { schoolId } = data.query;
 		const options = {
 			uri: generateUri(schoolId),

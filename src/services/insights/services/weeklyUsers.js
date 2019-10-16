@@ -13,26 +13,37 @@ function dataMassager(cubeJsDataThis, cubeJsDataLast) {
 	return data;
 }
 
-function generateUri(querySort, schoolId = '') {
+function generateUri(querySort, schoolId = 'school_id') {
 	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
 	const query = `query={
-			"measures": [
-			"Events.activeUsers"
-			],
-			"timeDimensions": [
-			{
-			"dimension": "Events.timeStamp",
-			"dateRange": "${querySort} week"
-			}
-			],
-			"values": [${schoolId}]
-			}`;
+				"measures":[
+				  "Events.activeUsers"
+			   ],
+			   "timeDimensions" : [
+				 {
+				   "dimension" : "Events.timeStamp",
+					"dateRange" : "${querySort} week"
+				 }
+			   ],
+			   "dimensions" : [],
+				"segments" : [],
+				"filters" : [
+				 {
+				   "dimension" : "Actor.${schoolId}" ,
+					"operator" : "contains" ,
+					"values" : []
+				 }
+			   ]
+			  }`;
 	return `${cubeJsUri}${query}`;
 }
 
 
 class WeeklyUsers {
 	async find(data, params) {
+		if (!data.query || !data.query.schoolId) {
+			return 'query required: schoolId';
+		}
 		const { schoolId } = data.query;
 		const thisOptions = {
 			uri: generateUri('This', schoolId),

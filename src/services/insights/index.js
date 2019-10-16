@@ -11,8 +11,3 @@ module.exports = (app) => {
 	app.configure(weeklyActiveUsers);
 	app.configure(dauOverMau);
 };
-
-// todo.
-// Extract URI to .env
-// Finish the tests
-// set up VUE components

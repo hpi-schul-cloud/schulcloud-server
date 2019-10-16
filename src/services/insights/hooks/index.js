@@ -1,20 +1,18 @@
-// const globalHooks = require('../../../hooks');
-// const auth = require('@feathersjs/authentication');
+const auth = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
+const globalHooks = require('../../../hooks');
 
-// filter for demo user
-// todo write function here
-
+// lookupSchool ??
 exports.before = {
 	all: [
-		// auth.hooks.authenticate('jwt'),
+		auth.hooks.authenticate('jwt'),
 	],
-	find: [],
-	get: [disallow('external')],
-	create: [disallow('external')],
-	update: [disallow('external')],
-	patch: [disallow('external')],
-	remove: [disallow('external')],
+	find: [globalHooks.hasPermission('INSIGHTS_VIEW')],
+	get: [disallow()],
+	create: [disallow()],
+	update: [disallow()],
+	patch: [disallow()],
+	remove: [disallow()],
 };
 
 exports.after = {

@@ -3,12 +3,13 @@
 ### Allowed HTTPs requests:
 ``GET ``
 ### Description Of Usual Server Responses:
-200 `OK`
+200 `OK` 
+
 401 `Unauthorized`
 ## Monthly Users 
-##### One sentence explanation here
-`/insgihts/monthlyUsers`
+`/insights/monthlyUsers`
 `GET`
+
 expected result:
 ```
 {
@@ -19,8 +20,7 @@ lastMonth: String
 Status 200 `OK`
 
 ## Weekly Users
-##### One sentence explanation here
-`/insgihts/weeklyUsers`
+`/insights/weeklyUsers`
 `GET`
 
 expected result:
@@ -32,8 +32,7 @@ lastWeek: String
 ```
 Status 200 `OK`
 ## Weekly Activity 
-##### One sentence explanation here
-`/insgihts/weeklyActivity`
+`/insights/weeklyActivity`
 `GET`
 expected result:
 ```
@@ -49,8 +48,7 @@ sunday: String
 ```
 Status 200 `OK`
 ## Weekly Active Users
-##### One sentence explanation here
-`/insgihts/weeklyActiveUsers`
+`/insights/weeklyActiveUsers`
 `GET`
 expected result:
 ```
@@ -67,8 +65,7 @@ Status 200 `OK`
 NB:  `activeStudentPercentage` and `activeTeacherPercentage` will return `NaN` or `Infinity` if trying to calculate percentage of 0.
 
 ## Role Activity 
-##### One sentence explanation here
-`/insgihts/roleActivity/:schoolId`
+`/insights/roleActivity`
 `GET`
 expected result:
 ```
@@ -81,13 +78,12 @@ Status 200 `OK`
 
 
 ## Dau Over Mau
-##### One sentence explanation here
-`/insgihts/dauOverMau`
+`/insights/dauOverMau`
 `GET`
 expected result:
 ```
 {
-teacher: String, // eg: "42"
+teacher: String, // eg: "42.1337"
 }
 ```
 Status 200 `OK`
