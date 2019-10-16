@@ -17,14 +17,14 @@ module.exports = function swaggerSetup(app) {
 			info: {
 				title: 'Schul-Cloud API',
 				description: 'This is the Schul-Cloud API.',
-				termsOfServiceUrl: 'https://github.com/schulcloud/schulcloud-server/blob/master/LICENSE',
+				termsOfServiceUrl: 'https://github.com/schul-cloud/schulcloud-server/blob/master/LICENSE',
 				contact: {
 					name: 'support',
 					email: 'info@schul-cloud.org',
 				},
 				license: {
 					name: 'GPL-3.0',
-					url: 'https://github.com/schulcloud/schulcloud-server/blob/master/LICENSE',
+					url: 'https://github.com/schul-cloud/schulcloud-server/blob/master/LICENSE',
 				},
 				version: '0.0.1',
 			},
