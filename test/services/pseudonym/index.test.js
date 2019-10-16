@@ -7,7 +7,7 @@ const toolService = app.service('ltiTools');
 const { expect } = chai;
 const { cleanup, createTestUser } = require('../helpers/testObjects')(app);
 
-describe('pseudonym service', async function pseudonymTest() {
+describe('pseudonym service', function pseudonymTest() {
 	this.timeout(10000);
 
 	const testTool1 = {
@@ -35,21 +35,26 @@ describe('pseudonym service', async function pseudonymTest() {
 		key: '1',
 	};
 
-	const testUser1 = await createTestUser();
-	const testUser2 = await createTestUser();
-	const testUser3 = await createTestUser();
+	let testUser1;
+	let testUser2;
+	let testUser3;
 
-	before(() => Promise.all([
-		toolService.create(testTool1),
-		toolService.create(testTool2),
-	]));
+	before(async () => {
+		testUser1 = await createTestUser();
+		testUser2 = await createTestUser();
+		testUser3 = await createTestUser();
 
-	after(() => Promise.all([
-		pseudonymService.remove(null, { query: {} }),
-		toolService.remove(testTool1),
-		toolService.remove(testTool2),
-		cleanup(),
-	]));
+		await toolService.create(testTool1);
+		await toolService.create(testTool2);
+	});
+
+	after(async () => {
+		await pseudonymService.remove(null, { query: {} });
+		await	toolService.remove(testTool1);
+		await toolService.remove(testTool2);
+		await cleanup();
+		return Promise.resolve();
+	});
 
 	it('is registered', () => {
 		assert.ok(app.service('pseudonym'));
@@ -136,19 +141,15 @@ describe('pseudonym service', async function pseudonymTest() {
 		assert(error.code, 404);
 	}));
 
-	it("doesn't create pseudonyms on FIND for missing tool", (done) => {
-		pseudonymService.find({
-			query: {
-				userId: '599ec1688e4e364ec18ff46e',
-				toolId: '599ec1688e4e364ec18ff46e', // not existing toolId
-			},
-		}).then(() => {
-			throw new Error('Was not supposed to succeed');
-		}).catch((error) => {
-			console.log(error);
-			assert(error.name, 'NotFound');
-			assert(error.code, 404);
-			done();
-		});
-	});
+	it("doesn't create pseudonyms on FIND for missing tool", () => pseudonymService.find({
+		query: {
+			userId: '599ec1688e4e364ec18ff46e',
+			toolId: '599ec1688e4e364ec18ff46e', // not existing toolId
+		},
+	}).then(() => {
+		throw new Error('Was not supposed to succeed');
+	}).catch((error) => {
+		assert(error.name, 'NotFound');
+		assert(error.code, 404);
+	}));
 });

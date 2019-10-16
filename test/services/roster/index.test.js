@@ -15,44 +15,46 @@ const { cleanup, createTestUser } = require('../helpers/testObjects')(app);
 
 chai.use(chaiHttp);
 
-describe('roster service', async function oauth() {
+describe('roster service', function oauth() {
 	this.timeout(10000);
 
-	const testUser1 = await createTestUser();
+	let testUser1;
+	let testTool1;
+	let testCourse;
 
-	const testTool1 = {
-		_id: '5a79cb15c3874f9aea14daa5',
-		name: 'test1',
-		url: 'https://tool.com?pseudonym={PSEUDONYM}',
-		isLocal: true,
-		isTemplate: true,
-		resource_link_id: 1,
-		lti_version: '1p0',
-		lti_message_type: 'basic-start-request',
-		secret: '1',
-		key: '1',
-		oAuthClientId: '123456789',
-	};
-
-	const testCourse = {
-		_id: '5cb8dc8e7cccac0e98a29975',
-		name: 'rosterTestCourse',
-		schoolId: '0000d186816abba584714c5f',
-		teacherIds: [testUser1._id],
-		userIds: [
-			'0000d213816abba584714c0a',
-			'0000d224816abba584714c9c',
-		],
-		ltiToolIds: [
-			testTool1._id,
-		],
-		shareToken: 'xxx',
-	};
 
 	let pseudonym1 = null;
 
-	before((done) => {
+	before(async (done) => {
 		this.timeout(10000);
+		testUser1 = await createTestUser();
+		testTool1 = {
+			_id: '5a79cb15c3874f9aea14daa5',
+			name: 'test1',
+			url: 'https://tool.com?pseudonym={PSEUDONYM}',
+			isLocal: true,
+			isTemplate: true,
+			resource_link_id: 1,
+			lti_version: '1p0',
+			lti_message_type: 'basic-start-request',
+			secret: '1',
+			key: '1',
+			oAuthClientId: '123456789',
+		};
+		testCourse = {
+			_id: '5cb8dc8e7cccac0e98a29975',
+			name: 'rosterTestCourse',
+			schoolId: '0000d186816abba584714c5f',
+			teacherIds: [testUser1._id],
+			userIds: [
+				'0000d213816abba584714c0a',
+				'0000d224816abba584714c9c',
+			],
+			ltiToolIds: [
+				testTool1._id,
+			],
+			shareToken: 'xxx',
+		};
 		Promise.all([
 			toolService.create(testTool1),
 			coursesService.create(testCourse),
@@ -69,16 +71,12 @@ describe('roster service', async function oauth() {
 		});
 	});
 
-	after((done) => {
-		Promise.all([
-			pseudonymService.remove(null, { query: {} }),
-			toolService.remove(testTool1),
-			coursesService.remove(testCourse),
-			cleanup(),
-		]).then((results) => {
-			done();
-		});
-	});
+	after(() => Promise.all([
+		pseudonymService.remove(null, { query: {} }),
+		toolService.remove(testTool1),
+		coursesService.remove(testCourse),
+		cleanup(),
+	]));
 
 	it('is registered', () => {
 		assert.ok(metadataService);
