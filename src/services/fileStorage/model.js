@@ -70,8 +70,11 @@ enableAuditLog(fileSchema);
 // make file-model searchable
 fileSchema.index({ name: 'text' });
 
+const FileModel = mongoose.model('file', fileSchema);
+const FilePermissionModel = mongoose.model('filePermissionModel', permissionSchema);
+
 module.exports = {
-	FileModel: mongoose.model('file', fileSchema),
+	FileModel,
 	permissionSchema,
-	FilePermissionModel: mongoose.model('filePermissionModel', permissionSchema),
+	FilePermissionModel,
 };
