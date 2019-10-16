@@ -2,25 +2,21 @@ const request = require('request-promise-native');
 const hooks = require('../hooks');
 
 function dataMassager(cubeJsData) {
-	const parsed = JSON.parse(cubeJsData);
-	const dauOverMau = parsed.data[0] ? parsed.data[0]['Events.dauToMau'] : null;
-	const data = {
-		dauOverMau,
-	};
-	return data;
+	const data = {};
+	return cubeJsData;
 }
 
 function generateUri(schoolId) {
 	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
 	const query = `query={
         "measures": [
-          "Events.dauToMau"
+          "Events.pageCountUnique"
         ],
         "timeDimensions": [
           {
             "dimension": "Events.timeStamp",
             "granularity": "day",
-            "dateRange": "Yesterday"
+            "dateRange": "Last 30 days"
           }
         ],
         "filters": [
@@ -29,13 +25,18 @@ function generateUri(schoolId) {
             "operator": "contains",
             "values": ["${schoolId}"]
           }
+        ],
+        "dimensions": [
+          "Actor.roles"
+        ],
+        "segments": [
+          "Actor.lehrerSchueler"
         ]
-      }`;
+      }
+      Optionen`;
 	return `${cubeJsUri}${query}`;
 }
-
-
-class DauOverMau {
+class UniquePageCount {
 	async find(data, params) {
 		if (!data.query || !data.query.schoolId) {
 			return 'query required: schoolId';
@@ -47,13 +48,14 @@ class DauOverMau {
 		};
 		const cubeJsData = await request(options);
 		const result = dataMassager(cubeJsData);
+
 		return result;
 	}
 }
 
 module.exports = (app) => {
-	const insightRoute = '/insights/dauOverMau';
-	app.use(insightRoute, new DauOverMau());
-	const insightsService = app.service('/insights/dauOverMau');
+	const insightRoute = '/insights/uniquePageCount';
+	app.use(insightRoute, new UniquePageCount());
+	const insightsService = app.service('/insights/uniquePageCount');
 	insightsService.hooks(hooks);
 };

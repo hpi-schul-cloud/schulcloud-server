@@ -1,5 +1,6 @@
 const {
-	monthlyUsers, weeklyUsers, weeklyActivity, roleActivity, weeklyActiveUsers, dauOverMau,
+	monthlyUsers, weeklyUsers, weeklyActivity, roleActivity,
+	weeklyActiveUsers, dauOverMau, uniquePageCount, avgTimeToInteractive, avgPageLoaded,
 } = require('./services');
 
 
@@ -10,4 +11,7 @@ module.exports = (app) => {
 	app.configure(roleActivity);
 	app.configure(weeklyActiveUsers);
 	app.configure(dauOverMau);
+	app.configure(uniquePageCount);
+	app.configure(avgTimeToInteractive);
+	app.configure(avgPageLoaded);
 };

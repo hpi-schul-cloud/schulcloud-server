@@ -14,7 +14,7 @@ function dataMassager(cubeJsDataThis, cubeJsDataLast) {
 	return data;
 }
 
-function generateUri(querySort, schoolId = 'school_id') {
+function generateUri(querySort, schoolId) {
 	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
 	const query = `query={
 				"measures" : [
@@ -30,9 +30,9 @@ function generateUri(querySort, schoolId = 'school_id') {
 				"segments" : [],
 				"filters" : [
 				 {
-				   "dimension" : "Actor.${schoolId}",
+				   "dimension" : "Actor.school_id",
 					"operator" : "contains" ,
-					"values" : []
+					"values" : ["${schoolId}"]
 				 }
 			   ]
 			  }`;

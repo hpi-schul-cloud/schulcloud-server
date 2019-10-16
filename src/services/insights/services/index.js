@@ -4,6 +4,9 @@ const weeklyActivity = require('./weeklyActivity');
 const roleActivity = require('./roleActivity');
 const weeklyActiveUsers = require('./weeklyActiveUsers');
 const dauOverMau = require('./dauOverMau');
+const uniquePageCount = require('./uniquePageCount');
+const avgTimeToInteractive = require('./avgTimeToInteractive');
+const avgPageLoaded = require('./avgPageLoaded');
 
 module.exports = {
 	monthlyUsers,
@@ -12,4 +15,7 @@ module.exports = {
 	roleActivity,
 	weeklyActiveUsers,
 	dauOverMau,
+	uniquePageCount,
+	avgTimeToInteractive,
+	avgPageLoaded,
 };

@@ -88,6 +88,40 @@ teacher: String, // eg: "42.1337"
 ```
 Status 200 `OK`
 
+## Average Page Loaded
+`/insights/avdPageLoaded`
+`GET`
+expected result:
+```
+{
+xxx
+}
+```
+Status 200 `OK`
+
+## Average Time To Interactive
+`/insights/avgTimeToInteractive`
+`GET`
+expected result:
+```
+{
+xxx
+}
+```
+Status 200 `OK`
+
+## Unique Page Count
+`/insights/uniquePageCount`
+`GET`
+expected result:
+```
+{
+xxx
+}
+```
+Status 200 `OK`
+
+
 NB: All values will return `null` if no data
 
 Feedback can be sent to tormod.flesjo@hpi.de
