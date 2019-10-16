@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const { ObjectId } = require('mongoose').Types;
 const {
 	NotAuthenticated,
 	BadRequest,
@@ -21,10 +22,13 @@ const objectKeys = {
 	weeklyActivityService: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
 	weeklyActiveUsersService: ['teacherUsers', 'studentUsers', 'activeStudents', 'activeTeachers', 'activeStudentPercentage', 'activeTeacherPercentage'],
 	roleActivityService: ['teacherData', 'studentData'],
+	avgPageLoadedService: [], // wip
+	avgTimeToInteractiveService: [], // wip
+	uniquePageCountService: [], // wip
+
 };
 
-
-function insightsTestingFunction(title, service, keys) {
+function insightsIntegrationTest(title, service, keys) {
 	describe(title, () => {
 		it('Students should not have access to insights', async () => {
 			const studentUser = await createTestUser({ roles: ['student'] });
@@ -84,14 +88,25 @@ function insightsTestingFunction(title, service, keys) {
 		});
 
 		it('should return query required when not provided', async () => {
-			const result = await service.find();
-			expect(result).to.equal('query required: schoolId');
+			const adminUser = await createTestUser({ roles: ['administrator'] });
+			const adminParams = await generateRequestParamsFromUser(adminUser);
+			const result = await service.find(adminParams);
+
+			adminParams.query = { schoolId: 'school_id' };
+			const fakeParamsResult = await service.find(adminParams);
+
+			adminParams.query = { schoolId: new ObjectId() };
+			const correctParamsResult = await service.find(adminParams);
+
+			expect(result).to.equal('query required: "schoolId" (ObjectId)');
+			expect(fakeParamsResult).to.equal('query required: "schoolId" (ObjectId)');
+			expect(correctParamsResult).to.not.equal('query required: "schoolId" (ObjectId)');
 		});
 
 		it('Admin should have access to insights', async () => {
 			const adminUser = await createTestUser({ roles: ['administrator'] });
-			const adminParams = await generateRequestParamsFromUser(adminUser, 'school_id');
-			adminParams.query = { schoolId: 'school_id' };
+			const adminParams = await generateRequestParamsFromUser(adminUser);
+			adminParams.query = { schoolId: new ObjectId() };
 			const result = await service.find(adminParams);
 			const resultKeys = Object.keys(result);
 			expect(resultKeys).to.eql(keys);
@@ -100,7 +115,7 @@ function insightsTestingFunction(title, service, keys) {
 		it('Teacher should have access to insights', async () => {
 			const teacherUser = await createTestUser({ roles: ['teacher'] });
 			const teacherParams = await generateRequestParamsFromUser(teacherUser);
-			teacherParams.query = { schoolId: 'school_id' };
+			teacherParams.query = { schoolId: new ObjectId() };
 			const result = await service.find(teacherParams);
 			const resultKeys = Object.keys(result);
 			expect(resultKeys).to.eql(keys);
@@ -108,4 +123,4 @@ function insightsTestingFunction(title, service, keys) {
 	});
 }
 
-module.exports = { objectKeys, insightsTestingFunction };
+module.exports = { objectKeys, insightsIntegrationTest };

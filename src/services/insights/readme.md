@@ -89,12 +89,12 @@ teacher: String, // eg: "42.1337"
 Status 200 `OK`
 
 ## Average Page Loaded
-`/insights/avdPageLoaded`
+`/insights/avgPageLoaded`
 `GET`
 expected result:
 ```
 {
-xxx
+wip
 }
 ```
 Status 200 `OK`
@@ -105,7 +105,7 @@ Status 200 `OK`
 expected result:
 ```
 {
-xxx
+wip
 }
 ```
 Status 200 `OK`
@@ -116,7 +116,7 @@ Status 200 `OK`
 expected result:
 ```
 {
-xxx
+wip
 }
 ```
 Status 200 `OK`

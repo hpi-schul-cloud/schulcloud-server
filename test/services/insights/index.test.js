@@ -1,19 +1,8 @@
 const { expect } = require('chai');
 const app = require('../../../src/app');
-/* const {
-	NotAuthenticated,
-	BadRequest,
-	Forbidden,
-} = require('@feathersjs/errors');
-const { cleanup, createTestUser, testObjects } = require('../helpers/testObjects')(app);
+const { ObjectId } = require('mongoose').Types;
 
-const {
-	createTestSchool,
-} = require('../helpers/testObjects')(app);
-
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
- */
-const { insightsTestingFunction, objectKeys } = require('./helper');
+const { insightsIntegrationTest, objectKeys } = require('./helper');
 
 const dauOverMauService = app.service('insights/dauOverMau');
 const monthlyUsersService = app.service('insights/monthlyUsers');
@@ -21,8 +10,11 @@ const weeklyUsersService = app.service('insights/weeklyUsers');
 const weeklyActivityService = app.service('insights/weeklyActivity');
 const weeklyActiveUsersService = app.service('insights/weeklyActiveUsers');
 const roleActivityService = app.service('insights/roleActivity');
+const avgPageLoadedService = app.service('insights/avgPageLoaded');
+const avgTimeToInteractiveService = app.service('insights/avgTimeToInteractive');
+const uniquePageCountService = app.service('insights/uniquePageCount');
 
-
+// todo, check with real school id to see different result
 describe.only('insights service', () => {
 	it('registers correctly', () => {
 		expect(app.service('insights/dauOverMau')).to.not.equal(undefined);
@@ -31,6 +23,9 @@ describe.only('insights service', () => {
 		expect(app.service('insights/weeklyActivity')).to.not.equal(undefined);
 		expect(app.service('insights/weeklyActiveUsers')).to.not.equal(undefined);
 		expect(app.service('insights/roleActivity')).to.not.equal(undefined);
+		expect(app.service('insights/avgPageLoaded')).to.not.equal(undefined);
+		expect(app.service('insights/avgTimeToInteractive')).to.not.equal(undefined);
+		expect(app.service('insights/uniquePageCount')).to.not.equal(undefined);
 	});
 
 	describe('integration tests', function integrationTests() {
@@ -45,13 +40,16 @@ describe.only('insights service', () => {
 			server.close(done);
 		});
 
-		insightsTestingFunction('Dau Over Mau service', dauOverMauService, objectKeys.dauOverMau);
-		insightsTestingFunction('Monthly Users service', monthlyUsersService, objectKeys.monthlyUsers);
-		insightsTestingFunction('Weekly Users service', weeklyUsersService, objectKeys.weeklyUsersService);
-		insightsTestingFunction('Weekly Activity service', weeklyActivityService, objectKeys.weeklyActivityService);
-		insightsTestingFunction(
-			'Weekly Active Users service', weeklyActiveUsersService, objectKeys.weeklyActiveUsersService,
-		);
-		insightsTestingFunction('Role Activity service', roleActivityService, objectKeys.roleActivityService);
+		insightsIntegrationTest('Dau Over Mau service', dauOverMauService, objectKeys.dauOverMau);
+		insightsIntegrationTest('Monthly Users service', monthlyUsersService, objectKeys.monthlyUsers);
+		insightsIntegrationTest('Weekly Users service', weeklyUsersService, objectKeys.weeklyUsersService);
+		insightsIntegrationTest('Weekly Activity service', weeklyActivityService, objectKeys.weeklyActivityService);
+		insightsIntegrationTest('Weekly Active Users service', weeklyActiveUsersService, objectKeys.weeklyActiveUsersService);
+		insightsIntegrationTest('Role Activity service', roleActivityService, objectKeys.roleActivityService);
+
+		// wip. uncomment when service is written in src/insights
+		// insightsIntegrationTest('Avg Page Loaded service', avgPageLoadedService, objectKeys.avgPageLoadedService);
+		// insightsIntegrationTest('Avg Time To Interactive service', avgTimeToInteractiveService, objectKeys.avgTimeToInteractiveService);
+		// insightsIntegrationTest('Unique Page Count service', uniquePageCountService, objectKeys.uniquePageCountService);
 	});
 });

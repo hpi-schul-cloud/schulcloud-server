@@ -2,12 +2,14 @@ const request = require('request-promise-native');
 const hooks = require('../hooks');
 
 function dataMassager(cubeJsData) {
-	return cubeJsData;
+    const parsed = JSON.parse(cubeJsData);
+    const data = {};
+    return parsed;
 }
-
-function generateUri(schoolId) {
-	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
-	const query = `query={
+// wip
+function generateUrl(schoolId) {
+    const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
+    const query = `load?query={
         "measures": [
           "Events.AvgPageLoaded"
         ],
@@ -28,28 +30,29 @@ function generateUri(schoolId) {
         "dimensions": [],
         "segments": []
       }`;
-	return `${cubeJsUri}${query}`;
+    return `${cubeJsUrl}${query}`;
 }
 class AvgPageLoaded {
-	async find(data, params) {
-		if (!data.query || !data.query.schoolId) {
-			return 'query required: schoolId';
-		}
-		const { schoolId } = data.query;
-		const options = {
-			uri: generateUri(schoolId),
-			method: 'GET',
-		};
-		const cubeJsData = await request(options);
-		const result = dataMassager(cubeJsData);
+    async find(data, params) {
+        const checkForHexRegExp = /^[a-f\d]{24}$/i;
+        if (!data.query || !data.query.schoolId || !checkForHexRegExp.test(data.query.schoolId)) {
+            return 'query required: "schoolId" (ObjectId)';
+        }
+        const { schoolId } = data.query;
+        const options = {
+            url: generateUrl(schoolId),
+            method: 'GET',
+        };
+        const cubeJsData = await request(options);
+        const result = dataMassager(cubeJsData);
 
-		return result;
-	}
+        return result;
+    }
 }
 
 module.exports = (app) => {
-	const insightRoute = '/insights/avgPageLoaded';
-	app.use(insightRoute, new AvgPageLoaded());
-	const insightsService = app.service('/insights/avgPageLoaded');
-	insightsService.hooks(hooks);
+    const insightRoute = '/insights/avgPageLoaded';
+    app.use(insightRoute, new AvgPageLoaded());
+    const insightsService = app.service('/insights/avgPageLoaded');
+    insightsService.hooks(hooks);
 };
