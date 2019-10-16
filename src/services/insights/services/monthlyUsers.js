@@ -17,6 +17,7 @@ function dataMassager(cubeJsDataThis, cubeJsDataLast) {
 function generateUri(querySort, schoolId = 'school_id') {
 	const cubeJsUri = 'http://localhost:4000/cubejs-api/v1/load?';
 	const query = `query={
+<<<<<<< HEAD
 				"measures" : [
 				  "Events.activeUsers"
 			   ],
@@ -36,6 +37,27 @@ function generateUri(querySort, schoolId = 'school_id') {
 				 }
 			   ]
 			  }`;
+=======
+		"measures": [
+		  "Events.activeUsers"
+		],
+		"timeDimensions": [
+		  {
+			"dimension": "Events.timeStamp",
+			"dateRange": "${querySort} month"
+		  }
+		],
+		"dimensions": [],
+		"segments": [],
+		"filters": [
+		  {
+			"dimension": "Actor.school_id",
+			"operator": "contains",
+			"values": [${schoolId}]
+		  }
+		]
+	   }`;
+>>>>>>> insights
 	return `${cubeJsUri}${query}`;
 }
 
