@@ -64,20 +64,14 @@ function connect() {
 		options.username ? `with username ${options.username}` : 'without user',
 		options.password ? 'and' : 'and without', 'password');
 
-	// initialize mongoose
-	const mongooseOptions = {
-		useMongoClient: true,
-	};
-
 	addAuthenticationToOptions(
 		options.username,
 		options.password,
-		mongooseOptions,
 	);
 
 	return mongoose.connect(
 		options.url,
-		mongooseOptions,
+		{ useNewUrlParser: true },
 	);
 }
 
