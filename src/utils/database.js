@@ -3,9 +3,9 @@
 const mongoose = require('mongoose');
 const diffHistory = require('mongoose-diff-history/diffHistory');
 const GLOBALS = require('../../config/globals');
-const logger = require('../logger/index');
+const logger = require('../logger');
 
-const configurations = ['test', 'production', 'default', 'migration'];
+const configurations = ['test', 'production', 'default', 'migration']; // todo move to config
 const env = process.env.NODE_ENV || 'default';
 
 if (!(configurations.includes(env))) {
@@ -55,6 +55,12 @@ function getConnectionOptions() {
 	};
 }
 
+/**
+ * creates the initial connection to a mongodb.
+ * see https://mongoosejs.com/docs/connections.html#error-handling for error handling
+ *
+ * @returns {Promise} rejects on initial errors
+ */
 function connect() {
 	mongoose.Promise = global.Promise;
 	const options = getConnectionOptions();
@@ -72,7 +78,13 @@ function connect() {
 	return mongoose.connect(
 		options.url,
 		{ useNewUrlParser: true },
-	);
+	).then((resolved) => {
+		// handle errors that appear after connection setup
+		mongoose.connection.on('error', (err) => {
+			logger.error(err);
+		});
+		return resolved;
+	});
 }
 
 function close() {
