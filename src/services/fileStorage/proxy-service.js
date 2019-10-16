@@ -92,37 +92,38 @@ const prepareThumbnailGeneration = (file, strategy, userId, { name: dataName },
 
 const prepareSecurityCheck = (file, strategy, userId, storageFileName) => {
 	if (ENABLE_FILE_SECURITY_CHECK === 'true') {
-		if (file.size <= FILE_SECURITY_CHECK_MAX_FILE_SIZE) {
-			return strategy.getSignedUrl({
-				userId,
-				flatFileName: storageFileName,
-				localFileName: storageFileName,
-				download: true,
-				Expires: 3600 * 24,
-			}).then((signedUrl) => rp.post({
-				url: FILE_SECURITY_CHECK_SERVICE_URI,
-				auth: {
-					user: FILE_SECURITY_SERVICE_USERNAME,
-					pass: FILE_SECURITY_SERVICE_PASSWORD,
+		if (file.size > FILE_SECURITY_CHECK_MAX_FILE_SIZE) {
+			return FileModel.updateOne(
+				{ _id: file._id },
+				{
+					$set: {
+						'securityCheck.status': SecurityCheckStatusTypes.WONTCHECK,
+						'securityCheck.reason': `File is larger than ${FILE_SECURITY_CHECK_MAX_FILE_SIZE} bytes`,
+					},
 				},
-				body: {
-					download_uri: signedUrl,
-					callback_uri: url.resolve(FILE_SECURITY_CHECK_CALLBACK_URI, file.securityCheck.requestToken),
-				},
-				json: true,
-			})).catch((err) => {
-				logger.error(err);
-			});
+			).exec();
 		}
-		return FileModel.updateOne(
-			{ _id: file._id },
-			{
-				$set: {
-					'securityCheck.status': SecurityCheckStatusTypes.WONTCHECK,
-					'securityCheck.reason': `File is larger than ${FILE_SECURITY_CHECK_MAX_FILE_SIZE} bytes`,
-				},
+		// create a temporary signed URL and provide it to the virus scan service
+		return strategy.getSignedUrl({
+			userId,
+			flatFileName: storageFileName,
+			localFileName: storageFileName,
+			download: true,
+			Expires: 3600 * 24,
+		}).then((signedUrl) => rp.post({
+			url: FILE_SECURITY_CHECK_SERVICE_URI,
+			auth: {
+				user: FILE_SECURITY_SERVICE_USERNAME,
+				pass: FILE_SECURITY_SERVICE_PASSWORD,
 			},
-		).exec();
+			body: {
+				download_uri: signedUrl,
+				callback_uri: url.resolve(FILE_SECURITY_CHECK_CALLBACK_URI, file.securityCheck.requestToken),
+			},
+			json: true,
+		})).catch((err) => {
+			logger.error(err);
+		});		
 	}
 	return Promise.resolve();
 };
