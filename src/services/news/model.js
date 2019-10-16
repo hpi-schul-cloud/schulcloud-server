@@ -17,7 +17,6 @@ const newsSchema = new Schema({
 	schoolId: {
 		type: Schema.Types.ObjectId,
 		required: true,
-		immutable: true,
 		ref: 'school',
 	},
 	title: { type: String, required: true },
@@ -27,7 +26,6 @@ const newsSchema = new Schema({
 	creatorId: {
 		type: Schema.Types.ObjectId,
 		ref: 'user',
-		immutable: true,
 	},
 	createdAt: { type: Date, default: Date.now, required: true },
 
@@ -38,7 +36,6 @@ const newsSchema = new Schema({
 		type: String,
 		default: 'internal',
 		enum: ['internal', 'rss'],
-		immutable: true,
 		required: true,
 	},
 	sourceDescription: {
@@ -49,7 +46,6 @@ const newsSchema = new Schema({
 		// Instead of a hardcoded model name in `ref`, `refPath` means Mongoose
 		// will look at the `targetModel` property to find the right model.
 		refPath: 'targetModel',
-		immutable: true,
 		// target and targetModel must be defined together or not
 		required: function requiredTarget() {
 			return !!this.targetModel;
@@ -58,7 +54,6 @@ const newsSchema = new Schema({
 	targetModel: {
 		type: String,
 		enum: targetModels,
-		immutable: true,
 		// target and targetModel must be defined together or not
 		required: function requiredTargetModel() {
 			return !!this.target;
@@ -79,9 +74,8 @@ const newsHistorySchema = new Schema({
 	parentId: { type: Schema.Types.ObjectId, ref: 'news' },
 });
 
-const newsHistoryModel = mongoose.model('newshistory', newsHistorySchema);
-
 enableAuditLog(newsHistorySchema);
+const newsHistoryModel = mongoose.model('newshistory', newsHistorySchema);
 
 
 module.exports = {
