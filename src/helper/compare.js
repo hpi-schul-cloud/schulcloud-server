@@ -7,7 +7,7 @@ module.exports = {
 		/**
 		 * Compares a list of at least two ObjectIds to equal each other.
 		 *
-		 * @param {[ObjectId]} args
+		 * @param {...ObjectId|String} args
 		 * @returns {Boolean}
 		 */
 		Equal(...args) {
