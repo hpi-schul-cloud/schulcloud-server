@@ -5,7 +5,7 @@ const { assert } = chai;
 
 const compare = require('../../src/helper/compare');
 
-describe.only('Comparator Library for', () => {
+describe('Comparator Library for', () => {
 	describe('ObjectId\'s', () => {
 		const sampleId = new Types.ObjectId();
 		it('requires at least two parameters given', () => {
