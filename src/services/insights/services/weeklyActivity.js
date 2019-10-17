@@ -7,6 +7,7 @@ function dataMassager(cubeJsData) {
 	for (const i of parsed.data) {
 		data[i['Events.dayOfWeek'].toLowerCase()] = i['Events.count'] || null;
 	}
+	console.log(data, 'data');
 	return data;
 }
 
@@ -39,9 +40,9 @@ function generateUrl(schoolId) {
 class WeeklyActivity {
 	async find(data, params) {
 		const checkForHexRegExp = /^[a-f\d]{24}$/i;
-		/* if (!data.query || !data.query.schoolId || !checkForHexRegExp.test(data.query.schoolId)) {
+		if (!data.query || !data.query.schoolId || !checkForHexRegExp.test(data.query.schoolId)) {
 			return 'query required: "schoolId" (ObjectId)';
-		} */
+		}
 		const { schoolId } = data.query;
 		const options = {
 			url: generateUrl(schoolId),

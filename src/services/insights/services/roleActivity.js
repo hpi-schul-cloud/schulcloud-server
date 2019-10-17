@@ -16,24 +16,29 @@ function dataMassager(cubeJsData) {
 function generateUrl(schoolId) {
 	const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
 	const query = `load?query={
-		"measures" : [
-		  "Events.count"
-	   ],
-	   "timeDimensions" : [
-		 {
-		   "dimension" : "Events.timeStamp" ,
-			"dateRange" : "Last 30 days"
-		 }
-	   ],
-	   "dimensions" : [],
-	   "segments" : [],
-	   "filters" :[{
-		"dimension" : "Actor.school_id",
-			"operator" : "contains" ,
-			"values": ["${schoolId}"]
-		 }
-		]
-	 }`;
+  "measures": [
+    "Events.count"
+  ],
+  "timeDimensions": [
+    {
+      "dimension": "Events.timeStamp",
+      "dateRange": "Last 30 days"
+    }
+  ],
+  "dimensions": [
+    "Actor.roles"
+  ],
+  "segments": [
+    "Actor.lehrerSchueler"
+  ],
+  "filters": [
+    {
+      "dimension": "Actor.school_id",
+      "operator": "contains",
+      "values": ["${schoolId}"]
+    }
+  ]
+}`;
 	return `${cubeJsUrl}${query}`;
 }
 

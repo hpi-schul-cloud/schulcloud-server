@@ -46,12 +46,13 @@ describe.only('insights service', () => {
 		insightsIntegrationTest('Weekly Active Users service', weeklyActiveUsersService, objectKeys.weeklyActiveUsersService);
 		insightsIntegrationTest('Role Activity service', roleActivityService, objectKeys.roleActivityService);
 
-		insightsAverageTimeTest('avg Page Loaded Service', avgPageLoadedService);
-		insightsAverageTimeTest('avg Time To Interactive Service', avgTimeToInteractiveService);
+		 insightsIntegrationTest('Avg Page Loaded service', avgPageLoadedService);
+		 insightsIntegrationTest('Avg Time To Interactive service', avgTimeToInteractiveService);
+
+		// insightsAverageTimeTest('avg Page Loaded Service', avgPageLoadedService);
+		// insightsAverageTimeTest('avg Time To Interactive Service', avgTimeToInteractiveService);
 
 		// wip. uncomment when service is written in src/insights
-		// insightsIntegrationTest('Avg Page Loaded service', avgPageLoadedService, objectKeys.avgPageLoadedService);
-		// insightsIntegrationTest('Avg Time To Interactive service', avgTimeToInteractiveService, objectKeys.avgTimeToInteractiveService);
 		// insightsIntegrationTest('Unique Page Count service', uniquePageCountService, objectKeys.uniquePageCountService);
 	});
 });

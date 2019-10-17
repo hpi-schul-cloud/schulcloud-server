@@ -4,10 +4,9 @@ const hooks = require('../hooks');
 function dataMassager(cubeJsData) {
 	const parsed = JSON.parse(cubeJsData);
 	const data = {};
-
 	for (const i in parsed.data) {
-		if (parsed.data) { // eslint required if
-			data[Object.values(parsed.data[i])[0]] = Object.values(parsed.data[i])[1];
+		if (Object.prototype.hasOwnProperty.call(parsed.data, i)) {
+			data[Object.values(parsed.data[i])[0]] = Object.values(parsed.data[i])[1] || null;
 		}
 	}
 	return data;
