@@ -3,14 +3,21 @@ const hooks = require('../hooks');
 
 function dataMassager(cubeJsData) {
 	const parsed = JSON.parse(cubeJsData);
-	const data = {};
-	for (const i of parsed.data) {
-		data[i['Events.dayOfWeek'].toLowerCase()] = i['Events.count'] || null;
-	}
-	console.log(data, 'data');
+	const data = {
+		Monday: null,
+		Tuesday: null,
+		Wednesday: null,
+		Thursday: null,
+		Friday: null,
+		Saturday: null,
+		Sunday: null,
+	};
+
+	parsed.data.forEach((w) => {
+		data[w['Events.dayOfWeek'].trim()] = w['Events.count'];
+	});
 	return data;
 }
-
 function generateUrl(schoolId) {
 	const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
 	const query = `load?query={

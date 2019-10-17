@@ -19,7 +19,7 @@ const objectKeys = {
 	dauOverMau: ['dauOverMau'],
 	monthlyUsers: ['thisMonth', 'lastMonth'],
 	weeklyUsersService: ['thisWeek', 'lastWeek'],
-	weeklyActivityService: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
+	weeklyActivityService: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 	weeklyActiveUsersService: ['teacherUsers', 'studentUsers', 'activeStudents', 'activeTeachers', 'activeStudentPercentage', 'activeTeacherPercentage'],
 	roleActivityService: ['teacherData', 'studentData'],
 	avgPageLoadedService: [],
