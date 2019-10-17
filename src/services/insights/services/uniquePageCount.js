@@ -4,9 +4,27 @@ const hooks = require('../hooks');
 function dataMassager(cubeJsData) {
 	const parsed = JSON.parse(cubeJsData);
 	const data = {};
-	return parsed;
+	// best practice:
+	parsed.data.forEach(((el) => {
+		const timeStamp = el['Events.timeStamp'];
+		data[timeStamp] = { teacher: null, student: null };
+	}
+	));
+	parsed.data.forEach((el) => {
+		const role = el['Actor.roles'];
+		const timeStamp = el['Events.timeStamp'];
+		const pageCount = el['Events.pageCountUnique'];
+
+		if (role.includes('teacher')) {
+			data[timeStamp].teacher = pageCount;
+		}
+		if (role.includes('student')) {
+			data[timeStamp].student = pageCount;
+		}
+	});
+	return data;
 }
-// wip
+
 function generateUrl(schoolId) {
 	const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
 	const query = `load?query={

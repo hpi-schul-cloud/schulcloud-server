@@ -1,19 +1,12 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const {
-	NotAuthenticated,
-	BadRequest,
 	Forbidden,
 } = require('@feathersjs/errors');
 const app = require('../../../../src/app');
-const { cleanup, createTestUser, testObjects } = require('../../helpers/testObjects')(app);
-
-const {
-	createTestSchool,
-} = require('../../helpers/testObjects')(app);
+const { createTestUser } = require('../../helpers/testObjects')(app);
 
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
-
 
 const objectKeys = {
 	dauOverMau: ['dauOverMau'],
@@ -25,7 +18,6 @@ const objectKeys = {
 	avgPageLoadedService: [],
 	avgTimeToInteractiveService: [],
 	uniquePageCountService: [], // wip
-
 };
 
 function insightsIntegrationTest(title, service, keys) {
@@ -113,7 +105,7 @@ function insightsIntegrationTest(title, service, keys) {
 			if (title.startsWith('Avg')) {
 				expect(resultKeys.every((k) => dateRegex.test(k)));
 			} else {
-				expect(resultKeys.sort()).to.eql(resultKeys.sort());
+				expect(resultKeys.sort()).to.eql(keys.sort());
 			}
 		});
 
@@ -126,7 +118,7 @@ function insightsIntegrationTest(title, service, keys) {
 			if (title.startsWith('Avg')) {
 				expect(resultKeys.every((k) => dateRegex.test(k)));
 			} else {
-				expect(resultKeys.sort()).to.eql(resultKeys.sort());
+				expect(resultKeys.sort()).to.eql(keys.sort());
 			}
 		});
 	});
