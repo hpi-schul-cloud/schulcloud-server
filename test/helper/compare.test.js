@@ -33,7 +33,7 @@ describe('Comparator Library for', () => {
 		});
 		it('allows string and object ids to be mixed', () => {
 			assert.isTrue(compare.ObjectId.Equal(sampleId, String(sampleId)));
-			assert.isTrue(compare.ObjectId.Equal(sampleId, String(sampleId), String(new Types.ObjectId(sampleId))));
+			assert.isTrue(compare.ObjectId.Equal(sampleId, String(sampleId), new Types.ObjectId(String(sampleId))));
 		});
 	});
 });
