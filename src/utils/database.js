@@ -2,6 +2,8 @@
 /* eslint-disable global-require */
 const mongoose = require('mongoose');
 const diffHistory = require('mongoose-diff-history/diffHistory');
+const uriFormat = require('mongodb-uri');
+
 const GLOBALS = require('../../config/globals');
 const logger = require('../logger');
 
@@ -20,6 +22,14 @@ if (GLOBALS.DATABASE_AUDIT === 'true') {
 	logger.info('database audit log enabled');
 }
 
+const encodeMongoURI = (urlString) => {
+	if (urlString) {
+		const parsed = uriFormat.parse(urlString);
+		return uriFormat.format(parsed);
+	}
+	return urlString;
+};
+
 function enableAuditLog(schema, options) {
 	if (GLOBALS.DATABASE_AUDIT === 'true') {
 		// set database audit
@@ -36,9 +46,9 @@ function getConnectionOptions() {
 	} = process.env;
 
 	return {
-		url: DB_URL,
-		username: DB_USERNAME,
-		password: DB_PASSWORD,
+		url: encodeMongoURI(DB_URL),
+		username: encodeMongoURI(DB_USERNAME),
+		password: encodeMongoURI(DB_PASSWORD),
 	};
 }
 
