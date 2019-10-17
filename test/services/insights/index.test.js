@@ -1,8 +1,7 @@
 const { expect } = require('chai');
 const app = require('../../../src/app');
-const { ObjectId } = require('mongoose').Types;
 
-const { insightsIntegrationTest, objectKeys } = require('./helper');
+const { insightsIntegrationTest, insightsAverageTimeTest, objectKeys } = require('./helper');
 
 const dauOverMauService = app.service('insights/dauOverMau');
 const monthlyUsersService = app.service('insights/monthlyUsers');
@@ -46,6 +45,9 @@ describe.only('insights service', () => {
 		insightsIntegrationTest('Weekly Activity service', weeklyActivityService, objectKeys.weeklyActivityService);
 		insightsIntegrationTest('Weekly Active Users service', weeklyActiveUsersService, objectKeys.weeklyActiveUsersService);
 		insightsIntegrationTest('Role Activity service', roleActivityService, objectKeys.roleActivityService);
+
+		insightsAverageTimeTest('avg Page Loaded Service', avgPageLoadedService);
+		insightsAverageTimeTest('avg Time To Interactive Service', avgTimeToInteractiveService);
 
 		// wip. uncomment when service is written in src/insights
 		// insightsIntegrationTest('Avg Page Loaded service', avgPageLoadedService, objectKeys.avgPageLoadedService);

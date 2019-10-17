@@ -3,17 +3,9 @@ const hooks = require('../hooks');
 
 function dataMassager(cubeJsData) {
 	const parsed = JSON.parse(cubeJsData);
-	const data = {
-		monday: null,
-		tuesday: null,
-		wednesday: null,
-		thursday: null,
-		friday: null,
-		saturday: null,
-		sunday: null,
-	};
+	const data = {};
 	for (const i of parsed.data) {
-		data[i['Events.dayOfWeek'].toLowerCase()] = i['Events.count'];
+		data[i['Events.dayOfWeek'].toLowerCase()] = i['Events.count'] || null;
 	}
 	return data;
 }
@@ -47,9 +39,9 @@ function generateUrl(schoolId) {
 class WeeklyActivity {
 	async find(data, params) {
 		const checkForHexRegExp = /^[a-f\d]{24}$/i;
-		if (!data.query || !data.query.schoolId || !checkForHexRegExp.test(data.query.schoolId)) {
+		/* if (!data.query || !data.query.schoolId || !checkForHexRegExp.test(data.query.schoolId)) {
 			return 'query required: "schoolId" (ObjectId)';
-		}
+		} */
 		const { schoolId } = data.query;
 		const options = {
 			url: generateUrl(schoolId),

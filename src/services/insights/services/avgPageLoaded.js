@@ -2,14 +2,20 @@ const request = require('request-promise-native');
 const hooks = require('../hooks');
 
 function dataMassager(cubeJsData) {
-    const parsed = JSON.parse(cubeJsData);
-    const data = {};
-    return parsed;
+	const parsed = JSON.parse(cubeJsData);
+	const data = {};
+
+	for (const i in parsed.data) {
+		if (parsed.data) { // eslint required if
+			data[Object.values(parsed.data[i])[0]] = Object.values(parsed.data[i])[1];
+		}
+	}
+	return data;
 }
-// wip
+
 function generateUrl(schoolId) {
-    const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
-    const query = `load?query={
+	const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
+	const query = `load?query={
         "measures": [
           "Events.AvgPageLoaded"
         ],
@@ -30,29 +36,29 @@ function generateUrl(schoolId) {
         "dimensions": [],
         "segments": []
       }`;
-    return `${cubeJsUrl}${query}`;
+	return `${cubeJsUrl}${query}`;
 }
 class AvgPageLoaded {
-    async find(data, params) {
-        const checkForHexRegExp = /^[a-f\d]{24}$/i;
-        if (!data.query || !data.query.schoolId || !checkForHexRegExp.test(data.query.schoolId)) {
-            return 'query required: "schoolId" (ObjectId)';
-        }
-        const { schoolId } = data.query;
-        const options = {
-            url: generateUrl(schoolId),
-            method: 'GET',
-        };
-        const cubeJsData = await request(options);
-        const result = dataMassager(cubeJsData);
+	async find(data, params) {
+		const checkForHexRegExp = /^[a-f\d]{24}$/i;
+		if (!data.query || !data.query.schoolId || !checkForHexRegExp.test(data.query.schoolId)) {
+			return 'query required: "schoolId" (ObjectId)';
+		}
+		const { schoolId } = data.query;
+		const options = {
+			url: generateUrl(schoolId),
+			method: 'GET',
+		};
+		const cubeJsData = await request(options);
+		const result = dataMassager(cubeJsData);
 
-        return result;
-    }
+		return result;
+	}
 }
 
 module.exports = (app) => {
-    const insightRoute = '/insights/avgPageLoaded';
-    app.use(insightRoute, new AvgPageLoaded());
-    const insightsService = app.service('/insights/avgPageLoaded');
-    insightsService.hooks(hooks);
+	const insightRoute = '/insights/avgPageLoaded';
+	app.use(insightRoute, new AvgPageLoaded());
+	const insightsService = app.service('/insights/avgPageLoaded');
+	insightsService.hooks(hooks);
 };

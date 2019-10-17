@@ -94,8 +94,10 @@ Status 200 `OK`
 expected result:
 ```
 {
-wip
+Date: String // eg: '2019-10-09T14:00:00.000': '545.7500000000000000',
+...
 }
+length of object varies from user activity
 ```
 Status 200 `OK`
 
@@ -105,8 +107,10 @@ Status 200 `OK`
 expected result:
 ```
 {
-wip
+Date: String // eg: '2019-10-11T09:00:00.000': '270.2500000000000000',
+...
 }
+length of object varies from user activity
 ```
 Status 200 `OK`
 
