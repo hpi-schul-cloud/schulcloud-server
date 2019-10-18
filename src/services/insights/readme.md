@@ -97,8 +97,8 @@ expected result:
 Date: String // eg: '2019-10-09T14:00:00.000': '545.7500000000000000',
 ...
 }
-length of object varies from user activity
 ```
+length of object varies from user activity
 Status 200 `OK`
 
 ## Average Time To Interactive
@@ -110,8 +110,8 @@ expected result:
 Date: String // eg: '2019-10-11T09:00:00.000': '270.2500000000000000',
 ...
 }
-length of object varies from user activity
 ```
+length of object varies from user activity
 Status 200 `OK`
 
 ## Unique Page Count
@@ -120,9 +120,18 @@ Status 200 `OK`
 expected result:
 ```
 {
-wip
+Date: {
+    student: String, // eg: "42"
+    teacher: String,
+},
+Date: {
+    student: String, // eg: "42"
+    teacher: null,
+},
+...
 }
 ```
+length of object varies from user activity
 Status 200 `OK`
 
 

@@ -14,7 +14,7 @@ const avgTimeToInteractiveService = app.service('insights/avgTimeToInteractive')
 const uniquePageCountService = app.service('insights/uniquePageCount');
 
 // todo, check with real school id to see different result
-describe.only('insights service', () => {
+describe('insights service', () => {
 	it('registers correctly', () => {
 		expect(app.service('insights/dauOverMau')).to.not.equal(undefined);
 		expect(app.service('insights/monthlyUsers')).to.not.equal(undefined);
