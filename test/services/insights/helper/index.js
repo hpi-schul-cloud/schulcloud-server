@@ -15,9 +15,6 @@ const objectKeys = {
 	weeklyActivityService: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
 	weeklyActiveUsersService: ['teacherUsers', 'studentUsers', 'activeStudents', 'activeTeachers', 'activeStudentPercentage', 'activeTeacherPercentage'],
 	roleActivityService: ['teacherData', 'studentData'],
-	avgPageLoadedService: [],
-	avgTimeToInteractiveService: [],
-	uniquePageCountService: [], // wip
 };
 
 function insightsIntegrationTest(title, service, keys) {
@@ -102,12 +99,13 @@ function insightsIntegrationTest(title, service, keys) {
 			adminParams.query = { schoolId: '0000d186816abba584714c5f' };
 			const result = await service.find(adminParams);
 			const resultKeys = Object.keys(result);
-			if (title.startsWith('Avg')) {
+			if (title.startsWith('Avg') || title.startsWith('Unique')) {
 				expect(resultKeys.every((k) => dateRegex.test(k)));
 			} else {
 				expect(resultKeys.sort()).to.eql(keys.sort());
 			}
 		});
+
 
 		it('Teacher should have access to insights', async () => {
 			const teacherUser = await createTestUser({ roles: ['teacher'] });
@@ -115,11 +113,27 @@ function insightsIntegrationTest(title, service, keys) {
 			teacherParams.query = { schoolId: '0000d186816abba584714c5f' };
 			const result = await service.find(teacherParams);
 			const resultKeys = Object.keys(result);
-			if (title.startsWith('Avg')) {
+			if (title.startsWith('Avg') || title.startsWith('Unique')) {
 				expect(resultKeys.every((k) => dateRegex.test(k)));
 			} else {
 				expect(resultKeys.sort()).to.eql(keys.sort());
 			}
+		});
+
+		it('Correct query should filter out unwanted schools', async () => {
+			const adminUser = await createTestUser({ roles: ['administrator'] });
+			const adminParams = await generateRequestParamsFromUser(adminUser);
+			adminParams.query = { schoolId: '0000d186816abba584714c5f' };
+
+			const teacherUser = await createTestUser({ roles: ['teacher'] });
+			const teacherParams = await generateRequestParamsFromUser(teacherUser);
+			teacherParams.query = { schoolId: new ObjectId() };
+
+			const resultsWithQuery = await service.find(adminParams);
+			const resultsWithOutQuery = await service.find(teacherParams);
+
+			expect(Object.entries(resultsWithQuery).length && resultsWithQuery.constructor === Object);
+			expect(Object.entries(resultsWithOutQuery).length === 0 && resultsWithOutQuery.constructor === Object);
 		});
 	});
 }

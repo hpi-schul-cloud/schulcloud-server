@@ -3,25 +3,11 @@ const hooks = require('../hooks');
 
 function dataMassager(cubeJsData) {
 	const parsed = JSON.parse(cubeJsData);
-	const data = {};
-	// best practice:
-	parsed.data.forEach(((el) => {
-		const timeStamp = el['Events.timeStamp'];
-		data[timeStamp] = { teacher: null, student: null };
-	}
-	));
-	parsed.data.forEach((el) => {
-		const role = el['Actor.roles'];
-		const timeStamp = el['Events.timeStamp'];
-		const pageCount = el['Events.pageCountUnique'];
-
-		if (role.includes('teacher')) {
-			data[timeStamp].teacher = pageCount;
-		}
-		if (role.includes('student')) {
-			data[timeStamp].student = pageCount;
-		}
-	});
+	const data = parsed.data.reduce((a, v) => {
+		a[v['Events.timeStamp']] = a[v['Events.timeStamp']] || { student: null, teacher: null };
+		a[v['Events.timeStamp']][v['Actor.roles'].replace(/[^\w\s]/gi, '')] = v['Events.pageCountUnique'];
+		return a;
+	}, {});
 	return data;
 }
 
