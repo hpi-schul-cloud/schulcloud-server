@@ -4,9 +4,9 @@ const globalHooks = require('../../../hooks');
 
 exports.before = {
 	all: [
-		// auth.hooks.authenticate('jwt'),
+		auth.hooks.authenticate('jwt'),
 	],
-	find: [/* globalHooks.hasPermission('INSIGHTS_VIEW') */],
+	find: [globalHooks.hasPermission('INSIGHTS_VIEW')],
 	get: [disallow()],
 	create: [disallow()],
 	update: [disallow()],
