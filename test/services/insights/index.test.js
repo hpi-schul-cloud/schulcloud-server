@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const app = require('../../../src/app');
 
-const { insightsIntegrationTest, insightsAverageTimeTest, objectKeys } = require('./helper');
+const { insightsIntegrationTest, objectKeys } = require('./helper');
 
 const dauOverMauService = app.service('insights/dauOverMau');
 const monthlyUsersService = app.service('insights/monthlyUsers');
