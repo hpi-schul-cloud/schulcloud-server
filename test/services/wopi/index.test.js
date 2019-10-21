@@ -7,7 +7,7 @@ const testObjects = require('../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
 
 
-describe.only('wopi service', () => {
+describe('wopi service', () => {
 	const testUserId = '599ec14d8e4e364ec18ff46d';
 
 	const testFile = {
