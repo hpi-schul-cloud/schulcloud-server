@@ -123,7 +123,7 @@ const prepareSecurityCheck = (file, strategy, userId, storageFileName) => {
 			json: true,
 		})).catch((err) => {
 			logger.error(err);
-		});		
+		});
 	}
 	return Promise.resolve();
 };
