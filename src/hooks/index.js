@@ -531,7 +531,8 @@ exports.sendEmail = (context, maildata) => {
 
 	if (emails.length > 0) {
 		emails.forEach((email) => {
-			const re = /\S+@\S+\.\S+/;
+			// email validation conform with <input type="email"> (see https://emailregex.com)
+			const re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 			if (re.test(email)) {
 				receipients.push(email);
 			}
