@@ -33,6 +33,7 @@ const persistCourseTimesEvent = (hook) => {
 exports.before = {
 	all: [
 		authenticate('jwt'),
+		globalHooks.mapPayload,
 	],
 	find: [globalHooks.hasPermission('CALENDAR_VIEW')],
 	get: [globalHooks.hasPermission('CALENDAR_VIEW')],

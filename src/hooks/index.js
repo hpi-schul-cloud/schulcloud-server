@@ -375,6 +375,26 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 	return context;
 });
 
+exports.mapPayload = (context) => {
+	logger.log('warning',
+		'DEPRICATED: this hook should be used to ensure backwards compability only, and be removed if possible.');
+	if (context.params.payload) {
+		context.params.authentication = Object.assign(context.params.authentication || {}, { payload: context.params.payload });
+	}
+	Object.defineProperty(context.params, 'payload', {
+		get() {
+			logger.log('warning', 'params.payload is DEPRICATED, please use params.authentication.payload instead!');
+			return (context.params.authentication || {}).payload;
+		},
+		set(v) {
+			logger.log('warning', 'params.payload is DEPRICATED, please use params.authentication.payload instead!');
+			if (!context.params.authentication) context.params.authentication = {};
+			context.params.authentication.payload = v;
+		},
+	});
+	return context;
+};
+
 exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
 		return context;
