@@ -21,11 +21,15 @@ describe('news hooks', () => {
 				},
 			};
 			expect(() => preparePagination(context)).not.to.throw(Error);
-			expect(preparePagination(context).params.query).to.deep.equal({ $paginate: true });
+			expect(preparePagination(context).params.query).to.deep.equal({
+				$paginate: true,
+			});
 
 			context.params.query.$paginate = 'false';
 			expect(() => preparePagination(context)).not.to.throw(Error);
-			expect(preparePagination(context).params.query).to.deep.equal({ $paginate: false });
+			expect(preparePagination(context).params.query).to.deep.equal({
+				$paginate: false,
+			});
 		});
 
 		it('should work if no query is given', () => {
@@ -57,7 +61,7 @@ describe('news hooks', () => {
 			}
 		});
 
-		it('should add the logged-in user\' school to the request params', async () => {
+		it("should add the logged-in user' school to the request params", async () => {
 			const user = await createTestUser();
 			const context = await lookupSchool({
 				app,
@@ -67,7 +71,9 @@ describe('news hooks', () => {
 					},
 				},
 			});
-			expect(context.params.account.schoolId.toString()).to.equal(user.schoolId.toString());
+			expect(context.params.account.schoolId.toString()).to.equal(
+				user.schoolId.toString(),
+			);
 		});
 
 		after(cleanup);

@@ -1,5 +1,6 @@
 const request = require('request-promise-native');
 const hooks = require('../hooks');
+const { findSchool } = require('../helper');
 
 function dataMassager(cubeJsDataThis, cubeJsDataLast) {
 	const parsedThis = JSON.parse(cubeJsDataThis);
@@ -14,7 +15,7 @@ function dataMassager(cubeJsDataThis, cubeJsDataLast) {
 }
 
 function generateUrl(querySort, schoolId) {
-	const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
+	const cubeJsUrl =		process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
 	const query = `load?query={
 				"measures":[
 				  "Events.activeUsers"
@@ -40,11 +41,16 @@ function generateUrl(querySort, schoolId) {
 
 class WeeklyUsers {
 	async find(data, params) {
+		const { userId } = data.account;
+		const schoolId = await findSchool(userId);
 		const checkForHexRegExp = /^[a-f\d]{24}$/i;
-		if (!data.query || !data.query.schoolId || !checkForHexRegExp.test(data.query.schoolId)) {
+		if (
+			!data.query
+			|| !data.query.schoolId
+			|| !checkForHexRegExp.test(data.query.schoolId)
+		) {
 			return 'query required: "schoolId" (ObjectId)';
 		}
-		const { schoolId } = data.query;
 		const thisOptions = {
 			url: generateUrl('This', schoolId),
 			method: 'GET',

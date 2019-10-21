@@ -1,18 +1,22 @@
 const request = require('request-promise-native');
 const hooks = require('../hooks');
+const { findSchool } = require('../helper');
 
 function dataMassager(cubeJsData) {
 	const parsed = JSON.parse(cubeJsData);
 	const data = parsed.data.reduce((a, v) => {
-		a[v['Events.timeStamp']] = a[v['Events.timeStamp']] || { student: null, teacher: null };
-		a[v['Events.timeStamp']][v['Actor.roles'].replace(/[^\w\s]/gi, '')] = v['Events.pageCountUnique'];
+		a[v['Events.timeStamp']] = a[v['Events.timeStamp']] || {
+			student: null,
+			teacher: null,
+		};
+		a[v['Events.timeStamp']][v['Actor.roles'].replace(/[^\w\s]/gi, '')] =			v['Events.pageCountUnique'];
 		return a;
 	}, {});
 	return data;
 }
 
 function generateUrl(schoolId) {
-	const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
+	const cubeJsUrl =		process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
 	const query = `load?query={
   "measures": [
     "Events.pageCountUnique"
@@ -42,11 +46,16 @@ function generateUrl(schoolId) {
 }
 class UniquePageCount {
 	async find(data, params) {
+		const { userId } = data.account;
+		const schoolId = await findSchool(userId);
 		const checkForHexRegExp = /^[a-f\d]{24}$/i;
-		if (!data.query || !data.query.schoolId || !checkForHexRegExp.test(data.query.schoolId)) {
+		if (
+			!data.query
+			|| !data.query.schoolId
+			|| !checkForHexRegExp.test(data.query.schoolId)
+		) {
 			return 'query required: "schoolId" (ObjectId)';
 		}
-		const { schoolId } = data.query;
 		const options = {
 			url: generateUrl(schoolId),
 			method: 'GET',

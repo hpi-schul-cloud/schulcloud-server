@@ -3,9 +3,7 @@ const { disallow } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 
 exports.before = {
-	all: [
-		auth.hooks.authenticate('jwt'),
-	],
+	all: [auth.hooks.authenticate('jwt')],
 	find: [globalHooks.hasPermission('INSIGHTS_VIEW')],
 	get: [disallow()],
 	create: [disallow()],

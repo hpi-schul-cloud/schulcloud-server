@@ -13,8 +13,7 @@ const avgPageLoadedService = app.service('insights/avgPageLoaded');
 const avgTimeToInteractiveService = app.service('insights/avgTimeToInteractive');
 const uniquePageCountService = app.service('insights/uniquePageCount');
 
-// todo, check with real school id to see different result
-describe('insights service', () => {
+describe.only('insights service', () => {
 	it('registers correctly', () => {
 		expect(app.service('insights/dauOverMau')).to.not.equal(undefined);
 		expect(app.service('insights/monthlyUsers')).to.not.equal(undefined);
@@ -38,7 +37,6 @@ describe('insights service', () => {
 		after((done) => {
 			server.close(done);
 		});
-
 		insightsIntegrationTest('Dau Over Mau service', dauOverMauService, objectKeys.dauOverMau);
 		insightsIntegrationTest('Monthly Users service', monthlyUsersService, objectKeys.monthlyUsers);
 		insightsIntegrationTest('Weekly Users service', weeklyUsersService, objectKeys.weeklyUsersService);
