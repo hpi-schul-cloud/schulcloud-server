@@ -89,7 +89,7 @@ const setLockResponseHeader = (hook) => {
 };
 
 exports.before = {
-	all: [mapPayload, wopiAuthentication],
+	all: [wopiAuthentication, mapPayload],
 	find: [],
 	get: [],
 	create: [retrieveWopiOverrideHeader, checkLockHeader],
