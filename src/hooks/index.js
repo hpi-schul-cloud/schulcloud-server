@@ -383,7 +383,7 @@ exports.mapPayload = (context) => {
 	}
 	Object.defineProperty(context.params, 'payload', {
 		get() {
-			logger.log('warning', 'params.payload is DEPRICATED, please use params.authentication.payload instead!');
+			logger.log('warning', 'params.payload is DEPRECATED, please use params.authentication.payload instead!');
 			return (context.params.authentication || {}).payload;
 		},
 		set(v) {
