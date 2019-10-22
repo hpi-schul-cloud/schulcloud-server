@@ -61,7 +61,10 @@ const filterApplicableSubmissions = (hook) => {
 			return promise.then((courseGroup) => {
 				if (c.homeworkId.publicSubmissions // publicSubmissions allowes (everyone can see)
 						|| EqualIds(c.homeworkId.teacherId, hook.params.account.userId) // or user is teacher
-	|| (c.studentId._id ? EqualIds(c.studentId._id, hook.params.account.userId) : EqualIds(c.studentId, hook.params.account.userId))// or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
+						|| (c.studentId._id
+							? EqualIds(c.studentId._id, hook.params.account.userId)
+							: EqualIds(c.studentId, hook.params.account.userId))
+						// or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
 						|| c.teamMembers && c.teamMembers.includes(hook.params.account.userId.toString()) // or is a teamMember
 						|| courseGroup && courseGroup.userIds && courseGroup.userIds.includes(hook.params.account.userId.toString())) { // or in the courseGroup
 					return true;
