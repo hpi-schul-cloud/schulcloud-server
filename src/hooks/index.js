@@ -387,7 +387,7 @@ exports.mapPayload = (context) => {
 			return (context.params.authentication || {}).payload;
 		},
 		set(v) {
-			logger.log('warning', 'params.payload is DEPRICATED, please use params.authentication.payload instead!');
+			logger.log('warning', 'params.payload is DEPRECATED, please use params.authentication.payload instead!');
 			if (!context.params.authentication) context.params.authentication = {};
 			context.params.authentication.payload = v;
 		},
