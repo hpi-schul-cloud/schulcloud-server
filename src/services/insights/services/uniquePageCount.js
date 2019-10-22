@@ -1,6 +1,5 @@
 const request = require('request-promise-native');
 const hooks = require('../hooks');
-const { findSchool } = require('../helper');
 
 function dataMassager(cubeJsData) {
 	const parsed = JSON.parse(cubeJsData);
@@ -46,16 +45,8 @@ function generateUrl(schoolId) {
 }
 class UniquePageCount {
 	async find(data, params) {
-		const { userId } = data.account;
-		const schoolId = await findSchool(userId);
-		const checkForHexRegExp = /^[a-f\d]{24}$/i;
-		if (
-			!data.query
-			|| !data.query.schoolId
-			|| !checkForHexRegExp.test(data.query.schoolId)
-		) {
-			return 'query required: "schoolId" (ObjectId)';
-		}
+		const { schoolId } = data.account;
+
 		const options = {
 			url: generateUrl(schoolId),
 			method: 'GET',

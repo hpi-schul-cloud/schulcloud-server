@@ -1,19 +1,34 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const {
-	Forbidden,
-} = require('@feathersjs/errors');
+const { Forbidden } = require('@feathersjs/errors');
 const app = require('../../../../src/app');
 const { createTestUser } = require('../../helpers/testObjects')(app);
 
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const {
+	generateRequestParamsFromUser,
+} = require('../../helpers/services/login')(app);
 
 const objectKeys = {
 	dauOverMau: ['dauOverMau'],
 	monthlyUsers: ['thisMonth', 'lastMonth'],
 	weeklyUsersService: ['thisWeek', 'lastWeek'],
-	weeklyActivityService: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-	weeklyActiveUsersService: ['teacherUsers', 'studentUsers', 'activeStudents', 'activeTeachers', 'activeStudentPercentage', 'activeTeacherPercentage'],
+	weeklyActivityService: [
+		'Monday',
+		'Tuesday',
+		'Wednesday',
+		'Thursday',
+		'Friday',
+		'Saturday',
+		'Sunday',
+	],
+	weeklyActiveUsersService: [
+		'teacherUsers',
+		'studentUsers',
+		'activeStudents',
+		'activeTeachers',
+		'activeStudentPercentage',
+		'activeTeacherPercentage',
+	],
 	roleActivityService: ['teacherData', 'studentData'],
 };
 
@@ -22,7 +37,9 @@ function insightsIntegrationTest(title, service, keys) {
 	describe(title, () => {
 		it('Students should not have access to insights', async () => {
 			const studentUser = await createTestUser({ roles: ['student'] });
-			const studentParams = await generateRequestParamsFromUser(studentUser);
+			const studentParams = await generateRequestParamsFromUser(
+				studentUser,
+			);
 
 			try {
 				await service.find(studentParams);
@@ -77,26 +94,32 @@ function insightsIntegrationTest(title, service, keys) {
 			}
 		});
 
-		it('should return query required when not provided', async () => {
-			const adminUser = await createTestUser({ roles: ['administrator'] });
+		/* it('should return query required when not provided', async () => {
+			const adminUser = await createTestUser({
+				roles: ['administrator'],
+			});
 			const adminParams = await generateRequestParamsFromUser(adminUser);
 			const result = await service.find(adminParams);
 
-			adminParams.query = { schoolId: 'school_id' };
 			const fakeParamsResult = await service.find(adminParams);
 
-			adminParams.query = { schoolId: new ObjectId() };
 			const correctParamsResult = await service.find(adminParams);
 
 			expect(result).to.equal('query required: "schoolId" (ObjectId)');
-			expect(fakeParamsResult).to.equal('query required: "schoolId" (ObjectId)');
-			expect(correctParamsResult).to.not.equal('query required: "schoolId" (ObjectId)');
-		});
+			expect(fakeParamsResult).to.equal(
+				'query required: "schoolId" (ObjectId)',
+			);
+			expect(correctParamsResult).to.not.equal(
+				'query required: "schoolId" (ObjectId)',
+			);
+		}); */
 
 		it('Admin should have access to insights', async () => {
-			const adminUser = await createTestUser({ roles: ['administrator'] });
+			const adminUser = await createTestUser({
+				roles: ['administrator'],
+			});
 			const adminParams = await generateRequestParamsFromUser(adminUser);
-			adminParams.query = { schoolId: '0000d186816abba584714c5f' };
+
 			const result = await service.find(adminParams);
 			const resultKeys = Object.keys(result);
 			if (title.startsWith('Avg') || title.startsWith('Unique')) {
@@ -106,11 +129,12 @@ function insightsIntegrationTest(title, service, keys) {
 			}
 		});
 
-
 		it('Teacher should have access to insights', async () => {
 			const teacherUser = await createTestUser({ roles: ['teacher'] });
-			const teacherParams = await generateRequestParamsFromUser(teacherUser);
-			teacherParams.query = { schoolId: '0000d186816abba584714c5f' };
+			const teacherParams = await generateRequestParamsFromUser(
+				teacherUser,
+			);
+
 			const result = await service.find(teacherParams);
 			const resultKeys = Object.keys(result);
 			if (title.startsWith('Avg') || title.startsWith('Unique')) {
@@ -121,19 +145,27 @@ function insightsIntegrationTest(title, service, keys) {
 		});
 
 		it('Correct query should filter out unwanted schools', async () => {
-			const adminUser = await createTestUser({ roles: ['administrator'] });
+			const adminUser = await createTestUser({
+				roles: ['administrator'],
+			});
 			const adminParams = await generateRequestParamsFromUser(adminUser);
-			adminParams.query = { schoolId: '0000d186816abba584714c5f' };
 
 			const teacherUser = await createTestUser({ roles: ['teacher'] });
-			const teacherParams = await generateRequestParamsFromUser(teacherUser);
-			teacherParams.query = { schoolId: new ObjectId() };
+			const teacherParams = await generateRequestParamsFromUser(
+				teacherUser,
+			);
 
 			const resultsWithQuery = await service.find(adminParams);
 			const resultsWithOutQuery = await service.find(teacherParams);
 
-			expect(Object.entries(resultsWithQuery).length && resultsWithQuery.constructor === Object);
-			expect(Object.entries(resultsWithOutQuery).length === 0 && resultsWithOutQuery.constructor === Object);
+			expect(
+				Object.entries(resultsWithQuery).length
+					&& resultsWithQuery.constructor === Object,
+			);
+			expect(
+				Object.entries(resultsWithOutQuery).length === 0
+					&& resultsWithOutQuery.constructor === Object,
+			);
 		});
 	});
 }
