@@ -13,12 +13,15 @@ const parseData = (context) => {
 
 exports.before = {
 	all: [],
-	find: [disallow('external')],
-	get: [disallow('external')],
-	create: [disallow('external')],
-	update: [parseData],
-	patch: [disallow('external')],
-	remove: [disallow('external')],
+	find: [disallow()],
+	get: [disallow()],
+	create: [disallow()],
+	update: [
+		disallow('internal'), // this route is only available for an external callback
+		parseData,
+	],
+	patch: [disallow()],
+	remove: [disallow()],
 };
 
 exports.after = {
