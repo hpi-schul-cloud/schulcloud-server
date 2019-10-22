@@ -379,7 +379,7 @@ exports.mapPayload = (context) => {
 	logger.log('warning',
 		'DEPRECATED: this hook should be used to ensure backwards compatibility only, and be removed if possible.');
 	if (context.params.payload) {
-		context.params.authentication = Object.assign(context.params.authentication || {}, { payload: context.params.payload });
+		context.params.authentication = Object.assign({}, context.params.authentication, { payload: context.params.payload });
 	}
 	Object.defineProperty(context.params, 'payload', {
 		get() {
