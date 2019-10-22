@@ -35,5 +35,13 @@ describe('Comparator Library for', () => {
 			assert.isTrue(compare.ObjectId.Equal(sampleId, String(sampleId)));
 			assert.isTrue(compare.ObjectId.Equal(sampleId, String(sampleId), new Types.ObjectId(String(sampleId))));
 		});
+		it('return false for unconventional input', () => {
+			assert.isFalse(compare.ObjectId.Equal(null, null));
+			assert.isFalse(compare.ObjectId.Equal(undefined, undefined));
+			assert.isFalse(compare.ObjectId.Equal(null, undefined));
+			assert.isFalse(compare.ObjectId.Equal({}, {}));
+			assert.isFalse(compare.ObjectId.Equal(null, {}));
+			assert.isFalse(compare.ObjectId.Equal('', {}));
+		});
 	});
 });
