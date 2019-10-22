@@ -75,15 +75,24 @@ describe('wopi service', () => {
 		assert.ok(app.service('wopi/files/:fileId/contents'));
 	});
 
-	it('GET /wopi/files/:fileId', (done) => { // !
-		app.service('wopi/files/:fileId').find({
-			query: { access_token: testAccessToken },
-			route: { fileId: testFile._id },
+	it('GET /wopi/files/:fileId', async () => { // !
+		const user = await testObjects.createTestUser();
+		const { authentication: { accessToken } } = await generateRequestParamsFromUser(user);
+		const file = await app.service('files').create({
+			owner: user._id,
+			refOwnerModel: 'user',
+			name: 'Test.docx',
+			size: 11348,
+			storageFileName: `${Date.now()}-Test.docx`,
+			permissions: [],
+		});
+		return app.service('wopi/files/:fileId').find({
+			query: { access_token: accessToken },
+			route: { fileId: file._id },
 			account: { userId: testUserId },
 		}).then((result) => {
-			assert.equal(result.BaseFileName, testFile.name);
-			assert.equal(result.Size, testFile.size);
-			done();
+			assert.equal(result.BaseFileName, file.name);
+			assert.equal(result.Size, file.size);
 		});
 	});
 
@@ -105,6 +114,7 @@ describe('wopi service', () => {
 		try {
 			const user = await testObjects.createTestUser();
 			const headers = {};
+			console.log("firstcall")
 			const file = await app.service('files').create({
 				owner: user._id,
 				refOwnerModel: 'user',
@@ -115,11 +125,11 @@ describe('wopi service', () => {
 			});
 			let params = await generateRequestParamsFromUser(user);
 			params = Object.assign(params, {
+				query: { access_token: params.authentication.accessToken },
 				headers,
 				fileId: file._id,
 				route: { fileId: file._id },
 			});
-			headers.authorization = testAccessToken;
 			await app.service('wopi/files/:fileId').create({}, params);
 			throw new Error('schould have failed');
 		} catch (e) {
@@ -140,9 +150,9 @@ describe('wopi service', () => {
 		});
 		const headers = {};
 		headers['x-wopi-override'] = 'LOCK';
-		headers.authorization = testAccessToken;
 		const authParams = await generateRequestParamsFromUser(user);
 		const firstparams = Object.assign(authParams, {
+			query: { access_token: authParams.authentication.accessToken },
 			headers,
 			_id: file._id,
 			route: { fileId: file._id },
@@ -151,9 +161,9 @@ describe('wopi service', () => {
 		const { lockId } = await app.service('wopi/files/:fileId').create({}, firstparams);
 		assert.notEqual(lockId, undefined);
 
-		headers.authorization = testAccessToken;
 		headers['x-wopi-override'] = 'GET_LOCK';
 		const secondparams = Object.assign(authParams, {
+			query: { access_token: authParams.authentication.accessToken },
 			headers,
 			_id: file._id,
 			route: { fileId: file._id },
