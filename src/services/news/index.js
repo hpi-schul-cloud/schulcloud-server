@@ -1,7 +1,8 @@
 const service = require('feathers-mongoose');
 const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
-const logger = require('../../logger/index');
 const { ObjectId } = require('mongoose').Types;
+const { Equal: EqualIds } = require('../../helper/compare').ObjectId;
+const logger = require('../../logger/index');
 const {
 	newsModel, targetModels, newsHistoryModel, newsPermissions,
 } = require('./model');
@@ -130,7 +131,7 @@ class AbstractService {
 		if (user == null) return [];
 
 		// test user is school member
-		const sameSchool = schoolId.toString() === user.schoolId.toString();
+		const sameSchool = EqualIds(schoolId, user.schoolId);
 		if (!sameSchool) return [];
 
 		return user.permissions;

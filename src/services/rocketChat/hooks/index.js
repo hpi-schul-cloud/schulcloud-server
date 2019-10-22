@@ -1,13 +1,11 @@
 const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
-const logger = require('../../../logger');
-
-const globalHooks = require('../../../hooks');
+const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
 
 
 const userIsInTeam = (userId, team) => {
-	const user = team.userIds.find((el) => el.userId.toString() === userId.toString());
+	const user = team.userIds.find((el) => EqualIds(el.userId, userId));
 	return (user !== undefined);
 };
 

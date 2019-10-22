@@ -3,6 +3,7 @@ const { BadRequest } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
+const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
@@ -59,7 +60,7 @@ const deleteWholeClassFromCourse = (hook) => {
 				{ $pull: { userIds: { $in: studentIds } } },
 				{ multi: true },
 			).exec();
-			hook.data.userIds = hook.data.userIds.filter((value) => !studentIds.some((id) => id.toString() === value));
+			hook.data.userIds = hook.data.userIds.filter((value) => !studentIds.some((id) => EqualIds(id, value)));
 			return hook;
 		});
 	});

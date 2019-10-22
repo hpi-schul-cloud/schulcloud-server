@@ -30,6 +30,7 @@ const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
+const { Equal: EqualIds } = require('../../helper/compare').ObjectId;
 
 const FILE_PREVIEW_SERVICE_URI = process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
 const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI
@@ -219,7 +220,7 @@ const fileStorageService = {
 			if (teamObject) {
 				return new Promise((resolve, reject) => {
 					const teamMember = teamObject.userIds.find(
-						(u) => u.userId.toString() === userId.toString(),
+						(u) => EqualIds(u.userId, userId),
 					);
 					if (teamMember) {
 						return resolve();
@@ -769,7 +770,7 @@ const filePermissionService = {
 		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
 		const rolePromises = rolePermissions
 			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
-		const isFileCreator = fileObj.permissions[0].refId.toString() === userId.toString();
+		const isFileCreator = EqualIds(fileObj.permissions[0].refId, userId);
 
 		const actionMap = {
 			user: () => {

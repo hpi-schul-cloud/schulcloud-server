@@ -1,6 +1,7 @@
 const logger = require('../../../logger/index');
 
 const { teamsModel } = require('../model');
+const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
 
 const getTeams = (userId) => teamsModel.find({ 'userIds.userId': userId }).lean().exec();
 const patchTeamUsers = (team) => teamsModel.findByIdAndUpdate(team._id, { userIds: team.userIds }).lean().exec();
@@ -35,7 +36,7 @@ const deleteUser = (app) => {
 			})
 			.catch((err) => {
 				const notRemovedFromTeams = teams.filter(
-					(team) => team.userIds.some((teamUser) => teamUser.userId.toString() === userId),
+					(team) => team.userIds.some((teamUser) => EqualIds(teamUser.userId, userId)),
 				);
 
 				logger.warning(
