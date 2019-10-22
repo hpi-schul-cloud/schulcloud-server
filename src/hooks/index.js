@@ -377,17 +377,28 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 
 exports.mapPayload = (context) => {
 	logger.log('warning',
-		'DEPRECATED: this hook should be used to ensure backwards compatibility only, and be removed if possible.');
+		'DEPRECATED: mapPayload hook should be used to ensure backwards compatibility only, and be removed if possible.'
+		+ ` path: ${context.path} method: ${context.method}`);
 	if (context.params.payload) {
-		context.params.authentication = Object.assign({}, context.params.authentication, { payload: context.params.payload });
+		context.params.authentication = Object.assign(
+			{},
+			context.params.authentication,
+			{ payload: context.params.payload },
+		);
 	}
 	Object.defineProperty(context.params, 'payload', {
 		get() {
-			logger.log('warning', 'params.payload is DEPRECATED, please use params.authentication.payload instead!');
+			logger.log(
+				'warning', 'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
+				+ ` path: ${context.path} method: ${context.method}`,
+			);
 			return (context.params.authentication || {}).payload;
 		},
 		set(v) {
-			logger.log('warning', 'params.payload is DEPRECATED, please use params.authentication.payload instead!');
+			logger.log(
+				'warning', 'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
+				+ `path: ${context.path} method: ${context.method}`,
+			);
 			if (!context.params.authentication) context.params.authentication = {};
 			context.params.authentication.payload = v;
 		},
