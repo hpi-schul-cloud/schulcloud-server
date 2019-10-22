@@ -2,6 +2,7 @@
 const { BadRequest, Conflict, NotFound } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { FileModel } = require('../../fileStorage/model');
+const { mapPayload } = require('../../../hooks');
 
 /**
     * handles the authentication for wopi-clients,
@@ -88,7 +89,7 @@ const setLockResponseHeader = (hook) => {
 };
 
 exports.before = {
-	all: [wopiAuthentication],
+	all: [wopiAuthentication, mapPayload],
 	find: [],
 	get: [],
 	create: [retrieveWopiOverrideHeader, checkLockHeader],
