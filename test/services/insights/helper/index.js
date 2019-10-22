@@ -1,94 +1,93 @@
-const { expect } = require('chai');
-const { ObjectId } = require('mongoose').Types;
-const { Forbidden } = require('@feathersjs/errors');
-const app = require('../../../../src/app');
-const { createTestUser } = require('../../helpers/testObjects')(app);
+const { expect } = require("chai");
+const { Forbidden } = require("@feathersjs/errors");
+const app = require("../../../../src/app");
+const { createTestUser } = require("../../helpers/testObjects")(app);
 
 const {
-	generateRequestParamsFromUser,
-} = require('../../helpers/services/login')(app);
+	generateRequestParamsFromUser
+} = require("../../helpers/services/login")(app);
 
 const objectKeys = {
-	dauOverMau: ['dauOverMau'],
-	monthlyUsers: ['thisMonth', 'lastMonth'],
-	weeklyUsersService: ['thisWeek', 'lastWeek'],
+	dauOverMau: ["dauOverMau"],
+	monthlyUsers: ["thisMonth", "lastMonth"],
+	weeklyUsersService: ["thisWeek", "lastWeek"],
 	weeklyActivityService: [
-		'Monday',
-		'Tuesday',
-		'Wednesday',
-		'Thursday',
-		'Friday',
-		'Saturday',
-		'Sunday',
+		"Monday",
+		"Tuesday",
+		"Wednesday",
+		"Thursday",
+		"Friday",
+		"Saturday",
+		"Sunday"
 	],
 	weeklyActiveUsersService: [
-		'teacherUsers',
-		'studentUsers',
-		'activeStudents',
-		'activeTeachers',
-		'activeStudentPercentage',
-		'activeTeacherPercentage',
+		"teacherUsers",
+		"studentUsers",
+		"activeStudents",
+		"activeTeachers",
+		"activeStudentPercentage",
+		"activeTeacherPercentage"
 	],
-	roleActivityService: ['teacherData', 'studentData'],
+	roleActivityService: ["teacherData", "studentData"]
 };
 
 function insightsIntegrationTest(title, service, keys) {
 	const dateRegex = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)$/;
 	describe(title, () => {
-		it('Students should not have access to insights', async () => {
-			const studentUser = await createTestUser({ roles: ['student'] });
+		it("Students should not have access to insights", async () => {
+			const studentUser = await createTestUser({ roles: ["student"] });
 			const studentParams = await generateRequestParamsFromUser(
-				studentUser,
+				studentUser
 			);
 
 			try {
 				await service.find(studentParams);
-				expect.fail('The previous call should have failed');
+				expect.fail("The previous call should have failed");
 			} catch (err) {
 				expect(err).to.be.instanceOf(Forbidden);
 			}
 		});
 
-		it('should not have access to .get', async () => {
+		it("should not have access to .get", async () => {
 			try {
 				await service.get();
-				expect.fail('The previous call should have failed');
+				expect.fail("The previous call should have failed");
 			} catch (err) {
 				expect(err).to.be.instanceOf(TypeError);
 			}
 		});
 
-		it('should not have access to .create', async () => {
+		it("should not have access to .create", async () => {
 			try {
 				await service.create();
-				expect.fail('The previous call should have failed');
+				expect.fail("The previous call should have failed");
 			} catch (err) {
 				expect(err).to.be.instanceOf(TypeError);
 			}
 		});
 
-		it('should not have access to .update', async () => {
+		it("should not have access to .update", async () => {
 			try {
 				await service.update();
-				expect.fail('The previous call should have failed');
+				expect.fail("The previous call should have failed");
 			} catch (err) {
 				expect(err).to.be.instanceOf(TypeError);
 			}
 		});
 
-		it('should not have access to .patch', async () => {
+		it("should not have access to .patch", async () => {
 			try {
 				await service.patch();
-				expect.fail('The previous call should have failed');
+				expect.fail("The previous call should have failed");
 			} catch (err) {
 				expect(err).to.be.instanceOf(TypeError);
 			}
 		});
 
-		it('should not have access to .remove', async () => {
+		it("should not have access to .remove", async () => {
 			try {
 				await service.remove();
-				expect.fail('The previous call should have failed');
+				expect.fail("The previous call should have failed");
 			} catch (err) {
 				expect(err).to.be.instanceOf(TypeError);
 			}
@@ -114,57 +113,57 @@ function insightsIntegrationTest(title, service, keys) {
 			);
 		}); */
 
-		it('Admin should have access to insights', async () => {
+		it("Admin should have access to insights", async () => {
 			const adminUser = await createTestUser({
-				roles: ['administrator'],
+				roles: ["administrator"]
 			});
 			const adminParams = await generateRequestParamsFromUser(adminUser);
 
 			const result = await service.find(adminParams);
 			const resultKeys = Object.keys(result);
-			if (title.startsWith('Avg') || title.startsWith('Unique')) {
-				expect(resultKeys.every((k) => dateRegex.test(k)));
+			if (title.startsWith("Avg") || title.startsWith("Unique")) {
+				expect(resultKeys.every(k => dateRegex.test(k)));
 			} else {
 				expect(resultKeys.sort()).to.eql(keys.sort());
 			}
 		});
 
-		it('Teacher should have access to insights', async () => {
-			const teacherUser = await createTestUser({ roles: ['teacher'] });
+		it("Teacher should have access to insights", async () => {
+			const teacherUser = await createTestUser({ roles: ["teacher"] });
 			const teacherParams = await generateRequestParamsFromUser(
-				teacherUser,
+				teacherUser
 			);
 
 			const result = await service.find(teacherParams);
 			const resultKeys = Object.keys(result);
-			if (title.startsWith('Avg') || title.startsWith('Unique')) {
-				expect(resultKeys.every((k) => dateRegex.test(k)));
+			if (title.startsWith("Avg") || title.startsWith("Unique")) {
+				expect(resultKeys.every(k => dateRegex.test(k)));
 			} else {
 				expect(resultKeys.sort()).to.eql(keys.sort());
 			}
 		});
 
-		it('Correct query should filter out unwanted schools', async () => {
+		it("Correct query should filter out unwanted schools", async () => {
 			const adminUser = await createTestUser({
-				roles: ['administrator'],
+				roles: ["administrator"]
 			});
 			const adminParams = await generateRequestParamsFromUser(adminUser);
 
-			const teacherUser = await createTestUser({ roles: ['teacher'] });
+			const teacherUser = await createTestUser({ roles: ["teacher"] });
 			const teacherParams = await generateRequestParamsFromUser(
-				teacherUser,
+				teacherUser
 			);
 
 			const resultsWithQuery = await service.find(adminParams);
 			const resultsWithOutQuery = await service.find(teacherParams);
 
 			expect(
-				Object.entries(resultsWithQuery).length
-					&& resultsWithQuery.constructor === Object,
+				Object.entries(resultsWithQuery).length &&
+					resultsWithQuery.constructor === Object
 			);
 			expect(
-				Object.entries(resultsWithOutQuery).length === 0
-					&& resultsWithOutQuery.constructor === Object,
+				Object.entries(resultsWithOutQuery).length === 0 &&
+					resultsWithOutQuery.constructor === Object
 			);
 		});
 	});

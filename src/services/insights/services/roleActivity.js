@@ -1,21 +1,20 @@
-const request = require("request-promise-native");
-const hooks = require("../hooks");
+const request = require('request-promise-native');
+const hooks = require('../hooks');
 
 function dataMassager(cubeJsData) {
 	const parsed = JSON.parse(cubeJsData);
-	const teacherData = parsed.data[0] ? parsed.data[0]["Events.count"] : null;
-	const studentData = parsed.data[1] ? parsed.data[1]["Events.count"] : null;
+	const teacherData = parsed.data[0] ? parsed.data[0]['Events.count'] : null;
+	const studentData = parsed.data[1] ? parsed.data[1]['Events.count'] : null;
 
 	const data = {
 		teacherData,
-		studentData
+		studentData,
 	};
 	return data;
 }
 
 function generateUrl(schoolId) {
-	const cubeJsUrl =
-		process.env.INSIGHTS_CUBEJS || "http://localhost:4000/cubejs-api/v1/";
+	const cubeJsUrl =		process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
 	const query = `load?query={
   "measures": [
     "Events.count"
@@ -49,7 +48,7 @@ class RoleActivity {
 
 		const options = {
 			url: generateUrl(schoolId),
-			method: "GET"
+			method: 'GET',
 		};
 		const cubeJsData = await request(options);
 		const result = dataMassager(cubeJsData);
@@ -58,9 +57,9 @@ class RoleActivity {
 	}
 }
 
-module.exports = app => {
-	const insightRoute = "/insights/roleActivity";
+module.exports = (app) => {
+	const insightRoute = '/insights/roleActivity';
 	app.use(insightRoute, new RoleActivity());
-	const insightsService = app.service("/insights/roleActivity");
+	const insightsService = app.service('/insights/roleActivity');
 	insightsService.hooks(hooks);
 };

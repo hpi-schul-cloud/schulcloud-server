@@ -1,36 +1,35 @@
-const request = require("request-promise-native");
-const hooks = require("../hooks");
-const { userModel } = require("../../user/model");
-const { findSchool } = require("../helper");
+const request = require('request-promise-native');
+const hooks = require('../hooks');
+const { userModel } = require('../../user/model');
 
 function dataMassager(cubeJsData, totalUsers) {
 	const parsed = JSON.parse(cubeJsData);
 
 	// filtering out the roles from mongodb
 	const teacherUsers = totalUsers[0]
-		? totalUsers[0].roles.filter(el => el.name === "teacher").length
+		? totalUsers[0].roles.filter((el) => el.name === 'teacher').length
 		: null;
 	const studentUsers = totalUsers[0]
-		? totalUsers[0].roles.filter(el => el.name === "student").length
+		? totalUsers[0].roles.filter((el) => el.name === 'student').length
 		: null;
 
 	// grabbing the active users from cubejs or null
 	const activeStudents = parsed.data[0]
-		? parsed.data[0]["Events.activeUsers"]
+		? parsed.data[0]['Events.activeUsers']
 		: null;
 	const activeTeachers = parsed.data[1]
-		? parsed.data[1]["Events.activeUsers"]
+		? parsed.data[1]['Events.activeUsers']
 		: null;
 
 	// converting to percentage or NaN.
 	// two decimals
 	const activeStudentPercentage = (
-		(Number(activeStudents) / studentUsers) *
-		100
+		(Number(activeStudents) / studentUsers)
+		* 100
 	).toFixed(2);
 	const activeTeacherPercentage = (
-		(Number(activeTeachers) / teacherUsers) *
-		100
+		(Number(activeTeachers) / teacherUsers)
+		* 100
 	).toFixed(2);
 
 	const data = {
@@ -39,14 +38,13 @@ function dataMassager(cubeJsData, totalUsers) {
 		activeStudents,
 		activeTeachers,
 		activeStudentPercentage,
-		activeTeacherPercentage
+		activeTeacherPercentage,
 	};
 	return data;
 }
 
 function generateUrl(schoolId) {
-	const cubeJsUrl =
-		process.env.INSIGHTS_CUBEJS || "http://localhost:4000/cubejs-api/v1/";
+	const cubeJsUrl =		process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
 	const query = `load?query={
         "measures": [
           "Events.activeUsers"
@@ -81,14 +79,14 @@ class WeeklyActiveUsers {
 
 		const options = {
 			url: generateUrl(schoolId),
-			method: "GET"
+			method: 'GET',
 		};
 		const cubeJsData = await request(options);
 
 		const totalUsers = await userModel
 			.find({})
-			.select("roles")
-			.populate("roles");
+			.select('roles')
+			.populate('roles');
 
 		const result = dataMassager(cubeJsData, totalUsers);
 
@@ -96,9 +94,9 @@ class WeeklyActiveUsers {
 	}
 }
 
-module.exports = app => {
-	const insightRoute = "/insights/weeklyActiveUsers";
+module.exports = (app) => {
+	const insightRoute = '/insights/weeklyActiveUsers';
 	app.use(insightRoute, new WeeklyActiveUsers());
-	const insightsService = app.service("/insights/weeklyActiveUsers");
+	const insightsService = app.service('/insights/weeklyActiveUsers');
 	insightsService.hooks(hooks);
 };
