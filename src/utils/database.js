@@ -37,6 +37,19 @@ function enableAuditLog(schema, options) {
 	}
 }
 
+function addAuthenticationToOptions(DB_USERNAME, DB_PASSWORD, options) {
+	const auth = {};
+	if (DB_USERNAME) {
+		auth.user = DB_USERNAME;
+	}
+	if (DB_PASSWORD) {
+		auth.password = DB_PASSWORD;
+	}
+	if (DB_USERNAME || DB_PASSWORD) {
+		options.auth = auth;
+	}
+}
+
 function getConnectionOptions() {
 	// read env params
 	const {
@@ -46,9 +59,9 @@ function getConnectionOptions() {
 	} = process.env;
 
 	return {
-		url: encodeMongoURI(DB_URL),
-		username: encodeMongoURI(DB_USERNAME),
-		password: encodeMongoURI(DB_PASSWORD),
+		url: DB_URL,
+		username: DB_USERNAME,
+		password: DB_PASSWORD,
 	};
 }
 
@@ -67,9 +80,20 @@ function connect() {
 		options.username ? `with username ${options.username}` : 'without user',
 		options.password ? 'and' : 'and without', 'password');
 
+	const mongooseOptions = {
+		useNewUrlParser: true,
+		useFindAndModify: false,
+	};
+
+	addAuthenticationToOptions(
+		options.username,
+		options.password,
+		mongooseOptions,
+	);
+
 	return mongoose.connect(
-		options.url,
-		{ useNewUrlParser: true },
+		encodeMongoURI(options.url),
+		mongooseOptions,
 	).then((resolved) => {
 		// handle errors that appear after connection setup
 		mongoose.connection.on('error', (err) => {
