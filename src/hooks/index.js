@@ -321,7 +321,7 @@ exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 	if (params.route && params.route.schoolId && params.route.schoolId !== currentSchoolId) {
 		throw new Forbidden('You do not have valid permissions to access this.');
 	}
-	if (context.method === 'get' || context.method === 'find') {
+	if (['get', 'find', 'remove'].includes(context.method)) {
 		if (params.query.schoolId === undefined) {
 			params.query.schoolId = user.schoolId;
 		} else if (params.query.schoolId !== currentSchoolId) {
@@ -532,7 +532,8 @@ exports.sendEmail = (context, maildata) => {
 
 	if (emails.length > 0) {
 		emails.forEach((email) => {
-			const re = /\S+@\S+\.\S+/;
+			// email validation conform with <input type="email"> (see https://emailregex.com)
+			const re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 			if (re.test(email)) {
 				receipients.push(email);
 			}
