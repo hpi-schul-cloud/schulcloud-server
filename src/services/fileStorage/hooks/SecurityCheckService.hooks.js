@@ -1,5 +1,12 @@
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
+
+const requireId = (context) => {
+	if ([null, undefined].includes(context.id)) {
+		throw new Forbidden('Id must not be null or undefined.');
+	}
+	return context;
+};
 
 const parseData = (context) => {
 	if (context.data) {
@@ -18,6 +25,7 @@ exports.before = {
 	create: [disallow()],
 	update: [
 		disallow('internal'), // this route is only available for an external callback
+		requireId,
 		parseData,
 	],
 	patch: [disallow()],
