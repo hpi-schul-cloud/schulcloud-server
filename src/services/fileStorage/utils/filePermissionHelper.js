@@ -75,7 +75,7 @@ const checkPermissions = (permission) => async (user, file) => {
 	} = fileObject;
 
 	// return always true for owner of file
-	if (user.toString() === owner.toString()) {
+	if (EqualIds(user, owner)) {
 		return Promise.resolve(true);
 	}
 

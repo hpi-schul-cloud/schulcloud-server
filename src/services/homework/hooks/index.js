@@ -169,7 +169,7 @@ const hasPatchPermission = (hook) => {
 			const removedStudents = homework.archived
 				.filter((studentId) => !hook.data.archived.find((stId) => EqualIds(studentId, stId)));
 			const removesOnlySelf = removedStudents.length === 1
-                && removedStudents[0].toString() === hook.params.account.userId.toString();
+                && EqualIds(removedStudents[0], hook.params.account.userId);
 
 			// allow the user to only add him/herself to the archived array (archive homework for this user)
 			const addedStudents = hook.data.archived

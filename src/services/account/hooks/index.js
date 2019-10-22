@@ -4,6 +4,7 @@ const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
 const hooks = require('feathers-hooks-common');
 const { ObjectId } = require('mongoose').Types;
+const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
 
@@ -84,7 +85,7 @@ const validatePassword = (hook) => {
 		hook.app.service('users').get(hook.params.account.userId)])
 		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero, user]) => {
 			// Check if it is own account
-			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id.toString();
+			const editsOwnAccount = EqualIds(hook.id, hook.params.account._id);
 			// Check if it is firstLogin
 			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
 
@@ -218,7 +219,7 @@ const securePatching = (hook) => Promise.all([
 	globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
 	globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
 ]).then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
-	const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id.toString();
+	const editsOwnAccount = EqualIds(hook.id, hook.params.account._id);
 	if (hook.params.account._id !== hook.id) {
 		if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent) || editsOwnAccount)) {
 			return Promise.reject(new BadRequest('You have not the permissions to change other users'));

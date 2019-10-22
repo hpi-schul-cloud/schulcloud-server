@@ -7,6 +7,7 @@ const { injectUserId } = require('../../../hooks');
 const lesson = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');
+const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
 
 const checkForShareToken = (context) => {
 	const { shareToken = '', lessonId } = context.data;
@@ -21,7 +22,7 @@ const checkForShareToken = (context) => {
 			if (
 				_lesson.shareToken === shareToken
 				|| course.shareToken === shareToken
-				|| course.teacherIds.some((t) => t.toString() === currentUserId)
+				|| course.teacherIds.some((t) => EqualIds(t, currentUserId))
 			) {
 				return context;
 			}

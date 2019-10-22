@@ -8,6 +8,7 @@ const {
 } = require('@feathersjs/errors');
 const _ = require('lodash');
 const mongoose = require('mongoose');
+const { Equal: EqualIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
 const KeysModel = require('../services/keys/model');
@@ -341,12 +342,12 @@ exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 const userIsInThatCourse = (user, { userIds = [], teacherIds = [], substitutionIds = [] }, isCourse) => {
 	const userId = user._id.toString();
 	if (isCourse) {
-		return userIds.some((u) => u.toString() === userId)
-            || teacherIds.some((u) => u.toString() === userId)
-            || substitutionIds.some((u) => u.toString() === userId);
+		return userIds.some((u) => EqualIds(u, userId))
+            || teacherIds.some((u) => EqualIds(u, userId))
+            || substitutionIds.some((u) => EqualIds(u, userId));
 	}
 
-	return userIds.some((u) => u.toString() === userId) || testIfRoleNameExist(user, 'teacher');
+	return userIds.some((u) => EqualIds(u, userId)) || testIfRoleNameExist(user, 'teacher');
 };
 
 exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) => {
@@ -444,8 +445,8 @@ exports.restrictToUsersOwnClasses = (context) => getUser(context).then((user) =>
 		const classService = context.app.service('classes');
 		return classService.get(context.id).then((result) => {
 			const userId = context.params.account.userId.toString();
-			if (!(_.some(result.userIds, (u) => u.toString() === userId))
-					&& !(_.some(result.teacherIds, (u) => u.toString() === userId))) {
+			if (!(_.some(result.userIds, (u) => EqualIds(u, userId)))
+					&& !(_.some(result.teacherIds, (u) => EqualIds(u, userId)))) {
 				throw new Forbidden('You are not in that class.');
 			}
 		});
