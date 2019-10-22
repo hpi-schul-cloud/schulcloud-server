@@ -114,7 +114,6 @@ describe('wopi service', () => {
 		try {
 			const user = await testObjects.createTestUser();
 			const headers = {};
-			console.log("firstcall")
 			const file = await app.service('files').create({
 				owner: user._id,
 				refOwnerModel: 'user',
