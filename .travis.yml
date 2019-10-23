@@ -5,10 +5,13 @@ node_js: '10.16'
 services:
   - docker
 
-jobs: 
+jobs:
   include:
 
     - stage: test
+      script:
+        - npm test
+        - npm run coverage-codecov
       name: test:mocha
       env:
         - ROCKET_CHAT_URI=http://localhost:5000
@@ -22,10 +25,17 @@ jobs:
         - npm ci
         - npm i -g wait-on
         - wait-on tcp:27017 -t 60000
-      script:
-        - npm test
-        - npm run coverage-codecov
-
+    - script:
+        - curl https://gist.githubusercontent.com/schul-cloud-bot/a849c38804174f99ca7818782bf03c00/raw/index.sh > integration-test.sh
+        - chmod 700 integration-test.sh
+        - bash integration-test.sh
+      name: "test:integration"
+      env:
+        - IT_CLIENT_HOST=nuxtclient
+        - IT_CLIENT_PORT=4000
+      cache: npm
+      install:
+        - echo "skipping install"
     - stage: deploy
       name: deploy
       env:
