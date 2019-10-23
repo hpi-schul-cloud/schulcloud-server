@@ -40,7 +40,7 @@ const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || f
 const FILE_SECURITY_CHECK_SERVICE_URI = process.env.FILE_SECURITY_CHECK_SERVICE_URI
 	|| 'http://localhost:8081/scan/file';
 const FILE_SECURITY_CHECK_CALLBACK_URI = url.resolve(
-	process.env.HOST || 'http://localhost:3030',
+	process.env.API_HOST || 'http://localhost:3030',
 	FILE_SECURITY_SERVICE_PATH,
 );
 const FILE_SECURITY_CHECK_MAX_FILE_SIZE = parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10)
