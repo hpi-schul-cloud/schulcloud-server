@@ -24,15 +24,15 @@ class AdminOverview {
 	}
 
 	static testIfUserByRoleExist(team, roleId) {
-		return team.userIds.some(user => isSameId(user.role, roleId));
+		return team.userIds.some((user) => isSameId(user.role, roleId));
 	}
 
 	static removeMemberBySchool(team, schoolId) {
-		return team.userIds.filter(user => !isSameId(user.schoolId, schoolId));
+		return team.userIds.filter((user) => !isSameId(user.schoolId, schoolId));
 	}
 
 	static getMembersBySchool(team, schoolId) {
-		return team.userIds.filter(user => isSameId(user.schoolId, schoolId));
+		return team.userIds.filter((user) => isSameId(user.schoolId, schoolId));
 	}
 
 	static getIsOwnerStats(ref, sessionUser, team) {
@@ -64,7 +64,7 @@ class AdminOverview {
 				sessionSchoolId,
 			);
 			const ownerExist = team.userIds.some(
-				user => user.role.name === 'teamowner',
+				(user) => user.role.name === 'teamowner',
 			); // role is populated
 			const hasRocketChat = team.features.includes('rocketChat');
 
@@ -92,7 +92,7 @@ class AdminOverview {
 			const memeberDiffAtOwnSchool = schoolMembers.length - reducedSchoolMembers.length;
 
 			schoolMembers = reducedSchoolMembers.map((m) => {
-				m.user.roles = (m.user.roles || []).map(role => role.name);
+				m.user.roles = (m.user.roles || []).map((role) => role.name);
 				return m;
 			});
 
@@ -110,7 +110,7 @@ class AdminOverview {
 				createdAt: team.createdAt,
 				ownerExist,
 				//      ownerSchool:team.schoolId.name,
-				schools: team.schoolIds.map(s => AdminOverview.getKeys(s, ['name', '_id'])),
+				schools: team.schoolIds.map((s) => AdminOverview.getKeys(s, ['name', '_id'])),
 				schoolMembers,
 			};
 		});
@@ -135,7 +135,7 @@ class AdminOverview {
 						], // schoolId
 					},
 				})
-				.then(teams => AdminOverview.mapped(teams, schoolId))
+				.then((teams) => AdminOverview.mapped(teams, schoolId))
 				.catch((err) => {
 					throw new BadRequest('Can not execute team find.', err);
 				});
@@ -203,7 +203,7 @@ class AdminOverview {
    */
 
 	static getOwner(team, ownerRoleId) {
-		return team.userIds.find(user => isSameId(user.role, ownerRoleId));
+		return team.userIds.find((user) => isSameId(user.role, ownerRoleId));
 	}
 
 	static formatText(text) {
@@ -216,7 +216,7 @@ class AdminOverview {
 	}
 
 	static getRestrictedQuery(teamIds, schoolId) {
-		let query = teamIds.map(_id => ({ _id }));
+		let query = teamIds.map((_id) => ({ _id }));
 		query = { $or: query, $populate: [{ path: 'userIds.userId' }] };
 		query.schoolIds = schoolId;
 		return { query };
@@ -278,14 +278,14 @@ class AdminOverview {
 							html: '',
 						};
 
-						const waits = emails.map(email => mailService
+						const waits = emails.map((email) => mailService
 							.create({ email, subject, content })
-							.then(res => res.accepted[0])
-							.catch(err => `Error: ${err.message}`));
+							.then((res) => res.accepted[0])
+							.catch((err) => `Error: ${err.message}`));
 
 						return Promise.all(waits)
-							.then(values => values)
-							.catch(err => err);
+							.then((values) => values)
+							.catch((err) => err);
 					})
 					.catch((err) => {
 						throw err;

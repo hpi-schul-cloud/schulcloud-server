@@ -11,6 +11,7 @@ const createTestUser = (app, opt) => ({
 	accounts = [], // test if it has a effect
 	roles = [],
 	discoverable = false,
+	firstLogin = false,
 	// manual cleanup, e.g. when testing delete:
 	manualCleanup = false,
 } = {}) => app.service('registrationPins').create({ email })
@@ -18,7 +19,7 @@ const createTestUser = (app, opt) => ({
 		tempPinIds.push(registrationPin);
 		return registrationPin;
 	})
-	.then(registrationPin => app.service('registrationPins').find({
+	.then((registrationPin) => app.service('registrationPins').find({
 		query: { pin: registrationPin.pin, email: registrationPin.email, verified: false },
 	}))
 	.then(() => app.service('users').create({
@@ -30,6 +31,9 @@ const createTestUser = (app, opt) => ({
 		accounts,
 		roles,
 		discoverable,
+		preferences: {
+			firstLogin,
+		},
 	}))
 	.then((user) => {
 		if (!manualCleanup) {
@@ -38,10 +42,10 @@ const createTestUser = (app, opt) => ({
 		return user;
 	});
 
-const cleanup = app => () => {
+const cleanup = (app) => () => {
 	const ids = createdUserIds;
 	createdUserIds = [];
-	return ids.map(id => app.service('users').remove(id));
+	return ids.map((id) => app.service('users').remove(id));
 };
 
 module.exports = (app, opt) => ({
