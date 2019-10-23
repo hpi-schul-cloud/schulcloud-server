@@ -5,6 +5,12 @@ node_js: '10.16'
 services:
   - docker
 
+branches:
+  only:
+    - develop
+    - master
+    - /^(?i:release|hotfix).*$/
+
 jobs:
   include:
 
