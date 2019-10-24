@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const {
 	ifNotLocal,
@@ -10,7 +10,7 @@ const lookupSchool = require('./lookupSchool');
 module.exports = {
 	before: {
 		all: [
-			ifNotLocal(auth.hooks.authenticate('jwt')),
+			ifNotLocal(authenticate('jwt')),
 			ifNotLocal(restrictToCurrentSchool),
 			lookupSchool,
 		],

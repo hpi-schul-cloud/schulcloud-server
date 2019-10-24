@@ -119,7 +119,7 @@ class RocketChatChannel {
 			`/api/v1/groups.members?roomName=${channel.channelName}`, {}, true, {}, 'GET',
 		)).catch((err) => this.handleChannelMissingRcSide(err, channel, teamId));
 
-		const userInChannel = !!(rcChannelMembers.find((e) => e._id === rcAccount.rcId));
+		const userInChannel = !!(rcChannelMembers.members.find((e) => e._id === rcAccount.rcId));
 		if (!userInChannel) {
 			const body = {
 				roomName: channel.channelName,
@@ -277,7 +277,7 @@ class RocketChatChannel {
 			}
 			return Promise.resolve();
 		} catch (err) {
-			logger.warn(`Fehler beim Synchronisieren der rocket.chat moderatoren für team ${teamId} `, err);
+			logger.warning(`Fehler beim Synchronisieren der rocket.chat moderatoren für team ${teamId} `, err);
 			return Promise.reject(err);
 		}
 	}

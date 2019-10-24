@@ -7,8 +7,8 @@ const SystemSyncer = require('./SystemSyncer');
  * @implements {Syncer}
  */
 class LDAPSchoolSyncer extends SystemSyncer {
-	constructor(app, stats, system, school) {
-		super(app, stats, system);
+	constructor(app, stats, logger, system, school) {
+		super(app, stats, logger, system);
 		this.school = school;
 		this.stats = Object.assign(this.stats, {
 			name: this.school.name,

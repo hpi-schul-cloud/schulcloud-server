@@ -146,7 +146,7 @@
 	"createdAt": {
 		"$date": "2019-09-17T14:43:38.288Z"
   },
-	"__v": 0  
+	"__v": 0
 },
 {
 	"_id": {
@@ -169,5 +169,26 @@
 		"$date": "2019-09-17T09:07:38.792Z"
 	},
 	"__v": 0
+},
+{
+    "_id": {
+		"$oid": "5d91b525fee68c5c70d99de1"
+	},
+    "state": "up",
+    "name": "removeUnusedTeamAttributes",
+    "createdAt": {
+		"$date": "2019-09-30T07:46:22.613Z"
+	},
+    "__v": 0
+},
+{
+    "_id" : {
+		"$oid": "5da051503921a638b07b0ccf"
+	},
+    "state" : "up",
+    "name" : "add-datasource-permissions",
+    "createdAt" : {
+		"$date": "2019-10-11T09:54:24.666+0000"
+	},
+    "__v" : 0
 }]
-

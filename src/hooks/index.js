@@ -320,7 +320,7 @@ exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 	if (params.route && params.route.schoolId && params.route.schoolId !== currentSchoolId) {
 		throw new Forbidden('You do not have valid permissions to access this.');
 	}
-	if (context.method === 'get' || context.method === 'find') {
+	if (['get', 'find', 'remove'].includes(context.method)) {
 		if (params.query.schoolId === undefined) {
 			params.query.schoolId = user.schoolId;
 		} else if (params.query.schoolId !== currentSchoolId) {
@@ -374,6 +374,37 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 
 	return context;
 });
+
+exports.mapPayload = (context) => {
+	logger.log('warning',
+		'DEPRECATED: mapPayload hook should be used to ensure backwards compatibility only, and be removed if possible.'
+		+ ` path: ${context.path} method: ${context.method}`);
+	if (context.params.payload) {
+		context.params.authentication = Object.assign(
+			{},
+			context.params.authentication,
+			{ payload: context.params.payload },
+		);
+	}
+	Object.defineProperty(context.params, 'payload', {
+		get() {
+			logger.log(
+				'warning', 'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
+				+ ` path: ${context.path} method: ${context.method}`,
+			);
+			return (context.params.authentication || {}).payload;
+		},
+		set(v) {
+			logger.log(
+				'warning', 'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
+				+ `path: ${context.path} method: ${context.method}`,
+			);
+			if (!context.params.authentication) context.params.authentication = {};
+			context.params.authentication.payload = v;
+		},
+	});
+	return context;
+};
 
 exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
@@ -506,8 +537,8 @@ exports.sendEmail = (context, maildata) => {
 	const userIds = (typeof maildata.userIds === 'string' ? [maildata.userIds] : maildata.userIds) || [];
 	const receipients = [];
 
-	/* eslint max-len: 0 */
-	const re = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+	// email validation conform with <input type="email"> (see https://emailregex.com)
+	const re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 	const replyEmail = ((maildata.replyEmail) && re.test(maildata.replyEmail)) ? maildata.replyEmail : null;
 
 	const promises = [];
