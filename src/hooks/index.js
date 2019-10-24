@@ -506,7 +506,8 @@ exports.sendEmail = (context, maildata) => {
 	const userIds = (typeof maildata.userIds === 'string' ? [maildata.userIds] : maildata.userIds) || [];
 	const receipients = [];
 
-	const re = /\S+@\S+\.\S+/;
+	/* eslint max-len: 0 */
+	const re = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 	const replyEmail = ((maildata.replyEmail) && re.test(maildata.replyEmail)) ? maildata.replyEmail : null;
 
 	const promises = [];

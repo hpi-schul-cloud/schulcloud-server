@@ -19,7 +19,6 @@ const states = ['open', 'closed', 'submitted'];
 
 const problemSchema = new Schema({
 	subject: { type: String, required: true },
-	category: { type: String, enum: categories },
 	currentState: { type: String },
 	targetState: { type: String },
 	state: { type: String, enum: states, default: 'open' },

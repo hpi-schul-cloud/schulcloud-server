@@ -79,7 +79,7 @@ const feedback = () => (hook) => {
 	} else {
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
-			emails: ['ticketsystem2@schul-cloud.org'],
+			emails: ['ticketsystem@schul-cloud.org'],
 			replyEmail: data.replyEmail,
 			content: {
 				text: createFeedbackText(
