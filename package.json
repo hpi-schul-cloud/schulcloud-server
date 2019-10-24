@@ -76,7 +76,7 @@
     "lodash": "^4.17.13",
     "migrate-mongoose": "^4.0.0",
     "moment": "^2.19.2",
-    "mongoose": "^4.7.6",
+    "mongoose": "^5.7.7",
     "mongoose-autopopulate": "^0.9.1",
     "mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
     "mongoose-history": "^0.8.0",
