@@ -3,7 +3,7 @@ const { Forbidden, NotFound } = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
 
 const logger = require('../../../logger/');
-const { injectUserId } = require('../../../hooks');
+const { injectUserId, mapPayload } = require('../../../hooks');
 const lesson = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');
@@ -40,6 +40,7 @@ exports.before = () => ({
 	find: [disallow()],
 	get: [disallow()],
 	create: [
+		mapPayload,
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
 		injectUserId,
 		checkForShareToken,

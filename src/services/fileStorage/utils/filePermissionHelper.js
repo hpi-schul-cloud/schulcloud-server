@@ -79,6 +79,13 @@ const checkPermissions = (permission) => async (user, file) => {
 		return Promise.resolve(true);
 	}
 
+	const userPermissions = permissions
+		.find((perm) => perm.refId && perm.refId.toString() === user.toString());
+
+	if (userPermissions && userPermissions[permission]) {
+		return Promise.resolve(true);
+	}
+
 	const submission = await Submission.findOne({ fileIds: fileObject._id }).lean().exec();
 	if (refOwnerModel === 'course' || submission) {
 		const userObject = await userModel.findOne({ _id: user }).populate('roles').lean().exec();
@@ -102,17 +109,11 @@ const checkPermissions = (permission) => async (user, file) => {
 	}
 
 	const isMember = checkMemberStatus({ file: fileObject, user });
-	const userPermissions = permissions
-		.find((perm) => perm.refId && EqualIds(perm.refId, user));
 
 	// User is no member of team or course
 	// and file has no explicit user permissions (sharednetz files)
 	if (!isMember && !userPermissions) {
 		return Promise.reject();
-	}
-
-	if (userPermissions) {
-		return userPermissions[permission] ? Promise.resolve(true) : Promise.reject();
 	}
 
 	return checkTeamPermission({
