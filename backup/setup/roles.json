@@ -130,7 +130,6 @@
 			"ADMIN_VIEW",
 			"HELPDESK_EDIT",
 			"HELPDESK_VIEW",
-			"INSIGHTS_VIEW",
 			"NEWS_CREATE",
 			"NEWS_EDIT",
 			"SCHOOL_NEWS_EDIT",
@@ -148,12 +147,7 @@
 			"USERGROUP_EDIT",
 			"USERGROUP_FULL_ADMIN",
 			"TEAM_INVITE_EXTERNAL",
-			"DATASOURCES_EDIT",
-			"DATASOURCES_VIEW",
-			"DATASOURCES_CREATE",
-			"DATASOURCES_DELETE",
-			"DATASOURCES_RUN",
-			"DATASOURCES_RUN_VIEW"
+			"INSIGHTS_VIEW"
 		],
 		"__v": 0
 	},
@@ -310,7 +304,10 @@
 				"$oid": "0000d186816abba584714c95"
 			}
 		],
-		"permissions": ["HELPDESK_VIEW", "HELPDESK_EDIT"],
+		"permissions": [
+			"HELPDESK_VIEW",
+			"HELPDESK_EDIT"
+		],
 		"__v": 0
 	},
 	{
@@ -444,7 +441,9 @@
 				"$oid": "5bb5c545fb457b1c3c0c7e13"
 			}
 		],
-		"permissions": ["DELETE_TEAM"],
+		"permissions": [
+			"DELETE_TEAM"
+		],
 		"__v": 0
 	}
 ]
