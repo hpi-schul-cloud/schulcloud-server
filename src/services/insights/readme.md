@@ -2,11 +2,11 @@
 
 [Official API docs](http://localhost:3030/docs/#/insights)
 
-### Allowed HTTPs requests:
+### Allowed HTTPs requests
 
 `GET`
 
-### Description Of Usual Server Responses:
+### Description Of Usual Server Responses
 
 200 `OK`
 
