@@ -33,6 +33,7 @@ const oauth2 = require('./oauth2');
 const roster = require('./roster');
 const ldap = require('./ldap');
 const sync = require('./sync');
+const datasources = require('./datasources');
 const rocketChat = require('./rocketChat');
 const clipboard = require('./clipboard');
 const me = require('./me');
@@ -84,6 +85,7 @@ module.exports = function initializeServices() {
 	app.configure(rocketChat);
 	app.configure(oauth2);
 	app.configure(roster);
+	app.configure(datasources);
 
 
 	// initialize events

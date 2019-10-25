@@ -23,6 +23,7 @@ module.exports = (app, opt = {
 		schools,
 		years,
 		schoolGroups,
+		datasources,
 	} = serviceHelpers(app, opt);
 
 	const cleanup = () => Promise.all([]
@@ -36,7 +37,8 @@ module.exports = (app, opt = {
 		.concat(roles.cleanup())
 		.concat(schools.cleanup())
 		.concat(schoolGroups.cleanup())
-		.concat(years.cleanup()))
+		.concat(years.cleanup())
+		.concat(datasources.cleanup()))
 		.then((res) => {
 			logger.info('[TestObjects] cleanup data.');
 			return res;
@@ -57,6 +59,7 @@ module.exports = (app, opt = {
 		schools: schools.info,
 		schoolGroups: schoolGroups.info,
 		years: years.info,
+		datasources: datasources.info,
 	});
 
 	const createTestTeamWithOwner = async () => {
@@ -85,6 +88,7 @@ module.exports = (app, opt = {
 		createTestRole: roles.create,
 		createTestSchool: schools.create,
 		createTestSchoolGroup: schoolGroups.create,
+		createTestDatasource: datasources.create,
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,

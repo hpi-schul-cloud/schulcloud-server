@@ -184,6 +184,17 @@
 	},
 	{
 		"_id": {
+			"$oid": "5da051503921a638b07b0ccf"
+		},
+		"state": "up",
+		"name": "add-datasource-permissions",
+		"createdAt": {
+			"$date": "2019-10-11T09:54:24.666+0000"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
 			"$oid": "5da5bb0bc279258e75b1b510"
 		},
 		"state": "up",
