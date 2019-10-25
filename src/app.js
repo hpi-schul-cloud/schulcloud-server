@@ -52,9 +52,7 @@ if (process.env.SENTRY_DSN) {
 		environment: app.get('env'),
 		release: version,
 		integrations: [
-			new Sentry.Integrations.Console({
-				loglevel: ['warning'],
-			}),
+			new Sentry.Integrations.Console(),
 		],
 	});
 	Sentry.configureScope((scope) => {
