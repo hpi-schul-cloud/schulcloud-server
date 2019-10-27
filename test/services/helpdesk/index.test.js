@@ -13,7 +13,6 @@ describe('helpdesk service', () => {
 		subject: 'Dies ist ein Titel',
 		currentState: 'Dies ist der CurrentState',
 		targetState: 'Dies ist der TargetState',
-		category: 'dashboard',
 		schoolId: '5836bb5664582c35df3bc000',
 	};
 
@@ -46,7 +45,6 @@ describe('helpdesk service', () => {
 			subject: 'Dies ist ein Titel 2',
 			currentState: 'Dies ist der CurrentState',
 			targetState: 'Dies ist der TargetState',
-			category: 'dashboard',
 			schoolId: '5836bb5664582c35df3bc000',
 		};
 
@@ -55,7 +53,6 @@ describe('helpdesk service', () => {
 				expect(result.subject).to.equal('Dies ist ein Titel 2');
 				expect(result.currentState).to.equal('Dies ist der CurrentState');
 				expect(result.targetState).to.equal('Dies ist der TargetState');
-				expect(result.category).to.equal('dashboard');
 			});
 	});
 
@@ -65,7 +62,6 @@ describe('helpdesk service', () => {
 			subject: 'Dies ist ein Titel 3',
 			currentState: 'Dies ist der CurrentState 2',
 			targetState: 'Dies ist der TargetState 2',
-			category: 'dashboard',
 		};
 
 		helpdeskService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
@@ -79,7 +75,6 @@ describe('helpdesk service', () => {
 		const postBody = {
 			type: 'contactAdmin',
 			subject: 'Dies ist ein Titel 3',
-			category: 'dashboard',
 			schoolId: '5836bb5664582c35df3bc000',
 		};
 		helpdeskService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
@@ -95,11 +90,12 @@ describe('helpdesk service', () => {
 			subject: 'Dies ist ein Titel 4',
 			currentState: 'Dies ist der CurrentState 2',
 			targetState: 'Dies ist der TargetState 2',
-			category: 'dashboard',
+			replyEmail: 'test@mail.de',
 		};
 		helpdeskService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
 			.then((result) => {
 				expect(result).to.equal({});
+				expect(result.replyTo).to.equal('test@mail.de');
 			});
 	});
 
@@ -111,11 +107,12 @@ describe('helpdesk service', () => {
 			desire: 'Dies ist Desire 1',
 			benefit: 'Dies ist Benefit 1',
 			acceptanceCriteria: 'Dies sind acceptanceCriteria',
-			category: 'dashboard',
+			replyEmail: 'test@mail.de',
 		};
 		helpdeskService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
 			.then((result) => {
 				expect(result).to.equal({});
+				expect(result.replyTo).to.equal('test@mail.de');
 			});
 	});
 
@@ -123,7 +120,6 @@ describe('helpdesk service', () => {
 		const postBody = {
 			type: 'contactHPI',
 			subject: 'Dies ist ein Titel 4',
-			category: 'dashboard',
 		};
 		helpdeskService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
 			.catch((err) => {

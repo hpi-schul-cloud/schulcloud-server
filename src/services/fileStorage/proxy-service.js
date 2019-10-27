@@ -23,7 +23,8 @@ const {
 	createDefaultPermissions,
 	createPermission,
 } = require('./utils/');
-const { FileModel } = require('./model');
+const { FileModel, SecurityCheckStatusTypes } = require('./model');
+const { SERVICE_PATH: FILE_SECURITY_SERVICE_PATH } = require('./SecurityCheckService');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
@@ -33,8 +34,20 @@ const logger = require('../../logger');
 
 const FILE_PREVIEW_SERVICE_URI = process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
 const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI
-|| 'http://localhost:3030/fileStorage/thumbnail/';
+	|| 'http://localhost:3030/fileStorage/thumbnail/';
 const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || false;
+
+const FILE_SECURITY_CHECK_SERVICE_URI = process.env.FILE_SECURITY_CHECK_SERVICE_URI
+	|| 'http://localhost:8081/scan/file';
+const FILE_SECURITY_CHECK_CALLBACK_URI = url.resolve(
+	process.env.HOST || 'http://localhost:3030',
+	FILE_SECURITY_SERVICE_PATH,
+);
+const FILE_SECURITY_CHECK_MAX_FILE_SIZE = parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10)
+	|| 512 * 1024 * 1024;
+const FILE_SECURITY_SERVICE_USERNAME = process.env.FILE_SECURITY_SERVICE_USERNAME || '';
+const FILE_SECURITY_SERVICE_PASSWORD = process.env.FILE_SECURITY_SERVICE_PASSWORD || '';
+const ENABLE_FILE_SECURITY_CHECK = process.env.ENABLE_FILE_SECURITY_CHECK || 'false';
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
@@ -76,6 +89,44 @@ const prepareThumbnailGeneration = (file, strategy, userId, { name: dataName },
 		}))
 		: Promise.resolve()
 );
+
+const prepareSecurityCheck = (file, strategy, userId, storageFileName) => {
+	if (ENABLE_FILE_SECURITY_CHECK === 'true') {
+		if (file.size > FILE_SECURITY_CHECK_MAX_FILE_SIZE) {
+			return FileModel.updateOne(
+				{ _id: file._id },
+				{
+					$set: {
+						'securityCheck.status': SecurityCheckStatusTypes.WONTCHECK,
+						'securityCheck.reason': `File is larger than ${FILE_SECURITY_CHECK_MAX_FILE_SIZE} bytes`,
+					},
+				},
+			).exec();
+		}
+		// create a temporary signed URL and provide it to the virus scan service
+		return strategy.getSignedUrl({
+			userId,
+			flatFileName: storageFileName,
+			localFileName: storageFileName,
+			download: true,
+			Expires: 3600 * 24,
+		}).then((signedUrl) => rp.post({
+			url: FILE_SECURITY_CHECK_SERVICE_URI,
+			auth: {
+				user: FILE_SECURITY_SERVICE_USERNAME,
+				pass: FILE_SECURITY_SERVICE_PASSWORD,
+			},
+			body: {
+				download_uri: signedUrl,
+				callback_uri: url.resolve(FILE_SECURITY_CHECK_CALLBACK_URI, file.securityCheck.requestToken),
+			},
+			json: true,
+		})).catch((err) => {
+			logger.error(err);
+		});
+	}
+	return Promise.resolve();
+};
 
 /**
 * @param {*} owner
@@ -135,6 +186,7 @@ const fileStorageService = {
 				.then(() => FileModel.findOne(props).lean().exec().then(
 					(modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 				))
+				.then((file) => prepareSecurityCheck(file, strategy, userId, props.storageFileName).then(() => file))
 				.then((file) => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file))
 				.catch((err) => {
 					throw new Forbidden(err);
@@ -144,6 +196,7 @@ const fileStorageService = {
 		return FileModel.findOne(props)
 			.exec()
 			.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
+			.then((file) => prepareSecurityCheck(file, strategy, userId, props.storageFileName).then(() => file))
 			.then((file) => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file));
 	},
 
@@ -338,7 +391,6 @@ const signedUrlService = {
 
 	async find({ query, payload: { userId, fileStorageType } }) {
 		const { file, download } = query;
-		// const { userId } = payload;
 		const strategy = createCorrectStrategy(fileStorageType);
 		const fileObject = await FileModel.findOne({ _id: file }).lean().exec();
 
@@ -347,6 +399,12 @@ const signedUrlService = {
 		}
 
 		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
+
+		if (download
+			&& fileObject.securityCheck
+			&& fileObject.securityCheck.status === SecurityCheckStatusTypes.BLOCKED) {
+			throw new Forbidden('File access blocked by security check.');
+		}
 
 		return canRead(userId, file)
 			.then(() => strategy.getSignedUrl({
