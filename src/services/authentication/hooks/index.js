@@ -3,14 +3,10 @@ const { TooManyRequests } = require('@feathersjs/errors');
 const updateUsernameForLDAP = async (context) => {
 	const { schoolId, strategy } = context.data;
 
-	if (strategy !== 'jwt') {
-		if (schoolId) {
-			await context.app.service('schools').get(schoolId).then((school) => {
-				if (strategy === 'ldap') {
-					context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
-				}
-			});
-		}
+	if (strategy === 'ldap' && schoolId) {
+		await context.app.service('schools').get(schoolId).then((school) => {
+			context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
+		});
 	}
 	return context;
 };
@@ -115,8 +111,8 @@ const removeProvider = (context) => {
 
 exports.before = {
 	create: [
-		lowerCaseUsername,
 		updateUsernameForLDAP,
+		lowerCaseUsername,
 		bruteForceCheck,
 		injectUserId,
 		removeProvider,
