@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 const logger = require('../src/logger');
 const app = require('../src/app');
 
-describe.only('Feathers application tests', () => {
+describe('Feathers application tests', () => {
 	before(function setup(done) {
 		this.server = app.listen(3031);
 		logger.level = 'error';

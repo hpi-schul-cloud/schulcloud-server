@@ -375,6 +375,37 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 	return context;
 });
 
+exports.mapPayload = (context) => {
+	logger.log('warning',
+		'DEPRECATED: mapPayload hook should be used to ensure backwards compatibility only, and be removed if possible.'
+		+ ` path: ${context.path} method: ${context.method}`);
+	if (context.params.payload) {
+		context.params.authentication = Object.assign(
+			{},
+			context.params.authentication,
+			{ payload: context.params.payload },
+		);
+	}
+	Object.defineProperty(context.params, 'payload', {
+		get() {
+			logger.log(
+				'warning', 'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
+				+ ` path: ${context.path} method: ${context.method}`,
+			);
+			return (context.params.authentication || {}).payload;
+		},
+		set(v) {
+			logger.log(
+				'warning', 'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
+				+ `path: ${context.path} method: ${context.method}`,
+			);
+			if (!context.params.authentication) context.params.authentication = {};
+			context.params.authentication.payload = v;
+		},
+	});
+	return context;
+};
+
 exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
 		return context;
@@ -506,6 +537,10 @@ exports.sendEmail = (context, maildata) => {
 	const userIds = (typeof maildata.userIds === 'string' ? [maildata.userIds] : maildata.userIds) || [];
 	const receipients = [];
 
+	// email validation conform with <input type="email"> (see https://emailregex.com)
+	const re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+	const replyEmail = ((maildata.replyEmail) && re.test(maildata.replyEmail)) ? maildata.replyEmail : null;
+
 	const promises = [];
 
 	if (roles.length > 0) {
@@ -531,8 +566,6 @@ exports.sendEmail = (context, maildata) => {
 
 	if (emails.length > 0) {
 		emails.forEach((email) => {
-			// email validation conform with <input type="email"> (see https://emailregex.com)
-			const re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 			if (re.test(email)) {
 				receipients.push(email);
 			}
@@ -558,6 +591,7 @@ exports.sendEmail = (context, maildata) => {
 					} else {
 						mailService.create({
 							email,
+							replyEmail,
 							subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 							headers: maildata.headers || {},
 							content: {
@@ -588,6 +622,7 @@ exports.sendEmail = (context, maildata) => {
 			_.uniq(receipients).forEach((email) => {
 				mailService.create({
 					email,
+					replyEmail,
 					subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 					headers: maildata.headers || {},
 					content: {
