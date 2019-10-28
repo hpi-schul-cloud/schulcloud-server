@@ -64,7 +64,7 @@ if (process.env.SENTRY_DSN) {
 	app.use(Sentry.Handlers.requestHandler());
 	app.use(Sentry.Handlers.errorHandler());
 	const removeIds = (url) => {
-		const checkForHexRegExp = /^[a-f\d]{24}$/ig;
+		const checkForHexRegExp = /[a-f\d]{24}/ig;
 		return url.replace(checkForHexRegExp, 'ID');
 	};
 	app.use((req, res, next) => {
