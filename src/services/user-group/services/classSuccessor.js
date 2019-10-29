@@ -53,10 +53,13 @@ const constructSuccessor = async (currentClass, app) => {
 	return successor;
 };
 
+const updatePredecessors = function updatePredecessors(context) {
+	// do things
+};
+
 class ClassSuccessorService {
 	constructor(app) {
 		this.docs = {};
-		this.app = app;
 	}
 
 	/**
@@ -105,6 +108,19 @@ class ClassSuccessorService {
 			logger.warning(err);
 			throw err;
 		}
+	}
+
+	/**
+     * Register methods of the service to listen to events of other services
+     * @listens classes:removed
+     */
+	registerEventListeners() {
+		this.app.service('classes').on('removed', updatePredecessors.bind(this));
+	}
+
+	setup(app) {
+		this.app = app;
+		this.registerEventListeners();
 	}
 }
 
