@@ -72,7 +72,8 @@ class SupportJWTService {
 			if (!userId) {
 				throw new BadRequest(this.err.missingParams);
 			}
-
+			// eslint-disable-next-line no-param-reassign
+			userId = userId.toString(); // validation for intern requests
 			const currentUserId = params.account.userId.toString();
 
 			const $populatedAccounts = await accountModel.find().or([

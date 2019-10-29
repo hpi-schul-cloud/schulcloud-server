@@ -1,3 +1,4 @@
+const logger = require('../../../../src/logger');
 const accountsHelper = require('./accounts');
 
 const generateJWT = (app) => async ({ username, password }) => {
@@ -26,10 +27,19 @@ const generateRequestParams = (app) => async ({ username, password }) => {
 	};
 };
 
-const generateRequestParamsFromUser = (app) => async (user) => {
+const generateRequestParamsFromUser = (app) => async (user, withAccount = false) => {
 	const credentials = { username: user.email, password: user.email };
-	await accountsHelper(app).create(credentials, 'local', user);
-	return generateRequestParams(app)(credentials);
+	const $account = await accountsHelper(app).create(credentials, 'local', user)
+		.catch((err) => {
+			logger.warning(err);
+			return err;
+		});
+
+	const requestParams = await generateRequestParams(app)(credentials);
+	if (withAccount === true) {
+		requestParams.account = $account.toObject();
+	}
+	return requestParams;
 };
 
 // hook.params.account.userId

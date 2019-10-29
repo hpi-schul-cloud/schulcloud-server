@@ -68,19 +68,19 @@ module.exports = (app, opt = {
 		return { team, user };
 	};
 
-	const setupUser = async () => {
-		// create account
-		const user = await users.create();
-		// const account = createTestAccount();
-		// fetch jwt
-		const account = {};
-		const requestParams = {};
+	const setupUser = async (userData) => {
+		const $user = await users.create(userData);
+		const user = $user.toObject();
+		const requestParams = await login.generateRequestParamsFromUser(user, true);
+		const { account } = requestParams;
+		delete requestParams.account;
+		// todo add fakeLoginParams 
 		return { user, account, requestParams };
 	};
 
 	return {
 		createTestSystem: testSystem.create,
-		createTestAccount: warn('@implement should rewrite', accounts.create),
+		createTestAccount: accounts.create,
 		createTestUser: users.create,
 		createTestConsent: consents.create,
 		createTestClass: classes.create,
@@ -92,12 +92,14 @@ module.exports = (app, opt = {
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
-		fakeLoginParams: login.fakeLoginParams,
+		generateRequestParamsFromUser: login.generateRequestParams,
+		// todo update and renname for intern request params?
+		fakeLoginParams: warn('@shouldUpdated', login.fakeLoginParams),
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
 		createTestTeamWithOwner,
 		info,
-		setupUser: warn('@implement should finished', setupUser),
+		setupUser,
 		options: opt,
 	};
 };
