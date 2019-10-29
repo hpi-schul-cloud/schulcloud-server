@@ -2,6 +2,7 @@ const CryptoJS = require('crypto-js');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const decode = require('jwt-decode');
+const { ObjectId } = require('mongoose').Types;
 
 const accountModel = require('../model');
 const logger = require('../../../logger');
@@ -20,8 +21,9 @@ class SupportJWTService {
 		this.err = {
 			missingParams: 'Missing param userId.',
 			noPermission: 'You have no permission to execute this.',
+			canNotCreateJWT: 'Can not create support jwt.',
 		};
-		this.roleThatCanPass = 'superhero';
+		this.permission = 'CREATE_SUPPORT_JWT';
 		this.aud = aud || 'https://schul-cloud.org';
 		this.expiredOffset = expiredOffset || 3600;
 	}
@@ -31,7 +33,7 @@ class SupportJWTService {
 	}
 
 	testAccess(requester) {
-		const canPass = requester.userId.roles.some((r) => r.name === this.roleThatCanPass);
+		const canPass = requester.userId.roles.some((r) => r.permissions.includes(this.permission));
 		if (!canPass) {
 			throw new Forbidden(this.err.noPermission);
 		}
@@ -59,22 +61,10 @@ class SupportJWTService {
 		return CryptoJS.HmacSHA256(signature, secret);
 	}
 
-	getJWTOptions() {
-		return Object.assign({}, this.jwtOptions);
-	}
-
-	addJtiIfAviable(jwtData, params) {
-		try {
-			const regex = /Bearer (.+)/g;
-			const jwtElements = regex.exec(params.headers.authorization) || [];
-			const requestedJWT = jwtElements[1];
-			const { jti } = decode(requestedJWT);
-			jwtData.jti = jti;
-			return jwtData;
-		} catch (err) {
-			logger.warn(err);
-			return jwtData;
-		}
+	// todo later add notification for user
+	executeInfo(currentUserId, userId, exp) {
+		// eslint-disable-next-line max-len
+		logger.info(`The support employee with the Id ${currentUserId} has created  a short live JWT for the user with the Id ${userId}. The JWT expires at ${exp}.`);
 	}
 
 	async create({ userId }, params) {
@@ -98,8 +88,6 @@ class SupportJWTService {
 				.exec();
 
 			const populatedAccounts = $populatedAccounts.map((a) => a.toObject());
-
-
 			const requester = populatedAccounts.find((a) => a.userId._id.toString() === currentUserId);
 			const account = populatedAccounts.find((a) => a.userId._id.toString() === userId);
 
@@ -116,7 +104,8 @@ class SupportJWTService {
 
 			const accountId = account._id.toString();
 
-			let jwtData = {
+			const jwtData = {
+				support: true, // mark for support jwts
 				accountId,
 				userId,
 				iat,
@@ -124,9 +113,8 @@ class SupportJWTService {
 				aud: this.aud,
 				iss: 'feathers',
 				sub: accountId,
+				jti: `support_${ObjectId()}`,
 			};
-
-			jwtData = this.addJtiIfAviable(jwtData, params);
 
 			const secret = this.authentication;
 
@@ -142,12 +130,10 @@ class SupportJWTService {
 
 			const jwt = `${encodedHeader}.${encodedData}.${signature}`;
 
-			// eslint-disable-next-line max-len
-			logger.info(`The support employee with the Id ${currentUserId} has created  a short live JWT for the user with the Id ${userId}. The JWT expires at ${exp}.`);
-			// todo exp -> new Date
+			this.executeInfo(currentUserId, userId, exp);
 			return jwt;
 		} catch (err) {
-			logger.warning('Can not create support jwt.', err);
+			logger.warning(this.err.canNotCreateJWT, err);
 			return err;
 		}
 	}
