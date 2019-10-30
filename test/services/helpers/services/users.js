@@ -1,14 +1,14 @@
 let createdUserIds = [];
 const tempPinIds = [];
 
-const rnd = () => Math.round(Math.random() * 100);
+const rnd = () => Math.round(Math.random() * 10000);
 
 const createTestUser = (app, opt) => async ({
 	// required fields for user
 	firstName = 'Max',
 	lastName = 'Mustermann',
 	birthday = undefined,
-	email = `max${Date.now() + rnd()}@mustermann.de`,
+	email = `max${`${Date.now()}_${rnd()}`}@mustermann.de`,
 	schoolId = opt.schoolId,
 	accounts = [], // test if it has a effect
 	roles = [],
