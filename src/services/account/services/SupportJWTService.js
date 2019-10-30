@@ -57,7 +57,7 @@ class SupportJWTService {
 	}
 
 	HmacSHA256(signature, secret) {
-		console.log(signature, secret, this.authentication, this.app.get('secret'));
+		console.log(signature, secret, this.authentication);
 		return CryptoJS.HmacSHA256(signature, secret);
 	}
 
@@ -146,6 +146,7 @@ class SupportJWTService {
 
 const supportJWTServiceSetup = (app) => {
 	const path = 'accounts/supportJWT';
+	console.log('#', app.get('secrets'));
 	const instance = new SupportJWTService(app.get('secrets').authentication);
 	app.use(path, instance);
 	const service = app.service(path);
