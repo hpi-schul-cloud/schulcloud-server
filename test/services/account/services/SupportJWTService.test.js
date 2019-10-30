@@ -28,22 +28,18 @@ describe('supportJWTService', () => {
 		const [superhero, student] = await Promise.all([
 			testObjects.setupUser({ roles: 'superhero' }),
 			testObjects.setupUser({ roles: 'student' }),
-		]).catch((err) => {
-			throw new Error('Can not setup test users.', err);
-		});
-		const { roles } = await app.service('users').get(superhero.user._id, { query: { $populate: 'roles' } });
+		]);
+
+		const { roles } = await app.service('users')
+			.get(superhero.user._id, { query: { $populate: 'roles' } });
 
 		expect(roles[0].permissions).to.include(testedPermission);
 
 		const userId = student.user._id.toString();
-		const jwt = await supportJWTService.create({ userId }, { account: { userId: superhero.user._id } });
+		const jwt = await supportJWTService
+			.create({ userId }, { account: { userId: superhero.user._id } });
 
-		let decodedJWT;
-		try {
-			decodedJWT = decode(jwt);
-		} catch (err) {
-			throw new Error('Can not decode jwt.');
-		}
+		const decodedJWT = decode(jwt);
 
 		const { expiredOffset } = supportJWTService;
 		const studentAccountId = student.account._id.toString();
@@ -59,21 +55,17 @@ describe('supportJWTService', () => {
 		const [teacher, student] = await Promise.all([
 			testObjects.setupUser({ roles: 'teacher' }),
 			testObjects.setupUser({ roles: 'student' }),
-		]).catch((err) => {
-			throw new Error('Can not setup test users.', err);
-		});
+		]);
 
-		const { roles } = await app.service('users').get(teacher.user._id, { query: { $populate: 'roles' } });
+		const { roles } = await app.service('users')
+			.get(teacher.user._id, { query: { $populate: 'roles' } });
 
 		expect(roles[0].permissions).to.not.include(testedPermission);
 
 		const userId = student.user._id.toString();
-		try {
-			await supportJWTService.create({ userId }, { account: { userId: teacher.user._id } });
-			throw new Error('Error should throw.');
-		} catch (err) {
-			expect(err).should.have.status(403);
-		}
+
+		const result = await supportJWTService.create({ userId }, { account: { userId: teacher.user._id } });
+		expect((result || {}).code).to.be.equal(403);
 	});
 
 	after(testObjects.cleanup);

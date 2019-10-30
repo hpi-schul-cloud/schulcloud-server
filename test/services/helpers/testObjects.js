@@ -69,13 +69,18 @@ module.exports = (app, opt = {
 	};
 
 	const setupUser = async (userData) => {
-		const $user = await users.create(userData);
-		const user = $user.toObject();
-		const requestParams = await login.generateRequestParamsFromUser(user, true);
-		const { account } = requestParams;
-		delete requestParams.account;
-		// todo add fakeLoginParams 
-		return { user, account, requestParams };
+		try {
+			const $user = await users.create(userData);
+			const user = $user.toObject();
+			const requestParams = await login.generateRequestParamsFromUser(user, true);
+			const { account } = requestParams;
+			delete requestParams.account;
+			// todo add fakeLoginParams 
+			return { user, account, requestParams };
+		} catch (err) {
+			logger.warning(err);
+			return err;
+		}
 	};
 
 	return {
