@@ -1,3 +1,5 @@
+const { registrationPinModel } = require('../../../../src/services/user/model');
+
 let createdUserIds = [];
 const tempPinIds = [];
 
@@ -43,7 +45,11 @@ const createTestUser = (app, opt) => async ({
 const cleanup = (app) => () => {
 	const ids = createdUserIds;
 	createdUserIds = [];
-	return ids.map((id) => app.service('users').remove(id));
+	const promises = ids.map((id) => app.service('users').remove(id));
+	promises.push(
+		registrationPinModel.deleteMany({ _id: { $in: tempPinIds.map((p) => p._id) } }),
+	);
+	return Promise.all(promises);
 };
 
 module.exports = (app, opt) => ({
