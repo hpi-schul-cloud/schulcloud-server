@@ -577,11 +577,10 @@ const fileTotalSizeService = {
 	 * - Check if user in payload is administrator
      */
 	find() {
-		return FileModel.find({}).exec()
-			.then((files) => ({
-				total: files.length,
-				totalSize: files.reduce((sum, file) => sum + file.size, 0),
-			}));
+		return Promise.resolve({
+			total: 0,
+			totalSize: 0,
+		});
 	},
 };
 
