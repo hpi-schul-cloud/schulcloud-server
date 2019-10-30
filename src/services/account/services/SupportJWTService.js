@@ -57,6 +57,7 @@ class SupportJWTService {
 	}
 
 	HmacSHA256(signature, secret) {
+		console.log(signature, secret, this.authentication, this.app.get('secret'));
 		return CryptoJS.HmacSHA256(signature, secret);
 	}
 
