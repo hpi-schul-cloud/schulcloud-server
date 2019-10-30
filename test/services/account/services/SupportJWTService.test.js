@@ -10,7 +10,7 @@ const testObjects = require('../../helpers/testObjects')(app);
 const supportJWTService = app.service('accounts/supportJWT');
 const testedPermission = 'CREATE_SUPPORT_JWT';
 
-describe('supportJWTService', () => {
+describe.only('supportJWTService', () => {
 	it('registered the supportJWT service', () => {
 		assert.ok(supportJWTService);
 	});
@@ -38,7 +38,7 @@ describe('supportJWTService', () => {
 		const userId = student.user._id.toString();
 		const jwt = await supportJWTService
 			.create({ userId }, { account: { userId: superhero.user._id } });
-
+		console.log('jwt>>>>>>>>>>>>>>>>', jwt);
 		const decodedJWT = decode(jwt);
 
 		const { expiredOffset } = supportJWTService;
