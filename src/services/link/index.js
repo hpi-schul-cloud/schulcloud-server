@@ -20,44 +20,45 @@ module.exports = function setup() {
 
 	let linkService = service(options);
 
-	const verifyDate = (date) => {
+	const hasExpired = (date) => {
+		// calculate the date the link will expire on
 		const expirationDate = new Date(date);
 		expirationDate.setDate(expirationDate.getDate() + registrationLinkExpirationDays);
-		return expirationDate >= Date.now();
-	};
-
-	const getFrontendUrl = () => {
-		const backendUrl = process.env.HOST;
-		if (backendUrl) return backendUrl.replace('api', '');
-		return 'http://localhost:3100';
+		// check if that expiration date has already passed
+		return expirationDate <= Date.now();
 	};
 
 	const isLocalRegistrationLink = (url) => {
-		const linkPrefix = `${getFrontendUrl()}/registration/`;
-		if (url.startsWith(linkPrefix)) return true;
-		return false;
+		// calculate the beginning of a registrationLink e.g. https://schul-cloud.org/registration/
+		const linkPrefix = `${app.settings.services.web}/registration/`;
+		// check if url starts with that prefix
+		return (url.startsWith(linkPrefix));
 	};
 
-	function redirectToTarget(req, res, next) {
-		if (req.method === 'GET' && !req.query.target) { // capture these requests and issue a redirect
+	function checkLink(req, res, next) {
+		if (req.method === 'GET' && !req.query.target) {
+			// capture queries that don't look for the target and check them
 			/* eslint-disable-next-line no-underscore-dangle */
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then((data) => {
-					if (isLocalRegistrationLink(data.target) && !(verifyDate(data.createdAt))) {
-						res.redirect(`${getFrontendUrl()}/link/expired`);
-					} else if (data.data || req.query.includeShortId) {
+					if (isLocalRegistrationLink(data.target) && hasExpired(data.createdAt)) {
+						// link is both local and has expired
+						res.status(403).json({ error: 'Expired' });
+					} else {
+						// link is valid
 						const [url, query] = data.target.split('?');
 						const queryObject = queryString.parse(query || '');
 						queryObject.link = data._id;
-						res.redirect(`${url}?${queryString.stringify(queryObject)}`);
-					} else {
-						res.redirect(data.target);
+						res.json({
+							target: `${url}?${queryString.stringify(queryObject)}`,
+						});
 					}
 				})
 				.catch((err) => {
 					logger.error(err);
-					res.status(500).redirect(`${getFrontendUrl()}/link/invalid`);
+					// send not found to client
+					res.status(404).json({ error: 'Not found' });
 				});
 		} else {
 			delete req.query.includeShortId;
@@ -186,7 +187,7 @@ module.exports = function setup() {
 	}
 
 
-	app.use('/link', redirectToTarget, linkService);
+	app.use('/link', checkLink, linkService);
 	app.use('/registrationlink', new RegistrationLinkService());
 	app.use('/expertinvitelink', new ExpertLinkService());
 	linkService = app.service('/link');
