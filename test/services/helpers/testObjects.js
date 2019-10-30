@@ -75,7 +75,7 @@ module.exports = (app, opt = {
 			const requestParams = await login.generateRequestParamsFromUser(user, true);
 			const { account } = requestParams;
 			delete requestParams.account;
-			// todo add fakeLoginParams 
+			// todo add fakeLoginParams
 			return { user, account, requestParams };
 		} catch (err) {
 			logger.warning(err);

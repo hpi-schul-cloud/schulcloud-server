@@ -1,7 +1,6 @@
 const CryptoJS = require('crypto-js');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const decode = require('jwt-decode');
 const { ObjectId } = require('mongoose').Types;
 
 const accountModel = require('../model');
