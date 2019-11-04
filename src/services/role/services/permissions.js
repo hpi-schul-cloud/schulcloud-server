@@ -1,11 +1,11 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const Role = require('../model');
 
 const hooks = {
 	before: {
 		all: [
-			auth.hooks.authenticate('jwt'),
+			authenticate('jwt'),
 		],
 		find: [
 			globalHooks.hasPermission('ROLE_VIEW'),

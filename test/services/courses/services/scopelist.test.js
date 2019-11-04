@@ -302,7 +302,7 @@ describe('courses scopelist service integration', () => {
 		} catch (err) {
 			expect(err).to.not.equal(undefined);
 			expect(err.name).to.equal('NotAuthenticated');
-			expect(err.message).to.equal('No auth token');
+			expect(err.message).to.equal('Not authenticated');
 		}
 	});
 

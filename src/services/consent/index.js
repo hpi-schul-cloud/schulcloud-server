@@ -2,22 +2,24 @@ const service = require('feathers-mongoose');
 const { consentModel, ConsentVersionModel } = require('./model');
 const consentHooks = require('./hooks/consents');
 const consentVersionHooks = require('./hooks/consentversions');
+const consentDocs = require('./docs');
 
 // eslint-disable-next-line func-names
 module.exports = function () {
 	const app = this;
 
-	/* Consent Model */
-	app.use('/consents', service({
+	const consentService = service({
 		Model: consentModel,
 		paginate: {
 			default: 25,
 			max: 100,
 		},
 		lean: true,
-	}));
-	const consentService = app.service('/consents');
-	consentService.hooks(consentHooks);
+	});
+	consentService.docs = consentDocs;
+	/* Consent Model */
+	app.use('/consents', consentService);
+	app.service('/consents').hooks(consentHooks);
 
 	/* ConsentVersion Model */
 	app.use('/consentVersions', service({
