@@ -14,10 +14,7 @@ const buildUserQuery = (query, userId) => {
 };
 
 const buildArchiveQuery = (query) => {
-	let filter = 'active';
-	if (query.filter && ['active', 'archived', 'all'].includes(query.filter)) {
-		({ filter } = query);
-	}
+	const filter = ['active', 'archived', 'all'].includes(query.filter) ? query.filter : 'active';
 
 	const yesterday = new Date();
 	yesterday.setDate(yesterday.getDate() - 1);
