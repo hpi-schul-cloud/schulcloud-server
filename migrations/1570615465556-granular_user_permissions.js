@@ -26,14 +26,14 @@ module.exports = {
 			{
 				name: 'user',
 			}, {
-				$pull: { permissions: { $in: ['USER_VIEW', 'USER_EDIT'] } },
+				$pull: { permissions: { $in: ['USER_VIEW', 'USER_EDIT', 'USERGROUP_VIEW'] } },
 			},
 		).lean().exec();
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'user',
 			}, {
-				$addToSet: { permissions: { $each: ['STUDENT_EDIT'] } },
+				$addToSet: { permissions: { $each: ['STUDENT_EDIT', 'CLASS_VIEW', 'COURSE_VIEW'] } },
 			},
 		).lean().exec();
 
@@ -42,14 +42,29 @@ module.exports = {
 			{
 				name: 'teacher',
 			}, {
-				$pull: { permissions: { $in: ['HOMEWORK_CREATE', 'HOMEWORK_EDIT', 'USER_CREATE'] } },
+				$pull: {
+					permissions: {
+						$in: ['HOMEWORK_CREATE', 'HOMEWORK_EDIT', 'USER_CREATE', 'USERGROUP_CREATE', 'USERGROUP_EDIT'],
+					},
+				},
 			},
 		).lean().exec();
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'teacher',
 			}, {
-				$addToSet: { permissions: { $each: ['STUDENT_LIST', 'TEACHER_LIST'] } },
+				$addToSet: {
+					permissions: {
+						$each: [
+							'STUDENT_LIST',
+							'TEACHER_LIST',
+							'CLASS_CREATE',
+							'CLASS_EDIT',
+							'COURSE_CREATE',
+							'COURSE_REMOVE',
+						],
+					},
+				},
 			},
 		).lean().exec();
 
@@ -58,7 +73,12 @@ module.exports = {
 			{
 				name: 'administrator',
 			}, {
-				$pull: { permissions: { $in: ['USER_CREATE'] } },
+				$pull: {
+					permissions: {
+						$in: ['USER_CREATE', 'USERGROUP_CREATE',
+							'USERGROUP_EDIT', 'USERGROUP_FULL_ADMIN'],
+					},
+				},
 			},
 		).lean().exec();
 		await RoleModel.findOneAndUpdate(
@@ -68,8 +88,10 @@ module.exports = {
 				$addToSet: {
 					permissions: {
 						$each: [
-							'STUDENT_LIST',
-							'TEACHER_CREATE', 'TEACHER_EDIT', 'TEACHER_LIST',
+							'STUDENT_LIST', 'TEACHER_CREATE', 'TEACHER_EDIT',
+							'TEACHER_LIST', 'CLASS_CREATE', 'CLASS_EDIT',
+							'CLASS_FULL_ADMIN', 'COURSE_CREATE', 'COURSE_EDIT',
+							'COURSE_REMOVE',
 						],
 					},
 				},
@@ -92,6 +114,22 @@ module.exports = {
 		).lean().exec();
 		// ////////////////////////////////////////////////////
 		await close();
+
+		// demo
+		await RoleModel.findOneAndUpdate(
+			{
+				name: 'demo',
+			}, {
+				$pull: { permissions: { $in: ['USERGROUP_VIEW'] } },
+			},
+		).lean().exec();
+		await RoleModel.findOneAndUpdate(
+			{
+				name: 'demo',
+			}, {
+				$addToSet: { permissions: { $each: ['CLASS_VIEW', 'COURSE_VIEW'] } },
+			},
+		).lean().exec();
 	},
 
 	down: async function down() {
@@ -103,14 +141,19 @@ module.exports = {
 			{
 				name: 'user',
 			}, {
-				$addToSet: { permissions: { $each: ['USER_VIEW', 'USER_EDIT'] } },
+				$addToSet: {
+					permissions: {
+						$each: ['HOMEWORK_CREATE', 'HOMEWORK_EDIT',
+							'USER_CREATE', 'USERGROUP_CREATE', 'USERGROUP_EDIT'],
+					},
+				},
 			},
 		).lean().exec();
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'user',
 			}, {
-				$pull: { permissions: { $in: ['STUDENT_EDIT'] } },
+				$pull: { permissions: { $in: ['STUDENT_EDIT', 'CLASS_VIEW', 'COURSE_VIEW'] } },
 			},
 		).lean().exec();
 
@@ -126,7 +169,18 @@ module.exports = {
 			{
 				name: 'teacher',
 			}, {
-				$pull: { permissions: { $in: ['STUDENT_LIST', 'TEACHER_LIST'] } },
+				$pull: {
+					permissions: {
+						$in: [
+							'STUDENT_LIST',
+							'TEACHER_LIST',
+							'CLASS_CREATE',
+							'CLASS_EDIT',
+							'COURSE_CREATE',
+							'COURSE_REMOVE',
+						],
+					},
+				},
 			},
 		).lean().exec();
 
@@ -135,7 +189,12 @@ module.exports = {
 			{
 				name: 'administrator',
 			}, {
-				$addToSet: { permissions: { $each: ['USER_CREATE'] } },
+				$addToSet: {
+					permissions: {
+						$each: ['USER_CREATE', 'USERGROUP_CREATE',
+							'USERGROUP_EDIT', 'USERGROUP_FULL_ADMIN'],
+					},
+				},
 			},
 		).lean().exec();
 		await RoleModel.findOneAndUpdate(
@@ -145,8 +204,10 @@ module.exports = {
 				$pull: {
 					permissions: {
 						$in: [
-							'STUDENT_LIST',
-							'TEACHER_CREATE', 'TEACHER_EDIT', 'TEACHER_LIST',
+							'STUDENT_LIST', 'TEACHER_CREATE', 'TEACHER_EDIT',
+							'TEACHER_LIST', 'CLASS_CREATE', 'CLASS_EDIT',
+							'CLASS_FULL_ADMIN', 'COURSE_CREATE', 'COURSE_EDIT',
+							'COURSE_REMOVE',
 						],
 					},
 				},
@@ -166,6 +227,22 @@ module.exports = {
 						],
 					},
 				},
+			},
+		).lean().exec();
+
+		// demo
+		await RoleModel.findOneAndUpdate(
+			{
+				name: 'demo',
+			}, {
+				$pull: { permissions: { $in: ['CLASS_VIEW', 'COURSE_VIEW'] } },
+			},
+		).lean().exec();
+		await RoleModel.findOneAndUpdate(
+			{
+				name: 'demo',
+			}, {
+				$addToSet: { permissions: { $each: ['USERGROUP_VIEW'] } },
 			},
 		).lean().exec();
 		// ////////////////////////////////////////////////////
