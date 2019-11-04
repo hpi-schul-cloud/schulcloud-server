@@ -20,6 +20,8 @@ module.exports = {
 					'COURSEGROUP_EDIT',
 					'LESSONS_VIEW',
 					'HOMEWORK_VIEW',
+					"HOMEWORK_EDIT",
+					"HOMEWORK_CREATE",
 					'COMMENTS_VIEW',
 					'COMMENTS_CREATE',
 					'COMMENTS_EDIT',
