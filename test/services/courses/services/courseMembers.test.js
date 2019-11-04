@@ -22,7 +22,7 @@ describe('course scope members service', () => {
 		expect(courseMembersService).to.not.equal(undefined);
 	});
 
-	describe('in a small course', () => {
+	describe('in a course without substitution teacher', () => {
 		let teacher;
 		let student;
 		let course;
@@ -88,7 +88,7 @@ describe('course scope members service', () => {
 		});
 	});
 
-	describe('in a large course', () => {
+	describe('in a course with substitution teacher', () => {
 		let teachers;
 		let substitutionTeachers;
 		let students;
