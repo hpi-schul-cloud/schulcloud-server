@@ -15,8 +15,8 @@ class SupportJWTService {
 	/**
 	 * @param {secret} authentication
 	 */
-	constructor(authentication, aud, expiredOffset) {
-		this.authentication = authentication;
+	constructor(secret, aud, expiredOffset) {
+		this.secret = secret;
 		this.err = {
 			missingParams: 'Missing param userId.',
 			noPermission: 'You have no permission to execute this.',
@@ -56,9 +56,8 @@ class SupportJWTService {
 		return CryptoJS.enc.Utf8.parse(JSON.stringify(input));
 	}
 
-	HmacSHA256(signature, secret) {
-		console.log(signature, secret, this.authentication);
-		return CryptoJS.HmacSHA256(signature, secret);
+	HmacSHA256(signature) {
+		return CryptoJS.HmacSHA256(signature, this.secret);
 	}
 
 	// todo later add notification for user
@@ -117,8 +116,6 @@ class SupportJWTService {
 				jti: `support_${ObjectId()}`,
 			};
 
-			const secret = this.authentication;
-
 			const stringifiedHeader = this.Utf8Stringify(header);
 			const encodedHeader = this.base64url(stringifiedHeader);
 
@@ -126,7 +123,7 @@ class SupportJWTService {
 			const encodedData = this.base64url(stringifiedData);
 
 			let signature = `${encodedHeader}.${encodedData}`;
-			signature = this.HmacSHA256(signature, secret); // algorithm: 'HS256',
+			signature = this.HmacSHA256(signature); // algorithm: 'HS256',
 			signature = this.base64url(signature);
 
 			const jwt = `${encodedHeader}.${encodedData}.${signature}`;
@@ -146,8 +143,8 @@ class SupportJWTService {
 
 const supportJWTServiceSetup = (app) => {
 	const path = 'accounts/supportJWT';
-	console.log('#', app.get('secrets'));
-	const instance = new SupportJWTService(app.get('secrets').authentication);
+	const secret = app.service('authentication').getSecret();
+	const instance = new SupportJWTService(secret);
 	app.use(path, instance);
 	const service = app.service(path);
 	service.hooks(instance.getSetupHooks());

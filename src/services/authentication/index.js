@@ -53,10 +53,15 @@ const authConfig = {
 	},
 };
 
+const addSecretHandler = (authenticationService) => {
+	authenticationService.getSecret = () => authenticationSecret;
+};
+
 module.exports = (app) => {
 	// Configure feathers-authentication
 	app.set('authentication', authConfig);
 	const authentication = new AuthenticationService(app);
+	addSecretHandler(authentication);
 
 	authentication.register('jwt', new JWTStrategy());
 	authentication.register('local', new LocalStrategy());
