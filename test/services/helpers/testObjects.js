@@ -97,9 +97,9 @@ module.exports = (app, opt = {
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
-		generateRequestParamsFromUser: login.generateRequestParams,
+		generateRequestParamsFromUser: login.generateRequestParamsFromUser,
 		// todo update and renname for intern request params?
-		fakeLoginParams: warn('@shouldUpdated', login.fakeLoginParams),
+		fakeLoginParams: warn('@deprecated', login.fakeLoginParams),
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
 		createTestTeamWithOwner,
