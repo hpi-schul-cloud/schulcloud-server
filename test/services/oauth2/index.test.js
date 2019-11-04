@@ -1,63 +1,63 @@
 /* eslint-disable no-console */
 
-const assert = require('assert');
-const chai = require('chai');
-const chaiHttp = require('chai-http');
+const assert = require("assert");
+const chai = require("chai");
+const chaiHttp = require("chai-http");
 
-const chalk = require('chalk');
-const hydraTest = require('./index');
+const chalk = require("chalk");
+const hydraTest = require("./index");
 
-const warning = chalk.keyword('orange');
+const warning = chalk.keyword("orange");
 
 // proxyserver
-const oauth2Server = require('./oauth2MockServer');
-const oauth2 = require('../../../src/services/oauth2');
+const oauth2Server = require("./oauth2MockServer");
+const oauth2 = require("../../../src/services/oauth2");
 
-const app = require('../../../src/app');
-const logger = require('../../../src/logger/');
+const app = require("../../../src/app");
+const logger = require("../../../src/logger/");
 
-const baseUrlService = app.service('oauth2/baseUrl');
-const clientsService = app.service('oauth2/clients');
-const loginService = app.service('oauth2/loginRequest');
-const introspectService = app.service('oauth2/introspect');
-const consentService = app.service('oauth2/auth/sessions/consent');
+const baseUrlService = app.service("oauth2/baseUrl");
+const clientsService = app.service("oauth2/clients");
+const loginService = app.service("oauth2/loginRequest");
+const introspectService = app.service("oauth2/introspect");
+const consentService = app.service("oauth2/auth/sessions/consent");
 
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require("../helpers/testObjects")(app);
 
 chai.use(chaiHttp);
 
-describe.only('oauth2 service', function oauthTest() {
+describe.only("oauth2 service", function oauthTest() {
 	this.timeout(10000);
 
 	const testUser2 = {
-		_id: '0000d224816abba584714c9c',
+		_id: "0000d224816abba584714c9c"
 	};
 
 	const testClient = {
-		client_id: 'unit_test',
-		client_name: 'Unit Test Client',
-		client_secret: 'xxxxxxxxxxxxx',
-		redirect_uris: ['https://localhost:8888'],
-		token_endpoint_auth_method: 'client_secret_basic',
-		subject_type: 'pairwise',
+		client_id: "unit_test",
+		client_name: "Unit Test Client",
+		client_secret: "xxxxxxxxxxxxx",
+		redirect_uris: ["https://localhost:8888"],
+		token_endpoint_auth_method: "client_secret_basic",
+		subject_type: "pairwise"
 	};
 
 	const testClient2 = {
-		client_id: 'unit_test_2',
-		client_name: 'Unit Test Client',
-		client_secret: 'xxxxxxxxxxxxx',
-		redirect_uris: ['https://localhost:8888'],
-		token_endpoint_auth_method: 'client_secret_basic',
-		subject_type: 'pairwise',
+		client_id: "unit_test_2",
+		client_name: "Unit Test Client",
+		client_secret: "xxxxxxxxxxxxx",
+		redirect_uris: ["https://localhost:8888"],
+		token_endpoint_auth_method: "client_secret_basic",
+		subject_type: "pairwise"
 	};
 
 	const beforeHydraUri = app.settings.services.hydra;
 	before(async () => {
-		if (process.env.OAUTH_URL === 'http://localhost:9000') {
-			console.log(warning('running BOTH hydra and mock server test'));
-			travisFriendlyTest();
+		if (process.env.OAUTH_URL === "http://localhost:9000") {
+			console.log(warning("running BOTH hydra and mock server test"));
+			hydraTest();
 		} else {
-			console.log(warning('running only mock server test.'));
+			console.log(warning("running only mock server test."));
 		}
 
 		this.timeout(10000);
@@ -68,121 +68,130 @@ describe.only('oauth2 service', function oauthTest() {
 		app.configure(oauth2);
 	});
 
-	after((done) => {
+	after(done => {
 		// sets uri back to original uri
 		app.settings.services.hydra = beforeHydraUri;
 		done();
 	});
 
-	it('is registered', () => {
+	it("is registered", () => {
 		assert.ok(clientsService);
 		assert.ok(loginService);
 		assert.ok(introspectService);
 		assert.ok(consentService);
 	});
 
-	it('GET BaseUrl', () => baseUrlService.find().then((response) => {
+	it("GET BaseUrl", () =>
+		baseUrlService.find().then(response => {
 			assert.ok(response);
 		}));
 
-	it('CREATE Client', () => app
-			.service('oauth2/clients')
+	it("CREATE Client", () =>
+		app
+			.service("oauth2/clients")
 			.create(testClient)
-			.then((result) => {
+			.then(result => {
 				assert.strictEqual(result.client_id, testClient.client_id);
 			}));
 
-	it('FIND Clients', () => app
-			.service('oauth2/clients/')
+	it("FIND Clients", () =>
+		app
+			.service("oauth2/clients/")
 			.find()
-			.then((result) => {
+			.then(result => {
 				const foundTestClient = JSON.parse(result).find(
-					(client) => client.client_id === testClient.client_id,
+					client => client.client_id === testClient.client_id
 				);
 				assert(foundTestClient, foundTestClient.toString());
 			}));
 
-	it('DELETE Client', () => app
-			.service('oauth2/clients/')
+	it("DELETE Client", () =>
+		app
+			.service("oauth2/clients/")
 			.remove(testClient.client_id)
-			.then((result) => {
+			.then(result => {
 				assert(true);
 			}));
 
-	it('GET Login Request', () => app
-			.service('oauth2/loginRequest')
+	it("GET Login Request", () =>
+		app
+			.service("oauth2/loginRequest")
 			.get(null)
-			.then((result) => {
+			.then(result => {
 				assert.strictEqual(result.challenge, null);
 			}));
 
-	it('PATCH Login Request Accept', async () => {
+	it("PATCH Login Request Accept", async () => {
 		const user = await testObjects.createTestUser();
-		const ltiTool = await app.service('ltiTools').create({
-			oAuthClientId: 'thethingwearelookingfor',
-			url: 'someUrl',
-			key: 'someKey',
-			secret: 'someSecret',
+		const ltiTool = await app.service("ltiTools").create({
+			oAuthClientId: "thethingwearelookingfor",
+			url: "someUrl",
+			key: "someKey",
+			secret: "someSecret"
 		});
-		const pseudonym = await app.service('pseudonym').create({
+		const pseudonym = await app.service("pseudonym").create({
 			userId: user._id,
 			tooldId: ltiTool._id,
-			pseudonym: 'somePseudonym',
+			pseudonym: "somePseudonym"
 		});
-		const results = await app.service('oauth2/loginRequest').patch(
+		const results = await app.service("oauth2/loginRequest").patch(
 			null,
 			{},
 			{
 				query: { accept: 1 },
-				account: { userId: testUser2._id },
-			},
+				account: { userId: testUser2._id }
+			}
 		);
 		// redirectTo = result.redirect_to;
 		assert.ok(results.redirect_to.includes(testClient2.client_id));
-		app.service('pseudonym').remove(pseudonym._id);
-		app.service('ltiTools').remove(ltiTool._id);
+		app.service("pseudonym").remove(pseudonym._id);
+		app.service("ltiTools").remove(ltiTool._id);
 	});
 
-	it('PATCH Login Request Reject', () => app
-			.service('oauth2/loginRequest')
+	it("PATCH Login Request Reject", () =>
+		app
+			.service("oauth2/loginRequest")
 			.patch(
 				null,
 				{},
 				{
 					query: { accept: 0 },
-					account: { userId: '0000d224816abba584714c9c' },
-				},
+					account: { userId: "0000d224816abba584714c9c" }
+				}
 			)
 			.then(() => {
 				assert.ok(true);
 			}));
 
-	it('Introspect Inactive Token', () => app
-			.service('oauth2/introspect')
-			.create({ token: 'xxx' })
-			.then((res) => {
+	it("Introspect Inactive Token", () =>
+		app
+			.service("oauth2/introspect")
+			.create({ token: "xxx" })
+			.then(res => {
 				assert(res.active === false);
 			}));
 
-	it('GET Consent', () => app
-			.service('oauth2/auth/sessions/consent')
+	it("GET Consent", () =>
+		app
+			.service("oauth2/auth/sessions/consent")
 			.get(testUser2._id, {
-				account: { userId: testUser2._id },
+				account: { userId: testUser2._id }
 			})
-			.then((consents) => {
+			.then(consents => {
 				assert.ok(consents);
 			}));
 
-	it('REMOVE Consent', () => app
-			.service('oauth2/auth/sessions/consent')
+	it("REMOVE Consent", () =>
+		app
+			.service("oauth2/auth/sessions/consent")
 			.remove(testUser2._id, {
 				account: { userId: testUser2._id },
-				query: { client: testClient.client_id },
+				query: { client: testClient.client_id }
 			})
 			.then(() => {
-				throw new Error('Was not supposed to succeed');
+				throw new Error("Was not supposed to succeed");
 			})
-			.catch((err) => {
+			.catch(err => {
 				assert.strictEqual(404, err.statusCode);
 			}));
 });
