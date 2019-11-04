@@ -61,10 +61,14 @@ const constructSuccessor = async (currentClass, app) => {
 const onClassRemoved = async function updateClassPredecessors(context) {
 	// using the class service returns all classes of the school.
 	// Once that behaviour is fixed, the class Service schould be used.
-	const classes = await classModel.find({ successor: context._id }).lean();
-	classes.forEach((c) => {
-		this.app.service('classes').patch(c._id, { $unset: { successor: '' } });
-	});
+	try {
+		const classes = await classModel.find({ successor: context._id }).lean();
+		classes.forEach((c) => {
+			this.app.service('classes').patch(c._id, { $unset: { successor: '' } });
+		});
+	} catch (err) {
+		logger.warning('error while updating predecessors of deleted class', err);
+	}
 };
 
 class ClassSuccessorService {
