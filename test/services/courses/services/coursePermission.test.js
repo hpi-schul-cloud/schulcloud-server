@@ -18,6 +18,7 @@ describe('PermissionService', async () => {
 		'COMMENTS_VIEW',
 		'CONTENT_NON_OER_VIEW',
 		'CONTENT_VIEW',
+		'COURSE_VIEW',
 		'COURSEGROUP_CREATE',
 		'COURSEGROUP_EDIT',
 		'DASHBOARD_VIEW',
@@ -56,13 +57,13 @@ describe('PermissionService', async () => {
 		'TEAM_VIEW',
 		'TOOL_VIEW',
 		'TOPIC_VIEW',
-		'USERGROUP_VIEW',
 	];
 
 	const studentPermissions = [...userPermissions];
 
 	const teacherPermissions = [
 		'ACCOUNT_CREATE',
+		'COURSE_CREATE',
 		'COURSE_EDIT',
 		'LESSONS_VIEW',
 		'NEWS_CREATE',
@@ -81,8 +82,6 @@ describe('PermissionService', async () => {
 		'TOOL_NEW_VIEW',
 		'TOPIC_CREATE',
 		'TOPIC_EDIT',
-		'USERGROUP_CREATE',
-		'USERGROUP_EDIT',
 		...userPermissions,
 	];
 
