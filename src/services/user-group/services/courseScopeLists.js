@@ -1,7 +1,7 @@
 const { ScopeListService } = require('../../helpers/scopePermissions');
 const { courseModel } = require('../model');
 
-const buildUnpreviledgedUserQuery = (query, userId) => {
+const buildUserQuery = (query, userId) => {
 	const userQuery = { $or: [] };
 	if (['false', 'all', undefined].includes(query.substitution)) {
 		userQuery.$or.push({ userIds: userId });
@@ -39,7 +39,7 @@ const buildArchiveQuery = (query) => {
 
 module.exports = (app) => {
 	ScopeListService.initialize(app, '/users/:scopeId/courses', async (user, permissions, params) => {
-		const userQuery = buildUnpreviledgedUserQuery(params.query, user._id);
+		const userQuery = buildUserQuery(params.query, user._id);
 		const untilQuery = buildArchiveQuery(params.query);
 
 		if (params.query.count === 'true') {
