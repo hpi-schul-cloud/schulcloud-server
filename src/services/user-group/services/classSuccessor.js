@@ -53,8 +53,11 @@ const constructSuccessor = async (currentClass, app) => {
 	return successor;
 };
 
-const updatePredecessors = function updatePredecessors(context) {
-	// do things
+const updatePredecessors = async function updatePredecessors(context) {
+	const classes = await classModel.find({ successor: context._id }).lean();
+	classes.forEach((c) => {
+		this.app.service('classes').patch(c._id, { $unset: { successor: '' } });
+	});
 };
 
 class ClassSuccessorService {
@@ -115,7 +118,7 @@ class ClassSuccessorService {
      * @listens classes:removed
      */
 	registerEventListeners() {
-		this.app.service('classes').on('removed', updatePredecessors.bind(this));
+		this.app.service('/classes').on('removed', updatePredecessors.bind(this));
 	}
 
 	setup(app) {
