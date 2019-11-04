@@ -53,7 +53,14 @@ const constructSuccessor = async (currentClass, app) => {
 	return successor;
 };
 
-const updatePredecessors = async function updatePredecessors(context) {
+/**
+ * event handler, to listen on classes:remove.
+ * make sure the removed class is not linked as successor to any class.
+ * @param {Object} context a class that has just been deleted
+ */
+const onClassRemoved = async function updateClassPredecessors(context) {
+	// using the class service returns all classes of the school.
+	// Once that behaviour is fixed, the class Service schould be used.
 	const classes = await classModel.find({ successor: context._id }).lean();
 	classes.forEach((c) => {
 		this.app.service('classes').patch(c._id, { $unset: { successor: '' } });
@@ -118,7 +125,7 @@ class ClassSuccessorService {
      * @listens classes:removed
      */
 	registerEventListeners() {
-		this.app.service('/classes').on('removed', updatePredecessors.bind(this));
+		this.app.service('/classes').on('removed', onClassRemoved.bind(this));
 	}
 
 	setup(app) {
