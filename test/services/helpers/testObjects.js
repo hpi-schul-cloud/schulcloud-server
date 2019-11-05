@@ -72,11 +72,16 @@ module.exports = (app, opt = {
 		try {
 			const $user = await users.create(userData);
 			const user = $user.toObject();
-			const requestParams = await login.generateRequestParamsFromUser(user, true);
+			const requestParams = await login.generateRequestParamsFromUser(user);
 			const { account } = requestParams;
-			delete requestParams.account;
-			// todo add fakeLoginParams
-			return { user, account, requestParams };
+
+			return {
+				user,
+				account,
+				requestParams,
+				userId: user._id.toString(),
+				accountId: account._id.toString(),
+			};
 		} catch (err) {
 			logger.warning(err);
 			return err;
@@ -98,8 +103,6 @@ module.exports = (app, opt = {
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
 		generateRequestParamsFromUser: login.generateRequestParamsFromUser,
-		// todo update and renname for intern request params?
-		fakeLoginParams: warn('@deprecated', login.fakeLoginParams),
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
 		createTestTeamWithOwner,
