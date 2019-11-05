@@ -202,4 +202,15 @@
 		"$date": "2019-07-30T13:24:23.114Z"
 	},
     "__v" : 0
+},
+{
+    "_id" : {
+		"$oid": "5dc19483d15115187413f3c0"
+	},
+    "state" : "up",
+    "name" : "remove-broken-class-successor-links",
+    "createdAt" : {
+		"$date": "2019-11-05T14:19:26.569Z"
+	},
+    "__v" : 0
 }]
