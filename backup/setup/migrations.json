@@ -37,7 +37,7 @@
 	},
 	"state": "up",
     "name" : "lessonIsCopyFrom",
-    "createdAt" : "2019-07-11T07:44:37.148Z",
+    "createdAt" : "2019-07-11T12:18:30.503Z",
 	"__v": 0
 },
 {
@@ -188,7 +188,18 @@
     "state" : "up",
     "name" : "add-datasource-permissions",
     "createdAt" : {
-		"$date": "2019-10-11T09:54:24.666+0000"
+		"$date": "2019-10-11T09:54:24.666Z"
+	},
+    "__v" : 0
+},
+{
+    "_id" : {
+		"$oid": "5dc173583c9c9844881b6aca"
+	},
+    "state" : "up",
+    "name" : "persist_files_by_copied_courses",
+	"createdAt" : {
+		"$date": "2019-07-30T13:24:23.114Z"
 	},
     "__v" : 0
 },
