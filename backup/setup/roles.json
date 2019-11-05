@@ -182,7 +182,8 @@
 			"SCHOOL_EDIT",
 			"SUBMISSIONS_SCHOOL_VIEW",
 			"TOOL_CREATE",
-			"TOOL_EDIT"
+			"TOOL_EDIT",
+			"CREATE_SUPPORT_JWT"
 		],
 		"__v": 0
 	},
@@ -448,6 +449,135 @@
 		"permissions": [
 			"DELETE_TEAM"
 		],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5bb5c62bfb457b1c3c0c7f00"
+		},
+		"name": "courseStudent",
+		"updatedAt": {
+			"$date": "2019-09-09T12:00:00.000Z"
+		},
+		"createdAt": {
+			"$date": "2019-09-09T12:00:00.000Z"
+		},
+		"roles": [],
+		"permissions": [
+			"COURSE_VIEW",
+			"TOOL_VIEW",
+			"NEWS_VIEW",
+			"ROLE_VIEW",
+			"USERGROUP_VIEW",
+			"COURSEGROUP_CREATE",
+			"COURSEGROUP_EDIT",
+			"LESSONS_VIEW",
+			"HOMEWORK_VIEW",
+			"HOMEWORK_EDIT",
+			"HOMEWORK_CREATE",
+			"COMMENTS_VIEW",
+			"COMMENTS_CREATE",
+			"COMMENTS_EDIT",
+			"SUBMISSIONS_VIEW",
+			"SUBMISSIONS_CREATE",
+			"SUBMISSIONS_EDIT",
+			"FILESTORAGE_VIEW",
+			"FILESTORAGE_EDIT",
+			"FILESTORAGE_CREATE",
+			"FILESTORAGE_REMOVE",
+			"CONTENT_VIEW",
+			"CONTENT_NON_OER_VIEW"
+		],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5bb5c62bfb457b1c3c0c7f01"
+		},
+		"name": "courseTeacher",
+		"updatedAt": {
+			"$date": "2019-09-09T12:00:00.000Z"
+		},
+		"createdAt": {
+			"$date": "2019-09-09T12:00:00.000Z"
+		},
+		"roles": [
+			{
+				"$oid": "5bb5c62bfb457b1c3c0c7f00"
+			}
+		],
+		"permissions": [
+			"COURSE_CREATE",
+			"COURSE_EDIT",
+			"COURSE_DELETE",
+			"HOMEWORK_CREATE",
+			"HOMEWORK_EDIT",
+			"LESSONS_CREATE",
+			"NEWS_CREATE",
+			"NEWS_EDIT",
+			"TOOL_CREATE",
+			"TOOL_EDIT",
+			"TOOL_NEW_VIEW",
+			"TOPIC_CREATE",
+			"TOPIC_EDIT",
+			"USER_CREATE",
+			"USERGROUP_CREATE",
+			"USERGROUP_EDIT",
+			"SCOPE_PERMISSIONS_VIEW"
+		],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5bb5c62bfb457b1c3c0c7f02"
+		},
+		"name": "courseSubstitutionTeacher",
+		"updatedAt": {
+			"$date": "2019-09-09T12:00:00.000Z"
+		},
+		"createdAt": {
+			"$date": "2019-09-09T12:00:00.000Z"
+		},
+		"roles": [
+			{
+				"$oid": "5bb5c62bfb457b1c3c0c7f00"
+			}
+		],
+		"permissions": [
+			"HOMEWORK_CREATE",
+			"HOMEWORK_EDIT",
+			"LESSONS_CREATE",
+			"NEWS_CREATE",
+			"NEWS_EDIT",
+			"TOOL_CREATE",
+			"TOOL_EDIT",
+			"TOOL_NEW_VIEW",
+			"TOPIC_CREATE",
+			"TOPIC_EDIT",
+			"USER_CREATE",
+			"USERGROUP_CREATE",
+			"USERGROUP_EDIT",
+			"SCOPE_PERMISSIONS_VIEW"
+		],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5bb5c62bfb457b1c3c0c7f03"
+		},
+		"name": "courseAdministrator",
+		"updatedAt": {
+			"$date": "2019-09-09T12:00:00.000Z"
+		},
+		"createdAt": {
+			"$date": "2019-09-09T12:00:00.000Z"
+		},
+		"roles": [
+			{
+				"$oid": "5bb5c62bfb457b1c3c0c7f01"
+			}
+		],
+		"permissions": [],
 		"__v": 0
 	}
 ]
