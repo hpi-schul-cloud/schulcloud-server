@@ -53,11 +53,11 @@ describe('oauth2 service', function oauthTest() {
 
 	const beforeHydraUri = app.settings.services.hydra;
 	before(async () => {
-		if (process.env.OAUTH_URL === 'http://localhost:9000') {
-			console.log(warning('running BOTH hydra and mock server test'));
+		if (process.env.OAUTH_URL) {
+			logger.info('running BOTH hydra and mock server test');
 			hydraTest();
 		} else {
-			console.log(warning('running only mock server test.'));
+			logger.info('running only mock server test.'));
 		}
 
 		this.timeout(10000);

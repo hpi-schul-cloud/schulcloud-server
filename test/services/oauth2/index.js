@@ -18,7 +18,6 @@ const toolService = app.service('ltiTools');
 chai.use(chaiHttp);
 
 const hydraTest = () => {
-	console.log('now starting travis friendly test');
 	describe('oauth2 service', function oauthTest() {
 		this.timeout(10000);
 
