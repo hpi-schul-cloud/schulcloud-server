@@ -22,11 +22,13 @@ class PermissionService {
 			name: roleName,
 		}).exec();
 
-		const permissions = [
-			...await role.getPermissions(), // gives back an Set
-		];
+		if (role) {
+			return [
+				...await role.getPermissions(), // gives back a set
+			];
+		}
 
-		return permissions;
+		return [];
 	}
 }
 
