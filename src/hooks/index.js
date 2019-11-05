@@ -537,6 +537,10 @@ exports.sendEmail = (context, maildata) => {
 	const userIds = (typeof maildata.userIds === 'string' ? [maildata.userIds] : maildata.userIds) || [];
 	const receipients = [];
 
+	// email validation conform with <input type="email"> (see https://emailregex.com)
+	const re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+	const replyEmail = ((maildata.replyEmail) && re.test(maildata.replyEmail)) ? maildata.replyEmail : null;
+
 	const promises = [];
 
 	if (roles.length > 0) {
@@ -562,7 +566,6 @@ exports.sendEmail = (context, maildata) => {
 
 	if (emails.length > 0) {
 		emails.forEach((email) => {
-			const re = /\S+@\S+\.\S+/;
 			if (re.test(email)) {
 				receipients.push(email);
 			}
@@ -588,6 +591,7 @@ exports.sendEmail = (context, maildata) => {
 					} else {
 						mailService.create({
 							email,
+							replyEmail,
 							subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 							headers: maildata.headers || {},
 							content: {
@@ -618,6 +622,7 @@ exports.sendEmail = (context, maildata) => {
 			_.uniq(receipients).forEach((email) => {
 				mailService.create({
 					email,
+					replyEmail,
 					subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 					headers: maildata.headers || {},
 					content: {
