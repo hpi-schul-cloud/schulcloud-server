@@ -21,7 +21,12 @@ describe('Test team basic methods', () => {
 
 			const schoolId = user.schoolId.toString();
 			userId = user._id.toString();
-			const fakeLoginParams = T.fakeLoginParams({ userId });
+			const fakeLoginParams = {
+				account: { userId },
+				authenticated: true,
+				provider: 'rest',
+				query: {},
+			};
 
 			team = await teamService.create({
 				name: 'TestTeam',
