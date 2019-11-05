@@ -4,10 +4,7 @@ const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
-const chalk = require('chalk');
 const hydraTest = require('./index');
-
-const warning = chalk.keyword('orange');
 
 // proxyserver
 const oauth2Server = require('./oauth2MockServer');
@@ -57,7 +54,7 @@ describe('oauth2 service', function oauthTest() {
 			logger.info('running BOTH hydra and mock server test');
 			hydraTest();
 		} else {
-			logger.info('running only mock server test.'));
+			logger.info('running only mock server test.');
 		}
 
 		this.timeout(10000);
@@ -82,39 +79,39 @@ describe('oauth2 service', function oauthTest() {
 	});
 
 	it('GET BaseUrl', () => baseUrlService.find().then((response) => {
-			assert.ok(response);
-		}));
+		assert.ok(response);
+	}));
 
 	it('CREATE Client', () => app
-			.service('oauth2/clients')
-			.create(testClient)
-			.then((result) => {
-				assert.strictEqual(result.client_id, testClient.client_id);
-			}));
+		.service('oauth2/clients')
+		.create(testClient)
+		.then((result) => {
+			assert.strictEqual(result.client_id, testClient.client_id);
+		}));
 
 	it('FIND Clients', () => app
-			.service('oauth2/clients/')
-			.find()
-			.then((result) => {
-				const foundTestClient = JSON.parse(result).find(
-					(client) => client.client_id === testClient.client_id,
-				);
-				assert(foundTestClient, foundTestClient.toString());
-			}));
+		.service('oauth2/clients/')
+		.find()
+		.then((result) => {
+			const foundTestClient = JSON.parse(result).find(
+				(client) => client.client_id === testClient.client_id,
+			);
+			assert(foundTestClient, foundTestClient.toString());
+		}));
 
 	it('DELETE Client', () => app
-			.service('oauth2/clients/')
-			.remove(testClient.client_id)
-			.then((result) => {
-				assert(true);
-			}));
+		.service('oauth2/clients/')
+		.remove(testClient.client_id)
+		.then((result) => {
+			assert(true);
+		}));
 
 	it('GET Login Request', () => app
-			.service('oauth2/loginRequest')
-			.get(null)
-			.then((result) => {
-				assert.strictEqual(result.challenge, null);
-			}));
+		.service('oauth2/loginRequest')
+		.get(null)
+		.then((result) => {
+			assert.strictEqual(result.challenge, null);
+		}));
 
 	it('PATCH Login Request Accept', async () => {
 		const user = await testObjects.createTestUser();
@@ -144,45 +141,45 @@ describe('oauth2 service', function oauthTest() {
 	});
 
 	it('PATCH Login Request Reject', () => app
-			.service('oauth2/loginRequest')
-			.patch(
-				null,
-				{},
-				{
-					query: { accept: 0 },
-					account: { userId: '0000d224816abba584714c9c' },
-				},
-			)
-			.then(() => {
-				assert.ok(true);
-			}));
+		.service('oauth2/loginRequest')
+		.patch(
+			null,
+			{},
+			{
+				query: { accept: 0 },
+				account: { userId: '0000d224816abba584714c9c' },
+			},
+		)
+		.then(() => {
+			assert.ok(true);
+		}));
 
 	it('Introspect Inactive Token', () => app
-			.service('oauth2/introspect')
-			.create({ token: 'xxx' })
-			.then((res) => {
-				assert(res.active === false);
-			}));
+		.service('oauth2/introspect')
+		.create({ token: 'xxx' })
+		.then((res) => {
+			assert(res.active === false);
+		}));
 
 	it('GET Consent', () => app
-			.service('oauth2/auth/sessions/consent')
-			.get(testUser2._id, {
-				account: { userId: testUser2._id },
-			})
-			.then((consents) => {
-				assert.ok(consents);
-			}));
+		.service('oauth2/auth/sessions/consent')
+		.get(testUser2._id, {
+			account: { userId: testUser2._id },
+		})
+		.then((consents) => {
+			assert.ok(consents);
+		}));
 
 	it('REMOVE Consent', () => app
-			.service('oauth2/auth/sessions/consent')
-			.remove(testUser2._id, {
-				account: { userId: testUser2._id },
-				query: { client: testClient.client_id },
-			})
-			.then(() => {
-				throw new Error('Was not supposed to succeed');
-			})
-			.catch((err) => {
-				assert.strictEqual(404, err.statusCode);
-			}));
+		.service('oauth2/auth/sessions/consent')
+		.remove(testUser2._id, {
+			account: { userId: testUser2._id },
+			query: { client: testClient.client_id },
+		})
+		.then(() => {
+			throw new Error('Was not supposed to succeed');
+		})
+		.catch((err) => {
+			assert.strictEqual(404, err.statusCode);
+		}));
 });
