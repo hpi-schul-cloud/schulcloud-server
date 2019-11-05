@@ -114,7 +114,7 @@ const hydraTest = () => {
 								method: 'GET',
 								followRedirect: false,
 							}).catch((res2) => {
-								const position2 =									res2.error.indexOf('login_challenge=')
+								const position2 = res2.error.indexOf('login_challenge=')
 									+ 'login_challenge'.length
 									+ 1;
 								loginRequest2 = res2.error.substr(
@@ -159,80 +159,80 @@ const hydraTest = () => {
 		});
 
 		it('GET BaseUrl', () => baseUrlService.find().then((response) => {
-				assert.ok(response);
-			}));
+			assert.ok(response);
+		}));
 
 		it('CREATE Client', () => clientsService.create(testClient).then((result) => {
-				assert.strictEqual(result.client_id, testClient.client_id);
-			}));
+			assert.strictEqual(result.client_id, testClient.client_id);
+		}));
 
 		it('FIND Clients', () => clientsService.find().then((result) => {
-				const foundTestClient = JSON.parse(result).find(
-					(client) => client.client_id === testClient.client_id,
-				);
-				assert(foundTestClient);
-			}));
+			const foundTestClient = JSON.parse(result).find(
+				(client) => client.client_id === testClient.client_id,
+			);
+			assert(foundTestClient);
+		}));
 
 		it('DELETE Client', () => clientsService.remove(testClient.client_id).then((result) => {
-				assert(true);
-			}));
+			assert(true);
+		}));
 
 		it('GET Login Request', () => loginService.get(loginRequest1).then((result) => {
-				assert.strictEqual(result.challenge, loginRequest1);
-			}));
+			assert.strictEqual(result.challenge, loginRequest1);
+		}));
 
 		it('PATCH Login Request Accept', () => loginService
-				.patch(
-					loginRequest1,
-					{},
-					{
-						query: { accept: 1 },
-						account: { userId: testUser2._id },
-					},
-				)
-				.then((result) => {
-					// redirectTo = result.redirect_to;
-					assert.ok(
-						result.redirect_to.indexOf(testClient2.client_id) !== -1,
-					);
-				}));
-
-		it('PATCH Login Request Reject', () => loginService
-				.patch(
-					loginRequest2,
-					{},
-					{
-						query: { accept: 0 },
-						account: { userId: '0000d224816abba584714c9c' },
-					},
-				)
-				.then(() => {
-					assert.ok(true);
-				}));
-
-		it('Introspect Inactive Token', () => introspectService.create({ token: 'xxx' }).then((res) => {
-				assert(res.active === false);
+			.patch(
+				loginRequest1,
+				{},
+				{
+					query: { accept: 1 },
+					account: { userId: testUser2._id },
+				},
+			)
+			.then((result) => {
+				// redirectTo = result.redirect_to;
+				assert.ok(
+					result.redirect_to.indexOf(testClient2.client_id) !== -1,
+				);
 			}));
 
+		it('PATCH Login Request Reject', () => loginService
+			.patch(
+				loginRequest2,
+				{},
+				{
+					query: { accept: 0 },
+					account: { userId: '0000d224816abba584714c9c' },
+				},
+			)
+			.then(() => {
+				assert.ok(true);
+			}));
+
+		it('Introspect Inactive Token', () => introspectService.create({ token: 'xxx' }).then((res) => {
+			assert(res.active === false);
+		}));
+
 		it('GET Consent', () => consentService
-				.get(testUser2._id, {
-					account: { userId: testUser2._id },
-				})
-				.then((consents) => {
-					assert.ok(consents);
-				}));
+			.get(testUser2._id, {
+				account: { userId: testUser2._id },
+			})
+			.then((consents) => {
+				assert.ok(consents);
+			}));
 
 		it('REMOVE Consent', () => consentService
-				.remove(testUser2._id, {
-					account: { userId: testUser2._id },
-					query: { client: testClient.client_id },
-				})
-				.then(() => {
-					throw new Error('Was not supposed to succeed');
-				})
-				.catch((err) => {
-					assert.strictEqual(404, err.statusCode);
-				}));
+			.remove(testUser2._id, {
+				account: { userId: testUser2._id },
+				query: { client: testClient.client_id },
+			})
+			.then(() => {
+				throw new Error('Was not supposed to succeed');
+			})
+			.catch((err) => {
+				assert.strictEqual(404, err.statusCode);
+			}));
 	});
 };
 module.exports = hydraTest;
