@@ -64,35 +64,20 @@ exports.hasRole = (context, userId, roleName) => {
 };
 
 exports.hasPermission = (permissionName) => (context) => {
-	const { params: { headers, account, provider }, app } = context;
+	const { params: { account, provider }, app } = context;
 	// If it was an internal call then skip this context
 	if (!provider) {
 		return Promise.resolve(context);
 	}
 
-	// If an api key was provided, skip
-	if ((headers || {})['x-api-key']) {
-		return KeysModel.findOne({ key: headers['x-api-key'] })
-			.then((res) => {
-				if (!res) throw new NotAuthenticated('API Key is invalid');
-				return context;
-			})
-			.catch(() => {
-				throw new NotAuthenticated('API Key is invalid.');
-			});
-	}
-
 	// Otherwise check for user permissions
-	if (!account) {
-		throw new Forbidden('Can not read account data');
+	if (!account && !account.userId) {
+		throw new Forbidden('Can not read account data.');
 	}
-	const service = app.service('/users/');
-	const _id = account.userId || '';
-	return service.get({ _id })
-		.then((user) => {
-			user.permissions = Array.from(user.permissions);
 
-			if (!user.permissions.includes(permissionName)) {
+	return app.service('/users/').get(account.userId)
+		.then(({ permissions = [] }) => {
+			if (!permissions.includes(permissionName)) {
 				throw new Forbidden(`You don't have the permission ${permissionName}.`);
 			}
 			return context;
