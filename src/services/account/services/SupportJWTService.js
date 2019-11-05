@@ -1,12 +1,15 @@
 const CryptoJS = require('crypto-js');
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
+const { BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { ObjectId } = require('mongoose').Types;
 
-const { hasPermission } = require('../../../hooks/index')
+const { hasPermission } = require('../../../hooks/index');
 const { authenticationSecret, audience: audienceName } = require('../../authentication/logic');
 const accountModel = require('../model');
 const logger = require('../../../logger');
+
+const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
+const DEFAULT_AUDIENCE = 'https://schul-cloud.org'; // The organisation that create this jwt.
 
 class JWT {
 	/**
@@ -14,13 +17,13 @@ class JWT {
 	 * @param {String} [audience] Name of jwt creator.
 	 * @param {Number} [expiredOffset] The jwt expire time in ms.
 	 */
-	constructor(secret, audience, expiredOffset) {
+	constructor(secret, audience = DEFAULT_AUDIENCE, expiredOffset = DEFAULT_EXPIRED) {
 		this.secret = secret;
 		this.aud = audience;
 		this.expiredOffset = expiredOffset;
 	}
 
-	static base64url(source) {
+	base64url(source) {
 		// Encode in classical base64
 		let encodedSource = CryptoJS.enc.Base64.stringify(source);
 
@@ -34,16 +37,25 @@ class JWT {
 		return encodedSource;
 	}
 
-	static Utf8Stringify(input) {
+	Utf8Stringify(input) {
 		return CryptoJS.enc.Utf8.parse(JSON.stringify(input));
 	}
 
-	static HmacSHA256(signature, secret) {
-		return CryptoJS.HmacSHA256(signature, secret || this.secret);
+	HmacSHA256(signature, _secret) {
+		const secret = _secret || this.secret;
+		if (!secret) {
+			throw new Error('No secret is defined.');
+		}
+		return CryptoJS.HmacSHA256(signature, secret);
 	}
 
 	async create(userId, secret) {
-		const account = await accountModel.find({ userId }).select('_id').lean().exec();
+		const account = await accountModel.findOne({ userId }).select('_id').lean().exec();
+
+		if (!account && !account._id) {
+			throw new Error(`Account for user with the id ${userId} do not exist.`);
+		}
+		const accountId = account._id.toString();
 
 		const header = {
 			alg: 'HS256',
@@ -52,8 +64,6 @@ class JWT {
 
 		const iat = new Date().valueOf();
 		const exp = iat + this.expiredOffset;
-
-		const accountId = account._id.toString();
 
 		const jwtData = {
 			support: true, // mark for support jwts
@@ -67,15 +77,15 @@ class JWT {
 			jti: `support_${ObjectId()}`,
 		};
 
-		const stringifiedHeader = JWT.Utf8Stringify(header);
-		const encodedHeader = JWT.base64url(stringifiedHeader);
+		const stringifiedHeader = this.Utf8Stringify(header);
+		const encodedHeader = this.base64url(stringifiedHeader);
 
-		const stringifiedData = JWT.Utf8Stringify(jwtData);
-		const encodedData = JWT.base64url(stringifiedData);
+		const stringifiedData = this.Utf8Stringify(jwtData);
+		const encodedData = this.base64url(stringifiedData);
 
 		let signature = `${encodedHeader}.${encodedData}`;
-		signature = JWT.HmacSHA256(signature, secret); // algorithm: 'HS256',
-		signature = JWT.base64url(signature);
+		signature = this.HmacSHA256(signature, secret); // algorithm: 'HS256',
+		signature = this.base64url(signature);
 
 		const jwt = `${encodedHeader}.${encodedData}.${signature}`;
 		return jwt;
@@ -93,7 +103,7 @@ class SupportJWTService {
 	 * @param {String} [audience] Name of jwt creator.
 	 * @param {Number} [expiredOffset] The jwt expire time in ms.
 	 */
-	constructor(secret, audience = 'https://schul-cloud.org', expiredOffset = 3600) {
+	constructor(secret, audience = DEFAULT_AUDIENCE, expiredOffset = DEFAULT_EXPIRED) {
 		this.err = Object.freeze({
 			missingParams: 'Missing param userId.',
 			canNotCreateJWT: 'Can not create support jwt.',
@@ -109,8 +119,9 @@ class SupportJWTService {
 
 	// todo later add notification for user
 	executeInfo(currentUserId, userId) {
+		const minutes = this.expiredOffset / (60 * 1000);
 		// eslint-disable-next-line max-len
-		logger.info(`[support][jwt] The support employee with the Id ${currentUserId} has created  a short live JWT for the user with the Id ${userId}. The JWT expires at ${this.expiredOffset}.`);
+		logger.info(`[support][jwt] The support employee with the Id ${currentUserId} has created  a short live JWT for the user with the Id ${userId}. The JWT expires expires in ${minutes} minutes`);
 	}
 
 	async create({ userId }, params) {
@@ -119,12 +130,12 @@ class SupportJWTService {
 				throw new BadRequest(this.err.missingParams);
 			}
 			// eslint-disable-next-line no-param-reassign
-			userId = userId.toString(); // validation for intern requests
+			const requestedUserId = userId.toString();
 			const currentUserId = params.account.userId.toString();
 
-			const jwt = await this.jwt.create();
+			const jwt = await this.jwt.create(userId);
 
-			this.executeInfo(currentUserId, userId);
+			this.executeInfo(currentUserId, requestedUserId);
 			return jwt;
 		} catch (err) {
 			logger.warning(this.err.canNotCreateJWT, err);
