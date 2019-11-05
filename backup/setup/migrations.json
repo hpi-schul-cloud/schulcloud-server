@@ -191,4 +191,15 @@
 		"$date": "2019-10-11T09:54:24.666+0000"
 	},
     "__v" : 0
+},
+{
+	"_id" : {
+		"$oid": "5db84906407b4a46ecf03a8b"
+	}, 
+	"state" : "up", 
+	"name" : "addCreateSupportJwtPermission", 
+	"createdAt" : {
+		"$date": "2019-10-29T14:13:26.935+0000" 
+	}, 
+	"__v" : 0
 }]
