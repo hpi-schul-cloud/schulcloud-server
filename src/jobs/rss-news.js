@@ -1,7 +1,7 @@
 const Parser = require('rss-parser');
 const database = require('../utils/database');
 
-const logger = console;
+const logger = require('../logger');
 const { schoolModel } = require('../services/school/model');
 const { newsModel } = require('../services/news/model');
 
