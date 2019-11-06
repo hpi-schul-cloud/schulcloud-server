@@ -67,35 +67,24 @@ exports.hasRole = (context, userId, roleName) => {
  * @param  {string, array[string]} permissions
  * @returns resolves if the current user has ANY of the given permissions
  */
-const hasPermission = (permissions) => {
-	const permissionNames = (typeof permissions === 'string') ? [permissions] : permissions;
+const hasPermission = (inputPermission) => {
+	const permissionNames = (typeof permissions === 'string') ? [inputPermission] : inputPermission;
 
 	return (context) => {
+		const { params: { account, provider }, app } = context;
 		// If it was an internal call then skip this context
-		if (!context.params.provider) {
-			return context;
+		if (!provider) {
+			return Promise.resolve(context);
 		}
 
-		// If an api key was provided, skip
-		if ((context.params.headers || {})['x-api-key']) {
-			return KeysModel.findOne({ key: context.params.headers['x-api-key'] })
-				.then((res) => {
-					if (!res) throw new NotAuthenticated('API Key is invalid');
-					return Promise.resolve(context);
-				})
-				.catch(() => {
-					throw new NotAuthenticated('API Key is invalid.');
-				});
+		if (!account && !account.userId) {
+			throw new Forbidden('Can not read account data');
 		}
 
 		// Otherwise check for user permissions
-		const service = context.app.service('/users/');
-		return service.get({ _id: (context.params.account.userId || '') })
-			.then((user) => {
-				user.permissions = Array.from(user.permissions);
-
-				const userHasPermission = (permission) => (user.permissions || []).includes(permission);
-				const hasAnyPermission = permissionNames.some(userHasPermission);
+		return app.service('users').get(account.userId)
+			.then(({ permissions = [] }) => {
+				const hasAnyPermission = permissionNames.some((perm) => permissions.includes(perm));
 				if (!hasAnyPermission) {
 					throw new Forbidden(`You don't have one of the permissions: ${permissionNames.join(', ')}.`);
 				}
@@ -103,6 +92,7 @@ const hasPermission = (permissions) => {
 			});
 	};
 };
+
 /**
  * @param  {string, array[string]} permissions
  * @returns resolves if the current user has ALL of the given permissions

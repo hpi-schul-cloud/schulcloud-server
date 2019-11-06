@@ -23,27 +23,11 @@ const versionService = require('./services/version');
 const { sha } = require('./helper/version');
 const { version } = require('../package.json');
 
-
-let secrets;
-try {
-	if (['production', 'lokal'].includes(process.env.NODE_ENV)) {
-		// eslint-disable-next-line global-require
-		secrets = require('../config/secrets.js');
-	} else {
-		// eslint-disable-next-line global-require
-		secrets = require('../config/secrets.json');
-	}
-} catch (error) {
-	secrets = {};
-}
-
 const app = express(feathers());
 const config = configuration();
 
 app.configure(config);
 setupSwagger(app);
-
-app.set('secrets', secrets);
 
 if (process.env.SENTRY_DSN) {
 	logger.info('Sentry reporting enabled using DSN', process.env.SENTRY_DSN);
