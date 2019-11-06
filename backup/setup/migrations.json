@@ -37,7 +37,7 @@
 	},
 	"state": "up",
     "name" : "lessonIsCopyFrom",
-    "createdAt" : "2019-07-11T07:44:37.148Z",
+    "createdAt" : "2019-07-11T12:18:30.503Z",
 	"__v": 0
 },
 {
@@ -161,12 +161,34 @@
 },
 {
 	"_id": {
+		"$oid": "5d81ef4e6012563f98d225e5"
+	},
+	"state": "up",
+	"name": "AddCourseRoles",
+	"createdAt": {
+		"$date": "2019-09-09T09:38:21.926Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5d80a25a92de001d94db5046"
 	},
 	"state": "up",
 	"name": "addUserDeletePermissions",
 	"createdAt": {
 		"$date": "2019-09-17T09:07:38.792Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d8b80ca723a1b53dc43172e"
+	},
+	"state": "up",
+	"name": "AddScopePermissionsViewPermissionToCourseTeachers",
+	"createdAt": {
+		"$date": "2019-09-25T14:59:22.19Z"
 	},
 	"__v": 0
 },
@@ -188,7 +210,41 @@
     "state" : "up",
     "name" : "add-datasource-permissions",
     "createdAt" : {
-		"$date": "2019-10-11T09:54:24.666+0000"
+		"$date": "2019-10-11T09:54:24.666Z"
+	},
+    "__v" : 0
+},
+{
+    "_id" : {
+		"$oid": "5dc173583c9c9844881b6aca"
+	},
+    "state" : "up",
+    "name" : "persist_files_by_copied_courses",
+	"createdAt" : {
+		"$date": "2019-07-30T13:24:23.114Z"
+	},
+    "__v" : 0
+},
+{
+	"_id" : {
+		"$oid": "5db84906407b4a46ecf03a8b"
+	}, 
+	"state" : "up", 
+	"name" : "addCreateSupportJwtPermission", 
+	"createdAt" : {
+		"$date": "2019-10-29T14:13:26.935+0000" 
+	}, 
+	"__v" : 0
+},
+{ 
+    "_id" : {
+		"$oid": "5dc18974ba666b70ac1199e5"
+	},
+    "state" : "up",
+    "name" : "add-enterthecloud-start-permission",
+    "createdAt" : {
+		"$date": "2019-11-05T14:38:44.172Z"
 	},
     "__v" : 0
 }]
+
