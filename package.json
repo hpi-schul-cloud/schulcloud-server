@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "hpi schulcloud server",
-  "version": "19.7.0",
+  "version": "19.8.0",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -29,8 +29,8 @@
     "debug:container": "nodemon --inspect=0.0.0.0:5959 src/",
     "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary node_modules/.bin/_mocha --exit test/ --recursive",
     "coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
-    "mocha": "cross-env NODE_ENV=test mocha --exit test/ --recursive",
-    "mocha-inspect": "cross-env NODE_ENV=test mocha --exit --inspect-brk --inspect test/ --recursive",
+    "mocha": "cross-env NODE_ENV=test mocha --exit test/**/*.test.js",
+    "mocha-inspect": "cross-env NODE_ENV=test mocha --exit --inspect-brk --inspect test/**/*.test.js --timeout 60000",
     "migration": "migrate",
     "migration-sync": "migrate list --autosync",
     "migration-persist": "mongoexport -d schulcloud -c migrations --jsonArray --pretty > ./backup/setup/migrations.json"
@@ -44,7 +44,7 @@
     "@feathersjs/feathers": "^4.3.4",
     "@feathersjs/socketio": "^4.3.4",
     "@sentry/integrations": "^5.6.1",
-    "@sentry/node": "^5.6.2",
+    "@sentry/node": "^5.7.1",
     "ajv": "^6.10.2",
     "async": "^2.6.3",
     "aws-sdk": "^2.306.0",

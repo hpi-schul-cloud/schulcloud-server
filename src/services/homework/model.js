@@ -14,7 +14,7 @@ const homeworkSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 	name: { type: String, required: true },
 	description: { type: String },
-	dueDate: { type: Date, required: true },
+	dueDate: { type: Date },
 	availableDate: { type: Date, required: true },
 	teacherId: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
 	courseId: { type: Schema.Types.ObjectId, default: null, ref: 'course' },
