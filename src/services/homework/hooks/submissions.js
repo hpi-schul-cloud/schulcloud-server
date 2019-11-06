@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 
 const globalHooks = require('../../../hooks');
-const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const filterRequestedSubmissions = (hook) => {
 // if no db query was given, try to slim down/restrict db request

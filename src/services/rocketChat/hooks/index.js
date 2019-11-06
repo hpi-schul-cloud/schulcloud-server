@@ -1,7 +1,7 @@
 const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
-const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 
 const userIsInTeam = (userId, team) => {

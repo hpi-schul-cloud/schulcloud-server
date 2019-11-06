@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
-const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const toArray = (data) => (Array.isArray(data) ? data : [data]);
 

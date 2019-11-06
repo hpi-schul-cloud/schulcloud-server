@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
-const { Equal: EqualIds } = require('../../../src/helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 const classesService = app.service('/classes');
 

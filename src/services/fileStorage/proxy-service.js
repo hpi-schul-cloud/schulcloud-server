@@ -31,7 +31,7 @@ const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
-const { Equal: EqualIds } = require('../../helper/compare').ObjectId;
+const { equal: equalIds } = require('../../helper/compare').ObjectId;
 
 const FILE_PREVIEW_SERVICE_URI = process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
 const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI

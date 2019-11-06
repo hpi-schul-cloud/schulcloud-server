@@ -7,7 +7,7 @@ const adminStudentsService = app.service('/users/admin/students');
 const adminTeachersService = app.service('/users/admin/teachers');
 const consentService = app.service('consents');
 
-const { Equal: EqualIds } = require('../../../../src/helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 
 describe('AdminUsersService', () => {

@@ -6,7 +6,7 @@ const app = require('../../../src/app');
 const T = require('../helpers/testObjects')(app);
 
 const teamService = app.service('/teams');
-const { Equal: EqualIds } = require('../../../src/helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 
 describe('Test team basic methods', () => {

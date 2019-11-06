@@ -4,7 +4,7 @@ const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
 const hooks = require('feathers-hooks-common');
 const { ObjectId } = require('mongoose').Types;
-const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
 

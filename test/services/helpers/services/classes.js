@@ -1,5 +1,5 @@
 const logger = require('../../../../src/logger/index');
-const { Equal: EqualIds } = require('../../../../src/helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 let createdClassesIds = [];
 

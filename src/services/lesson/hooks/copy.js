@@ -7,7 +7,7 @@ const { injectUserId, mapPayload } = require('../../../hooks');
 const lesson = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');
-const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const checkForShareToken = (context) => {
 	const { shareToken = '', lessonId } = context.data;

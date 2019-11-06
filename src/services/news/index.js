@@ -1,7 +1,7 @@
 const service = require('feathers-mongoose');
 const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
-const { Equal: EqualIds } = require('../../helper/compare').ObjectId;
+const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const logger = require('../../logger/index');
 const {
 	newsModel, targetModels, newsHistoryModel, newsPermissions,

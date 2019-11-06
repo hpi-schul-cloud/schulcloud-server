@@ -12,7 +12,7 @@ module.exports = {
 		 * @param {...ObjectId|String} args
 		 * @returns {Boolean}
 		 */
-		Equal(...args) {
+		equal(...args) {
 			if (!args || args.length < 2) throw new Error('could not compare less than two id\'s');
 			const [firstId, ...otherIds] = args;
 			const firstIdAsString = String(firstId);

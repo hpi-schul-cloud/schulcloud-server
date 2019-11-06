@@ -34,7 +34,7 @@ const {
 const { ScopePermissionService, ScopeListService } = require('../helpers/scopePermissions');
 // const {teamRolesToHook} = require('./hooks');
 // todo docs require
-const { Equal: EqualIds } = require('../../helper/compare').ObjectId;
+const { equal: equalIds } = require('../../helper/compare').ObjectId;
 
 
 const { AdminOverview } = require('./services');

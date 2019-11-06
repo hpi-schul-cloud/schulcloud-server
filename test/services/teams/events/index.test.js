@@ -6,7 +6,7 @@ const sleep = require('util').promisify(setTimeout);
 
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
-const { Equal: EqualIds } = require('../../../../src/helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const DELAY_TIME = 250;
 

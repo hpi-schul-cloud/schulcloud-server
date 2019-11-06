@@ -3,7 +3,7 @@ const errors = require('@feathersjs/errors');
 const logger = require('../../../logger');
 
 const globalHooks = require('../../../hooks');
-const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const getAverageRating = function getAverageRating(submissions) {
 	// Durchschnittsnote berechnen

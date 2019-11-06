@@ -7,7 +7,7 @@ const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
 const { homeworkModel } = require('../../homework/model');
 const lessonsModel = require('../../lesson/model');
-const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const createHomework = (
 	homework,

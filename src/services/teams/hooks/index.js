@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const {
 	Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable,
 } = require('@feathersjs/errors');
-const { Equal: EqualIds } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger');
