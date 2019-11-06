@@ -226,14 +226,25 @@
     "__v" : 0
 },
 {
+    "_id" : {
+		"$oid": "5dc19483d15115187413f3c0"
+	},
+    "state" : "up",
+    "name" : "remove-broken-class-successor-links",
+    "createdAt" : {
+		"$date": "2019-11-05T14:19:26.569Z"
+	},
+    "__v" : 0
+},
+{
 	"_id" : {
 		"$oid": "5db84906407b4a46ecf03a8b"
-	}, 
-	"state" : "up", 
-	"name" : "addCreateSupportJwtPermission", 
+	},
+	"state" : "up",
+	"name" : "addCreateSupportJwtPermission",
 	"createdAt" : {
-		"$date": "2019-10-29T14:13:26.935+0000" 
-	}, 
+		"$date": "2019-10-29T14:13:26.935+0000"
+	},
 	"__v" : 0
 },
 { 
