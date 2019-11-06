@@ -1,4 +1,5 @@
 const { TooManyRequests } = require('@feathersjs/errors');
+const { discard } = require('feathers-hooks-common');
 
 const updateUsernameForLDAP = async (context) => {
 	const { schoolId, strategy } = context.data;
@@ -121,6 +122,7 @@ exports.before = {
 };
 
 exports.after = {
+	all: [discard('account.password')],
 	create: [bruteForceReset],
 	remove: [populateResult],
 };
