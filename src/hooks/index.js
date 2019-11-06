@@ -64,11 +64,11 @@ exports.hasRole = (context, userId, roleName) => {
 };
 
 /**
- * @param  {string, array[string]} permissions
+ * @param  {string, array[string]} inputPermissions
  * @returns resolves if the current user has ANY of the given permissions
  */
-const hasPermission = (inputPermission) => {
-	const permissionNames = (typeof permissions === 'string') ? [inputPermission] : inputPermission;
+const hasPermission = (inputPermissions) => {
+	const permissionNames = (typeof inputPermissions === 'string') ? [inputPermissions] : inputPermissions;
 
 	return (context) => {
 		const { params: { account, provider }, app } = context;
