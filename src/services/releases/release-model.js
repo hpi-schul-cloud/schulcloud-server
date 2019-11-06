@@ -19,6 +19,8 @@ const releaseSchema = new Schema({
 	publishedAt: { type: Date, required: true },
 	zipUrl: { type: String },
 });
+
 enableAuditLog(releaseSchema);
 const releaseModel = mongoose.model('release', releaseSchema);
+
 module.exports = releaseModel;
