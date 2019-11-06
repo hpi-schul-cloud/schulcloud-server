@@ -246,4 +246,16 @@
 		"$date": "2019-10-29T14:13:26.935+0000"
 	},
 	"__v" : 0
+},
+{ 
+    "_id" : {
+		"$oid": "5dc18974ba666b70ac1199e5"
+	},
+    "state" : "up",
+    "name" : "add-enterthecloud-start-permission",
+    "createdAt" : {
+		"$date": "2019-11-05T14:38:44.172Z"
+	},
+    "__v" : 0
 }]
+
