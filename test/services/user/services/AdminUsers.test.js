@@ -116,19 +116,19 @@ describe('AdminUsersService', () => {
 
 	it('sorts students correctly', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
-			logger.warn('Can not create teacher', err);
+			logger.warning('Can not create teacher', err);
 		});
 		const student1 = await testObjects.createTestUser({
 			firstName: 'Max',
 			roles: ['student'],
 		}).catch((err) => {
-			logger.warn('Can not create student', err);
+			logger.warning('Can not create student', err);
 		});
 		const student2 = await testObjects.createTestUser({
 			firstName: 'Moritz',
 			roles: ['student'],
 		}).catch((err) => {
-			logger.warn('Can not create student', err);
+			logger.warning('Can not create student', err);
 		});
 
 		await testObjects.createTestConsent({
