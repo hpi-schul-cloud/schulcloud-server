@@ -44,7 +44,7 @@ function isGraded(submission) {
 }
 function isTeacher(userId, homework) {
 	const user = userId.toString();
-	let isTeacherCheck = EqualIds(homework.teacherId, userId);
+	let isTeacherCheck = equalIds(homework.teacherId, userId);
 	if (!isTeacherCheck && !homework.private) {
 		const isCourseTeacher = (homework.courseId.teacherIds || []).includes(user);
 		const isCourseSubstitution = (homework.courseId.substitutionIds || []).includes(user);
@@ -111,7 +111,7 @@ const addStats = (hook) => {
 			const c = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
 
 			// save grade in assignment if user is student of this task
-			const submission = submissions.data.filter((s) => (EqualIds(c._id, s.homeworkId) && (s.grade)));
+			const submission = submissions.data.filter((s) => (equalIds(c._id, s.homeworkId) && (s.grade)));
 			if (submission.length == 1 && !isTeacher(hook.params.account.userId, c)) {
 				c.grade = submission[0].grade;
 			}
@@ -120,7 +120,7 @@ const addStats = (hook) => {
 				(((c.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && c.publicSubmissions)
                 || isTeacher(hook.params.account.userId, c))) {
 				const NumberOfCourseMembers = ((c.courseId || {}).userIds || []).length;
-				const currentSubmissions = submissions.data.filter((s) => EqualIds(c._id, s.homeworkId));
+				const currentSubmissions = submissions.data.filter((s) => equalIds(c._id, s.homeworkId));
 				const validSubmissions = currentSubmissions.filter(isValidSubmission);
 				const gradedSubmissions = currentSubmissions.filter(isGraded);
 				const NumberOfUsersWithSubmission = validSubmissions.map((e) => (e.courseGroupId ? ((e.courseGroupId.userIds || []).length || 1) : ((e.teamMembers || []).length || 1))).reduce((a, b) => a + b, 0);
@@ -159,7 +159,7 @@ const hasPatchPermission = (hook) => {
 	}).then((homework) => {
 		// allow only students to archive their own homeworks
 		const isStudent = homework.courseId && homework.courseId.userIds && !!homework.courseId.userIds
-			.find((userId) => EqualIds(userId, hook.params.account.userId));
+			.find((userId) => equalIds(userId, hook.params.account.userId));
 		// allow this student to only change archived
 		const onlyChangesArchived = Object.keys(hook.data).length === 1
             && Array.isArray(hook.data.archived);
@@ -167,15 +167,15 @@ const hasPatchPermission = (hook) => {
 		if (isStudent && onlyChangesArchived) {
 			// allow the user to only remove him/herself from the archived array (reactivate homework for this user)
 			const removedStudents = homework.archived
-				.filter((studentId) => !hook.data.archived.find((stId) => EqualIds(studentId, stId)));
+				.filter((studentId) => !hook.data.archived.find((stId) => equalIds(studentId, stId)));
 			const removesOnlySelf = removedStudents.length === 1
-                && EqualIds(removedStudents[0], hook.params.account.userId);
+                && equalIds(removedStudents[0], hook.params.account.userId);
 
 			// allow the user to only add him/herself to the archived array (archive homework for this user)
 			const addedStudents = hook.data.archived
 				.filter((studentId) => !homework.archived
-					.find((stId) => EqualIds(studentId, stId)));
-			const addsOnlySelf = addedStudents.length === 1 && EqualIds(addedStudents[0], hook.params.account.userId);
+					.find((stId) => equalIds(studentId, stId)));
+			const addsOnlySelf = addedStudents.length === 1 && equalIds(addedStudents[0], hook.params.account.userId);
 
 			if (removesOnlySelf || addsOnlySelf) {
 				return Promise.resolve(hook);

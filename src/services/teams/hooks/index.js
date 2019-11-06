@@ -539,7 +539,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 				throw new Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
 			}));
 
-			const sessionUserTeamUser = team.userIds.find((user) => EqualIds(user.userId, sessionUserId));
+			const sessionUserTeamUser = team.userIds.find((user) => equalIds(user.userId, sessionUserId));
 			const sessionUserTeamRole = ((sessionUserTeamUser || {}).role).toString();
 			if (!isHigherOrEqualTeamrole(hook, sessionUserTeamRole, highestChangedRole)) {
 				wait.push(Promise.reject(new Forbidden('You cant change a Permission higher than yours')));

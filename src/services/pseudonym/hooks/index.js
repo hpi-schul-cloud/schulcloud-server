@@ -23,8 +23,8 @@ const createMissingPseudonyms = (hook) => {
 	for (const userId of userIds) {
 		for (const toolId of toolIds) {
 			if (!hook.result.data.find((entry) => (
-				EqualIds(entry.userId, userId)
-				&& EqualIds(entry.toolId, toolId)))) {
+				equalIds(entry.userId, userId)
+				&& equalIds(entry.toolId, toolId)))) {
 				missingPseudonyms.push({ userId, toolId });
 			}
 		}

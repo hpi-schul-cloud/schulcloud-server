@@ -60,7 +60,7 @@ const deleteWholeClassFromCourse = (hook) => {
 				{ $pull: { userIds: { $in: studentIds } } },
 				{ multi: true },
 			).exec();
-			hook.data.userIds = hook.data.userIds.filter((value) => !studentIds.some((id) => EqualIds(id, value)));
+			hook.data.userIds = hook.data.userIds.filter((value) => !studentIds.some((id) => equalIds(id, value)));
 			return hook;
 		});
 	});

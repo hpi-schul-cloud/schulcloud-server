@@ -71,7 +71,7 @@ const deleteByName = (app) => async ([gradeLevel, className]) => {
 	const promises = classObjects.map(async (classObject) => {
 		if (classObject && classObject._id) {
 			await app.service('classes').remove(classObject._id);
-			createdClassesIds.splice(createdClassesIds.find((i) => EqualIds(i, classObject._id)));
+			createdClassesIds.splice(createdClassesIds.find((i) => equalIds(i, classObject._id)));
 		} else {
 			logger.warning(`Trying to delete a class by name that does not exist: "${gradeLevel}${className}"`);
 		}

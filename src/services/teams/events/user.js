@@ -36,7 +36,7 @@ const deleteUser = (app) => {
 			})
 			.catch((err) => {
 				const notRemovedFromTeams = teams.filter(
-					(team) => team.userIds.some((teamUser) => EqualIds(teamUser.userId, userId)),
+					(team) => team.userIds.some((teamUser) => equalIds(teamUser.userId, userId)),
 				);
 
 				logger.warning(

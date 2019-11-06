@@ -273,7 +273,7 @@ const fileStorageService = {
 			if (teamObject) {
 				return new Promise((resolve, reject) => {
 					const teamMember = teamObject.userIds.find(
-						(u) => EqualIds(u.userId, userId),
+						(u) => equalIds(u.userId, userId),
 					);
 					if (teamMember) {
 						return resolve();
@@ -827,7 +827,7 @@ const filePermissionService = {
 		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
 		const rolePromises = rolePermissions
 			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
-		const isFileCreator = EqualIds(fileObj.permissions[0].refId, userId);
+		const isFileCreator = equalIds(fileObj.permissions[0].refId, userId);
 
 		const actionMap = {
 			user: () => {

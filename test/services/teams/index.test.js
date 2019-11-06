@@ -85,7 +85,7 @@ describe('Test team basic methods', () => {
 				expect(slimteam).to.be.ok;
 
 				const { userIds } = await teamService.get(slimteam._id);
-				expect(userIds.some((item) => EqualIds(item.userId, hero._id))).to.equal(true);
+				expect(userIds.some((item) => equalIds(item.userId, hero._id))).to.equal(true);
 			} finally {
 				T.cleanup();
 			}

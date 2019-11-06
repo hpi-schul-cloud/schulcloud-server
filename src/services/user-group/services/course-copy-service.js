@@ -93,7 +93,7 @@ class CourseCopyService {
 					homework,
 					res._id,
 					undefined,
-					EqualIds(params.account.userId, homework.teacherId) ? params.account.userId : homework.teacherId,
+					equalIds(params.account.userId, homework.teacherId) ? params.account.userId : homework.teacherId,
 					this.app,
 					params.account.userId,
 				);

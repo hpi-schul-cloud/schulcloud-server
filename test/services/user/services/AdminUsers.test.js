@@ -65,7 +65,7 @@ describe('AdminUsersService', () => {
 		});
 
 		const searchClass = (users, name) => users.some(
-			(user) => (EqualIds(student._id, user._id) && user.classes.includes(name)),
+			(user) => (equalIds(student._id, user._id) && user.classes.includes(name)),
 		);
 
 		expect(result.data).to.not.be.undefined;
@@ -111,7 +111,7 @@ describe('AdminUsersService', () => {
 		const result = await adminStudentsService.find(params);
 
 		expect(result.data).to.not.be.undefined;
-		const studentResult = result.data.filter((u) => EqualIds(u._id, student._id))[0];
+		const studentResult = result.data.filter((u) => equalIds(u._id, student._id))[0];
 		expect(studentResult.classes).to.include('classFromThisYear');
 		expect(studentResult.classes).to.not.include('classFromLastYear');
 		expect(studentResult.classes).to.include('classWithoutYear');

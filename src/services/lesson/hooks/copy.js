@@ -22,7 +22,7 @@ const checkForShareToken = (context) => {
 			if (
 				_lesson.shareToken === shareToken
 				|| course.shareToken === shareToken
-				|| course.teacherIds.some((t) => EqualIds(t, currentUserId))
+				|| course.teacherIds.some((t) => equalIds(t, currentUserId))
 			) {
 				return context;
 			}

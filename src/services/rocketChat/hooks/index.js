@@ -5,7 +5,7 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 
 const userIsInTeam = (userId, team) => {
-	const user = team.userIds.find((el) => EqualIds(el.userId, userId));
+	const user = team.userIds.find((el) => equalIds(el.userId, userId));
 	return (user !== undefined);
 };
 

@@ -35,15 +35,15 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 		let rolesToTest = [role];
 		while (rolesToTest.length > 0 && rolePermissions === undefined) {
 			const roleId = rolesToTest.pop().toString();
-			rolePermissions = permissions.find((perm) => EqualIds(perm.refId, roleId));
+			rolePermissions = permissions.find((perm) => equalIds(perm.refId, roleId));
 			rolesToTest = rolesToTest.concat(roleIndex[roleId].roles || []);
 		}
 
 		const { role: creatorRole } = file.owner.userIds
-			.find((_) => EqualIds(_.userId, file.permissions[0].refId));
+			.find((_) => equalIds(_.userId, file.permissions[0].refId));
 
 		const findRole = (roleId) => (roles) => roles
-			.findIndex((r) => EqualIds(r._id, roleId)) > -1;
+			.findIndex((r) => equalIds(r._id, roleId)) > -1;
 
 		const userPos = sortedTeamRoles.findIndex(findRole(role));
 		const creatorPos = sortedTeamRoles.findIndex(findRole(creatorRole));
@@ -75,7 +75,7 @@ const checkPermissions = (permission) => async (user, file) => {
 	} = fileObject;
 
 	// return always true for owner of file
-	if (EqualIds(user, owner)) {
+	if (equalIds(user, owner)) {
 		return Promise.resolve(true);
 	}
 
@@ -99,7 +99,7 @@ const checkPermissions = (permission) => async (user, file) => {
 		if (isMember) {
 			if (isStudent) {
 				const rolePermissions = permissions.find(
-					(perm) => perm.refId && EqualIds(perm.refId, isStudent._id),
+					(perm) => perm.refId && equalIds(perm.refId, isStudent._id),
 				);
 				return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
 			}

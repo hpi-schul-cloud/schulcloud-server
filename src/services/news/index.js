@@ -131,7 +131,7 @@ class AbstractService {
 		if (user == null) return [];
 
 		// test user is school member
-		const sameSchool = EqualIds(schoolId, user.schoolId);
+		const sameSchool = equalIds(schoolId, user.schoolId);
 		if (!sameSchool) return [];
 
 		return user.permissions;
