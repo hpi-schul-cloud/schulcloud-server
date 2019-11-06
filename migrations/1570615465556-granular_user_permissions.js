@@ -60,6 +60,7 @@ module.exports = {
 							'TEACHER_LIST',
 							'CLASS_CREATE',
 							'CLASS_EDIT',
+							'CLASS_REMOVE',
 							'COURSE_CREATE',
 							'COURSE_REMOVE',
 						],
@@ -89,7 +90,7 @@ module.exports = {
 					permissions: {
 						$each: [
 							'STUDENT_LIST', 'TEACHER_CREATE', 'TEACHER_EDIT',
-							'TEACHER_LIST', 'CLASS_CREATE', 'CLASS_EDIT',
+							'TEACHER_LIST', 'CLASS_CREATE', 'CLASS_EDIT', 'CLASS_REMOVE',
 							'CLASS_FULL_ADMIN', 'COURSE_CREATE', 'COURSE_EDIT',
 							'COURSE_REMOVE',
 						],
@@ -176,6 +177,7 @@ module.exports = {
 							'TEACHER_LIST',
 							'CLASS_CREATE',
 							'CLASS_EDIT',
+							'CLASS_REMOVE',
 							'COURSE_CREATE',
 							'COURSE_REMOVE',
 						],
@@ -205,7 +207,7 @@ module.exports = {
 					permissions: {
 						$in: [
 							'STUDENT_LIST', 'TEACHER_CREATE', 'TEACHER_EDIT',
-							'TEACHER_LIST', 'CLASS_CREATE', 'CLASS_EDIT',
+							'TEACHER_LIST', 'CLASS_CREATE', 'CLASS_EDIT', 'CLASS_REMOVE',
 							'CLASS_FULL_ADMIN', 'COURSE_CREATE', 'COURSE_EDIT',
 							'COURSE_REMOVE',
 						],
