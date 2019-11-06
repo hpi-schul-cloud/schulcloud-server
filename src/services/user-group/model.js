@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
@@ -50,9 +51,8 @@ const courseSchema = getUserGroupSchema({
 	externalId: { type: String },
 });
 
-courseSchema.plugin(require('mongoose-lean-virtuals'));
+courseSchema.plugin(mongooseLeanVirtuals);
 
-enableAuditLog(courseSchema);
 
 const getCourseIsArchived = (aCourse) => {
 	const oneDayInMilliseconds = 864e5;
@@ -72,13 +72,9 @@ courseSchema.virtual('isArchived').get(function () {
 courseSchema.set('toObject', { virtuals: true });
 courseSchema.set('toJSON', { virtuals: false }); // virtuals could not call with autopopulate for toJSON
 
-const courseModel = mongoose.model('course', courseSchema);
 const courseGroupSchema = getUserGroupSchema({
 	courseId: { type: Schema.Types.ObjectId, required: true, ref: 'course' },
 });
-enableAuditLog(courseGroupSchema);
-// represents a sub-group of students inside a course, e.g. for projects etc.
-const courseGroupModel = mongoose.model('courseGroup', courseGroupSchema);
 
 const classSchema = getUserGroupSchema({
 	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
@@ -95,9 +91,7 @@ const classSchema = getUserGroupSchema({
 	successor: { type: Schema.Types.ObjectId, ref: 'classes' },
 });
 
-classSchema.plugin(require('mongoose-lean-virtuals'));
-
-enableAuditLog(classSchema);
+classSchema.plugin(mongooseLeanVirtuals);
 
 const getClassDisplayName = (aClass) => {
 	if (aClass.gradeLevel) {
@@ -114,12 +108,18 @@ classSchema.virtual('displayName').get(function displayName() {
 classSchema.set('toObject', { virtuals: true });
 classSchema.set('toJSON', { virtuals: true }); // virtuals could not call with autopopulate for toJSON
 
-const classModel = mongoose.model('class', classSchema);
 
 const gradeSchema = getUserGroupSchema();
 
+enableAuditLog(courseSchema);
+enableAuditLog(courseGroupSchema);
+enableAuditLog(classSchema);
 enableAuditLog(gradeSchema);
 
+const courseModel = mongoose.model('course', courseSchema);
+// represents a sub-group of students inside a course, e.g. for projects etc.
+const courseGroupModel = mongoose.model('courseGroup', courseGroupSchema);
+const classModel = mongoose.model('class', classSchema);
 const gradeModel = mongoose.model('grade', gradeSchema);
 
 module.exports = {

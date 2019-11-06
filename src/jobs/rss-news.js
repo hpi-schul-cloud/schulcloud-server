@@ -1,5 +1,7 @@
 const Parser = require('rss-parser');
 const database = require('../utils/database');
+
+const logger = require('../logger');
 const { schoolModel } = require('../services/school/model');
 const { newsModel } = require('../services/news/model');
 
@@ -10,7 +12,6 @@ const parser = new Parser();
  * It is expected to pass MongoDB parameters as process environment variables.
  * Please see src/utils/database.js for more.
 */
-
 
 async function handleFeed(dbFeed, schoolId) {
 	const data = await parser.parseURL(dbFeed.url);
@@ -31,7 +32,7 @@ async function handleFeed(dbFeed, schoolId) {
 			},
 			{ upsert: true, new: true },
 		);
-
+		logger.info('fetched', rssItem.title);
 		checkedNews.push(dbNews._id.toString());
 	}
 
@@ -49,7 +50,7 @@ async function processSchool(school) {
 			allCheckedNews = allCheckedNews.concat(checkedNews);
 			dbFeed.status = 'success';
 		} catch (err) {
-			console.error(`Could not handle feed ${dbFeed.url} (${dbFeed._id}) for school ${school._id}`, err);
+			logger.error(`Could not handle feed ${dbFeed.url} (${dbFeed._id}) for school ${school._id}`, err);
 			dbFeed.status = 'error';
 		}
 	}
