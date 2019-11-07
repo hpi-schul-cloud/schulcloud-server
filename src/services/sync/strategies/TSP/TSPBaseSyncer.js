@@ -21,6 +21,10 @@ class TSPBaseSyncer extends Syncer {
 		super(app, stats, logger);
 		this.config = config;
 		this.api = new TspApi(config.baseUrl);
+		this.stats = Object.assign(this.stats, {
+			numberOfSchools: 0,
+			schools: [],
+		});
 	}
 
 	async getSchools() {
@@ -39,7 +43,8 @@ class TSPBaseSyncer extends Syncer {
 	}
 
 	async createOrUpdateSchoolSystem(identifier, name) {
-		const response = await this.app.service('systems').find({
+		this.logInfo(`Finding system for '${name}' (${identifier})...`);
+		const [system] = await this.app.service('systems').find({
 			query: {
 				type: SCHOOL_SYNCER_TARGET,
 				'tsp.identifier': identifier,
@@ -47,26 +52,28 @@ class TSPBaseSyncer extends Syncer {
 			},
 			paginate: false,
 		});
-		if (response) {
-			const [system] = response;
-			if (system) {
-				await this.app.service('systems').patch(
-					system._id,
-					{
-						'tsp.schoolName': name,
-					},
-				);
-			} else {
-				await this.app.service('systems').create({
-					type: SCHOOL_SYNCER_TARGET,
-					tsp: {
-						identifier,
-						schoolName: name,
-						baseUrl: this.config.baseUrl,
-					},
-				});
-			}
+		if (system) {
+			this.logInfo(`Patching '${name}' (${identifier})...`);
+			await this.app.service('systems').patch(
+				system._id,
+				{
+					'tsp.schoolName': name,
+				},
+			);
+		} else {
+			this.logInfo(`Nothing found. Creating '${name}' (${identifier})...`);
+			await this.app.service('systems').create({
+				type: SCHOOL_SYNCER_TARGET,
+				tsp: {
+					identifier,
+					schoolName: name,
+					baseUrl: this.config.baseUrl,
+				},
+			});
 		}
+		this.stats.numberOfSchools += 1;
+		this.stats.schools.push({ identifier, name });
+		this.logInfo('Done.');
 	}
 
 	async steps() {
