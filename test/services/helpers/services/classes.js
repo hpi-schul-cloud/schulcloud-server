@@ -1,4 +1,5 @@
 const logger = require('../../../../src/logger/index');
+const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 let createdClassesIds = [];
 
@@ -70,9 +71,9 @@ const deleteByName = (app) => async ([gradeLevel, className]) => {
 	const promises = classObjects.map(async (classObject) => {
 		if (classObject && classObject._id) {
 			await app.service('classes').remove(classObject._id);
-			createdClassesIds.splice(createdClassesIds.find((i) => i.toString() === classObject._id.toString()));
+			createdClassesIds.splice(createdClassesIds.find((i) => equalIds(i, classObject._id)));
 		} else {
-			logger.warn(`Trying to delete a class by name that does not exist: "${gradeLevel}${className}"`);
+			logger.warning(`Trying to delete a class by name that does not exist: "${gradeLevel}${className}"`);
 		}
 	});
 	await Promise.all(promises);

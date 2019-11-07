@@ -14,7 +14,7 @@ const homeworkSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 	name: { type: String, required: true },
 	description: { type: String },
-	dueDate: { type: Date, required: true },
+	dueDate: { type: Date },
 	availableDate: { type: Date, required: true },
 	teacherId: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
 	courseId: { type: Schema.Types.ObjectId, default: null, ref: 'course' },
@@ -25,8 +25,6 @@ const homeworkSchema = new Schema({
 	maxTeamMembers: { type: Number, default: null, min: 1 },
 	archived: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 });
-enableAuditLog(homeworkSchema);
-const homeworkModel = mongoose.model('homework', homeworkSchema);
 
 
 const submissionSchema = new Schema({
@@ -43,8 +41,6 @@ const submissionSchema = new Schema({
 	fileIds: [{ type: Schema.Types.ObjectId, ref: 'file' }],
 	comments: [{ type: Schema.Types.ObjectId, ref: 'comment' }],
 });
-enableAuditLog(submissionSchema);
-const submissionModel = mongoose.model('submission', submissionSchema);
 
 
 const commentSchema = new Schema({
@@ -53,7 +49,13 @@ const commentSchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	author: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
 });
+
+enableAuditLog(homeworkSchema);
+enableAuditLog(submissionSchema);
 enableAuditLog(commentSchema);
+
+const homeworkModel = mongoose.model('homework', homeworkSchema);
+const submissionModel = mongoose.model('submission', submissionSchema);
 const commentModel = mongoose.model('comment', commentSchema);
 
 module.exports = {

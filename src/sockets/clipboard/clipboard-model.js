@@ -23,4 +23,5 @@ const clipboardSchema = new Schema({
 }, { minimize: false });
 
 const clipboardModel = mongoose.model('clipboards', clipboardSchema);
+
 module.exports = clipboardModel;

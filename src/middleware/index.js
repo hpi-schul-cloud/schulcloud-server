@@ -1,4 +1,4 @@
-const handler = require('@feathersjs/express/errors');
+const express = require('@feathersjs/express');
 const notFound = require('./not-found-handler');
 const logger = require('./logger');
 
@@ -10,5 +10,5 @@ module.exports = function () {
 
 	app.use(notFound());
 	app.use(logger(app));
-	app.use(handler());
+	app.use(express.errorHandler());
 };

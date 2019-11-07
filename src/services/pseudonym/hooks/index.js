@@ -1,6 +1,7 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const toArray = (data) => (Array.isArray(data) ? data : [data]);
 
@@ -22,8 +23,8 @@ const createMissingPseudonyms = (hook) => {
 	for (const userId of userIds) {
 		for (const toolId of toolIds) {
 			if (!hook.result.data.find((entry) => (
-				entry.userId.toString() === userId.toString()
-				&& entry.toolId.toString() === toolId.toString()))) {
+				equalIds(entry.userId, userId)
+				&& equalIds(entry.toolId, toolId)))) {
 				missingPseudonyms.push({ userId, toolId });
 			}
 		}
@@ -75,7 +76,7 @@ const populateUsername = (context) => {
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [authenticate('jwt')],
 	find: [replaceToolWithOrigin],
 	get: [() => { throw new errors.MethodNotAllowed(); }],
 	create: [globalHooks.ifNotLocal(() => { throw new errors.MethodNotAllowed(); })],
