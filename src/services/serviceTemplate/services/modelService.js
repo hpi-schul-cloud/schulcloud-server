@@ -13,7 +13,7 @@ const { serviceModel } = require('../model');
 /**
  * the datasources service manages the datasources collection.
  */
-const simpleService = service({
+const modelService = service({
 	Model: serviceModel,
 	paginate: {
 		default: 25,
@@ -27,7 +27,7 @@ const simpleService = service({
  * use disallow() to disable any methods that are not supposed to be used.
  * more hooks can be found at https://feathers-plus.github.io/v1/feathers-hooks-common/index.html#Hooks.
  */
-const simpleServiceHooks = {
+const modelServiceHooks = {
 	before: {
 		all: [
 			auth.hooks.authenticate('jwt'),
@@ -71,4 +71,4 @@ const simpleServiceHooks = {
 	},
 };
 
-module.exports = { simpleService, simpleServiceHooks };
+module.exports = { modelService, modelServiceHooks };

@@ -1,10 +1,10 @@
-const { simpleService, simpleServiceHooks } = require('./services/simpleService');
+const { modelService, modelServiceHooks } = require('./services/modelService');
 
 module.exports = function setup() {
 	const app = this;
 
-	app.use('/serviceTemplate/simpleService', simpleService);
+	app.use('/serviceTemplate/modelService', modelService);
 
-	const serviceTemplate = app.service('/serviceTemplate');
-	serviceTemplate.hooks(simpleServiceHooks);
+	const serviceTemplate = app.service('/modelTemplate');
+	serviceTemplate.hooks(modelServiceHooks);
 };
