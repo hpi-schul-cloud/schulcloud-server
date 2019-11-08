@@ -10,7 +10,7 @@ const injectCourseId = (hook) => {
 };
 
 exports.before = {
-	all: [authenticate('jwt'), globalHooks.hasPermission('USERGROUP_CREATE')],
+	all: [authenticate('jwt'), globalHooks.hasPermission('COURSE_CREATE')],
 	find: [hooks.disallow()],
 	get: [hooks.disallow()],
 	create: [globalHooks.injectUserId, injectCourseId, globalHooks.ifNotLocal(globalHooks.checkCorrectCourseOrTeamId)],
@@ -30,7 +30,7 @@ exports.after = {
 };
 
 exports.beforeShare = {
-	all: [authenticate('jwt'), globalHooks.hasPermission('USERGROUP_CREATE')],
+	all: [authenticate('jwt'), globalHooks.hasPermission('COURSE_CREATE')],
 	find: [],
 	get: [globalHooks.ifNotLocal(globalHooks.checkCorrectCourseOrTeamId)],
 	create: [globalHooks.injectUserId],

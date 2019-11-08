@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { discard } = require('feathers-hooks-common');
 
 const globalHooks = require('../../../hooks');
 const { canRead } = require('../utils/filePermissionHelper');
@@ -28,7 +29,7 @@ exports.before = {
 };
 
 exports.after = {
-	all: [],
+	all: [discard('securityCheck.requestToken', 'thumbnailRequestToken')],
 	find: [restrictToCurrentUser],
 	get: [],
 	create: [],

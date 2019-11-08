@@ -8,13 +8,14 @@ const ShortId = require('mongoose-shortid-nodeps');
 const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
-const linkLength = 5;
+const LINK_LENGTH = 5;
 
 const linkSchema = new Schema({
 	_id: {
 		type: ShortId,
-		len: linkLength,
-		alphabet: 'abcdefghkmnopqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ123456789', // Base 62 (a-Z, 0-9) without similiar looking chars
+		len: LINK_LENGTH,
+		// Base 62 (a-Z, 0-9) without similiar looking chars
+		alphabet: 'abcdefghkmnopqrstuvwxyzABCDEFGHKLMNPQRSTUVWXYZ123456789',
 		retries: 20, // number of retries on collision
 	},
 	data: { type: Object },
@@ -23,6 +24,8 @@ const linkSchema = new Schema({
 });
 
 enableAuditLog(linkSchema);
+
 const linkModel = mongoose.model('link', linkSchema);
-linkModel.linkLength = linkLength;
+linkModel.linkLength = LINK_LENGTH; // fixme`
+
 module.exports = linkModel;

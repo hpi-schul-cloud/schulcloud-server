@@ -7,6 +7,7 @@ const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
 const { homeworkModel } = require('../../homework/model');
 const lessonsModel = require('../../lesson/model');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const createHomework = (
 	homework,
@@ -92,8 +93,7 @@ class CourseCopyService {
 					homework,
 					res._id,
 					undefined,
-					params.account.userId.toString() === homework.teacherId.toString()
-						? params.account.userId : homework.teacherId,
+					equalIds(params.account.userId, homework.teacherId) ? params.account.userId : homework.teacherId,
 					this.app,
 					params.account.userId,
 				);
