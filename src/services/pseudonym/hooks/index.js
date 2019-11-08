@@ -39,22 +39,22 @@ const createMissingPseudonyms = (hook) => {
 
 // restricts the return pseudonyms to the users the current user is allowed to retrieve
 const filterValidUsers = (context) => {
-	let validUserIds = [context.params.account.userId];
+	const currentUserId = context.params.account.userId;
+	let validUserIds = [currentUserId];
 	return context.app.service('courses').find({
 		query: {
 			$or: [
-				{ teacherIds: context.params.account.userId },
-				{ userIds: context.params.account.userId },
+				{ teacherIds: currentUserId },
+				{ userIds: currentUserId },
+				{ substitutionIds: currentUserId },
 			],
 			$populate: 'classIds',
 		},
 	}).then((courses) => {
 		for (const course of courses.data) {
-			validUserIds = validUserIds.concat(course.userIds);
-			validUserIds = validUserIds.concat(course.teacherIds);
+			validUserIds = validUserIds.concat(course.userIds, course.teacherIds, course.substitutionIds);
 			for (const classInstance of course.classIds) {
-				validUserIds = validUserIds.concat(classInstance.userIds);
-				validUserIds = validUserIds.concat(classInstance.teacherIds);
+				validUserIds = validUserIds.concat(classInstance.userIds, classInstance.teacherIds);
 			}
 		}
 		validUserIds = validUserIds.map((element) => element.toString());
