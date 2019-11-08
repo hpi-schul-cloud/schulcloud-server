@@ -8,7 +8,7 @@ const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
-const ltiTool = new Schema({
+const ltiToolSchema = new Schema({
 	name: { type: String },
 	url: { type: String, required: true },
 	key: { type: String, required: true },
@@ -38,8 +38,8 @@ const ltiTool = new Schema({
 	friendlyUrl: { type: String, unique: true, sparse: true },
 });
 
-enableAuditLog(ltiTool);
+enableAuditLog(ltiToolSchema);
 
-const ltiToolModel = mongoose.model('ltiTool', ltiTool);
+const ltiToolModel = mongoose.model('ltiTool', ltiToolSchema);
 
 module.exports = ltiToolModel;

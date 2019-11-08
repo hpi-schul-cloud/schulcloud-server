@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
@@ -14,10 +14,10 @@ const {
 
 exports.before = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 	],
 	find: [
-		globalHooks.hasPermission('USERGROUP_VIEW'),
+		globalHooks.hasPermission('COURSE_VIEW'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnCourses,
 		globalHooks.mapPaginationQuery,
@@ -25,11 +25,11 @@ exports.before = {
 	get: [courseInviteHook],
 	create: [
 		globalHooks.injectUserId,
-		globalHooks.hasPermission('USERGROUP_CREATE'),
+		globalHooks.hasPermission('COURSE_CREATE'),
 		restrictToCurrentSchool,
 	],
 	update: [
-		globalHooks.hasPermission('USERGROUP_EDIT'),
+		globalHooks.hasPermission('COURSE_EDIT'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnCourses,
 		restrictChangesToArchivedCourse,
@@ -42,7 +42,7 @@ exports.before = {
 		deleteWholeClassFromCourse,
 	],
 	remove: [
-		globalHooks.hasPermission('USERGROUP_CREATE'),
+		globalHooks.hasPermission('COURSE_REMOVE'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnCourses,
 		globalHooks.permitGroupOperation,

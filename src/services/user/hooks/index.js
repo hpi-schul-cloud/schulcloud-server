@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
@@ -6,6 +6,8 @@ const { sortRoles } = require('../../role/utils/rolesHelper');
 
 const constants = require('../../../utils/constants');
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../consent/config');
+
+const { hasEditPermissionForUser } = require('./index.hooks');
 
 /**
  *
@@ -161,14 +163,14 @@ const sanitizeData = (hook) => {
 
 const checkJwt = () => function checkJwtfnc(hook) {
 	if (((hook.params || {}).headers || {}).authorization !== undefined) {
-		return (auth.hooks.authenticate('jwt')).call(this, hook);
+		return (authenticate('jwt')).call(this, hook);
 	}
 	return Promise.resolve(hook);
 };
 
 const pinIsVerified = (hook) => {
 	if ((hook.params || {}).account && hook.params.account.userId) {
-		return (globalHooks.hasPermission('USER_CREATE')).call(this, hook);
+		return (globalHooks.hasPermission(['STUDENT_CREATE', 'TEACHER_CREATE', 'ADMIN_CREATE'])).call(this, hook);
 	}
 	// eslint-disable-next-line no-underscore-dangle
 	const email = (hook.params._additional || {}).parentEmail || hook.data.email;
@@ -393,18 +395,17 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 
 const User = require('../model');
 
-
 exports.before = {
 	all: [],
 	find: [
 		globalHooks.mapPaginationQuery.bind(this),
 		// resolve ids for role strings (e.g. 'TEACHER')
 		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
 		mapRoleFilterQuery,
 	],
-	get: [auth.hooks.authenticate('jwt')],
+	get: [authenticate('jwt')],
 	create: [
 		checkJwt(),
 		pinIsVerified,
@@ -414,23 +415,23 @@ exports.before = {
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 	],
 	update: [
-		auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('USER_EDIT'),
+		authenticate('jwt'),
 		// TODO only local for LDAP
 		sanitizeData,
+		hasEditPermissionForUser,
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
 	],
 	patch: [
-		auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('USER_EDIT'),
+		authenticate('jwt'),
 		globalHooks.ifNotLocal(securePatching),
 		globalHooks.permitGroupOperation,
 		sanitizeData,
+		hasEditPermissionForUser,
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		updateAccountUsername,
 	],
 	remove: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
 		globalHooks.ifNotLocal(enforceRoleHierarchyOnDelete),
 		globalHooks.permitGroupOperation,
