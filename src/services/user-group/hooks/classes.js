@@ -10,7 +10,7 @@ const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToU
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [
-		globalHooks.hasPermission('USERGROUP_VIEW'),
+		globalHooks.hasPermission('CLASS_VIEW'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnClasses,
 		sortByGradeAndOrName,
@@ -21,21 +21,21 @@ exports.before = {
 		restrictToUsersOwnClasses,
 	],
 	create: [
-		globalHooks.hasPermission('USERGROUP_CREATE'),
+		globalHooks.hasPermission('CLASS_CREATE'),
 		restrictToCurrentSchool,
 	],
 	update: [
-		globalHooks.hasPermission('USERGROUP_EDIT'),
+		globalHooks.hasPermission('CLASS_EDIT'),
 		restrictToCurrentSchool,
 		prepareGradeLevelUnset,
 	],
 	patch: [
-		globalHooks.hasPermission('USERGROUP_EDIT'),
+		globalHooks.hasPermission('CLASS_EDIT'),
 		restrictToCurrentSchool,
 		globalHooks.permitGroupOperation,
 		prepareGradeLevelUnset,
 	],
-	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('CLASS_REMOVE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
 };
 
 

@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 const classesService = app.service('/classes');
 
@@ -53,7 +54,7 @@ describe('classes service', () => {
 				expect(data.length).to.equal(classes.length);
 				// all created classes should be in the response:
 				expect(classes.reduce(
-					(agg, cur) => agg && data.some((d) => d._id.toString() === cur._id.toString()),
+					(agg, cur) => agg && data.some((d) => equalIds(d._id, cur._id)),
 					true,
 				)).to.equal(true);
 			}));
@@ -141,8 +142,8 @@ describe('classes service', () => {
 			expect(data[0].displayName).to.equal(classes[0].displayName);
 			expect(data[1].displayName).to.equal(classes[2].displayName);
 			expect(data[2].displayName).to.equal(classes[1].displayName);
-    });
-    
+		});
+
 		it('CREATE patches successor ID in predecessor class', async () => {
 			const orgClass = await app.service('classes').create({
 				name: 'sonnenklasse 1',

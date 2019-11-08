@@ -37,7 +37,7 @@
 	},
 	"state": "up",
     "name" : "lessonIsCopyFrom",
-    "createdAt" : "2019-07-11T07:44:37.148Z",
+    "createdAt" : "2019-07-11T12:18:30.503Z",
 	"__v": 0
 },
 {
@@ -146,7 +146,7 @@
 	"createdAt": {
 		"$date": "2019-09-17T14:43:38.288Z"
   },
-	"__v": 0  
+	"__v": 0
 },
 {
 	"_id": {
@@ -156,6 +156,17 @@
 	"name": "addNewsCreateToAdmin",
 	"createdAt": {
 		"$date": "2019-09-04T15:19:04.053Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d81ef4e6012563f98d225e5"
+	},
+	"state": "up",
+	"name": "AddCourseRoles",
+	"createdAt": {
+		"$date": "2019-09-09T09:38:21.926Z"
 	},
 	"__v": 0
 },
@@ -171,6 +182,17 @@
 	"__v": 0
 },
 {
+	"_id": {
+		"$oid": "5d8b80ca723a1b53dc43172e"
+	},
+	"state": "up",
+	"name": "AddScopePermissionsViewPermissionToCourseTeachers",
+	"createdAt": {
+		"$date": "2019-09-25T14:59:22.19Z"
+	},
+	"__v": 0
+},
+{
     "_id": {
 		"$oid": "5d91b525fee68c5c70d99de1"
 	},
@@ -180,4 +202,71 @@
 		"$date": "2019-09-30T07:46:22.613Z"
 	},
     "__v": 0
+},
+{
+    "_id": {
+		"$oid": "5d9db0a97bd9ad01a1734817"
+	},
+    "state": "up",
+    "name": "granular_user_permissions",
+    "createdAt": {
+		"$date": "2019-10-09T12:46:22.613Z"
+	},
+    "__v": 0
+},
+{
+    "_id" : {
+		"$oid": "5da051503921a638b07b0ccf"
+	},
+    "state" : "up",
+    "name" : "add-datasource-permissions",
+    "createdAt" : {
+		"$date": "2019-10-11T09:54:24.666Z"
+	},
+    "__v" : 0
+},
+{
+    "_id" : {
+		"$oid": "5dc173583c9c9844881b6aca"
+	},
+    "state" : "up",
+    "name" : "persist_files_by_copied_courses",
+	"createdAt" : {
+		"$date": "2019-07-30T13:24:23.114Z"
+	},
+    "__v" : 0
+},
+{
+    "_id" : {
+		"$oid": "5dc19483d15115187413f3c0"
+	},
+    "state" : "up",
+    "name" : "remove-broken-class-successor-links",
+    "createdAt" : {
+		"$date": "2019-11-05T14:19:26.569Z"
+	},
+    "__v" : 0
+},
+{
+	"_id" : {
+		"$oid": "5db84906407b4a46ecf03a8b"
+	},
+	"state" : "up",
+	"name" : "addCreateSupportJwtPermission",
+	"createdAt" : {
+		"$date": "2019-10-29T14:13:26.935+0000"
+	},
+	"__v" : 0
+},
+{ 
+    "_id" : {
+		"$oid": "5dc18974ba666b70ac1199e5"
+	},
+    "state" : "up",
+    "name" : "add-enterthecloud-start-permission",
+    "createdAt" : {
+		"$date": "2019-11-05T14:38:44.172Z"
+	},
+    "__v" : 0
 }]
+
