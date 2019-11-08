@@ -64,26 +64,49 @@ exports.hasRole = (context, userId, roleName) => {
 		});
 };
 
-exports.hasPermission = (permissionName) => (context) => {
-	const { params: { account, provider }, app } = context;
-	// If it was an internal call then skip this context
-	if (!provider) {
-		return Promise.resolve(context);
-	}
+/**
+ * @param  {string, array[string]} inputPermissions
+ * @returns resolves if the current user has ANY of the given permissions
+ */
+const hasPermission = (inputPermissions) => {
+	const permissionNames = (typeof inputPermissions === 'string') ? [inputPermissions] : inputPermissions;
 
-	// Otherwise check for user permissions
-	if (!account && !account.userId) {
-		throw new Forbidden('Can not read account data.');
-	}
+	return (context) => {
+		const { params: { account, provider }, app } = context;
+		// If it was an internal call then skip this context
+		if (!provider) {
+			return Promise.resolve(context);
+		}
 
-	return app.service('/users/').get(account.userId)
-		.then(({ permissions = [] }) => {
-			if (!permissions.includes(permissionName)) {
-				throw new Forbidden(`You don't have the permission ${permissionName}.`);
-			}
-			return context;
-		});
+		if (!account && !account.userId) {
+			throw new Forbidden('Can not read account data');
+		}
+
+		// Otherwise check for user permissions
+		return app.service('users').get(account.userId)
+			.then(({ permissions = [] }) => {
+				const hasAnyPermission = permissionNames.some((perm) => permissions.includes(perm));
+				if (!hasAnyPermission) {
+					throw new Forbidden(`You don't have one of the permissions: ${permissionNames.join(', ')}.`);
+				}
+				return Promise.resolve(context);
+			});
+	};
 };
+
+/**
+ * @param  {string, array[string]} permissions
+ * @returns resolves if the current user has ALL of the given permissions
+ */
+exports.hasAllPermissions = (permissions) => {
+	const permissionNames = (typeof permissions === 'string') ? permissions : [permissions];
+	return (context) => {
+		const hasPermissions = permissionNames.every((permission) => hasPermission(permission)(context));
+		return Promise.all(hasPermissions);
+	};
+};
+
+exports.hasPermission = hasPermission;
 
 /*
     excludeOptions = false => allways remove response

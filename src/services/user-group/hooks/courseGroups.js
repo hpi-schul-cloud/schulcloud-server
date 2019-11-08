@@ -6,7 +6,7 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 
 exports.before = {
 	all: [authenticate('jwt')],
-	find: [globalHooks.hasPermission('USERGROUP_VIEW'), restrictToCurrentSchool],
+	find: [globalHooks.hasPermission('COURSE_VIEW'), restrictToCurrentSchool],
 	get: [],
 	create: [globalHooks.hasPermission('COURSEGROUP_CREATE')],
 	update: [globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool],

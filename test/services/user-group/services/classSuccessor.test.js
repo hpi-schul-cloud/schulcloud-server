@@ -192,7 +192,7 @@ describe('classSuccessor service', () => {
 			throw new Error('should have failed');
 		} catch (error) {
 			expect(error.message).to.not.equal('should have failed');
-			expect(error.message).to.equal("You don't have the permission USERGROUP_CREATE.");
+			expect(error.message).to.equal("You don't have one of the permissions: CLASS_CREATE.");
 			expect(error.code).to.equal(403);
 		}
 	});
