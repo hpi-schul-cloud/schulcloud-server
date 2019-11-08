@@ -204,6 +204,17 @@
     "__v": 0
 },
 {
+    "_id": {
+		"$oid": "5d9db0a97bd9ad01a1734817"
+	},
+    "state": "up",
+    "name": "granular_user_permissions",
+    "createdAt": {
+		"$date": "2019-10-09T12:46:22.613Z"
+	},
+    "__v": 0
+},
+{
     "_id" : {
 		"$oid": "5da051503921a638b07b0ccf"
 	},
