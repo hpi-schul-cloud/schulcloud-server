@@ -1,13 +1,12 @@
 const modelService = require('./model-service');
 const proxyService = require('./proxy-service');
 const thumbnailService = require('./thumbnail-service');
+const { service: securityCheckService } = require('./SecurityCheckService');
 
-module.exports = function () {
-	const app = this;
-	// Setup proxy services
+module.exports = (app) => {
 	app.configure(proxyService);
-	// Setup model services
 	app.configure(modelService);
-	// Setup thumbnail service
+
 	app.configure(thumbnailService);
+	app.configure(securityCheckService);
 };

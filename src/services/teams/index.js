@@ -34,6 +34,8 @@ const {
 const { ScopePermissionService, ScopeListService } = require('../helpers/scopePermissions');
 // const {teamRolesToHook} = require('./hooks');
 // todo docs require
+const { equal: equalIds } = require('../../helper/compare').ObjectId;
+
 
 const { AdminOverview } = require('./services');
 
@@ -483,7 +485,7 @@ module.exports = function setup() {
 
 	ScopePermissionService.initialize(app, '/teams/:scopeId/userPermissions', async (userId, team) => {
 		// Return all permissions of the user's team role within the given team
-		const [teamUser] = team.userIds.filter((u) => u.userId.toString() === userId.toString());
+		const [teamUser] = team.userIds.filter((u) => equalIds(u.userId, userId));
 		if (teamUser !== undefined) {
 			const role = await app.service('roles').get(teamUser.role.toString());
 			return role.permissions;
@@ -503,7 +505,7 @@ module.exports = function setup() {
 		// We need to use map+filter here, because the role-lookup is async and cannot
 		// be handled by array#filter (which is inherently synchronous) alone.
 		const teams = (await Promise.all(result.data.map(async (t) => {
-			const [u] = t.userIds.filter((i) => i.userId.toString() === user._id.toString());
+			const [u] = t.userIds.filter((i) => equalIds(i.userId, user._id));
 			if (!u.role) return false;
 			const role = await app.service('roles').get(u.role);
 			return permissions.every((p) => role.permissions.includes(p)) ? t : undefined;

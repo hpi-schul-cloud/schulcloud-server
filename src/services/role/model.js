@@ -27,16 +27,16 @@ const roleSchema = new Schema({
 	timestamps: true,
 });
 
-roleSchema.methods.getPermissions = function () {
-	return roleModel.resolvePermissions([this._id]);
+roleSchema.methods.getPermissions = function getPermissions() {
+	return roleModel.resolvePermissions([this._id]); // fixme
 };
 
-roleSchema.statics.resolvePermissions = function (roleIds) {
+roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 	const processedRoleIds = [];
 	const permissions = new Set();
 
 	function resolveSubRoles(roleId) {
-		return roleModel.findById(roleId)
+		return roleModel.findById(roleId) // fixme
 			.then((role) => {
 				if (typeof role !== 'object') {
 					role = {};
@@ -62,6 +62,7 @@ roleSchema.statics.resolvePermissions = function (roleIds) {
 roleSchema.virtual('displayName').get(function get() {
 	return rolesDisplayName[this.name] || '';
 });
+
 roleSchema.plugin(leanVirtuals);
 
 enableAuditLog(roleSchema);
