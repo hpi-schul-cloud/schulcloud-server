@@ -53,7 +53,8 @@ const filterValidUsers = (context) => {
 		},
 	}).then((courses) => {
 		for (const course of courses.data) {
-			validUserIds = validUserIds.concat(course.userIds, course.teacherIds, course.substitutionIds);
+			course.substitutionIds = course.substitutionIds || [];
+			validUserIds = validUserIds.concat(course.userIds, course.teacherIds);
 			for (const classInstance of course.classIds) {
 				validUserIds = validUserIds.concat(classInstance.userIds, classInstance.teacherIds);
 			}
