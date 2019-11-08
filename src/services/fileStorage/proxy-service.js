@@ -31,6 +31,7 @@ const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
+const { equal: equalIds } = require('../../helper/compare').ObjectId;
 
 const FILE_PREVIEW_SERVICE_URI = process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
 const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI
@@ -40,7 +41,7 @@ const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || f
 const FILE_SECURITY_CHECK_SERVICE_URI = process.env.FILE_SECURITY_CHECK_SERVICE_URI
 	|| 'http://localhost:8081/scan/file';
 const FILE_SECURITY_CHECK_CALLBACK_URI = url.resolve(
-	process.env.HOST || 'http://localhost:3030',
+	process.env.API_HOST || 'http://localhost:3030',
 	FILE_SECURITY_SERVICE_PATH,
 );
 const FILE_SECURITY_CHECK_MAX_FILE_SIZE = parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10)
@@ -272,7 +273,7 @@ const fileStorageService = {
 			if (teamObject) {
 				return new Promise((resolve, reject) => {
 					const teamMember = teamObject.userIds.find(
-						(u) => u.userId.toString() === userId.toString(),
+						(u) => equalIds(u.userId, userId),
 					);
 					if (teamMember) {
 						return resolve();
@@ -635,11 +636,10 @@ const fileTotalSizeService = {
 	 * - Check if user in payload is administrator
      */
 	find() {
-		return FileModel.find({}).exec()
-			.then((files) => ({
-				total: files.length,
-				totalSize: files.reduce((sum, file) => sum + file.size, 0),
-			}));
+		return Promise.resolve({
+			total: 0,
+			totalSize: 0,
+		});
 	},
 };
 
@@ -827,7 +827,7 @@ const filePermissionService = {
 		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
 		const rolePromises = rolePermissions
 			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
-		const isFileCreator = fileObj.permissions[0].refId.toString() === userId.toString();
+		const isFileCreator = equalIds(fileObj.permissions[0].refId, userId);
 
 		const actionMap = {
 			user: () => {

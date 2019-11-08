@@ -46,6 +46,7 @@ jobs:
       script:
         - ./deploy.sh
       name: deploy
+      language: generic
       env:
         - GIT_SHA=$( git rev-parse HEAD )
         - DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" )

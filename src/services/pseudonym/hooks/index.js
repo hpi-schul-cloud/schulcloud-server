@@ -2,6 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const oauth2 = require('../../oauth2/hooks');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const toArray = (data) => (Array.isArray(data) ? data : [data]);
 
@@ -23,8 +24,8 @@ const createMissingPseudonyms = (hook) => {
 	for (const userId of userIds) {
 		for (const toolId of toolIds) {
 			if (!hook.result.data.find((entry) => (
-				entry.userId.toString() === userId.toString()
-				&& entry.toolId.toString() === toolId.toString()))) {
+				equalIds(entry.userId, userId)
+				&& equalIds(entry.toolId, toolId)))) {
 				missingPseudonyms.push({ userId, toolId });
 			}
 		}
