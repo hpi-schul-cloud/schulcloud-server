@@ -71,8 +71,7 @@ const populateUsername = (context) => {
 					firstName: response.firstName,
 					lastName: response.lastName,
 					iframe: oauth2.getSubject(context.result.data[0].pseudonym,
-						context.app.settings.services.web
-					),
+						context.app.settings.services.web),
 				},
 			};
 			return context;
