@@ -23,12 +23,11 @@ describe('link service', () => {
 		const url = 'https://schul-cloud.org/';
 		return service.create({ target: url })
 			.then((data) => {
-				
 				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
 				chai.expect(data.target).to.equal(url);
 				return Promise.resolve(data.id);
 			})
-			.then(id => new Promise((resolve, reject) => {
+			.then((id) => new Promise((resolve, reject) => {
 				chai.request(app)
 					.get(`/link/${id}`)
 					.end((error, result) => {
@@ -51,7 +50,7 @@ describe('link service', () => {
 				chai.expect(data.target).to.equal(url);
 				return Promise.resolve(data.id);
 			})
-			.then(id => new Promise((resolve, reject) => {
+			.then((id) => new Promise((resolve, reject) => {
 				chai.request(app)
 					.get(`/link/${id}`)
 					.end((error, result) => {
@@ -74,7 +73,7 @@ describe('link service', () => {
 				chai.expect(data.target).to.equal(url);
 				return Promise.resolve(data.id);
 			})
-			.then(id => new Promise((resolve, reject) => {
+			.then((id) => new Promise((resolve, reject) => {
 				chai.request(app)
 					.get(`/link/${id}`)
 					.end((error, result) => {
@@ -97,7 +96,7 @@ describe('link service', () => {
 				chai.expect(data.target).to.equal(url);
 				return Promise.resolve(data.id);
 			})
-			.then(id => new Promise((resolve, reject) => {
+			.then((id) => new Promise((resolve, reject) => {
 				chai.request(app)
 					.get(`/link/${id}`)
 					.end((error, result) => {
@@ -120,7 +119,7 @@ describe('link service', () => {
 				chai.expect(data.target).to.equal(url);
 				return Promise.resolve(data.id);
 			})
-			.then(id => new Promise((resolve, reject) => {
+			.then((id) => new Promise((resolve, reject) => {
 				chai.request(app)
 					.get(`/link/${id}`)
 					.end((error, result) => {
