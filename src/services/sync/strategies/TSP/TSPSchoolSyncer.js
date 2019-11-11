@@ -234,7 +234,9 @@ class TSPSchoolSyncer extends Syncer {
 	}
 
 	async createUserAndAccount(userOptions, roles, system) {
-		const email = ''; // todo: generate email
+		const username = `${USER_SOURCE}/${userOptions.schoolId}/${userOptions.sourceOptions[SOURCE_ID_ATTRIBUTE]}`
+			.toLowerCase();
+		const email = `${username}@schul-cloud.org`;
 		const { pin } = await this.app.service('registrationPins').create({
 			email,
 			verified: true,
@@ -248,8 +250,7 @@ class TSPSchoolSyncer extends Syncer {
 		});
 		await accountModel.create({
 			userId: user._id,
-			username: `${USER_SOURCE}/${userOptions.schoolId}/${userOptions.sourceOptions[SOURCE_ID_ATTRIBUTE]}`
-				.toLowerCase(),
+			username,
 			systemId: system._id,
 			activated: true,
 		});
