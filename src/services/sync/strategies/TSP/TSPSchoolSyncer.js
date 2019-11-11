@@ -1,8 +1,11 @@
 const Syncer = require('../Syncer');
 const { TspApi } = require('./TSP');
 const SchoolYearFacade = require('../../../school/logic/year');
+const accountModel = require('../../../account/model');
 
 const SYNCER_TARGET = 'tsp-school';
+const USER_SOURCE = 'tsp'; // used as source attribute in created users and classes
+const SOURCE_ID_ATTRIBUTE = 'tspUid';
 
 class TSPSchoolSyncer extends Syncer {
 	respondsTo(target) {
@@ -25,7 +28,11 @@ class TSPSchoolSyncer extends Syncer {
 	constructor(app, stats, logger, config) {
 		super(app, stats, logger);
 		this.stats = Object.assign(this.stats, {
-			schools: {},
+			users: {
+				teachers: { created: 0, updated: 0, errors: 0 },
+				students: { created: 0, updated: 0, errors: 0 },
+			},
+			classes: { created: 0, updated: 0, errors: 0 },
 		});
 		this.config = config;
 		this.api = new TspApi(config.baseUrl);
@@ -51,7 +58,10 @@ class TSPSchoolSyncer extends Syncer {
 				(item) => item.schuleNummer === system.schoolIdentifier,
 			));
 
-			// todo: create or update people
+			const teacherJobs = teachers.map((teacher) => this.createOrUpdateTeacher(teacher, school, system));
+			const studentJobs = students.map((student) => this.createOrUpdateStudent(student, school, system));
+			await Promise.all(teacherJobs.concat(studentJobs));
+
 			// todo: create or update classes and associate people (throw out others)
 		}
 	}
@@ -154,9 +164,102 @@ class TSPSchoolSyncer extends Syncer {
 		}
 		return students;
 	}
+
+	async createOrUpdateTeacher(tspTeacher, school, system) {
+		const query = { source: USER_SOURCE };
+		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspTeacher.lehrerUid;
+		const users = await this.app.service('users').find({ query });
+		if (users.total !== 0) {
+			// todo: update teacher
+			this.stats.users.teachers.updated += 1;
+		}
+		try {
+			const sourceOptions = {};
+			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspTeacher.lehrerUid;
+			const teacher = await this.createUserAndAccount({
+				title: tspTeacher.lehrerTitel,
+				firstName: tspTeacher.lehrerVorname,
+				lastName: tspTeacher.lehrerNachname,
+				schoolId: school._id,
+				source: USER_SOURCE,
+				sourceOptions,
+			},
+			'teacher', system);
+			this.stats.users.teachers.created += 1;
+			return teacher;
+		} catch (err) {
+			this.stats.users.teachers.errors += 1;
+			this.logError('User creation error', err, tspTeacher);
+			this.stats.errors.push({
+				type: 'create-teacher',
+				entity: tspTeacher.lehrerUid,
+				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"`
+					+ ' konnte nicht erstellt werden.',
+			});
+			return null;
+		}
+	}
+
+	async createOrUpdateStudent(tspStudent, school, system) {
+		const query = { source: USER_SOURCE };
+		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspStudent.schuelerUid;
+		const users = await this.app.service('users').find({ query });
+		if (users.total !== 0) {
+			// todo: update student
+			this.stats.users.students.updated += 1;
+		}
+		try {
+			const sourceOptions = {};
+			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspStudent.schuelerUid;
+			const student = await this.createUserAndAccount({
+				firstName: tspStudent.schuelerVorname,
+				lastName: tspStudent.schuelerNachname,
+				schoolId: school._id,
+				source: USER_SOURCE,
+				sourceOptions,
+			},
+			'student', system);
+			this.stats.users.students.created += 1;
+			return student;
+		} catch (err) {
+			this.stats.users.students.errors += 1;
+			this.logError('User creation error', err, tspStudent);
+			this.stats.errors.push({
+				type: 'create-student',
+				entity: tspStudent.schuelerUid,
+				message: `Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"`
+					+ ' konnte nicht erstellt werden.',
+			});
+			return null;
+		}
+	}
+
+	async createUserAndAccount(userOptions, roles, system) {
+		const email = ''; // todo: generate email
+		const { pin } = await this.app.service('registrationPins').create({
+			email,
+			verified: true,
+			silent: true,
+		});
+		const user = await this.app.service('users').create({
+			...userOptions,
+			pin,
+			email,
+			roles,
+		});
+		await accountModel.create({
+			userId: user._id,
+			username: `${USER_SOURCE}/${userOptions.schoolId}/${userOptions.sourceOptions[SOURCE_ID_ATTRIBUTE]}`
+				.toLowerCase(),
+			systemId: system._id,
+			activated: true,
+		});
+		return user;
+	}
 }
 
 module.exports = {
 	TSPSchoolSyncer,
 	SYNCER_TARGET,
+	USER_SOURCE,
 };
