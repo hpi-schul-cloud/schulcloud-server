@@ -1,3 +1,5 @@
+const { BadRequest } = require('@feathersjs/errors');
+
 const Syncer = require('../Syncer');
 const { TspApi } = require('./TSP');
 const SchoolYearFacade = require('../../../school/logic/year');
@@ -8,19 +10,17 @@ const USER_SOURCE = 'tsp'; // used as source attribute in created users and clas
 const SOURCE_ID_ATTRIBUTE = 'tspUid';
 
 class TSPSchoolSyncer extends Syncer {
-	respondsTo(target) {
+	static respondsTo(target) {
 		return target === SYNCER_TARGET;
 	}
 
-	params(params, data) {
+	static params(params, data) {
 		const config = (params || {}).config || (data || {}).config;
 		if (!config) {
-			this.logError('Missing parameter "config".');
-			return false;
+			throw new BadRequest('Missing parameter "config".');
 		}
 		if (!config.baseUrl) {
-			this.logError('Missing parameter "config.baseUrl" (URL that points to the TSP Server).');
-			return false;
+			throw new BadRequest('Missing parameter "config.baseUrl" (URL that points to the TSP Server).');
 		}
 		return [config];
 	}
