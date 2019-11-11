@@ -1,3 +1,5 @@
+const { BadRequest } = require('@feathersjs/errors');
+
 const Syncer = require('../Syncer');
 const { TspApi } = require('./TSP');
 
@@ -10,11 +12,16 @@ class TSPBaseSyncer extends Syncer {
 		return target === SYNCER_TARGET;
 	}
 
-	static params(params) {
-		// todo: fill
-		return [
-			{ baseUrl: 'https://example.org/tsp' }, // config
-		];
+	static params(params, data) {
+		// todo: filter
+		const config = ((params || {}).query || {}).config || (data || {}).config;
+		if (!config) {
+			throw new BadRequest('Missing parameter "config".');
+		}
+		if (!config.baseUrl) {
+			throw new BadRequest('Missing parameter "config.baseUrl" (URL that points to the TSP Server).');
+		}
+		return [config];
 	}
 
 	constructor(app, stats, logger, config) {

@@ -15,7 +15,7 @@ class TSPSchoolSyncer extends Syncer {
 	}
 
 	static params(params, data) {
-		const config = (params || {}).config || (data || {}).config;
+		const config = ((params || {}).query || {}).config || (data || {}).config;
 		if (!config) {
 			throw new BadRequest('Missing parameter "config".');
 		}
