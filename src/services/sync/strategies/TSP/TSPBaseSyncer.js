@@ -36,13 +36,18 @@ class TSPBaseSyncer extends Syncer {
 
 	async getSchools() {
 		// todo: eventuell nur Änderungen seit letztem Sync?
+		let schools = [];
 		try {
-			return this.api.request('/tip-ms/api/schulverwaltung_export_schule');
+			schools = await this.api.request('/tip-ms/api/schulverwaltung_export_schule');
 		} catch (err) {
-			this.stats.errors += 1;
-			// todo: create error object
+			this.logError('Cannot fetch schools.', err);
+			this.stats.errors.push({
+				type: 'fetch-schools',
+				entity: this.config.baseUrl,
+				message: 'Fehler beim Laden der Schuldaten.',
+			});
 		}
-		return [];
+		return schools;
 	}
 
 	async createOrUpdateSchoolSystem(identifier, name) {
