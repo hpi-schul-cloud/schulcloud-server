@@ -31,6 +31,9 @@ const userSchema = new Schema({
 	ldapDn: { type: String },
 	ldapId: { type: String },
 
+	source: { type: String },
+	sourceOptions: { type: Object }, // use this for external ids, etc.
+
 	customAvatarBackgroundColor: { type: String },
 	avatarSettings: { type: Object },
 }, {
