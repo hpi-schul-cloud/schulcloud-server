@@ -40,7 +40,6 @@ function isInstance(instance, componentId) {
  * Get all incidents
  * @returns {Promise}
  */
-// TODO: only return incidents not older than 2 days
 function getRawData() {
 	return new Promise((resolve, reject) => {
 		request.get(`${process.env.API_URL}/incidents`, (err, response, body) => {
@@ -61,7 +60,8 @@ module.exports = {
 			for (const element of rawData.data) {
 				const isinstance = await isInstance(instance, element.component_id);
 				// only mind messages for own instance (including none instance specific messages)
-				if (isinstance) {
+				// only mind incidents not older than 2 days
+				if (isinstance && Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
 					data.push(element);
 				}
 			}
