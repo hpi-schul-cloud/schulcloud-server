@@ -38,6 +38,7 @@ const clipboard = require('./clipboard');
 const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
+const alert = require('./alert');
 
 
 module.exports = function initializeServices() {
@@ -84,6 +85,7 @@ module.exports = function initializeServices() {
 	app.configure(oauth2);
 	app.configure(roster);
 	app.configure(datasources);
+	app.configure(alert);
 
 
 	// initialize events
