@@ -101,7 +101,7 @@ class Syncer {
 	}
 
 	logWarning(message, ...args) {
-		this.logger.warning(`[${this.prefix()}] ${message}`, ...args);
+		this.logger.warn(`[${this.prefix()}] ${message}`, ...args);
 	}
 
 	logError(message, ...args) {
