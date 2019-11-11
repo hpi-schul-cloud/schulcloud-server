@@ -30,16 +30,12 @@ class TSPBaseSyncer extends Syncer {
 	async getSchools() {
 		// todo: eventuell nur Änderungen seit letztem Sync?
 		try {
-			// return this.api.request('/tip-ms/api/schulverwaltung_export_schule');
+			return this.api.request('/tip-ms/api/schulverwaltung_export_schule');
 		} catch (err) {
 			this.stats.errors += 1;
 			// todo: create error object
 		}
-		// return [];
-		return [
-			{ schuleNummer: '42', schuleName: 'Thüringer Testschule 123' },
-			{ schuleNummer: '3755466', schuleName: 'Hasi Platnor Gymnasium' },
-		];
+		return [];
 	}
 
 	async createOrUpdateSchoolSystem(identifier, name) {
