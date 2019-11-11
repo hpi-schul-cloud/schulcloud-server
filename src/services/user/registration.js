@@ -5,6 +5,8 @@ const consentModel = require('../consent/model');
 const globalHooks = require('../../hooks');
 const logger = require('../../logger');
 
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../consent/config');
+
 const formatBirthdate1 = (datestamp) => {
 	if (datestamp == undefined) return false;
 
@@ -42,7 +44,7 @@ const populateUser = (app, data) => {
 				}
 			});
 
-			user.roles = user.roles.map(role => (typeof role === 'object' ? role.name : role));
+			user.roles = user.roles.map((role) => (typeof role === 'object' ? role.name : role));
 
 			delete user.importHash;
 			return { user, oldUser };
@@ -51,22 +53,30 @@ const populateUser = (app, data) => {
 	return Promise.resolve({ user, oldUser });
 };
 
-const insertUserToDB = (app, data, user) => {
+const insertUserToDB = async (app, data, user) => {
 	if (user._id) {
-		return app.service('users').remove(user._id).then(() => app.service('users').create(user, { _additional: { parentEmail: data.parent_email, asTask: 'student' } })
+		user.roles = [...new Set(await app.service('roles')
+			.find({ query: { name: { $in: user.roles } } })
+			.then((roles) => {
+				const r = roles.data.map((role) => role._id);
+				return r;
+			}))];
+		return app.service('users')
+			.update(user._id, user)
 			.catch((err) => {
 				logger.warning(err);
 				throw new errors.BadRequest('Fehler beim Updaten der Nutzerdaten.');
-			}));
+			});
 	}
 	return app.service('users').create(user, { _additional: { parentEmail: data.parent_email, asTask: 'student' } })
 		.catch((err) => {
 			logger.warning(err);
+			// fixme check error message is correct, check err
 			throw new errors.BadRequest('Fehler beim Erstellen des Nutzers. Eventuell ist die E-Mail-Adresse bereits im System registriert.');
 		});
 };
 
-const registerUser = function (data, params, app) {
+const registerUser = function register(data, params, app) {
 	let parent = null; let user = null; let oldUser = null; let account = null; let consent = null; let
 		consentPromise = null;
 
@@ -99,20 +109,31 @@ const registerUser = function (data, params, app) {
 		if ((user.roles || []).includes('student')) {
 			// wrong birthday object?
 			if (user.birthday instanceof Date && isNaN(user.birthday)) {
-				return Promise.reject(new errors.BadRequest('Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut.'));
+				return Promise.reject(new errors.BadRequest(
+					'Fehler bei der Erkennung des ausgewählten Geburtstages.'
+					+ ' Bitte lade die Seite neu und starte erneut.',
+				));
 			}
 			// wrong age?
 			const age = globalHooks.getAge(user.birthday);
-			if (data.parent_email && age >= 16) {
-				return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler nicht 16 Jahre oder älter sein.`));
-			} if (!data.parent_email && age < 16) {
-				return Promise.reject(new errors.BadRequest(`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler nicht jünger als 16 Jahre sein.`));
+			if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+				return Promise.reject(new errors.BadRequest(
+					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
+					+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
+				));
+			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+				return Promise.reject(new errors.BadRequest(
+					`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
+					+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
+				));
 			}
 		}
 
 		// identical emails?
 		if (data.parent_email && data.parent_email === data.email) {
-			return Promise.reject(new errors.BadRequest('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.'));
+			return Promise.reject(new errors.BadRequest(
+				'Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.',
+			));
 		}
 
 		if (data.password_1 && data.passwort_1 !== data.passwort_2) {
@@ -134,7 +155,7 @@ const registerUser = function (data, params, app) {
 			});
 		})
 		.then(() =>
-		// create user
+			// create user
 			insertUserToDB(app, data, user)
 				.then((newUser) => {
 					user = newUser;
@@ -152,11 +173,11 @@ const registerUser = function (data, params, app) {
 					.then((accountResponse) => {
 						account = accountResponse;
 					})
-					.catch(err => Promise.reject(new Error('Fehler der Account existiert nicht.')));
+					.catch((err) => Promise.reject(new Error('Fehler der Account existiert nicht.')));
 			}
 			return app.service('accounts').create(account)
 				.then((newAccount) => { account = newAccount; })
-				.catch(err => Promise.reject(new Error('Fehler beim Erstellen des Accounts.')));
+				.catch((err) => Promise.reject(new Error('Fehler beim Erstellen des Accounts.')));
 		})
 		.then((res) => {
 			// add parent if necessary
@@ -174,13 +195,16 @@ const registerUser = function (data, params, app) {
 						if (err.message.startsWith('parentCreatePatch')) {
 							return Promise.resolve(err.data);
 						}
-						return Promise.reject(new Error('Fehler beim Erstellen des Elternaccounts.'));
+						return Promise.reject(new Error(`Fehler beim Erstellen des Elternaccounts. ${err}`));
 					}).then((newParent) => {
 						parent = newParent;
 						return userModel.userModel.findByIdAndUpdate(user._id, { parents: [parent._id] }, { new: true }).exec()
-							.then(updatedUser => user = updatedUser);
+							.then((updatedUser) => user = updatedUser);
 					})
-					.catch(err => Promise.reject('Fehler beim Verknüpfen der Eltern.'));
+					.catch((err) => {
+						logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
+						return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.'));
+					});
 			}
 			return Promise.resolve();
 		})
@@ -206,7 +230,7 @@ const registerUser = function (data, params, app) {
 				.then((newConsent) => {
 					consent = newConsent;
 					return Promise.resolve();
-				}).catch(err => Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.')));
+				}).catch((err) => Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.')));
 		})
 		.then(() => Promise.resolve({
 			user, parent, account, consent,
@@ -231,7 +255,7 @@ const registerUser = function (data, params, app) {
 				rollbackPromises.push(consentModel.consentModel.findOneAndRemove({ _id: consent._id }).exec());
 			}
 			return Promise.all(rollbackPromises)
-				.catch(err => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator.')))
+				.catch((err) => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator.')))
 				.then(() => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Fehler bei der Registrierung.')));
 		});
 };

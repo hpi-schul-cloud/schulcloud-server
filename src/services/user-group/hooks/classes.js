@@ -1,77 +1,63 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
+
+const { sortByGradeAndOrName, prepareGradeLevelUnset } = require('./helpers/classHooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
 
-const prepareGradeLevelUnset = (context) => {
-	if (!context.data.gradeLevel && context.data.name) {
-		const unset = context.data.$unset || {};
-		unset.gradeLevel = '';
-		context.data.$unset = unset;
-	}
-
-	return context;
-};
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [authenticate('jwt')],
 	find: [
-		globalHooks.hasPermission('USERGROUP_VIEW'),
+		globalHooks.hasPermission('CLASS_VIEW'),
+		restrictToCurrentSchool,
+		restrictToUsersOwnClasses,
+		sortByGradeAndOrName,
+		globalHooks.mapPaginationQuery,
+	],
+	get: [
 		restrictToCurrentSchool,
 		restrictToUsersOwnClasses,
 	],
-	get: [restrictToUsersOwnClasses],
 	create: [
-		globalHooks.hasPermission('USERGROUP_CREATE'),
+		globalHooks.hasPermission('CLASS_CREATE'),
 		restrictToCurrentSchool,
 	],
 	update: [
-		globalHooks.hasPermission('USERGROUP_EDIT'),
+		globalHooks.hasPermission('CLASS_EDIT'),
 		restrictToCurrentSchool,
 		prepareGradeLevelUnset,
 	],
 	patch: [
-		globalHooks.hasPermission('USERGROUP_EDIT'),
+		globalHooks.hasPermission('CLASS_EDIT'),
 		restrictToCurrentSchool,
 		globalHooks.permitGroupOperation,
 		prepareGradeLevelUnset,
 	],
-	remove: [globalHooks.hasPermission('USERGROUP_CREATE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
+	remove: [globalHooks.hasPermission('CLASS_REMOVE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
 };
 
-const addDisplayName = (hook) => {
-	let data = hook.result.data || hook.result;
-	const arrayed = !(Array.isArray(data));
-	data = (Array.isArray(data)) ? (data) : ([data]);
-	if ((((hook.params.query || {}).$sort || {}).displayName || {}).toString() === '1') {
-		data.sort((a, b) => a.displayName.toLowerCase() > b.displayName.toLowerCase());
-	} else if ((((hook.params.query || {}).$sort || {}).displayName || {}).toString() === '-1') {
-		data.sort((a, b) => a.displayName.toLowerCase() < b.displayName.toLowerCase());
-	}
 
-	if (arrayed) {
-		data = data[0];
+const saveSuccessor = async (context) => {
+	if (context.data.predecessor) {
+		await context.app.service('classes').patch(context.data.predecessor, { successor: context.result._id });
 	}
-	if (hook.result.data) {
-		hook.result.data = data;
-	} else {
-		(hook.result = data);
-	}
-	return Promise.resolve(hook);
+	return context;
 };
 
 exports.after = {
 	all: [],
-	find: [addDisplayName],
+	find: [],
 	get: [
-		addDisplayName,
 		globalHooks.ifNotLocal(
 			globalHooks.denyIfNotCurrentSchool({
 				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
 			}),
 		)],
-	create: [],
+	create: [
+		saveSuccessor,
+	],
 	update: [],
 	patch: [],
 	remove: [],

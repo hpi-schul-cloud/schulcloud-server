@@ -1,9 +1,9 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { lookupSchool, preparePagination, deleteNewsHistory } = require('./news.hooks');
 
 exports.before = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		lookupSchool,
 	],
 	find: [

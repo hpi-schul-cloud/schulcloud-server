@@ -2,6 +2,7 @@
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
 const Entities = require('html-entities').AllHtmlEntities;
+
 const entities = new Entities();
 
 const globalHooks = require('./hooks/');
@@ -86,8 +87,39 @@ const removeObjectIdInData = (context) => {
 	return context;
 };
 
-module.exports = {
-	before: {
+const displayInternRequests = (level) => (context) => {
+	if (context.params.provider === 'rest') {
+		return context;
+	}
+	const {
+		id, params, path, data, method,
+	} = context;
+
+	if (['accounts'].includes(path) && level < 4) {
+		return context;
+	}
+	const out = {
+		path,
+		method,
+	};
+	if (id) { out.id = id; }
+	Object.keys(params).forEach((key) => {
+		if (params.key) { out[key] = params.key; }
+	});
+	if (data) { out.data = data; }
+
+	// eslint-disable-next-line no-console
+	console.log('[intern]');
+	// eslint-disable-next-line no-console
+	console.log(out);
+	// eslint-disable-next-line no-console
+	console.log(' ');
+
+	return context;
+};
+
+module.exports = function setup(app) {
+	const before = {
 		all: [],
 		find: [],
 		get: [],
@@ -95,9 +127,9 @@ module.exports = {
 		update: [sanitizeData],
 		patch: [sanitizeData],
 		remove: [],
-	},
+	};
 
-	after: {
+	const after = {
 		all: [],
 		find: [],
 		get: [],
@@ -105,9 +137,9 @@ module.exports = {
 		update: [],
 		patch: [],
 		remove: [],
-	},
+	};
 
-	error: {
+	const error = {
 		all: [],
 		find: [],
 		get: [],
@@ -115,5 +147,12 @@ module.exports = {
 		update: [],
 		patch: [],
 		remove: [],
-	},
+	};
+
+	// DISPLAY_REQUEST_LEVEL is set by requestLogger middleware in production it is force to 0
+	// level 2+ adding intern request
+	if (app.get('DISPLAY_REQUEST_LEVEL') > 1) {
+		before.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
+	}
+	app.hooks({ before, after, error });
 };

@@ -5,6 +5,9 @@ const { generateRequestParamsFromUser } = require('../../helpers/services/login'
 
 const courseScopeListService = app.service('/users/:scopeId/courses');
 
+const oneHour = 600000;
+const twoDays = 172800000;
+
 describe('courses scopelist service', () => {
 	it('is properly registered', () => {
 		expect(courseScopeListService).to.not.equal(undefined);
@@ -14,17 +17,17 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const activeCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({ route: { scopeId: user._id }, query: {} });
 		expect(response).to.not.equal(undefined);
 		expect(response.total).to.equal(1);
 		expect(response.data).to.not.equal(undefined);
-		const courseIds = response.data.map(course => course._id.toString());
+		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(activeCourse._id.toString())).to.equal(true);
 		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(false);
 	});
@@ -33,11 +36,11 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const activeCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -46,7 +49,7 @@ describe('courses scopelist service', () => {
 		expect(response).to.not.equal(undefined);
 		expect(response.total).to.equal(1);
 		expect(response.data).to.not.equal(undefined);
-		const courseIds = response.data.map(course => course._id.toString());
+		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(activeCourse._id.toString())).to.equal(true);
 		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(false);
 	});
@@ -55,11 +58,11 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const activeCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -68,7 +71,7 @@ describe('courses scopelist service', () => {
 		expect(response).to.not.equal(undefined);
 		expect(response.total).to.equal(1);
 		expect(response.data).to.not.equal(undefined);
-		const courseIds = response.data.map(course => course._id.toString());
+		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(activeCourse._id.toString())).to.equal(false);
 		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(true);
 	});
@@ -77,11 +80,11 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const activeCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const archivedCourse = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -90,7 +93,7 @@ describe('courses scopelist service', () => {
 		expect(response).to.not.equal(undefined);
 		expect(response.total).to.equal(2);
 		expect(response.data).to.not.equal(undefined);
-		const courseIds = response.data.map(course => course._id.toString());
+		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(activeCourse._id.toString())).to.equal(true);
 		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(true);
 	});
@@ -99,15 +102,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const courseAsStudent = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsTeacher = await testObjects.createTestCourse({
 			teacherIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
 			substitutionIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -116,7 +119,7 @@ describe('courses scopelist service', () => {
 		expect(response).to.not.equal(undefined);
 		expect(response.total).to.equal(3);
 		expect(response.data).to.not.equal(undefined);
-		const courseIds = response.data.map(course => course._id.toString());
+		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(true);
 		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(true);
 		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(true);
@@ -126,15 +129,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const courseAsStudent = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsTeacher = await testObjects.createTestCourse({
 			teacherIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
 			substitutionIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -143,7 +146,7 @@ describe('courses scopelist service', () => {
 		expect(response).to.not.equal(undefined);
 		expect(response.total).to.equal(2);
 		expect(response.data).to.not.equal(undefined);
-		const courseIds = response.data.map(course => course._id.toString());
+		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(true);
 		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(true);
 		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(false);
@@ -153,15 +156,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const courseAsStudent = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsTeacher = await testObjects.createTestCourse({
 			teacherIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
 			substitutionIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -170,7 +173,7 @@ describe('courses scopelist service', () => {
 		expect(response).to.not.equal(undefined);
 		expect(response.total).to.equal(1);
 		expect(response.data).to.not.equal(undefined);
-		const courseIds = response.data.map(course => course._id.toString());
+		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(false);
 		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(false);
 		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(true);
@@ -180,15 +183,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		const courseAsStudent = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsTeacher = await testObjects.createTestCourse({
 			teacherIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const courseAsSubstitutionTeacher = await testObjects.createTestCourse({
 			substitutionIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -197,7 +200,7 @@ describe('courses scopelist service', () => {
 		expect(response).to.not.equal(undefined);
 		expect(response.total).to.equal(3);
 		expect(response.data).to.not.equal(undefined);
-		const courseIds = response.data.map(course => course._id.toString());
+		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(true);
 		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(true);
 		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(true);
@@ -229,15 +232,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -253,15 +256,15 @@ describe('courses scopelist service', () => {
 		const user = await testObjects.createTestUser();
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() - 600000,
+			untilDate: Date.now() - twoDays,
 		});
 		const response = await courseScopeListService.find({
 			route: { scopeId: user._id },
@@ -299,7 +302,7 @@ describe('courses scopelist service integration', () => {
 		} catch (err) {
 			expect(err).to.not.equal(undefined);
 			expect(err.name).to.equal('NotAuthenticated');
-			expect(err.message).to.equal('No auth token');
+			expect(err.message).to.equal('Not authenticated');
 		}
 	});
 
@@ -317,13 +320,13 @@ describe('courses scopelist service integration', () => {
 			expect(err.name).to.equal('Forbidden');
 			expect(err.message).to.equal('Requested and requesting userIds do not match.');
 		}
-	});
+	}).timeout(4000);
 
 	it('succeeds for authenticated user', async () => {
 		const user = await testObjects.createTestUser();
 		const course = await testObjects.createTestCourse({
 			userIds: [user._id],
-			untilDate: Date.now() + 600000,
+			untilDate: Date.now() + oneHour,
 		});
 		const params = await generateRequestParamsFromUser(user);
 		params.route = { scopeId: user._id };
@@ -333,7 +336,7 @@ describe('courses scopelist service integration', () => {
 		expect(response.total).to.equal(1);
 		expect(response.data).to.not.equal(undefined);
 		expect(response.data[0]._id.toString()).to.equal(course._id.toString());
-	});
+	}).timeout(4000);
 
 	afterEach(testObjects.cleanup);
 });

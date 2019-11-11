@@ -94,9 +94,9 @@ describe('news hooks', () => {
 				{ title: 'title', content: 'content', parentId: new ObjectId() },
 			]);
 
-			expect(await newsHistoryModel.count()).to.equal(4);
+			expect(await newsHistoryModel.countDocuments()).to.equal(4);
 			await deleteNewsHistory({ id: newsId.toString() });
-			expect(await newsHistoryModel.count()).to.equal(2);
+			expect(await newsHistoryModel.countDocuments()).to.equal(2);
 
 			// cleanup
 			await newsHistoryModel.deleteMany({}).exec();

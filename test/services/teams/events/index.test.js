@@ -6,6 +6,7 @@ const sleep = require('util').promisify(setTimeout);
 
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
+const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const DELAY_TIME = 250;
 
@@ -40,7 +41,7 @@ describe('Test user remove events for teams.', () => {
 
 			const teamWithRemovedUser = await testObjects.teams.getById(team._id.toString());
 			const found = teamWithRemovedUser.userIds.some(
-				teamUser => teamUser.userId.toString() === user._id.toString(),
+				(teamUser) => equalIds(teamUser.userId, user._id),
 			);
 			expect(found).to.equal(false);
 			expect(teamWithRemovedUser.userIds).to.be.an('array').with.lengthOf(1);

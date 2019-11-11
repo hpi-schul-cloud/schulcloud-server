@@ -13,9 +13,9 @@ const mapResponseProps = (response) => {
 	return response;
 };
 
-const toQueryString = paramsObject => Object
+const toQueryString = (paramsObject) => Object
 	.keys(paramsObject)
-	.map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
+	.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
 	.join('&');
 
 class MessageService {
@@ -38,7 +38,7 @@ class MessageService {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(response => response);
+		return request(options).then((response) => response);
 	}
 
 	get(id, params) {
@@ -54,7 +54,7 @@ class MessageService {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => message);
+		return request(options).then((message) => message);
 	}
 
 	setup(app) {
@@ -80,7 +80,7 @@ class DeviceService {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(devices => devices);
+		return request(options).then((devices) => devices);
 	}
 
 	create(data, params) {
@@ -99,7 +99,7 @@ class DeviceService {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(response => mapResponseProps(response));
+		return request(options).then((response) => mapResponseProps(response));
 	}
 
 	remove(id, params) {
@@ -113,7 +113,7 @@ class DeviceService {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => message);
+		return request(options).then((message) => message);
 	}
 
 	setup(app) {
@@ -141,7 +141,7 @@ class CallbackService {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(response => response);
+		return request(options).then((response) => response);
 	}
 
 	setup(app) {
@@ -167,7 +167,7 @@ class NotificationService {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => message);
+		return request(options).then((message) => message);
 	}
 
 	find(params) {
@@ -185,7 +185,7 @@ class NotificationService {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		return request(options).then(message => message);
+		return request(options).then((message) => message);
 	}
 
 	setup(app) {

@@ -7,8 +7,8 @@ const SystemSyncer = require('./SystemSyncer');
  * @implements {Syncer}
  */
 class LDAPSchoolSyncer extends SystemSyncer {
-	constructor(app, stats, system, school) {
-		super(app, stats, system);
+	constructor(app, stats, logger, system, school) {
+		super(app, stats, logger, system);
 		this.school = school;
 		this.stats = Object.assign(this.stats, {
 			name: this.school.name,
@@ -32,15 +32,15 @@ class LDAPSchoolSyncer extends SystemSyncer {
      */
 	steps() {
 		return super.steps()
-			.then(_ => this.getUserData())
-			.then(_ => this.getClassData())
-			.then(_ => this.stats);
+			.then((_) => this.getUserData())
+			.then((_) => this.getClassData())
+			.then((_) => this.stats);
 	}
 
 	getUserData() {
 		this.logInfo('Getting users...');
 		return this.app.service('ldap').getUsers(this.system.ldapConfig, this.school)
-			.then(ldapUsers => Promise.all(ldapUsers.map(idmUser => this.createOrUpdateUser(idmUser, this.school)))
+			.then((ldapUsers) => Promise.all(ldapUsers.map((idmUser) => this.createOrUpdateUser(idmUser, this.school)))
 				.then((res) => {
 					this.logInfo(`Created ${this.stats.users.created} users, `
                                 + `updated ${this.stats.users.updated} users. `
@@ -88,7 +88,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 			email: idmUser.email,
 			verified: true,
 			silent: true,
-		}).then(registrationPin => this.app.service('users').create({
+		}).then((registrationPin) => this.app.service('users').create({
 			pin: registrationPin.pin,
 			firstName: idmUser.firstName,
 			lastName: idmUser.lastName,
@@ -97,7 +97,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 			ldapDn: idmUser.ldapDn,
 			ldapId: idmUser.ldapUUID,
 			roles: idmUser.roles,
-		})).then(user => accountModel.create({
+		})).then((user) => accountModel.create({
 			userId: user._id,
 			username: (`${this.school.ldapSchoolIdentifier}/${idmUser.ldapUID}`).toLowerCase(),
 			systemId: this.system._id,
@@ -127,16 +127,16 @@ class LDAPSchoolSyncer extends SystemSyncer {
 		return accountModel.update(
 			{ userId: user._id },
 			{ username: (`${this.school.ldapSchoolIdentifier}/${idmUser.ldapUID}`).toLowerCase() },
-		).then(_ => this.app.service('users').update(
+		).then((_) => this.app.service('users').update(
 			{ _id: user._id },
 			updateObject,
 		));
 	}
 
 	createClassesFromLdapData(data, school) {
-		const classes = data.filter(d => 'uniqueMembers' in d && d.uniqueMembers !== undefined);
-		const res = Promise.all(classes.map(ldapClass => this.getOrCreateClassFromLdapData(ldapClass, school)
-			.then(currentClass => this.populateClassUsers(ldapClass, currentClass, school))));
+		const classes = data.filter((d) => 'uniqueMembers' in d && d.uniqueMembers !== undefined);
+		const res = Promise.all(classes.map((ldapClass) => this.getOrCreateClassFromLdapData(ldapClass, school)
+			.then((currentClass) => this.populateClassUsers(ldapClass, currentClass, school))));
 		return res;
 	}
 
@@ -177,7 +177,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 		if (Array.isArray(ldapClass.uniqueMembers) === false) {
 			ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 		}
-		return Promise.all(ldapClass.uniqueMembers.map(ldapUserDn => this.app.service('users').find(
+		return Promise.all(ldapClass.uniqueMembers.map((ldapUserDn) => this.app.service('users').find(
 			{
 				query:
 				{
@@ -201,7 +201,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 				currentClass._id,
 				{ $set: { userIds: students, teacherIds: teachers } },
 			);
-		}).catch(err => Promise.reject(err));
+		}).catch((err) => Promise.reject(err));
 	}
 }
 

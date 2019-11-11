@@ -13,11 +13,11 @@ class ReleaseFetchService {
 			json: true,
 		};
 		return rp(options)
-			.then(releases => release.remove({}, (err, result) => {
+			.then((releases) => release.remove({}, (err, result) => {
 				if (err) {
 					return Promise.error(err);
 				}
-				return releases.map(r => release.create({
+				return releases.map((r) => release.create({
 					_id: r.id,
 					name: r.name,
 					body: r.body,

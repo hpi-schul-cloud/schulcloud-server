@@ -1,5 +1,5 @@
 const hooks = require('feathers-hooks-common');
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const HomeworkModel = require('../model').homeworkModel;
@@ -18,7 +18,7 @@ const hasViewPermissionBefore = (context) => {
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [authenticate('jwt')],
 	find: [hooks.disallow()],
 	get: [
 		globalHooks.hasPermission('HOMEWORK_VIEW'),

@@ -16,6 +16,7 @@ module.exports = function setup(app) {
 		create({
 			headers,
 			email,
+			replyEmail,
 			subject,
 			content,
 		}, params) {
@@ -24,7 +25,8 @@ module.exports = function setup(app) {
 					const options = app.get('secrets').smtp || app.get('secrets').sendmail || {};
 					const transporter = nodemailer.createTransport(options);
 					const mail = {
-						from: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
+						from: process.env.SMTP_SENDER || replyEmail || 'noreply@schul-cloud.org',
+						replyTo: replyEmail || process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 						headers,
 						to: user ? user.email : email,
 						subject,
@@ -39,7 +41,7 @@ module.exports = function setup(app) {
 					}
 					// otherwise print email message object on console
 					logger.debug('E-Mail Message not sent (not in production mode):', mail);
-				}).catch(err => Promise.reject(err));
+				}).catch((err) => Promise.reject(err));
 		}
 	}
 

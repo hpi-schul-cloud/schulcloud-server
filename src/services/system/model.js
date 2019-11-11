@@ -4,6 +4,7 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -55,6 +56,8 @@ const systemSchema = new Schema({
 }, {
 	timestamps: true,
 });
+
+enableAuditLog(systemSchema);
 
 const systemModel = mongoose.model('system', systemSchema);
 

@@ -1,14 +1,16 @@
+const { BadRequest } = require('@feathersjs/errors');
 const rolesModel = require('../../../../src/services/role/model.js');
 const { userModel } = require('../../../../src/services/user/model.js');
 const accountModel = require('../../../../src/services/account/model.js');
 // const app = require(SRC + 'app');
-const { BadRequest } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
 const app = require('../../../../src/app');
-const { warning } = require('../../../../src/logger/index');
+const { warning } = require('../../../../src/logger');
 
-const PASSWORD = process.env.TEST_PW ? process.env.TEST_PW.trim() : warning('process.env.TEST_PW is not defined');
-const PASSWORD_HASH = process.env.TEST_HASH ? process.env.TEST_HASH.trim() : warning('process.env.TEST_HASH is not defined');
+const PASSWORD = (process.env.TEST_PW || '').trim();
+if (PASSWORD === '') warning('process.env.TEST_PW is not defined');
+const PASSWORD_HASH = (process.env.TEST_HASH || '').trim();
+if (PASSWORD_HASH === '') warning('process.env.TEST_HASH is not defined');
 const AT = '@schul-cloud.org';
 
 const REQUEST_PARAMS = {
@@ -47,7 +49,7 @@ const createUser = async (userId, roleName = 'student', schoolId = '0000d186816a
 	});
 };
 
-const createAccount = userId => accountModel.create({
+const createAccount = (userId) => accountModel.create({
 	username: userId + AT,
 	password: PASSWORD_HASH,
 	userId,
