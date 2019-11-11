@@ -55,7 +55,7 @@ class TSPSchoolSyncer extends Syncer {
 			let school = await this.findSchool(system);
 			if (!school) school = await this.createSchool(system);
 			const [teachers, students, classes] = [allTeachers, allStudents, allClasses].map((list) => list.filter(
-				(item) => item.schuleNummer === system.schoolIdentifier,
+				(item) => String(item.schuleNummer) === (system.tsp || {}).identifier,
 			));
 
 			const teacherJobs = teachers.map((teacher) => this.createOrUpdateTeacher(teacher, school, system));
