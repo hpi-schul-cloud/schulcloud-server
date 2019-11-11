@@ -168,15 +168,43 @@ class TSPSchoolSyncer extends Syncer {
 		const query = { source: USER_SOURCE };
 		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspTeacher.lehrerUid;
 		const users = await this.app.service('users').find({ query });
-		if (users.total !== 0) {
-			// todo: update teacher
-			this.stats.users.teachers.updated += 1;
+		if (users.total > 0) {
+			return this.updateTeacher(users.data[0]._id, tspTeacher);
 		}
+		return this.createTeacher(tspTeacher, school, system);
+	}
+
+	async updateTeacher(userId, tspTeacher) {
+		try {
+			const teacher = await this.app.service('users').patch(
+				userId,
+				{
+					namePrefix: tspTeacher.lehrerTitel,
+					firstName: tspTeacher.lehrerVorname,
+					lastName: tspTeacher.lehrerNachname,
+				},
+			);
+			this.stats.users.teachers.updated += 1;
+			return teacher;
+		} catch (err) {
+			this.stats.users.teachers.errors += 1;
+			this.logError('User update error', err, userId, tspTeacher);
+			this.stats.errors.push({
+				type: 'update-teacher',
+				entity: tspTeacher.lehrerUid,
+				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"`
+					+ ' konnte nicht aktualisiert werden.',
+			});
+			return null;
+		}
+	}
+
+	async createTeacher(tspTeacher, school, system) {
 		try {
 			const sourceOptions = {};
 			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspTeacher.lehrerUid;
 			const teacher = await this.createUserAndAccount({
-				title: tspTeacher.lehrerTitel,
+				namePrefix: tspTeacher.lehrerTitel,
 				firstName: tspTeacher.lehrerVorname,
 				lastName: tspTeacher.lehrerNachname,
 				schoolId: school._id,
@@ -204,9 +232,36 @@ class TSPSchoolSyncer extends Syncer {
 		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspStudent.schuelerUid;
 		const users = await this.app.service('users').find({ query });
 		if (users.total !== 0) {
-			// todo: update student
-			this.stats.users.students.updated += 1;
+			return this.updateStudent(users.data[0]._id, tspStudent);
 		}
+		return this.createStudent(tspStudent, school, system);
+	}
+
+	async updateStudent(userId, tspStudent) {
+		try {
+			const student = await this.app.service('users').patch(
+				userId,
+				{
+					firstName: tspStudent.schuelerVorname,
+					lastName: tspStudent.schuelerNachname,
+				},
+			);
+			this.stats.users.students.updated += 1;
+			return student;
+		} catch (err) {
+			this.stats.users.students.errors += 1;
+			this.logError('User update error', err, userId, tspStudent);
+			this.stats.errors.push({
+				type: 'update-student',
+				entity: tspStudent.schuelerUid,
+				message: `Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"`
+					+ ' konnte nicht aktualisiert werden.',
+			});
+			return null;
+		}
+	}
+
+	async createStudent(tspStudent, school, system) {
 		try {
 			const sourceOptions = {};
 			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspStudent.schuelerUid;
