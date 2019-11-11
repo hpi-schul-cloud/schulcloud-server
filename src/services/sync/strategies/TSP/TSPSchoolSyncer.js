@@ -117,9 +117,8 @@ class TSPSchoolSyncer extends Syncer {
 				systems: system._id,
 				$limit: 1,
 			},
-			paginate: false,
 		});
-		if (!Array.isArray(response) || response.length < 1) {
+		if (!Array.isArray(response.data) || response.total < 1) {
 			this.logWarning(`No school found for system "${system.alias}" (${system._id}).`, system);
 			this.stats.errors.push({
 				type: 'find-school',
@@ -128,7 +127,7 @@ class TSPSchoolSyncer extends Syncer {
 			});
 			return null;
 		}
-		return response[0];
+		return response.data[0];
 	}
 
 	async fetchTeachers() {
