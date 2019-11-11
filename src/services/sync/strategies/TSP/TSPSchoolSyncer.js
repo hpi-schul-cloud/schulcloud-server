@@ -66,12 +66,12 @@ class TSPSchoolSyncer extends Syncer {
 		}
 	}
 
-	createSchool(system) {
+	async createSchool(system) {
 		return this.app.service('schools').create({
 			name: system.tsp.schoolName,
 			systems: [system._id],
-			currentYear: this.getCurrentYear(),
-			federalState: this.getFederalState(),
+			currentYear: await this.getCurrentYear(),
+			federalState: await this.getFederalState(),
 		});
 	}
 
