@@ -31,4 +31,11 @@ const sortByGradeAndOrName = (context) => {
 	return context;
 };
 
-module.exports = { prepareGradeLevelUnset, sortByGradeAndOrName };
+const saveSuccessor = async (context) => {
+	if (context.data.predecessor) {
+		await context.app.service('classes').patch(context.data.predecessor, { successor: context.result._id });
+	}
+	return context;
+};
+
+module.exports = { prepareGradeLevelUnset, sortByGradeAndOrName, saveSuccessor };
