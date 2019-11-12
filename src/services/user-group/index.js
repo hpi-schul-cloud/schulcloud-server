@@ -2,7 +2,6 @@ const service = require('feathers-mongoose');
 const {
 	courseModel,
 	courseGroupModel,
-	classModel,
 	gradeModel,
 } = require('./model');
 const hooks = require('./hooks');
@@ -48,12 +47,10 @@ module.exports = function () {
 
 	/* Class model */
 	app.use('/classModel', classModelService);
-	const classModelServiceRegistered = app.service('/classModel');
-	classModelServiceRegistered.hooks(classModelHooks);
+	app.service('/classModel').hooks(classModelHooks);
 
 	app.use('/classes', classesService);
-	const classService = app.service('/classes');
-	classService.hooks(classesHooks);
+	app.service('/classes').hooks(classesHooks);
 
 	/* Grade model */
 	app.use('/grades', service({
