@@ -1,13 +1,13 @@
 const { BadRequest } = require('@feathersjs/errors');
 
 const Syncer = require('../Syncer');
-const { TspApi } = require('./TSP');
+const {
+ TspApi, USER_SOURCE, SOURCE_ID_ATTRIBUTE, getUsername, getEmail 
+} = require('./TSP');
 const SchoolYearFacade = require('../../../school/logic/year');
 const accountModel = require('../../../account/model');
 
 const SYNCER_TARGET = 'tsp-school';
-const USER_SOURCE = 'tsp'; // used as source attribute in created users and classes
-const SOURCE_ID_ATTRIBUTE = 'tspUid';
 
 class TSPSchoolSyncer extends Syncer {
 	static respondsTo(target) {
@@ -289,9 +289,8 @@ class TSPSchoolSyncer extends Syncer {
 	}
 
 	async createUserAndAccount(userOptions, roles, system) {
-		const username = `${USER_SOURCE}/${userOptions.schoolId}/${userOptions.sourceOptions[SOURCE_ID_ATTRIBUTE]}`
-			.toLowerCase();
-		const email = `${username}@schul-cloud.org`;
+		const username = getUsername(userOptions);
+		const email = getEmail(userOptions);
 		const { pin } = await this.app.service('registrationPins').create({
 			email,
 			verified: true,
@@ -316,5 +315,4 @@ class TSPSchoolSyncer extends Syncer {
 module.exports = {
 	TSPSchoolSyncer,
 	SYNCER_TARGET,
-	USER_SOURCE,
 };
