@@ -1,7 +1,7 @@
 const { AuthenticationService, JWTStrategy } = require('@feathersjs/authentication');
 const { LocalStrategy } = require('@feathersjs/authentication-local');
 
-const { LdapStrategy, MoodleStrategy, IservStrategy } = require('./strategies');
+const { LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy } = require('./strategies');
 const hooks = require('./hooks');
 const { authenticationSecret, audience } = require('./logic');
 
@@ -28,7 +28,7 @@ const authConfig = {
 	entity: 'account',
 	service: 'accounts',
 	secret: authenticationSecret,
-	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv'],
+	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv', 'tsp'],
 	jwtOptions: {
 		header: { typ: 'access' },
 		audience,
@@ -51,6 +51,9 @@ const authConfig = {
 		usernameField: 'username',
 		systemIdField: 'systemId',
 	},
+	tsp: {
+		usernameField: '_id',
+	}
 };
 
 module.exports = (app) => {
@@ -63,6 +66,7 @@ module.exports = (app) => {
 	authentication.register('ldap', new LdapStrategy());
 	authentication.register('moodle', new MoodleStrategy());
 	authentication.register('iserv', new IservStrategy());
+	authentication.register('tsp', new TSPStrategy());
 
 	app.use('/authentication', authentication);
 
