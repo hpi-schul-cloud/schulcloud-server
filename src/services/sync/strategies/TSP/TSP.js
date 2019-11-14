@@ -7,16 +7,18 @@ const SOURCE_ID_ATTRIBUTE = 'tspUid'; // name of the uid attribute within source
 /**
  * Generates a username for a given user-like object
  * @param {User|TSP-User} user Schul-Cloud user or TSP user object
+ * @throws {Error} if user is not a valid user object
  */
 const getUsername = (user) => {
 	let username = '';
 	if (user.sourceOptions) {
 		// user is a Schul-Cloud user or behaves like it
 		username = `${USER_SOURCE}/${user.sourceOptions[SOURCE_ID_ATTRIBUTE]}`;
-	}
-	if (user.authUID) {
+	} else if (user.authUID) {
 		// user is a TSP user (e.g. during authentication)
 		username = `${USER_SOURCE}/${user.authUID}`;
+	} else {
+		throw new Error('Invalid user object.', user);
 	}
 	return username.toLowerCase();
 };
