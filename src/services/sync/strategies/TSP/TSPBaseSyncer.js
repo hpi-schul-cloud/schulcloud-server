@@ -21,13 +21,16 @@ class TSPBaseSyncer extends Syncer {
 		if (!config.baseUrl) {
 			throw new BadRequest('Missing parameter "config.baseUrl" (URL that points to the TSP Server).');
 		}
+		if (!config.clientId) {
+			throw new BadRequest('Missing parameter "config.clientId" (clientId to be used for TSP requests)');
+		}
 		return [config];
 	}
 
 	constructor(app, stats, logger, config) {
 		super(app, stats, logger);
 		this.config = config;
-		this.api = new TspApi(config.baseUrl);
+		this.api = new TspApi(config);
 		this.stats = Object.assign(this.stats, {
 			numberOfSchools: 0,
 			schools: [],
@@ -75,7 +78,7 @@ class TSPBaseSyncer extends Syncer {
 				tsp: {
 					identifier,
 					schoolName: name,
-					baseUrl: this.config.baseUrl,
+					...this.config,
 				},
 			});
 		}
