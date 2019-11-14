@@ -5,6 +5,8 @@ const dict = {
 	default: 1,
 	brb: 2,
 	open: 3,
+	n21: 6,
+	thr: 7,
 };
 
 /**
@@ -17,7 +19,7 @@ function isInstance(instance, componentId) {
 	return new Promise((resolve, reject) => {
 		// componentId 0: message not instance specific
 		if (componentId !== 0) {
-			request.get(`${process.env.API_URL}/components/${componentId}`, (err, response, body) => {
+			request.get(`${process.env.STATUS_API_URL}/components/${componentId}`, (err, response, body) => {
 				if (!err && response.statusCode === 200) {
 					const data = JSON.parse(body);
 					// translate instance into group_id
@@ -42,7 +44,7 @@ function isInstance(instance, componentId) {
  */
 function getRawData() {
 	return new Promise((resolve, reject) => {
-		request.get(`${process.env.API_URL}/incidents`, (err, response, body) => {
+		request.get(`${process.env.STATUS_API_URL}/incidents`, (err, response, body) => {
 			if (!err && response.statusCode === 200) {
 				resolve(JSON.parse(body));
 			} else {
