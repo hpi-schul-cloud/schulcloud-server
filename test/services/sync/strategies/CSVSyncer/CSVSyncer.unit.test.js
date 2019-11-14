@@ -1,7 +1,6 @@
 const { expect } = require('chai');
 const assert = require('assert');
 
-const app = require('../../../../../src/app');
 const Syncer = require('../../../../../src/services/sync/strategies/Syncer');
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
@@ -72,41 +71,6 @@ describe('CSVSyncer', () => {
 			expect(result[0].class).to.equal('1a');
 			expect(result[1].class).to.equal('');
 			expect(result[2].class).to.equal('2b');
-		});
-	});
-
-	describe('getClassObject method', () => {
-		it('should default to the `static` scheme', async () => {
-			const result = await new CSVSyncer().getClassObject('foobar');
-			expect(result.gradeLevel).to.be.undefined;
-			expect(result.name).to.equal('foobar');
-		});
-
-		it('should split classes and grade levels if applicable', async () => {
-			const result = await new CSVSyncer(app).getClassObject('1a');
-			expect(result.gradeLevel).to.equal('1');
-			expect(result.name).to.equal('a');
-		});
-
-		it('should only use grade levels for 1. to 13. grade', async () => {
-			for (let i = -5; i <= 20; i += 1) {
-				const result = await new CSVSyncer(app).getClassObject(`${i}b`);
-				if (i >= 1 && i <= 13) {
-					expect(result.gradeLevel).to.equal(String(i));
-					expect(result.name).to.equal('b');
-				} else {
-					expect(result.gradeLevel).to.be.undefined;
-					expect(result.name).to.equal(`${i}b`);
-				}
-			}
-		});
-
-		it('should trim leading zeros for grade levels', async () => {
-			await Promise.all(['02a', '05b', '09c', '012d', '007e', '0000010f'].map(async (input) => {
-				const result = await new CSVSyncer(app).getClassObject(input);
-				expect(result.gradeLevel).to.equal(input.match(/^0*(\d+)./)[1]);
-				expect(result.name).to.equal(input.replace(/\d*/, ''));
-			}));
 		});
 	});
 });

@@ -1,6 +1,7 @@
 const parse = require('csv-parse/lib/sync');
 const stripBOM = require('strip-bom');
 const Syncer = require('./Syncer');
+const { classObjectFromName } = require('../../user-group/logic/classes');
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
@@ -382,47 +383,16 @@ class CSVSyncer extends Syncer {
 		return classes.split('+').filter((name) => name !== '');
 	}
 
-	async getClassObject(klass) {
-		const formats = [
-			{
-				regex: /^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/,
-				values: async (string) => {
-					const gradeLevel = string.match(/^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/)[1];
-
-					return {
-						name: string.match(/^(?:0)*(?:(?:1[0-3])|[1-9])(\D.*)$/)[1],
-						gradeLevel,
-					};
-				},
-			},
-			{
-				regex: /(.*)/,
-				values: (string) => ({
-					name: string,
-				}),
-			},
-		];
-		const classNameFormat = formats.find((format) => format.regex.test(klass));
-		if (classNameFormat !== undefined) {
-			const result = {
-				...await classNameFormat.values(klass),
-				schoolId: this.options.schoolId,
-			};
-			if (this.options.schoolYear) {
-				result.year = this.options.schoolYear._id;
-			}
-			return result;
-		}
-		throw new Error('Class name does not match any format:', klass);
-	}
-
 	async buildClassMapping(classes) {
 		const classMapping = {};
 		const uniqueClasses = [...new Set(classes)];
 		await Promise.all(uniqueClasses.map(async (klass) => {
 			try {
 				if (classMapping[klass] === undefined) {
-					const classObject = await this.getClassObject(klass);
+					const classObject = await classObjectFromName(klass, {
+						schoolId: this.options.schoolId,
+						year: this.options.schoolYear._id,
+					});
 					classMapping[klass] = await this.findOrCreateClass(classObject);
 				}
 				this.stats.classes.successful += 1;
