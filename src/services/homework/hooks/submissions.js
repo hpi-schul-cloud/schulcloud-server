@@ -95,7 +95,10 @@ const insertSubmissionData = (hook) => {
 		const submissionService = hook.app.service('/submissions');
 		return submissionService.get(submissionId, { account: { userId: hook.params.account.userId } })
 			.then((submission) => {
-				hook.data.submission = submission;
+				hook.data = {
+					...hook.data,
+					submission,
+				};
 				hook.data = JSON.parse(JSON.stringify(hook.data));
 				hook.data.isTeamMember = false;
 				hook.data.isOwner = false;
