@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { enableAuditLog } = require('../../utils/database');
+const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 
@@ -47,7 +48,7 @@ const courseSchema = getUserGroupSchema({
 	times: [timeSchema],
 	// optional information if this course is a copy from other
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
-	externalId: { type: String },
+	...externalSourceSchema,
 });
 
 courseSchema.plugin(require('mongoose-lean-virtuals'));
@@ -93,6 +94,7 @@ const classSchema = getUserGroupSchema({
 	},
 	ldapDN: { type: String },
 	successor: { type: Schema.Types.ObjectId, ref: 'classes' },
+	...externalSourceSchema,
 });
 
 classSchema.plugin(require('mongoose-lean-virtuals'));

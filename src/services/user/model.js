@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
 const roleModel = require('../role/model');
 const { enableAuditLog } = require('../../utils/database');
+const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 
@@ -31,8 +32,7 @@ const userSchema = new Schema({
 	ldapDn: { type: String },
 	ldapId: { type: String },
 
-	source: { type: String },
-	sourceOptions: { type: Object }, // use this for external ids, etc.
+	...externalSourceSchema,
 
 	customAvatarBackgroundColor: { type: String },
 	avatarSettings: { type: Object },
