@@ -5,13 +5,13 @@ const { info, error } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 
 // use your own name for your model, otherwise other migrations may fail.
-// The third parameter is the actually relevent one for what collection to write to.
+// The third parameter is the collection to write to.
 const User = mongoose.model('makeMeUnique', new mongoose.Schema({
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
 }, {
 	timestamps: true,
-}), 'user');
+}), 'users');
 
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
