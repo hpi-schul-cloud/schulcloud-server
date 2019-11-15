@@ -20,7 +20,6 @@ const sortByGradeAndOrName = (context) => {
 		return context;
 	}
 
-
 	if (context.params.query.$sort) {
 		const displayNameSortOrder = context.params.query.$sort.displayName;
 		if (displayNameSortOrder !== undefined) {
