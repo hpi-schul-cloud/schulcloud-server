@@ -2,6 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const { sortByGradeAndOrName, prepareGradeLevelUnset, saveSuccessor } = require('../hooks/helpers/classHooks');
+const { paginate } = require('../../../utils/array');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
@@ -11,7 +12,37 @@ class Classes {
 		this.options = options || {};
 	}
 
-	find(params) {
+	async getSchoolYears(schoolId) {
+		const school = await this.app.service('schools').get(schoolId);
+		return school.years.schoolYears.map((y) => y._id);
+	}
+
+	async findClassesByYear(params) {
+		const years = (params.query.year || {}).$in
+			|| params.query.year
+			|| await this.getSchoolYears(params.query.schoolId);
+
+		const classPromises = years.map((y) => {
+			const yearParams = Object.assign(
+				{},
+				params,
+				{ query: Object.assign({}, params.query, { year: y._id || y }) },
+			);
+			return this.app.service('classModel').find(yearParams);
+		});
+		const classesByYear = await Promise.all(classPromises);
+		const data = classesByYear.reduce((acc, current) => acc.concat(current.data), []);
+
+		if (params.query.$paginate !== false) params.query.$paginate = true;
+		const result = paginate(data, params.query);
+		return result;
+	}
+
+	async find(params) {
+		if ((params.query.$sort || {}).year) {
+			return this.findClassesByYear(params);
+		}
+
 		return this.app.service('classModel').find(params);
 	}
 
