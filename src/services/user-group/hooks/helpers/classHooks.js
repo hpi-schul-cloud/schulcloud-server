@@ -24,8 +24,8 @@ const sortByGradeAndOrName = (context) => {
 	if (context.params.query.$sort) {
 		const displayNameSortOrder = context.params.query.$sort.displayName;
 		if (displayNameSortOrder !== undefined) {
-			const newQuery = { gradeLevel: displayNameSortOrder, name: displayNameSortOrder };
-			context.params.query.$sort = newQuery;
+			Object.assign(context.params.query.$sort, { gradeLevel: displayNameSortOrder, name: displayNameSortOrder });
+			delete context.params.query.$sort.displayName;
 		}
 	}
 	return context;
