@@ -1,25 +1,19 @@
 const request = require('request-promise-native');
 const hooks = require('../hooks');
 
-function dataMassager(data) {
-	const massagedData = data;
-	return massagedData;
-}
-
-function generateUrl(condition) {
-	const query = condition;
-	// url for edusharing here
-	return query;
+function generateUrl() {
+	const url = 'https://mv-repo.schul-cloud.org/edu-sharing/rest/search/v1/custom/-home-?maxItems=10&skipCount=0';
+	return url;
 }
 class SomeService {
 	async find(data, params) {
 		const options = {
-			url: generateUrl(true),
+			url: generateUrl(),
 			method: 'GET',
+			headers: data.headers,
 		};
-		const eduSharingData = await request(options);
-		const result = dataMassager(eduSharingData);
-		return result;
+		const eduData = await request(options);
+		return eduData;
 	}
 }
 
