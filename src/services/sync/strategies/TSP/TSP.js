@@ -1,7 +1,7 @@
 const rp = require('request-promise-native');
 const url = require('url');
 
-const USER_SOURCE = 'tsp'; // used as source attribute in created users and classes
+const ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
 const SOURCE_ID_ATTRIBUTE = 'tspUid'; // name of the uid attribute within sourceOptions
 
 /**
@@ -13,10 +13,10 @@ const getUsername = (user) => {
 	let username = '';
 	if (user.sourceOptions) {
 		// user is a Schul-Cloud user or behaves like it
-		username = `${USER_SOURCE}/${user.sourceOptions[SOURCE_ID_ATTRIBUTE]}`;
+		username = `${ENTITY_SOURCE}/${user.sourceOptions[SOURCE_ID_ATTRIBUTE]}`;
 	} else if (user.authUID) {
 		// user is a TSP user (e.g. during authentication)
-		username = `${USER_SOURCE}/${user.authUID}`;
+		username = `${ENTITY_SOURCE}/${user.authUID}`;
 	} else {
 		throw new Error('Invalid user object.', user);
 	}
@@ -48,7 +48,7 @@ class TspApi {
 }
 
 module.exports = {
-	USER_SOURCE,
+	ENTITY_SOURCE,
 	SOURCE_ID_ATTRIBUTE,
 	TspApi,
 	getUsername,

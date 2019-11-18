@@ -3,7 +3,7 @@ const { BadRequest } = require('@feathersjs/errors');
 const Syncer = require('../Syncer');
 const {
 	TspApi,
-	USER_SOURCE, SOURCE_ID_ATTRIBUTE,
+	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
 	getUsername, getEmail,
 } = require('./TSP');
 const SchoolYearFacade = require('../../../school/logic/year');
@@ -175,7 +175,7 @@ class TSPSchoolSyncer extends Syncer {
 	}
 
 	async createOrUpdateTeacher(tspTeacher, school, system) {
-		const query = { source: USER_SOURCE };
+		const query = { source: ENTITY_SOURCE };
 		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspTeacher.lehrerUid;
 		const users = await this.app.service('users').find({ query });
 		if (users.total > 0) {
@@ -218,7 +218,7 @@ class TSPSchoolSyncer extends Syncer {
 				firstName: tspTeacher.lehrerVorname,
 				lastName: tspTeacher.lehrerNachname,
 				schoolId: school._id,
-				source: USER_SOURCE,
+				source: ENTITY_SOURCE,
 				sourceOptions,
 			},
 			'teacher', system);
@@ -238,7 +238,7 @@ class TSPSchoolSyncer extends Syncer {
 	}
 
 	async createOrUpdateStudent(tspStudent, school, system) {
-		const query = { source: USER_SOURCE };
+		const query = { source: ENTITY_SOURCE };
 		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspStudent.schuelerUid;
 		const users = await this.app.service('users').find({ query });
 		if (users.total !== 0) {
@@ -279,7 +279,7 @@ class TSPSchoolSyncer extends Syncer {
 				firstName: tspStudent.schuelerVorname,
 				lastName: tspStudent.schuelerNachname,
 				schoolId: school._id,
-				source: USER_SOURCE,
+				source: ENTITY_SOURCE,
 				sourceOptions,
 			},
 			'student', system);
