@@ -1,7 +1,9 @@
 const parse = require('csv-parse/lib/sync');
 const stripBOM = require('strip-bom');
+const { mix } = require('mixwith');
+
 const Syncer = require('./Syncer');
-const { classObjectFromName } = require('../../user-group/logic/classes');
+const ClassImporter = require('./mixins/ClassImporter');
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
@@ -43,7 +45,7 @@ const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
  * @class CSVSyncer
  * @implements {Syncer}
  */
-class CSVSyncer extends Syncer {
+class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	constructor(app, stats = {}, logger, options = {}, requestParams = {}) {
 		super(app, stats, logger);
 
@@ -362,7 +364,10 @@ class CSVSyncer extends Syncer {
 	async createClasses(record, user) {
 		if (user === undefined) return;
 		const classes = CSVSyncer.splitClasses(record.class);
-		const classMapping = await this.buildClassMapping(classes);
+		const classMapping = await this.buildClassMapping(classes, {
+			schoolId: this.options.schoolId,
+			year: this.options.schoolYear._id,
+		});
 
 		const actions = classes.map(async (klass) => {
 			const classObject = classMapping[klass];
@@ -381,48 +386,6 @@ class CSVSyncer extends Syncer {
 
 	static splitClasses(classes) {
 		return classes.split('+').filter((name) => name !== '');
-	}
-
-	async buildClassMapping(classes) {
-		const classMapping = {};
-		const uniqueClasses = [...new Set(classes)];
-		await Promise.all(uniqueClasses.map(async (klass) => {
-			try {
-				if (classMapping[klass] === undefined) {
-					const classObject = await classObjectFromName(klass, {
-						schoolId: this.options.schoolId,
-						year: this.options.schoolYear._id,
-					});
-					classMapping[klass] = await this.findOrCreateClass(classObject);
-				}
-				this.stats.classes.successful += 1;
-			} catch (err) {
-				this.stats.classes.failed += 1;
-				this.stats.errors.push({
-					type: 'class',
-					entity: klass,
-					message: err.message,
-				});
-				this.logError('Failed to create class', klass, err);
-			}
-			return Promise.resolve();
-		}));
-		return classMapping;
-	}
-
-	async findOrCreateClass(classObject) {
-		const existing = await this.app.service('/classes').find({
-			query: classObject,
-			paginate: false,
-			lean: true,
-		});
-		if (existing.length === 0) {
-			const newClass = await this.app.service('/classes').create(classObject);
-			this.stats.classes.created += 1;
-			return newClass;
-		}
-		this.stats.classes.updated += 1;
-		return existing[0];
 	}
 }
 

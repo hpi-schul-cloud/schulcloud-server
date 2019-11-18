@@ -1,14 +1,17 @@
 const { expect } = require('chai');
 const assert = require('assert');
 
-const Syncer = require('../../../../../src/services/sync/strategies/Syncer');
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
 describe('CSVSyncer', () => {
 	it('works', () => new CSVSyncer());
 
 	it('implements the Syncer interface', () => {
-		expect(Object.getPrototypeOf(CSVSyncer)).to.equal(Syncer);
+		expect(CSVSyncer.params).to.not.equal(undefined);
+		expect(CSVSyncer.respondsTo).to.not.equal(undefined);
+		expect(CSVSyncer.aggregateStats).to.not.equal(undefined);
+		expect(new CSVSyncer().steps).to.not.equal(undefined);
+		expect(new CSVSyncer().sync).to.not.equal(undefined);
 	});
 
 	describe('parseCsvData', () => {
