@@ -12,17 +12,18 @@ class Classes {
 		this.options = options || {};
 	}
 
-	async getSchoolYears(schoolId) {
-		const school = await this.app.service('schools').get(schoolId);
+	async getSchoolYearsFromQuery(query) {
+		if ((query.year || {}).$in) return query.year.$in;
+		if (query.year) return [query.year];
+
+		const school = await this.app.service('schools').get(query.schoolId);
 		const years = school.years.schoolYears.map((y) => y._id);
 		years.push({ $exists: false }); // to find classes that dont have a year
 		return years;
 	}
 
 	async findClassesByYear(params) {
-		const years = (params.query.year || {}).$in
-			|| params.query.year
-			|| await this.getSchoolYears(params.query.schoolId);
+		const years = await this.getSchoolYearsFromQuery(params.query);
 
 		const classPromises = years.map((y) => {
 			const yearParams = Object.assign(
@@ -33,15 +34,15 @@ class Classes {
 			return this.app.service('classModel').find(yearParams);
 		});
 		const classesByYear = await Promise.all(classPromises);
-		const data = classesByYear.reduce((acc, current) => acc.concat(current.data), []);
+		const data = classesByYear.reduce((acc, current) => acc.concat(current.data || current), []);
 
-		if (params.query.$paginate !== false) params.query.$paginate = true;
+		if (params.query.$paginate !== false && params.paginate !== false) params.query.$paginate = true;
 		const result = paginate(data, params.query);
 		return result;
 	}
 
 	async find(params) {
-		if ((params.query.$sort || {}).year) {
+		if ((params.query.$sort || {}).year && params.query.schoolId) {
 			return this.findClassesByYear(params);
 		}
 
