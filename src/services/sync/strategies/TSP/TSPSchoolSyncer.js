@@ -2,7 +2,9 @@ const { BadRequest } = require('@feathersjs/errors');
 
 const Syncer = require('../Syncer');
 const {
- TspApi, USER_SOURCE, SOURCE_ID_ATTRIBUTE, getUsername, getEmail 
+	TspApi,
+	USER_SOURCE, SOURCE_ID_ATTRIBUTE,
+	getUsername, getEmail,
 } = require('./TSP');
 const SchoolYearFacade = require('../../../school/logic/year');
 const accountModel = require('../../../account/model');
@@ -35,7 +37,7 @@ class TSPSchoolSyncer extends Syncer {
 			classes: { created: 0, updated: 0, errors: 0 },
 		});
 		this.config = config;
-		this.api = new TspApi(config.baseUrl);
+		this.api = new TspApi(config);
 
 		this.currentYear = undefined;
 		this.federalState = undefined;
@@ -102,6 +104,14 @@ class TSPSchoolSyncer extends Syncer {
 			const system = await this.app.service('systems').get(this.config.systemId);
 			this.config.schoolIdentifier = (system.tsp || {}).identifier;
 			return [system];
+		}
+		if (this.config.schoolIdentifier) {
+			const systems = await this.app.service('systems').find({
+				query: {
+					'tsp.identifier': this.config.schoolIdentifier,
+				},
+			});
+			return systems.data;
 		}
 		return this.app.service('systems').find({
 			query: {
