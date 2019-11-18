@@ -12,6 +12,10 @@ class Classes {
 		this.options = options || {};
 	}
 
+	/**
+	 * retrieves the year from the query, or from the school of the user.
+	 * @param {Object} query feathers query
+	 */
 	async getSchoolYearsFromQuery(query) {
 		if ((query.year || {}).$in) return query.year.$in;
 		if (query.year) return [query.year];
@@ -22,6 +26,10 @@ class Classes {
 		return years;
 	}
 
+	/**
+	 * returns classes just like the class-model service would, but sorted by years.
+	 * @param {Object} params feathers params object.
+	 */
 	async findClassesByYear(params) {
 		const years = await this.getSchoolYearsFromQuery(params.query);
 
