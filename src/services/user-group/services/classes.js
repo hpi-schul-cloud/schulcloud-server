@@ -14,7 +14,9 @@ class Classes {
 
 	async getSchoolYears(schoolId) {
 		const school = await this.app.service('schools').get(schoolId);
-		return school.years.schoolYears.map((y) => y._id);
+		const years = school.years.schoolYears.map((y) => y._id);
+		years.push({ $exists: false }); // to find classes that dont have a year
+		return years;
 	}
 
 	async findClassesByYear(params) {
