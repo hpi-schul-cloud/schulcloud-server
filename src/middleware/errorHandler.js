@@ -6,7 +6,7 @@ const { requestError } = require('../logger/systemLogger');
 
 
 const logRequestInfosInErrorCase = (error, req, res, next) => {
-	if (error) {
+	if (error && !req.url.includes('/authentication')) {
 		const decodedJWT = decode(req.headers.authorization);
 		requestError(req, (decodedJWT || {}).userId, error);
 	}
