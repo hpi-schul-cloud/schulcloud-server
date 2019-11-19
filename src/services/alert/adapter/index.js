@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 class Adapter {
 	constructor() {
 		if (new.target === Adapter) {
