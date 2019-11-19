@@ -19,7 +19,7 @@ const replaceIds = (string) => {
  * @param {FeatherApp} app
  * @returns {SentryEvent || undefined} Return modified sentry event, or undefined to skip sending event
  */
-const removeIdMiddleware = (event, hint, app) => {
+const removeIdMiddleware = (event) => {
 	// eslint-disable-next-line camelcase
 	const { request: { data, url, query_string } } = event;
 
