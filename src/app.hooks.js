@@ -2,6 +2,7 @@
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
 const Entities = require('html-entities').AllHtmlEntities;
+const { GeneralError } = require('@feathersjs/errors');
 
 const entities = new Entities();
 
@@ -118,6 +119,36 @@ const displayInternRequests = (level) => (context) => {
 	return context;
 };
 
+/**
+ * For errors without error code create server error with code 500.
+ * In production mode remove error stack and data.
+ * @param {context} context
+ */
+const errorHandler = (context) => {
+	if (context.error) {
+		if (context.error.hook) {
+			delete context.error.hook;
+		}
+
+		if (!context.error.code) {
+			context.error = new GeneralError(context.error.message || 'server error', context.error.stack || '');
+		}
+		// console.log(context.error);
+		// todo default logger is smashed error objects
+		context.app.logger.error(context.error);
+
+		// for error handling in sentrys and logs remove this keys
+		if (context.data) {
+			delete context.data.createdBy;
+			delete context.data.updatedBy;
+		}
+		return context;
+	}
+	context.app.logger.warning('Error with no error key is throw. Error logic can not handle it.');
+
+	throw new GeneralError('server error');
+};
+
 module.exports = function setup(app) {
 	const before = {
 		all: [],
@@ -140,7 +171,7 @@ module.exports = function setup(app) {
 	};
 
 	const error = {
-		all: [],
+		all: [errorHandler],
 		find: [],
 		get: [],
 		create: [],
