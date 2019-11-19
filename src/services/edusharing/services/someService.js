@@ -7,6 +7,7 @@ function generateUrl() {
 }
 class SomeService {
 	async find(data, params) {
+		 console.log(data.headers, 'headers');
 		const options = {
 			url: generateUrl(),
 			method: 'GET',
