@@ -116,7 +116,7 @@
     "mockery": "^2.0.0",
     "nodemailer-mock": "^1.1.10",
     "nyc": "^14.1.1",
-    "nodemon": "^1.19.1",
+    "nodemon": "^2.0.0",
     "simple-oauth2": "^2.3.0"
   },
   "greenkeeper": {
