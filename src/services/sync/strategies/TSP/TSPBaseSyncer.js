@@ -68,6 +68,7 @@ class TSPBaseSyncer extends Syncer {
 			await this.app.service('systems').patch(
 				system._id,
 				{
+					alias: name,
 					'tsp.schoolName': name,
 				},
 			);
@@ -75,6 +76,7 @@ class TSPBaseSyncer extends Syncer {
 			this.logInfo(`Nothing found. Creating '${name}' (${identifier})...`);
 			await this.app.service('systems').create({
 				type: SCHOOL_SYNCER_TARGET,
+				alias: name,
 				tsp: {
 					identifier,
 					schoolName: name,
