@@ -1,6 +1,9 @@
 const { BadRequest } = require('@feathersjs/errors');
+const { mix } = require('mixwith');
 
 const Syncer = require('../Syncer');
+const ClassImporter = require('../mixins/ClassImporter');
+
 const {
 	TspApi,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
@@ -11,7 +14,7 @@ const accountModel = require('../../../account/model');
 
 const SYNCER_TARGET = 'tsp-school';
 
-class TSPSchoolSyncer extends Syncer {
+class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	static respondsTo(target) {
 		return target === SYNCER_TARGET;
 	}
@@ -44,28 +47,47 @@ class TSPSchoolSyncer extends Syncer {
 	}
 
 	async steps() {
-		let allTeachers = [];
-		let allStudents = [];
-		const allClasses = [];
+		let [teacherMap, studentMap, classMap] = [[], [], []];
 
 		const systems = await this.findSystems();
 		if (systems.length > 0) {
-			allTeachers = await this.fetchTeachers();
-			allStudents = await this.fetchStudents();
+			// fetch entities in parallel
+			[teacherMap, studentMap, classMap] = await Promise.all(['teachers', 'students', 'classes']
+				.map((type) => this.fetch(type).then(this.createSchoolMap)));
 		}
+		// create a mapping (schoolIdentifier => list<Entity>)
+
 		for (const system of systems) {
 			let school = await this.findSchool(system);
 			if (!school) school = await this.createSchool(system);
-			const [teachers, students, classes] = [allTeachers, allStudents, allClasses].map((list) => list.filter(
-				(item) => String(item.schuleNummer) === (system.tsp || {}).identifier,
-			));
 
-			const teacherJobs = teachers.map((teacher) => this.createOrUpdateTeacher(teacher, school, system));
-			const studentJobs = students.map((student) => this.createOrUpdateStudent(student, school, system));
-			await Promise.all(teacherJobs.concat(studentJobs));
+			const schoolTeachers = teacherMap[(system.tsp || {}).schoolIdentifier];
+			const schoolStudents = studentMap[(system.tsp || {}).schoolIdentifier];
+			const schoolClasses = classMap[(system.tsp || {}).schoolIdentifier];
 
-			// todo: create or update classes and associate people (throw out others)
+			const teacherMapping = {};
+			const classMapping = {};
+
+			await Promise.all(schoolTeachers.map(async (tspTeacher) => {
+				const teacher = await this.createOrUpdateTeacher(tspTeacher, school, system, classMapping);
+				teacherMapping[tspTeacher.lehrerUid] = teacher;
+			}));
+			await Promise.all(schoolStudents.map(async (tspStudent) => {
+				const student = await this.createOrUpdateStudent(tspStudent, school, system, classMapping);
+				classMapping[tspStudent.klasseId] = (classMapping[tspStudent.klasseId] || []).push(student._id);
+			}));
+
+			await this.createClasses(schoolClasses, school, teacherMapping, classMapping);
 		}
+	}
+
+	createSchoolMap(list) {
+		const globalMap = {};
+		list.forEach((item) => {
+			const k = item.schuleNummer;
+			globalMap[k] = (globalMap[k] || []).push(item);
+		});
+		return globalMap;
 	}
 
 	async createSchool(system) {
@@ -140,38 +162,26 @@ class TSPSchoolSyncer extends Syncer {
 		return response.data[0];
 	}
 
-	async fetchTeachers() {
-		let teachers = [];
+	async fetch(type) {
+		const strings = {
+			teachers: { de: 'Lehrer', url: '/tip-ms/api/schulverwaltung_export_lehrer' },
+			students: { de: 'Schüler', url: '/tip-ms/api/schulverwaltung_export_schueler' },
+			classes: { de: 'Klassen', url: '/tip-ms/api/schulverwaltung_export_klasse' },
+		};
+		let result = [];
 		try {
-			teachers = await this.api.request('/tip-ms/api/schulverwaltung_export_lehrer');
+			result = await this.api.request(strings[type].url);
 			if (this.config.schoolIdentifier) {
-				teachers = teachers.filter((t) => t.schuleNummer === this.config.schoolIdentifier);
+				result = result.filter((t) => t.schuleNummer === this.config.schoolIdentifier);
 			}
 		} catch (err) {
-			this.logError('Cannot fetch teachers.', err);
+			this.logError('Cannot fetch classes.', err);
 			this.stats.errors.push({
-				type: 'fetch-teachers',
-				message: 'Es ist derzeit nicht möglich Lehrerdaten aus dem TSP zu aktualisieren.',
+				type: `fetch-${type}`,
+				message: `Es ist derzeit nicht möglich ${strings[type].de}daten aus dem TSP zu aktualisieren.`,
 			});
 		}
-		return teachers;
-	}
-
-	async fetchStudents() {
-		let students = [];
-		try {
-			students = await this.api.request('/tip-ms/api/schulverwaltung_export_schueler');
-			if (this.config.schoolIdentifier) {
-				students = students.filter((t) => t.schuleNummer === this.config.schoolIdentifier);
-			}
-		} catch (err) {
-			this.logError('Cannot fetch students.', err);
-			this.stats.errors.push({
-				type: 'fetch-students',
-				message: 'Es ist derzeit nicht möglich Schülerdaten aus dem TSP zu aktualisieren.',
-			});
-		}
-		return students;
+		return result;
 	}
 
 	async createOrUpdateTeacher(tspTeacher, school, system) {
@@ -319,6 +329,23 @@ class TSPSchoolSyncer extends Syncer {
 			activated: true,
 		});
 		return user;
+	}
+
+	createClasses(classes, school, teacherMapping, classMapping) {
+		return Promise.all(classes.map((klass) => {
+			const className = klass.klasseName;
+			const sourceOptions = {};
+			sourceOptions[SOURCE_ID_ATTRIBUTE] = klass.klasseId;
+			const options = {
+				schoolId: school._id,
+				year: school.currentYear,
+				teacherIds: [teacherMapping[klass.klasseId]],
+				userIds: classMapping[klass.klasseId],
+				source: ENTITY_SOURCE,
+				sourceOptions,
+			};
+			return this.findOrCreateClassByName(className, options);
+		}));
 	}
 }
 
