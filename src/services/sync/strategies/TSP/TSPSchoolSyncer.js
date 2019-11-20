@@ -51,11 +51,10 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 
 		const systems = await this.findSystems();
 		if (systems.length > 0) {
-			// fetch entities in parallel
+			// fetch entities in parallel and create a mapping (schoolIdentifier => list<Entity>)
 			[teacherMap, studentMap, classMap] = await Promise.all(['teachers', 'students', 'classes']
 				.map((type) => this.fetch(type).then(this.createSchoolMap)));
 		}
-		// create a mapping (schoolIdentifier => list<Entity>)
 
 		for (const system of systems) {
 			let school = await this.findSchool(system);
