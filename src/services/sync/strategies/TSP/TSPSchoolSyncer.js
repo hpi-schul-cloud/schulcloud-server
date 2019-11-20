@@ -335,7 +335,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			const options = {
 				schoolId: school._id,
 				year: school.currentYear,
-				teacherIds: [teacherMapping[klass.klasseId]],
+				teacherIds: [teacherMapping[klass.lehrerUid]],
 				userIds: classMapping[klass.klasseId],
 				source: ENTITY_SOURCE,
 				sourceOptions,
