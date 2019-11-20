@@ -144,6 +144,38 @@ describe('classes service', () => {
 			expect(data[2].displayName).to.equal(classes[1].displayName);
 		});
 
+		it('should display the classes in correct order when years are included', async () => {
+			const { _id } = await testObjects.createTestSchool();
+			const school = await app.service('schools').get(_id);
+			const adminUser = await testObjects.createTestUser({ roles: ['administrator'] });
+
+			const classes = [
+				await testObjects.createTestClass({
+					name: 'A',
+					year: school.years.schoolYears[0],
+				}),
+				await testObjects.createTestClass({
+					name: 'A',
+					year: school.years.schoolYears[1],
+				}),
+				await testObjects.createTestClass({
+					name: 'B',
+					year: school.years.schoolYears[0],
+				}),
+			];
+
+			const adminParams = {
+				query: {},
+				...await generateRequestParamsFromUser(adminUser),
+			};
+			const { data } = await classesService.find(adminParams);
+
+			expect(data.length).to.equal(3);
+			expect(data[0].displayName).to.equal(classes[0].displayName);
+			expect(data[1].displayName).to.equal(classes[2].displayName);
+			expect(data[2].displayName).to.equal(classes[1].displayName);
+		});
+
 		it('CREATE patches successor ID in predecessor class', async () => {
 			const orgClass = await app.service('classes').create({
 				name: 'sonnenklasse 1',
