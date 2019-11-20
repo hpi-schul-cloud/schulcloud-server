@@ -152,12 +152,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			},
 		});
 		if (!Array.isArray(response.data) || response.total < 1) {
-			this.logWarning(`No school found for system "${system.alias}" (${system._id}).`, system);
-			this.stats.errors.push({
-				type: 'find-school',
-				entity: system._id.toString(),
-				message: 'Zum System gehörende Schule existiert nicht.',
-			});
+			this.logInfo(`No school found for system "${system.alias}" (${system._id}).`, system);
 			return null;
 		}
 		return response.data[0];
