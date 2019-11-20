@@ -12,6 +12,8 @@ const {
 	restrictChangesToArchivedCourse,
 } = require('./courses');
 
+const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
+
 exports.before = {
 	all: [
 		authenticate('jwt'),
@@ -42,7 +44,7 @@ exports.before = {
 		deleteWholeClassFromCourse,
 	],
 	remove: [
-		globalHooks.hasPermission('COURSE_REMOVE'),
+		checkScopePermissions(['COURSE_DELETE']),
 		restrictToCurrentSchool,
 		restrictToUsersOwnCourses,
 		globalHooks.permitGroupOperation,
