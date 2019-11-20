@@ -60,9 +60,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			let school = await this.findSchool(system);
 			if (!school) school = await this.createSchool(system);
 
-			const schoolTeachers = teacherMap[(system.tsp || {}).schoolIdentifier];
-			const schoolStudents = studentMap[(system.tsp || {}).schoolIdentifier];
-			const schoolClasses = classMap[(system.tsp || {}).schoolIdentifier];
+			const schoolTeachers = teacherMap[(system.tsp || {}).schoolIdentifier] || [];
+			const schoolStudents = studentMap[(system.tsp || {}).schoolIdentifier] || [];
+			const schoolClasses = classMap[(system.tsp || {}).schoolIdentifier] || [];
 
 			const teacherMapping = {};
 			const classMapping = {};
