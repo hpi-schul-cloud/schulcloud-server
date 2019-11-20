@@ -73,7 +73,8 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			}));
 			await Promise.all(schoolStudents.map(async (tspStudent) => {
 				const student = await this.createOrUpdateStudent(tspStudent, school, system, classMapping);
-				classMapping[tspStudent.klasseId] = (classMapping[tspStudent.klasseId] || []).push(student._id);
+				classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
+				classMapping[tspStudent.klasseId].push(student._id);
 			}));
 
 			await this.createClasses(schoolClasses, school, teacherMapping, classMapping);
@@ -83,8 +84,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	createSchoolMap(list) {
 		const globalMap = {};
 		list.forEach((item) => {
-			const k = item.schuleNummer;
-			globalMap[k] = (globalMap[k] || []).push(item);
+			const k = String(item.schuleNummer);
+			globalMap[k] = globalMap[k] || [];
+			globalMap[k].push(item);
 		});
 		return globalMap;
 	}
