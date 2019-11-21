@@ -90,12 +90,16 @@ const checkPermissions = (permission) => async (user, file) => {
 		const userObject = await userModel.findOne({ _id: user }).populate('roles').lean().exec();
 		const isStudent = userObject.roles.find((role) => role.name === 'student');
 		let courseFile = fileObject;
+		let homework;
 		if (submission) {
-			const homework = await Homework.findOne({ _id: submission.homeworkId }).populate('courseId').lean().exec();
+			homework = await Homework.findOne({ _id: submission.homeworkId }).populate('courseId').lean().exec();
 			courseFile = { ...fileObject, owner: homework.courseId || {} };
 		}
 		const isMember = checkMemberStatus({ file: courseFile, user });
 		if (isMember) {
+			if (homework && homework.publicSubmissions) {
+				return Promise.resolve(true);
+			}
 			if (isStudent) {
 				const rolePermissions = permissions.find(
 					(perm) => perm.refId && perm.refId.toString() === isStudent._id.toString(),
