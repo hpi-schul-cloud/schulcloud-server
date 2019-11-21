@@ -36,6 +36,7 @@ const lessonSchema = new Schema({
 });
 
 enableAuditLog(lessonSchema);
+
 const lessonModel = mongoose.model('lesson', lessonSchema);
 
 module.exports = lessonModel;

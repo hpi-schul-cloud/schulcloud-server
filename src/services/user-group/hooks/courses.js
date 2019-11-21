@@ -3,6 +3,7 @@ const { BadRequest } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
@@ -59,7 +60,7 @@ const deleteWholeClassFromCourse = (hook) => {
 				{ $pull: { userIds: { $in: studentIds } } },
 				{ multi: true },
 			).exec();
-			hook.data.userIds = hook.data.userIds.filter((value) => !studentIds.some((id) => id.toString() === value));
+			hook.data.userIds = hook.data.userIds.filter((value) => !studentIds.some((id) => equalIds(id, value)));
 			return hook;
 		});
 	});
@@ -78,7 +79,7 @@ const courseInviteHook = async (context) => {
 
 const patchPermissionHook = async (context) => {
 	const query = context.params.query || {};
-	const defaultPermissionHook = (ctx) => Promise.resolve(globalHooks.hasPermission('USERGROUP_EDIT')(ctx))
+	const defaultPermissionHook = (ctx) => Promise.resolve(globalHooks.hasPermission('COURSE_EDIT')(ctx))
 		.then((_ctx) => restrictToUsersOwnCourses(_ctx));
 
 	if (query.link) {
