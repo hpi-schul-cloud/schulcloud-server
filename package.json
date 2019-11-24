@@ -61,7 +61,7 @@
     "cross-env": "^6.0.3",
     "crypto-js": "^3.1.9-1",
     "csv-parse": "^4.6.3",
-    "ejs": "^2.5.5",
+    "ejs": "^3.0.1",
     "email-templates": "^6.0.0",
     "es6-promisify": "^6.0.1",
     "express": "^4.14.0",
