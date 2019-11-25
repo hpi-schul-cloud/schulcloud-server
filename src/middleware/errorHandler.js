@@ -3,6 +3,7 @@ const express = require('@feathersjs/express');
 const decode = require('jwt-decode');
 
 const { requestError } = require('../logger/systemLogger');
+const logger = require('../logger');
 
 
 const logRequestInfosInErrorCase = (error, req, res, next) => {
@@ -22,8 +23,11 @@ const logRequestInfosInErrorCase = (error, req, res, next) => {
 
 const formatErrors = (error, req, res, next) => {
 	if (error) {
-		delete error.stack;
-		delete error.data;
+		delete error.data; // error object
+		if (error.stack) { // other errors
+			logger.info(error.stack);
+			delete error.stack;
+		}
 	}
 	next(error);
 };

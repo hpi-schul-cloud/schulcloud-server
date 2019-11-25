@@ -133,9 +133,6 @@ const errorHandler = (context) => {
 		if (!context.error.code) {
 			context.error = new GeneralError(context.error.message || 'server error', context.error.stack || '');
 		}
-		// console.log(context.error);
-		// todo default logger is smashed error objects
-		context.app.logger.error(context.error);
 
 		// for error handling in sentrys and logs remove this keys
 		if (context.data) {
