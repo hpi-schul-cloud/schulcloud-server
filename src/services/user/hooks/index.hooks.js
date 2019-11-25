@@ -30,6 +30,10 @@ exports.checkUniqueAccount = (context) => {
 		// Nothing to check here, E-Mail does not get updated
 		return Promise.resolve(context);
 	}
+	if(!context.params || !context.params.provider){
+		// skip for internal calls (without params)
+		return Promise.resolve(context)
+	}
 	const accountQuery = { username: email.toLowerCase() };
 	if (context.params.account && context.params.account._id) {
 		accountQuery._id = { $ne: context.params.account._id };
