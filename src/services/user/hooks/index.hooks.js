@@ -1,3 +1,4 @@
+const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 
 /**
@@ -19,4 +20,26 @@ exports.hasEditPermissionForUser = async (context) => {
 		await globalHooks.hasPermission(['STUDENT_EDIT'])(context);
 	}
 	return context;
+};
+
+
+exports.checkUniqueAccount = (context) => {
+	const accountService = context.app.service('/accounts');
+	const { email } = context.data;
+	if (!email) {
+		// Nothing to check here, E-Mail does not get updated
+		return Promise.resolve(context);
+	}
+	const accountQuery = { username: email.toLowerCase() };
+	if (context.params.account && context.params.account._id) {
+		accountQuery._id = { $ne: context.params.account._id };
+	}
+	return accountService.find({ query: accountQuery })
+		.then((result) => {
+			if (result.length > 0) {
+				return Promise.reject(new errors
+					.BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`));
+			}
+			return Promise.resolve(context);
+		});
 };

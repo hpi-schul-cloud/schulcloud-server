@@ -105,6 +105,19 @@ describe('user service', () => {
 					});
 			});
 		});
+
+		it('should reject new users with mixed-case variants of existing usernames', async () => {
+			const otherUser = await testObjects.createTestUser();
+			const newUser = await testObjects.createTestUser();
+
+			try {
+				await app.service('user').patch(newUser._id, { email: otherUser.email });
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal(`Die E-Mail Adresse ${otherUser.email} ist bereits in Verwendung!`);
+			}
+		});
 	});
 
 	after(async () => {

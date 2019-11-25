@@ -2,12 +2,11 @@ const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
-const { sortRoles } = require('../../role/utils/rolesHelper');
 
 const constants = require('../../../utils/constants');
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../consent/config');
 
-const { hasEditPermissionForUser } = require('./index.hooks');
+const { hasEditPermissionForUser, checkUniqueAccount } = require('./index.hooks');
 
 /**
  *
@@ -65,19 +64,6 @@ const checkUnique = (hook) => {
 				/* to stop the create process, the message are catch and resolve in regestration hook */
 			}
 
-			return Promise.resolve(hook);
-		});
-};
-
-const checkUniqueAccount = (hook) => {
-	const accountService = hook.app.service('/accounts');
-	const { email } = hook.data;
-	return accountService.find({ query: { username: email.toLowerCase() } })
-		.then((result) => {
-			if (result.length > 0) {
-				return Promise.reject(new errors
-					.BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`));
-			}
 			return Promise.resolve(hook);
 		});
 };
@@ -419,6 +405,7 @@ exports.before = {
 		// TODO only local for LDAP
 		sanitizeData,
 		hasEditPermissionForUser,
+		checkUniqueAccount,
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
 	],
 	patch: [
@@ -427,6 +414,7 @@ exports.before = {
 		globalHooks.permitGroupOperation,
 		sanitizeData,
 		hasEditPermissionForUser,
+		checkUniqueAccount,
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		updateAccountUsername,
 	],
