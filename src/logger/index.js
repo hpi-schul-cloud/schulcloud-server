@@ -20,7 +20,11 @@ if (!logLevel) {
 }
 
 const addType = format.printf((log) => {
-	log.type = 'log';
+	if (log.stack || log.level === 'error') {
+		log.type = 'error';
+	} else {
+		log.type = 'log';
+	}
 	return log;
 });
 
