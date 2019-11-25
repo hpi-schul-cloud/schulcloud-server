@@ -9,6 +9,7 @@ const publicTeachersService = app.service('publicTeachers');
 const classesService = app.service('classes');
 const coursesService = app.service('courses');
 const testObjects = require('../helpers/testObjects')(app);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
 
 let testUserId;
 
@@ -106,12 +107,12 @@ describe('user service', () => {
 			});
 		});
 
-		it('should reject new users with mixed-case variants of existing usernames', async () => {
+		it('should reject patching user with existing email', async () => {
 			const otherUser = await testObjects.createTestUser();
 			const newUser = await testObjects.createTestUser();
-
+			const params = await generateRequestParamsFromUser(newUser);
 			try {
-				await app.service('user').patch(newUser._id, { email: otherUser.email });
+				await app.service('users').patch(newUser._id, { email: otherUser.email }, { params });
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
