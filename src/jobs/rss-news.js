@@ -63,29 +63,30 @@ async function processSchool(school, errors) {
 
 async function run() {
 	logger.info('will update rss feeds...');
-	const errors = [];
+	const listOfErrors = [];
 	await database.connect();
 
 	const cursor = schoolModel.find({}).cursor();
 	let school = await cursor.next();
 	while (school) {
 		try {
-			await processSchool(school, errors);
+			await processSchool(school, listOfErrors);
 		} catch (error) {
 			const message = `error updating rss news for school '${school._id}', continue...`;
-			errors.push(message);
+			listOfErrors.push(message);
 			logger.error(message, error);
 		}
 		school = await cursor.next();
 	}
 
 	await database.close();
-	if (errors.length) {
-		logger.error(`updating rss feeds finished with ${errors.length} errors`);
+	if (listOfErrors.length) {
+		logger.error(`updating rss feeds finished with ${listOfErrors.length} errors`);
 	} else {
 		logger.info('updating rss feeds finished without errors');
 	}
-	process.exit(errors.length);
+	// exit-code > 0 means # of errors
+	process.exit(listOfErrors.length);
 }
 
 run();
