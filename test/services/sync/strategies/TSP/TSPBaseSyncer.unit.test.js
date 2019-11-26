@@ -7,7 +7,7 @@ const {
 	SYNCER_TARGET,
 } = require('../../../../../src/services/sync/strategies/TSP/TSPBaseSyncer');
 
-describe.only('TSPBaseSyncer', () => {
+describe('TSPBaseSyncer', () => {
 	it('implements the Syncer interface', () => {
 		expect(TSPBaseSyncer.params).to.not.equal(undefined);
 		expect(TSPBaseSyncer.respondsTo).to.not.equal(undefined);
