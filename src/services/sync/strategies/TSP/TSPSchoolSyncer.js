@@ -14,11 +14,27 @@ const accountModel = require('../../../account/model');
 
 const SYNCER_TARGET = 'tsp-school';
 
+/**
+ * Used to sync one or more schools from the TSP to the Schul-Cloud instance.
+ * Configs can either be created manually or using TSPBaseSyncer.
+ * @see TSPBaseSyncer
+ * @extends Syncer
+ * @mixes ClassImporter
+ */
 class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
+	/**
+	 * @extends Syncer#respondsTo
+	 */
 	static respondsTo(target) {
 		return target === SYNCER_TARGET;
 	}
 
+	/**
+	 * Validates the params given to the Syncer.
+	 * `params.query` or `data` should contain a config object with at least:
+	 * `{ baseUrl: 'https://foo.bar/baz', clientId: 'some client id' }`
+	 * @extends Syncer#params
+	 */
 	static params(params, data) {
 		const config = ((params || {}).query || {}).config || (data || {}).config;
 		if (!config) {
@@ -27,9 +43,17 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		if (!config.baseUrl) {
 			throw new BadRequest('Missing parameter "config.baseUrl" (URL that points to the TSP Server).');
 		}
+		if (!config.clientId) {
+			throw new BadRequest('Missing parameter "config.clientId" (clientId to be used for TSP requests)');
+		}
 		return [config];
 	}
 
+	/**
+	 * Creates an instance of TSPSchoolSyncer.
+	 * @param {Object} config see #params
+	 * @extends Syncer#constructor
+	 */
 	constructor(app, stats, logger, config) {
 		super(app, stats, logger);
 		this.stats = Object.assign(this.stats, {
@@ -42,10 +66,24 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		this.config = config;
 		this.api = new TspApi(config);
 
+		// caches for currentYear and federalState as they need async initialization
 		this.currentYear = undefined;
 		this.federalState = undefined;
 	}
 
+	/**
+	 * Does the following steps:
+	 *   * find all login systems associated with the given config
+	 *   * fetch all TSP teachers, students, and classes; group by school identifier
+	 *   * for every school:
+	 *     * create it if it does not yet exist
+	 *     * create teachers
+	 *     * create students; store references grouped by class
+	 *     * create classes
+	 * @returns {Object} stats (see #constructor)
+	 * @async
+	 * @extends Syncer#steps
+	 */
 	async steps() {
 		let [teacherMap, studentMap, classMap] = [[], [], []];
 
@@ -60,6 +98,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			let school = await this.findSchool(system);
 			if (!school) school = await this.createSchool(system);
 
+			// find all teachers/students/classes of this school
 			const schoolTeachers = teacherMap[(system.tsp || {}).identifier] || [];
 			const schoolStudents = studentMap[(system.tsp || {}).identifier] || [];
 			const schoolClasses = classMap[(system.tsp || {}).identifier] || [];
@@ -67,20 +106,28 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			const teacherMapping = {};
 			const classMapping = {};
 
+			// create teachers and add them to the mapping (teacherUID => User)
 			await Promise.all(schoolTeachers.map(async (tspTeacher) => {
 				const teacher = await this.createOrUpdateTeacher(tspTeacher, school, system, classMapping);
 				teacherMapping[tspTeacher.lehrerUid] = teacher;
 			}));
+			// create students and add them to the mapping (classUid => [User])
 			await Promise.all(schoolStudents.map(async (tspStudent) => {
 				const student = await this.createOrUpdateStudent(tspStudent, school, system, classMapping);
 				classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
 				classMapping[tspStudent.klasseId].push(student._id);
 			}));
-
+			// create classes based on API response and user mappings
 			await this.createClasses(schoolClasses, school, teacherMapping, classMapping);
 		}
 	}
 
+	/**
+	 * For a list of entities, returns a map (schoolIdentifier => [Entity])
+	 * which contains a list of entities for each schoolIdentifier
+	 * @param {Array} list list of TSP entities
+	 * @returns {Object} map (schoolIdentifier => [Entity])
+	 */
 	createSchoolMap(list) {
 		const globalMap = {};
 		list.forEach((item) => {
@@ -91,6 +138,12 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return globalMap;
 	}
 
+	/**
+	 * Creates a school based on a TSP login system
+	 * @param {System} system
+	 * @returns {School} School
+	 * @async
+	 */
 	async createSchool(system) {
 		return this.app.service('schools').create({
 			name: system.tsp.schoolName,
@@ -100,6 +153,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		});
 	}
 
+	// async getters do not exist, so this will have to do
 	async getCurrentYear() {
 		if (!this.currentYear) {
 			const years = await this.app.service('years').find();
@@ -111,6 +165,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return this.currentYear;
 	}
 
+	// async getters do not exist, so this will have to do
 	async getFederalState() {
 		if (!this.federalState) {
 			const states = await this.app.service('federalStates').find({ query: { abbreviation: 'TH' } });
@@ -122,28 +177,36 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return this.federalState;
 	}
 
+	/**
+	 * Returns all login systems compatible with the provided config.
+	 * Optionally filters by schoolIdentifier if set as `config.schoolIdentifier`.
+	 * @returns {Array<System>} list of systems
+	 * @async
+	 */
 	async findSystems() {
 		if (this.config.systemId) {
 			const system = await this.app.service('systems').get(this.config.systemId);
 			this.config.schoolIdentifier = (system.tsp || {}).identifier;
 			return [system];
 		}
+		const query = {
+			type: SYNCER_TARGET,
+		};
 		if (this.config.schoolIdentifier) {
-			const systems = await this.app.service('systems').find({
-				query: {
-					'tsp.identifier': this.config.schoolIdentifier,
-				},
-			});
-			return systems.data;
+			query['tsp.identifier'] = this.config.schoolIdentifier;
 		}
 		return this.app.service('systems').find({
-			query: {
-				type: SYNCER_TARGET,
-			},
+			query,
 			paginate: false,
 		});
 	}
 
+	/**
+	 * Returns the school associated with the given login system
+	 * @param {System} system
+	 * @returns {School|null} the school or null if it does not exist
+	 * @async
+	 */
 	async findSchool(system) {
 		const response = await this.app.service('schools').find({
 			query: {
@@ -158,6 +221,12 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return response.data[0];
 	}
 
+	/**
+	 * Fetches an entity type from the TSP API.
+	 * @param {String} type one of [`teachers`, `students`, `classes`]
+	 * @returns {Array} API response (Array<Entity>)
+	 * @async
+	 */
 	async fetch(type) {
 		const strings = {
 			teachers: { de: 'Lehrer', url: '/tip-ms/api/schulverwaltung_export_lehrer' },
@@ -167,11 +236,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		let result = [];
 		try {
 			result = await this.api.request(strings[type].url);
-			if (this.config.schoolIdentifier) {
-				result = result.filter((t) => t.schuleNummer === this.config.schoolIdentifier);
-			}
 		} catch (err) {
-			this.logError('Cannot fetch classes.', err);
+			this.logError(`Cannot fetch ${type}.`, err);
+			// generate a nice user-facing error
 			this.stats.errors.push({
 				type: `fetch-${type}`,
 				message: `Es ist derzeit nicht möglich ${strings[type].de}daten aus dem TSP zu aktualisieren.`,
@@ -180,6 +247,14 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return result;
 	}
 
+	/**
+	 * Creates or updates a Schul-Cloud user based on a TSP teacher object
+	 * @param {Object} tspTeacher TSP teacher object
+	 * @param {School} school school of the user
+	 * @param {System} system login system (for account creation)
+	 * @returns {User} the user object of the SC-Teacher
+	 * @async
+	 */
 	async createOrUpdateTeacher(tspTeacher, school, system) {
 		const query = { source: ENTITY_SOURCE };
 		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspTeacher.lehrerUid;
@@ -190,6 +265,13 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return this.createTeacher(tspTeacher, school, system);
 	}
 
+	/**
+	 * Patches a Schul-Cloud user based on information from a TSP teacher object
+	 * @param {ObjectId|String} userId userId
+	 * @param {Object} tspTeacher TSP teacher object
+	 * @returns {User|null} the patched user or null (on error)
+	 * @async
+	 */
 	async updateTeacher(userId, tspTeacher) {
 		try {
 			const teacher = await this.app.service('users').patch(
@@ -215,6 +297,14 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		}
 	}
 
+	/**
+	 * Create a Schul-Cloud user based on a TSP teacher object
+	 * @param {Object} tspTeacher TSP teacher object
+	 * @param {School} school the user's school
+	 * @param {System} system the login system used for account creation
+	 * @returns {User|null} the user or null (on error)
+	 * @async
+	 */
 	async createTeacher(tspTeacher, school, system) {
 		try {
 			const sourceOptions = {};
@@ -243,6 +333,14 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		}
 	}
 
+	/**
+	 * Creates or updates a Schul-Cloud user based on a TSP student object
+	 * @param {Object} tspStudent TSP student object
+	 * @param {School} school school of the user
+	 * @param {System} system login system (for account creation)
+	 * @returns {User} the user object of the SC-Student
+	 * @async
+	 */
 	async createOrUpdateStudent(tspStudent, school, system) {
 		const query = { source: ENTITY_SOURCE };
 		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspStudent.schuelerUid;
@@ -253,6 +351,13 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return this.createStudent(tspStudent, school, system);
 	}
 
+	/**
+	 * Patches a Schul-Cloud user based on information from a TSP student object
+	 * @param {ObjectId|String} userId userId
+	 * @param {Object} tspStudent TSP student object
+	 * @returns {User|null} the patched user or null (on error)
+	 * @async
+	 */
 	async updateStudent(userId, tspStudent) {
 		try {
 			const student = await this.app.service('users').patch(
@@ -277,6 +382,14 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		}
 	}
 
+	/**
+	 * Create a Schul-Cloud user based on a TSP student object
+	 * @param {Object} tspStudent TSP student object
+	 * @param {School} school the user's school
+	 * @param {System} system the login system used for account creation
+	 * @returns {User|null} the user or null (on error)
+	 * @async
+	 */
 	async createStudent(tspStudent, school, system) {
 		try {
 			const sourceOptions = {};
@@ -304,6 +417,14 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		}
 	}
 
+	/**
+	 * Registers a user and creates an account
+	 * @param {Object} userOptions options to be provided to the user service
+	 * @param {Array<String>} roles the user's roles
+	 * @param {System} system the user's login system
+	 * @returns {User} the user object
+	 * @async
+	 */
 	async createUserAndAccount(userOptions, roles, system) {
 		const username = getUsername(userOptions);
 		const email = getEmail(userOptions);
@@ -327,6 +448,15 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return user;
 	}
 
+	/**
+	 * Creates classes based on TSP API response
+	 * @param {*} classes list of TSP class objects
+	 * @param {*} school school
+	 * @param {*} teacherMapping a mapping (teacherUid => User)
+	 * @param {*} classMapping a mapping (classUid => [User])
+	 * @returns {Array<Class>} created classes
+	 * @async
+	 */
 	createClasses(classes, school, teacherMapping, classMapping) {
 		return Promise.all(classes.map((klass) => {
 			const className = klass.klasseName;
@@ -340,7 +470,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				source: ENTITY_SOURCE,
 				sourceOptions,
 			};
-			return this.findOrCreateClassByName(className, options);
+			return this.findOrCreateClassByName(className, options); // see ClassImporter mixin
 		}));
 	}
 }
