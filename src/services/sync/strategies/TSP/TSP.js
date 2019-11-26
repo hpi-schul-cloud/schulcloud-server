@@ -13,6 +13,9 @@ const TSP_API_CLIENT_SECRET = process.env.TSP_API_CLIENT_SECRET || '';
 const TSP_TOKEN_ISS = process.env.SC_DOMAIN || 'https://schulcloud-thueringen.de';
 const TSP_TOKEN_SUB = process.env.HOST || 'schulcloud-thueringen.de';
 
+const TSP_ENCRYPTION_OPTIONS = { alg: 'dir', enc: 'A128CBC-HS256' };
+const TSP_SIGNATURE_OPTIONS = { alg: 'HS512' };
+
 /**
  * Converts a string to a jose-compatible base64url string
  * @param {String} string a string
@@ -49,26 +52,17 @@ const getUsername = (user) => {
  */
 const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
 
-const encryptPayload = (payload) => {
-	const encryptKey = JWK.asKey({
-		kty: 'oct', k: TSP_ENCRYPTION_KEY, alg: 'A128CBC-HS256', use: 'enc',
-	});
-	const encryptedPayload = JWE.encrypt(payload, encryptKey, {
-		alg: 'dir',
-		enc: 'A128CBC-HS256',
-	});
-	return encryptedPayload;
-};
+const getEncryptionKey = () => JWK.asKey({
+	kty: 'oct', k: TSP_ENCRYPTION_KEY, alg: TSP_ENCRYPTION_OPTIONS.alg, use: 'enc',
+});
+const encryptToken = (payload) => JWE.encrypt(payload, getEncryptionKey, TSP_ENCRYPTION_OPTIONS);
+const decryptToken = (payload) => JWE.decrypt(payload, getEncryptionKey, TSP_ENCRYPTION_OPTIONS);
 
-const signToken = (token) => {
-	const signKey = JWK.asKey({
-		kty: 'oct', k: toBase64Url(TSP_SIGNATURE_KEY), alg: 'HS512', use: 'sig',
-	});
-	const signedToken = JWS.sign(token, signKey, {
-		alg: 'HS512',
-	});
-	return signedToken;
-};
+const getSignKey = () => JWK.asKey({
+	kty: 'oct', k: toBase64Url(TSP_SIGNATURE_KEY), alg: TSP_SIGNATURE_OPTIONS.alg, use: 'sig',
+});
+const signToken = (token) => JWS.sign(token, getSignKey(), TSP_SIGNATURE_OPTIONS);
+const verifyToken = (token) => JWS.verify(token, getSignKey(), TSP_SIGNATURE_OPTIONS);
 
 /**
  * TSP API wrapper
@@ -92,7 +86,7 @@ class TspApi {
 			jti: uuid(),
 		});
 
-		const jwt = signToken(encryptPayload(payload));
+		const jwt = signToken(encryptToken(payload));
 		return jwt;
 	}
 
@@ -122,4 +116,8 @@ module.exports = {
 	TspApi,
 	getUsername,
 	getEmail,
+	encryptToken,
+	decryptToken,
+	signToken,
+	verifyToken,
 };
