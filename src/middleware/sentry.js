@@ -29,6 +29,11 @@ const removeIdMiddleware = (event) => {
 	return event;
 };
 
+const removeJwtToken = (event) => {
+	delete event.request.headers.authorization;
+	return event;
+};
+
 const logItMiddleware = (event, hint, app) => {
 	app.logger.info('Error is send to sentry!');
 	return event;
@@ -61,10 +66,12 @@ module.exports = (app) => {
 			filterByErrorCodesMiddleware(404),
 			filterByErrorMessageMiddleware('could not initialize rocketchat user'),
 			removeIdMiddleware,
+			removeJwtToken,
 		];
-		// for local test runs, post feedback
+		// for local test runs, post feedback but skip it
 		if (environment === 'development') {
 			middleware.push(logItMiddleware);
+			middleware.push(skipItMiddleware);
 		}
 		// do not execute for test runs
 		if (environment === 'test') {
