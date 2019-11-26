@@ -53,7 +53,7 @@ const getUsername = (user) => {
 const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
 
 const getEncryptionKey = () => JWK.asKey({
-	kty: 'oct', k: TSP_ENCRYPTION_KEY, alg: TSP_ENCRYPTION_OPTIONS.alg, use: 'enc',
+	kty: 'oct', k: TSP_ENCRYPTION_KEY, alg: TSP_ENCRYPTION_OPTIONS.enc, use: 'enc',
 });
 const encryptToken = (payload) => JWE.encrypt(payload, getEncryptionKey, TSP_ENCRYPTION_OPTIONS);
 const decryptToken = (payload) => JWE.decrypt(payload, getEncryptionKey, TSP_ENCRYPTION_OPTIONS);
