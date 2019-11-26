@@ -8,6 +8,7 @@ const configuration = require('@feathersjs/configuration');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
+const { ObjectId } = require('mongoose').Types;
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -55,6 +56,8 @@ app.use(compress())
 	.configure(requestLogger)
 	.use((req, res, next) => {
 		// pass header into hooks.params
+		const uid = ObjectId();
+		req.headers.requestId = uid.toString();
 		req.feathers.headers = req.headers;
 		next();
 	})

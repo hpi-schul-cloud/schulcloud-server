@@ -5,10 +5,8 @@ const decode = require('jwt-decode');
 const { requestError } = require('../logger/systemLogger');
 const logger = require('../logger');
 
-
 const logRequestInfosInErrorCase = (error, req, res, next) => {
 	if (error && !req.url.includes('/authentication')) {
-		req.headers.authorization = undefined;
 		let decodedJWT;
 		try {
 			decodedJWT = decode(req.headers.authorization);
@@ -21,11 +19,13 @@ const logRequestInfosInErrorCase = (error, req, res, next) => {
 	next(error);
 };
 
-const formatErrors = (error, req, res, next) => {
+const formatErrors = (showRequestId) => (error, req, res, next) => {
 	if (error) {
-		delete error.data; // error object
+		error.data = showRequestId ? {	// clear data and add requestId
+			requestId: req.headers.requestId,
+		} : {};
 		if (error.stack) { // other errors
-			logger.info(error.stack);
+			logger.info(error.stack, { requestId: req.headers.requestId });
 			delete error.stack;
 		}
 	}
@@ -39,9 +39,11 @@ const returnAsJson = express.errorHandler({
 });
 
 const errorHandler = (app) => {
-	app.use(logRequestInfosInErrorCase);
+	if (process.env.NODE_ENV !== 'test') {
+		app.use(logRequestInfosInErrorCase);
+	}
 	app.use(Sentry.Handlers.errorHandler());
-	app.use(formatErrors);
+	app.use(formatErrors(process.env.NODE_ENV !== 'test'));
 	app.use(returnAsJson);
 };
 

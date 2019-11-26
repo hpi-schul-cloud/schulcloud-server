@@ -1,4 +1,5 @@
 const winston = require('winston');
+const util = require('util');
 
 const systemLogLevel = process.env.SYSTEM_LOG_LEVEL || 'sendRequests';
 
@@ -28,15 +29,45 @@ const systemLogger = winston.createLogger({
 		}),
 	],
 });
-const requestError = (req, userId = 'noUserId', error) => systemLogger.requestError({
+
+const secretKeys = [
+	'password',
+	'passwort',
+	'new_password',
+	'new-password',
+	'oauth-password',
+	'current-password',
+	'passwort_1',
+	'passwort_2',
+	'password_1',
+	'password_2',
+	'password_verification',
+	'password_control',
+	'PASSWORD_HASH',
+	'password_new',
+];
+const filter = (data) => {
+	const newData = Object.assign({}, data);
+	Object.keys(newData).forEach((key) => {
+		if (secretKeys.includes(key)) {
+			delete newData[key];
+		}
+	});
+	return newData;
+};
+
+const requestError = (req, userId = 'noUserId', error) => systemLogger.requestError(util.inspect({
 	type: 'RequestError',
+	requestId: req.headers.requestId,
 	userId,
 	url: req.url,
-	data: req.body,
+	data: filter(req.body),
 	method: req.method,
 	timestamp: new Date(),
 	code: error.code,
-});
+}, {
+	depth: 5, compact: false, breakLength: 120,
+}));
 
 module.exports = {
 	requestError,
