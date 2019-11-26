@@ -3,11 +3,11 @@ const { classObjectFromName } = require('../../../user-group/logic/classes');
 /**
  * Provides a mixin for the Syncer interface to create or update classes
  * based on a list of class names.
- *
  * @see https://github.com/justinfagnani/mixwith.js for more info about mixins
  *
  * @param {Class} superClass the class to extend (should be Syncer or a subclass)
  * @returns {Class} a subclass factory building a class with mixed-in functionality
+ * @mixin
  */
 module.exports = (superClass) => class ClassImporter extends superClass {
 	/**
