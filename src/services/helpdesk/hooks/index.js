@@ -74,6 +74,7 @@ const feedback = () => (hook) => {
 					(hook.params.account || {}).username || 'nouser', data,
 				),
 			},
+			attachments: data.files,
 		});
 		// TODO: NOTIFICATION SERVICE
 	} else {
@@ -87,6 +88,7 @@ const feedback = () => (hook) => {
 					data,
 				),
 			},
+			attachments: data.files,
 		});
 	}
 	return Promise.resolve(hook);

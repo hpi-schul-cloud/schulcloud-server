@@ -21,6 +21,7 @@ module.exports = function setup(app) {
 			replyEmail,
 			subject,
 			content,
+			attachments,
 		}, params) {
 			return checkForToken(params, app)
 				.then(async (user) => {
@@ -34,6 +35,7 @@ module.exports = function setup(app) {
 						subject,
 						html: content.html,
 						text: content.text,
+						attachments,
 					};
 					// send mail with defined transport object in production mode
 					if (process.env.NODE_ENV === 'production' || process.env.FORCE_SEND_EMAIL) {

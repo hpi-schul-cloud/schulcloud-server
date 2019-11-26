@@ -551,6 +551,13 @@ exports.sendEmail = (context, maildata) => {
 	const userIds = (typeof maildata.userIds === 'string' ? [maildata.userIds] : maildata.userIds) || [];
 	const receipients = [];
 
+	// create email attachments
+	const files = maildata.attachments;
+	const attachments = [];
+	files.forEach((element) => {
+		attachments.push({ filename: element.name, content: new Buffer(element.data) });
+	});
+
 	// email validation conform with <input type="email"> (see https://emailregex.com)
 	const re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 	const replyEmail = ((maildata.replyEmail) && re.test(maildata.replyEmail)) ? maildata.replyEmail : null;
@@ -613,6 +620,7 @@ exports.sendEmail = (context, maildata) => {
 									|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
 								html: '', // still todo, html template mails
 							},
+							attachments,
 						}).catch((err) => {
 							logger.warning(err);
 							throw new BadRequest(
@@ -644,6 +652,7 @@ exports.sendEmail = (context, maildata) => {
 							|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
 						html: '', // still todo, html template mails
 					},
+					attachments,
 				}).catch((err) => {
 					logger.warning(err);
 					throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
