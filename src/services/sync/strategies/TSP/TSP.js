@@ -72,21 +72,30 @@ class TspApi {
 	constructor({ baseUrl, clientId }) {
 		this.baseUrl = baseUrl;
 		this.clientId = clientId;
+		this.lastToken = null;
+		this.lastTokenExpires = TspApi.formatDate(Date.now());
 	}
 
-	getJwt() {
-		const issueDate = Math.floor(Date.now() / 1000);
+	static formatDate(d) {
+		return Math.floor(d / 1000);
+	}
+	getJwt(lifetime = 30000) {
+		const issueDate = TspApi.formatDate(Date.now());
+		if (issueDate < this.lastTokenExpires - 1000) {
+			return this.lastToken;
+		}
+		this.lastTokenExpires = issueDate + lifetime;
 		const payload = JSON.stringify({
 			apiClientSecret: TSP_API_CLIENT_SECRET,
 			iss: TSP_TOKEN_ISS,
 			aud: this.baseUrl,
 			sub: TSP_TOKEN_SUB,
-			exp: issueDate + 300000,
+			exp: issueDate + lifetime,
 			iat: issueDate,
 			jti: uuid(),
 		});
-
 		const jwt = signToken(encryptToken(payload));
+		this.lastToken = jwt;
 		return jwt;
 	}
 
