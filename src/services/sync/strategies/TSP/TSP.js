@@ -69,6 +69,10 @@ const verifyToken = (token) => JWS.verify(token, getSignKey(), TSP_SIGNATURE_OPT
  * @class TspApi
  */
 class TspApi {
+	/**
+	 * Creates an instance of TspApi
+	 * @param {Object} { baseUrl, clientId } config object
+	 */
 	constructor({ baseUrl, clientId }) {
 		this.baseUrl = baseUrl;
 		this.clientId = clientId;
@@ -79,6 +83,13 @@ class TspApi {
 	static formatDate(d) {
 		return Math.floor(d / 1000);
 	}
+
+	/**
+	 * Returns a JWT to be used with the TSP API. Generated tokens will be cached until
+	 * one second before their expiry and re-used if needed to improve performance.
+	 * @param {Integer} lifetime the token's max age in milliseconds. Default: 30000
+	 * @returns {String} JWT in compact format
+	 */
 	getJwt(lifetime = 30000) {
 		const issueDate = TspApi.formatDate(Date.now());
 		if (issueDate < this.lastTokenExpires - 1000) {
@@ -99,12 +110,23 @@ class TspApi {
 		return jwt;
 	}
 
+	/**
+	 * Returns request headers needed to communicate with the TSP API
+	 * @returns {Object} headers
+	 */
 	getHeaders() {
 		return {
 			Authorization: `AUTH-JWT apiClientId=${this.clientId},jwt=${this.getJwt()}`,
 		};
 	}
 
+	/**
+	 * Requests and returns a TSP resource.
+	 * Results are parsed and returned as Objects/Arrays.
+	 * @param {String} path resource path
+	 * @param {Date} [lastChange=new Date(0)] request changes afer this date only
+	 * @returns {Object|Array} the requested resource
+	 */
 	async request(path, lastChange = new Date(0)) {
 		const lastChangeDate = moment(lastChange).format('YYYY-MM-DD HH:mm:ss.SSS');
 
