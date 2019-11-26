@@ -87,39 +87,57 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	async steps() {
 		let [teacherMap, studentMap, classMap] = [[], [], []];
 
+		this.logInfo('Looking for configuration...');
 		const systems = await this.findSystems();
+		this.logInfo(`${systems.length} configs found.`);
 		if (systems.length > 0) {
+			this.logInfo('Requesting and grouping entities. This can take a while...');
 			// fetch entities in parallel and create a mapping (schoolIdentifier => list<Entity>)
 			[teacherMap, studentMap, classMap] = await Promise.all(['teachers', 'students', 'classes']
 				.map((type) => this.fetch(type).then(this.createSchoolMap)));
+			this.logInfo('Done.');
 		}
 
 		for (const system of systems) {
+			this.logInfo(`Syncing ${system.alias}...`);
 			let school = await this.findSchool(system);
-			if (!school) school = await this.createSchool(system);
+			if (!school) {
+				this.logInfo(`No school found for system "${system.alias}" (${system._id}).`, system);
+				school = await this.createSchool(system);
+			}
 
 			// find all teachers/students/classes of this school
 			const schoolTeachers = teacherMap[(system.tsp || {}).identifier] || [];
 			const schoolStudents = studentMap[(system.tsp || {}).identifier] || [];
 			const schoolClasses = classMap[(system.tsp || {}).identifier] || [];
+			this.logInfo(`School has ${schoolTeachers.length} teachers, ${schoolStudents.length} students`
+				+ `, and ${schoolClasses.length} classes.`);
 
 			const teacherMapping = {};
 			const classMapping = {};
 
+			this.logInfo('Syncing teachers...');
 			// create teachers and add them to the mapping (teacherUID => User)
 			await Promise.all(schoolTeachers.map(async (tspTeacher) => {
 				const teacher = await this.createOrUpdateTeacher(tspTeacher, school, system, classMapping);
 				teacherMapping[tspTeacher.lehrerUid] = teacher;
 			}));
+
+			this.logInfo('Syncing students...');
 			// create students and add them to the mapping (classUid => [User])
 			await Promise.all(schoolStudents.map(async (tspStudent) => {
 				const student = await this.createOrUpdateStudent(tspStudent, school, system, classMapping);
 				classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
 				classMapping[tspStudent.klasseId].push(student._id);
 			}));
+
+			this.logInfo('Syncing classes...');
 			// create classes based on API response and user mappings
-			await this.createClasses(schoolClasses, school, teacherMapping, classMapping);
+			await this.createOrUpdateClasses(schoolClasses, school, teacherMapping, classMapping);
+
+			this.logInfo('Done.');
 		}
+		this.logInfo('Done.');
 	}
 
 	/**
@@ -215,7 +233,6 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			},
 		});
 		if (!Array.isArray(response.data) || response.total < 1) {
-			this.logInfo(`No school found for system "${system.alias}" (${system._id}).`, system);
 			return null;
 		}
 		return response.data[0];
@@ -457,7 +474,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @returns {Array<Class>} created classes
 	 * @async
 	 */
-	createClasses(classes, school, teacherMapping, classMapping) {
+	createOrUpdateClasses(classes, school, teacherMapping, classMapping) {
 		return Promise.all(classes.map((klass) => {
 			const className = klass.klasseName;
 			const sourceOptions = {};
