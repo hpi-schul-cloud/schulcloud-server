@@ -52,4 +52,5 @@ module.exports = {
 	authHeaderExtractor,
 	authenticationSecret,
 	audience,
+	secrets,
 };
