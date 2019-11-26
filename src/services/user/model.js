@@ -68,9 +68,9 @@ const registrationPinSchema = new Schema({
 const displayName = (user) => `${user.firstName} ${user.lastName}`;
 
 enableAuditLog(registrationPinSchema);
-const registrationPinModel = mongoose.model('registrationPin', registrationPinSchema);
-
 enableAuditLog(userSchema);
+
+const registrationPinModel = mongoose.model('registrationPin', registrationPinSchema);
 const userModel = mongoose.model('user', userSchema);
 
 module.exports = {

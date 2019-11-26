@@ -157,7 +157,7 @@ describe('datasources service', () => {
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have the permission DATASOURCES_CREATE.");
+			expect(err.message).to.equal("You don't have one of the permissions: DATASOURCES_CREATE.");
 		}
 	});
 
@@ -175,7 +175,7 @@ describe('datasources service', () => {
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have the permission DATASOURCES_CREATE.");
+			expect(err.message).to.equal("You don't have one of the permissions: DATASOURCES_CREATE.");
 		}
 	});
 

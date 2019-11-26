@@ -5,7 +5,7 @@ const idValidator = require('mongoose-id-validator');
 const uuid = require('uuid/v4');
 const { enableAuditLog } = require('../../utils/database');
 
-const Pseudonym = new Schema({
+const pseudonymSchema = new Schema({
 	userId: { type: Schema.Types.ObjectId, ref: 'user' },
 	toolId: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
 	pseudonym: { type: String, required: true, default: uuid },
@@ -13,7 +13,9 @@ const Pseudonym = new Schema({
 	timestamps: true,
 });
 
-Pseudonym.plugin(idValidator);
-enableAuditLog(Pseudonym);
+pseudonymSchema.plugin(idValidator);
+enableAuditLog(pseudonymSchema);
 
-module.exports = mongoose.model('Pseudonym', Pseudonym);
+const pseudonymModel = mongoose.model('Pseudonym', pseudonymSchema);
+
+module.exports = pseudonymModel;
