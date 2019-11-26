@@ -229,7 +229,6 @@ describe('oauth2 service', function oauthTest() {
 			throw new Error('Should not supposed to succeed');
 		})
 		.catch((err) => {
-			console.log('hydra err', err);
 			assert.strictEqual(404, err.statusCode);
 		}));
 });
