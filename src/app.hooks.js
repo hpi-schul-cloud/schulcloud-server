@@ -129,8 +129,8 @@ const errorHandler = (context) => {
 		if (context.error.hook) {
 			delete context.error.hook;
 		}
-
-		if (!context.error.code) {
+		// statusCode is return by extern services / or mocks that use express res.status(myCodeNumber)
+		if (!context.error.code && !context.error.statusCode) {
 			context.error = new GeneralError(context.error.message || 'server error', context.error.stack || '');
 		}
 
