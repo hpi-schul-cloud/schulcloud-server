@@ -10,8 +10,8 @@ const SOURCE_ID_ATTRIBUTE = 'tspUid'; // name of the uid attribute within source
 const TSP_ENCRYPTION_KEY = process.env.TSP_ENCRYPTION_KEY || '';
 const TSP_SIGNATURE_KEY = process.env.TSP_SIGNATURE_KEY || '';
 const TSP_API_CLIENT_SECRET = process.env.TSP_API_CLIENT_SECRET || '';
-const TSP_TOKEN_ISS = process.env.SC_DOMAIN || 'https://schulcloud-thueringen.de';
-const TSP_TOKEN_SUB = process.env.HOST || 'schulcloud-thueringen.de';
+const TSP_TOKEN_ISS = process.env.SC_DOMAIN || 'schulcloud-thueringen.de';
+const TSP_TOKEN_SUB = process.env.HOST || 'https://schulcloud-thueringen.de';
 
 const TSP_ENCRYPTION_OPTIONS = { alg: 'dir', enc: 'A128CBC-HS256' };
 const TSP_SIGNATURE_OPTIONS = { alg: 'HS512' };
