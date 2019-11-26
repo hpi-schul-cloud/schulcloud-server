@@ -24,8 +24,9 @@ const formatErrors = (showRequestId) => (error, req, res, next) => {
 		error.data = showRequestId ? {	// clear data and add requestId
 			requestId: req.headers.requestId,
 		} : {};
+
 		if (error.stack) { // other errors
-			logger.info(error.stack, { requestId: req.headers.requestId });
+			logger.info(error.stack, showRequestId ? { requestId: req.headers.requestId } : {});
 			delete error.stack;
 		}
 	}
