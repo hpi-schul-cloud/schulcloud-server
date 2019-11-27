@@ -56,7 +56,7 @@ describe('school service', () => {
 			const { currentYear } = out;
 			expect(currentYear, 'the defined year has been added to the school').to.be.ok;
 			const foundYear = defaultYears.filter((year) => equalIds(year._id, currentYear));
-			expect(foundYear.length, 'the auto added year exist in years').to.be.equal(1);
+			expect(foundYear.length, 'the auto added year exists in years').to.be.equal(1);
 			// here we could test, we have defaultYear added but however we just need any year
 			// to be set and this should not test year logic
 		});

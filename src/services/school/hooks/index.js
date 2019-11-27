@@ -11,7 +11,7 @@ const SchoolYearFacade = require('../logic/year');
 
 let years = null;
 
-const extpectYearsDefined = async () => {
+const expectYearsDefined = async () => {
 	if (!years) {
 		// default years will be cached after first call
 		years = await Year.find().lean().exec();
@@ -34,7 +34,7 @@ const setDefaultFileStorageType = (hook) => {
 
 const setCurrentYearIfMissing = async (hook) => {
 	if (!hook.data.currentYear) {
-		await extpectYearsDefined();
+		await expectYearsDefined();
 		const facade = new SchoolYearFacade(years, hook.data);
 		hook.data.currentYear = facade.defaultYear;
 	}
@@ -62,7 +62,7 @@ const createDefaultStorageOptions = (hook) => {
 
 
 const decorateYears = async (context) => {
-	await extpectYearsDefined();
+	await expectYearsDefined();
 	const addYearsToSchool = (school) => {
 		const facade = new SchoolYearFacade(years, school);
 		school.years = facade.toJSON();
