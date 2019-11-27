@@ -552,7 +552,7 @@ exports.sendEmail = (context, maildata) => {
 	const receipients = [];
 
 	// create email attachments
-	const files = maildata.attachments;
+	const files = maildata.attachments || [];
 	const attachments = [];
 	files.forEach((element) => {
 		attachments.push({ filename: element.name, content: Buffer.from(element.data) });
