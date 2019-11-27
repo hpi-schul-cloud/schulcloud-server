@@ -26,8 +26,10 @@ const systemLogger = winston.createLogger({
 	transports: [
 		new winston.transports.Console({
 			name: 'systemLogger',
+			handleExceptions: true,
 		}),
 	],
+	exitOnError: false,
 });
 
 const secretDataKeys = [
