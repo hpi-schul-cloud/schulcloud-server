@@ -23,17 +23,18 @@ describe('school service', () => {
 	describe('create school with or without year', () => {
 		let defaultYears = null;
 		let sampleYear;
+		let sampleSchoolData;
 		const schoolService = app.service('/schools');
 
-		before('load data', async () => {
+		before('load data and set samples', async () => {
 			defaultYears = await YearModel.find().lean().exec();
 			sampleYear = defaultYears[0];
+			const school = await createSchool();
+			sampleSchoolData = await School.findById(school._id).lean().exec();
+			delete sampleSchoolData._id;
 		});
 
 		it('create school with currentYear defined explictly', async () => {
-			const school = await createSchool({ currentYear: sampleYear });
-			const sampleSchoolData = await School.findById(school._id).lean().exec();
-			delete sampleSchoolData._id;
 			const serviceCreatedSchool = await schoolService.create(sampleSchoolData);
 			const { _id: schoolId } = serviceCreatedSchool;
 			createdSchoolIds.push(schoolId);
@@ -45,9 +46,6 @@ describe('school service', () => {
 		});
 
 		it('create school with no currentYear defined that will be added', async () => {
-			const school = await createSchool();
-			const sampleSchoolData = await School.findById(school._id).lean().exec();
-			delete sampleSchoolData._id;
 			const serviceCreatedSchool = await schoolService.create(sampleSchoolData);
 			const { _id: schoolId } = serviceCreatedSchool;
 			createdSchoolIds.push(schoolId);
