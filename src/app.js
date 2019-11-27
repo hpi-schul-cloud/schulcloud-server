@@ -70,6 +70,7 @@ if (process.env.KEEP_ALIVE) {
 }
 
 if (process.env.BODYPRASER_JSON_LIMIT === undefined) {
+	/* eslint-disable-next-line  */
 	logger.warning('please set the environment variable BODYPRASER_JSON_LIMIT to 12mb for helpdesk to work correctly! (Default: 100kb)');
 }
 

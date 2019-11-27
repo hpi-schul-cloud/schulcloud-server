@@ -555,7 +555,7 @@ exports.sendEmail = (context, maildata) => {
 	const files = maildata.attachments;
 	const attachments = [];
 	files.forEach((element) => {
-		attachments.push({ filename: element.name, content: new Buffer(element.data) });
+		attachments.push({ filename: element.name, content: Buffer.from(element.data) });
 	});
 
 	// email validation conform with <input type="email"> (see https://emailregex.com)

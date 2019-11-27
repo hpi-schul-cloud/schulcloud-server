@@ -43,8 +43,7 @@ Akzeptanzkriterien: ${data.acceptanceCriteria}
 ${text}
 User meldet folgendes:
 Problem Kurzbeschreibung: ${data.subject}
-IST-Zustand: ${data.currentState}
-SOLL-Zustand: ${data.targetState}
+Problembeschreibung: ${data.problemDescription}
         `;
 		if (data.notes) {
 			text = `
