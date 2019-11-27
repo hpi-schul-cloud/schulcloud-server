@@ -35,7 +35,10 @@ const removeJwtToken = (event) => {
 };
 
 const logItMiddleware = (event, hint, app) => {
-	app.logger.info('Error is send to sentry!');
+	app.logger.info(
+		`If you not in development mode, the error is send on this point to sentry!
+		Please note if you want to test if message is go to sentry disable this middleware.`
+	);
 	return event;
 };
 

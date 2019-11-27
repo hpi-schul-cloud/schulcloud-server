@@ -120,25 +120,21 @@ const displayInternRequests = (level) => (context) => {
 };
 
 /**
- * For errors without error code create server error with code 500.
- * In production mode remove error stack and data.
+ * For errors without error code create GeneralError with code 500.
  * @param {context} context
  */
 const errorHandler = (context) => {
 	if (context.error) {
+		/*
 		if (context.error.hook) {
 			delete context.error.hook;
 		}
+		*/
 		// statusCode is return by extern services / or mocks that use express res.status(myCodeNumber)
 		if (!context.error.code && !context.error.statusCode) {
 			context.error = new GeneralError(context.error.message || 'server error', context.error.stack || '');
 		}
 
-		// for error handling in sentrys and logs remove this keys
-		if (context.data) {
-			delete context.data.createdBy;
-			delete context.data.updatedBy;
-		}
 		return context;
 	}
 	context.app.logger.warning('Error with no error key is throw. Error logic can not handle it.');

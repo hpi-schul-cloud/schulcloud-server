@@ -56,8 +56,11 @@ app.use(compress())
 	.configure(requestLogger)
 	.use((req, res, next) => {
 		// pass header into hooks.params
+		// todo: To create a fake requestId on this place is a temporary solution
+		// it MUST removed after the API gateway is established
 		const uid = ObjectId();
 		req.headers.requestId = uid.toString();
+
 		req.feathers.headers = req.headers;
 		next();
 	})
