@@ -53,41 +53,4 @@ describe('TSPBaseSyncer', () => {
 			}
 		});
 	});
-
-	describe('getSchools', () => {
-		const MOCK_SCHOOLS = [
-			{ schuleNummer: 42, schuleName: 'Douglas Adams Gymnasium' },
-			{ schuleNummer: 3000, schuleName: 'Mars-Universität' },
-		];
-		const TSPAPIMock = function TSPAPIMock() {
-			this.request = (url) => {
-				if (url === '/tip-ms/api/schulverwaltung_export_schule') {
-					return MOCK_SCHOOLS;
-				}
-				throw new Error('Unknown request URL');
-			};
-		};
-
-		let TSPBaseSyncerWithMockedApi;
-
-		before(() => {
-			mockery.enable({
-				useCleanCache: true,
-				warnOnUnregistered: false,
-			});
-			mockery.registerMock('./TSP', { TspApi: TSPAPIMock });
-			// eslint-disable-next-line global-require, max-len
-			TSPBaseSyncerWithMockedApi = require('../../../../../src/services/sync/strategies/TSP/TSPBaseSyncer').TSPBaseSyncer;
-		});
-
-		after(() => {
-			mockery.deregisterAll();
-			mockery.disable();
-		});
-
-		it('should return schools fetched from the TSP API', async () => {
-			const syncer = new TSPBaseSyncerWithMockedApi();
-			expect(await syncer.getSchools()).to.equal(MOCK_SCHOOLS);
-		});
-	});
 });
