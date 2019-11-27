@@ -27,10 +27,10 @@
     "startd": "nodemon src/",
     "debug": "nodemon --inspect=5959 src/",
     "debug:container": "nodemon --inspect=0.0.0.0:5959 src/",
-    "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary mocha --recursive --exit --sort --extension test.js test/",
+    "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary mocha --exit './test/**/*.test.js'",
     "coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
-    "mocha": "cross-env NODE_ENV=test mocha --recursive --exit --sort --extension test.js test/",
-    "mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --recursive --exit --sort --extension test.js test/",
+    "mocha": "cross-env NODE_ENV=test mocha --exit './test/**/*.test.js'",
+    "mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --exit './test/**/*.test.js'",
     "migration": "migrate",
     "migration-sync": "migrate list --autosync",
     "migration-persist": "mongoexport -d schulcloud -c migrations --jsonArray --pretty > ./backup/setup/migrations.json"
