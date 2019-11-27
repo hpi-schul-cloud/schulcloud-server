@@ -125,11 +125,12 @@ const displayInternRequests = (level) => (context) => {
  */
 const errorHandler = (context) => {
 	if (context.error) {
-		/*
+
+		// to much for logging...
 		if (context.error.hook) {
-			delete context.error.hook;
+			delete context.error.hook; 
 		}
-		*/
+
 		// statusCode is return by extern services / or mocks that use express res.status(myCodeNumber)
 		if (!context.error.code && !context.error.statusCode) {
 			context.error = new GeneralError(context.error.message || 'server error', context.error.stack || '');

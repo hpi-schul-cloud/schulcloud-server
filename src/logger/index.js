@@ -28,13 +28,18 @@ const addType = format.printf((log) => {
 	return log;
 });
 
-const formater = process.env.NODE_ENV === 'test' ? format.combine(
-	format.prettyPrint({ depth: 1, colorize: true }),
-) : format.combine(
-	format.timestamp(),
-	addType,
-	format.prettyPrint({ depth: 3, colorize: true }),
-);
+let formater;
+if (process.env.NODE_ENV === 'test') {
+	formater = format.combine(
+		format.prettyPrint({ depth: 1, colorize: true }),
+	);
+} else {
+	formater = format.combine(
+		format.timestamp(),
+		addType,
+		format.prettyPrint({ depth: 3, colorize: true }),
+	);
+}
 
 const logger = createLogger({
 	levels: winston.config.syslog.levels,

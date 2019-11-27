@@ -17,7 +17,7 @@ const replaceIds = (string) => {
  * @param {SentryEvent} event
  * @param {Object(event_id, originalException, syntheticException)} hint
  * @param {FeatherApp} app
- * @returns {SentryEvent || undefined} Return modified sentry event, or undefined to skip sending event
+ * @returns {SentryEvent || null} Return modified sentry event, or undefined to skip sending event
  */
 const removeIdMiddleware = (event) => {
 	// eslint-disable-next-line camelcase
@@ -34,29 +34,30 @@ const removeJwtToken = (event) => {
 	return event;
 };
 
-const logItMiddleware = (event, hint, app) => {
+const logItMiddleware = (sendToSentry = false) => (event, hint, app) => {
 	app.logger.info(
-		`If you not in development mode, the error is send on this point to sentry!
-		Please note if you want to test if message is go to sentry disable this middleware.`
+		'If you not in development mode, the error is send on this point to sentry! '
+		+ 'Please note if you want to test if message is go to sentry modified sendToSentry',
 	);
-	return event;
+	return sendToSentry ? event : null;
 };
 
 const filterByErrorCodesMiddleware = (...errorCode) => (event, hint, app) => {
-	if (errorCode.includes(hint.originalException.code)) {
-		return undefined;
+	const code = hint.originalException.code || hint.originalException.statusCode;
+	if (errorCode.includes(code)) {
+		return null;
 	}
 	return event;
 };
 
 const filterByErrorMessageMiddleware = (...errorMessage) => (event, hint, app) => {
 	if (errorMessage.includes(hint.originalException.message)) {
-		return undefined;
+		return null;
 	}
 	return event;
 };
 
-const skipItMiddleware = () => undefined;
+const skipItMiddleware = () => null;
 
 module.exports = (app) => {
 	const dsn = process.env.SENTRY_DSN;
@@ -73,8 +74,7 @@ module.exports = (app) => {
 		];
 		// for local test runs, post feedback but skip it
 		if (environment === 'development') {
-			middleware.push(logItMiddleware);
-			middleware.push(skipItMiddleware);
+			middleware.push(logItMiddleware(false));
 		}
 		// do not execute for test runs
 		if (environment === 'test') {
@@ -98,11 +98,18 @@ module.exports = (app) => {
 			dsn,
 			environment,
 			release,
-			integrations: [
-				new Sentry.Integrations.Console({}),
-			],
+		//	debug: true,
+			sampleRate: 1.0,
+		//	captureUnhandledRejections: true,
+			// remove is great performance improve, but it do not catch errors outside of requests
+			/* integrations: [
+				new Sentry.Integrations.Console({
+					dsn,
+				}),
+			], */
 			beforeSend(event, hint) {
-				return runMiddlewares(event, hint);
+				const modifiedEvent = runMiddlewares(event, hint);
+				return modifiedEvent;
 			},
 		});
 

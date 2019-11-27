@@ -39,7 +39,61 @@ const returnAsJson = express.errorHandler({
 	},
 });
 
+const secretDataKeys = [
+	'password',
+	'passwort',
+	'new_password',
+	'new-password',
+	'oauth-password',
+	'current-password',
+	'passwort_1',
+	'passwort_2',
+	'password_1',
+	'password_2',
+	'password_verification',
+	'password_control',
+	'PASSWORD_HASH',
+	'password_new',
+];
+const filter = (data) => {
+	const newData = Object.assign({}, data);
+	Object.keys(newData).forEach((key) => {
+		if (secretDataKeys.includes(key)) {
+			newData[key] = '<secret>';
+		}
+	});
+	return newData;
+};
+
+const secretQueryKeys = [
+	'accessToken',
+	'access_token',
+];
+const filterQuery = (url) => {
+	let newUrl = url;
+	secretQueryKeys.forEach((key) => {
+		if (newUrl.includes(key)) {
+			// first step cut complet query
+			// maybe todo later add query as object of keys and remove keys with filter
+			newUrl = url.split('?')[0];
+			newUrl += '?<secretQuery>';
+		}
+	});
+	return newUrl;
+};
+
+// important that it is not send to sentry, or add it to logs
+const filterSecrets = (error, req, res, next) => {
+	if (error) {
+		req.url = filterQuery(req.url);
+		req.body = filter(req.body);
+		error.data = filter(error.data); //url + query_string
+	}
+	next(error);
+};
+
 const errorHandler = (app) => {
+	app.use(filterSecrets);
 	if (process.env.NODE_ENV !== 'test') {
 		app.use(logRequestInfosInErrorCase);
 	}
