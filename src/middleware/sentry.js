@@ -98,10 +98,10 @@ module.exports = (app) => {
 			dsn,
 			environment,
 			release,
-		//	debug: true,
+			//	debug: true,
 			sampleRate: 1.0,
-		//	captureUnhandledRejections: true,
-			// remove is great performance improve, but it do not catch errors outside of requests
+			//	captureUnhandledRejections: true,
+			// remove is great performance improve if it is not used, but it do not catch errors outside of requests
 			/* integrations: [
 				new Sentry.Integrations.Console({
 					dsn,
