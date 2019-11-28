@@ -33,56 +33,74 @@ module.exports = (superClass) => class ClassImporter extends superClass {
 		const uniqueClasses = [...new Set(classes)];
 		await Promise.all(uniqueClasses.map(async (klass) => {
 			if (classMapping[klass] === undefined) {
-				classMapping[klass] = await this.findOrCreateClassByName(klass, options);
+				classMapping[klass] = await this.findOrCreateClass({
+					...options,
+					name: klass,
+				});
 			}
 		}));
 		return classMapping;
 	}
 
 	/**
-     * Returns a class for a given name. Creates a class if none exists.
-     *
-     * @param {String} className the class name
+     * Returns a class for a given search query. Creates a class if none exists.
+     * @param {Object} classObject class attributes
+	 * @param {Object} query [optional] query to find an existing class. If undefined, query==classObject
      * @returns {Class} a Schul-Cloud class
-     * @throws if class does not exist and cannot be created
      */
-	async findOrCreateClassByName(className, options) {
-		let result = null;
+	async findOrCreateClass(classObject, query) {
+		let theClass = null;
+		let options = classObject;
 		try {
-			const classObject = await classObjectFromName(className, options);
-			result = await this.findOrCreateClass(classObject);
+			if (options.name && !options.gradeLevel) {
+				options = await classObjectFromName(options.name, options);
+			}
+			const existing = await this.findClass(query || options);
+			if (!existing) {
+				theClass = await this.createClass(options);
+			} else {
+				this.stats.classes.updated += 1;
+				theClass = existing;
+			}
 			this.stats.classes.successful += 1;
 		} catch (err) {
 			this.stats.classes.failed += 1;
 			this.stats.errors.push({
 				type: 'class',
-				entity: className,
+				entity: JSON.stringify(options),
 				message: err.message,
 			});
-			this.logError('Failed to create class', className, err);
+			this.logError('Failed to process class', options, err);
 		}
-		return result;
+		return theClass;
 	}
 
-	/**
-     * Returns a class for a given search query. Creates a class if none exists.
-     *
-     * @param {Object} classObject search query
-     * @returns {Class} a Schul-Cloud class
-     * @throws if class does not exist and cannot be created
-     */
-	async findOrCreateClass(classObject) {
-		const existing = await this.app.service('/classes').find({
-			query: classObject,
+	async findClass(query) {
+		const existingClasses = await this.app.service('/classes').find({
+			query,
 			paginate: false,
 			lean: true,
 		});
-		if (existing.length === 0) {
-			const newClass = await this.app.service('/classes').create(classObject);
-			this.stats.classes.created += 1;
-			return newClass;
+		if (existingClasses.length > 0) {
+			return existingClasses[0];
 		}
-		this.stats.classes.updated += 1;
-		return existing[0];
+		return null;
+	}
+
+	async createClass(classObject) {
+		let newClass = null;
+		try {
+			newClass = await this.app.service('/classes').create(classObject);
+			this.stats.classes.created += 1;
+		} catch (err) {
+			this.stats.classes.failed += 1;
+			this.stats.errors.push({
+				type: 'class',
+				entity: JSON.stringify(classObject),
+				message: err.message,
+			});
+			this.logError('Failed to create class', classObject, err);
+		}
+		return newClass;
 	}
 };

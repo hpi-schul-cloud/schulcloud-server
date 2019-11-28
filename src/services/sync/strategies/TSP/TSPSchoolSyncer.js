@@ -475,16 +475,20 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	createOrUpdateClasses(classes, school, teacherMapping, classMapping) {
 		return Promise.all(classes.map(async (klass) => {
-			const className = klass.klasseName;
 			const sourceOptions = {};
 			sourceOptions[SOURCE_ID_ATTRIBUTE] = klass.klasseId;
+			const query = {
+				source: ENTITY_SOURCE,
+				sourceOptions,
+			};
 			const options = {
+				name: klass.klasseName,
 				schoolId: school._id,
 				year: school.currentYear,
 				source: ENTITY_SOURCE,
 				sourceOptions,
 			};
-			const classObject = await this.findOrCreateClassByName(className, options); // see ClassImporter mixin
+			const classObject = await this.findOrCreateClass(options, query); // see ClassImporter mixin
 			this.app.service('classes').patch(classObject._id, {
 				teacherIds: [teacherMapping[klass.lehrerUid]],
 				userIds: classMapping[klass.klasseId],
