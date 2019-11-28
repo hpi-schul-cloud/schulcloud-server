@@ -485,14 +485,12 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				name: klass.klasseName,
 				schoolId: school._id,
 				year: school.currentYear,
+				teacherIds: [teacherMapping[klass.lehrerUid]],
+				userIds: classMapping[klass.klasseId],
 				source: ENTITY_SOURCE,
 				sourceOptions,
 			};
-			const classObject = await this.findOrCreateClass(options, query); // see ClassImporter mixin
-			this.app.service('classes').patch(classObject._id, {
-				teacherIds: [teacherMapping[klass.lehrerUid]],
-				userIds: classMapping[klass.klasseId],
-			});
+			await this.createOrUpdateClass(options, query); // see ClassImporter mixin
 		}));
 	}
 }

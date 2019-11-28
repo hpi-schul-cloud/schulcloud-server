@@ -23,7 +23,6 @@ module.exports = (superClass) => class ClassImporter extends superClass {
 	/**
      * Builds a mapping (class name => class object) for a given list of class names.
      * If a class does not yet exist, it is created in the process.
-     *
      * @param {Array<String>} classes list of class names
      * @param {Object} options options to be provided to the class objects
      * @returns {Object<String,Class>}
@@ -33,7 +32,7 @@ module.exports = (superClass) => class ClassImporter extends superClass {
 		const uniqueClasses = [...new Set(classes)];
 		await Promise.all(uniqueClasses.map(async (klass) => {
 			if (classMapping[klass] === undefined) {
-				classMapping[klass] = await this.findOrCreateClass({
+				classMapping[klass] = await this.createOrUpdateClass({
 					...options,
 					name: klass,
 				});
@@ -43,12 +42,12 @@ module.exports = (superClass) => class ClassImporter extends superClass {
 	}
 
 	/**
-     * Returns a class for a given search query. Creates a class if none exists.
+     * Updates a class for a given search query. Creates a class if none exists.
      * @param {Object} classObject class attributes
 	 * @param {Object} query [optional] query to find an existing class. If undefined, query==classObject
      * @returns {Class} a Schul-Cloud class
      */
-	async findOrCreateClass(classObject, query) {
+	async createOrUpdateClass(classObject, query) {
 		let theClass = null;
 		let options = classObject;
 		try {
@@ -56,11 +55,10 @@ module.exports = (superClass) => class ClassImporter extends superClass {
 				options = await classObjectFromName(options.name, options);
 			}
 			const existing = await this.findClass(query || options);
-			if (!existing) {
-				theClass = await this.createClass(options);
+			if (existing) {
+				theClass = await this.updateClass(existing._id, options);
 			} else {
-				this.stats.classes.updated += 1;
-				theClass = existing;
+				theClass = await this.createClass(options);
 			}
 			this.stats.classes.successful += 1;
 		} catch (err) {
@@ -75,9 +73,15 @@ module.exports = (superClass) => class ClassImporter extends superClass {
 		return theClass;
 	}
 
+	/**
+	 * Finds a class for the given query
+	 * @param {Object} query mongo-style query
+	 * @returns {Class} a Schul-Cloud class object
+	 * @async
+	 */
 	async findClass(query) {
 		const existingClasses = await this.app.service('/classes').find({
-			query,
+			query: { ...query }, // copy the query to avoid mutation through hooks
 			paginate: false,
 			lean: true,
 		});
@@ -87,17 +91,47 @@ module.exports = (superClass) => class ClassImporter extends superClass {
 		return null;
 	}
 
+	/**
+	 * Updates a class by id and updates the sync statistics according to result
+	 * @param {ObjectId|String} id class id
+	 * @param {Object} options patch data
+	 * @returns {Class} updated Schul-Cloud class object
+	 * @async
+	 */
+	async updateClass(id, options) {
+		let updatedClass = null;
+		try {
+			updatedClass = await this.app.service('/classes').patch(id, { ...options });
+			this.stats.classes.updated += 1;
+		} catch (err) {
+			this.stats.classes.failed += 1;
+			this.stats.errors.push({
+				type: 'class',
+				entity: id,
+				message: `Klasse ${id} konnte nicht bearbeitet werden.`,
+			});
+			this.logError(`Failed to patch class '${id}' with options ${JSON.stringify(options)}`, err);
+		}
+		return updatedClass;
+	}
+
+	/**
+	 * Creates a class object and updates sync statistics according to result
+	 * @param {Object} classObject class attributes
+	 * @returns {Class} new Schul-Cloud class object
+	 * @async
+	 */
 	async createClass(classObject) {
 		let newClass = null;
 		try {
-			newClass = await this.app.service('/classes').create(classObject);
+			newClass = await this.app.service('/classes').create({ ...classObject });
 			this.stats.classes.created += 1;
 		} catch (err) {
 			this.stats.classes.failed += 1;
 			this.stats.errors.push({
 				type: 'class',
 				entity: JSON.stringify(classObject),
-				message: err.message,
+				message: `Klasse ${JSON.stringify(classObject)} konnte nicht erstellt werden.`,
 			});
 			this.logError('Failed to create class', classObject, err);
 		}
