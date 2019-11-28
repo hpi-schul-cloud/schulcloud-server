@@ -1,6 +1,5 @@
 const { expect } = require('chai');
 const { BadRequest } = require('@feathersjs/errors');
-const mockery = require('mockery');
 
 const {
 	TSPBaseSyncer,
