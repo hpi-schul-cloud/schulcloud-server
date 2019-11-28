@@ -41,7 +41,8 @@ const returnAsJson = express.errorHandler({
 	},
 });
 
-const secretDataKeys = [
+// map to lower case and test as lower case
+const secretDataKeys = (() => [
 	'password',
 	'passwort',
 	'new_password',
@@ -56,25 +57,29 @@ const secretDataKeys = [
 	'password_control',
 	'PASSWORD_HASH',
 	'password_new',
-];
+].map((k) => k.toLocaleLowerCase())
+)();
 const filter = (data) => {
 	const newData = Object.assign({}, data);
 	Object.keys(newData).forEach((key) => {
-		if (secretDataKeys.includes(key)) {
+		// secretDataKeys are lower keys
+		if (secretDataKeys.includes(key.toLocaleLowerCase())) {
 			newData[key] = '<secret>';
 		}
 	});
 	return newData;
 };
 
-const secretQueryKeys = [
+const secretQueryKeys = (() => [
 	'accessToken',
 	'access_token',
-];
+].map((k) => k.toLocaleLowerCase())
+)();
 const filterQuery = (url) => {
 	let newUrl = url;
 	secretQueryKeys.forEach((key) => {
-		if (newUrl.includes(key)) {
+		// key is lower case
+		if (newUrl.toLocaleLowerCase().includes(key)) {
 			// first step cut complet query
 			// maybe todo later add query as object of keys and remove keys with filter
 			newUrl = url.split('?')[0];
