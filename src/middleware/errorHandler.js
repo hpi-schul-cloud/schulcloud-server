@@ -6,7 +6,7 @@ const { requestError } = require('../logger/systemLogger');
 const logger = require('../logger');
 
 const logRequestInfosInErrorCase = (error, req, res, next) => {
-	if (error && !req.url.includes('/authentication')) {
+	if (error) {
 		let decodedJWT;
 		try {
 			decodedJWT = decode(req.headers.authorization);
@@ -19,14 +19,16 @@ const logRequestInfosInErrorCase = (error, req, res, next) => {
 	next(error);
 };
 
-const formatErrors = (showRequestId) => (error, req, res, next) => {
+const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 	if (error) {
-		error.data = showRequestId ? {	// clear data and add requestId
+		// clear data and add requestId
+		error.data = showRequestId ? {
 			requestId: req.headers.requestId,
 		} : {};
+
 		logger.error(error);
-		if (error.stack) { // other errors
-			// error.stack, showRequestId ? { requestId: req.headers.requestId } : {});
+
+		if (error.stack) {
 			delete error.stack;
 		}
 	}
@@ -100,7 +102,7 @@ const errorHandler = (app) => {
 		app.use(logRequestInfosInErrorCase);
 	}
 	app.use(Sentry.Handlers.errorHandler());
-	app.use(formatErrors(process.env.NODE_ENV !== 'test'));
+	app.use(formatAndLogErrors(process.env.NODE_ENV !== 'test'));
 	app.use(returnAsJson);
 };
 

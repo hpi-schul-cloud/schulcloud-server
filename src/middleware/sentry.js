@@ -7,7 +7,7 @@ const { version } = require('../../package.json');
  */
 const replaceIds = (string) => {
 	if (string) {
-		return string.replace(/[a-f\d]{24}/ig, '[id]');
+		return string.replace(/[a-f\d]{24}/ig, '<id>');
 	}
 	return string;
 };
@@ -36,8 +36,8 @@ const removeJwtToken = (event) => {
 
 const logItMiddleware = (sendToSentry = false) => (event, hint, app) => {
 	app.logger.info(
-		'If you not in development mode, the error is send on this point to sentry! '
-		+ 'Please note if you want to test if message is go to sentry modified sendToSentry',
+		'If you are not in development mode, the error is sent to sentry at this point! '
+		+ 'If you actually want to send a real request to sentry, please modify sendToSentry.',
 	);
 	return sendToSentry ? event : null;
 };
@@ -49,14 +49,14 @@ const filterByErrorCodesMiddleware = (...errorCode) => (event, hint, app) => {
 	}
 	return event;
 };
-
+/*
 const filterByErrorMessageMiddleware = (...errorMessage) => (event, hint, app) => {
 	if (errorMessage.includes(hint.originalException.message)) {
 		return null;
 	}
 	return event;
 };
-
+*/
 const skipItMiddleware = () => null;
 
 module.exports = (app) => {
@@ -68,7 +68,7 @@ module.exports = (app) => {
 		// middleware to modified events that, are post to sentry
 		let middleware = [
 			filterByErrorCodesMiddleware(404),
-			filterByErrorMessageMiddleware('could not initialize rocketchat user'),
+			// filterByErrorMessageMiddleware('could not initialize rocketchat user'),
 			removeIdMiddleware,
 			removeJwtToken,
 		];
@@ -101,12 +101,6 @@ module.exports = (app) => {
 			//	debug: true,
 			sampleRate: 1.0,
 			//	captureUnhandledRejections: true,
-			// remove is great performance improve if it is not used, but it do not catch errors outside of requests
-			/* integrations: [
-				new Sentry.Integrations.Console({
-					dsn,
-				}),
-			], */
 			beforeSend(event, hint) {
 				const modifiedEvent = runMiddlewares(event, hint);
 				return modifiedEvent;

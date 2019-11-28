@@ -33,7 +33,7 @@ const systemLogger = winston.createLogger({
 });
 
 const requestError = (req, userId = 'noUserId', error) => systemLogger.requestError(util.inspect({
-	type: 'RequestError',
+	type: 'errorData',
 	requestId: req.headers.requestId,
 	userId,
 	url: req.originalUrl,
