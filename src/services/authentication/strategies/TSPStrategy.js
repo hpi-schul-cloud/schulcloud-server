@@ -1,12 +1,15 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
 const { NotAuthenticated } = require('@feathersjs/errors');
-const { omit } = require('lodash');
-//const { jose } = require('jose');
+
+const logger = require('../../../logger');
+const {
+	decryptToken, verifyToken,
+	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
+} = require('../../sync/strategies/TSP/TSP');
+const { SYNCER_TARGET } = require('../../sync/strategies/TSP/TSPSchoolSyncer');
 
 class TSPStrategy extends AuthenticationBaseStrategy {
-
 	get configuration() {
-
 		const authConfig = this.authentication.configuration;
 		const config = super.configuration || {};
 		return {
@@ -19,96 +22,75 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		};
 	}
 
-	verifyConfiguration() {
+	verifyConfiguration() {}
 
-		const config = this.configuration;
-		['usernameField'].forEach((prop) => {
-			if (typeof config[prop] !== 'string') {
-				throw new Error(`'${this.name}' authentication strategy requires a '${prop}' setting`);
-			}
+	async getPayload(authResult, params) {
+		// Call original `getPayload` first
+		const payload = await super.getPayload(authResult, params);
+		const { user } = authResult;
+
+		return payload;
+	}
+
+	async findUser(app, token) {
+		const sourceOptions = {
+			[SOURCE_ID_ATTRIBUTE]: token.authUID,
+		};
+		const [user] = await app.service('users').find({
+			query: {
+				source: ENTITY_SOURCE,
+				sourceOptions,
+				$limit: 1,
+			},
+			paginate: false,
 		});
+		return user;
 	}
 
 	async authenticate(authentication, params) {
-
+		const { ticket } = authentication;
+		let decryptedTicket;
+		try {
+			const verifiedToken = await verifyToken(ticket);
+			decryptedTicket = await decryptToken(verifiedToken);
+		} catch (err) {
+			logger.error('TSP ticket not valid.', err);
+			throw new NotAuthenticated('TSP ticket is not valid.');
+		}
 		const { app } = this;
-		const user = await app.service('users').get(authentication.ticket);
+		let user = await this.findUser(app, decryptedTicket);
+		if (!user) {
+			// User might have been created since the last sync
+			await app.service('sync').find({}, {
+				target: SYNCER_TARGET,
+				config: {
+					schoolIdentifier: decryptedTicket.ptscSchuleNummer,
+				},
+			});
+			user = await this.findUser(app, decryptedTicket);
+			if (!user) {
+				// User really does not exist
+				throw new NotAuthenticated('User does not exist');
+			}
+		}
+		const [account] = await app.service('accounts').find({
+			query: {
+				userId: user._id,
+				$limit: 1,
+			},
+			paginate: false,
+		});
 		const { entity } = this.configuration;
-		const result = await this.findEntity(authentication.ticket, omit(params, 'provider'));
 		return {
 			authentication: { strategy: this.name },
-			[entity]: await this.getEntity(result, params),
+			[entity]: account,
+			payload: {
+				accountId: account._id,
+				userId: user._id,
+				systemId: account.systemId,
+			},
 		};
 	}
-
-	/**
-	 *
-	 * @param ticket
-	 */
-	decryptTSPTicket(ticket) {
-
-		// Get Payload out of the Ticket
-		const payload = new Buffer(ticket.split('.')[1], 'base64').toString();
-		// Decrypt Payload
-		const payloadDecrypted = jose.JWE.decrypt(payload, this.configuration.encryptKeyJWK);
-
-		return payloadDecrypted;
-	}
-
-	/*
-	async authenticate(authentication, params) {
-		const { app } = this;
-		const ldapService = app.service('ldap');
-
-		const user = await app.service('users').get(params.payload.userId);
-		const system = await app.service('systems').get(authentication.systemId);
-		if (user && system) {
-			const isAuthenticated = await ldapService.authenticate(
-				system,
-				user.ldapDn,
-				authentication.password,
-			);
-			if (isAuthenticated) {
-				const { entity } = this.configuration;
-				const result = await this.findEntity(authentication.username, omit(params, 'provider'));
-				return {
-					authentication: { strategy: this.name },
-					[entity]: await this.getEntity(result, params),
-				};
-			}
-		}
-		throw new NotAuthenticated('Wrong Credentials - LDAP refused Login');
-	}
-
-	async getEntityQuery(query, _params) {
-		return {
-			$limit: 1,
-			...query,
-		};
-	}
-
-	async findEntity(username, params) {
-
-		const { entityUsernameField, service, errorMessage } = this.configuration;
-		const query = await this.getEntityQuery({
-			[entityUsernameField]: username,
-		}, params);
-
-		const findParams = { ...params, query };
-		const entityService = this.app.service(service);
-
-		const result = await entityService.find(findParams);
-		const list = Array.isArray(result) ? result : result.data;
-
-		if (!Array.isArray(list) || list.length === 0) {
-			throw new NotAuthenticated(errorMessage);
-		}
-
-		const [entity] = list;
-
-		return entity;
-	}
-	*/
 }
 
 

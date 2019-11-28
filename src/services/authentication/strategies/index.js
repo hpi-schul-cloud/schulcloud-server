@@ -7,5 +7,5 @@ module.exports = {
 	LdapStrategy,
 	MoodleStrategy,
 	IservStrategy,
-	TSPStrategy
+	TSPStrategy,
 };
