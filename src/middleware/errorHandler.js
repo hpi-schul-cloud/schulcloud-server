@@ -85,9 +85,11 @@ const filterQuery = (url) => {
 // important that it is not send to sentry, or add it to logs
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
-		req.url = filterQuery(req.url);
+		// req.url = filterQuery(req.url);
+		// originalUrl is used by sentry
+		req.originalUrl = filterQuery(req.originalUrl);
 		req.body = filter(req.body);
-		error.data = filter(error.data); //url + query_string
+		error.data = filter(error.data);
 	}
 	next(error);
 };

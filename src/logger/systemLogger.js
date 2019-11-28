@@ -36,7 +36,7 @@ const requestError = (req, userId = 'noUserId', error) => systemLogger.requestEr
 	type: 'RequestError',
 	requestId: req.headers.requestId,
 	userId,
-	url: req.url,
+	url: req.originalUrl,
 	data: req.body,
 	method: req.method,
 	timestamp: new Date(),
