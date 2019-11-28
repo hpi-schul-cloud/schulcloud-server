@@ -36,7 +36,7 @@
     "migration-persist": "mongoexport -d schulcloud -c migrations --jsonArray --pretty > ./backup/setup/migrations.json"
   },
   "dependencies": {
-    "@feathersjs/authentication": "^4.3.4",
+    "@feathersjs/authentication": "^4.3.11",
     "@feathersjs/authentication-local": "^4.3.4",
     "@feathersjs/configuration": "^4.3.4",
     "@feathersjs/errors": "^4.3.4",
