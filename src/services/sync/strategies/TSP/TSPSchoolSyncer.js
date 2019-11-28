@@ -61,7 +61,6 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				teachers: { created: 0, updated: 0, errors: 0 },
 				students: { created: 0, updated: 0, errors: 0 },
 			},
-			classes: { created: 0, updated: 0, errors: 0 },
 		});
 		this.config = config;
 		this.api = new TspApi(config);

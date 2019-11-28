@@ -10,6 +10,16 @@ const { classObjectFromName } = require('../../../user-group/logic/classes');
  * @mixin
  */
 module.exports = (superClass) => class ClassImporter extends superClass {
+	constructor(...args) {
+		super(...args);
+		this.stats.classes = {
+			successful: 0,
+			failed: 0,
+			created: 0,
+			updated: 0,
+		};
+	}
+
 	/**
      * Builds a mapping (class name => class object) for a given list of class names.
      * If a class does not yet exist, it is created in the process.

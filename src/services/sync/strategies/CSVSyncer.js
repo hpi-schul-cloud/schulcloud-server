@@ -63,12 +63,6 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 				successful: 0,
 				failed: 0,
 			},
-			classes: {
-				successful: 0,
-				created: 0,
-				updated: 0,
-				failed: 0,
-			},
 		});
 	}
 
