@@ -104,6 +104,6 @@ const courseHooks = {
 		patch: [addWholeClassToCourse],
 		remove: [],
 	},
-}
+};
 
 module.exports = { courseService, courseHooks };
