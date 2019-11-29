@@ -233,8 +233,8 @@ exports.after = {
 	all: [],
 	find: [decorateConsents, addConsentsStatus],
 	get: [decorateConsent, addConsentStatus],
-	create: [],
-	update: [],
-	patch: [],
+	create: [decorateConsent, addConsentStatus],
+	update: [decorateConsent, addConsentStatus],
+	patch: [decorateConsent, addConsentStatus],
 	remove: [],
 };

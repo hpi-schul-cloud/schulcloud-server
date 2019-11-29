@@ -6,6 +6,19 @@ const logger = require('../../../logger');
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
 
+const consentAttributes = [
+	'userId',
+	'userConsent.form',
+	'userConsent.privacyConsent',
+	'userConsent.termsOfUseConsent',
+	'parentConsents.parentId',
+	'parentConsents.form',
+	'parentConsents.privacyConsent',
+	'parentConsents.termsOfUseConsent',
+];
+
+const userAttributes = ['firstName', 'lastName', 'email', 'createdAt', 'importHash'];
+
 const getCurrentUserInfo = (id) => userModel.findById(id)
 	.select('schoolId')
 	.populate('roles')
@@ -19,7 +32,7 @@ const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('users'
 		$limit: sortObject.$limit,
 		$skip: sortObject.$skip,
 		$sort: sortObject.$sort,
-		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash'],
+		$select: userAttributes,
 	},
 });
 
@@ -50,15 +63,7 @@ const findConsents = (ref, userIds, $limit) => ref.app.service('/consents')
 		query: {
 			userId: { $in: userIds },
 			$limit,
-			$select: [
-				'userId',
-				'userConsent.form',
-				'userConsent.privacyConsent',
-				'userConsent.termsOfUseConsent',
-				'parentConsents.parentId',
-				'parentConsents.form',
-				'parentConsents.privacyConsent',
-				'parentConsents.termsOfUseConsent'],
+			$select: consentAttributes,
 		},
 	})
 	.then((consents) => consents.data);
@@ -80,11 +85,6 @@ class AdminUsers {
 
 			const currentSchool = await this.app.service('schools').get(schoolId);
 			const { currentYear } = currentSchool;
-
-			// permission check
-			if (!currentUser.roles.some((role) => ['teacher', 'administrator', 'superhero'].includes(role.name))) {
-				throw new Forbidden();
-			}
 			// fetch data that are scoped to schoolId
 			const studentRole = (roles.filter((role) => role.name === this.role))[0];
 			const [usersData, classes] = await Promise.all(
@@ -164,6 +164,55 @@ class AdminUsers {
 			logger.warning(err);
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.');
+			}
+			throw new BadRequest('Can not fetch data.');
+		}
+	}
+
+	async patch(id, data, params) {
+		try {
+			const promises = [];
+
+			// Patch consents
+			if (data.consent) {
+				if (data.consent._id) {
+					promises.push(
+						this.app
+							.service('consents')
+							.patch(data.consent._id, data.consent, {
+								query: { $select: ['userId', 'userConsent', 'parentConsents'] },
+								// query: { $select: consentAttributes },
+							}),
+					);
+				} else {
+					promises.push(
+						this.app.service('consents').create(data.consent, {
+							query: { $select: ['userId', 'userConsent', 'parentConsents'] },
+						}),
+					);
+				}
+			}
+
+			// remove all consent infos from user post
+			delete data.consent;
+
+			promises.push(this.app.service('users').patch(id, data, {
+				query: { $select: userAttributes },
+			}));
+
+			return Promise.all(promises).then(([consent, user]) => {
+				// classes are not patched because AdminUser service only retrieves their displaynames
+				user.classes = data.classes;
+				user.consent = consent;
+				this.emit('status', { status: 'patched' });
+				return user;
+			});
+		} catch (err) {
+			logger.warning(err);
+			if ((err || {}).code === 403) {
+				throw new Forbidden(
+					'You have not the permission to execute this.',
+				);
 			}
 			throw new BadRequest('Can not fetch data.');
 		}
