@@ -133,7 +133,7 @@ const removeStudentFromClasses = (hook) => {
 		}));
 };
 
-const removeStudentFromCourses = (hook) => {
+const removeStudentFromCourses = async (hook) => {
 	const coursesService = hook.app.service('/courses');
 	const userId = hook.id;
 	if (userId === undefined) {
@@ -142,19 +142,16 @@ const removeStudentFromCourses = (hook) => {
 		);
 	}
 
-	const query = { userIds: userId };
-
-	return coursesService.find({ query })
-		.then((courses) => Promise.all(
-			courses.data.map((course) => {
-				course.userIds.splice(course.userIds.indexOf(userId), 1);
-				return coursesService.patch(course._id, course);
-			}),
-		).then(() => hook).catch((err) => {
-			throw new errors.Forbidden(
-				'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.', err,
-			);
-		}));
+	try {
+		const usersCourses = await coursesService.find({ query: { userIds: userId } });
+		await Promise.all(usersCourses.data.map(
+			(course) => hook.app.service('courseModel').patch(course._id, { $pull: { userIds: userId } }),
+		));
+	} catch (err) {
+		throw new errors.Forbidden(
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.', err,
+		);
+	}
 };
 
 const sanitizeData = (hook) => {
