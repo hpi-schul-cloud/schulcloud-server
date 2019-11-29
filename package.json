@@ -43,6 +43,7 @@
     "@feathersjs/express": "^4.3.4",
     "@feathersjs/feathers": "^4.3.4",
     "@feathersjs/socketio": "^4.3.4",
+    "@schul-cloud/commons": "^1.0.7",
     "@sentry/integrations": "^5.8.0",
     "@sentry/node": "^5.9.0",
     "ajv": "^6.10.2",
