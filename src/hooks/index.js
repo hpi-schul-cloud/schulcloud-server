@@ -337,7 +337,7 @@ exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 	if (['get', 'find', 'remove'].includes(context.method)) {
 		if (params.query.schoolId === undefined) {
 			params.query.schoolId = user.schoolId;
-		} else if (params.query.schoolId !== currentSchoolId) {
+		} else if (!equalIds(params.query.schoolId, currentSchoolId)) {
 			throw new Forbidden('You do not have valid permissions to access this.');
 		}
 	} else if (context.data.schoolId === undefined) {
