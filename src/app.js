@@ -69,9 +69,10 @@ if (process.env.KEEP_ALIVE) {
 	});
 }
 
+const BODYPARSER_JSON_LIMIT = process.env.BODYPARSER_JSON_LIMIT || '100kb';
 if (process.env.BODYPARSER_JSON_LIMIT === undefined) {
 	/* eslint-disable-next-line  */
-	logger.warning('please set the environment variable BODYPARSER_JSON_LIMIT to 12mb for helpdesk to work correctly! (Default: 100kb)');
+	logger.warning(`please set the environment variable BODYPARSER_JSON_LIMIT to 12mb for helpdesk to work correctly! (Currently: ${BODYPARSER_JSON_LIMIT})`);
 }
 
 app.use(compress())
@@ -79,7 +80,7 @@ app.use(compress())
 	.use(cors())
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 	.use('/', express.static('public'))
-	.use(bodyParser.json({ limit: process.env.BODYPARSER_JSON_LIMIT || '100kb' }))
+	.use(bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 	.use(bodyParser.urlencoded({ extended: true }))
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 	.use(versionService)
