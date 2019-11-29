@@ -277,7 +277,7 @@ class RocketChatChannel {
 			}
 			return Promise.resolve();
 		} catch (err) {
-			logger.warn(`Fehler beim Synchronisieren der rocket.chat moderatoren für team ${teamId} `, err);
+			logger.warning(`Fehler beim Synchronisieren der rocket.chat moderatoren für team ${teamId} `, err);
 			return Promise.reject(err);
 		}
 	}

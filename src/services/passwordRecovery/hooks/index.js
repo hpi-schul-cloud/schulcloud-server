@@ -60,7 +60,7 @@ exports.before = {
 	get: [],
 	create: [
 		hashId,
-		local.hooks.hashPassword({ passwordField: 'password' }),
+		local.hooks.hashPassword('password'),
 	],
 	update: [
 		authenticate('jwt'),

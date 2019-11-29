@@ -15,69 +15,65 @@ chai.use(chaiHttp);
 
 describe('roster service', function oauth() {
 	this.timeout(10000);
+	let server;
 
-	const testUser1 = {
-		_id: '0000d231816abba584714c9e',
-	};
+	let testUser1;
+	let testTool1;
+	let testCourse;
 
-	const testTool1 = {
-		_id: '5a79cb15c3874f9aea14daa5',
-		name: 'test1',
-		url: 'https://tool.com?pseudonym={PSEUDONYM}',
-		isLocal: true,
-		isTemplate: true,
-		resource_link_id: 1,
-		lti_version: '1p0',
-		lti_message_type: 'basic-start-request',
-		secret: '1',
-		key: '1',
-		oAuthClientId: '123456789',
-	};
-
-	const testCourse = {
-		_id: '5cb8dc8e7cccac0e98a29975',
-		name: 'rosterTestCourse',
-		schoolId: '0000d186816abba584714c5f',
-		teacherIds: [testUser1._id],
-		userIds: [
-			'0000d213816abba584714c0a',
-			'0000d224816abba584714c9c',
-		],
-		ltiToolIds: [
-			testTool1._id,
-		],
-		shareToken: 'xxx',
-	};
 
 	let pseudonym1 = null;
 
-	before((done) => {
-		this.timeout(10000);
-		Promise.all([
+	before(() => {
+		server = app.listen(0);
+
+		testUser1 = { _id: '0000d231816abba584714c9e' }; // cord carl
+		testTool1 = {
+			_id: '5a79cb15c3874f9aea14daa5',
+			name: 'test1',
+			url: 'https://tool.com?pseudonym={PSEUDONYM}',
+			isLocal: true,
+			isTemplate: true,
+			resource_link_id: 1,
+			lti_version: '1p0',
+			lti_message_type: 'basic-start-request',
+			secret: '1',
+			key: '1',
+			oAuthClientId: '123456789',
+		};
+		testCourse = {
+			_id: '5cb8dc8e7cccac0e98a29975',
+			name: 'rosterTestCourse',
+			schoolId: '0000d186816abba584714c5f',
+			teacherIds: [testUser1._id],
+			userIds: [
+				'0000d213816abba584714c0a',
+				'0000d224816abba584714c9c',
+			],
+			ltiToolIds: [
+				testTool1._id,
+			],
+			shareToken: 'xxx',
+		};
+		return Promise.all([
 			toolService.create(testTool1),
 			coursesService.create(testCourse),
-		]).then(() => {
-			pseudonymService.find({
-				query: {
-					userId: testUser1._id,
-					toolId: testTool1._id,
-				},
-			}).then((pseudonym) => {
-				pseudonym1 = pseudonym.data[0].pseudonym;
-				done();
-			});
-		});
+		]).then(() => pseudonymService.find({
+			query: {
+				userId: testUser1._id,
+				toolId: testTool1._id,
+			},
+		}).then((pseudonym) => {
+			pseudonym1 = pseudonym.data[0].pseudonym;
+			return Promise.resolve();
+		}));
 	});
 
-	after((done) => {
-		Promise.all([
-			pseudonymService.remove(null, { query: {} }),
-			toolService.remove(testTool1),
-			coursesService.remove(testCourse),
-		]).then((results) => {
-			done();
-		});
-	});
+	after(() => Promise.all([
+		pseudonymService.remove(null, { query: {} }),
+		toolService.remove(testTool1),
+		coursesService.remove(testCourse),
+	]).then(server.close()));
 
 	it('is registered', () => {
 		assert.ok(metadataService);
@@ -85,13 +81,12 @@ describe('roster service', function oauth() {
 		assert.ok(groupsService);
 	});
 
-	it('GET metadata', (done) => {
-		metadataService.find({ route: { user: pseudonym1 } }).then((metadata) => {
+	it('GET metadata', () => metadataService
+		.find({ route: { user: pseudonym1 } })
+		.then((metadata) => {
 			assert.strictEqual(pseudonym1, metadata.data.user_id);
 			assert.strictEqual('teacher', metadata.data.type);
-			done();
-		});
-	});
+		}));
 
 	it('GET user groups', (done) => {
 		userGroupsService.find({

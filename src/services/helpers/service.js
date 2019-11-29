@@ -1,6 +1,8 @@
 const nodemailer = require('nodemailer');
 const logger = require('../../logger');
 
+const { secrets } = require('../../services/authentication/logic');
+
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {
 		const userId = params.headers.token;
@@ -16,15 +18,17 @@ module.exports = function setup(app) {
 		create({
 			headers,
 			email,
+			replyEmail,
 			subject,
 			content,
 		}, params) {
 			return checkForToken(params, app)
 				.then(async (user) => {
-					const options = app.get('secrets').smtp || app.get('secrets').sendmail || {};
+					const options = secrets.smtp || secrets.sendmail || {};
 					const transporter = nodemailer.createTransport(options);
 					const mail = {
-						from: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
+						from: process.env.SMTP_SENDER || replyEmail || 'noreply@schul-cloud.org',
+						replyTo: replyEmail || process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 						headers,
 						to: user ? user.email : email,
 						subject,

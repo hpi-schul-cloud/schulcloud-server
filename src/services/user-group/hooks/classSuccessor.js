@@ -4,8 +4,8 @@ const { hasPermission } = require('../../../hooks');
 
 exports.before = {
 	all: [authenticate('jwt')],
-	find: [hasPermission('USERGROUP_CREATE')],
-	get: [hasPermission('USERGROUP_CREATE')],
+	find: [hasPermission('CLASS_CREATE')],
+	get: [hasPermission('CLASS_CREATE')],
 	create: [disallow()],
 	update: [disallow()],
 	patch: [disallow()],
