@@ -21,11 +21,9 @@ const filterForPublicTeacher = (hook) => {
 	// Limit accessible user (only teacher which are discoverable)
 	hook.params.query.roles = ['teacher'];
 
-	const TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION =	hook.app.Settings
+	const TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION =	hook.app.Config
 		.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
 	switch (TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION) {
-		case 'enabled':
-			break;
 		case 'opt-in':
 			// own school and other schools if opted-in
 			hook.params.query.$or = [
@@ -44,10 +42,8 @@ const filterForPublicTeacher = (hook) => {
 			}
 			break;
 		default:
-			throw new Conflict(
-				'invalid settings for TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION',
-				{ TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION },
-			);
+			// 'enabled'
+			break;
 	}
 
 	return Promise.resolve(hook);
