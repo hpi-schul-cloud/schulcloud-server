@@ -1,0 +1,139 @@
+const { expect } = require('chai');
+const { mix } = require('mixwith');
+
+const ClassImporter = require('../../../../../src/services/sync/strategies/mixins/ClassImporter');
+const Syncer = require('../../../../../src/services/sync/strategies/Syncer');
+const app = require('../../../../../src/app');
+const { createTestSchool, createTestClass, cleanup } = require('../../../helpers/testObjects')(app);
+const { info: createdClassIds } = require('../../../helpers/services/classes')(app);
+
+describe('Syncer Mixins', () => {
+	describe('ClassImporter', () => {
+		const MIXIN_METHODS = [
+			'buildClassMapping', 'createOrUpdateClass', 'findClass', 'createClass', 'updateClass',
+		];
+		const SampleSyncer = class extends Syncer {};
+		const MixedClass = mix(Syncer).with(ClassImporter);
+
+		let server;
+
+		before((done) => {
+			server = app.listen(0, done);
+		});
+
+		after((done) => {
+			server.close(done);
+		});
+
+		it('returns a mixin factory', () => {
+			expect(ClassImporter).to.be.instanceOf(Function);
+		});
+
+		it('cannot be instantiated directly', () => {
+			try {
+				// eslint-disable-next-line no-new
+				new ClassImporter();
+				throw new Error('The previous call should have failed.');
+			} catch (err) {
+				expect(err).to.be.instanceOf(TypeError);
+				expect(err.message).to.equal('ClassImporter is not a constructor');
+			}
+		});
+
+		it('extends a Syncer subclass with class-related operations', () => {
+			const undecoratedInstance = new SampleSyncer();
+			MIXIN_METHODS.forEach((method) => expect(undecoratedInstance[method]).to.equal(undefined));
+			const decoratedInstance = new MixedClass();
+			MIXIN_METHODS.forEach((method) => expect(decoratedInstance[method]).to.not.equal(undefined));
+		});
+
+		describe('#findClass', () => {
+			after(cleanup);
+
+			it('returns null if no class was found', async () => {
+				const result = await (new MixedClass(app)).findClass({ foo: 'bar' });
+				expect(result).to.be.null;
+			});
+
+			it('finds classes using the class service', async () => {
+				const identifier = 'myVeryUniqueClassName123';
+				const existingClass = await createTestClass({ name: identifier });
+				const result = await (new MixedClass(app)).findClass({ name: identifier });
+				expect(result._id.toString()).to.deep.equal(existingClass._id.toString());
+			});
+		});
+
+		describe('#createClass', () => {
+			after(cleanup);
+
+			it('allows creating a class', async () => {
+				const { _id: schoolId } = await createTestSchool();
+				const result = await (new MixedClass(app)).createClass({ name: 'foo', schoolId });
+				expect(result).to.be.ok;
+				expect(result.name).to.equal('foo');
+				// cleanup:
+				app.service('classes').remove(result._id);
+			});
+
+			it('increases the number of created classes on success', async () => {
+				const { _id: schoolId } = await createTestSchool();
+				const instance = new MixedClass(app);
+				const firstClass = await instance.createClass({ name: 'foo', schoolId });
+				expect(instance.stats.classes.created).to.equal(1);
+				const secondClass = await instance.createClass({ name: 'bar', schoolId });
+				expect(instance.stats.classes.created).to.equal(2);
+				// cleanup:
+				app.service('classes').remove(firstClass._id);
+				app.service('classes').remove(secondClass._id);
+			});
+
+			it('logs an error if the class creation fails', async () => {
+				const instance = new MixedClass({
+					service: () => ({
+						create: () => { throw new Error('Go fork yourself!'); },
+					}),
+				});
+				const { _id: schoolId } = await createTestSchool();
+				await instance.createClass({ name: 'foo', schoolId });
+				expect(instance.stats.classes.created).to.equal(0);
+				expect(instance.stats.classes.failed).to.equal(1);
+				expect(instance.stats.errors.length).to.equal(1);
+				expect(instance.stats.errors[0].type).to.equal('class');
+			});
+		});
+
+		describe('#updateClass', () => {
+			after(cleanup);
+
+			it('allows updating a class by id', async () => {
+				const existingClass = await createTestClass({ name: 'foo' });
+				const result = await (new MixedClass(app)).updateClass(existingClass._id, { name: 'barz' });
+				expect(result._id.toString()).to.deep.equal(existingClass._id.toString());
+				expect(result.name).to.equal('barz');
+			});
+
+			it('increases the number of updated classes on success', async () => {
+				const instance = new MixedClass(app);
+				const existingClass = await createTestClass({ name: 'foo' });
+				await instance.updateClass(existingClass._id, { name: 'barz' });
+				expect(instance.stats.classes.updated).to.equal(1);
+				await instance.updateClass(existingClass._id, { name: 'spam' });
+				expect(instance.stats.classes.updated).to.equal(2);
+			});
+
+			it('logs an error if the class update fails', async () => {
+				const instance = new MixedClass({
+					service: () => ({
+						patch: () => { throw new Error('Go fork yourself!'); },
+					}),
+				});
+				const existingClass = await createTestClass({ name: 'foo' });
+				await instance.updateClass(existingClass._id, { name: 'barz' });
+				expect(instance.stats.classes.updated).to.equal(0);
+				expect(instance.stats.classes.failed).to.equal(1);
+				expect(instance.stats.errors.length).to.equal(1);
+				expect(instance.stats.errors[0].type).to.equal('class');
+			});
+		});
+	});
+});
