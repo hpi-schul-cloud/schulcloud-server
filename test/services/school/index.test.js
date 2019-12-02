@@ -35,7 +35,9 @@ describe('school service', () => {
 		});
 
 		it('create school with currentYear defined explictly', async () => {
-			const serviceCreatedSchool = await schoolService.create(sampleSchoolData);
+			const serviceCreatedSchool = await schoolService.create(
+				Object.assign({}, sampleSchoolData, { currentYear: sampleYear }),
+			);
 			const { _id: schoolId } = serviceCreatedSchool;
 			createdSchoolIds.push(schoolId);
 			const out = await schoolService.get(schoolId);
