@@ -26,9 +26,7 @@ const { version } = require('../package.json');
 
 const app = express(feathers());
 const config = configuration();
-const Configuration = new commons.Configuration({
-	schemaFileName: 'default.schema.json',
-});
+const Configuration = new commons.Configuration();
 
 app.configure(config);
 Configuration.init(app);
