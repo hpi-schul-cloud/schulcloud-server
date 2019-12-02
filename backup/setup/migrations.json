@@ -258,7 +258,7 @@
 	},
 	"__v" : 0
 },
-{ 
+{
     "_id" : {
 		"$oid": "5dc18974ba666b70ac1199e5"
 	},
@@ -266,6 +266,17 @@
     "name" : "add-enterthecloud-start-permission",
     "createdAt" : {
 		"$date": "2019-11-05T14:38:44.172Z"
+	},
+    "__v" : 0
+},
+{
+    "_id" : {
+		"$oid":"5de50ab801498f0f504d349e"
+	},
+    "state" : "up",
+    "name" : "fix-demo-permissions",
+    "createdAt" : {
+		"$date": "2019-12-02T12:59:36.284Z"
 	},
     "__v" : 0
 }]
