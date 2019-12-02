@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden, Conflict } = require('@feathersjs/errors');
+const { Forbidden } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
-const { lookupSchool } = require('../../news/hooks/news.hooks');
+const { lookupSchool } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const mapRoleFilterQuery = (hook) => {

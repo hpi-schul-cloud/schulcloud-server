@@ -6,9 +6,9 @@ const { createTestUser, cleanup } = require('../../helpers/testObjects')(app);
 const { newsHistoryModel } = require('../../../../src/services/news/model');
 const {
 	preparePagination,
-	lookupSchool,
 	deleteNewsHistory,
 } = require('./../../../../src/services/news/hooks/news.hooks');
+const {	lookupSchool } = require('../../../../src/hooks');
 
 describe('news hooks', () => {
 	describe('#preparePagination', () => {
