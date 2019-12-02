@@ -1,14 +1,12 @@
 const { expect } = require('chai');
-const { BadRequest } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
 const app = require('../../../../src/app');
-const { createTestUser, cleanup } = require('../../helpers/testObjects')(app);
+const { cleanup } = require('../../helpers/testObjects')(app);
 const { newsHistoryModel } = require('../../../../src/services/news/model');
 const {
 	preparePagination,
 	deleteNewsHistory,
 } = require('./../../../../src/services/news/hooks/news.hooks');
-const {	lookupSchool } = require('../../../../src/hooks');
 
 describe('news hooks', () => {
 	describe('#preparePagination', () => {
@@ -35,42 +33,6 @@ describe('news hooks', () => {
 			expect(() => preparePagination(context)).not.to.throw(Error);
 			expect(preparePagination(context)).to.deep.equal(context);
 		});
-	});
-
-	describe('#lookupSchool', () => {
-		it('should require authentication to provide a user', async () => {
-			try {
-				await lookupSchool({});
-				expect.fail('This call should have failed');
-			} catch (err) {
-				expect(err).to.be.instanceOf(BadRequest);
-			}
-			try {
-				await lookupSchool({
-					params: {
-						query: { _id: 42 },
-					},
-				});
-				expect.fail('This call should have failed');
-			} catch (err) {
-				expect(err).to.be.instanceOf(BadRequest);
-			}
-		});
-
-		it('should add the logged-in user\' school to the request params', async () => {
-			const user = await createTestUser();
-			const context = await lookupSchool({
-				app,
-				params: {
-					account: {
-						userId: user._id,
-					},
-				},
-			});
-			expect(context.params.account.schoolId.toString()).to.equal(user.schoolId.toString());
-		});
-
-		after(cleanup);
 	});
 
 	describe('#deleteNewsHistory', () => {
