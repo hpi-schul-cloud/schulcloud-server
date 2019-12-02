@@ -2,6 +2,7 @@
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
 const Entities = require('html-entities').AllHtmlEntities;
+const { GeneralError } = require('@feathersjs/errors');
 
 const entities = new Entities();
 
@@ -118,6 +119,29 @@ const displayInternRequests = (level) => (context) => {
 	return context;
 };
 
+/**
+ * For errors without error code create GeneralError with code 500.
+ * @param {context} context
+ */
+const errorHandler = (context) => {
+	if (context.error) {
+		// too much for logging...
+		if (context.error.hook) {
+			delete context.error.hook;
+		}
+
+		// statusCode is return by extern services / or mocks that use express res.status(myCodeNumber)
+		if (!context.error.code && !context.error.statusCode) {
+			context.error = new GeneralError(context.error.message || 'server error', context.error.stack || '');
+		}
+
+		return context;
+	}
+	context.app.logger.warning('Error with no error key is throw. Error logic can not handle it.');
+
+	throw new GeneralError('server error');
+};
+
 module.exports = function setup(app) {
 	const before = {
 		all: [],
@@ -140,7 +164,7 @@ module.exports = function setup(app) {
 	};
 
 	const error = {
-		all: [],
+		all: [errorHandler],
 		find: [],
 		get: [],
 		create: [],
