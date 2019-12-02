@@ -11,7 +11,7 @@
 				"opt-out",
 				"enabled"
 			],
-			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
+			"description": "Defines wether external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
 		}
 	},
 	"required": [
