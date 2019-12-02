@@ -135,5 +135,60 @@ describe('Syncer Mixins', () => {
 				expect(instance.stats.errors[0].type).to.equal('class');
 			});
 		});
+
+		describe('#createOrUpdateClass', () => {
+			after(cleanup);
+
+			it('updates an existing class and returns it using a given query', async () => {
+				const identifier = '45678djerf734cirtbciw4vrti4bcw34kcnk8';
+				const existing = await createTestClass({ name: identifier });
+				const instance = new MixedClass(app);
+				const result = await instance.createOrUpdateClass({ name: 'new name' }, { name: identifier });
+				expect(result._id.toString()).to.equal(existing._id.toString());
+				expect(result.name).to.not.equal(existing.name);
+				expect(result.name).to.equal('new name');
+			});
+
+			it('creates a new class if none exists for the search query', async () => {
+				const identifier = '45678djerf734cirtbciw4vrti4bcw34kcnk8';
+				const { _id: schoolId } = await createTestSchool();
+				const instance = new MixedClass(app);
+				const result = await instance.createOrUpdateClass({ name: 'check', schoolId }, { name: identifier });
+				expect(result).to.be.ok;
+				expect(result.name).to.equal('check');
+				// cleanup:
+				app.service('classes').remove(result._id);
+			});
+
+			it('uses the classObject as search query if query is undefined', async () => {
+				const { _id: schoolId } = await createTestSchool();
+				const instance = new MixedClass(app);
+				const created = await instance.createOrUpdateClass({ name: 'mark', schoolId });
+				expect(created).to.be.ok;
+				expect(created.name).to.equal('mark');
+				const updated = await instance.createOrUpdateClass({ name: 'mark' });
+				expect(updated).to.be.ok;
+				expect(updated._id.toString()).to.equal(created._id.toString());
+				expect(updated.name).to.equal('mark');
+				expect(updated.schoolId.toString()).to.equal(schoolId.toString());
+				// cleanup:
+				app.service('classes').remove(updated._id);
+			});
+
+			it('processes errors and adds them to the syncer stats', async () => {
+				const instance = new MixedClass({
+					service: () => ({
+						find: () => { throw new Error('Go fork yourself!'); },
+					}),
+				});
+				const result = await instance.createOrUpdateClass({ name: 'beep boop boop' });
+				expect(instance.stats.classes.created).to.equal(0);
+				expect(instance.stats.classes.updated).to.equal(0);
+				expect(instance.stats.classes.failed).to.equal(1);
+				expect(instance.stats.errors.length).to.equal(1);
+				expect(instance.stats.errors[0].type).to.equal('class');
+				expect(result).to.be.null;
+			});
+		});
 	});
 });
