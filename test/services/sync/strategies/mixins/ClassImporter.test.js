@@ -5,7 +5,6 @@ const ClassImporter = require('../../../../../src/services/sync/strategies/mixin
 const Syncer = require('../../../../../src/services/sync/strategies/Syncer');
 const app = require('../../../../../src/app');
 const { createTestSchool, createTestClass, cleanup } = require('../../../helpers/testObjects')(app);
-const { info: createdClassIds } = require('../../../helpers/services/classes')(app);
 
 describe('Syncer Mixins', () => {
 	describe('ClassImporter', () => {
