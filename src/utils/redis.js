@@ -1,6 +1,7 @@
 const { promisify } = require('util');
 const redis = require('redis');
 const jwt = require('jsonwebtoken');
+const { MethodNotAllowed } = require('@feathersjs/errors');
 
 let redisClient = false;
 const redisUrl = process.env.REDIS_URI;
@@ -14,9 +15,10 @@ function getRedisClient() {
 	return redisClient;
 }
 
-const redisGetAsync = promisify(redisClient.get).bind(redisClient);
-const redisSetAsync = promisify(redisClient.set).bind(redisClient);
-const redisDelAsync = promisify(redisClient.del).bind(redisClient);
+const notAllowed = () => { throw new MethodNotAllowed('no redis connection. check for this via getRedisClient()'); };
+const redisGetAsync = redisClient ? promisify(redisClient.get).bind(redisClient) : notAllowed;
+const redisSetAsync = redisClient ? promisify(redisClient.set).bind(redisClient) : notAllowed;
+const redisDelAsync = redisClient ? promisify(redisClient.del).bind(redisClient) : notAllowed;
 
 function getRedisIdentifier(token) {
 	const decodedToken = jwt.decode(token.replace('Bearer ', ''));
