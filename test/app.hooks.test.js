@@ -1,6 +1,5 @@
 const assert = require('assert');
 const chai = require('chai');
-const logger = require('../src/logger/index');
 const { ObjectId } = require('mongoose').Types;
 
 const { expect } = chai;
@@ -9,6 +8,8 @@ const app = require('../src/app');
 const { cleanup, createTestUser } = require('./services/helpers/testObjects')(app);
 
 describe('Sanitization Hook', () => {
+	let server;
+
 	let newsService;
 	let helpdeskService;
 	let courseService;
@@ -18,6 +19,7 @@ describe('Sanitization Hook', () => {
 	let currentLessonId = null;
 
 	before((done) => {
+		server = app.listen(0);
 		newsService = app.service('newsModel');
 		helpdeskService = app.service('helpdesk');
 		courseService = app.service('courses');
@@ -26,6 +28,7 @@ describe('Sanitization Hook', () => {
 	});
 
 	after((done) => {
+		server.close();
 		done();
 	});
 
@@ -241,49 +244,38 @@ describe('Sanitization Hook', () => {
 });
 
 describe('removeObjectIdInData hook', () => {
-	let userId;
-	let userServices;
-	let userObject;
-	let _id;
+	let user;
 
-	before((done) => {
-		userServices = app.service('users');
-		_id = ObjectId();
-		userObject = {
-			_id,
-			firstName: 'Max',
-			lastName: 'Mustermann',
-			email: `max${Date.now()}@mustermann.de`,
-			schoolId: '584ad186816abba584714c94',
-			roles: [],
-		};
-		done();
+	before(async () => {
+		user = await createTestUser();
 	});
 
 	after(async () => {
 		await cleanup();
 	});
 
-	it('Should work by create', async () => {
-		const user = await createTestUser(userObject)
-			.then((res) => {
-				userId = res._id;
-				return res;
-			})
-			.catch((err) => {
-				logger.warning('Can not create test User.', err);
-			});
-
-		expect(_id).to.not.equal(user._id.toString());
+	it('Should work for create', async () => {
+		const _id = new ObjectId();
+		const newUser = await createTestUser({ _id });
+		expect(_id.toString()).to.not.equal(newUser._id.toString());
 	});
 
-	it('Should work by patch', async () => {
-		const user = await userServices.patch(userId, { _id });
-		expect(_id).to.not.equal(user._id.toString());
+	it('Should work for patch', async () => {
+		const _id = new ObjectId();
+		const response = await app.service('users').patch(user._id, { _id });
+		expect(_id.toString()).to.not.equal(response._id.toString());
 	});
 
-	it('Should work by update', async () => {
-		const user = await userServices.update(userId, userObject);
-		expect(_id).to.not.equal(user._id.toString());
+	it('Should work for update', async () => {
+		const _id = new ObjectId();
+		const response = await app.service('users').update(user._id, {
+			_id,
+			firstName: 'Max',
+			lastName: 'Mustermann',
+			email: `max${Date.now()}@mustermann.de`,
+			schoolId: '584ad186816abba584714c94',
+			roles: [],
+		});
+		expect(_id.toString()).to.not.equal(response._id.toString());
 	});
 });
