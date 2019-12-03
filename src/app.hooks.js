@@ -2,7 +2,10 @@
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
 const Entities = require('html-entities').AllHtmlEntities;
-const { GeneralError } = require('@feathersjs/errors');
+const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
+const { promisify } = require('util');
+const redis = require('redis');
+const jwt = require('jsonwebtoken');
 
 const entities = new Entities();
 
@@ -119,6 +122,44 @@ const displayInternRequests = (level) => (context) => {
 	return context;
 };
 
+const handleAutoLogout = async (context) => {
+	let redisClient = false;
+	const redisUrl = process.env.REDIS_URI;
+	if (redisUrl) {
+		redisClient = redis.createClient({
+			url: redisUrl,
+		});
+	}
+	const getAsync = promisify(redisClient.get).bind(redisClient);
+	const setAsync = promisify(redisClient.set).bind(redisClient);
+
+	// Check if jwt is available, if not let request pass
+	if (redisClient && (context.params.headers || {}).authorization) {
+		const decodedToken = jwt.decode(context.params.headers.authorization.replace('Bearer ', ''));
+		const { accountId, jti } = decodedToken; // jti - UID of the token
+
+		const redisIdentifier = `jwt:${accountId}:${jti}`;
+		// Todo: this obviously should be in the login route...
+		await setAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', 100);
+
+		const redisResponse = await getAsync(redisIdentifier);
+		if (redisResponse) {
+			// Check if JTI is in white list and still valid
+			await setAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', 100);
+		} else {
+			// Throw not Authenticated
+			// redisClient.quit();
+			throw new NotAuthenticated('jwt is not whitelisted anymore - autologout');
+		}
+	}
+
+	if (redisClient) {
+		redisClient.quit();
+	}
+
+	return context;
+};
+
 /**
  * For errors without error code create GeneralError with code 500.
  * @param {context} context
@@ -144,7 +185,7 @@ const errorHandler = (context) => {
 
 module.exports = function setup(app) {
 	const before = {
-		all: [],
+		all: [handleAutoLogout],
 		find: [],
 		get: [],
 		create: [sanitizeData, globalHooks.ifNotLocal(removeObjectIdInData)],
