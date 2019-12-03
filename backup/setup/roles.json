@@ -70,7 +70,7 @@
 	},
 	"name": "administrator",
 	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
+		"$date": "2019-12-03T15:47:27.307Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -90,17 +90,18 @@
 		"COURSE_CREATE",
 		"COURSE_EDIT",
 		"COURSE_REMOVE",
-		"DATASOURCES_EDIT",
-		"DATASOURCES_VIEW",
 		"DATASOURCES_CREATE",
 		"DATASOURCES_DELETE",
+		"DATASOURCES_EDIT",
 		"DATASOURCES_RUN",
 		"DATASOURCES_RUN_VIEW",
+		"DATASOURCES_VIEW",
 		"ENTERTHECLOUD_START",
 		"HELPDESK_EDIT",
 		"HELPDESK_VIEW",
 		"NEWS_CREATE",
 		"NEWS_EDIT",
+		"REQUEST_CONSENTS",
 		"SCHOOL_EDIT",
 		"SCHOOL_NEWS_EDIT",
 		"STUDENT_CREATE",
@@ -117,7 +118,7 @@
 		"TEACHER_SKIP_REGISTRATION",
 		"TEAM_INVITE_EXTERNAL"
 	],
-	"__v": 0
+	"__v": 1
 },
 {
 	"_id": {
@@ -125,7 +126,7 @@
 	},
 	"name": "superhero",
 	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
+		"$date": "2019-12-03T15:47:27.311Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -141,6 +142,7 @@
 		"FEDERALSTATE_EDIT",
 		"RELEASES_CREATE",
 		"RELEASES_EDIT",
+		"REQUEST_CONSENTS",
 		"ROLE_CREATE",
 		"ROLE_EDIT",
 		"SCHOOL_CREATE",
@@ -156,7 +158,7 @@
 		"TOOL_CREATE",
 		"TOOL_EDIT"
 	],
-	"__v": 0
+	"__v": 1
 },
 {
 	"_id": {
@@ -164,7 +166,7 @@
 	},
 	"name": "teacher",
 	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
+		"$date": "2019-12-03T15:47:27.302Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -178,13 +180,16 @@
 		"ACCOUNT_CREATE",
 		"CLASS_CREATE",
 		"CLASS_EDIT",
+		"CLASS_LIST",
 		"CLASS_REMOVE",
 		"COURSE_CREATE",
 		"COURSE_EDIT",
 		"COURSE_REMOVE",
+		"ENTERTHECLOUD_START",
 		"LESSONS_VIEW",
 		"NEWS_CREATE",
 		"NEWS_EDIT",
+		"REQUEST_CONSENTS",
 		"SCHOOL_NEWS_EDIT",
 		"STUDENT_CREATE",
 		"STUDENT_DELETE",
@@ -194,18 +199,17 @@
 		"TEACHER_CREATE",
 		"TEACHER_LIST",
 		"TEAM_INVITE_EXTERNAL",
+		"TEAM_INVITE_EXTERNAL",
 		"TOOL_CREATE",
 		"TOOL_EDIT",
 		"TOOL_NEW_VIEW",
 		"TOPIC_CREATE",
 		"TOPIC_EDIT",
-		"USER_CREATE",
 		"USERGROUP_CREATE",
 		"USERGROUP_EDIT",
-		"TEAM_INVITE_EXTERNAL",
-		"ENTERTHECLOUD_START"
+		"USER_CREATE"
 	],
-	"__v": 0
+	"__v": 2
 },
 {
 	"_id": {
