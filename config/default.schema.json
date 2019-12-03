@@ -42,7 +42,7 @@
 
 		"FEATURE_TSP_ENABLED": {
 			"type": "boolean",	
-			"default": false,
+			"default": true,
 			"description": "Feature toggle for TSP features."
 		}
 	},

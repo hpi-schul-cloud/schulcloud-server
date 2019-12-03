@@ -1,8 +1,12 @@
 const { BadRequest } = require('@feathersjs/errors');
 const { mix } = require('mixwith');
+const { Configuration } = require('@schul-cloud/commons');
 
 const Syncer = require('../Syncer');
 const ClassImporter = require('../mixins/ClassImporter');
+
+const Config = new Configuration();
+Config.init();
 
 const {
 	TspApi,
@@ -26,7 +30,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @extends Syncer#respondsTo
 	 */
 	static respondsTo(target) {
-		return target === SYNCER_TARGET;
+		return target === SYNCER_TARGET && Config.get('FEATURE_TSP_ENABLED');
 	}
 
 	/**

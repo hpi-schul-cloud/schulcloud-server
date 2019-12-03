@@ -1,7 +1,11 @@
 const { BadRequest } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
 
 const Syncer = require('../Syncer');
 const { TspApi } = require('./TSP');
+
+const Config = new Configuration();
+Config.init();
 
 const SCHOOL_SYNCER_TARGET = require('./TSPSchoolSyncer').SYNCER_TARGET;
 
@@ -17,7 +21,7 @@ class TSPBaseSyncer extends Syncer {
 	 * @extends Syncer#respondsTo
 	 */
 	static respondsTo(target) {
-		return target === SYNCER_TARGET;
+		return target === SYNCER_TARGET && Config.get('FEATURE_TSP_ENABLED');
 	}
 
 	/**
