@@ -17,7 +17,7 @@ let success = false;
 async function addMessageProvider(ProviderAdapter) {
 	const data = await ProviderAdapter.getMessage(globals.SC_THEME);
 	messages = messages.concat(data.messages);
-	success = data.success;
+	({ success } = data);
 }
 
 /**

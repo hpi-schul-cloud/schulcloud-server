@@ -1,3 +1,4 @@
+/* eslint-disable-next-line */
 const dotenv = require('dotenv').config({ path: `${__dirname}/.env` });
 const request = require('request-promise-native');
 
