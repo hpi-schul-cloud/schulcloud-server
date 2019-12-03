@@ -1,0 +1,20 @@
+{
+	"title": "HPI Schul-Cloud Configuration",
+	"type": "object",
+	"properties": {
+		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
+			"type": "string",
+			"default": "enabled",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "Defines wether external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
+		}
+	},
+	"required": [
+		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION"
+	]
+}

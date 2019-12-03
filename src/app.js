@@ -5,6 +5,7 @@ const compress = require('compression');
 const cors = require('cors');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
+const commons = require('@schul-cloud/commons');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
@@ -25,8 +26,10 @@ const { version } = require('../package.json');
 
 const app = express(feathers());
 const config = configuration();
+const Configuration = new commons.Configuration();
 
 app.configure(config);
+Configuration.init(app);
 setupSwagger(app);
 
 if (process.env.SENTRY_DSN) {
