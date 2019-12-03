@@ -15,6 +15,11 @@ const roleNames = ['teacher', 'administrator', 'superhero'];
 
 module.exports = {
 	up: async function up() {
+		if (process.env.SC_THEME === 'thr') {
+			info('no further updates required, this migration continues only iff SC_THEME is not set to "thr"');
+			return Promise.resolve();
+		}
+
 		await connect();
 		// ////////////////////////////////////////////////////
 		for (const roleName of roleNames) {
@@ -36,6 +41,7 @@ module.exports = {
 
 		// ////////////////////////////////////////////////////
 		await close();
+		return Promise.resolve();
 	},
 
 	down: async function down() {
@@ -58,5 +64,6 @@ module.exports = {
 
 		// ////////////////////////////////////////////////////
 		await close();
+		return Promise.resolve();
 	},
 };
