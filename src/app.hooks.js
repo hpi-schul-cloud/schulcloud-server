@@ -139,8 +139,6 @@ const handleAutoLogout = async (context) => {
 		const { accountId, jti } = decodedToken; // jti - UID of the token
 
 		const redisIdentifier = `jwt:${accountId}:${jti}`;
-		// Todo: this obviously should be in the login route...
-		await setAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', 100);
 
 		const redisResponse = await getAsync(redisIdentifier);
 		if (redisResponse) {
