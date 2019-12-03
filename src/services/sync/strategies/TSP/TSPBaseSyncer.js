@@ -1,11 +1,5 @@
-const { BadRequest } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
-
 const Syncer = require('../Syncer');
-const { TspApi } = require('./TSP');
-
-const Config = new Configuration();
-Config.init();
+const { TspApi, config: TSP_CONFIG } = require('./TSP');
 
 const SCHOOL_SYNCER_TARGET = require('./TSPSchoolSyncer').SYNCER_TARGET;
 
@@ -21,27 +15,18 @@ class TSPBaseSyncer extends Syncer {
 	 * @extends Syncer#respondsTo
 	 */
 	static respondsTo(target) {
-		return target === SYNCER_TARGET && Config.get('FEATURE_TSP_ENABLED');
+		return target === SYNCER_TARGET && TSP_CONFIG.FEATURE_ENABLED;
 	}
 
 	/**
 	 * Validates the params given to the Syncer.
-	 * `params.query` or `data` should contain a config object with at least:
-	 * `{ baseUrl: 'https://foo.bar/baz', clientId: 'some client id' }`
+	 * `params.query` or `data` can optionally contain a config object with:
+	 * `{ schoolIdentifier: '4738' // a TSP school id }`
 	 * @extends Syncer#params
 	 */
 	static params(params, data) {
 		// todo: filter
 		const config = ((params || {}).query || {}).config || (data || {}).config;
-		if (!config) {
-			throw new BadRequest('Missing parameter "config".');
-		}
-		if (!config.baseUrl) {
-			throw new BadRequest('Missing parameter "config.baseUrl" (URL that points to the TSP Server).');
-		}
-		if (!config.clientId) {
-			throw new BadRequest('Missing parameter "config.clientId" (clientId to be used for TSP requests)');
-		}
 		return [config];
 	}
 
@@ -53,7 +38,7 @@ class TSPBaseSyncer extends Syncer {
 	constructor(app, stats, logger, config) {
 		super(app, stats, logger);
 		this.config = config;
-		this.api = new TspApi(config);
+		this.api = new TspApi();
 		this.stats = Object.assign(this.stats, {
 			schools: {
 				successful: 0,
@@ -77,7 +62,7 @@ class TSPBaseSyncer extends Syncer {
 			this.logError('Cannot fetch schools.', err);
 			this.stats.errors.push({
 				type: 'fetch-schools',
-				entity: this.config.baseUrl,
+				entity: TSP_CONFIG.BASE_URL,
 				message: 'Fehler beim Laden der Schuldaten.',
 			});
 		}
@@ -142,7 +127,6 @@ class TSPBaseSyncer extends Syncer {
 			tsp: {
 				identifier,
 				schoolName: name,
-				...this.config,
 			},
 		});
 	}

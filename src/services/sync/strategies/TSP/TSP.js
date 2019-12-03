@@ -151,6 +151,10 @@ module.exports = {
 	ENTITY_SOURCE,
 	SOURCE_ID_ATTRIBUTE,
 	TspApi,
+	config: {
+		FEATURE_ENABLED: Config.get('FEATURE_TSP_ENABLED'),
+		BASE_URL,
+	},
 	getUsername,
 	getEmail,
 	encryptToken,

@@ -1,15 +1,11 @@
-const { BadRequest } = require('@feathersjs/errors');
 const { mix } = require('mixwith');
-const { Configuration } = require('@schul-cloud/commons');
 
 const Syncer = require('../Syncer');
 const ClassImporter = require('../mixins/ClassImporter');
 
-const Config = new Configuration();
-Config.init();
-
 const {
 	TspApi,
+	config: TSP_CONFIG,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
 	getUsername, getEmail,
 } = require('./TSP');
@@ -30,26 +26,20 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @extends Syncer#respondsTo
 	 */
 	static respondsTo(target) {
-		return target === SYNCER_TARGET && Config.get('FEATURE_TSP_ENABLED');
+		return target === SYNCER_TARGET && TSP_CONFIG.FEATURE_ENABLED;
 	}
 
 	/**
 	 * Validates the params given to the Syncer.
-	 * `params.query` or `data` should contain a config object with at least:
-	 * `{ baseUrl: 'https://foo.bar/baz', clientId: 'some client id' }`
+	 * `params.query` or `data` can optionally contain a config object with:
+	 * `{
+	 * 		schoolIdentifier: '4738' // a TSP school id (filter)
+	 * 		systemId: ObjectId(...)  // a Schul-Cloud system (filter)
+	 * 	}`
 	 * @extends Syncer#params
 	 */
 	static params(params, data) {
 		const config = ((params || {}).query || {}).config || (data || {}).config;
-		if (!config) {
-			throw new BadRequest('Missing parameter "config".');
-		}
-		if (!config.baseUrl) {
-			throw new BadRequest('Missing parameter "config.baseUrl" (URL that points to the TSP Server).');
-		}
-		if (!config.clientId) {
-			throw new BadRequest('Missing parameter "config.clientId" (clientId to be used for TSP requests)');
-		}
 		return [config];
 	}
 
@@ -67,7 +57,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			},
 		});
 		this.config = config;
-		this.api = new TspApi(config);
+		this.api = new TspApi();
 
 		// caches for currentYear and federalState as they need async initialization
 		this.currentYear = undefined;
@@ -90,7 +80,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	async steps() {
 		let [teacherMap, studentMap, classMap] = [[], [], []];
 
-		this.logInfo('Looking for configuration...');
+		this.logInfo('Looking for configurations...');
 		const systems = await this.findSystems();
 		this.logInfo(`${systems.length} configs found.`);
 		if (systems.length > 0) {

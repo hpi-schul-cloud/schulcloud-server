@@ -1,5 +1,4 @@
 const { expect } = require('chai');
-const { BadRequest } = require('@feathersjs/errors');
 
 const {
 	TSPBaseSyncer,
@@ -20,36 +19,14 @@ describe('TSPBaseSyncer', () => {
 	});
 
 	describe('params', () => {
-		it('should not accept empty params and data', () => {
-			try {
-				TSPBaseSyncer.params(undefined, undefined);
-				throw new Error('The previous call should have failed.');
-			} catch (err) {
-				expect(err).to.be.instanceOf(BadRequest);
-			}
+		it('should accept empty params and data', () => {
+			expect(TSPBaseSyncer.params(undefined, undefined)).to.be.ok;
 		});
 
 		it('should accept valid config objects via params.query or data', () => {
-			const config = { baseUrl: 'http://example.com', clientId: 'foobar42' };
+			const config = { schoolIdentifier: '42' };
 			expect(TSPBaseSyncer.params({ query: { config } })).to.deep.equal([config]);
 			expect(TSPBaseSyncer.params(undefined, { config })).to.deep.equal([config]);
-		});
-
-		it('should not accept incomplete config objects', () => {
-			try {
-				TSPBaseSyncer.params(undefined, { config: { clientId: 'foobar42' } });
-				throw new Error('The previous call should have failed.');
-			} catch (err) {
-				expect(err).to.be.instanceOf(BadRequest);
-				expect(/(?=.*missing)(?=.*parameter)(?=.*baseUrl)/i.test(err.message)).to.equal(true);
-			}
-			try {
-				TSPBaseSyncer.params(undefined, { config: { baseUrl: 'http://schul-cloud.org' } });
-				throw new Error('The previous call should have failed.');
-			} catch (err) {
-				expect(err).to.be.instanceOf(BadRequest);
-				expect(/(?=.*missing)(?=.*parameter)(?=.*clientId)/i.test(err.message)).to.equal(true);
-			}
 		});
 	});
 });
