@@ -122,13 +122,16 @@ const displayInternRequests = (level) => (context) => {
 	return context;
 };
 
+/**
+ * for authenticated requests, if a redis connection is defined, check if the users jwt is whitelisted.
+ * if so, the expiration timer is reset, if not the user is logged out automatically.
+ * @param {Object} context feathers context
+ */
 const handleAutoLogout = async (context) => {
-	// Check if jwt is available, if not let request pass
 	if (getRedisClient && (context.params.headers || {}).authorization) {
 		const redisIdentifier = getRedisIdentifier(context.params.headers.authorization);
 		const redisResponse = await redisGetAsync(redisIdentifier);
 		if (redisResponse) {
-			// Check if JTI is in white list and still valid
 			await redisSetAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', 100);
 		} else {
 			throw new NotAuthenticated('session was expired due to inactivity - autologout');

@@ -1,6 +1,5 @@
 const { TooManyRequests } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
-const jwt = require('jsonwebtoken');
 const {
 	getRedisClient, redisSetAsync, redisDelAsync, getRedisIdentifier,
 } = require('../../../utils/redis');
@@ -114,6 +113,10 @@ const removeProvider = (context) => {
 	return context;
 };
 
+/**
+ * if a redis connection exists, the newly created is added to the whitelist.
+ * @param {Object} context feathers context
+ */
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient) {
 		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
@@ -123,6 +126,10 @@ const addJwtToWhitelist = async (context) => {
 	return context;
 };
 
+/**
+ * if a redis connection exists, the newly created is removed from the whitelist.
+ * @param {Object} context feathers context
+ */
 const removeJwtFromWhitelist = async (context) => {
 	if (getRedisClient) {
 		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
