@@ -200,6 +200,8 @@ describe('Syncer Mixins', () => {
 		});
 
 		describe('#buildClassMapping', () => {
+			after(cleanup);
+
 			it('works if no classes are given', async () => {
 				const instance = new MixedClass(app);
 				const result = await instance.buildClassMapping([], {});
