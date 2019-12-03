@@ -1,7 +1,9 @@
 const { TooManyRequests } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
 const jwt = require('jsonwebtoken');
-const { getRedisClient, redisSetAsync, redisDelAsync } = require('../../../utils/redis');
+const {
+	getRedisClient, redisSetAsync, redisDelAsync, getRedisIdentifier,
+} = require('../../../utils/redis');
 
 const updateUsernameForLDAP = async (context) => {
 	const { schoolId, strategy } = context.data;
@@ -114,10 +116,7 @@ const removeProvider = (context) => {
 
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient) {
-		const decodedToken = jwt.decode(context.result.accessToken.replace('Bearer ', ''));
-		const { accountId, jti } = decodedToken; // jti - UID of the token
-
-		const redisIdentifier = `jwt:${accountId}:${jti}`;
+		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
 		await redisSetAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', 100);
 	}
 
@@ -126,10 +125,7 @@ const addJwtToWhitelist = async (context) => {
 
 const removeJwtFromWhitelist = async (context) => {
 	if (getRedisClient) {
-		const decodedToken = jwt.decode(context.result.accessToken.replace('Bearer ', ''));
-		const { accountId, jti } = decodedToken; // jti - UID of the token
-
-		const redisIdentifier = `jwt:${accountId}:${jti}`;
+		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
 		await redisDelAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}');
 	}
 

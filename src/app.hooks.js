@@ -3,8 +3,9 @@
 const sanitizeHtml = require('sanitize-html');
 const Entities = require('html-entities').AllHtmlEntities;
 const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
-const jwt = require('jsonwebtoken');
-const { getRedisClient, redisGetAsync, redisSetAsync } = require('./utils/redis');
+const {
+	getRedisClient, redisGetAsync, redisSetAsync, getRedisIdentifier,
+} = require('./utils/redis');
 
 const entities = new Entities();
 
@@ -124,18 +125,12 @@ const displayInternRequests = (level) => (context) => {
 const handleAutoLogout = async (context) => {
 	// Check if jwt is available, if not let request pass
 	if (getRedisClient && (context.params.headers || {}).authorization) {
-		const decodedToken = jwt.decode(context.params.headers.authorization.replace('Bearer ', ''));
-		const { accountId, jti } = decodedToken; // jti - UID of the token
-
-		const redisIdentifier = `jwt:${accountId}:${jti}`;
-
+		const redisIdentifier = getRedisIdentifier(context.params.headers.authorization);
 		const redisResponse = await redisGetAsync(redisIdentifier);
 		if (redisResponse) {
 			// Check if JTI is in white list and still valid
 			await redisSetAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', 100);
 		} else {
-			// Throw not Authenticated
-			// redisClient.quit();
 			throw new NotAuthenticated('session was expired due to inactivity - autologout');
 		}
 	}
