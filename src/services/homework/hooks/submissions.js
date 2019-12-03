@@ -330,7 +330,7 @@ exports.before = () => ({
 		noDuplicateSubmissionForTeamMembers,
 		populateCourseGroup,
 		maxTeamMembersHook,
-	//	globalHooks.permitGroupOperation,
+		//	globalHooks.permitGroupOperation,
 		canGrade,
 	],
 	remove: [
@@ -338,7 +338,7 @@ exports.before = () => ({
 		insertSubmissionData,
 		insertHomeworkData,
 		insertSubmissionsData,
-	//	globalHooks.permitGroupOperation,
+		//	globalHooks.permitGroupOperation,
 		hasDeletePermission,
 	],
 });
