@@ -31,6 +31,7 @@ module.exports = {
 		}).lean().exec();
 		// ////////////////////////////////////////////////////
 		await close();
+		return Promise.resolve();
 	},
 
 	down: async function down() {
@@ -45,5 +46,6 @@ module.exports = {
 		}).lean().exec();
 		// ////////////////////////////////////////////////////
 		await close();
+		return Promise.resolve();
 	},
 };
