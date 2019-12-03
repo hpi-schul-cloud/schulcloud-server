@@ -1,8 +1,7 @@
 const { TooManyRequests, NotAuthenticated } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
-const { promisify } = require('util');
-const redis = require('redis');
 const jwt = require('jsonwebtoken');
+const { getRedisClient, redisSetAsync, redisDelAsync } = require('../../../utils/redis');
 
 const updateUsernameForLDAP = async (context) => {
 	const { schoolId, strategy } = context.data;
@@ -114,46 +113,24 @@ const removeProvider = (context) => {
 };
 
 const addJwtToWhitelist = async (context) => {
-	let redisClient = false;
-	const redisUrl = process.env.REDIS_URI;
-	if (redisUrl) {
-		redisClient = redis.createClient({
-			url: redisUrl,
-		});
-	}
-	const setAsync = promisify(redisClient.set).bind(redisClient);
-
-	// Check if jwt is available, if not let request pass
-	if (redisClient) {
+	if (getRedisClient) {
 		const decodedToken = jwt.decode(context.result.accessToken.replace('Bearer ', ''));
 		const { accountId, jti } = decodedToken; // jti - UID of the token
 
 		const redisIdentifier = `jwt:${accountId}:${jti}`;
-		await setAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', 100);
-		redisClient.quit();
+		await redisSetAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', 100);
 	}
 
 	return context;
 };
 
 const removeJwtFromWhitelist = async (context) => {
-	let redisClient = false;
-	const redisUrl = process.env.REDIS_URI;
-	if (redisUrl) {
-		redisClient = redis.createClient({
-			url: redisUrl,
-		});
-	}
-	const delAsync = promisify(redisClient.del).bind(redisClient);
-
-	// Check if jwt is available, if not let request pass
-	if (redisClient) {
+	if (getRedisClient) {
 		const decodedToken = jwt.decode(context.result.accessToken.replace('Bearer ', ''));
 		const { accountId, jti } = decodedToken; // jti - UID of the token
 
 		const redisIdentifier = `jwt:${accountId}:${jti}`;
-		await delAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}');
-		redisClient.quit();
+		await redisDelAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}');
 	}
 
 	return context;
