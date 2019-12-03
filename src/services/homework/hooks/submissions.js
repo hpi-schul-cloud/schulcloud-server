@@ -1,12 +1,12 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Conflict, Forbidden } = require('@feathersjs/errors');
 
-const globalHooks = require('../../../hooks');
+const { hasPermission, mapPaginationQuery } = require('../../../hooks');
 
 const filterRequestedSubmissions = (context) => {
 // if no db query was given, try to slim down/restrict db request
 	if (Object.keys(context.params.query).length !== 0) {
-		return context;
+		return Promise.resolve(context);
 	}
 
 	const { currentUserId } = context.params;
@@ -36,64 +36,14 @@ const filterRequestedSubmissions = (context) => {
 			throw new BadRequest({ message: "can't reach users service" }, err);
 		});
 };
-/* code do not return any
-const filterApplicableSubmissions = (hook) => {
-	const data = hook.result.data || hook.result;
-	if (hook.params.account) {
-		Promise.all(data.filter((e) => {
-			const c = JSON.parse(JSON.stringify(e));
-			if (!c.teamMembers) {
-				c.teamMembers = [];
-			}
-			if (typeof c.teamMembers[0] === 'object') {
-				// map teamMembers list to _id list (if $populate(d) is used)
-				c.teamMembers = c.teamMembers.map((e) => e._id);
-			}
 
-			let promise;
-			if (typeof c.courseGroupId === 'object') {
-				promise = Promise.resolve(c.courseGroupId);
-			} else if (c.courseGroupId) {
-				promise = hook.app.service('courseGroups').get(c.courseGroupId);
-			} else {
-				promise = Promise.resolve({ userIds: [] });
-			}
-
-			return promise.then((courseGroup) => {
-				if (c.homeworkId.publicSubmissions // publicSubmissions allowes (everyone can see)
-						|| equalIds(c.homeworkId.teacherId, hook.params.account.userId) // or user is teacher
-						|| (c.studentId._id
-							? equalIds(c.studentId._id, hook.params.account.userId)
-							: equalIds(c.studentId, hook.params.account.userId))
-						// or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
-						|| c.teamMembers && c.teamMembers.includes(hook.params.account.userId.toString()) // or is a teamMember
-						|| courseGroup && courseGroup.userIds && courseGroup.userIds.includes(hook.params.account.userId.toString())) { // or in the courseGroup
-					return true;
-				} if (c.homeworkId.courseId) {
-					const courseService = hook.app.service('/courses');
-					return courseService.get(c.homeworkId.courseId)
-						.then((course) => ((course || {}).teacherIds || []).includes(hook.params.account.userId.toString()) // or user is teacher
-												|| ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString()), // or user is substitution teacher
-						)
-						.catch((err) => Promise.reject(new BadRequest({ message: "can't reach course service" })));
-				}
-				return false;
-			});
-		})).then(() => {
-			(hook.result.data) ? (hook.result.total = data.length) : (hook.total = data.length);
-			(hook.result.data) ? (hook.result.data = data) : (hook.result = data);
-		});
+const stringifyUserId = (context) => {
+	if ((context.params.account || {}).userId) {
+		const currentUserId = context.params.account.userId.toString();
+		context.params.currentUserId = currentUserId;
+		context.params.account.userId = currentUserId;
 	}
-	return Promise.resolve(hook);
-};
-*/
-const stringifyUserId = (hook) => {
-	if ((hook.params.account || {}).userId) {
-		const currentUserId = hook.params.account.userId.toString();
-		hook.params.currentUserId = currentUserId;
-		hook.params.account.userId = currentUserId;
-	}
-	return Promise.resolve(hook);
+	return context;
 };
 
 // Add status of requester in context of this requested submission
@@ -189,11 +139,11 @@ const preventNoTeamMember = (context) => {
 		context.data.teamMembers = [currentUserId];
 	}
 	if (method === 'update' && (!data.teamMembers || data.teamMembers.length === 0)) {
-		return Promise.reject(new Conflict({
+		throw new Conflict({
 			message: 'Abgaben ohne TeamMember sind nicht erlaubt!',
-		}));
+		});
 	}
-	return Promise.resolve(context);
+	return context;
 };
 
 const setTeamMembers = (context) => {
@@ -201,11 +151,11 @@ const setTeamMembers = (context) => {
 		context.data.teamMembers = [context.params.currentUserId];
 	}
 	if (!context.data.teamMembers.includes(context.params.currentUserId)) {
-		Promise.reject(new Conflict({
+		throw new Conflict({
 			message: 'Du kannst nicht ausschließlich für andere Abgeben. Füge dich selbst zur Abgabe hinzu!',
-		}));
+		});
 	}
-	return Promise.resolve(context);
+	return context;
 };
 
 const noSubmissionBefore = (context) => {
@@ -219,9 +169,9 @@ const noSubmissionBefore = (context) => {
 	if (submissionsForMe.length > 0) {
 		const { firstName, lastName } = submissionsForMe[0].studentId;
 		const message = `${firstName} ${lastName} hat bereits für dich abgegeben!`;
-		return Promise.reject(new Conflict({ message }));
+		throw new Conflict({ message });
 	}
-	return Promise.resolve(context);
+	return context;
 };
 
 const noDuplicateSubmissionForTeamMembers = (context) => {
@@ -254,9 +204,8 @@ const noDuplicateSubmissionForTeamMembers = (context) => {
 			+ `Entferne diese${isOne ? 's Mitglied!' : ' Mitglieder!'}`;
 			throw new Conflict({ message });
 		}
-		return Promise.resolve(context);
 	}
-	return Promise.resolve(context);
+	return context;
 };
 
 const populateCourseGroup = (context) => {
@@ -273,76 +222,83 @@ const populateCourseGroup = (context) => {
 };
 
 const maxTeamMembersHook = (context) => {
+	const teamMembers = (context.data.teamMembers || []).length;
 	if (!context.data.isTeacher && context.data.homework.teamSubmissions) {
 		const { maxTeamMembers } = context.data.homework;
+
 		if (maxTeamMembers) {
-			// NOTE the following conditional is a bit hard to understand. 
+			const courseGroupTempUserIds = context.courseGroupTemp && (context.courseGroupTemp.userIds || []).length;
+			// NOTE the following conditional is a bit hard to understand.
 			// To prevent side effects, I added a pre-conditional above.
-			if ((maxTeamMembers || 0) >= 1
-				&& ((context.data.teamMembers || []).length > maxTeamMembers)
-				|| (context.courseGroupTemp && (context.courseGroupTemp.userIds || []).length > maxTeamMembers)) {
-				return Promise.reject(new Conflict({
+			const homeworkTeamMemberExist = (maxTeamMembers || 0) >= 1;
+			const newTeamMemberMoreThenAllowed = teamMembers > maxTeamMembers;
+			const moreThenUserInTempGroup = courseGroupTempUserIds > maxTeamMembers;
+
+			if (homeworkTeamMemberExist && (newTeamMemberMoreThenAllowed || moreThenUserInTempGroup)) {
+				throw new Conflict({
 					message: `Dein Team ist größer als erlaubt! ( maximal ${maxTeamMembers} Teammitglieder erlaubt)`,
-				}));
+				});
 			}
 		}
-	} else if ((context.data.teamMembers || []).length > 1) {
-		return Promise.reject(new Conflict({
+	} else if (teamMembers > 1) {
+		throw new Conflict({
 			message: 'Teamabgaben sind nicht erlaubt!',
-		}));
+		});
 	}
-	return Promise.resolve(context);
+	return context;
 };
 
-const canRemoveOwner = (hook) => {
-	if (hook.data.teamMembers
-&& !hook.data.teamMembers.includes(hook.data.submission.studentId)
-&& !hook.data.courseGroupId) {
-		if (hook.data.isOwner) {
-			return Promise.reject(new Conflict({
+const canRemoveOwner = (context) => {
+	const {
+		teamMembers, submission, courseGroupId, isOwner,
+	} = context.data;
+
+	if (teamMembers && !teamMembers.includes(submission.studentId) && !courseGroupId) {
+		if (isOwner) {
+			throw new Conflict({
 				message: 'Du hast diese Abgabe erstellt. Du darfst dich nicht selbst von dieser löschen!',
-			}));
+			});
 		}
-		return Promise.reject(new Conflict({
+		throw new Conflict({
 			message: 'Du darfst den Ersteller nicht von der Abgabe löschen!',
-		}));
+		});
 	}
-	return Promise.resolve(hook);
+	return context;
 };
 
-const canGrade = (hook) => {
-	if (!hook.data.isTeacher
-&& (Number.isInteger(hook.data.grade) || typeof hook.data.gradeComment === 'string')) { // students try to grade? BLOCK!
-		return Promise.reject(new Forbidden());
+const canGrade = (context) => {
+	const { gradeComment, grade, isTeacher } = context;
+	if (!isTeacher && (Number.isInteger(grade) || typeof gradeComment === 'string')) { // students try to grade? BLOCK!
+		throw new Forbidden();
 	}
-	return Promise.resolve(hook);
+	return context;
 };
 
-const hasEditPermission = (hook) => {
+const hasEditPermission = (context) => {
 // may check that the teacher can't edit the submission itself (only grading allowed)
-	if (hook.data.isTeamMember || hook.data.isTeacher) {
-		return Promise.resolve(hook);
+	if (context.data.isTeamMember || context.data.isTeacher) {
+		return context;
 	}
-	return Promise.reject(new Forbidden());
+	throw new Forbidden();
 };
 
-const hasDeletePermission = (hook) => {
-	if (hook.data.isTeamMember) {
-		return Promise.resolve(hook);
+const hasDeletePermission = (context) => {
+	if (context.data.isTeamMember) {
+		return context;
 	}
-	return Promise.reject(new Forbidden());
+	throw new Forbidden();
 };
 
 exports.before = () => ({
 	all: [authenticate('jwt'), stringifyUserId],
 	find: [
-		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
+		hasPermission('SUBMISSIONS_VIEW'),
 		filterRequestedSubmissions,
-		globalHooks.mapPaginationQuery.bind(this),
+		mapPaginationQuery.bind(this),
 	],
-	get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
+	get: [hasPermission('SUBMISSIONS_VIEW')],
 	create: [
-		globalHooks.hasPermission('SUBMISSIONS_CREATE'),
+		hasPermission('SUBMISSIONS_CREATE'),
 		insertHomeworkData, insertSubmissionsData,
 		setTeamMembers,
 		noSubmissionBefore,
@@ -352,7 +308,7 @@ exports.before = () => ({
 		canGrade,
 	],
 	update: [
-		globalHooks.hasPermission('SUBMISSIONS_EDIT'),
+		hasPermission('SUBMISSIONS_EDIT'),
 		insertSubmissionData,
 		insertHomeworkData,
 		insertSubmissionsData,
@@ -364,7 +320,7 @@ exports.before = () => ({
 		maxTeamMembersHook,
 		canGrade],
 	patch: [
-		globalHooks.hasPermission('SUBMISSIONS_EDIT'),
+		hasPermission('SUBMISSIONS_EDIT'),
 		insertSubmissionData,
 		insertHomeworkData,
 		insertSubmissionsData,
@@ -374,15 +330,15 @@ exports.before = () => ({
 		noDuplicateSubmissionForTeamMembers,
 		populateCourseGroup,
 		maxTeamMembersHook,
-		globalHooks.permitGroupOperation,
+	//	globalHooks.permitGroupOperation,
 		canGrade,
 	],
 	remove: [
-		globalHooks.hasPermission('SUBMISSIONS_CREATE'),
+		hasPermission('SUBMISSIONS_CREATE'),
 		insertSubmissionData,
 		insertHomeworkData,
 		insertSubmissionsData,
-		globalHooks.permitGroupOperation,
+	//	globalHooks.permitGroupOperation,
 		hasDeletePermission,
 	],
 });
