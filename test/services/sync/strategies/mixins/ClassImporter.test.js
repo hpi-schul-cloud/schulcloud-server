@@ -47,6 +47,15 @@ describe('Syncer Mixins', () => {
 			MIXIN_METHODS.forEach((method) => expect(decoratedInstance[method]).to.not.equal(undefined));
 		});
 
+		it('adds empty class stats to the syncer stats', () => {
+			const instance = new MixedClass();
+			expect(instance.stats.classes).to.be.ok;
+			expect(instance.stats.classes.successful).to.equal(0);
+			expect(instance.stats.classes.failed).to.equal(0);
+			expect(instance.stats.classes.created).to.equal(0);
+			expect(instance.stats.classes.updated).to.equal(0);
+		});
+
 		describe('#findClass', () => {
 			after(cleanup);
 
@@ -189,6 +198,10 @@ describe('Syncer Mixins', () => {
 				expect(instance.stats.errors[0].type).to.equal('class');
 				expect(result).to.be.null;
 			});
+		});
+
+		describe('#buildClassMapping', () => {
+
 		});
 	});
 });
