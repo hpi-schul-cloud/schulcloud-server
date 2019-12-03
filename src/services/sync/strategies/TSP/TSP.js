@@ -3,18 +3,24 @@ const url = require('url');
 const moment = require('moment');
 const { JWE, JWK, JWS } = require('jose');
 const uuid = require('uuid/v4');
+const { Configuration } = require('@schul-cloud/commons');
+
+const Config = new Configuration();
+Config.init();
 
 const ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
 const SOURCE_ID_ATTRIBUTE = 'tspUid'; // name of the uid attribute within sourceOptions
 
-const TSP_ENCRYPTION_KEY = process.env.TSP_ENCRYPTION_KEY || '';
-const TSP_SIGNATURE_KEY = process.env.TSP_SIGNATURE_KEY || '';
-const TSP_API_CLIENT_SECRET = process.env.TSP_API_CLIENT_SECRET || '';
-const TSP_TOKEN_ISS = process.env.SC_DOMAIN || 'schulcloud-thueringen.de';
-const TSP_TOKEN_SUB = process.env.HOST || 'https://schulcloud-thueringen.de';
+const ENCRYPTION_KEY = Config.get('TSP_API_ENCRYPTION_KEY');
+const SIGNATURE_KEY = Config.get('TSP_API_SIGNATURE_KEY');
+const BASE_URL = Config.get('TSP_API_BASE_URL');
+const CLIENT_ID = Config.get('TSP_API_CLIENT_ID');
+const CLIENT_SECRET = Config.get('TSP_API_CLIENT_SECRET');
+const TOKEN_ISS = process.env.SC_DOMAIN || 'schulcloud-thueringen.de';
+const TOKEN_SUB = process.env.HOST || 'https://schulcloud-thueringen.de';
 
-const TSP_ENCRYPTION_OPTIONS = { alg: 'dir', enc: 'A128CBC-HS256' };
-const TSP_SIGNATURE_OPTIONS = { alg: 'HS512' };
+const ENCRYPTION_OPTIONS = { alg: 'dir', enc: 'A128CBC-HS256' };
+const SIGNATURE_OPTIONS = { alg: 'HS512' };
 
 /**
  * Converts a string to a jose-compatible base64url string
@@ -53,19 +59,19 @@ const getUsername = (user) => {
 const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
 
 const getEncryptionKey = () => JWK.asKey({
-	kty: 'oct', k: TSP_ENCRYPTION_KEY, alg: TSP_ENCRYPTION_OPTIONS.enc, use: 'enc',
+	kty: 'oct', k: ENCRYPTION_KEY, alg: ENCRYPTION_OPTIONS.enc, use: 'enc',
 });
-const encryptToken = (payload) => JWE.encrypt(payload, getEncryptionKey(), TSP_ENCRYPTION_OPTIONS);
+const encryptToken = (payload) => JWE.encrypt(payload, getEncryptionKey(), ENCRYPTION_OPTIONS);
 const decryptToken = (payload) => {
-	const decryptedPayload = JWE.decrypt(payload, getEncryptionKey(), TSP_ENCRYPTION_OPTIONS);
+	const decryptedPayload = JWE.decrypt(payload, getEncryptionKey(), ENCRYPTION_OPTIONS);
 	return JSON.parse(decryptedPayload.toString());
 };
 
 const getSignKey = () => JWK.asKey({
-	kty: 'oct', k: toBase64Url(TSP_SIGNATURE_KEY), alg: TSP_SIGNATURE_OPTIONS.alg, use: 'sig',
+	kty: 'oct', k: toBase64Url(SIGNATURE_KEY), alg: SIGNATURE_OPTIONS.alg, use: 'sig',
 });
-const signToken = (token) => JWS.sign(token, getSignKey(), TSP_SIGNATURE_OPTIONS);
-const verifyToken = (token) => JWS.verify(token, getSignKey(), TSP_SIGNATURE_OPTIONS);
+const signToken = (token) => JWS.sign(token, getSignKey(), SIGNATURE_OPTIONS);
+const verifyToken = (token) => JWS.verify(token, getSignKey(), SIGNATURE_OPTIONS);
 
 /**
  * TSP API wrapper
@@ -74,11 +80,8 @@ const verifyToken = (token) => JWS.verify(token, getSignKey(), TSP_SIGNATURE_OPT
 class TspApi {
 	/**
 	 * Creates an instance of TspApi
-	 * @param {Object} { baseUrl, clientId } config object
 	 */
-	constructor({ baseUrl, clientId }) {
-		this.baseUrl = baseUrl;
-		this.clientId = clientId;
+	constructor() {
 		this.lastToken = null;
 		this.lastTokenExpires = TspApi.formatDate(Date.now());
 	}
@@ -100,10 +103,10 @@ class TspApi {
 		}
 		this.lastTokenExpires = issueDate + lifetime;
 		const payload = JSON.stringify({
-			apiClientSecret: TSP_API_CLIENT_SECRET,
-			iss: TSP_TOKEN_ISS,
-			aud: this.baseUrl,
-			sub: TSP_TOKEN_SUB,
+			apiClientSecret: CLIENT_SECRET,
+			iss: TOKEN_ISS,
+			aud: BASE_URL,
+			sub: TOKEN_SUB,
 			exp: issueDate + lifetime,
 			iat: issueDate,
 			jti: uuid(),
@@ -119,7 +122,7 @@ class TspApi {
 	 */
 	getHeaders() {
 		return {
-			Authorization: `AUTH-JWT apiClientId=${this.clientId},jwt=${this.getJwt()}`,
+			Authorization: `AUTH-JWT apiClientId=${CLIENT_ID},jwt=${this.getJwt()}`,
 		};
 	}
 
@@ -133,7 +136,7 @@ class TspApi {
 	async request(path, lastChange = new Date(0)) {
 		const lastChangeDate = moment(lastChange).format('YYYY-MM-DD HH:mm:ss.SSS');
 
-		const requestUrl = url.resolve(this.baseUrl, path);
+		const requestUrl = url.resolve(BASE_URL, path);
 		const response = await rp(requestUrl, {
 			headers: this.getHeaders(),
 			qs: {

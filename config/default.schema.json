@@ -12,6 +12,38 @@
 				"enabled"
 			],
 			"description": "Defines wether external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
+		},
+
+		"TSP_API_BASE_URL": {
+			"type": "string",
+			"default": "https://www.schulportal-thueringen.de",
+			"description": "The TSP API base URL."
+		},
+		"TSP_API_CLIENT_ID": {
+			"type": "string",
+			"default": "",
+			"description": "The TSP API client id."
+		},
+		"TSP_API_CLIENT_SECRET": {
+			"type": "string",
+			"default": "",
+			"description": "The TSP API client secret."
+		},
+		"TSP_API_ENCRYPTION_KEY": {
+			"type": "string",
+			"default": "",
+			"description": "The key used to encrypt/decrypt TSP request tokens."
+		},
+		"TSP_API_SIGNATURE_KEY": {
+			"type": "string",
+			"default": "",
+			"description": "The key used to sign/verify TSP request tokens."
+		},
+
+		"FEATURE_TSP_ENABLED": {
+			"type": "boolean",	
+			"default": false,
+			"description": "Feature toggle for TSP features."
 		}
 	},
 	"required": [
