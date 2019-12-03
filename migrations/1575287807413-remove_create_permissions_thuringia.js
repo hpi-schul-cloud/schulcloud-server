@@ -10,11 +10,25 @@ const Role = require('../src/services/role/model');
 
 module.exports = {
 	up: async function up() {
+		await connect();
+
+		info('add permission CLASS_LIST for teacher role (while administrator has ADMIN_VIEW)');
+		const teacher = await Role.findOne({ name: 'teacher' }).exec();
+		if (teacher.permissions.includes('CLASS_LIST')) {
+			info('teacher already has permission CLASS_LIST, ignore...');
+		} else {
+			info('add permission CLASS_LIST to teacher...');
+			teacher.permissions.push('CLASS_LIST');
+			teacher.permissions.sort();
+			await teacher.save();
+			info('teacher updated successfully, continue...');
+		}
+
 		if (process.env.SC_THEME !== 'thr') {
-			info('no updates required, this migrations runs only iff SC_THEME is set to "thr"');
+			info('no further updates required, this migration continues only iff SC_THEME is set to "thr"');
+			await close();
 			return Promise.resolve();
 		}
-		await connect();
 
 		const roles = ['user', 'student', 'teacher', 'administrator'];
 		const permissions = [
@@ -49,7 +63,9 @@ module.exports = {
 				info(`role '${role}' finished without modifications.`);
 			}
 		}
-		info('permissions updated');
+
+
+		info('permissions updated, done');
 
 		await close();
 		return Promise.resolve();
