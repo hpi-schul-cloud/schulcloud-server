@@ -1,4 +1,4 @@
-const { TooManyRequests, NotAuthenticated } = require('@feathersjs/errors');
+const { TooManyRequests } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
 const jwt = require('jsonwebtoken');
 const { getRedisClient, redisSetAsync, redisDelAsync } = require('../../../utils/redis');
