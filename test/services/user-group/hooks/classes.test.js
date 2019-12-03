@@ -5,7 +5,7 @@ const {
 } = require('../../../../src/services/user-group/hooks/helpers/classHooks');
 
 describe('sorting method', () => {
-	const defaultQuery = { gradeLevel: 1, name: 1 };
+	const defaultQuery = { year: 1, gradeLevel: 1, name: 1 };
 
 	it('is returning a value when not provided a sortQuery', () => {
 		const context = {

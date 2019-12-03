@@ -13,62 +13,62 @@ const { FileModel } = require('../fileStorage/model');
 const promises = [
 	{
 		name: 'users',
-		promise: userModel.userModel.count().exec(),
+		promise: userModel.userModel.countDocuments().exec(),
 		model: userModel.userModel.find().exec(),
 	},
 	{
 		name: 'schools',
-		promise: schoolModel.schoolModel.count().exec(),
+		promise: schoolModel.schoolModel.countDocuments().exec(),
 		model: schoolModel.schoolModel.find().exec(),
 	},
 	{
 		name: 'accounts',
-		promise: accountModel.count().exec(),
+		promise: accountModel.countDocuments().exec(),
 		model: accountModel.find().exec(),
 	},
 	{
 		name: 'homework',
-		promise: homeworkModel.homeworkModel.count().exec(),
+		promise: homeworkModel.homeworkModel.countDocuments().exec(),
 		model: homeworkModel.homeworkModel.find().exec(),
 	},
 	{
 		name: 'submissions',
-		promise: homeworkModel.submissionModel.count().exec(),
+		promise: homeworkModel.submissionModel.countDocuments().exec(),
 		model: homeworkModel.submissionModel.find().exec(),
 	},
 	{
 		name: 'comments',
-		promise: homeworkModel.commentModel.count().exec(),
+		promise: homeworkModel.commentModel.countDocuments().exec(),
 		model: homeworkModel.commentModel.find().exec(),
 	},
 	{
 		name: 'lessons',
-		promise: lessonModel.count().exec(),
+		promise: lessonModel.countDocuments().exec(),
 		model: lessonModel.find().exec(),
 	},
 	{
 		name: 'classes',
-		promise: groupModel.classModel.count().exec(),
+		promise: groupModel.classModel.countDocuments().exec(),
 		model: groupModel.classModel.find().exec(),
 	},
 	{
 		name: 'courses',
-		promise: groupModel.courseModel.count().exec(),
+		promise: groupModel.courseModel.countDocuments().exec(),
 		model: groupModel.courseModel.find().exec(),
 	},
 	{
 		name: 'teachers',
-		promise: userModel.userModel.count({ roles: '0000d186816abba584714c98' }).exec(),
+		promise: userModel.userModel.countDocuments({ roles: '0000d186816abba584714c98' }).exec(),
 		model: userModel.userModel.find({ roles: '0000d186816abba584714c98' }).exec(),
 	},
 	{
 		name: 'students',
-		promise: userModel.userModel.count({ roles: '0000d186816abba584714c99' }).exec(),
+		promise: userModel.userModel.countDocuments({ roles: '0000d186816abba584714c99' }).exec(),
 		model: userModel.userModel.find({ roles: '0000d186816abba584714c99' }).exec(),
 	},
 	{
 		name: 'files/directories',
-		promise: FileModel.count().exec(),
+		promise: FileModel.countDocuments().exec(),
 		model: FileModel.find().exec(),
 	},
 ];

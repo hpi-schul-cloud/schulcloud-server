@@ -11,9 +11,13 @@ branches:
     - master
     - /^(?i:release|hotfix).*$/
 
+stages:
+  - name: test
+    if: NOT (commit_message =~ /(skip-test-stage)/ AND branch = master)
+  - name: deploy
+    if: NOT (commit_message =~ /(skip-deploy-stage)/)
 jobs:
   include:
-
     - stage: test
       script:
         - npm test
@@ -46,6 +50,7 @@ jobs:
       script:
         - ./deploy.sh
       name: deploy
+      language: generic
       env:
         - GIT_SHA=$( git rev-parse HEAD )
         - DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" )

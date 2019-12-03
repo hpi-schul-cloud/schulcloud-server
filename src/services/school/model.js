@@ -64,14 +64,11 @@ const schoolSchema = new Schema({
 	timestamps: true,
 });
 
-enableAuditLog(schoolSchema);
-
 
 const schoolGroupSchema = new Schema({
 	name: { type: String, required: true },
 }, { timestamps: true });
 
-enableAuditLog(schoolGroupSchema);
 
 /**
  * Determine if school is in maintenance mode ("Schuljahreswechsel"):
@@ -98,12 +95,14 @@ const yearSchema = new Schema({
 	endDate: { type: Date, required: true },
 });
 
-enableAuditLog(yearSchema);
 
 const gradeLevelSchema = new Schema({
 	name: { type: String, required: true },
 });
 
+enableAuditLog(schoolSchema);
+enableAuditLog(schoolGroupSchema);
+enableAuditLog(yearSchema);
 enableAuditLog(gradeLevelSchema);
 
 const schoolModel = mongoose.model('school', schoolSchema);

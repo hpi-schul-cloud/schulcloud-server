@@ -85,7 +85,7 @@ module.exports = function () {
 		const getUser = (socket) => () => app.service('users').get(socket.client.userId).then((result, err) => {
 			const user = {
 				id: result._id,
-				role: result.permissions.indexOf('USERGROUP_EDIT') >= 0 ? 'teacher' : 'student',
+				role: result.permissions.indexOf('COURSE_EDIT') >= 0 ? 'teacher' : 'student',
 				name: result.displayName,
 			};
 			user.bucket = `${user.role}s`;
