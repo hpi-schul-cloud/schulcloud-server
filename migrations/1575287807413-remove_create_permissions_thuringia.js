@@ -20,7 +20,7 @@ module.exports = {
 		const permissions = [
 			'STUDENT_CREATE', 'STUDENT_EDIT', 'STUDENT_DELETE',
 			'TEACHER_CREATE', 'TEACHER_EDIT', 'TEACHER_DELETE',
-			'CLASS_CREATE', 'CLASS_EDIT', 'CLASS_REMOVE', 'CLASS_FULL_ADMIN',
+			'CLASS_CREATE', 'CLASS_EDIT', 'CLASS_REMOVE',
 		];
 
 		info('remove permissions from users iff existing...', { roles, permissions });
@@ -30,6 +30,10 @@ module.exports = {
 			const removedPersmissions = [];
 			info(`updating role '${role}'...`);
 			const currentRole = await Role.findOne({ name: role }).exec();
+			if (currentRole === null) {
+				error(`role '${role}} not found - ignore...`);
+				break;
+			}
 			for (const permission of permissions) {
 				if (currentRole.permissions.includes(permission)) {
 					currentRole.permissions.pull(permission);
