@@ -201,7 +201,60 @@ describe('Syncer Mixins', () => {
 		});
 
 		describe('#buildClassMapping', () => {
+			it('works if no classes are given', async () => {
+				const instance = new MixedClass(app);
+				const result = await instance.buildClassMapping([], {});
+				expect(result).to.deep.equal({});
+			});
 
+			it('creates new classes if they don\'t exist', async () => {
+				const classes = ['1a', '2b', '3c'];
+				const instance = new MixedClass(app);
+				const { _id: schoolId } = await createTestSchool();
+				const result = await instance.buildClassMapping(classes, { schoolId });
+				await Promise.all(classes.map(async (c) => {
+					expect(result[c]).to.not.equal(undefined);
+					expect(result[c]._id).to.not.equal(undefined);
+					// cleanup:
+					await app.service('classes').remove(result[c]._id);
+				}));
+				expect(instance.stats.classes.created).to.equal(3);
+				expect(instance.stats.classes.updated).to.equal(0);
+				expect(instance.stats.classes.successful).to.equal(3);
+				expect(instance.stats.classes.failed).to.equal(0);
+			});
+
+			it('creates new classes only once', async () => {
+				const classes = ['1a', '1a', '1a'];
+				const instance = new MixedClass(app);
+				const { _id: schoolId } = await createTestSchool();
+				const result = await instance.buildClassMapping(classes, { schoolId });
+				expect(result['1a']).to.not.equal(undefined);
+				expect(result['1a']._id).to.not.equal(undefined);
+				// cleanup:
+				await app.service('classes').remove(result['1a']._id);
+				expect(instance.stats.classes.created).to.equal(1);
+				expect(instance.stats.classes.updated).to.equal(0);
+				expect(instance.stats.classes.successful).to.equal(1);
+				expect(instance.stats.classes.failed).to.equal(0);
+			});
+
+			it('updates existing classes of the same name and school', async () => {
+				const classes = ['1a'];
+				const instance = new MixedClass(app);
+				const { _id: schoolId } = await createTestSchool();
+				const existing1a = await createTestClass({
+					gradeLevel: 1,
+					name: 'a',
+					schoolId,
+				});
+				const result = await instance.buildClassMapping(classes, { schoolId });
+				expect(result['1a']._id.toString()).to.equal(existing1a._id.toString());
+				expect(instance.stats.classes.created).to.equal(0);
+				expect(instance.stats.classes.updated).to.equal(1);
+				expect(instance.stats.classes.successful).to.equal(1);
+				expect(instance.stats.classes.failed).to.equal(0);
+			});
 		});
 	});
 });
