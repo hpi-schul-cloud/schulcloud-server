@@ -118,7 +118,7 @@ const removeProvider = (context) => {
  * @param {Object} context feathers context
  */
 const addJwtToWhitelist = async (context) => {
-	if (getRedisClient) {
+	if (getRedisClient()) {
 		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
 		await redisSetAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', 100);
 	}
@@ -131,7 +131,7 @@ const addJwtToWhitelist = async (context) => {
  * @param {Object} context feathers context
  */
 const removeJwtFromWhitelist = async (context) => {
-	if (getRedisClient) {
+	if (getRedisClient()) {
 		const redisIdentifier = getRedisIdentifier(context.params.headers.authentication);
 		await redisDelAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}');
 	}

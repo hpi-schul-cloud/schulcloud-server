@@ -128,7 +128,7 @@ const displayInternRequests = (level) => (context) => {
  * @param {Object} context feathers context
  */
 const handleAutoLogout = async (context) => {
-	if (getRedisClient && (context.params.headers || {}).authorization) {
+	if (getRedisClient() && (context.params.headers || {}).authorization) {
 		const redisIdentifier = getRedisIdentifier(context.params.headers.authorization);
 		const redisResponse = await redisGetAsync(redisIdentifier);
 		if (redisResponse) {
