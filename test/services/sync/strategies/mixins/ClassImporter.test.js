@@ -81,7 +81,7 @@ describe('Syncer Mixins', () => {
 				expect(result).to.be.ok;
 				expect(result.name).to.equal('foo');
 				// cleanup:
-				app.service('classes').remove(result._id);
+				await app.service('classes').remove(result._id);
 			});
 
 			it('increases the number of created classes on success', async () => {
@@ -92,8 +92,8 @@ describe('Syncer Mixins', () => {
 				const secondClass = await instance.createClass({ name: 'bar', schoolId });
 				expect(instance.stats.classes.created).to.equal(2);
 				// cleanup:
-				app.service('classes').remove(firstClass._id);
-				app.service('classes').remove(secondClass._id);
+				await app.service('classes').remove(firstClass._id);
+				await app.service('classes').remove(secondClass._id);
 			});
 
 			it('logs an error if the class creation fails', async () => {
@@ -166,7 +166,7 @@ describe('Syncer Mixins', () => {
 				expect(result).to.be.ok;
 				expect(result.name).to.equal('check');
 				// cleanup:
-				app.service('classes').remove(result._id);
+				await app.service('classes').remove(result._id);
 			});
 
 			it('uses the classObject as search query if query is undefined', async () => {
@@ -181,7 +181,7 @@ describe('Syncer Mixins', () => {
 				expect(updated.name).to.equal('mark');
 				expect(updated.schoolId.toString()).to.equal(schoolId.toString());
 				// cleanup:
-				app.service('classes').remove(updated._id);
+				await app.service('classes').remove(updated._id);
 			});
 
 			it('processes errors and adds them to the syncer stats', async () => {
