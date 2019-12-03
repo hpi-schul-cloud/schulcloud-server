@@ -24,14 +24,6 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 
 	verifyConfiguration() {}
 
-	async getPayload(authResult, params) {
-		// Call original `getPayload` first
-		const payload = await super.getPayload(authResult, params);
-		const { user } = authResult;
-
-		return payload;
-	}
-
 	async findUser(app, token) {
 		const sourceOptions = {
 			[SOURCE_ID_ATTRIBUTE]: token.authUID,
