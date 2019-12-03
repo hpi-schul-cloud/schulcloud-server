@@ -132,7 +132,7 @@ const addJwtToWhitelist = async (context) => {
  */
 const removeJwtFromWhitelist = async (context) => {
 	if (getRedisClient) {
-		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
+		const redisIdentifier = getRedisIdentifier(context.params.headers.authentication);
 		await redisDelAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}');
 	}
 
