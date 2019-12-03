@@ -70,7 +70,7 @@
 	},
 	"name": "administrator",
 	"updatedAt": {
-		"$date": "2019-12-03T15:47:27.307Z"
+		"$date": "2019-12-03T16:35:35.224Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -86,6 +86,7 @@
 		"CLASS_CREATE",
 		"CLASS_EDIT",
 		"CLASS_FULL_ADMIN",
+		"CLASS_LIST",
 		"CLASS_REMOVE",
 		"COURSE_CREATE",
 		"COURSE_EDIT",
@@ -118,7 +119,7 @@
 		"TEACHER_SKIP_REGISTRATION",
 		"TEAM_INVITE_EXTERNAL"
 	],
-	"__v": 1
+	"__v": 2
 },
 {
 	"_id": {
@@ -126,7 +127,7 @@
 	},
 	"name": "superhero",
 	"updatedAt": {
-		"$date": "2019-12-03T15:47:27.311Z"
+		"$date": "2019-12-03T16:35:35.238Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -137,6 +138,7 @@
 		}
 	],
 	"permissions": [
+		"CLASS_LIST",
 		"CREATE_SUPPORT_JWT",
 		"FEDERALSTATE_CREATE",
 		"FEDERALSTATE_EDIT",
@@ -158,7 +160,7 @@
 		"TOOL_CREATE",
 		"TOOL_EDIT"
 	],
-	"__v": 1
+	"__v": 2
 },
 {
 	"_id": {

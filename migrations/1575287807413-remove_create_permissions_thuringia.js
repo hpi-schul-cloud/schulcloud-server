@@ -12,16 +12,19 @@ module.exports = {
 	up: async function up() {
 		await connect();
 
-		info('add permission CLASS_LIST for teacher role (while administrator has ADMIN_VIEW)');
-		const teacher = await Role.findOne({ name: 'teacher' }).exec();
-		if (teacher.permissions.includes('CLASS_LIST')) {
-			info('teacher already has permission CLASS_LIST, ignore...');
-		} else {
-			info('add permission CLASS_LIST to teacher...');
-			teacher.permissions.push('CLASS_LIST');
-			teacher.permissions.sort();
-			await teacher.save();
-			info('teacher updated successfully, continue...');
+		const roleNames = ['teacher', 'administrator', 'superhero'];
+		for (const roleName of roleNames) {
+			info(`add permission CLASS_LIST for role ${roleName}`);
+			const role = await Role.findOne({ name: roleName }).exec();
+			if (role.permissions.includes('CLASS_LIST')) {
+				info('teacher already has permission CLASS_LIST, ignore...');
+			} else {
+				info(`add permission CLASS_LIST for ${roleName}...`);
+				role.permissions.push('CLASS_LIST');
+				role.permissions.sort();
+				await role.save();
+				info(`${roleName} updated successfully, continue...`);
+			}
 		}
 
 		if (process.env.SC_THEME !== 'thr') {
