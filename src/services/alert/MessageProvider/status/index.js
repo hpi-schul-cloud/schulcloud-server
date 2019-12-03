@@ -69,8 +69,8 @@ module.exports = {
 				}
 			}
 			return data;
-		} catch (e) {
-			return [];
+		} catch (e) { // return null on error
+			return null;
 		}
 	},
 };

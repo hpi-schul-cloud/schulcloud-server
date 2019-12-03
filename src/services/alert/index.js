@@ -8,13 +8,16 @@ const StatusAdapter = require('./adapter/status');
 let messages = [];
 // durtion of cache in min
 const duration = 5;
+let success = false;
 
 /**
  * Building Message Array
  * @param {Adapter} ProviderAdapter
  */
 async function addMessageProvider(ProviderAdapter) {
-	messages = messages.concat(await ProviderAdapter.getMessage(globals.SC_THEME));
+	const data = await ProviderAdapter.getMessage(globals.SC_THEME);
+	messages = messages.concat(data.messages);
+	success = data.success;
 }
 
 /**
@@ -30,7 +33,7 @@ class AlertService {
 			// add Message Provider here
 			await addMessageProvider(new StatusAdapter()); // status.schul-cloud.org
 
-			cache.put('cachedMessages', messages, duration * 1000 * 60);
+			if (success) { cache.put('cachedMessages', messages, duration * 1000 * 60); }
 		}
 		return messages;
 	}
