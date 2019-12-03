@@ -136,7 +136,7 @@ const handleAutoLogout = async (context) => {
 		} else {
 			// Throw not Authenticated
 			// redisClient.quit();
-			throw new NotAuthenticated('jwt is not whitelisted anymore - autologout');
+			throw new NotAuthenticated('session was expired due to inactivity - autologout');
 		}
 	}
 	return context;
