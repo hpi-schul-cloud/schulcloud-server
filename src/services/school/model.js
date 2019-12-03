@@ -6,6 +6,7 @@
 const mongoose = require('mongoose');
 const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
+const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
@@ -60,6 +61,7 @@ const schoolSchema = new Schema({
 	rssFeeds: [{ type: rssFeedSchema }],
 	features: [{ type: String, enum: ['rocketChat', 'disableStudentTeamCreation'] }],
 	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below)
+	...externalSourceSchema,
 }, {
 	timestamps: true,
 });

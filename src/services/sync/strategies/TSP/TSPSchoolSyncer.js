@@ -161,6 +161,10 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			systems: [system._id],
 			currentYear: await this.getCurrentYear(),
 			federalState: await this.getFederalState(),
+			source: ENTITY_SOURCE,
+			sourceOptions: {
+				schoolIdentifier: system.tsp.identifier,
+			},
 		});
 	}
 
