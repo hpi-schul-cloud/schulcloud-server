@@ -8,6 +8,8 @@ const app = require('../src/app');
 const { cleanup, createTestUser } = require('./services/helpers/testObjects')(app);
 
 describe('Sanitization Hook', () => {
+	let server;
+
 	let newsService;
 	let helpdeskService;
 	let courseService;
@@ -17,6 +19,7 @@ describe('Sanitization Hook', () => {
 	let currentLessonId = null;
 
 	before((done) => {
+		server = app.listen(0);
 		newsService = app.service('newsModel');
 		helpdeskService = app.service('helpdesk');
 		courseService = app.service('courses');
@@ -25,6 +28,7 @@ describe('Sanitization Hook', () => {
 	});
 
 	after((done) => {
+		server.close();
 		done();
 	});
 
