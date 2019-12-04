@@ -22,6 +22,7 @@ const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 
 const setupSwagger = require('./swagger');
+const { initializeRedisClient } = require('./utils/redis');
 const allHooks = require('./app.hooks');
 const versionService = require('./services/version');
 
@@ -32,6 +33,7 @@ const Configuration = new commons.Configuration();
 app.configure(config);
 Configuration.init(app);
 setupSwagger(app);
+initializeRedisClient(app);
 
 // set custom response header for ha proxy
 if (process.env.KEEP_ALIVE) {

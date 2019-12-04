@@ -4,11 +4,14 @@ const jwt = require('jsonwebtoken');
 const { MethodNotAllowed } = require('@feathersjs/errors');
 
 let redisClient = false;
-const redisUrl = process.env.REDIS_URI;
-if (redisUrl) {
-	redisClient = redis.createClient({
-		url: redisUrl,
-	});
+
+function initializeRedisClient(app) {
+	const redisUrl = app.Config.data.REDIS_URI;
+	if (redisUrl) {
+		redisClient = redis.createClient({
+			url: redisUrl,
+		});
+	}
 }
 
 function getRedisClient() {
@@ -16,9 +19,18 @@ function getRedisClient() {
 }
 
 const notAllowed = () => { throw new MethodNotAllowed('no redis connection. check for this via getRedisClient()'); };
-const redisGetAsync = redisClient ? promisify(redisClient.get).bind(redisClient) : notAllowed;
-const redisSetAsync = redisClient ? promisify(redisClient.set).bind(redisClient) : notAllowed;
-const redisDelAsync = redisClient ? promisify(redisClient.del).bind(redisClient) : notAllowed;
+const redisGetAsync = () => {
+	if (redisClient) return promisify(redisClient.get).bind(redisClient);
+	return notAllowed;
+};
+const redisSetAsync = () => {
+	if (redisClient) return promisify(redisClient.set).bind(redisClient);
+	return notAllowed;
+};
+const redisDelAsync = () => {
+	if (redisClient) return promisify(redisClient.del).bind(redisClient);
+	return notAllowed;
+};
 
 function getRedisIdentifier(token) {
 	const decodedToken = jwt.decode(token.replace('Bearer ', ''));
@@ -29,6 +41,7 @@ function getRedisIdentifier(token) {
 }
 
 module.exports = {
+	initializeRedisClient,
 	getRedisClient,
 	redisGetAsync,
 	redisSetAsync,
