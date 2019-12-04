@@ -12,6 +12,7 @@ const classModelService = service({
 		default: 25,
 		max: 100,
 	},
+	whitelist: ['$exists'],
 	lean: { virtuals: true },
 });
 
