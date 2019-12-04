@@ -12,6 +12,16 @@
 				"enabled"
 			],
 			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
+		},
+		"REDIS_URI": {
+			"type": "string",
+			"pattern": "(rediss?:)?\/\/((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(\/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
+			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
+		},
+		"JWT_TIMEOUT_SECONDS": {
+			"type": "integer",
+			"default": 7200,
+			"description": "After this many seconds of inactivity, a user gets logged out automatically. If no REDIS_URI is set, this value is ignored."
 		}
 	},
 	"required": [

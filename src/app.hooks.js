@@ -132,7 +132,9 @@ const handleAutoLogout = async (context) => {
 		const redisIdentifier = getRedisIdentifier(context.params.headers.authorization);
 		const redisResponse = await redisGetAsync(redisIdentifier);
 		if (redisResponse) {
-			await redisSetAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', 100);
+			await redisSetAsync(
+				redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
+			);
 		} else {
 			throw new NotAuthenticated('session was expired due to inactivity - autologout');
 		}

@@ -120,7 +120,9 @@ const removeProvider = (context) => {
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
 		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
-		await redisSetAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', 100);
+		await redisSetAsync(
+			redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
+		);
 	}
 
 	return context;
