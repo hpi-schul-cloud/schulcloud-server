@@ -6,7 +6,7 @@ const GLOBALS = require('../../../config/globals');
 
 if (process.env.BODYPARSER_JSON_LIMIT === undefined) {
 	/* eslint-disable-next-line  */
-	logger.warning(`please set the environment variable BODYPARSER_JSON_LIMIT to 12mb for helpdesk to work correctly! (Currently: ${GLOBALS.BODYPARSER_JSON_LIMIT})`);
+	logger.warning(`please set the environment variable BODYPARSER_JSON_LIMIT to min. 10mb for helpdesk to work correctly! (Currently: ${GLOBALS.BODYPARSER_JSON_LIMIT})`);
 }
 
 module.exports = function () {

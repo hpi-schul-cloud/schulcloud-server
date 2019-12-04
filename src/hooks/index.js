@@ -564,7 +564,6 @@ exports.sendEmail = (context, maildata) => {
 			attachments.push({ filename: element.name, content: imgBuffer });
 		} else {
 			/* eslint-disable-next-line */
-			const m = `Email Attachemnts exceed the max. total file limit of ${maxTotalBufferSize} byte. Some attachments might be missing`;
 			logger.error(`Email Attachments exceed the max. total file limit of ${maxTotalBufferSize} byte. Some attachments might be missing!`);
 			maildata.content.text += '\nEmail Attachments exceed file limit. Some attachments might be missing!';
 		}
