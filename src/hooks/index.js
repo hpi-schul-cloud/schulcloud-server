@@ -555,8 +555,19 @@ exports.sendEmail = (context, maildata) => {
 	// create email attachments
 	const files = maildata.attachments || [];
 	const attachments = [];
+	let cTotalBufferSize = 0;
+	const maxTotalBufferSize = 2 * 1024 * 1024; // 5 MB
 	files.forEach((element) => {
-		attachments.push({ filename: element.name, content: Buffer.from(element.data) });
+		const imgBuffer = Buffer.from(element.data);
+		cTotalBufferSize += imgBuffer.length;
+		if (cTotalBufferSize < maxTotalBufferSize) {
+			attachments.push({ filename: element.name, content: imgBuffer });
+		} else {
+			/* eslint-disable-next-line */
+			const m = `Email Attachemnts exceed the max. total file limit of ${maxTotalBufferSize} byte. Some attachments might be missing`;
+			logger.error(`Email Attachments exceed the max. total file limit of ${maxTotalBufferSize} byte. Some attachments might be missing!`);
+			maildata.content.text += '\nEmail Attachments exceed file limit. Some attachments might be missing!';
+		}
 	});
 
 	// email validation conform with <input type="email"> (see https://emailregex.com)
