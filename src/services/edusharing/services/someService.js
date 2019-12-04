@@ -1,19 +1,17 @@
 const request = require('request-promise-native');
 const hooks = require('../hooks');
+const EduSharingConnector = require('../logic/connector');
 
-function generateUrl() {
-	const url = 'https://mv-repo.schul-cloud.org/edu-sharing/rest/search/v1/custom/-home-?maxItems=10&skipCount=0';
+/* function generateUrl() {
+// const url = `https://${process.env.ES_DOMAIN}/edu-sharing/rest/search/v1/custom/-home-?property=myProp&value=myValue&maxItems=10&skipCount=0`;
 	return url;
-}
+} */
 class SomeService {
-	async find(data, params) {
-		const options = {
-			url: generateUrl(),
-			method: 'GET',
-			headers: data.headers,
-		};
-		const eduData = await request(options);
-		return eduData;
+	find(data, params) {
+		const { searchValue } = data.query;
+		// todo, add skip and count (and props)
+		console.log(searchValue, '<-- searchValue');
+		return EduSharingConnector.GET(params, searchValue);
 	}
 }
 

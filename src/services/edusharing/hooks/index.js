@@ -8,9 +8,9 @@ const { getCookie } = require('./getCookie');
 
 // disallow all entry
 exports.before = {
-	all: [getCookie],
+	all: [],
 	find: [],
-	get: [disallow()],
+	get: [],
 	create: [disallow()],
 	update: [disallow()],
 	patch: [disallow()],
