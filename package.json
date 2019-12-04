@@ -1,7 +1,7 @@
 {
   "name": "schulcloud-server",
   "description": "hpi schulcloud server",
-  "version": "20.0.0",
+  "version": "20.0.3",
   "homepage": "https://schul-cloud.org",
   "main": "src/",
   "keywords": [
@@ -27,10 +27,10 @@
     "startd": "nodemon src/",
     "debug": "nodemon --inspect=5959 src/",
     "debug:container": "nodemon --inspect=0.0.0.0:5959 src/",
-    "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary mocha --recursive --exit --sort --extension test.js test/",
+    "coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary mocha --exit './test/**/*.test.js'",
     "coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
-    "mocha": "cross-env NODE_ENV=test mocha --recursive --exit --sort --extension test.js test/",
-    "mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --recursive --exit --sort --extension test.js test/",
+    "mocha": "cross-env NODE_ENV=test mocha --exit './test/**/*.test.js'",
+    "mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --exit './test/**/*.test.js'",
     "migration": "migrate",
     "migration-sync": "migrate list --autosync",
     "migration-persist": "mongoexport -d schulcloud -c migrations --jsonArray --pretty > ./backup/setup/migrations.json"
@@ -43,8 +43,7 @@
     "@feathersjs/express": "^4.3.4",
     "@feathersjs/feathers": "^4.3.4",
     "@feathersjs/socketio": "^4.3.4",
-    "@sentry/integrations": "^5.6.1",
-    "@sentry/node": "^5.7.1",
+    "@sentry/node": "^5.9.0",
     "ajv": "^6.10.2",
     "async": "^2.6.3",
     "aws-sdk": "^2.306.0",
@@ -106,17 +105,17 @@
     "winston": "^3.2.0"
   },
   "devDependencies": {
-    "codecov": "^3.5.0",
+    "codecov": "^3.6.1",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-react": "^7.11.1",
     "jsonwebtoken": "8.5.1",
-    "mocha": "^6.1.4",
+    "mocha": "^6.2.2",
     "mockery": "^2.0.0",
     "nodemailer-mock": "^1.1.10",
-    "nyc": "^14.1.1",
     "nodemon": "^1.19.1",
+    "nyc": "^14.1.1",
     "simple-oauth2": "^2.3.0"
   },
   "greenkeeper": {
