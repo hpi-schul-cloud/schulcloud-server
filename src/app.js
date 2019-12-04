@@ -20,6 +20,8 @@ const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 
+const logger = require('../src/logger');
+
 const setupSwagger = require('./swagger');
 const allHooks = require('./app.hooks');
 const versionService = require('./services/version');
