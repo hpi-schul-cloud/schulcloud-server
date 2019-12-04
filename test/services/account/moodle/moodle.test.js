@@ -49,7 +49,7 @@ describe('Moodle single-sign-on', () => {
 			.send({
 				username: newTestAccount.username,
 				password: newTestAccount.password,
-				systemId: testSystem.id,
+				systemId: testSystem._id,
 			})
 			.end((err, res) => {
 				if (err) {
@@ -62,7 +62,7 @@ describe('Moodle single-sign-on', () => {
 				account.should.have.property('_id');
 				account.username.should.equal(newTestAccount.username.toLowerCase());
 				account.should.include({
-					systemId: testSystem.id,
+					systemId: testSystem._id,
 					activated: false,
 				});
 

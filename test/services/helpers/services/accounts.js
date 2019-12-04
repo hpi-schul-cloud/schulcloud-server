@@ -3,7 +3,7 @@ let createdaccountsIds = [];
 // should rewrite
 const createTestAccount = (app) => (accountParameters, system, user) => {
 	if (system) {
-		accountParameters.systemId = system.id;
+		accountParameters.systemId = system._id;
 	}
 	accountParameters.userId = user._id;
 	return app.service('accounts').create(accountParameters)
