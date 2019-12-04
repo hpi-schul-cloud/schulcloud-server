@@ -15,7 +15,7 @@ const avgTimeToInteractiveService = app.service(
 );
 const uniquePageCountService = app.service('insights/uniquePageCount');
 
-describe.only('insights service', () => {
+describe('insights service', () => {
 	it('registers correctly', () => {
 		expect(app.service('insights/dauOverMau')).to.not.equal(undefined);
 		expect(app.service('insights/monthlyUsers')).to.not.equal(undefined);

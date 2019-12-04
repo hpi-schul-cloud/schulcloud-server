@@ -6,36 +6,35 @@ function dataMassager(cubeJsDataThis, cubeJsDataLast) {
 	const parsedThis = JSON.parse(cubeJsDataThis);
 	const parsedLast = JSON.parse(cubeJsDataLast);
 	const data = {
-		thisMonth: null,
-		lastMonth: null,
+		thisMonth: parsedThis.data[0]['Events.activeUsers'] || null,
+		lastMonth: parsedLast.data[0]['Events.activeUsers'] || null,
 	};
-	data.thisMonth = parsedThis.data[0]['Events.activeUsers'];
-	data.lastMonth = parsedLast.data[0]['Events.activeUsers'];
+
 	return data;
 }
 
 function generateUrl(querySort, schoolId) {
 	const cubeJsUrl =		process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
 	const query = `load?query={
-				"measures" : [
-				  "Events.activeUsers"
-			   ],
-			   "timeDimensions" : [
-				 {
-				   "dimension" : "Events.timeStamp" ,
-					"dateRange" : "${querySort} month"
-				 }
-			   ],
-			   "dimensions" : [],
-				"segments" : [],
-				"filters" : [
-				 {
-				   "dimension" : "Actor.school_id",
-					"operator" : "contains" ,
-					"values" : ["${schoolId}"]
-				 }
-			   ]
-			  }`;
+		"measures" : [
+		"Events.activeUsers"
+		],
+		"timeDimensions" : [
+			{
+			"dimension" : "Events.timeStamp" ,
+			"dateRange" : "${querySort} month"
+			}
+		],
+		"dimensions" : [],
+		"segments" : [],
+		"filters" : [
+			{
+				"dimension" : "Actor.school_id",
+				"operator" : "contains" ,
+				"values" : ["${schoolId}"]
+			}
+		]
+	}`;
 	return `${cubeJsUrl}${query}`;
 }
 

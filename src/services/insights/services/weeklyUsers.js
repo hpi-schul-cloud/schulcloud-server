@@ -5,11 +5,10 @@ function dataMassager(cubeJsDataThis, cubeJsDataLast) {
 	const parsedThis = JSON.parse(cubeJsDataThis);
 	const parsedLast = JSON.parse(cubeJsDataLast);
 	const data = {
-		thisWeek: null,
-		lastWeek: null,
+		thisWeek: parsedThis.data[0]['Events.activeUsers'] || null,
+		lastWeek: parsedLast.data[0]['Events.activeUsers'] || null,
 	};
-	data.thisWeek = parsedThis.data[0]['Events.activeUsers'];
-	data.lastWeek = parsedLast.data[0]['Events.activeUsers'];
+
 	return data;
 }
 

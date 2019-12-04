@@ -310,7 +310,10 @@
 				"$oid": "0000d186816abba584714c95"
 			}
 		],
-		"permissions": ["HELPDESK_VIEW", "HELPDESK_EDIT"],
+		"permissions": [
+			"HELPDESK_VIEW",
+			"HELPDESK_EDIT"
+		],
 		"__v": 0
 	},
 	{
