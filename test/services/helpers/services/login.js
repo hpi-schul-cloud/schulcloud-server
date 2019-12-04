@@ -39,10 +39,10 @@ const generateRequestParams = (app) => async ({ username, password }) => {
  */
 const generateRequestParamsFromUser = (app) => async (user) => {
 	const credentials = { username: user.email, password: user.email };
-	const $account = await accountsHelper(app).create(credentials, 'local', user);
+	const account = await accountsHelper(app).create(credentials, 'local', user);
 
 	const requestParams = await generateRequestParams(app)(credentials);
-	requestParams.account = $account.toObject();
+	requestParams.account = account;
 	return requestParams;
 };
 
