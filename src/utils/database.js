@@ -83,6 +83,8 @@ function connect() {
 	const mongooseOptions = {
 		useNewUrlParser: true,
 		useFindAndModify: false,
+		useCreateIndex: true,
+		useUnifiedTopology: true,
 	};
 
 	addAuthenticationToOptions(
@@ -90,11 +92,6 @@ function connect() {
 		options.password,
 		mongooseOptions,
 	);
-
-	mongoose.set('useNewUrlParser', true);
-	mongoose.set('useFindAndModify', false);
-	mongoose.set('useCreateIndex', true);
-	mongoose.set('useUnifiedTopology', true);
 
 	return mongoose.connect(
 		encodeMongoURI(options.url),
