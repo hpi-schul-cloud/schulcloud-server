@@ -20,7 +20,7 @@ const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 
-const logger = require('../src/logger');
+const GLOBALS = require('../config/globals');
 
 const setupSwagger = require('./swagger');
 const allHooks = require('./app.hooks');
@@ -40,19 +40,13 @@ if (process.env.KEEP_ALIVE) {
 	});
 }
 
-const BODYPARSER_JSON_LIMIT = process.env.BODYPARSER_JSON_LIMIT || '100kb';
-if (process.env.BODYPARSER_JSON_LIMIT === undefined) {
-	/* eslint-disable-next-line  */
-	logger.warning(`please set the environment variable BODYPARSER_JSON_LIMIT to 12mb for helpdesk to work correctly! (Currently: ${BODYPARSER_JSON_LIMIT})`);
-}
-
 app.use(compress())
 	.options('*', cors())
 	.use(cors())
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 	.use('/', express.static('public'))
 	.configure(sentry)
-	.use(bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
+	.use(bodyParser.json({ limit: GLOBALS.BODYPARSER_JSON_LIMIT }))
 	.use(bodyParser.urlencoded({ extended: true }))
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 	.use(versionService)
