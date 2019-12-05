@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 const redis = require('redis');
 const jwt = require('jsonwebtoken');
-const { MethodNotAllowed } = require('@feathersjs/errors');
+const { GeneralError } = require('@feathersjs/errors');
 
 let redisClient = false;
 
@@ -18,18 +18,17 @@ function getRedisClient() {
 	return redisClient;
 }
 
-const notAllowed = () => { throw new MethodNotAllowed('no redis connection. check for this via getRedisClient()'); };
-const redisGetAsync = () => {
-	if (redisClient) return promisify(redisClient.get).bind(redisClient);
-	return notAllowed;
+const redisGetAsync = (...args) => {
+	if (redisClient) return promisify(redisClient.get).apply(redisClient, ...args);
+	throw new GeneralError('no redis connection. check for this via getRedisClient()');
 };
-const redisSetAsync = () => {
-	if (redisClient) return promisify(redisClient.set).bind(redisClient);
-	return notAllowed;
+const redisSetAsync = (...args) => {
+	if (redisClient) return promisify(redisClient.set).apply(redisClient, ...args);
+	throw new GeneralError('no redis connection. check for this via getRedisClient()');
 };
-const redisDelAsync = () => {
-	if (redisClient) return promisify(redisClient.del).bind(redisClient);
-	return notAllowed;
+const redisDelAsync = (...args) => {
+	if (redisClient) return promisify(redisClient.del).apply(redisClient, ...args);
+	throw new GeneralError('no redis connection. check for this via getRedisClient()');
 };
 
 function getRedisIdentifier(token) {

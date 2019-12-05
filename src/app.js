@@ -33,7 +33,7 @@ const Configuration = new commons.Configuration();
 app.configure(config);
 Configuration.init(app);
 setupSwagger(app);
-initializeRedisClient(app);
+app.configure(initializeRedisClient);
 
 // set custom response header for ha proxy
 if (process.env.KEEP_ALIVE) {
