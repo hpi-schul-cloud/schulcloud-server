@@ -447,6 +447,7 @@ module.exports = function setup() {
 			max: 100,
 		},
 		lean: { virtuals: true },
+		whitelist: ['$elemMatch'],
 	};
 
 	app.use('/teams', service(options));
