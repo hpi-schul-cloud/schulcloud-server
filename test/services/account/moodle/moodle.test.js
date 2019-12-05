@@ -44,7 +44,7 @@ describe('Moodle single-sign-on', () => {
 		chai.request(app)
 			.post('/accounts')
 			.set('Accept', 'application/json')
-			.set('content-type', 'application/x-www-form-urlencoded')
+			.set('content-type', 'application/json')
 			// send credentials
 			.send({
 				username: newTestAccount.username,
@@ -62,7 +62,7 @@ describe('Moodle single-sign-on', () => {
 				account.should.have.property('_id');
 				account.username.should.equal(newTestAccount.username.toLowerCase());
 				account.should.include({
-					systemId: testSystem._id,
+					systemId: testSystem._id.toString(),
 					activated: false,
 				});
 
