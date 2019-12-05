@@ -1,5 +1,12 @@
+const mongoose = require('mongoose');
 const { connect, close } = require('../src/utils/database');
-const Roles = require('../src/services/role/model');
+
+const Roles = mongoose.model('role', new mongoose.Schema({
+	name: { type: String, required: true },
+	permissions: [{ type: String }],
+}, {
+	timestamps: true,
+}));
 
 module.exports = {
 	up: async function up() {

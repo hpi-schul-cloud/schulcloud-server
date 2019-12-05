@@ -1,18 +1,35 @@
 const request = require('request-promise-native');
 const hooks = require('../hooks');
 const { userModel } = require('../../user/model');
+const roleModel = require('../../role/model');
+
+const roleIdsMapping = {
+	teacher: null,
+	student: null,
+};
+
+// returns the mongodb _id for roles. eg 'student' or 'teacher'
+const getRoleIdForName = async (roleName) => {
+	if (roleIdsMapping[roleName] === null) {
+		roleIdsMapping[roleName] = await roleModel.findOne({ name: roleName }).select('_id');
+	}
+	return roleIdsMapping[roleName];
+};
+
+// returns a count of users that matches the role _id
+const getCountFromMongo = async (roleId) => {
+	const userCount = await userModel.countDocuments({
+		roles: {
+			$in: [roleId],
+		},
+	});
+	return userCount;
+};
 
 function dataMassager(cubeJsData, totalUsers) {
 	const parsed = JSON.parse(cubeJsData);
 
-	// filtering out the roles from mongodb
-	const teacherUsers = totalUsers[0]
-		? totalUsers[0].roles.filter((el) => el.name === 'teacher').length
-		: null;
-	const studentUsers = totalUsers[0]
-		? totalUsers[0].roles.filter((el) => el.name === 'student').length
-		: null;
-
+	const [teacherUsers, studentUsers] = totalUsers;
 	// grabbing the active users from cubejs or null
 	const activeStudents = parsed.data[0]
 		? parsed.data[0]['Events.activeUsers']
@@ -73,23 +90,22 @@ function generateUrl(schoolId) {
 	return `${cubeJsUrl}${query}`;
 }
 
+
 class WeeklyActiveUsers {
 	async find(data, params) {
 		const { schoolId } = data.account;
 
+		await getRoleIdForName('teacher');
+		await getRoleIdForName('student');
+
+
 		const options = {
-			url: generateUrl(schoolId),
+			url: generateUrl('schoolId'),
 			method: 'GET',
 		};
+		const totalUsers = [await getCountFromMongo(roleIdsMapping.teacher), await getCountFromMongo(roleIdsMapping.student)];
 		const cubeJsData = await request(options);
-
-		const totalUsers = await userModel
-			.find({})
-			.select('roles')
-			.populate('roles');
-
 		const result = dataMassager(cubeJsData, totalUsers);
-
 		return result;
 	}
 }
