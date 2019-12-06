@@ -59,7 +59,8 @@ module.exports = {
 				}
 			}
 			if (updated !== 0) {
-				info(`updating role '${role}' finished with ${updated} modifications. Removed permissions:`, removedPersmissions);
+				info(`updating role '${role}' finished with ${updated} modifications. \
+				Removed permissions:`, removedPersmissions);
 				await currentRole.save();
 				info('role updated successfully...');
 			} else {
