@@ -3,10 +3,9 @@ const url = require('url');
 const moment = require('moment');
 const { JWE, JWK, JWS } = require('jose');
 const uuid = require('uuid/v4');
-const { Configuration } = require('@schul-cloud/commons');
+const commons = require('@schul-cloud/commons');
 
-const Config = new Configuration();
-Config.init();
+const Config = commons.Configuration.Instance;
 
 const ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
 const SOURCE_ID_ATTRIBUTE = 'tspUid'; // name of the uid attribute within sourceOptions
