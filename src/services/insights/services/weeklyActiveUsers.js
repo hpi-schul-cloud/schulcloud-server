@@ -17,7 +17,7 @@ const getRoleIdForName = async (roleName) => {
 };
 
 // returns a count of users that matches the role _id
-const getCountFromMongo = async (roleId) => {
+const getCountFromDb = async (roleId) => {
 	const userCount = await userModel.countDocuments({
 		roles: {
 			$in: [roleId],
@@ -100,10 +100,12 @@ class WeeklyActiveUsers {
 
 
 		const options = {
-			url: generateUrl('schoolId'),
+			url: generateUrl(schoolId),
 			method: 'GET',
 		};
-		const totalUsers = [await getCountFromMongo(roleIdsMapping.teacher), await getCountFromMongo(roleIdsMapping.student)];
+		const totalUsers = [
+			await getCountFromDb(roleIdsMapping.teacher),
+			await getCountFromDb(roleIdsMapping.student)];
 		const cubeJsData = await request(options);
 		const result = dataMassager(cubeJsData, totalUsers);
 		return result;
