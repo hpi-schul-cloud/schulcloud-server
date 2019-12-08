@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const {
-	ScopeService, ScopePermissionService, ScopeListService,
+	ScopeService, ScopePermissionService, ScopeListService, ScopeMembersService,
 } = require('../../../../src/services/helpers/scopePermissions');
 
 describe('ScopeService', () => {
@@ -38,7 +38,7 @@ describe('ScopeService', () => {
 				}),
 			};
 
-			[ScopeService, ScopePermissionService, ScopeListService].forEach((klass) => {
+			[ScopeService, ScopePermissionService, ScopeListService, ScopeMembersService].forEach((klass) => {
 				klass.initialize(fakeApp, SERVICE_PATH, () => true);
 				expect(registeredService).to.be.instanceOf(klass);
 			});
