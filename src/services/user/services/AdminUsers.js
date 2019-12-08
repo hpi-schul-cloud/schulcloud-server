@@ -172,16 +172,16 @@ class AdminUsers {
 	async patch(id, data, params) {
 		try {
 			const promises = [];
+			const hasConsent = !!data.consent;
 
 			// Patch consents
-			if (data.consent) {
+			if (hasConsent) {
 				if (data.consent._id) {
 					promises.push(
 						this.app
 							.service('consents')
 							.patch(data.consent._id, data.consent, {
 								query: { $select: ['userId', 'userConsent', 'parentConsents'] },
-								// query: { $select: consentAttributes },
 							}),
 					);
 				} else {
@@ -191,21 +191,35 @@ class AdminUsers {
 						}),
 					);
 				}
+				// remove all consent infos from user post
+				delete data.consent;
 			}
-
-			// remove all consent infos from user post
-			delete data.consent;
 
 			promises.push(this.app.service('users').patch(id, data, {
 				query: { $select: userAttributes },
 			}));
 
-			return Promise.all(promises).then(([consent, user]) => {
+			if (hasConsent) {
+				return Promise.all(promises).then(([consent, user]) => {
+					// classes are not patched because AdminUser service only retrieves their displaynames
+					if (user && consent) {
+						user.classes = data.classes;
+						user.consent = consent;
+						this.emit('status', { status: 'patched' });
+						return user;
+					}
+					throw new BadRequest('Can not patch data.');
+				});
+			}
+
+			return Promise.all(promises).then(([user]) => {
 				// classes are not patched because AdminUser service only retrieves their displaynames
-				user.classes = data.classes;
-				user.consent = consent;
-				this.emit('status', { status: 'patched' });
-				return user;
+				if (user) {
+					user.classes = data.classes;
+					this.emit('status', { status: 'patched' });
+					return user;
+				}
+				throw new BadRequest('Can not patch data.');
 			});
 		} catch (err) {
 			logger.warning(err);
@@ -214,7 +228,7 @@ class AdminUsers {
 					'You have not the permission to execute this.',
 				);
 			}
-			throw new BadRequest('Can not fetch data.');
+			throw new BadRequest('Can not patch data.');
 		}
 	}
 

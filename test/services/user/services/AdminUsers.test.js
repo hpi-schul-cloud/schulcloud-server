@@ -251,6 +251,69 @@ describe('AdminUsersService', () => {
 		expect(idsOk).to.not.include(studentWithoutConsents._id.toString(), studentWithParentConsent._id.toString());
 	});
 
+	it('patches users and their consents', async () => {
+		const teacher = await testObjects.createTestUser({ lastName: 'Müller', roles: ['teacher'] }).catch((err) => {
+			logger.warning('Can not create teacher', err);
+		});
+		const student = await testObjects.createTestUser({
+			firstName: 'Max',
+			roles: ['student'],
+		}).catch((err) => {
+			logger.warning('Can not create student', err);
+		});
+
+		const consent = await testObjects.createTestConsent({
+			userId: student._id,
+			userConsent: {
+				form: 'digital',
+				privacyConsent: true,
+				termsOfUseConsent: true,
+			},
+			parentConsents: [{
+				form: 'digital',
+				privacyConsent: true,
+				termsOfUseConsent: true,
+			}],
+		});
+
+		const updatedStudent = {
+			_id: student._id,
+			firstName: 'Moritz',
+			classes: ['1a'],
+			consent: {
+				_id: consent._id,
+				userId: student._id,
+				parentConsents: [
+					{
+						termsOfUseConsent: true,
+						privacyConsent: false,
+					},
+				],
+			},
+		};
+
+		const createParams = () => ({
+			account: {
+				userId: teacher._id,
+			},
+		});
+
+		expect(student).to.not.be.undefined;
+
+		const patchedStudent = await adminStudentsService.patch(student._id, updatedStudent, createParams());
+		expect(patchedStudent.firstName).to.equal('Moritz');
+		expect(patchedStudent.classes).to.include('1a');
+		expect(patchedStudent.consent.parentConsents[0].termsOfUseConsent).to.true;
+		expect(patchedStudent.consent.parentConsents[0].privacyConsent).to.false;
+
+		const updatedTeacher = {
+			lastName: 'Meyer',
+		};
+
+		const patchedTeacher = await adminTeachersService.patch(teacher._id, updatedTeacher, createParams());
+		expect(patchedTeacher.lastName).to.equal('Meyer');
+	});
+
 	after(async () => {
 		await testObjects.cleanup();
 	});
