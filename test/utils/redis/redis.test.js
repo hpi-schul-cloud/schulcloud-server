@@ -4,20 +4,24 @@ const { expect } = require('chai');
 const mockery = require('mockery');
 const redisMock = require('./redisMock');
 
-describe.only('redis helpers', () => {
-	describe('without redis server', () => {
+describe('redis helpers', () => {
+	describe('without a redis server', () => {
 		let redisHelpers;
 
 		before(async () => {
-			/* mockery.enable({
+			mockery.enable({
 				warnOnReplace: false,
 				warnOnUnregistered: false,
 				useCleanCache: true,
 			});
-			mockery.registerMock('redis', redisMock); */
+			mockery.registerMock('redis', redisMock);
 
 			delete require.cache[require.resolve('../../../src/utils/redis')];
 			redisHelpers = require('../../../src/utils/redis');
+
+			redisHelpers.initializeRedisClient({
+				Config: { data: {} },
+			});
 		});
 
 		after(async () => {
@@ -25,15 +29,7 @@ describe.only('redis helpers', () => {
 			mockery.disable();
 		});
 
-		it('getRedisClient returns false if no client exists', () => {
-			const response = redisHelpers.getRedisClient();
-			expect(response).to.equal(false);
-		});
-
 		it('no redisClient is created if there is no URL', async () => {
-			redisHelpers.initializeRedisClient({
-				Config: { data: {} },
-			});
 			expect(redisHelpers.getRedisClient()).to.equal(false);
 		});
 
