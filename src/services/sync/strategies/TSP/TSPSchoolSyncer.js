@@ -56,7 +56,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				students: { created: 0, updated: 0, errors: 0 },
 			},
 		});
-		this.config = config;
+		this.config = config || {};
 		this.api = new TspApi();
 
 		// caches for currentYear and federalState as they need async initialization
