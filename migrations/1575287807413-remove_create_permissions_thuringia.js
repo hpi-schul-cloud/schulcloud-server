@@ -38,6 +38,7 @@ module.exports = {
 			'STUDENT_CREATE', 'STUDENT_EDIT', 'STUDENT_DELETE',
 			'TEACHER_CREATE', 'TEACHER_EDIT', 'TEACHER_DELETE',
 			'CLASS_CREATE', 'CLASS_EDIT', 'CLASS_REMOVE',
+			'STUDENT_SKIP_REGISTRATION', 'SYSTEM_CREATE', 'SYSTEM_EDIT',
 		];
 
 		info('remove permissions from users iff existing...', { roles, permissions });
@@ -59,8 +60,8 @@ module.exports = {
 				}
 			}
 			if (updated !== 0) {
-				info(`updating role '${role}' finished with ${updated} modifications. \
-				Removed permissions:`, removedPersmissions);
+				info(`updating role '${role}' finished with ${updated} modifications. `
+				+ 'Removed permissions:', removedPersmissions);
 				await currentRole.save();
 				info('role updated successfully...');
 			} else {
@@ -68,6 +69,28 @@ module.exports = {
 			}
 		}
 
+		info('add \'SYSTEM_CREATE\', \'SYSTEM_EDIT\', to superhero in SC_THEME=thr');
+
+		const superHero = await Role.findOne({ name: 'superhero' }).exec();
+		info('current superhero permissions are', superHero.permissions);
+		let superHeroUpdated = false;
+		if (!superHero.permissions.includes('SYSTEM_CREATE')) {
+			info('add SYSTEM_CREATE permission to superhero');
+			superHero.permissions.push('SYSTEM_CREATE');
+			superHeroUpdated = true;
+		}
+		if (!superHero.permissions.includes('SYSTEM_EDIT')) {
+			info('add SYSTEM_EDIT permission to superhero');
+			superHero.permissions.push('SYSTEM_EDIT');
+			superHeroUpdated = true;
+		}
+		if (superHeroUpdated) {
+			superHero.permissions.sort();
+			await superHero.save();
+			info('superHero permissions updated successfully to', superHero.permissions);
+		} else {
+			info('no more permissions added to superhero');
+		}
 
 		info('permissions updated, done');
 
