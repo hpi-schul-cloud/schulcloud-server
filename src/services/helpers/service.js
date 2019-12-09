@@ -32,7 +32,7 @@ module.exports = function setup(app) {
 						replyTo: replyEmail || process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 						headers,
 						to: user ? user.email : email,
-						subject,
+						subject: process.env.NODE_ENV === 'production' ? subject : `[SC-TEST] ${subject}`,
 						html: content.html,
 						text: content.text,
 						attachments,
