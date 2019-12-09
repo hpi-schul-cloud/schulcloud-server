@@ -19,15 +19,19 @@ function getRedisClient() {
 }
 
 const redisGetAsync = (...args) => {
-	if (redisClient) return promisify(redisClient.get).apply(redisClient, ...args);
+	if (redisClient) return promisify(redisClient.get).apply(redisClient, args);
 	throw new GeneralError('no redis connection. check for this via getRedisClient()');
 };
 const redisSetAsync = (...args) => {
-	if (redisClient) return promisify(redisClient.set).apply(redisClient, ...args);
+	if (redisClient) return promisify(redisClient.set).apply(redisClient, args);
 	throw new GeneralError('no redis connection. check for this via getRedisClient()');
 };
 const redisDelAsync = (...args) => {
-	if (redisClient) return promisify(redisClient.del).apply(redisClient, ...args);
+	if (redisClient) return promisify(redisClient.del).apply(redisClient, args);
+	throw new GeneralError('no redis connection. check for this via getRedisClient()');
+};
+const redisTtlAsync = (...args) => {
+	if (redisClient) return promisify(redisClient.ttl).apply(redisClient, args);
 	throw new GeneralError('no redis connection. check for this via getRedisClient()');
 };
 
@@ -45,5 +49,6 @@ module.exports = {
 	redisGetAsync,
 	redisSetAsync,
 	redisDelAsync,
+	redisTtlAsync,
 	getRedisIdentifier,
 };
