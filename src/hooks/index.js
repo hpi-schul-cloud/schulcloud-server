@@ -12,7 +12,7 @@ const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
 const KeysModel = require('../services/keys/model');
-const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE } = require('../../config/globals');
+const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../config/globals');
 // Add any common hooks you want to share across services in here.
 
 const { extractTokenFromBearerHeader } = require('../services/authentication/logic');
@@ -543,7 +543,7 @@ function validatedAttachmentsSize(attachments) {
 	let cTotalBufferSize = 0;
 	attachments.forEach((element) => {
 		cTotalBufferSize += element.size;
-		if (cTotalBufferSize >= MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE) {
+		if (cTotalBufferSize >= MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE) {
 			throw new BadRequest('Email Attachments exceed the max. total file limit.');
 		}
 	});
