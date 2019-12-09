@@ -8,6 +8,7 @@ const {
 } = require('@feathersjs/errors');
 const _ = require('lodash');
 const mongoose = require('mongoose');
+const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
 const KeysModel = require('../services/keys/model');
@@ -63,26 +64,49 @@ exports.hasRole = (context, userId, roleName) => {
 		});
 };
 
-exports.hasPermission = (permissionName) => (context) => {
-	const { params: { account, provider }, app } = context;
-	// If it was an internal call then skip this context
-	if (!provider) {
-		return Promise.resolve(context);
-	}
+/**
+ * @param  {string, array[string]} inputPermissions
+ * @returns resolves if the current user has ANY of the given permissions
+ */
+const hasPermission = (inputPermissions) => {
+	const permissionNames = (typeof inputPermissions === 'string') ? [inputPermissions] : inputPermissions;
 
-	// Otherwise check for user permissions
-	if (!account && !account.userId) {
-		throw new Forbidden('Can not read account data.');
-	}
+	return (context) => {
+		const { params: { account, provider }, app } = context;
+		// If it was an internal call then skip this context
+		if (!provider) {
+			return Promise.resolve(context);
+		}
 
-	return app.service('/users/').get(account.userId)
-		.then(({ permissions = [] }) => {
-			if (!permissions.includes(permissionName)) {
-				throw new Forbidden(`You don't have the permission ${permissionName}.`);
-			}
-			return context;
-		});
+		if (!account && !account.userId) {
+			throw new Forbidden('Can not read account data');
+		}
+
+		// Otherwise check for user permissions
+		return app.service('users').get(account.userId)
+			.then(({ permissions = [] }) => {
+				const hasAnyPermission = permissionNames.some((perm) => permissions.includes(perm));
+				if (!hasAnyPermission) {
+					throw new Forbidden(`You don't have one of the permissions: ${permissionNames.join(', ')}.`);
+				}
+				return Promise.resolve(context);
+			});
+	};
 };
+
+/**
+ * @param  {string, array[string]} permissions
+ * @returns resolves if the current user has ALL of the given permissions
+ */
+exports.hasAllPermissions = (permissions) => {
+	const permissionNames = (typeof permissions === 'string') ? permissions : [permissions];
+	return (context) => {
+		const hasPermissions = permissionNames.every((permission) => hasPermission(permission)(context));
+		return Promise.all(hasPermissions);
+	};
+};
+
+exports.hasPermission = hasPermission;
 
 /*
     excludeOptions = false => allways remove response
@@ -313,7 +337,7 @@ exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 	if (['get', 'find', 'remove'].includes(context.method)) {
 		if (params.query.schoolId === undefined) {
 			params.query.schoolId = user.schoolId;
-		} else if (params.query.schoolId !== currentSchoolId) {
+		} else if (!equalIds(params.query.schoolId, currentSchoolId)) {
 			throw new Forbidden('You do not have valid permissions to access this.');
 		}
 	} else if (context.data.schoolId === undefined) {
@@ -331,12 +355,12 @@ exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 const userIsInThatCourse = (user, { userIds = [], teacherIds = [], substitutionIds = [] }, isCourse) => {
 	const userId = user._id.toString();
 	if (isCourse) {
-		return userIds.some((u) => u.toString() === userId)
-            || teacherIds.some((u) => u.toString() === userId)
-            || substitutionIds.some((u) => u.toString() === userId);
+		return userIds.some((u) => equalIds(u, userId))
+            || teacherIds.some((u) => equalIds(u, userId))
+            || substitutionIds.some((u) => equalIds(u, userId));
 	}
 
-	return userIds.some((u) => u.toString() === userId) || testIfRoleNameExist(user, 'teacher');
+	return userIds.some((u) => equalIds(u, userId)) || testIfRoleNameExist(user, 'teacher');
 };
 
 exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) => {
@@ -366,9 +390,10 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 });
 
 exports.mapPayload = (context) => {
-	logger.log('warning',
+	logger.info(
 		'DEPRECATED: mapPayload hook should be used to ensure backwards compatibility only, and be removed if possible.'
-		+ ` path: ${context.path} method: ${context.method}`);
+		+ ` path: ${context.path} method: ${context.method}`,
+	);
 	if (context.params.payload) {
 		context.params.authentication = Object.assign(
 			{},
@@ -378,15 +403,15 @@ exports.mapPayload = (context) => {
 	}
 	Object.defineProperty(context.params, 'payload', {
 		get() {
-			logger.log(
-				'warning', 'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
+			logger.warning(
+				'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
 				+ ` path: ${context.path} method: ${context.method}`,
 			);
 			return (context.params.authentication || {}).payload;
 		},
 		set(v) {
-			logger.log(
-				'warning', 'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
+			logger.warning(
+				'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
 				+ `path: ${context.path} method: ${context.method}`,
 			);
 			if (!context.params.authentication) context.params.authentication = {};
@@ -465,8 +490,8 @@ exports.restrictToUsersOwnClasses = (context) => getUser(context).then((user) =>
 		const classService = context.app.service('classes');
 		return classService.get(context.id).then((result) => {
 			const userId = context.params.account.userId.toString();
-			if (!(_.some(result.userIds, (u) => u.toString() === userId))
-					&& !(_.some(result.teacherIds, (u) => u.toString() === userId))) {
+			if (!(_.some(result.userIds, (u) => equalIds(u, userId)))
+					&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
 				throw new Forbidden('You are not in that class.');
 			}
 		});

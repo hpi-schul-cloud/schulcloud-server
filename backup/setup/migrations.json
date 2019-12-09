@@ -204,6 +204,17 @@
     "__v": 0
 },
 {
+    "_id": {
+		"$oid": "5d9db0a97bd9ad01a1734817"
+	},
+    "state": "up",
+    "name": "granular_user_permissions",
+    "createdAt": {
+		"$date": "2019-10-09T12:46:22.613Z"
+	},
+    "__v": 0
+},
+{
     "_id" : {
 		"$oid": "5da051503921a638b07b0ccf"
 	},
@@ -247,7 +258,7 @@
 	},
 	"__v" : 0
 },
-{ 
+{
     "_id" : {
 		"$oid": "5dc18974ba666b70ac1199e5"
 	},
@@ -255,6 +266,17 @@
     "name" : "add-enterthecloud-start-permission",
     "createdAt" : {
 		"$date": "2019-11-05T14:38:44.172Z"
+	},
+    "__v" : 0
+},
+{
+    "_id" : {
+		"$oid":"5de50ab801498f0f504d349e"
+	},
+    "state" : "up",
+    "name" : "fix-demo-permissions",
+    "createdAt" : {
+		"$date": "2019-12-02T12:59:36.284Z"
 	},
     "__v" : 0
 }]

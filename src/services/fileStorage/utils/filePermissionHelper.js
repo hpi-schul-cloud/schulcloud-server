@@ -5,6 +5,7 @@ const { userModel } = require('../../user/model');
 const RoleModel = require('../../role/model');
 const { sortRoles } = require('../../role/utils/rolesHelper');
 const { submissionModel: Submission, homeworkModel: Homework } = require('../../homework/model');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const getFile = (id) => FileModel
 	.findOne({ _id: id })
@@ -34,15 +35,15 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 		let rolesToTest = [role];
 		while (rolesToTest.length > 0 && rolePermissions === undefined) {
 			const roleId = rolesToTest.pop().toString();
-			rolePermissions = permissions.find((perm) => perm.refId.toString() === roleId);
+			rolePermissions = permissions.find((perm) => equalIds(perm.refId, roleId));
 			rolesToTest = rolesToTest.concat(roleIndex[roleId].roles || []);
 		}
 
 		const { role: creatorRole } = file.owner.userIds
-			.find((_) => _.userId.toString() === file.permissions[0].refId.toString());
+			.find((_) => equalIds(_.userId, file.permissions[0].refId));
 
 		const findRole = (roleId) => (roles) => roles
-			.findIndex((r) => r._id.toString() === roleId.toString()) > -1;
+			.findIndex((r) => equalIds(r._id, roleId)) > -1;
 
 		const userPos = sortedTeamRoles.findIndex(findRole(role));
 		const creatorPos = sortedTeamRoles.findIndex(findRole(creatorRole));
@@ -74,7 +75,7 @@ const checkPermissions = (permission) => async (user, file) => {
 	} = fileObject;
 
 	// return always true for owner of file
-	if (user.toString() === owner.toString()) {
+	if (equalIds(user, owner)) {
 		return Promise.resolve(true);
 	}
 
@@ -102,7 +103,7 @@ const checkPermissions = (permission) => async (user, file) => {
 			}
 			if (isStudent) {
 				const rolePermissions = permissions.find(
-					(perm) => perm.refId && perm.refId.toString() === isStudent._id.toString(),
+					(perm) => perm.refId && equalIds(perm.refId, isStudent._id),
 				);
 				return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
 			}
@@ -112,6 +113,7 @@ const checkPermissions = (permission) => async (user, file) => {
 	}
 
 	const isMember = checkMemberStatus({ file: fileObject, user });
+
 	// User is no member of team or course
 	// and file has no explicit user permissions (sharednetz files)
 	if (!isMember && !userPermissions) {
