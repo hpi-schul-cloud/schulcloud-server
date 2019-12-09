@@ -128,8 +128,11 @@ const displayInternRequests = (level) => (context) => {
  * @param {Object} context feathers context
  */
 const handleAutoLogout = async (context) => {
-	if (getRedisClient() && (context.params.headers || {}).authorization) {
-		const redisIdentifier = getRedisIdentifier(context.params.headers.authorization);
+	const ignoreRoute = (context.path === 'jwtTimer' && context.method === 'get');
+	const redisClientExists = !!getRedisClient();
+	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
+	if (!ignoreRoute && redisClientExists && authorizedRequest) {
+		const redisIdentifier = getRedisIdentifier(context.params.authentication.accessToken);
 		const redisResponse = await redisGetAsync(redisIdentifier);
 		if (redisResponse) {
 			await redisSetAsync(
@@ -165,7 +168,7 @@ const errorHandler = (context) => {
 	throw new GeneralError('server error');
 };
 
-module.exports = function setup(app) {
+function setup(app) {
 	const before = {
 		all: [handleAutoLogout],
 		find: [],
@@ -202,4 +205,6 @@ module.exports = function setup(app) {
 		before.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
 	}
 	app.hooks({ before, after, error });
-};
+}
+
+module.exports = { setup, handleAutoLogout };

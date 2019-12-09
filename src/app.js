@@ -23,7 +23,7 @@ const sentry = require('./middleware/sentry');
 
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
-const allHooks = require('./app.hooks');
+const { setup: setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
 const app = express(feathers());
@@ -72,7 +72,7 @@ app.use(compress())
 	.configure(services)
 	.configure(sockets)
 	.configure(middleware)
-	.configure(allHooks)
+	.configure(setupAppHooks)
 	.configure(errorHandler);
 
 module.exports = app;
