@@ -12,6 +12,7 @@ const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
 const KeysModel = require('../services/keys/model');
+const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE } = require('../../config/globals');
 // Add any common hooks you want to share across services in here.
 
 const { extractTokenFromBearerHeader } = require('../services/authentication/logic');
@@ -538,12 +539,25 @@ exports.checkSchoolOwnership = (context) => {
 		});
 };
 
+function validatedAttachmentsSize(attachments) {
+	let cTotalBufferSize = 0;
+	attachments.forEach((element) => {
+		cTotalBufferSize += element.size;
+		if (cTotalBufferSize >= MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE) {
+			throw new BadRequest('Email Attachments exceed the max. total file limit.');
+		}
+	});
+}
+
 // TODO: later: Template building
 // z.B.: maildata.template =
 //   { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
 // if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
 // mail.html = generatedHtml || "";
 exports.sendEmail = (context, maildata) => {
+	const files = maildata.attachments || [];
+	if (files) { validatedAttachmentsSize(files); }
+
 	const userService = context.app.service('/users');
 	const mailService = context.app.service('/mails');
 
@@ -553,19 +567,12 @@ exports.sendEmail = (context, maildata) => {
 	const receipients = [];
 
 	// create email attachments
-	const files = maildata.attachments || [];
 	const attachments = [];
-	let cTotalBufferSize = 0;
-	const maxTotalBufferSize = 2 * 1024 * 1024; // 5 MB
 	files.forEach((element) => {
-		const imgBuffer = Buffer.from(element.data);
-		cTotalBufferSize += imgBuffer.length;
-		if (cTotalBufferSize < maxTotalBufferSize) {
-			attachments.push({ filename: element.name, content: imgBuffer });
-		} else {
-			/* eslint-disable-next-line */
-			logger.error(`Email Attachments exceed the max. total file limit of ${maxTotalBufferSize} byte. Some attachments might be missing!`);
-			maildata.content.text += '\nEmail Attachments exceed file limit. Some attachments might be missing!';
+		try {
+			attachments.push({ filename: element.name, content: Buffer.from(element.data) });
+		} catch (error) {
+			throw new Error('Unexpected Error while creating Attachment.');
 		}
 	});
 
