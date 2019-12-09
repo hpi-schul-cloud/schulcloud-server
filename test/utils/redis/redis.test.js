@@ -67,22 +67,36 @@ describe('redis helpers', () => {
 		});
 	});
 
-	/* let redisHelperWithServer;
+	describe('with a redis server', () => {
+		let redisHelpers;
 
-	before(async () => {
-		mockery.enable({
-			warnOnReplace: false,
-			warnOnUnregistered: false,
-			useCleanCache: true,
+		before(async () => {
+			mockery.enable({
+				warnOnReplace: false,
+				warnOnUnregistered: false,
+				useCleanCache: true,
+			});
+			mockery.registerMock('redis', redisMock);
+
+			delete require.cache[require.resolve('../../../src/utils/redis')];
+			redisHelpers = require('../../../src/utils/redis');
+
+			redisHelpers.initializeRedisClient({
+				Config: { data: { REDIS_URI: '//validHost:6379' } },
+			});
 		});
-		mockery.registerMock('redis', redisMock);
-		redisHelperWithServer = require('../../../src/utils/redis');
+
+		after(async () => {
+			mockery.deregisterAll();
+			mockery.disable();
+		});
+
+		it('getRedisClient returns a client object', () => {
+			const redisClient = redisHelpers.getRedisClient();
+			expect(redisClient).to.not.equal(false);
+			expect(redisClient).to.have.property('set');
+			expect(redisClient).to.have.property('get');
+			expect(redisClient).to.have.property('del');
+		});
 	});
-
-	it('creates a redisClient if an URL is given', async () => {
-		redisHelperWithServer.initializeRedisClient({
-			Config: { data: { REDIS_URI: '//validHost:6379' } },
-		});
-		expect(redisHelperWithServer.getRedisClient).to.not.equal(false);
-	}); */
 });
