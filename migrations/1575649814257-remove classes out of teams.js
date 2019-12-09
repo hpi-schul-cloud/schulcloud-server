@@ -16,28 +16,35 @@ module.exports = {
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
 		const teams = await Teams.find({ 'classIds.0': { $exists: true } }).exec();
-		console.info(`found ${teams.length} teams having classes...`);
+		info(`found ${teams.length} teams having classes...`);
 		const errors = [];
 		for (const team of teams) {
 			try {
-				console.info(`start updating team ${String(team._id)}...`);
-				const classIds = (team.classIds || []).map((classId) => String(classId));
-				console.log(`following classIds will be removed: ${JSON.stringify(classIds)}`);
+				info(`start updating team ${String(team._id)}...`);
+				const classIds = team.classIds.map((classId) => String(classId));
+				info(`following classIds will be removed: ${JSON.stringify(classIds)}`);
 				team.classIds = [];
 				await team.save();
-				console.info(`updating team ${String(team._id)} finished successfully`);
+				info(`updating team ${String(team._id)} finished`);
 			} catch (e) {
 				const message = `error updating team ${String(team._id)}`;
 				errors.push(message);
-				console.error(message, e);
+				error(message, e);
 			}
 		}
+		const teamsAfter = await Teams.find({ 'classIds.0': { $exists: true } }).exec();
+		info(`By now, ${teamsAfter.length} teams having classes...`);
+
 
 		// ////////////////////////////////////////////////////
 		await close();
 
+		if (teamsAfter.length !== 0) {
+			throw new Error(`there were ${teamsAfter.length} teams not updated successfully!`);
+		}
+
 		if (errors.length !== 0) {
-			throw new Error(`there were ${errors.length} errors occured, `);
+			throw new Error(`there were ${errors.length} errors occured!`);
 		}
 		return Promise.resolve();
 	},
@@ -46,7 +53,7 @@ module.exports = {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
-		console.error('check up logs for manually undo this migration');
+		error('check up logs for manually undo this migration');
 		// ////////////////////////////////////////////////////
 		await close();
 		return Promise.resolve();
