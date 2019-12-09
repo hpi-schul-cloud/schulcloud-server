@@ -309,6 +309,7 @@ describe('handleAutoLogout hook', () => {
 	after(async () => {
 		mockery.deregisterAll();
 		mockery.disable();
+		cleanup();
 	});
 
 	it('whitelisted JWT is accepted and extended', async () => {

@@ -141,19 +141,22 @@ const removeJwtFromWhitelist = async (context) => {
 	return context;
 };
 
-exports.before = {
-	create: [
-		updateUsernameForLDAP,
-		lowerCaseUsername,
-		bruteForceCheck,
-		injectUserId,
-		removeProvider,
-	],
-	remove: [removeProvider],
+const hooks = {
+	before: {
+		create: [
+			updateUsernameForLDAP,
+			lowerCaseUsername,
+			bruteForceCheck,
+			injectUserId,
+			removeProvider,
+		],
+		remove: [removeProvider],
+	},
+	after: {
+		all: [discard('account.password')],
+		create: [bruteForceReset, addJwtToWhitelist],
+		remove: [populateResult, removeJwtFromWhitelist],
+	},
 };
 
-exports.after = {
-	all: [discard('account.password')],
-	create: [bruteForceReset, addJwtToWhitelist],
-	remove: [populateResult, removeJwtFromWhitelist],
-};
+module.exports = { hooks, removeJwtFromWhitelist, addJwtToWhitelist };
