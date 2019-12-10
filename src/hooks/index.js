@@ -389,11 +389,14 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 	return context;
 });
 
+const isProductionMode = process.env.NODE_ENV === 'production';
 exports.mapPayload = (context) => {
-	logger.info(
-		'DEPRECATED: mapPayload hook should be used to ensure backwards compatibility only, and be removed if possible.'
-		+ ` path: ${context.path} method: ${context.method}`,
-	);
+	if (!isProductionMode) {
+		logger.info(
+			'DEPRECATED: mapPayload hook should be used to ensure backwards compatibility only, '
+			+ `and be removed if possible. path: ${context.path} method: ${context.method}`,
+		);
+	}
 	if (context.params.payload) {
 		context.params.authentication = Object.assign(
 			{},

@@ -125,14 +125,15 @@ const displayInternRequests = (level) => (context) => {
  */
 const errorHandler = (context) => {
 	if (context.error) {
-		// too much for logging...
 		if (context.error.hook) {
+			// too much for logging...
 			delete context.error.hook;
 		}
 
-		// statusCode is return by extern services / or mocks that use express res.status(myCodeNumber)
-		if (!context.error.code && !context.error.statusCode) {
-			context.error = new GeneralError(context.error.message || 'server error', context.error.stack || '');
+		if (!context.error.type || context.error.type !== 'FeathersError') {
+			context.error = new GeneralError(context.error.message || 'Server Error', context.error.stack);
+		} else if (!context.error.code) {
+			context.error.code = context.error.statusCode || 500;
 		}
 
 		return context;
