@@ -539,9 +539,15 @@ exports.checkSchoolOwnership = (context) => {
 		});
 };
 
-function validatedAttachmentsSize(attachments) {
+function validatedAttachments(attachments) {
 	let cTotalBufferSize = 0;
 	attachments.forEach((element) => {
+		if (!element.mimetype.includes('image/')
+		&& !element.mimetype.includes('video/')
+		&& !element.mimetype.includes('application/msword')
+		&& !element.mimetype.includes('application/pdf')) {
+			throw new Error('Email Attachment is not a valid file!');
+		}
 		cTotalBufferSize += element.size;
 		if (cTotalBufferSize >= MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE) {
 			throw new BadRequest('Email Attachments exceed the max. total file limit.');
@@ -556,7 +562,7 @@ function validatedAttachmentsSize(attachments) {
 // mail.html = generatedHtml || "";
 exports.sendEmail = (context, maildata) => {
 	const files = maildata.attachments || [];
-	if (files) { validatedAttachmentsSize(files); }
+	if (files) { validatedAttachments(files); }
 
 	const userService = context.app.service('/users');
 	const mailService = context.app.service('/mails');
