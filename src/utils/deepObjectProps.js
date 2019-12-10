@@ -39,6 +39,9 @@ const get = (obj, ...paths) => { // TODO: write tests!
 
 // const set = () => {}; // TODO: Add it!
 
+// action = () => {}
+// delete = () => {}
+
 module.exports = {
 	get,
 	pathToArray,
