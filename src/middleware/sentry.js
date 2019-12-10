@@ -23,16 +23,24 @@ const removeIdMiddleware = (event) => {
 	if (event.request) {
 		// eslint-disable-next-line camelcase
 		const { request: { data, url, query_string } } = event;
-
-		event.request.data = replaceIds(data);
-		event.request.url = replaceIds(url);
-		event.request.query_string = replaceIds(query_string);
+		if (data) {
+			event.request.data = replaceIds(data);
+		}
+		if (url) {
+			event.request.url = replaceIds(url);
+		}
+		// eslint-disable-next-line camelcase
+		if (query_string) {
+			event.request.query_string = replaceIds(query_string);
+		}
 	}
 	return event;
 };
 
 const removeJwtToken = (event) => {
-	if (event.request) {
+	if (event && event.request
+		&& event.request.headers
+		&& event.request.headers.authorization) {
 		delete event.request.headers.authorization;
 	}
 	return event;
