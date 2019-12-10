@@ -13,7 +13,7 @@ let years = null;
 
 const getDefaultFileStorageType = () => {
 	if (!fileStorageTypes || !fileStorageTypes.length) {
-		return void 0;
+		return undefined;
 	}
 	return fileStorageTypes[0];
 };

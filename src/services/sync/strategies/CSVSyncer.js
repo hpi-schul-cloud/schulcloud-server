@@ -1,6 +1,9 @@
 const parse = require('csv-parse/lib/sync');
 const stripBOM = require('strip-bom');
+const { mix } = require('mixwith');
+
 const Syncer = require('./Syncer');
+const ClassImporter = require('./mixins/ClassImporter');
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
@@ -42,7 +45,7 @@ const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
  * @class CSVSyncer
  * @implements {Syncer}
  */
-class CSVSyncer extends Syncer {
+class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	constructor(app, stats = {}, logger, options = {}, requestParams = {}) {
 		super(app, stats, logger);
 
@@ -58,12 +61,6 @@ class CSVSyncer extends Syncer {
 			},
 			invitations: {
 				successful: 0,
-				failed: 0,
-			},
-			classes: {
-				successful: 0,
-				created: 0,
-				updated: 0,
 				failed: 0,
 			},
 		});
@@ -361,7 +358,10 @@ class CSVSyncer extends Syncer {
 	async createClasses(record, user) {
 		if (user === undefined) return;
 		const classes = CSVSyncer.splitClasses(record.class);
-		const classMapping = await this.buildClassMapping(classes);
+		const classMapping = await this.buildClassMapping(classes, {
+			schoolId: this.options.schoolId,
+			year: this.options.schoolYear._id,
+		});
 
 		const actions = classes.map(async (klass) => {
 			const classObject = classMapping[klass];
@@ -380,79 +380,6 @@ class CSVSyncer extends Syncer {
 
 	static splitClasses(classes) {
 		return classes.split('+').filter((name) => name !== '');
-	}
-
-	async getClassObject(klass) {
-		const formats = [
-			{
-				regex: /^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/,
-				values: async (string) => {
-					const gradeLevel = string.match(/^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/)[1];
-
-					return {
-						name: string.match(/^(?:0)*(?:(?:1[0-3])|[1-9])(\D.*)$/)[1],
-						gradeLevel,
-					};
-				},
-			},
-			{
-				regex: /(.*)/,
-				values: (string) => ({
-					name: string,
-				}),
-			},
-		];
-		const classNameFormat = formats.find((format) => format.regex.test(klass));
-		if (classNameFormat !== undefined) {
-			const result = {
-				...await classNameFormat.values(klass),
-				schoolId: this.options.schoolId,
-			};
-			if (this.options.schoolYear) {
-				result.year = this.options.schoolYear._id;
-			}
-			return result;
-		}
-		throw new Error('Class name does not match any format:', klass);
-	}
-
-	async buildClassMapping(classes) {
-		const classMapping = {};
-		const uniqueClasses = [...new Set(classes)];
-		await Promise.all(uniqueClasses.map(async (klass) => {
-			try {
-				if (classMapping[klass] === undefined) {
-					const classObject = await this.getClassObject(klass);
-					classMapping[klass] = await this.findOrCreateClass(classObject);
-				}
-				this.stats.classes.successful += 1;
-			} catch (err) {
-				this.stats.classes.failed += 1;
-				this.stats.errors.push({
-					type: 'class',
-					entity: klass,
-					message: err.message,
-				});
-				this.logError('Failed to create class', klass, err);
-			}
-			return Promise.resolve();
-		}));
-		return classMapping;
-	}
-
-	async findOrCreateClass(classObject) {
-		const existing = await this.app.service('/classes').find({
-			query: classObject,
-			paginate: false,
-			lean: true,
-		});
-		if (existing.length === 0) {
-			const newClass = await this.app.service('/classes').create(classObject);
-			this.stats.classes.created += 1;
-			return newClass;
-		}
-		this.stats.classes.updated += 1;
-		return existing[0];
 	}
 }
 

@@ -1,10 +1,19 @@
-const path = require('path');
 const express = require('@feathersjs/express');
+const feathers = require('@feathersjs/feathers');
+const configuration = require('@feathersjs/configuration');
+const commons = require('@schul-cloud/commons');
+
+const app = express(feathers());
+const config = configuration();
+app.configure(config);
+
+// init & register configuration
+commons.Configuration.Instance.init({ app });
+
+const path = require('path');
 const favicon = require('serve-favicon');
 const compress = require('compression');
 const cors = require('cors');
-const feathers = require('@feathersjs/feathers');
-const configuration = require('@feathersjs/configuration');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
@@ -24,8 +33,6 @@ const setupSwagger = require('./swagger');
 const allHooks = require('./app.hooks');
 const versionService = require('./services/version');
 
-const app = express(feathers());
-const config = configuration();
 
 app.configure(config);
 setupSwagger(app);
