@@ -20,17 +20,21 @@ const replaceIds = (string) => {
  * @returns {SentryEvent || null} Return modified sentry event, or undefined to skip sending event
  */
 const removeIdMiddleware = (event) => {
-	// eslint-disable-next-line camelcase
-	const { request: { data, url, query_string } } = event;
+	if (event.request) {
+		// eslint-disable-next-line camelcase
+		const { request: { data, url, query_string } } = event;
 
-	event.request.data = replaceIds(data);
-	event.request.url = replaceIds(url);
-	event.request.query_string = replaceIds(query_string);
+		event.request.data = replaceIds(data);
+		event.request.url = replaceIds(url);
+		event.request.query_string = replaceIds(query_string);
+	}
 	return event;
 };
 
 const removeJwtToken = (event) => {
-	delete event.request.headers.authorization;
+	if (event.request) {
+		delete event.request.headers.authorization;
+	}
 	return event;
 };
 
