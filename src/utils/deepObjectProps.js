@@ -1,5 +1,7 @@
+const logger = require('../logger');
+
 const pathToArray = (...paths) => {
-	let keys;
+	let keys = [];
 	try {
 		paths.forEach((path) => {
 			let newKeys = [];
@@ -16,7 +18,7 @@ const pathToArray = (...paths) => {
 		});
 		return keys;
 	} catch (err) {
-		// TODO: log it?
+		logger.info(err);
 		return '';
 	}
 };

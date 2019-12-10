@@ -39,9 +39,7 @@ const removeIdMiddleware = (event) => {
 };
 
 const removeJwtToken = (event) => {
-	if (event && event.request
-		&& event.request.headers
-		&& event.request.headers.authorization) {
+	if (deepObjectProps.get(event, 'event.request.headers.authorization')) {
 		delete event.request.headers.authorization;
 	}
 	return event;
