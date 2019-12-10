@@ -23,7 +23,7 @@ const pathToArray = (...paths) => {
 	}
 };
 
-const get = (obj, ...paths) => { // TODO: write tests! 
+const get = (obj, ...paths) => { // TODO: write tests!
 	try {
 		let value = obj;
 
