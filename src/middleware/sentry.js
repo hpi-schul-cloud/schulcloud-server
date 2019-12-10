@@ -1,6 +1,7 @@
 const Sentry = require('@sentry/node');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
+const { deepObjectProps } = require('../utils/');
 
 /**
  * helpers
