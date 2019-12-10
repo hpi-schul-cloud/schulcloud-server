@@ -19,7 +19,7 @@ class JwtTimerService {
 			const redisIdentifier = getRedisIdentifier(params.authentication.accessToken);
 			return redisTtlAsync(redisIdentifier);
 		}
-		return Promise.resolve(0);
+		throw new MethodNotAllowed('this feature is disabled on this instance');
 	}
 
 	/**

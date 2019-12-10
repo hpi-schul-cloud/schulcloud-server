@@ -66,5 +66,61 @@ describe('jwtTimer service', () => {
 		});
 	});
 
+	describe('without redis instance', () => {
+		let redisHelper;
+
+		before(async () => {
+			mockery.enable({
+				warnOnReplace: false,
+				warnOnUnregistered: false,
+				useCleanCache: true,
+			});
+			mockery.registerMock('redis', redisMock);
+
+			delete require.cache[require.resolve('../../../../src/utils/redis')];
+			/* eslint-disable global-require */
+			redisHelper = require('../../../../src/utils/redis');
+			const { jwtTimerSetup } = require('../../../../src/services/account/services/jwtTimerService');
+			app.configure(jwtTimerSetup);
+			/* eslint-enable global-require */
+
+			redisHelper.initializeRedisClient({
+				Config: { data: { } },
+			});
+		});
+
+		after(async () => {
+			mockery.deregisterAll();
+			mockery.disable();
+			testObjects.cleanup();
+		});
+
+		it('FIND fails without redis server.', async () => {
+			const user = await testObjects.createTestUser();
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			try {
+				await app.service('/accounts/jwtTimer').find(params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(405);
+				expect(err.message).to.equal('this feature is disabled on this instance');
+			}
+		});
+
+		it('CREATE fails without redis server.', async () => {
+			const user = await testObjects.createTestUser();
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			try {
+				await app.service('/accounts/jwtTimer').create({}, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(405);
+				expect(err.message).to.equal('this feature is disabled on this instance');
+			}
+		});
+	});
+
 	after(testObjects.cleanup);
 });
