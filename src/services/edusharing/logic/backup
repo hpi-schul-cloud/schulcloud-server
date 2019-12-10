@@ -35,15 +35,8 @@ class EduSharingConnector {
 	}
 
 	static get authorization() {
-<<<<<<< HEAD
-		// todo, crete new account for schul cloud.
-		// https://mv-repo.schul-cloud.org/edu-sharing/components/permissions?mainnav=true
-		const userName = process.env.EDUUSERNAMER || 'admin';
-		const pw = process.env.EDUPASSWORD || '';
-=======
 		const userName = process.env.ES_USER;
 		const pw = process.env.ES_PASSWORD;
->>>>>>> 43cd6895... sanatize and formatting
 
 		const headers = Object.assign({}, EduSharingConnector.headers, {
 			Authorization: `Basic ${Buffer.from(`${userName}:${pw}`).toString('base64')}`,

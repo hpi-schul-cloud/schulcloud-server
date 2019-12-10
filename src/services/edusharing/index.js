@@ -1,5 +1,5 @@
-const { someService } = require('./services');
+const { eduSearch } = require('./services');
 
 module.exports = (app) => {
-	app.configure(someService);
+	app.configure(eduSearch);
 };

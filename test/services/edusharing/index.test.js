@@ -3,10 +3,10 @@ const app = require('../../../src/app');
 
 // const { someHelperFunction } = require('./helper');
 
-const someService = app.service('edusharing/someService');
+const eduSearch = app.service('edusharing/eduSearch');
 
 describe.only('insights service', () => {
 	it('registers correctly', () => {
-		expect(app.service('edusharing/someService')).to.not.equal(undefined);
+		expect(app.service('edusharing/eduSearch')).to.not.equal(undefined);
 	});
 });

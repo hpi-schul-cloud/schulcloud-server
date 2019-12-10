@@ -1,7 +1,6 @@
 const auth = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
-const { getCookie } = require('./getCookie');
 
 /* all: [auth.hooks.authenticate('jwt'), lookupSchool],
 	find: [globalHooks.hasPermission('INSIGHTS_VIEW')], */

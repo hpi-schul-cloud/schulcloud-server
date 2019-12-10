@@ -1,5 +1,5 @@
-const someService = require('./someService');
+const eduSearch = require('./eduSearch');
 
 module.exports = {
-	someService,
+	eduSearch,
 };

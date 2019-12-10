@@ -1,0 +1,5 @@
+# includes protocol and no trailing slash
+process.env.ES_DOMAIN=""
+# see edu-sharing instance for creating/editing users
+process.env.ES_USER=""
+process.env.ES_PASSWORD=""
