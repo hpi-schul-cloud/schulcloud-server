@@ -2,7 +2,9 @@ const auth = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const { MethodNotAllowed } = require('@feathersjs/errors');
 
-const { getRedisClient, redisSetAsync, redisTtlAsync, getRedisIdentifier } = require('../../../utils/redis');
+const {
+	getRedisClient, redisSetAsync, redisTtlAsync, getRedisIdentifier,
+} = require('../../../utils/redis');
 
 class JwtTimerService {
 	constructor(options) {
