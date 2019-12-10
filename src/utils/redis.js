@@ -8,9 +8,13 @@ let redisClient = false;
 function initializeRedisClient(app) {
 	const redisUrl = app.Config.data.REDIS_URI;
 	if (redisUrl) {
-		redisClient = redis.createClient({
-			url: redisUrl,
-		});
+		try {
+			redisClient = redis.createClient({
+				url: redisUrl,
+			});
+		} catch (err) {
+			throw new GeneralError('redis connection failed!', err);
+		}
 	}
 }
 
