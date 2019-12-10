@@ -19,7 +19,7 @@ const pathToArray = (...paths) => {
 		return keys;
 	} catch (err) {
 		logger.info(err);
-		return '';
+		return [];
 	}
 };
 
