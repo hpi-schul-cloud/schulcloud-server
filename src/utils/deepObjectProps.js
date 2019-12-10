@@ -37,7 +37,7 @@ const get = (obj, ...paths) => { // TODO: write tests!
 	}
 };
 
-const set = () => {}; // TODO: Add it!
+// const set = () => {}; // TODO: Add it!
 
 module.exports = {
 	get,
