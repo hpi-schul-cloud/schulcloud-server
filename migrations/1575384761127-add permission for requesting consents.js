@@ -5,7 +5,19 @@ const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-const Role = require('../src/services/role/model');
+const { Schema } = mongoose;
+
+const roleSchema = new Schema({
+	name: { type: String, required: true },
+	permissions: [{ type: String }],
+
+	// inheritance
+	roles: [{ type: Schema.Types.ObjectId }],
+}, {
+	timestamps: true,
+});
+
+const Role = mongoose.model('role323323', roleSchema, 'roles');
 
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
