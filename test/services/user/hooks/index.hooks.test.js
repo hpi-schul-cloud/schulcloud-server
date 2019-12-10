@@ -1,8 +1,10 @@
-const assert = require('assert');
 const mockery = require('mockery');
+const { expect } = require('chai');
 
 const app = require('../../../../src/app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(app);
+
+const { hasEditPermissionForUser } = require('../../../../src/services/user/hooks/index.hooks');
 
 const userService = app.service('users');
 
@@ -25,7 +27,7 @@ const hasPermissionHookMockGenerator = (loggedinUserPermissions = []) => {
 	mockery.registerMock('../../../hooks', globalHookMock);
 	// need to require it after the mocks got defined
 	// eslint-disable-next-line global-require
-	const { hasEditPermissionForUser: testHook } = require('./index.hooks');
+	const { hasEditPermissionForUser: testHook } = require('../../../../src/services/user/hooks/index.hooks');
 	return testHook;
 };
 
@@ -36,14 +38,25 @@ const hasPermissionHookMockGenerator = (loggedinUserPermissions = []) => {
  * @returns the promise
  */
 const assertPromiseStatus = (promise, success) => promise.then((result) => {
-	assert.ok(success);
+	expect(success).to.be.ok;
 	return result;
 }).catch((error) => {
-	assert.ok(!success);
+	expect(success).to.not.be.ok;
 	return error;
 });
 
-describe('user index hooks', () => {
+describe('hasEditPermissionForUser', () => {
+	it('can edit your own user', async () => {
+		const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
+		const params = await testObjects.generateRequestParamsFromUser(teacherUser);
+		const context = {
+			id: teacherUser._id,
+			params,
+		};
+		const result = await hasEditPermissionForUser(context);
+		expect(result).to.deep.equal(context);
+	});
+
 	it('can edit a student when current user has the STUDENT_EDIT permission', async () => {
 		const testHook = hasPermissionHookMockGenerator(['STUDENT_EDIT']);
 		const { _id: targetId } = await testObjects.createTestUser({ roles: ['student'] });
@@ -76,6 +89,7 @@ describe('user index hooks', () => {
 		assertPromiseStatus(testHook(context), true);
 		mockery.disable();
 	});
+
 
 	it('can not edit a teacher when current user has not the TEACHER_EDIT permission', async () => {
 		const testHook = hasPermissionHookMockGenerator([]);
