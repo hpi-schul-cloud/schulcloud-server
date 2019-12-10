@@ -1,5 +1,4 @@
 const assert = require('assert');
-const { decode } = require('jsonwebtoken');
 
 const { expect } = require('chai');
 const mockery = require('mockery');
