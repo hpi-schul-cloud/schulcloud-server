@@ -56,7 +56,7 @@ app.use(compress())
 	.use(defaultHeaders)
 	.get('/testrun', async (req, res, next) => {
 		const t1 = Date.now();
-		await delay(2000 + getRandomInt(3000));
+		await delay(5000 + getRandomInt(0));
 		const t2 = Date.now();
 		const response = {
 			t1,
