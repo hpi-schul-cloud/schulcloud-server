@@ -56,7 +56,7 @@ const fileSchema = new Schema({
 	isDirectory: { type: Boolean, default: false }, // should be required
 	name: { type: String, required: true },
 	size: { type: Number, required() { return !this.isDirectory; } },
-	type: { type: String, required() { return !this.isDirectory; } },
+	type: { type: String }, // todo add required but then wopi fails
 	storageFileName: { type: String, required() { return !this.isDirectory; } },
 	thumbnail: { type: String },
 	thumbnailRequestToken: { type: String, default: uuid },
