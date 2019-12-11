@@ -8,6 +8,7 @@ const configuration = require('@feathersjs/configuration');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
+const delay = require('delay');
 const { ObjectId } = require('mongoose').Types;
 
 const middleware = require('./middleware');
@@ -49,6 +50,19 @@ app.use(compress())
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 	.use(versionService)
 	.use(defaultHeaders)
+	.get('/testrun', async (req, res, next) => {
+		const t1 = Date.now();
+		await delay(5000);
+		const t2 = Date.now();
+		const response = {
+			t1,
+			t2,
+			delta: t2 - t1,
+			hallo: 'server',
+		};
+		// console.log(response);
+		res.json(response);
+	})
 	.get('/system_info/haproxy', (req, res) => { res.send({ timestamp: new Date().getTime() }); })
 	.get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
 	.configure(rest(handleResponseType))
