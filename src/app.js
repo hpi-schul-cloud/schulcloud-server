@@ -39,6 +39,10 @@ if (process.env.KEEP_ALIVE) {
 	});
 }
 
+function getRandomInt(max) {
+	return Math.floor(Math.random() * Math.floor(max));
+}
+
 app.use(compress())
 	.options('*', cors())
 	.use(cors())
@@ -52,7 +56,7 @@ app.use(compress())
 	.use(defaultHeaders)
 	.get('/testrun', async (req, res, next) => {
 		const t1 = Date.now();
-		await delay(5000);
+		await delay(2000 + getRandomInt(3000));
 		const t2 = Date.now();
 		const response = {
 			t1,
