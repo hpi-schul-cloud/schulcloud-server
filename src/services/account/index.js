@@ -65,6 +65,8 @@ module.exports = (app) => {
 
 	app.use('/accounts/pwgen', new PasswordGenService());
 
+	app.configure(jwtTimerSetup);
+
 	app.use('/accounts', service(options));
 
 	app.configure(supportJWTServiceSetup);
@@ -80,5 +82,4 @@ module.exports = (app) => {
 
 	accountService.hooks(hooks);
 
-	app.configure(jwtTimerSetup);
 };

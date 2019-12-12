@@ -17,10 +17,11 @@ class JwtTimerService {
 	 * this is the only authenticated request that does not reset said timer.
 	 * @param {Object} params feathers params
 	 */
-	find(params) {
+	async find(params) {
 		if (getRedisClient()) {
 			const redisIdentifier = getRedisIdentifier(params.authentication.accessToken);
-			return redisTtlAsync(redisIdentifier);
+			const redisResponse = await redisTtlAsync(redisIdentifier);
+			return Promise.resolve({ ttl: redisResponse });
 		}
 		throw new MethodNotAllowed('this feature is disabled on this instance');
 	}
@@ -36,7 +37,7 @@ class JwtTimerService {
 			await redisSetAsync(
 				redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', this.app.Config.data.JWT_TIMEOUT_SECONDS,
 			);
-			return this.app.Config.data.JWT_TIMEOUT_SECONDS;
+			return Promise.resolve({ ttl: this.app.Config.data.JWT_TIMEOUT_SECONDS });
 		}
 		throw new MethodNotAllowed('this feature is disabled on this instance');
 	}
@@ -49,7 +50,12 @@ class JwtTimerService {
 const docs = {
 	definitions: {
 		jwtTimer: {
-			type: 'integer',
+			type: 'object',
+			properties: {
+				ttl: {
+					type: 'integer',
+				},
+			},
 		},
 	},
 	operations: {
@@ -62,11 +68,10 @@ const docs = {
 			responses: {
 				200: {
 					description: 'success',
-					content: { 'application/json': { schema: { type: 'integer' } } },
+					content: { 'application/json': { schema: { $ref: '#/components/schemas/jwtTimer' } } },
 				},
 				405: {
 					description: 'feature is disabled on this instance',
-					content: { 'application/json': { schema: { type: 'integer' } } },
 				},
 			},
 		},
@@ -78,11 +83,10 @@ const docs = {
 			responses: {
 				200: {
 					description: 'success',
-					content: { 'application/json': { schema: { type: 'integer' } } },
+					content: { 'application/json': { schema: { $ref: '#/components/schemas/jwtTimer' } } },
 				},
 				405: {
 					description: 'feature is disabled on this instance',
-					content: { 'application/json': { schema: { type: 'integer' } } },
 				},
 			},
 		},

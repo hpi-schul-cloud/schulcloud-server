@@ -49,7 +49,7 @@ describe('jwtTimer service', () => {
 			await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
 
 			const result = await app.service('/accounts/jwtTimer').find(params);
-			expect(result).to.equal(1000);
+			expect(result.ttl).to.equal(1000);
 		});
 
 		it('CREATE resets the ttl on the jwt that is used', async () => {
