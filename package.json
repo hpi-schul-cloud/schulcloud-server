@@ -47,6 +47,7 @@
 		"ajv": "^6.10.2",
 		"async": "^2.6.3",
 		"aws-sdk": "^2.306.0",
+		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
 		"body-parser": "^1.15.2",
 		"chai": "^4.2.0",
