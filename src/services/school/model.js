@@ -58,7 +58,7 @@ const schoolSchema = new Schema({
 	logo_dataUrl: { type: String },
 	purpose: { type: String },
 	rssFeeds: [{ type: rssFeedSchema }],
-	features: [{ type: String, enum: ['rocketChat', 'disableStudentTeamCreation'] }],
+	features: [{ type: String, enum: ['rocketChat', 'disableStudentTeamCreation', 'videoconference'] }],
 	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below)
 }, {
 	timestamps: true,
