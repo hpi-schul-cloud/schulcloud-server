@@ -179,7 +179,7 @@ const errorHandler = (context) => {
 	throw new GeneralError('server error');
 };
 
-function setup(app) {
+function setupAppHooks(app) {
 	const before = {
 		all: [iff(isProvider('external'), handleAutoLogout)],
 		find: [],
@@ -218,4 +218,4 @@ function setup(app) {
 	app.hooks({ before, after, error });
 }
 
-module.exports = { setup, handleAutoLogout };
+module.exports = { setupAppHooks, handleAutoLogout };

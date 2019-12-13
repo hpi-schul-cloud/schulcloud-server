@@ -23,7 +23,7 @@ const sentry = require('./middleware/sentry');
 
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
-const { setup: setupAppHooks } = require('./app.hooks');
+const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
 const app = express(feathers());
