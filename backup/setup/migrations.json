@@ -290,5 +290,16 @@
 		"$date": "2019-10-09T10:04:25.556Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5df0d35872a8731352bf769f"
+	},
+	"state": "up",
+	"name": "remove invalid files from collection",
+	"createdAt": {
+		"$date": "2019-12-11T10:20:29.714Z"
+	},
+	"__v": 0
 }]
 
