@@ -328,7 +328,7 @@ describe('handleAutoLogout hook', () => {
 		const user = await createTestUser();
 		const params = await generateRequestParamsFromUser(user);
 		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
-		await redisHelper.redisDelAsync(redisIdentifier, 'value');
+		await redisHelper.redisDelAsync(redisIdentifier);
 		try {
 			await fut({
 				params, app: { Config: { data: { REDIS_URI: '//validHost:6379', JWT_TIMEOUT_SECONDS: 7200 } } },
@@ -345,7 +345,7 @@ describe('handleAutoLogout hook', () => {
 		const user = await createTestUser();
 		const params = await generateRequestParamsFromUser(user);
 		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
-		await redisHelper.redisDelAsync(redisIdentifier, 'value');
+		await redisHelper.redisDelAsync(redisIdentifier);
 		const result = await fut({
 			params,
 			app: {
