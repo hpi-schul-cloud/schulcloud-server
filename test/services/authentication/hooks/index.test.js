@@ -33,7 +33,7 @@ describe('authentication hooks', () => {
 	after(async () => {
 		mockery.deregisterAll();
 		mockery.disable();
-		cleanup();
+		await cleanup();
 	});
 
 	it('addJwtToWhitelist', async () => {

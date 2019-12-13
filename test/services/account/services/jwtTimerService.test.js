@@ -39,7 +39,7 @@ describe('jwtTimer service', () => {
 		after(async () => {
 			mockery.deregisterAll();
 			mockery.disable();
-			testObjects.cleanup();
+			await testObjects.cleanup();
 		});
 
 		it('FIND returns the whitelist timeToLive on the JWT that is used', async () => {
@@ -91,7 +91,7 @@ describe('jwtTimer service', () => {
 		after(async () => {
 			mockery.deregisterAll();
 			mockery.disable();
-			testObjects.cleanup();
+			await testObjects.cleanup();
 		});
 
 		it('FIND fails without redis server.', async () => {
