@@ -2,7 +2,8 @@
 // Global hooks that run for every service
 const sanitizeHtml = require('sanitize-html');
 const Entities = require('html-entities').AllHtmlEntities;
-const { GeneralError } = require('@feathersjs/errors');
+const { GeneralError, BadRequest } = require('@feathersjs/errors');
+const { iff, isProvider } = require('feathers-hooks-common');
 
 const entities = new Entities();
 
@@ -46,7 +47,11 @@ const sanitize = (data, options) => {
  * @param data {object/array/string}
  * @returns data - clean without JS
  */
-const sanitizeDeep = (data, path) => {
+const maxDeep = 10;
+const sanitizeDeep = (data, path, depth = 0) => {
+	if (depth >= maxDeep) {
+		throw new BadRequest('Data level is to deep. (sanitizeDeep)', { path, data });
+	}
 	if (typeof data === 'object' && data !== null) {
 		Object.entries(data).forEach(([key, value]) => {
 			if (typeof value === 'string') {
@@ -57,7 +62,7 @@ const sanitizeDeep = (data, path) => {
                     && ['lessons', 'news', 'newsModel', 'homework', 'submissions'].includes(path);
 				data[key] = sanitize(value, { html: needsHtml });
 			} else {
-				sanitizeDeep(value, path);
+				sanitizeDeep(value, path, depth + 1);
 			}
 		});
 	} else if (typeof data === 'string') {
@@ -67,7 +72,7 @@ const sanitizeDeep = (data, path) => {
 			if (typeof data[i] === 'string') {
 				data[i] = sanitize(data[i], { html: false });
 			} else {
-				sanitizeDeep(data[i], path);
+				sanitizeDeep(data[i], path, depth + 1);
 			}
 		}
 	}
@@ -147,9 +152,21 @@ module.exports = function setup(app) {
 		all: [],
 		find: [],
 		get: [],
-		create: [sanitizeData, globalHooks.ifNotLocal(removeObjectIdInData)],
-		update: [sanitizeData],
-		patch: [sanitizeData],
+		create: [
+			iff(isProvider('external'), [
+				sanitizeData, removeObjectIdInData,
+			]),
+		],
+		update: [
+			iff(isProvider('external'), [
+				sanitizeData,
+			]),
+		],
+		patch: [
+			iff(isProvider('external'), [
+				sanitizeData,
+			]),
+		],
 		remove: [],
 	};
 
