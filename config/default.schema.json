@@ -25,7 +25,8 @@
 		},
 		"JWT_WHITELIST_ACCEPT_ALL": {
 			"type": "boolean",
-			"default": false
+			"default": false,
+			"description": "JWTs that are not in the whitelist are added to it, instead of invalidated. To be used for the first 2 hours after release."
 		}
 	},
 	"required": [
