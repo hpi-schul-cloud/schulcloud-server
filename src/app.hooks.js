@@ -3,6 +3,7 @@
 const sanitizeHtml = require('sanitize-html');
 const Entities = require('html-entities').AllHtmlEntities;
 const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
+const { iff, isProvider } = require('feathers-hooks-common');
 const {
 	getRedisClient, redisGetAsync, redisSetAsync, getRedisIdentifier, getRedisValue,
 } = require('./utils/redis');
@@ -180,7 +181,7 @@ const errorHandler = (context) => {
 
 function setup(app) {
 	const before = {
-		all: [handleAutoLogout],
+		all: [iff(isProvider('external'), handleAutoLogout)],
 		find: [],
 		get: [],
 		create: [sanitizeData, globalHooks.ifNotLocal(removeObjectIdInData)],
