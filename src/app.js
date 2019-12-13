@@ -21,7 +21,7 @@ const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 
 const setupSwagger = require('./swagger');
-const allHooks = require('./app.hooks');
+const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
 const app = express(feathers());
@@ -67,7 +67,7 @@ app.use(compress())
 	.configure(services)
 	.configure(sockets)
 	.configure(middleware)
-	.configure(allHooks)
+	.configure(setupAppHooks)
 	.configure(errorHandler);
 
 module.exports = app;

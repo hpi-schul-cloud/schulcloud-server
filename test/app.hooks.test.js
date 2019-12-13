@@ -5,6 +5,7 @@ const { ObjectId } = require('mongoose').Types;
 const { expect } = chai;
 
 const app = require('../src/app');
+const { sanitizeData } = require('../src/app.hooks');
 const { cleanup, createTestUser } = require('./services/helpers/testObjects')(app);
 
 describe.only('Sanitization Hook', () => {
