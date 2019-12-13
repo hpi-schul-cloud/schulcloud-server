@@ -7,7 +7,7 @@ const { expect } = chai;
 const app = require('../src/app');
 const { cleanup, createTestUser } = require('./services/helpers/testObjects')(app);
 
-describe('Sanitization Hook', () => {
+describe.only('Sanitization Hook', () => {
 	let server;
 
 	let newsService;
@@ -17,13 +17,20 @@ describe('Sanitization Hook', () => {
 
 	let currentUsedId;
 	let currentLessonId = null;
+	let createContext = () => ({});
 
 	before((done) => {
 		server = app.listen(0);
-		newsService = app.service('newsModel');
+		newsService = app.service('news');
 		helpdeskService = app.service('helpdesk');
 		courseService = app.service('courses');
 		lessonService = app.service('lessons');
+
+		createContext = () => ({
+			payload: { userId: '0000d213816abba584714c0a' },
+			account: { userId: '0000d213816abba584714c0a' },
+			provider: 'rest',
+		});
 		done();
 	});
 
@@ -37,7 +44,7 @@ describe('Sanitization Hook', () => {
 		done();
 	});
 
-	it('POST /news (Sanitization)', () => {
+	it('POST /news (Sanitization)', async () => {
 		const postBody = {
 			schoolId: '0000d186816abba584714c5f',
 			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
@@ -45,12 +52,12 @@ describe('Sanitization Hook', () => {
 					+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 		};
 
-		return newsService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
-			.then((result) => {
-				currentUsedId = result._id;
-				expect(result.title).to.equal('SanitizationTest äöüß§$%/()=');
-				expect(result.content).to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>äöüß§$%/()=');
-			});
+		const result = await newsService
+			.create(postBody, createContext());
+
+		currentUsedId = result._id;
+		expect(result.title).to.equal('SanitizationTest äöüß§$%/()=');
+		expect(result.content).to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>äöüß§$%/()=');
 	});
 
 	it('POST FAIL /news (Sanitization)', () => {
@@ -60,7 +67,7 @@ describe('Sanitization Hook', () => {
 			content: 'a',
 		};
 
-		return newsService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
+		return newsService.create(postBody, createContext())
 			.catch((exception) => {
 				expect(exception).to.not.be.undefined;
 				expect(exception.code).to.equal(400);
@@ -68,8 +75,9 @@ describe('Sanitization Hook', () => {
 			});
 	});
 
-	it('DELETE /news (Sanitization)',
-		() => newsService.remove(currentUsedId, { payload: { userId: '0000d213816abba584714c0a' } }).then((result) => {
+	it('DELETE /news (Sanitization)', () => newsService
+		.remove(currentUsedId, createContext())
+		.then((result) => {
 			expect(result).to.not.be.undefined;
 			expect(result.title).to.equal('SanitizationTest äöüß§$%/()=');
 		}));
@@ -91,7 +99,7 @@ describe('Sanitization Hook', () => {
 			schoolId: '0000d186816abba584714c5f',
 		};
 
-		return helpdeskService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
+		return helpdeskService.create(postBody, createContext())
 			.then((result) => {
 				currentUsedId = result._id;
 				expect(result.subject).to.equal('SanitizationTest äöüß§$%/()=');
@@ -112,7 +120,7 @@ describe('Sanitization Hook', () => {
 			schoolId: '0000d186816abba584714c5f',
 		};
 
-		return helpdeskService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
+		return helpdeskService.create(postBody, createContext())
 			.catch((exception) => {
 				expect(exception).to.not.be.undefined;
 				expect(exception.code).to.equal(400);
@@ -121,7 +129,7 @@ describe('Sanitization Hook', () => {
 	});
 
 	it('DELETE /helpdesk (Sanitization)',
-		() => helpdeskService.remove(currentUsedId, { payload: { userId: '0000d213816abba584714c0a' } })
+		() => helpdeskService.remove(currentUsedId, createContext())
 			.then((result) => {
 				expect(result).to.not.be.undefined;
 				expect(result.subject).to.equal('SanitizationTest äöüß§$%/()=');
@@ -143,7 +151,7 @@ describe('Sanitization Hook', () => {
 			schoolId: '0000d186816abba584714c5f',
 		};
 
-		return courseService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
+		return courseService.create(postBody, createContext())
 			.then((result) => {
 				currentUsedId = result._id;
 				expect(result.name).to.equal('SanitizationTest äöüß§$%/()=');
@@ -161,7 +169,7 @@ describe('Sanitization Hook', () => {
 			schoolId: '0000d186816abba584714c5f',
 		};
 
-		return courseService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
+		return courseService.create(postBody, createContext())
 			.catch((exception) => {
 				expect(exception).to.not.be.undefined;
 				expect(exception.code).to.equal(400);
@@ -190,7 +198,7 @@ describe('Sanitization Hook', () => {
 			materialIds: [],
 		};
 
-		return lessonService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } })
+		return lessonService.create(postBody, createContext())
 			.then((lresult) => {
 				currentLessonId = lresult._id;
 				expect(lresult.name).to.equal('SanitizationTest äöüß§$%/()=');
@@ -220,7 +228,7 @@ describe('Sanitization Hook', () => {
 			materialIds: [],
 		};
 
-		return lessonService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } })
+		return lessonService.create(postBody, createContext())
 			.catch((exception) => {
 				expect(exception).to.not.be.undefined;
 				expect(exception.code).to.equal(400);
@@ -229,14 +237,14 @@ describe('Sanitization Hook', () => {
 	});
 
 	it('DELETE /lessons (Sanitization)',
-		() => lessonService.remove(currentLessonId, { payload: { userId: '0000d213816abba584714c0a' } })
+		() => lessonService.remove(currentLessonId, createContext())
 			.then((result) => {
 				expect(result).to.not.be.undefined;
 				expect(result.name).to.equal('SanitizationTest äöüß§$%/()=');
 			}));
 
 	it('DELETE /courses (Sanitization)',
-		() => courseService.remove(currentUsedId, { payload: { userId: '0000d213816abba584714c0a' } })
+		() => courseService.remove(currentUsedId, createContext())
 			.then((result) => {
 				expect(result).to.not.be.undefined;
 				expect(result.name).to.equal('SanitizationTest äöüß§$%/()=');

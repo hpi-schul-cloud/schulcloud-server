@@ -147,7 +147,7 @@ const errorHandler = (context) => {
 	throw new GeneralError('server error');
 };
 
-module.exports = function setup(app) {
+function setupAppHooks(app) {
 	const before = {
 		all: [],
 		find: [],
@@ -197,3 +197,5 @@ module.exports = function setup(app) {
 	}
 	app.hooks({ before, after, error });
 };
+
+module.exports = { setupAppHooks, sanitizeData };
