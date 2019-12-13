@@ -103,7 +103,7 @@ describe('jwtTimer service', () => {
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(405);
-				expect(err.message).to.equal('this feature is disabled on this instance');
+				expect(err.message).to.equal('This feature is disabled on this instance!');
 			}
 		});
 
@@ -116,7 +116,7 @@ describe('jwtTimer service', () => {
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(405);
-				expect(err.message).to.equal('this feature is disabled on this instance');
+				expect(err.message).to.equal('This feature is disabled on this instance!');
 			}
 		});
 	});

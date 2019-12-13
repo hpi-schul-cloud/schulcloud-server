@@ -338,7 +338,7 @@ describe('handleAutoLogout hook', () => {
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(401);
-			expect(err.message).to.equal('session was expired due to inactivity - autologout');
+			expect(err.message).to.equal('Session was expired due to inactivity - autologout.');
 		}
 	});
 

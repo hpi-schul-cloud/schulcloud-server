@@ -149,7 +149,7 @@ const handleAutoLogout = async (context) => {
 				return context;
 			}
 			// ------------------------------------------------------------------------
-			throw new NotAuthenticated('session was expired due to inactivity - autologout');
+			throw new NotAuthenticated('Session was expired due to inactivity - autologout.');
 		}
 	}
 	return context;

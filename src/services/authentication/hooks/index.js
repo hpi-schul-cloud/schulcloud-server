@@ -114,7 +114,7 @@ const removeProvider = (context) => {
 };
 
 /**
- * if a redis connection exists, the newly created is added to the whitelist.
+ * If a redis connection exists, the newly created is added to the whitelist.
  * @param {Object} context feathers context
  */
 const addJwtToWhitelist = async (context) => {
@@ -129,13 +129,13 @@ const addJwtToWhitelist = async (context) => {
 };
 
 /**
- * if a redis connection exists, the newly created is removed from the whitelist.
+ * If a redis connection exists, the newly created is removed from the whitelist.
  * @param {Object} context feathers context
  */
 const removeJwtFromWhitelist = async (context) => {
 	if (getRedisClient()) {
 		const redisIdentifier = getRedisIdentifier(context.params.authentication.accessToken);
-		await redisDelAsync(redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}');
+		await redisDelAsync(redisIdentifier);
 	}
 
 	return context;

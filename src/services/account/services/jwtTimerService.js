@@ -13,8 +13,8 @@ class JwtTimerService {
 	}
 
 	/**
-	 * returns the remaining seconds until the JWT used to authenticate this request is automatically logged out.
-	 * this is the only authenticated request that does not reset said timer.
+	 * Returns the remaining seconds until the JWT used to authenticate this request is automatically logged out.
+	 * This is the only authenticated request that does not reset said timer.
 	 * @param {Object} params feathers params
 	 */
 	async find(params) {
@@ -23,11 +23,11 @@ class JwtTimerService {
 			const redisResponse = await redisTtlAsync(redisIdentifier);
 			return Promise.resolve({ ttl: redisResponse });
 		}
-		throw new MethodNotAllowed('this feature is disabled on this instance');
+		throw new MethodNotAllowed('This feature is disabled on this instance!');
 	}
 
 	/**
-	 * resets the auto-logout timer for the JWT used to authenticate this request.
+	 * Resets the auto-logout timer for the JWT used to authenticate this request.
 	 * @param {Object} data
 	 * @param {Object} params feathers params
 	 */
@@ -39,7 +39,7 @@ class JwtTimerService {
 			);
 			return Promise.resolve({ ttl: this.app.Config.data.JWT_TIMEOUT_SECONDS });
 		}
-		throw new MethodNotAllowed('this feature is disabled on this instance');
+		throw new MethodNotAllowed('This feature is disabled on this instance!');
 	}
 
 	setup(app) {
