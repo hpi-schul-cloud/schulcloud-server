@@ -81,5 +81,4 @@ module.exports = (app) => {
 	const accountService = app.service('/accounts');
 
 	accountService.hooks(hooks);
-
 };

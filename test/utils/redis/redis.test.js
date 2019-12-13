@@ -40,7 +40,7 @@ describe('redis helpers', () => {
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(500);
-				expect(err.message).to.equal('no redis connection. check for this via getRedisClient()');
+				expect(err.message).to.equal('No redis connection. Check for this via getRedisClient().');
 			}
 		});
 
@@ -51,7 +51,7 @@ describe('redis helpers', () => {
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(500);
-				expect(err.message).to.equal('no redis connection. check for this via getRedisClient()');
+				expect(err.message).to.equal('No redis connection. Check for this via getRedisClient().');
 			}
 		});
 
@@ -62,7 +62,7 @@ describe('redis helpers', () => {
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(500);
-				expect(err.message).to.equal('no redis connection. check for this via getRedisClient()');
+				expect(err.message).to.equal('No redis connection. Check for this via getRedisClient().');
 			}
 		});
 	});

@@ -6,8 +6,7 @@ const mockery = require('mockery');
 const { expect } = chai;
 
 const app = require('../src/app');
-const { cleanup, createTestUser } = require('./services/helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('./services/helpers/services/login')(app);
+const { cleanup, createTestUser, generateRequestParamsFromUser } = require('./services/helpers/testObjects')(app);
 const redisMock = require('./utils/redis/redisMock');
 
 describe('Sanitization Hook', () => {
