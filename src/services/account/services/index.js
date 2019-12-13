@@ -1,7 +1,7 @@
 const { supportJWTServiceSetup } = require('./SupportJWTService');
-const { jwtTimerSetup } = require('./jwtTimerService');
+const { jwtTimerServiceSetup } = require('./jwtTimerService');
 
 module.exports = {
 	supportJWTServiceSetup,
-	jwtTimerSetup,
+	jwtTimerServiceSetup,
 };

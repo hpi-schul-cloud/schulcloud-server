@@ -5,7 +5,7 @@ const Chance = require('chance');
 const account = require('./model');
 const hooks = require('./hooks');
 
-const { supportJWTServiceSetup, jwtTimerSetup } = require('./services');
+const { supportJWTServiceSetup, jwtTimerServiceSetup } = require('./services');
 
 const chance = new Chance();
 
@@ -65,7 +65,7 @@ module.exports = (app) => {
 
 	app.use('/accounts/pwgen', new PasswordGenService());
 
-	app.configure(jwtTimerSetup);
+	app.configure(jwtTimerServiceSetup);
 
 	app.use('/accounts', service(options));
 

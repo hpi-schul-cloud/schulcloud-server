@@ -118,10 +118,10 @@ const jwtTimerHooks = {
 	},
 };
 
-const jwtTimerSetup = (app) => {
+const jwtTimerServiceSetup = (app) => {
 	jwtTimerService.docs = docs;
 	app.use('/accounts/jwtTimer', jwtTimerService);
 	app.service('/accounts/jwtTimer').hooks(jwtTimerHooks);
 };
 
-module.exports = { jwtTimerService, jwtTimerHooks, jwtTimerSetup };
+module.exports = { jwtTimerService, jwtTimerHooks, jwtTimerServiceSetup };
