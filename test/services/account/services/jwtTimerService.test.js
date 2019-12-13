@@ -27,8 +27,8 @@ describe('jwtTimer service', () => {
 			delete require.cache[require.resolve('../../../../src/utils/redis')];
 			/* eslint-disable global-require */
 			redisHelper = require('../../../../src/utils/redis');
-			const { jwtTimerSetup } = require('../../../../src/services/account/services/jwtTimerService');
-			app.configure(jwtTimerSetup);
+			const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
+			app.configure(jwtTimerServiceSetup);
 			/* eslint-enable global-require */
 
 			redisHelper.initializeRedisClient({
@@ -79,8 +79,8 @@ describe('jwtTimer service', () => {
 			delete require.cache[require.resolve('../../../../src/utils/redis')];
 			/* eslint-disable global-require */
 			redisHelper = require('../../../../src/utils/redis');
-			const { jwtTimerSetup } = require('../../../../src/services/account/services/jwtTimerService');
-			app.configure(jwtTimerSetup);
+			const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
+			app.configure(jwtTimerServiceSetup);
 			/* eslint-enable global-require */
 
 			redisHelper.initializeRedisClient({
