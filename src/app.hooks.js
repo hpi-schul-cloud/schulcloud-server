@@ -139,6 +139,16 @@ const handleAutoLogout = async (context) => {
 				redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
 			);
 		} else {
+			// ------------------------------------------------------------------------
+			// this is so we can ensure a fluid release without booting out all users.
+			if (context.app.Config.data.JWT_WHITELIST_ACCEPT_ALL) {
+				await redisSetAsync(
+					redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}',
+					'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
+				);
+				return context;
+			}
+			// ------------------------------------------------------------------------
 			throw new NotAuthenticated('session was expired due to inactivity - autologout');
 		}
 	}

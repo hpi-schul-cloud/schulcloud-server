@@ -22,6 +22,10 @@
 			"type": "integer",
 			"default": 7200,
 			"description": "After this many seconds of inactivity, a user gets logged out automatically. If no REDIS_URI is set, this value is ignored."
+		},
+		"JWT_WHITELIST_ACCEPT_ALL": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"required": [

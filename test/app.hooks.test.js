@@ -342,6 +342,25 @@ describe('handleAutoLogout hook', () => {
 		}
 	});
 
+	it('JWT_WHITELIST_ACCEPT_ALL can be set to not auto-logout users', async () => {
+		const user = await createTestUser();
+		const params = await generateRequestParamsFromUser(user);
+		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
+		await redisHelper.redisDelAsync(redisIdentifier, 'value');
+		const result = await fut({
+			params,
+			app: {
+				Config: {
+					data: {
+						REDIS_URI: '//validHost:6379', JWT_TIMEOUT_SECONDS: 7200, JWT_WHITELIST_ACCEPT_ALL: true,
+					},
+				},
+			},
+		});
+		expect(result).to.have.property('params');
+		expect(result).to.have.property('app');
+	});
+
 	it('passes through requests without authorisation', async () => {
 		const response = await fut({ params: {} });
 		expect(response).to.not.eq(undefined);
