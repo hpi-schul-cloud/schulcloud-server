@@ -13,7 +13,7 @@ function initializeRedisClient(app) {
 				url: redisUrl,
 			});
 		} catch (err) {
-			throw new GeneralError('redis connection failed!', err);
+			throw new GeneralError('Redis connection failed!', err);
 		}
 	}
 }
