@@ -3,7 +3,7 @@ const { disallow } = require('feathers-hooks-common');
 const { MethodNotAllowed } = require('@feathersjs/errors');
 
 const {
-	getRedisClient, redisSetAsync, redisTtlAsync, getRedisIdentifier,
+	getRedisClient, redisSetAsync, redisTtlAsync, getRedisIdentifier, getRedisValue,
 } = require('../../../utils/redis');
 
 
@@ -35,7 +35,7 @@ class JwtTimerService {
 		if (getRedisClient()) {
 			const redisIdentifier = getRedisIdentifier(params.authentication.accessToken);
 			await redisSetAsync(
-				redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', this.app.Config.data.JWT_TIMEOUT_SECONDS,
+				redisIdentifier, getRedisValue(), 'EX', this.app.Config.data.JWT_TIMEOUT_SECONDS,
 			);
 			return Promise.resolve({ ttl: this.app.Config.data.JWT_TIMEOUT_SECONDS });
 		}

@@ -4,7 +4,7 @@ const sanitizeHtml = require('sanitize-html');
 const Entities = require('html-entities').AllHtmlEntities;
 const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
 const {
-	getRedisClient, redisGetAsync, redisSetAsync, getRedisIdentifier,
+	getRedisClient, redisGetAsync, redisSetAsync, getRedisIdentifier, getRedisValue,
 } = require('./utils/redis');
 
 const entities = new Entities();
@@ -136,14 +136,14 @@ const handleAutoLogout = async (context) => {
 		const redisResponse = await redisGetAsync(redisIdentifier);
 		if (redisResponse) {
 			await redisSetAsync(
-				redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
+				redisIdentifier, getRedisValue(), 'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
 			);
 		} else {
 			// ------------------------------------------------------------------------
 			// this is so we can ensure a fluid release without booting out all users.
 			if (context.app.Config.data.JWT_WHITELIST_ACCEPT_ALL) {
 				await redisSetAsync(
-					redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}',
+					redisIdentifier, getRedisValue(),
 					'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
 				);
 				return context;

@@ -1,7 +1,7 @@
 const { TooManyRequests } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
 const {
-	getRedisClient, redisSetAsync, redisDelAsync, getRedisIdentifier,
+	getRedisClient, redisSetAsync, redisDelAsync, getRedisIdentifier, getRedisValue,
 } = require('../../../utils/redis');
 
 const updateUsernameForLDAP = async (context) => {
@@ -121,7 +121,7 @@ const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
 		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
 		await redisSetAsync(
-			redisIdentifier, '{"IP": "NONE", "Browser": "NONE"}', 'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
+			redisIdentifier, getRedisValue(), 'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
 		);
 	}
 

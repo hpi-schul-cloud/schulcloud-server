@@ -47,6 +47,10 @@ function getRedisIdentifier(token) {
 	return redisIdentifier;
 }
 
+function getRedisValue() {
+	return '{"IP": "NONE", "Browser": "NONE"}';
+}
+
 module.exports = {
 	initializeRedisClient,
 	getRedisClient,
@@ -55,4 +59,5 @@ module.exports = {
 	redisDelAsync,
 	redisTtlAsync,
 	getRedisIdentifier,
+	getRedisValue,
 };
