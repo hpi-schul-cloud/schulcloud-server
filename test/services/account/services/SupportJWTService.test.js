@@ -1,6 +1,6 @@
 const assert = require('assert');
 const chai = require('chai');
-const decode = require('jwt-decode');
+const { decode } = require('jsonwebtoken');
 
 const { expect } = chai;
 
