@@ -18,7 +18,7 @@ const sanitize = (data, options) => {
 	// https://www.npmjs.com/package/sanitize-html
 	if ((options || {}).html === true) {
 		// editor-content data
-		data = sanitizeHtml(data, {
+		data = sanitizeHtml(data, { // TODO: set options own time
 			allowedTags,
 			allowedAttributes: false, // allow all attributes of allowed tags
 			allowedSchemes,
@@ -30,7 +30,7 @@ const sanitize = (data, options) => {
 		data = data.replace(/(<script>).*?(<\/script>)/gim, ''); // force remove script tags
 	} else {
 		// non editor-content data
-		data = sanitizeHtml(data, {
+		data = sanitizeHtml(data, { // TODO: set options own time
 			allowedTags: [], // disallow all tags
 			allowedAttributes: [], // disallow all attributes
 			allowedSchemes: [], // disallow url schemes
@@ -57,6 +57,7 @@ const sanitizeDeep = (data, path, depth = 0) => {
 		throw new Error('Data level is to deep. (sanitizeDeep)', { path, data });
 	}
 	if (typeof data === 'object' && data !== null) {
+		// eslint-disable-next-line consistent-return
 		Object.entries(data).forEach(([key, value]) => {
 			if (typeof value === 'string') {
 				// ignore values completely
