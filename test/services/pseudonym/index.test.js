@@ -1,11 +1,12 @@
-const assert = require('assert');
-const chai = require('chai');
+const { expect } = require('chai');
+const { ObjectId } = require('mongoose').Types;
 const app = require('../../../src/app');
 
 const pseudonymService = app.service('pseudonym');
+const Pseudonym = require('../../../src/services/pseudonym/model');
+
 const toolService = app.service('ltiTools');
-const { expect } = chai;
-const { cleanup, createTestUser } = require('../helpers/testObjects')(app);
+const { cleanup, createTestUser, generateRequestParamsFromUser } = require('../helpers/testObjects')(app);
 
 describe('pseudonym service', function pseudonymTest() {
 	this.timeout(10000);
@@ -49,44 +50,53 @@ describe('pseudonym service', function pseudonymTest() {
 	});
 
 	after(async () => {
-		await pseudonymService.remove(null, { query: {} });
-		await	toolService.remove(testTool1);
+		await Pseudonym.remove({}).exec();
+		await toolService.remove(testTool1);
 		await toolService.remove(testTool2);
 		await cleanup();
-		return Promise.resolve();
 	});
 
 	it('is registered', () => {
-		assert.ok(app.service('pseudonym'));
+		expect(app.service('pseudonym')).to.be.ok;
 	});
 
 	it('throws MethodNotAllowed on GET', () => pseudonymService.get(testTool1._id).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((err) => {
-		assert(err.name, 'MethodNotAllowed');
-		assert(err.code, 405);
+		expect(err.name).to.equal('MethodNotAllowed');
+		expect(err.code).to.equal(405);
 	}));
 
 	it('throws MethodNotAllowed on UPDATE', () => pseudonymService.update(testTool1._id, {}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((err) => {
-		assert(err.name, 'MethodNotAllowed');
-		assert(err.code, 405);
+		expect(err.name, 'MethodNotAllowed');
+		expect(err.code, 405);
 	}));
 
 	it('throws MethodNotAllowed on PATCH', () => pseudonymService.patch(testTool1._id, {}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((err) => {
-		assert(err.name, 'MethodNotAllowed');
-		assert(err.code, 405);
+		expect(err.name, 'MethodNotAllowed');
+		expect(err.code, 405);
 	}));
 
-	it('throws MethodNotAllowed on REMOVE', () => pseudonymService.remove(testTool1._id).then(() => {
-		throw new Error('Was not supposed to succeed');
-	}).catch((err) => {
-		assert(err.name, 'MethodNotAllowed');
-		assert(err.code, 405);
-	}));
+	it('throws MethodNotAllowed on external call to REMOVE', async () => {
+		const user = await createTestUser({ roles: 'teacher' });
+		const params = await generateRequestParamsFromUser(user);
+		return pseudonymService.remove(testTool1._id, params).then(() => {
+			throw new Error('Was not supposed to succeed');
+		}).catch((err) => {
+			expect(err.name).to.equal('MethodNotAllowed');
+			expect(err.code).to.equal(405);
+		});
+	});
+
+	it('does not throw on internal call to REMOVE', async () => {
+		const pseudonym = await Pseudonym.create({});
+		await pseudonymService.remove(pseudonym._id);
+		expect(await Pseudonym.findById(pseudonym._id)).to.equal(null);
+	});
 
 	let pseudonym = '';
 	it('creates missing pseudonym on FIND for derived tool', () => pseudonymService.find({
@@ -95,8 +105,9 @@ describe('pseudonym service', function pseudonymTest() {
 			toolId: testTool2._id,
 		},
 	}).then((result) => {
+		expect(Array.isArray(result.data)).to.equal(true);
 		({ pseudonym } = result.data[0]);
-		expect(result.data[0].pseudonym).to.be.a('String');
+		expect(pseudonym).to.be.a('String');
 	}));
 
 	it('returns existing pseudonym on FIND for derived tool', () => pseudonymService.find({
@@ -105,8 +116,8 @@ describe('pseudonym service', function pseudonymTest() {
 			toolId: testTool2._id,
 		},
 	}).then((result) => {
-		expect(result.data.length).to.eql(1);
-		expect(result.data[0].pseudonym).to.eql(pseudonym);
+		expect(result.data.length).to.equal(1);
+		expect(result.data[0].pseudonym).to.equal(pseudonym);
 	}));
 
 	it('returns existing pseudonym on FIND for origin tool', () => pseudonymService.find({
@@ -131,14 +142,14 @@ describe('pseudonym service', function pseudonymTest() {
 
 	it("doesn't create pseudonyms on FIND for missing users", () => pseudonymService.find({
 		query: {
-			userId: '599ec1688e4e364ac18ff46e', // not existing userId
+			userId: new ObjectId(), // not existing userId
 			toolId: testTool1._id,
 		},
 	}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((error) => {
-		assert(error.name, 'NotFound');
-		assert(error.code, 404);
+		expect(error.name).to.equal('BadRequest');
+		expect(error.code).to.equal(400);
 	}));
 
 	it("doesn't create pseudonyms on FIND for missing tool", () => pseudonymService.find({
@@ -149,7 +160,7 @@ describe('pseudonym service', function pseudonymTest() {
 	}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((error) => {
-		assert(error.name, 'NotFound');
-		assert(error.code, 404);
+		expect(error.name).to.equal('NotFound');
+		expect(error.code).to.equal(404);
 	}));
 });
