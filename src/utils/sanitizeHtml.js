@@ -89,5 +89,6 @@ module.exports = {
 		saveKeys,
 		allowedTags,
 		allowedSchemes,
+		maxDeep,
 	},
 };
