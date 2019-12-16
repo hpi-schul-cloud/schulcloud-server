@@ -113,8 +113,6 @@ module.exports = {
 				},
 			},
 		).lean().exec();
-		// ////////////////////////////////////////////////////
-		await close();
 
 		// demo
 		await RoleModel.findOneAndUpdate(
@@ -131,6 +129,9 @@ module.exports = {
 				$addToSet: { permissions: { $each: ['CLASS_VIEW', 'COURSE_VIEW'] } },
 			},
 		).lean().exec();
+
+		// ////////////////////////////////////////////////////
+		await close();
 	},
 
 	down: async function down() {

@@ -5,13 +5,13 @@ const { info, error } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 
 // use your own name for your model, otherwise other migrations may fail.
-// The third parameter is the collection to write to.
-const User = mongoose.model('makeMeUnique', new mongoose.Schema({
-	firstName: { type: String, required: true },
-	lastName: { type: String, required: true },
+// The third parameter is the actually relevant one for what collection to write to.
+const RoleModel = mongoose.model('fixDemoModel', new mongoose.Schema({
+	name: { type: String, required: true },
+	permissions: [{ type: String }],
 }, {
 	timestamps: true,
-}), 'users');
+}), 'roles');
 
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
@@ -23,12 +23,20 @@ module.exports = {
 		// Make changes to the database here.
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
-		await User.findOneAndUpdate({
-			firstName: 'Marla',
-			lastName: 'Mathe',
-		}, {
-			firstName: 'Max',
-		}).lean().exec();
+		await RoleModel.findOneAndUpdate(
+			{
+				name: 'demo',
+			}, {
+				$pull: { permissions: { $in: ['USERGROUP_VIEW'] } },
+			},
+		).lean().exec();
+		await RoleModel.findOneAndUpdate(
+			{
+				name: 'demo',
+			}, {
+				$addToSet: { permissions: { $each: ['CLASS_VIEW', 'COURSE_VIEW'] } },
+			},
+		).lean().exec();
 		// ////////////////////////////////////////////////////
 		await close();
 	},
@@ -37,12 +45,20 @@ module.exports = {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
-		await User.findOneAndUpdate({
-			firstName: 'Max',
-			lastName: 'Mathe',
-		}, {
-			firstName: 'Marla',
-		}).lean().exec();
+		await RoleModel.findOneAndUpdate(
+			{
+				name: 'demo',
+			}, {
+				$pull: { permissions: { $in: ['CLASS_VIEW', 'COURSE_VIEW'] } },
+			},
+		).lean().exec();
+		await RoleModel.findOneAndUpdate(
+			{
+				name: 'demo',
+			}, {
+				$addToSet: { permissions: { $each: ['USERGROUP_VIEW'] } },
+			},
+		).lean().exec();
 		// ////////////////////////////////////////////////////
 		await close();
 	},
