@@ -14,16 +14,15 @@ describe('schoolUsesLdap', () => {
 	});
 
 	it('should return false for inactive ldap systems', async () => {
-		const school = await createSchool({
-			systems: [
-				await createSystem({
-					type: 'ldap',
-					ldapConfig: {
-						active: false,
-					},
-				}),
-			],
-		});
+		const school = await createSchool();
+		school.systems = [
+			await createSystem({
+				type: 'ldap',
+				ldapConfig: {
+					active: false,
+				},
+			}),
+		];
 		expect(() => schoolUsesLdap(school)).not.to.throw();
 		expect(schoolUsesLdap(school)).to.equal(false);
 	});
