@@ -70,15 +70,15 @@ describe('pseudonym service', function pseudonymTest() {
 	it('throws MethodNotAllowed on UPDATE', () => pseudonymService.update(testTool1._id, {}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((err) => {
-		expect(err.name, 'MethodNotAllowed');
-		expect(err.code, 405);
+		expect(err.name).to.equal('MethodNotAllowed');
+		expect(err.code).to.equal(405);
 	}));
 
 	it('throws MethodNotAllowed on PATCH', () => pseudonymService.patch(testTool1._id, {}).then(() => {
 		throw new Error('Was not supposed to succeed');
 	}).catch((err) => {
-		expect(err.name, 'MethodNotAllowed');
-		expect(err.code, 405);
+		expect(err.name).to.equal('MethodNotAllowed');
+		expect(err.code).to.equal(405);
 	}));
 
 	it('throws MethodNotAllowed on external call to REMOVE', async () => {
