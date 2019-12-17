@@ -2,6 +2,7 @@ const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
 const { NotAuthenticated } = require('@feathersjs/errors');
 const { omit } = require('lodash');
 const ClientOAuth2 = require('client-oauth2');
+const url = require('url');
 const logger = require('../../../logger');
 
 class IservStrategy extends AuthenticationBaseStrategy {
@@ -90,14 +91,14 @@ class IservStrategy extends AuthenticationBaseStrategy {
 			throw new NotAuthenticated('No password is set.');
 		}
 		if (!system.url) {
-			throw new NotAuthenticated('No moodle URL is provided.');
+			throw new NotAuthenticated('No iServ URL is provided.');
 		}
 
 		const iservAuth = new ClientOAuth2({
 			clientId: system.oaClientId,
 			clientSecret: system.oaClientSecret,
-			accessTokenUri: `${system.url}/iserv/oauth/v2/token`,
-			authorizationUri: `${system.url}/iserv/oauth/v2/auth`,
+			accessTokenUri: url.resolve(system.url, 'iserv/oauth/v2/token'),
+			authorizationUri: url.resolve(system.url, 'iserv/oauth/v2/auth'),
 		});
 
 		logger.debug('[iserv]: Trying to connect to IServ-Server');
