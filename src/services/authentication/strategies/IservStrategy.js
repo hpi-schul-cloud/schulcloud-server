@@ -90,15 +90,17 @@ class IservStrategy extends AuthenticationBaseStrategy {
 			throw new NotAuthenticated('No password is set.');
 		}
 		if (!system.url) {
-			throw new NotAuthenticated('No moodle URL is provided.');
+			throw new NotAuthenticated('No iServ URL is provided.');
 		}
 
-		const iservAuth = new ClientOAuth2({
+		const { origin } = new URL(system.url);
+		const iServOptions = {
 			clientId: system.oaClientId,
 			clientSecret: system.oaClientSecret,
-			accessTokenUri: `${system.url}/iserv/oauth/v2/token`,
-			authorizationUri: `${system.url}/iserv/oauth/v2/auth`,
-		});
+			accessTokenUri: new URL('iserv/oauth/v2/token', origin).href,
+			authorizationUri: new URL('iserv/oauth/v2/auth', origin).href,
+		};
+		const iservAuth = new ClientOAuth2(iServOptions);
 
 		logger.debug('[iserv]: Trying to connect to IServ-Server');
 		const client = await iservAuth.owner.getToken(username, password);
