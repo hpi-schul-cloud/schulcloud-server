@@ -8,7 +8,9 @@ const config = configuration();
 app.configure(config);
 
 // init & register configuration
-commons.Configuration.Instance.init({ app });
+if (commons.Configuration.Instance.readyState === 1) {
+	commons.Configuration.Instance.init({ app });
+}
 
 const path = require('path');
 const favicon = require('serve-favicon');
