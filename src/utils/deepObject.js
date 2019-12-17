@@ -8,7 +8,10 @@ const validateKeys = (newKeys) => newKeys.reduce((validatedKeys, key) => {
 	return validatedKeys;
 }, []);
 
-const pathToArray = (...paths) => {
+/**
+ * @param  {...String||Array} paths 
+ */
+const pathsToArray = (...paths) => {
 	try {
 		let keys = [];
 		(paths || []).forEach((path) => {
@@ -18,7 +21,7 @@ const pathToArray = (...paths) => {
 					// for dot notation y.asd.asdasd.sdada and array notations like a[0]
 					newKeys = path.replace(/\[/g, '.').replace(/]/g, '.').split('.');
 				} else if (Array.isArray(path)) {
-					newKeys = pathToArray(...path);
+					newKeys = pathsToArray(...path);
 				} else {
 					throw new Error('Wrong type is adding as path in deepObjectProps.');
 				}
@@ -30,6 +33,29 @@ const pathToArray = (...paths) => {
 	} catch (err) {
 		logger.error(err);
 		return [];
+	}
+};
+
+/**
+ * Returns the value of a (nested) attribute
+ * @param {*} item a value
+ * @param {String} pathString a string describing the attribute to select
+ * @example
+ * getSimple({foo: 'bar'}, 'foo') => 'bar'
+ * getSimple({foo: {bar: 'baz'}}, 'foo.bar') => 'baz'
+ */
+const getSimple = (item, pathString) => {
+	if (!item || !pathString) return item;
+	try {
+		let chain = pathString.split('.');
+		let result = item;
+
+		chain.forEach(key => {
+			result = result[key];
+		});
+		return result;
+	} catch (err) {
+		return undefined;
 	}
 };
 
@@ -60,5 +86,6 @@ const get = (obj, ...paths) => {
 
 module.exports = {
 	get,
-	pathToArray,
+	getSimple,
+	pathsToArray,
 };

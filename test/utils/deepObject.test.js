@@ -4,29 +4,30 @@ const { toPath } = require('lodash');
 const logger = require('../../src/logger');
 const { deepObject } = require('../../src/utils');
 
-describe.only('[utils] deepObject', () => {
+describe('[utils] deepObject', () => {
 	it('Should export all avaible actions', () => {
 		expect(deepObject.get).is.not.an('undefined');
-		expect(deepObject.pathToArray).is.not.an('undefined');
+		expect(deepObject.pathsToArray).is.not.an('undefined');
+		expect(deepObject.getSimple).is.not.an('undefined');
 	});
 
 	describe('deepObject > pathToArray', () => {
-		const { pathToArray } = deepObject;
+		const { pathsToArray, getSimple } = deepObject;
 
 		it('should work for empty input', () => {
-			const result = pathToArray();
+			const result = pathsToArray();
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(0);
 		});
 
 		it('should work for empty string input', () => {
-			const result = pathToArray('');
+			const result = pathsToArray('');
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(0);
 		});
 
 		it('should work for one string', () => {
-			const result = pathToArray('x.y.z');
+			const result = pathsToArray('x.y.z');
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(3);
 			expect(result[0]).to.equal('x');
@@ -35,49 +36,57 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for one string without dot noation', () => {
-			const result = pathToArray('x');
+			const result = pathsToArray('x');
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(1);
 			expect(result[0]).to.equal('x');
 		});
 
 		it('should work for strings with a lot of dot noations', () => {
-			const result = pathToArray('ele0.ele1.ele2.ele3.ele4.ele5.ele6.ele7.ele8.ele9.ele10');
+			const result = pathsToArray('ele0.ele1.ele2.ele3.ele4.ele5.ele6.ele7.ele8.ele9.ele10');
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(11);
 			expect(result[0]).to.equal('ele0');
 			expect(result[10]).to.equal('ele10');
 		});
 		// the implementation is slower, becouse it can resolve mutch more combinations
-		// and loadash is optimize for re-runs
-		it('[profiling]'
+		// and loadash is optimize for re-runs with momory cache
+		it('[profiling] pathsToArray - '
 			+ 'should not significantly slower for string notations like lodash.toPath.', () => {
 			const testPath = 'ele0.ele1.ele2.ele3.ele4.ele5.ele6.ele7.ele8.ele9.ele10';
 			const iterations = 100000;
 			const slowerFactor = 10;
 
-			const s1 = Date.now();
+			const s3 = Date.now();
 			for (let i = 0; i <= iterations; i += 1) {
-				pathToArray(testPath);
+				testPath.split('.');
 			}
-			const pathToArrayDelta = Date.now() - s1;
+			const baseSplitOperation = Date.now() - s3;
 
 			const s2 = Date.now();
 			for (let i = 0; i <= iterations; i += 1) {
 				toPath(testPath);
 			}
 			const loadashToPathDelta = Date.now() - s2;
+
+			const s1 = Date.now();
+			for (let i = 0; i <= iterations; i += 1) {
+				pathsToArray(testPath);
+			}
+			const pathToArrayDelta = Date.now() - s1;
+	
 			logger.info({
 				type: 'profiling',
 				iterations,
 				pathToArrayDelta,
 				loadashToPathDelta,
+				baseSplitOperation
 			});
 			expect(pathToArrayDelta <= (loadashToPathDelta * slowerFactor)).to.equal(true);
 		});
 
 		it('should work for strings with point before or after', () => {
-			const result = pathToArray('.x.y.z.');
+			const result = pathsToArray('.x.y.z.');
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(3);
 			expect(result[0]).to.equal('x');
@@ -86,7 +95,7 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for array element path notation', () => {
-			const result = pathToArray('.x.y[0].z.');
+			const result = pathsToArray('.x.y[0].z.');
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(4);
 			expect(result[0]).to.equal('x');
@@ -96,7 +105,7 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for array element path notation over 0 as path', () => {
-			const result = pathToArray('.x.y.0.z.');
+			const result = pathsToArray('.x.y.0.z.');
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(4);
 			expect(result[0]).to.equal('x');
@@ -106,7 +115,7 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for strings with double and multiple points', () => {
-			const result = pathToArray('x..y...z.');
+			const result = pathsToArray('x..y...z.');
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(3);
 			expect(result[0]).to.equal('x');
@@ -115,7 +124,7 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for multiple strings', () => {
-			const result = pathToArray('x1.y1.z1', 'x2.y2.z2', 'x3.y3.z3');
+			const result = pathsToArray('x1.y1.z1', 'x2.y2.z2', 'x3.y3.z3');
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(9);
 			expect(result[0]).to.equal('x1');
@@ -130,7 +139,7 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for one array with includes strings', () => {
-			const result = pathToArray(['x', 'y', 'z']);
+			const result = pathsToArray(['x', 'y', 'z']);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(3);
 			expect(result[0]).to.equal('x');
@@ -139,7 +148,7 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for muliple arrays', () => {
-			const result = pathToArray(['x1', 'y1', 'z1'], ['x2', 'y2', 'z2'], ['x3', 'y3', 'z3']);
+			const result = pathsToArray(['x1', 'y1', 'z1'], ['x2', 'y2', 'z2'], ['x3', 'y3', 'z3']);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(9);
 			expect(result[0]).to.equal('x1');
@@ -154,7 +163,7 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for muliple arrays and string mixes inputs', () => {
-			const result = pathToArray(['x1', 'y1', 'z1'], 'x2.y2.z2', ['x3', 'y3', 'z3']);
+			const result = pathsToArray(['x1', 'y1', 'z1'], 'x2.y2.z2', ['x3', 'y3', 'z3']);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(9);
 			expect(result[0]).to.equal('x1');
@@ -169,7 +178,7 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for dot notation strings in arrays with mixed inputs', () => {
-			const result = pathToArray(['x1.y1.z1', 'x2.y2.z2', 'x3.y3.z3'], 'x4.y4.z4', ['x5', 'y5', 'z5']);
+			const result = pathsToArray(['x1.y1.z1', 'x2.y2.z2', 'x3.y3.z3'], 'x4.y4.z4', ['x5', 'y5', 'z5']);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(15);
 			expect(result[0]).to.equal('x1');
@@ -190,7 +199,7 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for dot notation strings in deep arrays with mixed inputs', () => {
-			const result = pathToArray(
+			const result = pathsToArray(
 				['x1.y1.z1', 'x2.y2.z2', 'x3.y3.z3', ['x4.y4.z4', 'x5', 'y5', 'z5']],
 				'x6.y6.z6', ['x7', 'y7', 'z7', 'ele1.ele2.ele3'],
 			);
@@ -223,13 +232,13 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for undefined input', () => {
-			const result = pathToArray(undefined);
+			const result = pathsToArray(undefined);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(0);
 		});
 
 		it('should work for undefined with mixed valid inputs', () => {
-			const result = pathToArray('x.y.z', undefined);
+			const result = pathsToArray('x.y.z', undefined);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(3);
 			expect(result[0]).to.equal('x');
@@ -238,7 +247,7 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for neested undefined inputs', () => {
-			const result = pathToArray(['x.y.z', undefined]);
+			const result = pathsToArray(['x.y.z', undefined]);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(3);
 			expect(result[0]).to.equal('x');
@@ -247,13 +256,13 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for empty null input', () => {
-			const result = pathToArray(null);
+			const result = pathsToArray(null);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(0);
 		});
 
 		it('should work for null inputs with mixed valid inputs', () => {
-			const result = pathToArray('x.y.z', null);
+			const result = pathsToArray('x.y.z', null);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(3);
 			expect(result[0]).to.equal('x');
@@ -262,7 +271,7 @@ describe.only('[utils] deepObject', () => {
 		});
 
 		it('should work for neested null inputs', () => {
-			const result = pathToArray(['x.y.z', null]);
+			const result = pathsToArray(['x.y.z', null]);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(3);
 			expect(result[0]).to.equal('x');
@@ -272,13 +281,13 @@ describe.only('[utils] deepObject', () => {
 
 		// should NOT work
 		it('should not work for object inputs and return empty array', () => {
-			const result = pathToArray('x1.y1.z1', { x: 1, y: 2, z: 3 });
+			const result = pathsToArray('x1.y1.z1', { x: 1, y: 2, z: 3 });
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(0);
 		});
 
 		it('should not work for neested object inputs and return empty array', () => {
-			const result = pathToArray(['x1.y1.z1', { x: 1, y: 2, z: 3 }]);
+			const result = pathsToArray(['x1.y1.z1', { x: 1, y: 2, z: 3 }]);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(0);
 		});
