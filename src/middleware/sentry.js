@@ -1,7 +1,7 @@
 const Sentry = require('@sentry/node');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
-const { deepObjectProps } = require('../utils/');
+const { deepObject } = require('../utils/');
 
 /**
  * helpers
@@ -39,7 +39,7 @@ const removeIdMiddleware = (event) => {
 };
 
 const removeJwtToken = (event) => {
-	if (deepObjectProps.get(event, 'request.headers.authorization')) {
+	if (deepObject.get(event, 'request.headers.authorization')) {
 		delete event.request.headers.authorization;
 	}
 	return event;

@@ -1,1 +1,1 @@
-exports.deepObjectProps = require('./deepObjectProps');
+exports.deepObject = require('./deepObject');
