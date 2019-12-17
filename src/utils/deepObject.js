@@ -69,7 +69,7 @@ const get = (obj, ...paths) => {
 		let result = obj;
 		if (Array.isArray(paths)) {
 			// pathToArray(...paths) if it is changed then the test for objects return other result
-			_.toPath(...paths).forEach((key) => {	
+			_.toPath(...paths).forEach((key) => {
 				result = result[key];
 			});
 		}
