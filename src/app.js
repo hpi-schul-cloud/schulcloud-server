@@ -5,6 +5,7 @@ const compress = require('compression');
 const cors = require('cors');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
+const commons = require('@schul-cloud/commons');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
@@ -23,14 +24,18 @@ const sentry = require('./middleware/sentry');
 const { BODYPARSER_JSON_LIMIT } = require('../config/globals');
 
 const setupSwagger = require('./swagger');
-const allHooks = require('./app.hooks');
+const { initializeRedisClient } = require('./utils/redis');
+const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
 const app = express(feathers());
 const config = configuration();
+const Configuration = new commons.Configuration();
 
 app.configure(config);
+Configuration.init(app);
 setupSwagger(app);
+app.configure(initializeRedisClient);
 
 // set custom response header for ha proxy
 if (process.env.KEEP_ALIVE) {
@@ -70,7 +75,7 @@ app.use(compress())
 	.configure(services)
 	.configure(sockets)
 	.configure(middleware)
-	.configure(allHooks)
+	.configure(setupAppHooks)
 	.configure(errorHandler);
 
 module.exports = app;
