@@ -7,6 +7,7 @@ const validateKeys = (newKeys) => newKeys.reduce((validatedKeys, key) => {
 	return validatedKeys;
 }, []);
 
+// TODO: Should work for array selected notation a[0]
 const pathToArray = (...paths) => {
 	try {
 		let keys = [];
