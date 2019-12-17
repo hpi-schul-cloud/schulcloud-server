@@ -301,5 +301,16 @@
 		"$date": "2019-12-11T10:20:29.714Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5df895ad9ac7d23f70ad66fa"
+	},
+	"state": "up",
+	"name": "removeUnnecessaryLocalSystems",
+	"createdAt": {
+		"$date": "2019-12-17T08:20:02.025Z"
+	},
+	"__v": 0
 }]
 
