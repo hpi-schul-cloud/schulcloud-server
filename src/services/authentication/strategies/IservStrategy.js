@@ -2,7 +2,6 @@ const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
 const { NotAuthenticated } = require('@feathersjs/errors');
 const { omit } = require('lodash');
 const ClientOAuth2 = require('client-oauth2');
-const url = require('url');
 const logger = require('../../../logger');
 
 class IservStrategy extends AuthenticationBaseStrategy {
@@ -94,12 +93,14 @@ class IservStrategy extends AuthenticationBaseStrategy {
 			throw new NotAuthenticated('No iServ URL is provided.');
 		}
 
-		const iservAuth = new ClientOAuth2({
+		const { origin } = new URL(system.url);
+		const iServOptions = {
 			clientId: system.oaClientId,
 			clientSecret: system.oaClientSecret,
-			accessTokenUri: url.resolve(system.url, 'iserv/oauth/v2/token'),
-			authorizationUri: url.resolve(system.url, 'iserv/oauth/v2/auth'),
-		});
+			accessTokenUri: new URL('iserv/oauth/v2/token', origin).href,
+			authorizationUri: new URL('iserv/oauth/v2/auth', origin).href,
+		};
+		const iservAuth = new ClientOAuth2(iServOptions);
 
 		logger.debug('[iserv]: Trying to connect to IServ-Server');
 		const client = await iservAuth.owner.getToken(username, password);
