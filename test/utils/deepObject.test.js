@@ -1,5 +1,7 @@
 const { expect } = require('chai');
+const { toPath } = require('lodash');
 
+const logger = require('../../src/logger');
 const { deepObject } = require('../../src/utils');
 
 describe.only('[utils] deepObject', () => {
@@ -46,6 +48,33 @@ describe.only('[utils] deepObject', () => {
 			expect(result[0]).to.equal('ele0');
 			expect(result[10]).to.equal('ele10');
 		});
+		// the implementation is slower, becouse it can resolve mutch more combinations
+		// and loadash is optimize for re-runs
+		it('[profiling]'
+			+ 'should not significantly slower for string notations like lodash.toPath.', () => {
+			const testPath = 'ele0.ele1.ele2.ele3.ele4.ele5.ele6.ele7.ele8.ele9.ele10';
+			const iterations = 100000;
+			const slowerFactor = 10;
+
+			const s1 = Date.now();
+			for (let i = 0; i <= iterations; i += 1) {
+				pathToArray(testPath);
+			}
+			const pathToArrayDelta = Date.now() - s1;
+
+			const s2 = Date.now();
+			for (let i = 0; i <= iterations; i += 1) {
+				toPath(testPath);
+			}
+			const loadashToPathDelta = Date.now() - s2;
+			logger.info({
+				type: 'profiling',
+				iterations,
+				pathToArrayDelta,
+				loadashToPathDelta,
+			});
+			expect(pathToArrayDelta <= (loadashToPathDelta * slowerFactor)).to.equal(true);
+		});
 
 		it('should work for strings with point before or after', () => {
 			const result = pathToArray('.x.y.z.');
@@ -56,13 +85,24 @@ describe.only('[utils] deepObject', () => {
 			expect(result[2]).to.equal('z');
 		});
 
-		it('should work for strings with points before or after', () => {
-			const result = pathToArray('.x.y.z.');
+		it('should work for array element path notation', () => {
+			const result = pathToArray('.x.y[0].z.');
 			expect(result).to.be.an('array');
-			expect(result).have.lengthOf(3);
+			expect(result).have.lengthOf(4);
 			expect(result[0]).to.equal('x');
 			expect(result[1]).to.equal('y');
-			expect(result[2]).to.equal('z');
+			expect(result[2]).to.equal('0');
+			expect(result[3]).to.equal('z');
+		});
+
+		it('should work for array element path notation over 0 as path', () => {
+			const result = pathToArray('.x.y.0.z.');
+			expect(result).to.be.an('array');
+			expect(result).have.lengthOf(4);
+			expect(result[0]).to.equal('x');
+			expect(result[1]).to.equal('y');
+			expect(result[2]).to.equal('0');
+			expect(result[3]).to.equal('z');
 		});
 
 		it('should work for strings with double and multiple points', () => {
@@ -302,7 +342,8 @@ describe.only('[utils] deepObject', () => {
 				},
 			};
 			const result = get(obj, { x: { y: 1 } });
-			expect(result).to.deep.equal(obj);
+			expect(result).to.be.an('undefined');
+			// expect(result).to.deep.equal(obj);
 		});
 
 		it('should return value if obj leaf is target and path can resolve', () => {

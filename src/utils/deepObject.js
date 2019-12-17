@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const logger = require('../logger');
 
 const validateKeys = (newKeys) => newKeys.reduce((validatedKeys, key) => {
@@ -7,7 +8,6 @@ const validateKeys = (newKeys) => newKeys.reduce((validatedKeys, key) => {
 	return validatedKeys;
 }, []);
 
-// TODO: Should work for array selected notation a[0]
 const pathToArray = (...paths) => {
 	try {
 		let keys = [];
@@ -15,7 +15,8 @@ const pathToArray = (...paths) => {
 			if (path) {	// avoid null and undefined
 				let newKeys = [];
 				if (typeof path === 'string') {
-					newKeys = path.split('.'); // for dot notation y.asd.asdasd.sdada
+					// for dot notation y.asd.asdasd.sdada and array notations like a[0]
+					newKeys = path.replace(/\[/g, '.').replace(/]/g, '.').split('.');
 				} else if (Array.isArray(path)) {
 					newKeys = pathToArray(...path);
 				} else {
@@ -32,11 +33,17 @@ const pathToArray = (...paths) => {
 	}
 };
 
+/**
+ * Attention to resolve the path it is used _.toPath and not pathToArray.
+ * @param {*} obj
+ * @param  {...any} paths
+ */
 const get = (obj, ...paths) => {
 	try {
 		let result = obj;
 		if (Array.isArray(paths)) {
-			pathToArray(...paths).forEach((key) => {
+			// pathToArray(...paths) if it is changed then the test for objects return other result
+			_.toPath(...paths).forEach((key) => {	
 				result = result[key];
 			});
 		}
