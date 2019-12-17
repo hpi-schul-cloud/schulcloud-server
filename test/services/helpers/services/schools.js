@@ -24,10 +24,6 @@ const create = (app) => async ({
 	customYears = [],
 	inMaintenanceSince = undefined,
 } = {}) => {
-	if (systems && systems.length === 0) {
-		const localSystem = (await app.service('systems').find({ query: { type: 'local' }, paginate: false }))[0];
-		systems.push(localSystem._id);
-	}
 	const school = await School.create({
 		name,
 		address,
