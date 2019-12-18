@@ -5,10 +5,11 @@ module.exports = {
 	FEATURE_VIDEOCONFERENCE_ENABLED: process.env.FEATURE_VIDEOCONFERENCE_ENABLED === 'true',
 	SERVICES: {
 		/**
-		 * Requires FEATURE_VIDEOCONFERENCE_ENABLED=true, API-Mate: https://mconf.github.io/api-mate/#server=https://bigbluebutton.schul-cloud.org/bigbluebutton/&sharedSecret=nueUMgNqoypZIPp1EYQ122YzmhWTtanCIOiQYcrV4Q
+		 * Required, if FEATURE_VIDEOCONFERENCE_ENABLED='true',
+		 * API-Mate: https://mconf.github.io/api-mate/
  		*/
 		VIDEOCONFERENCE: {
-			URL: process.env.BBB_URL,
+			HOST: process.env.BBB_URL,
 			SALT: process.env.BBB_SALT,
 		},
 	},

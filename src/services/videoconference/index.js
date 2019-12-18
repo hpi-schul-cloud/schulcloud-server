@@ -1,5 +1,3 @@
-const bbb = require('bbb-promise');
-
 const {
 	BadRequest,
 	Forbidden,
@@ -7,13 +5,11 @@ const {
 	NotFound,
 	NotImplemented,
 } = require('@feathersjs/errors');
+const { FEATURE_VIDEOCONFERENCE_ENABLED } = require('../../../config/globals');
+
 const { info, error, warning } = require('../../logger');
 const videoconferenceHooks = require('./hooks');
 
-const { FEATURE_VIDEOCONFERENCE_ENABLED, SERVICES } = require('../../../config/globals').SERVICES.VIDEOCONFERENCE;
-const { URL, SALT } = SERVICES.VIDEOCONFERENCE;
-
-const server = bbb.server(, 'some_secret');
 
 class VideoconferenceService {
 	constructor() {
@@ -25,7 +21,7 @@ class VideoconferenceService {
 		if (!FEATURE_VIDEOCONFERENCE_ENABLED === true) {
 			return new Forbidden();
 		}
-
+		return new NotImplemented();
 	}
 
 	get(id, params) {
@@ -33,7 +29,7 @@ class VideoconferenceService {
 		if (!FEATURE_VIDEOCONFERENCE_ENABLED === true) {
 			return new Forbidden();
 		}
-		return new NotImplemented();
+		
 	}
 
 	remove(id, params) {
