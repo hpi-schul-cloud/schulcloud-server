@@ -13,9 +13,7 @@ const {
 const adminHook = require('./hooks/admin');
 
 
-module.exports = function setup() {
-	const app = this;
-
+module.exports = function setup(app) {
 	const options = {
 		Model: userModel,
 		paginate: {

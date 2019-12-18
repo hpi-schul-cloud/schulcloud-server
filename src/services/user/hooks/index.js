@@ -1,13 +1,19 @@
 const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
+const feathersCache = require('@feathers-plus/cache');
+
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
-const { sortRoles } = require('../../role/utils/rolesHelper');
+const User = require('../model');
+const cacheSetup = require('../../helpers/cache');
 
 const constants = require('../../../utils/constants');
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../consent/config');
 
 const { hasEditPermissionForUser } = require('./index.hooks');
+
+const cacheMap = feathersCache({ max: 100 }); // Keep the 100 most recently used.
+const { clearCacheAfterModified, sendFromCache, saveToCache } = cacheSetup(cacheMap, { logging: false });
 
 /**
  *
@@ -204,6 +210,7 @@ const pinIsVerified = (hook) => {
 
 // student administrator helpdesk superhero teacher parent
 // eslint-disable-next-line no-unused-vars
+/*
 const permissionRoleCreate = async (hook) => {
 	if (!hook.params.provider) {
 		// internal call
@@ -241,7 +248,7 @@ const permissionRoleCreate = async (hook) => {
 	}
 	return Promise.reject(new errors.BadRequest('You have not the permissions to create this roles.'));
 };
-
+*/
 const securePatching = (hook) => Promise.all([
 	globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
@@ -365,7 +372,7 @@ const handleClassId = (hook) => {
 	}
 	return hook.app.service('/classes').patch(hook.data.classId, {
 		$push: { userIds: hook.result._id },
-	}).then((res) => Promise.resolve(hook));
+	}).then(() => Promise.resolve(hook));
 };
 
 const pushRemoveEvent = (hook) => {
@@ -406,8 +413,6 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 	}
 };
 
-const User = require('../model');
-
 exports.before = {
 	all: [],
 	find: [
@@ -417,8 +422,12 @@ exports.before = {
 		authenticate('jwt'),
 		globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
 		mapRoleFilterQuery,
+		sendFromCache,
 	],
-	get: [authenticate('jwt')],
+	get: [
+		authenticate('jwt'),
+		sendFromCache,
+	],
 	create: [
 		checkJwt(),
 		pinIsVerified,
@@ -456,6 +465,7 @@ exports.after = {
 	find: [
 		decorateAvatar,
 		decorateUsers,
+		saveToCache,
 	],
 	get: [
 		decorateAvatar,
@@ -466,15 +476,21 @@ exports.after = {
 				errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
 			}),
 		),
+		saveToCache,
 	],
 	create: [
 		handleClassId,
 	],
-	update: [],
-	patch: [],
+	update: [
+		clearCacheAfterModified,
+	],
+	patch: [
+		clearCacheAfterModified,
+	],
 	remove: [
 		pushRemoveEvent,
 		removeStudentFromClasses,
 		removeStudentFromCourses,
+		clearCacheAfterModified,
 	],
 };

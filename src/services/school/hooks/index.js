@@ -1,7 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
-const logger = require('../../../logger');
+const feathersCache = require('@feathers-plus/cache');
 
+const logger = require('../../../logger');
+const cacheSetup = require('../../helpers/cache');
 const globalHooks = require('../../../hooks');
 const { fileStorageTypes } = require('../model');
 const getFileStorageStrategy = require('../../fileStorage/strategies').createStrategy;
@@ -10,6 +12,8 @@ const { yearModel: Year } = require('../model');
 const SchoolYearFacade = require('../logic/year');
 
 let years = null;
+const cacheMap = feathersCache({ max: 100 }); // Keep the 100 most recently used.
+const { clearCacheAfterModified, sendFromCache, saveToCache } = cacheSetup(cacheMap, { logging: false });
 
 const expectYearsDefined = async () => {
 	if (!years) {
@@ -89,8 +93,12 @@ const decorateYears = async (context) => {
 // fixme: resdtrict to current school
 exports.before = {
 	all: [],
-	find: [],
-	get: [],
+	find: [
+		sendFromCache,
+	],
+	get: [
+		sendFromCache,
+	],
 	create: [
 		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_CREATE'),
@@ -113,10 +121,10 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [decorateYears],
-	get: [decorateYears],
-	create: [createDefaultStorageOptions],
-	update: [createDefaultStorageOptions],
-	patch: [createDefaultStorageOptions],
+	find: [decorateYears, saveToCache],
+	get: [decorateYears, saveToCache],
+	create: [createDefaultStorageOptions, clearCacheAfterModified],
+	update: [createDefaultStorageOptions, clearCacheAfterModified],
+	patch: [createDefaultStorageOptions, clearCacheAfterModified],
 	remove: [],
 };

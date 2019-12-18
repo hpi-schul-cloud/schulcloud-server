@@ -5,7 +5,7 @@ const { resolveToIds, hasPermission, computeProperty } = require('../../../hooks
 const cacheSetup = require('../../helpers/cache');
 const Role = require('../model');
 
-const cacheMap = feathersCache({ max: 2 }); // Keep the 100 most recently used.
+const cacheMap = feathersCache({ max: 100 }); // Keep the 100 most recently used.
 const { clearCacheAfterModified, sendFromCache, saveToCache } = cacheSetup(cacheMap, { logging: false });
 
 exports.before = () => ({
