@@ -22,6 +22,7 @@ class VideoconferenceService {
 			return new Forbidden();
 		}
 		return new NotImplemented();
+		// TODO check user permissions in given scope
 	}
 
 	get(id, params) {
@@ -29,15 +30,7 @@ class VideoconferenceService {
 		if (!FEATURE_VIDEOCONFERENCE_ENABLED === true) {
 			return new Forbidden();
 		}
-		
-	}
-
-	remove(id, params) {
-		// check feature is enabled
-		if (!FEATURE_VIDEOCONFERENCE_ENABLED === true) {
-			return new Forbidden();
-		}
-		return new NotImplemented();
+		// TODO check user permissions in given scope
 	}
 }
 
