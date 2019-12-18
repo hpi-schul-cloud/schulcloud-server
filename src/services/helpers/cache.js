@@ -1,25 +1,18 @@
 const logger = require('../../logger');
 
-const clone = (obj) => JSON.parse(JSON.stringify(obj));
-
-const isF = (e) => typeof e === 'function';
-const isValidCacheMap = (cacheMap) => {
-	const {
-		get, set, keys, delete: d,
-	} = cacheMap;
-	return isF(get) && isF(set) && isF(keys) && isF(d);
-};
-
-const isGetFind = (context) => ['get', 'find'].includes(context.method);
-
+// const
 const splitString = '::';
 const findString = '<find>';
 
-const getIndex = (context) => {
-	const id = (context.id || findString).toString();
-	return id + splitString + JSON.stringify(context.params.query);
-};
-// cacheMap must be include a get(), set(), keys(), delete()  P
+// helper
+const clone = (obj) => JSON.parse(JSON.stringify(obj));
+const isF = (e) => typeof e === 'function';
+const isValidCacheMap = (c) => isF(c.get) && isF(c.set) && isF(c.keys) && isF(c.delete);
+const isGetFind = (context) => ['get', 'find'].includes(context.method);
+const extractId = (context) => (context.id || findString).toString();
+const getIndex = (context) => extractId(context) + splitString + JSON.stringify(context.params.query);
+
+// hooks
 const sendFromCache = (cacheMap, logging = false) => (context) => {
 	if (!isGetFind(context)) {
 		return context;
