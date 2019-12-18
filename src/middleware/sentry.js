@@ -7,7 +7,7 @@ const { version } = require('../../package.json');
  */
 const replaceIds = (string) => {
 	if (string) {
-		return string.replace(/[a-f\d]{24}/ig, '<id>');
+		return string.replace(/[a-f\d]{24}/ig, '__id__');
 	}
 	return string;
 };
