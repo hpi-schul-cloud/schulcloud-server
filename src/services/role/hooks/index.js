@@ -1,42 +1,50 @@
-const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const globalHooks = require('../../../hooks');
+const feathersCache = require('@feathers-plus/cache');
+
+const { resolveToIds, hasPermission, computeProperty } = require('../../../hooks');
+const cacheSetup = require('../../helpers/cache');
+const Role = require('../model');
+
+const cacheMap = feathersCache({ max: 2 }); // Keep the 100 most recently used.
+const { clearCacheAfterModified, sendFromCache, saveToCache } = cacheSetup(cacheMap, { logging: false });
 
 exports.before = () => ({
 	all: [
 		authenticate('jwt'),
 	],
-	find: [],
+	find: [
+		sendFromCache,
+	],
 	get: [
-		globalHooks.hasPermission('ROLE_VIEW'),
+		hasPermission('ROLE_VIEW'),
+		sendFromCache,
 	],
 	create: [
-		globalHooks.hasPermission('ROLE_CREATE'),
-		globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
+		hasPermission('ROLE_CREATE'),
+		resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 	],
 	update: [
-		globalHooks.hasPermission('ROLE_EDIT'),
+		hasPermission('ROLE_EDIT'),
 	],
 	patch: [
-		globalHooks.hasPermission('ROLE_EDIT'),
-		globalHooks.permitGroupOperation,
+		hasPermission('ROLE_EDIT'),
 	],
 	remove: [
-		globalHooks.hasPermission('ROLE_CREATE'),
-		globalHooks.permitGroupOperation,
+		hasPermission('ROLE_CREATE'),
 	],
 });
 
-const Role = require('../model');
-
 exports.after = {
 	all: [],
-	find: [],
+	find: [
+		saveToCache,
+	],
 	get: [
-		globalHooks.computeProperty(Role, 'getPermissions', 'permissions'),
+		computeProperty(Role, 'getPermissions', 'permissions'),
+		saveToCache,
 	],
 	create: [],
-	update: [],
-	patch: [],
-	remove: [],
+	update: [clearCacheAfterModified],
+	patch: [clearCacheAfterModified],
+	remove: [clearCacheAfterModified],
 };
