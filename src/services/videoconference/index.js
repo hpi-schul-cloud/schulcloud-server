@@ -2,6 +2,7 @@ const {
 	BadRequest,
 	Forbidden,
 	NotFound,
+	GeneralError,
 } = require('@feathersjs/errors');
 const { FEATURE_VIDEOCONFERENCE_ENABLED } = require('../../../config/globals');
 
@@ -27,14 +28,18 @@ class VideoconferenceService {
 		this.docs = {};
 	}
 
+	/**
+	 * creates an url to join a meeting
+	 * @param {*} data
+	 * @param {*} params
+	 */
 	async create(data, params) {
 		// check feature is enabled
 		if (!FEATURE_VIDEOCONFERENCE_ENABLED === true) {
-			return new Forbidden('feature disabled');
+			throw new Forbidden('FEATURE_VIDEOCONFERENCE_ENABLED disabled');
 		}
-		if (isNullOrEmpty(data.scopeName) || !scopeNames.includes(data.scopeName)
-			|| isNullOrEmpty(data.id) || !ObjectId.isValid(data.id)) {
-			return new BadRequest('id or scope invalid');
+		if (!this.valid(data)) {
+			throw new BadRequest('id or scope invalid');
 		}
 		try {
 			// TODO check user permissions in given scope & moderator role option
@@ -49,27 +54,23 @@ class VideoconferenceService {
 			const user = await getUser({ params, app });
 			const url = await joinMeeting(server, name, data.id, user.fullName, role);
 			// TODO secure authentication for one-time-use only
-			return {
-				success: true,
-				url,
-			};
+			return { url };
 		} catch (err) {
-			error(err);
-			return {
-				success: false,
-			};
+			throw new GeneralError('join meeting link generation failed', err);
 		}
 	}
 
+	/**
+	 * fetches details about an existing meeting
+	 * @param {*} params
+	 */
 	find(params) {
 		// check feature is enabled
 		if (!FEATURE_VIDEOCONFERENCE_ENABLED === true) {
-			return new Forbidden('feature disabled');
+			throw new Forbidden('FEATURE_VIDEOCONFERENCE_ENABLED disabled');
 		}
-		if (!ObjectId.isValid(params.id)
-			|| isNullOrEmpty(params.scopeName)
-			|| !scopeNames.includes(params.scopeName)) {
-			return new BadRequest('id or scope name invalid');
+		if (this.valid(params)) {
+			throw new BadRequest('id or scope name invalid');
 		}
 		try {
 			// TODO check user permissions in given scope, request scope type in params
@@ -78,16 +79,16 @@ class VideoconferenceService {
 			if (meeting === false) {
 				return new NotFound();
 			}
-			return {
-				success: true,
-				meeting,
-			};
-		} catch (e) {
-			error(e);
-			return {
-				success: false,
-			};
+			return { meeting };
+		} catch (err) {
+			throw new GeneralError('requesting meeting info failed', err);
 		}
+	}
+
+	valid(params) {
+		return ObjectId.isValid(params.id)
+			&& !isNullOrEmpty(params.scopeName)
+			&& scopeNames.includes(params.scopeName);
 	}
 }
 
