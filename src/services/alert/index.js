@@ -7,7 +7,7 @@ const StatusAdapter = require('./adapter/status');
 
 let messages = [];
 // durtion of cache in min
-const duration = 5;
+const duration = 2;
 let success = false;
 
 /**
