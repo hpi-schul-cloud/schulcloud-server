@@ -314,6 +314,7 @@ const getUser = (context) => context.app.service('users').get(context.params.acc
 }).catch((err) => {
 	throw new NotFound('Can not fetch user.', err);
 });
+exports.getUser = getUser;
 
 const testIfRoleNameExist = (user, roleNames) => {
 	if (typeof roleNames === 'string') {
@@ -356,8 +357,8 @@ const userIsInThatCourse = (user, { userIds = [], teacherIds = [], substitutionI
 	const userId = user._id.toString();
 	if (isCourse) {
 		return userIds.some((u) => equalIds(u, userId))
-            || teacherIds.some((u) => equalIds(u, userId))
-            || substitutionIds.some((u) => equalIds(u, userId));
+			|| teacherIds.some((u) => equalIds(u, userId))
+			|| substitutionIds.some((u) => equalIds(u, userId));
 	}
 
 	return userIds.some((u) => equalIds(u, userId)) || testIfRoleNameExist(user, 'teacher');
@@ -444,7 +445,7 @@ exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) =>
 					return userIsInThatCourse(user, lesson.courseGroupId, false);
 				}
 				return userIsInThatCourse(user, lesson.courseId, true)
-                        || (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
 			});
 			if (tempLesson.length === 0) {
 				throw new Forbidden("You don't have access to that lesson.");
@@ -462,7 +463,7 @@ exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) =>
 					return userIsInThatCourse(user, lesson.courseGroupId, false);
 				}
 				return userIsInThatCourse(user, lesson.courseId, true)
-                        || (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
 			});
 
 			if (context.result.data.length === 0) {
@@ -491,7 +492,7 @@ exports.restrictToUsersOwnClasses = (context) => getUser(context).then((user) =>
 		return classService.get(context.id).then((result) => {
 			const userId = context.params.account.userId.toString();
 			if (!(_.some(result.userIds, (u) => equalIds(u, userId)))
-					&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
+				&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
 				throw new Forbidden('You are not in that class.');
 			}
 		});
