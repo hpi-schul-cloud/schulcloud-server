@@ -17,7 +17,7 @@ const { isNullOrEmpty } = require('./logic/utils');
 const server = require('./logic/server');
 const { ROLES, PERMISSIONS } = require('./logic/constants');
 
-const scopeNames = ['team', 'event'];
+const scopeNames = ['team', 'event', 'course'];
 
 const { ObjectId } = require('../../helper/compare');
 
@@ -48,11 +48,10 @@ class VideoconferenceService {
 			// if (!permissions.includes(PERMISSIONS.CREATE_MEETING) || !permissions.includes(PERMISSIONS.JOIN_MEETING)) {
 			// 	return new Forbidden();
 			// }
-			const role = permissions.includes(PERMISSIONS.CREATE_MEETING) ? ROLES.MODERATOR : ROLES.ATTENDEE;
-			const name = 'scopemeetingname';
+			// const role = permissions.includes(PERMISSIONS.CREATE_MEETING) ? ROLES.MODERATOR : ROLES.ATTENDEE;
 			const { app } = this;
 			const user = await getUser({ params, app });
-			const url = await joinMeeting(server, name, data.id, user.fullName, role);
+			const url = await joinMeeting(server, data.name, data.id, user.fullName, data.role);
 			// TODO secure authentication for one-time-use only
 			return { url };
 		} catch (err) {
@@ -88,6 +87,7 @@ class VideoconferenceService {
 	valid(params) {
 		return ObjectId.isValid(params.id)
 			&& !isNullOrEmpty(params.scopeName)
+			&& !isNullOrEmpty(params.name) // set this using scope props
 			&& scopeNames.includes(params.scopeName);
 	}
 }

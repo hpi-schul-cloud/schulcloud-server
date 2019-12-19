@@ -54,6 +54,7 @@ const convertEventToJsonApi = (body) => ({
 				repeat_until: body.repeat_until,
 				'x-sc-courseId': body.courseId,
 				'x-sc-teamId': body.teamId,
+				'x-sc-featureVideoConference': body.featureVideoConference === 'on',
 				'x-sc-courseTimeId': body.courseTimeId,
 			},
 			relationships: {
