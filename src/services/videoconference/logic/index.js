@@ -63,7 +63,8 @@ exports.joinMeeting = (server, meetingName, meetingId, userName, role) => server
 
 /**
 	 * returns information about a meeting if the meeting exist.
-	 * only successful responses or not found error are valid responses this method will be returned
+	 * only successful responses are valid responses this method will be returned
+	 * returns false on not found
 	 * attention: this may expose sensitive data!
 	 */
 exports.getMeetingInfo = (server, meetingId) => server.monitoring
@@ -77,8 +78,8 @@ exports.getMeetingInfo = (server, meetingId) => server.monitoring
 			return response;
 		}
 		if (Array.isArray(response.messageKey) && response.messageKey.includes(MESSAGE_KEYS.NOT_FOUND)) {
-			// meeting does not exist, got valid response
-			return response;
+			// meeting does not exist
+			return false;
 		}
 		throw new Error('unknown response from bbb...');
 	});

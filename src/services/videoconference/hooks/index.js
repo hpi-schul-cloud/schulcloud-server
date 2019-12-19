@@ -1,7 +1,7 @@
-// todo add permissions and authentication
+const { authenticate } = require('@feathersjs/authentication');
 
 exports.before = {
-	all: [],
+	all: [authenticate('jwt')],
 	find: [],
 	get: [],
 	create: [],
@@ -9,6 +9,7 @@ exports.before = {
 	patch: [],
 	remove: [],
 };
+
 exports.after = {
 	all: [],
 	find: [],

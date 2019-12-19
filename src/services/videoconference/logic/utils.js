@@ -16,11 +16,11 @@ module.exports = {
 	},
 	isNullOrEmpty: (stringValue) => {
 		if (stringValue === null || stringValue === undefined) {
-			return false;
+			return true;
 		}
 		if (typeof stringValue !== 'string' || stringValue.length === 0) {
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	},
 };

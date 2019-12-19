@@ -6,3 +6,6 @@ exports.RETURN_CODES = returnCodes;
 
 const messageKeys = { NOT_FOUND: 'notFound' };
 exports.MESSAGE_KEYS = messageKeys;
+
+const permissions = { CREATE_MEETING: 'CREATE_MEETING', JOIN_MEETING: 'JOIN_MEETING' };
+exports.PERMISSIONS = permissions;

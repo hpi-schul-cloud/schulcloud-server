@@ -5,7 +5,7 @@ const { HOST, SALT } = require('../../../../config/globals').SERVICES.VIDEOCONFE
 const { FEATURE_VIDEOCONFERENCE_ENABLED } = require('../../../../config/globals');
 
 // validate host and salt if enabled
-if (FEATURE_VIDEOCONFERENCE_ENABLED === 'true') {
+if (FEATURE_VIDEOCONFERENCE_ENABLED === true) {
 	// host must be valid uri that does not end with an slash
 	if (!isUrl(HOST) || HOST.endsWith('/')) {
 		throw new Error('VIDEOCONFERENCE.HOST must be valid uri that does not end with an slash');
