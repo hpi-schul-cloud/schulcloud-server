@@ -12,7 +12,7 @@ describe('[utils] deepObject', () => {
 	});
 
 	describe('deepObject > pathToArray', () => {
-		const { pathsToArray, getSimple } = deepObject;
+		const { pathsToArray } = deepObject;
 
 		it('should work for empty input', () => {
 			const result = pathsToArray();
@@ -74,13 +74,13 @@ describe('[utils] deepObject', () => {
 				pathsToArray(testPath);
 			}
 			const pathToArrayDelta = Date.now() - s1;
-	
+
 			logger.info({
 				type: 'profiling',
 				iterations,
 				pathToArrayDelta,
 				loadashToPathDelta,
-				baseSplitOperation
+				baseSplitOperation,
 			});
 			expect(pathToArrayDelta <= (loadashToPathDelta * slowerFactor)).to.equal(true);
 		});

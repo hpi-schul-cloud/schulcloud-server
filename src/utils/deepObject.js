@@ -9,7 +9,7 @@ const validateKeys = (newKeys) => newKeys.reduce((validatedKeys, key) => {
 }, []);
 
 /**
- * @param  {...String||Array} paths 
+ * @param  {...String||Array} paths
  */
 const pathsToArray = (...paths) => {
 	try {
@@ -47,10 +47,10 @@ const pathsToArray = (...paths) => {
 const getSimple = (item, pathString) => {
 	if (!item || !pathString) return item;
 	try {
-		let chain = pathString.split('.');
+		const chain = pathString.split('.');
 		let result = item;
 
-		chain.forEach(key => {
+		chain.forEach((key) => {
 			result = result[key];
 		});
 		return result;
