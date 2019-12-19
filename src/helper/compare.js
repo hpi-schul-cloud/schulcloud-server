@@ -27,7 +27,7 @@ const ObjectId = {
 	 */
 	isValid(id) {
 		const idAsString = typeof id === 'string' ? id : String(id);
-		return idAsString.match('^[0-9a-f]{24}$');
+		return /^[0-9a-f]{24}$/.test(idAsString);
 	},
 };
 
