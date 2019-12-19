@@ -38,7 +38,7 @@ module.exports = {
 				oAuthClientId: context.params.tokenInfo.client_id,
 			},
 		}).then((originTools) => {
-			context.params.useIframePseudonym = originTools.data[0].useIframePseudonym;
+
 			return toolService.find({
 				query: {
 					originTool: originTools.data[0]._id,

@@ -164,8 +164,8 @@ describe('oauth2 service', function oauthTest() {
 			account: { userId: testUser2._id },
 			query: { client: testClient.client_id },
 		})
-		.then(() => {
-			throw new Error('Was not supposed to succeed');
+		.then((res) => {
+			throw new Error('Should not supposed to succeed');
 		})
 		.catch((err) => {
 			assert.strictEqual(404, err.statusCode);

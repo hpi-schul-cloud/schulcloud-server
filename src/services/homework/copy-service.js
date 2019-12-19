@@ -20,10 +20,7 @@ class HomeworkCopyService {
 				tempAssignment.private = true;
 				tempAssignment.name += ' - Copy';
 
-				return HomeworkModel.create(tempAssignment, (err, res) => {
-					if (err) return err;
-					return res;
-				});
+				return HomeworkModel.create(tempAssignment);
 			});
 	}
 
