@@ -14,30 +14,34 @@ const allowedTags = ['h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 
 	'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video', 'iframe'];
 const allowedSchemes = ['http', 'https', 'ftp', 'mailto'];
 
+const htmlTrueOptions = {
+	allowedTags,
+	allowedAttributes: false, // allow all attributes of allowed tags
+	allowedSchemes,
+	parser: {
+		decodeEntities: true,
+	},
+};
+
+const htmlFalseOptions = {
+	allowedTags: [], // disallow all tags
+	allowedAttributes: [], // disallow all attributes
+	allowedSchemes: [], // disallow url schemes
+	parser: {
+		decodeEntities: true,
+	},
+};
+
 const sanitize = (data, options) => {
 	// https://www.npmjs.com/package/sanitize-html
 	if ((options || {}).html === true) {
 		// editor-content data
-		data = sanitizeHtml(data, { // TODO: set options own time
-			allowedTags,
-			allowedAttributes: false, // allow all attributes of allowed tags
-			allowedSchemes,
-			parser: {
-				decodeEntities: true,
-			},
-		});
+		data = sanitizeHtml(data, htmlTrueOptions);
 		data = data.replace(/(&lt;script&gt;).*?(&lt;\/script&gt;)/gim, ''); // force remove script tags
 		data = data.replace(/(<script>).*?(<\/script>)/gim, ''); // force remove script tags
 	} else {
 		// non editor-content data
-		data = sanitizeHtml(data, { // TODO: set options own time
-			allowedTags: [], // disallow all tags
-			allowedAttributes: [], // disallow all attributes
-			allowedSchemes: [], // disallow url schemes
-			parser: {
-				decodeEntities: true,
-			},
-		});
+		data = sanitizeHtml(data, htmlFalseOptions);
 	}
 	// something during sanitizeHtml() is encoding HTML Entities like & => &amp;
 	// I wasn't able to figure out which option disables this so I just decode it again.
