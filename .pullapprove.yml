@@ -26,7 +26,7 @@ notifications:
     our Review-Guidelines https://docs.schul-cloud.org/display/SCDOK/Review-Guidelines
 
 groups:
-  integrathor-pr:
+  integrathors:
     conditions:
     - "'IntegraTHORs' in labels"
     reviews:
@@ -37,7 +37,7 @@ groups:
       teams:
       - integrathors
       
-  loki-pr:
+  loki:
     conditions:
     - "'Loki' in labels"
     reviews:
@@ -48,7 +48,7 @@ groups:
       teams:
       - loki
       
-  no-team-label:
+  server-core:
     conditions:
     - "'Loki' not in labels and 'IntegraTHORs' not in labels"
     reviews:
