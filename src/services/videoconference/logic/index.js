@@ -1,7 +1,9 @@
 const { error } = require('../../../logger');
-const { MESSAGE_KEYS, RETURN_CODES, ROLES } = require('./constants');
+const {
+	MESSAGE_KEYS, RETURN_CODES, ROLES, GUEST_POLICIES,
+} = require('./constants');
 
-const createParams = {};
+const createParams = { allowStartStopRecording: false, guestPolicy: GUEST_POLICIES.ALWAYS_DENY };
 
 /**
  * creates a url for attendee or moderator to join a meeting.
@@ -9,7 +11,7 @@ const createParams = {};
  *
  * @returns join url
  */
-exports.joinMeeting = (server, meetingName, meetingId, userName, role) => server.monitoring
+exports.joinMeeting = (server, meetingName, meetingId, userName, role, params) => server.monitoring
 	// TODO instead recreation should be possible
 	.getMeetingInfo(meetingId)
 	.then((meeting) => {
@@ -58,7 +60,7 @@ exports.joinMeeting = (server, meetingName, meetingId, userName, role) => server
 		if (!Array.isArray(response.meetingID) || !response.meetingID.length) {
 			throw new Error('invalid meetingID');
 		}
-		return server.administration.join(userName, response.meetingID[0], secret); // todo add userId
+		return server.administration.join(userName, response.meetingID[0], secret, params); // todo add userId
 	});
 
 /**

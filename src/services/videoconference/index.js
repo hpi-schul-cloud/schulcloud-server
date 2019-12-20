@@ -51,7 +51,7 @@ class VideoconferenceService {
 			// const role = permissions.includes(PERMISSIONS.CREATE_MEETING) ? ROLES.MODERATOR : ROLES.ATTENDEE;
 			const { app } = this;
 			const user = await getUser({ params, app });
-			const url = await joinMeeting(server, data.name, data.id, user.fullName, data.role);
+			const url = await joinMeeting(server, data.name, data.id, user.fullName, data.role, { userID: String(user._id) });
 			// TODO secure authentication for one-time-use only
 			return { url };
 		} catch (err) {
