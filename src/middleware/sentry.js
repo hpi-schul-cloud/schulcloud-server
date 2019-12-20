@@ -93,17 +93,16 @@ module.exports = (app) => {
 			middleware = [skipItMiddleware];
 		}
 
-		const runMiddlewares = (event, hint, index = 0) => {
-			if (event === undefined) {
-				return undefined;
-			}
+		const runMiddlewares = (event, hint) => {
+			let modifiedEvent = event; // is no copy, event is also mutated
 
-			if (middleware.length === index) {
-				return event;
+			for (let i = 0; i < middleware.length; i += 1) {
+				if (!modifiedEvent) {	// if skip return
+					return modifiedEvent;
+				}
+				modifiedEvent = middleware[i](modifiedEvent, hint, app);
 			}
-
-			const modifiedEvent = middleware[index](event, hint, app);
-			return runMiddlewares(modifiedEvent, hint, index + 1);
+			return modifiedEvent;
 		};
 
 		Sentry.init({
