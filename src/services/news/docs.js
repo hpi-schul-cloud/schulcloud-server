@@ -87,7 +87,111 @@ module.exports = {
 			},
 		},
 	},
-	/* operations: {
-
-	}, */
+	operations: {
+		create: {
+			description: 'Create a new news of a certain scope.',
+			responses: {
+				201: {
+					description: 'created',
+					content: { 'application/json': { schema: { $ref: '#/components/schemas/news' } } },
+				},
+				401: {
+					description: 'not authenticated',
+				},
+				403: {
+					description: 'not authorized',
+				},
+				500: {
+					description: 'general error',
+				},
+			},
+		},
+		find: {
+			description: 'Find all news the user has access to, optionally filtered by scope.',
+		},
+		get: {
+			description: 'Returns the news specified by id.',
+			responses: {
+				200: {
+					description: 'success',
+					content: { 'application/json': { schema: { $ref: '#/components/schemas/news' } } },
+				},
+				401: {
+					description: 'not authenticated',
+				},
+				403: {
+					description: 'not authorized',
+				},
+				404: {
+					description: 'not found',
+				},
+				500: {
+					description: 'general error',
+				},
+			},
+		},
+		remove: {
+			description: 'Removes the news specified by id.',
+			responses: {
+				201: {
+					description: 'success',
+					content: { 'application/json': { schema: { $ref: '#/components/schemas/news' } } },
+				},
+				401: {
+					description: 'not authenticated',
+				},
+				403: {
+					description: 'not authorized',
+				},
+				404: {
+					description: 'not found',
+				},
+				500: {
+					description: 'general error',
+				},
+			},
+		},
+		update: {
+			description: 'Replaces the news specified by id.',
+			responses: {
+				201: {
+					description: 'success',
+					content: { 'application/json': { schema: { $ref: '#/components/schemas/news' } } },
+				},
+				401: {
+					description: 'not authenticated',
+				},
+				403: {
+					description: 'not authorized',
+				},
+				404: {
+					description: 'not found',
+				},
+				500: {
+					description: 'general error',
+				},
+			},
+		},
+		patch: {
+			description: 'patches the news specified by id.',
+			responses: {
+				201: {
+					description: 'success',
+					content: { 'application/json': { schema: { $ref: '#/components/schemas/news' } } },
+				},
+				401: {
+					description: 'not authenticated',
+				},
+				403: {
+					description: 'not authorized',
+				},
+				404: {
+					description: 'not found',
+				},
+				500: {
+					description: 'general error',
+				},
+			},
+		},
+	},
 };
