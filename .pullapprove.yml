@@ -26,12 +26,29 @@ notifications:
     our Review-Guidelines https://docs.schul-cloud.org/display/SCDOK/Review-Guidelines
 
 groups:
-  code:
+  integrathor-pr:
+    conditions:
+    - "'IntegraTHORs' in labels"
     reviews:
       request: 2  # 2 reviews requests will be sent at a time
       request_order: shuffle  # reviewers will be chosen in a random order
       author_value: 1  # if the PR author is in this group, automatically add +1
-      required: 2  # 1 approval from this group are required, author has 1, https://docs.pullapprove.com/config/reviews/
+      required: 2  # 1 approval from this group are required
+    reviewers:
+      teams:
+      - integrathors
+      
+  loki-pr:
+    conditions:
+    - "'Loki' in labels"
+    reviews:
+      request: 2  # 2 reviews requests will be sent at a time
+      request_order: shuffle  # reviewers will be chosen in a random order
+      author_value: 1  # if the PR author is in this group, automatically add +1
+      required: 2  # 1 approval from this group are required
+    reviewers:
+      teams:
+      - loki
 
   privacy:
     conditions:
