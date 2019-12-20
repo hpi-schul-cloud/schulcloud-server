@@ -30,10 +30,9 @@ groups:
     conditions:
     - "'IntegraTHORs' in labels"
     reviews:
+      required: 1  # 1 approval from this group are required
       request: 2  # 2 reviews requests will be sent at a time
       request_order: shuffle  # reviewers will be chosen in a random order
-      author_value: 1  # if the PR author is in this group, automatically add +1
-      required: 2  # 1 approval from this group are required
     reviewers:
       teams:
       - integrathors
@@ -42,14 +41,24 @@ groups:
     conditions:
     - "'Loki' in labels"
     reviews:
+      required: 1  # 1 approval from this group are required
       request: 2  # 2 reviews requests will be sent at a time
       request_order: shuffle  # reviewers will be chosen in a random order
-      author_value: 1  # if the PR author is in this group, automatically add +1
-      required: 2  # 1 approval from this group are required
     reviewers:
       teams:
       - loki
-
+      
+  no-team-label:
+    conditions:
+    - "'Loki' not in labels and 'IntegraTHORs' not in labels"
+    reviews:
+      required: 1  # 1 approval from this group are required
+      request: 2  # 2 reviews requests will be sent at a time
+      request_order: shuffle  # reviewers will be chosen in a random order
+    reviewers:
+      teams:
+      - server-core
+      
   privacy:
     conditions:
     - "'*model.js' in files or 'backup/setup/*.json' in files or '.pullapprove.yml' in files"
