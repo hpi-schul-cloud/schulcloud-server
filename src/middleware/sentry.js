@@ -20,7 +20,7 @@ const replaceIds = (string) => {
  * @returns {SentryEvent || null} Return modified sentry event, or undefined to skip sending event
  */
 const removeIdMiddleware = (event) => {
-	if (event.request) {
+	if (event && event.request) {
 		// eslint-disable-next-line camelcase
 		const { request: { data, url, query_string } } = event;
 		if (data) {
@@ -78,7 +78,7 @@ module.exports = (app) => {
 
 	if (dsn) {
 		// middleware to modified events that, are post to sentry
-		let middleware = [
+		let middlewares = [
 			filterByErrorCodesMiddleware(404),
 			// filterByErrorMessageMiddleware('could not initialize rocketchat user'),
 			removeIdMiddleware,
@@ -86,21 +86,21 @@ module.exports = (app) => {
 		];
 		// for local test runs, post feedback but skip it
 		if (environment === 'development') {
-			middleware.push(logItMiddleware(false));
+			middlewares.push(logItMiddleware(false));
 		}
 		// do not execute for test runs
 		if (environment === 'test') {
-			middleware = [skipItMiddleware];
+			middlewares = [skipItMiddleware];
 		}
 
 		const runMiddlewares = (event, hint) => {
 			let modifiedEvent = event; // is no copy, event is also mutated
 
-			for (let i = 0; i < middleware.length; i += 1) {
+			for (let i = 0; i < middlewares.length; i += 1) {
 				if (!modifiedEvent) {	// if skip return
 					return modifiedEvent;
 				}
-				modifiedEvent = middleware[i](modifiedEvent, hint, app);
+				modifiedEvent = middlewares[i](modifiedEvent, hint, app);
 			}
 			return modifiedEvent;
 		};
