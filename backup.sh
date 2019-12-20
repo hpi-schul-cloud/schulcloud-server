@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DEFAULT_DB="schulcloud"
-DEFAULT_HOST="localhost:27017"
+DEFAULT_HOST="127.0.0.1:27017"
 DEFAULT_PATH="backup/"
 
 usage()

@@ -111,9 +111,20 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 						return;
 					}
 
+					let firstName = obj[userAttributeNameMapping.givenName];
+					if (!firstName) {
+						if (roles.includes('administrator')) {
+							firstName = 'Admin';
+						} else if (roles.includes('teacher')) {
+							firstName = 'Lehrkraft';
+						} else {
+							firstName = 'Schüler:in';
+						}
+					}
+
 					results.push({
 						email: obj[userAttributeNameMapping.mail],
-						firstName: obj[userAttributeNameMapping.givenName],
+						firstName,
 						lastName: obj[userAttributeNameMapping.sn],
 						roles,
 						ldapDn: obj[userAttributeNameMapping.dn],
