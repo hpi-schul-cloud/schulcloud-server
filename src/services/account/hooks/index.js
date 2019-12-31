@@ -89,19 +89,20 @@ const validatePassword = (hook) => {
 			// Check if it is firstLogin
 			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
 
-			if (
-				(!userDidFirstLogin && editsOwnAccount)
-				|| (
-					(!editsOwnAccount
-						&& (
-							(hasStudentCreate && isStudent)
-							|| (hasAdminView && (isStudent || isTeacher))
-							|| isSuperHero
-						)
-					)
+			if (!userDidFirstLogin && editsOwnAccount) {
+				// user is editing own account
+				return hook;
+			}
+			if (!editsOwnAccount
+				&& (
+					(hasStudentCreate && isStudent)	|| (hasAdminView && (isStudent || isTeacher)) || isSuperHero
 				)
 			) {
-				return hook;
+				// REQUIRE PASSWORD CHANGE ON NEXT LOGIN
+				return hook.app.service('accounts').get(hook.id).then((account) => hook.app.service('users')
+					.patch(account.userId, {
+						preferences: { firstLogin: false, newPassword: true },
+					}).then(() => hook));
 			}
 			if (password && !passwordVerification) {
 				throw new Forbidden(

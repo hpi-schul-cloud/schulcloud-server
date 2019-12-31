@@ -39,11 +39,13 @@ const firstLogin = async (data, params, app) => {
 	let consentPromise = Promise.resolve();
 	let updateConsentUsingVersions = Promise.resolve();
 	const user = await app.service('users').get(params.account.userId);
+	const preferences = user.preferences || {};
 
 	if (data['password-1']) {
 		accountUpdate.password_verification = data.password_verification;
 		accountUpdate.password = data['password-1'];
 		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
+		preferences.newPassword = false;
 	}
 
 	if (data.parent_email) {
@@ -72,7 +74,6 @@ const firstLogin = async (data, params, app) => {
 		userUpdate.email = data['student-email'];
 	}
 
-	const preferences = user.preferences || {};
 	preferences.firstLogin = true;
 	userUpdate.preferences = preferences;
 
