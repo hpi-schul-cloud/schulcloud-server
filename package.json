@@ -66,7 +66,7 @@
 		"es6-promisify": "^6.0.1",
 		"express": "^4.14.0",
 		"feathers-hooks-common": "^4.20.7",
-		"feathers-mongoose": "^3.6.2",
+		"feathers-mongoose": "^8.2.0",
 		"feathers-swagger": "^1.1.0",
 		"file-type": "^12.1.0",
 		"freeport": "^1.0.5",
