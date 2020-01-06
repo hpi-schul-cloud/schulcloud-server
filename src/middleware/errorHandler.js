@@ -26,7 +26,7 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 			requestId: req.headers.requestId,
 		} : {};
 
-		logger.error(error);
+		logger.error({ ...error });
 
 		if (error.stack) {
 			delete error.stack;
