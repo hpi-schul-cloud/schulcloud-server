@@ -21,6 +21,8 @@ const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 
+const { BODYPARSER_JSON_LIMIT } = require('../config/globals');
+
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
@@ -49,7 +51,8 @@ app.use(compress())
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 	.use('/', express.static('public'))
 	.configure(sentry)
-	.use(bodyParser.json())
+	.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
+	.use('/', bodyParser.json())
 	.use(bodyParser.urlencoded({ extended: true }))
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 	.use(versionService)
