@@ -1,6 +1,8 @@
 const nodemailer = require('nodemailer');
 const logger = require('../../logger');
 
+const { secrets } = require('../../services/authentication/logic');
+
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {
 		const userId = params.headers.token;
@@ -19,19 +21,21 @@ module.exports = function setup(app) {
 			replyEmail,
 			subject,
 			content,
+			attachments,
 		}, params) {
 			return checkForToken(params, app)
 				.then(async (user) => {
-					const options = app.get('secrets').smtp || app.get('secrets').sendmail || {};
+					const options = secrets.smtp || secrets.sendmail || {};
 					const transporter = nodemailer.createTransport(options);
 					const mail = {
 						from: process.env.SMTP_SENDER || replyEmail || 'noreply@schul-cloud.org',
 						replyTo: replyEmail || process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 						headers,
 						to: user ? user.email : email,
-						subject,
+						subject: process.env.NODE_ENV === 'production' ? subject : `[SC-TEST] ${subject}`,
 						html: content.html,
 						text: content.text,
+						attachments,
 					};
 					// send mail with defined transport object in production mode
 					if (process.env.NODE_ENV === 'production' || process.env.FORCE_SEND_EMAIL) {
