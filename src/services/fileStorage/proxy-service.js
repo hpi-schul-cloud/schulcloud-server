@@ -558,30 +558,33 @@ const directoryService = {
 	async find({ query, payload }) {
 		const { parent } = query;
 		const { userId } = payload;
-		const scopeFilters = [
-			{
-				refOwnerModel: 'user',
-				owner: userId,
-			},
-		];
 
-		const scopes = {
-			courses: this.app.service('/users/:scopeId/courses'),
-			teams: this.app.service('/users/:scopeId/teams'),
-		};
-		const scopeNames = Object.keys(scopes);
-		await Promise.all(scopeNames.map(async (scopeName) => {
-			const scopeList = await scopes[scopeName].find({ route: { scopeId: userId }, query: {}, paginate: false });
-			scopeFilters.push({
+		const scopeNames = ['courses', 'teams'];
+		const getScopeListService = (scopeName) => this.app.service(`/users/:scopeId/${scopeName}`);
+
+		const scopeFilters = await Promise.all(scopeNames.map(async (scopeName) => {
+			const scopeListService = getScopeListService(scopeName);
+			const scopeList = await scopeListService.find({
+				route: { scopeId: userId },
+				query: {},
+				paginate: false,
+			});
+			return {
 				refOwnerModel: scopeName,
 				owner: {
 					$in: scopeList,
 				},
-			});
+			};
 		}));
 
 		const params = sanitizeObj({
-			$or: scopeFilters,
+			$or: [
+				{
+					refOwnerModel: 'user',
+					owner: userId,
+				},
+				...scopeFilters,
+			],
 			isDirectory: true,
 			parent,
 		});
