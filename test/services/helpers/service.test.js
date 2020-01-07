@@ -9,12 +9,13 @@ const config = require(`../../../config/${process.env.NODE_ENV || 'default'}.jso
 
 const isMailbodyValid = ({
 	platform,
+	platformId,
 	to,
 	subject,
 	text,
 	html,
 	replyTo,
-}) => !!(platform && to && subject && (text || html) && replyTo);
+}) => !!(platform && platformId && to && subject && (text || html) && replyTo);
 
 describe('Mail Service', () => {
 	let mailService;
@@ -47,6 +48,29 @@ describe('Mail Service', () => {
 				subject: 'test',
 				content: { html: '<h1>Testing Purposes</h1>' },
 			});
+		});
+	});
+
+	describe('invalid emails', () => {
+		beforeEach(() => {
+			nock(config.services.notification)
+				.post('/mails')
+				.reply(200,
+					(uri, requestBody) => {
+						expect(isMailbodyValid(requestBody)).to.equal(false);
+						return 'Message queued';
+					});
+		});
+		it('should sthrow if subject is missing', async () => {
+			try {
+				await mailService.create({
+					email: 'test@test.test',
+					content: { text: 'Testing Purposes' },
+				});
+				expect('Service executed without errors').to.equeal("Shouldn't be reachable");
+			} catch (_) {
+				expect('to throw error').to.equal('to throw error');
+			}
 		});
 	});
 });

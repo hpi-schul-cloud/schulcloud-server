@@ -58,6 +58,7 @@ module.exports = function setup(app) {
 					...headers,
 				},
 				body: {
+					platformId: NOTIFICATION_PLATFORM,
 					platform: NOTIFICATION_PLATFORM,
 					...Mail,
 				},
