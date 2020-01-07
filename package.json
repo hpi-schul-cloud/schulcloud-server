@@ -68,7 +68,7 @@
 		"feathers-hooks-common": "^4.20.7",
 		"feathers-mongoose": "^3.6.2",
 		"feathers-swagger": "^1.1.0",
-		"file-type": "^12.1.0",
+		"file-type": "^13.0.1",
 		"freeport": "^1.0.5",
 		"html-entities": "^1.2.1",
 		"jsonwebtoken": "8.5.1",
