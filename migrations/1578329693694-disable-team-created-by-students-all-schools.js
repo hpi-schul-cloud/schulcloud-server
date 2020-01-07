@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
+const { SC_THEME } = require('../config/globals');
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
 const features = mongoose.model('features', new mongoose.Schema({
@@ -17,11 +18,13 @@ const features = mongoose.model('features', new mongoose.Schema({
 
 module.exports = {
 	up: async function up() {
+		if (SC_THEME !== 'n21') {
+			info('Migration will be applied to n21 instance only! Ignore...');
+			return Promise.resolve();
+		}
+
 		await connect();
 		// ////////////////////////////////////////////////////
-		// Make changes to the database here.
-		// Hint: Access models via this('modelName'), not an imported model to have
-		// access to the correct database connection. Otherwise Mongoose calls never return.
 		await features.updateMany(
 			{
 				features: { $ne: 'disableStudentTeamCreation' },
@@ -34,6 +37,9 @@ module.exports = {
 		).lean().exec();
 		// ////////////////////////////////////////////////////
 		await close();
+
+		info('Migration has been applied to this instance of n21');
+		return Promise.resolve();
 	},
 
 	down: async function down() {
