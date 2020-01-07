@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const { GeneralError } = require('@feathersjs/errors');
+const { GeneralError, Unavailable } = require('@feathersjs/errors');
 const logger = require('../../logger');
 
 const {
