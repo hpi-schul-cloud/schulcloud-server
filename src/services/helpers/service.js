@@ -3,15 +3,9 @@ const { Unavailable } = require('@feathersjs/errors');
 const logger = require('../../logger');
 
 const {
-	FORCE_SEND_EMAIL,
-	NOTIFICATION_PLATFORM,
 	REQUEST_TIMEOUT,
 	SMTP_SENDER,
 } = require('../../../config/globals');
-
-if (!NOTIFICATION_PLATFORM) {
-	throw new Error('Required Env NOTIFICATION_PLATFORM is not defined');
-}
 
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {
@@ -26,7 +20,10 @@ module.exports = function setup(app) {
 	class MailService {
 		// POST
 		async create(data, params) {
-			if (!NOTIFICATION_PLATFORM) {
+			const FORCE_SEND_EMAIL = app.get('FORCE_SEND_EMAIL');
+			const NOTIFICATION_PLATFORM = app.get('NOTIFICATION_PLATFORM');
+
+			if (!NOTIFICATION_PLATFORM || process.env.NOTIFICATION_PLATFORM) {
 				throw new Unavailable('Required Env NOTIFICATION_PLATFORM is not defined');
 			}
 

@@ -26,8 +26,6 @@ describe('Mail Service', () => {
 
 	describe('valid emails', () => {
 		beforeEach(() => {
-			process.env.NOTIFICATION_PLATFORM = 'testplatform';
-			process.env.FORCE_SEND_EMAIL = true;
 			nock(config.services.notification)
 				.post('/mails')
 				.reply(200,
