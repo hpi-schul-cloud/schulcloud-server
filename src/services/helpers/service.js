@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const { Unavailable } = require('@feathersjs/errors');
+const { GeneralError } = require('@feathersjs/errors');
 const logger = require('../../logger');
 
 const {
@@ -31,6 +31,11 @@ module.exports = function setup(app) {
 
 			const user = await checkForToken(params, app);
 
+			const encodeFiles = (files) => files.map(({ content, filename }) => ({
+				filename,
+				content: content.toString('base64'),
+			}));
+
 			const {
 				headers,
 				email,
@@ -39,8 +44,10 @@ module.exports = function setup(app) {
 				content,
 				// TODO: must be implemented by the mailservice
 				// currently only used by the helpdesk
-				// attachments,
+				attachments,
 			} = data;
+
+			const base64Attachments = encodeFiles(attachments);
 
 			const Mail = {
 				to: user ? user.email : email,
@@ -49,6 +56,7 @@ module.exports = function setup(app) {
 				html: content.html,
 				from: SMTP_SENDER || replyEmail || 'noreply@schul-cloud.org',
 				replyTo: replyEmail || SMTP_SENDER || 'noreply@schul-cloud.org',
+				attachments: base64Attachments,
 			};
 
 			const requestOptions = {
@@ -68,7 +76,9 @@ module.exports = function setup(app) {
 
 			// send mail with defined transport object in production mode
 			if (app.get('env') === 'production' || FORCE_SEND_EMAIL) {
-				return request(requestOptions);
+				return request(requestOptions).catch((error) => {
+					throw new GeneralError(error.message);
+				});
 			}
 			// otherwise print email message object on console
 			return logger.debug('E-Mail Message not sent (not in production mode):', Mail);
