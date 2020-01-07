@@ -6,9 +6,16 @@
 const mongoose = require('mongoose');
 const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
+const { STUDENT_TEAM_CREATE_DISABLED } = require('../../../config/globals');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
+
+const defaultFeatures = [];
+if (STUDENT_TEAM_CREATE_DISABLED) {
+	defaultFeatures.push('disableStudentTeamCreation');
+}
+
 
 const rssFeedSchema = new Schema({
 	url: {
@@ -58,7 +65,11 @@ const schoolSchema = new Schema({
 	logo_dataUrl: { type: String },
 	purpose: { type: String },
 	rssFeeds: [{ type: rssFeedSchema }],
-	features: [{ type: String, enum: ['rocketChat', 'disableStudentTeamCreation'] }],
+	features: [{
+		type: String,
+		enum: ['rocketChat', 'disableStudentTeamCreation'],
+		default: defaultFeatures,
+	}],
 	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below)
 }, {
 	timestamps: true,
