@@ -88,8 +88,7 @@ describe('helpdesk service', () => {
 		const postBody = {
 			type: 'contactHPI',
 			subject: 'Dies ist ein Titel 4',
-			currentState: 'Dies ist der CurrentState 2',
-			targetState: 'Dies ist der TargetState 2',
+			problemDescription: 'Dies ist die Problembeschreibung 1',
 			replyEmail: 'test@mail.de',
 		};
 		helpdeskService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })

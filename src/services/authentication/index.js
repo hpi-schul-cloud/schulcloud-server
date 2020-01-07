@@ -2,10 +2,10 @@ const { AuthenticationService, JWTStrategy } = require('@feathersjs/authenticati
 const { LocalStrategy } = require('@feathersjs/authentication-local');
 
 const { LdapStrategy, MoodleStrategy, IservStrategy } = require('./strategies');
-const hooks = require('./hooks');
-const logger = require('../../logger');
+const { hooks } = require('./hooks');
+const { authenticationSecret, audience } = require('./logic');
 
-
+/*
 let secrets;
 try {
 	if (['production', 'lokal'].includes(process.env.NODE_ENV)) {
@@ -23,7 +23,7 @@ const authenticationSecret = (secrets.authentication) ? secrets.authentication :
 if (process.env.NODE_ENV === 'production' && !secrets.authentication) {
 	logger.error('use default authentication secret');
 }
-
+*/
 const authConfig = {
 	entity: 'account',
 	service: 'accounts',
@@ -31,7 +31,7 @@ const authConfig = {
 	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv'],
 	jwtOptions: {
 		header: { typ: 'access' },
-		audience: 'https://schul-cloud.org',
+		audience,
 		issuer: 'feathers',
 		algorithm: 'HS256',
 		expiresIn: '30d',
