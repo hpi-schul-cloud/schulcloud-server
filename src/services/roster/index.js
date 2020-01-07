@@ -32,7 +32,7 @@ module.exports = function roster() {
 					return {
 						data: {
 							user_id: params.route.user,
-							username: 'Anonymous',
+							username: oauth2.getSubject(params.pseudonym, app.settings.services.web),
 							type: user.roles[0].name,
 						},
 
@@ -75,9 +75,9 @@ module.exports = function roster() {
 							{ teacherIds: userId },
 						],
 					},
-				}).then(courses => ({
+				}).then((courses) => ({
 					data: {
-						groups: courses.data.map(course => ({
+						groups: courses.data.map((course) => ({
 							group_id: course._id.toString(),
 							name: course.name,
 							student_count: course.userIds.length,
@@ -132,15 +132,13 @@ module.exports = function roster() {
 					}),
 				]).then(([users, teachers]) => ({
 					data: {
-						students: users.data.map(user => ({
-							user_id: (params.useIframePseudonym
-								? oauth2.getSubject(user.pseudonym, app.settings.services.web)
-								: user.pseudonym),
+						students: users.data.map((user) => ({
+							user_id: user.pseudonym,
+							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
 						})),
-						teachers: teachers.data.map(user => ({
-							user_id: (params.useIframePseudonym
-								? oauth2.getSubject(user.pseudonym, app.settings.services.web)
-								: user.pseudonym),
+						teachers: teachers.data.map((user) => ({
+							user_id: user.pseudonym,
+							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
 						})),
 					},
 				}));

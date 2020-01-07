@@ -55,8 +55,19 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 
 		const rawAttributes = [userAttributeNameMapping.uuid];
 
-		const searchString = `${userPathAdditions},${this.config.rootPath}`;
-		return this.app.service('ldap').searchCollection(this.config, searchString, options, rawAttributes)
+		const searchArray = userPathAdditions.split(';;');
+
+		searchArray.forEach((searchString, index) => {
+			searchArray[index] = (searchString === '')
+				? this.config.rootPath
+				: `${searchString},${this.config.rootPath}`;
+		});
+
+		const promises = searchArray.map((searchPath) => (
+			this.app.service('ldap').searchCollection(this.config, searchPath, options, rawAttributes)
+		));
+		return Promise.all(promises)
+			.then((results) => results.reduce((all, result) => all.concat(result)), [])
 			.then((data) => {
 				const results = [];
 				data.forEach((obj) => {
@@ -100,9 +111,20 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 						return;
 					}
 
+					let firstName = obj[userAttributeNameMapping.givenName];
+					if (!firstName) {
+						if (roles.includes('administrator')) {
+							firstName = 'Admin';
+						} else if (roles.includes('teacher')) {
+							firstName = 'Lehrkraft';
+						} else {
+							firstName = 'Schüler:in';
+						}
+					}
+
 					results.push({
 						email: obj[userAttributeNameMapping.mail],
-						firstName: obj[userAttributeNameMapping.givenName],
+						firstName,
 						lastName: obj[userAttributeNameMapping.sn],
 						roles,
 						ldapDn: obj[userAttributeNameMapping.dn],
@@ -138,7 +160,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 			};
 			const searchString = `${classPathAdditions},${this.config.rootPath}`;
 			return this.app.service('ldap').searchCollection(this.config, searchString, options)
-				.then(data => data.map(obj => ({
+				.then((data) => data.map((obj) => ({
 					className: obj[classAttributeNameMapping.description],
 					ldapDn: obj[classAttributeNameMapping.dn],
 					uniqueMembers: obj[classAttributeNameMapping.uniqueMember],

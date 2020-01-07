@@ -1,12 +1,13 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden, NotFound } = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
 
 const logger = require('../../../logger/');
-const { injectUserId } = require('../../../hooks');
+const { injectUserId, mapPayload } = require('../../../hooks');
 const lesson = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const checkForShareToken = (context) => {
 	const { shareToken = '', lessonId } = context.data;
@@ -21,7 +22,7 @@ const checkForShareToken = (context) => {
 			if (
 				_lesson.shareToken === shareToken
 				|| course.shareToken === shareToken
-				|| course.teacherIds.some(t => t.toString() === currentUserId)
+				|| course.teacherIds.some((t) => equalIds(t, currentUserId))
 			) {
 				return context;
 			}
@@ -35,10 +36,11 @@ const checkForShareToken = (context) => {
 
 
 exports.before = () => ({
-	all: [auth.hooks.authenticate('jwt')],
+	all: [authenticate('jwt')],
 	find: [disallow()],
 	get: [disallow()],
 	create: [
+		mapPayload,
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
 		injectUserId,
 		checkForShareToken,

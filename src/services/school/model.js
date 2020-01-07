@@ -4,6 +4,8 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const { getDocumentBaseDir } = require('./logic/school');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
@@ -25,9 +27,10 @@ const rssFeedSchema = new Schema({
 		enum: ['pending', 'success', 'error'],
 	},
 });
+enableAuditLog(rssFeedSchema);
 
 const customYearSchema = new Schema({
-	yearId:	{ type: Schema.Types.ObjectId, ref: 'year', required: true },
+	yearId: { type: Schema.Types.ObjectId, ref: 'year', required: true },
 	startDate: { type: Date, required: true },
 	endDate: { type: Date, required: true },
 });
@@ -36,6 +39,13 @@ const schoolSchema = new Schema({
 	name: { type: String, required: true },
 	address: { type: Object },
 	fileStorageType: { type: String, enum: fileStorageTypes },
+	schoolGroupId: { type: Schema.Types.ObjectId, ref: 'schoolGroup' },
+	documentBaseDirType: {
+		type: String,
+		required: false,
+		default: '',
+		enum: ['', 'school', 'schoolGroup'],
+	},
 	systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
 	federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
 	createdAt: { type: Date, default: Date.now },
@@ -54,16 +64,28 @@ const schoolSchema = new Schema({
 	timestamps: true,
 });
 
+
+const schoolGroupSchema = new Schema({
+	name: { type: String, required: true },
+}, { timestamps: true });
+
+
 /**
  * Determine if school is in maintenance mode ("Schuljahreswechsel"):
  * 		inMaintenanceSince not set: maintenance mode is disabled (false)
  * 		inMaintenanceSince <  Date.now(): maintenance will be enabled at this date in the future (false)
  * 		inMaintenanceSince >= Date.now(): maintenance mode is enabled (true)
  */
+schoolSchema.plugin(require('mongoose-lean-virtuals'));
+
 schoolSchema.virtual('inMaintenance').get(function get() {
 	return Boolean(this.inMaintenanceSince && this.inMaintenanceSince <= Date.now());
 });
-schoolSchema.plugin(require('mongoose-lean-virtuals'));
+
+schoolSchema.virtual('documentBaseDir').get(function get() {
+	const school = this;
+	return getDocumentBaseDir(school);
+});
 
 const yearSchema = new Schema({
 	name: {
@@ -73,16 +95,24 @@ const yearSchema = new Schema({
 	endDate: { type: Date, required: true },
 });
 
+
 const gradeLevelSchema = new Schema({
 	name: { type: String, required: true },
 });
 
+enableAuditLog(schoolSchema);
+enableAuditLog(schoolGroupSchema);
+enableAuditLog(yearSchema);
+enableAuditLog(gradeLevelSchema);
+
 const schoolModel = mongoose.model('school', schoolSchema);
+const schoolGroupModel = mongoose.model('schoolGroup', schoolGroupSchema);
 const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
 	schoolModel,
+	schoolGroupModel,
 	yearModel,
 	customYearSchema,
 	gradeLevelModel,

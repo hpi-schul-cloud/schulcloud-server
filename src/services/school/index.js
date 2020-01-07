@@ -1,6 +1,7 @@
 const service = require('feathers-mongoose');
 const schoolModels = require('./model');
 const hooks = require('./hooks');
+const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
 const { SchoolMaintenanceService } = require('./maintenance');
 
 module.exports = function schoolServices() {
@@ -23,6 +24,17 @@ module.exports = function schoolServices() {
 
 	app.use('/schools/:schoolId/maintenance', new SchoolMaintenanceService());
 
+	/* schoolGroup service */
+	app.use('/schoolGroup', service({
+		Model: schoolModels.schoolGroupModel,
+		paginate: {
+			default: 500,
+			max: 5000,
+		},
+	}));
+	const schoolGroupService = app.service('/schoolGroup');
+	schoolGroupService.hooks(schoolGroupHooks);
+
 	/* year Service */
 	app.use('/years', service({
 		Model: schoolModels.yearModel,
@@ -30,6 +42,7 @@ module.exports = function schoolServices() {
 			default: 500,
 			max: 5000,
 		},
+		lean: true,
 	}));
 	const yearService = app.service('/years');
 	yearService.hooks(hooks);
@@ -41,6 +54,7 @@ module.exports = function schoolServices() {
 			default: 500,
 			max: 5000,
 		},
+		lean: true,
 	}));
 	const gradeLevelService = app.service('/gradeLevels');
 	gradeLevelService.hooks(hooks);

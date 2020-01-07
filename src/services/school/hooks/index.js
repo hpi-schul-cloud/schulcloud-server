@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
 const logger = require('../../../logger');
 
@@ -11,6 +11,14 @@ const SchoolYearFacade = require('../logic/year');
 
 let years = null;
 
+const expectYearsDefined = async () => {
+	if (!years) {
+		// default years will be cached after first call
+		years = await Year.find().lean().exec();
+	}
+	return years;
+};
+
 const getDefaultFileStorageType = () => {
 	if (!fileStorageTypes || !fileStorageTypes.length) {
 		return void 0;
@@ -21,6 +29,15 @@ const getDefaultFileStorageType = () => {
 const setDefaultFileStorageType = (hook) => {
 	const storageType = getDefaultFileStorageType();
 	hook.data.fileStorageType = storageType;
+	return Promise.resolve(hook);
+};
+
+const setCurrentYearIfMissing = async (hook) => {
+	if (!hook.data.currentYear) {
+		await expectYearsDefined();
+		const facade = new SchoolYearFacade(years, hook.data);
+		hook.data.currentYear = facade.defaultYear;
+	}
 	return Promise.resolve(hook);
 };
 
@@ -45,10 +62,7 @@ const createDefaultStorageOptions = (hook) => {
 
 
 const decorateYears = async (context) => {
-	if (!years) {
-		// default years will be cached after first call
-		years = await Year.find().lean().exec();
-	}
+	await expectYearsDefined();
 	const addYearsToSchool = (school) => {
 		const facade = new SchoolYearFacade(years, school);
 		school.years = facade.toJSON();
@@ -78,20 +92,21 @@ exports.before = {
 	find: [],
 	get: [],
 	create: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_CREATE'),
 		setDefaultFileStorageType,
+		setCurrentYearIfMissing,
 	],
 	update: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_EDIT'),
 	],
 	patch: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_EDIT'),
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
-    remove: [auth.hooks.authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
+    remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
     */
 	remove: [hooks.disallow()],
 };

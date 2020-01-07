@@ -10,8 +10,8 @@ const SchoolYearFacade = require('../../school/logic/year.js');
  * @implements {Syncer}
  */
 class LDAPSyncer extends SystemSyncer {
-	constructor(app, stats, system) {
-		super(app, stats, system);
+	constructor(app, stats, logger, system) {
+		super(app, stats, logger, system);
 		this.stats = Object.assign(this.stats, {
 			schools: {},
 		});
@@ -24,9 +24,9 @@ class LDAPSyncer extends SystemSyncer {
 		return super.steps()
 			.then(() => this.getSchools())
 			.then((schools) => {
-				const activeSchools = schools.filter(s => !s.inMaintenance);
+				const activeSchools = schools.filter((s) => !s.inMaintenance);
 				const jobs = activeSchools.map((school) => {
-					const syncer = new LDAPSchoolSyncer(this.app, this.getSchoolStats(school), this.system, school);
+					const syncer = new LDAPSchoolSyncer(this.app, this.getSchoolStats(school), this.logger, this.system, school);
 					return syncer.sync();
 				});
 				return Promise.all(jobs);
@@ -35,7 +35,7 @@ class LDAPSyncer extends SystemSyncer {
 
 	getSchools() {
 		return this.app.service('ldap').getSchools(this.system.ldapConfig)
-			.then(data => this.createSchoolsFromLdapData(data));
+			.then((data) => this.createSchoolsFromLdapData(data));
 	}
 
 	getSchoolStats(school) {
@@ -65,7 +65,7 @@ class LDAPSyncer extends SystemSyncer {
 		const currentLDAPProvider = this.system.ldapConfig.provider;
 		let newSchools = 0;
 		let updates = 0;
-		return Promise.all(data.map(ldapSchool => this.app.service('schools').find(
+		return Promise.all(data.map((ldapSchool) => this.app.service('schools').find(
 			{
 				query:
 				{

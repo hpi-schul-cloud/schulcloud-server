@@ -1,6 +1,6 @@
 const { BadRequest } = require('@feathersjs/errors');
 
-const userDataFilter = user => ({
+const userDataFilter = (user) => ({
 	userId: user._id,
 	email: user.email,
 	firstName: user.firstName,
@@ -23,7 +23,7 @@ class UserLinkImportService {
 					throw new BadRequest('Can not match the hash.');
 				}
 				return userDataFilter(users.data[0]);
-			}).catch(err => err);
+			}).catch((err) => err);
 	}
 
 	setup(app) {

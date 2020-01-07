@@ -8,10 +8,14 @@ const {
 } = require('@feathersjs/errors');
 const _ = require('lodash');
 const mongoose = require('mongoose');
+const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
 const KeysModel = require('../services/keys/model');
+const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../config/globals');
 // Add any common hooks you want to share across services in here.
+
+const { extractTokenFromBearerHeader } = require('../services/authentication/logic');
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
@@ -24,7 +28,7 @@ exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
 	};
 };
 
-exports.forceHookResolve = forcedHook => (context) => {
+exports.forceHookResolve = (forcedHook) => (context) => {
 	forcedHook(context)
 		.then(() => Promise.resolve(context))
 		.catch(() => Promise.resolve(context));
@@ -43,7 +47,7 @@ exports.isSuperHero = () => (context) => {
 	return userService.find({ query: { _id: (context.params.account.userId || ''), $populate: 'roles' } })
 		.then((user) => {
 			user.data[0].roles = Array.from(user.data[0].roles);
-			if (!(user.data[0].roles.filter(u => (u.name === 'superhero')).length > 0)) {
+			if (!(user.data[0].roles.filter((u) => (u.name === 'superhero')).length > 0)) {
 				throw new Forbidden('you are not a superhero, sorry...');
 			}
 			return Promise.resolve(context);
@@ -57,49 +61,60 @@ exports.hasRole = (context, userId, roleName) => {
 		.then((user) => {
 			user.roles = Array.from(user.roles);
 
-			return (_.some(user.roles, u => u.name === roleName));
+			return (_.some(user.roles, (u) => u.name === roleName));
 		});
 };
 
-exports.hasPermission = permissionName => (context) => {
-	// If it was an internal call then skip this context
-	if (!context.params.provider) {
-		return context;
-	}
+/**
+ * @param  {string, array[string]} inputPermissions
+ * @returns resolves if the current user has ANY of the given permissions
+ */
+const hasPermission = (inputPermissions) => {
+	const permissionNames = (typeof inputPermissions === 'string') ? [inputPermissions] : inputPermissions;
 
-	// If an api key was provided, skip
-	if ((context.params.headers || {})['x-api-key']) {
-		return KeysModel.findOne({ key: context.params.headers['x-api-key'] })
-			.then((res) => {
-				if (!res) throw new NotAuthenticated('API Key is invalid');
-				return Promise.resolve(context);
-			})
-			.catch(() => {
-				throw new NotAuthenticated('API Key is invalid.');
-			});
-	}
-	// If test then skip too
-	if (process.env.NODE_ENV === 'test') return Promise.resolve(context);
-
-	// Otherwise check for user permissions
-	const service = context.app.service('/users/');
-	return service.get({ _id: (context.params.account.userId || '') })
-		.then((user) => {
-			user.permissions = Array.from(user.permissions);
-
-			if (!(user.permissions || []).includes(permissionName)) {
-				throw new Forbidden(`You don't have the permission ${permissionName}.`);
-			}
+	return (context) => {
+		const { params: { account, provider }, app } = context;
+		// If it was an internal call then skip this context
+		if (!provider) {
 			return Promise.resolve(context);
-		});
+		}
+
+		if (!account && !account.userId) {
+			throw new Forbidden('Can not read account data');
+		}
+
+		// Otherwise check for user permissions
+		return app.service('users').get(account.userId)
+			.then(({ permissions = [] }) => {
+				const hasAnyPermission = permissionNames.some((perm) => permissions.includes(perm));
+				if (!hasAnyPermission) {
+					throw new Forbidden(`You don't have one of the permissions: ${permissionNames.join(', ')}.`);
+				}
+				return Promise.resolve(context);
+			});
+	};
 };
+
+/**
+ * @param  {string, array[string]} permissions
+ * @returns resolves if the current user has ALL of the given permissions
+ */
+exports.hasAllPermissions = (permissions) => {
+	const permissionNames = (typeof permissions === 'string') ? permissions : [permissions];
+	return (context) => {
+		const hasPermissions = permissionNames.every((permission) => hasPermission(permission)(context));
+		return Promise.all(hasPermissions);
+	};
+};
+
+exports.hasPermission = hasPermission;
 
 /*
     excludeOptions = false => allways remove response
     excludeOptions = undefined => remove response when not GET or FIND request
     excludeOptions = ['get', ...] => remove when method not in array
  */
-exports.removeResponse = excludeOptions => (context) => {
+exports.removeResponse = (excludeOptions) => (context) => {
 	// If it was an internal call then skip this context
 	if (!context.params.provider) {
 		return context;
@@ -130,18 +145,18 @@ exports.hasRoleNoHook = (context, userId, roleName, account = false) => {
 	const accountService = context.app.service('/accounts/');
 	if (account) {
 		return accountService.get(userId)
-			.then(_account => userService.find({ query: { _id: (_account.userId || ''), $populate: 'roles' } })
+			.then((_account) => userService.find({ query: { _id: (_account.userId || ''), $populate: 'roles' } })
 				.then((user) => {
 					user.data[0].roles = Array.from(user.data[0].roles);
 
-					return (user.data[0].roles.filter(u => (u.name === roleName)).length > 0);
+					return (user.data[0].roles.filter((u) => (u.name === roleName)).length > 0);
 				}));
 	}
 	return userService.find({ query: { _id: (userId || ''), $populate: 'roles' } })
 		.then((user) => {
 			user.data[0].roles = Array.from(user.data[0].roles);
 
-			return (user.data[0].roles.filter(u => (u.name === roleName)).length > 0);
+			return (user.data[0].roles.filter((u) => (u.name === roleName)).length > 0);
 		});
 };
 
@@ -204,12 +219,12 @@ exports.permitGroupOperation = (context) => {
 };
 
 // get the model instance to call functions etc  TODO make query results not lean
-exports.computeProperty = (Model, functionName, variableName) => context => Model.findById(context.result._id)
-	.then(modelInstance => modelInstance[functionName]()) // compute that property
+exports.computeProperty = (Model, functionName, variableName) => (context) => Model.findById(context.result._id)
+	.then((modelInstance) => modelInstance[functionName]()) // compute that property
 	.then((result) => {
 		context.result[variableName] = Array.from(result); // save it in the resulting object
 	})
-	.catch(e => logger.error(e))
+	.catch((e) => logger.error(e))
 	.then(() => Promise.resolve(context));
 
 exports.mapPaginationQuery = (context) => {
@@ -286,7 +301,7 @@ exports.injectUserId = (context) => {
 	return context;
 };
 
-const getUser = context => context.app.service('users').get(context.params.account.userId, {
+const getUser = (context) => context.app.service('users').get(context.params.account.userId, {
 	query: {
 		$populate: 'roles',
 		// todo select in roles only role name
@@ -311,7 +326,7 @@ const testIfRoleNameExist = (user, roleNames) => {
 	return user.roles.some(({ name }) => roleNames.includes(name));
 };
 
-exports.restrictToCurrentSchool = context => getUser(context).then((user) => {
+exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, 'superhero')) {
 		return context;
 	}
@@ -320,10 +335,10 @@ exports.restrictToCurrentSchool = context => getUser(context).then((user) => {
 	if (params.route && params.route.schoolId && params.route.schoolId !== currentSchoolId) {
 		throw new Forbidden('You do not have valid permissions to access this.');
 	}
-	if (context.method === 'get' || context.method === 'find') {
+	if (['get', 'find', 'remove'].includes(context.method)) {
 		if (params.query.schoolId === undefined) {
 			params.query.schoolId = user.schoolId;
-		} else if (params.query.schoolId !== currentSchoolId) {
+		} else if (!equalIds(params.query.schoolId, currentSchoolId)) {
 			throw new Forbidden('You do not have valid permissions to access this.');
 		}
 	} else if (context.data.schoolId === undefined) {
@@ -341,15 +356,15 @@ exports.restrictToCurrentSchool = context => getUser(context).then((user) => {
 const userIsInThatCourse = (user, { userIds = [], teacherIds = [], substitutionIds = [] }, isCourse) => {
 	const userId = user._id.toString();
 	if (isCourse) {
-		return userIds.some(u => u.toString() === userId)
-            || teacherIds.some(u => u.toString() === userId)
-            || substitutionIds.some(u => u.toString() === userId);
+		return userIds.some((u) => equalIds(u, userId))
+            || teacherIds.some((u) => equalIds(u, userId))
+            || substitutionIds.some((u) => equalIds(u, userId));
 	}
 
-	return userIds.some(u => u.toString() === userId) || testIfRoleNameExist(user, 'teacher');
+	return userIds.some((u) => equalIds(u, userId)) || testIfRoleNameExist(user, 'teacher');
 };
 
-exports.restrictToUsersOwnCourses = context => getUser(context).then((user) => {
+exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
 		return context;
 	}
@@ -375,7 +390,39 @@ exports.restrictToUsersOwnCourses = context => getUser(context).then((user) => {
 	return context;
 });
 
-exports.restrictToUsersOwnLessons = context => getUser(context).then((user) => {
+exports.mapPayload = (context) => {
+	logger.info(
+		'DEPRECATED: mapPayload hook should be used to ensure backwards compatibility only, and be removed if possible.'
+		+ ` path: ${context.path} method: ${context.method}`,
+	);
+	if (context.params.payload) {
+		context.params.authentication = Object.assign(
+			{},
+			context.params.authentication,
+			{ payload: context.params.payload },
+		);
+	}
+	Object.defineProperty(context.params, 'payload', {
+		get() {
+			logger.warning(
+				'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
+				+ ` path: ${context.path} method: ${context.method}`,
+			);
+			return (context.params.authentication || {}).payload;
+		},
+		set(v) {
+			logger.warning(
+				'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
+				+ `path: ${context.path} method: ${context.method}`,
+			);
+			if (!context.params.authentication) context.params.authentication = {};
+			context.params.authentication.payload = v;
+		},
+	});
+	return context;
+};
+
+exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
 		return context;
 	}
@@ -436,16 +483,16 @@ exports.restrictToUsersOwnLessons = context => getUser(context).then((user) => {
 	return context;
 });
 
-exports.restrictToUsersOwnClasses = context => getUser(context).then((user) => {
-	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
+exports.restrictToUsersOwnClasses = (context) => getUser(context).then((user) => {
+	if (testIfRoleNameExist(user, ['superhero', 'administrator', 'teacher'])) {
 		return context;
 	}
 	if (context.method === 'get') {
 		const classService = context.app.service('classes');
 		return classService.get(context.id).then((result) => {
 			const userId = context.params.account.userId.toString();
-			if (!(_.some(result.userIds, u => u.toString() === userId))
-					&& !(_.some(result.teacherIds, u => u.toString() === userId))) {
+			if (!(_.some(result.userIds, (u) => equalIds(u, userId)))
+					&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
 				throw new Forbidden('You are not in that class.');
 			}
 		});
@@ -465,7 +512,7 @@ exports.restrictToUsersOwnClasses = context => getUser(context).then((user) => {
 // meant to be used as an after context
 exports.denyIfNotCurrentSchool = (
 	{ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' },
-) => context => getUser(context).then((user) => {
+) => (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, 'superhero')) {
 		return context;
 	}
@@ -492,12 +539,31 @@ exports.checkSchoolOwnership = (context) => {
 		});
 };
 
+function validatedAttachments(attachments) {
+	let cTotalBufferSize = 0;
+	attachments.forEach((element) => {
+		if (!element.mimetype.includes('image/')
+		&& !element.mimetype.includes('video/')
+		&& !element.mimetype.includes('application/msword')
+		&& !element.mimetype.includes('application/pdf')) {
+			throw new Error('Email Attachment is not a valid file!');
+		}
+		cTotalBufferSize += element.size;
+		if (cTotalBufferSize >= MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE) {
+			throw new BadRequest('Email Attachments exceed the max. total file limit.');
+		}
+	});
+}
+
 // TODO: later: Template building
 // z.B.: maildata.template =
 //   { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
 // if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
 // mail.html = generatedHtml || "";
 exports.sendEmail = (context, maildata) => {
+	const files = maildata.attachments || [];
+	if (files) { validatedAttachments(files); }
+
 	const userService = context.app.service('/users');
 	const mailService = context.app.service('/mails');
 
@@ -505,6 +571,20 @@ exports.sendEmail = (context, maildata) => {
 	const emails = (typeof maildata.emails === 'string' ? [maildata.emails] : maildata.emails) || [];
 	const userIds = (typeof maildata.userIds === 'string' ? [maildata.userIds] : maildata.userIds) || [];
 	const receipients = [];
+
+	// create email attachments
+	const attachments = [];
+	files.forEach((element) => {
+		try {
+			attachments.push({ filename: element.name, content: Buffer.from(element.data) });
+		} catch (error) {
+			throw new Error('Unexpected Error while creating Attachment.');
+		}
+	});
+
+	// email validation conform with <input type="email"> (see https://emailregex.com)
+	const re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+	const replyEmail = ((maildata.replyEmail) && re.test(maildata.replyEmail)) ? maildata.replyEmail : null;
 
 	const promises = [];
 
@@ -531,7 +611,6 @@ exports.sendEmail = (context, maildata) => {
 
 	if (emails.length > 0) {
 		emails.forEach((email) => {
-			const re = /\S+@\S+\.\S+/;
 			if (re.test(email)) {
 				receipients.push(email);
 			}
@@ -557,6 +636,7 @@ exports.sendEmail = (context, maildata) => {
 					} else {
 						mailService.create({
 							email,
+							replyEmail,
 							subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 							headers: maildata.headers || {},
 							content: {
@@ -564,6 +644,7 @@ exports.sendEmail = (context, maildata) => {
 									|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
 								html: '', // still todo, html template mails
 							},
+							attachments,
 						}).catch((err) => {
 							logger.warning(err);
 							throw new BadRequest(
@@ -587,6 +668,7 @@ exports.sendEmail = (context, maildata) => {
 			_.uniq(receipients).forEach((email) => {
 				mailService.create({
 					email,
+					replyEmail,
 					subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 					headers: maildata.headers || {},
 					content: {
@@ -594,6 +676,7 @@ exports.sendEmail = (context, maildata) => {
 							|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
 						html: '', // still todo, html template mails
 					},
+					attachments,
 				}).catch((err) => {
 					logger.warning(err);
 					throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
@@ -633,4 +716,29 @@ exports.arrayIncludes = (array, includesList, excludesList) => {
 		}
 	}
 	return true;
+};
+
+/** used for user decoration of create, update, patch requests for mongoose-diff-history */
+exports.decorateWithCurrentUserId = (context) => {
+	// todo decorate document removal
+	// todo simplify user extraction to do this only once
+	try {
+		if (!context.params.account) {
+			context.params.account = {};
+		}
+		const { userId } = context.params.account;
+		// if user not defined, try extract userId from jwt
+		if (!userId && (context.params.headers || {}).authorization) {
+			// const jwt = extractTokenFromBearerHeader(context.params.headers.authorization);
+			// userId = 'jwt'; // fixme
+		}
+		// eslint-disable-next-line no-underscore-dangle
+		if (userId && context.data && !context.data.__user) {
+			// eslint-disable-next-line no-underscore-dangle
+			context.data.__user = userId;
+		}
+	} catch (err) {
+		logger.error(err);
+	}
+	return context;
 };

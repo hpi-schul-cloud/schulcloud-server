@@ -1,8 +1,9 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
-const toArray = data => (Array.isArray(data) ? data : [data]);
+const toArray = (data) => (Array.isArray(data) ? data : [data]);
 
 // rewrite tool id if there is a origin tool (content-specific pseudonym)
 const replaceToolWithOrigin = (hook) => {
@@ -21,9 +22,9 @@ const createMissingPseudonyms = (hook) => {
 	const missingPseudonyms = [];
 	for (const userId of userIds) {
 		for (const toolId of toolIds) {
-			if (!hook.result.data.find(entry => (
-				entry.userId.toString() === userId.toString()
-				&& entry.toolId.toString() === toolId.toString()))) {
+			if (!hook.result.data.find((entry) => (
+				equalIds(entry.userId, userId)
+				&& equalIds(entry.toolId, toolId)))) {
 				missingPseudonyms.push({ userId, toolId });
 			}
 		}
@@ -39,22 +40,27 @@ const createMissingPseudonyms = (hook) => {
 
 // restricts the return pseudonyms to the users the current user is allowed to retrieve
 const filterValidUsers = (context) => {
-	let validUserIds = [context.params.account.userId];
+	const currentUserId = context.params.account.userId;
+	let courseUserIds = [currentUserId];
 	return context.app.service('courses').find({
 		query: {
-			teacherIds: context.params.account.userId,
+			$or: [
+				{ teacherIds: currentUserId },
+				{ userIds: currentUserId },
+				{ substitutionIds: currentUserId },
+			],
 			$populate: 'classIds',
 		},
-	}).then((courses) => {
-		for (const course of courses.data) {
-			validUserIds = validUserIds.concat(course.userIds);
-			for (const classInstance of course.classIds) {
-				validUserIds = validUserIds.concat(classInstance.userIds);
+	}).then((currentUserCourses) => {
+		for (const course of currentUserCourses.data) {
+			courseUserIds = courseUserIds.concat(course.userIds, course.teacherIds, (course.substitutionIds || []));
+			for (const classInstance of (course.classIds || [])) {
+				courseUserIds = courseUserIds.concat(classInstance.userIds, classInstance.teacherIds);
 			}
 		}
-		validUserIds = validUserIds.map(element => element.toString());
+		courseUserIds = new Set(courseUserIds.map((element) => element.toString()));
 		context.result.data = context.result.data
-			.filter(pseudonym => validUserIds.includes(pseudonym.userId.toString()));
+			.filter((pseudonym) => courseUserIds.has(pseudonym.userId.toString()));
 		return context;
 	});
 };
@@ -75,7 +81,7 @@ const populateUsername = (context) => {
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [authenticate('jwt')],
 	find: [replaceToolWithOrigin],
 	get: [() => { throw new errors.MethodNotAllowed(); }],
 	create: [globalHooks.ifNotLocal(() => { throw new errors.MethodNotAllowed(); })],

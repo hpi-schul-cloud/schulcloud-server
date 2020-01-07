@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const uuid = require('uuid/v4');
 
+const { enableAuditLog } = require('../../utils/database');
+
 const { Schema } = mongoose;
 
 const permissionSchema = new Schema(
@@ -21,6 +23,14 @@ const permissionSchema = new Schema(
 	{ _id: false },
 );
 
+enableAuditLog(permissionSchema);
+
+const SecurityCheckStatusTypes = Object.freeze({
+	PENDING: 'pending',
+	VERIFIED: 'verified',
+	BLOCKED: 'blocked',
+	WONTCHECK: 'wont-check',
+});
 
 /**
  * handles meta-data for a file
@@ -30,6 +40,12 @@ const permissionSchema = new Schema(
  * @param type {String} - the type of the file, e.g. mime/image
  * @param storageFileName {String} - the name of the real file on the storage
  * @param thumbnail {String} - the url of the file's thumbnail image
+ * @param thumbnailRequestToken {String} - a UUID to be used to identify a file to a thumbnail generation service
+ * @param securityCheck.status {String} - status of the check (see SecurityCheckStatusTypes)
+ * @param securityCheck.reason {String} - reason for the status
+ * @param securityCheck.requestToken {String} - a UUID to be used to identify the file
+ * @param securityCheck.createdAt {Date} - when the security check was requested (usually the file creation date)
+ * @param securityCheck.updatedAt {Date} - timestamp of last status change (if any)
  * @param shareToken {String} - hash for enabling sharing. if undefined than sharing is disabled
  * @param parent {File} - parent directory
  * @param owner {User|Course|Team} - owner Object of file
@@ -37,13 +53,24 @@ const permissionSchema = new Schema(
  * @param lockId {ObjectId} - indicates whether a file is locked for editing or not (wopi-related)
  */
 const fileSchema = new Schema({
-	isDirectory: { type: Boolean, default: false },
-	name: { type: String },
-	size: { type: Number },
-	type: { type: String },
-	storageFileName: { type: String },
+	isDirectory: { type: Boolean, default: false }, // should be required
+	name: { type: String, required: true },
+	size: { type: Number, required() { return !this.isDirectory; } },
+	type: { type: String }, // todo add required but then wopi fails
+	storageFileName: { type: String, required() { return !this.isDirectory; } },
 	thumbnail: { type: String },
 	thumbnailRequestToken: { type: String, default: uuid },
+	securityCheck: {
+		status: {
+			type: String,
+			enum: Object.values(SecurityCheckStatusTypes),
+			default: SecurityCheckStatusTypes.PENDING,
+		},
+		reason: { type: String, default: 'not yet scanned' },
+		requestToken: { type: String, default: uuid },
+		createdAt: { type: Date, default: Date.now },
+		updatedAt: { type: Date, default: Date.now },
+	},
 	shareToken: { type: String },
 	parent: { type: Schema.Types.ObjectId, ref: 'file' },
 	owner: {
@@ -62,11 +89,17 @@ const fileSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
+enableAuditLog(fileSchema);
+
 // make file-model searchable
 fileSchema.index({ name: 'text' });
 
+const FileModel = mongoose.model('file', fileSchema);
+const FilePermissionModel = mongoose.model('filePermissionModel', permissionSchema);
+
 module.exports = {
-	FileModel: mongoose.model('file', fileSchema),
+	FileModel,
+	SecurityCheckStatusTypes,
 	permissionSchema,
-	FilePermissionModel: mongoose.model('filePermissionModel', permissionSchema),
+	FilePermissionModel,
 };

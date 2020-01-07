@@ -1,10 +1,13 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 const { sortRoles } = require('../../role/utils/rolesHelper');
 
 const constants = require('../../../utils/constants');
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../consent/config');
+
+const { hasEditPermissionForUser } = require('./index.hooks');
 
 /**
  *
@@ -108,34 +111,47 @@ const updateAccountUsername = (hook) => {
 const removeStudentFromClasses = (hook) => {
 	const classesService = hook.app.service('/classes');
 	const userId = hook.id;
-	if (userId === undefined) throw new errors.BadRequest('Fehler beim Entfernen des Users aus abhängigen Klassen');
+	if (userId === undefined) {
+		throw new errors.BadRequest(
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
+		);
+	}
 
 
 	const query = { userIds: userId };
 
 	return classesService.find({ query })
-		.then(classes => Promise.all(
+		.then((classes) => Promise.all(
 			classes.data.map((myClass) => {
 				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
 				return classesService.patch(myClass._id, myClass);
 			}),
-		).then(_ => hook).catch((err) => { throw new errors.Forbidden('No Permission', err); }));
+		).then(() => hook).catch((err) => {
+			throw new errors.Forbidden(
+				'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.', err,
+			);
+		}));
 };
 
-const removeStudentFromCourses = (hook) => {
+const removeStudentFromCourses = async (hook) => {
 	const coursesService = hook.app.service('/courses');
 	const userId = hook.id;
-	if (userId === undefined) throw new errors.BadRequest('Fehler beim Entfernen des Users aus abhängigen Kursen');
+	if (userId === undefined) {
+		throw new errors.BadRequest(
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
+		);
+	}
 
-	const query = { userIds: userId };
-
-	return coursesService.find({ query })
-		.then(courses => Promise.all(
-			courses.data.map((course) => {
-				course.userIds.splice(course.userIds.indexOf(userId), 1);
-				return coursesService.patch(course._id, course);
-			}),
-		).then(() => hook).catch((err) => { throw new errors.Forbidden('No Permission', err); }));
+	try {
+		const usersCourses = await coursesService.find({ query: { userIds: userId } });
+		await Promise.all(usersCourses.data.map(
+			(course) => hook.app.service('courseModel').patch(course._id, { $pull: { userIds: userId } }),
+		));
+	} catch (err) {
+		throw new errors.Forbidden(
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.', err,
+		);
+	}
 };
 
 const sanitizeData = (hook) => {
@@ -160,14 +176,14 @@ const sanitizeData = (hook) => {
 
 const checkJwt = () => function checkJwtfnc(hook) {
 	if (((hook.params || {}).headers || {}).authorization !== undefined) {
-		return (auth.hooks.authenticate('jwt')).call(this, hook);
+		return (authenticate('jwt')).call(this, hook);
 	}
 	return Promise.resolve(hook);
 };
 
 const pinIsVerified = (hook) => {
 	if ((hook.params || {}).account && hook.params.account.userId) {
-		return (globalHooks.hasPermission('USER_CREATE')).call(this, hook);
+		return (globalHooks.hasPermission(['STUDENT_CREATE', 'TEACHER_CREATE', 'ADMIN_CREATE'])).call(this, hook);
 	}
 	// eslint-disable-next-line no-underscore-dangle
 	const email = (hook.params._additional || {}).parentEmail || hook.data.email;
@@ -176,7 +192,7 @@ const pinIsVerified = (hook) => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
 				const age = globalHooks.getAge(hook.data.birthday);
 
-				if (!((hook.data.roles || []).includes('student') && age < 16)) {
+				if (!((hook.data.roles || []).includes('student') && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS)) {
 					hook.app.service('/registrationPins').remove(pins.data[0]._id);
 				}
 
@@ -203,7 +219,7 @@ const permissionRoleCreate = async (hook) => {
 		isLoggedIn = true;
 		const userService = hook.app.service('/users/');
 		const currentUser = await userService.get(hook.params.account.userId, { query: { $populate: 'roles' } });
-		const userRoles = currentUser.roles.map(role => role.name);
+		const userRoles = currentUser.roles.map((role) => role.name);
 		if (userRoles.includes('superhero')) {
 			// call from superhero Dashboard
 			return Promise.resolve(hook);
@@ -226,7 +242,7 @@ const permissionRoleCreate = async (hook) => {
 	return Promise.reject(new errors.BadRequest('You have not the permissions to create this roles.'));
 };
 
-const securePatching = hook => Promise.all([
+const securePatching = (hook) => Promise.all([
 	globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
@@ -261,8 +277,8 @@ const getDisplayName = (user, app) => app.service('/roles').find({
 		name: ['teacher', 'admin'],
 	},
 }).then((protectedRoles) => {
-	const protectedRoleIds = (protectedRoles.data || []).map(role => role._id);
-	const isProtectedUser = protectedRoleIds.find(role => (user.roles || []).includes(role));
+	const protectedRoleIds = (protectedRoles.data || []).map((role) => role._id);
+	const isProtectedUser = protectedRoleIds.find((role) => (user.roles || []).includes(role));
 
 	user.age = globalHooks.getAge(user.birthday);
 
@@ -277,7 +293,7 @@ const getDisplayName = (user, app) => app.service('/roles').find({
  * @param hook {object} - the hook of the server-request
  * @returns {object} - the hook with the decorated user
  */
-const decorateUser = hook => getDisplayName(hook.result, hook.app)
+const decorateUser = (hook) => getDisplayName(hook.result, hook.app)
 	.then((displayName) => {
 		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
 		hook.result.displayName = displayName;
@@ -315,7 +331,7 @@ const setAvatarData = (user) => {
 const decorateAvatar = (hook) => {
 	if (hook.result.total) {
 		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-		(hook.result.data || []).forEach(user => setAvatarData(user));
+		(hook.result.data || []).forEach((user) => setAvatarData(user));
 	} else {
 		// run and find with only one user
 		hook.result = setAvatarData(hook.result);
@@ -332,7 +348,7 @@ const decorateAvatar = (hook) => {
  */
 const decorateUsers = (hook) => {
 	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-	const userPromises = (hook.result.data || []).map(user => getDisplayName(user, hook.app).then((displayName) => {
+	const userPromises = (hook.result.data || []).map((user) => getDisplayName(user, hook.app).then((displayName) => {
 		user.displayName = displayName;
 		return user;
 	}));
@@ -349,7 +365,7 @@ const handleClassId = (hook) => {
 	}
 	return hook.app.service('/classes').patch(hook.data.classId, {
 		$push: { userIds: hook.result._id },
-	}).then(res => Promise.resolve(hook));
+	}).then((res) => Promise.resolve(hook));
 };
 
 const pushRemoveEvent = (hook) => {
@@ -359,7 +375,8 @@ const pushRemoveEvent = (hook) => {
 
 const enforceRoleHierarchyOnDelete = async (hook) => {
 	try {
-		if (globalHooks.hasRoleNoHook(hook, hook.params.account.userId, 'superhero')) return hook;
+		const userIsSuperhero = await globalHooks.hasRoleNoHook(hook, hook.params.account.userId, 'superhero');
+		if (userIsSuperhero) return hook;
 
 		const [targetIsStudent, targetIsTeacher, targetIsAdmin] = await Promise.all([
 			globalHooks.hasRoleNoHook(hook, hook.id, 'student'),
@@ -385,12 +402,11 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 		return hook;
 	} catch (error) {
 		logger.error(error);
-		return Promise.reject();
+		throw new errors.Forbidden('you dont have permission to delete this user!');
 	}
 };
 
 const User = require('../model');
-
 
 exports.before = {
 	all: [],
@@ -398,11 +414,11 @@ exports.before = {
 		globalHooks.mapPaginationQuery.bind(this),
 		// resolve ids for role strings (e.g. 'TEACHER')
 		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
 		mapRoleFilterQuery,
 	],
-	get: [auth.hooks.authenticate('jwt')],
+	get: [authenticate('jwt')],
 	create: [
 		checkJwt(),
 		pinIsVerified,
@@ -412,23 +428,23 @@ exports.before = {
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 	],
 	update: [
-		auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('USER_EDIT'),
+		authenticate('jwt'),
 		// TODO only local for LDAP
 		sanitizeData,
+		hasEditPermissionForUser,
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
 	],
 	patch: [
-		auth.hooks.authenticate('jwt'),
-		globalHooks.hasPermission('USER_EDIT'),
+		authenticate('jwt'),
 		globalHooks.ifNotLocal(securePatching),
 		globalHooks.permitGroupOperation,
 		sanitizeData,
+		hasEditPermissionForUser,
 		globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		updateAccountUsername,
 	],
 	remove: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool),
 		globalHooks.ifNotLocal(enforceRoleHierarchyOnDelete),
 		globalHooks.permitGroupOperation,

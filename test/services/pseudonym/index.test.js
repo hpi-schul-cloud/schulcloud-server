@@ -5,6 +5,7 @@ const app = require('../../../src/app');
 const pseudonymService = app.service('pseudonym');
 const toolService = app.service('ltiTools');
 const { expect } = chai;
+const { cleanup, createTestUser } = require('../helpers/testObjects')(app);
 
 describe('pseudonym service', function pseudonymTest() {
 	this.timeout(10000);
@@ -33,34 +34,26 @@ describe('pseudonym service', function pseudonymTest() {
 		secret: '1',
 		key: '1',
 	};
-	const testUser1 = {
-		_id: '0000d231816abba584714c9e',
-	};
-	const testUser2 = {
-		_id: '0000d224816abba584714c9c',
-	};
-	const testUser3 = {
-		_id: '0000d213816abba584714c0a',
-	};
 
-	before((done) => {
-		this.timeout(10000);
-		Promise.all([
-			toolService.create(testTool1),
-			toolService.create(testTool2),
-		]).then((results) => {
-			done();
-		});
+	let testUser1;
+	let testUser2;
+	let testUser3;
+
+	before(async () => {
+		testUser1 = await createTestUser();
+		testUser2 = await createTestUser();
+		testUser3 = await createTestUser();
+
+		await toolService.create(testTool1);
+		await toolService.create(testTool2);
 	});
 
-	after((done) => {
-		Promise.all([
-			pseudonymService.remove(null, { query: {} }),
-			toolService.remove(testTool1),
-			toolService.remove(testTool2),
-		]).then((results) => {
-			done();
-		});
+	after(async () => {
+		await pseudonymService.remove(null, { query: {} });
+		await	toolService.remove(testTool1);
+		await toolService.remove(testTool2);
+		await cleanup();
+		return Promise.resolve();
 	});
 
 	it('is registered', () => {
@@ -102,7 +95,7 @@ describe('pseudonym service', function pseudonymTest() {
 			toolId: testTool2._id,
 		},
 	}).then((result) => {
-		pseudonym = result.data[0].pseudonym; // eslint-disable-line prefer-destructuring
+		({ pseudonym } = result.data[0]);
 		expect(result.data[0].pseudonym).to.be.a('String');
 	}));
 

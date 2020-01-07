@@ -3,7 +3,7 @@ const service = require('feathers-mongoose');
 const hooks = require('./hooks');
 const material = require('./material-model');
 
-const REQUEST_TIMEOUT = 8000; // in ms
+const { REQUEST_TIMEOUT } = require('../../../config/globals');
 
 class ResourcesService {
 	constructor(options) {
@@ -18,7 +18,7 @@ class ResourcesService {
 			json: true,
 			timeout: REQUEST_TIMEOUT,
 		};
-		return request(options).then(message => message);
+		return request(options).then((message) => message);
 	}
 
 	get(id) {
@@ -28,7 +28,7 @@ class ResourcesService {
 			json: true,
 			timeout: REQUEST_TIMEOUT,
 		};
-		return request(options).then(message => message);
+		return request(options).then((message) => message);
 	}
 
 	setup(app, path) {
@@ -49,7 +49,7 @@ class SearchService {
 			json: true,
 			timeout: REQUEST_TIMEOUT,
 		};
-		return request(options).then(message => message);
+		return request(options).then((message) => message);
 	}
 
 	setup(app, path) {

@@ -1,41 +1,43 @@
-const { /* ScopePermissionService, */ ScopeListService } = require('../../helpers/scopePermissions');
+const { ScopeListService } = require('../../helpers/scopePermissions');
 const { courseModel } = require('../model');
 
-module.exports = function setup() {
-	const app = this;
+const buildUserQuery = (query, userId) => {
+	const userQuery = { $or: [] };
+	if (['false', 'all', undefined].includes(query.substitution)) {
+		userQuery.$or.push({ userIds: userId });
+		userQuery.$or.push({ teacherIds: userId });
+	}
+	if (['true', 'all', undefined].includes(query.substitution)) {
+		userQuery.$or.push({ substitutionIds: userId });
+	}
+	return userQuery;
+};
 
+const buildArchiveQuery = (query) => {
+	const filter = ['active', 'archived', 'all'].includes(query.filter) ? query.filter : 'active';
+
+	const yesterday = new Date();
+	yesterday.setDate(yesterday.getDate() - 1);
+	let untilQuery = {};
+	if (filter === 'active') {
+		untilQuery = {
+			$or: [
+				{ untilDate: { $exists: false } },
+				{ untilDate: null },
+				{ untilDate: { $gte: yesterday } },
+			],
+		};
+	}
+	if (filter === 'archived') {
+		untilQuery = { untilDate: { $lt: yesterday } };
+	}
+	return untilQuery;
+};
+
+module.exports = (app) => {
 	ScopeListService.initialize(app, '/users/:scopeId/courses', async (user, permissions, params) => {
-		let filter = 'active';
-		let substitution = 'all';
-		if (params.query.filter && ['active', 'archived', 'all'].includes(params.query.filter)) {
-			({ filter } = params.query);
-		}
-		if (params.query.substitution && ['true', 'false', 'all'].includes(params.query.substitution)) {
-			({ substitution } = params.query);
-		}
-
-		const userQuery = { $or: [] };
-		if (['false', 'all'].includes(substitution)) {
-			userQuery.$or.push(
-				{ userIds: user._id },
-				{ teacherIds: user._id },
-			);
-		}
-		if (['true', 'all'].includes(substitution)) userQuery.$or.push({ substitutionIds: user._id });
-
-		let untilQuery = {};
-		if (filter === 'active') {
-			untilQuery = {
-				$or: [
-					{ untilDate: { $exists: false } },
-					{ untilDate: null },
-					{ untilDate: { $gte: Date.now() } },
-				],
-			};
-		}
-		if (filter === 'archived') {
-			untilQuery = { untilDate: { $lt: Date.now() } };
-		}
+		const userQuery = buildUserQuery(params.query, user._id);
+		const untilQuery = buildArchiveQuery(params.query);
 
 		if (params.query.count === 'true') {
 			const courseCount = await courseModel.count({

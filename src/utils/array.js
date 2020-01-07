@@ -4,7 +4,7 @@
  * @example flatten([1, [2], [[3, 4], 5], 6]) => [1, 2, 3, 4, 5, 6]
  * @returns {Array} flatted array
  */
-const flatten = arr => arr.reduce((agg, el) => {
+const flatten = (arr) => arr.reduce((agg, el) => {
 	if (el instanceof Array) {
 		return agg.concat(flatten(el));
 	}

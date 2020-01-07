@@ -1,7 +1,8 @@
 const service = require('feathers-mongoose');
 const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
-const logger = require('../../logger/index');
 const { ObjectId } = require('mongoose').Types;
+const { equal: equalIds } = require('../../helper/compare').ObjectId;
+const logger = require('../../logger/index');
 const {
 	newsModel, targetModels, newsHistoryModel, newsPermissions,
 } = require('./model');
@@ -72,20 +73,20 @@ class AbstractService {
 				},
 				paginate: false,
 			});
-			return scopeItems.map(item => ({
+			return scopeItems.map((item) => ({
 				targetModel: scope,
 				target: item._id,
 			}));
 		});
 		const results = await Promise.all(ops);
-		return flatten(results.filter(r => r !== null));
+		return flatten(results.filter((r) => r !== null));
 	}
 
 	/* Permissions */
 
 	async getPermissions(userId, { target, targetModel, schoolId } = {}) {
 		// target and school might be populated or not
-		const isObjectId = o => o instanceof ObjectId || typeof o === 'string';
+		const isObjectId = (o) => o instanceof ObjectId || typeof o === 'string';
 		// scope case: user role in scope must have given permission
 		if (target && targetModel) {
 			const targetId = isObjectId(target) ? target.toString() : target._id.toString();
@@ -130,7 +131,7 @@ class AbstractService {
 		if (user == null) return [];
 
 		// test user is school member
-		const sameSchool = schoolId.toString() === user.schoolId.toString();
+		const sameSchool = equalIds(schoolId, user.schoolId);
 		if (!sameSchool) return [];
 
 		return user.permissions;
@@ -194,7 +195,7 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	static decorateResults(result) {
-		const decorate = n => ({
+		const decorate = (n) => ({
 			...n,
 			school: n.schoolId,
 			schoolId: (n.schoolId || {})._id,
@@ -221,7 +222,7 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async decoratePermissions(result, userId) {
-		const decorate = async n => ({
+		const decorate = async (n) => ({
 			...n,
 			permissions: await this.getPermissions(userId, {
 				target: (n.target || {})._id,
@@ -287,7 +288,7 @@ class NewsService extends AbstractService {
 				));
 			}
 		}
-		return flatten(query.filter(q => q !== null));
+		return flatten(query.filter((q) => q !== null));
 	}
 
 	/**
@@ -303,7 +304,13 @@ class NewsService extends AbstractService {
 	async get(id, params) {
 		const news = await this.app.service('newsModel').get(id, NewsService.populateParams());
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account.userId, newsPermissions.VIEW);
+		const now = Date.now();
+		if (news.displayAt > now) {
+			await this.authorize(news, params.account.userId, newsPermissions.EDIT);
+		} else {
+			await this.authorize(news, params.account.userId, newsPermissions.VIEW);
+		}
+
 		news.permissions = await this.getPermissions(params.account.userId, news);
 		return NewsService.decorateResults(news);
 	}
@@ -350,7 +357,7 @@ class NewsService extends AbstractService {
 		return this.app.service('newsModel')
 			.find(internalRequestParams)
 			.then(NewsService.decorateResults)
-			.then(result => this.decoratePermissions(result, params.account.userId));
+			.then((result) => this.decoratePermissions(result, params.account.userId));
 	}
 
 	/**

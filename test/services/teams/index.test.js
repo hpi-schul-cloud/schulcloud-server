@@ -6,6 +6,7 @@ const app = require('../../../src/app');
 const T = require('../helpers/testObjects')(app);
 
 const teamService = app.service('/teams');
+const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 
 describe('Test team basic methods', () => {
@@ -21,7 +22,12 @@ describe('Test team basic methods', () => {
 
 			const schoolId = user.schoolId.toString();
 			userId = user._id.toString();
-			const fakeLoginParams = T.fakeLoginParams({ userId });
+			const fakeLoginParams = {
+				account: { userId },
+				authenticated: true,
+				provider: 'rest',
+				query: {},
+			};
 
 			team = await teamService.create({
 				name: 'TestTeam',
@@ -79,7 +85,7 @@ describe('Test team basic methods', () => {
 				expect(slimteam).to.be.ok;
 
 				const { userIds } = await teamService.get(slimteam._id);
-				expect(userIds.some(item => item.userId.toString() === hero._id.toString())).to.equal(true);
+				expect(userIds.some((item) => equalIds(item.userId, hero._id))).to.equal(true);
 			} finally {
 				T.cleanup();
 			}
