@@ -2,7 +2,7 @@ const removeLeadingSlash = (path) => (path[0] === '/' ? path.substring(1) : path
 
 const generateFileNameSuffix = (fileName) => {
 	// eslint-disable-next-line no-useless-escape
-	const newString = fileName.replace(/[';:=#*+\[\]~<{\\()}>§$%&|^£@±?!"`□ ]/g, '-');
+	const newString = fileName.replace(/[';:=#*+\[\]~<{\\()}>§$%&|^£@±?!"`□\s]/g, '-');
 	return `${Date.now()}-${newString.toLowerCase()}`;
 };
 
