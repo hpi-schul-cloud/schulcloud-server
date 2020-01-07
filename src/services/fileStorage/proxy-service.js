@@ -449,6 +449,10 @@ const directoryService = {
 
 	docs: swaggerDocs.directoryService,
 
+	setup(app) {
+		this.app = app;
+	},
+
 	setRefId(perm) {
 		if (!perm.refId) {
 			perm.refId = perm._id;
@@ -551,11 +555,33 @@ const directoryService = {
      * @param query contains the ID of parent folder (optional)
      * @param payload contains userId set by middleware
      */
-	find({ query, payload }) {
+	async find({ query, payload }) {
 		const { parent } = query;
 		const { userId } = payload;
+		const scopeFilters = [
+			{
+				refOwnerModel: 'user',
+				owner: userId,
+			},
+		];
+
+		const scopes = {
+			courses: this.app.service('/users/:scopeId/courses'),
+			teams: this.app.service('/users/:scopeId/teams'),
+		};
+		const scopeNames = Object.keys(scopes);
+		await Promise.all(scopeNames.map(async (scopeName) => {
+			const scopeList = await scopes[scopeName].find({ route: { scopeId: userId }, query: {}, paginate: false });
+			scopeFilters.push({
+				refOwnerModel: scopeName,
+				owner: {
+					$in: scopeList,
+				},
+			});
+		}));
 
 		const params = sanitizeObj({
+			$or: scopeFilters,
 			isDirectory: true,
 			parent,
 		});
