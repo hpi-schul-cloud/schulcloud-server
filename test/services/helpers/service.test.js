@@ -14,8 +14,15 @@ const isMailbodyValid = ({
 	subject,
 	text,
 	html,
-	replyTo,
-}) => !!(platform && platformId && to && subject && (text || html) && replyTo);
+	attachments,
+}) => {
+	// file content must be base64 encoded ant therefore of type string
+	const attachmentsAreValid = attachments
+		.every((attachment) => Boolean(typeof attachment.filename === 'string'
+			&& typeof attachment.content === 'string'));
+	const hasRequiredAttributes = Boolean(platform && platformId && to && subject && (text || html));
+	return Boolean(hasRequiredAttributes && attachmentsAreValid);
+};
 
 describe('Mail Service', () => {
 	let mailService;
@@ -47,6 +54,19 @@ describe('Mail Service', () => {
 				email: 'test@test.test',
 				subject: 'test',
 				content: { html: '<h1>Testing Purposes</h1>' },
+			});
+		});
+		it('files should be base64 encoded', async () => {
+			await mailService.create({
+				email: 'test@test.test',
+				subject: 'test',
+				content: { html: '<h1>Testing Purposes</h1>' },
+				attachments: [
+					{
+						filename: 'test.gif',
+						content: Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64'),
+					},
+				],
 			});
 		});
 	});
