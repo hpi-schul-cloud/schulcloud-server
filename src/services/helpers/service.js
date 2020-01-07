@@ -1,7 +1,17 @@
 const request = require('request-promise-native');
+const { Unavailable } = require('@feathersjs/errors');
 const logger = require('../../logger');
 
-const { REQUEST_TIMEOUT } = require('../../../config/globals');
+const {
+	FORCE_SEND_EMAIL,
+	NOTIFICATION_PLATFORM,
+	REQUEST_TIMEOUT,
+	SMTP_SENDER,
+} = require('../../../config/globals');
+
+if (!NOTIFICATION_PLATFORM) {
+	throw new Error('Required Env NOTIFICATION_PLATFORM is not defined');
+}
 
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {
@@ -16,6 +26,10 @@ module.exports = function setup(app) {
 	class MailService {
 		// POST
 		async create(data, params) {
+			if (!NOTIFICATION_PLATFORM) {
+				throw new Unavailable('Required Env NOTIFICATION_PLATFORM is not defined');
+			}
+
 			const serviceUrls = app.get('services') || {};
 
 			const user = await checkForToken(params, app);
@@ -36,8 +50,8 @@ module.exports = function setup(app) {
 				subject,
 				text: content.text,
 				html: content.html,
-				from: process.env.SMTP_SENDER || replyEmail || 'noreply@schul-cloud.org',
-				replyTo: replyEmail || process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
+				from: SMTP_SENDER || replyEmail || 'noreply@schul-cloud.org',
+				replyTo: replyEmail || SMTP_SENDER || 'noreply@schul-cloud.org',
 			};
 
 			const requestOptions = {
@@ -47,8 +61,7 @@ module.exports = function setup(app) {
 					...headers,
 				},
 				body: {
-					platformId: 'testplatform',
-					platform: 'testplatform',
+					platform: NOTIFICATION_PLATFORM,
 					...Mail,
 				},
 				json: true,
@@ -56,7 +69,7 @@ module.exports = function setup(app) {
 			};
 
 			// send mail with defined transport object in production mode
-			if (process.env.NODE_ENV === 'production' || process.env.FORCE_SEND_EMAIL) {
+			if (app.get('env') === 'production' || FORCE_SEND_EMAIL) {
 				return request(requestOptions);
 			}
 			// otherwise print email message object on console
