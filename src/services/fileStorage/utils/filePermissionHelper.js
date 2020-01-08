@@ -119,7 +119,7 @@ const checkPermissions = (permission) => async (user, file) => {
 		const isMember = checkMemberStatus({ file: courseFile, user });
 		if (isMember) return Promise.resolve(true);
 
-		return Promise.resolve(false);
+		return Promise.reject();
 	}
 
 	const isMember = checkMemberStatus({ file: fileObject, user });
