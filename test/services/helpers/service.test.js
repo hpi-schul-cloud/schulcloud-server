@@ -23,20 +23,29 @@ const isMailbodyValid = ({
 	return Boolean(hasRequiredAttributes && attachmentsAreValid);
 };
 
+const getNotificationMock = (expectedData = {}) => {
+	nock(config.services.notification)
+		.post('/mails')
+		.reply(200,
+			(uri, requestBody) => {
+				Object.entries(expectedData).forEach(([key, value]) => {
+					expect(requestBody[key]).to.eql(value);
+				});
+				expect(isMailbodyValid(requestBody)).to.equal(true);
+				return 'Message queued';
+			});
+};
+
 describe.only('Mail Service', () => {
 	const mailService = app.service('/mails');
 
+	afterEach(() => {
+		nock.cleanAll();
+	});
+
 	describe('valid emails', () => {
-		beforeEach(() => {
-			nock(config.services.notification)
-				.post('/mails')
-				.reply(200,
-					(uri, requestBody) => {
-						expect(isMailbodyValid(requestBody)).to.equal(true);
-						return 'Message queued';
-					});
-		});
 		it('should send an valid text email to the notification service', async () => {
+			getNotificationMock();
 			await mailService.create({
 				email: 'test@test.test',
 				subject: 'test',
@@ -44,6 +53,7 @@ describe.only('Mail Service', () => {
 			});
 		});
 		it('should send an valid html email to the notification service', async () => {
+			getNotificationMock();
 			await mailService.create({
 				email: 'test@test.test',
 				subject: 'test',
@@ -51,6 +61,14 @@ describe.only('Mail Service', () => {
 			});
 		});
 		it('files should be base64 encoded', async () => {
+			getNotificationMock({
+				attachments: [
+					{
+						filename: 'test.gif',
+						content: 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+					},
+				],
+			});
 			await mailService.create({
 				email: 'test@test.test',
 				subject: 'test',

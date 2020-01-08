@@ -18,6 +18,13 @@ const checkForToken = (params, app) => {
 
 module.exports = function setup(app) {
 	class MailService {
+		encodeFiles(files = []) {
+			return files.map(({ content, filename }) => ({
+				filename,
+				content: content.toString('base64'),
+			}));
+		}
+
 		// POST
 		async create(data, params) {
 			const FORCE_SEND_EMAIL = app.get('FORCE_SEND_EMAIL');
@@ -31,11 +38,6 @@ module.exports = function setup(app) {
 
 			const user = await checkForToken(params, app);
 
-			const encodeFiles = (files) => files.map(({ content, filename }) => ({
-				filename,
-				content: content.toString('base64'),
-			}));
-
 			const {
 				headers,
 				email,
@@ -47,7 +49,7 @@ module.exports = function setup(app) {
 				attachments,
 			} = data;
 
-			const base64Attachments = encodeFiles(attachments);
+			const base64Attachments = this.encodeFiles(attachments);
 
 			const Mail = {
 				to: user ? user.email : email,
