@@ -2,7 +2,6 @@ const { expect } = require('chai');
 const nock = require('nock');
 
 const app = require('../../../src/app');
-const MailService = require('../../../src/services/helpers/service');
 
 // eslint-disable-next-line import/no-dynamic-require
 const config = require(`../../../config/${process.env.NODE_ENV || 'default'}.json`);
@@ -24,13 +23,8 @@ const isMailbodyValid = ({
 	return Boolean(hasRequiredAttributes && attachmentsAreValid);
 };
 
-describe('Mail Service', () => {
-	let mailService;
-
-	before(() => {
-		app.use('/mails', new MailService());
-		mailService = app.service('/mails');
-	});
+describe.only('Mail Service', () => {
+	const mailService = app.service('/mails');
 
 	describe('valid emails', () => {
 		beforeEach(() => {
@@ -75,21 +69,16 @@ describe('Mail Service', () => {
 		beforeEach(() => {
 			nock(config.services.notification)
 				.post('/mails')
-				.reply(200,
-					(uri, requestBody) => {
-						expect(isMailbodyValid(requestBody)).to.equal(false);
-						return 'Message queued';
-					});
+				.replyWithError('invalid data send');
 		});
-		it('should sthrow if subject is missing', async () => {
+		it('should throw if notification server returns error', async () => {
 			try {
 				await mailService.create({
-					email: 'test@test.test',
 					content: { text: 'Testing Purposes' },
 				});
-				expect('Service executed without errors').to.equeal("Shouldn't be reachable");
-			} catch (_) {
-				expect('to throw error').to.equal('to throw error');
+				throw new Error('The previous call should have failed.');
+			} catch (error) {
+				expect(error.message).to.equal('Error: invalid data send');
 			}
 		});
 	});
