@@ -12,7 +12,8 @@ const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
 
 const defaultFeatures = [];
-if (STUDENT_TEAM_CREATE_DISABLED) {
+if (STUDENT_TEAM_CREATE_DISABLED === 'true'
+	|| STUDENT_TEAM_CREATE_DISABLED === '1') {
 	defaultFeatures.push('disableStudentTeamCreation');
 }
 
