@@ -114,7 +114,7 @@ const checkPermissions = (permission) => async (user, file) => {
 
 	const homework = await Homework.findOne({ fileIds: fileObject._id }).lean().exec();
 	if (homework && !homework.private) {
-		// TODO: Check if user is course member? school member?
+		// TODO: Check if user as access to homework
 		// let courseFile = fileObject;
 		// courseFile = { ...fileObject, owner: homework.courseId || {} };
 		// const isMember = checkMemberStatus({ file: courseFile, user });
