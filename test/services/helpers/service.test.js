@@ -51,7 +51,7 @@ describe.only('Mail Service', () => {
 				.post('/mails')
 				.replyWithError('invalid data send');
 		});
-		it('should throw if server returns error', async () => {
+		it('should throw if notification server returns error', async () => {
 			try {
 				await mailService.create({
 					content: { text: 'Testing Purposes' },
