@@ -16,7 +16,7 @@ const isMailbodyValid = ({
 	replyTo,
 }) => !!(platform && platformId && to && subject && (text || html) && replyTo);
 
-describe.only('Mail Service', () => {
+describe('Mail Service', () => {
 	const mailService = app.service('/mails');
 
 	describe('valid emails', () => {
