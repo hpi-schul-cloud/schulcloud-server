@@ -36,7 +36,7 @@ const getNotificationMock = (expectedData = {}) => {
 			});
 };
 
-describe.only('Mail Service', () => {
+describe('Mail Service', () => {
 	const mailService = app.service('/mails');
 
 	afterEach(() => {
