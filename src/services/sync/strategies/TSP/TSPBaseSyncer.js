@@ -1,5 +1,8 @@
 const Syncer = require('../Syncer');
-const { TspApi, config: TSP_CONFIG } = require('./TSP');
+const {
+	TspApi, config: TSP_CONFIG, ENTITY_SOURCE,
+} = require('./TSP');
+const SchoolYearFacade = require('../../../school/logic/year');
 
 const SCHOOL_SYNCER_TARGET = require('./TSPSchoolSyncer').SYNCER_TARGET;
 
@@ -49,6 +52,47 @@ class TSPBaseSyncer extends Syncer {
 	}
 
 	/**
+	 * Implements synchronization steps.
+	 * @returns {Promise<Stats>} sync statistics
+	 * @extends Syncer#steps
+	 * @async
+	 */
+	async steps() {
+		await this.ensureLoginSystemExists();
+		const schools = await this.getSchools();
+		for (const { schuleNummer, schuleName } of schools) {
+			const school = await this.createOrUpdateSchool(schuleNummer, schuleName);
+			await this.ensureDatasourceExists(school);
+		}
+		return this.stats;
+	}
+
+	async ensureLoginSystemExists() {
+		let system = await this.findSystem();
+		if (!system) {
+			system = await this.createSystem();
+		}
+		this.tspSystemId = system._id;
+	}
+
+	async findSystem() {
+		const [system] = await this.app.service('systems').find({
+			query: {
+				type: SCHOOL_SYNCER_TARGET,
+				$limit: 1,
+			},
+			paginate: false,
+		});
+		return system;
+	}
+
+	async createSystem() {
+		return this.app.service('systems').create({
+			type: SCHOOL_SYNCER_TARGET,
+		});
+	}
+
+	/**
 	 * Fetches all schools from the TSP.
 	 * @returns {Array<TSPSchool>} schools
 	 * @async
@@ -75,17 +119,25 @@ class TSPBaseSyncer extends Syncer {
 	 * @param {String} name TSP school name that will be used as system alias and school name
 	 * @async
 	 */
-	async createOrUpdateSchoolSystem(identifier, name) {
+	async createOrUpdateSchool(identifier, name) {
+		let result;
 		this.stats.schools.entities.push({ identifier, name });
 		try {
-			this.logInfo(`Finding system for '${name}' (${identifier})...`);
-			const system = await this.findSystem(identifier);
-			if (system) {
-				this.logInfo(`Patching '${name}' (${identifier})...`);
-				await this.updateSystem(system._id, name);
+			this.logInfo(`Finding school '${name}' (${identifier})...`);
+			const schools = await this.app.service('schools').find({
+				query: {
+					source: ENTITY_SOURCE,
+					'sourceOptions.schoolIdentifier': identifier,
+					$limit: 1,
+				},
+				paginate: false,
+			});
+			if (Array.isArray(schools) && schools.length === 1) {
+				this.logInfo(`Updating '${name}' (${identifier})...`);
+				result = await this.updateSchool(schools[0], name);
 			} else {
-				this.logInfo(`Nothing found. Creating '${name}' (${identifier})...`);
-				await this.createSystem(identifier, name);
+				this.logInfo(`School not found. Creating '${name}' (${identifier})...`);
+				result = await this.createSchool(identifier, name);
 			}
 			this.stats.schools.successful += 1;
 		} catch (err) {
@@ -98,51 +150,99 @@ class TSPBaseSyncer extends Syncer {
 			});
 		}
 		this.logInfo('Done.');
+		return result;
 	}
 
-	async findSystem(identifier) {
-		const [system] = await this.app.service('systems').find({
-			query: {
-				type: SCHOOL_SYNCER_TARGET,
-				'tsp.identifier': identifier,
-				$limit: 1,
-			},
-			paginate: false,
-		});
-		return system;
-	}
-
-	async updateSystem(id, name) {
-		return this.app.service('systems').patch(id,
-			{
-				alias: name,
-				'tsp.schoolName': name,
-			});
-	}
-
-	async createSystem(identifier, name) {
-		return this.app.service('systems').create({
-			type: SCHOOL_SYNCER_TARGET,
-			alias: name,
-			tsp: {
-				identifier,
-				schoolName: name,
+	/**
+	 * Creates a school based on a TSP identifier and name
+	 * @param {String} identifier the TSP school identifier
+	 * @param {String} name the school name
+	 * @returns {School} School
+	 * @async
+	 */
+	async createSchool(identifier, name) {
+		return this.app.service('schools').create({
+			name,
+			systems: [this.tspSystemId],
+			currentYear: await this.getCurrentYear(),
+			federalState: await this.getFederalState(),
+			source: ENTITY_SOURCE,
+			sourceOptions: {
+				schoolIdentifier: identifier,
 			},
 		});
 	}
 
 	/**
-	 * Implements synchronization steps.
-	 * @returns {Promise<Stats>} sync statistics
-	 * @extends Syncer#steps
+	 * Updates a school
+	 * @param {School} school
+	 * @param {String} name
+	 * @returns {School} school
 	 * @async
 	 */
-	async steps() {
-		const schools = await this.getSchools();
-		for (const { schuleNummer, schuleName } of schools) {
-			await this.createOrUpdateSchoolSystem(schuleNummer, schuleName);
+	async updateSchool(school, name) {
+		return this.app.service('schools').patch(school._id, {
+			name,
+		});
+	}
+
+	// async getters do not exist, so this will have to do
+	async getCurrentYear() {
+		if (!this.currentYear) {
+			const years = await this.app.service('years').find();
+			if (years.total === 0) {
+				throw new Error('At least one year has to exist in the database.');
+			}
+			this.currentYear = new SchoolYearFacade(years.data).defaultYear;
 		}
-		return this.stats;
+		return this.currentYear;
+	}
+
+	// async getters do not exist, so this will have to do
+	async getFederalState() {
+		if (!this.federalState) {
+			const states = await this.app.service('federalStates').find({ query: { abbreviation: 'TH' } });
+			if (states.total === 0) {
+				throw new Error('The federal state does not exist.');
+			}
+			this.federalState = states.data[0]._id;
+		}
+		return this.federalState;
+	}
+
+	async ensureDatasourceExists(school) {
+		const existingDatasource = await this.findDatasource(school);
+		if (existingDatasource === null) {
+			await this.createDatasource(school);
+		}
+	}
+
+	async findDatasource(school) {
+		const datasources = this.app.service('datasources').find({
+			query: {
+				schoolId: school._id,
+				'config.target': SCHOOL_SYNCER_TARGET,
+				$limit: 1,
+			},
+			paginate: false,
+		});
+		if (Array.isArray(datasources) && datasources.length === 1) {
+			return datasources[0];
+		}
+		return null;
+	}
+
+	async createDatasource(school) {
+		return this.app.service('datasources').create({
+			schoolId: school._id,
+			name: 'TSP',
+			config: {
+				target: SCHOOL_SYNCER_TARGET,
+				config: {
+					schoolIdentifier: school.sourceOptions.schoolIdentifier,
+				},
+			},
+		});
 	}
 }
 

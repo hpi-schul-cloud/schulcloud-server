@@ -9,7 +9,6 @@ const {
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
 	getUsername, getEmail,
 } = require('./TSP');
-const SchoolYearFacade = require('../../../school/logic/year');
 const accountModel = require('../../../account/model');
 
 const SYNCER_TARGET = 'tsp-school';
@@ -80,10 +79,10 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	async steps() {
 		let [teacherMap, studentMap, classMap] = [[], [], []];
 
-		this.logInfo('Looking for configurations...');
-		const systems = await this.findSystems();
-		this.logInfo(`${systems.length} configs found.`);
-		if (systems.length > 0) {
+		this.logInfo('Looking for schools...');
+		const schools = await this.findSchools();
+		this.logInfo(`${schools.length} schools found.`);
+		if (schools.length > 0) {
 			this.logInfo('Requesting and grouping entities. This can take a while...');
 			// fetch entities in parallel and create a mapping (schoolIdentifier => list<Entity>)
 			[teacherMap, studentMap, classMap] = await Promise.all(['teachers', 'students', 'classes']
@@ -91,18 +90,14 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.logInfo('Done.');
 		}
 
-		for (const system of systems) {
-			this.logInfo(`Syncing ${system.alias}...`);
-			let school = await this.findSchool(system);
-			if (!school) {
-				this.logInfo(`No school found for system "${system.alias}" (${system._id}).`, system);
-				school = await this.createSchool(system);
-			}
+		for (const school of schools) {
+			const { schoolIdentifier } = school.sourceOptions;
+			this.logInfo(`Syncing ${school.name} (${school.sourceOptions.schoolIdentifier})...`);
 
 			// find all teachers/students/classes of this school
-			const schoolTeachers = teacherMap[(system.tsp || {}).identifier] || [];
-			const schoolStudents = studentMap[(system.tsp || {}).identifier] || [];
-			const schoolClasses = classMap[(system.tsp || {}).identifier] || [];
+			const schoolTeachers = teacherMap[schoolIdentifier] || [];
+			const schoolStudents = studentMap[schoolIdentifier] || [];
+			const schoolClasses = classMap[schoolIdentifier] || [];
 			this.logInfo(`School has ${schoolTeachers.length} teachers, ${schoolStudents.length} students`
 				+ `, and ${schoolClasses.length} classes.`);
 
@@ -112,14 +107,14 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.logInfo('Syncing teachers...');
 			// create teachers and add them to the mapping (teacherUID => User)
 			await Promise.all(schoolTeachers.map(async (tspTeacher) => {
-				const teacher = await this.createOrUpdateTeacher(tspTeacher, school, system, classMapping);
+				const teacher = await this.createOrUpdateTeacher(tspTeacher, school);
 				teacherMapping[tspTeacher.lehrerUid] = teacher;
 			}));
 
 			this.logInfo('Syncing students...');
 			// create students and add them to the mapping (classUid => [User])
 			await Promise.all(schoolStudents.map(async (tspStudent) => {
-				const student = await this.createOrUpdateStudent(tspStudent, school, system, classMapping);
+				const student = await this.createOrUpdateStudent(tspStudent, school);
 				classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
 				classMapping[tspStudent.klasseId].push(student._id);
 			}));
@@ -150,89 +145,21 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	/**
-	 * Creates a school based on a TSP login system
-	 * @param {System} system
-	 * @returns {School} School
+	 * Returns all TSP schools
+	 * @returns {Array<School>}
 	 * @async
 	 */
-	async createSchool(system) {
-		return this.app.service('schools').create({
-			name: system.tsp.schoolName,
-			systems: [system._id],
-			currentYear: await this.getCurrentYear(),
-			federalState: await this.getFederalState(),
-			source: ENTITY_SOURCE,
-			sourceOptions: {
-				schoolIdentifier: system.tsp.identifier,
-			},
-		});
-	}
-
-	// async getters do not exist, so this will have to do
-	async getCurrentYear() {
-		if (!this.currentYear) {
-			const years = await this.app.service('years').find();
-			if (years.total === 0) {
-				throw new Error('At least one year has to exist in the database.');
-			}
-			this.currentYear = new SchoolYearFacade(years.data).defaultYear;
-		}
-		return this.currentYear;
-	}
-
-	// async getters do not exist, so this will have to do
-	async getFederalState() {
-		if (!this.federalState) {
-			const states = await this.app.service('federalStates').find({ query: { abbreviation: 'TH' } });
-			if (states.total === 0) {
-				throw new Error('The federal state does not exist.');
-			}
-			this.federalState = states.data[0]._id;
-		}
-		return this.federalState;
-	}
-
-	/**
-	 * Returns all login systems compatible with the provided config.
-	 * Optionally filters by schoolIdentifier if set as `config.schoolIdentifier`.
-	 * @returns {Array<System>} list of systems
-	 * @async
-	 */
-	async findSystems() {
-		if (this.config.systemId) {
-			const system = await this.app.service('systems').get(this.config.systemId);
-			this.config.schoolIdentifier = (system.tsp || {}).identifier;
-			return [system];
-		}
+	async findSchools() {
 		const query = {
-			type: SYNCER_TARGET,
+			source: ENTITY_SOURCE,
 		};
 		if (this.config.schoolIdentifier) {
-			query['tsp.identifier'] = this.config.schoolIdentifier;
+			query['sourceOptions.schoolIdentifier'] = this.config.schoolIdentifier;
 		}
-		return this.app.service('systems').find({
+		return this.app.service('schools').find({
 			query,
 			paginate: false,
 		});
-	}
-
-	/**
-	 * Returns the school associated with the given login system
-	 * @param {System} system
-	 * @returns {School|null} the school or null if it does not exist
-	 * @async
-	 */
-	async findSchool(system) {
-		const response = await this.app.service('schools').find({
-			query: {
-				systems: system._id,
-				$limit: 1,
-			},
-		});
-		if (!Array.isArray(response.data) || response.total < 1) {
-			return null;
-		}
-		return response.data[0];
 	}
 
 	/**
@@ -265,18 +192,18 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * Creates or updates a Schul-Cloud user based on a TSP teacher object
 	 * @param {Object} tspTeacher TSP teacher object
 	 * @param {School} school school of the user
-	 * @param {System} system login system (for account creation)
 	 * @returns {User} the user object of the SC-Teacher
 	 * @async
 	 */
-	async createOrUpdateTeacher(tspTeacher, school, system) {
+	async createOrUpdateTeacher(tspTeacher, school) {
+		const systemId = school.systems[0];
 		const query = { source: ENTITY_SOURCE };
 		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspTeacher.lehrerUid;
 		const users = await this.app.service('users').find({ query });
 		if (users.total > 0) {
 			return this.updateTeacher(users.data[0]._id, tspTeacher);
 		}
-		return this.createTeacher(tspTeacher, school, system);
+		return this.createTeacher(tspTeacher, school, systemId);
 	}
 
 	/**
@@ -315,11 +242,11 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * Create a Schul-Cloud user based on a TSP teacher object
 	 * @param {Object} tspTeacher TSP teacher object
 	 * @param {School} school the user's school
-	 * @param {System} system the login system used for account creation
+	 * @param {System} systemId the login system used for account creation
 	 * @returns {User|null} the user or null (on error)
 	 * @async
 	 */
-	async createTeacher(tspTeacher, school, system) {
+	async createTeacher(tspTeacher, school, systemId) {
 		try {
 			const sourceOptions = {};
 			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspTeacher.lehrerUid;
@@ -331,7 +258,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				source: ENTITY_SOURCE,
 				sourceOptions,
 			},
-			'teacher', system);
+			'teacher', systemId);
 			this.stats.users.teachers.created += 1;
 			return teacher;
 		} catch (err) {
@@ -351,18 +278,18 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * Creates or updates a Schul-Cloud user based on a TSP student object
 	 * @param {Object} tspStudent TSP student object
 	 * @param {School} school school of the user
-	 * @param {System} system login system (for account creation)
 	 * @returns {User} the user object of the SC-Student
 	 * @async
 	 */
-	async createOrUpdateStudent(tspStudent, school, system) {
+	async createOrUpdateStudent(tspStudent, school) {
+		const systemId = school.systems[0];
 		const query = { source: ENTITY_SOURCE };
 		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspStudent.schuelerUid;
 		const users = await this.app.service('users').find({ query });
 		if (users.total !== 0) {
 			return this.updateStudent(users.data[0]._id, tspStudent);
 		}
-		return this.createStudent(tspStudent, school, system);
+		return this.createStudent(tspStudent, school, systemId);
 	}
 
 	/**
@@ -400,11 +327,11 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * Create a Schul-Cloud user based on a TSP student object
 	 * @param {Object} tspStudent TSP student object
 	 * @param {School} school the user's school
-	 * @param {System} system the login system used for account creation
+	 * @param {System} systemId the login system used for account creation
 	 * @returns {User|null} the user or null (on error)
 	 * @async
 	 */
-	async createStudent(tspStudent, school, system) {
+	async createStudent(tspStudent, school, systemId) {
 		try {
 			const sourceOptions = {};
 			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspStudent.schuelerUid;
@@ -415,7 +342,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				source: ENTITY_SOURCE,
 				sourceOptions,
 			},
-			'student', system);
+			'student', systemId);
 			this.stats.users.students.created += 1;
 			return student;
 		} catch (err) {
@@ -435,11 +362,11 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * Registers a user and creates an account
 	 * @param {Object} userOptions options to be provided to the user service
 	 * @param {Array<String>} roles the user's roles
-	 * @param {System} system the user's login system
+	 * @param {System} systemId the user's login system
 	 * @returns {User} the user object
 	 * @async
 	 */
-	async createUserAndAccount(userOptions, roles, system) {
+	async createUserAndAccount(userOptions, roles, systemId) {
 		const username = getUsername(userOptions);
 		const email = getEmail(userOptions);
 		const { pin } = await this.app.service('registrationPins').create({
@@ -456,7 +383,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		await accountModel.create({
 			userId: user._id,
 			username,
-			systemId: system._id,
+			systemId,
 			activated: true,
 		});
 		return user;
