@@ -107,6 +107,7 @@ class AdminUsers {
 			// bsonId to stringId that it can use .includes for is in test
 			classes.forEach((c) => {
 				c.userIds = c.userIds.map((id) => id.toString());
+				c.teacherIds = c.teacherIds.map((id) => id.toString());
 			});
 
 			// patch classes and consent into user
@@ -115,7 +116,7 @@ class AdminUsers {
 				const userId = user._id.toString();
 				user.consent = consents[userId] || {};
 				classes.forEach((c) => {
-					if (c.userIds.includes(userId)) {
+					if (c.userIds.includes(userId) || c.teacherIds.includes(userId)) {
 						user.classes.push(c.displayName);
 					}
 				});

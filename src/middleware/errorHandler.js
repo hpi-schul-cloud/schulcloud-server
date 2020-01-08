@@ -1,6 +1,6 @@
 const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
-const decode = require('jwt-decode');
+const jwt = require('jsonwebtoken');
 
 const { requestError } = require('../logger/systemLogger');
 const logger = require('../logger');
@@ -9,7 +9,7 @@ const logRequestInfosInErrorCase = (error, req, res, next) => {
 	if (error) {
 		let decodedJWT;
 		try {
-			decodedJWT = decode(req.headers.authorization);
+			decodedJWT = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
 		} catch (err) {
 			decodedJWT = {};
 		}
@@ -26,7 +26,7 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 			requestId: req.headers.requestId,
 		} : {};
 
-		logger.error(error);
+		logger.error({ ...error });
 
 		if (error.stack) {
 			delete error.stack;
