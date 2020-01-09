@@ -309,7 +309,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			};
 
 			if (download) {
-				params.ResponseContentDisposition = `attachment; filename = ${localFileName}`;
+				params.ResponseContentDisposition = `attachment; filename = "${localFileName.replace('"', '')}"`;
 			}
 
 			return promisify(awsObject.s3.getSignedUrl.bind(awsObject.s3), awsObject.s3)(action, params);
