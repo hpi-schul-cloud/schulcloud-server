@@ -96,12 +96,13 @@ const errorHandler = (context) => {
 			delete context.error.hook;
 		}
 
-		if (!context.error.type || context.error.type !== 'FeathersError') {
+		context.error.code = context.error.code || context.error.statusCode;
+		if (!context.error.code && !context.error.type) {
+			const catchedError = context.error;
 			context.error = new GeneralError(context.error.message || 'Server Error', context.error.stack);
-		} else if (!context.error.code) {
-			context.error.code = context.error.statusCode || 500;
+			context.error.catchedError = catchedError;
 		}
-
+		context.error.code = context.error.code || 500;
 		return context;
 	}
 	context.app.logger.warning('Error with no error key is throw. Error logic can not handle it.');
