@@ -105,6 +105,8 @@
 		"REQUEST_CONSENTS",
 		"SCHOOL_EDIT",
 		"SCHOOL_NEWS_EDIT",
+		"SCHOOL_CHAT_MANAGE",
+		"SCHOOL_LOGO_MANAGE",
 		"STUDENT_CREATE",
 		"STUDENT_DELETE",
 		"STUDENT_LIST",
@@ -607,4 +609,3 @@
 	"permissions": [],
 	"__v": 0
 }]
-

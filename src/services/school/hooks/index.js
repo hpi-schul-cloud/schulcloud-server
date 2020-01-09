@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { Forbidden } = require('@feathersjs/errors');
 const hooks = require('feathers-hooks-common');
 const logger = require('../../../logger');
 
@@ -72,6 +73,34 @@ const decorateYears = async (context) => {
 	return context;
 };
 
+const updatesRocketChat = (key, data) => (key === '$push' || key === '$pull') && data[key].features === 'rocketChat';
+
+const hasEditPermissions = async (context) => {
+	try {
+		const user = await globalHooks.getUser(context);
+		if (user.permissions.includes('SCHOOL_EDIT')) {
+			// SCHOOL_EDIT includes all of the more granular permissions below
+			return context;
+		}
+		// if the user does not have SCHOOL_EDIT permissions, reduce the patch to the fields
+		// the user is allowed to edit
+		const patch = {};
+		for (const key of Object.keys(context.data)) {
+			if (user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesRocketChat(key, context.data)) {
+				patch[key] = context.data[key];
+			}
+			if (user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl') {
+				patch[key] = context.data[key];
+			}
+		}
+		context.data = patch;
+		return context;
+	} catch (err) {
+		logger.error('Failed to check school edit permissions', err);
+		throw new Forbidden('You don\'t have the necessary permissions to patch these fields');
+	}
+};
+
 // fixme: resdtrict to current school
 exports.before = {
 	all: [],
@@ -88,7 +117,7 @@ exports.before = {
 	],
 	patch: [
 		authenticate('jwt'),
-		globalHooks.hasPermission('SCHOOL_EDIT'),
+		hasEditPermissions,
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]

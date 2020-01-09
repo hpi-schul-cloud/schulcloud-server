@@ -290,5 +290,16 @@
 		"$date": "2019-12-03T14:52:41.127Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e1706fd79b3c360204f88bc"
+	},
+	"state": "up",
+	"name": "addGranularSchoolEditPermissions",
+	"createdAt": {
+		"$date": "2020-01-09T10:57:01.515Z"
+	},
+	"__v": 0
 }]
 

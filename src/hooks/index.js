@@ -314,6 +314,7 @@ const getUser = (context) => context.app.service('users').get(context.params.acc
 }).catch((err) => {
 	throw new NotFound('Can not fetch user.', err);
 });
+exports.getUser = getUser;
 
 const testIfRoleNameExist = (user, roleNames) => {
 	if (typeof roleNames === 'string') {
