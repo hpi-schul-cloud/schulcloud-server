@@ -39,7 +39,11 @@ if (process.env.SENTRY_DSN) {
 			new Sentry.Integrations.Console(),
 		],
 	});
+<<<<<<< HEAD
 	Sentry.configureScope((scope) => {
+=======
+	Sentry.configureScope(scope => {
+>>>>>>> fbf412fc02c039bec96a987549d3f234259ab380
 		scope.setTag('frontend', false);
 		scope.setLevel('warning');
 		scope.setTag('domain', process.env.SC_DOMAIN || 'localhost');
@@ -47,8 +51,13 @@ if (process.env.SENTRY_DSN) {
 	});
 	app.use(Sentry.Handlers.requestHandler());
 	app.use(Sentry.Handlers.errorHandler());
+<<<<<<< HEAD
 	const removeIds = (url) => {
 		const checkForHexRegExp = /[a-f\d]{24}/ig;
+=======
+	const removeIds = url => {
+		const checkForHexRegExp = /[a-f\d]{24}/gi;
+>>>>>>> fbf412fc02c039bec96a987549d3f234259ab380
 		return url.replace(checkForHexRegExp, 'ID');
 	};
 	app.use((req, res, next) => {
@@ -79,8 +88,17 @@ app.use(compress())
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 	.use(versionService)
 	.use(defaultHeaders)
+<<<<<<< HEAD
 	.get('/system_info/haproxy', (req, res) => { res.send({ timestamp: new Date().getTime() }); })
 	.get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
+=======
+	.get('/system_info/haproxy', (req, res) => {
+		res.send({ timestamp: new Date().getTime() });
+	})
+	.get('/ping', (req, res) => {
+		res.send({ message: 'pong', timestamp: new Date().getTime() });
+	})
+>>>>>>> fbf412fc02c039bec96a987549d3f234259ab380
 	.configure(rest(handleResponseType))
 	.configure(socketio())
 	.configure(requestLogger)
