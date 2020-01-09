@@ -12,6 +12,14 @@ const SchoolYearFacade = require('../logic/year');
 
 let years = null;
 
+const expectYearsDefined = async () => {
+	if (!years) {
+		// default years will be cached after first call
+		years = await Year.find().lean().exec();
+	}
+	return years;
+};
+
 const getDefaultFileStorageType = () => {
 	if (!fileStorageTypes || !fileStorageTypes.length) {
 		return undefined;
@@ -22,6 +30,15 @@ const getDefaultFileStorageType = () => {
 const setDefaultFileStorageType = (hook) => {
 	const storageType = getDefaultFileStorageType();
 	hook.data.fileStorageType = storageType;
+	return Promise.resolve(hook);
+};
+
+const setCurrentYearIfMissing = async (hook) => {
+	if (!hook.data.currentYear) {
+		await expectYearsDefined();
+		const facade = new SchoolYearFacade(years, hook.data);
+		hook.data.currentYear = facade.defaultYear;
+	}
 	return Promise.resolve(hook);
 };
 
@@ -46,10 +63,7 @@ const createDefaultStorageOptions = (hook) => {
 
 
 const decorateYears = async (context) => {
-	if (!years) {
-		// default years will be cached after first call
-		years = await Year.find().lean().exec();
-	}
+	await expectYearsDefined();
 	const addYearsToSchool = (school) => {
 		const facade = new SchoolYearFacade(years, school);
 		school.years = facade.toJSON();
@@ -110,6 +124,7 @@ exports.before = {
 		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_CREATE'),
 		setDefaultFileStorageType,
+		setCurrentYearIfMissing,
 	],
 	update: [
 		authenticate('jwt'),

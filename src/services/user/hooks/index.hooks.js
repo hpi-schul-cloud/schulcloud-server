@@ -1,4 +1,5 @@
 const globalHooks = require('../../../hooks');
+const { ObjectId } = require('../../../helper/compare');
 
 /**
  * Warning: Role Changes are not handled yet.
@@ -7,6 +8,10 @@ const globalHooks = require('../../../hooks');
  */
 exports.hasEditPermissionForUser = async (context) => {
 	const { id, service: userService } = context;
+	// check if user is editing his own profile.
+	if (ObjectId.equal(((context.params || {}).account || {}).userId, id)) {
+		return context;
+	}
 	const requestedUser = await userService.get(id, { query: { $populate: 'roles' } });
 	const requestedUserRoles = requestedUser.roles.map((r) => r.name);
 	if (requestedUserRoles.includes('adminstrator')) {

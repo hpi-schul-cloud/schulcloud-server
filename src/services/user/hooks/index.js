@@ -111,7 +111,11 @@ const updateAccountUsername = (hook) => {
 const removeStudentFromClasses = (hook) => {
 	const classesService = hook.app.service('/classes');
 	const userId = hook.id;
-	if (userId === undefined) throw new errors.BadRequest('Fehler beim Entfernen des Users aus abhängigen Klassen');
+	if (userId === undefined) {
+		throw new errors.BadRequest(
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
+		);
+	}
 
 
 	const query = { userIds: userId };
@@ -122,23 +126,32 @@ const removeStudentFromClasses = (hook) => {
 				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
 				return classesService.patch(myClass._id, myClass);
 			}),
-		).then((_) => hook).catch((err) => { throw new errors.Forbidden('No Permission', err); }));
+		).then(() => hook).catch((err) => {
+			throw new errors.Forbidden(
+				'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.', err,
+			);
+		}));
 };
 
-const removeStudentFromCourses = (hook) => {
+const removeStudentFromCourses = async (hook) => {
 	const coursesService = hook.app.service('/courses');
 	const userId = hook.id;
-	if (userId === undefined) throw new errors.BadRequest('Fehler beim Entfernen des Users aus abhängigen Kursen');
+	if (userId === undefined) {
+		throw new errors.BadRequest(
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
+		);
+	}
 
-	const query = { userIds: userId };
-
-	return coursesService.find({ query })
-		.then((courses) => Promise.all(
-			courses.data.map((course) => {
-				course.userIds.splice(course.userIds.indexOf(userId), 1);
-				return coursesService.patch(course._id, course);
-			}),
-		).then(() => hook).catch((err) => { throw new errors.Forbidden('No Permission', err); }));
+	try {
+		const usersCourses = await coursesService.find({ query: { userIds: userId } });
+		await Promise.all(usersCourses.data.map(
+			(course) => hook.app.service('courseModel').patch(course._id, { $pull: { userIds: userId } }),
+		));
+	} catch (err) {
+		throw new errors.Forbidden(
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.', err,
+		);
+	}
 };
 
 const sanitizeData = (hook) => {

@@ -8,9 +8,7 @@ const config = configuration();
 app.configure(config);
 
 // init & register configuration
-if (commons.Configuration.Instance.readyState === 1) {
-	commons.Configuration.Instance.init({ app });
-}
+(new commons.Configuration()).init({ app });
 
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -31,13 +29,15 @@ const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 
+const { BODYPARSER_JSON_LIMIT } = require('../config/globals');
+
 const setupSwagger = require('./swagger');
-const allHooks = require('./app.hooks');
+const { initializeRedisClient } = require('./utils/redis');
+const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
-
-app.configure(config);
 setupSwagger(app);
+app.configure(initializeRedisClient);
 
 // set custom response header for ha proxy
 if (process.env.KEEP_ALIVE) {
@@ -53,7 +53,8 @@ app.use(compress())
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 	.use('/', express.static('public'))
 	.configure(sentry)
-	.use(bodyParser.json())
+	.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
+	.use('/', bodyParser.json())
 	.use(bodyParser.urlencoded({ extended: true }))
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 	.use(versionService)
@@ -76,7 +77,7 @@ app.use(compress())
 	.configure(services)
 	.configure(sockets)
 	.configure(middleware)
-	.configure(allHooks)
+	.configure(setupAppHooks)
 	.configure(errorHandler);
 
 module.exports = app;

@@ -1,7 +1,11 @@
-const nodemailer = require('nodemailer');
+const request = require('request-promise-native');
+const { GeneralError, Unavailable } = require('@feathersjs/errors');
 const logger = require('../../logger');
 
-const { secrets } = require('../../services/authentication/logic');
+const {
+	REQUEST_TIMEOUT,
+	SMTP_SENDER,
+} = require('../../../config/globals');
 
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {
@@ -14,36 +18,72 @@ const checkForToken = (params, app) => {
 
 module.exports = function setup(app) {
 	class MailService {
+		encodeFiles(files = []) {
+			return files.map(({ content, filename }) => ({
+				filename,
+				content: content.toString('base64'),
+			}));
+		}
+
 		// POST
-		create({
-			headers,
-			email,
-			replyEmail,
-			subject,
-			content,
-		}, params) {
-			return checkForToken(params, app)
-				.then(async (user) => {
-					const options = secrets.smtp || secrets.sendmail || {};
-					const transporter = nodemailer.createTransport(options);
-					const mail = {
-						from: process.env.SMTP_SENDER || replyEmail || 'noreply@schul-cloud.org',
-						replyTo: replyEmail || process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
-						headers,
-						to: user ? user.email : email,
-						subject,
-						html: content.html,
-						text: content.text,
-					};
-					// send mail with defined transport object in production mode
-					if (process.env.NODE_ENV === 'production' || process.env.FORCE_SEND_EMAIL) {
-						const info = await transporter.sendMail(mail);
-						logger.info(`E-Mail Message sent: ${info.messageId}`);
-						return;
-					}
-					// otherwise print email message object on console
-					logger.debug('E-Mail Message not sent (not in production mode):', mail);
-				}).catch((err) => Promise.reject(err));
+		async create(data, params) {
+			const FORCE_SEND_EMAIL = app.get('FORCE_SEND_EMAIL');
+			const NOTIFICATION_PLATFORM = app.get('NOTIFICATION_PLATFORM');
+
+			if (!NOTIFICATION_PLATFORM || process.env.NOTIFICATION_PLATFORM) {
+				throw new Unavailable('Required Env NOTIFICATION_PLATFORM is not defined');
+			}
+
+			const serviceUrls = app.get('services') || {};
+
+			const user = await checkForToken(params, app);
+
+			const {
+				headers,
+				email,
+				replyEmail,
+				subject,
+				content,
+				// TODO: must be implemented by the mailservice
+				// currently only used by the helpdesk
+				attachments,
+			} = data;
+
+			const base64Attachments = this.encodeFiles(attachments);
+
+			const Mail = {
+				to: user ? user.email : email,
+				subject,
+				text: content.text,
+				html: content.html,
+				from: SMTP_SENDER || replyEmail || 'noreply@schul-cloud.org',
+				replyTo: replyEmail || SMTP_SENDER || 'noreply@schul-cloud.org',
+				attachments: base64Attachments,
+			};
+
+			const requestOptions = {
+				uri: `${serviceUrls.notification}/mails`,
+				method: 'POST',
+				headers: {
+					...headers,
+				},
+				body: {
+					platformId: NOTIFICATION_PLATFORM,
+					platform: NOTIFICATION_PLATFORM,
+					...Mail,
+				},
+				json: true,
+				timeout: REQUEST_TIMEOUT,
+			};
+
+			// send mail with defined transport object in production mode
+			if (app.get('env') === 'production' || FORCE_SEND_EMAIL) {
+				return request(requestOptions).catch((error) => {
+					throw new GeneralError(error.message);
+				});
+			}
+			// otherwise print email message object on console
+			return logger.debug('E-Mail Message not sent (not in production mode):', Mail);
 		}
 	}
 

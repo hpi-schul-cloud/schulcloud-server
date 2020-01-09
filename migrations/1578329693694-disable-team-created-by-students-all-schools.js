@@ -3,46 +3,50 @@ const mongoose = require('mongoose');
 const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
-
+const { SC_THEME } = require('../config/globals');
 // use your own name for your model, otherwise other migrations may fail.
-// The third parameter is the collection to write to.
-const User = mongoose.model('makeMeUnique', new mongoose.Schema({
-	firstName: { type: String, required: true },
-	lastName: { type: String, required: true },
-}, {
-	timestamps: true,
-}), 'users');
+// The third parameter is the actually relevent one for what collection to write to.
+const features = mongoose.model('features', new mongoose.Schema({
+	features: [{
+		type: String,
+		enum: ['rocketChat', 'disableStudentTeamCreation'],
+	}],
+}), 'schools');
 
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
 
 module.exports = {
 	up: async function up() {
+		if (SC_THEME !== 'n21') {
+			info('Migration will be applied to n21 instance only! Ignore...');
+			return Promise.resolve();
+		}
+
 		await connect();
 		// ////////////////////////////////////////////////////
-		// Make changes to the database here.
-		// Hint: Access models via this('modelName'), not an imported model to have
-		// access to the correct database connection. Otherwise Mongoose calls never return.
-		await User.findOneAndUpdate({
-			firstName: 'Marla',
-			lastName: 'Mathe',
-		}, {
-			firstName: 'Max',
-		}).lean().exec();
+		await features.updateMany(
+			{
+				features: { $ne: 'disableStudentTeamCreation' },
+			},
+			{
+				$push: {
+					features: 'disableStudentTeamCreation',
+				},
+			},
+		).lean().exec();
 		// ////////////////////////////////////////////////////
 		await close();
+
+		info('Migration has been applied to this instance of n21');
+		return Promise.resolve();
 	},
 
 	down: async function down() {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
-		await User.findOneAndUpdate({
-			firstName: 'Max',
-			lastName: 'Mathe',
-		}, {
-			firstName: 'Marla',
-		}).lean().exec();
+		error('can not roll back this migration');
 		// ////////////////////////////////////////////////////
 		await close();
 	},
