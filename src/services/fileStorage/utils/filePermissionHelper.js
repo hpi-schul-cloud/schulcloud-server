@@ -117,13 +117,12 @@ const checkPermissions = (permission) => async (user, file) => {
 		return Promise.reject();
 	}
 
-	if (homework && !homework.private) {
-		let courseFile = fileObject;
-		courseFile = { ...fileObject, owner: homework.courseId || {} };
-		const isMember = checkMemberStatus({ file: courseFile, user });
-		if (isMember) return Promise.resolve(true);
-
-		return Promise.reject();
+	if (homework) {
+		if (!homework.private) {
+			const courseFile = { ...fileObject, owner: homework.courseId || {} };
+			const isMember = checkMemberStatus({ file: courseFile, user });
+			if (isMember) return Promise.resolve(true);
+		} else { return Promise.reject(); }
 	}
 
 	const isMember = checkMemberStatus({ file: fileObject, user });

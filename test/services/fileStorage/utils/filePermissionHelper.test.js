@@ -17,7 +17,7 @@ const {
 
 const fixtures = require('../fixtures');
 
-describe.only('filePermissionHelper', () => {
+describe('filePermissionHelper', () => {
 	describe('checkPermissions function should', () => {
 		before((done) => {
 			const promises = [
