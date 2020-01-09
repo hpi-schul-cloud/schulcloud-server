@@ -48,7 +48,7 @@ describe.only('filePermissionHelper', () => {
 		});
 
 		it('does not let access files for no owner, member or shared file', (done) => {
-			canRead('0001d224816abba584714c9c', '5ca613c4c7f5120bxx8c5bef27').catch(() => {
+			canRead('0001d224816abba584714c9c', '5ca613c4c7f5120b8c5bef27').catch(() => {
 				done();
 			});
 		});
