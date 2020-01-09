@@ -5,6 +5,8 @@ const { userModel } = require('../../../../src/services/user/model');
 const RoleModel = require('../../../../src/services/role/model');
 // const { submissionModel } = require('../../../../src/services/homework/model');
 const { courseModel } = require('../../../../src/services/user-group/model');
+const { homeworkModel } = require('../../../../src/services/homework/model');
+
 
 const {
 	canWrite,
@@ -15,14 +17,15 @@ const {
 
 const fixtures = require('../fixtures');
 
-describe('filePermissionHelper', () => {
+describe.only('filePermissionHelper', () => {
 	describe('checkPermissions function should', () => {
 		before((done) => {
 			const promises = [
 				FileModel.create(fixtures.files),
 				userModel.create(fixtures.users),
 				RoleModel.create(fixtures.roles),
-				courseModel.create(fixtures.roles),
+				courseModel.create(fixtures.courses),
+				homeworkModel.create(fixtures.homeworks),
 			];
 
 			Promise.all(promises)
@@ -36,6 +39,7 @@ describe('filePermissionHelper', () => {
 				...fixtures.users.map((_) => userModel.findByIdAndRemove(_._id).exec()),
 				...fixtures.roles.map((_) => RoleModel.findByIdAndRemove(_._id).exec()),
 				...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
+				...fixtures.homeworks.map((_) => homeworkModel.findByIdAndRemove(_._id).exec()),
 			];
 
 			Promise.all(promises)
@@ -44,7 +48,7 @@ describe('filePermissionHelper', () => {
 		});
 
 		it('does not let access files for no owner, member or shared file', (done) => {
-			canRead('0001d224816abba584714c9c', '5ca613c4c7f5120b8c5bef27').catch(() => {
+			canRead('0001d224816abba584714c9c', '5ca613c4c7f5120bxx8c5bef27').catch(() => {
 				done();
 			});
 		});
@@ -70,6 +74,27 @@ describe('filePermissionHelper', () => {
 		it('let read shared file', (done) => {
 			canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef27').then((result) => {
 				expect(result).to.be.true;
+				done();
+			});
+		});
+
+		it('let teacher read his homework file', (done) => {
+			canRead('0000d224816abba584714c8e', '5ca601745d629505e51252d8').then((result) => {
+				expect(result).to.be.true;
+				done();
+			});
+		});
+
+
+		it('let student read homework file', (done) => {
+			canRead(fixtures.users[0]._id, '5ca601745d629505e51252d8').then((result) => {
+				expect(result).to.be.true;
+				done();
+			});
+		});
+
+		it('reject student from other course not read homework file', (done) => {
+			canRead(fixtures.users[1]._id, '5ca601745d629505e51252d8').catch(() => {
 				done();
 			});
 		});
