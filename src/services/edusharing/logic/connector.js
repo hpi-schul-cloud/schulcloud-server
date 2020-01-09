@@ -1,9 +1,7 @@
 const request = require("request-promise-native");
-// const feathersError = require('@feathersjs/errors');
-const url = require("url");
-
 const REQUEST_TIMEOUT = 8000; // ms
 
+// STACKOVERFLOW BEAUTY
 function validURL(str) {
 	const pattern = new RegExp(
 		"^(https?:\\/\\/)?" +
@@ -25,7 +23,8 @@ class EduSharingConnector {
 		if (!validURL(this.url)) {
 			return "Invalid ES_DOMAIN, check your .env";
 		}
-		this.authorization = null;
+		this.authorization = null; // JSESSION COOKIE
+		this.accessToken = null; // ACCESSTOKEN
 		EduSharingConnector.instance = this;
 	}
 
@@ -39,7 +38,6 @@ class EduSharingConnector {
 	static get authorization() {
 		const userName = process.env.ES_USER;
 		const pw = process.env.ES_PASSWORD;
-
 		const headers = Object.assign({}, EduSharingConnector.headers, {
 			Authorization: `Basic ${Buffer.from(`${userName}:${pw}`).toString(
 				"base64"
@@ -47,7 +45,8 @@ class EduSharingConnector {
 		});
 		return headers;
 	}
-	// todo, path combine with URL
+
+	// gets cookie (JSESSION) and attach it to header
 	getCookie() {
 		const cookieOptions = {
 			uri: `${process.env.ES_DOMAIN}/edu-sharing/rest/authentication/v1/validateSession`,
@@ -58,8 +57,6 @@ class EduSharingConnector {
 		};
 		return request(cookieOptions)
 			.then(result => {
-				console.log(result.statusCode === 200, "statusCode");
-				console.log(result.body.isValidLogin === true, "validLogin");
 				if (
 					result.statusCode !== 200 ||
 					result.body.isValidLogin !== true
@@ -73,51 +70,47 @@ class EduSharingConnector {
 				console.error("error: ", err);
 			});
 	}
+	// gets access_token and refresh_token
+	getAuth() {
+		const oauthoptions = {
+			method: "POST",
+			url: `${process.env.ES_DOMAIN}/edu-sharing/oauth2/token`,
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: `grant_type=${process.env.ES_GRANT_TYPE}&client_id=${process.env.ES_CLIENT_ID}&client_secret=${process.env.ES_OAUTH_SECRET}&username=${process.env.ES_USER}&password=${process.env.ES_PASSWORD}`,
+			timeout: REQUEST_TIMEOUT
+		};
+		return request(oauthoptions).then(result => {
+			if (result) {
+				const parsedResult = JSON.parse(result);
+				return parsedResult.access_token;
+			}
+			console.error("Oauth failed");
+			return null;
+		});
+	}
 
 	checkEnv() {
 		return (
 			process.env.ES_DOMAIN &&
 			process.env.ES_USER &&
-			process.env.ES_PASSWORD
+			process.env.ES_PASSWORD &&
+			process.env.ES_GRANT_TYPE &&
+			process.env.ES_OAUTH_SECRET &&
+			process.env.ES_CLIENT_ID
 		);
 	}
 
 	async login() {
 		this.authorization = await this.getCookie();
+		this.accessToken = await this.getAuth();
 	}
 
 	isLoggedin() {
-		return !!this.authorization;
+		// returns false if cookie or accesstoken is falsy
+		return !!this.authorization && !!this.accessToken;
 	}
 
 	async GET(data) {
-		const myVar = process.env.ES_DOMAIN; // "https://mv-repo.schul-cloud.org"
-		const myHost = process.env.HOST; // "http://localhost:3030"
-
-		// proxy task
-		if (data.mode && data.mode === "preview") {
-			console.log(data.params, "paramsurl");
-			const newUrl = new url.URL(
-				"/edu-sharing/preview",
-				process.env.ES_DOMAIN
-			);
-			const modeOptions = {
-				method: "GET",
-				resolveWithFullResponse: true,
-				transform: function(body) {
-					return body;
-				},
-				qs: data.params.query,
-				url: newUrl.toString(),
-				headers: Object.assign(
-					{},
-					{
-						cookie: this.authorization
-					}
-				)
-			};
-			return request(modeOptions);
-		}
 		const limit = data.query.$limit || 9;
 		const skip = data.query.$skip || 0;
 		const searchWord = data.query.searchWord || "img"; // will give pictures of flowers as default
@@ -130,7 +123,7 @@ class EduSharingConnector {
 		if (this.isLoggedin() === false) {
 			await this.login();
 		}
-		console.log(searchWord, "searchword");
+
 		const options = {
 			method: "POST",
 			url: `${process.env.ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?contentType=${contentType}&skipCount=${skip}&maxItems=${limit}&sortProperties=score&sortProperties=cm%3Amodified&sortAscending=false&sortAscending=false&propertyFilter=-all-&`,
@@ -147,9 +140,16 @@ class EduSharingConnector {
 		};
 
 		const eduResponse = await request(options);
-		const regex = new RegExp(process.env.ES_DOMAIN, "g");
-		const parsed = JSON.parse(eduResponse.replace(regex, process.env.HOST));
+		const parsed = JSON.parse(eduResponse);
 
+		// adds accesstoken to image-url to let user see the picture on client-side.
+		if (parsed && parsed.nodes) {
+			parsed.nodes.forEach(node => {
+				if (node.preview && node.preview.url) {
+					node.preview.url += `&accessToken=${this.accessToken}`;
+				}
+			});
+		}
 		return parsed;
 	}
 
