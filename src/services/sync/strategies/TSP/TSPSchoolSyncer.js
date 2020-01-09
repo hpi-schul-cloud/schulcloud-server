@@ -65,12 +65,11 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 
 	/**
 	 * Does the following steps:
-	 *   * find all login systems associated with the given config
+	 *   * find all schools with associated TSP identifier
 	 *   * fetch all TSP teachers, students, and classes; group by school identifier
 	 *   * for every school:
-	 *     * create it if it does not yet exist
 	 *     * create teachers
-	 *     * create students; store references grouped by class
+	 *     * create students
 	 *     * create classes
 	 * @returns {Object} stats (see #constructor)
 	 * @async

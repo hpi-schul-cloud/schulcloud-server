@@ -58,7 +58,10 @@ class TSPBaseSyncer extends Syncer {
 	 * @async
 	 */
 	async steps() {
+		// There is only one login system for all TSP-schools (which is created here if it does not exist).
 		await this.ensureLoginSystemExists();
+
+		// Create/update all schools from the API and create/update a school-specific data source
 		const schools = await this.getSchools();
 		for (const { schuleNummer, schuleName } of schools) {
 			const school = await this.createOrUpdateSchool(schuleNummer, schuleName);
