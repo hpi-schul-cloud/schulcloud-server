@@ -41,7 +41,7 @@ class SCAuthenticationService extends AuthenticationService {
 	async getPayload(authResult, params) {
 		return super.getPayload(authResult, {
 			...params,
-			payload: authResult.payload,
+			payload: authResult.payload || params.payload,
 		});
 	}
 }
