@@ -15,10 +15,8 @@ const logRequestInfosInErrorCase = (error, req, res, next) => {
 		}
 
 		requestError(req, (decodedJWT || {}).userId, error);
-		next(error);
-	} else {
-		next();
 	}
+	next(error);
 };
 
 const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
@@ -33,10 +31,8 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 		if (error.stack) {
 			delete error.stack;
 		}
-		next(error);
-	} else {
-		next();
 	}
+	next(error);
 };
 
 const returnAsJson = express.errorHandler({
@@ -101,10 +97,8 @@ const filterSecrets = (error, req, res, next) => {
 		req.originalUrl = filterQuery(req.originalUrl);
 		req.body = filter(req.body);
 		error.data = filter(error.data);
-		next(error);
-	} else {
-		next();
 	}
+	next(error);
 };
 
 const errorHandler = (app) => {
