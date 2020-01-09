@@ -1,74 +1,103 @@
 const { expect } = require('chai');
-const mockery = require('mockery');
-const nodemailerMock = require('nodemailer-mock');
+const nock = require('nock');
+
+const app = require('../../../src/app');
+
+// eslint-disable-next-line import/no-dynamic-require
+const config = require(`../../../config/${process.env.NODE_ENV || 'default'}.json`);
+
+const isMailbodyValid = ({
+	platform,
+	platformId,
+	to,
+	subject,
+	text,
+	html,
+	attachments,
+}) => {
+	// file content must be base64 encoded ant therefore of type string
+	const attachmentsAreValid = attachments
+		.every((attachment) => Boolean(typeof attachment.filename === 'string'
+			&& typeof attachment.content === 'string'));
+	const hasRequiredAttributes = Boolean(platform && platformId && to && subject && (text || html));
+	return Boolean(hasRequiredAttributes && attachmentsAreValid);
+};
+
+const getNotificationMock = (expectedData = {}) => {
+	nock(config.services.notification)
+		.post('/mails')
+		.reply(200,
+			(uri, requestBody) => {
+				Object.entries(expectedData).forEach(([key, value]) => {
+					expect(requestBody[key]).to.eql(value);
+				});
+				expect(isMailbodyValid(requestBody)).to.equal(true);
+				return 'Message queued';
+			});
+};
 
 describe('Mail Service', () => {
-	const emailOptions = {
-		email: 'test@test.test',
-		subject: 'test',
-		content: { html: '<h1>Testing Purposes</h1>', text: 'Testing Purposes' },
-	};
+	const mailService = app.service('/mails');
 
-	let mailService;
+	afterEach(() => {
+		nock.cleanAll();
+	});
 
-	before((done) => {
-		// Enable mockery to mock objects
-		mockery.enable({
-			warnOnUnregistered: false,
+	describe('valid emails', () => {
+		it('should send an valid text email to the notification service', async () => {
+			getNotificationMock();
+			await mailService.create({
+				email: 'test@test.test',
+				subject: 'test',
+				content: { text: 'Testing Purposes' },
+			});
 		});
-
-		// Once mocked, any code that calls require('nodemailer') will get our nodemailerMock
-		mockery.registerMock('nodemailer', nodemailerMock);
-
-		// Make sure anything that uses nodemailer is loaded here, after it is mocked...
-		delete require.cache[require.resolve('../../../src/services/helpers/service')];
-
-		// load new app to make mockery work
-		const feathers = require('@feathersjs/feathers');
-		const app = feathers();
-		let secrets;
-		try {
-			secrets = require('../config/secrets.json');
-		} catch (error) {
-			secrets = {};
-		}
-		app.set('secrets', secrets);
-		const MailService = require('../../../src/services/helpers/service')(app);
-		app.use('/mails', new MailService());
-		mailService = app.service('/mails');
-
-		done();
-	});
-
-	after(() => {
-		// Remove our mocked nodemailer and disable mockery
-		mockery.deregisterAll();
-		mockery.disable();
-	});
-
-	it('should send an email using nodemailer-mock', () => {
-		mailService.create(emailOptions)
-			.then((_) => {
-				// get the array of emails we sent
-				const sentMail = nodemailerMock.mock.sentMail();
-				expect(sentMail.length).to.equal(1);
-				expect(sentMail[0].to).to.equal(emailOptions.email);
-				expect(sentMail[0].subject).to.equal(emailOptions.subject);
-				expect(sentMail[0].html).to.equal(emailOptions.content.html);
-				expect(sentMail[0].text).to.equal(emailOptions.content.text);
+		it('should send an valid html email to the notification service', async () => {
+			getNotificationMock();
+			await mailService.create({
+				email: 'test@test.test',
+				subject: 'test',
+				content: { html: '<h1>Testing Purposes</h1>' },
 			});
+		});
+		it('files should be base64 encoded', async () => {
+			getNotificationMock({
+				attachments: [
+					{
+						filename: 'test.gif',
+						content: 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+					},
+				],
+			});
+			await mailService.create({
+				email: 'test@test.test',
+				subject: 'test',
+				content: { html: '<h1>Testing Purposes</h1>' },
+				attachments: [
+					{
+						filename: 'test.gif',
+						content: Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64'),
+					},
+				],
+			});
+		});
 	});
 
-	it('should fail to send an email using nodemailer-mock', () => {
-		// tell the mock class to return an error
-		const err = 'My custom error';
-		nodemailerMock.mock.shouldFailOnce();
-		nodemailerMock.mock.failResponse(err);
-
-		// call a service that uses nodemailer
-		return mailService.create(emailOptions)
-			.catch((err) => {
-				expect(err).to.be.equal(err);
-			});
+	describe('invalid emails', () => {
+		beforeEach(() => {
+			nock(config.services.notification)
+				.post('/mails')
+				.replyWithError('invalid data send');
+		});
+		it('should throw if notification server returns error', async () => {
+			try {
+				await mailService.create({
+					content: { text: 'Testing Purposes' },
+				});
+				throw new Error('The previous call should have failed.');
+			} catch (error) {
+				expect(error.message).to.equal('Error: invalid data send');
+			}
+		});
 	});
 });
