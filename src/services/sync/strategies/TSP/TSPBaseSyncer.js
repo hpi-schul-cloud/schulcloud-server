@@ -89,6 +89,7 @@ class TSPBaseSyncer extends Syncer {
 	async createSystem() {
 		return this.app.service('systems').create({
 			type: SCHOOL_SYNCER_TARGET,
+			alias: 'Thüringer Schulportal',
 		});
 	}
 
