@@ -78,25 +78,20 @@ describe('filePermissionHelper', () => {
 			});
 		});
 
-		it('let teacher read his homework file', (done) => {
-			canRead('0000d224816abba584714c8e', '5ca601745d629505e51252d8').then((result) => {
-				expect(result).to.be.true;
-				done();
-			});
+		it('let teacher read his homework file', () => {
+			const promise = canRead('0000d224816abba584714c8e', '5ca601745d629505e51252d8');
+			return expect(promise).to.be.eventually.true;
 		});
 
 
-		it('let student read homework file', (done) => {
-			canRead(fixtures.users[0]._id, '5ca601745d629505e51252d8').then((result) => {
-				expect(result).to.be.true;
-				done();
-			});
+		it('let student read homework file', async () => {
+			const promise = canRead(fixtures.users[0]._id, '5ca601745d629505e51252d8');
+			return expect(promise).to.be.eventually.true;
 		});
 
-		it('reject student from other course not read homework file', (done) => {
-			canRead(fixtures.users[1]._id, '5ca601745d629505e51252d8').catch(() => {
-				done();
-			});
+		it('reject student from other course to see homework file', () => {
+			const promise = canRead(fixtures.users[1]._id, '5ca601745d629505e51252d8');
+			return expect(promise).to.be.rejected;
 		});
 
 		it('let read, write, create and delete course files for teacher', (done) => {

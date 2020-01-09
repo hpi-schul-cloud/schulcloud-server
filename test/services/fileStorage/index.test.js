@@ -1,5 +1,9 @@
 const mockery = require('mockery');
-const { expect } = require('chai');
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
+
+const { expect } = chai;
+
 const assert = require('assert');
 const mongoose = require('mongoose');
 
