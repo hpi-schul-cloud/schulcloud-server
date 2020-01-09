@@ -87,7 +87,6 @@
 		"moodle-client": "^0.5.2",
 		"nanoid": "^2.0.3",
 		"node-sass": "^4.2.0",
-		"nodemailer": "^6.2.1",
 		"passport": "^0.4.0",
 		"passport-strategy": "^1.0.0",
 		"pretty-error": "^2.0.3",
@@ -114,7 +113,7 @@
 		"eslint-plugin-react": "^7.11.1",
 		"mocha": "^6.2.2",
 		"mockery": "^2.0.0",
-		"nodemailer-mock": "^1.1.10",
+		"nock": "^11.7.1",
 		"nodemon": "^1.19.1",
 		"nyc": "^14.1.1",
 		"simple-oauth2": "^2.3.0"
