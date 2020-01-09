@@ -91,16 +91,18 @@ const handleAutoLogout = async (context) => {
  */
 const errorHandler = (context) => {
 	if (context.error) {
-		// too much for logging...
 		if (context.error.hook) {
+			// too much for logging...
 			delete context.error.hook;
 		}
 
-		// statusCode is return by extern services / or mocks that use express res.status(myCodeNumber)
-		if (!context.error.code && !context.error.statusCode) {
-			context.error = new GeneralError(context.error.message || 'server error', context.error.stack || '');
+		context.error.code = context.error.code || context.error.statusCode;
+		if (!context.error.code && !context.error.type) {
+			const catchedError = context.error;
+			context.error = new GeneralError(context.error.message || 'Server Error', context.error.stack);
+			context.error.catchedError = catchedError;
 		}
-
+		context.error.code = context.error.code || 500;
 		return context;
 	}
 	context.app.logger.warning('Error with no error key is throw. Error logic can not handle it.');
