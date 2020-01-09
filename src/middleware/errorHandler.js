@@ -106,6 +106,7 @@ const errorHandler = (app) => {
 	if (process.env.NODE_ENV !== 'test') {
 		app.use(logRequestInfosInErrorCase);
 	}
+
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(formatAndLogErrors(process.env.NODE_ENV !== 'test'));
 	app.use(returnAsJson);
