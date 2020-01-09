@@ -21,7 +21,7 @@ const replaceIds = (string) => {
  * @returns {SentryEvent || null} Return modified sentry event, or undefined to skip sending event
  */
 const removeIdMiddleware = (event) => {
-	if (event.request) {
+	if (event && event.request) {
 		// eslint-disable-next-line camelcase
 		const { request: { data, url, query_string } } = event;
 		if (data) {
@@ -39,7 +39,9 @@ const removeIdMiddleware = (event) => {
 };
 
 const removeJwtToken = (event) => {
-	if (deepObject.get(event, 'request.headers.authorization')) {
+	if (event && event.request
+		&& event.request.headers
+		&& event.request.headers.authorization) {
 		delete event.request.headers.authorization;
 	}
 	return event;
@@ -77,7 +79,7 @@ module.exports = (app) => {
 
 	if (dsn) {
 		// middleware to modified events that, are post to sentry
-		let middleware = [
+		let middlewares = [
 			filterByErrorCodesMiddleware(404),
 			// filterByErrorMessageMiddleware('could not initialize rocketchat user'),
 			removeIdMiddleware,
@@ -85,24 +87,23 @@ module.exports = (app) => {
 		];
 		// for local test runs, post feedback but skip it
 		if (environment === 'development') {
-			middleware.push(logItMiddleware(false));
+			middlewares.push(logItMiddleware(false));
 		}
 		// do not execute for test runs
 		if (environment === 'test') {
-			middleware = [skipItMiddleware];
+			middlewares = [skipItMiddleware];
 		}
 
-		const runMiddlewares = (event, hint, index = 0) => {
-			if (event === undefined) {
-				return undefined;
-			}
+		const runMiddlewares = (event, hint) => {
+			let modifiedEvent = event; // is no copy, event is also mutated
 
-			if (middleware.length === index) {
-				return event;
+			for (let i = 0; i < middlewares.length; i += 1) {
+				if (!modifiedEvent) {	// if skip return
+					return modifiedEvent;
+				}
+				modifiedEvent = middlewares[i](modifiedEvent, hint, app);
 			}
-
-			const modifiedEvent = middleware[index](event, hint, app);
-			return runMiddlewares(modifiedEvent, hint, index + 1);
+			return modifiedEvent;
 		};
 
 		Sentry.init({

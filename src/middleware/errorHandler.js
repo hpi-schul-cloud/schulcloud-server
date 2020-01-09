@@ -26,7 +26,7 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 			requestId: req.headers.requestId,
 		} : {};
 
-		logger.error(error);
+		logger.error({ ...error });
 
 		if (error.stack) {
 			delete error.stack;
@@ -106,6 +106,7 @@ const errorHandler = (app) => {
 	if (process.env.NODE_ENV !== 'test') {
 		app.use(logRequestInfosInErrorCase);
 	}
+
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(formatAndLogErrors(process.env.NODE_ENV !== 'test'));
 	app.use(returnAsJson);

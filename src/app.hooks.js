@@ -1,84 +1,13 @@
-/* eslint-disable no-param-reassign */
 // Global hooks that run for every service
-const sanitizeHtml = require('sanitize-html');
-const Entities = require('html-entities').AllHtmlEntities;
 const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
+const { sanitizeHtml: { sanitizeDeep } } = require('./utils');
 const {
 	getRedisClient, redisGetAsync, redisSetAsync, getRedisIdentifier, getRedisValue,
 } = require('./utils/redis');
 
-const entities = new Entities();
 
-const globalHooks = require('./hooks/');
-
-const sanitize = (data, options) => {
-	// https://www.npmjs.com/package/sanitize-html
-	if ((options || {}).html === true) {
-		// editor-content data
-		data = sanitizeHtml(data, {
-			allowedTags: ['h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span', 'del',
-				'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-				'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video', 'iframe'],
-			allowedAttributes: false, // allow all attributes of allowed tags
-			allowedSchemes: ['http', 'https', 'ftp', 'mailto'],
-			parser: {
-				decodeEntities: true,
-			},
-		});
-		data = data.replace(/(&lt;script&gt;).*?(&lt;\/script&gt;)/gim, ''); // force remove script tags
-		data = data.replace(/(<script>).*?(<\/script>)/gim, ''); // force remove script tags
-	} else {
-		// non editor-content data
-		data = sanitizeHtml(data, {
-			allowedTags: [], // disallow all tags
-			allowedAttributes: [], // disallow all attributes
-			allowedSchemes: [], // disallow url schemes
-			parser: {
-				decodeEntities: true,
-			},
-		});
-	}
-	// something during sanitizeHtml() is encoding HTML Entities like & => &amp;
-	// I wasn't able to figure out which option disables this so I just decode it again.
-	// BTW: html-entities is already a dependency of sanitize-html so no new imports where done here.
-	return entities.decode(data);
-};
-
-/**
- * Strips JS/HTML Code from data and returns clean version of it
- * @param data {object/array/string}
- * @returns data - clean without JS
- */
-const sanitizeDeep = (data, path) => {
-	if (typeof data === 'object' && data !== null) {
-		Object.entries(data).forEach(([key, value]) => {
-			if (typeof value === 'string') {
-				// ignore values completely
-				if (['password'].includes(key)) return data;
-				// enable html for all current editors
-				const needsHtml = ['content', 'text', 'comment', 'gradeComment', 'description'].includes(key)
-                    && ['lessons', 'news', 'newsModel', 'homework', 'submissions'].includes(path);
-				data[key] = sanitize(value, { html: needsHtml });
-			} else {
-				sanitizeDeep(value, path);
-			}
-		});
-	} else if (typeof data === 'string') {
-		data = sanitize(data, { html: false });
-	} else if (Array.isArray(data)) {
-		for (let i = 0; i < data.length; i += 1) {
-			if (typeof data[i] === 'string') {
-				data[i] = sanitize(data[i], { html: false });
-			} else {
-				sanitizeDeep(data[i], path);
-			}
-		}
-	}
-	return data;
-};
-
-const sanitizeData = (context) => {
+const sanitizeDataHook = (context) => {
 	if (context.data && context.path && context.path !== 'authentication') {
 		sanitizeDeep(context.data, context.path);
 	}
@@ -162,16 +91,18 @@ const handleAutoLogout = async (context) => {
  */
 const errorHandler = (context) => {
 	if (context.error) {
-		// too much for logging...
 		if (context.error.hook) {
+			// too much for logging...
 			delete context.error.hook;
 		}
 
-		// statusCode is return by extern services / or mocks that use express res.status(myCodeNumber)
-		if (!context.error.code && !context.error.statusCode) {
-			context.error = new GeneralError(context.error.message || 'server error', context.error.stack || '');
+		context.error.code = context.error.code || context.error.statusCode;
+		if (!context.error.code && !context.error.type) {
+			const catchedError = context.error;
+			context.error = new GeneralError(context.error.message || 'Server Error', context.error.stack);
+			context.error.catchedError = catchedError;
 		}
-
+		context.error.code = context.error.code || 500;
 		return context;
 	}
 	context.app.logger.warning('Error with no error key is throw. Error logic can not handle it.');
@@ -184,9 +115,21 @@ function setupAppHooks(app) {
 		all: [iff(isProvider('external'), handleAutoLogout)],
 		find: [],
 		get: [],
-		create: [sanitizeData, globalHooks.ifNotLocal(removeObjectIdInData)],
-		update: [sanitizeData],
-		patch: [sanitizeData],
+		create: [
+			iff(isProvider('external'), [
+				sanitizeDataHook, removeObjectIdInData,
+			]),
+		],
+		update: [
+			iff(isProvider('external'), [
+				sanitizeDataHook,
+			]),
+		],
+		patch: [
+			iff(isProvider('external'), [
+				sanitizeDataHook,
+			]),
+		],
 		remove: [],
 	};
 
@@ -218,4 +161,8 @@ function setupAppHooks(app) {
 	app.hooks({ before, after, error });
 }
 
-module.exports = { setupAppHooks, handleAutoLogout };
+module.exports = {
+	setupAppHooks,
+	sanitizeDataHook,
+	handleAutoLogout,
+};

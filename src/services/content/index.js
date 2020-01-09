@@ -3,7 +3,7 @@ const service = require('feathers-mongoose');
 const hooks = require('./hooks');
 const material = require('./material-model');
 
-const REQUEST_TIMEOUT = 8000; // in ms
+const { REQUEST_TIMEOUT } = require('../../../config/globals');
 
 class ResourcesService {
 	constructor(options) {

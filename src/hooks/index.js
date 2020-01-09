@@ -12,6 +12,7 @@ const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
 const KeysModel = require('../services/keys/model');
+const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../config/globals');
 // Add any common hooks you want to share across services in here.
 
 const { extractTokenFromBearerHeader } = require('../services/authentication/logic');
@@ -389,11 +390,14 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 	return context;
 });
 
+const isProductionMode = process.env.NODE_ENV === 'production';
 exports.mapPayload = (context) => {
-	logger.info(
-		'DEPRECATED: mapPayload hook should be used to ensure backwards compatibility only, and be removed if possible.'
-		+ ` path: ${context.path} method: ${context.method}`,
-	);
+	if (!isProductionMode) {
+		logger.info(
+			'DEPRECATED: mapPayload hook should be used to ensure backwards compatibility only, '
+			+ `and be removed if possible. path: ${context.path} method: ${context.method}`,
+		);
+	}
 	if (context.params.payload) {
 		context.params.authentication = Object.assign(
 			{},
@@ -538,12 +542,31 @@ exports.checkSchoolOwnership = (context) => {
 		});
 };
 
+function validatedAttachments(attachments) {
+	let cTotalBufferSize = 0;
+	attachments.forEach((element) => {
+		if (!element.mimetype.includes('image/')
+		&& !element.mimetype.includes('video/')
+		&& !element.mimetype.includes('application/msword')
+		&& !element.mimetype.includes('application/pdf')) {
+			throw new Error('Email Attachment is not a valid file!');
+		}
+		cTotalBufferSize += element.size;
+		if (cTotalBufferSize >= MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE) {
+			throw new BadRequest('Email Attachments exceed the max. total file limit.');
+		}
+	});
+}
+
 // TODO: later: Template building
 // z.B.: maildata.template =
 //   { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
 // if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
 // mail.html = generatedHtml || "";
 exports.sendEmail = (context, maildata) => {
+	const files = maildata.attachments || [];
+	if (files) { validatedAttachments(files); }
+
 	const userService = context.app.service('/users');
 	const mailService = context.app.service('/mails');
 
@@ -551,6 +574,16 @@ exports.sendEmail = (context, maildata) => {
 	const emails = (typeof maildata.emails === 'string' ? [maildata.emails] : maildata.emails) || [];
 	const userIds = (typeof maildata.userIds === 'string' ? [maildata.userIds] : maildata.userIds) || [];
 	const receipients = [];
+
+	// create email attachments
+	const attachments = [];
+	files.forEach((element) => {
+		try {
+			attachments.push({ filename: element.name, content: Buffer.from(element.data) });
+		} catch (error) {
+			throw new Error('Unexpected Error while creating Attachment.');
+		}
+	});
 
 	// email validation conform with <input type="email"> (see https://emailregex.com)
 	const re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -614,6 +647,7 @@ exports.sendEmail = (context, maildata) => {
 									|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
 								html: '', // still todo, html template mails
 							},
+							attachments,
 						}).catch((err) => {
 							logger.warning(err);
 							throw new BadRequest(
@@ -645,6 +679,7 @@ exports.sendEmail = (context, maildata) => {
 							|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
 						html: '', // still todo, html template mails
 					},
+					attachments,
 				}).catch((err) => {
 					logger.warning(err);
 					throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
