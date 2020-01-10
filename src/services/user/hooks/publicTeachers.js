@@ -21,7 +21,7 @@ const filterForPublicTeacher = (hook) => {
 	// Limit accessible user (only teacher which are discoverable)
 	hook.params.query.roles = ['teacher'];
 
-	const TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION =	hook.app.Config
+	const TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = hook.app.Config
 		.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
 	switch (TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION) {
 		case 'opt-in':
@@ -32,8 +32,8 @@ const filterForPublicTeacher = (hook) => {
 			];
 			break;
 		case 'opt-out':
-			// everybody who did not opt-out
-			hook.params.query.discoverable = { $ne: false }; // must not be false
+			// everybody who did not opt-out or from same school
+			hook.params.query.discoverable = { $ne: false }; // must not be false (but true or undefined/null)
 			break;
 		case 'disabled':
 			// force foreign school id to be set
