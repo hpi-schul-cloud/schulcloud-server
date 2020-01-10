@@ -78,75 +78,53 @@ describe('filePermissionHelper', () => {
 			});
 		});
 
-		it('let teacher read his homework file', () => {
-			const promise = canRead(fixtures.users[2]._id, '5ca601745d629505e51252d8');
-			return expect(promise).to.be.eventually.true;
+		it('let teacher read his homework file', async () => {
+			expect(canRead(fixtures.users[2]._id, '5ca601745d629505e51252d8'))
+				.to.be.eventually.true;
 		});
 
 
 		it('let student read homework file', async () => {
-			const promise = canRead(fixtures.users[0]._id, '5ca601745d629505e51252d8');
-			return expect(promise).to.be.eventually.true;
+			expect(canRead(fixtures.users[0]._id, '5ca601745d629505e51252d8'))
+				.to.be.eventually.true;
 		});
 
-		it('reject student from other course to see homework file', () => {
-			const promise = canRead(fixtures.users[1]._id, '5ca601745d629505e51252d8');
-			return expect(promise).to.be.rejected;
+		it('reject student from other course to read homework file', async () => {
+			expect(canRead(fixtures.users[1]._id, '5ca601745d629505e51252d8'))
+				.to.be.rejected;
 		});
 
-		it('let read, write, create and delete course files for teacher', (done) => {
-			const permissionPromises = [
-				canWrite('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-				canRead('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-				canCreate('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-				canDelete('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-			];
-
-			Promise.all(permissionPromises).then((result) => {
-				expect(result).to.have.lengthOf(4);
-				done();
-			});
+		it('let read, write, create and delete course files for teacher', async () => {
+			expect(canWrite('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.true;
+			expect(canRead('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.true;
+			expect(canCreate('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.true;
+			expect(canDelete('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.true;
 		});
 
-		it('let read, write, create and delete course files members', (done) => {
-			const permissionPromises = [
-				canWrite('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-				canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-				canCreate('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-				canDelete('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-			];
-
-			Promise.all(permissionPromises).then((result) => {
-				expect(result).to.have.lengthOf(4);
-				done();
-			});
+		it('let read, write, create and delete course files members', async () => {
+			expect(canWrite('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.true;
+			expect(canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.true;
+			expect(canCreate('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.true;
+			expect(canDelete('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.true;
 		});
 
-		it('does not let read, write, create and delete course files for non members students', (done) => {
-			const permissionPromises = [
-				canWrite('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-				canRead('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-				canCreate('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-				canDelete('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')
-					.then(() => true).catch(() => undefined),
-			];
-
-			Promise.all(permissionPromises).then((result) => {
-				expect(result).to.have.lengthOf(4);
-				expect(result.filter(Boolean)).to.have.lengthOf(0);
-				done();
-			});
+		it('reject read, write, create and delete course files for non course-member students', async () => {
+			expect(canWrite('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.rejected;
+			expect(canRead('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.rejected;
+			expect(canCreate('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.rejected;
+			expect(canDelete('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28'))
+				.to.be.eventually.rejected;
 		});
 	});
 });
