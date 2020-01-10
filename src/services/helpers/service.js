@@ -28,9 +28,9 @@ module.exports = function setup(app) {
 		// POST
 		async create(data, params) {
 			const FORCE_SEND_EMAIL = app.get('FORCE_SEND_EMAIL');
-			const NOTIFICATION_PLATFORM = app.get('NOTIFICATION_PLATFORM');
+			const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
 
-			if (!NOTIFICATION_PLATFORM || process.env.NOTIFICATION_PLATFORM) {
+			if (!notificationPlatform) {
 				throw new Unavailable('Required Env NOTIFICATION_PLATFORM is not defined');
 			}
 
@@ -68,8 +68,8 @@ module.exports = function setup(app) {
 					...headers,
 				},
 				body: {
-					platformId: NOTIFICATION_PLATFORM,
-					platform: NOTIFICATION_PLATFORM,
+					platformId: notificationPlatform,
+					platform: notificationPlatform,
 					...Mail,
 				},
 				json: true,
