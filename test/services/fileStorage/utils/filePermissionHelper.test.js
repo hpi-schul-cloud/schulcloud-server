@@ -132,13 +132,13 @@ describe('filePermissionHelper', () => {
 
 		it('does not let read, write, create and delete course files for non members students', (done) => {
 			const permissionPromises = [
-				canWrite('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')
+				canWrite('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')
 					.then(() => true).catch(() => undefined),
-				canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')
+				canRead('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')
 					.then(() => true).catch(() => undefined),
-				canCreate('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')
+				canCreate('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')
 					.then(() => true).catch(() => undefined),
-				canDelete('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')
+				canDelete('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')
 					.then(() => true).catch(() => undefined),
 			];
 

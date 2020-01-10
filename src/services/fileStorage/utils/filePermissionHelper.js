@@ -57,7 +57,7 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 
 const checkMemberStatus = ({ file, user }) => {
 	const { owner: { userIds, teacherIds, substitutionIds } } = file;
-	const finder = (obj) => user.equals(obj.userId || obj);
+	const finder = (obj) => user.toString() === ((obj.userId || obj).toString());
 
 	return [userIds, teacherIds, substitutionIds]
 		.reduce((result, list) => result || (list && list.find(finder)), false);
