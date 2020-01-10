@@ -79,7 +79,7 @@ describe('filePermissionHelper', () => {
 		});
 
 		it('let teacher read his homework file', () => {
-			const promise = canRead('0000d224816abba584714c8e', '5ca601745d629505e51252d8');
+			const promise = canRead(fixtures.users[2]._id, '5ca601745d629505e51252d8');
 			return expect(promise).to.be.eventually.true;
 		});
 
