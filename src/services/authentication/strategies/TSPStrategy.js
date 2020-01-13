@@ -3,7 +3,7 @@ const { NotAuthenticated } = require('@feathersjs/errors');
 
 const logger = require('../../../logger');
 const {
-	decryptToken, verifyToken,
+	decryptToken,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
 } = require('../../sync/strategies/TSP/TSP');
 const { SYNCER_TARGET } = require('../../sync/strategies/TSP/TSPSchoolSyncer');
