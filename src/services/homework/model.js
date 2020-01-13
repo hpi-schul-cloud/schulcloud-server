@@ -11,6 +11,7 @@ const { Schema } = mongoose;
 const homeworkSchema = new Schema({
 	schoolId: { type: Schema.Types.ObjectId, required: true },
 	createdAt: { type: Date, default: Date.now },
+	fileIds: [{ type: Schema.Types.ObjectId, ref: 'file' }],
 	updatedAt: { type: Date, default: Date.now },
 	name: { type: String, required: true },
 	description: { type: String },
