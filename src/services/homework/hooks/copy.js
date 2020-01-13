@@ -3,6 +3,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const HomeworkModel = require('../model').homeworkModel;
+const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');
 
 const hasViewPermissionBefore = (context) => {
 	const currentUser = context.params.account.userId.toString();
@@ -24,6 +25,7 @@ exports.before = {
 		globalHooks.hasPermission('HOMEWORK_VIEW'),
 		globalHooks.hasPermission('HOMEWORK_CREATE'),
 		hasViewPermissionBefore,
+		resolveStorageType,
 	],
 	create: [
 		globalHooks.injectUserId,

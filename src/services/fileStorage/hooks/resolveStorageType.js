@@ -1,4 +1,7 @@
 const resolveStorageType = (context) => {
+	if (!context.params.payload) {
+		context.params.payload = {};
+	}
 	const { params: { payload, account } } = context;
 	const userId = payload.userId || (account || {}).userId;
 	return context.app.service('users').get(userId, {
