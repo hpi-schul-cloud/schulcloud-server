@@ -72,15 +72,16 @@ class HomeworkCopyService {
 		newTeacherId, _id, courseId, lessonId,
 	}, params) {
 		const userId = newTeacherId || params.payload.userId || (params.account || {}).userId;
-		const ignoredKeys = ['_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId'];
+		const ignoredKeys = ['_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId', 'fileIds'];
 
 		const [copyAssignment, { schoolId, _id: teacherId }] = await Promise.all([
 			HomeworkModel.findById(_id).exec(),
 			this.app.service('users').get(userId),
 		]);
+		const fileIds = await this.copyFilesIfExist(copyAssignment.fileIds, params);
 
 		const addingKeys = {
-			courseId, lessonId, schoolId, teacherId,
+			courseId, lessonId, schoolId, teacherId, fileIds,
 		};
 
 		const tempAssignment = this.copy(copyAssignment, ignoredKeys, addingKeys);

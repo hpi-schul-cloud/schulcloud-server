@@ -32,6 +32,7 @@ exports.before = {
 		globalHooks.hasPermission('HOMEWORK_VIEW'),
 		globalHooks.hasPermission('HOMEWORK_CREATE'),
 		hasViewPermissionBefore,
+		resolveStorageType,
 	],
 	update: [hooks.disallow()],
 	patch: [hooks.disallow()],
