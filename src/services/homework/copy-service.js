@@ -10,9 +10,33 @@ class HomeworkCopyService {
 		this.app = app;
 	}
 
-	copy(obj, ignoreParams, addParams) {
-		const temp = _.omit(JSON.parse(JSON.stringify(obj)), ignoreParams);
+	copy(copyAssignment, ignoreParams, addParams) {
+		const temp = _.omit(JSON.parse(JSON.stringify(copyAssignment)), ignoreParams);
 		return Object.assign(temp, addParams);
+	}
+
+	/**
+	 * @param {Object} fileIds
+	 * @param {Object} params
+	 */
+	async copyFilesIfExist(fileIds = [], params) {
+		if (fileIds.length > 0) {
+			const $or = (fileIds || []).map((_id) => ({ _id }));
+
+			const files = await FileModel.find({ $or });
+
+			const copiedFiles = await Promise.all(files.map((file) => copyFile({
+				file,
+				parent: params.account.userId,
+				sourceSchoolId: params.payload.schoolId,
+			}, params)))
+				.catch((error) => {
+					this.app.logger.error('Can not copied files for homework.', { homeworkId: params.id, error });
+				});
+
+			return copiedFiles.map((file) => file._id);
+		}
+		return [];
 	}
 
 	/**
@@ -20,34 +44,16 @@ class HomeworkCopyService {
      * @param id = id of homework to copy
      * @returns {new homework}
      */
-	async get(id, param) {
+	async get(id, params) {
 		const ignoredKeys = ['_id', 'stats', 'isTeacher', 'archived', '__v', 'fileIds'];
 
 		const copyAssignment = await HomeworkModel.findOne({ _id: id }).exec();
-		const { fileIds } = copyAssignment;
-		let newFileIds = [];
-
-		if (Array.isArray(fileIds) && fileIds.length > 0) {
-			const $or = (fileIds || []).map((_id) => ({ _id }));
-
-			const files = await FileModel.find({ $or });
-
-			const copiedFiles = await Promise.all(files.map((file) => copyFile({
-				file,
-				parent: param.account.userId,
-				sourceSchoolId: param.payload.schoolId,
-			}, param)))
-				.catch((error) => {
-					this.app.logger.error('Can not copied files for homework.', { homeworkId: id, error });
-				});
-
-			newFileIds = copiedFiles.map((file) => file._id);
-		}
+		const fileIds = await this.copyFilesIfExist(copyAssignment.fileIds, params);
 
 		const addingKeys = {
 			private: true,
 			name: `${copyAssignment.name || ''} - Copy`,
-			fileIds: newFileIds,
+			fileIds,
 		};
 
 		const tempAssignment = this.copy(copyAssignment, ignoredKeys, addingKeys);
