@@ -301,5 +301,16 @@
 		"$date": "2019-12-11T10:20:29.714Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e1c307cfa669ea0863851bc"
+	},
+	"state": "up",
+	"name": "videoconference permissions added in coursesroles",
+	"createdAt": {
+		"$date": "2020-01-13T08:55:24.955Z"
+	},
+	"__v": 0
 }]
 
