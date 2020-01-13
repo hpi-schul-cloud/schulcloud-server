@@ -16,18 +16,18 @@ class HomeworkCopyService {
      * @param id = id of homework to copy
      * @returns {new homework}
      */
-	get(id) {
+	async get(id) {
 		const ignoreParams = ['_id', 'stats', 'isTeacher', 'archived', '__v'];
+
+		const copyAssignment = await HomeworkModel.findOne({ _id: id }).exec();
+
 		const addParams = {
-			private: true,
-			name: ' - Copy',
+			private: true, // TODO: Soll das so sein?
+			name: `${copyAssignment.name || ''} - Copy`,
 		};
 
-		return HomeworkModel.findOne({ _id: id }).exec()
-			.then((copyAssignment) => {
-				const tempAssignment = this.copy(copyAssignment, ignoreParams, addParams);
-				return HomeworkModel.create(tempAssignment);
-			});
+		const tempAssignment = this.copy(copyAssignment, ignoreParams, addParams);
+		return HomeworkModel.create(tempAssignment);
 	}
 
 	/**
