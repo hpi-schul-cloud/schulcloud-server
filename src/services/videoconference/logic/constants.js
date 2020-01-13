@@ -16,3 +16,8 @@ const guestPolicies = {
 	ASK_MODERATOR: 'ASK_MODERATOR',
 };
 exports.GUEST_POLICIES = guestPolicies;
+
+const scopeNames = {
+	COURSE: 'course',
+};
+exports.SCOPE_NAMES = scopeNames;
