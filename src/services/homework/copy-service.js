@@ -7,16 +7,21 @@ class HomeworkCopyService {
 		this.app = app;
 	}
 
+	copyObject(obj) {
+		return JSON.parse(JSON.stringify(obj));
+	}
 
 	/**
      * @param id = id of homework to copy
      * @returns {new homework}
      */
-	get(id, params) {
+	get(id) {
+		const ignoreParams = ['_id', 'stats', 'isTeacher', 'archived', '__v'];
+
 		return HomeworkModel.findOne({ _id: id }).exec()
 			.then((copyAssignment) => {
-				let tempAssignment = JSON.parse(JSON.stringify(copyAssignment));
-				tempAssignment = _.omit(tempAssignment, ['_id', 'stats', 'isTeacher', 'archived', '__v']);
+				let tempAssignment = this.copyObject(copyAssignment);
+				tempAssignment = _.omit(tempAssignment, ignoreParams);
 				tempAssignment.private = true;
 				tempAssignment.name += ' - Copy';
 
@@ -32,11 +37,12 @@ class HomeworkCopyService {
      */
 	create(data, params) {
 		const userId = data.newTeacherId || params.payload.userId || (params.account || {}).userId;
+		const ignoreParams = ['_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId'];
 
 		return HomeworkModel.findById(data._id).exec()
 			.then((copyAssignment) => {
-				let tempAssignment = JSON.parse(JSON.stringify(copyAssignment));
-				tempAssignment = _.omit(tempAssignment, ['_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId']);
+				let tempAssignment = this.copyObject(copyAssignment);
+				tempAssignment = _.omit(tempAssignment, ignoreParams);
 				tempAssignment.courseId = data.courseId;
 				tempAssignment.lessonId = data.lessonId;
 
@@ -51,9 +57,7 @@ class HomeworkCopyService {
 	}
 }
 
-module.exports = function () {
-	const app = this;
-
+module.exports = (app) => {
 	app.use('/homework/copy', new HomeworkCopyService(app));
 	const homeworkCopyService = app.service('/homework/copy');
 	homeworkCopyService.hooks(hooks);
