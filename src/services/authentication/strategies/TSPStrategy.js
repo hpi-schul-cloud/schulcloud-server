@@ -66,6 +66,18 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 				throw new NotAuthenticated('User does not exist');
 			}
 		}
+
+		if (decryptedTicket.ptscListRolle && typeof decryptedTicket.ptscListRolle === 'string') {
+			const roles = decryptedTicket.ptscListRolle.split(',').map((tspRole) => ({
+				Schueler: 'student',
+				Lehrer: 'teacher',
+				Administrator: 'administrator',
+			}[tspRole])).filter((r) => r);
+			if (roles.length > 0) {
+				await app.service('users').patch(user._id, { roles });
+			}
+		}
+
 		const [account] = await app.service('accounts').find({
 			query: {
 				userId: user._id,
