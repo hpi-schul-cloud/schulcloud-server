@@ -2,6 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
 const hooks = require('feathers-hooks-common');
 const logger = require('../../../logger');
+const { equal } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
 const { fileStorageTypes } = require('../model');
@@ -115,7 +116,13 @@ const hasEditPermissions = async (context) => {
 	}
 };
 
-// fixme: resdtrict to current school
+const restrictToUserSchool = (context) => {
+	if (equal(context.id, context.params.account.schoolId)) {
+		return context;
+	}
+	throw new Forbidden('You can only edit your own school.');
+};
+
 exports.before = {
 	all: [],
 	find: [],
@@ -129,10 +136,14 @@ exports.before = {
 	update: [
 		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_EDIT'),
+		globalHooks.lookupSchool,
+		restrictToUserSchool,
 	],
 	patch: [
 		authenticate('jwt'),
 		hasEditPermissions,
+		globalHooks.lookupSchool,
+		restrictToUserSchool,
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
