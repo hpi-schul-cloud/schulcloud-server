@@ -1,6 +1,9 @@
 const _ = require('lodash');
+
+const { copyFile } = require('../fileStorage/utils/');
 const hooks = require('./hooks/copy');
 const HomeworkModel = require('./model').homeworkModel;
+const { FileModel } = require('../fileStorage/model');
 
 class HomeworkCopyService {
 	constructor(app) {
@@ -13,24 +16,47 @@ class HomeworkCopyService {
 	}
 
 	/**
+	 * Is used in client for copy single homeworks.
      * @param id = id of homework to copy
      * @returns {new homework}
      */
-	async get(id) {
-		const ignoreParams = ['_id', 'stats', 'isTeacher', 'archived', '__v'];
+	async get(id, param) {
+		const ignoredKeys = ['_id', 'stats', 'isTeacher', 'archived', '__v', 'fileIds'];
 
 		const copyAssignment = await HomeworkModel.findOne({ _id: id }).exec();
+		const { fileIds } = copyAssignment;
+		let newFileIds = [];
 
-		const addParams = {
-			private: true, // TODO: Soll das so sein?
+		if (Array.isArray(fileIds) && fileIds.length > 0) {
+			const $or = (fileIds || []).map((_id) => ({ _id }));
+
+			const files = await FileModel.find({ $or });
+
+			const copiedFiles = await Promise.all(files.map((file) => copyFile({
+				file,
+				parent: param.account.userId,
+				sourceSchoolId: param.payload.schoolId,
+			}, param)))
+				.catch((error) => {
+					this.app.logger.error('Can not copied files for homework.', { homeworkId: id, error });
+				});
+
+			newFileIds = copiedFiles.map((file) => file._id);
+		}
+
+		const addingKeys = {
+			private: true,
 			name: `${copyAssignment.name || ''} - Copy`,
+			fileIds: newFileIds,
 		};
 
-		const tempAssignment = this.copy(copyAssignment, ignoreParams, addParams);
+		const tempAssignment = this.copy(copyAssignment, ignoredKeys, addingKeys);
 		return HomeworkModel.create(tempAssignment);
 	}
 
 	/**
+	 * TODO: test if it is also used for client tasks
+	 * It is used for course and topic/lessons copy services by share and clone it.
      * Copies a homework if the homework belongs to the user.
      * @param data consists of the _id to copy, can have courseId/lessonId to add to correct course/lesson.
      * @param params consists of information about the user.
@@ -40,18 +66,18 @@ class HomeworkCopyService {
 		newTeacherId, _id, courseId, lessonId,
 	}, params) {
 		const userId = newTeacherId || params.payload.userId || (params.account || {}).userId;
-		const ignoreParams = ['_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId'];
+		const ignoredKeys = ['_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId'];
 
 		const [copyAssignment, { schoolId, _id: teacherId }] = await Promise.all([
 			HomeworkModel.findById(_id).exec(),
 			this.app.service('users').get(userId),
 		]);
 
-		const addParams = {
+		const addingKeys = {
 			courseId, lessonId, schoolId, teacherId,
 		};
-		const tempAssignment = this.copy(copyAssignment, ignoreParams, addParams);
 
+		const tempAssignment = this.copy(copyAssignment, ignoredKeys, addingKeys);
 		return HomeworkModel.create(tempAssignment);
 	}
 }
