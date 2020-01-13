@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const { GeneralError, Unavailable } = require('@feathersjs/errors');
+const { GeneralError, MethodNotAllowed } = require('@feathersjs/errors');
 const logger = require('../../logger');
 
 const {
@@ -31,7 +31,7 @@ module.exports = function setup(app) {
 			const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
 
 			if (!notificationPlatform) {
-				throw new Unavailable('Required Env NOTIFICATION_PLATFORM is not defined');
+				throw new MethodNotAllowed('Required Env NOTIFICATION_PLATFORM is not defined');
 			}
 
 			const serviceUrls = app.get('services') || {};
