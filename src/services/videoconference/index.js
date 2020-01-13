@@ -68,9 +68,9 @@ class VideoconferenceService {
 				route: { scopeId },
 				query: { userId: user.id },
 			});
-			if (permissions.includes(PERMISSIONS.CREATE_MEETING)) {
+			if (permissions.includes(PERMISSIONS.MODERATE_MEETING)) {
 				role = ROLES.MODERATOR;
-			} else if (permissions.includes(PERMISSIONS.JOIN_MEETING)) {
+			} else if (permissions.includes(PERMISSIONS.ATTEND_MEETING)) {
 				role = ROLES.ATTENDEE;
 			} else {
 				throw new Forbidden('huhu');

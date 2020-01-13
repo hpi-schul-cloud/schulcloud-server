@@ -7,7 +7,7 @@ exports.RETURN_CODES = returnCodes;
 const messageKeys = { NOT_FOUND: 'notFound' };
 exports.MESSAGE_KEYS = messageKeys;
 
-const permissions = { CREATE_MEETING: 'CREATE_MEETING', JOIN_MEETING: 'JOIN_MEETING' };
+const permissions = { MODERATE_MEETING: 'MODERATE_MEETING', ATTEND_MEETING: 'ATTEND_MEETING' };
 exports.PERMISSIONS = permissions;
 
 const guestPolicies = {
