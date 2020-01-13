@@ -7,8 +7,9 @@ class HomeworkCopyService {
 		this.app = app;
 	}
 
-	copyObject(obj) {
-		return JSON.parse(JSON.stringify(obj));
+	copy(obj, ignoreParams, addParams) {
+		const temp = _.omit(JSON.parse(JSON.stringify(obj)), ignoreParams);
+		return Object.assign(temp, addParams);
 	}
 
 	/**
@@ -17,14 +18,14 @@ class HomeworkCopyService {
      */
 	get(id) {
 		const ignoreParams = ['_id', 'stats', 'isTeacher', 'archived', '__v'];
+		const addParams = {
+			private: true,
+			name: ' - Copy',
+		};
 
 		return HomeworkModel.findOne({ _id: id }).exec()
 			.then((copyAssignment) => {
-				let tempAssignment = this.copyObject(copyAssignment);
-				tempAssignment = _.omit(tempAssignment, ignoreParams);
-				tempAssignment.private = true;
-				tempAssignment.name += ' - Copy';
-
+				const tempAssignment = this.copy(copyAssignment, ignoreParams, addParams);
 				return HomeworkModel.create(tempAssignment);
 			});
 	}
@@ -35,24 +36,21 @@ class HomeworkCopyService {
      * @param params consists of information about the user.
      * @returns new homework.
      */
-	create(data, params) {
-		const userId = data.newTeacherId || params.payload.userId || (params.account || {}).userId;
+	create({
+		newTeacherId, _id, courseId, lessonId,
+	}, params) {
+		const userId = newTeacherId || params.payload.userId || (params.account || {}).userId;
 		const ignoreParams = ['_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId'];
 
-		return HomeworkModel.findById(data._id).exec()
-			.then((copyAssignment) => {
-				let tempAssignment = this.copyObject(copyAssignment);
-				tempAssignment = _.omit(tempAssignment, ignoreParams);
-				tempAssignment.courseId = data.courseId;
-				tempAssignment.lessonId = data.lessonId;
+		return HomeworkModel.findById(_id).exec()
+			.then(async (copyAssignment) => {
+				const { schoolId, _id: teacherId } = await this.app.service('users').get(userId);
+				const addParams = {
+					courseId, lessonId, schoolId, teacherId,
+				};
+				const tempAssignment = this.copy(copyAssignment, ignoreParams, addParams);
 
-				return this.app.service('users').get(userId)
-					.then((user) => {
-						tempAssignment.schoolId = user.schoolId;
-						tempAssignment.teacherId = user._id;
-
-						return HomeworkModel.create(tempAssignment);
-					});
+				return HomeworkModel.create(tempAssignment);
 			});
 	}
 }
