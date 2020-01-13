@@ -36,22 +36,23 @@ class HomeworkCopyService {
      * @param params consists of information about the user.
      * @returns new homework.
      */
-	create({
+	async create({
 		newTeacherId, _id, courseId, lessonId,
 	}, params) {
 		const userId = newTeacherId || params.payload.userId || (params.account || {}).userId;
 		const ignoreParams = ['_id', 'stats', 'isTeacher', 'archived', '__v', 'courseId', 'lessonId'];
 
-		return HomeworkModel.findById(_id).exec()
-			.then(async (copyAssignment) => {
-				const { schoolId, _id: teacherId } = await this.app.service('users').get(userId);
-				const addParams = {
-					courseId, lessonId, schoolId, teacherId,
-				};
-				const tempAssignment = this.copy(copyAssignment, ignoreParams, addParams);
+		const [copyAssignment, { schoolId, _id: teacherId }] = await Promise.all([
+			HomeworkModel.findById(_id).exec(),
+			this.app.service('users').get(userId),
+		]);
 
-				return HomeworkModel.create(tempAssignment);
-			});
+		const addParams = {
+			courseId, lessonId, schoolId, teacherId,
+		};
+		const tempAssignment = this.copy(copyAssignment, ignoreParams, addParams);
+
+		return HomeworkModel.create(tempAssignment);
 	}
 }
 
