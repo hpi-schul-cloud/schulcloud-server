@@ -73,7 +73,7 @@ module.exports = {
 
 	down: async function down() {
 		await connect();
-		error('Pech gehabt! :-) ');
+		info('Nothing to do!');
 		await close();
 	},
 };
