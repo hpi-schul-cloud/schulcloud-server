@@ -332,4 +332,15 @@
 		"$date": "2020-01-09T10:57:01.515Z"
 	},
 	"__v": 0
+},
+{ 
+    "_id" : {
+		"$oid":"5e1db8ae3c170e46b849baf1"
+	}, 
+    "state" : "up", 
+    "name" : "addSchoolIdsForUsersInTeams", 
+    "createdAt" : {
+		"$date": "2020-01-14T12:48:46.081Z"
+	}, 
+    "__v" : 0
 }]
