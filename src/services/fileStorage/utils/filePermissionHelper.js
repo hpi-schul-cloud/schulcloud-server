@@ -57,7 +57,7 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 
 const checkMemberStatus = ({ file, user }) => {
 	const { owner: { userIds, teacherIds, substitutionIds } } = file;
-	const finder = (obj) => user.equals(obj.userId || obj);
+	const finder = (obj) => user.toString() === ((obj.userId || obj).toString());
 
 	return [userIds, teacherIds, substitutionIds]
 		.reduce((result, list) => result || (list && list.find(finder)), false);
@@ -86,19 +86,24 @@ const checkPermissions = (permission) => async (user, file) => {
 		return Promise.resolve(true);
 	}
 
-	const submission = await Submission.findOne({ fileIds: fileObject._id }).lean().exec();
+	const submissionPromise = Submission.findOne({ fileIds: fileObject._id }).lean().exec();
+	const homeworkPromise = Homework.findOne({ fileIds: fileObject._id }).populate('courseId').lean().exec();
+
+	const [submission, homework] = await Promise.all([submissionPromise, homeworkPromise]);
+
 	if (refOwnerModel === 'course' || submission) {
 		const userObject = await userModel.findOne({ _id: user }).populate('roles').lean().exec();
 		const isStudent = userObject.roles.find((role) => role.name === 'student');
 		let courseFile = fileObject;
-		let homework;
+		let submissionHomework;
 		if (submission) {
-			homework = await Homework.findOne({ _id: submission.homeworkId }).populate('courseId').lean().exec();
-			courseFile = { ...fileObject, owner: homework.courseId || {} };
+			submissionHomework = await Homework.findOne({ _id: submission.homeworkId })
+				.populate('courseId').lean().exec();
+			courseFile = { ...fileObject, owner: submissionHomework.courseId || {} };
 		}
 		const isMember = checkMemberStatus({ file: courseFile, user });
 		if (isMember) {
-			if (homework && homework.publicSubmissions) {
+			if (submissionHomework && submissionHomework.publicSubmissions) {
 				return Promise.resolve(true);
 			}
 			if (isStudent) {
@@ -110,6 +115,14 @@ const checkPermissions = (permission) => async (user, file) => {
 			return Promise.resolve(true);
 		}
 		return Promise.reject();
+	}
+
+	if (homework) {
+		if (!homework.private) {
+			const courseFile = { ...fileObject, owner: homework.courseId || {} };
+			const isMember = checkMemberStatus({ file: courseFile, user });
+			if (isMember) return Promise.resolve(true);
+		} else { return Promise.reject(); }
 	}
 
 	const isMember = checkMemberStatus({ file: fileObject, user });

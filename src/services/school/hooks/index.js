@@ -1,6 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { Forbidden } = require('@feathersjs/errors');
 const hooks = require('feathers-hooks-common');
 const logger = require('../../../logger');
+const { equal } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
 const { fileStorageTypes } = require('../model');
@@ -21,7 +23,7 @@ const expectYearsDefined = async () => {
 
 const getDefaultFileStorageType = () => {
 	if (!fileStorageTypes || !fileStorageTypes.length) {
-		return void 0;
+		return undefined;
 	}
 	return fileStorageTypes[0];
 };
@@ -86,7 +88,41 @@ const decorateYears = async (context) => {
 	return context;
 };
 
-// fixme: resdtrict to current school
+const updatesRocketChat = (key, data) => (key === '$push' || key === '$pull') && data[key].features === 'rocketChat';
+
+const hasEditPermissions = async (context) => {
+	try {
+		const user = await globalHooks.getUser(context);
+		if (user.permissions.includes('SCHOOL_EDIT')) {
+			// SCHOOL_EDIT includes all of the more granular permissions below
+			return context;
+		}
+		// if the user does not have SCHOOL_EDIT permissions, reduce the patch to the fields
+		// the user is allowed to edit
+		const patch = {};
+		for (const key of Object.keys(context.data)) {
+			if (user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesRocketChat(key, context.data)) {
+				patch[key] = context.data[key];
+			}
+			if (user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl') {
+				patch[key] = context.data[key];
+			}
+		}
+		context.data = patch;
+		return context;
+	} catch (err) {
+		logger.error('Failed to check school edit permissions', err);
+		throw new Forbidden('You don\'t have the necessary permissions to patch these fields');
+	}
+};
+
+const restrictToUserSchool = (context) => {
+	if (equal(context.id, context.params.account.schoolId)) {
+		return context;
+	}
+	throw new Forbidden('You can only edit your own school.');
+};
+
 exports.before = {
 	all: [],
 	find: [],
@@ -100,10 +136,14 @@ exports.before = {
 	update: [
 		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_EDIT'),
+		globalHooks.lookupSchool,
+		restrictToUserSchool,
 	],
 	patch: [
 		authenticate('jwt'),
-		globalHooks.hasPermission('SCHOOL_EDIT'),
+		hasEditPermissions,
+		globalHooks.lookupSchool,
+		restrictToUserSchool,
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
