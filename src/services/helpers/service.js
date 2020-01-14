@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const { GeneralError, Unavailable } = require('@feathersjs/errors');
+const { GeneralError, MethodNotAllowed } = require('@feathersjs/errors');
 const logger = require('../../logger');
 
 const {
@@ -28,10 +28,10 @@ module.exports = function setup(app) {
 		// POST
 		async create(data, params) {
 			const FORCE_SEND_EMAIL = app.get('FORCE_SEND_EMAIL');
-			const NOTIFICATION_PLATFORM = app.get('NOTIFICATION_PLATFORM');
+			const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
 
-			if (!NOTIFICATION_PLATFORM || process.env.NOTIFICATION_PLATFORM) {
-				throw new Unavailable('Required Env NOTIFICATION_PLATFORM is not defined');
+			if (!notificationPlatform) {
+				throw new MethodNotAllowed('Required Env NOTIFICATION_PLATFORM is not defined');
 			}
 
 			const serviceUrls = app.get('services') || {};
@@ -68,8 +68,8 @@ module.exports = function setup(app) {
 					...headers,
 				},
 				body: {
-					platformId: NOTIFICATION_PLATFORM,
-					platform: NOTIFICATION_PLATFORM,
+					platformId: notificationPlatform,
+					platform: notificationPlatform,
 					...Mail,
 				},
 				json: true,

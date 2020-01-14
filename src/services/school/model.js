@@ -6,6 +6,7 @@
 const mongoose = require('mongoose');
 const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
+const externalSourceSchema = require('../../helper/externalSourceSchema');
 const { STUDENT_TEAM_CREATE_DISABLED } = require('../../../config/globals');
 
 const { Schema } = mongoose;
@@ -72,6 +73,7 @@ const schoolSchema = new Schema({
 		enum: ['rocketChat', 'disableStudentTeamCreation'],
 	},
 	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below)
+	...externalSourceSchema,
 }, {
 	timestamps: true,
 });

@@ -110,9 +110,9 @@ exports.hasAllPermissions = (permissions) => {
 exports.hasPermission = hasPermission;
 
 /*
-    excludeOptions = false => allways remove response
-    excludeOptions = undefined => remove response when not GET or FIND request
-    excludeOptions = ['get', ...] => remove when method not in array
+	excludeOptions = false => allways remove response
+	excludeOptions = undefined => remove response when not GET or FIND request
+	excludeOptions = ['get', ...] => remove when method not in array
  */
 exports.removeResponse = (excludeOptions) => (context) => {
 	// If it was an internal call then skip this context
@@ -315,6 +315,7 @@ const getUser = (context) => context.app.service('users').get(context.params.acc
 }).catch((err) => {
 	throw new NotFound('Can not fetch user.', err);
 });
+exports.getUser = getUser;
 
 const testIfRoleNameExist = (user, roleNames) => {
 	if (typeof roleNames === 'string') {
@@ -357,8 +358,8 @@ const userIsInThatCourse = (user, { userIds = [], teacherIds = [], substitutionI
 	const userId = user._id.toString();
 	if (isCourse) {
 		return userIds.some((u) => equalIds(u, userId))
-            || teacherIds.some((u) => equalIds(u, userId))
-            || substitutionIds.some((u) => equalIds(u, userId));
+			|| teacherIds.some((u) => equalIds(u, userId))
+			|| substitutionIds.some((u) => equalIds(u, userId));
 	}
 
 	return userIds.some((u) => equalIds(u, userId)) || testIfRoleNameExist(user, 'teacher');
@@ -448,7 +449,7 @@ exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) =>
 					return userIsInThatCourse(user, lesson.courseGroupId, false);
 				}
 				return userIsInThatCourse(user, lesson.courseId, true)
-                        || (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+						|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
 			});
 			if (tempLesson.length === 0) {
 				throw new Forbidden("You don't have access to that lesson.");
@@ -466,7 +467,7 @@ exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) =>
 					return userIsInThatCourse(user, lesson.courseGroupId, false);
 				}
 				return userIsInThatCourse(user, lesson.courseId, true)
-                        || (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+						|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
 			});
 
 			if (context.result.data.length === 0) {
@@ -744,4 +745,19 @@ exports.decorateWithCurrentUserId = (context) => {
 		logger.error(err);
 	}
 	return context;
+};
+
+/* Decorates context.params.account with the user's schoolId
+* @param {context} context Hook context
+* @requires authenticate('jwt')
+* @throws {BadRequest} if not authenticated or userId is missing.
+* @throws {NotFound} if user cannot be found
+*/
+exports.lookupSchool = async (context) => {
+	if (context.params && context.params.account && context.params.account.userId) {
+		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
+		context.params.account.schoolId = schoolId;
+		return context;
+	}
+	throw new BadRequest('Authentication is required.');
 };
