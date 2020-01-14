@@ -1,11 +1,19 @@
-const path = require('path');
 const express = require('@feathersjs/express');
-const favicon = require('serve-favicon');
-const compress = require('compression');
-const cors = require('cors');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
 const commons = require('@schul-cloud/commons');
+
+const app = express(feathers());
+const config = configuration();
+app.configure(config);
+
+// init & register configuration
+(new commons.Configuration()).init({ app });
+
+const path = require('path');
+const favicon = require('serve-favicon');
+const compress = require('compression');
+const cors = require('cors');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
@@ -28,12 +36,6 @@ const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
-const app = express(feathers());
-const config = configuration();
-const Configuration = new commons.Configuration();
-
-app.configure(config);
-Configuration.init(app);
 setupSwagger(app);
 app.configure(initializeRedisClient);
 

@@ -4,6 +4,7 @@ const globalLogger = require('../../logger');
 
 const getSyncLogger = (logStream) => {
 	const logger = winston.createLogger({
+		levels: winston.config.syslog.levels,
 		transports: [
 			new winston.transports.Stream({
 				stream: globalLogger,
