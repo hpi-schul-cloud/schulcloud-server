@@ -160,6 +160,7 @@ function setupAppHooks(app) {
 }
 
 module.exports = {
-	setupAppHooks,
 	handleAutoLogout,
+	sanitizeDataHook,
+	setupAppHooks,
 };
