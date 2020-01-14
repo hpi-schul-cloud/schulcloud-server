@@ -5,10 +5,10 @@ const mockery = require('mockery');
 const { expect } = chai;
 
 const app = require('../src/app');
-const { cleanup, createTestUser, generateRequestParamsFromUser } = require('./services/helpers/testObjects')(app);
-const redisMock = require('./utils/redis/redisMock');
 const { sanitizeDataHook } = require('../src/app.hooks');
 const { sanitizeHtml: { sanitizeDeep } } = require('../src/utils');
+const { cleanup, createTestUser, generateRequestParamsFromUser } = require('./services/helpers/testObjects')(app);
+const redisMock = require('./utils/redis/redisMock');
 
 describe('Sanitization Hook', () => {
 	// TODO: Test if it work for create, post and update
