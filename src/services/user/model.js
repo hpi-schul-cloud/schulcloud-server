@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
 const roleModel = require('../role/model');
 const { enableAuditLog } = require('../../utils/database');
+const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 
@@ -26,10 +27,18 @@ const userSchema = new Schema({
 	parents: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 
 	preferences: { type: Object }, // blackbox for frontend stuff like "cookies accepted"
-	discoverable: { type: Boolean, default: false },
+
+	/**
+	 * depending on system settings,
+	 * a user may opt-in or -out,
+	 * default=null should use TEAM_INVITATION_DEFAULT_VISIBILITY_FOR_TEACHERS instead
+	*/
+	discoverable: { type: Boolean, required: false },
 
 	ldapDn: { type: String },
 	ldapId: { type: String },
+
+	...externalSourceSchema,
 
 	customAvatarBackgroundColor: { type: String },
 	avatarSettings: { type: Object },
