@@ -8,7 +8,7 @@ exports.before = {
 	get: [hooks.disallow('external')], // handled by redirection middleware
 	create: [authenticate('jwt'), globalHooks.hasPermission('LINK_CREATE')],
 	update: [hooks.disallow()],
-	patch: [hooks.disallow()],
+	patch: [hooks.disallow('external')],
 	remove: [globalHooks.ifNotLocal(hooks.disallow())],
 };
 

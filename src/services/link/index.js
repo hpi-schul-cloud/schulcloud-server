@@ -100,13 +100,27 @@ module.exports = function setup() {
 			// remove possible double-slashes in url except the protocol ones
 			linkData.link = linkData.link.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
 
-			// generate short url
-			await app.service('link').create({ target: linkData.link }).then((generatedShortLink) => {
-				linkData.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`;
-			}).catch((err) => {
-				logger.warning(err);
-				return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
-			});
+			// check if link already exists
+			const currentLinks = await app.service('link').find({ query: { target: linkData.link } });
+
+			if (currentLinks && currentLinks.total > 0) {
+				// if so, set createdAt date to now so that link expires a month from now
+				const id = currentLinks.data[0]._id;
+				await app.service('link').patch(id, { createdAt: new Date() }).then((updatedShortlink) => {
+					linkData.shortLink = `${(data.host || process.env.HOST)}/link/${updatedShortlink._id}`;
+				}).catch((err) => {
+					logger.warning(err);
+					return Promise.reject(new Error('Fehler beim Erneuern des Kurzlinks.'));
+				});
+			} else {
+				// if not already existent, generate short url
+				await app.service('link').create({ target: linkData.link }).then((generatedShortLink) => {
+					linkData.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`;
+				}).catch((err) => {
+					logger.warning(err);
+					return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
+				});
+			}
 
 			// remove possible double-slashes in url except the protocol ones
 			linkData.shortLink = linkData.shortLink.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
