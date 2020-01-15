@@ -76,7 +76,7 @@ class EduSharingConnector {
 			method: 'POST',
 			url: `${process.env.ES_DOMAIN}/edu-sharing/oauth2/token`,
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body: `grant_type=${"password"}&client_id=${"eduApp"}&client_secret=${"secret"}&username=${process.env.ES_USER}&password=${process.env.ES_PASSWORD}`,
+			body: `grant_type=${'password'}&client_id=${process.env.ES_CLIENT_ID}&client_secret=${process.env.ES_OAUTH_SECRET}&username=${process.env.ES_USER}&password=${process.env.ES_PASSWORD}`,
 			timeout: REQUEST_TIMEOUT
 		};
 		return request(oauthoptions).then(result => {
@@ -90,15 +90,15 @@ class EduSharingConnector {
 	}
 
 	checkEnv() {
-		return true
-		/* return (
+
+		return (
 			process.env.ES_DOMAIN &&
 			process.env.ES_USER &&
 			process.env.ES_PASSWORD &&
 			process.env.ES_GRANT_TYPE &&
 			process.env.ES_OAUTH_SECRET &&
 			process.env.ES_CLIENT_ID
-		); */
+		);
 	}
 
 	async login() {
@@ -112,6 +112,7 @@ class EduSharingConnector {
 	}
 
 	async GET(data) {
+
 		const limit = data.query.$limit || 9;
 		const skip = data.query.$skip || 0;
 		const searchWord = data.query.searchWord || 'img'; // will give pictures of flowers as default
@@ -124,14 +125,10 @@ class EduSharingConnector {
 		if (this.isLoggedin() === false) {
 			await this.login();
 		}
-
 		const options = {
 			method: 'POST',
 			// This will be changed later with a qs where sorting, filtering etc is present. 
-			// hard coded params
-			url: `https://mv-repo.schul-cloud.org/edu-sharing/rest/search/v1/queriesV2/-home-/-default-/workspace/?contentType=ALL&skipCount=0&maxItems=25&sortProperties=cm%3Aname&sortAscending=true&propertyFilter=-all-&`,
-			//url: `${process.env.ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?contentType=${contentType}
-			//&skipCount=${skip}&maxItems=${limit}&sortProperties=score&sortProperties=cm%3Amodified&sortAscending=false&sortAscending=false&propertyFilter=-all-&`,
+			url: `${process.env.ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?contentType=${contentType}&skipCount=${skip}&maxItems=${limit}&sortProperties=score&sortProperties=cm%3Amodified&sortAscending=false&sortAscending=false&propertyFilter=-all-&`,
 			headers: { ...EduSharingConnector.headers, cookie: this.authorization },
 			body: JSON.stringify({
 				criterias: [
@@ -141,6 +138,7 @@ class EduSharingConnector {
 			}),
 			timeout: REQUEST_TIMEOUT
 		};
+		console.log(options.url, 'alksjrlkasjrlkasjr')
 
 		const eduResponse = await request(options);
 		const parsed = JSON.parse(eduResponse);
