@@ -1,10 +1,7 @@
 const copyService = require('./copy-service');
 const modelService = require('./model-service');
 
-module.exports = function () {
-	const app = this;
-	// Setup copy services
+module.exports = (app) => {
 	app.configure(copyService);
-	// Setup model services
 	app.configure(modelService);
 };

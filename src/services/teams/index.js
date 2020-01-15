@@ -380,7 +380,7 @@ class Accept {
      */
 	get(teamId, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
-			const { email } = sessionUser;
+			const { email, schoolId } = sessionUser;
 			const userId = bsonIdToString(sessionUser._id);
 			let { invitedUserIds } = team;
 			const { userIds } = team;
@@ -390,7 +390,7 @@ class Accept {
 				throw new NotFound('User is not in this team.');
 			}
 			const role = ref.findRole('name', invitedUser.role, '_id');
-			userIds.push({ userId, role });
+			userIds.push({ userId, role, schoolId });
 
 			invitedUserIds = removeInvitedUserByEmail(team, email);
 
