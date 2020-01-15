@@ -54,9 +54,13 @@ const create = (app) => async ({
 	return school;
 };
 
-const cleanup = async () => {
-	await School.deleteMany({ _id: { $in: createdSchoolIds } });
+const cleanup = () => {
+	if (createdSchoolIds.length === 0) {
+		return Promise.resolve();
+	}
+	const ids = createdSchoolIds;
 	createdSchoolIds = [];
+	return School.deleteMany({ _id: { $in: ids } });
 };
 
 module.exports = (app) => ({

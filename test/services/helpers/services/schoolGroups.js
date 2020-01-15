@@ -9,8 +9,12 @@ const create = async (data) => {
 };
 
 const cleanup = async () => {
-	await schoolGroupModel.deleteMany({ id: { $in: createdSchoolGroups } });
+	if (createdSchoolGroups.length === 0) {
+		return Promise.resolve();
+	}
+	const ids = createdSchoolGroups;
 	createdSchoolGroups = [];
+	return schoolGroupModel.deleteMany({ id: { $in: ids } });
 };
 
 module.exports = {

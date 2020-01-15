@@ -6,6 +6,7 @@ const app = require('../../../src/app');
 const {
 	createTestUser, cleanup, teams: teamsHelper, generateRequestParams, createTestAccount,
 } = require('../helpers/testObjects')(app);
+const testHelper = require('../helpers/testObjects')(app);
 
 const teamService = app.service('/teams');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
@@ -89,7 +90,7 @@ describe('Test team basic methods', () => {
 				const { userIds } = await teamService.get(slimteam._id);
 				expect(userIds.some((item) => equalIds(item.userId, hero._id))).to.equal(true);
 			} finally {
-				T.cleanup();
+				cleanup();
 			}
 		});
 
@@ -115,5 +116,58 @@ describe('Test team basic methods', () => {
 				cleanup();
 			}
 		});
+	});
+});
+
+describe('Test team extern add', () => {
+	let teacher;
+	let params;
+	let owner;
+	let expert;
+	let testteam;
+	let addService;
+
+	before(async () => {
+		addService = app.service('/teams/extern/add');
+		addService.setup(app);
+
+		[owner, teacher, expert] = await Promise.all([
+			createTestUser({ roles: ['teacher'] }),
+			createTestUser({ roles: ['teacher'] }),
+			createTestUser({ roles: ['expert'] }),
+		]);
+
+		const username = owner.email;
+		const password = 'Schulcloud1!';
+
+		await createTestAccount({ username, password }, 'local', owner);
+
+		[params, testteam] = await Promise.all([
+			generateRequestParams({ username, password }),
+			teamsHelper.create(owner),
+		]);
+	});
+
+	after(testHelper.cleanup);
+
+	it('add new teamadministrator with userId', async () => {
+		const userId = teacher._id.toString();
+		const data = {
+			role: 'teamadministrator',
+			userId,
+		};
+
+		const fakeParams = { ...params, query: {} };
+		const patchResponse = await addService.patch(testteam._id, data, fakeParams);
+
+		expect(patchResponse.message).to.equal('Success!');
+		const patchedTeam = await teamsHelper.getById(testteam._id);
+		expect(patchedTeam.userIds).to.be.an('array').with.lengthOf(2);
+		const exist = patchedTeam.userIds.some((teamUser) => teamUser.userId.toString() === userId);
+		expect(exist).to.be.true;
+	});
+
+	it('add new teamexpert', () => {
+
 	});
 });

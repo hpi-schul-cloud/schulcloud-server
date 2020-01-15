@@ -35,6 +35,9 @@ const removeManyTeams = (ids) => teamsModel.deleteMany({ _ids: { $in: ids } }).l
 // const teamServices = app => app.service('teams');
 
 const cleanup = () => {
+	if (createdTeamIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdTeamIds;
 	createdTeamIds = [];
 	return removeManyTeams(ids);
