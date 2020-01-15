@@ -22,6 +22,8 @@ describe('classes service', () => {
 			server.close(done);
 		});
 
+		afterEach(testObjects.cleanup);
+
 		it('should allow teachers and admins to find all classes', async () => {
 			const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
 			const adminUser = await testObjects.createTestUser({
