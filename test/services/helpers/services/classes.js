@@ -41,7 +41,7 @@ const cleanup = () => {
 };
 
 const createByName = (app) => async ([gradeLevel, className, schoolId], overrides = {}) => {
-	const school = await app.service('/schools').get(schoolId);
+	const school = await app.service('schools').get(schoolId);
 	const year = await app.service('years').get(school.currentYear);
 
 	const classObject = {

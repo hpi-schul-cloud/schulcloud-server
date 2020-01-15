@@ -347,7 +347,7 @@ class Add {
 			return out;
 		} catch (err) {
 			warning(err);
-			return Promise.resolve('Success!');
+			return Promise.resolve({ message: 'Success!' });
 		}
 	}
 
