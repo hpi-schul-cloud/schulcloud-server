@@ -3,7 +3,9 @@ const { expect } = require('chai');
 const logger = require('../../../src/logger/index');
 
 const app = require('../../../src/app');
-const T = require('../helpers/testObjects')(app);
+const {
+	createTestUser, cleanup, teams: teamsHelper, generateRequestParams, createTestAccount,
+} = require('../helpers/testObjects')(app);
 
 const teamService = app.service('/teams');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
@@ -16,7 +18,7 @@ describe('Test team basic methods', () => {
 		let userId;
 
 		before(async () => {
-			const user = await T.createTestUser({ roles: ['administrator'] }).catch((err) => {
+			const user = await createTestUser({ roles: ['administrator'] }).catch((err) => {
 				logger.warning('Can not create test user', err);
 			});
 
@@ -42,7 +44,7 @@ describe('Test team basic methods', () => {
 			return Promise.resolve();
 		});
 
-		after(() => Promise.all([T.cleanup(), T.teams.removeOne(teamId)]));
+		after(() => Promise.all([cleanup(), teamsHelper.removeOne(teamId)]));
 
 
 		it('should for extern request only return the _id', () => {
@@ -68,11 +70,11 @@ describe('Test team basic methods', () => {
 		});
 
 		it('is allowed for superheroes', async () => {
-			const hero = await T.createTestUser({ roles: ['superhero'] });
+			const hero = await createTestUser({ roles: ['superhero'] });
 			const username = hero.email;
 			const password = 'Schulcloud1!';
-			await T.createTestAccount({ username, password }, 'local', hero);
-			const params = await T.generateRequestParams({ username, password });
+			await createTestAccount({ username, password }, 'local', hero);
+			const params = await generateRequestParams({ username, password });
 
 			try {
 				const record = {
@@ -92,11 +94,11 @@ describe('Test team basic methods', () => {
 		});
 
 		it('is not allowed for demoStudent', async () => {
-			const demoStudent = await T.createTestUser({ roles: ['demoStudent'] });
+			const demoStudent = await createTestUser({ roles: ['demoStudent'] });
 			const username = demoStudent.email;
 			const password = 'Schulcloud1!';
-			await T.createTestAccount({ username, password }, 'local', demoStudent);
-			const params = await T.generateRequestParams({ username, password });
+			await createTestAccount({ username, password }, 'local', demoStudent);
+			const params = await generateRequestParams({ username, password });
 
 			try {
 				const record = {
@@ -110,7 +112,7 @@ describe('Test team basic methods', () => {
 					expect(e.message).to.equal('Only administrator, teacher and students can create teams.');
 				});
 			} finally {
-				T.cleanup();
+				cleanup();
 			}
 		});
 	});
