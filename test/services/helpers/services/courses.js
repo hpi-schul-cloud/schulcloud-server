@@ -3,7 +3,7 @@ const { courseModel } = require('../../../../src/services/user-group/model');
 let createdCourseIds = [];
 let coursesServices;
 
-const removeManyCourses = (ids) => courseModel.deleteMany({ _ids: { $in: ids } }).lean().exec();
+const removeManyCourses = (ids) => courseModel.deleteMany({ _id: { $in: ids } }).lean().exec();
 
 const createTestCourse = (app, opt) => ({
 	// required fields for base group

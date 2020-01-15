@@ -5,7 +5,8 @@ const { classModel } = require('../../../../src/services/user-group/model');
 let createdClassesIds = [];
 let classesServices;
 
-const removeManyClasses = (ids) => classModel.deleteMany({ _ids: { $in: ids } }).lean().exec();
+const removeManyClasses = (ids) => classModel.deleteMany({ _id: { $in: ids } }).lean().exec();
+const removeOneClass = (id) => classModel.findOneAndRemove({ _id: id }).lean().exec();
 
 const createTestClass = (app, opt) => ({
 	// required fields
@@ -98,5 +99,7 @@ module.exports = (app, opt) => {
 		findByName: findByName(app),
 		findOneByName: findOneByName(app),
 		info: createdClassesIds,
+		removeOne: removeOneClass,
+		removeMany: removeManyClasses,
 	};
 };

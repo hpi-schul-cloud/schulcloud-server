@@ -14,7 +14,7 @@ const cleanup = async () => {
 	}
 	const ids = createdSchoolGroups;
 	createdSchoolGroups = [];
-	return schoolGroupModel.deleteMany({ id: { $in: ids } });
+	return schoolGroupModel.deleteMany({ _id: { $in: ids } });
 };
 
 module.exports = {
