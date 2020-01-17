@@ -1,4 +1,5 @@
 const errors = require('@feathersjs/errors');
+const { equal } = require('../../helper/compare').ObjectId;
 
 // get an json api conform entry
 const getDataEntry = ({
@@ -12,7 +13,7 @@ const getDataEntry = ({
 	}, attributes),
 });
 
-const equalId = (baseId) => (id) => baseId.toString() === id.toString();
+const equalId = (baseId) => (id) => equal(baseId, id);
 
 // get scopes from user object Id
 class ScopeResolver {
