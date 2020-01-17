@@ -12,9 +12,11 @@ const getDataEntry = ({
 	}, attributes),
 });
 
+const equalId = (baseId) => (id) => baseId.toString() === id.toString();
+
 // get scopes from user object Id
 class ScopeResolver {
-	get(id, params) {
+	async get(id, params) {
 		const userService = this.app.service('/users');
 		const courseService = this.app.service('/courses');
 		const classService = this.app.service('/classes');
@@ -31,71 +33,91 @@ class ScopeResolver {
 			data: [],
 		};
 
-		return userService.get(id)
-			.then((user) => {
-				response.data.push(getDataEntry({
-					type: 'user',
-					id: user._id,
-					name: user.fullName,
-					authorities: [
-						'can-read',
-						'can-write',
-						'can-send-notifications',
-					],
-				}));
+		const user = await userService.get(id);
+		const userId = user._id;
 
-				// find courses and classes where user is student or teacher
-				return Promise.all([
-					courseService.find({ query: { $or: [{ userIds: user._id }, { teacherIds: user._id }] }, headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }),
-					classService.find({ query: { $or: [{ userIds: user._id }, { teacherIds: user._id }] }, headers: { 'x-api-key': (params.headers || {})['x-api-key'] } }),
-					teamService.find({ query: { $limit: 1000, userIds: { $elemMatch: { userId: user._id } } } }),
-				]).then(([courses, classes, teams]) => {
-					courses.data = courses.data.map((c) => {
-						c.attributes = {
-							scopeType: 'course',
-						};
-						return c;
-					});
+		response.data.push(getDataEntry({
+			type: 'user',
+			id: userId,
+			name: user.fullName,
+			authorities: [
+				'can-read',
+				'can-write',
+				'can-send-notifications',
+			],
+		}));
 
-					classes.data = classes.data.map((c) => {
-						c.attributes = {
-							scopeType: 'class',
-						};
-						return c;
-					});
+		const [courses, classes, teams] = await Promise.all([
+			courseService.find({
+				query: {
+					$limit: 1000,
+					$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
+				},
+			}),
+			classService.find({
+				query: {
+					$limit: 1000,
+					$or: [{ userIds: userId }, { teacherIds: userId }],
+				},
+			}),
+			teamService.find({
+				query: {
+					$limit: 1000,
+					userIds: { $elemMatch: { userId } },
+				},
+			}),
+		]);
 
-					teams.data.forEach((_team) => {
-						response.data.push(getDataEntry({
-							type: 'scope',
-							id: _team._id,
-							name: _team.name,
-							authorities: ['can-read', 'can-write', 'can-send-notifications'], // todo: only leaders have notification and write permissions
-							attributes: {
-								scopeType: 'team',
-							},
-						}));
-					});
+		courses.data = courses.data.map((c) => {
+			c.attributes = {
+				scopeType: 'course',
+			};
+			return c;
+		});
 
-					const scopes = [].concat(courses.data, classes.data);
-					scopes.forEach((scope) => {
-						const authorities = ['can-read'];
+		classes.data = classes.data.map((c) => {
+			c.attributes = {
+				scopeType: 'class',
+			};
+			return c;
+		});
 
-						const isTeacher = scope.teacherIds.filter((teacherId) => JSON.stringify(teacherId) === JSON.stringify(user._id));
-						if (isTeacher.length > 0) {
-							authorities.push('can-write', 'can-send-notifications');
-						}
+		teams.data.forEach((_team) => {
+			response.data.push(getDataEntry({
+				type: 'scope',
+				id: _team._id,
+				name: _team.name,
+				// todo: only leaders have notification and write permissions
+				authorities: ['can-read', 'can-write', 'can-send-notifications'],
+				attributes: {
+					scopeType: 'team',
+				},
+			}));
+		});
 
-						response.data.push(getDataEntry({
-							type: 'scope',
-							id: scope._id,
-							name: scope.name,
-							authorities,
-							attributes: scope.attributes,
-						}));
-					});
-					return Promise.resolve(response);
-				});
-			});
+		const scopes = [].concat(courses.data, classes.data);
+		const isUserId = equalId(userId);
+
+		scopes.forEach((scope) => {
+			const authorities = ['can-read'];
+
+			const isTeacher = (scope.teacherIds || []).some(isUserId);
+			const isSubstitutionTeacher = (scope.substitutionIds || []).some(isUserId);
+
+			if (isTeacher || isSubstitutionTeacher) {
+				authorities.push('can-write', 'can-send-notifications');
+			}
+
+			response.data.push(getDataEntry({
+				type: 'scope',
+				id: scope._id,
+				name: scope.name,
+				authorities,
+				attributes: scope.attributes,
+			}));
+		});
+
+		return Promise.resolve(response);
 	}
 
 	setup(app, path) {
