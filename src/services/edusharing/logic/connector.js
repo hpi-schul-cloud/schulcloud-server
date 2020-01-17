@@ -38,11 +38,13 @@ class EduSharingConnector {
 	static get authorization() {
 		const userName = process.env.ES_USER;
 		const pw = process.env.ES_PASSWORD;
-		const headers = Object.assign({}, EduSharingConnector.headers, {
+		const headers = {
+			...EduSharingConnector.headers,
 			Authorization: `Basic ${Buffer.from(`${userName}:${pw}`).toString(
 				'base64',
 			)}`,
-		});
+		};
+
 		return headers;
 	}
 
@@ -87,6 +89,7 @@ class EduSharingConnector {
 				const parsedResult = JSON.parse(result);
 				return parsedResult.access_token;
 			}
+			// eslint-disable-next-line no-console
 			console.error('Oauth failed');
 			return null;
 		});

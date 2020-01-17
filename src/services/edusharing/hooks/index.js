@@ -1,6 +1,5 @@
-const auth = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
-const globalHooks = require('../../../hooks');
+
 
 /* all: [auth.hooks.authenticate('jwt'), lookupSchool],
 	find: [globalHooks.hasPermission('INSIGHTS_VIEW')], */

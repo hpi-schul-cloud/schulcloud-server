@@ -3,7 +3,6 @@ const EduSharingConnector = require('../logic/connector');
 
 class EduSearch {
 	find(data) {
-		console.log('EduSearch.find');
 		return EduSharingConnector.GET(data);
 	}
 }
