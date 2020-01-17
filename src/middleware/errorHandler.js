@@ -26,6 +26,12 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 			requestId: req.headers.requestId,
 		} : {};
 
+		// delete response informations for extern express applications
+		delete error.response;
+		if (error.options) {
+			// can include jwts if error it throw by extern micro services
+			delete error.options.headers;
+		}
 		logger.error({ ...error });
 
 		if (error.stack) {
