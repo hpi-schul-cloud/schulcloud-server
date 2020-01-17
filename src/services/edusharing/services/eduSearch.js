@@ -8,7 +8,7 @@ class EduSearch {
 	}
 }
 
-module.exports = app => {
+module.exports = (app) => {
 	const eduRoute = '/edu-sharing';
 	app.use(eduRoute, new EduSearch(), (req, res) => {
 		res.send(res.data);
