@@ -12,7 +12,7 @@ const subtractDays = (date, d) => {
 	return date;
 };
 
-describe.only('link service', () => {
+describe('link service', () => {
 	const service = app.service('link');
 	const forceNew = true;
 	it('registered the links service', () => {
