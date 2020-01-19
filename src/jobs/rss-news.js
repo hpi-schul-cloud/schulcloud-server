@@ -32,14 +32,13 @@ async function handleFeed(dbFeed, schoolId) {
 			},
 			{ upsert: true, new: true },
 		);
-		logger.info('fetched', rssItem.title);
 		checkedNews.push(dbNews._id.toString());
 	}
 
 	return checkedNews;
 }
 
-async function processSchool(school) {
+async function processSchool(school, errors) {
 	if (!school) return;
 
 	let allCheckedNews = [];
@@ -50,7 +49,9 @@ async function processSchool(school) {
 			allCheckedNews = allCheckedNews.concat(checkedNews);
 			dbFeed.status = 'success';
 		} catch (err) {
-			logger.error(`Could not handle feed ${dbFeed.url} (${dbFeed._id}) for school ${school._id}`, err);
+			const message = `Could not handle feed '${dbFeed.url}' (${dbFeed._id}) for school '${school._id}'`;
+			errors.push(message);
+			logger.error(message, err);
 			dbFeed.status = 'error';
 		}
 	}
@@ -61,17 +62,31 @@ async function processSchool(school) {
 }
 
 async function run() {
+	logger.info('will update rss feeds...');
+	const listOfErrors = [];
 	await database.connect();
 
 	const cursor = schoolModel.find({}).cursor();
 	let school = await cursor.next();
 	while (school) {
-		await processSchool(school);
+		try {
+			await processSchool(school, listOfErrors);
+		} catch (error) {
+			const message = `error updating rss news for school '${school._id}', continue...`;
+			listOfErrors.push(message);
+			logger.error(message, error);
+		}
 		school = await cursor.next();
 	}
 
 	await database.close();
-	process.exit(0);
+	if (listOfErrors.length) {
+		logger.error(`updating rss feeds finished with ${listOfErrors.length} errors`);
+	} else {
+		logger.info('updating rss feeds finished without errors');
+	}
+	// exit-code > 0 means # of errors
+	process.exit(listOfErrors.length);
 }
 
 run();
