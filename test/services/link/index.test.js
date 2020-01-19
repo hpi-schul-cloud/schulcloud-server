@@ -25,8 +25,8 @@ describe('link service', () => {
 		const url = 'https://schul-cloud.org/';
 		return service.create({ target: url, forceNew })
 			.then((data) => {
-				// chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
-				// chai.expect(data.target).to.equal(url);
+				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
+				chai.expect(data.target).to.equal(url);
 				return Promise.resolve(data.id);
 			})
 			.then((id) => new Promise((resolve, reject) => {
@@ -186,12 +186,11 @@ describe('link service', () => {
 		const url = 'http://localhost:3100/testurl/1234';
 		return service.create({ target: url, createdAt })
 			.then((data) => {
-				console.log(data._id)
 				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
 				chai.expect(data.target).to.equal(url);
 				return Promise.resolve(data.id);
 			})
-			.then((id) => new Promise((resolve, reject) => {
+			.then((id) => new Promise((resolve) => {
 				service.create({ target: url, createdAt })
 					.then((data) => {
 						// check that shortlinks are the same
