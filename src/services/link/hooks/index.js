@@ -8,12 +8,15 @@ const preventDuplicates = async (hook) => {
 	// get all links to the same target
 	const currentLinks = await hook.app.service('link').find({ query: { target: linkData.target } });
 
-	// check if link to specified target already exists
-	if (currentLinks && currentLinks.total > 0) {
+	// check if link to specified target already exists or new link is forced
+	if (currentLinks && currentLinks.total > 0 && !linkData.forceNew) {
 		// if so, set createdAt date to now so that link expires a month from now
 		const id = currentLinks.data[0]._id;
 		await hook.app.service('link').patch(id, { createdAt: new Date() }).then((updatedShortlink) => {
 			// return the updated link and don't create a new one
+			console.log(updatedShortlink);
+			// prevent errors in tests by adding id without underscore
+			updatedShortlink.id = updatedShortlink._id;
 			hook.result = updatedShortlink;
 		}).catch((err) => {
 			logger.warning(err);

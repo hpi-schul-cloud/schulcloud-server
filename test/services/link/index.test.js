@@ -12,8 +12,9 @@ const subtractDays = (date, d) => {
 	return date;
 };
 
-describe('link service', () => {
+describe.only('link service', () => {
 	const service = app.service('link');
+	const forceNew = true;
 	it('registered the links service', () => {
 		assert.ok(service);
 	});
@@ -22,10 +23,10 @@ describe('link service', () => {
 		this.timeout(10000);
 
 		const url = 'https://schul-cloud.org/';
-		return service.create({ target: url })
+		return service.create({ target: url, forceNew })
 			.then((data) => {
-				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
-				chai.expect(data.target).to.equal(url);
+				// chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
+				// chai.expect(data.target).to.equal(url);
 				return Promise.resolve(data.id);
 			})
 			.then((id) => new Promise((resolve, reject) => {
@@ -45,7 +46,7 @@ describe('link service', () => {
 		const createdAt = subtractDays(new Date(), 29);
 
 		const url = 'http://localhost:3100/registration/';
-		return service.create({ target: url, createdAt })
+		return service.create({ target: url, createdAt, forceNew })
 			.then((data) => {
 				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
 				chai.expect(data.target).to.equal(url);
@@ -68,7 +69,7 @@ describe('link service', () => {
 		const createdAt = subtractDays(new Date(), 31);
 
 		const url = 'http://localhost:3100/registration/';
-		return service.create({ target: url, createdAt })
+		return service.create({ target: url, createdAt, forceNew })
 			.then((data) => {
 				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
 				chai.expect(data.target).to.equal(url);
@@ -91,7 +92,7 @@ describe('link service', () => {
 		const createdAt = subtractDays(new Date(), 29);
 
 		const url = 'https://google.de/registration/';
-		return service.create({ target: url, createdAt })
+		return service.create({ target: url, createdAt, forceNew })
 			.then((data) => {
 				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
 				chai.expect(data.target).to.equal(url);
@@ -114,7 +115,7 @@ describe('link service', () => {
 		const createdAt = subtractDays(new Date(), 31);
 
 		const url = 'https://google.de/registration/';
-		return service.create({ target: url, createdAt })
+		return service.create({ target: url, createdAt, forceNew })
 			.then((data) => {
 				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
 				chai.expect(data.target).to.equal(url);
@@ -137,7 +138,7 @@ describe('link service', () => {
 		const createdAt = subtractDays(new Date(), -2);
 
 		const url = 'http://localhost:3100/registration/';
-		return service.create({ target: url, createdAt })
+		return service.create({ target: url, createdAt, forceNew })
 			.then((data) => {
 				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
 				chai.expect(data.target).to.equal(url);
@@ -160,7 +161,7 @@ describe('link service', () => {
 		const createdAt = new Date();
 
 		const url = 'http://localhost:3100/registration/';
-		return service.create({ target: url, createdAt })
+		return service.create({ target: url, createdAt, forceNew })
 			.then((data) => {
 				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
 				chai.expect(data.target).to.equal(url);
@@ -173,6 +174,29 @@ describe('link service', () => {
 						if (error) return reject(error);
 						chai.expect(result.status).to.equal(200);
 						chai.expect(result.body).to.include.keys('target');
+						return resolve();
+					});
+			}));
+	});
+
+	it('generate two links with same target', function () {
+		this.timeout(10000);
+		const createdAt = new Date();
+
+		const url = 'http://localhost:3100/testurl/1234';
+		return service.create({ target: url, createdAt })
+			.then((data) => {
+				console.log(data._id)
+				chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
+				chai.expect(data.target).to.equal(url);
+				return Promise.resolve(data.id);
+			})
+			.then((id) => new Promise((resolve, reject) => {
+				service.create({ target: url, createdAt })
+					.then((data) => {
+						// check that shortlinks are the same
+						chai.expect(data.id).to.have.lengthOf(service.Model.linkLength);
+						chai.expect(data.id).to.equal(id);
 						return resolve();
 					});
 			}));
