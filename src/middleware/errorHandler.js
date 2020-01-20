@@ -63,6 +63,7 @@ const secretDataKeys = (() => [
 	'password_control',
 	'PASSWORD_HASH',
 	'password_new',
+	'accessToken',
 ].map((k) => k.toLocaleLowerCase())
 )();
 const filter = (data) => {
