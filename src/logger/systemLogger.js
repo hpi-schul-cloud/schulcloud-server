@@ -2,6 +2,7 @@ const winston = require('winston');
 const util = require('util');
 
 const systemLogLevel = process.env.SYSTEM_LOG_LEVEL || 'sendRequests';
+const colorizeMessage = process.env.NODE_ENV !== 'production';
 
 const systemLogger = winston.createLogger({
 	level: systemLogLevel,
@@ -19,7 +20,7 @@ const systemLogger = winston.createLogger({
 				request: 'yellow',
 				sendRequests: 'blue',
 			},
-			message: true,
+			message: colorizeMessage,
 		}),
 		winston.format.printf((log) => log.message),
 	),

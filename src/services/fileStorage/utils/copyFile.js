@@ -35,7 +35,7 @@ const renameFileIfAlreadyExistInParent = (existingFile, newFileObject) => {
  * @param {Function} [ permissionHandler ] <optional> permissionHandler(userId, file, parent)
  */
 const copyFile = async ({ file, parent, sourceSchoolId }, { payload, account }, permissionHandler) => {
-	const userId = payload.userId || account.userId;
+	const userId = (payload || {}).userId || account.userId;
 	const strategy = createCorrectStrategy(payload.fileStorageType);
 
 	if (!file || !parent || !userId) {
