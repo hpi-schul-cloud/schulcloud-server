@@ -2,14 +2,7 @@ const express = require('@feathersjs/express');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
 const commons = require('@schul-cloud/commons');
-
-const app = express(feathers());
-const config = configuration();
-app.configure(config);
-
-// init & register configuration
-(new commons.Configuration()).init({ app });
-
+const apiMetrics = require('prometheus-api-metrics');
 const path = require('path');
 const favicon = require('serve-favicon');
 const compress = require('compression');
@@ -18,6 +11,21 @@ const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
+const globals = require('../config/globals');
+
+const app = express(feathers());
+
+const metricsOptions = {};
+if (globals.METRICS_PATH) {
+	metricsOptions.metricsPath = globals.METRICS_PATH;
+}
+app.use(apiMetrics(metricsOptions));
+
+const config = configuration();
+app.configure(config);
+
+// init & register configuration
+(new commons.Configuration()).init({ app });
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
