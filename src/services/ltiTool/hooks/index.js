@@ -1,6 +1,18 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
+const protectSecrets = (context) => {
+	if (Array.isArray(context.result.data)) {
+		let i;
+		for (i = 0; i < context.result.data.length; i += 1) {
+			context.result.data[i].secret = undefined;
+		}
+	} else {
+		context.result.secret = undefined;
+	}
+	return context;
+};
+
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('TOOL_VIEW')],
@@ -13,8 +25,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [],
-	get: [],
+	find: [globalHooks.ifNotLocal(protectSecrets)],
+	get: [globalHooks.ifNotLocal(protectSecrets)],
 	create: [],
 	update: [],
 	patch: [],
