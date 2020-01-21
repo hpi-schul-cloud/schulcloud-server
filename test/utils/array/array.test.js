@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { flatten, paginate, sort } = require('../../../src/utils/array');
 
-describe('array helpers', () => {
+describe('[utils] array helpers', () => {
 	describe('#flatten', () => {
 		it('should work on empty arrays', () => {
 			expect(flatten([])).to.deep.equal([]);

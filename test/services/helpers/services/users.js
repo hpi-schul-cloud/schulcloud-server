@@ -14,7 +14,7 @@ const createTestUser = (app, opt) => async ({
 	schoolId = opt.schoolId,
 	accounts = [], // test if it has a effect
 	roles = [],
-	discoverable = false,
+	discoverable = undefined,
 	firstLogin = false,
 	// manual cleanup, e.g. when testing delete:
 	manualCleanup = false,
