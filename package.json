@@ -90,6 +90,8 @@
 		"passport": "^0.4.0",
 		"passport-strategy": "^1.0.0",
 		"pretty-error": "^2.0.3",
+		"prom-client": "^11.5.3",
+		"prometheus-api-metrics": "^2.2.3",
 		"querystring": "^0.2.0",
 		"randexp": "^0.5.3",
 		"read-chunk": "^3.0.0",
