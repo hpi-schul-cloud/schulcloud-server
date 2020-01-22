@@ -58,7 +58,7 @@ const displayInternRequests = (level) => (context) => {
  * @param {Object} context feathers context
  */
 const handleAutoLogout = async (context) => {
-	const ignoreRoute = (context.path === 'accounts/jwtTimer' || context.path.includes('wopi/'));
+	const ignoreRoute = context.path && (context.path === 'accounts/jwtTimer' || context.path.includes('wopi/'));
 	const redisClientExists = !!getRedisClient();
 	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
 	if (!ignoreRoute && redisClientExists && authorizedRequest) {
