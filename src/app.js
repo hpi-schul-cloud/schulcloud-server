@@ -44,6 +44,12 @@ const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
+const metricsOptions = {};
+if (globals.METRICS_PATH) {
+	metricsOptions.metricsPath = globals.METRICS_PATH;
+}
+app.use(apiMetrics(metricsOptions));
+
 setupSwagger(app);
 app.configure(initializeRedisClient);
 

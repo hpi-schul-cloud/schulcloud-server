@@ -1,6 +1,6 @@
 const auth = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
-const { MethodNotAllowed } = require('@feathersjs/errors');
+const { MethodNotAllowed, NotAuthenticated } = require('@feathersjs/errors');
 const docs = require('./jwtTimerDocs');
 
 const {
@@ -35,6 +35,8 @@ class JwtTimerService {
 	async create(data, params) {
 		if (getRedisClient()) {
 			const redisIdentifier = getRedisIdentifier(params.authentication.accessToken);
+			const redisResponse = await redisTtlAsync(redisIdentifier);
+			if (redisResponse < 0) throw new NotAuthenticated('Session was expired due to inactivity - autologout.');
 			await redisSetAsync(
 				redisIdentifier, getRedisValue(), 'EX', this.app.Config.data.JWT_TIMEOUT_SECONDS,
 			);

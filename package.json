@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "20.1.17",
+	"version": "20.2.0",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -88,7 +88,6 @@
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
 		"nanoid": "^2.0.3",
-		"node-sass": "^4.2.0",
 		"passport": "^0.4.0",
 		"passport-strategy": "^1.0.0",
 		"pretty-error": "^2.0.3",
