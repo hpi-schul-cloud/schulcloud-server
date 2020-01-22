@@ -89,6 +89,7 @@ class VideoconferenceService {
 			if (err instanceof FeathersError) {
 				throw err;
 			}
+			error(err);
 			throw new GeneralError(
 				'join meeting link generation failed',
 			);
@@ -116,7 +117,8 @@ class VideoconferenceService {
 			}
 			return { meeting };
 		} catch (err) {
-			throw new GeneralError('requesting meeting info failed', err);
+			error(err);
+			throw new GeneralError('requesting meeting info failed');
 		}
 	}
 
