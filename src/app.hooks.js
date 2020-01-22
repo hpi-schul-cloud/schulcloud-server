@@ -1,7 +1,10 @@
 // Global hooks that run for every service
-const { GeneralError } = require('@feathersjs/errors');
+const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { sanitizeHtml: { sanitizeDeep } } = require('./utils');
+const {
+	getRedisClient, redisGetAsync, redisSetAsync, getRedisIdentifier, getRedisValue,
+} = require('./utils/redis');
 
 
 const sanitizeDataHook = (context) => {
@@ -50,21 +53,60 @@ const displayInternRequests = (level) => (context) => {
 };
 
 /**
+ * for authenticated requests, if a redis connection is defined, check if the users jwt is whitelisted.
+ * if so, the expiration timer is reset, if not the user is logged out automatically.
+ * @param {Object} context feathers context
+ */
+const handleAutoLogout = async (context) => {
+	const ignoreRoute = context.path && (context.path === 'accounts/jwtTimer' || context.path.includes('wopi/'));
+	const redisClientExists = !!getRedisClient();
+	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
+	if (!ignoreRoute && redisClientExists && authorizedRequest) {
+		const redisIdentifier = getRedisIdentifier(context.params.authentication.accessToken);
+		const redisResponse = await redisGetAsync(redisIdentifier);
+		if (redisResponse) {
+			await redisSetAsync(
+				redisIdentifier, getRedisValue(), 'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
+			);
+		} else {
+			// ------------------------------------------------------------------------
+			// this is so we can ensure a fluid release without booting out all users.
+			if (context.app.Config.data.JWT_WHITELIST_ACCEPT_ALL) {
+				await redisSetAsync(
+					redisIdentifier, getRedisValue(),
+					'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
+				);
+				return context;
+			}
+			// ------------------------------------------------------------------------
+			throw new NotAuthenticated('Session was expired due to inactivity - autologout.');
+		}
+	}
+	return context;
+};
+
+/**
  * For errors without error code create GeneralError with code 500.
  * @param {context} context
  */
 const errorHandler = (context) => {
 	if (context.error) {
-		// too much for logging...
+		context.error.code = context.error.code || context.error.statusCode;
+		if (!context.error.code && !context.error.type) {
+			const catchedError = context.error;
+			if (catchedError.hook) {
+				// too much for logging...
+				delete catchedError.hook;
+			}
+			context.error = new GeneralError(context.error.message || 'Server Error', context.error.stack);
+			context.error.catchedError = catchedError;
+		}
+		context.error.code = context.error.code || 500;
+
 		if (context.error.hook) {
+			// too much for logging...
 			delete context.error.hook;
 		}
-
-		// statusCode is return by extern services / or mocks that use express res.status(myCodeNumber)
-		if (!context.error.code && !context.error.statusCode) {
-			context.error = new GeneralError(context.error.message || 'server error', context.error.stack || '');
-		}
-
 		return context;
 	}
 	context.app.logger.warning('Error with no error key is throw. Error logic can not handle it.');
@@ -74,7 +116,7 @@ const errorHandler = (context) => {
 
 function setupAppHooks(app) {
 	const before = {
-		all: [],
+		all: [iff(isProvider('external'), handleAutoLogout)],
 		find: [],
 		get: [],
 		create: [
@@ -124,6 +166,7 @@ function setupAppHooks(app) {
 }
 
 module.exports = {
-	setupAppHooks,
+	handleAutoLogout,
 	sanitizeDataHook,
+	setupAppHooks,
 };

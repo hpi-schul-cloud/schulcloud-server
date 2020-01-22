@@ -1,12 +1,14 @@
 const chai = require('chai');
 const { ObjectId } = require('mongoose').Types;
+const mockery = require('mockery');
 
 const { expect } = chai;
 
 const app = require('../src/app');
 const { sanitizeDataHook } = require('../src/app.hooks');
 const { sanitizeHtml: { sanitizeDeep } } = require('../src/utils');
-const { cleanup, createTestUser } = require('./services/helpers/testObjects')(app);
+const { cleanup, createTestUser, generateRequestParamsFromUser } = require('./services/helpers/testObjects')(app);
+const redisMock = require('./utils/redis/redisMock');
 
 describe('Sanitization Hook', () => {
 	// TODO: Test if it work for create, post and update
@@ -194,5 +196,89 @@ describe('removeObjectIdInData hook', () => {
 			roles: [],
 		});
 		expect(_id.toString()).to.not.equal(response._id.toString());
+	});
+});
+
+describe('handleAutoLogout hook', () => {
+	let fut;
+	let redisHelper;
+
+	before(async () => {
+		mockery.enable({
+			warnOnReplace: false,
+			warnOnUnregistered: false,
+			useCleanCache: true,
+		});
+		mockery.registerMock('redis', redisMock);
+
+		delete require.cache[require.resolve('../src/utils/redis')];
+		/* eslint-disable global-require */
+		redisHelper = require('../src/utils/redis');
+		fut = require('../src/app.hooks').handleAutoLogout;
+		/* eslint-enable global-require */
+
+		redisHelper.initializeRedisClient({
+			Config: { data: { REDIS_URI: '//validHost:6379' } },
+		});
+	});
+
+	after(async () => {
+		mockery.deregisterAll();
+		mockery.disable();
+		await cleanup();
+	});
+
+	it('whitelisted JWT is accepted and extended', async () => {
+		const user = await createTestUser();
+		const params = await generateRequestParamsFromUser(user);
+		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
+		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
+		const result = await fut({
+			params, app: { Config: { data: { REDIS_URI: '//validHost:6379', JWT_TIMEOUT_SECONDS: 7200 } } },
+		});
+		expect(result).to.not.equal(undefined);
+		const ttl = await redisHelper.redisTtlAsync(redisIdentifier);
+		expect(ttl).to.be.greaterThan(7000);
+	});
+
+	it('not whitelisted JWT is rejected', async () => {
+		const user = await createTestUser();
+		const params = await generateRequestParamsFromUser(user);
+		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
+		await redisHelper.redisDelAsync(redisIdentifier);
+		try {
+			await fut({
+				params, app: { Config: { data: { REDIS_URI: '//validHost:6379', JWT_TIMEOUT_SECONDS: 7200 } } },
+			});
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(401);
+			expect(err.message).to.equal('Session was expired due to inactivity - autologout.');
+		}
+	});
+
+	it('JWT_WHITELIST_ACCEPT_ALL can be set to not auto-logout users', async () => {
+		const user = await createTestUser();
+		const params = await generateRequestParamsFromUser(user);
+		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
+		await redisHelper.redisDelAsync(redisIdentifier);
+		const result = await fut({
+			params,
+			app: {
+				Config: {
+					data: {
+						REDIS_URI: '//validHost:6379', JWT_TIMEOUT_SECONDS: 7200, JWT_WHITELIST_ACCEPT_ALL: true,
+					},
+				},
+			},
+		});
+		expect(result).to.have.property('params');
+		expect(result).to.have.property('app');
+	});
+
+	it('passes through requests without authorisation', async () => {
+		const response = await fut({ params: {} });
+		expect(response).to.not.eq(undefined);
 	});
 });
