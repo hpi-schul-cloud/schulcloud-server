@@ -54,10 +54,12 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		let user = await this.findUser(app, decryptedTicket);
 		if (!user) {
 			// User might have been created since the last sync
-			await app.service('sync').find({}, {
-				target: SYNCER_TARGET,
-				config: {
-					schoolIdentifier: decryptedTicket.ptscSchuleNummer,
+			await app.service('sync').find({
+				query: {
+					target: SYNCER_TARGET,
+					config: {
+						schoolIdentifier: decryptedTicket.ptscSchuleNummer,
+					},
 				},
 			});
 			user = await this.findUser(app, decryptedTicket);
