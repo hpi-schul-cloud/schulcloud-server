@@ -18,7 +18,9 @@ const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
+const apiMetrics = require('prometheus-api-metrics');
 
+const globals = require('../config/globals');
 const middleware = require('./middleware');
 const sockets = require('./sockets');
 const services = require('./services/');
@@ -35,6 +37,12 @@ const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
+
+const metricsOptions = {};
+if (globals.METRICS_PATH) {
+	metricsOptions.metricsPath = globals.METRICS_PATH;
+}
+app.use(apiMetrics(metricsOptions));
 
 setupSwagger(app);
 app.configure(initializeRedisClient);
