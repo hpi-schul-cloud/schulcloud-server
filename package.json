@@ -106,7 +106,8 @@
 		"strip-js": "^1.0.6",
 		"universal-analytics": "^0.4.17",
 		"uuid": "^3.3.2",
-		"winston": "^3.2.0"
+		"winston": "^3.2.0",
+		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {
 		"codecov": "^3.6.1",
