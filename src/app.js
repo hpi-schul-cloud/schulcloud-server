@@ -11,15 +11,8 @@ const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
-const globals = require('../config/globals');
 
 const app = express(feathers());
-
-const metricsOptions = {};
-if (globals.METRICS_PATH) {
-	metricsOptions.metricsPath = globals.METRICS_PATH;
-}
-app.use(apiMetrics(metricsOptions));
 
 const config = configuration();
 app.configure(config);
@@ -37,7 +30,7 @@ const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 
-const { BODYPARSER_JSON_LIMIT } = require('../config/globals');
+const { BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
 
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
@@ -45,8 +38,8 @@ const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
 const metricsOptions = {};
-if (globals.METRICS_PATH) {
-	metricsOptions.metricsPath = globals.METRICS_PATH;
+if (METRICS_PATH) {
+	metricsOptions.metricsPath = METRICS_PATH;
 }
 app.use(apiMetrics(metricsOptions));
 
