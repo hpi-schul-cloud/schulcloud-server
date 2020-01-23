@@ -54,10 +54,12 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		let user = await this.findUser(app, decryptedTicket);
 		if (!user) {
 			// User might have been created since the last sync
-			await app.service('sync').find({}, {
-				target: SYNCER_TARGET,
-				config: {
-					schoolIdentifier: decryptedTicket.ptscSchuleNummer,
+			await app.service('sync').find({
+				query: {
+					target: SYNCER_TARGET,
+					config: {
+						schoolIdentifier: decryptedTicket.ptscSchuleNummer,
+					},
 				},
 			});
 			user = await this.findUser(app, decryptedTicket);
@@ -69,10 +71,10 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 
 		if (decryptedTicket.ptscListRolle && typeof decryptedTicket.ptscListRolle === 'string') {
 			const roles = decryptedTicket.ptscListRolle.split(',').map((tspRole) => ({
-				Schueler: 'student',
-				Lehrer: 'teacher',
-				Administrator: 'administrator',
-			}[tspRole])).filter((r) => r);
+				schueler: 'student',
+				lehrer: 'teacher',
+				admin: 'administrator',
+			}[tspRole.toLowerCase()])).filter((r) => r);
 			if (roles.length > 0) {
 				await app.service('users').patch(user._id, { roles });
 			}
