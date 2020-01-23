@@ -34,11 +34,14 @@ class VideoconferenceService {
 	/**
 	 * @typedef {Object} CreateResponse
 	 * @property {[url:Url]} the url to join the videoconference
-	 * @property {[action:ActionEnum]} if the videoconference is not existing it can be created or started first
+	 * @property {[state:STATE]} the current state in which the videoconference is in
+	 * @property {success:'SUCCESS'|'ERROR'} status indicator
+	 * @property {[permissions:[String]]} user permissions
+	 * @property {[error:String]} error message indication string
 	 */
 
 	/**
-	 * creates an videoconference url to join a meeting, inside a scope defined by
+ * creates an videoconference url to join a meeting, inside a scope defined by
 	 * id and scopeName depending on permissions as moderator or attendee.
 	 * this may fail due missing permissions
 	 * @param {{scopeName:string, id:string}} data
