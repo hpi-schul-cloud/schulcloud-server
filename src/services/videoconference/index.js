@@ -16,7 +16,9 @@ const { getUser } = require('../../hooks');
 const { joinMeeting, getMeetingInfo } = require('./logic');
 const { isNullOrEmpty } = require('./logic/utils');
 const server = require('./logic/server');
-const { ROLES, PERMISSIONS, SCOPE_NAMES } = require('./logic/constants');
+const {
+	ROLES, PERMISSIONS, SCOPE_NAMES, RESPONSE_STATUS, STATES,
+} = require('./logic/constants');
 
 const VideoconferenceModel = require('./model');
 const { schoolModel: Schools } = require('../school/model');
@@ -32,13 +34,73 @@ class VideoconferenceService {
 	}
 
 	/**
-	 * @typedef {Object} CreateResponse
+	 * @typedef {Object} VideoConference
 	 * @property {[url:Url]} the url to join the videoconference
 	 * @property {[state:STATE]} the current state in which the videoconference is in
 	 * @property {success:'SUCCESS'|'ERROR'} status indicator
 	 * @property {[permissions:[String]]} user permissions
 	 * @property {[error:String]} error message indication string
 	 */
+
+	 /**
+		*
+		* @param {String} id the id of the scope
+		* @param {Object} params
+		* @param {String} params.query.scopeName the named identifier for given scope id
+		* @returns {VideoConference}
+		*/
+	async get(id, params) {
+		// PARAMETER VALIDATION
+		const { scopeName } = params.route;
+		if (!this.requestParamsValid({ id, scopeName })) {
+			// todo params cleanup
+			throw new BadRequest('id or scopeName invalid');
+		}
+		// TODO CHECK PERMISSIONS
+
+		const responseTypes = ['wait', 'start', 'join', 'error'];
+		if (!params.query.demo || !responseTypes.includes(params.query.demo)) {
+			throw new BadRequest(`define demo in query with one value of${JSON.stringify(responseTypes)}`);
+		}
+
+		const createResponse = (status, state, permission, url, options) => ({
+			status, state, permission, url, options,
+		});
+
+		// sample wait  response
+		switch (params.query.demo) {
+			case 'wait':
+				return createResponse(
+					RESPONSE_STATUS.SUCCESS,
+					STATES.NOT_STARTED,
+					PERMISSIONS.JOIN_MEETING,
+				);
+			case 'start':
+				return createResponse(
+					RESPONSE_STATUS.SUCCESS,
+					STATES.READY,
+					PERMISSIONS.START_MEETING,
+					undefined,
+					{
+						moderatorMustApproveJoinRequests: false,
+						everybodyJoinsAsModerator: false,
+					},
+				);
+			case 'join':
+				return createResponse(
+					RESPONSE_STATUS.SUCCESS,
+					STATES.STARTED,
+					PERMISSIONS.JOIN_MEETING,
+					'https://some.url',
+				);
+			default: // error
+				return {
+					status: RESPONSE_STATUS.ERROR,
+					error: { message: 'errorMessage', key: 123 },
+				};
+		}
+	}
+
 
 	/**
  * creates an videoconference url to join a meeting, inside a scope defined by
@@ -59,7 +121,7 @@ class VideoconferenceService {
 		// PARAMETER VALIDATION
 		if (!this.requestParamsValid(data)) {
 			// todo params cleanup
-			throw new BadRequest('id or scope invalid');
+			throw new BadRequest('id or scopeName invalid');
 		}
 
 		const { app } = this;
@@ -266,7 +328,7 @@ class VideoconferenceService {
 
 
 module.exports = function setup(app) {
-	app.use('/videoconference', new VideoconferenceService(app));
+	app.use('/videoconference/:scopeName', new VideoconferenceService(app));
 	const videoconferenceService = app.service('/videoconference');
-	videoconferenceService.hooks(videoconferenceHooks);
+	// videoconferenceService.hooks(videoconferenceHooks);
 };
