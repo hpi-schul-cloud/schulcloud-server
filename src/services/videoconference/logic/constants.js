@@ -42,3 +42,10 @@ const states = {
 	STARTED: 'STARTED,',
 };
 exports.STATES = states;
+
+const createOptionToggles = {
+	MODERATOR_MUST_APPROVE_JOIN_REQUESTS: 'moderatorMustApproveJoinRequests',
+	EVERYBODY_JOINS_AS_MODERATOR: 'everybodyJoinsAsModerator',
+	EVERY_ATTENDY_JOINS_MUTED: 'everyAttendeJoinsMuted',
+};
+exports.CREATE_OPTION_TOGGLES = createOptionToggles;
