@@ -9,13 +9,9 @@ exports.MESSAGE_KEYS = messageKeys;
 
 const permissions = {
 	/**
-	 * Attend/join a meeting with extended priviledges.
+	 * join a meeting as normal user.
 	 */
-	MODERATE_MEETING: 'MODERATE_MEETING',
-	/**
-	 * Attend/join a meeting as normal user.
-	 */
-	ATTEND_MEETING: 'ATTEND_MEETING',
+	JOIN_MEETING: 'JOIN_MEETING', // todo rename in migration
 	/**
 	 * the first user must start a meeting.
 	 * This is a precondition for other users which only need to have permission to ATTEND_MEETING.
@@ -39,3 +35,10 @@ const scopeNames = {
 	COURSE: 'course',
 };
 exports.SCOPE_NAMES = scopeNames;
+
+const states = {
+	NOT_STARTED: 'NOT_STARTED',
+	READY: 'READY',
+	STARTED: 'STARTED,',
+};
+exports.STATES = states;
