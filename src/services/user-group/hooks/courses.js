@@ -66,6 +66,19 @@ const deleteWholeClassFromCourse = (hook) => {
 	});
 };
 
+/**
+ * remove all substitution teacher which are also teachers
+ * @param hook - contains and request body
+ */
+const removeSubstitutionDuplicates = (hook) => {
+	const requestBody = hook.data;
+	if (requestBody.substitutionIds && (requestBody.substitutionIds || []).length > 0) {
+		requestBody.substitutionIds = requestBody.substitutionIds.filter(
+			(val) => !requestBody.teacherIds.includes(val),
+		);
+	}
+};
+
 const courseInviteHook = async (context) => {
 	if (context.path === 'courses' && context.params.query && context.params.query.link) {
 		// link is used as "authorization"
@@ -112,6 +125,7 @@ const restrictChangesToArchivedCourse = async (context) => {
 module.exports = {
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
+	removeSubstitutionDuplicates,
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,

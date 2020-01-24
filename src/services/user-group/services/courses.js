@@ -10,7 +10,10 @@ const {
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
+	removeSubstitutionDuplicates,
 } = require('../hooks/courses');
+
+const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
 
 class Courses {
 	constructor(options) {
@@ -68,6 +71,7 @@ const courseHooks = {
 		create: [
 			globalHooks.injectUserId,
 			globalHooks.hasPermission('COURSE_CREATE'),
+			removeSubstitutionDuplicates,
 			restrictToCurrentSchool,
 		],
 		update: [
@@ -81,10 +85,11 @@ const courseHooks = {
 			restrictToCurrentSchool,
 			restrictChangesToArchivedCourse,
 			globalHooks.permitGroupOperation,
+			removeSubstitutionDuplicates,
 			deleteWholeClassFromCourse,
 		],
 		remove: [
-			globalHooks.hasPermission('COURSE_REMOVE'),
+			checkScopePermissions(['COURSE_DELETE']),
 			restrictToCurrentSchool,
 			restrictToUsersOwnCourses,
 			globalHooks.permitGroupOperation,

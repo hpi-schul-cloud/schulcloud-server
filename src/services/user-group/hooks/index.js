@@ -10,6 +10,7 @@ const {
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
+	removeSubstitutionDuplicates,
 } = require('./courses');
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
@@ -28,6 +29,7 @@ exports.before = {
 	create: [
 		globalHooks.injectUserId,
 		globalHooks.hasPermission('COURSE_CREATE'),
+		removeSubstitutionDuplicates,
 		restrictToCurrentSchool,
 	],
 	update: [
@@ -41,6 +43,7 @@ exports.before = {
 		restrictToCurrentSchool,
 		restrictChangesToArchivedCourse,
 		globalHooks.permitGroupOperation,
+		removeSubstitutionDuplicates,
 		deleteWholeClassFromCourse,
 	],
 	remove: [
