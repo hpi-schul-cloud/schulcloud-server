@@ -75,7 +75,7 @@ const courseHooks = {
 			restrictToCurrentSchool,
 		],
 		update: [
-			globalHooks.hasPermission('COURSE_EDIT'),
+			checkScopePermissions(['COURSE_EDIT']),
 			restrictToCurrentSchool,
 			restrictToUsersOwnCourses,
 			restrictChangesToArchivedCourse,
