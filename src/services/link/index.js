@@ -3,6 +3,7 @@ const service = require('feathers-mongoose');
 const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
+const {REGISTRATIONLINK_EXPIRATION_DAYS} = require('../../../config/globals')
 
 module.exports = function setup() {
 	const app = this;
@@ -16,16 +17,15 @@ module.exports = function setup() {
 		lean: true,
 	};
 
-	const registrationLinkExpirationDays = app.get('registrationLinkExpirationDays') || 30;
+	const registrationLinkExpirationDays = REGISTRATIONLINK_EXPIRATION_DAYS || 30;
 
 	let linkService = service(options);
 
-	const hasExpired = (date) => {
+	const isExpired = (date) => {
 		// calculate the date the link will expire on
-		const expirationDate = new Date(date);
-		expirationDate.setDate(expirationDate.getDate() + registrationLinkExpirationDays);
+		date.setDate(date.getDate() + registrationLinkExpirationDays);
 		// check if that expiration date has already passed
-		return expirationDate <= Date.now();
+		return date <= Date.now();
 	};
 
 	const isLocalRegistrationLink = (url) => {
@@ -42,7 +42,7 @@ module.exports = function setup() {
 			const linkId = req.params.__feathersId;
 			linkService.get(linkId)
 				.then((data) => {
-					if (isLocalRegistrationLink(data.target) && hasExpired(data.createdAt)) {
+					if (isLocalRegistrationLink(data.target) && isExpired(data.createdAt)) {
 						// link is both local and has expired
 						res.status(403).json({ error: 'Expired' });
 					} else {
@@ -50,7 +50,7 @@ module.exports = function setup() {
 						const [url, query] = data.target.split('?');
 						const queryObject = queryString.parse(query || '');
 						queryObject.link = data._id;
-						res.json({
+						return res.json({
 							target: `${url}?${queryString.stringify(queryObject)}`,
 						});
 					}
@@ -58,11 +58,11 @@ module.exports = function setup() {
 				.catch((err) => {
 					logger.error(err);
 					// send not found to client
-					res.status(404).json({ error: 'Not found' });
+					return res.status(404).json({ error: 'Not found' });
 				});
 		} else {
 			delete req.query.includeShortId;
-			next();
+			return next();
 		}
 	}
 

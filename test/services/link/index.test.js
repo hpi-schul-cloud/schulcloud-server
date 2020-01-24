@@ -7,6 +7,7 @@ const app = require('../../../src/app');
 chai.use(chaiHttp);
 
 const subtractDays = (date, d) => {
+	// generate a date object that is d days before now
 	// calculation method intentionally different from what is being used in production
 	date.setTime(date.getTime() - (d * 24 * 60 * 60 * 1000));
 	return date;
@@ -14,6 +15,7 @@ const subtractDays = (date, d) => {
 
 describe('link service', () => {
 	const service = app.service('link');
+	// forces disables duplicate prevention during tests to prevent conflicts with existing data
 	const forceNew = true;
 	it('registered the links service', () => {
 		assert.ok(service);
