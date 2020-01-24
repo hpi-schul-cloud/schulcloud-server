@@ -127,7 +127,7 @@ class CourseShareService {
 		// Also check the corresponding lessons and add shareToken
 		const course = coursesService.get(id);
 		if (!course.shareToken) {
-			const lessons = await lessonsService.find({ query: { courseId: id } })
+			const lessons = await lessonsService.find({ query: { courseId: id } });
 			for (let i = 0; i < lessons.data.length; i += 1) {
 				if (!lessons.data[i].shareToken) {
 					lessonsModel
