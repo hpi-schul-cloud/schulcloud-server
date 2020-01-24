@@ -13,11 +13,14 @@ const { getUser } = require('../../hooks');
 
 const {
 	createMeeting,
+	getMeetingInfo,
 } = require('./logic');
+
 const {
 	isNullOrEmpty,
 	copyPropertyNameIfIncludedInValuesFromSourceToTarget,
 } = require('./logic/utils');
+
 const server = require('./logic/server');
 const {
 	ROLES,
@@ -26,6 +29,7 @@ const {
 	RESPONSE_STATUS,
 	STATES,
 	CREATE_OPTION_TOGGLES,
+	MESSAGE_KEYS,
 } = require('./logic/constants');
 
 const VideoconferenceModel = require('./model');
@@ -198,12 +202,32 @@ class VideoconferenceBaseService {
 		return null;
 	}
 
-	static createResponse(status, state, permissions, url, options) {
+	static createResponse(status, state, permissions, url = undefined, options = null) {
 		const permission = VideoconferenceBaseService
 			.getHighestVideoconferencePermission(permissions);
 		return {
-			status, state, permission, url, options,
+			status, state, permission, url, options: options || [],
 		};
+	}
+
+
+	/**
+ * fetchs the VideoconferenceModel with given scopeName and scopeId and returns it.
+ * the model will be defined when a videoconference is created/starts.
+ * some of the options are reused from other users for join link generation
+ * @param {String} scopeName
+ * @param {String} scopeId
+ * @re
+ */
+	static async getVideocenceOptions(scopeName, scopeId) {
+		const modelDefaults = VideoconferenceBaseService.getDefaultModel(scopeName, scopeId);
+		const videoconferenceSettings = await VideoconferenceModel
+			.findOne(modelDefaults).lean().exec();
+		return videoconferenceSettings;
+	}
+
+	static getDefaultModel(scopeName, scopeId) {
+		return { targetModel: scopeName, target: scopeId };
 	}
 }
 
@@ -237,63 +261,54 @@ class GetVideoconferenceServie extends VideoconferenceBaseService {
 	async get(scopeId, params) {
 		const { scopeName } = params.route;
 
-		// PARAMETER VALIDATION
+		// PARAMETER VALIDATION ///////////////////////////////////////////////////
 		VideoconferenceBaseService.throwOnValidationErrors(scopeId, scopeName);
 
 		const { app } = this;
 		const authenticatedUser = await getUser({ params, app });
+		const { userPermissionsInScope } = await this
+			.getScopeInfo(app, authenticatedUser, scopeName, scopeId);
 
-		// CHECK PERMISSIONS
+		// CHECK PERMISSIONS //////////////////////////////////////////////////////
 		VideoconferenceBaseService.throwOnFeaturesDisabled(authenticatedUser);
+		VideoconferenceBaseService.throwOnPermissionMissingInScope(PERMISSIONS.JOIN_MEETING, userPermissionsInScope);
 
-		// WIP BELOW
+		// check videoconference metadata have been already defined locally and videoconference is running
+		const videoconferenceMetadata = await VideoconferenceBaseService
+			.getVideocenceOptions(scopeName, scopeId);
+		const meetingInfo = await getMeetingInfo(server, scopeId);
 
-		const responseTypes = ['wait', 'start', 'join', 'error'];
-		if (!params.query.demo || !responseTypes.includes(params.query.demo)) {
-			throw new BadRequest(`define demo in query with one value of${JSON.stringify(responseTypes)}`);
+		if (videoconferenceMetadata === null || meetingInfo === MESSAGE_KEYS.NOT_FOUND) {
+			// meeting is not started yet --> wait (permission: join) or start (permission: start)
+			return VideoconferenceBaseService.createResponse(
+				RESPONSE_STATUS.SUCCESS,
+				videoconferenceMetadata ? STATES.READY : STATES.NOT_STARTED,
+				userPermissionsInScope,
+				undefined,
+				videoconferenceMetadata,
+			);
 		}
 
-
-		// sample wait  response
-		switch (params.query.demo) {
-			case 'wait':
-				return VideoconferenceBaseService.createResponse(
-					RESPONSE_STATUS.SUCCESS,
-					STATES.NOT_STARTED,
-					PERMISSIONS.JOIN_MEETING,
-				);
-			case 'start':
-				return VideoconferenceBaseService.createResponse(
-					RESPONSE_STATUS.SUCCESS,
-					STATES.READY,
-					PERMISSIONS.START_MEETING,
-					undefined,
-					{
-						moderatorMustApproveJoinRequests: false,
-						everybodyJoinsAsModerator: false,
-					},
-				);
-			case 'join':
-				return VideoconferenceBaseService.createResponse(
-					RESPONSE_STATUS.SUCCESS,
-					STATES.STARTED,
-					PERMISSIONS.JOIN_MEETING,
-					'https://some.url',
-				);
-			default: // error
-				return {
-					status: RESPONSE_STATUS.ERROR,
-					error: { message: 'errorMessage', key: 123 },
-				};
+		if (videoconferenceMetadata && meetingInfo !== MESSAGE_KEYS.NOT_FOUND) {
+			// meeting already has started --> join (again)
+			return VideoconferenceBaseService.createResponse(
+				RESPONSE_STATUS.SUCCESS,
+				STATES.STARTED,
+				userPermissionsInScope,
+				meetingInfo.url,
+				videoconferenceMetadata,
+			);
 		}
+
+		throw new GeneralError('could not fetch current videoconference state');
 	}
 }
 
 class CreateVideoconferenceService extends VideoconferenceBaseService {
 	/**
- * creates an videoconference url to join a meeting, inside a scope defined by
-	 * id and scopeName depending on permissions as moderator or attendee.
-	 * this may fail due missing permissions
+ *			reates an videoconference url to join a meeting, inside a s				e defined by
+	 * id and scopeName dependi			 on permiss		on		 as moderator or attendee.
+	 * t	his may fail due missing permissions
 	 * @param {{scopeName:string, id:string}} data
 	 * @param {VideoconferenceOptions} params
 	 * @returns {CreateResponse} to authenticate through browser redirect
@@ -365,11 +380,10 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
  * @param {*} options
  */
 	static async updateAndReturnVideoconferenceOptions(scopeName, scopeId, options) {
-		const modelDefaults = { targetModel: scopeName, target: scopeId };
-		let videoconferenceSettings = await VideoconferenceModel
-			.findOne(modelDefaults).lean().exec();
-		const validOptions = VideoconferenceBaseService.getValidOptions(options);
+		const modelDefaults = VideoconferenceBaseService.getDefaultModel(scopeName, scopeId);
+		let videoconferenceSettings = await VideoconferenceBaseService.getVideocenceOptions(scopeName, scopeId);
 		if (videoconferenceSettings === null) {
+			const validOptions = VideoconferenceBaseService.getValidOptions(options);
 			videoconferenceSettings = await new VideoconferenceModel({
 				...modelDefaults, options: validOptions,
 			}).save();

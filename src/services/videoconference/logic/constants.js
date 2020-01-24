@@ -17,11 +17,6 @@ const permissions = {
 	 * This is a precondition for other users which only need to have permission to ATTEND_MEETING.
 	 */
 	START_MEETING: 'START_MEETING',
-	/**
-	 * create meeting metadata locally, which is a precondition to START_MEETING.
-	 * @deprecated
-	 */
-	CREATE_MEETING: 'CREATE_MEETING',
 };
 exports.PERMISSIONS = permissions;
 
