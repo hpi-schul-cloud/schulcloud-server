@@ -7,7 +7,7 @@ const resolveScope = (context) => {
 		} else {
 			scopeName = context.path;
 		}
-		const scopeId = context.params.route.scopeId || context.id;
+		const scopeId = context.params.route ? context.params.route.scopeId || context.id : context.id;
 
 		return { scopeName, scopeId };
 	} catch (e) {

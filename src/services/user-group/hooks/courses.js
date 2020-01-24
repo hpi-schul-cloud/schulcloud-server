@@ -8,6 +8,8 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
+const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
+
 /**
  * adds all students to a course when a class is added to the course
  * @param hook - contains created/patched object and request body
@@ -92,7 +94,7 @@ const courseInviteHook = async (context) => {
 
 const patchPermissionHook = async (context) => {
 	const query = context.params.query || {};
-	const defaultPermissionHook = (ctx) => Promise.resolve(globalHooks.hasPermission('COURSE_EDIT')(ctx))
+	const defaultPermissionHook = (ctx) => Promise.resolve(checkScopePermissions(['COURSE_EDIT'])(ctx))
 		.then((_ctx) => restrictToUsersOwnCourses(_ctx));
 
 	if (query.link) {

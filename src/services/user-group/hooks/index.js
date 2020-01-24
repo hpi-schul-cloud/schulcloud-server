@@ -13,8 +13,6 @@ const {
 	removeSubstitutionDuplicates,
 } = require('./courses');
 
-const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
-
 exports.before = {
 	all: [
 		authenticate('jwt'),
@@ -47,7 +45,7 @@ exports.before = {
 		deleteWholeClassFromCourse,
 	],
 	remove: [
-		checkScopePermissions(['COURSE_DELETE']),
+		globalHooks.hasPermission('COURSE_DELETE'),
 		restrictToCurrentSchool,
 		restrictToUsersOwnCourses,
 		globalHooks.permitGroupOperation,
