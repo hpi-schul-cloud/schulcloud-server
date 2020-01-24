@@ -6,6 +6,8 @@ const { Schema } = mongoose;
 const targetModels = ['courses', 'events'];
 const rolesEnum = ['courseStudent', 'courseTeacher']; // todo: complete for course and team/event-roles
 
+// todo create index on targetModel and target
+
 const videoconferenceSchema = new Schema({
 	target: {
 		type: Schema.Types.ObjectId,

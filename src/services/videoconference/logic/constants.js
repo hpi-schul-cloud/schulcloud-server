@@ -18,7 +18,8 @@ const permissions = {
 	 */
 	START_MEETING: 'START_MEETING',
 	/**
-	 * create meeting metadata locally, which is aq precondition to START_MEETING.
+	 * create meeting metadata locally, which is a precondition to START_MEETING.
+	 * @deprecated
 	 */
 	CREATE_MEETING: 'CREATE_MEETING',
 };
