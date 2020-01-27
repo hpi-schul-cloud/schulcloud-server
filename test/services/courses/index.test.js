@@ -35,8 +35,8 @@ const testLesson = {
 };
 
 describe('courseGroup service', () => {
-	it('creates a courseGroup in a course', () => {
-		const course = testObjects.createTestCourse({});
+	it('creates a courseGroup in a course', async () => {
+		const course = await testObjects.createTestCourse({});
 		testCourseGroup.courseId = course._id;
 		return courseGroupService.create(testCourseGroup)
 			.then((courseGroup) => {
