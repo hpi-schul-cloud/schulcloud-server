@@ -58,7 +58,7 @@ describe.only('test videoconference logic', () => {
 	it('get meeting information for not existing meeting', async () => {
 		const randomId = String(new mongoose.Types.ObjectId());
 		const response = await getMeetingInfo(testServer, randomId);
-		expect(utils.isNotFoundResponse(response)).to.be.true;
+		expect(utils.isValidNotFoundResponse(response)).to.be.true;
 		expect(response.messageKey[0]).to.equal(MESSAGE_KEYS.NOT_FOUND);
 	});
 

@@ -36,7 +36,7 @@ module.exports = {
 		}
 		return false;
 	},
-	isNotFoundResponse: (response) => response
+	isValidNotFoundResponse: (response) => response
 		&& Array.isArray(response.messageKey)
 		&& response.messageKey.includes(MESSAGE_KEYS.NOT_FOUND),
 	isValidFoundResponse: (response) => response

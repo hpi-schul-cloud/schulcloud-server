@@ -101,7 +101,7 @@ exports.getMeetingInfo = (server, meetingId) => server.monitoring
 		if (!meeting || !response) {
 			throw new Error('error contacting bbb/server');
 		}
-		if (utils.isValidFoundResponse(response) || utils.isNotFoundResponse(response)) {
+		if (utils.isValidFoundResponse(response) || utils.isValidNotFoundResponse(response)) {
 			// valid response with not found or existing meeting
 			return response;
 		}
