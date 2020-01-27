@@ -1,12 +1,8 @@
 // const rp = require('request-promise-native');
 // const xml2js = require('xml2js-es6-promise');
 const { error } = require('../../../logger');
-const {
-	MESSAGE_KEYS, RESPONSE_STATUS, ROLES, GUEST_POLICIES,
-} = require('./constants');
+const { ROLES } = require('./constants');
 const utils = require('./utils');
-
-const createParams = { allowStartStopRecording: false, guestPolicy: GUEST_POLICIES.ALWAYS_DENY };
 
 const logErrorAndThrow = (message, response) => {
 	error(message, response);
@@ -35,7 +31,7 @@ exports.createMeeting = (
 		// the meeting does not exist, create it...
 		if (utils.isValidNotFoundResponse(response)) {
 			return server.administration
-				.create(meetingName, meetingId, createParams);
+				.create(meetingName, meetingId, params);
 		}
 		throw new Error('error in setup the meeting, retry...?');
 	})

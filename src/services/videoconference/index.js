@@ -31,14 +31,13 @@ const {
 	RESPONSE_STATUS,
 	STATES,
 	CREATE_OPTION_TOGGLES,
+	GUEST_POLICIES,
 } = require('./logic/constants');
 
 const VideoconferenceModel = require('./model');
 const { schoolModel: Schools } = require('../school/model');
 
-
 const { ObjectId } = require('../../helper/compare');
-
 
 class VideoconferenceBaseService {
 	constructor(app) {
@@ -346,7 +345,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 			// todo extend options based on metadata created before
 			const role = this.getUserRole();
 			const settings = CreateVideoconferenceService
-				.getCreateOptions(authenticatedUser.id, videoconferenceMetadata.options);
+				.getCreationSettings(authenticatedUser.id, videoconferenceMetadata.options);
 			const url = await createMeeting(
 				server,
 				scopeTitle,
@@ -402,14 +401,22 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 	 * @returns bbb settings
 
 	 */
-	static getCreateOptions(userID, {
+	static getCreationSettings(userID, {
 		moderatorMustApproveJoinRequests = false,
 		everybodyJoinsAsModerator = false,
 		everyAttendeJoinsMuted = false,
 		// rolesAllowedToAttendVideoconference = [],
 		// rolesAllowedToStartVideoconference = [],
 	}) {
-		const settings = { userID };
+		// set default settings first...
+		const settings = {
+			userID,
+			allowStartStopRecording: false,
+			guestPolicy: GUEST_POLICIES.ALWAYS_DENY,
+		};
+
+		// modify them based on option toggles...
+
 		if (moderatorMustApproveJoinRequests) {
 			// todo others are guests and guest policy may be updated
 		}
