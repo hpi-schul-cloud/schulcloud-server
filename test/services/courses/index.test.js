@@ -43,7 +43,6 @@ const testLesson = {
 describe('courses service', () => {
 	it('registered the courses service', () => {
 		assert.ok(courseService);
-		assert.ok(copyCourseService);
 	});
 
 	it('creates a course', () => courseService.create(testCourse)
@@ -52,46 +51,6 @@ describe('courses service', () => {
 			chai.expect(course.name).to.equal(testCourse.name);
 			chai.expect(course.userIds).to.have.lengthOf(0);
 		}));
-
-	it('creates a course copy', () => {
-		const newCourseName = 'testCourse 76';
-		return copyCourseService.create({ _id: courseId, name: newCourseName })
-			.then((course) => {
-				chai.expect(course.name).to.equal(newCourseName);
-				chai.expect(course.schoolId.toString()).to.equal(testCourse.schoolId);
-				chai.expect(course.userIds).to.have.lengthOf(0);
-			});
-	});
-
-	it('creates a course copy including homeworks', () => {
-		const newCourseName = 'testCourse 76';
-		return copyCourseService.create({ _id: testCourseExample, name: newCourseName, userId: testUserId })
-			.then((course) => {
-				chai.expect(course.name).to.equal(newCourseName);
-				chai.expect(course.userIds).to.have.lengthOf(0);
-			});
-	});
-
-	it('creates a shareToken for a course', async () => {
-		const course = await testObjects.createTestCourse({});
-		const sharedCourse = await shareCourseService.get(course._id);
-		chai.expect(sharedCourse.shareToken).to.not.be.undefined;
-	});
-
-	it('find name of course through shareToken', async () => {
-		const course = await testObjects.createTestCourse({ name: 'Deutsch 10a' });
-		const sharedCourse = await shareCourseService.get(course._id);
-		const courseName = await shareCourseService.find({ query: { shareToken: sharedCourse.shareToken } });
-		chai.expect(courseName).to.equal('Deutsch 10a');
-	});
-
-	it('creates a course copy through shareToken', () => shareCourseService.create({
-		shareToken,
-		courseName: 'testCourse 76',
-		userId: testUserId,
-	}).then((course) => {
-		chai.expect(course.name).to.equal('testCourse 76');
-	}));
 
 	it('creates a courseGroup in a course', () => {
 		testCourseGroup.courseId = courseId;
