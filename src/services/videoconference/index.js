@@ -19,6 +19,8 @@ const {
 const {
 	isNullOrEmpty,
 	copyPropertyNameIfIncludedInValuesFromSourceToTarget,
+	isValidNotFoundResponse,
+	isValidFoundResponse,
 } = require('./logic/utils');
 
 const server = require('./logic/server');
@@ -29,7 +31,6 @@ const {
 	RESPONSE_STATUS,
 	STATES,
 	CREATE_OPTION_TOGGLES,
-	MESSAGE_KEYS,
 } = require('./logic/constants');
 
 const VideoconferenceModel = require('./model');
@@ -278,24 +279,25 @@ class GetVideoconferenceServie extends VideoconferenceBaseService {
 			.getVideocenceOptions(scopeName, scopeId);
 		const meetingInfo = await getMeetingInfo(server, scopeId);
 
-		if (videoconferenceMetadata === null || (meetingInfo && meetingInfo.messa === MESSAGE_KEYS.NOT_FOUND)) {
-			// meeting is not started yet --> wait (permission: join) or start (permission: start)
-			return VideoconferenceBaseService.createResponse(
-				RESPONSE_STATUS.SUCCESS,
-				videoconferenceMetadata ? STATES.FINISHED : STATES.NOT_STARTED,
-				userPermissionsInScope,
-				undefined,
-				videoconferenceMetadata,
-			);
-		}
-
-		if (videoconferenceMetadata && meetingInfo !== MESSAGE_KEYS.NOT_FOUND) {
+		if (isValidFoundResponse(meetingInfo)) {
 			// meeting already has started --> join (again)
 			return VideoconferenceBaseService.createResponse(
 				RESPONSE_STATUS.SUCCESS,
 				STATES.RUNNING,
 				userPermissionsInScope,
 				meetingInfo.url,
+				videoconferenceMetadata,
+			);
+		}
+
+		if (isValidNotFoundResponse(meetingInfo)) {
+			// meeting is not started yet or finihed --> wait (permission: join) or start (permission: start)
+			const wasRunning = !!videoconferenceMetadata;
+			return VideoconferenceBaseService.createResponse(
+				RESPONSE_STATUS.SUCCESS,
+				wasRunning ? STATES.FINISHED : STATES.NOT_STARTED,
+				userPermissionsInScope,
+				undefined,
 				videoconferenceMetadata,
 			);
 		}

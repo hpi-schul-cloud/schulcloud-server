@@ -29,11 +29,11 @@ exports.createMeeting = (
 			throw new Error('error contacting bbb/server');
 		}
 		// the meeting already exist...
-		if (Array.isArray(response.returncode) && response.returncode.includes(RESPONSE_STATUS.SUCCESS)) {
+		if (utils.isValidFoundResponse(response)) {
 			return meeting;
 		}
 		// the meeting does not exist, create it...
-		if (Array.isArray(response.messageKey) && response.messageKey.includes(MESSAGE_KEYS.NOT_FOUND)) {
+		if (utils.isValidNotFoundResponse(response)) {
 			return server.administration
 				.create(meetingName, meetingId, createParams);
 		}
@@ -45,7 +45,7 @@ exports.createMeeting = (
 		if (!meeting || !response) {
 			throw new Error('error contacting bbb/server');
 		}
-		if (!Array.isArray(response.returncode) || !response.returncode.includes(RESPONSE_STATUS.SUCCESS)) {
+		if (!utils.isValidFoundResponse(response)) {
 			const message = 'meeting room creation failed';
 			error(message, response);
 			throw new Error(message);
