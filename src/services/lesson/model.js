@@ -28,6 +28,7 @@ const lessonSchema = new Schema({
 	hidden: { type: Boolean, default: true },
 	// token for topic sharing
 	shareToken: { type: String, unique: true, sparse: true },
+	isTitle: { type: Boolean, default: false },
 	// if current topic was copied from another, for later fancy stuff
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
 	position: { type: Number, default: 0, required: true },
