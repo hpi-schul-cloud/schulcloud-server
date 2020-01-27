@@ -18,6 +18,11 @@ const createParams = { allowStartStopRecording: false, guestPolicy: GUEST_POLICI
 // 	return undefined;
 // };
 
+const logErrorAndThrow = (message, response) => {
+	error(message, response);
+	throw new Error(message);
+};
+
 /**
  * creates a url for attendee or moderator to join a meeting.
  * if the meeting does not exist, it will be created.
@@ -43,20 +48,20 @@ exports.createMeeting = (
 		switch (role) {
 			case ROLES.MODERATOR:
 				if (!Array.isArray(response.moderatorPW) || !response.moderatorPW.length) {
-					throw new Error('invalid moderator credentials');
+					logErrorAndThrow('invalid moderator credentials', response);
 				}
 				secret = response.moderatorPW[0];
 				break;
 			case ROLES.ATTENDEE:
 			default:
 				if (!Array.isArray(response.attendeePW) || !response.attendeePW.length) {
-					throw new Error('invalid attendee credentials');
+					logErrorAndThrow('invalid attendee credentials', response);
 				}
 				secret = response.attendeePW[0];
 		}
 
 		if (!Array.isArray(response.meetingID) || !response.meetingID.length) {
-			throw new Error('invalid meetingID');
+			logErrorAndThrow('invalid meetingID', response);
 		}
 		const p = Object.assign({}, { redirect: false }, params);
 		return server.administration.join(userName, response.meetingID[0], secret, p);
