@@ -4,7 +4,7 @@
 	},
 	"name": "AddPositionToLessons",
 	"createdAt": {
-		"$date": "2019-07-08T14:15:27.050Z"
+		"$date": "2019-07-08T14:15:27.05Z"
 	},
 	"state": "up",
 	"__v": 0
@@ -38,7 +38,7 @@
 	"state": "up",
 	"name": "addStartAndEndDateToYearCollection",
 	"createdAt": {
-		"$date": "2019-07-17T08:12:18.480Z"
+		"$date": "2019-07-17T08:12:18.48Z"
 	},
 	"__v": 0
 },
@@ -188,7 +188,7 @@
 	"state": "up",
 	"name": "AddScopePermissionsViewPermissionToCourseTeachers",
 	"createdAt": {
-		"$date": "2019-09-25T14:59:22.190Z"
+		"$date": "2019-09-25T14:59:22.19Z"
 	},
 	"__v": 0
 },
@@ -271,6 +271,16 @@
 },
 {
 	"_id": {
+		"$oid": "5de50ab801498f0f504d349e"
+	},
+	"state": "up",
+	"name": "fix-demo-permissions",
+	"createdAt": {
+		"$date": "2019-12-02T12:59:36.284Z"
+	}
+},
+{
+	"_id": {
 		"$oid": "5de6838fc7c4a02707c337dd"
 	},
 	"state": "up",
@@ -279,16 +289,6 @@
 		"$date": "2019-12-02T11:56:47.413Z"
 	},
 	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5de50ab801498f0f504d349e"
-	},
-	"state": "up",
-	"name": "fix-demo-permissions",
-	"createdAt": {
-		"$date": "2019-12-02T12:59:36.284Z"
-	}
 },
 {
 	"_id": {
@@ -343,4 +343,16 @@
 		"$date": "2020-01-13T08:55:24.955Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e2f045b366f2b4b14ad754d"
+	},
+	"state": "up",
+	"name": "add bbb template to lti tools",
+	"createdAt": {
+		"$date": "2020-01-13T15:32:28.449Z"
+	},
+	"__v": 0
 }]
+
