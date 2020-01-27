@@ -6,6 +6,7 @@ const {
 } = require('@feathersjs/errors');
 const lodash = require('lodash');
 const { FEATURE_VIDEOCONFERENCE_ENABLED } = require('../../../config/globals'); // todo use config
+const { VIDEOCONFERENCE } = require('../../../src/services/school/model').SCHOOL_FEATURES;
 
 const videoconferenceHooks = require('./hooks');
 
@@ -63,7 +64,8 @@ class VideoconferenceBaseService {
 			throw new Forbidden('feature FEATURE_VIDEOCONFERENCE_ENABLED disabled');
 		}
 		// throw, if current users school feature is not enabled
-		const schoolFeatureEnabled = await VideoconferenceBaseService.isSchoolFeatureEnabled(authenticatedUser.schoolId);
+		const schoolFeatureEnabled = await VideoconferenceBaseService
+			.isSchoolFeatureEnabled(authenticatedUser.schoolId);
 		if (!schoolFeatureEnabled) {
 			throw new Forbidden('school feature disabled');
 		}
@@ -79,7 +81,7 @@ class VideoconferenceBaseService {
 	 * Takes valid and enabled options and returns the enabled toggles
 	 * @param {*} options
 	 */
-	static getValidOptions(options) {
+	static getValidOptions(options = {}) {
 		const validOptions = {};
 		const toggleOptions = Object.getOwnPropertyNames(CREATE_OPTION_TOGGLES);
 		toggleOptions.forEach((option) => {
@@ -104,13 +106,13 @@ class VideoconferenceBaseService {
 		const school = await Schools.findById(schoolId).lean().exec();
 		if (school && school.features
 			&& Array.isArray(school.features)
-			&& 'videoconference' in school.features) { // todo define feature-constants
+			&& school.features.includes(VIDEOCONFERENCE)) { // todo define feature-constants
 			return true;
 		}
 		return false;
 	}
 
-	userHasVideoconferencePermissionsInScope(userPermissions) {
+	static userHasVideoconferencePermissionsInScope(userPermissions) {
 		const videoConferencePermissionValues = Object.values(PERMISSIONS);
 		const videoConferencePermissionsOfUser = userPermissions
 			.filter((permission) => videoConferencePermissionValues.includes(permission));
@@ -123,7 +125,7 @@ class VideoconferenceBaseService {
 	 * @param {[String]} usersPermissions
 	 * @returns {Boolean}
 	 */
-	userIsAllowedTo(permission, usersPermissions) {
+	static userIsAllowedTo(permission, usersPermissions) {
 		return usersPermissions.includes(permission);
 	}
 
@@ -225,7 +227,11 @@ class VideoconferenceBaseService {
 	}
 
 	static getDefaultModel(scopeName, scopeId) {
-		return { targetModel: scopeName, target: scopeId };
+		const collectionNameFor = (scope) => {
+			if (scope === 'course') return 'courses';
+			throw new Error();
+		};
+		return { targetModel: collectionNameFor(scopeName), target: scopeId };
 	}
 }
 
@@ -316,7 +322,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 	 * service while corerct parameters are given or the feature is disabled
 	 */
 	async create(data = {}, params) {
-		const { scopeName, scopeId, options } = data;
+		const { scopeName, scopeId, options = {} } = data;
 
 		// PARAMETER VALIDATION ///////////////////////////////////////////////////
 		VideoconferenceBaseService.throwOnValidationErrors(scopeId, scopeName, options);
@@ -335,8 +341,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 		// BUSINESS LOGIC /////////////////////////////////////////		/////////////
 
 		// check videoconference metadata have been already defined locally
-		const videoconferenceMetadata = await CreateVideoconferenceService
-			.updateAndReturnVideocenceOptions(scopeName, scopeId, userPermissionsInScope, options);
+		const videoconferenceMetadata = await CreateVideoconferenceService.updateAndReturnVideoconferenceOptions(scopeName, scopeId, options);
 
 		// start the videoconference in bbb, no matter it's already running, return it
 		try {

@@ -10,7 +10,7 @@ const createService = app.service('videoconference');
 
 const { VIDEOCONFERENCE } = require('../../../src/services/school/model').SCHOOL_FEATURES;
 
-describe.only('videoconference service', () => {
+describe('videoconference service', () => {
 	let testData = null;
 	let server;
 
@@ -54,7 +54,8 @@ describe.only('videoconference service', () => {
 			scopeName: 'course',
 		};
 		expect(() => createService
-			.create(createOptions, testData.teacherRequestAuthentication), 'feature probably enabled in school').to.throw;
+			.create(createOptions, testData.teacherRequestAuthentication), 'feature probably enabled in school')
+			.to.throw;
 	});
 
 	it('succeds with school feature enabled', async () => {
@@ -65,7 +66,7 @@ describe.only('videoconference service', () => {
 		testData.school.features.push(VIDEOCONFERENCE);
 		await testData.school.save();
 		const response = await createService.create(createOptions, testData.teacherRequestAuthentication);
-		expect(response.SUCCESS, 'feature probably disabled in school').to.be.equal('SUCCESS');
+		expect(response, 'feature probably disabled in school').to.be.ok;
 	});
 
 	// // scope permission tests
