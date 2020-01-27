@@ -43,56 +43,56 @@ describe('schoolUsesLdap', () => {
 
 	it('should work even if multiple systems are registered', async () => {
 		const school = await createSchool();
-		school.systems = [
-			await createSystem({
+		school.systems = await Promise.all([
+			createSystem({
 				type: 'local',
 			}),
-			await createSystem({
+			createSystem({
 				type: 'ldap',
 				ldapConfig: {
 					active: true,
 				},
 			}),
-			await createSystem({
+			createSystem({
 				type: 'moodle',
 				url: 'https://schul-cloud.org/moodle',
 			}),
-		];
+		]);
 		expect(() => schoolUsesLdap(school)).not.to.throw();
 		expect(schoolUsesLdap(school)).to.equal(true);
 
 		const school2 = await createSchool();
-		school2.systems = [
-			await createSystem({
+		school2.systems = await Promise.all([
+			createSystem({
 				type: 'local',
 			}),
-			await createSystem({
+			createSystem({
 				type: 'ldap',
 				ldapConfig: {
 					active: false,
 				},
 			}),
-			await createSystem({
+			createSystem({
 				type: 'moodle',
 				url: 'https://schul-cloud.org/moodle',
 			}),
-		];
+		]);
 		expect(() => schoolUsesLdap(school2)).not.to.throw();
 		expect(schoolUsesLdap(school2)).to.equal(false);
 	});
 
 	it('should work if multiple ldap systems are in use', async () => {
 		const school = await createSchool();
-		school.systems = [
-			await createSystem({
+		school.systems = await Promise.all([
+			createSystem({
 				type: 'ldap',
 				ldapConfig: { active: false },
 			}),
-			await createSystem({
+			createSystem({
 				type: 'ldap',
 				ldapConfig: { active: true },
 			}),
-		];
+		]);
 		expect(() => schoolUsesLdap(school)).not.to.throw();
 		expect(schoolUsesLdap(school)).to.equal(true);
 	});
