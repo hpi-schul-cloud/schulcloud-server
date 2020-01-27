@@ -19,6 +19,8 @@ const {
 const {
 	isNullOrEmpty,
 	copyPropertyNameIfIncludedInValuesFromSourceToTarget,
+	isValidNotFoundResponse,
+	isValidFoundResponse,
 } = require('./logic/utils');
 
 const server = require('./logic/server');
@@ -29,15 +31,13 @@ const {
 	RESPONSE_STATUS,
 	STATES,
 	CREATE_OPTION_TOGGLES,
-	MESSAGE_KEYS,
+	GUEST_POLICIES,
 } = require('./logic/constants');
 
 const VideoconferenceModel = require('./model');
 const { schoolModel: Schools } = require('../school/model');
 
-
 const { ObjectId } = require('../../helper/compare');
-
 
 class VideoconferenceBaseService {
 	constructor(app) {
@@ -278,24 +278,25 @@ class GetVideoconferenceServie extends VideoconferenceBaseService {
 			.getVideocenceOptions(scopeName, scopeId);
 		const meetingInfo = await getMeetingInfo(server, scopeId);
 
-		if (videoconferenceMetadata === null || meetingInfo === MESSAGE_KEYS.NOT_FOUND) {
-			// meeting is not started yet --> wait (permission: join) or start (permission: start)
+		if (isValidFoundResponse(meetingInfo)) {
+			// meeting already has started --> join (again)
 			return VideoconferenceBaseService.createResponse(
 				RESPONSE_STATUS.SUCCESS,
-				videoconferenceMetadata ? STATES.READY : STATES.NOT_STARTED,
+				STATES.RUNNING,
 				userPermissionsInScope,
-				undefined,
+				meetingInfo.url,
 				videoconferenceMetadata,
 			);
 		}
 
-		if (videoconferenceMetadata && meetingInfo !== MESSAGE_KEYS.NOT_FOUND) {
-			// meeting already has started --> join (again)
+		if (isValidNotFoundResponse(meetingInfo)) {
+			// meeting is not started yet or finihed --> wait (permission: join) or start (permission: start)
+			const wasRunning = !!videoconferenceMetadata;
 			return VideoconferenceBaseService.createResponse(
 				RESPONSE_STATUS.SUCCESS,
-				STATES.STARTED,
+				wasRunning ? STATES.FINISHED : STATES.NOT_STARTED,
 				userPermissionsInScope,
-				meetingInfo.url,
+				undefined,
 				videoconferenceMetadata,
 			);
 		}
@@ -344,7 +345,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 			// todo extend options based on metadata created before
 			const role = this.getUserRole();
 			const settings = CreateVideoconferenceService
-				.getCreateOptions(authenticatedUser.id, videoconferenceMetadata.options);
+				.getCreationSettings(authenticatedUser.id, videoconferenceMetadata.options);
 			const url = await createMeeting(
 				server,
 				scopeTitle,
@@ -355,7 +356,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 			);
 			return VideoconferenceBaseService.createResponse(
 				RESPONSE_STATUS.SUCCESS,
-				STATES.STARTED,
+				STATES.RUNNING,
 				userPermissionsInScope,
 				url,
 				settings,
@@ -400,14 +401,22 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 	 * @returns bbb settings
 
 	 */
-	static getCreateOptions(userID, {
+	static getCreationSettings(userID, {
 		moderatorMustApproveJoinRequests = false,
 		everybodyJoinsAsModerator = false,
 		everyAttendeJoinsMuted = false,
 		// rolesAllowedToAttendVideoconference = [],
 		// rolesAllowedToStartVideoconference = [],
 	}) {
-		const settings = { userID };
+		// set default settings first...
+		const settings = {
+			userID,
+			allowStartStopRecording: false,
+			guestPolicy: GUEST_POLICIES.ALWAYS_DENY,
+		};
+
+		// modify them based on option toggles...
+
 		if (moderatorMustApproveJoinRequests) {
 			// todo others are guests and guest policy may be updated
 		}

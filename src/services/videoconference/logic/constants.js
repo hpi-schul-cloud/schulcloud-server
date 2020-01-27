@@ -34,8 +34,8 @@ exports.SCOPE_NAMES = scopeNames;
 
 const states = {
 	NOT_STARTED: 'NOT_STARTED',
-	READY: 'READY',
-	STARTED: 'STARTED,',
+	RUNNING: 'RUNNING',
+	FINISHED: 'FINISHED',
 };
 exports.STATES = states;
 

@@ -1,12 +1,13 @@
 const { expect } = require('chai');
 const mongoose = require('mongoose');
 const url = require('url');
-const { ROLES, RETURN_CODES, MESSAGE_KEYS } = require('../../../../src/services/videoconference/logic/constants');
-const { joinMeeting, getMeetingInfo } = require('../../../../src/services/videoconference/logic');
+const { ROLES, RESPONSE_STATUS, MESSAGE_KEYS } = require('../../../../src/services/videoconference/logic/constants');
+const { createMeeting, getMeetingInfo } = require('../../../../src/services/videoconference/logic');
 const testServer = require('../../../../src/services/videoconference/logic/server');
+const utils = require('../../../../src/services/videoconference/logic/utils');
 
 
-describe('test videoconference logic', () => {
+describe.only('test videoconference logic', () => {
 	it('test server initialized', () => {
 		expect(testServer).to.be.ok;
 	});
@@ -17,10 +18,10 @@ describe('test videoconference logic', () => {
 				'moderator',
 				'attendee',
 			]);
-		expect(Object.values(RETURN_CODES))
+		expect(Object.values(RESPONSE_STATUS))
 			.to.be.deep.equal([
 				'SUCCESS',
-				'FAILED',
+				'ERROR',
 			]);
 		expect(Object.values(MESSAGE_KEYS))
 			.to.be.deep.equal([
@@ -28,11 +29,11 @@ describe('test videoconference logic', () => {
 			]);
 	});
 
-	it('join a new or existing meeting', async () => {
+	it('create a new or existing meeting works', async () => {
 		const randomId = String(new mongoose.Types.ObjectId());
 
-		// join a new meeting
-		const moderatorUrl = await joinMeeting(
+		// create a new meeting
+		const moderatorUrl = await createMeeting(
 			testServer,
 			'testMeeting',
 			randomId,
@@ -42,8 +43,8 @@ describe('test videoconference logic', () => {
 		expect(moderatorUrl).to.be.not.empty;
 		expect(url.parse(moderatorUrl)).to.be.ok;
 
-		// join an existing meeting
-		const attendeeUrl = await joinMeeting(
+		// re-create an existing meeting
+		const attendeeUrl = await createMeeting(
 			testServer,
 			'testMeeting',
 			randomId,
@@ -57,14 +58,14 @@ describe('test videoconference logic', () => {
 	it('get meeting information for not existing meeting', async () => {
 		const randomId = String(new mongoose.Types.ObjectId());
 		const response = await getMeetingInfo(testServer, randomId);
-		expect(response).to.have.property('messageKey');
+		expect(utils.isValidNotFoundResponse(response)).to.be.true;
 		expect(response.messageKey[0]).to.equal(MESSAGE_KEYS.NOT_FOUND);
 	});
 
 	it('get meeting information for existing meeting', async () => {
 		const randomId = String(new mongoose.Types.ObjectId());
 		// create a new meeting
-		const moderatorUrl = await joinMeeting(
+		const moderatorUrl = await createMeeting(
 			testServer,
 			'testExistingMeeting',
 			randomId,
@@ -75,7 +76,7 @@ describe('test videoconference logic', () => {
 		expect(url.parse(moderatorUrl)).to.be.ok;
 		const response = await getMeetingInfo(testServer, randomId);
 		expect(response).to.have.property('returncode');
-		expect(response.returncode[0]).to.equal(RETURN_CODES.SUCCESS);
+		expect(response.returncode[0]).to.equal(RESPONSE_STATUS.SUCCESS);
 		expect(response.meetingID[0]).to.equal(randomId);
 	});
 });
