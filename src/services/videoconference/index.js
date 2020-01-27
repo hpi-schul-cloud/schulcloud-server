@@ -278,7 +278,7 @@ class GetVideoconferenceServie extends VideoconferenceBaseService {
 			.getVideocenceOptions(scopeName, scopeId);
 		const meetingInfo = await getMeetingInfo(server, scopeId);
 
-		if (videoconferenceMetadata === null || meetingInfo === MESSAGE_KEYS.NOT_FOUND) {
+		if (videoconferenceMetadata === null || (meetingInfo && meetingInfo.messa === MESSAGE_KEYS.NOT_FOUND)) {
 			// meeting is not started yet --> wait (permission: join) or start (permission: start)
 			return VideoconferenceBaseService.createResponse(
 				RESPONSE_STATUS.SUCCESS,

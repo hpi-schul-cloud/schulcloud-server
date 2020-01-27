@@ -4,6 +4,7 @@ const url = require('url');
 const { ROLES, RESPONSE_STATUS, MESSAGE_KEYS } = require('../../../../src/services/videoconference/logic/constants');
 const { createMeeting, getMeetingInfo } = require('../../../../src/services/videoconference/logic');
 const testServer = require('../../../../src/services/videoconference/logic/server');
+const utils = require('../../../../src/services/videoconference/logic/utils');
 
 
 describe.only('test videoconference logic', () => {
@@ -57,7 +58,7 @@ describe.only('test videoconference logic', () => {
 	it('get meeting information for not existing meeting', async () => {
 		const randomId = String(new mongoose.Types.ObjectId());
 		const response = await getMeetingInfo(testServer, randomId);
-		expect(response).to.have.property('messageKey');
+		expect(utils.isNotFoundResponse(response)).to.be.true;
 		expect(response.messageKey[0]).to.equal(MESSAGE_KEYS.NOT_FOUND);
 	});
 

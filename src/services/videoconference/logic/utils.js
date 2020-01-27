@@ -1,4 +1,5 @@
 const url = require('url');
+const { MESSAGE_KEYS, RESPONSE_STATUS } = require('./constants');
 
 module.exports = {
 	/**
@@ -25,7 +26,7 @@ module.exports = {
 	},
 	copyPropertyNameIfIncludedInValuesFromSourceToTarget: ({
 		source, propertyName, values, target, sourcePropertyNames = null,
-	})	=> {
+	}) => {
 		const propertyNames = sourcePropertyNames || Object.getOwnPropertyNames(source);
 		if (propertyNames.includes(propertyName)
 			&& Array.isArray(values)
@@ -35,4 +36,10 @@ module.exports = {
 		}
 		return false;
 	},
+	isNotFoundResponse: (response) => response
+		&& Array.isArray(response.messageKey)
+		&& response.messageKey.includes(MESSAGE_KEYS.NOT_FOUND),
+	isValidFoundResponse: (response) => response
+		&& Array.isArray(response.returncode)
+		&& response.returncode.includes(RESPONSE_STATUS.SUCCESS),
 };

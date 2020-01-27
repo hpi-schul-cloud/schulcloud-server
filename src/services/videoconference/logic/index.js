@@ -2,21 +2,11 @@
 // const xml2js = require('xml2js-es6-promise');
 const { error } = require('../../../logger');
 const {
-	MESSAGE_KEYS, RETURN_CODES, ROLES, GUEST_POLICIES,
+	MESSAGE_KEYS, RESPONSE_STATUS, ROLES, GUEST_POLICIES,
 } = require('./constants');
+const utils = require('./utils');
 
 const createParams = { allowStartStopRecording: false, guestPolicy: GUEST_POLICIES.ALWAYS_DENY };
-
-// /**
-//  * responseheaders will be evaluated to have a set-cookie valuecontaining a jsessionid
-//  * @param {*} headers
-//  */
-// const getSessionCookieFromHeaders = (headers) => {
-// 	if (headers && headers['set-cookie'] && Array.isArray(headers['set-cookie'])) {
-// 		return headers['set-cookie'].find((cookie) => String(cookie).startsWith('JSESSIONID'));
-// 	}
-// 	return undefined;
-// };
 
 const logErrorAndThrow = (message, response) => {
 	error(message, response);
@@ -31,15 +21,31 @@ const logErrorAndThrow = (message, response) => {
  */
 exports.createMeeting = (
 	server, meetingName, meetingId, userName, role, params,
-) => server.administration
-	.create(meetingName, meetingId, createParams)
+) => server.monitoring
+	.getMeetingInfo(meetingId)
+	.then((meeting) => {
+		const { response } = meeting;
+		if (!meeting || !response) {
+			throw new Error('error contacting bbb/server');
+		}
+		// the meeting already exist...
+		if (Array.isArray(response.returncode) && response.returncode.includes(RESPONSE_STATUS.SUCCESS)) {
+			return meeting;
+		}
+		// the meeting does not exist, create it...
+		if (Array.isArray(response.messageKey) && response.messageKey.includes(MESSAGE_KEYS.NOT_FOUND)) {
+			return server.administration
+				.create(meetingName, meetingId, createParams);
+		}
+		throw new Error('error in setup the meeting, retry...?');
+	})
 	.then((meeting) => {
 		// here we probably have a meeting, add user to the meeting...
 		const { response } = meeting;
 		if (!meeting || !response) {
 			throw new Error('error contacting bbb/server');
 		}
-		if (!Array.isArray(response.returncode) || !response.returncode.includes(RETURN_CODES.SUCCESS)) {
+		if (!Array.isArray(response.returncode) || !response.returncode.includes(RESPONSE_STATUS.SUCCESS)) {
 			const message = 'meeting room creation failed';
 			error(message, response);
 			throw new Error(message);
@@ -82,26 +88,22 @@ exports.createMeeting = (
 		// 	throw new Error('session token generation failed');
 	});
 
+
 /**
- * @param {Server} server
- * @param {String} meetingId
- * @returns information about a meeting if the meeting exist.
- * @returns MESSAGE_KEYS.NOT_FOUND on not found
- * attention: this may expose sensitive data!
- */
+		 * @param {Server} server
+		 * @param {String} meetingId
+		 * @returns information about a meeting if the meeting exist.
+		 * attention: this may expose sensitive data!
+		 */
 exports.getMeetingInfo = (server, meetingId) => server.monitoring
 	.getMeetingInfo(meetingId).then((meeting) => {
 		const { response } = meeting;
 		if (!meeting || !response) {
 			throw new Error('error contacting bbb/server');
 		}
-		if (Array.isArray(response.returncode) && response.returncode.includes(RETURN_CODES.SUCCESS)) {
-			// meeting exist, got valid response
+		if (utils.isValidFoundResponse(response) || utils.isNotFoundResponse(response)) {
+			// valid response with not found or existing meeting
 			return response;
-		}
-		if (Array.isArray(response.messageKey) && response.messageKey.includes(MESSAGE_KEYS.NOT_FOUND)) {
-			// meeting does not exist
-			return MESSAGE_KEYS.NOT_FOUND;
 		}
 		throw new Error('unknown response from bbb...');
 	});
