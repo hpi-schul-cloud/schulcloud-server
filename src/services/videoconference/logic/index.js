@@ -1,5 +1,5 @@
-const rp = require('request-promise-native');
-const xml2js = require('xml2js-es6-promise');
+// const rp = require('request-promise-native');
+// const xml2js = require('xml2js-es6-promise');
 const { error } = require('../../../logger');
 const {
 	MESSAGE_KEYS, RETURN_CODES, ROLES, GUEST_POLICIES,
@@ -7,16 +7,16 @@ const {
 
 const createParams = { allowStartStopRecording: false, guestPolicy: GUEST_POLICIES.ALWAYS_DENY };
 
-/**
- * responseheaders will be evaluated to have a set-cookie valuecontaining a jsessionid
- * @param {*} headers
- */
-const getSessionCookieFromHeaders = (headers) => {
-	if (headers && headers['set-cookie'] && Array.isArray(headers['set-cookie'])) {
-		return headers['set-cookie'].find((cookie) => String(cookie).startsWith('JSESSIONID'));
-	}
-	return undefined;
-};
+// /**
+//  * responseheaders will be evaluated to have a set-cookie valuecontaining a jsessionid
+//  * @param {*} headers
+//  */
+// const getSessionCookieFromHeaders = (headers) => {
+// 	if (headers && headers['set-cookie'] && Array.isArray(headers['set-cookie'])) {
+// 		return headers['set-cookie'].find((cookie) => String(cookie).startsWith('JSESSIONID'));
+// 	}
+// 	return undefined;
+// };
 
 /**
  * creates a url for attendee or moderator to join a meeting.

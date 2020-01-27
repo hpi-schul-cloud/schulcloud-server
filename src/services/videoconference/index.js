@@ -282,7 +282,7 @@ class GetVideoconferenceServie extends VideoconferenceBaseService {
 			// meeting is not started yet --> wait (permission: join) or start (permission: start)
 			return VideoconferenceBaseService.createResponse(
 				RESPONSE_STATUS.SUCCESS,
-				videoconferenceMetadata ? STATES.READY : STATES.NOT_STARTED,
+				videoconferenceMetadata ? STATES.FINISHED : STATES.NOT_STARTED,
 				userPermissionsInScope,
 				undefined,
 				videoconferenceMetadata,
@@ -293,7 +293,7 @@ class GetVideoconferenceServie extends VideoconferenceBaseService {
 			// meeting already has started --> join (again)
 			return VideoconferenceBaseService.createResponse(
 				RESPONSE_STATUS.SUCCESS,
-				STATES.STARTED,
+				STATES.RUNNING,
 				userPermissionsInScope,
 				meetingInfo.url,
 				videoconferenceMetadata,
@@ -355,7 +355,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 			);
 			return VideoconferenceBaseService.createResponse(
 				RESPONSE_STATUS.SUCCESS,
-				STATES.STARTED,
+				STATES.RUNNING,
 				userPermissionsInScope,
 				url,
 				settings,
