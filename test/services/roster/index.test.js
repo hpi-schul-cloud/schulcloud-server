@@ -9,7 +9,7 @@ const userGroupsService = app.service('roster/users/:user/groups');
 const groupsService = app.service('roster/groups');
 const pseudonymService = app.service('pseudonym');
 const toolService = app.service('ltiTools');
-const testObjects = require('../helpers/testObjects')(app);
+const courseService = app.service('courseModel');
 
 chai.use(chaiHttp);
 
@@ -57,7 +57,7 @@ describe('roster service', function oauth() {
 		};
 		return Promise.all([
 			toolService.create(testTool1),
-			testObjects.createTestCourse(testCourse),
+			courseService.create(testCourse),
 		]).then(() => pseudonymService.find({
 			query: {
 				userId: testUser1._id,
@@ -72,7 +72,7 @@ describe('roster service', function oauth() {
 	after(() => Promise.all([
 		pseudonymService.remove(null, { query: {} }),
 		toolService.remove(testTool1),
-		testObjects.cleanup(),
+		courseService.remove(testCourse._id),
 	]).then(server.close()));
 
 	it('is registered', () => {
