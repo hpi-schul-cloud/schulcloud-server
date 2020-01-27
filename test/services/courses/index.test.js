@@ -1,11 +1,7 @@
-const assert = require('assert');
 const chai = require('chai');
 
 const app = require('../../../src/app');
 
-const courseService = app.service('courses');
-const copyCourseService = app.service('courses/copy');
-const shareCourseService = app.service('courses/share');
 const courseGroupService = app.service('courseGroups');
 const lessonsService = app.service('lessons');
 
@@ -23,8 +19,6 @@ const testCourse = {
 	ltiToolIds: [],
 };
 
-let courseId;
-let shareToken;
 let courseGroupId;
 let lessonId;
 
@@ -40,20 +34,10 @@ const testLesson = {
 	userId: testUserId,
 };
 
-describe('courses service', () => {
-	it('registered the courses service', () => {
-		assert.ok(courseService);
-	});
-
-	it('creates a course', () => courseService.create(testCourse)
-		.then((course) => {
-			courseId = course._id;
-			chai.expect(course.name).to.equal(testCourse.name);
-			chai.expect(course.userIds).to.have.lengthOf(0);
-		}));
-
+describe('courseGroup service', () => {
 	it('creates a courseGroup in a course', () => {
-		testCourseGroup.courseId = courseId;
+		const course = testObjects.createTestCourse({});
+		testCourseGroup.courseId = course._id;
 		return courseGroupService.create(testCourseGroup)
 			.then((courseGroup) => {
 				courseGroupId = courseGroup._id;
