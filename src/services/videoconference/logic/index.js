@@ -65,8 +65,8 @@ exports.createMeeting = (
 		if (!Array.isArray(response.meetingID) || !response.meetingID.length) {
 			logErrorAndThrow('invalid meetingID', response);
 		}
-		const p = Object.assign({}, { redirect: false }, params);
-		return server.administration.join(userName, response.meetingID[0], secret, p);
+		// const p = Object.assign({}, { redirect: false }, params);
+		return server.administration.join(userName, response.meetingID[0], secret, params);
 		// }) // todo add userId
 		// .then((loginUrl) => {
 		// 	const options = { resolveWithFullResponse: true };

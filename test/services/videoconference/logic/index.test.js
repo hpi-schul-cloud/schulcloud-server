@@ -6,8 +6,7 @@ const { createMeeting, getMeetingInfo } = require('../../../../src/services/vide
 const testServer = require('../../../../src/services/videoconference/logic/server');
 const utils = require('../../../../src/services/videoconference/logic/utils');
 
-
-describe.only('test videoconference logic', () => {
+describe('test videoconference logic', () => {
 	it('test server initialized', () => {
 		expect(testServer).to.be.ok;
 	});
