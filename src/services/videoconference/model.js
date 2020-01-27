@@ -4,7 +4,7 @@ const { enableAuditLog } = require('../../utils/database');
 const { Schema } = mongoose;
 
 const targetModels = ['courses', 'events'];
-const rolesEnum = ['courseStudent', 'courseTeacher']; // todo: complete for course and team/event-roles
+// const rolesEnum = ['courseStudent', 'courseTeacher']; // todo: complete for course and team/event-roles
 
 // todo create index on targetModel and target
 
@@ -38,14 +38,14 @@ const videoconferenceSchema = new Schema({
 			default: false,
 			required: true,
 		},
-		rolesAllowedToAttendVideoconference: [{
-			type: String,
-			enum: rolesEnum,
-		}],
-		rolesAllowedToStartVideoconference: [{
-			type: String,
-			enum: rolesEnum,
-		}],
+		// rolesAllowedToAttendVideoconference: [{
+		// 	type: String,
+		// 	enum: rolesEnum,
+		// }],
+		// rolesAllowedToStartVideoconference: [{
+		// 	type: String,
+		// 	enum: rolesEnum,
+		// }],
 	},
 }, {
 	timestamps: true,

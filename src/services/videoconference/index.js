@@ -5,7 +5,7 @@ const {
 	FeathersError,
 } = require('@feathersjs/errors');
 const lodash = require('lodash');
-const { FEATURE_VIDEOCONFERENCE_ENABLED } = require('../../../config/globals');
+const { FEATURE_VIDEOCONFERENCE_ENABLED } = require('../../../config/globals'); // todo use config
 
 const videoconferenceHooks = require('./hooks');
 
@@ -17,7 +17,6 @@ const {
 } = require('./logic');
 
 const {
-	isNullOrEmpty,
 	copyPropertyNameIfIncludedInValuesFromSourceToTarget,
 	isValidNotFoundResponse,
 	isValidFoundResponse,
@@ -53,7 +52,7 @@ class VideoconferenceBaseService {
 		if (options !== null) {
 			const validOptions = VideoconferenceBaseService.getValidOptions(options);
 			if (!lodash.isEqual(options, validOptions)) {
-				throw new BadRequest('options invalid');
+				throw new BadRequest('options invalid'); // todo cleanup
 			}
 		}
 	}
@@ -64,7 +63,7 @@ class VideoconferenceBaseService {
 			throw new Forbidden('feature FEATURE_VIDEOCONFERENCE_ENABLED disabled');
 		}
 		// throw, if current users school feature is not enabled
-		const schoolFeatureEnabled = await this.isSchoolFeatureEnabled(authenticatedUser.schoolId);
+		const schoolFeatureEnabled = await VideoconferenceBaseService.isSchoolFeatureEnabled(authenticatedUser.schoolId);
 		if (!schoolFeatureEnabled) {
 			throw new Forbidden('school feature disabled');
 		}
@@ -101,7 +100,7 @@ class VideoconferenceBaseService {
 	 * @param {String} schoolId
 	 * @returns Boolean
 	 */
-	async isSchoolFeatureEnabled(schoolId) {
+	static async isSchoolFeatureEnabled(schoolId) {
 		const school = await Schools.findById(schoolId).lean().exec();
 		if (school && school.features
 			&& Array.isArray(school.features)
@@ -192,21 +191,20 @@ class VideoconferenceBaseService {
 
 	static idAndScopeNameAreValid(params) {
 		return ObjectId.isValid(params.scopeId)
-			&& !isNullOrEmpty(params.scopeName)
 			&& Object.values(SCOPE_NAMES).includes(params.scopeName);
 	}
 
 	static getHighestVideoconferencePermission(permissions) {
 		if (permissions.includes(PERMISSIONS.START_MEETING)) return PERMISSIONS.START_MEETING;
-		if (permissions.includes(PERMISSIONS.JOIN_MEETING)) return PERMISSIONS.START_MEETING;
+		if (permissions.includes(PERMISSIONS.JOIN_MEETING)) return PERMISSIONS.JOIN_MEETING;
 		return null;
 	}
 
-	static createResponse(status, state, permissions, url = undefined, options = null) {
+	static createResponse(status, state, permissions, url = undefined, options = []) {
 		const permission = VideoconferenceBaseService
 			.getHighestVideoconferencePermission(permissions);
 		return {
-			status, state, permission, url, options: options || [],
+			status, state, permission, url, options,
 		};
 	}
 
@@ -250,7 +248,7 @@ class VideoconferenceBaseService {
 	* @property {[String]} [params.rolesAllowedToStartVideoconference] - scope role who may start the videoconference
 	*/
 
-class GetVideoconferenceServie extends VideoconferenceBaseService {
+class GetVideoconferenceService extends VideoconferenceBaseService {
 	/**
 	 *
 	 * @param {String} scopeId the id of a scope, the videoconference is related to
@@ -317,7 +315,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 	 * @returns Forbidden, if the user is not allowed to join or create the videocoference or access this
 	 * service while corerct parameters are given or the feature is disabled
 	 */
-	async create(data, params) {
+	async create(data = {}, params) {
 		const { scopeName, scopeId, options } = data;
 
 		// PARAMETER VALIDATION ///////////////////////////////////////////////////
@@ -343,7 +341,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 		// start the videoconference in bbb, no matter it's already running, return it
 		try {
 			// todo extend options based on metadata created before
-			const role = this.getUserRole();
+			const role = this.getUserRole(userPermissionsInScope);
 			const settings = CreateVideoconferenceService
 				.getCreationSettings(authenticatedUser.id, videoconferenceMetadata.options);
 			const url = await createMeeting(
@@ -389,6 +387,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 				...modelDefaults, options: validOptions,
 			}).save();
 		}
+		// todo update?
 		return videoconferenceSettings;
 	}
 
@@ -433,7 +432,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 
 module.exports = function setup(app) {
 	app.use('/videoconference', new CreateVideoconferenceService(app));
-	app.use('/videoconference/:scopeName', new GetVideoconferenceServie(app));
+	app.use('/videoconference/:scopeName', new GetVideoconferenceService(app));
 	const videoConferenceServices = [
 		app.service('/videoconference'),
 		app.service('/videoconference/:scopeName'),

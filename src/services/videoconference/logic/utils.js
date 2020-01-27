@@ -15,15 +15,6 @@ module.exports = {
 			return false;
 		}
 	},
-	isNullOrEmpty: (stringValue) => {
-		if (stringValue === null || stringValue === undefined) {
-			return true;
-		}
-		if (typeof stringValue !== 'string' || stringValue.length === 0) {
-			return true;
-		}
-		return false;
-	},
 	copyPropertyNameIfIncludedInValuesFromSourceToTarget: ({
 		source, propertyName, values, target, sourcePropertyNames = null,
 	}) => {

@@ -19,12 +19,9 @@ exports.createMeeting = (
 	server, meetingName, meetingId, userName, role, params,
 ) => server.monitoring
 	.getMeetingInfo(meetingId)
-	.then((meeting) => {
+	.then((meeting = {}) => {
 		const { response } = meeting;
-		if (!meeting || !response) {
-			throw new Error('error contacting bbb/server');
-		}
-		// the meeting already exist...
+		// the meeting already exist, use it...
 		if (utils.isValidFoundResponse(response)) {
 			return meeting;
 		}
@@ -33,18 +30,15 @@ exports.createMeeting = (
 			return server.administration
 				.create(meetingName, meetingId, params);
 		}
-		throw new Error('error in setup the meeting, retry...?');
+		return logErrorAndThrow('error in setup the meeting, retry...?', response);
 	})
 	.then((meeting) => {
 		// here we probably have a meeting, add user to the meeting...
 		const { response } = meeting;
-		if (!meeting || !response) {
-			throw new Error('error contacting bbb/server');
-		}
+
 		if (!utils.isValidFoundResponse(response)) {
 			const message = 'meeting room creation failed';
-			error(message, response);
-			throw new Error(message);
+			logErrorAndThrow(message, response);
 		}
 		let secret;
 		switch (role) {
@@ -92,11 +86,9 @@ exports.createMeeting = (
 		 * attention: this may expose sensitive data!
 		 */
 exports.getMeetingInfo = (server, meetingId) => server.monitoring
-	.getMeetingInfo(meetingId).then((meeting) => {
+	.getMeetingInfo(meetingId)
+	.then((meeting = {}) => {
 		const { response } = meeting;
-		if (!meeting || !response) {
-			throw new Error('error contacting bbb/server');
-		}
 		if (utils.isValidFoundResponse(response) || utils.isValidNotFoundResponse(response)) {
 			// valid response with not found or existing meeting
 			return response;
