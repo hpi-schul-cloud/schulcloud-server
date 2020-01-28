@@ -48,12 +48,29 @@ describe('course service', () => {
 		}
 	});
 
-	/* it('teacher can DELETE course', async () => {
+	it('teacher can DELETE course', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		const course = await testObjects.createTestCourse({ name: 'course', teacherIds: [teacher._id] });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
 
 		const result = await courseService.remove(course._id, params);
-		expect(result.name).to.equal('courseChanged');
-	}); */
+		expect(result).to.not.be.undefined;
+	});
+
+	it('substitution teacher can not DELETE course', async () => {
+		try {
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+			const course = await testObjects.createTestCourse({
+				substitutionIds: [teacher._id],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = {};
+			await courseService.remove(course._id, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.eq(403);
+		}
+	});
 });
