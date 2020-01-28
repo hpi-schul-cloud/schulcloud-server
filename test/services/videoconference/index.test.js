@@ -10,7 +10,9 @@ const createService = app.service('videoconference');
 
 const { VIDEOCONFERENCE } = require('../../../src/services/school/model').SCHOOL_FEATURES;
 
-describe.only('videoconference service', () => {
+describe.only('videoconference service', function slowTests() {
+	this.timeout(10000);
+
 	let testData = null;
 	let server;
 
@@ -26,17 +28,24 @@ describe.only('videoconference service', () => {
 			schoolId,
 			firstName: 'teacher',
 		});
+		const coursesubstitutionTeacher = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId,
+			firstName: 'substitutionteacher',
+		});
 		const courseStudent = await testObjects.createTestUser({
 			roles: ['student'],
 			schoolId,
 			firstName: 'student',
 		});
 		const teacherRequestAuthentication = await generateRequestParamsFromUser(courseTeacher);
+		const substitutionTeacherRequestAuthentication = await generateRequestParamsFromUser(coursesubstitutionTeacher);
 		const studentRequestAuthentication = await generateRequestParamsFromUser(courseStudent);
 		const course = await testObjects.createTestCourse({
 			name: 'test videoconference course',
 			userIds: [courseStudent.id],
 			teacherIds: [courseTeacher.id],
+			substitutionIds: [coursesubstitutionTeacher.id],
 		});
 		const createOptions = {
 			scopeId: course.id,
@@ -47,6 +56,7 @@ describe.only('videoconference service', () => {
 			courseTeacher,
 			courseStudent,
 			teacherRequestAuthentication,
+			substitutionTeacherRequestAuthentication,
 			studentRequestAuthentication,
 			course,
 			createOptions,
@@ -60,34 +70,48 @@ describe.only('videoconference service', () => {
 		testData.school.features.push(VIDEOCONFERENCE);
 		await testData.school.save();
 		const response = await createService.create(testData.createOptions, testData.teacherRequestAuthentication);
-		expect(response, 'feature probably disabled in school').to.be.ok;
+		expect(response).to.be.ok;
 		expect(response.status).to.be.equal('SUCCESS');
 		expect(response.url).to.be.ok;
 	});
 
 	it('test creation with start permission works multiple times', async () => {
 		let successfulRuns = 0;
+		const authenticated = [];
 		for (let i = 0; i < 20; i += 1) {
 			const response = await createService.create(testData.createOptions, testData.teacherRequestAuthentication);
-			expect(response, 'feature probably disabled in school').to.be.ok;
+			expect(response).to.be.ok;
 			expect(response.status).to.be.equal('SUCCESS');
 			expect(response.url).to.be.ok;
-			const authenticated = await rp(response.url);
-			expect(authenticated).to.be.ok;
+			authenticated.push(rp(response.url));
 			successfulRuns += 1;
 		}
 		expect(successfulRuns).to.be.equal(20);
+		// expect all requests finish successfully
+		return Promise.all(authenticated);
 	});
 
+	it('test creation with join permission (student in courses) fails', () => {
+		expect(() => createService
+			.create(testData.createOptions, testData.studentRequestAuthentication),
+		'students should not have the permission to start a videoconference in courses')
+			.to.throw;
+	});
+	it('test creation as substitution teacher works', () => {
+		expect(() => createService
+			.create(testData.reateOptions, testData.substitutionTeacherRequestAuthentication),
+		'substitutionteachers should be able to start a videoconference in courses')
+			.not.to.throw;
+	});
 
-	// // scope permission tests
-	// it('test creation with join permission fails', () => { });
 	// it('test join with start permission works', () => { });
 	// it('test join with join permission works', () => { });
-	// it('test without permission', () => { });
+	// it('test without permission fails', () => { });
 
-	after('cleanup', testObjects.cleanup);
+	// TODO scope permission tests: courses, team-events
+
 	after((done) => {
 		server.close(done);
 	});
+	after('cleanup', testObjects.cleanup);
 });
