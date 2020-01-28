@@ -29,14 +29,33 @@ describe('courses copy service', () => {
 	});
 
 	it('creates a course copy including homeworks', async () => {
-		// todo: refactor to use testObjects
-		const newCourseName = 'testCourse 76';
-		const courseCopy = await copyCourseService.create({
-			_id: testCourseExample, name: newCourseName, userId: testUserId,
+		const ONEDAYINMILLISECONDS = (1000 * 60 * 60 * 24);
+
+		const teacher = await testObjects.createTestUser();
+		const course = await testObjects.createTestCourse({ teacherIds: teacher._id });
+		await app.service('homework').create({
+			schoolId: course.schoolId,
+			teacherId: teacher._id,
+			name: 'Testaufgabe',
+			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+			availableDate: Date.now(),
+			dueDate: Date.now() + ONEDAYINMILLISECONDS,
+			private: true,
+			courseId: course._id,
 		});
 
-		chai.expect(courseCopy.name).to.equal(newCourseName);
+		const courseCopy = await copyCourseService.create({
+			_id: testCourseExample, name: 'course copy', userId: teacher._id,
+		});
+
+		chai.expect(courseCopy.name).to.equal('course copy');
 		chai.expect(courseCopy.userIds).to.have.lengthOf(0);
+
+		const homeworkCopies = await app.service('homework').find({
+			query: { courseId: course._id },
+			account: { userId: teacher._id },
+		});
+		chai.expect(homeworkCopies.total).to.equal(1);
 	});
 
 	it('creates a shareToken for a course', async () => {
@@ -59,4 +78,12 @@ describe('courses copy service', () => {
 	}).then((course) => {
 		chai.expect(course.name).to.equal('testCourse 76');
 	}));
+
+	it('teacher can share a course', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		const course = await testObjects.createTestCourse({ teacherIds: [teacher._id] });
+		const sharedCourse = await shareCourseService.get(course._id, params);
+		chai.expect(sharedCourse.shareToken).to.not.be.undefined;
+	});
 });
