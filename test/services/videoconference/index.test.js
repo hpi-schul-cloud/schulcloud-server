@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-
+const rp = require('request-promise-native');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 
@@ -10,7 +10,7 @@ const createService = app.service('videoconference');
 
 const { VIDEOCONFERENCE } = require('../../../src/services/school/model').SCHOOL_FEATURES;
 
-describe('videoconference service', () => {
+describe.only('videoconference service', () => {
 	let testData = null;
 	let server;
 
@@ -38,6 +38,10 @@ describe('videoconference service', () => {
 			userIds: [courseStudent.id],
 			teacherIds: [courseTeacher.id],
 		});
+		const createOptions = {
+			scopeId: course.id,
+			scopeName: 'course',
+		};
 		testData = {
 			school,
 			courseTeacher,
@@ -45,32 +49,38 @@ describe('videoconference service', () => {
 			teacherRequestAuthentication,
 			studentRequestAuthentication,
 			course,
+			createOptions,
 		};
 	});
 
-	it('fails with school feature disabled', async () => {
-		const createOptions = {
-			scopeId: testData.course.id,
-			scopeName: 'course',
-		};
+	it('fails with school feature disabled, enables school feature for further tests', async () => {
 		expect(() => createService
-			.create(createOptions, testData.teacherRequestAuthentication), 'feature probably enabled in school')
+			.create(testData.reateOptions, testData.teacherRequestAuthentication), 'feature probably enabled in school')
 			.to.throw;
-	});
-
-	it('succeds with school feature enabled', async () => {
-		const createOptions = {
-			scopeId: testData.course.id,
-			scopeName: 'course',
-		};
 		testData.school.features.push(VIDEOCONFERENCE);
 		await testData.school.save();
-		const response = await createService.create(createOptions, testData.teacherRequestAuthentication);
+		const response = await createService.create(testData.createOptions, testData.teacherRequestAuthentication);
 		expect(response, 'feature probably disabled in school').to.be.ok;
+		expect(response.status).to.be.equal('SUCCESS');
+		expect(response.url).to.be.ok;
 	});
 
+	it('test creation with start permission works multiple times', async () => {
+		let successfulRuns = 0;
+		for (let i = 0; i < 20; i += 1) {
+			const response = await createService.create(testData.createOptions, testData.teacherRequestAuthentication);
+			expect(response, 'feature probably disabled in school').to.be.ok;
+			expect(response.status).to.be.equal('SUCCESS');
+			expect(response.url).to.be.ok;
+			const authenticated = await rp(response.url);
+			expect(authenticated).to.be.ok;
+			successfulRuns += 1;
+		}
+		expect(successfulRuns).to.be.equal(20);
+	});
+
+
 	// // scope permission tests
-	// it('test creation with start permission works', () => { });
 	// it('test creation with join permission fails', () => { });
 	// it('test join with start permission works', () => { });
 	// it('test join with join permission works', () => { });
