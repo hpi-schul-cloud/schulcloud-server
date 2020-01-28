@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const mockery = require('mockery');
+const sleep = require('util').promisify(setTimeout);
 
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
@@ -70,9 +71,9 @@ describe('datasourceRuns service', () => {
 		});
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id });
 		expect(result).to.not.equal(undefined);
-		expect(result.status).to.equal('Success');
-		expect(typeof result.log).to.equal('string');
-		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
+		expect(result.status).to.equal('Pending');
+		/* expect(typeof result.log).to.equal('string');
+		expect(result.datasourceId.toString()).to.equal(datasource._id.toString()); */
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
@@ -86,14 +87,14 @@ describe('datasourceRuns service', () => {
 		});
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id, data: 'datakraken-food' });
 		expect(result).to.not.equal(undefined);
-		expect(result.status).to.equal('Success');
-		expect(typeof result.log).to.equal('string');
-		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
+		expect(result.status).to.equal('Pending');
+		/* expect(typeof result.log).to.equal('string');
+		expect(result.datasourceId.toString()).to.equal(datasource._id.toString()); */
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
-	it('CREATE updates lastrun of the datasource', async () => {
+	it('CREATE updates the datasource and datasourcerun once its done.', async () => {
 		const testSchool = await testObjects.createTestSchool();
 		const datasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
@@ -102,10 +103,13 @@ describe('datasourceRuns service', () => {
 		});
 		const beforeRun = Date.now();
 		const run = await datasourceRunsService.create({ datasourceId: datasource._id });
+		await sleep(50);
+		const updatedRun = await datasourceRunsService.get(run._id);
+		expect(updatedRun.status).to.equal('Success');
 		const updatedDatasource = await app.service('datasources').get(datasource._id);
 		expect(updatedDatasource).to.not.equal(undefined);
 		expect(updatedDatasource.lastRun.getTime()).to.be.greaterThan(beforeRun);
-		expect(updatedDatasource.lastStatus).to.equal(run.status);
+		expect(updatedDatasource.lastStatus).to.equal(updatedRun.status);
 
 		await datasourceRunModel.deleteOne({ _id: run._id }).lean().exec();
 	});
@@ -124,9 +128,7 @@ describe('datasourceRuns service', () => {
 			params,
 		);
 		expect(result).to.not.equal(undefined);
-		expect(result.status).to.equal('Success');
-		expect(typeof result.log).to.equal('string');
-		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
+		expect(result.status).to.equal('Pending');
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
@@ -164,6 +166,7 @@ describe('datasourceRuns service', () => {
 			name: 'awesome datasource',
 		});
 		const datasourceRun = await datasourceRunsService.create({ datasourceId: datasource._id });
+		await sleep(50);
 		const result = await datasourceRunsService.get(datasourceRun._id);
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Success');
@@ -213,7 +216,7 @@ describe('datasourceRuns service', () => {
 		const result = await datasourceRunsService.find({ query: { datasourceId: datasource._id } });
 		expect(result).to.not.equal(undefined);
 		result.data.forEach((res) => {
-			expect(res.status).to.equal('Success');
+			expect(res.status).to.not.be.undefined;
 			expect(res.log).to.not.exist;
 			expect(datasourceRunIds.includes(res._id.toString())).to.equal(true);
 		});
@@ -239,7 +242,7 @@ describe('datasourceRuns service', () => {
 		const result = await datasourceRunsService.find({ query: { schoolId: testSchool._id } });
 		expect(result).to.not.equal(undefined);
 		result.data.forEach((res) => {
-			expect(res.status).to.equal('Success');
+			expect(res.status).to.not.be.undefined;
 			expect(res.log).to.not.exist;
 			expect(datasourceRunIds.includes(res._id.toString())).to.equal(true);
 		});

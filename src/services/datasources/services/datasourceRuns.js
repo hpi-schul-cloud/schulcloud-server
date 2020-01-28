@@ -1,6 +1,6 @@
 const Ajv = require('ajv');
 const { Writable } = require('stream');
-const {	Forbidden } = require('@feathersjs/errors');
+const {	Forbidden, GeneralError } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const {
 	iff, isProvider, validateSchema, disallow,
@@ -10,7 +10,7 @@ const { getDatasource, restrictToDatasourceSchool } = require('../hooks');
 
 const { datasourceRunCreateSchema } = require('../schemas');
 const { datasourceRunModel } = require('../model');
-const { SUCCESS, ERROR } = require('../constants');
+const { SUCCESS, ERROR, PENDING } = require('../constants');
 
 class DatasourceRuns {
 	constructor(options) {
@@ -123,39 +123,58 @@ class DatasourceRuns {
 
 		const dryrun = data.dryrun || false;
 
-		// run a syncer
-		const startTime = Date.now();
-		const result = data.data
-			? await this.app.service('sync').create(
-				{ data: data.data },
-				{ logStream, query: params.datasource.config, dryrun },
-			)
-			: await this.app.service('sync').find({ logStream, query: params.datasource.config, dryrun });
-		const endTime = Date.now();
-
-		// determine status
-		// ToDo: status into constants
-		let status = SUCCESS;
-		result.forEach((e) => {
-			if (!e.success) status = ERROR;
-		});
-
-		// save to database
 		const dsrData = {
 			datasourceId: data.datasourceId,
-			status,
-			log: logString,
+			status: PENDING,
 			config: params.datasource.config,
 			schoolId: params.datasource.schoolId,
 			dryrun,
 			createdBy: (params.account || {}).userId,
-			duration: endTime - startTime,
 		};
-		const modelResult = await datasourceRunModel.create(dsrData);
+		const dsr = await datasourceRunModel.create(dsrData);
 
-		await this.app.service('datasources').patch(params.datasource._id, { lastRun: endTime, lastStatus: status });
+		const syncParams = {
+			logStream,
+			query: params.datasource.config,
+			dryrun,
+			datasourceRunId: dsr._id,
+		};
 
-		return Promise.resolve(modelResult);
+		const startTime = Date.now();
+		const updateAfterRun = async (result) => {
+			const endTime = Date.now();
+			let status = SUCCESS;
+			result.forEach((e) => {
+				if (!e.success) status = ERROR;
+			});
+
+			// save to database
+			const updateData = {
+				status,
+				log: logString,
+				duration: endTime - startTime,
+			};
+
+			try {
+				await Promise.all([
+					datasourceRunModel.updateOne({ _id: dsr._id }, updateData),
+					this.app.service('datasources').patch(params.datasource._id, {
+						lastRun: endTime, lastStatus: status,
+					}),
+				]);
+			} catch (err) {
+				throw new GeneralError('error while updating datasourcerun', err);
+			}
+		};
+
+		// run a syncer
+		const promise = data.data
+			? this.app.service('sync').create(data.data, syncParams)
+			: this.app.service('sync').find(syncParams);
+
+		promise.then((result) => updateAfterRun(result));
+
+		return Promise.resolve(dsr);
 	}
 }
 
