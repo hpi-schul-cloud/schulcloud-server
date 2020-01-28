@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "20.1.16",
+	"version": "20.2.1",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -15,7 +15,7 @@
 	"contributors": [],
 	"bugs": {},
 	"engines": {
-		"node": "^10.16.0"
+		"node": "^10.17.0"
 	},
 	"scripts": {
 		"lint": "eslint ./src ./test --ext .js --fix",
@@ -66,7 +66,7 @@
 		"es6-promisify": "^6.0.1",
 		"express": "^4.14.0",
 		"feathers-hooks-common": "^4.20.7",
-		"feathers-mongoose": "^3.6.2",
+		"feathers-mongoose": "^6.3.0",
 		"feathers-swagger": "^1.1.0",
 		"file-type": "^12.1.0",
 		"freeport": "^1.0.5",
@@ -88,10 +88,11 @@
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
 		"nanoid": "^2.0.3",
-		"node-sass": "^4.2.0",
 		"passport": "^0.4.0",
 		"passport-strategy": "^1.0.0",
 		"pretty-error": "^2.0.3",
+		"prom-client": "^11.5.3",
+		"prometheus-api-metrics": "^2.2.3",
 		"querystring": "^0.2.0",
 		"randexp": "^0.5.3",
 		"read-chunk": "^3.0.0",

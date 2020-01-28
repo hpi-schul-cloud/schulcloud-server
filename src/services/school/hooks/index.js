@@ -136,14 +136,14 @@ exports.before = {
 	update: [
 		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_EDIT'),
-		globalHooks.lookupSchool,
-		restrictToUserSchool,
+		globalHooks.ifNotLocal(globalHooks.lookupSchool),
+		globalHooks.ifNotLocal(restrictToUserSchool),
 	],
 	patch: [
 		authenticate('jwt'),
-		hasEditPermissions,
-		globalHooks.lookupSchool,
-		restrictToUserSchool,
+		globalHooks.ifNotLocal(hasEditPermissions),
+		globalHooks.ifNotLocal(globalHooks.lookupSchool),
+		globalHooks.ifNotLocal(restrictToUserSchool),
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]

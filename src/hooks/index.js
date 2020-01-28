@@ -686,7 +686,6 @@ exports.sendEmail = (context, maildata) => {
 					},
 					attachments,
 				}).catch((err) => {
-					logger.warning(err);
 					throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
 				});
 			});
