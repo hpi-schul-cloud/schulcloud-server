@@ -14,6 +14,9 @@ const createTestAccount = (app) => (accountParameters, system, user) => {
 };
 
 const cleanup = (app) => () => {
+	if (createdaccountsIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdaccountsIds;
 	createdaccountsIds = [];
 	return ids.map((id) => app.service('accounts').remove(id));

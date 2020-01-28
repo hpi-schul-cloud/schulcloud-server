@@ -104,6 +104,7 @@ module.exports = (app, opt = {
 		generateRequestParamsFromUser: login.generateRequestParamsFromUser,
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
+		classes,
 		createTestTeamWithOwner,
 		info,
 		setupUser,
