@@ -121,7 +121,7 @@ describe.only('videoconference service', function slowServiceTests() {
 			.to.throw;
 	});
 
-	it('test join with start and join permission works after creation', async () => {
+	it('test get with start or join permission works after creation', async () => {
 		// expect creation finished like above...
 		const teacherResponse = getService
 			.get(testData.serviceParams.scopeId, {
@@ -142,28 +142,48 @@ describe.only('videoconference service', function slowServiceTests() {
 			.then((responses) => responses.forEach((response) => {
 				expect(response.status).to.be.equal('SUCCESS');
 				expect(response.url).to.be.not.empty;
-				return rp(response.url).then((authenticated) => expect(authenticated).to.be.not.empty);
+				return rp(response.url).then((authenticated) => {
+					expect(authenticated).to.be.not.empty;
+					return Promise.resolve();
+				});
 			}));
 	});
 
-	it('test join permission works (student in courses) works multiple times', async () => {
+	it('test join permission (student in courses) works multiple times', async () => {
 		let successfulRuns = 0;
-		const authenticated = [];
-		for (let i = 0; i < 20; i += 1) {
-			const response = await getService
+		const chain = [];
+		const runs = 2;
+		for (let i = 0; i < runs; i += 1) {
+			// add new user into course and let it join the meeting
+			const someStudentInCourse = await testObjects.createTestUser({
+				roles: ['student'],
+				schoolId: testData.school.id,
+				firstName: 'a user in course',
+				lastName: `num_${i}`,
+			});
+			testData.course.userIds.push(someStudentInCourse.id);
+			await testData.course.save();
+			const auth = await generateRequestParamsFromUser(someStudentInCourse);
+
+			const promise = getService
 				.get(testData.serviceParams.scopeId, {
 					route: { scopeName: testData.serviceParams.scopeName },
-					...testData.studentRequestAuthentication,
+					...auth,
+				}).then((response) => {
+					expect(response).to.be.ok;
+					expect(response.status).to.be.equal('SUCCESS');
+					expect(response.url).to.be.not.empty;
+					return rp(response.url);
+				}).then((authenticated) => {
+					expect(authenticated).to.be.not.empty;
+					return Promise.resolve();
 				});
-			expect(response).to.be.ok;
-			expect(response.status).to.be.equal('SUCCESS');
-			expect(response.url).to.be.not.empty;
-			authenticated.push(rp(response.url));
+			chain.push(promise);
 			successfulRuns += 1;
 		}
-		expect(successfulRuns).to.be.equal(20);
+		expect(successfulRuns).to.be.equal(runs);
 		// expect all requests finish successfully
-		return Promise.all(authenticated);
+		return Promise.all(chain);
 	});
 
 	it('test info/get without permission fails', () => {
