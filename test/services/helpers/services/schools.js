@@ -28,7 +28,7 @@ const create = (app) => async ({
 		const localSystem = (await app.service('systems').find({ query: { type: 'local' }, paginate: false }))[0];
 		systems.push(localSystem._id);
 	}
-	const school = await School.create({
+	const school = await app.service('schools').create({
 		name,
 		address,
 		fileStorageType,
