@@ -22,6 +22,9 @@ const createTestDatasource = (app, opt) => async ({
 };
 
 const cleanup = (app) => () => {
+	if (createdDatasourceIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdDatasourceIds;
 	createdDatasourceIds = [];
 	return ids.map((id) => app.service('datasources').remove(id));
