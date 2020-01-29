@@ -100,7 +100,9 @@ describe('datasourceRuns service', () => {
 			config: { target: 'mockwithdata' },
 			name: 'datahungry source',
 		});
-		const result = await datasourceRunsService.create({ datasourceId: datasource._id, data: 'datakraken-food' });
+		const result = await datasourceRunsService.create({
+			datasourceId: datasource._id, data: { key: 'datakraken-food' },
+		});
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Pending');
 
@@ -158,7 +160,7 @@ describe('datasourceRuns service', () => {
 			});
 			const params = await generateRequestParamsFromUser(user);
 			const result = await datasourceRunsService.create(
-				{ datasourceId: datasource._id.toString(), data: 'datakraken-food' },
+				{ datasourceId: datasource._id.toString(), data: { plate: 'datakraken-food' } },
 				params,
 			);
 			// this should not be reached, but in case it does: clean up
@@ -202,7 +204,7 @@ describe('datasourceRuns service', () => {
 			});
 			const params = await generateRequestParamsFromUser(user);
 			datasourceRun = await datasourceRunsService
-				.create({ datasourceId: datasource._id.toString(), data: 'datakraken-food' });
+				.create({ datasourceId: datasource._id.toString(), data: { payload: 'datakraken-food' } });
 			await datasourceRunsService.get(datasourceRun._id, params);
 			throw new Error('should have failed');
 		} catch (err) {
