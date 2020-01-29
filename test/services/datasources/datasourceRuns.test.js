@@ -72,8 +72,23 @@ describe('datasourceRuns service', () => {
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id });
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Pending');
-		/* expect(typeof result.log).to.equal('string');
-		expect(result.datasourceId.toString()).to.equal(datasource._id.toString()); */
+
+		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
+	});
+
+	it('CREATE handles errors in syncer', async () => {
+		const testSchool = await testObjects.createTestSchool();
+		const datasource = await testObjects.createTestDatasource({
+			schoolId: testSchool._id,
+			config: { target: 'errormock' },
+			name: 'cool datasource',
+		});
+		const result = await datasourceRunsService.create({ datasourceId: datasource._id });
+		expect(result).to.not.equal(undefined);
+		expect(result.status).to.equal('Pending');
+		await sleep(50);
+		const updatedRun = await datasourceRunsService.get(result._id);
+		expect(updatedRun.status).to.equal('Error');
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
@@ -88,8 +103,6 @@ describe('datasourceRuns service', () => {
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id, data: 'datakraken-food' });
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Pending');
-		/* expect(typeof result.log).to.equal('string');
-		expect(result.datasourceId.toString()).to.equal(datasource._id.toString()); */
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});

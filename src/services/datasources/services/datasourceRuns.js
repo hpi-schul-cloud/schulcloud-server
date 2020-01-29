@@ -7,6 +7,7 @@ const {
 } = require('feathers-hooks-common');
 const { hasPermission } = require('../../../hooks');
 const { getDatasource, restrictToDatasourceSchool } = require('../hooks');
+// const { datasourcesDocs } = require('../docs');
 
 const { datasourceRunCreateSchema } = require('../schemas');
 const { datasourceRunModel } = require('../model');
@@ -173,6 +174,23 @@ class DatasourceRuns {
 			: this.app.service('sync').find(syncParams);
 
 		promise.then((result) => updateAfterRun(result));
+		promise.catch(async (err) => {
+			const endTime = Date.now();
+			const updateData = {
+				status: ERROR,
+				log: `Error while syncing: ${err.message}`,
+				duration: endTime - startTime,
+			};
+			await Promise.all([
+				datasourceRunModel.updateOne({ _id: dsr._id }, updateData),
+				this.app.service('datasources').patch(params.datasource._id, {
+					lastRun: endTime, lastStatus: ERROR,
+				}),
+			]);
+			throw new GeneralError(
+				'datasourceRun encountered an error after invoking sync. This is most likely a user error.', err,
+			);
+		});
 
 		return Promise.resolve(dsr);
 	}
