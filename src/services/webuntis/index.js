@@ -28,7 +28,7 @@ class WebuntisCourseMetadata {
 					teacher: 'Renz',
 					class: '7a',
 					subject: 'Deutsch',
-					Raum: 'E-51',
+					room: 'E-51',
 				},
 				{
 					_id: '99997c385b94c21cc80e88d6',
@@ -36,7 +36,7 @@ class WebuntisCourseMetadata {
 					teacher: 'Kremer',
 					class: '7b',
 					subject: 'Deutsch',
-					Raum: 'E-51',
+					room: 'E-51',
 				},
 				{
 					_id: '99997c385b94c21cc80e88d7',
@@ -44,7 +44,7 @@ class WebuntisCourseMetadata {
 					teacher: 'Sommer',
 					class: '8b',
 					subject: 'Englisch',
-					Raum: '1-32',
+					room: '1-32',
 				},
 				{
 					_id: '99997c385b94c21cc80e88d8',
@@ -52,7 +52,7 @@ class WebuntisCourseMetadata {
 					teacher: 'Thorns',
 					class: '8c',
 					subject: 'Englisch',
-					Raum: '1-32',
+					room: '1-32',
 				},
 			],
 		};
