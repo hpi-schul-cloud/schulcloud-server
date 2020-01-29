@@ -1,5 +1,6 @@
 const service = require('feathers-mongoose');
-const oauth = require('oauth-sign');
+const CryptoJS = require('crypto-js');
+const OAuth = require('oauth-1.0a');
 
 const ltiTool = require('./model');
 const hooks = require('./hooks');
@@ -24,7 +25,23 @@ module.exports = function () {
 		create(data) {
 			return app.service('/ltiTools')
 				.get(data.id)
-				.then((tool) => oauth.hmacsign('POST', data.url, data.payload, tool.secret));
+				.then((tool) => {
+					const consumer = OAuth({
+						consumer: {
+							key: tool.key,
+							secret: tool.secret,
+						},
+						signature_method: 'HMAC-SHA1',
+						hash_function: (baseString, key) => CryptoJS.HmacSHA1(baseString, key)
+							.toString(CryptoJS.enc.Base64),
+					});
+					const requestData = {
+						url: data.url,
+						method: 'POST',
+						data: data.payload,
+					};
+					return consumer.authorize(requestData);
+				});
 		},
 	});
 };

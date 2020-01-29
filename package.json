@@ -88,7 +88,7 @@
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
 		"nanoid": "^2.0.3",
-		"oauth-sign": "^0.9.0",
+		"oauth-1.0a": "^2.2.6",
 		"passport": "^0.4.0",
 		"passport-strategy": "^1.0.0",
 		"pretty-error": "^2.0.3",
