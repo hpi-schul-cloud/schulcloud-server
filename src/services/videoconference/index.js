@@ -214,11 +214,12 @@ class VideoconferenceBaseService {
 		return null;
 	}
 
-	static createResponse(status, state, permissions, options = [], url) {
+	static createResponse(status, state, permissions, options = null, url) {
 		const permission = VideoconferenceBaseService
 			.getHighestVideoconferencePermission(permissions);
+		const leanOptions = (options !== null && options.toObject) ? options.toObject() : {};
 		return {
-			status, state, permission, options, url,
+			status, state, permission, options: leanOptions, url,
 		};
 	}
 
@@ -234,7 +235,7 @@ class VideoconferenceBaseService {
 	static async getVideocenceMetadata(scopeName, scopeId) {
 		const modelDefaults = VideoconferenceBaseService.getDefaultModel(scopeName, scopeId);
 		const videoconferenceMetadata = await VideoconferenceModel
-			.findOne(modelDefaults).lean().exec();
+			.findOne(modelDefaults).exec();
 		return videoconferenceMetadata;
 	}
 

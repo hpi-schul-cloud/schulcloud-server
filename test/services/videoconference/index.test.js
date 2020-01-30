@@ -10,7 +10,7 @@ const getService = app.service('videoconference/:scopeName');
 
 const { VIDEOCONFERENCE } = require('../../../src/services/school/model').SCHOOL_FEATURES;
 
-describe.only('videoconference service', function slowServiceTests() {
+describe('videoconference service', function slowServiceTests() {
 	this.timeout(1000000);
 
 	let testData = null;
@@ -141,23 +141,14 @@ describe.only('videoconference service', function slowServiceTests() {
 				route: { scopeName: testData.serviceParams.scopeName },
 				...testData.studentRequestAuthentication,
 			});
-		// const courseStudentResponse2 = getService
-		// 	.get(testData.serviceParams.scopeId, {
-		// 		route: { scopeName: testData.serviceParams.scopeName },
-		// 		...testData.studentRequestAuthentication,
-		// 	});
 		let successCounter = 0;
 		await Promise.all([teacherResponse, substitutionTeacherResponse, courseStudentResponse])
 			.then(([...serviceResponses]) => Promise.all(serviceResponses.map((serviceResponse) => {
 				expect(serviceResponse.status).to.be.equal('SUCCESS');
-				expect(serviceResponse.url).to.be.not.empty;
-				return rp(serviceResponse.url).then((authenticated) => {
-					expect(authenticated).to.be.not.empty;
-					successCounter += 1;
-					return Promise.resolve(authenticated);
-				});
+				expect(serviceResponse.url).to.be.undefined;
+				successCounter += 1;
 			})));
-		expect(successCounter).to.be.equal(4);
+		expect(successCounter).to.be.equal(3);
 		return Promise.resolve(successCounter);
 	});
 
