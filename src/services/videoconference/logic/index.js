@@ -11,26 +11,23 @@ const logErrorAndThrow = (message, response) => {
 
 /**
  * creates a url for attendee or moderator to join a meeting.
- * if the meeting does not exist, it will be created.
+ * if the meeting does not exist, it will be created if create set true.
  *
  * @returns join url
  */
-exports.createMeeting = (
-	server, meetingName, meetingId, userName, role, params,
+const joinMeeting = (
+	server, meetingName, meetingId, userName, role, params, create,
 ) => server.monitoring
 	.getMeetingInfo(meetingId)
 	.then((meeting = {}) => {
 		const { response } = meeting;
-		// the meeting already exist, use it...
-		if (utils.isValidFoundResponse(response)) {
-			return meeting;
-		}
 		// the meeting does not exist, create it...
-		if (utils.isValidNotFoundResponse(response)) {
+		if (utils.isValidNotFoundResponse(response) && create === true) {
 			return server.administration
 				.create(meetingName, meetingId, params);
 		}
-		return logErrorAndThrow('error in setup the meeting, retry...?', response);
+		// the meeting probably already exist, use it...
+		return meeting;
 	})
 	.then((meeting) => {
 		// here we probably have a meeting, add user to the meeting...
@@ -59,25 +56,9 @@ exports.createMeeting = (
 		if (!Array.isArray(response.meetingID) || !response.meetingID.length) {
 			logErrorAndThrow('invalid meetingID', response);
 		}
-		// const p = Object.assign({}, { redirect: false }, params);
 		return server.administration.join(userName, response.meetingID[0], secret, params);
-		// }) // todo add userId
-		// .then((loginUrl) => {
-		// 	const options = { resolveWithFullResponse: true };
-		// 	return rp(loginUrl, options);
-		// })		// retrieve a token based url from credential based url
-		// .then(async (xmlResponse) => {
-		// 	const { response } = await xml2js(xmlResponse.body);
-		// 	if (response && response.url && Array.isArray(response.url) && response.url.length !== 0) {
-		// 		const result = { url: response.url[0] };
-		// 		if (xmlResponse.headers) {
-		// 			result.session = getSessionCookieFromHeaders(xmlResponse.headers);
-		// 		}
-		// 		return result;
-		// 	}
-		// 	throw new Error('session token generation failed');
 	});
-
+exports.joinMeeting = joinMeeting;
 
 /**
 		 * @param {Server} server

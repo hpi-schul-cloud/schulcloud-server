@@ -11,7 +11,7 @@ const getService = app.service('videoconference/:scopeName');
 const { VIDEOCONFERENCE } = require('../../../src/services/school/model').SCHOOL_FEATURES;
 
 describe.only('videoconference service', function slowServiceTests() {
-	this.timeout(10000);
+	this.timeout(1000000);
 
 	let testData = null;
 	let server;
@@ -69,11 +69,13 @@ describe.only('videoconference service', function slowServiceTests() {
 			course,
 			serviceParams,
 		};
-	});
 
-	it('fails with school feature disabled, enables school feature for further tests', async () => {
-		expect(() => createService
-			.create(testData.reateOptions, testData.teacherRequestAuthentication), 'feature probably enabled in school')
+		// fails with school feature disabled, enables school feature and starts meeting for further tests
+		expect(() => createService.create(
+			testData.createOptions,
+			testData.teacherRequestAuthentication,
+		),
+		'feature should not be enabled in school')
 			.to.throw;
 		testData.school.features.push(VIDEOCONFERENCE);
 		await testData.school.save();
@@ -83,33 +85,34 @@ describe.only('videoconference service', function slowServiceTests() {
 		expect(response.url).to.be.not.empty;
 	});
 
-	it('test creation with start permission works multiple times [slow]', async () => {
-		let successfulRuns = 0;
-		const authenticated = [];
-		for (let i = 0; i < 20; i += 1) {
-			const response = await createService.create(testData.serviceParams, testData.teacherRequestAuthentication);
-			expect(response).to.be.ok;
-			expect(response.status).to.be.equal('SUCCESS');
-			expect(response.url).to.be.not.empty;
-			authenticated.push(rp(response.url));
-			successfulRuns += 1;
-		}
-		expect(successfulRuns).to.be.equal(20);
-		// expect all requests finish successfully
-		return Promise.all(authenticated);
-	});
+	// it('test join with start permission works multiple times [slow]', async () => {
+	// 	let successfulRuns = 0;
+	// 	const authenticated = [];
+	// 	for (let i = 0; i < 20; i += 1) {
+	// 		const response = await createService.create(testData.serviceParams, testData.teacherRequestAuthentication);
+	// 		expect(response).to.be.ok;
+	// 		expect(response.status).to.be.equal('SUCCESS');
+	// 		expect(response.url).to.be.not.empty;
+	// 		authenticated.push(rp(response.url));
+	// 		successfulRuns += 1;
+	// 	}
+	// 	expect(successfulRuns).to.be.equal(20);
+	// 	// expect all requests finish successfully
+	// 	return Promise.all(authenticated);
+	// });
 
-	it('test creation with join permission (student in courses) fails', () => {
-		expect(() => createService
-			.create(testData.serviceParams, testData.studentRequestAuthentication),
-			'students should not have the permission to start a videoconference in courses')
-			.to.throw;
-	});
-	it('test creation as substitution teacher works', () => {
-		expect(() => createService
-			.create(testData.serviceParams, testData.substitutionTeacherRequestAuthentication),
+	it('test join permission works for students and substitution teachers', async () => {
+		const studentResponse = await createService
+			.create(testData.serviceParams, testData.studentRequestAuthentication);
+		expect(studentResponse.url,
+			'students should not have the permission to join a started videoconference in courses')
+			.not.to.be.empty;
+
+		const substitutionteacherResponse = await createService
+			.create(testData.serviceParams, testData.substitutionTeacherRequestAuthentication);
+		expect(substitutionteacherResponse.url,
 			'substitutionteachers should be able to start a videoconference in courses')
-			.not.to.throw;
+			.not.to.be.empty;
 	});
 
 	it('test creation without permission fails', () => {
@@ -138,53 +141,72 @@ describe.only('videoconference service', function slowServiceTests() {
 				route: { scopeName: testData.serviceParams.scopeName },
 				...testData.studentRequestAuthentication,
 			});
-		return Promise.all([teacherResponse, substitutionTeacherResponse, courseStudentResponse])
-			.then((responses) => responses.forEach((response) => {
-				expect(response.status).to.be.equal('SUCCESS');
-				expect(response.url).to.be.not.empty;
-				return rp(response.url).then((authenticated) => {
+		// const courseStudentResponse2 = getService
+		// 	.get(testData.serviceParams.scopeId, {
+		// 		route: { scopeName: testData.serviceParams.scopeName },
+		// 		...testData.studentRequestAuthentication,
+		// 	});
+		let successCounter = 0;
+		await Promise.all([teacherResponse, substitutionTeacherResponse, courseStudentResponse])
+			.then(([...serviceResponses]) => Promise.all(serviceResponses.map((serviceResponse) => {
+				expect(serviceResponse.status).to.be.equal('SUCCESS');
+				expect(serviceResponse.url).to.be.not.empty;
+				return rp(serviceResponse.url).then((authenticated) => {
 					expect(authenticated).to.be.not.empty;
-					return Promise.resolve();
+					successCounter += 1;
+					return Promise.resolve(authenticated);
 				});
-			}));
+			})));
+		expect(successCounter).to.be.equal(4);
+		return Promise.resolve(successCounter);
 	});
 
-	it('test join permission (student in courses) works multiple times', async () => {
-		let successfulRuns = 0;
-		const chain = [];
-		const runs = 2;
-		for (let i = 0; i < runs; i += 1) {
-			// add new user into course and let it join the meeting
-			const someStudentInCourse = await testObjects.createTestUser({
-				roles: ['student'],
-				schoolId: testData.school.id,
-				firstName: 'a user in course',
-				lastName: `num_${i}`,
-			});
-			testData.course.userIds.push(someStudentInCourse.id);
-			await testData.course.save();
-			const auth = await generateRequestParamsFromUser(someStudentInCourse);
-
-			const promise = getService
-				.get(testData.serviceParams.scopeId, {
-					route: { scopeName: testData.serviceParams.scopeName },
-					...auth,
-				}).then((response) => {
-					expect(response).to.be.ok;
-					expect(response.status).to.be.equal('SUCCESS');
-					expect(response.url).to.be.not.empty;
-					return rp(response.url);
-				}).then((authenticated) => {
-					expect(authenticated).to.be.not.empty;
-					return Promise.resolve();
-				});
-			chain.push(promise);
-			successfulRuns += 1;
-		}
-		expect(successfulRuns).to.be.equal(runs);
-		// expect all requests finish successfully
-		return Promise.all(chain);
-	});
+	// it('test join permission (student in courses) works multiple times', async () => {
+	// 	let successfulRuns = 0;
+	// 	const chain = [];
+	// 	const runs = 1;
+	// 	const course = await testObjects.createTestCourse({
+	// 		name: 'test videoconference course',
+	// 		userIds: [],
+	// 		teacherIds: [testData.courseTeacher.id],
+	// 	});
+	// 	const serviceParams = {
+	// 		scopeId: course.id,
+	// 		scopeName: 'course',
+	// 	};
+	// 	for (let i = 0; i < runs; i += 1) {
+	// 		// add new user into course and let it join the meeting
+	// 		const someStudentInCourse = await testObjects.createTestUser({
+	// 			roles: ['student'],
+	// 			schoolId: testData.school.id,
+	// 			firstName: 'newstudent',
+	// 			// lastName: `num_${i}`,
+	// 		});
+	// 		course.userIds.push(someStudentInCourse.id);
+	// 		await course.save();
+	// 		const auth = await generateRequestParamsFromUser(someStudentInCourse);
+	// 		await createService
+	// 			.create(serviceParams, testData.teacherRequestAuthentication);
+	// 		const promise = getService
+	// 			.get(serviceParams.scopeId, {
+	// 				route: { scopeName: serviceParams.scopeName },
+	// 				...auth,
+	// 			}).then((response) => {
+	// 				expect(response).to.be.ok;
+	// 				expect(response.status).to.be.equal('SUCCESS');
+	// 				expect(response.url).to.be.not.empty;
+	// 				return rp(response.url);
+	// 			}).then((authenticated) => {
+	// 				expect(authenticated).to.be.not.empty;
+	// 				return Promise.resolve();
+	// 			});
+	// 		chain.push(promise);
+	// 		successfulRuns += 1;
+	// 	}
+	// 	expect(successfulRuns).to.be.equal(runs);
+	// 	// expect all requests finish successfully
+	// 	return Promise.all(chain);
+	// });
 
 	it('test info/get without permission fails', () => {
 		// todo this (throw) is not working as expected here and above!!!

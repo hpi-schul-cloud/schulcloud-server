@@ -1,6 +1,7 @@
 const {
 	BadRequest,
 	Forbidden,
+	NotFound,
 	GeneralError,
 	FeathersError,
 } = require('@feathersjs/errors');
@@ -13,7 +14,7 @@ const videoconferenceHooks = require('./hooks');
 const { getUser } = require('../../hooks');
 
 const {
-	createMeeting,
+	joinMeeting,
 	getMeetingInfo,
 } = require('./logic');
 
@@ -74,6 +75,12 @@ class VideoconferenceBaseService {
 	static throwOnPermissionMissingInScope(permission, permissions) {
 		if (!VideoconferenceBaseService.userIsAllowedTo(permission, permissions)) {
 			throw new Forbidden(`permission ${permission} not given in scope`);
+		}
+	}
+
+	static throweOnNotAnyPermissionInScope(requiredPermissions, scopePermissions) {
+		if (scopePermissions.filter((permission) => requiredPermissions.includes(permission)).length === 0) {
+			throw new Forbidden(`one permission of ${JSON.stringify(requiredPermissions)} required in scope`);
 		}
 	}
 
@@ -207,11 +214,11 @@ class VideoconferenceBaseService {
 		return null;
 	}
 
-	static createResponse(status, state, permissions, url = undefined, options = []) {
+	static createResponse(status, state, permissions, options = [], url) {
 		const permission = VideoconferenceBaseService
 			.getHighestVideoconferencePermission(permissions);
 		return {
-			status, state, permission, url, options,
+			status, state, permission, options, url,
 		};
 	}
 
@@ -224,11 +231,11 @@ class VideoconferenceBaseService {
  * @param {String} scopeId
  * @re
  */
-	static async getVideocenceOptions(scopeName, scopeId) {
+	static async getVideocenceMetadata(scopeName, scopeId) {
 		const modelDefaults = VideoconferenceBaseService.getDefaultModel(scopeName, scopeId);
-		const videoconferenceSettings = await VideoconferenceModel
+		const videoconferenceMetadata = await VideoconferenceModel
 			.findOne(modelDefaults).lean().exec();
-		return videoconferenceSettings;
+		return videoconferenceMetadata;
 	}
 
 	static getDefaultModel(scopeName, scopeId) {
@@ -248,7 +255,7 @@ class VideoconferenceBaseService {
 	 * @returns bbb settings
 
 	 */
-	static getCreationSettings(userID, userPermissions, {
+	static getSettings(userID, userPermissions, {
 		moderatorMustApproveJoinRequests = false,
 		everybodyJoinsAsModerator = false,
 		everyAttendeJoinsMuted = false,
@@ -324,8 +331,10 @@ class GetVideoconferenceService extends VideoconferenceBaseService {
 
 		// check videoconference metadata have been already defined locally and videoconference is running
 		const videoconferenceMetadata = await VideoconferenceBaseService
-			.getVideocenceOptions(scopeName, scopeId);
+			.getVideocenceMetadata(scopeName, scopeId);
 		const meetingInfo = await getMeetingInfo(server, scopeId);
+
+		const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
 
 		if (isValidNotFoundResponse(meetingInfo)) {
 			// meeting is not started yet or finihed --> wait (permission: join) or start (permission: start)
@@ -334,30 +343,17 @@ class GetVideoconferenceService extends VideoconferenceBaseService {
 				RESPONSE_STATUS.SUCCESS,
 				wasRunning ? STATES.FINISHED : STATES.NOT_STARTED,
 				userPermissionsInScope,
-				undefined,
-				videoconferenceMetadata,
+				hasStartPermission ? videoconferenceMetadata.options : {},
 			);
 		}
 
 		if (isValidFoundResponse(meetingInfo)) {
-			// meeting already has started --> join (again)
-			const { role, settings } = VideoconferenceBaseService
-				.getCreationSettings(authenticatedUser.id, userPermissionsInScope, videoconferenceMetadata.options);
-			const joinUrl = await createMeeting(
-				server,
-				undefined,
-				scopeId,
-				authenticatedUser.fullName,
-				role,
-				settings,
-			);
-			if (joinUrl) {
+			if (meetingInfo) {
 				return VideoconferenceBaseService.createResponse(
 					RESPONSE_STATUS.SUCCESS,
 					STATES.RUNNING,
 					userPermissionsInScope,
-					joinUrl,
-					videoconferenceMetadata,
+					hasStartPermission ? videoconferenceMetadata.options : {},
 				);
 			}
 		}
@@ -391,38 +387,63 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 
 		// CHECK PERMISSIONS //////////////////////////////////////////////////////
 		await VideoconferenceBaseService.throwOnFeaturesDisabled(authenticatedUser);
-		VideoconferenceBaseService.throwOnPermissionMissingInScope(
-			PERMISSIONS.START_MEETING, userPermissionsInScope,
-		);
+		VideoconferenceBaseService.throweOnNotAnyPermissionInScope([
+			PERMISSIONS.START_MEETING, PERMISSIONS.JOIN_MEETING,
+		], userPermissionsInScope);
 
 		// TODO if event... check team feature flag, ignore for courses
 
 		// BUSINESS LOGIC /////////////////////////////////////////		/////////////
 
-
-		// check videoconference metadata have been already defined locally
-		const videoconferenceMetadata = await CreateVideoconferenceService
-			.updateAndReturnVideoconferenceOptions(scopeName, scopeId, options);
-
-		// start the videoconference in bbb, no matter it's already running, return it
 		try {
-			// todo extend options based on metadata created before
-			const { role, settings } = VideoconferenceBaseService
-				.getCreationSettings(authenticatedUser.id, userPermissionsInScope, videoconferenceMetadata.options);
-			const url = await createMeeting(
-				server,
-				scopeTitle,
-				scopeId,
-				authenticatedUser.fullName,
-				role,
-				settings,
-			);
+			let joinUrl = null;
+			let videoconferenceMetadata = null;
+			const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
+			const hasJoinPermission = hasStartPermission || userPermissionsInScope.includes(PERMISSIONS.JOIN_MEETING);
+
+			if (hasStartPermission) {
+				videoconferenceMetadata = await CreateVideoconferenceService
+					.updateAndGetVideoconferenceMetadata(scopeName, scopeId, options);
+				// todo extend options based on metadata created before
+				const { role, settings } = VideoconferenceBaseService
+					.getSettings(
+						authenticatedUser.id,
+						userPermissionsInScope,
+						videoconferenceMetadata.options.toObject(),
+					);
+				joinUrl = await joinMeeting(
+					server,
+					scopeTitle,
+					scopeId,
+					authenticatedUser.fullName,
+					role,
+					settings,
+					true,
+				);
+			} else if (hasJoinPermission) {
+				// join permission given only
+				videoconferenceMetadata = await VideoconferenceBaseService.getVideocenceMetadata(scopeName, scopeId);
+				if (videoconferenceMetadata === null) {
+					return new NotFound('ask a moderator to start the videoconference, it\'s not started yet');
+				}
+				const { role, settings } = VideoconferenceBaseService
+					.getSettings(authenticatedUser.id, userPermissionsInScope, videoconferenceMetadata.options);
+				joinUrl = await joinMeeting(
+					server,
+					scopeTitle,
+					scopeId,
+					authenticatedUser.fullName,
+					role,
+					settings,
+					false,
+				);
+			}
 			return VideoconferenceBaseService.createResponse(
 				RESPONSE_STATUS.SUCCESS,
 				STATES.RUNNING,
 				userPermissionsInScope,
-				url,
-				settings,
+				hasStartPermission ? videoconferenceMetadata.options : {},
+				joinUrl,
 			);
 		} catch (error) {
 			if (error instanceof FeathersError) {
@@ -443,16 +464,17 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
  * @param {String} scopeId
  * @param {*} options
  */
-	static async updateAndReturnVideoconferenceOptions(scopeName, scopeId, options) {
+	static async updateAndGetVideoconferenceMetadata(scopeName, scopeId, options) {
 		const modelDefaults = VideoconferenceBaseService.getDefaultModel(scopeName, scopeId);
-		let videoconferenceSettings = await VideoconferenceBaseService.getVideocenceOptions(scopeName, scopeId);
+		let videoconferenceSettings = await VideoconferenceBaseService.getVideocenceMetadata(scopeName, scopeId);
 		if (videoconferenceSettings === null) {
-			const validOptions = VideoconferenceBaseService.getValidOptions(options);
 			videoconferenceSettings = await new VideoconferenceModel({
-				...modelDefaults, options: validOptions,
-			}).save();
+				...modelDefaults,
+			});
 		}
-		// todo update?
+		const validOptions = VideoconferenceBaseService.getValidOptions(options);
+		Object.assign(videoconferenceSettings.options, validOptions);
+		await videoconferenceSettings.save();
 		return videoconferenceSettings;
 	}
 }
