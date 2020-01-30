@@ -10,6 +10,6 @@ const webuntisMetadataSchema = new Schema({
 	room: { type: String },
 }, { timestamps: true });
 
-const webuntisMetadataModel = mongoose.model('webuntiscoursemetadata', webuntisMetadataSchema);
+const webuntisMetadataModel = mongoose.model('webuntismetadata', webuntisMetadataSchema);
 
 module.exports = { webuntisMetadataModel };
