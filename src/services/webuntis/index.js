@@ -4,7 +4,5 @@ const { webuntisMetadataService, webuntisMetadataServiceHooks } = require('./ser
 
 module.exports = (app) => {
 	app.use('/webuntisMetadata', webuntisMetadataService);
-
-	const serviceTemplate = app.service('/webuntisMetadata');
-	serviceTemplate.hooks(webuntisMetadataServiceHooks);
+	app.service('/webuntisMetadata').hooks(webuntisMetadataServiceHooks);
 };
