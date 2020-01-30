@@ -1,5 +1,5 @@
 const bbb = require('bbb-promise');
-const { isUrl, isNullOrEmpty } = require('./utils');
+const { isUrl } = require('./utils');
 
 const { HOST, SALT } = require('../../../../config/globals').SERVICES.VIDEOCONFERENCE;
 const { FEATURE_VIDEOCONFERENCE_ENABLED } = require('../../../../config/globals');
@@ -8,10 +8,10 @@ const { FEATURE_VIDEOCONFERENCE_ENABLED } = require('../../../../config/globals'
 if (FEATURE_VIDEOCONFERENCE_ENABLED === true) {
 	// host must be valid uri that does not end with an slash
 	if (!isUrl(HOST) || HOST.endsWith('/')) {
-		throw new Error('VIDEOCONFERENCE.HOST must be valid uri that does not end with an slash');
+		throw new Error('VIDEOCONFERENCE.HOST must be valid uri that does not end with a slash');
 	}
-	if (isNullOrEmpty(SALT)) {
-		throw new Error('VIDEOCONFERENCE.SALT must be a not emty string');
+	if (typeof SALT !== 'string' || SALT === '') {
+		throw new Error('VIDEOCONFERENCE.SALT must be a not empty string');
 	}
 }
 
