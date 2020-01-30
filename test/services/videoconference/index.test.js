@@ -63,7 +63,7 @@ const expectNoGetPermission = (testData) => {
 };
 
 describe.only('videoconference service', function slowServiceTests() {
-	this.timeout(10000);
+	this.timeout(30000);
 
 	let testData = null;
 	let server;
@@ -192,37 +192,72 @@ describe.only('videoconference service', function slowServiceTests() {
 				.not.to.be.empty;
 		});
 
-		it.skip('test join works multiple times [TODO]', async () => {
-			let successfulRuns = 0;
-			const authenticated = [];
-			const courseStudents = [];
-			const studentIds = [];
+		describe('bbb mass request tests', () => {
+			it('test get works multiple times', async () => {
+				let successfulRuns = 0;
+				const courseStudents = [];
+				const studentIds = [];
 
-			for (let i = 0; i < 20; i += 1) {
-				const student = await testObjects.createTestUser({
-					roles: ['student'],
-					schoolId: testData.school.id,
-					firstName: 'student',
-				});
-				studentIds.push(student.id);
-				const authentication = await generateRequestParamsFromUser(student);
-				courseStudents.push({ student, authentication });
-			}
-			studentIds.forEach((userId) => testData.course.userIds.push(userId));
-			await testData.course.save();
+				for (let i = 0; i < 20; i += 1) {
+					const student = await testObjects.createTestUser({
+						roles: ['student'],
+						schoolId: testData.school.id,
+						firstName: 'student',
+					});
+					studentIds.push(student.id);
+					const authentication = await generateRequestParamsFromUser(student);
+					courseStudents.push({ student, authentication });
+				}
+				studentIds.forEach((userId) => testData.course.userIds.push(userId));
+				await testData.course.save();
 
-			for (let i = 0; i < 20; i += 1) {
-				const response = await createService
-					.create(testData.serviceParams, courseStudents[i].authentication);
-				expect(response).to.be.ok;
-				expect(response.status).to.be.equal('SUCCESS');
-				expect(response.url).to.be.not.empty;
-				authenticated.push(rp(response.url));
-				successfulRuns += 1;
-			}
-			expect(successfulRuns).to.be.equal(20);
-			// expect all requests finish successfully
-			return Promise.all(authenticated);
+				for (let i = 0; i < 20; i += 1) {
+					const response = await getService
+						.get(testData.serviceParams.scopeId, {
+							route: { scopeName: testData.serviceParams.scopeName },
+							...courseStudents[i].authentication,
+						});
+					expect(response).to.be.ok;
+					expect(response.status).to.be.equal('SUCCESS');
+					expect(response.url).to.be.undefined;
+					successfulRuns += 1;
+				}
+				expect(successfulRuns).to.be.equal(20);
+				return Promise.resolve();
+			});
+
+			it.skip('test join works multiple times [TODO]', async () => {
+				let successfulRuns = 0;
+				const authenticated = [];
+				const courseStudents = [];
+				const studentIds = [];
+
+				for (let i = 0; i < 20; i += 1) {
+					const student = await testObjects.createTestUser({
+						roles: ['student'],
+						schoolId: testData.school.id,
+						firstName: 'student',
+					});
+					studentIds.push(student.id);
+					const authentication = await generateRequestParamsFromUser(student);
+					courseStudents.push({ student, authentication });
+				}
+				studentIds.forEach((userId) => testData.course.userIds.push(userId));
+				await testData.course.save();
+
+				for (let i = 0; i < 20; i += 1) {
+					const response = await createService
+						.create(testData.serviceParams, courseStudents[i].authentication);
+					expect(response).to.be.ok;
+					expect(response.status).to.be.equal('SUCCESS');
+					expect(response.url).to.be.not.empty;
+					authenticated.push(rp(response.url));
+					successfulRuns += 1;
+				}
+				expect(successfulRuns).to.be.equal(20);
+				// expect all requests finish successfully
+				return Promise.all(authenticated);
+			});
 		});
 	});
 
