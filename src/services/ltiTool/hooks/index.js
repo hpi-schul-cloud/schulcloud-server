@@ -13,17 +13,23 @@ const protectSecrets = (context) => {
 	return context;
 };
 
-const addSecret = (context) => context.app.service('/ltiTools/').get(context.data.originTool)
-	.then((tool) => {
-		context.data.secret = tool.secret;
-		return context;
-	});
+const addSecret = (context) => {
+	if (context.data.originTool) {
+		return context.app.service('/ltiTools/').get(context.data.originTool)
+			.then((tool) => {
+				context.data.secret = tool.secret;
+				return context;
+			});
+	}
+
+	return context;
+};
 
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('TOOL_VIEW')],
 	get: [globalHooks.hasPermission('TOOL_VIEW')],
-	create: [globalHooks.hasPermission('TOOL_CREATE'), globalHooks.ifNotLocal(addSecret)],
+	create: [globalHooks.hasPermission('TOOL_CREATE'), addSecret],
 	update: [globalHooks.hasPermission('TOOL_EDIT')],
 	patch: [globalHooks.hasPermission('TOOL_EDIT')],
 	remove: [globalHooks.hasPermission('TOOL_CREATE')],
