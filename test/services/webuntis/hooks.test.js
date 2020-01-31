@@ -47,17 +47,17 @@ describe('webuntis metadata hooks', () => {
 			}
 		});
 
-		it('fails if schools dont match'/* , async () => {
+		it('fails if schools dont match', async () => {
 			const fut = requireDatasourceRunId;
 			const { _id: userSchoolId } = await testObjects.createTestSchool();
 			const { _id: datasourceSchoolId } = await testObjects.createTestSchool();
 			const datasource = await testObjects.createTestDatasource({
 				config: { target: 'none' },
 				name: 'datasource',
-				datasourceSchoolId,
+				schoolId: datasourceSchoolId,
 			});
 			const run = await app.service('datasourceRuns').create({ datasourceId: datasource._id });
-			const admin = await testObjects.createTestUser({ roles: ['administrator'], userSchoolId });
+			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: userSchoolId });
 			try {
 				await fut({
 					app,
@@ -71,11 +71,30 @@ describe('webuntis metadata hooks', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.eq('should have failed');
-				expect(err.code).to.eq(403);
+				expect(err.code).to.eq(404);
 				expect(err.message).to.equal('no such datasourceRun');
 			}
-		} */);
+		});
 
-		it('fails if datasourceRun doesnt exist');
+		it('fails if datasourceRun doesnt exist', async () => {
+			const fut = requireDatasourceRunId;
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			try {
+				await fut({
+					app,
+					params: {
+						account: { userId: admin._id },
+						query: {
+							datasourceRunId: admin._id, // not a datasourceRun id
+						},
+					},
+				});
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.eq('should have failed');
+				expect(err.code).to.eq(404);
+				expect(err.message).to.equal('no such datasourceRun');
+			}
+		});
 	});
 });

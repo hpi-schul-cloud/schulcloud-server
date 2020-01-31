@@ -8,8 +8,8 @@ const requireDatasourceRunId = async (context) => {
 		throw new BadRequest('you have to filter by a datasourceRunId.');
 	}
 	const { schoolId: userSchoolId } = await context.app.service('users').get(context.params.account.userId);
-	const { schoolId: dsrSchoolId } = await context.app.service('datasourceRuns').get(datasourceRunId);
-	if (!equalIds(userSchoolId, dsrSchoolId)) {
+	const datasourceRun = await context.app.service('datasourceRuns').get(datasourceRunId);
+	if (!datasourceRun || !equalIds(userSchoolId, datasourceRun.schoolId)) {
 		throw new NotFound('no such datasourceRun');
 	}
 
