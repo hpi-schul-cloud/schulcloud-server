@@ -49,31 +49,29 @@ describe('webuntis Syncer', () => {
 		});
 		expect(paramsWithData).to.not.be.false;
 
-		const metaDataOnlyParams = WebUntisSyncer.params({
+		const dryrunParams = WebUntisSyncer.params({
+			dryrun: true,
 			query: {
 				username: 'webuntisusername',
 				password: 'secret123',
 				url: 'url.com',
 			},
-		}, {
-			metadataOnly: true,
 		});
-		expect(metaDataOnlyParams).to.not.be.false;
+		expect(dryrunParams).to.not.be.false;
 	});
 
-	it('metadataOnly run persists metadata of webuntis courses', async () => {
+	it('dryrun persists metadata of webuntis courses', async () => {
 		const { _id: datasourceId } = await testObjects.createTestDatasource({
 			config: { target: 'webuntis' },
 		});
 		const args = WebUntisSyncer.params({
 			datasourceId,
+			dryrun: true,
 			query: {
 				username: 'webuntisusername',
 				password: 'secret123',
 				url: 'url.com',
 			},
-		}, {
-			metadataOnly: true,
 		});
 		const syncer = new WebUntisSyncer(app, {}, undefined, ...args);
 		const result = await syncer.sync();
@@ -180,8 +178,8 @@ describe('webuntis Syncer', () => {
 		});
 		await app.service('datasourceRuns').create({
 			datasourceId,
+			dryrun: true,
 			data: {
-				metadataOnly: true,
 				courseMetadataIds: [],
 				datatype: 'inclusive',
 			},

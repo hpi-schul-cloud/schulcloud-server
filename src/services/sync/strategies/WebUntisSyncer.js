@@ -25,7 +25,7 @@ class WebUntisSyncer extends Syncer {
 				url: params.query.url,
 				datatype: data.datatype,
 				courseMetadataIds: data.courseMetadataIds,
-				metadataOnly: data.metadataOnly,
+				dryrun: params.dryrun,
 			}];
 		}
 		return false;
@@ -80,7 +80,7 @@ class WebUntisSyncer extends Syncer {
 
 	async steps() {
 		await super.steps();
-		if (this.data.metadataOnly) {
+		if (this.data.dryrun) {
 			await this.writeMockMetadata();
 		} else {
 			await this.updateMockMetadata();
