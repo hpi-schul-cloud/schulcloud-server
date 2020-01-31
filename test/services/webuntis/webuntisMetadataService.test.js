@@ -33,6 +33,7 @@ describe('webuntis metadata service', () => {
 			class: '2a',
 			room: '0-23',
 			subject: 'mathe',
+			state: 'new',
 		});
 		expect(createResult).to.not.be.undefined;
 		expect(createResult.datasourceId).to.equal(datasource._id);
@@ -51,6 +52,7 @@ describe('webuntis metadata service', () => {
 			class: '2a',
 			room: '0-23',
 			subject: 'deutsch',
+			state: 'new',
 		});
 
 		const result = await webuntisMetadataService.find({ query: { datasourceId: datasource._id } });
@@ -73,12 +75,36 @@ describe('webuntis metadata service', () => {
 			class: '2a',
 			room: '0-23',
 			subject: 'sport',
+			state: 'new',
 		});
 
 		const result = await webuntisMetadataService.get(metadata._id);
 
 		expect(result).to.not.be.undefined;
 		expect(result.datasourceId.toString()).to.eq(datasource._id.toString());
+
+		await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
+	});
+
+	it('internal call can PATCH metadata', async () => {
+		const datasource = await testObjects.createTestDatasource({
+			config: { target: 'none' },
+			name: 'datasource',
+		});
+		const metadata = await webuntisMetadataModel.create({
+			datasourceId: datasource._id,
+			teacher: 'Renz',
+			class: '2a',
+			room: '0-23',
+			subject: 'sport',
+			state: 'new',
+		});
+
+		const result = await webuntisMetadataService.patch(metadata._id, { state: 'imported' });
+
+		expect(result).to.not.be.undefined;
+		expect(result.datasourceId.toString()).to.eq(datasource._id.toString());
+		expect(result.state).to.equal('imported');
 
 		await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
 	});
@@ -94,6 +120,7 @@ describe('webuntis metadata service', () => {
 			class: '2a',
 			room: '0-23',
 			subject: 'kunst',
+			state: 'new',
 		});
 
 		const result = await webuntisMetadataService.remove(metadata._id);
@@ -117,6 +144,7 @@ describe('webuntis metadata service', () => {
 			class: '2a',
 			room: '0-23',
 			subject: 'Traumdeutung',
+			state: 'new',
 		});
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		params.query = { datasourceId: datasource._id };
@@ -143,6 +171,7 @@ describe('webuntis metadata service', () => {
 			class: '2a',
 			room: '0-23',
 			subject: 'physik',
+			state: 'new',
 		});
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		try {
@@ -170,6 +199,7 @@ describe('webuntis metadata service', () => {
 			class: '2a',
 			room: '0-23',
 			subject: 'Telekinetik',
+			state: 'new',
 		});
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		params.query = { datasourceId: datasource._id };
@@ -200,6 +230,7 @@ describe('webuntis metadata service', () => {
 				class: '2a',
 				room: '0-23',
 				subject: 'Verteidigung gegen die dunklen Künste',
+				state: 'new',
 			}, params);
 			await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
 			throw new Error('should have failed');
@@ -223,6 +254,7 @@ describe('webuntis metadata service', () => {
 			class: '2a',
 			room: '0-23',
 			subject: 'physik',
+			state: 'new',
 		});
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		try {
@@ -249,6 +281,7 @@ describe('webuntis metadata service', () => {
 			class: '2a',
 			room: '0-23',
 			subject: 'Darstellendes Spiel',
+			state: 'new',
 		});
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		try {
@@ -275,6 +308,7 @@ describe('webuntis metadata service', () => {
 			class: '2',
 			room: 'Kerker',
 			subject: 'Zaubertränke',
+			state: 'new',
 		});
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		try {
