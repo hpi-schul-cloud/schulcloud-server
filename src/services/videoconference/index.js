@@ -10,6 +10,8 @@ const { FEATURE_VIDEOCONFERENCE_ENABLED } = require('../../../config/globals'); 
 const { VIDEOCONFERENCE } = require('../../../src/services/school/model').SCHOOL_FEATURES;
 
 const videoconferenceHooks = require('./hooks');
+const { isUrl } = require('./logic/utils');
+
 
 const { getUser } = require('../../hooks');
 
@@ -39,6 +41,8 @@ const VideoconferenceModel = require('./model');
 const { schoolModel: Schools } = require('../school/model');
 
 const { ObjectId } = require('../../helper/compare');
+
+const CLIENT_HOST = process.env.HOST;
 
 class VideoconferenceBaseService {
 	constructor(app) {
@@ -100,6 +104,9 @@ class VideoconferenceBaseService {
 				sourcePropertyNames: toggleOptions,
 			});
 		});
+		if (options.filename && typeof options.filename === 'string' && isUrl(options.filename)) {
+			validOptions.filename = options.filename;
+		}
 		return validOptions;
 	}
 
@@ -269,38 +276,53 @@ class VideoconferenceBaseService {
 	/**
 	 * This translates internal params for creation into options from bbb.
 	 * @param {String} userId
-	 * @param {VideoconferenceOptions} params
+	 * @param {VideoconferenceOptions} params.options
+	 * @param {String} params.scopeName
+	 * @param {String} params.scopeId
 
 	 * @returns bbb settings
 
 	 */
-	static getSettings(userID, userPermissions, {
-		moderatorMustApproveJoinRequests = false,
-		everybodyJoinsAsModerator = false,
-		everyAttendeJoinsMuted = false,
-		// rolesAllowedToAttendVideoconference = [],
-		// rolesAllowedToStartVideoconference = [],
-	}) {
-		// set default settings first...
-		const baseRole = VideoconferenceBaseService.getUserRole(userPermissions);
+	getSettings(
+		userID,
+		userPermissions, {
+			targetModel,
+			target,
+			options: {
+				moderatorMustApproveJoinRequests = false,
+				everybodyJoinsAsModerator = false,
+				everyAttendeJoinsMuted = false,
+				filename = undefined,
+			},
+		},
+	) {
+		let role = VideoconferenceBaseService.getUserRole(userPermissions);
+		const logoutURL = `${CLIENT_HOST}/${targetModel}/${target}`;
 		const settings = {
 			userID,
 			allowStartStopRecording: false,
-			guestPolicy: GUEST_POLICIES.ALWAYS_DENY,
+			lockSettingsDisablePrivateChat: true,
+			logoutURL,
 		};
 
-		// modify them based on option toggles...
+		if (filename) {
+			settings.filename = filename;
+		}
 
-		if (moderatorMustApproveJoinRequests) {
-			// todo others are guests and guest policy may be updated
+		if (moderatorMustApproveJoinRequests && role !== ROLES.MODERATOR) {
+			settings.guestPolicy = GUEST_POLICIES.ASK_MODERATOR;
+			settings.guest = true;
 		}
+
 		if (everybodyJoinsAsModerator) {
-			// here we override the current role the user will have
+			role = ROLES.MODERATOR;
 		}
+
 		if (everyAttendeJoinsMuted) {
-			// here we override the current sound settings for non-moderators
+			settings.muteOnStart = true;
 		}
-		return { role: baseRole, settings };
+
+		return { role, settings };
 	}
 }
 
@@ -349,8 +371,8 @@ class GetVideoconferenceService extends VideoconferenceBaseService {
 		);
 
 		// check videoconference metadata have been already defined locally and videoconference is running
-		const videoconferenceMetadata = await VideoconferenceBaseService
-			.getVideocenceMetadata(scopeName, scopeId);
+		const videoconferenceMetadata = (await VideoconferenceBaseService
+			.getVideocenceMetadata(scopeName, scopeId)).toObject();
 		const meetingInfo = await getMeetingInfo(server, scopeId);
 
 		const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
@@ -421,14 +443,14 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 			const hasJoinPermission = hasStartPermission || userPermissionsInScope.includes(PERMISSIONS.JOIN_MEETING);
 
 			if (hasStartPermission) {
-				videoconferenceMetadata = await CreateVideoconferenceService
-					.updateAndGetVideoconferenceMetadata(scopeName, scopeId, options);
+				videoconferenceMetadata = (await CreateVideoconferenceService
+					.updateAndGetVideoconferenceMetadata(scopeName, scopeId, options)).toObject();
 				// todo extend options based on metadata created before
-				const { role, settings } = VideoconferenceBaseService
+				const { role, settings } = super
 					.getSettings(
 						authenticatedUser.id,
 						userPermissionsInScope,
-						videoconferenceMetadata.options.toObject(),
+						videoconferenceMetadata,
 					);
 				joinUrl = await joinMeeting(
 					server,
@@ -441,12 +463,17 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 				);
 			} else if (hasJoinPermission) {
 				// join permission given only
-				videoconferenceMetadata = await VideoconferenceBaseService.getVideocenceMetadata(scopeName, scopeId);
+				videoconferenceMetadata = (await VideoconferenceBaseService
+					.getVideocenceMetadata(scopeName, scopeId)).toObject();
 				if (videoconferenceMetadata === null) {
 					return new NotFound('ask a moderator to start the videoconference, it\'s not started yet');
 				}
-				const { role, settings } = VideoconferenceBaseService
-					.getSettings(authenticatedUser.id, userPermissionsInScope, videoconferenceMetadata.options);
+				const { role, settings } = super
+					.getSettings(
+						authenticatedUser.id,
+						userPermissionsInScope,
+						videoconferenceMetadata,
+					);
 				joinUrl = await joinMeeting(
 					server,
 					scopeTitle,
@@ -470,7 +497,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 			}
 			throw new GeneralError(
 				'join meeting link generation failed',
-				{ errors: { error } },
+				{ errors: error },
 			);
 		}
 	}

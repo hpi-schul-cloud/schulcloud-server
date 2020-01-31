@@ -34,6 +34,7 @@ const getServiceRespondsDependingOnUserPermissions = (testData) => {
 				expect(serviceResponse.status).to.be.equal('SUCCESS');
 				expect(serviceResponse.url).to.be.undefined;
 				successCounter += 1;
+				return successCounter;
 			})));
 		expect(successCounter).to.be.equal(3);
 		return Promise.resolve(successCounter);
@@ -258,6 +259,14 @@ describe.only('videoconference service', function slowServiceTests() {
 				// expect all requests finish successfully
 				return Promise.all(authenticated);
 			});
+		});
+	});
+
+	describe('team events', () => {
+		before('create team event, enable videoconference', async () => {
+			// const { team, user } = await testObjects.createTestTeamWithOwner();
+			// const event = await testObjects.createTestEvent();
+
 		});
 	});
 
