@@ -5,7 +5,7 @@ const {
 	iff, isProvider, /* validateSchema, */ disallow,
 } = require('feathers-hooks-common');
 const { hasPermission } = require('../../../hooks');
-const { requireDatasourceRunId } = require('../hooks');
+const { requireDatasourceId } = require('../hooks');
 // const { createSchema, patchSchema } = require('../schemas');
 const { webuntisMetadataModel } = require('../model');
 
@@ -32,7 +32,7 @@ const webuntisMetadataServiceHooks = {
 			auth.hooks.authenticate('jwt'),
 		],
 		find: [
-			iff(isProvider('external'), [hasPermission('DATASOURCES_VIEW'), requireDatasourceRunId]),
+			iff(isProvider('external'), [hasPermission('DATASOURCES_VIEW'), requireDatasourceId]),
 		],
 		get: [
 			iff(isProvider('external'), disallow()),

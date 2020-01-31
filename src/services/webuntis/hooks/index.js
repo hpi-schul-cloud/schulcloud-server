@@ -1,3 +1,3 @@
-const requireDatasourceRunId = require('./requireDatasourceRunId');
+const requireDatasourceId = require('./requireDatasourceId');
 
-module.exports = { requireDatasourceRunId };
+module.exports = { requireDatasourceId };
