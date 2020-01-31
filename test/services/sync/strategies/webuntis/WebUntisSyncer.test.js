@@ -178,7 +178,7 @@ describe('webuntis Syncer', () => {
 				url: 'webuntis.org',
 			},
 		});
-		const { _id: runId } = await app.service('datasourceRuns').create({
+		await app.service('datasourceRuns').create({
 			datasourceId,
 			data: {
 				metadataOnly: true,
