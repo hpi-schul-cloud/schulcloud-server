@@ -154,27 +154,43 @@ class VideoconferenceBaseService {
 	 * @param {* scopeId
 	 */
 	async getScopeInfo(app, user, scopeName, scopeId) {
-		let scopePermissionService;
 		let scopeTitle;
+		let event;
+		let permissionScopeId;
+		let permissionScopeName;
 		// retrieve scope information, set roomName AND scopePermissionService OR throw
 		switch (scopeName) {
 			case (SCOPE_NAMES.COURSE):
 				// fetch course metadata
 				// eslint-disable-next-line prefer-destructuring
-				scopeTitle = (await app.service('courses').get(scopeId)).name;
-				scopePermissionService = app.service('/courses/:scopeId/userPermissions');
+				permissionScopeId = scopeId;
+				permissionScopeName = 'courses';
+				scopeTitle = (await app.service(permissionScopeName).get(scopeId)).name;
+				break;
+			case (SCOPE_NAMES.EVENT):
+				event = (await app.service('calendar').find(scopeId)); // event title
+				permissionScopeId = event.teamId;
+				if (!permissionScopeId) {
+					throw new NotFound('could not found videoconference enabled for this event in team');
+				}
+				permissionScopeName = 'team';
+				scopeTitle = event.title;
 				break;
 			default:
 				throw new BadRequest('invalid scope information given');
 		}
 
 		// check permissions and set role
+		const scopePermissionService = app.service(`/${permissionScopeName}/:scopeId/userPermissions`);
 		const { [user.id]: userPermissionsInScope } = await scopePermissionService.find({
-			route: { scopeId },
+			route: { scopeId: permissionScopeId },
 			query: { userId: user.id },
 		});
 		// todo filter permissions to meeting permissions
-		return { scopeTitle, userPermissionsInScope };
+		return {
+			scopeTitle,
+			userPermissionsInScope,
+		};
 	}
 
 	// /**
@@ -204,7 +220,9 @@ class VideoconferenceBaseService {
 	// }
 
 	static idAndScopeNameAreValid(params) {
-		return ObjectId.isValid(params.scopeId)
+		// event ids are from postgres instead of mongo
+		const scopeIdMatchesEventId = (id) => /^[0-9a-f-]{36}$/.test(id);
+		return (ObjectId.isValid(params.scopeId) || scopeIdMatchesEventId(params.scopeId))
 			&& Object.values(SCOPE_NAMES).includes(params.scopeName);
 	}
 
@@ -264,7 +282,7 @@ class VideoconferenceBaseService {
 		// rolesAllowedToStartVideoconference = [],
 	}) {
 		// set default settings first...
-		const role = VideoconferenceBaseService.getUserRole(userPermissions);
+		const baseRole = VideoconferenceBaseService.getUserRole(userPermissions);
 		const settings = {
 			userID,
 			allowStartStopRecording: false,
@@ -282,7 +300,7 @@ class VideoconferenceBaseService {
 		if (everyAttendeJoinsMuted) {
 			// here we override the current sound settings for non-moderators
 		}
-		return { role, settings };
+		return { role: baseRole, settings };
 	}
 }
 
