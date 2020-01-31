@@ -1,9 +1,10 @@
+const { BadRequest } = require('@feathersjs/errors');
 const Syncer = require('./Syncer');
 
 class WebUntisSyncer extends Syncer {
-	constructor(app, stats, logger, datasourceRunId) {
+	constructor(app, stats, logger, data) {
 		super(app, stats, logger);
-		this.datasourceRunId = datasourceRunId;
+		this.data = data;
 	}
 
 	static respondsTo(target) {
@@ -12,21 +13,78 @@ class WebUntisSyncer extends Syncer {
 
 	static params(params, data = {}) {
 		const query = (params || {}).query || {};
-		if (query.username && query.password && query.url) {
-			return [params.datasourceRunId];
+		const validParams = query.username && query.password && query.url;
+		const validData = (
+			['inclusive', 'exclusive'].includes(data.datatype) || (!data.datatype && !data.courseMetadataIds)
+		);
+		if (validParams && validData) {
+			return [{
+				datasourceId: params.datasourceId,
+				username: params.query.username,
+				password: params.query.password,
+				url: params.query.url,
+				datatype: data.datatype,
+				courseMetadataIds: data.courseMetadataIds,
+				metadataOnly: data.metadataOnly,
+			}];
 		}
 		return false;
 	}
 
+	getimportCondition() {
+		if (this.data.datatype === 'inclusive') {
+			return ((id) => this.data.courseMetadataIds.includes(id));
+		}
+		if (this.data.datatype === 'exclusive') {
+			return ((id) => !this.data.courseMetadataIds.includes(id));
+		}
+		throw new BadRequest('invalid datatype');
+	}
+
+	async writeMockMetadata() {
+		if (this.data.datasourceId) {
+			const metadata = this.app.service('webuntisMetadata').find({
+				query: { datasourceId: this.data.datasourceId },
+			});
+			const newMockAmount = (metadata.total > 10) ? 3 : 40;
+			await Promise.all(new Array(newMockAmount).fill('').map(() => this.app.service('webuntisMetadata').create({
+				datasourceId: this.data.datasourceId,
+				teacher: 'Renz',
+				class: '2a',
+				room: '0-23',
+				subject: 'mathe',
+				state: 'new',
+			})));
+		}
+		return Promise.resolve();
+	}
+
+	async updateMockMetadata() {
+		if (this.data.datasourceId) {
+			const metadata = await this.app.service('webuntisMetadata').find({
+				query: { datasourceId: this.data.datasourceId },
+			});
+			const importCondition = this.getimportCondition();
+			const promises = [];
+			metadata.data.forEach((md) => {
+				if (importCondition(md._id)) {
+					promises.push(this.app.service('webuntisMetadata').patch(md._id, { state: 'imported' }));
+				} else {
+					promises.push(this.app.service('webuntisMetadata').patch(md._id, { state: 'discarded' }));
+				}
+			});
+			await Promise.all(promises);
+		}
+		return Promise.resolve();
+	}
+
 	async steps() {
 		await super.steps();
-		await Promise.all(new Array(40).fill('').map(() => this.app.service('webuntisMetadata').create({
-			datasourceRunId: this.datasourceRunId,
-			teacher: 'Renz',
-			class: '2a',
-			room: '0-23',
-			subject: 'mathe',
-		})));
+		if (this.data.metadataOnly) {
+			await this.writeMockMetadata();
+		} else {
+			await this.updateMockMetadata();
+		}
 
 		return Promise.resolve();
 	}

@@ -46,7 +46,7 @@ const webuntisMetadataServiceHooks = {
 			disallow(),
 		],
 		patch: [
-			disallow(),
+			iff(isProvider('external'), disallow()),
 		],
 		remove: [
 			iff(isProvider('external'), [
