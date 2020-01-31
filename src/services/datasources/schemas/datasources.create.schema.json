@@ -27,9 +27,9 @@
 		  "type": "array",
 		  "items": {
 			  "type": "string",
-			  "description": "fields in the config that should recieve special protection.",
-			  "default": ["password"]
-		  }
+			  "description": "fields in the config that should recieve special protection."
+		  },
+		  "default": ["password"]
 	  }
 	},
 	"additionalProperties": false

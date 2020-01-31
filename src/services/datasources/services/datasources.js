@@ -5,7 +5,7 @@ const {
 	iff, isProvider, validateSchema, disallow,
 } = require('feathers-hooks-common');
 const { datasourceModel } = require('../model');
-const { updatedBy, createdBy } = require('../hooks');
+const { updatedBy, createdBy, protectFields } = require('../hooks');
 
 const { restrictToCurrentSchool, hasPermission, denyIfNotCurrentSchool } = require('../../../hooks');
 const { datasourcesCreateSchema, datasourcesPatchSchema } = require('../schemas');
@@ -65,6 +65,7 @@ const datasourceHooks = {
 				denyIfNotCurrentSchool({
 					errorMessage: 'You do not have valid permissions to access this.',
 				}),
+				protectFields,
 			]),
 		],
 		create: [],

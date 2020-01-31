@@ -77,6 +77,26 @@ describe('datasources service', () => {
 		datasourceModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
+	it('protected fields are protected', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await generateRequestParamsFromUser(admin);
+		const data = {
+			config: { target: 'csv', password: 'didumm', secret: 'Im an agent', public: 'im an expert' },
+			name: `test${Date.now()}`,
+			protected: ['password', 'secret'],
+		};
+		const datasource = await datasourcesService.create(data, params);
+		params.query = {};
+		const result = await datasourcesService.get(datasource._id, params);
+		expect(result).to.not.be.undefined;
+		expect(result.config).to.exist;
+		expect(result.config.password).to.equal('secret');
+		expect(result.config.secret).to.equal('secret');
+		expect(result.config.public).to.equal('im an expert');
+		datasourceModel.deleteOne({ _id: result._id }).lean().exec();
+	});
+
+
 	it('FIND all datasources of the users school', async () => {
 		const school = await testObjects.createTestSchool();
 		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
