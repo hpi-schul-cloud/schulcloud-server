@@ -10,7 +10,7 @@ function validURL(str) {
 		+ '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'
 		+ '(\\?[;&a-z\\d%_.~+=-]*)?'
 		+ '(\\#[-a-z\\d_]*)?$',
-		'i',
+		'i'
 	);
 	return !!pattern.test(str);
 }
@@ -31,7 +31,7 @@ class EduSharingConnector {
 	static get headers() {
 		return {
 			Accept: 'application/json',
-			'Content-type': 'application/json',
+			'Content-type': 'application/json'
 		};
 	}
 
@@ -41,8 +41,8 @@ class EduSharingConnector {
 		const headers = {
 			...EduSharingConnector.headers,
 			Authorization: `Basic ${Buffer.from(`${userName}:${pw}`).toString(
-				'base64',
-			)}`,
+				'base64'
+			)}`
 		};
 
 		return headers;
@@ -55,19 +55,19 @@ class EduSharingConnector {
 			method: 'GET',
 			headers: EduSharingConnector.authorization,
 			resolveWithFullResponse: true,
-			json: true,
+			json: true
 		};
 		return request(cookieOptions)
-			.then((result) => {
+			.then(result => {
 				if (
-					result.statusCode !== 200
-					|| result.body.isValidLogin !== true
+					result.statusCode !== 200 ||
+					result.body.isValidLogin !== true
 				) {
 					throw Error('authentication error with edu sharing');
 				}
 				return result.headers['set-cookie'][0];
 			})
-			.catch((err) => {
+			.catch(err => {
 				// eslint-disable-next-line no-console
 				console.error('error: ', err);
 			});
@@ -81,10 +81,14 @@ class EduSharingConnector {
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 
 			// eslint-disable-next-line max-len
-			body: `grant_type=${'password'}&client_id=${process.env.ES_CLIENT_ID}&client_secret=${process.env.ES_OAUTH_SECRET}&username=${process.env.ES_USER}&password=${process.env.ES_PASSWORD}`,
-			timeout: REQUEST_TIMEOUT,
+			body: `grant_type=${'password'}&client_id=${
+				process.env.ES_CLIENT_ID
+				}&client_secret=${process.env.ES_OAUTH_SECRET}&username=${
+				process.env.ES_USER
+				}&password=${process.env.ES_PASSWORD}`,
+			timeout: REQUEST_TIMEOUT
 		};
-		return request(oauthoptions).then((result) => {
+		return request(oauthoptions).then(result => {
 			if (result) {
 				const parsedResult = JSON.parse(result);
 				return parsedResult.access_token;
@@ -97,12 +101,12 @@ class EduSharingConnector {
 
 	checkEnv() {
 		return (
-			process.env.ES_DOMAIN
-			&& process.env.ES_USER
-			&& process.env.ES_PASSWORD
-			&& process.env.ES_GRANT_TYPE
-			&& process.env.ES_OAUTH_SECRET
-			&& process.env.ES_CLIENT_ID
+			process.env.ES_DOMAIN &&
+			process.env.ES_USER &&
+			process.env.ES_PASSWORD &&
+			process.env.ES_GRANT_TYPE &&
+			process.env.ES_OAUTH_SECRET &&
+			process.env.ES_CLIENT_ID
 		);
 	}
 
@@ -117,10 +121,17 @@ class EduSharingConnector {
 	}
 
 	async GET(data) {
-		const limit = data.query.$limit || 9;
-		const skip = data.query.$skip || 0;
+		// run twice, one with
+		const contentType = data.query.contentType || 'FILES'; // enum:[FILES,FILES_AND_FOLDERS,COLLECTIONS,ALL]
+		const skipCount = data.query.$skip || 0;
+		const maxItems = data.query.$limit || 9;
+		const sortProperties = data.query.sortProperties || 'score';
+		const sortAscending = data.query.$ascending || true;
+		const propertyFilter = data.query.propertyFilter || '-all-'; // '-all-' for all properties OR ccm-stuff
 		const searchWord = data.query.searchQuery || 'img'; // will give pictures of flowers as default
-		const contentType = data.query.contentType || 'FILES';// enum:[FILES,FILES_AND_FOLDERS,COLLECTIONS,ALL]
+
+		// const filterOptions = data.query.filterOptions
+
 
 		if (!this.checkEnv()) {
 			return 'Update your env variables. See --> src/services/edusharing/envTemplate';
@@ -133,24 +144,89 @@ class EduSharingConnector {
 			method: 'POST',
 			// This will be changed later with a qs where sorting, filtering etc is present.
 			// eslint-disable-next-line max-len
-			url: `${process.env.ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?contentType=${contentType}&skipCount=${skip}&maxItems=${limit}&sortProperties=score&sortProperties=cm%3Amodified&sortAscending=false&sortAscending=false&propertyFilter=-all-&`,
-			headers: { ...EduSharingConnector.headers, cookie: this.authorization },
+			url: `${process.env.ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?contentType=${contentType}&skipCount=${skipCount}&maxItems=${maxItems}&sortProperties=${sortProperties}&sortProperties=cm%3Amodified&sortAscending=${sortAscending}&sortAscending=false&propertyFilter=${propertyFilter}&`,
+			headers: {
+				...EduSharingConnector.headers,
+				cookie: this.authorization,
+			},
 			body: JSON.stringify({
 				criterias: [
-					{ property: 'ngsearchword', values: [`${searchWord}`] },
+					{ property: 'ngsearchword', values: [`${searchWord}`] }
 				],
-				facettes: ['cclom:general_keyword'],
+				facettes: ['cclom:general_keyword']
 			}),
 			timeout: REQUEST_TIMEOUT,
 		};
 
+		/* const options2 = {
+			method: 'POST',
+			// This will be changed later with a qs where sorting, filtering etc is present.
+			// eslint-disable-next-line max-len
+			//url: `${process.env.ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?contentType=${contentType}&skipCount=${skipCount}&maxItems=${maxItems}&sortProperties=score&sortProperties=cm%3Amodified&sortAscending=false&sortAscending=false&propertyFilter=-all-&`,
+			uri: `${process.env.ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/`,
+			qs: {
+				contentType,
+				skipCount,
+				sortProperties,
+				sortAscending,
+				propertyFilter,
+			},
+
+			headers: {
+				...EduSharingConnector.headers,
+				cookie: this.authorization,
+			},
+			body: JSON.stringify({
+				criterias: [
+					{ property: 'ngsearchword', values: [`${searchWord}`] }
+				],
+				facettes: ['cclom:general_keyword']
+			}),
+			timeout: REQUEST_TIMEOUT
+		}; */
 
 		const eduResponse = await request(options);
-		const parsed = JSON.parse(eduResponse);
+		let parsed = JSON.parse(eduResponse);
+
+		// provided by client eg data.query.filterOptions
+		const filterOptions = {
+			mimetype: ['text/html', 'image/jpeg'],
+			provider: ['BauhausMaterial.de', 'München educationcenter', 'Khan Academy']
+		}
+
+		// checks if user has set filter options
+		if (!!Object.values(filterOptions).length) {
+			parsed = filterResult(parsed, filterOptions)
+		}
+
+		function filterResult(obj, options) {
+			let result;
+			// checks if user has set type filter
+			if (options.mimetype.length) {
+				result = filterMime(obj, options.mimetype)
+			}
+			// checks if user has set provider filter
+			if (options.provider.length) {
+				result = filterProvider(obj, options.provider)
+			}
+			return result
+		}
+
+		// filter away everything buy selected mimetype
+		function filterMime(obj, mimetypes) {
+			let result = obj.nodes
+			mimetypes.forEach(type => { result = result.filter(n => n.mimeType === type) })
+			return result
+		}
+
+		// filter away everything buy selected providers
+		function filterProvider(obj, providers) {
+			return obj
+		}
 
 		// adds accesstoken to image-url to let user see the picture on client-side.
 		if (parsed && parsed.nodes) {
-			parsed.nodes.forEach((node) => {
+			parsed.nodes.forEach(node => {
 				if (node.preview && node.preview.url) {
 					node.preview.url += `&accessToken=${this.accessToken}`;
 				}
