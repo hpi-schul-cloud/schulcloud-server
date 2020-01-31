@@ -222,7 +222,7 @@ class DatasourceRuns {
 			logStream,
 			query: params.datasource.config,
 			dryrun,
-			datasourceRunId: datasourceRun._id,
+			datasourceId: params.datasource._id,
 		};
 
 		// we intentionally do not await the sync, and instead return the pending run.
