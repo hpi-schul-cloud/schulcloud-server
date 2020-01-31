@@ -43,7 +43,7 @@ class WebUntisSyncer extends Syncer {
 
 	async writeMockMetadata() {
 		if (this.data.datasourceId) {
-			const metadata = this.app.service('webuntisMetadata').find({
+			const metadata = await this.app.service('webuntisMetadata').find({
 				query: { datasourceId: this.data.datasourceId },
 			});
 			const newMockAmount = (metadata.total > 10) ? 3 : 40;
