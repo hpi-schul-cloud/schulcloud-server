@@ -38,14 +38,11 @@ const videoconferenceSchema = new Schema({
 			default: false,
 			required: true,
 		},
-		// rolesAllowedToAttendVideoconference: [{
-		// 	type: String,
-		// 	enum: rolesEnum,
-		// }],
-		// rolesAllowedToStartVideoconference: [{
-		// 	type: String,
-		// 	enum: rolesEnum,
-		// }],
+		everyAttendeJoinsMuted: {
+			type: Boolean,
+			default: false,
+			required: true,
+		},
 	},
 }, {
 	timestamps: true,
