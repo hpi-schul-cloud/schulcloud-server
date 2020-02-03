@@ -6,8 +6,12 @@ const {
 	FeathersError,
 } = require('@feathersjs/errors');
 const lodash = require('lodash');
-const { FEATURE_VIDEOCONFERENCE_ENABLED } = require('../../../config/globals'); // todo use config
-const { VIDEOCONFERENCE } = require('../../../src/services/school/model').SCHOOL_FEATURES;
+const { Configuration } = require('@schul-cloud/commons');
+
+const Config = new Configuration();
+Config.init();
+
+const { SCHOOL_FEATURES } = require('../../../src/services/school/model');
 
 const videoconferenceHooks = require('./hooks');
 const { isUrl } = require('./logic/utils');
@@ -65,7 +69,7 @@ class VideoconferenceBaseService {
 
 	static async throwOnFeaturesDisabled(authenticatedUser) {
 		// throw, if feature has not been enabled
-		if (!FEATURE_VIDEOCONFERENCE_ENABLED === true) {
+		if (!Config.get('FEATURE_VIDEOCONFERENCE_ENABLED') === true) {
 			throw new Forbidden('feature FEATURE_VIDEOCONFERENCE_ENABLED disabled');
 		}
 		// throw, if current users school feature is not enabled
@@ -120,7 +124,7 @@ class VideoconferenceBaseService {
 		const school = await Schools.findById(schoolId).lean().exec();
 		if (school && school.features
 			&& Array.isArray(school.features)
-			&& school.features.includes(VIDEOCONFERENCE)) {
+			&& school.features.includes(SCHOOL_FEATURES.VIDEOCONFERENCE)) {
 			return true;
 		}
 		return false;
@@ -368,7 +372,7 @@ class GetVideoconferenceService extends VideoconferenceBaseService {
 			.getScopeInfo(app, authenticatedUser, scopeName, scopeId);
 
 		// CHECK PERMISSIONS //////////////////////////////////////////////////////
-		VideoconferenceBaseService.throwOnFeaturesDisabled(authenticatedUser);
+		await VideoconferenceBaseService.throwOnFeaturesDisabled(authenticatedUser);
 		VideoconferenceBaseService.throwOnPermissionMissingInScope(
 			PERMISSIONS.JOIN_MEETING, userPermissionsInScope,
 		);
