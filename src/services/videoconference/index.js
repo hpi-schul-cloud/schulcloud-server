@@ -485,6 +485,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 				if (videoconferenceMetadata === null) {
 					return new NotFound('ask a moderator to start the videoconference, it\'s not started yet');
 				}
+				// todo check bbb has started -> 403 getmeetinginfo
 				const { role, settings } = super
 					.getSettings(
 						authenticatedUser.id,
