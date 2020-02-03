@@ -90,5 +90,35 @@ describe('datasources hooks', () => {
 			expect(context).to.not.be.undefined;
 			expect(context.result.config.public).to.equal('lorem ipsum');
 		});
+
+		it('works for FIND', async () => {
+			const fut = protectFields;
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const context = await fut({
+				result: {
+					data: [
+						{
+							config: { type: 'csv', public: 'lorem ipsum' },
+							name: `somename${Date.now()}`,
+							schoolId: admin.schoolId,
+						},
+						{
+							config: { type: 'webuntis', secret: 'lorem ipsum' },
+							name: `somename${Date.now()}`,
+							schoolId: admin.schoolId,
+							protected: ['secret'],
+						},
+					],
+					total: 2,
+					limit: 2,
+					skip: 0,
+				},
+				params: { account: { userId: admin._id } },
+				method: 'find',
+			});
+			expect(context).to.not.be.undefined;
+			expect(context.result.data[0].config.public).to.equal('lorem ipsum');
+			expect(context.result.data[1].config.secret).to.equal('<secret>');
+		});
 	});
 });

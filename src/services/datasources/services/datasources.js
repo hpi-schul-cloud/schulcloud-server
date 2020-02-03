@@ -59,7 +59,7 @@ const datasourceHooks = {
 	},
 	after: {
 		all: [],
-		find: [],
+		find: [iff(isProvider('external'), protectFields)],
 		get: [
 			iff(isProvider('external'), [
 				denyIfNotCurrentSchool({
@@ -68,10 +68,10 @@ const datasourceHooks = {
 				protectFields,
 			]),
 		],
-		create: [],
-		update: [],
-		patch: [],
-		remove: [],
+		create: [iff(isProvider('external'), protectFields)],
+		update: [iff(isProvider('external'), protectFields)],
+		patch: [iff(isProvider('external'), protectFields)],
+		remove: [iff(isProvider('external'), protectFields)],
 	},
 };
 
