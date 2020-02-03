@@ -28,7 +28,7 @@
 		  "items": {
 			  "type": "string",
 			  "description": "fields in the config that should recieve special protection. A field named password will always be protected"
-		  },
+		  }
 	  }
 	},
 	"additionalProperties": false
