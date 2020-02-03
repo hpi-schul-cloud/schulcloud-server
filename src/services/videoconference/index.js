@@ -98,7 +98,7 @@ class VideoconferenceBaseService {
 	 */
 	static getValidOptions(options = {}) {
 		const validOptions = {};
-		const toggleOptions = Object.getOwnPropertyNames(CREATE_OPTION_TOGGLES);
+		const toggleOptions = Object.values(CREATE_OPTION_TOGGLES);
 		toggleOptions.forEach((option) => {
 			copyPropertyNameIfIncludedInValuesFromSourceToTarget({
 				source: options,
