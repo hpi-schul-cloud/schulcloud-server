@@ -257,10 +257,13 @@ class VideoconferenceBaseService {
  * @param {String} scopeId
  * @re
  */
-	static async getVideocenceMetadata(scopeName, scopeId) {
+	static async getVideocenceMetadata(scopeName, scopeId, returnAsObject = false) {
 		const modelDefaults = VideoconferenceBaseService.getDefaultModel(scopeName, scopeId);
 		const videoconferenceMetadata = await VideoconferenceModel
 			.findOne(modelDefaults).exec();
+		if (returnAsObject && videoconferenceMetadata !== null) {
+			return videoconferenceMetadata.toObject();
+		}
 		return videoconferenceMetadata;
 	}
 
@@ -372,10 +375,11 @@ class GetVideoconferenceService extends VideoconferenceBaseService {
 
 		// check videoconference metadata have been already defined locally and videoconference is running
 		const videoconferenceMetadata = (await VideoconferenceBaseService
-			.getVideocenceMetadata(scopeName, scopeId)).toObject();
+			.getVideocenceMetadata(scopeName, scopeId, true));
 		const meetingInfo = await getMeetingInfo(server, scopeId);
 
 		const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
+		const hasOptions = videoconferenceMetadata && videoconferenceMetadata.options;
 
 		if (isValidNotFoundResponse(meetingInfo)) {
 			// meeting is not started yet or finihed --> wait (permission: join) or start (permission: start)
@@ -384,19 +388,17 @@ class GetVideoconferenceService extends VideoconferenceBaseService {
 				RESPONSE_STATUS.SUCCESS,
 				wasRunning ? STATES.FINISHED : STATES.NOT_STARTED,
 				userPermissionsInScope,
-				hasStartPermission ? videoconferenceMetadata.options : {},
+				hasStartPermission && hasOptions ? videoconferenceMetadata.options : {},
 			);
 		}
 
 		if (isValidFoundResponse(meetingInfo)) {
-			if (meetingInfo) {
-				return VideoconferenceBaseService.createResponse(
-					RESPONSE_STATUS.SUCCESS,
-					STATES.RUNNING,
-					userPermissionsInScope,
-					hasStartPermission ? videoconferenceMetadata.options : {},
-				);
-			}
+			return VideoconferenceBaseService.createResponse(
+				RESPONSE_STATUS.SUCCESS,
+				STATES.RUNNING,
+				userPermissionsInScope,
+				hasStartPermission && hasOptions ? videoconferenceMetadata.options : {},
+			);
 		}
 
 		throw new GeneralError('could not fetch videoconference join url');
@@ -464,7 +466,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 			} else if (hasJoinPermission) {
 				// join permission given only
 				videoconferenceMetadata = (await VideoconferenceBaseService
-					.getVideocenceMetadata(scopeName, scopeId)).toObject();
+					.getVideocenceMetadata(scopeName, scopeId, true));
 				if (videoconferenceMetadata === null) {
 					return new NotFound('ask a moderator to start the videoconference, it\'s not started yet');
 				}
