@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 const { expect } = require('chai');
 const rp = require('request-promise-native');
 const app = require('../../../src/app');
