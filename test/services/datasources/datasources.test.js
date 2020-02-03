@@ -47,13 +47,12 @@ describe('datasources service', () => {
 			name: `test${Date.now()}`,
 			protected: ['csvpassword'],
 		};
-		const result = await datasourcesService.create(data, params);
+		const datasource = await datasourcesService.create(data, params);
+		params.query = {};
+		const result = await datasourcesService.get(datasource._id, params);
 		expect(result).to.not.be.undefined;
 		expect(result.config).to.exist;
-		expect(result.config).to.haveOwnProperty('target');
-		expect(result.name).to.exist;
-		expect(result.createdBy.toString()).to.equal(admin._id.toString());
-		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
+		expect(result.config.csvpassword).to.not.eq('secure123');
 		expect(result.protected).to.not.be.undefined;
 		datasourceModel.deleteOne({ _id: result._id }).lean().exec();
 	});
