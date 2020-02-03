@@ -7,10 +7,12 @@ const requireDatasourceId = async (context) => {
 	if (!datasourceId) {
 		throw new BadRequest('you have to filter by a datasourceId.');
 	}
-	const { schoolId: userSchoolId } = await context.app.service('users').get(context.params.account.userId);
-	const datasource = await context.app.service('datasources').get(datasourceId)
+	const userPromise = context.app.service('users').get(context.params.account.userId);
+	const datasourcePromise = context.app.service('datasources').get(datasourceId)
 		.catch((err) => { throw new NotFound('no such datasource', err); });
-	if (!equalIds(userSchoolId, datasource.schoolId)) {
+
+	const [user, datasource] = await Promise.all([userPromise, datasourcePromise]);
+	if (!equalIds(user.schoolId, datasource.schoolId)) {
 		throw new NotFound('no such datasource');
 	}
 
