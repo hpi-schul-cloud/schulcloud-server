@@ -10,10 +10,7 @@ const targetModels = ['courses', 'events'];
 
 const videoconferenceSchema = new Schema({
 	target: {
-		type: Schema.Types.ObjectId,
-		// Instead of a hardcoded model name in `ref`, `refPath` means Mongoose
-		// will look at the `targetModel` property to find the right model.
-		refPath: 'targetModel',
+		type: String,
 		// target and targetModel must both be defined or not
 		required: function requiredTarget() {
 			return !!this.targetModel;
