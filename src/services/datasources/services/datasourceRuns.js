@@ -112,7 +112,7 @@ class DatasourceRuns {
 	 * @param {Bool} dryrun
 	 * @param {ObjectId} userId id of the user calling the run.
 	 */
-	async persistPendingRun(datasource, dryrun, userId) {
+	persistPendingRun(datasource, dryrun, userId) {
 		const dsrData = {
 			datasourceId: datasource._id,
 			status: PENDING,
@@ -121,8 +121,7 @@ class DatasourceRuns {
 			dryrun,
 			createdBy: userId,
 		};
-		const dsr = await datasourceRunModel.create(dsrData);
-		return Promise.resolve(dsr);
+		return datasourceRunModel.create(dsrData);
 	}
 
 	/**
