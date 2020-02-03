@@ -51,7 +51,7 @@ describe('datasources hooks', () => {
 				params: { account: { userId: admin._id } },
 			});
 			expect(context).to.not.be.undefined;
-			expect(context.result.config.secret).to.equal('secret');
+			expect(context.result.config.secret).to.equal('<secret>');
 		});
 
 		it('always censures password', async () => {
@@ -69,8 +69,8 @@ describe('datasources hooks', () => {
 				params: { account: { userId: admin._id } },
 			});
 			expect(context).to.not.be.undefined;
-			expect(context.result.config.password).to.equal('secret');
-			expect(context.result.config.secret).to.equal('secret');
+			expect(context.result.config.password).to.equal('<secret>');
+			expect(context.result.config.secret).to.equal('<secret>');
 			expect(context.result.config.public).to.equal('lorem ipsum');
 		});
 

@@ -35,7 +35,7 @@ describe('webuntis metadata service', () => {
 			state: 'new',
 		});
 		expect(createResult).to.not.be.undefined;
-		expect(createResult.datasourceId).to.equal(datasource._id);
+		expect(createResult.datasourceId.toString()).to.equal(datasource._id.toString());
 
 		await webuntisMetadataModel.deleteOne({ _id: createResult._id }).lean().exec();
 	});
