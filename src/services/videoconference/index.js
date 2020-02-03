@@ -280,6 +280,7 @@ class VideoconferenceBaseService {
 	static getDefaultModel(scopeName, scopeId) {
 		const collectionNameFor = (scope) => {
 			if (scope === 'course') return 'courses';
+			if (scope === 'event') return 'events';
 			throw new Error();
 		};
 		return { targetModel: collectionNameFor(scopeName), target: scopeId };
