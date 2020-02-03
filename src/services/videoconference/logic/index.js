@@ -14,9 +14,10 @@ const logErrorAndThrow = (message, response) => {
  * if the meeting does not exist, it will be created if create set true.
  *
  * @returns join url
+ * @param {Boolean} create
  */
 const joinMeeting = (
-	server, meetingName, meetingId, userName, role, params, create,
+	server, meetingName, meetingId, userName, role, params, create = false,
 ) => server.monitoring
 	.getMeetingInfo(meetingId)
 	.then((meeting = {}) => {
