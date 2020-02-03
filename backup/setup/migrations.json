@@ -354,5 +354,16 @@
 		"$date": "2020-01-13T15:32:28.449Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e37e55302b039321c3f200a"
+	},
+	"state": "up",
+	"name": "addVideoconferencePermissionsToTeamRoles",
+	"createdAt": {
+		"$date": "2020-02-03T09:18:11.13Z"
+	},
+	"__v": 0
 }]
 
