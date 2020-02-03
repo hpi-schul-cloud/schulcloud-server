@@ -175,12 +175,22 @@ class VideoconferenceBaseService {
 				scopeTitle = (await app.service(permissionScopeName).get(scopeId)).name;
 				break;
 			case (SCOPE_NAMES.EVENT):
-				event = (await app.service('calendar').find(scopeId)); // event title
-				permissionScopeId = event.teamId;
-				if (!permissionScopeId) {
-					throw new NotFound('could not found videoconference enabled for this event in team');
+				// eslint-disable-next-line no-case-declarations
+				const events = (await app.service('calendar').find({
+					query: { 'event-id': scopeId },
+					payload: { userId: user.id },
+				}));
+				if (Array.isArray(events) && events.length >= 1) {
+					event = events[0];
+				} else {
+					throw new NotFound('event not found');
 				}
-				permissionScopeName = 'team';
+
+				permissionScopeId = event['x-sc-teamId'];
+				if (!permissionScopeId) {
+					throw new NotFound('could not find videoconference enabled for this event in team');
+				}
+				permissionScopeName = 'teams';
 				scopeTitle = event.title;
 				break;
 			default:
