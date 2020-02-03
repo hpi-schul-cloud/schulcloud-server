@@ -4,4 +4,6 @@ const getDatasource = require('./getDatasource');
 const restrictToDatasourceSchool = require('./restrictToDatasourceSchool');
 const protectFields = require('./protectFields');
 
-module.exports = { updatedBy, createdBy, getDatasource, restrictToDatasourceSchool, protectFields };
+module.exports = {
+	updatedBy, createdBy, getDatasource, restrictToDatasourceSchool, protectFields,
+};

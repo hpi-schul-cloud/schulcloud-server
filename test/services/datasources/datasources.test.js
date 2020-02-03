@@ -81,7 +81,9 @@ describe('datasources service', () => {
 		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await generateRequestParamsFromUser(admin);
 		const data = {
-			config: { target: 'csv', password: 'didumm', secret: 'Im an agent', public: 'im an expert' },
+			config: {
+				target: 'csv', password: 'didumm', secret: 'Im an agent', public: 'im an expert',
+			},
 			name: `test${Date.now()}`,
 			protected: ['password', 'secret'],
 		};

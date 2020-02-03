@@ -5,7 +5,6 @@ const testObjects = require('../helpers/testObjects')(app);
 
 const webuntisMetadataService = app.service('webuntisMetadata');
 const { webuntisMetadataModel } = require('../../../src/services/webuntis/model');
-const { datasourceRunModel } = require('../../../src/services/datasources/model');
 
 describe('webuntis metadata service', () => {
 	let server;
