@@ -5,6 +5,8 @@ const testObjects = require('../helpers/testObjects')(app);
 const { updatedBy, createdBy, protectFields } = require('../../../src/services/datasources/hooks');
 
 describe('datasources hooks', () => {
+	after(testObjects.cleanup);
+
 	describe('updatedBy', () => {
 		it('adds the updatedBy field', async () => {
 			const fut = updatedBy;

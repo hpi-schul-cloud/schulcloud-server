@@ -12,9 +12,9 @@ describe('webuntis Syncer', () => {
 		server = app.listen(0, done);
 	});
 
-	after((done) => {
-		server.close(done);
-		testObjects.cleanup();
+	after(async () => {
+		await server.close();
+		await testObjects.cleanup();
 	});
 
 	it('works', () => new WebUntisSyncer());

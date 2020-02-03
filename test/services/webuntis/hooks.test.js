@@ -5,6 +5,8 @@ const testObjects = require('../helpers/testObjects')(app);
 const { requireDatasourceId } = require('../../../src/services/webuntis/hooks');
 
 describe('webuntis metadata hooks', () => {
+	after(testObjects.cleanup);
+
 	describe('requireDatasourceId', () => {
 		it('returns if datasource belongs to users school', async () => {
 			const fut = requireDatasourceId;

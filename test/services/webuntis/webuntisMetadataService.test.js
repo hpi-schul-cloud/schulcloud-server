@@ -12,9 +12,9 @@ describe('webuntis metadata service', () => {
 		server = app.listen(0, done);
 	});
 
-	after((done) => {
-		server.close(done);
-		testObjects.cleanup();
+	after(async () => {
+		await server.close();
+		await testObjects.cleanup();
 	});
 
 	it('registered the webuntis metadata service', () => {
