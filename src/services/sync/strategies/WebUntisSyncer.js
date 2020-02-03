@@ -31,6 +31,9 @@ class WebUntisSyncer extends Syncer {
 		return false;
 	}
 
+	/* ---------------------------------------------------------------------------------
+	this should be replaced by real data once the actual untis sync is written
+	-------------------------------------------------------------------------------------*/
 	getimportCondition() {
 		if (this.data.datatype === 'inclusive') {
 			return ((id) => this.data.courseMetadataIds.includes(id));
@@ -77,6 +80,8 @@ class WebUntisSyncer extends Syncer {
 		}
 		return Promise.resolve();
 	}
+
+	// -------------------------------------------------------------------------------------------------------
 
 	async steps() {
 		await super.steps();
