@@ -457,7 +457,6 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 			let joinUrl = null;
 			let videoconferenceMetadata = null;
 			const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
-			const hasJoinPermission = hasStartPermission || userPermissionsInScope.includes(PERMISSIONS.JOIN_MEETING);
 
 			if (hasStartPermission) {
 				videoconferenceMetadata = (await CreateVideoconferenceService
