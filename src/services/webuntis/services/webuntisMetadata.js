@@ -15,8 +15,8 @@ const { webuntisMetadataModel } = require('../model');
 const webuntisMetadataService = service({
 	Model: webuntisMetadataModel,
 	paginate: {
-		default: 25,
-		max: 100,
+		default: 50,
+		max: 1000,
 	},
 });
 
