@@ -64,7 +64,7 @@ const expectNoGetPermission = (testData) => {
 		})).to.throw;
 };
 
-describe.only('videoconference service', function slowServiceTests() {
+describe('videoconference service', function slowServiceTests() {
 	this.timeout(30000);
 
 	let testData = null;
