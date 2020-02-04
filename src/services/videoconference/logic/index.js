@@ -23,9 +23,12 @@ const joinMeeting = (
 	.then((meeting = {}) => {
 		const { response } = meeting;
 		// the meeting does not exist, create it...
-		if (utils.isValidNotFoundResponse(response) && create === true) {
-			return server.administration
-				.create(meetingName, meetingId, params);
+		if (utils.isValidNotFoundResponse(response)) {
+			if (create === true) {
+				return server.administration
+					.create(meetingName, meetingId, params);
+			}
+			return logErrorAndThrow('meeting room not found', response);
 		}
 		// the meeting probably already exist, use it...
 		return meeting;

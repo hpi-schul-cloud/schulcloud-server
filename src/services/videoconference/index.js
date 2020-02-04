@@ -478,20 +478,20 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 					settings,
 					true,
 				);
-			} else if (hasJoinPermission) {
-				// join permission given only
+			} else {
+				// (hasJoinPermission)
 				videoconferenceMetadata = (await VideoconferenceBaseService
 					.getVideocenceMetadata(scopeName, scopeId, true));
 				if (videoconferenceMetadata === null) {
 					return new NotFound('ask a moderator to start the videoconference, it\'s not started yet');
 				}
-				// todo check bbb has started -> 403 getmeetinginfo
 				const { role, settings } = super
 					.getSettings(
 						authenticatedUser.id,
 						userPermissionsInScope,
 						videoconferenceMetadata,
 					);
+				// joinMeeting throws, if videoconference has not started yet
 				joinUrl = await joinMeeting(
 					server,
 					scopeTitle,
