@@ -17,11 +17,35 @@ const setupBBB = (context) => {
 	return context;
 };
 
+const protectSecrets = (context) => {
+	if (Array.isArray(context.result.data)) {
+		let i;
+		for (i = 0; i < context.result.data.length; i += 1) {
+			context.result.data[i].secret = undefined;
+		}
+	} else {
+		context.result.secret = undefined;
+	}
+	return context;
+};
+
+const addSecret = (context) => {
+	if (context.data.originTool) {
+		return context.app.service('/ltiTools/').get(context.data.originTool)
+			.then((tool) => {
+				context.data.secret = tool.secret;
+				return context;
+			});
+	}
+
+	return context;
+};
+
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('TOOL_VIEW')],
 	get: [globalHooks.hasPermission('TOOL_VIEW')],
-	create: [globalHooks.hasPermission('TOOL_CREATE'), setupBBB],
+	create: [globalHooks.hasPermission('TOOL_CREATE'), addSecret, setupBBB],
 	update: [globalHooks.hasPermission('TOOL_EDIT')],
 	patch: [globalHooks.hasPermission('TOOL_EDIT')],
 	remove: [globalHooks.hasPermission('TOOL_CREATE')],
@@ -29,8 +53,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [],
-	get: [],
+	find: [globalHooks.ifNotLocal(protectSecrets)],
+	get: [globalHooks.ifNotLocal(protectSecrets)],
 	create: [],
 	update: [],
 	patch: [],

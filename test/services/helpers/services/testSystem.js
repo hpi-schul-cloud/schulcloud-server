@@ -7,6 +7,9 @@ const createTestSystem = (app) => async (options = { url: '', type: 'moodle' }) 
 };
 
 const cleanup = (app) => () => {
+	if (createdSystemIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdSystemIds;
 	createdSystemIds = [];
 	return ids.map((id) => app.service('systems').remove(id));
