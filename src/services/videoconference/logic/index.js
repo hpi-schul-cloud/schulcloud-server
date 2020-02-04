@@ -1,12 +1,13 @@
 // const rp = require('request-promise-native');
 // const xml2js = require('xml2js-es6-promise');
+const { NotFound } = require('@feathersjs/errors');
 const { error } = require('../../../logger');
 const { ROLES } = require('./constants');
 const utils = require('./utils');
 
-const logErrorAndThrow = (message, response) => {
+const logErrorAndThrow = (message, response, ErrorClass = Error) => {
 	error(message, response);
-	throw new Error(message);
+	throw new ErrorClass(message);
 };
 
 /**
@@ -28,7 +29,7 @@ const joinMeeting = (
 				return server.administration
 					.create(meetingName, meetingId, params);
 			}
-			return logErrorAndThrow('meeting room not found', response);
+			return logErrorAndThrow('meeting room not found, create missing', response, NotFound);
 		}
 		// the meeting probably already exist, use it...
 		return meeting;
