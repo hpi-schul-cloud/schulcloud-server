@@ -1,5 +1,5 @@
 let createdDatasourceIds = [];
-const { datasourceModel } = require('../../../../src/services/datasources/model')
+const { datasourceModel } = require('../../../../src/services/datasources/model');
 
 const createTestDatasource = (app, opt) => async ({
 	name = 'testDatasource',
