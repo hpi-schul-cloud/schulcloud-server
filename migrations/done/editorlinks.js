@@ -13,7 +13,7 @@ const { FileModel } = require('../../src/services/fileStorage/model.js');
 mongoose.Promise = global.Promise;
 
 const sanitizeObj = (obj) => {
-	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
+	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
 	return obj;
 };
 
@@ -87,7 +87,7 @@ const run = async () => {
 	}, { contents: 1, _id: 1 }).exec().catch(errorHandler);
 
 	lessons = lessons
-		.filter(lesson => lesson.contents.some(c => c.component === 'text'));
+		.filter((lesson) => lesson.contents.some((c) => c.component === 'text'));
 
 	const promises = lessons.map((lesson) => {
 		const regex = /(?:src|href)=\"(.*?\/files\/file\?(?:path|file)=(.+?\/[0-9a-z]+?\/.*?))\"/gm;
@@ -102,7 +102,7 @@ const run = async () => {
 
 				const oldKeys = content.content.text
 					.match(regex)
-					.map(str => str.replace(regex, '$2'));
+					.map((str) => str.replace(regex, '$2'));
 
 				console.log(`Found old path keys ${oldKeys}`);
 
@@ -111,14 +111,14 @@ const run = async () => {
 						const fn = key.split('/').pop();
 						return key.replace(fn, encodeURIComponent(fn));
 					})
-					.map(key => oldfileModel.findOne({ key }).lean().exec().catch(errorHandler));
+					.map((key) => oldfileModel.findOne({ key }).lean().exec().catch(errorHandler));
 
 				return Promise.all(oldPromises)
 					.then((oldFiles) => {
 						const newFiles = oldFiles
-							.filter(file => file)
-							.map(file => convertDocument(file))
-							.map(file => FileModel.findOne(file).exec().catch(errorHandler));
+							.filter((file) => file)
+							.map((file) => convertDocument(file))
+							.map((file) => FileModel.findOne(file).exec().catch(errorHandler));
 
 						return Promise.all(newFiles);
 					})

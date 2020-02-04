@@ -18,7 +18,7 @@
 		"node": "^10.16.0"
 	},
 	"scripts": {
-		"lint": "eslint ./src ./test --ext .js --fix",
+		"lint": "eslint ./src ./test ./migrations --ext .js --fix",
 		"seed": "./backup.sh -p setup/ -D schulcloud-test -a import",
 		"test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
 		"backup": "./backup.sh -a -b export",

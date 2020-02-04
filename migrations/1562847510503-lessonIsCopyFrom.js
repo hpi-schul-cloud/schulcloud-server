@@ -10,7 +10,7 @@ const LessonModel = mongoose.model('lessonNew', new mongoose.Schema({
 	originalTopic: { type: Schema.Types.ObjectId, ref: 'topic' },
 }), 'lesson');
 
-const isNotEmpty = e => !(e === undefined || e === null);
+const isNotEmpty = (e) => !(e === undefined || e === null);
 
 const createDatabaseTask = (collectionData, sourceKey, targetKey) => {
 	const tasks = [];
@@ -37,7 +37,7 @@ module.exports = {
 			name: 'LessonCopyFrom',
 		});
 
-		await Promise.all(tasks.map(task => task.exec(LessonModel, 'updateOne', out)));
+		await Promise.all(tasks.map((task) => task.exec(LessonModel, 'updateOne', out)));
 		out.printResults();
 		await close();
 	},
@@ -52,7 +52,7 @@ module.exports = {
 			name: 'LessonCopyFrom',
 		});
 
-		await Promise.all(tasks.map(task => task.exec(LessonModel, 'updateOne', out)));
+		await Promise.all(tasks.map((task) => task.exec(LessonModel, 'updateOne', out)));
 		out.printResults();
 		await close();
 	},

@@ -28,34 +28,34 @@ module.exports = {
 			{
 				name: 'courseStudent',
 			}, {
-			$addToSet: {
-				permissions: {
-					$each: [PERMISSIONS.JOIN_MEETING],
+				$addToSet: {
+					permissions: {
+						$each: [PERMISSIONS.JOIN_MEETING],
+					},
 				},
 			},
-		},
 		).exec();
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'courseTeacher',
 			}, {
-			$addToSet: {
-				permissions: {
-					$each: [PERMISSIONS.START_MEETING],
+				$addToSet: {
+					permissions: {
+						$each: [PERMISSIONS.START_MEETING],
+					},
 				},
 			},
-		},
 		).exec();
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'courseSubstitutionTeacher',
 			}, {
-			$addToSet: {
-				permissions: {
-					$each: [PERMISSIONS.START_MEETING],
+				$addToSet: {
+					permissions: {
+						$each: [PERMISSIONS.START_MEETING],
+					},
 				},
 			},
-		},
 		).exec();
 		// /////////////////////////////////////////////////
 		await close();
@@ -69,28 +69,28 @@ module.exports = {
 			{
 				name: 'courseStudent',
 			}, {
-			$pull: {
-				permissions: { $in: [PERMISSIONS.JOIN_MEETING] },
+				$pull: {
+					permissions: { $in: [PERMISSIONS.JOIN_MEETING] },
+				},
 			},
-		},
 		).exec();
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'courseTeacher',
 			}, {
-			$pull: {
-				permissions: { $in: [PERMISSIONS.START_MEETING] },
+				$pull: {
+					permissions: { $in: [PERMISSIONS.START_MEETING] },
+				},
 			},
-		},
 		).exec();
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'courseSubstitutionTeacher',
 			}, {
-			$pull: {
-				permissions: { $in: [PERMISSIONS.START_MEETING] },
+				$pull: {
+					permissions: { $in: [PERMISSIONS.START_MEETING] },
+				},
 			},
-		},
 		).exec();
 		// ////////////////////////////////////////////////////
 		await close();
