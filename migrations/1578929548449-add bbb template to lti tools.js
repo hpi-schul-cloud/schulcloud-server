@@ -40,6 +40,7 @@ module.exports = {
 			url,
 			isTemplate: true,
 			isLocal: true,
+			logo_url: '/images/tools/bbb/available.png',
 			secret: 'none',
 			key: 'none',
 		});
