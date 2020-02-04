@@ -66,7 +66,7 @@
 		"VIDEOCONFERENCE_HOST": {
 			"type": "string",
 			"format": "uri",
-			"securedUrl": true,
+			"pattern":".*(?<!/)$",
 			"default": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 			"description": "The BBB base url (should end without a slash)."
 		},
@@ -74,9 +74,15 @@
 			"type": "string",
 			"default": "",
 			"description": "The BBB Salt for api call checksum creation."
+		},
+		"HOST": {
+			"type": "string",
+			"format": "uri",
+			"pattern":".*(?<!/)$",
+			"description": "The client url (should end without a slash)."
 		}
 	},
 	"required": [
-		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION"
+		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION", "HOST"
 	]
 }

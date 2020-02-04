@@ -46,7 +46,7 @@ const { schoolModel: Schools } = require('../school/model');
 
 const { ObjectId } = require('../../helper/compare');
 
-const CLIENT_HOST = process.env.HOST;
+const CLIENT_HOST = Config.get('HOST');
 
 class VideoconferenceBaseService {
 	constructor(app) {
@@ -207,10 +207,15 @@ class VideoconferenceBaseService {
 			route: { scopeId: permissionScopeId },
 			query: { userId: user.id },
 		});
-		// todo filter permissions to meeting permissions
+
+		let logoutURL = `${CLIENT_HOST}/${permissionScopeName}/${permissionScopeId}`;
+		if (permissionScopeName === 'teams') logoutURL += '?activeTab=events';
+		if (permissionScopeName === 'courses') logoutURL += '?activeTab=tools';
+
 		return {
 			scopeTitle,
 			userPermissionsInScope,
+			logoutURL,
 		};
 	}
 
@@ -304,8 +309,6 @@ class VideoconferenceBaseService {
 	getSettings(
 		userID,
 		userPermissions, {
-			targetModel,
-			target,
 			options: {
 				moderatorMustApproveJoinRequests = false,
 				everybodyJoinsAsModerator = false,
@@ -313,9 +316,9 @@ class VideoconferenceBaseService {
 				filename = undefined,
 			},
 		},
+		logoutURL = undefined,
 	) {
 		let role = VideoconferenceBaseService.getUserRole(userPermissions);
-		const logoutURL = `${CLIENT_HOST}/${targetModel}/${target}`;
 		const settings = {
 			userID,
 			allowStartStopRecording: false,
@@ -440,7 +443,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 
 		const { app } = this;
 		const authenticatedUser = await getUser({ params, app });
-		const { scopeTitle, userPermissionsInScope } = await this
+		const { scopeTitle, userPermissionsInScope, logoutURL } = await this
 			.getScopeInfo(app, authenticatedUser, scopeName, scopeId);
 
 		// CHECK PERMISSIONS //////////////////////////////////////////////////////
@@ -467,6 +470,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 						authenticatedUser.id,
 						userPermissionsInScope,
 						videoconferenceMetadata,
+						logoutURL,
 					);
 				joinUrl = await joinMeeting(
 					server,
@@ -489,6 +493,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 						authenticatedUser.id,
 						userPermissionsInScope,
 						videoconferenceMetadata,
+						logoutURL,
 					);
 				// joinMeeting throws, if videoconference has not started yet
 				joinUrl = await joinMeeting(
