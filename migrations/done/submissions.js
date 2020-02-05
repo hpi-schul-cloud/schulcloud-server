@@ -13,7 +13,7 @@ const { FileModel } = require('../../src/services/fileStorage/model.js');
 mongoose.Promise = global.Promise;
 
 const sanitizeObj = (obj) => {
-	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
+	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
 	return obj;
 };
 
@@ -90,21 +90,21 @@ const run = async (dry) => {
 	const promises = submissionWithFiles
 		.map((sub) => {
 			const submissionPrommies = sub.fileIds
-				.map(id => oldfileModel.findOne({ _id: id }).lean().exec().catch(errorHandler));
+				.map((id) => oldfileModel.findOne({ _id: id }).lean().exec().catch(errorHandler));
 
 			const { teacherId } = sub.homeworkId || {};
 
 			return Promise.all(submissionPrommies)
 				.then((files) => {
 					const docPromises = files
-						.filter(f => Boolean(f))
+						.filter((f) => Boolean(f))
 						.map(convertDocument)
-						.map(d => FileModel.findOne(d).exec().catch(errorHandler));
+						.map((d) => FileModel.findOne(d).exec().catch(errorHandler));
 
 					return Promise.all(docPromises);
 				})
-				.then(files => !teacherId ? Promise.resolve() : Promise.all(
-					files.filter(_ => Boolean(_)).map(file => dry
+				.then((files) => !teacherId ? Promise.resolve() : Promise.all(
+					files.filter((_) => Boolean(_)).map((file) => dry
 						? Promise.resolve()
 						: FileModel.update({ _id: file._id }, {
 							$set: {
