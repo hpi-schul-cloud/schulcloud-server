@@ -39,6 +39,7 @@ const webuntis = require('./webuntis');
 const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
+const videoconference = require('./videoconference');
 
 
 module.exports = function initializeServices() {
@@ -86,6 +87,7 @@ module.exports = function initializeServices() {
 	app.configure(roster);
 	app.configure(datasources);
 	app.configure(webuntis);
+	app.configure(videoconference);
 
 
 	// initialize events
