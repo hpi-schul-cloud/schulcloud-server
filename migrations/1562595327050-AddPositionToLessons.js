@@ -3,7 +3,7 @@ const { connect, close } = require('../src/utils/database');
 const LessonModel = require('../src/services/lesson/model');
 const { OutputLogTemplate, DatabaseTaskTemplate } = require('./helpers/');
 
-const isUndefined = e => typeof e === 'undefined';
+const isUndefined = (e) => typeof e === 'undefined';
 
 const getSortedLessons = async () => LessonModel
 	.find({})
@@ -61,7 +61,7 @@ module.exports = {
 		// add position if not exist, by oldest first | convert data to mongoose request
 		const databaseTasks = createDatabaseTask(Object.assign(courseMap, courseGroupMap));
 
-		await Promise.all(databaseTasks.map(task => task.exec(LessonModel, 'updateOne', out)));
+		await Promise.all(databaseTasks.map((task) => task.exec(LessonModel, 'updateOne', out)));
 		out.printResults();
 		await close();
 	},
