@@ -70,7 +70,7 @@ class WebUntisSyncer extends Syncer {
 			const importCondition = this.getimportCondition();
 			const promises = [];
 			metadata.data.forEach((md) => {
-				if (importCondition(md._id)) {
+				if (importCondition(md._id.toString())) {
 					promises.push(this.app.service('webuntisMetadata').patch(md._id, { state: 'imported' }));
 				} else {
 					promises.push(this.app.service('webuntisMetadata').patch(md._id, { state: 'discarded' }));
