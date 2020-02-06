@@ -94,7 +94,7 @@ describe('datasources service', () => {
 		expect(result.config.password).to.equal('<secret>');
 		expect(result.config.secret).to.equal('<secret>');
 		expect(result.config.public).to.equal('im an expert');
-		datasourceModel.deleteOne({ _id: result._id }).lean().exec();
+		await datasourceModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
 
