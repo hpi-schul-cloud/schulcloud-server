@@ -1,7 +1,12 @@
 const logger = require('../../../../src/logger/index');
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
+const { classModel } = require('../../../../src/services/user-group/model');
 
 let createdClassesIds = [];
+let classesServices;
+
+const removeManyClasses = (ids) => classModel.deleteMany({ _id: { $in: ids } }).lean().exec();
+const removeOneClass = (id) => classModel.findOneAndRemove({ _id: id }).lean().exec();
 
 const createTestClass = (app, opt) => ({
 	// required fields
@@ -13,7 +18,7 @@ const createTestClass = (app, opt) => ({
 	gradeLevel = undefined,
 	year = undefined,
 	predecessor = undefined,
-}) => app.service('classes').create({
+}) => classesServices.create({
 	name,
 	schoolId,
 	userIds,
@@ -27,10 +32,13 @@ const createTestClass = (app, opt) => ({
 	return res;
 });
 
-const cleanup = (app) => () => {
+const cleanup = () => {
+	if (createdClassesIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdClassesIds;
 	createdClassesIds = [];
-	return ids.map((id) => app.service('classes').remove(id));
+	return removeManyClasses(ids);
 };
 
 const createByName = (app) => async ([gradeLevel, className, schoolId], overrides = {}) => {
@@ -45,12 +53,12 @@ const createByName = (app) => async ([gradeLevel, className, schoolId], override
 		...overrides,
 	};
 
-	const createdClass = await app.service('classes').create(classObject);
+	const createdClass = await classesServices.create(classObject);
 	createdClassesIds.push(createdClass._id);
 };
 
 const findByName = (app) => async ([gradeLevel, className]) => {
-	const classObjects = await app.service('classes').find({
+	const classObjects = await classesServices.find({
 		query: {
 			gradeLevel,
 			name: className,
@@ -70,7 +78,7 @@ const deleteByName = (app) => async ([gradeLevel, className]) => {
 	const classObjects = await findByName(app)([gradeLevel, className]);
 	const promises = classObjects.map(async (classObject) => {
 		if (classObject && classObject._id) {
-			await app.service('classes').remove(classObject._id);
+			await classesServices.remove(classObject._id);
 			createdClassesIds.splice(createdClassesIds.find((i) => equalIds(i, classObject._id)));
 		} else {
 			logger.warning(`Trying to delete a class by name that does not exist: "${gradeLevel}${className}"`);
@@ -79,12 +87,19 @@ const deleteByName = (app) => async ([gradeLevel, className]) => {
 	await Promise.all(promises);
 };
 
-module.exports = (app, opt) => ({
-	cleanup: cleanup(app),
-	create: createTestClass(app, opt),
-	createByName: createByName(app),
-	deleteByName: deleteByName(app),
-	findByName: findByName(app),
-	findOneByName: findOneByName(app),
-	info: createdClassesIds,
-});
+module.exports = (app, opt) => {
+	classesServices = app.service('classes');
+	classesServices.setup(app);
+
+	return {
+		cleanup,
+		create: createTestClass(app, opt),
+		createByName: createByName(app),
+		deleteByName: deleteByName(app),
+		findByName: findByName(app),
+		findOneByName: findOneByName(app),
+		info: createdClassesIds,
+		removeOne: removeOneClass,
+		removeMany: removeManyClasses,
+	};
+};

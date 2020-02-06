@@ -8,9 +8,13 @@ const create = async (data) => {
 	return role;
 };
 
-const cleanup = async () => {
-	await Role.deleteMany({ id: { $in: createdRoles } });
+const cleanup = () => {
+	if (createdRoles.length === 0) {
+		return Promise.resolve();
+	}
+	const ids = createdRoles;
 	createdRoles = [];
+	return Role.deleteMany({ id: { $in: ids } });
 };
 
 module.exports = {

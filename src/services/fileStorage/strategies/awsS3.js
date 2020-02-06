@@ -307,11 +307,10 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				Key: flatFileName,
 				Expires: 60,
 			};
-
-			if (download) {
+			const getBoolean = (value) => value === true || value === 'true';
+			if (getBoolean(download)) {
 				params.ResponseContentDisposition = `attachment; filename = "${localFileName.replace('"', '')}"`;
 			}
-
 			return promisify(awsObject.s3.getSignedUrl.bind(awsObject.s3), awsObject.s3)(action, params);
 		});
 	}
