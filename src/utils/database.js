@@ -83,6 +83,8 @@ function connect() {
 	const mongooseOptions = {
 		useNewUrlParser: true,
 		useFindAndModify: false,
+		useCreateIndex: true,
+		useUnifiedTopology: true,
 	};
 
 	addAuthenticationToOptions(

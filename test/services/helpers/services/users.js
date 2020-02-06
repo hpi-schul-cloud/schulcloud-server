@@ -14,7 +14,7 @@ const createTestUser = (app, opt) => async ({
 	schoolId = opt.schoolId,
 	accounts = [], // test if it has a effect
 	roles = [],
-	discoverable = false,
+	discoverable = undefined,
 	firstLogin = false,
 	// manual cleanup, e.g. when testing delete:
 	manualCleanup = false,
@@ -43,6 +43,9 @@ const createTestUser = (app, opt) => async ({
 };
 
 const cleanup = (app) => () => {
+	if (createdUserIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdUserIds;
 	createdUserIds = [];
 	const promises = ids.map((id) => app.service('users').remove(id));

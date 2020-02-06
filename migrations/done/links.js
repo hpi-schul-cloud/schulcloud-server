@@ -13,7 +13,7 @@ const { FileModel } = require('../../src/services/fileStorage/model.js');
 mongoose.Promise = global.Promise;
 
 const sanitizeObj = (obj) => {
-	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
+	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
 	return obj;
 };
 
@@ -87,7 +87,7 @@ const run = async (dry) => {
 			const id = target.replace(regex, '$2');
 
 			return oldfileModel.findOne({ _id: id }).lean().exec().catch(errorHandler)
-				.then(file => file
+				.then((file) => file
 					? FileModel.findOne(convertDocument(file)).exec().catch(errorHandler)
 					: Promise.resolve())
 				.then((file) => {
