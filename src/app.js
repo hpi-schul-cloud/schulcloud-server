@@ -1,14 +1,24 @@
-const path = require('path');
 const express = require('@feathersjs/express');
+const feathers = require('@feathersjs/feathers');
+const configuration = require('@feathersjs/configuration');
+const commons = require('@schul-cloud/commons');
+const apiMetrics = require('prometheus-api-metrics');
+const path = require('path');
 const favicon = require('serve-favicon');
 const compress = require('compression');
 const cors = require('cors');
-const feathers = require('@feathersjs/feathers');
-const configuration = require('@feathersjs/configuration');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
+
+const app = express(feathers());
+
+const config = configuration();
+app.configure(config);
+
+// init & register configuration
+(new commons.Configuration()).init({ app });
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -20,15 +30,21 @@ const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 
+const { BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
+
 const setupSwagger = require('./swagger');
-const allHooks = require('./app.hooks');
+const { initializeRedisClient } = require('./utils/redis');
+const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
-const app = express(feathers());
-const config = configuration();
+const metricsOptions = {};
+if (METRICS_PATH) {
+	metricsOptions.metricsPath = METRICS_PATH;
+}
+app.use(apiMetrics(metricsOptions));
 
-app.configure(config);
 setupSwagger(app);
+app.configure(initializeRedisClient);
 
 // set custom response header for ha proxy
 if (process.env.KEEP_ALIVE) {
@@ -44,7 +60,8 @@ app.use(compress())
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 	.use('/', express.static('public'))
 	.configure(sentry)
-	.use(bodyParser.json())
+	.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
+	.use('/', bodyParser.json())
 	.use(bodyParser.urlencoded({ extended: true }))
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 	.use(versionService)
@@ -67,7 +84,7 @@ app.use(compress())
 	.configure(services)
 	.configure(sockets)
 	.configure(middleware)
-	.configure(allHooks)
+	.configure(setupAppHooks)
 	.configure(errorHandler);
 
 module.exports = app;

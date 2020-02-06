@@ -1,7 +1,6 @@
 const service = require('feathers-mongoose');
 const {
 	BadRequest,
-	Forbidden,
 	GeneralError,
 	NotFound,
 } = require('@feathersjs/errors');
@@ -24,12 +23,9 @@ const {
 } = require('./helpers');
 const {
 	isArray,
-	isArrayWithElement,
-	isString,
 	isDefined,
 	isUndefined,
 	bsonIdToString,
-	isSameId,
 } = require('./hooks/collection');
 const { ScopePermissionService, ScopeListService } = require('../helpers/scopePermissions');
 // const {teamRolesToHook} = require('./hooks');
@@ -239,7 +235,6 @@ class Add {
      * }}
      */
 	async _userImportById(teamId, { userId, role }, params) {
-		//  const { userId, role } = data;
 		const [ref, user, team] = await getBasic(this, teamId, params, userId);
 		const { schoolId } = user;
 		const schoolIds = getUpdatedSchoolIdArray(team, user);
@@ -352,7 +347,7 @@ class Add {
 			return out;
 		} catch (err) {
 			warning(err);
-			return Promise.resolve('Success!');
+			return Promise.resolve({ message: 'Success!' });
 		}
 	}
 
@@ -380,7 +375,7 @@ class Accept {
      */
 	get(teamId, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
-			const { email } = sessionUser;
+			const { email, schoolId } = sessionUser;
 			const userId = bsonIdToString(sessionUser._id);
 			let { invitedUserIds } = team;
 			const { userIds } = team;
@@ -390,7 +385,7 @@ class Accept {
 				throw new NotFound('User is not in this team.');
 			}
 			const role = ref.findRole('name', invitedUser.role, '_id');
-			userIds.push({ userId, role });
+			userIds.push({ userId, role, schoolId });
 
 			invitedUserIds = removeInvitedUserByEmail(team, email);
 

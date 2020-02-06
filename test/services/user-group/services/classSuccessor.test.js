@@ -234,7 +234,5 @@ describe('classSuccessor service', () => {
 		expect(oldClass.successor).to.be.undefined;
 	});
 
-	after(async () => {
-		await testObjects.cleanup();
-	});
+	after(testObjects.cleanup);
 });

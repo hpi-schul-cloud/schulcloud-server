@@ -1,7 +1,7 @@
 const request = require('request-promise-native');
 const hooks = require('./hooks/index');
 
-const REQUEST_TIMEOUT = 8000; // in ms
+const { REQUEST_TIMEOUT } = require('../../../config/globals');
 
 /**
  * maps jsonapi properties of a response to fit anything but jsonapi
