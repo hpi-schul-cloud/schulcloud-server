@@ -43,6 +43,9 @@ const createTestUser = (app, opt) => async ({
 };
 
 const cleanup = (app) => () => {
+	if (createdUserIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdUserIds;
 	createdUserIds = [];
 	const promises = ids.map((id) => app.service('users').remove(id));

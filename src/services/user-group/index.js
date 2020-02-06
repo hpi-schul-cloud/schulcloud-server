@@ -1,6 +1,5 @@
 const service = require('feathers-mongoose');
 const {
-	courseModel,
 	courseGroupModel,
 	gradeModel,
 } = require('./model');

@@ -408,17 +408,21 @@ exports.mapPayload = (context) => {
 	}
 	Object.defineProperty(context.params, 'payload', {
 		get() {
-			logger.warning(
-				'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
-				+ ` path: ${context.path} method: ${context.method}`,
-			);
+			if (!isProductionMode) {
+				logger.warning(
+					'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
+					+ ` path: ${context.path} method: ${context.method}`,
+				);
+			}
 			return (context.params.authentication || {}).payload;
 		},
 		set(v) {
-			logger.warning(
-				'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
-				+ `path: ${context.path} method: ${context.method}`,
-			);
+			if (!isProductionMode) {
+				logger.warning(
+					'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
+					+ `path: ${context.path} method: ${context.method}`,
+				);
+			}
 			if (!context.params.authentication) context.params.authentication = {};
 			context.params.authentication.payload = v;
 		},
@@ -496,7 +500,7 @@ exports.restrictToUsersOwnClasses = (context) => getUser(context).then((user) =>
 		return classService.get(context.id).then((result) => {
 			const userId = context.params.account.userId.toString();
 			if (!(_.some(result.userIds, (u) => equalIds(u, userId)))
-					&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
+				&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
 				throw new Forbidden('You are not in that class.');
 			}
 		});
@@ -682,7 +686,6 @@ exports.sendEmail = (context, maildata) => {
 					},
 					attachments,
 				}).catch((err) => {
-					logger.warning(err);
 					throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
 				});
 			});
