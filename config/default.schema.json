@@ -78,6 +78,7 @@
 		"HOST": {
 			"type": "string",
 			"format": "uri",
+			"default":"http://localhost:3100",
 			"pattern":".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
 		}
