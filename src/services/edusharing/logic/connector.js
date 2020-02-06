@@ -158,6 +158,8 @@ class EduSharingConnector {
 			timeout: REQUEST_TIMEOUT,
 		};
 
+		// code below includes params in seperate key/value, but does not work.
+
 		/* const options2 = {
 			method: 'POST',
 			// This will be changed later with a qs where sorting, filtering etc is present.
