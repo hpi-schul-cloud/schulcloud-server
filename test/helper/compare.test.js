@@ -43,5 +43,19 @@ describe('Comparator Library for', () => {
 			assert.isFalse(compare.ObjectId.equal(null, {}));
 			assert.isFalse(compare.ObjectId.equal('', {}));
 		});
+
+		it('checks for valid ObjectIds', () => {
+			for (let i = 0; i < 100; i += 1) {
+				const id = new Types.ObjectId();
+				assert.isTrue(compare.ObjectId.isValid(id));
+				assert.isTrue(compare.ObjectId.isValid(String(id)));
+				assert.isFalse(compare.ObjectId.isValid(String(id) + 1));
+				assert.isFalse(compare.ObjectId.isValid(2 + String(id)));
+				assert.isFalse(compare.ObjectId.isValid(`a${String(id)}`));
+				assert.isTrue(compare.ObjectId.isValid(`a${String(id).substring(0, 23)}`));
+				assert.isFalse(compare.ObjectId.isValid(`${String(id).substring(0, 23)}r`));
+				assert.isFalse(compare.ObjectId.isValid(String(id).substring(0, 20)));
+			}
+		});
 	});
 });

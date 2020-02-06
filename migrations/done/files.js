@@ -15,7 +15,7 @@ const RoleModel = require('../../src/services/role/model.js');
 mongoose.Promise = global.Promise;
 
 const sanitizeObj = (obj) => {
-	Object.keys(obj).forEach(key => obj[key] === undefined && delete obj[key]);
+	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
 	return obj;
 };
 
@@ -146,7 +146,7 @@ const run = async (dry) => {
 		}
 
 		if (doc.permissions && doc.permissions.length) {
-			permissions = [...permissions, ...doc.permissions.map(perm => ({
+			permissions = [...permissions, ...doc.permissions.map((perm) => ({
 				refId: perm.userId,
 				refPermModel: 'user',
 				write: perm.permissions.indexOf('can-write') > -1,
@@ -180,7 +180,7 @@ const run = async (dry) => {
 		let transformed = directories.map(convertDocument);
 
 		if (parent) {
-			transformed = transformed.map(doc => ({ ...doc, parent }));
+			transformed = transformed.map((doc) => ({ ...doc, parent }));
 		}
 
 		const promises = transformed.map(async (d) => {
@@ -202,14 +202,14 @@ const run = async (dry) => {
 	};
 
 	const rootDocument = (docs) => {
-		const splitPath = docs.path.split('/').filter(chunk => !!chunk);
+		const splitPath = docs.path.split('/').filter((chunk) => !!chunk);
 		return splitPath.length === 2;
 	};
 
 	const resolveChildren = ({ subset, documents, parent }) => spawnDocuments(subset, parent)
 		.then((result) => {
 			const childPromises = subset.map((document, index) => {
-				const children = documents.filter(d => d.path.slice(0, -1) === document.key);
+				const children = documents.filter((d) => d.path.slice(0, -1) === document.key);
 
 				if (children.length) {
 					return resolveChildren({
