@@ -22,6 +22,9 @@ class Classes {
 
 		const school = await this.app.service('schools').get(query.schoolId);
 		const years = school.years.schoolYears.map((y) => y._id);
+		if (((query.$sort || {}).year === '-1' || (query.$sort || {}).year === 'desc')) {
+			years.reverse();
+		}
 		years.push({ $exists: false }); // to find classes that dont have a year
 		return years;
 	}

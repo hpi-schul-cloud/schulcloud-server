@@ -26,11 +26,17 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 			requestId: req.headers.requestId,
 		} : {};
 
-		logger.error(error);
-
-		if (error.stack) {
-			delete error.stack;
+		// delete response informations for extern express applications
+		delete error.response;
+		if (error.options) {
+			// can include jwts if error it throw by extern micro services
+			delete error.options.headers;
 		}
+		logger.error({ ...error });
+
+		// if exist delete it
+		delete error.stack;
+		delete error.catchedError;
 	}
 	next(error);
 };
@@ -57,6 +63,7 @@ const secretDataKeys = (() => [
 	'password_control',
 	'PASSWORD_HASH',
 	'password_new',
+	'accessToken',
 ].map((k) => k.toLocaleLowerCase())
 )();
 const filter = (data) => {
@@ -106,6 +113,7 @@ const errorHandler = (app) => {
 	if (process.env.NODE_ENV !== 'test') {
 		app.use(logRequestInfosInErrorCase);
 	}
+
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(formatAndLogErrors(process.env.NODE_ENV !== 'test'));
 	app.use(returnAsJson);

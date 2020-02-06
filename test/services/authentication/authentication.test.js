@@ -58,6 +58,44 @@ describe('General login service', () => {
 			});
 	}));
 
+	it('should get a JWT when credentials are padded in spaces', () => new Promise((resolve, reject) => {
+		chai.request(app)
+			.post('/authentication')
+			.set('Accept', 'application/json')
+			.set('content-type', 'application/x-www-form-urlencoded')
+		// send credentials
+			.send({
+				username: `     ${testAccount.username} `,
+				password: `  ${testAccount.password} `,
+				strategy: 'local',
+			})
+			.end((err, res) => {
+				if (err) {
+					reject(err);
+					return;
+				}
+
+				const decodedToken = jwt.decode(res.body.accessToken);
+
+				// get the account id from JWT
+				decodedToken.should.have.property('accountId');
+
+				accountService.get(decodedToken.accountId)
+					.then((account) => {
+						account.username.should.equal(testAccount.username);
+						resolve();
+					})
+					.catch((error) => {
+						logger.error(`failed to get the account from the service: ${error}`);
+						// throw error;
+						reject(error);
+						// done();
+					});
+
+				resolve();
+			});
+	}));
+
 	it('should not get a JWT with wrong credentials', () => new Promise((resolve, reject) => {
 		chai.request(app)
 			.post('/authentication')
