@@ -125,20 +125,6 @@ class DatasourceRuns {
 	}
 
 	/**
-	 * invokes a Syncer with params and data
-	 * @param {Object} params params for the syncer
-	 * @param {Object} data data for the syncer
-	 * @returns {Promise} SyncResult
-	 */
-	async startSync(params, data) {
-		// run a syncer
-		const promise = data
-			? this.app.service('sync').create(data, params)
-			: this.app.service('sync').find(params);
-		return promise;
-	}
-
-	/**
 	 * Update both the datasource and the datasourcerun with the results of a successful Sync.
 	 * @param {Object} result result of a syncer run
 	 * @param {Sting} logString string containing the log of the syncer run
@@ -225,7 +211,7 @@ class DatasourceRuns {
 		};
 
 		// we intentionally do not await the sync, and instead return the pending run.
-		const promise = this.startSync(syncParams, (data || {}).data);
+		const promise = this.app.service('sync').create(data, syncParams);
 
 		promise.then(async (result) => {
 			await this.updateAfterSuccess(result, logString, startTime, datasourceRun._id, params.datasource._id);
