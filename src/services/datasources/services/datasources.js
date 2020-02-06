@@ -58,20 +58,19 @@ const datasourceHooks = {
 		],
 	},
 	after: {
-		all: [],
-		find: [iff(isProvider('external'), protectFields)],
+		all: [iff(isProvider('external'), protectFields)],
+		find: [],
 		get: [
 			iff(isProvider('external'), [
 				denyIfNotCurrentSchool({
 					errorMessage: 'You do not have valid permissions to access this.',
 				}),
-				protectFields,
 			]),
 		],
-		create: [iff(isProvider('external'), protectFields)],
-		update: [iff(isProvider('external'), protectFields)],
-		patch: [iff(isProvider('external'), protectFields)],
-		remove: [iff(isProvider('external'), protectFields)],
+		create: [],
+		update: [],
+		patch: [],
+		remove: [],
 	},
 };
 

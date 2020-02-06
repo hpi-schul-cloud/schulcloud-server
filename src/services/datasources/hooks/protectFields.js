@@ -12,7 +12,7 @@ const replaceFields = (datasource) => {
 /**
  * replaces the values of protected fields with '<secret>'
  */
-module.exports = async (context) => {
+module.exports = (context) => {
 	if (context.method === 'find') {
 		context.result.data = (context.result.data || []).map((ds) => replaceFields(ds));
 	} else {
