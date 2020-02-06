@@ -500,7 +500,7 @@ exports.restrictToUsersOwnClasses = (context) => getUser(context).then((user) =>
 		return classService.get(context.id).then((result) => {
 			const userId = context.params.account.userId.toString();
 			if (!(_.some(result.userIds, (u) => equalIds(u, userId)))
-					&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
+				&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
 				throw new Forbidden('You are not in that class.');
 			}
 		});
@@ -686,7 +686,6 @@ exports.sendEmail = (context, maildata) => {
 					},
 					attachments,
 				}).catch((err) => {
-					logger.warning(err);
 					throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
 				});
 			});

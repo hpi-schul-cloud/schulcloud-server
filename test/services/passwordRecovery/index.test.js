@@ -2,14 +2,13 @@ const assert = require('assert');
 const app = require('../../../src/app');
 
 const passwordRecoveryService = app.service('passwordRecovery');
-const chai = require('chai');
 
 describe('passwordRecovery service', () => {
 	const testRecovery = {
 		username: 'schueler@schul-cloud.org',
 	};
 
-	before(function (done) {
+	before(function before(done) {
 		this.timeout(10000);
 		passwordRecoveryService.create(testRecovery)
 			.then((result) => {
@@ -30,30 +29,23 @@ describe('passwordRecovery service', () => {
 		assert.ok(passwordRecoveryService);
 	});
 
-	it('_id is 24 characters long', (done) => {
-		passwordRecoveryService.find()
-			.then((result) => {
-				assert.equal(result.data[0]._id.length, 24);
-				done();
-			});
+	it('_id is 24 characters long', async () => {
+		const result = await passwordRecoveryService.find();
+		assert.equal(result.data[0]._id.length, 24);
 	});
 
-	it('found the correct accountId in hook', (done) => {
-		passwordRecoveryService.find()
-			.then((result) => {
-				assert.equal(result.data[0].account, '0000d225816abba584714c9d');
-				done();
-			});
+	it('found the correct accountId in hook', async () => {
+		const result = await passwordRecoveryService.find();
+		assert.equal(result.data[0].account, '0000d225816abba584714c9d');
 	});
 
-	it('successfully changed password for user', (done) => {
-		passwordRecoveryService.find()
-			.then((result) => {
-				app.service('passwordRecovery/reset').create({ accountId: result.data[0].account, password: 'schulcloud', resetId: result.data[0]._id })
-					.then((success) => {
-						assert.ok(success);
-						done();
-					});
-			});
+	it('successfully changed password for user', async () => {
+		const result = await passwordRecoveryService.find();
+		const success = await app.service('passwordRecovery/reset').create({
+			accountId: result.data[0].account,
+			password: 'schulcloud',
+			resetId: result.data[0]._id,
+		});
+		assert.ok(success);
 	});
 });
