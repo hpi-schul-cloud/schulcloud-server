@@ -102,6 +102,20 @@ const lowerCaseUsername = (hook) => {
 	return hook;
 };
 
+const trimUsername = (hook) => {
+	if (hook.data.username) {
+		hook.data.username = hook.data.username.trim();
+	}
+	return hook;
+};
+
+const trimPassword = (hook) => {
+	if (hook.data.password) {
+		hook.data.password = hook.data.password.trim();
+	}
+	return hook;
+};
+
 const populateResult = (hook) => {
 	hook.result.userId = hook.result.account.userId; // required by event listeners
 	return hook;
@@ -147,6 +161,8 @@ const hooks = {
 		create: [
 			updateUsernameForLDAP,
 			lowerCaseUsername,
+			trimUsername,
+			trimPassword,
 			bruteForceCheck,
 			injectUserId,
 			removeProvider,
