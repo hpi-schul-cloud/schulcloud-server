@@ -10,14 +10,6 @@ const logErrorAndThrow = (message, response, ErrorClass = Error) => {
 	throw new ErrorClass(message);
 };
 
-const preUploadUrl = (slideUrls) => {
-	const begin = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><modules><module name=\'presentation\'>';
-	const urls = slideUrls.map((url) => `<document url=${url} />`);
-	const end = '</module></modules>';
-	const xml = begin + urls.join() + end;
-	return xml;
-};
-
 /**
  * creates a url for attendee or moderator to join a meeting.
  * if the meeting does not exist, it will be created if create set true.

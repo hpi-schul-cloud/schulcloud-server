@@ -107,9 +107,6 @@ class VideoconferenceBaseService {
 				sourcePropertyNames: toggleOptions,
 			});
 		});
-		if (options.filename && typeof options.filename === 'string' && isUrl(options.filename)) {
-			validOptions.filename = options.filename;
-		}
 		return validOptions;
 	}
 
@@ -311,7 +308,6 @@ class VideoconferenceBaseService {
 				moderatorMustApproveJoinRequests = false,
 				everybodyJoinsAsModerator = false,
 				everyAttendeJoinsMuted = false,
-				filename = undefined,
 			},
 		},
 		logoutURL = undefined,
@@ -323,10 +319,6 @@ class VideoconferenceBaseService {
 			lockSettingsDisablePrivateChat: true,
 			logoutURL,
 		};
-
-		if (filename) {
-			settings.filename = filename;
-		}
 
 		if (moderatorMustApproveJoinRequests && role !== ROLES.MODERATOR) {
 			settings.guest = true;
