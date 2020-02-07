@@ -38,7 +38,6 @@ const {
 	RESPONSE_STATUS,
 	STATES,
 	CREATE_OPTION_TOGGLES,
-	GUEST_POLICIES,
 } = require('./logic/constants');
 
 const VideoconferenceModel = require('./model');
@@ -261,9 +260,8 @@ class VideoconferenceBaseService {
 	static createResponse(status, state, permissions, options = null, url) {
 		const permission = VideoconferenceBaseService
 			.getHighestVideoconferencePermission(permissions);
-		const leanOptions = (options !== null && options.toObject) ? options.toObject() : {};
 		return {
-			status, state, permission, options: leanOptions, url,
+			status, state, permission, options, url,
 		};
 	}
 
@@ -396,7 +394,7 @@ class GetVideoconferenceService extends VideoconferenceBaseService {
 		const meetingInfo = await getMeetingInfo(server, scopeId);
 
 		const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
-		const hasOptions = videoconferenceMetadata && videoconferenceMetadata.options;
+		const hasOptions = videoconferenceMetadata !== null && videoconferenceMetadata.options !== undefined;
 
 		if (isValidNotFoundResponse(meetingInfo)) {
 			// meeting is not started yet or finihed --> wait (permission: join) or start (permission: start)
