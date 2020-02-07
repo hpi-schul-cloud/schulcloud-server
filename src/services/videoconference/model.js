@@ -40,6 +40,9 @@ const videoconferenceSchema = new Schema({
 			default: false,
 			required: true,
 		},
+		filename: {
+			type: String,
+		},
 	},
 }, {
 	timestamps: true,
