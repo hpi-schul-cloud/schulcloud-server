@@ -331,7 +331,6 @@ class VideoconferenceBaseService {
 		}
 
 		if (moderatorMustApproveJoinRequests && role !== ROLES.MODERATOR) {
-			settings.guestPolicy = GUEST_POLICIES.ASK_MODERATOR;
 			settings.guest = true;
 		}
 
