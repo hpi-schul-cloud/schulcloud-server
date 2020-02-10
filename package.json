@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "20.3.0",
+	"version": "22.0.0",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -59,7 +59,7 @@
 		"client-oauth2": "^4.2.5",
 		"compression": "^1.6.2",
 		"cors": "^2.8.1",
-		"cross-env": "^6.0.3",
+		"cross-env": "^7.0.0",
 		"crypto-js": "^3.1.9-1",
 		"csv-parse": "^4.6.3",
 		"ejs": "^2.5.5",
@@ -117,7 +117,7 @@
 		"eslint-config-airbnb-base": "^13.0.0",
 		"eslint-plugin-import": "^2.18.2",
 		"eslint-plugin-react": "^7.11.1",
-		"mocha": "^6.2.2",
+		"mocha": "^7.0.1",
 		"mockery": "^2.0.0",
 		"nock": "^11.7.1",
 		"nodemon": "^1.19.1",
