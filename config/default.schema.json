@@ -66,7 +66,7 @@
 		"VIDEOCONFERENCE_HOST": {
 			"type": "string",
 			"format": "uri",
-			"pattern":".*(?<!/)$",
+			"pattern": ".*(?<!/)$",
 			"default": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 			"description": "The BBB base url (should end without a slash)."
 		},
@@ -78,12 +78,24 @@
 		"HOST": {
 			"type": "string",
 			"format": "uri",
-			"default":"http://localhost:3100",
-			"pattern":".*(?<!/)$",
+			"default": "http://localhost:3100",
+			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
+		},
+		"LERNSTORE_MODE": {
+			"type": "string",
+			"enum": [
+				"DISABLED",
+				"LEGACY",
+				"EDUSHARING"
+			],
+			"default": "DISABLED",
+			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
 		}
 	},
 	"required": [
-		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION", "HOST"
+		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
+		"HOST",
+		"LERNSTORE_MODE"
 	]
 }
