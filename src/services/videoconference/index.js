@@ -18,6 +18,7 @@ const { isUrl } = require('./logic/utils');
 
 
 const { getUser } = require('../../hooks');
+const { sendEmailNotification } = require('./logic/notification')
 
 const {
 	joinMeeting,
@@ -462,6 +463,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 			const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
 
 			if (hasStartPermission) {
+
 				videoconferenceMetadata = (await CreateVideoconferenceService
 					.updateAndGetVideoconferenceMetadata(scopeName, scopeId, options)).toObject();
 				// todo extend options based on metadata created before
@@ -481,6 +483,14 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 					settings,
 					true,
 				);
+				if (scopeName === 'course') {
+					await app.service('/courses').get(scopeId, {
+						query: { $populate: ['userIds'], },
+					}).then((users) => {
+						const emailAdresses = users.userIds.map(u => u.email)
+						sendEmailNotification(app, emailAdresses, logoutURL)
+					})
+				}
 			} else {
 				// (hasJoinPermission)
 				videoconferenceMetadata = (await VideoconferenceBaseService
@@ -505,6 +515,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 					settings,
 					false,
 				);
+				console.log(scopeName, 'seperator', scopeId, scopeName)
 			}
 			return VideoconferenceBaseService.createResponse(
 				RESPONSE_STATUS.SUCCESS,
@@ -557,3 +568,5 @@ module.exports = function setup(app) {
 	];
 	videoConferenceServices.forEach((service) => service.hooks(videoconferenceHooks));
 };
+
+
