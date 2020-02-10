@@ -2,7 +2,6 @@ const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const { isValid } = require('../../../helper/compare').ObjectId;
-const { BaseService } = require('../../videoconference/index');
 const { populateCurrentSchool } = require('../../../hooks/index');
 
 const isBBBCreateRequest = (context) => context.data && context.data.url && context.data.url === 'BBB_URL';

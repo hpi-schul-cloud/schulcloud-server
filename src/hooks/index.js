@@ -767,7 +767,8 @@ exports.lookupSchool = async (context) => {
 
 exports.populateCurrentSchool = async (context) => {
 	if (context.params && context.params.account && context.params.account.userId) {
-		context.params.school = await context.app.service('schools').get(context.params.account.schoolId);
+		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
+		context.params.school = await context.app.service('schools').get(schoolId);
 		return context;
 	}
 	throw new BadRequest('Authentication is required.');

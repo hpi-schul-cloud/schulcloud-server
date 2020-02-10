@@ -335,7 +335,6 @@ class VideoconferenceBaseService {
 	}
 }
 
-exports.BaseService = VideoconferenceBaseService;
 
 /**
  * @typedef {Object} VideoConference
