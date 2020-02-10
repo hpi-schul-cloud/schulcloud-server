@@ -217,6 +217,8 @@ class VideoconferenceBaseService {
 			scopeTitle,
 			userPermissionsInScope,
 			logoutURL,
+			permissionScopeId,
+			permissionScopeName
 		};
 	}
 
@@ -444,8 +446,12 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 
 		const { app } = this;
 		const authenticatedUser = await getUser({ params, app });
-		const { scopeTitle, userPermissionsInScope, logoutURL } = await this
-			.getScopeInfo(app, authenticatedUser, scopeName, scopeId);
+		const { scopeTitle,
+			userPermissionsInScope,
+			logoutURL,
+			permissionScopeId,
+			permissionScopeName } = await this
+				.getScopeInfo(app, authenticatedUser, scopeName, scopeId);
 
 		// CHECK PERMISSIONS //////////////////////////////////////////////////////
 		await VideoconferenceBaseService.throwOnFeaturesDisabled(authenticatedUser);
@@ -483,14 +489,14 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 					settings,
 					true,
 				);
-				if (scopeName === 'course') {
-					await app.service('/courses').get(scopeId, {
-						query: { $populate: ['userIds'], },
-					}).then((users) => {
-						const emailAdresses = users.userIds.map(u => u.email)
-						sendEmailNotification(app, emailAdresses, logoutURL)
-					})
-				}
+
+				// permissionScopeName enum = ['courses','teams']
+				await this.app.service(`/${permissionScopeName}/`).get(scopeId, {
+					query: { $populate: ['userIds'], },
+				}).then((users) => {
+					const emailAdresses = users.userIds.map(u => u.email)
+					sendEmailNotification(app, emailAdresses, logoutURL)
+				})
 			} else {
 				// (hasJoinPermission)
 				videoconferenceMetadata = (await VideoconferenceBaseService
