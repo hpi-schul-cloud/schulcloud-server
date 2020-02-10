@@ -362,7 +362,7 @@
 	"state": "up",
 	"name": "addVideoconferencePermissionsToTeamRoles",
 	"createdAt": {
-		"$date": "2020-02-03T09:18:11.13Z"
+		"$date": "2020-02-03T09:18:11.130Z"
 	},
 	"__v": 0
 },
