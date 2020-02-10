@@ -1,7 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { Forbidden } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const { isValid } = require('../../../helper/compare').ObjectId;
-
+const { BaseService } = require('../../videoconference/index');
+const { populateCurrentSchool } = require('../../../hooks/index');
 
 const isBBBCreateRequest = (context) => context.data && context.data.url && context.data.url === 'BBB_URL';
 
@@ -41,10 +43,35 @@ const addSecret = (context) => {
 	return context;
 };
 
+const isBBBTool = (tool) => tool.name && tool.name === 'Video-Konferenz mit BigBlueButton';
+
+const filterFindBBB = (context) => {
+	let hasVideoconferenceItems = false;
+	if (context.result && context.result.data && Array.isArray(context.result.data)) {
+		hasVideoconferenceItems = context.result.data.some((tool) => isBBBTool(tool));
+	}
+	if (hasVideoconferenceItems) {
+		// if school feature disabled, remove bbb tools from results data
+		const { features } = context.params.school;
+		if (!features.includes('videoconference')) {
+			context.result.data = context.result.data.filter((tool) => !isBBBTool(tool));
+		}
+	}
+};
+
+const filterGetBBB = (context) => {
+	if (context.data && isBBBTool(context.data)) {
+		const { features } = context.params.school;
+		if (!features.includes('videoconference')) {
+			throw new Forbidden('school feature disabled');
+		}
+	}
+};
+
 exports.before = {
 	all: [authenticate('jwt')],
-	find: [globalHooks.hasPermission('TOOL_VIEW')],
-	get: [globalHooks.hasPermission('TOOL_VIEW')],
+	find: [globalHooks.hasPermission('TOOL_VIEW'), populateCurrentSchool],
+	get: [globalHooks.hasPermission('TOOL_VIEW'), populateCurrentSchool],
 	create: [globalHooks.hasPermission('TOOL_CREATE'), addSecret, setupBBB],
 	update: [globalHooks.hasPermission('TOOL_EDIT')],
 	patch: [globalHooks.hasPermission('TOOL_EDIT')],
@@ -53,8 +80,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [globalHooks.ifNotLocal(protectSecrets)],
-	get: [globalHooks.ifNotLocal(protectSecrets)],
+	find: [globalHooks.ifNotLocal(protectSecrets), filterFindBBB],
+	get: [globalHooks.ifNotLocal(protectSecrets), filterGetBBB],
 	create: [],
 	update: [],
 	patch: [],

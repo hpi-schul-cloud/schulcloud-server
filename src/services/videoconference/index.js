@@ -14,7 +14,6 @@ Config.init();
 const { SCHOOL_FEATURES } = require('../../../src/services/school/model');
 
 const videoconferenceHooks = require('./hooks');
-const { isUrl } = require('./logic/utils');
 
 
 const { getUser } = require('../../hooks');
@@ -335,6 +334,8 @@ class VideoconferenceBaseService {
 		return { role, settings };
 	}
 }
+
+exports.BaseService = VideoconferenceBaseService;
 
 /**
  * @typedef {Object} VideoConference
