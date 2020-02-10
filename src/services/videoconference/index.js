@@ -515,7 +515,7 @@ class CreateVideoconferenceService extends VideoconferenceBaseService {
 					settings,
 					false,
 				);
-				console.log(scopeName, 'seperator', scopeId, scopeName)
+				
 			}
 			return VideoconferenceBaseService.createResponse(
 				RESPONSE_STATUS.SUCCESS,
@@ -568,5 +568,4 @@ module.exports = function setup(app) {
 	];
 	videoConferenceServices.forEach((service) => service.hooks(videoconferenceHooks));
 };
-
 
