@@ -1,4 +1,3 @@
-const assert = require('assert');
 const chai = require('chai');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
@@ -9,8 +8,7 @@ const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 
 
-describe('homework service', function test() {
-	this.timeout(10000);
+describe('homework service', () => {
 	const homeworkIdsToDelete = [];
 
 	after(async () => {
