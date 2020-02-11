@@ -49,6 +49,6 @@ describe('api-key authentication strategy', () => {
 		} catch (err) {
 			expect(err.message).to.not.eq('should have failed');
 			expect(err.code).to.equal(401);
-		};
+		}
 	});
 });
