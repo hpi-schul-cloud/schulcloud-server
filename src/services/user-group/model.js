@@ -5,6 +5,11 @@ const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 
+const defaultFeatures = [];
+const COURSE_FEATURES = {
+	EDTR: 'edtr',
+};
+
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
@@ -42,6 +47,11 @@ const courseSchema = getUserGroupSchema({
 	teacherIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
 	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
 	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
+	features: {
+		type: [String],
+		default: defaultFeatures,
+		enum: Object.values(COURSE_FEATURES),
+	},
 	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },
 	untilDate: { type: Date },
