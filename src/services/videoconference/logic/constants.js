@@ -20,13 +20,6 @@ const permissions = {
 };
 exports.PERMISSIONS = permissions;
 
-const guestPolicies = {
-	ALWAYS_ACCEPT: 'ALWAYS_ACCEPT',
-	ALWAYS_DENY: 'ALWAYS_DENY',
-	ASK_MODERATOR: 'ASK_MODERATOR',
-};
-exports.GUEST_POLICIES = guestPolicies;
-
 const scopeNames = {
 	COURSE: 'course',
 	EVENT: 'event',
