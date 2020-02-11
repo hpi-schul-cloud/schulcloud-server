@@ -51,19 +51,19 @@ class ScopeResolver {
 		const [courses, classes, teams] = await Promise.all([
 			courseService.find({
 				query: {
-					$limit: 1000,
+					$limit: false,
 					$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
 				},
 			}),
 			classService.find({
 				query: {
-					$limit: 1000,
+					$limit: false,
 					$or: [{ userIds: userId }, { teacherIds: userId }],
 				},
 			}),
 			teamService.find({
 				query: {
-					$limit: 1000,
+					$limit: false,
 					userIds: { $elemMatch: { userId } },
 				},
 			}),
