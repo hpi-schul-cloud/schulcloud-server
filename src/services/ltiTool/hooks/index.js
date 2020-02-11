@@ -69,8 +69,8 @@ const filterGetBBB = (context) => {
 
 exports.before = {
 	all: [authenticate('jwt')],
-	find: [globalHooks.hasPermission('TOOL_VIEW'), populateCurrentSchool],
-	get: [globalHooks.hasPermission('TOOL_VIEW'), populateCurrentSchool],
+	find: [globalHooks.hasPermission('TOOL_VIEW'), globalHooks.ifNotLocal(populateCurrentSchool)],
+	get: [globalHooks.hasPermission('TOOL_VIEW'), globalHooks.ifNotLocal(populateCurrentSchool)],
 	create: [globalHooks.hasPermission('TOOL_CREATE'), addSecret, setupBBB],
 	update: [globalHooks.hasPermission('TOOL_EDIT')],
 	patch: [globalHooks.hasPermission('TOOL_EDIT')],
