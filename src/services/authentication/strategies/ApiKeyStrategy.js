@@ -3,7 +3,7 @@ const { NotAuthenticated } = require('@feathersjs/errors');
 
 class ApiKeyStrategy extends AuthenticationBaseStrategy {
 	parse(req, res) {
-		if (req.headers['x-api-key']) {
+		if (this.validateApiKey(req.headers['x-api-key'])) {
 			return {
 				strategy: this.name,
 				apiKey: req.headers['x-api-key'],
@@ -14,12 +14,25 @@ class ApiKeyStrategy extends AuthenticationBaseStrategy {
 
 	async authenticate(authentication, params) {
 		// todo: compare keys to a database collection instead.
-		if (authentication.apiKey === this.app.Config.data.CALENDAR_API_KEY) {
+		if (this.credentialCheck(authentication.apiKey)) {
 			return {
 				authentication: { strategy: this.name },
 			};
 		}
 		throw new NotAuthenticated('invalid token');
+	}
+
+	/**
+	 * validate that key exists, is typeof string, and not empty
+	 * @param key content of a x-api-key header
+	 */
+	validateApiKey(key) {
+		return (key && typeof key === 'string' && key !== '');
+	}
+
+	credentialCheck(key) {
+		// todo: authenticate against database collection, return permissions.
+		return (key === this.app.Config.data.CALENDAR_API_KEY);
 	}
 }
 
