@@ -14,7 +14,6 @@ Config.init();
 const { SCHOOL_FEATURES } = require('../../../src/services/school/model');
 
 const videoconferenceHooks = require('./hooks');
-const { isUrl } = require('./logic/utils');
 
 
 const { getUser } = require('../../hooks');
@@ -38,7 +37,6 @@ const {
 	RESPONSE_STATUS,
 	STATES,
 	CREATE_OPTION_TOGGLES,
-	GUEST_POLICIES,
 } = require('./logic/constants');
 
 const VideoconferenceModel = require('./model');
@@ -108,9 +106,6 @@ class VideoconferenceBaseService {
 				sourcePropertyNames: toggleOptions,
 			});
 		});
-		if (options.filename && typeof options.filename === 'string' && isUrl(options.filename)) {
-			validOptions.filename = options.filename;
-		}
 		return validOptions;
 	}
 
@@ -261,9 +256,8 @@ class VideoconferenceBaseService {
 	static createResponse(status, state, permissions, options = null, url) {
 		const permission = VideoconferenceBaseService
 			.getHighestVideoconferencePermission(permissions);
-		const leanOptions = (options !== null && options.toObject) ? options.toObject() : {};
 		return {
-			status, state, permission, options: leanOptions, url,
+			status, state, permission, options, url,
 		};
 	}
 
@@ -313,7 +307,6 @@ class VideoconferenceBaseService {
 				moderatorMustApproveJoinRequests = false,
 				everybodyJoinsAsModerator = false,
 				everyAttendeJoinsMuted = false,
-				filename = undefined,
 			},
 		},
 		logoutURL = undefined,
@@ -326,12 +319,7 @@ class VideoconferenceBaseService {
 			logoutURL,
 		};
 
-		if (filename) {
-			settings.filename = filename;
-		}
-
 		if (moderatorMustApproveJoinRequests && role !== ROLES.MODERATOR) {
-			settings.guestPolicy = GUEST_POLICIES.ASK_MODERATOR;
 			settings.guest = true;
 		}
 
@@ -346,6 +334,7 @@ class VideoconferenceBaseService {
 		return { role, settings };
 	}
 }
+
 
 /**
  * @typedef {Object} VideoConference
@@ -397,7 +386,7 @@ class GetVideoconferenceService extends VideoconferenceBaseService {
 		const meetingInfo = await getMeetingInfo(server, scopeId);
 
 		const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
-		const hasOptions = videoconferenceMetadata && videoconferenceMetadata.options;
+		const hasOptions = videoconferenceMetadata !== null && videoconferenceMetadata.options !== undefined;
 
 		if (isValidNotFoundResponse(meetingInfo)) {
 			// meeting is not started yet or finihed --> wait (permission: join) or start (permission: start)
