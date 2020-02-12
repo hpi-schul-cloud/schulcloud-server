@@ -1,0 +1,7 @@
+process.env.ES_DOMAIN=""
+process.env.ES_USER=""
+process.env.ES_PASSWORD=""
+
+process.env.ES_GRANT_TYPE=
+process.env.ES_OAUTH_SECRET=""
+process.env.ES_CLIENT_ID=""
