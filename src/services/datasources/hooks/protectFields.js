@@ -2,7 +2,7 @@ const replaceFields = (datasource) => {
 	const protectedFields = datasource.protected || [];
 	if (!protectedFields.includes('password')) protectedFields.push('password');
 	protectedFields.forEach((key) => {
-		if (key !== 'target' && datasource.config[key]) {
+		if (key !== 'target' && (datasource.config || {})[key]) {
 			datasource.config[key] = '<secret>';
 		}
 	});
