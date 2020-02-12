@@ -1,5 +1,6 @@
 const { TooManyRequests } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
+const { Configuration } = require('@schul-cloud/commons');
 const {
 	getRedisClient, redisSetAsync, redisDelAsync, getRedisIdentifier, getRedisValue,
 } = require('../../../utils/redis');
@@ -35,8 +36,8 @@ const bruteForceCheck = async (context) => {
 				if (timeDifference < allowedTimeDifference) {
 					throw new TooManyRequests(
 						'Brute Force Prevention!', {
-							timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
-						},
+						timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
+					},
 					);
 				}
 			}
@@ -135,7 +136,7 @@ const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
 		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
 		await redisSetAsync(
-			redisIdentifier, getRedisValue(), 'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
+			redisIdentifier, getRedisValue(), 'EX', Configuration.get('JWT_TIMEOUT_SECONDS'),
 		);
 	}
 
