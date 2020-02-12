@@ -1,9 +1,9 @@
-const assert = require('assert');
+/* const assert = require('assert');
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 
 const app = require('../../../src/app');
-
+const { Configuration } = require('@schul-cloud/commons');
 const userService = app.service('users');
 const registrationPinService = app.service('registrationPins');
 const publicTeachersService = app.service('publicTeachers');
@@ -178,12 +178,12 @@ describe('publicTeachers service', () => {
 	describe('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', () => {
 		// save TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION value
 		// eslint-disable-next-line max-len
-		const ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = app.Config.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
+		const ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
 		let result;
 
 		it('set to opt-in: find 1 discoverable teacher (testTeacherEnabled) but not find other teachers', async () => {
-			app.Config.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'opt-in');
-			expect(app.Config.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('opt-in');
+			Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'opt-in');
+			expect(Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('opt-in');
 			result = await publicTeachersService.find({ query: { schoolId }, ...params });
 			expect(result.total).to.equal(1);
 			expect(result.data[0]._id.toString()).to.equal(testTeacherEnabled._id.toString());
@@ -192,8 +192,8 @@ describe('publicTeachers service', () => {
 		});
 
 		it('set to opt-out: find discoverable teachers but not find the disabled teacher', async () => {
-			app.Config.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'opt-out');
-			expect(app.Config.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('opt-out');
+			Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'opt-out');
+			expect(Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('opt-out');
 			result = await publicTeachersService.find({ query: { schoolId }, ...params });
 			const resultIds = result.data.map((teacher) => teacher._id.toString());
 			expect(resultIds).to.include(testTeacher._id.toString());
@@ -203,8 +203,8 @@ describe('publicTeachers service', () => {
 
 		it('set to enabled: find all 2 teachers, ignoring their setting', async () => {
 			// test with enabled'
-			app.Config.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'enabled');
-			expect(app.Config.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('enabled');
+			Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'enabled');
+			expect(Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('enabled');
 			result = await publicTeachersService.find({ query: { schoolId }, ...params });
 			expect(result.total).to.equal(3);
 			const resultIds = result.data.map((teacher) => teacher._id.toString());
@@ -215,8 +215,8 @@ describe('publicTeachers service', () => {
 		});
 
 		it('set to disabled: find no teachers (from different school), ignoring their setting', async () => {
-			app.Config.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'disabled');
-			expect(app.Config.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('disabled');
+			Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'disabled');
+			expect(Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('disabled');
 			expect(() => publicTeachersService.find({ query: { schoolId }, ...params })).to.throw;
 			result = await publicTeachersService.find({
 				query: { schoolId: teacherFromDifferentSchool.schoolId },
@@ -226,10 +226,11 @@ describe('publicTeachers service', () => {
 		});
 		// reset TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION back to original value
 		// eslint-disable-next-line max-len
-		app.Config.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION);
+		Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 	});
 });
+ */

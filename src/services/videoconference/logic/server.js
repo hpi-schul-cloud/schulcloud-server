@@ -2,9 +2,6 @@ const bbb = require('bbb-promise');
 const { Configuration } = require('@schul-cloud/commons');
 const { isUrl } = require('./utils');
 
-const Config = new Configuration();
-Config.init(); // todo use singleton instead
-
 const FEATURE_VIDEOCONFERENCE_ENABLED = Config.get('FEATURE_VIDEOCONFERENCE_ENABLED');
 const HOST = Config.get('VIDEOCONFERENCE_HOST');
 const SALT = Config.get('VIDEOCONFERENCE_SALT');
