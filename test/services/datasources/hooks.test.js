@@ -91,6 +91,20 @@ describe('datasources hooks', () => {
 			expect(context.result.config.public).to.equal('lorem ipsum');
 		});
 
+		it('works if config has not been returned with result', async () => {
+			const fut = protectFields;
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const context = await fut({
+				result: {
+					name: `somename${Date.now()}`,
+					schoolId: admin.schoolId,
+				},
+				params: { account: { userId: admin._id } },
+			});
+			expect(context).to.not.be.undefined;
+			expect(context.result).to.not.be.undefined;
+		});
+
 		it('works for FIND', async () => {
 			const fut = protectFields;
 			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
