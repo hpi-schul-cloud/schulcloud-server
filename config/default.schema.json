@@ -91,6 +91,49 @@
 			],
 			"default": "DISABLED",
 			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
+		},
+		"EDUSHARING": {
+			"type": "object",
+			"description": "search credentials",
+			"properties": {
+				"DOMAIN": {
+					"type": "string",
+					"format": "uri",
+					"default": "https://mv-repo.schul-cloud.org",
+					"pattern": ".*(?<!/)$",
+					"description": "Edu sharing repo"
+				},
+				"USER": {
+					"type": "string",
+					"default": "admin",
+					"description": "Username for repo login"
+				},
+				"PASSWORD": {
+					"type": "string",
+					"minLength": 1,
+					"description": "Password for admin"
+				},
+				"GRANT_TYPE": {
+					"type": "string",
+					"minLength": 1,
+					"description": "GRANT_TYPE for requests to repo"
+				},
+				"OAUTH_SECRET": {
+					"type": "string",
+					"minLength": 1,
+					"description": "Oauth secret for requests to repo"
+				},
+				"CLIENT_ID": {
+					"type": "string",
+					"default": "eduApp",
+					"description": "Id for client"
+				}
+			},
+			"required": [
+				"PASSWORD",
+				"GRANT_TYPE",
+				"OAUTH_SECRET"
+			]
 		}
 	},
 	"required": [
