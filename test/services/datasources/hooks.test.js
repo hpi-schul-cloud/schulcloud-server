@@ -2,14 +2,17 @@ const { expect } = require('chai');
 
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
-const { updatedBy, createdBy, protectFields } = require('../../../src/services/datasources/hooks');
+const {
+	updatedBy, createdBy, protectFields, validateParams,
+} = require('../../../src/services/datasources/hooks');
 
 describe('datasources hooks', () => {
 	after(testObjects.cleanup);
 
 	describe('updatedBy', () => {
+		const fut = updatedBy;
+
 		it('adds the updatedBy field', async () => {
-			const fut = updatedBy;
 			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 			const result = fut({
 				data: {
@@ -23,8 +26,9 @@ describe('datasources hooks', () => {
 	});
 
 	describe('createdBy', () => {
+		const fut = createdBy;
+
 		it('adds the createdBy field', async () => {
-			const fut = createdBy;
 			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 			const result = fut({
 				data: {
@@ -40,8 +44,9 @@ describe('datasources hooks', () => {
 	});
 
 	describe('protectFields', () => {
+		const fut = protectFields;
+
 		it('censures protected values', async () => {
-			const fut = protectFields;
 			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 			const context = await fut({
 				result: {
@@ -57,7 +62,6 @@ describe('datasources hooks', () => {
 		});
 
 		it('always censures password', async () => {
-			const fut = protectFields;
 			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 			const context = await fut({
 				result: {
@@ -77,7 +81,6 @@ describe('datasources hooks', () => {
 		});
 
 		it('works if protected is not defined', async () => {
-			const fut = protectFields;
 			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 			const context = await fut({
 				result: {
@@ -92,7 +95,6 @@ describe('datasources hooks', () => {
 		});
 
 		it('works if config has not been returned with result', async () => {
-			const fut = protectFields;
 			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 			const context = await fut({
 				result: {
@@ -106,7 +108,6 @@ describe('datasources hooks', () => {
 		});
 
 		it('works for FIND', async () => {
-			const fut = protectFields;
 			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 			const context = await fut({
 				result: {
@@ -133,6 +134,50 @@ describe('datasources hooks', () => {
 			expect(context).to.not.be.undefined;
 			expect(context.result.data[0].config.public).to.equal('lorem ipsum');
 			expect(context.result.data[1].config.secret).to.equal('<secret>');
+		});
+	});
+
+	describe('validateParams', () => {
+		const fut = validateParams;
+		it('appends protectedFields to $select when config is selected', async () => {
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const context = await fut({
+				params: {
+					account: { userId: admin._id },
+					query: {
+						$select: ['config'],
+					},
+				},
+			});
+			expect(context).to.not.be.undefined;
+			expect(context.params.query.$select).to.include('protected');
+		});
+
+		it('doesnt append ProtectedFields if config is not selected', async () => {
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const context = await fut({
+				params: {
+					account: { userId: admin._id },
+					query: {
+						$select: ['lastStatus'],
+					},
+				},
+			});
+			expect(context).to.not.be.undefined;
+			expect(context.params.query.$select).to.not.include('protected');
+		});
+
+		it('works if $select is undefined', async () => {
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const context = await fut({
+				params: {
+					account: { userId: admin._id },
+					query: {},
+				},
+			});
+			expect(context).to.not.be.undefined;
+			expect(context.params).to.not.be.undefined;
+			expect(context.params.query.$select).to.be.undefined;
 		});
 	});
 });
