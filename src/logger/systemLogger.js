@@ -46,8 +46,21 @@ const requestError = (req, userId = 'noUserId', error) => systemLogger.requestEr
 	depth: 5, compact: false, breakLength: 120,
 }));
 
+
+const requestInfo = (req) => systemLogger.request(util.inspect({
+	type: 'Request',
+	// userId: (req.feathers || {}).userId || '<noUserId>',
+	url: req.url,
+	data: req.body,
+	method: req.method,
+	timestamp: new Date(),
+}, {
+	depth: 10, compact: false, breakLength: 120,
+}));
+
 module.exports = {
 	requestError,
+	requestInfo,
 	// sendRequests: systemLogger.sendRequests,
 	// requestInfo: request,
 	systemInfo: systemLogger.systemLogs,

@@ -37,6 +37,8 @@ const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
+const { requestInfo } = require('./logger/systemLogger');
+
 const metricsOptions = {};
 if (METRICS_PATH) {
 	metricsOptions.metricsPath = METRICS_PATH;
@@ -80,8 +82,18 @@ app.use(compress())
 
 		req.feathers.headers = req.headers;
 		next();
-	})
-	.configure(services)
+	});
+
+if (!['production', 'test'].includes(app.get('env'))) {
+	// eslint-disable-next-line no-console
+	console.info('set request logging for development');
+	app.use((req, res, next) => {
+		requestInfo(req);
+		next();
+	});
+}
+
+app.configure(services)
 	.configure(sockets)
 	.configure(middleware)
 	.configure(setupAppHooks)

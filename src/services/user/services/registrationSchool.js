@@ -31,6 +31,7 @@ class RegistrationSchoolService {
 	 * @param {Object} params reserved for future use.
 	 */
 	async get(id, params) {
+		// TODO: Please use resolve scopes :-)
 		const promises = [
 			this.app.service('schools').get(id).catch(() => undefined),
 			this.app.service('classes').get(id).catch(() => undefined),
