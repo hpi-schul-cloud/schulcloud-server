@@ -169,7 +169,10 @@ const registerUser = function register(data, params, app) {
 			};
 			if (data.sso === 'true' && data.account) {
 				const accountId = data.account;
-				return app.service('accounts').update({ _id: accountId }, { $set: { activated: true, userId: user._id } })
+				return accountModel.findByIdAndUpdate(
+					accountId,
+					{ $set: { activated: true, userId: user._id } },
+				).exec()
 					.then((accountResponse) => {
 						account = accountResponse;
 					})
