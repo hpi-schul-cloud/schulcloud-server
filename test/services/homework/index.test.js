@@ -92,14 +92,4 @@ describe('homework service', function test() {
 		// no stats as a student
 		expect(result.data[0].stats).to.not.equal(undefined);
 	}));
-
-	it('copies a homework via POST', () => homeworkCopyService
-		.create({ _id: '59d1f63ce0a06325e8b5288b', userId: '0000d231816abba584714c9e' })
-		.then((homework) => {
-			expect(homework.courseId).to.equal(null);
-			expect(homework.lessonId).to.equal(null);
-			expect(homework.name).to.equal('Aufgabe an Marla (Mathe) - mit Abgabe & Bewertung');
-			expect(homework.stats).to.equal(undefined);
-			expect(homework.grade).to.equal(undefined);
-		}));
 });
