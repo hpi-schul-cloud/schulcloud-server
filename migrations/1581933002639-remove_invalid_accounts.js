@@ -32,10 +32,6 @@ const Backup = mongoose.model('backupforremoveaccounts', new mongoose.Schema({
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
 
-
-// TODO npm run migration-persist and remove this line
-// TODO update seed data and remove this line
-
 module.exports = {
 	up: async function up() {
 		await connect();
@@ -49,8 +45,6 @@ module.exports = {
 
 		const { _id: parentRoleId } = await Role.findOne({ name: 'parent' }).exec();
 		const { _id: expertRoleId } = await Role.findOne({ name: 'expert' }).exec();
-
-		info('about to get users');
 
 		const invalidUsers = await User.aggregate(
 			[
@@ -82,8 +76,6 @@ module.exports = {
 				},
 			],
 		).exec();
-
-		info('got the users');
 
 		const promises = [];
 		invalidAccounts.forEach(async (acc) => {
