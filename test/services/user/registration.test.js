@@ -34,7 +34,7 @@ describe('registration', () => {
 	let userId = '';
 	const { schoolId } = testObjects.options;
 
-	it('sso registration should work', async () => {	
+	it('sso registration should work', async () => {
 		system = await testObjects.createTestSystem();
 
 		expect(system).to.exist;
