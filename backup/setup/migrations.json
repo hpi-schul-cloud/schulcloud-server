@@ -4,7 +4,7 @@
 	},
 	"name": "AddPositionToLessons",
 	"createdAt": {
-		"$date": "2019-07-08T14:15:27.05Z"
+		"$date": "2019-07-08T14:15:27.050Z"
 	},
 	"state": "up",
 	"__v": 0
@@ -38,7 +38,7 @@
 	"state": "up",
 	"name": "addStartAndEndDateToYearCollection",
 	"createdAt": {
-		"$date": "2019-07-17T08:12:18.48Z"
+		"$date": "2019-07-17T08:12:18.480Z"
 	},
 	"__v": 0
 },
@@ -188,7 +188,7 @@
 	"state": "up",
 	"name": "AddScopePermissionsViewPermissionToCourseTeachers",
 	"createdAt": {
-		"$date": "2019-09-25T14:59:22.19Z"
+		"$date": "2019-09-25T14:59:22.190Z"
 	},
 	"__v": 0
 },

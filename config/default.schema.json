@@ -2,11 +2,6 @@
 	"title": "HPI Schul-Cloud Configuration",
 	"type": "object",
 	"properties": {
-		"CALENDAR_API_KEY": {
-			"type": "string",
-			"default": "example",
-			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
-		},
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
 			"type": "string",
 			"default": "enabled",

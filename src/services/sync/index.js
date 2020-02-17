@@ -10,7 +10,7 @@ module.exports = function setup() {
 
 	class SyncService {
 		find(params) {
-			return this.respond(undefined, params);
+			return this.respond(null, params);
 		}
 
 		create(data, params) {

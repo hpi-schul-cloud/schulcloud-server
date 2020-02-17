@@ -53,22 +53,12 @@ const displayInternRequests = (level) => (context) => {
 };
 
 /**
- * Routes as (regular expressions) which should be ignored for the auto-logout feature.
- */
-const AUTO_LOGOUT_BLACKLIST = [
-	/^accounts\/jwtTimer$/,
-	/^authentication$/,
-	/wopi\//,
-];
-
-/**
  * for authenticated requests, if a redis connection is defined, check if the users jwt is whitelisted.
  * if so, the expiration timer is reset, if not the user is logged out automatically.
  * @param {Object} context feathers context
  */
 const handleAutoLogout = async (context) => {
-	const ignoreRoute = typeof context.path === 'string'
-		&& AUTO_LOGOUT_BLACKLIST.some((entry) => context.path.match(entry));
+	const ignoreRoute = context.path && (context.path === 'accounts/jwtTimer' || context.path.includes('wopi/'));
 	const redisClientExists = !!getRedisClient();
 	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
 	if (!ignoreRoute && redisClientExists && authorizedRequest) {

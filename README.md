@@ -7,8 +7,6 @@ Master: [![Build Status](https://travis-ci.com/schul-cloud/schulcloud-server.svg
 Dev: [![codecov](https://codecov.io/gh/schul-cloud/schulcloud-server/branch/develop/graph/badge.svg)](https://codecov.io/gh/schul-cloud/schulcloud-server/branch/develop)
 Master: [![codecov](https://codecov.io/gh/schul-cloud/schulcloud-server/branch/master/graph/badge.svg)](https://codecov.io/gh/schul-cloud/schulcloud-server)
 
-Codacy: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b5a3d19c5ec640749b167dafb02e2648)](https://www.codacy.com/manual/schul-cloud/schulcloud-server?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=schul-cloud/schulcloud-server&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/b5a3d19c5ec640749b167dafb02e2648)](https://www.codacy.com/manual/schul-cloud/schulcloud-server?utm_source=github.com&utm_medium=referral&utm_content=schul-cloud/schulcloud-server&utm_campaign=Badge_Coverage)
-
 [![Version](https://img.shields.io/github/release/schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/schulcloud-server/releases)
 [![Greenkeeper badge](https://badges.greenkeeper.io/schul-cloud/schulcloud-server.svg)](https://greenkeeper.io/)
 

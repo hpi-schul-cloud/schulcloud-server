@@ -8,9 +8,9 @@
 	"properties": {
 	  "config": {
 		"type": "object",
-		"required": ["target"],
+		"required": ["type"],
 		"properties": {
-			"target": {
+			"type": {
 				"type": "string"
 			}
 		},
@@ -22,13 +22,6 @@
 	  },
 	  "name": {
 		"type": "string"
-	  },
-	  "protected": {
-		  "type": "array",
-		  "items": {
-			  "type": "string",
-			  "description": "fields in the config that should recieve special protection. A field named password will always be protected"
-		  }
 	  }
 	},
 	"additionalProperties": false

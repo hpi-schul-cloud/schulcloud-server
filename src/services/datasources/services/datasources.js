@@ -5,7 +5,7 @@ const {
 	iff, isProvider, validateSchema, disallow,
 } = require('feathers-hooks-common');
 const { datasourceModel } = require('../model');
-const { updatedBy, createdBy, protectFields } = require('../hooks');
+const { updatedBy, createdBy } = require('../hooks');
 
 const { restrictToCurrentSchool, hasPermission, denyIfNotCurrentSchool } = require('../../../hooks');
 const { datasourcesCreateSchema, datasourcesPatchSchema } = require('../schemas');
@@ -58,7 +58,7 @@ const datasourceHooks = {
 		],
 	},
 	after: {
-		all: [iff(isProvider('external'), protectFields)],
+		all: [],
 		find: [],
 		get: [
 			iff(isProvider('external'), [

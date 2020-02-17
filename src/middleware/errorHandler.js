@@ -34,9 +34,9 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 		}
 		logger.error({ ...error });
 
-		// if exist delete it
-		delete error.stack;
-		delete error.catchedError;
+		if (error.stack) {
+			delete error.stack;
+		}
 	}
 	next(error);
 };
@@ -59,8 +59,6 @@ const secretDataKeys = (() => [
 	'passwort_2',
 	'password_1',
 	'password_2',
-	'password-1',
-	'password-2',
 	'password_verification',
 	'password_control',
 	'PASSWORD_HASH',

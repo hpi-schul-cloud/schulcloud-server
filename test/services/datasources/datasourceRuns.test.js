@@ -1,6 +1,5 @@
 const { expect } = require('chai');
 const mockery = require('mockery');
-const sleep = require('util').promisify(setTimeout);
 
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
@@ -71,24 +70,9 @@ describe('datasourceRuns service', () => {
 		});
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id });
 		expect(result).to.not.equal(undefined);
-		expect(result.status).to.equal('Pending');
-
-		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
-	});
-
-	it('CREATE handles errors in syncer', async () => {
-		const testSchool = await testObjects.createTestSchool();
-		const datasource = await testObjects.createTestDatasource({
-			schoolId: testSchool._id,
-			config: { target: 'errormock' },
-			name: 'cool datasource',
-		});
-		const result = await datasourceRunsService.create({ datasourceId: datasource._id });
-		expect(result).to.not.equal(undefined);
-		expect(result.status).to.equal('Pending');
-		await sleep(50);
-		const updatedRun = await datasourceRunsService.get(result._id);
-		expect(updatedRun.status).to.equal('Error');
+		expect(result.status).to.equal('Success');
+		expect(typeof result.log).to.equal('string');
+		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
@@ -100,16 +84,16 @@ describe('datasourceRuns service', () => {
 			config: { target: 'mockwithdata' },
 			name: 'datahungry source',
 		});
-		const result = await datasourceRunsService.create({
-			datasourceId: datasource._id, data: { key: 'datakraken-food' },
-		});
+		const result = await datasourceRunsService.create({ datasourceId: datasource._id, data: 'datakraken-food' });
 		expect(result).to.not.equal(undefined);
-		expect(result.status).to.equal('Pending');
+		expect(result.status).to.equal('Success');
+		expect(typeof result.log).to.equal('string');
+		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
-	it('CREATE updates the datasource and datasourcerun once its done.', async () => {
+	it('CREATE updates lastrun of the datasource', async () => {
 		const testSchool = await testObjects.createTestSchool();
 		const datasource = await testObjects.createTestDatasource({
 			schoolId: testSchool._id,
@@ -118,13 +102,10 @@ describe('datasourceRuns service', () => {
 		});
 		const beforeRun = Date.now();
 		const run = await datasourceRunsService.create({ datasourceId: datasource._id });
-		await sleep(50);
-		const updatedRun = await datasourceRunsService.get(run._id);
-		expect(updatedRun.status).to.equal('Success');
 		const updatedDatasource = await app.service('datasources').get(datasource._id);
 		expect(updatedDatasource).to.not.equal(undefined);
 		expect(updatedDatasource.lastRun.getTime()).to.be.greaterThan(beforeRun);
-		expect(updatedDatasource.lastStatus).to.equal(updatedRun.status);
+		expect(updatedDatasource.lastStatus).to.equal(run.status);
 
 		await datasourceRunModel.deleteOne({ _id: run._id }).lean().exec();
 	});
@@ -143,7 +124,9 @@ describe('datasourceRuns service', () => {
 			params,
 		);
 		expect(result).to.not.equal(undefined);
-		expect(result.status).to.equal('Pending');
+		expect(result.status).to.equal('Success');
+		expect(typeof result.log).to.equal('string');
+		expect(result.datasourceId.toString()).to.equal(datasource._id.toString());
 
 		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
 	});
@@ -160,7 +143,7 @@ describe('datasourceRuns service', () => {
 			});
 			const params = await generateRequestParamsFromUser(user);
 			const result = await datasourceRunsService.create(
-				{ datasourceId: datasource._id.toString(), data: { plate: 'datakraken-food' } },
+				{ datasourceId: datasource._id.toString(), data: 'datakraken-food' },
 				params,
 			);
 			// this should not be reached, but in case it does: clean up
@@ -181,7 +164,6 @@ describe('datasourceRuns service', () => {
 			name: 'awesome datasource',
 		});
 		const datasourceRun = await datasourceRunsService.create({ datasourceId: datasource._id });
-		await sleep(50);
 		const result = await datasourceRunsService.get(datasourceRun._id);
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Success');
@@ -204,7 +186,7 @@ describe('datasourceRuns service', () => {
 			});
 			const params = await generateRequestParamsFromUser(user);
 			datasourceRun = await datasourceRunsService
-				.create({ datasourceId: datasource._id.toString(), data: { payload: 'datakraken-food' } });
+				.create({ datasourceId: datasource._id.toString(), data: 'datakraken-food' });
 			await datasourceRunsService.get(datasourceRun._id, params);
 			throw new Error('should have failed');
 		} catch (err) {
@@ -231,7 +213,7 @@ describe('datasourceRuns service', () => {
 		const result = await datasourceRunsService.find({ query: { datasourceId: datasource._id } });
 		expect(result).to.not.equal(undefined);
 		result.data.forEach((res) => {
-			expect(res.status).to.not.be.undefined;
+			expect(res.status).to.equal('Success');
 			expect(res.log).to.not.exist;
 			expect(datasourceRunIds.includes(res._id.toString())).to.equal(true);
 		});
@@ -257,7 +239,7 @@ describe('datasourceRuns service', () => {
 		const result = await datasourceRunsService.find({ query: { schoolId: testSchool._id } });
 		expect(result).to.not.equal(undefined);
 		result.data.forEach((res) => {
-			expect(res.status).to.not.be.undefined;
+			expect(res.status).to.equal('Success');
 			expect(res.log).to.not.exist;
 			expect(datasourceRunIds.includes(res._id.toString())).to.equal(true);
 		});

@@ -2,7 +2,7 @@ const { AuthenticationService, JWTStrategy } = require('@feathersjs/authenticati
 const { LocalStrategy } = require('@feathersjs/authentication-local');
 
 const {
-	LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy,
+	LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy,
 } = require('./strategies');
 const { hooks } = require('./hooks');
 const { authenticationSecret, audience } = require('./logic');
@@ -11,7 +11,7 @@ const authConfig = {
 	entity: 'account',
 	service: 'accounts',
 	secret: authenticationSecret,
-	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv', 'tsp', 'api-key'],
+	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv', 'tsp'],
 	jwtOptions: {
 		header: { typ: 'access' },
 		audience,
@@ -35,7 +35,6 @@ const authConfig = {
 		systemIdField: 'systemId',
 	},
 	tsp: {},
-	'api-key': {},
 };
 
 class SCAuthenticationService extends AuthenticationService {
@@ -58,7 +57,6 @@ module.exports = (app) => {
 	authentication.register('moodle', new MoodleStrategy());
 	authentication.register('iserv', new IservStrategy());
 	authentication.register('tsp', new TSPStrategy());
-	authentication.register('api-key', new ApiKeyStrategy());
 
 	app.use('/authentication', authentication);
 
