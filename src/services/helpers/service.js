@@ -56,7 +56,7 @@ module.exports = function setup(app) {
 				subject,
 				text: content.text,
 				html: content.html,
-				from: replyEmail || SMTP_SENDER || 'noreply@schul-cloud.org',
+				from: SMTP_SENDER || replyEmail || 'noreply@schul-cloud.org',
 				replyTo: replyEmail || SMTP_SENDER || 'noreply@schul-cloud.org',
 				attachments: base64Attachments,
 			};
