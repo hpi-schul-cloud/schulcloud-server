@@ -409,5 +409,16 @@
 		"$date": "2020-01-29T15:10:12.565Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e4a61ca1db4f62c8cb2b9df"
+	},
+	"state": "up",
+	"name": "remove_invalid_accounts",
+	"createdAt": {
+		"$date": "2020-02-17T09:50:02.639"
+	},
+	"__v": 0
 }]
 
