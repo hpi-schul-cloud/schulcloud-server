@@ -172,7 +172,8 @@ const registerUser = function register(data, params, app) {
 				return accountModel.findByIdAndUpdate(
 					accountId,
 					{ $set: { activated: true, userId: user._id } },
-				).exec()
+					{ new: true },
+				).lean().exec()
 					.then((accountResponse) => {
 						account = accountResponse;
 					})
