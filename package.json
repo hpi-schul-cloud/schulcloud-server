@@ -98,7 +98,7 @@
 		"querystring": "^0.2.0",
 		"randexp": "^0.5.3",
 		"read-chunk": "^3.0.0",
-		"redis": "^2.8.0",
+		"redis": "^3.0.0",
 		"request-promise-native": "^1.0.3",
 		"rss-parser": "^3.6.2",
 		"sanitize-html": "^1.18.2",
