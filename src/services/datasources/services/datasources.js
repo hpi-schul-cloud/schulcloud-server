@@ -5,7 +5,9 @@ const {
 	iff, isProvider, validateSchema, disallow,
 } = require('feathers-hooks-common');
 const { datasourceModel } = require('../model');
-const { updatedBy, createdBy, protectFields, validateParams } = require('../hooks');
+const {
+	updatedBy, createdBy, protectFields, validateParams,
+} = require('../hooks');
 
 const { restrictToCurrentSchool, hasPermission, denyIfNotCurrentSchool } = require('../../../hooks');
 const { datasourcesCreateSchema, datasourcesPatchSchema } = require('../schemas');
