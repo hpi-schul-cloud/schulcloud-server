@@ -1,11 +1,11 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const { hasPermission } = require('../../../hooks');
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
-	find: [hasPermission('USERGROUP_CREATE')],
-	get: [hasPermission('USERGROUP_CREATE')],
+	all: [authenticate('jwt')],
+	find: [hasPermission('CLASS_CREATE')],
+	get: [hasPermission('CLASS_CREATE')],
 	create: [disallow()],
 	update: [disallow()],
 	patch: [disallow()],

@@ -18,7 +18,7 @@ const run = async () => {
 	const chain = [];
 
 	// update user roles/permissions
-	chain.push(userRoles.map(userRole => Promise.all(addPermissions.map((permission) => {
+	chain.push(userRoles.map((userRole) => Promise.all(addPermissions.map((permission) => {
 		if (!userRole.permissions.includes(permission)) {
 			console.log(`add permission ${permission} for userrole ${userRole.name}`);
 			return RoleModel

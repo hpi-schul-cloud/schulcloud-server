@@ -11,7 +11,6 @@ const userSchema = new Schema({
 	rcId: { type: String, required: true },
 	authToken: { type: String },
 }, { timestamps: true });
-enableAuditLog(userSchema);
 
 const channelSchema = new Schema({
 	teamId: {
@@ -19,6 +18,8 @@ const channelSchema = new Schema({
 	}, // toDo: make flexible reference, example see fileStorage
 	channelName: { type: String, required: true },
 }, { timestamps: true });
+
+enableAuditLog(userSchema);
 enableAuditLog(channelSchema);
 
 const userModel = mongoose.model('rocketChatUser', userSchema);

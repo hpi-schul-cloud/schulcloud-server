@@ -37,18 +37,18 @@ const run = async (dry) => {
 			}
 
 			const buggyFiles = sub.fileIds
-				.filter(file => !file.permissions
-					.find(perm => perm.refId && perm.refId.toString() === teacherId.toString()));
+				.filter((file) => !file.permissions
+					.find((perm) => perm.refId && perm.refId.toString() === teacherId.toString()));
 
 			if (!buggyFiles.length) {
 				return Promise.resolve();
 			}
 
 			console.log('Update permissions of files:');
-			console.log(buggyFiles.map(file => file._id));
+			console.log(buggyFiles.map((file) => file._id));
 			console.log(`with access rights for teacher: ${teacherId}`);
 
-			const filePromises = buggyFiles.map(file => dry
+			const filePromises = buggyFiles.map((file) => dry
 				? Promise.resolve()
 				: FileModel.update({ _id: file._id }, {
 					$set: {

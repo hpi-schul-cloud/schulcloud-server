@@ -1,27 +1,16 @@
 const errors = require('@feathersjs/errors');
-const auth = require('@feathersjs/authentication');
-const logger = require('../../logger');
+const { authenticate } = require('@feathersjs/authentication');
 
 const Syncer = require('./strategies/Syncer');
-const LDAPSystemSyncer = require('./strategies/LDAPSystemSyncer');
-const CSVSyncer = require('./strategies/CSVSyncer');
-const WebUntisSchoolyearSyncer = require('./strategies/WebUntisSchoolyearSyncer');
+const syncers = require('./strategies');
+const getSyncLogger = require('./logger');
 
-const syncers = [LDAPSystemSyncer, CSVSyncer, WebUntisSchoolyearSyncer];
-
-module.exports = function syncServiceSetup() {
+module.exports = function setup() {
 	const app = this;
 
 	class SyncService {
-		/**
-		 * Constructor
-		 *
-		 * Disabled because of ESlint
-		 */
-		/* constructor() {} */
-
 		find(params) {
-			return this.respond(null, params);
+			return this.respond(undefined, params);
 		}
 
 		create(data, params) {
@@ -33,14 +22,15 @@ module.exports = function syncServiceSetup() {
 				throw new errors.BadRequest('No target supplied');
 			}
 			const { target } = params.query;
+			const logger = getSyncLogger(params.logStream);
 			const instances = [];
-			syncers.forEach((SyncerClass) => {
-				if (SyncerClass.respondsTo(target)) {
-					const args = SyncerClass.params(params, data);
+			syncers.forEach((StrategySyncer) => {
+				if (StrategySyncer.respondsTo(target)) {
+					const args = StrategySyncer.params(params, data);
 					if (args) {
-						instances.push(new SyncerClass(app, {}, ...args));
+						instances.push(new StrategySyncer(app, {}, logger, ...args));
 					} else {
-						throw new Error(`Invalid params for ${SyncerClass.name}: "${JSON.stringify(params)}"`);
+						throw new Error(`Invalid params for ${StrategySyncer.name}: "${JSON.stringify(params)}"`);
 					}
 				}
 			});
@@ -61,7 +51,7 @@ module.exports = function syncServiceSetup() {
 	syncService.hooks({
 		before: {
 			create: [
-				auth.hooks.authenticate('jwt'),
+				authenticate('jwt'),
 			],
 		},
 	});

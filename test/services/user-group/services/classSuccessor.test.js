@@ -3,6 +3,7 @@ const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
 const SchoolYearFacade = require('../../../../src/services/school/logic/year');
+const classSuccessorServiceClass = require('../../../../src/services/user-group/services/classSuccessor');
 
 const classSuccessorService = app.service('classes/successor');
 
@@ -191,7 +192,7 @@ describe('classSuccessor service', () => {
 			throw new Error('should have failed');
 		} catch (error) {
 			expect(error.message).to.not.equal('should have failed');
-			expect(error.message).to.equal("You don't have the permission USERGROUP_CREATE.");
+			expect(error.message).to.equal("You don't have one of the permissions: CLASS_CREATE.");
 			expect(error.code).to.equal(403);
 		}
 	});
@@ -212,7 +213,26 @@ describe('classSuccessor service', () => {
 		}
 	});
 
-	after(async () => {
-		await testObjects.cleanup();
+	it('if a successor is created, the original class is updated.', async () => {
+		let oldClass = await testObjects.createTestClass({ name: 'a', gradeLevel: 4 });
+		const successor = await classSuccessorService.get(oldClass._id);
+		const newClass = await app.service('classes').create(successor);
+		oldClass = await app.service('classes').get(oldClass._id);
+		expect(oldClass.successor.toString()).to.equal(newClass._id.toString());
+		await app.service('classes').remove(newClass._id);
 	});
+
+	it('OnClassRemove updates any existing predecessors.', async () => {
+		let oldClass = await testObjects.createTestClass({ name: 'f', gradeLevel: 4 });
+		const newClass = await testObjects.createTestClass({ name: 'fakesuccessor' });
+		oldClass = await app.service('classes').patch(oldClass._id, { successor: newClass._id });
+		// call the eventListener directly. apply() calls the function, with 'this' set to the first parameter.
+		// that emulates the event getting triggered.
+		await classSuccessorServiceClass.onClassRemoved.apply({ app }, [newClass]);
+		oldClass = await app.service('classes').get(oldClass._id);
+		expect(oldClass._id).to.not.be.undefined;
+		expect(oldClass.successor).to.be.undefined;
+	});
+
+	after(testObjects.cleanup);
 });

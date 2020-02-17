@@ -3,14 +3,12 @@
 	"port": "PORT",
 	"mongodb": "MONGO_URI",
 	"public": "../public/",
-	"auth": {
-		"secret": "FQ5lS1j41dcZdaPFPP3VRPH6W2bt8Z19bmvcVz+8SH8PtfVpVTl/p+9D0jIdRhwC1UrWg69lTU9koFgugf9oZg=="
-	},
 	"services": {
 		"calendar": "CALENDAR_URI",
 		"content": "CONTENT_URI",
 		"notification": "NOTIFICATION_URI",
 		"hydra": "HYDRA_URI",
 		"web": "HOST"
-	}
+	},
+	"NOTIFICATION_PLATFORM":"NOTIFICATION_PLATFORM"
 }

@@ -17,6 +17,9 @@ const createTestConsent = (app, opt) => ({
 });
 
 const cleanup = (app) => () => {
+	if (createdConsentIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdConsentIds;
 	createdConsentIds = [];
 	return ids.map((id) => app.service('consents').remove(id));

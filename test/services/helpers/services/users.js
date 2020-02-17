@@ -1,27 +1,28 @@
+const { registrationPinModel } = require('../../../../src/services/user/model');
+
 let createdUserIds = [];
 const tempPinIds = [];
 
-const createTestUser = (app, opt) => ({
+const rnd = () => Math.round(Math.random() * 10000);
+
+const createTestUser = (app, opt) => async ({
 	// required fields for user
 	firstName = 'Max',
 	lastName = 'Mustermann',
 	birthday = undefined,
-	email = `max${Date.now()}@mustermann.de`,
+	email = `max${`${Date.now()}_${rnd()}`}@mustermann.de`,
 	schoolId = opt.schoolId,
 	accounts = [], // test if it has a effect
 	roles = [],
-	discoverable = false,
+	discoverable = undefined,
+	firstLogin = false,
 	// manual cleanup, e.g. when testing delete:
 	manualCleanup = false,
-} = {}) => app.service('registrationPins').create({ email })
-	.then((registrationPin) => {
-		tempPinIds.push(registrationPin);
-		return registrationPin;
-	})
-	.then((registrationPin) => app.service('registrationPins').find({
-		query: { pin: registrationPin.pin, email: registrationPin.email, verified: false },
-	}))
-	.then(() => app.service('users').create({
+} = {}) => {
+	const registrationPin = await app.service('registrationPins').create({ email, verified: true, silent: true });
+	tempPinIds.push(registrationPin);
+
+	const user = await app.service('users').create({
 		firstName,
 		lastName,
 		birthday,
@@ -30,18 +31,28 @@ const createTestUser = (app, opt) => ({
 		accounts,
 		roles,
 		discoverable,
-	}))
-	.then((user) => {
-		if (!manualCleanup) {
-			createdUserIds.push(user._id.toString());
-		}
-		return user;
+		preferences: {
+			firstLogin,
+		},
 	});
 
+	if (!manualCleanup) {
+		createdUserIds.push(user._id.toString());
+	}
+	return user;
+};
+
 const cleanup = (app) => () => {
+	if (createdUserIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdUserIds;
 	createdUserIds = [];
-	return ids.map((id) => app.service('users').remove(id));
+	const promises = ids.map((id) => app.service('users').remove(id));
+	promises.push(
+		registrationPinModel.deleteMany({ _id: { $in: tempPinIds.map((p) => p._id) } }),
+	);
+	return Promise.all(promises);
 };
 
 module.exports = (app, opt) => ({

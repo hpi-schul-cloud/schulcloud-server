@@ -41,7 +41,7 @@ describe('homework service', function test() {
 	}).then((result) => {
 		expect(result.data.length).to.be.above(0);
 		return homeworkService.remove(result.data[0]._id)
-			.then((result) => true);
+			.then(() => true);
 	}));
 
 	// PERMISSION TESTS
@@ -50,7 +50,7 @@ describe('homework service', function test() {
 		account: { userId: '0000d231816abba584714c9e' },
 	}).then((result) => {
 		expect(result.total).to.be.above(0);
-		expect(result.data.filter((e) => e.teacherId != '0000d231816abba584714c9e').length).to.equal(0);
+		expect(result.data.filter((e) => String(e.teacherId) !== '0000d231816abba584714c9e').length).to.equal(0);
 	}));
 
 	it('try to FIND tasks of others', () => homeworkService.find({
@@ -92,13 +92,4 @@ describe('homework service', function test() {
 		// no stats as a student
 		expect(result.data[0].stats).to.not.equal(undefined);
 	}));
-
-	it('copies a homework via POST', () => homeworkCopyService.create({ _id: '59d1f63ce0a06325e8b5288b', userId: '0000d231816abba584714c9e' })
-		.then((homework) => {
-			expect(homework.courseId).to.equal(null);
-			expect(homework.lessonId).to.equal(null);
-			expect(homework.name).to.equal('Aufgabe an Marla (Mathe) - mit Abgabe & Bewertung');
-			expect(homework.stats).to.equal(undefined);
-			expect(homework.grade).to.equal(undefined);
-		}));
 });

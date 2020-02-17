@@ -10,8 +10,8 @@ const SchoolYearFacade = require('../../school/logic/year.js');
  * @implements {Syncer}
  */
 class LDAPSyncer extends SystemSyncer {
-	constructor(app, stats, system) {
-		super(app, stats, system);
+	constructor(app, stats, logger, system) {
+		super(app, stats, logger, system);
 		this.stats = Object.assign(this.stats, {
 			schools: {},
 		});
@@ -26,7 +26,7 @@ class LDAPSyncer extends SystemSyncer {
 			.then((schools) => {
 				const activeSchools = schools.filter((s) => !s.inMaintenance);
 				const jobs = activeSchools.map((school) => {
-					const syncer = new LDAPSchoolSyncer(this.app, this.getSchoolStats(school), this.system, school);
+					const syncer = new LDAPSchoolSyncer(this.app, this.getSchoolStats(school), this.logger, this.system, school);
 					return syncer.sync();
 				});
 				return Promise.all(jobs);

@@ -1,9 +1,11 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const {
 	Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable,
 } = require('@feathersjs/errors');
-const logger = require('../../../logger');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+
 const globalHooks = require('../../../hooks');
+const logger = require('../../../logger');
 
 const { set, get } = require('./scope');
 const createEmailText = require('./mail-text.js');
@@ -537,7 +539,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 				throw new Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
 			}));
 
-			const sessionUserTeamUser = team.userIds.find((user) => user.userId.toString() === sessionUserId);
+			const sessionUserTeamUser = team.userIds.find((user) => equalIds(user.userId, sessionUserId));
 			const sessionUserTeamRole = ((sessionUserTeamUser || {}).role).toString();
 			if (!isHigherOrEqualTeamrole(hook, sessionUserTeamRole, highestChangedRole)) {
 				wait.push(Promise.reject(new Forbidden('You cant change a Permission higher than yours')));
@@ -693,13 +695,26 @@ const keys = {
 	resFind: ['_id', 'name', 'times', 'description', 'userIds', 'color'],
 	resId: ['_id'],
 	query: ['$populate', '$limit', '$skip'],
-	data: ['filePermission', 'name', 'times', 'description', 'userIds', 'color', 'features', 'ltiToolIds', 'classIds', 'startDate', 'untilDate', 'schoolId'],
+	data: [
+		'filePermission',
+		'name',
+		'times',
+		'description',
+		'userIds',
+		'color',
+		'features',
+		'ltiToolIds',
+		'classIds',
+		'startDate',
+		'untilDate',
+		'schoolId',
+	],
 };
 
 // todo: TeamPermissions
 exports.before = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		existId,
 		filterToRelated(keys.query, 'params.query'),
 		globalHooks.ifNotLocal(teamRolesToHook),
@@ -745,7 +760,7 @@ exports.after = {
 
 exports.beforeExtern = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		existId,
 		filterToRelated([], 'params.query'),
 	],
@@ -776,7 +791,7 @@ exports.afterExtern = {
 
 exports.beforeAdmin = {
 	all: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		isAdmin,
 		existId,
 		filterToRelated([], 'params.query'),

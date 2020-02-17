@@ -1,7 +1,9 @@
 const service = require('feathers-mongoose');
 const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
-const logger = require('../../logger/index');
 const { ObjectId } = require('mongoose').Types;
+const { equal: equalIds } = require('../../helper/compare').ObjectId;
+const logger = require('../../logger/index');
+const newsDocs = require('./docs');
 const {
 	newsModel, targetModels, newsHistoryModel, newsPermissions,
 } = require('./model');
@@ -130,7 +132,7 @@ class AbstractService {
 		if (user == null) return [];
 
 		// test user is school member
-		const sameSchool = schoolId.toString() === user.schoolId.toString();
+		const sameSchool = equalIds(schoolId, user.schoolId);
 		if (!sameSchool) return [];
 
 		return user.permissions;
@@ -450,8 +452,10 @@ class NewsService extends AbstractService {
 module.exports = function news() {
 	const app = this;
 
+	const newsService = new NewsService();
+	newsService.docs = newsDocs;
 	// use /news to access a user's news
-	app.use('/news', new NewsService());
+	app.use('/news', newsService);
 	app.service('news').hooks(hooks);
 
 	// use /newsModel to directly access the model from other services
