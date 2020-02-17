@@ -29,11 +29,14 @@ const setSubject = (hook) => {
 
 const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
-	return hook.app.service('ltiTools').find({
-		query: {
-			oAuthClientId: hook.params.consentRequest.client.client_id,
-		},
-	}).then((tools) => hook.app.service('pseudonym').find({
+	return Promise.all([
+		hook.app.service('users').get(hook.params.account.userId),
+		hook.app.service('ltiTools').find({
+			query: {
+				oAuthClientId: hook.params.consentRequest.client.client_id,
+			},
+		}),
+	]).then(([user, tools]) => hook.app.service('pseudonym').find({
 		query: {
 			toolId: tools.data[0]._id,
 			userId: hook.params.account.userId,
@@ -43,6 +46,7 @@ const setIdToken = (hook) => {
 		hook.data.session = {
 			id_token: {
 				iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
+				email: (tools.data[0].privacy_permission === 'e-mail' ? user.email : undefined),
 			},
 		};
 		return hook;
