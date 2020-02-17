@@ -4,21 +4,28 @@
 	"title": "datasourcesCreate",
 	"properties": {
 	  "config": {
-		"type": "object",
-		"properties": {
-			"type": {
-				"type": "string"
-			}
-		},
-		"additionalProperties": true
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
 	  },
 	  "schoolId": {
-		"type": "string",
-		"pattern": "[a-f0-9]{24}"
+      "type": "string",
+      "pattern": "[a-f0-9]{24}"
 	  },
 	  "name": {
-		"type": "string"
+		  "type": "string"
+    },
+    "protected": {
+		  "type": "array",
+		  "items": {
+			  "type": "string",
+			  "description": "fields in the config that should recieve special protection."
+		  }
 	  }
 	},
 	"additionalProperties": false
-  }
+}

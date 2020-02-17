@@ -453,7 +453,7 @@ exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) =>
 					return userIsInThatCourse(user, lesson.courseGroupId, false);
 				}
 				return userIsInThatCourse(user, lesson.courseId, true)
-						|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
 			});
 			if (tempLesson.length === 0) {
 				throw new Forbidden("You don't have access to that lesson.");
@@ -471,7 +471,7 @@ exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) =>
 					return userIsInThatCourse(user, lesson.courseGroupId, false);
 				}
 				return userIsInThatCourse(user, lesson.courseId, true)
-						|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
 			});
 
 			if (context.result.data.length === 0) {
@@ -551,9 +551,9 @@ function validatedAttachments(attachments) {
 	let cTotalBufferSize = 0;
 	attachments.forEach((element) => {
 		if (!element.mimetype.includes('image/')
-		&& !element.mimetype.includes('video/')
-		&& !element.mimetype.includes('application/msword')
-		&& !element.mimetype.includes('application/pdf')) {
+			&& !element.mimetype.includes('video/')
+			&& !element.mimetype.includes('application/msword')
+			&& !element.mimetype.includes('application/pdf')) {
 			throw new Error('Email Attachment is not a valid file!');
 		}
 		cTotalBufferSize += element.size;
@@ -760,6 +760,15 @@ exports.lookupSchool = async (context) => {
 	if (context.params && context.params.account && context.params.account.userId) {
 		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
 		context.params.account.schoolId = schoolId;
+		return context;
+	}
+	throw new BadRequest('Authentication is required.');
+};
+
+exports.populateCurrentSchool = async (context) => {
+	if (context.params && context.params.account && context.params.account.userId) {
+		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
+		context.params.school = await context.app.service('schools').get(schoolId);
 		return context;
 	}
 	throw new BadRequest('Authentication is required.');
