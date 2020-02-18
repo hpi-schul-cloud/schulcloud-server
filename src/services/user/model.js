@@ -6,6 +6,11 @@ const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 
+const defaultFeatures = [];
+const USER_FEATURES = {
+	EDTR: 'edtr',
+};
+
 const userSchema = new Schema({
 	roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
 	email: { type: String, required: true, lowercase: true },
@@ -27,6 +32,11 @@ const userSchema = new Schema({
 	parents: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 
 	preferences: { type: Object }, // blackbox for frontend stuff like "cookies accepted"
+	features: {
+		type: [String],
+		default: defaultFeatures,
+		enum: Object.values(USER_FEATURES),
+	},
 
 	/**
 	 * depending on system settings,
