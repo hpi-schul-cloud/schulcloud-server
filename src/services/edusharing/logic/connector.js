@@ -2,12 +2,12 @@ const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons')
 
-const DOMAIN = Configuration.get('EDUSHARING__DOMAIN');
-const USER = Configuration.get('EDUSHARING__USER');
-const PASSWORD = Configuration.get('EDUSHARING__PASSWORD');
-const GRANT_TYPE = Configuration.get('EDUSHARING__GRANT_TYPE');
-const OAUTH_SECRET = Configuration.get('EDUSHARING__OAUTH_SECRET');
-const CLIENT_ID = Configuration.get('EDUSHARING__CLIENT_ID');
+const DOMAIN = Configuration.get('ES_DOMAIN');
+const USER = Configuration.get('ES_USER');
+const PASSWORD = Configuration.get('ES_PASSWORD');
+const GRANT_TYPE = Configuration.get('ES_GRANT_TYPE');
+const OAUTH_SECRET = Configuration.get('ES_OAUTH_SECRET');
+const CLIENT_ID = Configuration.get('ES_CLIENT_ID');
 
 
 // STACKOVERFLOW BEAUTY
@@ -57,7 +57,6 @@ class EduSharingConnector {
 
 	// gets cookie (JSESSION) and attach it to header
 	getCookie() {
-
 		const cookieOptions = {
 			uri: `${DOMAIN}/edu-sharing/rest/authentication/v1/validateSession`,
 			method: 'GET',
@@ -89,11 +88,7 @@ class EduSharingConnector {
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 
 			// eslint-disable-next-line max-len
-			body: `GRANT_TYPE=${GRANT_TYPE}&client_id=${
-				CLIENT_ID
-				}&client_secret=${OAUTH_SECRET}&username=${
-				USER
-				}&password=${PASSWORD}`,
+			body: `grant_type=${GRANT_TYPE}&client_id=${CLIENT_ID}&client_secret=${OAUTH_SECRET}&username=${USER}&password=${PASSWORD}`,
 			timeout: REQUEST_TIMEOUT
 		};
 		return request(oauthoptions).then(result => {
