@@ -10,6 +10,7 @@ branches:
     - develop
     - master
     - /^(?i:release|hotfix).*$/
+    - /^greenkeeper/.*$/
 
 stages:
   - name: test
