@@ -81,6 +81,7 @@ const feedback = () => (hook) => {
 			subject: data.title || data.subject || 'nosubject',
 			emails: ['ticketsystem@schul-cloud.org'],
 			replyEmail: data.replyEmail,
+			from: data.replyEmail,
 			content: {
 				text: createFeedbackText(
 					(hook.params.account || {}).username || 'nouser',
