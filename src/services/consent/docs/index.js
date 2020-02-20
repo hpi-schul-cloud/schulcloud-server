@@ -75,7 +75,7 @@ module.exports = {
 				total: { type: 'integer' },
 				limit: { type: 'integer' },
 				skip: { type: 'integer' },
-			}
+			},
 
 
 		},

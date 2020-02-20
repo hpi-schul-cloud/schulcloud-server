@@ -2,6 +2,11 @@
 	"title": "HPI Schul-Cloud Configuration",
 	"type": "object",
 	"properties": {
+		"CALENDAR_API_KEY": {
+			"type": "string",
+			"default": "example",
+			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
+		},
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
 			"type": "string",
 			"default": "enabled",
@@ -28,7 +33,6 @@
 			"default": false,
 			"description": "JWTs that are not in the whitelist are added to it, instead of invalidated. To be used for the first 2 hours after release."
 		},
-
 		"TSP_API_BASE_URL": {
 			"type": "string",
 			"default": "https://www.schulportal-thueringen.de",
@@ -54,14 +58,37 @@
 			"default": "",
 			"description": "The key used to sign/verify TSP request tokens."
 		},
-
 		"FEATURE_TSP_ENABLED": {
-			"type": "boolean",	
+			"type": "boolean",
 			"default": false,
 			"description": "Feature toggle for TSP features."
+		},
+		"FEATURE_VIDEOCONFERENCE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, adds video conferences to teams and courses."
+		},
+		"VIDEOCONFERENCE_HOST": {
+			"type": "string",
+			"format": "uri",
+			"pattern":".*(?<!/)$",
+			"default": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
+			"description": "The BBB base url (should end without a slash)."
+		},
+		"VIDEOCONFERENCE_SALT": {
+			"type": "string",
+			"default": "",
+			"description": "The BBB Salt for api call checksum creation."
+		},
+		"HOST": {
+			"type": "string",
+			"format": "uri",
+			"default":"http://localhost:3100",
+			"pattern":".*(?<!/)$",
+			"description": "The client url (should end without a slash)."
 		}
 	},
 	"required": [
-		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION"
+		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION", "HOST"
 	]
 }

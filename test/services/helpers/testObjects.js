@@ -70,8 +70,7 @@ module.exports = (app, opt = {
 
 	const setupUser = async (userData) => {
 		try {
-			const $user = await users.create(userData);
-			const user = $user.toObject();
+			const user = await users.create(userData);
 			const requestParams = await login.generateRequestParamsFromUser(user);
 			const { account } = requestParams;
 
@@ -105,6 +104,7 @@ module.exports = (app, opt = {
 		generateRequestParamsFromUser: login.generateRequestParamsFromUser,
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
+		classes,
 		createTestTeamWithOwner,
 		info,
 		setupUser,

@@ -64,14 +64,14 @@ describe('consent service', () => {
 			.create({
 				userId,
 			})
-			.then((consent) => consentService.create({
+			.then(() => consentService.create({
 				userId,
 				userConsent: {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 				},
 			}))
-			.then((consent) => consentService.find({ query: { userId } }))
+			.then(() => consentService.find({ query: { userId } }))
 			.then((results) => {
 				chai.expect(results.total).to.equal(1);
 				chai.expect(results.data[0]).to.have.property('userConsent');
@@ -85,7 +85,8 @@ describe('consent service', () => {
 		.find({ versionNumber: 'testversion' })
 		.then((consentVersion) => {
 			chai.expect(consentVersion).to.exist;
-			chai.expect(consentVersion.data[0]).to.have.property('versionNumber', 'testversion');
+			const specificSampleConsentVersion = consentVersion.data.filter((cv) => cv.versionNumber === 'testversion');
+			chai.expect(specificSampleConsentVersion.length).to.be.equal(1);
 		}));
 
 	it('checks access on get', () => consentService
