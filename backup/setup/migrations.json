@@ -417,8 +417,7 @@
 	"state": "up",
 	"name": "remove_invalid_accounts",
 	"createdAt": {
-		"$date": "2020-02-17T09:50:02.639"
+		"$date": "2020-02-17T09:50:02.639Z"
 	},
 	"__v": 0
 }]
-
