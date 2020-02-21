@@ -71,6 +71,30 @@ const promises = [
 		promise: FileModel.countDocuments().exec(),
 		model: FileModel.find().exec(),
 	},
+	{
+		name: 'files/sizes',
+		promise: FileModel.aggregate([
+			{
+				$bucketAuto: {
+					groupBy: '$size',
+					buckets: 5,
+				},
+			},
+		]),
+		model: FileModel.find().exec(),
+	},
+	{
+		name: 'files/types',
+		promise: FileModel.aggregate([
+			{
+				$group: {
+					_id: '$type',
+					total_files_per_type: { $sum: 1 },
+				},
+			},
+		]),
+		model: FileModel.find().exec(),
+	},
 ];
 
 const fetchStatistics = () => {

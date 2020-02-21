@@ -18,6 +18,11 @@ if (STUDENT_TEAM_CREATE_DISABLED === 'true'
 	defaultFeatures.push('disableStudentTeamCreation');
 }
 
+const SCHOOL_FEATURES = {
+	ROCKET_CHAT: 'rocketChat',
+	DISABLE_STUDENT_TEAM_CREATION: 'disableStudentTeamCreation',
+	VIDEOCONFERENCE: 'videoconference',
+};
 
 const rssFeedSchema = new Schema({
 	url: {
@@ -70,7 +75,7 @@ const schoolSchema = new Schema({
 	features: {
 		type: [String],
 		default: defaultFeatures,
-		enum: ['rocketChat', 'disableStudentTeamCreation'],
+		enum: Object.values(SCHOOL_FEATURES),
 	},
 	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below)
 	...externalSourceSchema,
@@ -125,6 +130,7 @@ const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
+	SCHOOL_FEATURES,
 	schoolModel,
 	schoolGroupModel,
 	yearModel,

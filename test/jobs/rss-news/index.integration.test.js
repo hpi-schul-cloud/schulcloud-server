@@ -1,7 +1,9 @@
 /* eslint-disable */
 const chai = require('chai');
 const path = require('path');
+const http = require('http');
 const { exec } = require('child_process');
+
 const { schoolModel } = require('../../../src/services/school/model');
 const { newsModel } = require('../../../src/services/news/model');
 
@@ -24,12 +26,62 @@ function runWorker() {
 
 describe('RSS Feed Crawler Integration', function () {
 	this.timeout(10000)
+	
+	const mockPort = 3039;
+	let mockServer;
+
+	const mockRssResponse = `<?xml version="1.0" encoding="utf-8"?>
+	<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
+		<channel>
+			<atom:link href="http://www.hpi.de/" rel="self" type="application/rss+xml" />
+			<title><![CDATA[News des Fachgebietes Informationssysteme]]></title>
+			<link><![CDATA[http://www.hpi.de/]]></link>
+			<description><![CDATA[]]></description>
+			<copyright><![CDATA[]]></copyright>
+			<language><![CDATA[de]]></language>
+			<item>
+				<title><![CDATA[Accepted Paper at LREC 2020]]></title>
+				<link><![CDATA[https://hpi.de/naumann/news/accepted-paper-at-lrec-2020.html]]></link>
+				<description><![CDATA[]]></description>
+				<guid><![CDATA[https://hpi.de/naumann/news/accepted-paper-at-lrec-2020.html]]></guid>
+				<pubDate>Wed, 12 Feb 2020 14:07:00 +0100</pubDate>
+				<lastBuildDate>Wed, 12 Feb 2020 14:07:38 +0100</lastBuildDate>
+			</item>
+			<item>
+				<title><![CDATA[Contribution of a Chapter...0]]></title>
+				<link><![CDATA[https://hpi.de/naumann/news/contribution-of-a-chapter0.html]]></link>
+				<description><![CDATA[]]></description>
+				<guid><![CDATA[https://hpi.de/naumann/news/contribution-of-a-chapter0.html]]></guid>
+				<pubDate>Mon, 03 Feb 2020 13:13:00 +0100</pubDate>
+				<lastBuildDate>Tue, 04 Feb 2020 13:14:39 +0100</lastBuildDate>
+			</item>
+		</channel>
+	</rss>`;
+
 	let sampleSchool;
 	let dbRSSNews;
+
 	const sampleRSSFeed = {
-		url: 'https://hpi.de/nc/rss.xml',
-		description: 'HPI News',
+		url: `http://localhost:${mockPort}`,
+		description: 'Test News',
 	};
+
+	before('start mock server', (done) => {
+		const requestHandler = (req, res) => {
+			res.end(mockRssResponse);
+		};
+		mockServer = http.createServer(requestHandler);
+		mockServer.listen(mockPort, (err) => {
+			if (err) {
+				throw err;
+			}
+			done();
+		});
+	});
+
+	after('stop mock server', (done) => {
+		mockServer.close(done);
+	});
 
 	before(async function () {
 		 sampleSchool = await schoolModel.findOneAndUpdate(
