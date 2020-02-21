@@ -9,5 +9,8 @@ module.exports = function restFormatter(req, res, next) {
 		'text/plain': function () {
 			res.send(res.data);
 		},
+		'text/html': function () {
+			res.send(res.data);
+		},
 	});
 };

@@ -1,4 +1,5 @@
 const service = require('feathers-mongoose');
+const { authenticate } = require('@feathersjs/authentication');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const CryptoJS = require('crypto-js');
@@ -24,7 +25,7 @@ module.exports = function () {
 	ltiToolService.hooks(hooks);
 
 	app.use('/tools/:id/link', {
-		create (data, params) {
+		create(data, params) {
 			return app.service('ltiTools').find({
 				query: {
 					oAuthClientId: jwt.decode(data.id_token).iss,
@@ -32,13 +33,28 @@ module.exports = function () {
 					isTemplate: true,
 				},
 			}).then((tool) => {
-				const idToken = jwt.verify(data.id_token, tool.data[0].key, {algorithm: 'RS256'});
+				const idToken = jwt.verify(data.id_token, tool.data[0].key, { algorithm: 'RS256' });
 				const link = idToken['https://purl.imsglobal.org/spec/lti-dl/claim/content_items'];
-				// sent link to schulcloud-editor
-
-				return "saved" // actually we should redirect to a nuxt-client page
+				return `<html>
+	<head>
+		<script>
+			window.parent.postMessage({id: '${params.route.id}', url: '${link.url}'}, "http://localhost:3100");
+		</script>
+	</head>
+	<body>
+		<h1>Speichern...</h1>
+	</body>
+</html>`;
 			});
-		}
+		},
+	});
+	app.service('/tools/:id/link').hooks({
+		after: {
+			create: (context) => {
+				context.data.headerPipes = [{ key: 'content-type', value: 'text/html' }];
+				return context;
+			},
+		},
 	});
 
 	app.use('/tools/sign/lti11/', {
@@ -64,6 +80,11 @@ module.exports = function () {
 				});
 		},
 	});
+	app.service('/tools/sign/lti11/').hooks({
+		before: {
+			create: [authenticate('jwt')],
+		},
+	});
 
 	app.use('/tools/sign/lti13', {
 		create(data) {
@@ -71,6 +92,11 @@ module.exports = function () {
 			return new Promise((resolve) => resolve(
 				jwt.sign(data.request, fs.readFileSync('private_key.pem'), { algorithm: 'RS256' })
 			));
+		},
+	});
+	app.service('/tools/sign/lti13/').hooks({
+		before: {
+			create: [authenticate('jwt')],
 		},
 	});
 };
