@@ -11,7 +11,7 @@ const { Schema } = mongoose;
 const ltiToolSchema = new Schema({
 	name: { type: String },
 	url: { type: String, required: true },
-	key: { type: String, required: true },
+	key: { type: String },
 	secret: { type: String, required: true },
 	logo_url: { type: String },
 	lti_message_type: { type: String },
