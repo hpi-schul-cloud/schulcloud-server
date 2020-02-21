@@ -47,6 +47,7 @@ const setIdToken = (hook) => {
 			id_token: {
 				iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
 				email: (tools.data[0].privacy_permission === 'e-mail' ? user.email : undefined),
+				name: (tools.data[0].privacy_permission === 'name' ? `${user.firstName} ${user.lastName}` : undefined),
 			},
 		};
 		return hook;
