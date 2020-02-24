@@ -2,6 +2,11 @@
 	"title": "HPI Schul-Cloud Configuration",
 	"type": "object",
 	"properties": {
+		"CALENDAR_API_KEY": {
+			"type": "string",
+			"default": "example",
+			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
+		},
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
 			"type": "string",
 			"default": "enabled",
@@ -78,6 +83,7 @@
 		"HOST": {
 			"type": "string",
 			"format": "uri",
+			"default":"http://localhost:3100",
 			"pattern":".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
 		}
