@@ -1076,7 +1076,7 @@
         "import/no-cycle": [
             "error",
             {
-                "maxDepth": null
+                "maxDepth": 5
             }
         ],
         "import/no-default-export": "off",
