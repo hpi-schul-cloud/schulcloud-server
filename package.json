@@ -87,7 +87,6 @@
 		"moodle-client": "^0.5.2",
 		"nanoid": "^2.0.3",
 		"oauth-1.0a": "^2.2.6",
-		"pretty-error": "^2.0.3",
 		"prom-client": "^11.5.3",
 		"prometheus-api-metrics": "^2.2.3",
 		"querystring": "^0.2.0",
