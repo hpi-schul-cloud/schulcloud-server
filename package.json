@@ -46,7 +46,6 @@
 		"@schul-cloud/commons": "^1.0.12",
 		"@sentry/node": "^5.9.0",
 		"ajv": "^6.10.2",
-		"async": "^2.6.3",
 		"aws-sdk": "^2.306.0",
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
