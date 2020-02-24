@@ -112,7 +112,7 @@
 		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {
-		"codecov": "^3.6.1",
+		"codecov": "^3.6.5",
 		"eslint": "^5.16.0",
 		"eslint-config-airbnb-base": "^13.0.0",
 		"eslint-plugin-import": "^2.18.2",
