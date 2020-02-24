@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "22.1.1",
+	"version": "22.1.4",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -69,7 +69,7 @@
 		"feathers-hooks-common": "^4.20.7",
 		"feathers-mongoose": "^6.3.0",
 		"feathers-swagger": "^1.1.0",
-		"file-type": "^12.1.0",
+		"file-type": "^13.0.1",
 		"freeport": "^1.0.5",
 		"html-entities": "^1.2.1",
 		"jose": "^1.13.0",
@@ -80,7 +80,7 @@
 		"mixwith": "^0.1.1",
 		"moment": "^2.19.2",
 		"mongodb-uri": "^0.9.7",
-		"mongoose": "~5.7.14",
+		"mongoose": "~5.8.12",
 		"mongoose-autopopulate": "^0.9.1",
 		"mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-history": "^0.8.0",
@@ -98,7 +98,7 @@
 		"querystring": "^0.2.0",
 		"randexp": "^0.5.3",
 		"read-chunk": "^3.0.0",
-		"redis": "^2.8.0",
+		"redis": "^3.0.0",
 		"request-promise-native": "^1.0.3",
 		"rss-parser": "^3.6.2",
 		"sanitize-html": "^1.18.2",
@@ -112,17 +112,17 @@
 		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {
-		"codecov": "^3.6.1",
+		"codecov": "^3.6.5",
 		"eslint": "^5.16.0",
 		"eslint-config-airbnb-base": "^13.0.0",
 		"eslint-plugin-import": "^2.18.2",
 		"eslint-plugin-react": "^7.11.1",
 		"mocha": "^7.0.1",
 		"mockery": "^2.0.0",
-		"nock": "^11.7.1",
+		"nock": "^12.0.0",
 		"nodemon": "^1.19.1",
 		"nyc": "^14.1.1",
-		"simple-oauth2": "^2.3.0"
+		"simple-oauth2": "^3.0.0"
 	},
 	"greenkeeper": {
 		"ignore": [
