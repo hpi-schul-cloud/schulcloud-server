@@ -114,7 +114,6 @@
 	"devDependencies": {
 		"codecov": "^3.6.5",
 		"eslint": "^5.16.0",
-		"eslint-config-airbnb-base": "^13.0.0",
 		"eslint-plugin-import": "^2.18.2",
 		"eslint-plugin-react": "^7.11.1",
 		"mocha": "^7.0.1",
@@ -127,7 +126,6 @@
 	"greenkeeper": {
 		"ignore": [
 			"eslint",
-			"eslint-config-airbnb-base",
 			"eslint-plugin-import",
 			"eslint-plugin-react"
 		]
