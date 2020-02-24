@@ -99,7 +99,6 @@
 		"serve-favicon": "^2.3.2",
 		"socketio-file-upload": "^0.7.0",
 		"strip-bom": "^4.0.0",
-		"strip-js": "^1.0.6",
 		"universal-analytics": "^0.4.17",
 		"uuid": "^3.3.2",
 		"winston": "^3.2.0",
