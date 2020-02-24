@@ -32,11 +32,11 @@ const userSchema = new Schema({
 	parents: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 
 	preferences: { type: Object }, // blackbox for frontend stuff like "cookies accepted"
-	features: {
+	features: [{
 		type: [String],
 		default: defaultFeatures,
 		enum: Object.values(USER_FEATURES),
-	},
+	}],
 
 	/**
 	 * depending on system settings,
