@@ -116,8 +116,9 @@ const hasEditPermissions = async (context) => {
 	}
 };
 
-const restrictToUserSchool = (context) => {
-	if (equal(context.id, context.params.account.schoolId)) {
+const restrictToUserSchool = async (context) => {
+	const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+	if (isSuperHero || equal(context.id, context.params.account.schoolId)) {
 		return context;
 	}
 	throw new Forbidden('You can only edit your own school.');

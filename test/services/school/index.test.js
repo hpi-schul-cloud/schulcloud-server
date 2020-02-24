@@ -11,7 +11,7 @@ const {
 	yearModel: YearModel,
 } = require('../../../src/services/school/model');
 
-const { cleanup } = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(app);
 const { create: createSchool, info: createdSchoolIds } = require('./../helpers/services/schools')(app);
 
 
@@ -62,7 +62,58 @@ describe('school service', () => {
 		});
 	});
 
-	after(cleanup);
+	describe('patch schools', () => {
+		it('administrator can patch his own school', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const result = await app.service('/schools').patch(school._id, { features: ['rocketChat'] }, params);
+			expect(result).to.not.be.undefined;
+			expect(result.features).to.include('rocketChat');
+		});
+
+		it('administrator can not patch a different school', async () => {
+			const usersSchool = await testObjects.createTestSchool({});
+			const otherSchool = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: usersSchool._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			try {
+				await app.service('/schools').patch(
+					otherSchool._id, { features: ['rocketChat'] }, params,
+				);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+			}
+		});
+
+		it('superhero can patch any school', async () => {
+			const usersSchool = await testObjects.createTestSchool({});
+			const otherSchool = await testObjects.createTestSchool({});
+			const batman = await testObjects.createTestUser({
+				schoolId: usersSchool._id,
+				roles: ['superhero'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(batman);
+
+			const result = await app.service('/schools').patch(
+				otherSchool._id, { name: 'all strings are better with "BATMAN!" in it!' }, params,
+			);
+			expect(result).to.not.be.undefined;
+			expect(result.name).to.equal('all strings are better with "BATMAN!" in it!');
+		});
+	});
+
+	after(testObjects.cleanup);
 });
 
 describe('years service', () => {

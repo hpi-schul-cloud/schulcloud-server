@@ -1,4 +1,5 @@
 let createdDatasourceIds = [];
+const { datasourceModel } = require('../../../../src/services/datasources/model');
 
 const createTestDatasource = (app, opt) => async ({
 	name = 'testDatasource',
@@ -21,17 +22,17 @@ const createTestDatasource = (app, opt) => async ({
 	return datasource;
 };
 
-const cleanup = (app) => () => {
+const cleanup = () => {
 	if (createdDatasourceIds.length === 0) {
 		return Promise.resolve();
 	}
 	const ids = createdDatasourceIds;
 	createdDatasourceIds = [];
-	return ids.map((id) => app.service('datasources').remove(id));
+	return datasourceModel.deleteMany({ _id: { $in: ids } }).lean().exec();
 };
 
 module.exports = (app, opt) => ({
 	create: createTestDatasource(app, opt),
-	cleanup: cleanup(app),
+	cleanup,
 	info: createdDatasourceIds,
 });
