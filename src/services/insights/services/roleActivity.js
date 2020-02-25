@@ -3,6 +3,11 @@ const hooks = require('../hooks');
 
 const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/';
 
+/**
+ * loops through the cubejs-response and returns an object:
+ * @param cubeJsData {JSON}
+ * @returns data - object stripped for unnecessary data and prettified
+ */
 const dataMassager = (cubeJsData) => {
 	const parsed = JSON.parse(cubeJsData);
 	const teacherData = parsed.data[0] ? parsed.data[0]['Events.count'] : null;
@@ -13,7 +18,7 @@ const dataMassager = (cubeJsData) => {
 		studentData,
 	};
 	return data;
-}
+};
 
 const generateUrl = (schoolId) => {
 	const query = `v1/load?query={

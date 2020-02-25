@@ -28,6 +28,12 @@ const getCountFromDb = async (roleId) => {
 	return userCount;
 };
 
+/**
+ * loops through the cubejs-response and returns an object:
+ * @param cubeJsData {JSON}
+ * @param totalUsers {JSON}
+ * @returns data - object stripped for unnecessary data and prettified
+ */
 const dataMassager = (cubeJsData, totalUsers) => {
 	const parsed = JSON.parse(cubeJsData);
 
@@ -60,7 +66,7 @@ const dataMassager = (cubeJsData, totalUsers) => {
 		activeTeacherPercentage,
 	};
 	return data;
-}
+};
 
 const generateUrl = (schoolId) => {
 	const query = `v1/load?query={
@@ -110,7 +116,7 @@ class WeeklyActiveUsers {
 		const result = dataMassager(cubeJsData, totalUsers);
 		return result;
 	}
-}
+};
 
 module.exports = (app) => {
 	const insightRoute = '/insights/weeklyActiveUsers';

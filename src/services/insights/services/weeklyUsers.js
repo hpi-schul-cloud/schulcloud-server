@@ -3,6 +3,12 @@ const hooks = require('../hooks');
 
 const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/';
 
+/**
+ * loops through the cubejs-response and returns an object:
+ * @param cubeJsDataThis {JSON}
+ * @param cubeJsDataLast {JSON}
+ * @returns data - object stripped for unnecessary data and prettified
+ */
 const dataMassager = (cubeJsDataThis, cubeJsDataLast) => {
 	const parsedThis = JSON.parse(cubeJsDataThis);
 	const parsedLast = JSON.parse(cubeJsDataLast);
@@ -12,7 +18,7 @@ const dataMassager = (cubeJsDataThis, cubeJsDataLast) => {
 	};
 
 	return data;
-}
+};
 
 const generateUrl = (querySort, schoolId) => {
 	const query = `v1/load?query={
@@ -56,7 +62,7 @@ class WeeklyUsers {
 		const result = dataMassager(cubeJsDataThis, cubeJsDataLast);
 		return result;
 	}
-}
+};
 
 module.exports = (app) => {
 	const insightRoute = '/insights/weeklyUsers';

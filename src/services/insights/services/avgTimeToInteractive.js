@@ -3,6 +3,11 @@ const hooks = require('../hooks');
 
 const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/';
 
+/**
+ * loops through the cubejs-response and returns an object:
+ * @param cubeJsData {JSON}
+ * @returns data - object stripped for unnecessary data and prettified
+ */
 const dataMassager = (cubeJsData) => {
 	const parsed = JSON.parse(cubeJsData);
 	const data = {};
@@ -37,7 +42,8 @@ const generateUrl = (schoolId) => {
         "segments": []
       }`;
 	return `${cubeJsUrl}${query}`;
-}
+};
+
 class AvgTimeToInteractive {
 	async find(data, params) {
 		const { schoolId } = data.account;
@@ -51,7 +57,7 @@ class AvgTimeToInteractive {
 
 		return result;
 	}
-}
+};
 
 module.exports = (app) => {
 	const insightRoute = '/insights/avgTimeToInteractive';

@@ -3,6 +3,11 @@ const hooks = require('../hooks');
 
 const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/';
 
+/**
+ * loops through the cubejs-response and returns an object:
+ * @param cubeJsData {JSON}
+ * @returns data - object stripped for unnecessary data and prettified
+ */
 const dataMassager = (cubeJsData) => {
 	const parsed = JSON.parse(cubeJsData);
 	const data = parsed.data.reduce((a, v) => {
@@ -14,7 +19,7 @@ const dataMassager = (cubeJsData) => {
 		return a;
 	}, {});
 	return data;
-}
+};
 
 const generateUrl = (schoolId) => {
 	const query = `v1/load?query={
@@ -57,7 +62,7 @@ class UniquePageCount {
 
 		return result;
 	}
-}
+};
 
 module.exports = (app) => {
 	const insightRoute = '/insights/uniquePageCount';

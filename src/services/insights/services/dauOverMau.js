@@ -3,6 +3,11 @@ const hooks = require('../hooks');
 
 const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/';
 
+/**
+ * loops through the cubejs-response and returns an object:
+ * @param cubeJsData {JSON}
+ * @returns data - object stripped for unnecessary data and prettified
+ */
 const dataMassager = (cubeJsData) => {
 	const parsed = JSON.parse(cubeJsData);
 	const dauOverMau = parsed.data[0]
@@ -35,7 +40,7 @@ const generateUrl = (schoolId) => {
         ]
       }`;
 	return `${cubeJsUrl}${query}`;
-}
+};
 
 class DauOverMau {
 	async find(data, params) {
@@ -49,7 +54,7 @@ class DauOverMau {
 		const result = dataMassager(cubeJsData);
 		return result;
 	}
-}
+};
 
 module.exports = (app) => {
 	const insightRoute = '/insights/dauOverMau';

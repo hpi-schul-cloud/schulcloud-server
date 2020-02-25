@@ -19,7 +19,7 @@ const dataMassager = (cubeJsData) => {
 		}
 	}
 	return data;
-}
+};
 
 const generateUrl = (schoolId) => {
 	const query = `v1/load?query={
@@ -58,7 +58,7 @@ class AvgPageLoaded {
 
 		return result;
 	}
-}
+};
 
 module.exports = (app) => {
 	const insightRoute = '/insights/avgPageLoaded';
