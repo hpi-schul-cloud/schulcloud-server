@@ -97,6 +97,25 @@ describe('datasources service', () => {
 		await datasourceModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
+	it('cant circumvent protection via $select', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await generateRequestParamsFromUser(admin);
+		const data = {
+			config: {
+				target: 'csv', secret: 'Im an agent', public: 'im an expert',
+			},
+			name: `test${Date.now()}`,
+			protected: ['secret'],
+		};
+		const datasource = await datasourcesService.create(data, params);
+		params.query = { $select: ['config', 'schoolId'] };
+		const result = await datasourcesService.get(datasource._id, params);
+		expect(result).to.not.be.undefined;
+		expect(result.config).to.exist;
+		expect(result.config.secret).to.equal('<secret>');
+		expect(result.config.public).to.equal('im an expert');
+		await datasourceModel.deleteOne({ _id: result._id }).lean().exec();
+	});
 
 	it('FIND all datasources of the users school', async () => {
 		const school = await testObjects.createTestSchool();

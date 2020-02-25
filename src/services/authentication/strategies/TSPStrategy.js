@@ -3,6 +3,7 @@ const { NotAuthenticated } = require('@feathersjs/errors');
 
 const logger = require('../../../logger');
 const {
+	verifyToken,
 	decryptToken,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
 } = require('../../sync/strategies/TSP/TSP');
@@ -43,8 +44,7 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		const { ticket } = authentication;
 		let decryptedTicket;
 		try {
-			// todo: const verifiedToken = await verifyToken(ticket);
-			const verifiedToken = Buffer.from(ticket.split('.')[1], 'base64').toString();
+			const verifiedToken = await verifyToken(ticket);
 			decryptedTicket = await decryptToken(verifiedToken);
 		} catch (err) {
 			logger.error('TSP ticket not valid.', err);

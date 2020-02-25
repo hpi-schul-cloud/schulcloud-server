@@ -173,6 +173,26 @@ describe('datasourceRuns service', () => {
 		}
 	});
 
+	it('Superhero can start Run on any school', async () => {
+		const userSchool = await testObjects.createTestSchool();
+		const datasourceSchool = await testObjects.createTestSchool();
+		const user = await testObjects.createTestUser({ roles: ['superhero'], schoolId: userSchool._id });
+		const datasource = await testObjects.createTestDatasource({
+			schoolId: datasourceSchool._id,
+			config: { target: 'mock' },
+			name: 'superheroes source',
+		});
+		const params = await generateRequestParamsFromUser(user);
+		const result = await datasourceRunsService.create(
+			{ datasourceId: datasource._id.toString() },
+			params,
+		);
+		expect(result).to.not.equal(undefined);
+		expect(result.status).to.equal('Pending');
+
+		await datasourceRunModel.deleteOne({ _id: result._id }).lean().exec();
+	});
+
 	it('GET fetches a run including log', async () => {
 		const testSchool = await testObjects.createTestSchool();
 		const datasource = await testObjects.createTestDatasource({
