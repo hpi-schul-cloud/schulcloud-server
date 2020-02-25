@@ -13,9 +13,9 @@ const dataMassager = (cubeJsDataThis, cubeJsDataLast) => {
 	};
 
 	return data;
-}
+};
 
-function generateUrl(querySort, schoolId) {
+const generateUrl = (querySort, schoolId) => {
 	const query = `v1/load?query={
 		"measures" : [
 		"Events.activeUsers"

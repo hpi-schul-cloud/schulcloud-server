@@ -41,7 +41,7 @@ const generateUrl = (schoolId) => {
   ]
 }`;
 	return `${cubeJsUrl}${query}`;
-}
+};
 
 class RoleActivity {
 	async find(data, params) {

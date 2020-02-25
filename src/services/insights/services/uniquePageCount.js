@@ -43,7 +43,7 @@ const generateUrl = (schoolId) => {
   ]
 }`;
 	return `${cubeJsUrl}${query}`;
-}
+};
 class UniquePageCount {
 	async find(data, params) {
 		const { schoolId } = data.account;

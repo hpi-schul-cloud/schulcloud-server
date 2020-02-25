@@ -89,8 +89,7 @@ const generateUrl = (schoolId) => {
       }`;
 
 	return `${cubeJsUrl}${query}`;
-}
-
+};
 
 class WeeklyActiveUsers {
 	async find(data, params) {

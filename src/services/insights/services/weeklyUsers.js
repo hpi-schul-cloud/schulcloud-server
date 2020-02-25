@@ -36,7 +36,7 @@ const generateUrl = (querySort, schoolId) => {
 			   ]
 			  }`;
 	return `${cubeJsUrl}${query}`;
-}
+};
 
 class WeeklyUsers {
 	async find(data, params) {

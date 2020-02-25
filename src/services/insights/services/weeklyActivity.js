@@ -44,7 +44,8 @@ const generateUrl = (schoolId) => {
   ]
 }`;
 	return `${cubeJsUrl}${query}`;
-}
+};
+
 class WeeklyActivity {
 	async find(data, params) {
 		const { schoolId } = data.account;

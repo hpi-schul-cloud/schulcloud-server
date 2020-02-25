@@ -12,9 +12,9 @@ const dataMassager = (cubeJsData) => {
 		dauOverMau,
 	};
 	return data;
-}
+};
 
-function generateUrl(schoolId) {
+const generateUrl = (schoolId) => {
 	const query = `v1/load?query={
         "measures": [
           "Events.dauToMau"

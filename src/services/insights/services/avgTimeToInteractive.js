@@ -12,9 +12,9 @@ const dataMassager = (cubeJsData) => {
 		}
 	}
 	return data;
-}
+};
 
-function generateUrl(schoolId) {
+const generateUrl = (schoolId) => {
 	const query = `v1/load?query={
         "measures": [
           "Events.AvgTimeToInteractive"

@@ -1,6 +1,6 @@
 const request = require('request-promise-native');
-const hooks = require('../hooks');
 const { URL } = require('url');
+const hooks = require('../hooks');
 
 const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/';
 
@@ -10,7 +10,7 @@ const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-a
  * @param cubeJsData {JSON}
  * @returns data - object stripped for unnecessary data and prettified
  */
-const dataMassager = cubeJsData => {
+const dataMassager = (cubeJsData) => {
 	const parsed = JSON.parse(cubeJsData);
 	const data = {};
 	for (const i in parsed.data) {
@@ -44,7 +44,7 @@ const generateUrl = (schoolId) => {
         "segments": []
       }`;
 	return URL.resolve(cubeJsUrl, query);
-}
+};
 class AvgPageLoaded {
 	async find(data) {
 		const { schoolId } = data.account;
