@@ -25,11 +25,25 @@ const selectTeamUserWithoutSchoolIds = (teams) => {
 
 const idsToOrCondition = (ids) => ids.map((_id) => ({ _id }));
 
+const getReducer = (users) => (array, teamUser) => {
+	// skip and remove not existing teamUser
+	if (!teamUser) {
+		return array;
+	}
+
+	if (!teamUser.schoolId) {
+		const baseUser = users.find(({ _id }) => equal(teamUser.userId, _id));
+		teamUser.schoolId = baseUser.schoolId;
+	}
+	array.push(teamUser);
+	return array;
+};
 
 module.exports = {
 	up: async function up() {
 		await connect();
 		let teamsForFixing; let users;
+		let fixTeamUsersReducer;
 		// pre conditions and data selects
 		try {
 			// TeamsModel.find({ 'userIds.0.schoolId': { $exists: true } })
@@ -38,6 +52,7 @@ module.exports = {
 			const userIdsForFixing = selectTeamUserWithoutSchoolIds(teamsForFixing);
 			const $or = idsToOrCondition(userIdsForFixing);
 			users = await UserModel.find({ $or }).select('schoolId').lean().exec();
+			fixTeamUsersReducer = getReducer(users);
 		} catch (err) {
 			error('Pre select for data failed.', err);
 		}
@@ -45,12 +60,7 @@ module.exports = {
 		// pre fix team data
 		info(`Found ${teamsForFixing.length} teams for fixing.`, teamsForFixing.map((team) => team._id));
 		teamsForFixing.forEach((team) => {
-			team.userIds.forEach((user) => {
-				if (!user.schoolId) {
-					const baseUser = users.find(({ _id }) => equal(user.userId, _id));
-					user.schoolId = baseUser.schoolId;
-				}
-			});
+			team.userIds = team.userIds.reduce(fixTeamUsersReducer, []);
 		});
 
 		// create querys for fixes
