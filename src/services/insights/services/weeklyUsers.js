@@ -62,7 +62,7 @@ class WeeklyUsers {
 		const result = dataMassager(cubeJsDataThis, cubeJsDataLast);
 		return result;
 	}
-};
+}
 
 module.exports = (app) => {
 	const insightRoute = '/insights/weeklyUsers';

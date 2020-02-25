@@ -65,7 +65,7 @@ class WeeklyActivity {
 
 		return result;
 	}
-};
+}
 
 module.exports = (app) => {
 	const insightRoute = '/insights/weeklyActivity';

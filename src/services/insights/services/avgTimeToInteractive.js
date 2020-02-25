@@ -57,7 +57,7 @@ class AvgTimeToInteractive {
 
 		return result;
 	}
-};
+}
 
 module.exports = (app) => {
 	const insightRoute = '/insights/avgTimeToInteractive';

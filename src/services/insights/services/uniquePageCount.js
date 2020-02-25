@@ -62,7 +62,7 @@ class UniquePageCount {
 
 		return result;
 	}
-};
+}
 
 module.exports = (app) => {
 	const insightRoute = '/insights/uniquePageCount';

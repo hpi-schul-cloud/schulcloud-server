@@ -62,7 +62,7 @@ class MonthlyUsers {
 		const result = dataMassager(cubeJsDataThis, cubeJsDataLast);
 		return result;
 	}
-};
+}
 
 module.exports = (app) => {
 	const monthlyUsersRoute = '/insights/monthlyUsers';

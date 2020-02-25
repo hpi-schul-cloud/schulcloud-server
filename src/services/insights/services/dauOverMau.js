@@ -54,7 +54,7 @@ class DauOverMau {
 		const result = dataMassager(cubeJsData);
 		return result;
 	}
-};
+}
 
 module.exports = (app) => {
 	const insightRoute = '/insights/dauOverMau';

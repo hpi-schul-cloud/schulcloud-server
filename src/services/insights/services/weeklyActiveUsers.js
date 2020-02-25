@@ -116,7 +116,7 @@ class WeeklyActiveUsers {
 		const result = dataMassager(cubeJsData, totalUsers);
 		return result;
 	}
-};
+}
 
 module.exports = (app) => {
 	const insightRoute = '/insights/weeklyActiveUsers';
