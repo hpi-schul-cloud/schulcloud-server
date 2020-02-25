@@ -1,12 +1,16 @@
 const request = require('request-promise-native');
 const hooks = require('../hooks');
+const { URL } = require('url');
 
-// loops through the cubejs-response and returns an object:
-// {
-// Date: String // eg: '2019-10-09T14:00:00.000': '545.7500000000000000',
-// ...
-// }
-function dataMassager(cubeJsData) {
+const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/';
+
+
+/**
+ * loops through the cubejs-response and returns an object:
+ * @param cubeJsData {JSON}
+ * @returns data - object stripped for unnecessary data and prettified
+ */
+const dataMassager = cubeJsData => {
 	const parsed = JSON.parse(cubeJsData);
 	const data = {};
 	for (const i in parsed.data) {
@@ -17,9 +21,8 @@ function dataMassager(cubeJsData) {
 	return data;
 }
 
-function generateUrl(schoolId) {
-	const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
-	const query = `load?query={
+const generateUrl = (schoolId) => {
+	const query = `v1/load?query={
         "measures": [
           "Events.AvgPageLoaded"
         ],
@@ -40,10 +43,10 @@ function generateUrl(schoolId) {
         "dimensions": [],
         "segments": []
       }`;
-	return `${cubeJsUrl}${query}`;
+	return URL.resolve(cubeJsUrl, query);
 }
 class AvgPageLoaded {
-	async find(data, params) {
+	async find(data) {
 		const { schoolId } = data.account;
 
 		const options = {

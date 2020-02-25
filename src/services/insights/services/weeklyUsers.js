@@ -1,7 +1,9 @@
 const request = require('request-promise-native');
 const hooks = require('../hooks');
 
-function dataMassager(cubeJsDataThis, cubeJsDataLast) {
+const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/';
+
+const dataMassager = (cubeJsDataThis, cubeJsDataLast) => {
 	const parsedThis = JSON.parse(cubeJsDataThis);
 	const parsedLast = JSON.parse(cubeJsDataLast);
 	const data = {
@@ -12,9 +14,8 @@ function dataMassager(cubeJsDataThis, cubeJsDataLast) {
 	return data;
 }
 
-function generateUrl(querySort, schoolId) {
-	const cubeJsUrl =		process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
-	const query = `load?query={
+const generateUrl = (querySort, schoolId) => {
+	const query = `v1/load?query={
 				"measures":[
 				  "Events.activeUsers"
 			   ],

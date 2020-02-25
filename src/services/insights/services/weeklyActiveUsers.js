@@ -3,6 +3,8 @@ const hooks = require('../hooks');
 const { userModel } = require('../../user/model');
 const roleModel = require('../../role/model');
 
+const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/';
+
 const roleIdsMapping = {
 	teacher: null,
 	student: null,
@@ -26,7 +28,7 @@ const getCountFromDb = async (roleId) => {
 	return userCount;
 };
 
-function dataMassager(cubeJsData, totalUsers) {
+const dataMassager = (cubeJsData, totalUsers) => {
 	const parsed = JSON.parse(cubeJsData);
 
 	const [teacherUsers, studentUsers] = totalUsers;
@@ -60,9 +62,8 @@ function dataMassager(cubeJsData, totalUsers) {
 	return data;
 }
 
-function generateUrl(schoolId) {
-	const cubeJsUrl =		process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
-	const query = `load?query={
+const generateUrl = (schoolId) => {
+	const query = `v1/load?query={
         "measures": [
           "Events.activeUsers"
         ],

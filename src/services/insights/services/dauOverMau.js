@@ -1,7 +1,9 @@
 const request = require('request-promise-native');
 const hooks = require('../hooks');
 
-function dataMassager(cubeJsData) {
+const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/';
+
+const dataMassager = (cubeJsData) => {
 	const parsed = JSON.parse(cubeJsData);
 	const dauOverMau = parsed.data[0]
 		? parsed.data[0]['Events.dauToMau']
@@ -13,8 +15,7 @@ function dataMassager(cubeJsData) {
 }
 
 function generateUrl(schoolId) {
-	const cubeJsUrl =		process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
-	const query = `load?query={
+	const query = `v1/load?query={
         "measures": [
           "Events.dauToMau"
         ],

@@ -1,20 +1,21 @@
 const request = require('request-promise-native');
 const hooks = require('../hooks');
 
-function dataMassager(cubeJsData) {
+const cubeJsUrl = process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/';
+
+const dataMassager = (cubeJsData) => {
 	const parsed = JSON.parse(cubeJsData);
 	const data = {};
 	for (const i in parsed.data) {
 		if (Object.prototype.hasOwnProperty.call(parsed.data, i)) {
-			data[Object.values(parsed.data[i])[0]] =				Object.values(parsed.data[i])[1] || null;
+			data[Object.values(parsed.data[i])[0]] = Object.values(parsed.data[i])[1] || null;
 		}
 	}
 	return data;
 }
 
 function generateUrl(schoolId) {
-	const cubeJsUrl =		process.env.INSIGHTS_CUBEJS || 'http://localhost:4000/cubejs-api/v1/';
-	const query = `load?query={
+	const query = `v1/load?query={
         "measures": [
           "Events.AvgTimeToInteractive"
         ],
