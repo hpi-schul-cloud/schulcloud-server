@@ -8,14 +8,16 @@ const { teamsModel: TeamsModel } = require('../src/services/teams/model'); // mo
 
 const equal = (id1, id2) => id1.toString() === id2.toString();
 
-const filterTeamWithMissingSchoolIds = (teams) => teams.filter((team) => team.userIds.some((user) => !user.schoolId));
+const filterTeamWithMissingSchoolIds = (teams = []) => teams.filter(
+	(team) => team.userIds.some((user) => !user.schoolId),
+);
 
-const selectTeamUserWithoutSchoolIds = (teams) => {
+const selectTeamUserWithoutSchoolIds = (teams = []) => {
 	const usersIds = [];
 	teams.forEach((team) => {
-		team.userIds.forEach(({ userId, schoolId }) => {
-			if (!schoolId) {
-				usersIds.push(userId);
+		team.userIds.forEach((teamUser) => {
+			if (teamUser && !teamUser.schoolId && teamUser.userId) {
+				usersIds.push(teamUser.userId);
 			}
 		});
 	});
@@ -23,22 +25,43 @@ const selectTeamUserWithoutSchoolIds = (teams) => {
 	return [...new Set(usersIds)];
 };
 
-const idsToOrCondition = (ids) => ids.map((_id) => ({ _id }));
+const idsToOrCondition = (ids = []) => ids.map((_id) => ({ _id }));
 
-const getReducer = (users) => (array, teamUser) => {
+const getReducer = (users = []) => (array, teamUser) => {
 	// skip and remove not existing teamUser
-	if (!teamUser) {
+	if (!teamUser || !typeof teamUser === 'object' || !teamUser.userId) {
+		return array;
+	}
+	// already exist
+	if (teamUser.schoolId) {
+		array.push(teamUser);
 		return array;
 	}
 
-	if (!teamUser.schoolId) {
-		const baseUser = users.find(({ _id }) => equal(teamUser.userId, _id));
-		teamUser.schoolId = baseUser.schoolId;
+	const baseUser = users.find(({ _id }) => equal(teamUser.userId, _id));
+	if (!baseUser || !baseUser.schoolId) {
+		return array;
 	}
+
+	teamUser.schoolId = baseUser.schoolId;
+
 	array.push(teamUser);
 	return array;
 };
 
+/**
+ * Fix userIds in teams that are:
+ * - miss schoolId
+ * - null
+ * - undefined
+ * - has only userId inside and not a teamUserObject
+ * It handle and fix also not existing users, that are linked in teams. The users are removed.
+ *
+ * It do NOT touched the schoolIds array that are related if users removed.
+ * Because it should not modified the team vs school permissions.
+ *
+ * It can also handle the case that all is fine. :P
+ */
 module.exports = {
 	up: async function up() {
 		await connect();
