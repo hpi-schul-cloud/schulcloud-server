@@ -55,7 +55,7 @@ const getReducer = (users = []) => (array, teamUser) => {
  * - null
  * - undefined
  * - has only userId inside and not a teamUserObject
- * It handle and fix also not existing users, that are linked in teams. The users are removed.
+ * It handle and fix also not existing users, that are linked in teams. this teamUsers are removed.
  *
  * It do NOT touched the schoolIds array that are related if users removed.
  * Because it should not modified the team vs school permissions.
