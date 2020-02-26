@@ -4,6 +4,7 @@ const moment = require('moment');
 const { JWE, JWK, JWS } = require('jose');
 const uuid = require('uuid/v4');
 const commons = require('@schul-cloud/commons');
+const accountModel = require('../../../account/model');
 
 const Config = new commons.Configuration();
 Config.init();
@@ -57,6 +58,37 @@ const getUsername = (user) => {
  * @param {User|TSP-User} user Schul-Cloud user or TSP user object
  */
 const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
+
+/**
+ * Registers a user and creates an account
+ * @param {Object} userOptions options to be provided to the user service
+ * @param {Array<String>} roles the user's roles
+ * @param {System} systemId the user's login system
+ * @returns {User} the user object
+ * @async
+ */
+const createUserAndAccount = async (app, userOptions, roles, systemId) => {
+	const username = getUsername(userOptions);
+	const email = getEmail(userOptions);
+	const { pin } = await app.service('registrationPins').create({
+		email,
+		verified: true,
+		silent: true,
+	});
+	const user = await app.service('users').create({
+		...userOptions,
+		pin,
+		email,
+		roles,
+	});
+	await accountModel.create({
+		userId: user._id,
+		username,
+		systemId,
+		activated: true,
+	});
+	return user;
+};
 
 const getEncryptionKey = () => JWK.asKey({
 	kty: 'oct', k: ENCRYPTION_KEY, alg: ENCRYPTION_OPTIONS.enc, use: 'enc',
@@ -157,6 +189,7 @@ module.exports = {
 	},
 	getUsername,
 	getEmail,
+	createUserAndAccount,
 	encryptToken,
 	decryptToken,
 	signToken,
