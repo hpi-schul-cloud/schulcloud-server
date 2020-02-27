@@ -2,6 +2,7 @@ const assert = require('assert');
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 
+const { Configuration } = require('@schul-cloud/commons');
 const app = require('../../../src/app');
 
 const userService = app.service('users');
