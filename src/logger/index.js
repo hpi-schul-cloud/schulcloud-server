@@ -45,6 +45,7 @@ if (process.env.NODE_ENV === 'test') {
 
 const logger = createLogger({
 	levels: winston.config.syslog.levels,
+	level: logLevel,
 	format: formater,
 	transports: [
 		new transports.Console({
