@@ -48,10 +48,14 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		try {
 			const verifiedToken = await verifyToken(ticket);
 			decryptedTicket = await decryptToken(verifiedToken);
-			// todo: verify iat and exp dates
 		} catch (err) {
 			logger.error('TSP ticket not valid.', err);
 			throw new NotAuthenticated('TSP ticket is not valid.');
+		}
+
+		const now = Date.now() / 1000;
+		if (decryptedTicket.iat > now || now > decryptedTicket.exp) {
+			throw new NotAuthenticated('TSP token expired.');
 		}
 
 		// translate TSP roles into SC roles
