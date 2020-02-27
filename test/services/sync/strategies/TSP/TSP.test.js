@@ -26,7 +26,7 @@ const users = {
 	},
 };
 
-describe.only('TSP Unit tests', () => {
+describe('TSP Unit tests', () => {
 	it('gets username', () => {
 		expect(getUsername(users.testUser0)).to.equal('tsp/foo');
 		expect(getUsername(users.testUser1)).to.equal('tsp/bar');
