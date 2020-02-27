@@ -90,6 +90,27 @@ const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 	return user;
 };
 
+/**
+ * Finds and returns the school identified by the given identifier
+ * @async
+ * @param {string} tspIdentifier TSP school identifier
+ * @returns {School|null} the school or null if it doesn't exist
+ */
+const findSchool = async (tspIdentifier) => {
+	const schools = await this.app.service('schools').find({
+		query: {
+			source: ENTITY_SOURCE,
+			'sourceOptions.schoolIdentifier': tspIdentifier,
+			$limit: 1,
+		},
+		paginate: false,
+	});
+	if (Array.isArray(schools)) {
+		return schools[0];
+	}
+	return null;
+};
+
 const getEncryptionKey = () => JWK.asKey({
 	kty: 'oct', k: ENCRYPTION_KEY, alg: ENCRYPTION_OPTIONS.enc, use: 'enc',
 });
@@ -190,6 +211,7 @@ module.exports = {
 	getUsername,
 	getEmail,
 	createUserAndAccount,
+	findSchool,
 	encryptToken,
 	decryptToken,
 	signToken,

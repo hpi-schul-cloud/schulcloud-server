@@ -1,6 +1,6 @@
 const Syncer = require('../Syncer');
 const {
-	TspApi, config: TSP_CONFIG, ENTITY_SOURCE,
+	TspApi, config: TSP_CONFIG, ENTITY_SOURCE, findSchool,
 } = require('./TSP');
 const SchoolYearFacade = require('../../../school/logic/year');
 
@@ -128,17 +128,10 @@ class TSPBaseSyncer extends Syncer {
 		this.stats.schools.entities.push({ identifier, name });
 		try {
 			this.logInfo(`Finding school '${name}' (${identifier})...`);
-			const schools = await this.app.service('schools').find({
-				query: {
-					source: ENTITY_SOURCE,
-					'sourceOptions.schoolIdentifier': identifier,
-					$limit: 1,
-				},
-				paginate: false,
-			});
-			if (Array.isArray(schools) && schools.length === 1) {
+			const school = findSchool(identifier);
+			if (school) {
 				this.logInfo(`Updating '${name}' (${identifier})...`);
-				result = await this.updateSchool(schools[0], name);
+				result = await this.updateSchool(school, name);
 			} else {
 				this.logInfo(`School not found. Creating '${name}' (${identifier})...`);
 				result = await this.createSchool(identifier, name);
