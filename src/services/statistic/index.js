@@ -182,14 +182,15 @@ class StatisticsService {
 	get(id, params) {
 		return _.find(getPromises(), { name: id }).model.select({ createdAt: 1 }).exec()
 			.then((generic) => {
-				const stats = generic.map((gen) => moment(gen.createdAt).format('YYYY-MM-DD'));
+				const stats = generic.map((gen) => moment(gen.createdAt).toISOString());
 
 				const counts = {};
 				stats.forEach((x) => { counts[x] = (counts[x] || 0) + 1; });
-
-				const ordered = {};
+				let incrementedCount = 0;
+				const ordered = [];
 				Object.keys(counts).sort().forEach((key) => {
-					ordered[key] = counts[key];
+					incrementedCount += counts[key];
+					ordered.push([key, incrementedCount]);
 				});
 
 				const x = [];
