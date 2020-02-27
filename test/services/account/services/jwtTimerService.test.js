@@ -2,11 +2,11 @@ const assert = require('assert');
 
 const { expect } = require('chai');
 const mockery = require('mockery');
+const { Configuration } = require('@schul-cloud/commons');
 
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 const redisMock = require('../../../utils/redis/redisMock');
-
 
 describe('jwtTimer service', () => {
 	it('registered the supportJWT service', () => {
@@ -56,7 +56,7 @@ describe('jwtTimer service', () => {
 			const user = await testObjects.createTestUser();
 			const params = await testObjects.generateRequestParamsFromUser(user);
 			const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
-			const ttl = app.Config.data.JWT_TIMEOUT_SECONDS;
+			const ttl = Configuration.get('JWT_TIMEOUT_SECONDS');
 			await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', ttl - 5);
 
 			await app.service('/accounts/jwtTimer').create({}, params);
@@ -84,7 +84,7 @@ describe('jwtTimer service', () => {
 			/* eslint-enable global-require */
 
 			redisHelper.initializeRedisClient({
-				Config: { data: { } },
+				Config: { data: {} },
 			});
 		});
 
