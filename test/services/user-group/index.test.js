@@ -13,14 +13,18 @@ describe('classes service', () => {
 
 	describe('find route', () => {
 		let server;
+		const createdIds = [];
 
 		before((done) => {
 			server = app.listen(0, done);
 		});
 
-		after((done) => {
-			server.close(done);
+		after(async () => {
+			await testObjects.classes.removeMany(createdIds);
+			await server.close();
 		});
+
+		afterEach(testObjects.cleanup);
 
 		it('should allow teachers and admins to find all classes', async () => {
 			const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
@@ -177,21 +181,21 @@ describe('classes service', () => {
 		});
 
 		it('CREATE patches successor ID in predecessor class', async () => {
-			const orgClass = await app.service('classes').create({
+			const orgClass = await classesService.create({
 				name: 'sonnenklasse 1',
 				schoolId: '0000d186816abba584714c5f',
 			});
-			const successorClass = await app.service('classes').create({
+			createdIds.push(orgClass._id);
+			const successorClass = await classesService.create({
 				name: 'sonnenklasse 2',
 				schoolId: '0000d186816abba584714c5f',
 				predecessor: orgClass._id,
 			});
+			createdIds.push(successorClass._id);
 			const updatedOrgClass = await classesService.get(orgClass._id);
 			expect(updatedOrgClass.name).to.equal('sonnenklasse 1');
 			expect(successorClass.name).to.equal('sonnenklasse 2');
 			expect(updatedOrgClass.successor.toString()).to.equal(successorClass._id.toString());
 		});
-
-		afterEach(testObjects.cleanup);
 	});
 });

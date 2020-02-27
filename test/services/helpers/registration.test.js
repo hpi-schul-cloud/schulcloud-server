@@ -66,8 +66,8 @@ describe('registration service', () => {
 				chai.expect(response.consent).to.have.property('_id');
 				chai.expect(response.consent.parentConsents.length).to.be.at.least(1);
 				chai.expect(response.parent).to.have.property('_id');
-				chai.expect(response.user.parents).to.include(response.parent._id);
-				chai.expect(response.parent.children).to.include(response.user._id);
+				chai.expect(response.user.parents[0].toString()).to.equal(response.parent._id.toString());
+				chai.expect(response.parent.children[0].toString()).to.include(response.user._id.toString());
 			});
 	});
 

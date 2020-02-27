@@ -9,5 +9,6 @@
 		"notification": "NOTIFICATION_URI",
 		"hydra": "HYDRA_URI",
 		"web": "HOST"
-	}
+	},
+	"NOTIFICATION_PLATFORM":"NOTIFICATION_PLATFORM"
 }

@@ -16,6 +16,10 @@ const User = mongoose.model('makeMeUnique', new mongoose.Schema({
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
 
+
+// TODO npm run migration-persist and remove this line
+// TODO update seed data and remove this line
+
 module.exports = {
 	up: async function up() {
 		await connect();

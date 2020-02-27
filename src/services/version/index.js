@@ -2,6 +2,7 @@ const express = require('express');
 
 const migrationFactory = require('migrate-mongoose/src/db');
 const mongoose = require('mongoose');
+
 const MigrationModel = migrationFactory(undefined, mongoose.connection);
 const { version } = require('../../../package.json');
 const {
@@ -9,6 +10,8 @@ const {
 } = require('../../helper/version');
 
 const router = express.Router();
+const startTime = Date.now();
+const startedAt = new Date();
 
 router.get('/version', async (req, res, next) => {
 	if (!process.env.SHOW_VERSION) {
@@ -28,6 +31,8 @@ router.get('/version', async (req, res, next) => {
 		message,
 		birthtime,
 		migrations,
+		age: Date.now() - startTime,
+		startedAt,
 	});
 });
 

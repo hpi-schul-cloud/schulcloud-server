@@ -1,6 +1,6 @@
 const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
-const decode = require('jwt-decode');
+const jwt = require('jsonwebtoken');
 
 const { requestError } = require('../logger/systemLogger');
 const logger = require('../logger');
@@ -9,7 +9,7 @@ const logRequestInfosInErrorCase = (error, req, res, next) => {
 	if (error) {
 		let decodedJWT;
 		try {
-			decodedJWT = decode(req.headers.authorization);
+			decodedJWT = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
 		} catch (err) {
 			decodedJWT = {};
 		}
@@ -26,11 +26,17 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 			requestId: req.headers.requestId,
 		} : {};
 
-		logger.error(error);
-
-		if (error.stack) {
-			delete error.stack;
+		// delete response informations for extern express applications
+		delete error.response;
+		if (error.options) {
+			// can include jwts if error it throw by extern micro services
+			delete error.options.headers;
 		}
+		logger.error({ ...error });
+
+		// if exist delete it
+		delete error.stack;
+		delete error.catchedError;
 	}
 	next(error);
 };
@@ -53,10 +59,13 @@ const secretDataKeys = (() => [
 	'passwort_2',
 	'password_1',
 	'password_2',
+	'password-1',
+	'password-2',
 	'password_verification',
 	'password_control',
 	'PASSWORD_HASH',
 	'password_new',
+	'accessToken',
 ].map((k) => k.toLocaleLowerCase())
 )();
 const filter = (data) => {
@@ -106,6 +115,7 @@ const errorHandler = (app) => {
 	if (process.env.NODE_ENV !== 'test') {
 		app.use(logRequestInfosInErrorCase);
 	}
+
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(formatAndLogErrors(process.env.NODE_ENV !== 'test'));
 	app.use(returnAsJson);

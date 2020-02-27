@@ -2,8 +2,14 @@ const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
 const roleModel = require('../role/model');
 const { enableAuditLog } = require('../../utils/database');
+const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
+
+const defaultFeatures = [];
+const USER_FEATURES = {
+	EDTR: 'edtr',
+};
 
 const userSchema = new Schema({
 	roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
@@ -26,10 +32,23 @@ const userSchema = new Schema({
 	parents: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 
 	preferences: { type: Object }, // blackbox for frontend stuff like "cookies accepted"
-	discoverable: { type: Boolean, default: false },
+	features: {
+		type: [String],
+		default: defaultFeatures,
+		enum: Object.values(USER_FEATURES),
+	},
+
+	/**
+	 * depending on system settings,
+	 * a user may opt-in or -out,
+	 * default=null should use TEAM_INVITATION_DEFAULT_VISIBILITY_FOR_TEACHERS instead
+	*/
+	discoverable: { type: Boolean, required: false },
 
 	ldapDn: { type: String },
 	ldapId: { type: String },
+
+	...externalSourceSchema,
 
 	customAvatarBackgroundColor: { type: String },
 	avatarSettings: { type: Object },
@@ -71,6 +90,7 @@ const registrationPinModel = mongoose.model('registrationPin', registrationPinSc
 const userModel = mongoose.model('user', userSchema);
 
 module.exports = {
+	USER_FEATURES,
 	userModel,
 	registrationPinModel,
 	displayName,
