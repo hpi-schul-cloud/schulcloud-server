@@ -32,7 +32,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * `params.query` or `data` can optionally contain a config object with:
 	 * `{
 	 * 		schoolIdentifier: '4738' // a TSP school id (filter)
-	 * 		systemId: ObjectId(...)  // a Schul-Cloud system (filter)
+	 * 		lastChange: 159274672 // Unix timestamp to be relayed to the TSP API as lastChange
 	 * 	}`
 	 * @extends Syncer#params
 	 */
@@ -54,12 +54,41 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				students: { created: 0, updated: 0, errors: 0 },
 			},
 		});
-		this.config = config || {};
+		this.config = this.normalizeConfig(config);
+
 		this.api = new TspApi();
 
 		// caches for currentYear and federalState as they need async initialization
 		this.currentYear = undefined;
 		this.federalState = undefined;
+	}
+
+	/**
+	 * Ensures config parameters have the right format if they are present.
+	 * @param {Object} [config] [optional] config as object
+	 * @returns {Object} normalized config
+	 */
+	normalizeConfig(config = {}) {
+		const normalized = config;
+		if (config.schoolIdentifier) {
+			const type = typeof config.schoolIdentifier;
+			if (type === 'string') {
+				normalized.schoolIdentifier = config.schoolIdentifier;
+			} else {
+				this.logWarning(`Converting '${type}' value for 'schoolIdentifier' to string.`);
+				normalized.schoolIdentifier = String(config.schoolIdentifier);
+			}
+		}
+		if (config.lastChange) {
+			const type = typeof config.lastChange;
+			if (type === 'number' || config.lastChange instanceof Date) {
+				normalized.lastChange = config.lastChange;
+			} else {
+				this.logWarning(`Invalid data type for 'lastChange'. Expected 'number' or 'Date', but got '${type}'.`);
+			}
+		}
+		this.logDebug('Normalized config', { config: normalized });
+		return normalized;
 	}
 
 	/**
@@ -174,7 +203,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		};
 		let result = [];
 		try {
-			result = await this.api.request(strings[type].url);
+			result = await this.api.request(strings[type].url, this.config.lastChange);
 		} catch (err) {
 			this.logError(`Cannot fetch ${type}.`, err);
 			// generate a nice user-facing error
