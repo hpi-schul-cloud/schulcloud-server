@@ -107,6 +107,10 @@ class Syncer {
 	logError(message, ...args) {
 		this.logger.error(`[${this.prefix()}] ${message}`, ...args);
 	}
+
+	logDebug(message, ...args) {
+		this.logger.debug(`[${this.prefix()}] ${message}`, ...args);
+	}
 }
 
 module.exports = Syncer;
