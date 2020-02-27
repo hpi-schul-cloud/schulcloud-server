@@ -91,6 +91,20 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 			await app.service('users').patch(user._id, { roles });
 		}
 
+		const oneDayInMilliseconds = 864e5;
+		const timeOfLastSync = Date.now() - oneDayInMilliseconds;
+
+		// trigger an asynchronous TSP sync to reflect changes to classes
+		app.service('sync').find({
+			query: {
+				target: SYNCER_TARGET,
+				config: {
+					schoolIdentifier: decryptedTicket.ptscSchuleNummer,
+					lastChange: timeOfLastSync,
+				},
+			},
+		});
+
 		const [account] = await app.service('accounts').find({
 			query: {
 				userId: user._id,
