@@ -5,7 +5,7 @@ const globalHooks = require('../../../hooks');
 exports.before = {
 	all: [
 		authenticate('jwt'),
-		globalHooks.isSuperHero(),
+		globalHooks.lookupSchool,
 	],
 	find: [],
 	get: [],

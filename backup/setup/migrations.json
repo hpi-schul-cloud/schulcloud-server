@@ -431,4 +431,15 @@
 		"$date": "2020-02-19T14:22:21.200Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e57921712aca413c08cb0f8"
+	},
+	"state": "up",
+	"name": "add_statistic_permissions",
+	"createdAt": {
+		"$date": "2020-02-27T09:06:38.170Z"
+	},
+	"__v": 0
 }]

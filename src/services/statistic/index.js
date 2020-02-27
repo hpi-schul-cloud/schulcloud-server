@@ -7,100 +7,145 @@ const userModel = require('../user/model');
 const accountModel = require('../account/model');
 const homeworkModel = require('../homework/model');
 const lessonModel = require('../lesson/model');
+const teamsModel = require('../teams/model');
 const groupModel = require('../user-group/model');
 const { FileModel } = require('../fileStorage/model');
+const { hasPermissionNoHook } = require('../../hooks');
+const { PERMISSIONS } = require('./logic/constants');
 
-const promises = [
-	{
-		name: 'users',
-		promise: userModel.userModel.countDocuments(),
-		model: userModel.userModel.find(),
-	},
-	{
-		name: 'schools',
-		promise: schoolModel.schoolModel.countDocuments(),
-		model: schoolModel.schoolModel.find(),
-	},
-	{
-		name: 'accounts',
-		promise: accountModel.countDocuments(),
-		model: accountModel.find(),
-	},
-	{
-		name: 'homework',
-		promise: homeworkModel.homeworkModel.countDocuments(),
-		model: homeworkModel.homeworkModel.find(),
-	},
-	{
-		name: 'submissions',
-		promise: homeworkModel.submissionModel.countDocuments(),
-		model: homeworkModel.submissionModel.find(),
-	},
-	{
-		name: 'comments',
-		promise: homeworkModel.commentModel.countDocuments(),
-		model: homeworkModel.commentModel.find(),
-	},
-	{
-		name: 'lessons',
-		promise: lessonModel.countDocuments(),
-		model: lessonModel.find(),
-	},
-	{
-		name: 'classes',
-		promise: groupModel.classModel.countDocuments(),
-		model: groupModel.classModel.find(),
-	},
-	{
-		name: 'courses',
-		promise: groupModel.courseModel.countDocuments(),
-		model: groupModel.courseModel.find(),
-	},
-	{
-		name: 'teachers',
-		promise: userModel.userModel.countDocuments({ roles: '0000d186816abba584714c98' }),
-		model: userModel.userModel.find({ roles: '0000d186816abba584714c98' }),
-	},
-	{
-		name: 'students',
-		promise: userModel.userModel.countDocuments({ roles: '0000d186816abba584714c99' }),
-		model: userModel.userModel.find({ roles: '0000d186816abba584714c99' }),
-	},
-	{
-		name: 'files/directories',
-		promise: FileModel.countDocuments(),
-		model: FileModel.find(),
-	},
-	{
-		name: 'files/sizes',
-		promise: FileModel.aggregate([
-			{
-				$bucketAuto: {
-					groupBy: '$size',
-					buckets: 5,
-				},
-			},
-		]),
-		model: FileModel.find(),
-	},
-	{
-		name: 'files/types',
-		promise: FileModel.aggregate([
-			{
-				$group: {
-					_id: '$type',
-					total_files_per_type: { $sum: 1 },
-				},
-			},
-		]),
-		model: FileModel.find(),
-	},
-];
+const getPromises = (schoolId) => {
+	const roleTeacher = '0000d186816abba584714c98';
+	const roleStudent = '0000d186816abba584714c99';
 
-const fetchStatistics = () => {
+	const schoolIdFilter = schoolId ? { schoolId } : {};
+
+	let promises = [
+		{
+			name: 'users',
+			promise: userModel.userModel.countDocuments(schoolIdFilter),
+			model: userModel.userModel.find(schoolIdFilter),
+		},
+		{
+			name: 'homework',
+			promise: homeworkModel.homeworkModel.countDocuments(schoolIdFilter),
+			model: homeworkModel.homeworkModel.find(schoolIdFilter),
+		},
+		{
+			name: 'submissions',
+			promise: homeworkModel.submissionModel.countDocuments(schoolIdFilter),
+			model: homeworkModel.submissionModel.find(schoolIdFilter),
+		},
+		{
+			name: 'classes',
+			promise: groupModel.classModel.countDocuments(schoolIdFilter),
+			model: groupModel.classModel.find(schoolIdFilter),
+		},
+		{
+			name: 'courses',
+			promise: groupModel.courseModel.countDocuments(schoolIdFilter),
+			model: groupModel.courseModel.find(schoolIdFilter),
+		},
+		{
+			name: 'teams',
+			promise: teamsModel.teamsModel.countDocuments(schoolIdFilter),
+			model: teamsModel.teamsModel.find(schoolIdFilter),
+		},
+		{
+			name: 'teachers',
+			promise: userModel.userModel.countDocuments(
+				schoolId
+					? { roles: roleTeacher, schoolId }
+					: { roles: roleTeacher },
+			),
+			model: userModel.userModel.find(
+				schoolId
+					? { roles: roleTeacher, schoolId }
+					: { roles: roleTeacher },
+			),
+		},
+		{
+			name: 'students',
+			promise: userModel.userModel.countDocuments(
+				schoolId
+					? { roles: roleStudent, schoolId }
+					: { roles: roleStudent },
+			),
+			model: userModel.userModel.find(
+				schoolId
+					? { roles: roleStudent, schoolId }
+					: { roles: roleStudent },
+			),
+		},
+	];
+
+	const promisesWithoutSchoolIds = [
+		{
+			name: 'schools',
+			promise: schoolModel.schoolModel.countDocuments(),
+			model: schoolModel.schoolModel.find(),
+		},
+		{
+			name: 'accounts',
+			promise: accountModel.countDocuments(),
+			model: accountModel.find(),
+		},
+		{
+			name: 'comments',
+			promise: homeworkModel.commentModel.countDocuments(),
+			model: homeworkModel.commentModel.find(),
+		},
+		{
+			name: 'teams',
+			promise: teamsModel.teamsModel.countDocuments(),
+			model: teamsModel.teamsModel.find(),
+		},
+		{
+			name: 'lessons',
+			promise: lessonModel.countDocuments(),
+			model: lessonModel.find(),
+		},
+		{
+			name: 'files/directories',
+			promise: FileModel.countDocuments(),
+			model: FileModel.find(),
+		},
+		{
+			name: 'files/sizes',
+			promise: FileModel.aggregate([
+				{
+					$bucketAuto: {
+						groupBy: '$size',
+						buckets: 5,
+					},
+				},
+			]),
+			model: FileModel.find(),
+		},
+		{
+			name: 'files/types',
+			promise: FileModel.aggregate([
+				{
+					$group: {
+						_id: '$type',
+						total_files_per_type: { $sum: 1 },
+					},
+				},
+			]),
+			model: FileModel.find(),
+		},
+	];
+
+	if (!schoolId) {
+		promises = [...promises, ...promisesWithoutSchoolIds];
+	}
+
+	return promises;
+};
+
+const fetchStatistics = (schoolId) => {
 	const statistics = {};
 
-	return Promise.all(promises.map((p) => p.promise.exec().then((res) => {
+	return Promise.all(getPromises(schoolId).map((p) => p.promise.exec().then((res) => {
 		statistics[p.name] = res;
 		return res;
 	}))).then((_) => statistics);
@@ -111,13 +156,31 @@ class StatisticsService {
 		this.docs = swaggerDocs.statisticsService;
 	}
 
-	find({ query, payload }) {
-		return fetchStatistics()
-			.then((statistics) => statistics);
+	setup(app) {
+		this.app = app;
+	}
+
+	async find({
+		query, params, account, app,
+	}) {
+		let statistics;
+		// TODO: Promise.all
+		const hasViewMySchoolStatsPermission = await hasPermissionNoHook(
+			this, account.userId, PERMISSIONS.VIEW_MYSCHOOL_STATS,
+		);
+		const hasViewGlobalStatsPermission = await hasPermissionNoHook(
+			this, account.userId, PERMISSIONS.VIEW_GLOBAL_STATS,
+		);
+		if (query.school === 'myschool' && hasViewMySchoolStatsPermission) {
+			statistics = await fetchStatistics(account.schoolId);
+		} else if (hasViewGlobalStatsPermission) {
+			statistics = await fetchStatistics();
+		}
+		return statistics;
 	}
 
 	get(id, params) {
-		return _.find(promises, { name: id }).model.select({ createdAt: 1 }).exec()
+		return _.find(getPromises(), { name: id }).model.select({ createdAt: 1 }).exec()
 			.then((generic) => {
 				const stats = generic.map((gen) => moment(gen.createdAt).format('YYYY-MM-DD'));
 
