@@ -184,7 +184,7 @@ class TspApi {
 	 * Requests and returns a TSP resource.
 	 * Results are parsed and returned as Objects/Arrays.
 	 * @param {String} path resource path
-	 * @param {Date} [lastChange=new Date(0)] request changes afer this date only
+	 * @param {Date|number} [lastChange=new Date(0)] request changes afer this date only
 	 * @returns {Object|Array} the requested resource
 	 */
 	async request(path, lastChange = new Date(0)) {
