@@ -71,7 +71,7 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 			const sourceOptions = {
 				[SOURCE_ID_ATTRIBUTE]: decryptedTicket.authUID,
 			};
-			const school = await findSchool(decryptedTicket.ptscSchuleNummer);
+			const school = await findSchool(app, decryptedTicket.ptscSchuleNummer);
 			const systemId = school.systems[0];
 			user = await createUserAndAccount(
 				app,

@@ -93,11 +93,12 @@ const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 /**
  * Finds and returns the school identified by the given identifier
  * @async
+ * @param {Object} app Feathers app
  * @param {string} tspIdentifier TSP school identifier
  * @returns {School|null} the school or null if it doesn't exist
  */
-const findSchool = async (tspIdentifier) => {
-	const schools = await this.app.service('schools').find({
+const findSchool = async (app, tspIdentifier) => {
+	const schools = await app.service('schools').find({
 		query: {
 			source: ENTITY_SOURCE,
 			'sourceOptions.schoolIdentifier': tspIdentifier,

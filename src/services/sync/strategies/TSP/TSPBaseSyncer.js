@@ -128,7 +128,7 @@ class TSPBaseSyncer extends Syncer {
 		this.stats.schools.entities.push({ identifier, name });
 		try {
 			this.logInfo(`Finding school '${name}' (${identifier})...`);
-			const school = findSchool(identifier);
+			const school = findSchool(this.app, identifier);
 			if (school) {
 				this.logInfo(`Updating '${name}' (${identifier})...`);
 				result = await this.updateSchool(school, name);
