@@ -67,7 +67,7 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		const { app } = this;
 		let user = await this.findUser(app, decryptedTicket);
 		if (!user) {
-			// User might have been created since the last sync, so we'll create him from the ticket info
+			// User has been created since the last sync, so we'll create him from the ticket info
 			const sourceOptions = {
 				[SOURCE_ID_ATTRIBUTE]: decryptedTicket.authUID,
 			};
