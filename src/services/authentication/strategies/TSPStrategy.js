@@ -5,6 +5,8 @@ const logger = require('../../../logger');
 const {
 	verifyToken,
 	decryptToken,
+	createUserAndAccount,
+	findSchool,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
 } = require('../../sync/strategies/TSP/TSP');
 const { SYNCER_TARGET } = require('../../sync/strategies/TSP/TSPSchoolSyncer');
@@ -46,38 +48,47 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		try {
 			const verifiedToken = await verifyToken(ticket);
 			decryptedTicket = await decryptToken(verifiedToken);
+			// todo: verify iat and exp dates
 		} catch (err) {
 			logger.error('TSP ticket not valid.', err);
 			throw new NotAuthenticated('TSP ticket is not valid.');
 		}
-		const { app } = this;
-		let user = await this.findUser(app, decryptedTicket);
-		if (!user) {
-			// User might have been created since the last sync
-			await app.service('sync').find({
-				query: {
-					target: SYNCER_TARGET,
-					config: {
-						schoolIdentifier: decryptedTicket.ptscSchuleNummer,
-					},
-				},
-			});
-			user = await this.findUser(app, decryptedTicket);
-			if (!user) {
-				// User really does not exist
-				throw new NotAuthenticated('User does not exist');
-			}
-		}
 
+		// translate TSP roles into SC roles
+		let roles;
 		if (decryptedTicket.ptscListRolle && typeof decryptedTicket.ptscListRolle === 'string') {
-			const roles = decryptedTicket.ptscListRolle.split(',').map((tspRole) => ({
+			roles = decryptedTicket.ptscListRolle.split(',').map((tspRole) => ({
 				schueler: 'student',
 				lehrer: 'teacher',
 				admin: 'administrator',
 			}[tspRole.toLowerCase()])).filter((r) => r);
-			if (roles.length > 0) {
-				await app.service('users').patch(user._id, { roles });
-			}
+		}
+
+		const { app } = this;
+		let user = await this.findUser(app, decryptedTicket);
+		if (!user) {
+			// User might have been created since the last sync, so we'll create him from the ticket info
+			const sourceOptions = {
+				[SOURCE_ID_ATTRIBUTE]: decryptedTicket.authUID,
+			};
+			const school = await findSchool(decryptedTicket.ptscSchuleNummer);
+			const systemId = school.systems[0];
+			user = await createUserAndAccount(
+				app,
+				{
+					namePrefix: decryptedTicket.personTitel,
+					firstName: decryptedTicket.personVorname,
+					lastName: decryptedTicket.personNachname,
+					schoolId: school._id,
+					source: ENTITY_SOURCE,
+					sourceOptions,
+				},
+				roles,
+				systemId,
+			);
+		} else if (Array.isArray(roles)) {
+			// if we know the user and roles were supplied, we need to reflect role changes
+			await app.service('users').patch(user._id, { roles });
 		}
 
 		const [account] = await app.service('accounts').find({
