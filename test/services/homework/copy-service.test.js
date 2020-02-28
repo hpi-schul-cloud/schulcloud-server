@@ -8,17 +8,17 @@ const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 
 
-describe('homework service', () => {
+describe('homework copy service', () => {
 	const homeworkIdsToDelete = [];
 
 	after(async () => {
 		await homeworkModel.deleteMany({ id: { $in: homeworkIdsToDelete } });
+		testObjects.cleanup();
 	});
 
 	it('copies a homework via POST', async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });
-		const homework = await homeworkService.create({
-			schoolId: '0000d186816abba584714c5f',
+		const homework = await testObjects.createTestHomework({
 			teacherId: user._id,
 			name: 'Testaufgabe',
 			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
@@ -28,8 +28,6 @@ describe('homework service', () => {
 			archived: [user._id],
 			lessonId: null,
 			courseId: null,
-			updatedAt: '2017-09-28T11:47:46.648Z',
-			createdAt: '2017-09-28T11:47:46.648Z',
 		});
 
 		const copy = await homeworkCopyService.create({ _id: homework._id, userId: user._id });
@@ -43,8 +41,7 @@ describe('homework service', () => {
 	it('generates data for a copy on GET', async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const homework = await homeworkService.create({
-			schoolId: '0000d186816abba584714c5f',
+		const homework = await testObjects.createTestHomework({
 			teacherId: user._id,
 			name: 'Testaufgabe',
 			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
@@ -54,12 +51,9 @@ describe('homework service', () => {
 			archived: [user._id],
 			lessonId: null,
 			courseId: null,
-			updatedAt: '2017-09-28T11:47:46.648Z',
-			createdAt: '2017-09-28T11:47:46.648Z',
 		});
 
 		const copy = await homeworkCopyService.get(homework._id, params);
-		homeworkIdsToDelete.push(copy);
 		expect(copy.courseId).to.equal(null);
 		expect(copy.lessonId).to.equal(null);
 		expect(copy.name).to.equal('Testaufgabe - Copy');
@@ -71,8 +65,7 @@ describe('homework service', () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });
 		const otherUser = await testObjects.createTestUser({ roles: ['teacher'] });
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const homework = await homeworkService.create({
-			schoolId: '0000d186816abba584714c5f',
+		const homework = await testObjects.createTestHomework({
 			teacherId: otherUser._id,
 			name: 'Testaufgabe',
 			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
@@ -82,8 +75,6 @@ describe('homework service', () => {
 			archived: [user._id],
 			lessonId: null,
 			courseId: null,
-			updatedAt: '2017-09-28T11:47:46.648Z',
-			createdAt: '2017-09-28T11:47:46.648Z',
 		});
 		try {
 			const copy = await homeworkCopyService.create({ _id: homework._id, userId: user._id });
