@@ -1,7 +1,6 @@
 const express = require('@feathersjs/express');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
-const commons = require('@schul-cloud/commons');
 const apiMetrics = require('prometheus-api-metrics');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -16,9 +15,6 @@ const app = express(feathers());
 
 const config = configuration();
 app.configure(config);
-
-// init & register configuration
-(new commons.Configuration()).init({ app });
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
