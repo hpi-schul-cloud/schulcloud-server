@@ -17,6 +17,8 @@ describe('jwtTimer service', () => {
 		let redisHelper;
 
 		before(async () => {
+			// fixme same like jwtTimerService
+
 			mockery.enable({
 				warnOnReplace: false,
 				warnOnUnregistered: false,
@@ -31,9 +33,7 @@ describe('jwtTimer service', () => {
 			app.configure(jwtTimerServiceSetup);
 			/* eslint-enable global-require */
 
-			redisHelper.initializeRedisClient({
-				Config: { data: { REDIS_URI: '//validHost:6379' } },
-			});
+			redisHelper.initializeRedisClient();
 		});
 
 		after(async () => {

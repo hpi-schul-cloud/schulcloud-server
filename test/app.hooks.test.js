@@ -1,6 +1,7 @@
 const chai = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const mockery = require('mockery');
+const { Configuration } = require('@schul-cloud/commons');
 
 const { expect } = chai;
 
@@ -202,8 +203,14 @@ describe('removeObjectIdInData hook', () => {
 describe('handleAutoLogout hook', () => {
 	let fut;
 	let redisHelper;
+	let configBefore;
+
 
 	before(async () => {
+		configBefore = Configuration.toObject(); // deep copy current config
+		Configuration.set('REDIS_URI', '//validHost:6379');
+		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
+
 		mockery.enable({
 			warnOnReplace: false,
 			warnOnUnregistered: false,
@@ -216,26 +223,22 @@ describe('handleAutoLogout hook', () => {
 		redisHelper = require('../src/utils/redis');
 		fut = require('../src/app.hooks').handleAutoLogout;
 		/* eslint-enable global-require */
-
-		redisHelper.initializeRedisClient({
-			Config: { data: { REDIS_URI: '//validHost:6379' } },
-		});
+		redisHelper.initializeRedisClient();
 	});
 
 	after(async () => {
+		Configuration.parse(configBefore); // reset config to before state
 		mockery.deregisterAll();
 		mockery.disable();
 		await cleanup();
 	});
 
-	it('whitelisted JWT is accepted and extended', async () => {
+	it.only('whitelisted JWT is accepted and extended', async () => {
 		const user = await createTestUser();
 		const params = await generateRequestParamsFromUser(user);
 		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
 		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
-		const result = await fut({
-			params, app: { Config: { data: { REDIS_URI: '//validHost:6379', JWT_TIMEOUT_SECONDS: 7200 } } },
-		});
+		const result = await fut({ params });
 		expect(result).to.not.equal(undefined);
 		const ttl = await redisHelper.redisTtlAsync(redisIdentifier);
 		expect(ttl).to.be.greaterThan(7000);
@@ -263,16 +266,7 @@ describe('handleAutoLogout hook', () => {
 		const params = await generateRequestParamsFromUser(user);
 		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
 		await redisHelper.redisDelAsync(redisIdentifier);
-		const result = await fut({
-			params,
-			app: {
-				Config: {
-					data: {
-						REDIS_URI: '//validHost:6379', JWT_TIMEOUT_SECONDS: 7200, JWT_WHITELIST_ACCEPT_ALL: true,
-					},
-				},
-			},
-		});
+		const result = await fut({ params });
 		expect(result).to.have.property('params');
 		expect(result).to.have.property('app');
 	});

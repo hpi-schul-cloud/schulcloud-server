@@ -40,7 +40,7 @@ if (METRICS_PATH) {
 app.use(apiMetrics(metricsOptions));
 
 setupSwagger(app);
-app.configure(initializeRedisClient);
+initializeRedisClient();
 
 // set custom response header for ha proxy
 if (process.env.KEEP_ALIVE) {
