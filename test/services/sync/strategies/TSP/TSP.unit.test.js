@@ -3,7 +3,6 @@ const { expect } = require('chai');
 const {
 	getUsername,
 	getEmail,
-
 } = require('../../../../../src/services/sync/strategies/TSP/TSP');
 
 const users = {
@@ -26,7 +25,7 @@ const users = {
 	},
 };
 
-describe('TSP Unit tests', () => {
+describe('TSP API unit tests', () => {
 	it('gets username', () => {
 		expect(getUsername(users.testUser0)).to.equal('tsp/foo');
 		expect(getUsername(users.testUser1)).to.equal('tsp/bar');
