@@ -61,6 +61,7 @@ const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
 
 /**
  * Registers a user and creates an account
+ * @param {Object} app the Feathers app
  * @param {Object} userOptions options to be provided to the user service
  * @param {Array<String>} roles the user's roles
  * @param {System} systemId the user's login system
