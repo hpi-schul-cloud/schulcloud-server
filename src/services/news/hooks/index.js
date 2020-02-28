@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { lookupSchool, preparePagination, deleteNewsHistory } = require('./news.hooks');
+const { preparePagination, deleteNewsHistory } = require('./news.hooks');
+const { lookupSchool } = require('../../../hooks');
 
 exports.before = {
 	all: [

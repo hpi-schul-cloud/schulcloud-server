@@ -2,9 +2,10 @@ const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 
 const globalHooks = require('../../../hooks');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const filterRequestedSubmissions = (hook) => {
-	// if no db query was given, try to slim down/restrict db request
+// if no db query was given, try to slim down/restrict db request
 	if (Object.keys(hook.params.query).length === 0) {
 		// if user is given
 		// TODO: what if hook.params.account is not set?
@@ -59,16 +60,19 @@ const filterApplicableSubmissions = (hook) => {
 			}
 			return promise.then((courseGroup) => {
 				if (c.homeworkId.publicSubmissions // publicSubmissions allowes (everyone can see)
-                    || (c.homeworkId.teacherId || {}).toString() == hook.params.account.userId.toString() // or user is teacher
-					|| (c.studentId._id ? c.studentId._id.toString() == hook.params.account.userId.toString() : c.studentId.toString() == hook.params.account.userId.toString())// or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
-                    || c.teamMembers && c.teamMembers.includes(hook.params.account.userId.toString()) // or is a teamMember
-                    || courseGroup && courseGroup.userIds && courseGroup.userIds.includes(hook.params.account.userId.toString())) { // or in the courseGroup
+						|| equalIds(c.homeworkId.teacherId, hook.params.account.userId) // or user is teacher
+						|| (c.studentId._id
+							? equalIds(c.studentId._id, hook.params.account.userId)
+							: equalIds(c.studentId, hook.params.account.userId))
+						// or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
+						|| c.teamMembers && c.teamMembers.includes(hook.params.account.userId.toString()) // or is a teamMember
+						|| courseGroup && courseGroup.userIds && courseGroup.userIds.includes(hook.params.account.userId.toString())) { // or in the courseGroup
 					return true;
 				} if (c.homeworkId.courseId) {
 					const courseService = hook.app.service('/courses');
 					return courseService.get(c.homeworkId.courseId)
 						.then((course) => ((course || {}).teacherIds || []).includes(hook.params.account.userId.toString()) // or user is teacher
-                                || ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString()), // or user is substitution teacher
+												|| ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString()), // or user is substitution teacher
 						)
 						.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach course service" })));
 				}
@@ -95,7 +99,10 @@ const insertSubmissionData = (hook) => {
 		const submissionService = hook.app.service('/submissions');
 		return submissionService.get(submissionId, { account: { userId: hook.params.account.userId } })
 			.then((submission) => {
-				hook.data.submission = submission;
+				hook.data = {
+					...hook.data,
+					submission,
+				};
 				hook.data = JSON.parse(JSON.stringify(hook.data));
 				hook.data.isTeamMember = false;
 				hook.data.isOwner = false;
@@ -130,8 +137,8 @@ const insertHomeworkData = (hook) => {
 				// isTeacher?
 				hook.data.isTeacher = false;
 				if ((hook.data.homework.teacherId == hook.params.account.userId)
-                    || (hook.data.homework.courseId.teacherIds || []).includes(hook.params.account.userId)
-                    || (hook.data.homework.courseId.substitutionIds || []).includes(hook.params.account.userId)) {
+						|| (hook.data.homework.courseId.teacherIds || []).includes(hook.params.account.userId)
+						|| (hook.data.homework.courseId.substitutionIds || []).includes(hook.params.account.userId)) {
 					hook.data.isTeacher = true;
 				}
 				return Promise.resolve(hook);
@@ -142,7 +149,7 @@ const insertHomeworkData = (hook) => {
 };
 
 const insertSubmissionsData = (hook) => {
-	// get all the submissions for the homework
+// get all the submissions for the homework
 	const submissionService = hook.app.service('/submissions');
 	return submissionService.find({
 		query: {
@@ -180,10 +187,10 @@ const setTeamMembers = (hook) => {
 };
 
 const noSubmissionBefore = (hook) => {
-	// check that no one has already submitted for the current User
+// check that no one has already submitted for the current User
 	const submissionsForMe = hook.data.submissions.filter((submission) => // is there an submission for the current user?
 		(submission.teamMembers.includes(hook.params.account.userId))
-            || ((submission.studentId || {})._id == hook.params.account.userId));
+		|| ((submission.studentId || {})._id == hook.params.account.userId));
 	if (submissionsForMe.length > 0) {
 		return Promise.reject(new errors.Conflict({
 			message: `${submissionsForMe[0].studentId.firstName} ${submissionsForMe[0].studentId.lastName} hat bereits für dich abgegeben!`,
@@ -205,7 +212,7 @@ const noDuplicateSubmissionForTeamMembers = (hook) => {
 			for (let i = 0; i < newTeamMembers.length; i++) {
 				const teamMember = newTeamMembers[i].toString();
 				if (submission.teamMembers.includes(teamMember)
-                    || (((submission.studentId || {})._id || {}).toString() == teamMember)
+						|| (((submission.studentId || {})._id || {}).toString() == teamMember)
 				) {
 					toRemove += (toRemove == '') ? '' : ', ';
 					toRemove += `${submission.studentId.firstName} ${submission.studentId.lastName}`;
@@ -239,8 +246,8 @@ const maxTeamMembers = (hook) => {
 		if (hook.data.homework.maxTeamMembers) {
 			// NOTE the following conditional is a bit hard to understand. To prevent side effects, I added a pre-conditional above.
 			if ((hook.data.homework.maxTeamMembers || 0) >= 1
-                && ((hook.data.teamMembers || []).length > hook.data.homework.maxTeamMembers)
-                || (hook.courseGroupTemp && (hook.courseGroupTemp.userIds || []).length > hook.data.homework.maxTeamMembers)) {
+				&& ((hook.data.teamMembers || []).length > hook.data.homework.maxTeamMembers)
+				|| (hook.courseGroupTemp && (hook.courseGroupTemp.userIds || []).length > hook.data.homework.maxTeamMembers)) {
 				return Promise.reject(new errors.Conflict({
 					message: `Dein Team ist größer als erlaubt! ( maximal ${hook.data.homework.maxTeamMembers} Teammitglieder erlaubt)`,
 				}));
@@ -256,8 +263,8 @@ const maxTeamMembers = (hook) => {
 
 const canRemoveOwner = (hook) => {
 	if (hook.data.teamMembers
-        && !hook.data.teamMembers.includes(hook.data.submission.studentId)
-        && !hook.data.courseGroupId) {
+&& !hook.data.teamMembers.includes(hook.data.submission.studentId)
+&& !hook.data.courseGroupId) {
 		if (hook.data.isOwner) {
 			return Promise.reject(new errors.Conflict({
 				message: 'Du hast diese Abgabe erstellt. Du darfst dich nicht selbst von dieser löschen!',
@@ -272,14 +279,14 @@ const canRemoveOwner = (hook) => {
 
 const canGrade = (hook) => {
 	if (!hook.data.isTeacher
-        && (Number.isInteger(hook.data.grade) || typeof hook.data.gradeComment === 'string')) { // students try to grade? BLOCK!
+&& (Number.isInteger(hook.data.grade) || typeof hook.data.gradeComment === 'string')) { // students try to grade? BLOCK!
 		return Promise.reject(new errors.Forbidden());
 	}
 	return Promise.resolve(hook);
 };
 
 const hasEditPermission = (hook) => {
-	// may check that the teacher can't edit the submission itself (only grading allowed)
+// may check that the teacher can't edit the submission itself (only grading allowed)
 	if (hook.data.isTeamMember || hook.data.isTeacher) {
 		return Promise.resolve(hook);
 	}

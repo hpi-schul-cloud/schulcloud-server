@@ -6,9 +6,23 @@
 const mongoose = require('mongoose');
 const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
+const externalSourceSchema = require('../../helper/externalSourceSchema');
+const { STUDENT_TEAM_CREATE_DISABLED } = require('../../../config/globals');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
+
+const defaultFeatures = [];
+if (STUDENT_TEAM_CREATE_DISABLED === 'true'
+	|| STUDENT_TEAM_CREATE_DISABLED === '1') {
+	defaultFeatures.push('disableStudentTeamCreation');
+}
+
+const SCHOOL_FEATURES = {
+	ROCKET_CHAT: 'rocketChat',
+	DISABLE_STUDENT_TEAM_CREATION: 'disableStudentTeamCreation',
+	VIDEOCONFERENCE: 'videoconference',
+};
 
 const rssFeedSchema = new Schema({
 	url: {
@@ -58,20 +72,22 @@ const schoolSchema = new Schema({
 	logo_dataUrl: { type: String },
 	purpose: { type: String },
 	rssFeeds: [{ type: rssFeedSchema }],
-	features: [{ type: String, enum: ['rocketChat', 'disableStudentTeamCreation'] }],
+	features: {
+		type: [String],
+		default: defaultFeatures,
+		enum: Object.values(SCHOOL_FEATURES),
+	},
 	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below)
+	...externalSourceSchema,
 }, {
 	timestamps: true,
 });
-
-enableAuditLog(schoolSchema);
 
 
 const schoolGroupSchema = new Schema({
 	name: { type: String, required: true },
 }, { timestamps: true });
 
-enableAuditLog(schoolGroupSchema);
 
 /**
  * Determine if school is in maintenance mode ("Schuljahreswechsel"):
@@ -98,12 +114,14 @@ const yearSchema = new Schema({
 	endDate: { type: Date, required: true },
 });
 
-enableAuditLog(yearSchema);
 
 const gradeLevelSchema = new Schema({
 	name: { type: String, required: true },
 });
 
+enableAuditLog(schoolSchema);
+enableAuditLog(schoolGroupSchema);
+enableAuditLog(yearSchema);
 enableAuditLog(gradeLevelSchema);
 
 const schoolModel = mongoose.model('school', schoolSchema);
@@ -112,6 +130,7 @@ const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
+	SCHOOL_FEATURES,
 	schoolModel,
 	schoolGroupModel,
 	yearModel,

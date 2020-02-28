@@ -1,8 +1,11 @@
 const service = require('feathers-mongoose');
 const RandExp = require('randexp');
 const Chance = require('chance');
+
 const account = require('./model');
 const hooks = require('./hooks');
+
+const { supportJWTServiceSetup, jwtTimerServiceSetup } = require('./services');
 
 const chance = new Chance();
 
@@ -51,9 +54,7 @@ class PasswordGenService {
 	}
 }
 
-module.exports = function () {
-	const app = this;
-
+module.exports = (app) => {
 	const options = {
 		Model: account,
 		paginate: false,
@@ -64,8 +65,11 @@ module.exports = function () {
 
 	app.use('/accounts/pwgen', new PasswordGenService());
 
+	app.configure(jwtTimerServiceSetup);
+
 	app.use('/accounts', service(options));
 
+	app.configure(supportJWTServiceSetup);
 
 	app.use('/accounts/confirm', {
 		create(data, params) {

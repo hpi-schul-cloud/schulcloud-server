@@ -1,4 +1,5 @@
 const SUCCESS = 'Success';
 const ERROR = 'Error';
+const PENDING = 'Pending';
 
-module.exports = { SUCCESS, ERROR };
+module.exports = Object.freeze({ SUCCESS, ERROR, PENDING });

@@ -8,21 +8,6 @@ const deleteNewsHistory = async (context) => {
 	return context;
 };
 
-/**
- * Decorates context.params.account with the user's schoolId
- * @param {context} context Hook context
- * @requires authenticate('jwt')
- * @throws {BadRequest} if not authenticated or userId is missing.
- * @throws {NotFound} if user cannot be found
- */
-const lookupSchool = async (context) => {
-	if (context.params && context.params.account && context.params.account.userId) {
-		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
-		context.params.account.schoolId = schoolId;
-		return context;
-	}
-	throw new BadRequest('Authentication is required.');
-};
 
 const getBoolean = (value) => value === true || value === 'true';
 
@@ -42,6 +27,5 @@ const preparePagination = (context) => {
 
 module.exports = {
 	deleteNewsHistory,
-	lookupSchool,
 	preparePagination,
 };

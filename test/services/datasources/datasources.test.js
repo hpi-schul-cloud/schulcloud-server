@@ -26,16 +26,34 @@ describe('datasources service', () => {
 		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await generateRequestParamsFromUser(admin);
 		const data = {
-			config: { type: 'csv' },
+			config: { target: 'csv' },
 			name: `test${Date.now()}`,
 		};
 		const result = await datasourcesService.create(data, params);
 		expect(result).to.not.be.undefined;
 		expect(result.config).to.exist;
-		expect(result.config).to.haveOwnProperty('type');
+		expect(result.config).to.haveOwnProperty('target');
 		expect(result.name).to.exist;
 		expect(result.createdBy.toString()).to.equal(admin._id.toString());
 		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
+		datasourceModel.deleteOne({ _id: result._id }).lean().exec();
+	});
+
+	it('protects fields', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await generateRequestParamsFromUser(admin);
+		const data = {
+			config: { target: 'csv', csvpassword: 'secure123' },
+			name: `test${Date.now()}`,
+			protected: ['csvpassword'],
+		};
+		const datasource = await datasourcesService.create(data, params);
+		params.query = {};
+		const result = await datasourcesService.get(datasource._id, params);
+		expect(result).to.not.be.undefined;
+		expect(result.config).to.exist;
+		expect(result.config.csvpassword).to.not.eq('secure123');
+		expect(result.protected).to.not.be.undefined;
 		datasourceModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
@@ -43,7 +61,7 @@ describe('datasources service', () => {
 		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await generateRequestParamsFromUser(admin);
 		const data = {
-			config: { type: 'csv' },
+			config: { target: 'csv' },
 			name: `test${Date.now()}`,
 		};
 		const datasource = await datasourcesService.create(data, params);
@@ -51,11 +69,52 @@ describe('datasources service', () => {
 		const result = await datasourcesService.get(datasource._id, params);
 		expect(result).to.not.be.undefined;
 		expect(result.config).to.exist;
-		expect(result.config).to.haveOwnProperty('type');
+		expect(result.config).to.haveOwnProperty('target');
 		expect(result.name).to.exist;
 		expect(result.createdBy.toString()).to.equal(admin._id.toString());
 		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
 		datasourceModel.deleteOne({ _id: result._id }).lean().exec();
+	});
+
+	it('protected fields are protected', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await generateRequestParamsFromUser(admin);
+		const data = {
+			config: {
+				target: 'csv', password: 'didumm', secret: 'Im an agent', public: 'im an expert',
+			},
+			name: `test${Date.now()}`,
+			protected: ['password', 'secret'],
+		};
+		const datasource = await datasourcesService.create(data, params);
+		params.query = {};
+		const result = await datasourcesService.get(datasource._id, params);
+		expect(result).to.not.be.undefined;
+		expect(result.config).to.exist;
+		expect(result.config.password).to.equal('<secret>');
+		expect(result.config.secret).to.equal('<secret>');
+		expect(result.config.public).to.equal('im an expert');
+		await datasourceModel.deleteOne({ _id: result._id }).lean().exec();
+	});
+
+	it('cant circumvent protection via $select', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await generateRequestParamsFromUser(admin);
+		const data = {
+			config: {
+				target: 'csv', secret: 'Im an agent', public: 'im an expert',
+			},
+			name: `test${Date.now()}`,
+			protected: ['secret'],
+		};
+		const datasource = await datasourcesService.create(data, params);
+		params.query = { $select: ['config', 'schoolId'] };
+		const result = await datasourcesService.get(datasource._id, params);
+		expect(result).to.not.be.undefined;
+		expect(result.config).to.exist;
+		expect(result.config.secret).to.equal('<secret>');
+		expect(result.config.public).to.equal('im an expert');
+		await datasourceModel.deleteOne({ _id: result._id }).lean().exec();
 	});
 
 	it('FIND all datasources of the users school', async () => {
@@ -64,11 +123,11 @@ describe('datasources service', () => {
 		const params = await generateRequestParamsFromUser(admin);
 
 		const datasource01 = await datasourcesService.create({
-			config: { type: 'csv' },
+			config: { target: 'csv' },
 			name: `onetest${Date.now()}`,
 		}, params);
 		const datasource02 = await datasourcesService.create({
-			config: { type: 'csv' },
+			config: { target: 'csv' },
 			name: `othertest${Date.now()}`,
 		}, params);
 
@@ -88,7 +147,7 @@ describe('datasources service', () => {
 		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await generateRequestParamsFromUser(admin);
 		const data = {
-			config: { type: 'csv' },
+			config: { target: 'csv' },
 			name: `test${Date.now()}`,
 		};
 		const datasource = await datasourcesService.create(data, params);
@@ -96,7 +155,7 @@ describe('datasources service', () => {
 		const result = await datasourcesService.patch(datasource._id, { name }, params);
 		expect(result).to.not.be.undefined;
 		expect(result.config).to.exist;
-		expect(result.config).to.haveOwnProperty('type');
+		expect(result.config).to.haveOwnProperty('target');
 		expect(result.name).to.equal(name);
 		expect(result.createdBy.toString()).to.equal(admin._id.toString());
 		expect(result.schoolId.toString()).to.equal(admin.schoolId.toString());
@@ -109,7 +168,7 @@ describe('datasources service', () => {
 			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 			const params = await generateRequestParamsFromUser(admin);
 			const data = {
-				config: { type: 'csv' },
+				config: { target: 'csv' },
 				name: `test${Date.now()}`,
 			};
 			datasource = await datasourcesService.create(data, params);
@@ -129,7 +188,7 @@ describe('datasources service', () => {
 			const params = await generateRequestParamsFromUser(admin);
 			params.query = {};
 			const data = {
-				config: { type: 'csv' },
+				config: { target: 'csv' },
 				name: `test${Date.now()}`,
 			};
 			const datasource = await datasourcesService.create(data, params);
@@ -149,7 +208,7 @@ describe('datasources service', () => {
 			const params = await generateRequestParamsFromUser(admin);
 			params.query = {};
 			const data = {
-				config: { type: 'csv' },
+				config: { target: 'csv' },
 				name: `test${Date.now()}`,
 			};
 			await datasourcesService.create(data, params);
@@ -157,7 +216,7 @@ describe('datasources service', () => {
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have the permission DATASOURCES_CREATE.");
+			expect(err.message).to.equal("You don't have one of the permissions: DATASOURCES_CREATE.");
 		}
 	});
 
@@ -167,7 +226,7 @@ describe('datasources service', () => {
 			const params = await generateRequestParamsFromUser(admin);
 			params.query = {};
 			const data = {
-				config: { type: 'csv' },
+				config: { target: 'csv' },
 				name: `test${Date.now()}`,
 			};
 			await datasourcesService.create(data, params);
@@ -175,7 +234,7 @@ describe('datasources service', () => {
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have the permission DATASOURCES_CREATE.");
+			expect(err.message).to.equal("You don't have one of the permissions: DATASOURCES_CREATE.");
 		}
 	});
 
@@ -192,7 +251,7 @@ describe('datasources service', () => {
 			const adminParams = await generateRequestParamsFromUser(admin);
 			adminParams.query = {};
 			const data = {
-				config: { type: 'csv' },
+				config: { target: 'csv' },
 				name: `test${Date.now()}`,
 			};
 			datasource = await datasourcesService.create(data, adminParams);

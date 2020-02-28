@@ -21,7 +21,6 @@ const teamInvitedUserSchema = new Schema({
 	role: { type: String, required: true, enum: ['teamexpert', 'teamadministrator'] },
 }, { _id: false, timestamps: true });
 
-const teamInvitedUserModel = mongoose.model('_teamInvitedUserSchema', teamInvitedUserSchema);
 
 const teamUserSchema = new Schema({
 	userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
@@ -29,7 +28,6 @@ const teamUserSchema = new Schema({
 	schoolId: { type: Schema.Types.ObjectId, ref: 'school', required: true },
 }, { _id: false, timestamps: true });
 
-const teamUserModel = mongoose.model('_teamUserSchema', teamUserSchema);
 
 const teamsSchema = getUserGroupSchema({
 	schoolIds: {
@@ -42,12 +40,14 @@ const teamsSchema = getUserGroupSchema({
 	description: { type: String, default: '' },
 	classIds: [{ type: Schema.Types.ObjectId, ref: 'class' }],
 	color: { type: String, default: '#ACACAC' },
-	features: [{ type: String, enum: ['isTeam', 'rocketChat'] }],
+	features: [{ type: String, enum: ['isTeam', 'rocketChat', 'videoconference'] }],
 	filePermission: [permissionSchema],
 });
 
 enableAuditLog(teamsSchema);
 
+const teamInvitedUserModel = mongoose.model('_teamInvitedUserSchema', teamInvitedUserSchema);
+const teamUserModel = mongoose.model('_teamUserSchema', teamUserSchema);
 const teamsModel = mongoose.model('teams', teamsSchema);
 
 module.exports = {
