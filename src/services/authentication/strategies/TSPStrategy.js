@@ -109,6 +109,7 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 			},
 		});
 
+		// find account and generate JWT payload
 		const [account] = await app.service('accounts').find({
 			query: {
 				userId: user._id,
