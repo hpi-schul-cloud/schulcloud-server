@@ -106,7 +106,7 @@ const findSchool = async (app, tspIdentifier) => {
 		},
 		paginate: false,
 	});
-	if (Array.isArray(schools)) {
+	if (Array.isArray(schools) && schools.length > 0) {
 		return schools[0];
 	}
 	return null;
