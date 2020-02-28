@@ -105,12 +105,12 @@ const getPromises = (schoolId) => {
 			model: lessonModel.find(),
 		},
 		{
-			name: 'files/directories',
+			name: 'files_directories',
 			promise: FileModel.countDocuments(),
 			model: FileModel.find(),
 		},
 		{
-			name: 'files/sizes',
+			name: 'files_sizes',
 			promise: FileModel.aggregate([
 				{
 					$bucketAuto: {
@@ -122,7 +122,7 @@ const getPromises = (schoolId) => {
 			model: FileModel.find(),
 		},
 		{
-			name: 'files/types',
+			name: 'files_types',
 			promise: FileModel.aggregate([
 				{
 					$group: {
