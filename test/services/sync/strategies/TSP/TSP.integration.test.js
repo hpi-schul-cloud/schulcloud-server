@@ -3,17 +3,19 @@ const { expect } = require('chai');
 const app = require('../../../../../src/app');
 
 const testObjects = require('../../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../../helpers/services/login')(app);
-const { create: createUser } = require('../../../helpers/services/users')(app);
 const { create: createSchool } = require('../../../helpers/services/schools')(app);
+const { info: createdTestUsers } = require('../../../helpers/services/users')(app);
+const { info: createdAccounts } = require('../../../helpers/services/accounts')(app);
+const { create: createSystem } = require('../../../helpers/services/testSystem')(app);
 
 const { equal: equalIds } = require('../../../../../src/helper/compare').ObjectId;
 
 const {
 	findSchool,
+	createUserAndAccount,
 } = require('../../../../../src/services/sync/strategies/TSP/TSP');
 
-describe.only('TSP API integration tests', () => {
+describe('TSP API integration tests', () => {
 	let server;
 
 	before((done) => {
@@ -35,6 +37,37 @@ describe.only('TSP API integration tests', () => {
 		it('returns null if no school was found', async () => {
 			const foundSchool = await findSchool(app, '63472');
 			expect(foundSchool).to.equal(null);
+		});
+
+		after(testObjects.cleanup);
+	});
+
+	describe('#createUserAndAccount', () => {
+		it('should create an activated user and account based on the given details', async () => {
+			const school = await createSchool();
+			const userDetails = {
+				firstName: 'Thor',
+				lastName: 'Heyerdahl',
+				email: 'sailing@pacific.ocean',
+				schoolId: school._id,
+				source: 'tsp',
+				sourceOptions: { awesome: true, tspUid: '2345' },
+			};
+			const roles = ['administrator', 'teacher'];
+			const systemId = (await createSystem())._id;
+			const createdUser = await createUserAndAccount(app, userDetails, roles, systemId);
+			createdTestUsers.push(createdUser._id);
+
+			expect(createdUser).to.be.ok;
+			expect(createdUser.source).to.equal('tsp');
+			expect(createdUser.sourceOptions.awesome).to.equal(true);
+
+			const [account] = await app.service('accounts').find({
+				query: { userId: createdUser._id },
+			});
+			createdAccounts.push(account._id);
+			expect(account.username).to.equal('tsp/2345');
+			expect(account.activated).to.equal(true);
 		});
 
 		after(testObjects.cleanup);
