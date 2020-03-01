@@ -38,6 +38,13 @@ const ltiToolSchema = new Schema({
 	friendlyUrl: { type: String, unique: true, sparse: true },
 });
 
+ltiToolSchema.path('key').validate(function (value) {
+	console.log(value);
+	console.log(this);
+	if (this.lti_version === 'LTI-1p0') return !!value;
+	return true;
+});
+
 enableAuditLog(ltiToolSchema);
 
 const ltiToolModel = mongoose.model('ltiTool', ltiToolSchema);
