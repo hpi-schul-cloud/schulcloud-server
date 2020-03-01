@@ -39,8 +39,6 @@ const ltiToolSchema = new Schema({
 });
 
 ltiToolSchema.path('key').validate(function (value) {
-	console.log(value);
-	console.log(this);
 	if (this.lti_version === 'LTI-1p0') return !!value;
 	return true;
 });
