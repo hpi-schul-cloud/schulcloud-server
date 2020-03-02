@@ -419,7 +419,8 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				source: ENTITY_SOURCE,
 				sourceOptions,
 			};
-			await this.createOrUpdateClass(options, query); // see ClassImporter mixin
+			const onlyAddNew = this.config.lastChange !== undefined;
+			await this.createOrUpdateClass(options, query, onlyAddNew); // see ClassImporter mixin
 		}));
 	}
 }

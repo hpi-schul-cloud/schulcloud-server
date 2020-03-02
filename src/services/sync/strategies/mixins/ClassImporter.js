@@ -44,10 +44,12 @@ module.exports = (superClass) => class ClassImporter extends superClass {
 	/**
      * Updates a class for a given search query. Creates a class if none exists.
      * @param {Object} classObject class attributes
-	 * @param {Object} query [optional] query to find an existing class. If undefined, query==classObject
+	 * @param {Object} [query] [optional] query to find an existing class. If undefined, query==classObject
+	 * @param {boolean} [onlyAddNew] [optional] add users from classObject to existing classes,
+	 * instead of using them to replace the original members on update (useful for incremental updates)
      * @returns {Class} a Schul-Cloud class
      */
-	async createOrUpdateClass(classObject, query) {
+	async createOrUpdateClass(classObject, query, onlyAddNew = false) {
 		let theClass = null;
 		let options = classObject;
 		try {
@@ -56,6 +58,10 @@ module.exports = (superClass) => class ClassImporter extends superClass {
 			}
 			const existing = await this.findClass(query || options);
 			if (existing) {
+				if (onlyAddNew) {
+					options.teacherIds = Array.from(new Set((existing.teacherIds || []).concat(options.teacherIds)));
+					options.userIds = Array.from(new Set((existing.userIds || []).concat(options.userIds)));
+				}
 				theClass = await this.updateClass(existing._id, options);
 			} else {
 				theClass = await this.createClass(options);
