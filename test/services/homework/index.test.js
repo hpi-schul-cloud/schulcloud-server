@@ -1,6 +1,7 @@
 const assert = require('assert');
 const chai = require('chai');
 const app = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(app);
 
 const homeworkService = app.service('homework');
 const homeworkCopyService = app.service('homework/copy');
@@ -44,29 +45,88 @@ describe('homework service', function test() {
 			.then(() => true);
 	}));
 
-	// PERMISSION TESTS
-	it('FIND only my own tasks', () => homeworkService.find({
-		query: {},
-		account: { userId: '0000d231816abba584714c9e' },
-	}).then((result) => {
-		expect(result.total).to.be.above(0);
-		expect(result.data.filter((e) => String(e.teacherId) !== '0000d231816abba584714c9e').length).to.equal(0);
-	}));
-
-	it('try to FIND tasks of others', () => homeworkService.find({
-		query: {
-			teacherId: '0000d224816abba584714c9c',
+	it('FIND only my own tasks', async () => {
+		const user = await testObjects.createTestUser({ roles: ['teacher'] });
+		await testObjects.createTestHomework({
+			teacherId: user._id,
+			name: 'Testaufgabe',
+			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
 			private: true,
-		},
-		account: { userId: '0000d231816abba584714c9e' },
-	}).then((result) => {
-		expect(result.total).to.equal(0);
-	}));
+			archived: [user._id],
+			lessonId: null,
+			courseId: null,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(user);
+		params.query = {};
+		const result = await homeworkService.find(params);
+		expect(result.total).to.be.above(0);
+		expect(result.data.filter((e) => e.teacherId.toString() !== user._id.toString()).length).to.equal(0);
+	});
 
-	it('contains statistics as a teacher', () => homeworkService.find({
-		query: { _id: '59d1f63ce0a06325e8b5288b' },
-		account: { userId: '0000d231816abba584714c9e' },
-	}).then((result) => {
+	it('try to FIND tasks of others', async () => {
+		const user = await testObjects.createTestUser({ roles: ['teacher'] });
+		const otherUser = await testObjects.createTestUser({ roles: ['teacher'] });
+		await testObjects.createTestHomework({
+			teacherId: otherUser._id,
+			name: 'Testaufgabe',
+			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
+			private: true,
+			archived: [otherUser._id],
+			lessonId: null,
+			courseId: null,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(user);
+		params.query = {
+			teacherId: otherUser._id,
+			private: true,
+		};
+		const result = await homeworkService.find(params);
+		expect(result.total).to.equal(0);
+	});
+
+	const setupHomeworkWithGrades = async () => {
+		const [teacher, studentOne, studentTwo] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'] }),
+			testObjects.createTestUser({ roles: ['student'] }),
+			testObjects.createTestUser({ roles: ['student'] }),
+		]);
+		const course = await testObjects.createTestCourse({
+			teacherIds: [teacher._id], userIds: [studentOne._id, studentTwo._id],
+		});
+		const homework = await testObjects.createTestHomework({
+			teacherId: teacher._id,
+			name: 'Testaufgabe',
+			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
+			private: false,
+			archived: [teacher._id],
+			lessonId: null,
+			courseId: course._id,
+		});
+		const submission = await testObjects.createTestSubmission({
+			schoolId: course.schoolId,
+			courseId: course._id,
+			homeworkId: homework._id,
+			studentId: studentOne._id,
+			comment: 'hello teacher, my dog has eaten this database entry...',
+			grade: 67,
+		});
+		return {
+			teacher, students: [studentOne, studentTwo], course, homework, submission,
+		};
+	};
+
+	it('contains statistics as a teacher', async () => {
+		const { homework, teacher } = await setupHomeworkWithGrades();
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = { _id: homework._id };
+		const result = await homeworkService.find(params);
+
 		expect(result.data[0].stats.userCount).to.equal(2);
 		expect(result.data[0].stats.submissionCount).to.equal(1);
 		expect(result.data[0].stats.submissionPercentage).to.equal('50.00');
@@ -75,21 +135,26 @@ describe('homework service', function test() {
 		expect(result.data[0].stats.averageGrade).to.equal('67.00');
 		// no grade as a teacher
 		expect(result.data[0].grade).to.equal(undefined);
-	}));
-	it('contains grade as a student', () => homeworkService.find({
-		query: { _id: '59d1f63ce0a06325e8b5288b' },
-		account: { userId: '0000d224816abba584714c9c' },
-	}).then((result) => {
-		expect(result.data[0].grade).to.not.equal('67.00');
+	});
+
+	it('contains grade as a student', async () => {
+		const { students, homework } = await setupHomeworkWithGrades();
+		const params = await testObjects.generateRequestParamsFromUser(students[0]);
+		params.query = { _id: homework._id };
+		const result = await homeworkService.find(params);
+		expect(result.data[0].grade).to.equal('67.00');
 		// no stats as a student
 		expect(result.data[0].stats).to.equal(undefined);
-	}));
-	it('contains statistics as students when publicSubmissions:true', () => homeworkService.find({
-		query: { _id: '59d1fae6395c8218f82cb914' },
-		account: { userId: '0000d224816abba584714c9c' },
-	}).then((result) => {
-		expect(result.data[0].grade).to.not.equal('67.00');
+	});
+
+	it('contains statistics as students when publicSubmissions:true', async () => {
+		const { students, homework } = await setupHomeworkWithGrades();
+		await app.service('homework').patch(homework._id, { publicSubmissions: true });
+		const params = await testObjects.generateRequestParamsFromUser(students[0]);
+		params.query = { _id: homework._id };
+		const result = await homeworkService.find(params);
+		expect(result.data[0].grade).to.equal('67.00');
 		// no stats as a student
 		expect(result.data[0].stats).to.not.equal(undefined);
-	}));
+	});
 });
