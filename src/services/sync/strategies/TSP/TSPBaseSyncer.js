@@ -63,10 +63,14 @@ class TSPBaseSyncer extends Syncer {
 
 		// Create/update all schools from the API and create/update a school-specific data source
 		const schools = await this.getSchools();
+		const tasks = [];
 		for (const { schuleNummer, schuleName } of schools) {
-			const school = await this.createOrUpdateSchool(schuleNummer, schuleName);
-			await this.ensureDatasourceExists(school);
+			tasks.push(async () => {
+				const school = await this.createOrUpdateSchool(schuleNummer, schuleName);
+				await this.ensureDatasourceExists(school);
+			});
 		}
+		await Promise.all(tasks.map((t) => t()));
 		return this.stats;
 	}
 
@@ -146,7 +150,7 @@ class TSPBaseSyncer extends Syncer {
 				message: 'Fehler bei der Synchronisierung der Schule.',
 			});
 		}
-		this.logInfo('Done.');
+		this.logInfo(`'${name}' (${identifier}) exists.`);
 		return result;
 	}
 
@@ -208,10 +212,13 @@ class TSPBaseSyncer extends Syncer {
 	}
 
 	async ensureDatasourceExists(school) {
+		const schoolName = `'${school.name}' (${school.sourceOptions.schoolIdentifier})`;
 		const existingDatasource = await this.findDatasource(school);
 		if (existingDatasource === null) {
+			this.logInfo(`There is no datasource for ${schoolName} yet. Creating it...`);
 			await this.createDatasource(school);
 		}
+		this.logInfo(`Datasource for ${schoolName} exists.`);
 	}
 
 	async findDatasource(school) {
