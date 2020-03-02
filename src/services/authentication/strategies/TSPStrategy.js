@@ -59,13 +59,22 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		}
 
 		// translate TSP roles into SC roles
-		let roles;
+		let roles = [];
 		if (decryptedTicket.ptscListRolle && typeof decryptedTicket.ptscListRolle === 'string') {
-			roles = decryptedTicket.ptscListRolle.split(',').map((tspRole) => ({
-				schueler: 'student',
-				lehrer: 'teacher',
-				admin: 'administrator',
-			}[tspRole.toLowerCase()])).filter((r) => r);
+			const roleList = decryptedTicket.ptscListRolle.split(',');
+			roles = roleList
+				.map((tspRole) => ({
+					schueler: 'student',
+					lehrer: 'teacher',
+					admin: 'administrator',
+				}[tspRole.toLowerCase()]))
+				.filter((role) => {
+					const validRole = role !== undefined;
+					if (!validRole) {
+						logger.warning(`Got invalid role(s) from TSP API: [${roleList}].`);
+					}
+					return validRole;
+				});
 		}
 
 		const { app } = this;
