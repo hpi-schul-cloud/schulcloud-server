@@ -4,8 +4,8 @@ const logger = require('../../../logger');
 
 // TODO: in default Schema eintragen
 const {
-	NEXBOARD_URL = 'https://nexboard.nexenio.com',
-	NEXBOARD_URI = '/portal/api/v1/public/',
+	NEXBOARD_URL = 'https://nexboard.nexenio.com/',
+	NEXBOARD_URI = 'portal/api/v1/public/',
 	NEXBOARD_API_KEY,
 	NEXBOARD_USER_ID,
 } = process.env;

@@ -12,13 +12,13 @@ function request({
 	method = 'get',
 	endpoint,
 	data,
-	token,
+	accessToken,
 }) {
 	return new Promise((resolve, reject) => (
 		chai.request(server)[method](endpoint)
 			.set({
 				Accept: 'application/json',
-				Authorization: `Bearer ${token}`,
+				Authorization: accessToken, // `Bearer ${token}`,
 				'Content-Type': 'application/x-www-form-urlencoded',
 			})
 			.send(data)
@@ -34,52 +34,31 @@ function request({
 
 describe('Nexboard services', () => {
 	let mockServer;
+	let server;
 	let token;
 	let app;
-	let userId;
 	let testHelpers;
 
 	before(async () => {
 		mockServer = await MockServer({});
 		process.env.NEXBOARD_MOCK_URL = mockServer.url;
-	});
-
-	before((done) => {
+		// eslint-disable-next-line global-require
 		app = require('../../../src/app');
-		app.listen(0, done);
+		server = app.listen(0);
+		testHelpers = testObjects(app);
+		console.log(app.get('NEXBOARD_MOCK_URL'));
 	});
 
-	before(async () => {
-		testHelpers = testObjects(testObjects);
-
-		const user = await testHelpers.createTestUser({ roles: ['teacher'] });
-		const schoolId = user.schoolId.toString();
-		userId = user._id.toString();
-		const fakeLoginParams = {
-			account: { userId },
-			authenticated: true,
-			provider: 'rest',
-			query: {},
-		};
-		/*
-		const getToken = async ({ userId = 'demo-schueler' }) => {
-			const result = await app.service('authentication').create({
-				strategy: 'local',
-				username: `${userId}@schul-cloud.org`,
-				password: 'Schulcloud1!', // TODO remove
-			}, {
-				'content-type': 'application/json',
-				provider: 'rest',
-			});
-			console.log(result);
-			return result.accessToken;
-		};
-		// token = await getAccessToken({ username: 'paula.meyer@schul-cloud.org', password: 'Schulcloud1!' });
-		token = await getToken({}); */
-		console.log(fakeLoginParams);
+	after(async () => {
+		mockServer.server.close(); // TODO not working atm
+		server.close();
 	});
 
 	it('should create a new project', async () => {
+		const {
+			requestParams: { authentication: { accessToken } },
+		} = await testHelpers.setupUser({ roles: ['teacher'] });
+
 		const data = { title: 'my title', description: 'abc' };
 
 		const { body } = await request({
@@ -87,7 +66,7 @@ describe('Nexboard services', () => {
 			method: 'post',
 			endpoint: '/nexboard/projects',
 			data,
-			token,
+			accessToken,
 		});
 
 		expect(body.title).to.equal(data.title);
@@ -189,9 +168,5 @@ describe('Nexboard services', () => {
 
 		expect(board).to.be.an('object');
 		expect(board.id).to.equal(id);
-	});
-
-	after((done) => {
-		mockServer.server.close(done); // TODO not working atm
 	});
 });
