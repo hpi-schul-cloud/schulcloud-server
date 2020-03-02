@@ -63,14 +63,23 @@ class TSPBaseSyncer extends Syncer {
 
 		// Create/update all schools from the API and create/update a school-specific data source
 		const schools = await this.getSchools();
-		const tasks = [];
-		for (const { schuleNummer, schuleName } of schools) {
-			tasks.push(async () => {
-				const school = await this.createOrUpdateSchool(schuleNummer, schuleName);
+		const tasks = schools.map(async ({ schuleNummer: identifier, schuleName: name }) => {
+			try {
+				const school = await this.createOrUpdateSchool(identifier, name);
 				await this.ensureDatasourceExists(school);
-			});
-		}
-		await Promise.all(tasks.map((t) => t()));
+				this.stats.schools.successful += 1;
+			} catch (err) {
+				this.logError(`Encountered an error while creating or updating '${name}' (${identifier}):`,
+					{ error: err });
+				this.stats.schools.errors += 1;
+				this.stats.errors.push({
+					type: 'sync-school',
+					entity: `'${name}' (${identifier})`,
+					message: 'Fehler bei der Synchronisierung der Schule.',
+				});
+			}
+		});
+		await Promise.all(tasks);
 		return this.stats;
 	}
 
@@ -130,25 +139,14 @@ class TSPBaseSyncer extends Syncer {
 	async createOrUpdateSchool(identifier, name) {
 		let result;
 		this.stats.schools.entities.push({ identifier, name });
-		try {
-			this.logInfo(`Finding school '${name}' (${identifier})...`);
-			const school = await findSchool(this.app, identifier);
-			if (school) {
-				this.logInfo(`Updating '${name}' (${identifier})...`);
-				result = await this.updateSchool(school, name);
-			} else {
-				this.logInfo(`School not found. Creating '${name}' (${identifier})...`);
-				result = await this.createSchool(identifier, name);
-			}
-			this.stats.schools.successful += 1;
-		} catch (err) {
-			this.logError(`Encountered an error while creating or updating '${name}' (${identifier}):`, err);
-			this.stats.schools.errors += 1;
-			this.stats.errors.push({
-				type: 'sync-school',
-				entity: `'${name}' (${identifier})`,
-				message: 'Fehler bei der Synchronisierung der Schule.',
-			});
+		this.logInfo(`Finding school '${name}' (${identifier})...`);
+		const school = await findSchool(this.app, identifier);
+		if (school) {
+			this.logInfo(`Updating '${name}' (${identifier})...`);
+			result = await this.updateSchool(school, name);
+		} else {
+			this.logInfo(`School not found. Creating '${name}' (${identifier})...`);
+			result = await this.createSchool(identifier, name);
 		}
 		this.logInfo(`'${name}' (${identifier}) exists.`);
 		return result;
