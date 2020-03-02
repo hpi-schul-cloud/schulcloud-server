@@ -414,8 +414,8 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				name: klass.klasseName,
 				schoolId: school._id,
 				year: school.currentYear,
-				teacherIds: [teacherMapping[klass.lehrerUid]],
-				userIds: classMapping[klass.klasseId],
+				teacherIds: [teacherMapping[klass.lehrerUid]] || [],
+				userIds: classMapping[klass.klasseId] || [],
 				source: ENTITY_SOURCE,
 				sourceOptions,
 			};
