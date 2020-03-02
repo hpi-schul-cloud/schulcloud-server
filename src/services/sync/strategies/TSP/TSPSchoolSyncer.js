@@ -403,7 +403,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @async
 	 */
 	createOrUpdateClasses(classes, school, teacherMapping, classMapping) {
-		return Promise.all(classes.map(async (klass) => {
+		return Promise.all(classes.map((klass) => {
 			const sourceOptions = {};
 			sourceOptions[SOURCE_ID_ATTRIBUTE] = klass.klasseId;
 			const query = {
@@ -420,7 +420,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				sourceOptions,
 			};
 			const onlyAddNew = this.config.lastChange !== undefined;
-			await this.createOrUpdateClass(options, query, onlyAddNew); // see ClassImporter mixin
+			return this.createOrUpdateClass(options, query, onlyAddNew); // see ClassImporter mixin
 		}));
 	}
 }
