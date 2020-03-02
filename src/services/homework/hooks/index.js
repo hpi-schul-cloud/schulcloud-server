@@ -116,7 +116,7 @@ const addStats = (hook) => {
 			// save grade in assignment if user is student of this task
 			const submission = submissions.data.filter((s) => (equalIds(c._id, s.homeworkId) && (s.grade)));
 			if (submission.length == 1 && !isTeacher(hook.params.account.userId, c)) {
-				c.grade = submission[0].grade;
+				c.grade = submission[0].grade.toFixed(2);
 			}
 
 			if (!c.private && (
