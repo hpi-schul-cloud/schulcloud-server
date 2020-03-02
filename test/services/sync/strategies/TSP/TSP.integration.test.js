@@ -2,11 +2,14 @@ const { expect } = require('chai');
 
 const app = require('../../../../../src/app');
 
-const testObjects = require('../../../helpers/testObjects')(app);
-const { create: createSchool } = require('../../../helpers/services/schools')(app);
-const { info: createdTestUsers } = require('../../../helpers/services/users')(app);
-const { info: createdAccounts } = require('../../../helpers/services/accounts')(app);
-const { create: createSystem } = require('../../../helpers/services/testSystem')(app);
+const {
+	cleanup,
+	createTestSchool: createSchool,
+	createTestSystem: createSystem,
+	info,
+} = require('../../../helpers/testObjects')(app);
+
+const { users: createdTestUsers, accounts: createdAccounts } = info();
 
 const { equal: equalIds } = require('../../../../../src/helper/compare').ObjectId;
 
@@ -39,7 +42,7 @@ describe('TSP API integration tests', () => {
 			expect(foundSchool).to.equal(null);
 		});
 
-		after(testObjects.cleanup);
+		after(cleanup);
 	});
 
 	describe('#createUserAndAccount', () => {
@@ -70,6 +73,6 @@ describe('TSP API integration tests', () => {
 			expect(account.activated).to.equal(true);
 		});
 
-		after(testObjects.cleanup);
+		after(cleanup);
 	});
 });
