@@ -26,6 +26,9 @@ class Nexboard {
 		this.apiKey = apiKey;
 		this.user = userID;
 		this.url = url + uri;
+
+		logger.info('Nextboard is set to=', this.url);
+
 		this.err = {
 			projectIds: 'Could not retrieve ProjectIds',
 			createProject: 'Could not create new Project',

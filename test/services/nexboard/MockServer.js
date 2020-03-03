@@ -9,25 +9,31 @@ const {
 } = process.env;
 
 module.exports = function MockServer({
-	nexUrl = NEXBOARD_URL, uri = NEXBOARD_URI, url, port, resolver,
+	nexUrl = NEXBOARD_URL,
+	uri = NEXBOARD_URI,
+	url,
+	port = 57832,
+	resolver,
 }) {
 	const app = express();
 	app.use(bodyParser.json()); // for parsing application/json
 	app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-	// app.port = port;
 	app.url = url;
 
 	const uris = {
-		url,
-		uri,
-		postProject: `${uri}projects`,
-		getProject: `${uri}projects/:id`,
-		findProject: `${uri}projects`,
-		postBoards: `${uri}boards`,
-		getProjectBoards: `${uri}projects/:projectId/boards`,
-		getBoard: `${uri}boards/:id`,
+		postProject: `/${uri}projects`,
+		getProject: `/${uri}projects/:id`,
+		findProject: `/${uri}projects`,
+		postBoards: `/${uri}boards`,
+		getProjectBoards: `/${uri}projects/:projectId/boards`,
+		getBoard: `/${uri}boards/:id`,
 	};
-	logger.info('Nexboard server is starting...', uris);
+
+	app.get('/ping', (req, res) => {
+		res.json({
+			pong: 'true',
+		});
+	});
 
 	app.post(uris.postProject, (req, res) => {
 		res.json({
@@ -107,7 +113,7 @@ module.exports = function MockServer({
 
 	const server = app.listen(port);
 	server.on('listening', () => {
-		logger.log('info', `Nexboard mock application started on http://${app.url}`);
+		logger.log('info', `Nexboard mock application started on http://${app.url}`, uris);
 		if (resolver) {
 			resolver();
 		}
