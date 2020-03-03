@@ -50,4 +50,8 @@ describe('homework share service', () => {
 		expect(res.shareToken).to.not.be.undefined;
 		expect(typeof res.shareToken).to.eq('string');
 	});
+
+	it('user can use his own sharetoken');
+	it('user on the same school can use sharetoken');
+	it('user on different school can use sharetoken');
 });
