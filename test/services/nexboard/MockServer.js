@@ -11,8 +11,7 @@ const {
 module.exports = function MockServer({
 	nexUrl = NEXBOARD_URL,
 	uri = NEXBOARD_URI,
-	url,
-	port = 57832,
+	url = 'localhost:58372',
 	resolver,
 }) {
 	const app = express();

@@ -1,8 +1,5 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-// const { promisify } = require('es6-promisify');
-
-// const freeport = promisify(require('freeport'));
 const freeport = require('freeport');
 
 const logger = require('../../../src/logger');
@@ -24,7 +21,7 @@ function request({
 		chai.request(server)[method](endpoint)
 			.set({
 				Accept: 'application/json',
-				Authorization: accessToken, // `Bearer ${token}`,
+				Authorization: accessToken,
 				'Content-Type': 'application/x-www-form-urlencoded',
 			})
 			.send(data)
@@ -43,6 +40,7 @@ describe('Nexboard services', () => {
 	let server;
 	let app;
 	let testHelpers;
+	let memoryUrl;
 
 	before((done) => {
 		freeport((err, port) => {
@@ -56,6 +54,8 @@ describe('Nexboard services', () => {
 			testHelpers = testObjects(app);
 
 			const mockUrl = `localhost:${port}/`;
+			// TODO: app.Config.data.NEXBOARD_MOCK_URL;
+			memoryUrl = process.env.NEXBOARD_MOCK_URL;
 			process.env.NEXBOARD_MOCK_URL = `http://${mockUrl}`;
 			logger.info('set process.env.NEXBOARD_MOCK_URL', {
 				NEXBOARD_MOCK_URL: process.env.NEXBOARD_MOCK_URL,
@@ -70,11 +70,11 @@ describe('Nexboard services', () => {
 	});
 
 	after(async () => {
-		process.env.NEXBOARD_MOCK_URL = undefined;
+		process.env.NEXBOARD_MOCK_URL = memoryUrl;
 		logger.info('set process.env.NEXBOARD_MOCK_URL', {
 			NEXBOARD_MOCK_URL: process.env.NEXBOARD_MOCK_URL,
 		});
-		await mockServer.close(); // TODO not working atm
+		await mockServer.close();
 		await server.close();
 	});
 

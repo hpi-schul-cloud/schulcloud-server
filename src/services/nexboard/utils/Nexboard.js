@@ -2,7 +2,7 @@ const rp = require('request-promise-native');
 const { BadRequest } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 
-// TODO: in default Schema eintragen
+// TODO: use config
 const {
 	NEXBOARD_URL = 'https://nexboard.nexenio.com/',
 	NEXBOARD_URI = 'portal/api/v1/public/',

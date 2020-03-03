@@ -86,6 +86,33 @@
 			"default":"http://localhost:3100",
 			"pattern":".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
+		},
+		"NEXBOARD_URL": {
+			"type": "string",
+			"format": "uri",
+			"default":"https://nexboard.nexenio.com/",
+			"pattern":".*(?<!/)$",
+			"description": "The nexboard url."
+		},
+		"NEXBOARD_URI": {
+			"type": "string",
+			"default":"portal/api/v1/public/",
+			"description": "The nexboard api version uri."
+		},
+		"NEXBOARD_API_KEY": {
+			"type": "string",
+			"default":"99999",
+			"description": "The nexboard api key for sending requests."
+		},
+		"NEXBOARD_USER_ID": {
+			"type": "string",
+			"default":"99999",
+			"description": "The nexboard 'schul-cloud' userId."
+		},
+		"NEXBOARD_MOCK_URL": {
+			"type": "string",
+			"default":"localhost:58372",
+			"description": "The nexboard mock server url that is primary use for tests and local."
 		}
 	},
 	"required": [
