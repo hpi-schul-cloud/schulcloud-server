@@ -36,14 +36,32 @@ describe('homework service', function test() {
 				expect(result.name).to.equal('Testaufgabe');
 			});
 	});
-	it('DELETE task', () => homeworkService.find({
-		query: { name: 'Testaufgabe' },
-		account: { userId: '0000d231816abba584714c9e' },
-	}).then((result) => {
-		expect(result.data.length).to.be.above(0);
-		return homeworkService.remove(result.data[0]._id)
-			.then(() => true);
-	}));
+
+	it('DELETE task', async () => {
+		const user = await testObjects.createTestUser({ roles: ['teacher'] });
+		const homework = await testObjects.createTestHomework({
+			teacherId: user._id,
+			name: 'Testaufgabe',
+			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
+			private: true,
+			archived: [user._id],
+			lessonId: null,
+			courseId: null,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(user);
+		params.query = {};
+		const result = await homeworkService.remove(homework._id, params);
+		expect(result).to.not.be.undefined;
+		try {
+			await homeworkService.get(homework._id);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.eq(404);
+		}
+	});
 
 	it('FIND only my own tasks', async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });
