@@ -43,11 +43,12 @@ const setIdToken = (hook) => {
 		},
 	}).then((pseudonyms) => {
 		const { pseudonym } = pseudonyms.data[0];
+		const name = (user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`);
 		hook.data.session = {
 			id_token: {
 				iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
 				email: (tools.data[0].privacy_permission === 'e-mail' ? user.email : undefined),
-				name: (tools.data[0].privacy_permission === 'name' ? `${user.firstName} ${user.lastName}` : undefined),
+				name: (tools.data[0].privacy_permission === 'name' ? name : undefined),
 			},
 		};
 		return hook;
