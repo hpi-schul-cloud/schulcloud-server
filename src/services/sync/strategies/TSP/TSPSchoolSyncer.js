@@ -7,9 +7,8 @@ const {
 	TspApi,
 	config: TSP_CONFIG,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
-	getUsername, getEmail,
+	createUserAndAccount,
 } = require('./TSP');
-const accountModel = require('../../../account/model');
 
 const SYNCER_TARGET = 'tsp-school';
 
@@ -33,7 +32,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * `params.query` or `data` can optionally contain a config object with:
 	 * `{
 	 * 		schoolIdentifier: '4738' // a TSP school id (filter)
-	 * 		systemId: ObjectId(...)  // a Schul-Cloud system (filter)
+	 * 		lastChange: 159274672 // Unix timestamp to be relayed to the TSP API as lastChange
 	 * 	}`
 	 * @extends Syncer#params
 	 */
@@ -55,12 +54,41 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				students: { created: 0, updated: 0, errors: 0 },
 			},
 		});
-		this.config = config || {};
+		this.config = this.normalizeConfig(config);
+
 		this.api = new TspApi();
 
 		// caches for currentYear and federalState as they need async initialization
 		this.currentYear = undefined;
 		this.federalState = undefined;
+	}
+
+	/**
+	 * Ensures config parameters have the right format if they are present.
+	 * @param {Object} [config] [optional] config as object
+	 * @returns {Object} normalized config
+	 */
+	normalizeConfig(config = {}) {
+		const normalized = config;
+		if (config.schoolIdentifier) {
+			const type = typeof config.schoolIdentifier;
+			if (type === 'string') {
+				normalized.schoolIdentifier = config.schoolIdentifier;
+			} else {
+				this.logWarning(`Converting '${type}' value for 'schoolIdentifier' to string.`);
+				normalized.schoolIdentifier = String(config.schoolIdentifier);
+			}
+		}
+		if (config.lastChange) {
+			const type = typeof config.lastChange;
+			if (type === 'number' || config.lastChange instanceof Date) {
+				normalized.lastChange = config.lastChange;
+			} else {
+				this.logWarning(`Invalid data type for 'lastChange'. Expected 'number' or 'Date', but got '${type}'.`);
+			}
+		}
+		this.logDebug('Normalized config', { config: normalized });
+		return normalized;
 	}
 
 	/**
@@ -175,7 +203,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		};
 		let result = [];
 		try {
-			result = await this.api.request(strings[type].url);
+			result = await this.api.request(strings[type].url, this.config.lastChange);
 		} catch (err) {
 			this.logError(`Cannot fetch ${type}.`, err);
 			// generate a nice user-facing error
@@ -249,15 +277,19 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		try {
 			const sourceOptions = {};
 			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspTeacher.lehrerUid;
-			const teacher = await this.createUserAndAccount({
-				namePrefix: tspTeacher.lehrerTitel,
-				firstName: tspTeacher.lehrerVorname,
-				lastName: tspTeacher.lehrerNachname,
-				schoolId: school._id,
-				source: ENTITY_SOURCE,
-				sourceOptions,
-			},
-			'teacher', systemId);
+			const teacher = await createUserAndAccount(
+				this.app,
+				{
+					namePrefix: tspTeacher.lehrerTitel,
+					firstName: tspTeacher.lehrerVorname,
+					lastName: tspTeacher.lehrerNachname,
+					schoolId: school._id,
+					source: ENTITY_SOURCE,
+					sourceOptions,
+				},
+				'teacher',
+				systemId,
+			);
 			this.stats.users.teachers.created += 1;
 			return teacher;
 		} catch (err) {
@@ -334,14 +366,18 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		try {
 			const sourceOptions = {};
 			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspStudent.schuelerUid;
-			const student = await this.createUserAndAccount({
-				firstName: tspStudent.schuelerVorname,
-				lastName: tspStudent.schuelerNachname,
-				schoolId: school._id,
-				source: ENTITY_SOURCE,
-				sourceOptions,
-			},
-			'student', systemId);
+			const student = await createUserAndAccount(
+				this.app,
+				{
+					firstName: tspStudent.schuelerVorname,
+					lastName: tspStudent.schuelerNachname,
+					schoolId: school._id,
+					source: ENTITY_SOURCE,
+					sourceOptions,
+				},
+				'student',
+				systemId,
+			);
 			this.stats.users.students.created += 1;
 			return student;
 		} catch (err) {
@@ -358,37 +394,6 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	/**
-	 * Registers a user and creates an account
-	 * @param {Object} userOptions options to be provided to the user service
-	 * @param {Array<String>} roles the user's roles
-	 * @param {System} systemId the user's login system
-	 * @returns {User} the user object
-	 * @async
-	 */
-	async createUserAndAccount(userOptions, roles, systemId) {
-		const username = getUsername(userOptions);
-		const email = getEmail(userOptions);
-		const { pin } = await this.app.service('registrationPins').create({
-			email,
-			verified: true,
-			silent: true,
-		});
-		const user = await this.app.service('users').create({
-			...userOptions,
-			pin,
-			email,
-			roles,
-		});
-		await accountModel.create({
-			userId: user._id,
-			username,
-			systemId,
-			activated: true,
-		});
-		return user;
-	}
-
-	/**
 	 * Creates classes based on TSP API response
 	 * @param {*} classes list of TSP class objects
 	 * @param {*} school school
@@ -398,7 +403,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @async
 	 */
 	createOrUpdateClasses(classes, school, teacherMapping, classMapping) {
-		return Promise.all(classes.map(async (klass) => {
+		return Promise.all(classes.map((klass) => {
 			const sourceOptions = {};
 			sourceOptions[SOURCE_ID_ATTRIBUTE] = klass.klasseId;
 			const query = {
@@ -414,7 +419,8 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				source: ENTITY_SOURCE,
 				sourceOptions,
 			};
-			await this.createOrUpdateClass(options, query); // see ClassImporter mixin
+			const onlyAddNew = this.config.lastChange !== undefined;
+			return this.createOrUpdateClass(options, query, onlyAddNew); // see ClassImporter mixin
 		}));
 	}
 }
