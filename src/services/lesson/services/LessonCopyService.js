@@ -46,18 +46,7 @@ class LessonCopyService {
 		this.app = app;
 	}
 
-	testIfHomeworkShouldCopy(homework, userId) {
-		const isArchived = homework.archived.length > 0;
-		const isNotTeacher = homework.teacherId.toString() !== userId;
-		const isPrivate = homework.private;
-		return isArchived || (isNotTeacher && isPrivate);
-	}
-
 	createHomeworkCopyTask(homework, userId, newCourseId, newLesson) {
-		if (this.testIfHomeworkShouldCopy(homework, userId)) {
-			return false;
-		}
-
 		return this.app.service('homework/copy').create({
 			_id: homework._id,
 			courseId: newCourseId,
@@ -69,7 +58,7 @@ class LessonCopyService {
 
 	async copyHomeworks(params, { _id: oldLessonId }, newCourseId, newLesson) {
 		const userId = params.account.userId.toString();
-		const homeworks = await homeworkModel.find({ oldLessonId })
+		const homeworks = await homeworkModel.find({ lessonId: oldLessonId })
 			.lean()
 			.exec()
 			.catch((err) => {
