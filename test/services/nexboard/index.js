@@ -5,6 +5,7 @@ const chaiHttp = require('chai-http');
 // const freeport = promisify(require('freeport'));
 const freeport = require('freeport');
 
+const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
 const testObjects = require('../helpers/testObjects');
 
@@ -46,17 +47,21 @@ describe('Nexboard services', () => {
 
 	before((done) => {
 		freeport((err, port) => {
-			const wait = new Promise();
-			({ server: mockServer } = MockServer(port, wait));
-			process.env.NEXBOARD_MOCK_URL = mockServer.url;
+			if (err) {
+				logger.warning('freeport:', err);
+			}
+			const mockUrl = `http://localhost:${port}/`;
+			process.env.NEXBOARD_MOCK_URL = mockUrl;
+
 			// eslint-disable-next-line global-require
 			app = require('../../../src/app');
 			server = app.listen(0);
 			testHelpers = testObjects(app);
-			Promise.all([wait], () => {
-				// wait for mockServer is running and all code before is executed
-				done();
-			});
+
+			({ server: mockServer } = MockServer({
+				resolver: done,
+				url: mockUrl,
+			}));
 		});
 	});
 

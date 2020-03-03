@@ -1,7 +1,5 @@
 const express = require('express');
-const { promisify } = require('es6-promisify');
 const bodyParser = require('body-parser');
-const freeport = promisify(require('freeport'));
 const logger = require('../../../src/logger');
 
 // TODO: use config
@@ -10,17 +8,13 @@ const {
 	NEXBOARD_URI = 'portal/api/v1/public/',
 } = process.env;
 
-module.exports = function MockServer(port = 1, resolver) {
-	// const findFreePort = port ? Promise.resolve(port) : freeport();
-
-	// const freePort = port; // await findFreePort;
-
+module.exports = function MockServer({
+	nexUrl = NEXBOARD_URL, uri = NEXBOARD_URI, url, port, resolver,
+}) {
 	const app = express();
 	app.use(bodyParser.json()); // for parsing application/json
 	app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-	app.port = port;
-	const url = `http://localhost:${app.port}/`;
-	const uri = NEXBOARD_URI;
+	// app.port = port;
 	app.url = url;
 
 	const uris = {
@@ -67,9 +61,9 @@ module.exports = function MockServer(port = 1, resolver) {
 			description: req.body.description || 'Ein digitales Whiteboard',
 			projectId: req.body.projectId || null,
 			isTemplate: false,
-			publicLink: `${NEXBOARD_URL}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
-			preview: `${NEXBOARD_URL}/screenshots/14212?date=1555423972&width=300&height=210`,
-			image: `${NEXBOARD_URL}/screenshots/14212?date=1555423972&width=1900&height=1200`,
+			publicLink: `${nexUrl}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
+			preview: `${nexUrl}/screenshots/14212?date=1555423972&width=300&height=210`,
+			image: `${nexUrl}/screenshots/14212?date=1555423972&width=1900&height=1200`,
 		});
 	});
 
@@ -87,9 +81,9 @@ module.exports = function MockServer(port = 1, resolver) {
 			isTemplate: false,
 			meta: null,
 			isPublic: false,
-			publicLink: `${NEXBOARD_URL}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
-			preview: `${NEXBOARD_URL}/screenshots/14212?date=1555424066&width=300&height=210`,
-			image: `${NEXBOARD_URL}/screenshots/14212?date=1555424066&width=1900&height=1200`,
+			publicLink: `${nexUrl}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
+			preview: `${nexUrl}/screenshots/14212?date=1555424066&width=300&height=210`,
+			image: `${nexUrl}/screenshots/14212?date=1555424066&width=1900&height=1200`,
 		}]);
 	});
 
@@ -105,16 +99,18 @@ module.exports = function MockServer(port = 1, resolver) {
 			isTemplate: false,
 			meta: null,
 			isPublic: false,
-			publicLink: `${NEXBOARD_URL}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
-			preview: `${NEXBOARD_URL}/screenshots/14212?date=1555424066&width=300&height=210`,
-			image: `${NEXBOARD_URL}/screenshots/14212?date=1555424066&width=1900&height=1200`,
+			publicLink: `${nexUrl}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
+			preview: `${nexUrl}/screenshots/14212?date=1555424066&width=300&height=210`,
+			image: `${nexUrl}/screenshots/14212?date=1555424066&width=1900&height=1200`,
 		});
 	});
 
 	const server = app.listen(port);
 	server.on('listening', () => {
 		logger.log('info', `Nexboard mock application started on http://${app.url}`);
-		resolver.resolve();
+		if (resolver) {
+			resolver();
+		}
 	});
 	return {
 		server, app, port, uris,
