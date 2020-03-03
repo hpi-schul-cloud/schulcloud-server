@@ -23,6 +23,8 @@ const create = (app) => async ({
 	features = [],
 	customYears = [],
 	inMaintenanceSince = undefined,
+	source = undefined,
+	sourceOptions = undefined,
 } = {}) => {
 	if (systems && systems.length === 0) {
 		const localSystem = (await app.service('systems').find({ query: { type: 'local' }, paginate: false }))[0];
@@ -49,6 +51,8 @@ const create = (app) => async ({
 		rssFeeds,
 		features,
 		inMaintenanceSince,
+		source,
+		sourceOptions,
 	});
 	createdSchoolIds.push(school._id);
 	return school;
