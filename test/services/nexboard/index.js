@@ -1,5 +1,10 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+// const { promisify } = require('es6-promisify');
+
+// const freeport = promisify(require('freeport'));
+const freeport = require('freeport');
+
 const MockServer = require('./MockServer');
 const testObjects = require('../helpers/testObjects');
 
@@ -39,19 +44,25 @@ describe('Nexboard services', () => {
 	let app;
 	let testHelpers;
 
-	before(async () => {
-		mockServer = await MockServer({});
-		process.env.NEXBOARD_MOCK_URL = mockServer.url;
-		// eslint-disable-next-line global-require
-		app = require('../../../src/app');
-		server = app.listen(0);
-		testHelpers = testObjects(app);
-		console.log(app.get('NEXBOARD_MOCK_URL'));
+	before((done) => {
+		freeport((err, port) => {
+			const wait = new Promise();
+			({ server: mockServer } = MockServer(port, wait));
+			process.env.NEXBOARD_MOCK_URL = mockServer.url;
+			// eslint-disable-next-line global-require
+			app = require('../../../src/app');
+			server = app.listen(0);
+			testHelpers = testObjects(app);
+			Promise.all([wait], () => {
+				// wait for mockServer is running and all code before is executed
+				done();
+			});
+		});
 	});
 
 	after(async () => {
-		mockServer.server.close(); // TODO not working atm
-		server.close();
+		await mockServer.close(); // TODO not working atm
+		await server.close();
 	});
 
 	it('should create a new project', async () => {

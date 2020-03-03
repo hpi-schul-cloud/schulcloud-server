@@ -26,6 +26,13 @@ class Nexboard {
 		this.apiKey = apiKey;
 		this.user = userID;
 		this.url = url + uri;
+		this.err = {
+			projectIds: 'Could not retrieve ProjectIds',
+			createProject: 'Could not create new Project',
+			retrieveBoardsFromProject: 'Could not retrieve Boards from Project',
+			retrieveBoards: 'Could not retrieve Board',
+			createBoard: 'Could not create a new Board',
+		};
 	}
 
 	createSettings({
@@ -54,9 +61,7 @@ class Nexboard {
 		return rp(this.createSettings({ endpoint: 'projects' }))
 			.then((res) => res.map((e) => e.id))
 			.catch((err) => {
-				throw new BadRequest(
-					`Could not retrieve ProjectIds - ${err.error.msg}`,
-				);
+				throw new BadRequest(this.err.projectIds, err);
 			});
 	}
 
@@ -70,7 +75,7 @@ class Nexboard {
 			},
 		}))
 			.catch((err) => {
-				throw new BadRequest(`Could not create new Project - ${err.error.msg}`);
+				throw new BadRequest(this.err.createProject, err);
 			});
 	}
 
@@ -79,7 +84,7 @@ class Nexboard {
 			endpoint: `projects/${project}/boards`,
 		}))
 			.catch((err) => {
-				throw new BadRequest(`Could not retrieve Boards from Project - ${err.error.msg}`);
+				throw new BadRequest(this.err.retrieveBoardsFromProject, err);
 			});
 	}
 
@@ -88,7 +93,7 @@ class Nexboard {
 			endpoint: `boards/${boardId}`,
 		}))
 			.catch((err) => {
-				throw new BadRequest(`Could not retrieve Board - ${err.error.msg}`);
+				throw new BadRequest(this.err.retrieveBoards, err);
 			});
 	}
 
@@ -107,7 +112,7 @@ class Nexboard {
 			},
 		}))
 			.catch((err) => {
-				throw new BadRequest(`Could not create a new Board - ${err.error.msg}`);
+				throw new BadRequest(this.err.createBoard, err);
 			});
 	}
 }
