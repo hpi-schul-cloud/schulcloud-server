@@ -13,8 +13,6 @@ const ES_GRANT_TYPE = Config.get('ES_GRANT_TYPE');
 const ES_OAUTH_SECRET = Config.get('ES_OAUTH_SECRET');
 const ES_CLIENT_ID = Config.get('ES_CLIENT_ID');
 
-console.table([ES_DOMAIN, ES_USER, ES_PASSWORD, ES_GRANT_TYPE, ES_OAUTH_SECRET, ES_CLIENT_ID]);
-
 // STACKOVERFLOW BEAUTY
 const validURL = (str) => {
 	const pattern = new RegExp(
@@ -71,8 +69,6 @@ class EduSharingConnector {
 		};
 		return request(cookieOptions)
 			.then((result) => {
-				console.log(result, 'res');
-
 				if (
 					result.statusCode !== 200
 					|| result.body.isValidLogin !== true
@@ -135,7 +131,6 @@ class EduSharingConnector {
 	}
 
 	async GET(data) {
-		console.log('get!!!!');
 		const contentType = data.query.contentType || 'ALL'; // enum:[FILES,FILES_AND_FOLDERS,COLLECTIONS,ALL]
 		const skipCount = data.query.from || 0;
 		const maxItems = data.query.count || 9;
@@ -176,6 +171,7 @@ class EduSharingConnector {
 		try {
 			eduResponse = await request(options);
 		} catch (e) {
+			// eslint-disable-next-line no-console
 			console.error('error: ', e);
 		}
 
@@ -223,7 +219,6 @@ class EduSharingConnector {
 		/* if (Object.values(filterOptions).length) {
 			parsed = filterResult(parsed, filterOptions);
 		} */
-		console.log(parsed, 'parsed ');
 		return parsed;
 	}
 

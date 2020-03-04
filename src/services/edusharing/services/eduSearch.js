@@ -9,7 +9,6 @@ class EduSearch {
 }
 
 module.exports = (app) => {
-	console.log('hello');
 	if (app.Config.get('FEATURE_EDUSHARING_ENABLED') === true) {
 		const eduRoute = '/edu-sharing';
 		app.use(eduRoute, new EduSearch(), (req, res) => {
@@ -18,7 +17,6 @@ module.exports = (app) => {
 		const eduService = app.service('/edu-sharing');
 		eduService.hooks(hooks);
 	} else {
-		console.error('oops');
 		logger.debug('Feature edusharing is not enabled');
 	}
 };
