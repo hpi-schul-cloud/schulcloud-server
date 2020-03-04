@@ -224,12 +224,10 @@ exports.before = () => ({
 exports.after = {
 	all: [],
 	find: [
-		iff(isProvider('external'), hasViewPermissionAfter),
-		addStats,
+		iff(isProvider('external'), [hasViewPermissionAfter, addStats]),
 	],
 	get: [
-		iff(isProvider('external'), hasViewPermissionAfter),
-		addStats,
+		iff(isProvider('external'), [hasViewPermissionAfter, addStats]),
 	],
 	create: [],
 	update: [],
