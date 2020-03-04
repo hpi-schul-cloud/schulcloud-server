@@ -46,16 +46,9 @@ class WebUntisBaseSyncer extends Syncer {
 		super(app, stats, logger);
 		this.data = data;
 
-		this.account = account;
-
-		Object.assign(this.stats, {
-			systems: {},
-		});
-
 		// Save configuration
 		this.clientId = 'schulcloud';
 		this.session = {};
-		// this.dryrun = dryrun;
 	}
 
 
