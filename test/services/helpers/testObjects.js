@@ -26,6 +26,7 @@ module.exports = (app, opt = {
 		datasources,
 		homeworks,
 		submissions,
+		lessons,
 	} = serviceHelpers(app, opt);
 
 	const cleanup = () => Promise.all([]
@@ -42,6 +43,7 @@ module.exports = (app, opt = {
 		.concat(years.cleanup())
 		.concat(datasources.cleanup())
 		.concat(submissions.cleanup())
+		.concat(lessons.cleanup())
 		.concat(homeworks.cleanup()))
 		.then((res) => {
 			logger.info('[TestObjects] cleanup data.');
@@ -66,6 +68,7 @@ module.exports = (app, opt = {
 		datasources: datasources.info,
 		homeworks: homeworks.info,
 		submissions: submissions.info,
+		lessons: lessons.info,
 	});
 
 	const createTestTeamWithOwner = async () => {
@@ -106,6 +109,7 @@ module.exports = (app, opt = {
 		createTestDatasource: datasources.create,
 		createTestHomework: homeworks.create,
 		createTestSubmission: submissions.create,
+		createTestLesson: lessons.create,
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
