@@ -9,6 +9,16 @@ class WebUntisSyncer extends Syncer {
 	* @param {*} stats
 	* @param {*} logger
 	* @param {*} data
+	*
+	* Current data structure: {
+	*	datasourceId: associated SchuldCloud data source id,
+	*	username: Username for the user to access WebUntis,
+	*	password: Password for the user to access WebUntis,
+	*	url: URL of the WebUntis endpoint,
+	*	datatype: 'inclusive' or 'exclusive', depending on the intended semantics for courseMetadataIds
+	*	courseMetadataIds: list of metadata IDs to consider for inclusion/rejection
+	*	dryrun: collect metadata instead of synching
+	* }
 	*/
 	constructor(app, stats, logger, data) {
 		super(app, stats, logger);
