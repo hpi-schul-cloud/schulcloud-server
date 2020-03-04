@@ -10,8 +10,8 @@ const { copyFile } = require('../src/services/fileStorage/utils/');
 const DETAIL_LOGS = true;
 const EXECUTE_FIX = true;
 
-const isUndefined = e => typeof e === 'undefined';
-const isTextContent = content => content.component === 'text' && content.content.text;
+const isUndefined = (e) => typeof e === 'undefined';
+const isTextContent = (content) => content.component === 'text' && content.content.text;
 
 const createDataTree = (courses = []) => {
 	const map = {};
@@ -117,7 +117,7 @@ const addCourseGroupLessons = (datatree, courseGroupdLessons) => {
 	return datatree;
 };
 
-const filterCourseFiles = files => files.filter(f => f.refOwnerModel === 'course');
+const filterCourseFiles = (files) => files.filter((f) => f.refOwnerModel === 'course');
 
 const extracFileIdsFromContents = (contents, courseId, lessonId) => {
 	let list = [];
@@ -168,7 +168,7 @@ const extractAndAddFile = (datatree) => {
 };
 
 const detectNotExistingFiles = (datatree, files) => {
-	const fileIds = files.map(f => f._id.toString());
+	const fileIds = files.map((f) => f._id.toString());
 	const notExists = [];
 	// test via include all files in datatree
 	Object.keys(datatree).forEach((courseId) => {
@@ -238,8 +238,8 @@ const foundMissingFiles = (datatree, collectionFiles) => {
 
 		filesShouldExist.forEach((shouldExist) => {
 			const id = shouldExist._id;
-			if (!filesThatExist.some(f => f._id.toString() === id)) {
-				const sourceFile = collectionFiles.filter(f => f._id.toString() === id)[0];
+			if (!filesThatExist.some((f) => f._id.toString() === id)) {
+				const sourceFile = collectionFiles.filter((f) => f._id.toString() === id)[0];
 				if (sourceFile === undefined) {
 					notExistingSourceFiles.push({ shouldExist, error: 'Source file do not exist.' });
 				} else {

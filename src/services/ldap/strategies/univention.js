@@ -1,6 +1,7 @@
 const request = require('request-promise-native');
 
 const AbstractLDAPStrategy = require('./interface.js');
+const { REQUEST_TIMEOUT } = require('../../../../config/globals');
 
 /**
  * Univention-specific LDAP functionality
@@ -218,7 +219,6 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 		const username = this.config.importUser || process.env.NBC_IMPORTUSER;
 		const password = this.config.importUserPassword || process.env.NBC_IMPORTPASSWORD;
 		const auth = `Basic ${new Buffer(`${username}:${password}`).toString('base64')}`;
-		const REQUEST_TIMEOUT = 8000;
 
 		const options = {
 			headers: {

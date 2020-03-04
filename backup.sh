@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DEFAULT_DB="schulcloud"
-DEFAULT_HOST="localhost:27017"
+DEFAULT_HOST="127.0.0.1:27017"
 DEFAULT_PATH="backup/"
 
 usage()
@@ -52,7 +52,7 @@ while getopts "hp:c:U:P:H:D:ab" opt; do
             ;;
 
 		H)
-            HOST="$OPTARG"
+            DB_HOST="$OPTARG"
             ;;
 
         D)
@@ -92,8 +92,8 @@ if [ -z "$DB" ]; then
     DB="$DEFAULT_DB"
 fi
 
-if [ -z "$HOST" ]; then
-    HOST="$DEFAULT_HOST"
+if [ -z "$DB_HOST" ]; then
+    DB_HOST="$DEFAULT_HOST"
 fi
 
 if [ -z "$BACKUP_PATH_PREFIX" ]; then
@@ -123,7 +123,7 @@ fi
 
 # Make connection
 
-CONN="$HOST/$DB"
+CONN="$DB_HOST/$DB"
 
 if [ "$ACTION" = "export" ]; then
 
@@ -138,7 +138,7 @@ if [ "$ACTION" = "export" ]; then
 
 	for collection in $DATABASE_COLLECTIONS; do
 		echo "Exporting $DB/$collection into $collection.json"
-		mongoexport --host $HOST $CREDENTIALS --db $DB --collection $collection --out $collection.json $STYLE >/dev/null
+		mongoexport --host $DB_HOST $CREDENTIALS --db $DB --collection $collection --out $collection.json $STYLE >/dev/null
 	done
 
 elif [ "$ACTION" = "import" ]; then
@@ -164,9 +164,9 @@ elif [ "$ACTION" = "import" ]; then
 
 		if [ "$PASSWORD" == "" ];
 		then
-			mongoimport --host $HOST --db $DB --collection $collection $path $STYLE $ARRAY --drop
+			mongoimport --host $DB_HOST --db $DB --collection $collection $path $STYLE $ARRAY --drop
 		else
-			mongoimport --host $HOST $CREDENTIALS --db $DB --collection $collection $path $STYLE $ARRAY --drop
+			mongoimport --host $DB_HOST $CREDENTIALS --db $DB --collection $collection $path $STYLE $ARRAY --drop
 		fi
 	done
 

@@ -1,5 +1,19 @@
 const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
+const { Configuration } = require('@schul-cloud/commons');
+
+const Config = new Configuration();
+Config.init();
+
+// config envs
+const ES_DOMAIN = Config.get('ES_DOMAIN');
+const ES_USER = Config.get('ES_USER');
+const ES_PASSWORD = Config.get('ES_PASSWORD');
+const ES_GRANT_TYPE = Config.get('ES_GRANT_TYPE');
+const ES_OAUTH_SECRET = Config.get('ES_OAUTH_SECRET');
+const ES_CLIENT_ID = Config.get('ES_CLIENT_ID');
+
+console.table([ES_DOMAIN, ES_USER, ES_PASSWORD, ES_GRANT_TYPE, ES_OAUTH_SECRET, ES_CLIENT_ID]);
 
 // STACKOVERFLOW BEAUTY
 const validURL = (str) => {
@@ -36,11 +50,9 @@ class EduSharingConnector {
 	}
 
 	static get authorization() {
-		const userName = process.env.ES_USER; // Set to new config function?
-		const pw = process.env.ES_PASSWORD;
 		const headers = {
 			...EduSharingConnector.headers,
-			Authorization: `Basic ${Buffer.from(`${userName}:${pw}`).toString(
+			Authorization: `Basic ${Buffer.from(`${ES_USER}:${ES_PASSWORD}`).toString(
 				'base64',
 			)}`,
 		};
@@ -51,7 +63,7 @@ class EduSharingConnector {
 	// gets cookie (JSESSION) and attach it to header
 	getCookie() {
 		const cookieOptions = {
-			uri: `${process.env.ES_DOMAIN}/edu-sharing/rest/authentication/v1/validateSession`,
+			uri: `${ES_DOMAIN}/edu-sharing/rest/authentication/v1/validateSession`,
 			method: 'GET',
 			headers: EduSharingConnector.authorization,
 			resolveWithFullResponse: true,
@@ -59,6 +71,8 @@ class EduSharingConnector {
 		};
 		return request(cookieOptions)
 			.then((result) => {
+				console.log(result, 'res');
+
 				if (
 					result.statusCode !== 200
 					|| result.body.isValidLogin !== true
@@ -77,15 +91,15 @@ class EduSharingConnector {
 	getAuth() {
 		const oauthoptions = {
 			method: 'POST',
-			url: `${process.env.ES_DOMAIN}/edu-sharing/oauth2/token`,
+			url: `${ES_DOMAIN}/edu-sharing/oauth2/token`,
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 
 			// eslint-disable-next-line max-len
-			body: `grant_type=${'password'}&client_id=${
-				process.env.ES_CLIENT_ID
-			}&client_secret=${process.env.ES_OAUTH_SECRET}&username=${
-				process.env.ES_USER
-			}&password=${process.env.ES_PASSWORD}`,
+			body: `grant_type=${ES_GRANT_TYPE}&client_id=${
+				ES_CLIENT_ID
+			}&client_secret=${ES_OAUTH_SECRET}&username=${
+				ES_USER
+			}&password=${ES_PASSWORD}`,
 			timeout: REQUEST_TIMEOUT,
 		};
 		return request(oauthoptions).then((result) => {
@@ -101,12 +115,12 @@ class EduSharingConnector {
 
 	checkEnv() {
 		return (
-			process.env.ES_DOMAIN
-			&& process.env.ES_USER
-			&& process.env.ES_PASSWORD
-			&& process.env.ES_GRANT_TYPE
-			&& process.env.ES_OAUTH_SECRET
-			&& process.env.ES_CLIENT_ID
+			ES_DOMAIN
+			&& ES_USER
+			&& ES_PASSWORD
+			&& ES_GRANT_TYPE
+			&& ES_OAUTH_SECRET
+			&& ES_CLIENT_ID
 		);
 	}
 
@@ -121,14 +135,14 @@ class EduSharingConnector {
 	}
 
 	async GET(data) {
-		// run twice, one with
-		const contentType = data.query.contentType || 'FILES'; // enum:[FILES,FILES_AND_FOLDERS,COLLECTIONS,ALL]
-		const skipCount = data.query.$skip || 0;
-		const maxItems = data.query.$limit || 9;
+		console.log('get!!!!');
+		const contentType = data.query.contentType || 'ALL'; // enum:[FILES,FILES_AND_FOLDERS,COLLECTIONS,ALL]
+		const skipCount = data.query.from || 0;
+		const maxItems = data.query.count || 9;
 		const sortProperties = data.query.sortProperties || 'score';
 		const sortAscending = data.query.$ascending || true;
 		const propertyFilter = data.query.propertyFilter || '-all-'; // '-all-' for all properties OR ccm-stuff
-		const searchWord = data.query.searchQuery || 'img'; // will give pictures of flowers as default
+		const searchWord = data.query.searchQuery || ''; // will give pictures of flowers as default
 
 		// const filterOptions = data.query.filterOptions
 
@@ -144,7 +158,7 @@ class EduSharingConnector {
 			method: 'POST',
 			// This will be changed later with a qs where sorting, filtering etc is present.
 			// eslint-disable-next-line max-len
-			url: `${process.env.ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?contentType=${contentType}&skipCount=${skipCount}&maxItems=${maxItems}&sortProperties=${sortProperties}&sortProperties=cm%3Amodified&sortAscending=${sortAscending}&sortAscending=false&propertyFilter=${propertyFilter}&`,
+			url: `${ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?contentType=${contentType}&skipCount=${skipCount}&maxItems=${maxItems}&sortProperties=${sortProperties}&sortProperties=cm%3Amodified&sortAscending=${sortAscending}&sortAscending=false&propertyFilter=${propertyFilter}&`,
 			headers: {
 				...EduSharingConnector.headers,
 				cookie: this.authorization,

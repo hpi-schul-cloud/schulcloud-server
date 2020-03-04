@@ -87,8 +87,7 @@ class RocketChatUser {
 			}
 			let rcUser = await userModel.findOne({ userId });
 			if (!rcUser) {
-				rcUser = await this.createRocketChatAccount(userId)
-					.then(userModel.findOne({ userId }));
+				rcUser = await this.createRocketChatAccount(userId);
 			}
 			return {
 				username: rcUser.username,

@@ -28,13 +28,16 @@ const addTeamUserToTeam = (opt) => async (id, user, teamRoleName) => teamsModel.
 
 const getTeamById = (id) => teamsModel.findById(id).lean().exec();
 
-const removeOneTeam = (id) => teamsModel.findOneAndRemove({ _id: id }).exec();
+const removeOneTeam = (id) => teamsModel.findOneAndRemove({ _id: id }).lean().exec();
 
-const removeManyTeams = (ids) => teamsModel.deleteMany({ _ids: { $in: ids } }).exec();
+const removeManyTeams = (ids) => teamsModel.deleteMany({ _id: { $in: ids } }).lean().exec();
 
 // const teamServices = app => app.service('teams');
 
 const cleanup = () => {
+	if (createdTeamIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdTeamIds;
 	createdTeamIds = [];
 	return removeManyTeams(ids);

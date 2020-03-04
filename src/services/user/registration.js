@@ -169,15 +169,19 @@ const registerUser = function register(data, params, app) {
 			};
 			if (data.sso === 'true' && data.account) {
 				const accountId = data.account;
-				return app.service('accounts').update({ _id: accountId }, { $set: { activated: true, userId: user._id } })
+				return accountModel.findByIdAndUpdate(
+					accountId,
+					{ $set: { activated: true, userId: user._id } },
+					{ new: true },
+				).lean().exec()
 					.then((accountResponse) => {
 						account = accountResponse;
 					})
-					.catch((err) => Promise.reject(new Error('Fehler der Account existiert nicht.')));
+					.catch((err) => Promise.reject(new Error('Fehler der Account existiert nicht.', err)));
 			}
 			return app.service('accounts').create(account)
 				.then((newAccount) => { account = newAccount; })
-				.catch((err) => Promise.reject(new Error('Fehler beim Erstellen des Accounts.')));
+				.catch((err) => Promise.reject(new Error('Fehler beim Erstellen des Accounts.', err)));
 		})
 		.then((res) => {
 			// add parent if necessary
@@ -203,7 +207,7 @@ const registerUser = function register(data, params, app) {
 					})
 					.catch((err) => {
 						logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
-						return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.'));
+						return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.', err));
 					});
 			}
 			return Promise.resolve();
@@ -230,7 +234,7 @@ const registerUser = function register(data, params, app) {
 				.then((newConsent) => {
 					consent = newConsent;
 					return Promise.resolve();
-				}).catch((err) => Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.')));
+				}).catch((err) => Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.', err)));
 		})
 		.then(() => Promise.resolve({
 			user, parent, account, consent,

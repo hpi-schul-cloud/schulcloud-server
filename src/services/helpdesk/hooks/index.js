@@ -43,8 +43,7 @@ Akzeptanzkriterien: ${data.acceptanceCriteria}
 ${text}
 User meldet folgendes:
 Problem Kurzbeschreibung: ${data.subject}
-IST-Zustand: ${data.currentState}
-SOLL-Zustand: ${data.targetState}
+Problembeschreibung: ${data.problemDescription}
         `;
 		if (data.notes) {
 			text = `
@@ -74,6 +73,7 @@ const feedback = () => (hook) => {
 					(hook.params.account || {}).username || 'nouser', data,
 				),
 			},
+			attachments: data.files,
 		});
 		// TODO: NOTIFICATION SERVICE
 	} else {
@@ -81,12 +81,14 @@ const feedback = () => (hook) => {
 			subject: data.title || data.subject || 'nosubject',
 			emails: ['ticketsystem@schul-cloud.org'],
 			replyEmail: data.replyEmail,
+			from: data.replyEmail,
 			content: {
 				text: createFeedbackText(
 					(hook.params.account || {}).username || 'nouser',
 					data,
 				),
 			},
+			attachments: data.files,
 		});
 	}
 	return Promise.resolve(hook);

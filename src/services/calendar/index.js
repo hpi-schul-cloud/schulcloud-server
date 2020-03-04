@@ -1,7 +1,7 @@
 const request = require('request-promise-native');
-const hooks = require('./hooks');
 
-const REQUEST_TIMEOUT = 4000; // in ms
+const hooks = require('./hooks');
+const { REQUEST_TIMEOUT } = require('../../../config/globals');
 
 function toQueryString(paramsObject) {
 	return Object
@@ -54,6 +54,7 @@ const convertEventToJsonApi = (body) => ({
 				repeat_until: body.repeat_until,
 				'x-sc-courseId': body.courseId,
 				'x-sc-teamId': body.teamId,
+				'x-sc-featureVideoConference': body.featureVideoConference === 'on',
 				'x-sc-courseTimeId': body.courseTimeId,
 			},
 			relationships: {

@@ -9,12 +9,13 @@ const userGroupsService = app.service('roster/users/:user/groups');
 const groupsService = app.service('roster/groups');
 const pseudonymService = app.service('pseudonym');
 const toolService = app.service('ltiTools');
-const coursesService = app.service('courses');
+const courseService = app.service('courseModel');
 
 chai.use(chaiHttp);
 
 describe('roster service', function oauth() {
 	this.timeout(10000);
+	let server;
 
 	let testUser1;
 	let testTool1;
@@ -24,6 +25,8 @@ describe('roster service', function oauth() {
 	let pseudonym1 = null;
 
 	before(() => {
+		server = app.listen(0);
+
 		testUser1 = { _id: '0000d231816abba584714c9e' }; // cord carl
 		testTool1 = {
 			_id: '5a79cb15c3874f9aea14daa5',
@@ -54,7 +57,7 @@ describe('roster service', function oauth() {
 		};
 		return Promise.all([
 			toolService.create(testTool1),
-			coursesService.create(testCourse),
+			courseService.create(testCourse),
 		]).then(() => pseudonymService.find({
 			query: {
 				userId: testUser1._id,
@@ -69,8 +72,8 @@ describe('roster service', function oauth() {
 	after(() => Promise.all([
 		pseudonymService.remove(null, { query: {} }),
 		toolService.remove(testTool1),
-		coursesService.remove(testCourse),
-	]));
+		courseService.remove(testCourse._id),
+	]).then(server.close()));
 
 	it('is registered', () => {
 		assert.ok(metadataService);

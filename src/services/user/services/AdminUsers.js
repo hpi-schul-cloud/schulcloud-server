@@ -106,7 +106,16 @@ class AdminUsers {
 			});
 			// bsonId to stringId that it can use .includes for is in test
 			classes.forEach((c) => {
-				c.userIds = c.userIds.map((id) => id.toString());
+				if (Array.isArray(c.userIds)) {
+					c.userIds = c.userIds.map((id) => id.toString());
+				} else {
+					c.userIds = [];
+				}
+				if (Array.isArray(c.teacherIds)) {
+					c.teacherIds = c.teacherIds.map((id) => id.toString());
+				} else {
+					c.teacherIds = [];
+				}
 			});
 
 			// patch classes and consent into user
@@ -115,7 +124,7 @@ class AdminUsers {
 				const userId = user._id.toString();
 				user.consent = consents[userId] || {};
 				classes.forEach((c) => {
-					if (c.userIds.includes(userId)) {
+					if (c.userIds.includes(userId) || c.teacherIds.includes(userId)) {
 						user.classes.push(c.displayName);
 					}
 				});
