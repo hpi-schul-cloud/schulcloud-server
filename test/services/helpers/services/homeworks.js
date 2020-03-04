@@ -15,7 +15,7 @@ const cleanup = () => {
 	}
 	const ids = createdHomeworks;
 	createdHomeworks = [];
-	return homeworkModel.deleteMany({ id: { $in: ids } });
+	return homeworkModel.deleteMany({ id: { $in: ids } }).lean().exec();
 };
 
 module.exports = (app, opt) => ({

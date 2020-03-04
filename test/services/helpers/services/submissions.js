@@ -18,7 +18,7 @@ const cleanup = () => {
 	}
 	const ids = createdSubmissions;
 	createdSubmissions = [];
-	return submissionModel.deleteMany({ id: { $in: ids } });
+	return submissionModel.deleteMany({ id: { $in: ids } }).lean().exec();
 };
 
 module.exports = (app, opt) => ({

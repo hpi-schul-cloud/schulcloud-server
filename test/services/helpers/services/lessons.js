@@ -26,7 +26,7 @@ const cleanup = () => {
 	}
 	const ids = createdLessons;
 	createdLessons = [];
-	return LessonModel.deleteMany({ id: { $in: ids } });
+	return LessonModel.deleteMany({ id: { $in: ids } }).lean().exec();
 };
 
 module.exports = {
