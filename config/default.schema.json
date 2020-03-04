@@ -71,7 +71,7 @@
 		"VIDEOCONFERENCE_HOST": {
 			"type": "string",
 			"format": "uri",
-			"pattern":".*(?<!/)$",
+			"pattern": ".*(?<!/)$",
 			"default": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 			"description": "The BBB base url (should end without a slash)."
 		},
@@ -83,12 +83,44 @@
 		"HOST": {
 			"type": "string",
 			"format": "uri",
-			"default":"http://localhost:3100",
-			"pattern":".*(?<!/)$",
+			"default": "http://localhost:3100",
+			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
+		},
+		"ES_DOMAIN": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"description": "The URL for the edu-sharing repository."
+		},
+		"ES_USER": {
+			"type": "string",
+			"description": "The username for edu-sharing api access"
+		},
+		"ES_PASSWORD": {
+			"type": "string",
+			"description": "The password for edu-sharing api access"
+		},
+		"ES_GRANT_TYPE": {
+			"type": "string",
+			"description": "The grant_type for edu-sharing api access"
+		},
+		"ES_OAUTH_SECRET": {
+			"type": "string",
+			"description": "The oauth for edu-sharing api access"
+		},
+		"ES_CLIENT_ID": {
+			"type": "string",
+			"description": "The client id for edu-sharing api access"
+		},
+		"FEATURE_EDUSHARING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for EDU-SHARING features."
 		}
 	},
 	"required": [
-		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION", "HOST"
+		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
+		"HOST"
 	]
 }
