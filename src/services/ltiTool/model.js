@@ -38,10 +38,12 @@ const ltiToolSchema = new Schema({
 	friendlyUrl: { type: String, unique: true, sparse: true },
 });
 
-ltiToolSchema.path('key').validate(function (value) {
+function validateKey(value) {
 	if (this.lti_version === 'LTI-1p0') return !!value;
 	return true;
-});
+}
+
+ltiToolSchema.path('key').validate(validateKey);
 
 enableAuditLog(ltiToolSchema);
 
