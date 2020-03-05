@@ -38,7 +38,7 @@ module.exports = function () {
 				return `<html>
 	<head>
 		<script>
-			window.parent.postMessage({id: '${params.route.id}', url: '${link.url}'}, "http://localhost:3100");
+			window.parent.postMessage({id: '${params.route.id}', url: '${link.url}'}, params.app.get('HOST'));
 		</script>
 	</head>
 	<body>
@@ -89,9 +89,7 @@ module.exports = function () {
 	app.use('/tools/sign/lti13', {
 		create(data) {
 			data.request.name = decodeURI(data.request.name);
-			return new Promise((resolve) => resolve(
-				jwt.sign(data.request, fs.readFileSync('private_key.pem'), { algorithm: 'RS256' })
-			));
+			Promise.resolve(jwt.sign(data.request, fs.readFileSync('private_key.pem'), { algorithm: 'RS256' }));
 		},
 	});
 	app.service('/tools/sign/lti13/').hooks({
