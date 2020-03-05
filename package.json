@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "22.1.4",
+	"version": "22.2.4",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -46,7 +46,6 @@
 		"@schul-cloud/commons": "^1.0.12",
 		"@sentry/node": "^5.9.0",
 		"ajv": "^6.10.2",
-		"async": "^2.6.3",
 		"aws-sdk": "^2.306.0",
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
@@ -60,9 +59,8 @@
 		"compression": "^1.6.2",
 		"cors": "^2.8.1",
 		"cross-env": "^7.0.0",
-		"crypto-js": "^3.1.9-1",
+		"crypto-js": "^4.0.0",
 		"csv-parse": "^4.6.3",
-		"ejs": "^2.5.5",
 		"email-templates": "^6.0.0",
 		"es6-promisify": "^6.0.1",
 		"express": "^4.14.0",
@@ -72,7 +70,7 @@
 		"file-type": "^13.0.1",
 		"freeport": "^1.0.5",
 		"html-entities": "^1.2.1",
-		"jose": "^1.13.0",
+		"jose": "^1.22.2",
 		"jsonwebtoken": "8.5.1",
 		"ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
 		"lodash": "^4.17.13",
@@ -81,7 +79,6 @@
 		"moment": "^2.19.2",
 		"mongodb-uri": "^0.9.7",
 		"mongoose": "~5.8.12",
-		"mongoose-autopopulate": "^0.9.1",
 		"mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-history": "^0.8.0",
 		"mongoose-id-validator": "^0.5.3",
@@ -90,9 +87,6 @@
 		"moodle-client": "^0.5.2",
 		"nanoid": "^2.0.3",
 		"oauth-1.0a": "^2.2.6",
-		"passport": "^0.4.0",
-		"passport-strategy": "^1.0.0",
-		"pretty-error": "^2.0.3",
 		"prom-client": "^11.5.3",
 		"prometheus-api-metrics": "^2.2.3",
 		"querystring": "^0.2.0",
@@ -105,7 +99,6 @@
 		"serve-favicon": "^2.3.2",
 		"socketio-file-upload": "^0.7.0",
 		"strip-bom": "^4.0.0",
-		"strip-js": "^1.0.6",
 		"universal-analytics": "^0.4.17",
 		"uuid": "^3.3.2",
 		"winston": "^3.2.0",
@@ -116,7 +109,6 @@
 		"eslint": "^5.16.0",
 		"eslint-config-airbnb-base": "^13.0.0",
 		"eslint-plugin-import": "^2.18.2",
-		"eslint-plugin-react": "^7.11.1",
 		"mocha": "^7.0.1",
 		"mockery": "^2.0.0",
 		"nock": "^12.0.0",
@@ -128,8 +120,7 @@
 		"ignore": [
 			"eslint",
 			"eslint-config-airbnb-base",
-			"eslint-plugin-import",
-			"eslint-plugin-react"
+			"eslint-plugin-import"
 		]
 	}
 }

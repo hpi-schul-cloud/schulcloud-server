@@ -106,8 +106,16 @@ class AdminUsers {
 			});
 			// bsonId to stringId that it can use .includes for is in test
 			classes.forEach((c) => {
-				c.userIds = c.userIds.map((id) => id.toString());
-				c.teacherIds = c.teacherIds.map((id) => id.toString());
+				if (Array.isArray(c.userIds)) {
+					c.userIds = c.userIds.map((id) => id.toString());
+				} else {
+					c.userIds = [];
+				}
+				if (Array.isArray(c.teacherIds)) {
+					c.teacherIds = c.teacherIds.map((id) => id.toString());
+				} else {
+					c.teacherIds = [];
+				}
 			});
 
 			// patch classes and consent into user
