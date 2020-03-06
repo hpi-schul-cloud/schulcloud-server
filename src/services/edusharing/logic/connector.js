@@ -167,6 +167,7 @@ class EduSharingConnector {
 			timeout: REQUEST_TIMEOUT,
 		};
 
+
 		let eduResponse;
 		try {
 			eduResponse = await request(options);
@@ -221,6 +222,49 @@ class EduSharingConnector {
 		} */
 		return parsed;
 	}
+
+	async GETONE(id, params) {
+		if (!this.checkEnv()) {
+			return 'Update your env variables. See --> src/services/edusharing/envTemplate';
+		}
+
+		if (this.isLoggedin() === false) {
+			await this.login();
+		}
+		/* ae525fb9-1f47-4439-9e11-4b50498f6d4d */
+
+
+		// TODO, figure out which endpoint is correct here.
+		const options = {
+			method: 'POST',
+			// This will be changed later with a qs where sorting, filtering etc is present.
+			// eslint-disable-next-line max-len
+			url: `${ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?contentType=${'contentType'}&skipCount=${'skipCount'}&maxItems=${'maxItems'}&sortProperties=${'sortProperties'}&sortProperties=cm%3Amodified&sortAscending=${'sortAscending'}&sortAscending=false&propertyFilter=${'propertyFilter'}&`,
+			headers: {
+				...EduSharingConnector.headers,
+				cookie: this.authorization,
+			},
+			body: JSON.stringify({
+				criterias: [
+					{ property: 'ngsearchword', values: [`${'searchWord'}`] },
+				],
+				facettes: ['cclom:general_keyword'],
+			}),
+			timeout: REQUEST_TIMEOUT,
+		};
+
+
+		let eduResponse;
+		try {
+			eduResponse = await request(options);
+		} catch (e) {
+			// eslint-disable-next-line no-console
+			console.error('error: ', e);
+		}
+
+		return 'some Value with id';
+	}
+
 
 	static get Instance() {
 		if (!EduSharingConnector.instance) {

@@ -6,6 +6,10 @@ class EduSearch {
 	find(data) {
 		return EduSharingConnector.GET(data);
 	}
+
+	get(id, params) {
+		return EduSharingConnector.GETONE(id, params);
+	}
 }
 
 module.exports = (app) => {
