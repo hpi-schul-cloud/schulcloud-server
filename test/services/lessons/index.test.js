@@ -27,16 +27,4 @@ describe('lessons service', () => {
 			chai.expect(lesson.description).to.equal(testLesson.description);
 			chai.expect(lesson.courseId.toString()).to.equal(testLesson.courseId);
 		}));
-
-	it('copies a lesson', () => lessonCopyService.create({
-		lessonId,
-		newCourseId: testLesson.courseId,
-		userId: '0000d231816abba584714c9e',
-	})
-		.then((lesson) => {
-			chai.expect(lesson.name).to.equal(testLesson.name);
-			chai.expect(lesson.description).to.equal(testLesson.description);
-			chai.expect(lesson.courseId.toString()).to.equal(testLesson.courseId);
-			chai.expect(lesson._id.toString()).to.not.equal(lessonId);
-		}));
 });
