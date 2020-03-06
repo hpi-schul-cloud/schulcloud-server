@@ -104,11 +104,11 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		const metaData = await this.obtainMetadata(params);
 		const session = await this.login(config);
 
-		const data = await this.fetchData(session, metadata);
+		const data = await this.fetchData(session, metaData);
 
-		await this.logout(sessionResult.value);
+		await this.logout(session);
 
-		await this.createCourses(data);
+		await this.createCourses(data, params);
 
 		this.stats.success = true;
 	}
