@@ -56,15 +56,9 @@ class WebUntisBaseSyncer extends Syncer {
 		return this.app.service('users').get(this.account.userId);
 	}
 
-	async getWebUntisSystems(user) {
-		this.logInfo(`Get Systems for user ${user}, ${user.id}, ${user.schoolId}.`);
-		return this.app.service('schools').get(user.schoolId)
-			.then(school => [
-				school.systems.filter(system => system.type === 'webuntis'),
-				school,
-			]);
+	async getSchool(user) {
+		return this.app.service('schools').get(user.schoolId);
 	}
-
 
 	dayLookUp(day) {
 		return DayMapping[day];

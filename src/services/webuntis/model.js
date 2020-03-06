@@ -8,7 +8,7 @@ const webuntisMetadataSchema = new Schema({
 	class: { type: String },
 	subject: { type: String },
 	room: { type: String },
-	state: { type: String, enum: ['new', 'imported', 'discarded'] },
+	state: { type: String, enum: ['new', 'imported', 'discarded', 'errored'] },
 }, { timestamps: true });
 
 const webuntisMetadataModel = mongoose.model('webuntismetadata', webuntisMetadataSchema);

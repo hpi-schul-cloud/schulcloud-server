@@ -49,7 +49,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 			['inclusive', 'exclusive'].includes(data.datatype) || (!data.datatype && !data.courseMetadataIds)
 		);
 
-		if (!validParams || !validData) {
+		if (!validData) {
 			return false;
 		}
 		
@@ -80,236 +80,131 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	/**
 	* 
 	*/
-	createMetaDataFromWebUntisSteps(params) {
-		return this.obtainWebUntisConfig()
-			.then((config) => this.login(config))
-			.then((session) => Promise.allSettled([
-				Promise.resolve(session),
-				this.fetchMetadata(session, params)
-			]))
-			.then(([sessionResult, metadataResult]) => Promise.allSettled([
-				this.logout(sessionResult.value),
-				this.storeMetadata(metadataResult.value || {})
-			]))
-			.then(([logoutResult, metadataCreationResult]) => Promise.resolve(metadataCreationResult.value || {}));
+	async createMetaDataFromWebUntisSteps(params) {
+		this.stats.success = false;
+		
+		const config = await this.obtainWebUntisConfig();
+
+		const session = await this.login(config);
+		const metaData = await this.fetchMetaData(session, params);
+		await this.logout(session);
+		await this.storeMetadata(metaData, params);
+
+		this.stats.success = true;
 	}
 
 	/**
 	* 
 	*/
-	createCoursesFromMetaDataAndWebUntisSteps(params) {
-		return Promise.allSettled([
-				this.obtainMetadata(params),
-				this.obtainWebUntisConfig(params)
-					.then((config) => this.login(config))
-			])
-			.then(([metadataResult, sessionResult]) => Promise.allSettled([
-				Promise.resolve(sessionResult.value),
-				this.fetchData(sessionResult.value, metadataResult.value || {})
-			]))
-			.then(([sessionResult, dataResult]) => Promise.allSettled([
-				this.logout(sessionResult.value),
-				this.createCourses(dataResult.value || {})
-			]))
-			.then(([logoutResult, courseCreationResult]) => Promise.resolve(courseCreationResult.value || {}));
-	}
+	async createCoursesFromMetaDataAndWebUntisSteps(params) {
+		this.stats.success = false;
 
-	/**
-	* 
-	*/
-	obtainWebUntisConfig() {
-		return Promise.resolve({
-			alias: 'Test WebUntis',
-			type: 'webuntis',
-			webuntisConfig: {
-				active: true,
-				url: '[URL]',
-				schoolname: '[schoolname]',
-				user: '[username]',
-				password: '[password]',
-			},
-		});
+		const config = await this.obtainWebUntisConfig();
+
+		const metaData = await this.obtainMetadata(params);
+		const session = await this.login(config);
+
+		const data = await this.fetchData(session, metadata);
+
+		await this.logout(sessionResult.value);
+
+		await this.createCourses(data);
+
+		this.stats.success = true;
 	}
 
 	/**
 	* 
 	* @param {*} params 
 	*/
-	obtainMetadata(params) {
-		return Promise.resolve({});
+	getImportConditionEvaluator(params) {
+		if (params.datatype === 'inclusive') {
+			return ((id) => params.courseMetadataIds.includes(id));
+		}
+		if (params.datatype === 'exclusive') {
+			return ((id) => !params.courseMetadataIds.includes(id));
+		}
+		throw new BadRequest('invalid datatype');
+	}
+
+	/**
+	* 
+	*/
+	async obtainWebUntisConfig() {
+		return {
+			url: '[URL]',
+			schoolname: '[schoolname]',
+			user: '[username]',
+			password: '[password]',
+		};
+	}
+
+	/**
+	* 
+	* @param {*} params 
+	*/
+	async obtainMetadata(params) {
+		const metaData = await this.app.service('webuntisMetadata').find({
+			query: { datasourceId: params.datasourceId },
+		});
+
+		return metaData;
 	}
 
 	/**
 	* 
 	* @param {*} config 
 	*/
-	login(config) {
+	async login(config) {
 		await super.login(config.url, config.schoolname, config.user, config.password);
 
-		return Promise.resolve({
+		return {
 			session: this.session,
 			rpc: this.rpc
-		});
+		};
 	}
 
 	/**
 	* 
 	* @param {*} session 
 	*/
-	fetchMetaData(session) {
-		return Promise.resolve({});
-	}
-
-	/**
-	* 
-	* @param {*} session 
-	* @param {*} metadata 
-	*/
-	fetchData(session, metadata) {
-		return Promise.resolve({});
-	}
-
-	/**
-	* 
-	* @param {*} session 
-	*/
-	logout(session) {
-		super.logout();
-	}
-
-	/**
-	* 
-	* @param {*} metadata 
-	*/
-	storeMetadata(metadata) {
-		return Promise.resolve({});
-	}
-
-	/**
-	* 
-	* @param {*} data 
-	*/
-	createCourses(data) {
-		return Promise.resolve({});
-	}
-
-	// Former implementation
-
-	/**
-	 * @see {Syncer#steps}
-     *
-     * Steps:
-     * * Check for WebUntis system (may have configured none)
-     * * Login to WebUntis
-     * * Fetch Lesson/Teacher/Room/... changes
-     * * Migrate the changes
-     * * Generate events using text templates
-     * * Send out events for all affected student/teacher/...
-     *
-     * Assumptions:
-     * * Each school has one WebUntis system at most
-     * * This syncer has to be triggered for each school individually
-	 */
-	steps() {
-		this.logInfo(`Running WebUntis Sync in dry run: ${this.data.dryrun}.\n`);
-
-		/* Why not
-        return this.getWebUntisSystems().then(
-            systems => {
-                // ...
-            }
-        );
-        ? */
-		return this.getUser()
-			.then(user => this.getWebUntisSystems(user))
-			.then(([systems, school]) => {
-				/* TODO: Remove later */
-				// if (systems.length === 0) {
-				// Configure test environment until configuration is available via GUI
-				systems[0] = {
-					alias: 'Test WebUntis',
-					type: 'webuntis',
-					webuntisConfig: {
-						active: true,
-						url: '[URL]',
-						schoolname: '[schoolname]',
-						user: '[username]',
-						password: '[password]',
-					},
-				};
-				// }
-
-				if (systems.length === 0) {
-					return Promise.reject(
-						new Error('No WebUntis configuration for associated school.'),
-					);
-				}
-				this.logInfo(`Found ${systems.length} WebUntis configurations for school ${school.name}.\n`);
-				
-				return Promise.all(systems.map((system) => {
-					this.stats.systems[school.name] = {};
-					return this.syncFromSystem(system, this.stats.systems[school.name], school);
-				}));
-			});
-	}
-
-	syncFromSystem(system, stats, school) {
-		return this.login(system.webuntisConfig.url, system.webuntisConfig.schoolname,
-			system.webuntisConfig.user, system.webuntisConfig.password)
-			.then(() => this.fetchInformation())
-			.then((data) => {
-				this.logout();
-				stats.temp = data;
-				return Promise.resolve(data);
-			})
-			/*.then(data => {
-				if (this.dryrun) {
-					return this.collectData(data, stats, school);
-				} else {
-					return this.migrateData(data, stats, school);
-				}
-			})*/
-			.then(() => {
-				stats.success = true;
-			});
-	}
-
-	async fetchInformation() {
+	async fetchMetaData(session) {
 		const intermediateData = {};
-		const data = {};
-		data.currentSchoolYear = await this.getCurrentSchoolyear();
-		// intermediateData.holidays = await this.getHolidays();
-		// data.subjects = await this.getSubjects(); // Ignore subjects for now
-		intermediateData.classes = await this.getClasses(data.currentSchoolYear.id);
-		intermediateData.timeGrid = await this.getTimegrid();
+		
+		intermediateData.currentSchoolYear = await this.getCurrentSchoolyear();
+
+		this.logger.info('Current school year ', intermediateData.currentSchoolYear);
+		
+		// To iterate over either concept
+		intermediateData.classes = await this.getClasses(intermediateData.currentSchoolYear.id);
 		intermediateData.teachers = await this.getTeachers();
+		intermediateData.rooms = await this.getRooms();
+		intermediateData.subjects = await this.getSubjects();
 
-		// data.holidayRanges = data.holidays.map(holiday => [ holiday.startDate, holiday.endDate ]);
-		data.classes = intermediateData.classes.map(klass => ({
-			id: klass.id,
-			name: klass.longName,
-			timetable: [],
-		}));
-		data.timeGrid = intermediateData.timeGrid.map(day => ({
-			day: this.dayLookUp(day.day),
-			timeUnits: day.timeUnits,
-		}));
+		intermediateData.timeGrid = await this.getTimegrid();
 
+		this.logger.info('Classes ', intermediateData.classes);
+
+		// Initialize empty timetable for classes
+		for (let entry of intermediateData.classes) {
+			entry.timetable = [];
+		}
+
+		const result = [];
+
+		/* TODO: remove start */
+		// intermediateData.teachers.length = Math.min(intermediateData.teachers.length, 3);
+		// intermediateData.rooms.length = Math.min(intermediateData.rooms.length, 3);
+		/* TODO: remove end */
+
+		// Iteration approaches currently implemented: teachers and rooms
 		if (intermediateData.teachers !== undefined) { // Iterate over teachers
+			for (const teacher of intermediateData.teachers) {
+				const name = `${teacher.foreName} ${teacher.longName}`;
 
-			data.teachers = intermediateData.teachers.map(teacher => ({
-				id: teacher.id,
-				name: `${teacher.foreName} ${teacher.longName}`
-			}));
-
-			// TODO: remove
-			data.teachers.length = 3;
-			// END TODO: remove
-
-			for (const teacher of data.teachers) {
 				let timetable = await this.getCustomizableTimeTableFor(2, teacher.id, {
-					startDate: data.currentSchoolYear.startDate,
-					endDate: data.currentSchoolYear.endDate,
+					startDate: intermediateData.currentSchoolYear.startDate,
+					endDate: intermediateData.currentSchoolYear.endDate,
 					onlyBaseTimetable: true,
 					klasseFields: ['id', 'longname'],
 					subjectFields: ['id', 'longname'],
@@ -326,51 +221,56 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	
 				for (const entry of timetable) {
 					for (const classEntry of entry.kl) {
-						const klass = data.classes.find(k => k.id === classEntry.id);
+						const klass = intermediateData.classes.find(k => k.id === classEntry.id);
 	
 						if (klass !== undefined) {
 							klass.timetable.push({
 								date: entry.date,
 								startTime: entry.startTime,
 								endTime: entry.endTime,
-								teacher: teacher.name,
+								teacher: name,
 								subject: entry.su[0].longname,
 								room: entry.ro[0].longname,
+							});
+
+							result.push({
+								teacher: name,
+								class: classEntry.longname,
+								room: entry.ro[0].longname,
+								subject: entry.su[0].longname,
+								state: 'new',
 							});
 						}
 					}
 				}
+
+				// One teacher for now
+				break;
 			}
 		} else { // Iterate over rooms
-			intermediateData.rooms = await this.getRooms();
+			for (const room of intermediateData.rooms) {
+				const name = `${room.name} (${room.longName}${room.building !== '' ? `, ${room.building}` : ''})`;
 
-			data.rooms = intermediateData.rooms.map(room => ({
-				id: room.id,
-				name: `${room.name} (${room.longName}${room.building !== '' ? `, ${room.building}` : ''})`,
-			}));
-	
-			// TODO: remove
-			data.rooms.length = 5;
-			// END TODO: remove
-	
-			for (const room of data.rooms) {
 				let timetable = await this.getCustomizableTimeTableFor(4, room.id, {
-					startDate: data.currentSchoolYear.startDate,
-					endDate: data.currentSchoolYear.endDate,
+					startDate: intermediateData.currentSchoolYear.startDate,
+					endDate: intermediateData.currentSchoolYear.endDate,
 					onlyBaseTimetable: true,
 					klasseFields: ['id', 'longname'],
 					subjectFields: ['id', 'longname'],
 					teacherFields: ['id', 'longname'],
 				});
+
+				/* TODO: Check for change */
 				timetable = timetable.filter(entry => entry.ro.length === 1
 					&& entry.ro[0].id === room.id
 					&& entry.kl.length > 0
 					&& entry.te.length === 1
 					&& entry.su.length === 1);
+				/* END TODO: Check for change */
 	
 				for (const entry of timetable) {
 					for (const classEntry of entry.kl) {
-						const klass = data.classes.find(k => k.id === classEntry.id);
+						const klass = intermediateData.classes.find(k => k.id === classEntry.id);
 	
 						if (klass !== undefined) {
 							klass.timetable.push({
@@ -379,284 +279,205 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 								endTime: entry.endTime,
 								teacher: entry.te[0].longname,
 								subject: entry.su[0].longname,
-								room: room.name,
+								room: name,
+							});
+
+							result.push({
+								teacher: entry.te[0].longname,
+								class: classEntry.longname,
+								room: entry.ro[0].longname,
+								subject: entry.su[0].longname,
+								state: 'new',
 							});
 						}
 					}
 				}
+
+				// One room for now
+				break;
 			}
 		}
 
-		return Promise.resolve(data);
+		/**
+		 * Result: Array of {
+		 * 	 datasourceId: this.data.datasourceId,
+		 * 	 teacher: 'Renz',
+		 * 	 class: '2a',
+		 * 	 room: '0-23',
+		 * 	 subject: 'mathe',
+		 * 	 state: 'new',
+		 * }
+		 */
+
+		return result;
 	}
 
-	async migrateData(data, stats, school) {
-		assert.ok(!this.dryrun);
+	/**
+	* 
+	* @param {*} session 
+	* @param {*} metaData 
+	*/
+	async fetchData(session, metaData) {
+		// Not required as all information are fetched during phase 1
 
+		return metaData;
+	}
+
+	/**
+	* 
+	* @param {*} session 
+	*/
+	logout(session) {
+		super.logout();
+	}
+
+	/**
+	* 
+	* @param {*} metadata 
+	*/
+	async storeMetadata(metaData, params) {
+		if (!params.datasourceId) {
+			return;
+		}
+
+		const webUntisMetadataService = this.app.service('webuntisMetadata');
+
+		await Promise.all(metaData.map((entry) => {
+			return webUntisMetadataService.create(Object.assign(
+				{ datasourceId: params.datasourceId },
+				entry
+			));
+		}));
+	}
+
+	/**
+	* 
+	* @param {*} data 
+	*/
+	async createCourses(data, params) {
+		if (!params.datasourceId) {
+			return;
+		}
+
+		// Convert metadata to actual schulcloud courses
+		// And reflect changes in metadata store
+		const webUntisMetadataService = this.app.service('webuntisMetadata');
+
+		const importCondition = this.getImportConditionEvaluator(params);
+		const promises = data.map((entry) => {
+			if (importCondition(entry.state.toString())) {
+				return this.obtainAndUpdateCourseAndClass(entry)
+					.then(() => webUntisMetadataService.patch(entry._id, { state: 'imported' }))
+					.catch(() => webUntisMetadataService.patch(entry._id, { state: 'errored' }));
+			} else {
+				return webUntisMetadataService.patch(entry._id, { state: 'discarded' });
+			}
+		});
+
+		await Promise.all(promises);
+	}
+
+	/**
+	* Entry: {
+	* 	 datasourceId: this.data.datasourceId,
+	* 	 teacher: 'Renz',
+	* 	 class: '2a',
+	* 	 room: '0-23',
+	* 	 subject: 'mathe',
+	* 	 state: 'new',
+	* }
+	*/
+	async obtainAndUpdateCourseAndClass(entry) {
 		const courseService = this.app.service('courses');
 		const classService = this.app.service('classes');
 
-		stats.classes = {};
-		stats.classes.count = 0;
-		stats.classes.createdCount = 0;
-		stats.classes.reusedCount = 0;
-		stats.courses = {};
-		stats.courses.count = 0;
-		stats.courses.createdCount = 0;
-		stats.courses.reusedCount = 0;
-		stats.times = {};
-		stats.times.count = 0;
+		const school = await this.getSchool(await this.getUser());
 
 		/**
-         * Mapping:
-         *
-         * Schul-Cloud: class, course (per class), lesson
-         * WebUntis: class, subject
-         * German: Klasse, Kurs, Fach, Schulstunde
-         */
+        * Mapping:
+        *
+        * Schul-Cloud: class, course (per class), lesson
+        * WebUntis: class, subject
+        * German: Klasse, Kurs, Fach, Schulstunde
+        */
 
-		for (const klass of data.classes) {
-			/**
-             * Obtain classes
-             */
-			const className = klass.name;
-			this.logInfo(`Handle ${className}\n`);
-			const scClasses = await classService.find({ query: { name: className }, paginate: false });
+		// Get class
+		const scClasses = await classService.find({ query: { name: entry.class }, paginate: false });
+		
+		let scClass = scClasses[0];
+		if (scClass === undefined) {
+			// Create Schul-Cloud class?
+			const newClass = {
+				name: className,
+				schoolId: school._id,
+				nameFormat: 'static',
+				year: school.currentYear,
+			};
+			scClass = await classService.create(newClass);
+		}
 
-			let scClass = scClasses[0];
-			if (scClass === undefined) {
-				// Create Schul-Cloud class?
-				const newClass = {
-					name: className,
-					schoolId: school._id,
-					nameFormat: 'static',
-					year: school.currentYear,
-				};
-				scClass = await classService.create(newClass);
-				stats.classes.createdCount += 1;
-			} else {
-				stats.classes.reusedCount += 1;
-			}
+		// Get course
+		const scCourses = await courseService.find({
+			query: {
+				name: entry.subject,
+				classIds: scClass._id,
+				schoolId: school._id,
+			},
+			paginate: false,
+		});
 
-			const courses = {};
-			const times = {};
-			for (const timetableEntry of klass.timetable) {
-				/** Obtain courses for subjects:
-                 *
-                 * - class
-                 * - (teacher)
-                 * - time series
-                 * - room
-                 */
-				const subjectName = timetableEntry.subject;
+		scCourse = scCourses[0];
+		if (scCourse === undefined) {
+			// Create Course
+			const newCourse = {
+				name: courseName,
+				classIds: [scClass._id],
+				schoolId: school._id,
+				teacherIds: [],
+			};
 
-				let scCourse = courses[subjectName];
-				if (scCourse === undefined) {
-					const courseName = `${subjectName} ${scClass.name}`;
-					this.logInfo(`Handle ${courseName}\n`);
-					const scCourses = await courseService.find({
-						query: {
-							name: courseName,
-							classIds: scClass._id,
-							schoolId: school._id,
-						},
-						paginate: false,
-					});
-					scCourse = scCourses[0];
-					if (scCourse === undefined) {
-						// Create Course
-						const newCourse = {
-							name: courseName,
-							classIds: [scClass._id],
-							schoolId: school._id,
-							teacherIds: [],
-						};
+			scCourse = await courseService.create(newCourse);
+		}
 
-						scCourse = await courseService.create(newCourse);
-						courses[subjectName] = scCourse;
-						times[subjectName] = [];
-						stats.courses.createdCount += 1;
-					} else {
-						courses[subjectName] = scCourse;
-						stats.courses.reusedCount += 1;
-						times[subjectName] = [];
-					}
-				}
-
-				const newEntry = {
-					weekday: this.getWeekDay(timetableEntry.date),
-					startTime: this.getStartTime(timetableEntry.startTime),
-					duration: this.getDuration(timetableEntry.startTime, timetableEntry.endTime),
-					room: timetableEntry.room,
-					count: 1,
-				};
-				let entryFound = false;
-				for (const givenEntry of times[subjectName]) {
-					if (givenEntry.weekday === newEntry.weekday
-                        && givenEntry.startTime === newEntry.startTime
-                        && givenEntry.duration === newEntry.duration
-                        && givenEntry.room === newEntry.room) {
-						givenEntry.count += 1;
-						entryFound = true;
-					}
-				}
-				if (!entryFound) {
-					times[subjectName].push(newEntry);
-					stats.times.count += 1;
+		// Get times
+		
+		const times = [];
+		for (const timetableEntry of entry.timetable) {
+			const newEntry = {
+				weekday: this.getWeekDay(timetableEntry.date),
+				startTime: this.getStartTime(timetableEntry.startTime),
+				duration: this.getDuration(timetableEntry.startTime, timetableEntry.endTime),
+				room: timetableEntry.room,
+				count: 1,
+			};
+			let entryFound = false;
+			for (const givenEntry of times) {
+				if (givenEntry.weekday === newEntry.weekday
+					&& givenEntry.startTime === newEntry.startTime
+					&& givenEntry.duration === newEntry.duration
+					&& givenEntry.room === newEntry.room) {
+					givenEntry.count += 1;
+					entryFound = true;
 				}
 			}
-
-			for (const courseName in courses) {
-				if ({}.hasOwnProperty.call(courses, courseName)) {
-					const scCourse = courses[courseName];
-					const courseTimes = times[courseName];
-					// Update times, considered are events that occurs at least twice a year
-					scCourse.times = courseTimes.filter(entry => entry.count >= 2).map(entry => ({
-						weekday: entry.weekday,
-						startTime: entry.startTime,
-						duration: entry.duration,
-						eventId: undefined,
-						room: entry.room,
-					}));
-				}
+			if (!entryFound) {
+				times.push(newEntry);
 			}
 		}
 
-		return Promise.resolve();
-	}
+		// Assumption: After 2 entries it is recurring
+		times = times.filter(entry => entry.count >= 2).map(entry => ({
+			weekday: entry.weekday,
+			startTime: entry.startTime,
+			duration: entry.duration,
+			eventId: undefined,
+			room: entry.room,
+		}));
 
-	async collectData(data, stats, school) {
-		assert.ok(this.dryrun);
-
-		const courseService = this.app.service('courses');
-		const classService = this.app.service('classes');
-
-		stats.classes = {};
-
-		/**
-         * Mapping:
-         *
-         * Schul-Cloud: class, course (per class), lesson
-         * WebUntis: class, subject
-         * German: Klasse, Kurs, Fach, Schulstunde
-         */
-
-		for (const klass of data.classes) {
-			/**
-             * Obtain classes
-             */
-			const className = klass.name;
-			this.logInfo(`Handle ${className}\n`);
-			const scClasses = await classService.find({ query: { name: className }, paginate: false });
-
-			let scClass = scClasses[0];
-			if (scClass === undefined) {
-				// Create Schul-Cloud class?
-				const newClass = {
-					name: className,
-					schoolId: school._id,
-					nameFormat: 'static',
-					year: school.currentYear,
-				};
-				scClass = newClass;
-				scClass._id = null;
-
-				stats.classes[className] = {
-					missing: true,
-					name: className,
-					courses: {},
-				};
-			} else {
-				stats.classes[className] = {
-					missing: true,
-					name: className,
-					courses: {},
-				};
-			}
-			const statsClass = stats.classes[className];
-
-			const times = {};
-			for (const timetableEntry of klass.timetable) {
-				/** Obtain courses for subjects:
-                 *
-                 * - class
-                 * - (teacher)
-                 * - time series
-                 * - room
-                 */
-				const subjectName = timetableEntry.subject;
-
-				let scCourse = statsClass.courses[subjectName];
-				if (scCourse === undefined) {
-					const courseName = `${subjectName} ${scClass.name}`;
-					this.logInfo(`Handle ${courseName}\n`);
-					const scCourses = await courseService.find({
-						query: {
-							name: courseName,
-							classIds: scClass._id,
-							schoolId: school._id,
-						},
-						paginate: false,
-					});
-
-					scCourse = scCourses[0];
-					if (scCourse === undefined) {
-						times[subjectName] = [];
-						
-						statsClass.courses[subjectName] = {
-							missing: true,
-							name: subjectName,
-						};
-					} else {
-						times[subjectName] = [];
-
-						statsClass.courses[subjectName] = {
-							missing: false,
-							name: subjectName,
-						};
-					}
-				}
-
-				const newEntry = {
-					weekday: this.getWeekDay(timetableEntry.date),
-					startTime: this.getStartTime(timetableEntry.startTime),
-					duration: this.getDuration(timetableEntry.startTime, timetableEntry.endTime),
-					room: timetableEntry.room,
-					count: 1,
-				};
-				let entryFound = false;
-				for (const givenEntry of times[subjectName]) {
-					if (givenEntry.weekday === newEntry.weekday
-                        && givenEntry.startTime === newEntry.startTime
-                        && givenEntry.duration === newEntry.duration
-                        && givenEntry.room === newEntry.room) {
-						givenEntry.count += 1;
-						entryFound = true;
-					}
-				}
-				if (!entryFound) {
-					times[subjectName].push(newEntry);
-				}
-			}
-
-			for (const courseName in statsClass.courses) {
-				if ({}.hasOwnProperty.call(statsClass.courses, courseName)) {
-					const statsCourse = statsClass.courses[courseName];
-					const courseTimes = times[courseName];
-					// Update times, considered are events that occurs at least twice a year
-					statsCourse.times = courseTimes.filter(entry => entry.count >= 2).map(entry => ({
-						weekday: entry.weekday,
-						startTime: entry.startTime,
-						duration: entry.duration,
-						eventId: undefined,
-						room: entry.room,
-					}));
-				}
-			}
-		}
-
-		return Promise.resolve();
+		courseService.patch(scCourse._id, scCourse);
 	}
 }
 
-module.exports = WebUntisSchoolyearSyncer;
+module.exports = {
+	WebUntisSchoolyearSyncer
+};
