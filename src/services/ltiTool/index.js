@@ -38,7 +38,7 @@ module.exports = function () {
 				return `<html>
 	<head>
 		<script>
-			window.parent.postMessage({id: '${params.route.id}', url: '${link.url}'}, params.app.get('HOST'));
+			window.parent.postMessage({id: '${params.route.id}', url: '${link.url}'}, '${app.Config.data.HOST}');
 		</script>
 	</head>
 	<body>
