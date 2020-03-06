@@ -57,12 +57,12 @@ class Syncer {
 			.then((stats) => {
 				this.stats.success = this.stats.errors.length === 0;
 				const aggregated = Syncer.aggregateStats(stats);
-				this.logInfo('Finished syncing', aggregated);
+				this.logInfo('Finished syncing ', aggregated);
 				return Promise.resolve(this.stats);
 			})
 			.catch((err) => {
 				this.stats.success = false;
-				this.logError('Error while syncing', err);
+				this.logError('Error while syncing ', err);
 				return Promise.resolve(this.stats);
 			});
 	}
