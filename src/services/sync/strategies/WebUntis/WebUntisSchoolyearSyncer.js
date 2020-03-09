@@ -25,7 +25,8 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	*	  password: Password for the user to access WebUntis,
 	*	  url: URL of the WebUntis endpoint,
 	*     schoolname: Identifier of the school in WebUntis
-	*   }
+	*   },
+	*   datasourceId: schul-cloud data source id to associate with WebUntis fetches,
 	*	datatype: 'inclusive' or 'exclusive', depending on the intended semantics for courseMetadataIds
 	*	courseMetadataIds: list of metadata IDs to consider for inclusion/rejection
 	*	dryrun: collect metadata instead of synching
@@ -57,7 +58,8 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		);
 		
 		const validData = (
-			['inclusive', 'exclusive'].includes(data.datatype) || (!data.datatype && !data.courseMetadataIds)
+			['inclusive', 'exclusive'].includes(data.datatype) || (!data.datatype && !data.courseMetadataIds) &&
+			data.datasourceId != ''
 		);
 
 		if (!validData || !validQuery) {
@@ -71,6 +73,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 				username: query.username,
 				password: query.password,
 			},
+			datasourceId: data.datasourceId,
 			datatype: data.datatype,
 			courseMetadataIds: data.courseMetadataIds,
 			dryrun: !("dryrun" in params) || (params.dryrun !== 'false' && params.dryrun !== false),
@@ -305,7 +308,6 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 
 		/**
 		 * Result: Array of {
-		 * 	 datasourceId: this.data.datasourceId,
 		 * 	 teacher: 'Renz',
 		 * 	 class: '2a',
 		 * 	 room: '0-23',
@@ -332,8 +334,8 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	* 
 	* @param {*} session 
 	*/
-	logout(session) {
-		super.logout();
+	async logout(session) {
+		await super.logout();
 	}
 
 	/**
@@ -341,17 +343,26 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	* @param {*} metadata 
 	*/
 	async storeMetadata(metaData, params) {
-		if (!params.datasourceId) {
-			return;
-		}
-
 		const webUntisMetadataService = this.app.service('webuntisMetadata');
 
-		await Promise.all(metaData.map((entry) => {
-			return webUntisMetadataService.create(Object.assign(
-				{ datasourceId: params.datasourceId },
-				entry
-			));
+		await Promise.all(metaData.map(async (entry) => {
+			const metadataResults = await webUntisMetadataService.find({ query: {
+				datasourceId: params.datasourceId,
+				teacher: entry.teacher,
+				class: entry.class,
+				subject: entry.subject,
+				room: entry.room
+			}, paginate: false });
+			const result = metadataResults[0];
+
+			if (result !== undefined) { // patch/replace existing
+				await webUntisMetadataService.patch(result._id, { state: entry.state });
+			} else { // create new
+				await webUntisMetadataService.create(Object.assign(
+					{ datasourceId: params.datasourceId },
+					entry
+				));
+			}
 		}));
 	}
 
@@ -360,10 +371,6 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	* @param {*} data 
 	*/
 	async createCourses(data, params) {
-		if (!params.datasourceId) {
-			return;
-		}
-
 		// Convert metadata to actual schulcloud courses
 		// And reflect changes in metadata store
 		const webUntisMetadataService = this.app.service('webuntisMetadata');
