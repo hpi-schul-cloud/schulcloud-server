@@ -241,16 +241,14 @@ class EduSharingConnector {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-
-		let eduResponse = {};
 		try {
-			eduResponse = await request(options);
+			const eduResponse = JSON.parse(await request(options));
+			return eduResponse.node;
 		} catch (e) {
 			// eslint-disable-next-line no-console
 			console.error('error: ', e);
 		}
-
-		return eduResponse;
+		return {};
 	}
 
 
