@@ -231,38 +231,28 @@ class EduSharingConnector {
 		if (this.isLoggedin() === false) {
 			await this.login();
 		}
-		/* ae525fb9-1f47-4439-9e11-4b50498f6d4d */
 
+		const propertyFilter = '-all-';
 
-		// TODO, figure out which endpoint is correct here.
 		const options = {
-			method: 'POST',
-			// This will be changed later with a qs where sorting, filtering etc is present.
+			method: 'GET',
 			// eslint-disable-next-line max-len
-			url: `${ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?contentType=${'contentType'}&skipCount=${'skipCount'}&maxItems=${'maxItems'}&sortProperties=${'sortProperties'}&sortProperties=cm%3Amodified&sortAscending=${'sortAscending'}&sortAscending=false&propertyFilter=${'propertyFilter'}&`,
+			url: `${ES_DOMAIN}/edu-sharing/rest/node/v1/nodes/mv-repo.schul-cloud.org/${id}/metadata?propertyFilter=${propertyFilter}`,
 			headers: {
 				...EduSharingConnector.headers,
 				cookie: this.authorization,
 			},
-			body: JSON.stringify({
-				criterias: [
-					{ property: 'ngsearchword', values: [`${'searchWord'}`] },
-				],
-				facettes: ['cclom:general_keyword'],
-			}),
 			timeout: REQUEST_TIMEOUT,
 		};
 
-
-		let eduResponse;
 		try {
-			eduResponse = await request(options);
+			const eduResponse = JSON.parse(await request(options));
+			return eduResponse.node;
 		} catch (e) {
 			// eslint-disable-next-line no-console
 			console.error('error: ', e);
 		}
-
-		return 'some Value with id';
+		return {};
 	}
 
 
