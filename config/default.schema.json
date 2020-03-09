@@ -2,6 +2,11 @@
 	"title": "HPI Schul-Cloud Configuration",
 	"type": "object",
 	"properties": {
+		"CALENDAR_API_KEY": {
+			"type": "string",
+			"default": "example",
+			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
+		},
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
 			"type": "string",
 			"default": "enabled",
@@ -91,6 +96,37 @@
 			],
 			"default": "DISABLED",
 			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
+		},
+		"ES_DOMAIN": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"description": "The URL for the edu-sharing repository."
+		},
+		"ES_USER": {
+			"type": "string",
+			"description": "The username for edu-sharing api access"
+		},
+		"ES_PASSWORD": {
+			"type": "string",
+			"description": "The password for edu-sharing api access"
+		},
+		"ES_GRANT_TYPE": {
+			"type": "string",
+			"description": "The grant_type for edu-sharing api access"
+		},
+		"ES_OAUTH_SECRET": {
+			"type": "string",
+			"description": "The oauth for edu-sharing api access"
+		},
+		"ES_CLIENT_ID": {
+			"type": "string",
+			"description": "The client id for edu-sharing api access"
+		},
+		"FEATURE_EDUSHARING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for EDU-SHARING features."
 		}
 	},
 	"required": [
