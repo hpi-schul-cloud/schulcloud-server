@@ -3,6 +3,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { ObjectId } = require('../../../helper/compare');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 
+
 const getLesson = async (context) => {
 	const { lessonId } = context.params.route;
 	if (!ObjectId.isValid(lessonId)) {
