@@ -4,7 +4,7 @@ const { ObjectId } = require('../../../helper/compare');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 
 
-const getLesson = async (context) => {
+const addLessonToParams = async (context) => {
 	const { lessonId } = context.params.route;
 	if (!ObjectId.isValid(lessonId)) {
 		throw new BadRequest(`Invalid lessonId: "${lessonId}"`);
@@ -16,7 +16,7 @@ const getLesson = async (context) => {
 	return context;
 };
 
-const validateParams = async (context) => {
+const validateData = async (context) => {
 	if (!context.data) {
 		throw new BadRequest('Data missing');
 	}
@@ -39,8 +39,9 @@ module.exports = {
 	before: () => ({
 		all: [authenticate('jwt')],
 		create: [
-			validateParams,
-			getLesson,
+			validateData,
+			addLessonToParams,
+			// checks permission for COURSE and TOPIC for creation
 			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', true),
 		],
 	}),

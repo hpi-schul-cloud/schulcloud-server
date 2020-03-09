@@ -12,10 +12,12 @@ class AddMaterialService {
 		const material = await this.app.service('materials').create({ title, client, url });
 
 		await this.app.service('lessons').patch(params.lesson._id, {
+			courseId: params.lesson.courseId, //
 			$push: {
 				materialIds: material._id,
 			},
 		});
+		return material;
 	}
 }
 

@@ -4,11 +4,12 @@ const logger = require('../../../logger');
 
 class EduSearch {
 	find(data) {
-		return EduSharingConnector.GET(data);
+		// todo filter response properties
+		return EduSharingConnector.FIND(data);
 	}
 
 	get(id, params) {
-		return EduSharingConnector.GETONE(id, params);
+		return EduSharingConnector.GET(id, params);
 	}
 }
 
@@ -18,7 +19,7 @@ module.exports = (app) => {
 		app.use(eduRoute, new EduSearch(), (req, res) => {
 			res.send(res.data);
 		});
-		const eduService = app.service('/edu-sharing');
+		const eduService = app.service(eduRoute);
 		eduService.hooks(hooks);
 	} else {
 		logger.debug('Feature edusharing is not enabled');

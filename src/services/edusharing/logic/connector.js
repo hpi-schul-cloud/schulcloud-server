@@ -130,7 +130,7 @@ class EduSharingConnector {
 		return !!this.authorization && !!this.accessToken;
 	}
 
-	async GET(data) {
+	async FIND(data) {
 		const contentType = data.query.contentType || 'ALL'; // enum:[FILES,FILES_AND_FOLDERS,COLLECTIONS,ALL]
 		const skipCount = data.query.from || 0;
 		const maxItems = data.query.count || 9;
@@ -223,7 +223,7 @@ class EduSharingConnector {
 		return parsed;
 	}
 
-	async GETONE(id, params) {
+	async GET(id, params) {
 		if (!this.checkEnv()) {
 			return 'Update your env variables. See --> src/services/edusharing/envTemplate';
 		}
