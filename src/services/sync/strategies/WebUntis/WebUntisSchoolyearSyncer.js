@@ -20,10 +20,12 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	* @param {*} data
 	* 
 	* Current data structure: {
-	*	datasourceId: associated SchuldCloud data source id,
-	*	username: Username for the user to access WebUntis,
-	*	password: Password for the user to access WebUntis,
-	*	url: URL of the WebUntis endpoint,
+	*	webuntisConfig: {
+	*	  username: Username for the user to access WebUntis,
+	*	  password: Password for the user to access WebUntis,
+	*	  url: URL of the WebUntis endpoint,
+	*     schoolname: Identifier of the school in WebUntis
+	*   }
 	*	datatype: 'inclusive' or 'exclusive', depending on the intended semantics for courseMetadataIds
 	*	courseMetadataIds: list of metadata IDs to consider for inclusion/rejection
 	*	dryrun: collect metadata instead of synching
@@ -37,27 +39,41 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	 * @see {Syncer#respondsTo}
 	 */
 	static respondsTo(target) {
-		return target === 'webuntis-schoolyear';
+		return target === 'webuntis';
 	}
 
 	static params(params, data = {}) {
-		// TODO: check usage of params. params.query, and data
-		
-		const query = (params || {}).query || {};
+		if (!params || !data) {
+			return false;
+		}
+
+		const query = (params || {}).query || {}; // object containing url, username, password, and schoolname
+
+		const validQuery = (
+			query.username != '' &&
+			query.url != '' &&
+			query.password != '' &&
+			query.schoolname != ''
+		);
 		
 		const validData = (
 			['inclusive', 'exclusive'].includes(data.datatype) || (!data.datatype && !data.courseMetadataIds)
 		);
 
-		if (!validData) {
+		if (!validData || !validQuery) {
 			return false;
 		}
 		
 		return [{
-			datasourceId: params.datasourceId,
+			webuntisConfig: {
+				url: query.url,
+				schoolname: query.schoolname,
+				username: query.username,
+				password: query.password,
+			},
 			datatype: data.datatype,
 			courseMetadataIds: data.courseMetadataIds,
-			dryrun: !("dryrun" in params.query) || params.query.dryrun !== 'false',
+			dryrun: !("dryrun" in params) || (params.dryrun !== 'false' && params.dryrun !== false),
 		}];
 	}
 
@@ -69,6 +85,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	*/
 	steps() {
 		this.logInfo(`Running WebUntis School Year Sync.\n`);
+		// this.logInfo(`Parameters `, this.data);
 
 		if (this.data.dryrun) {
 			return this.createMetaDataFromWebUntisSteps(this.data);
@@ -83,7 +100,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	async createMetaDataFromWebUntisSteps(params) {
 		this.stats.success = false;
 		
-		const config = await this.obtainWebUntisConfig();
+		const config = params.webuntisConfig;
 
 		const session = await this.login(config);
 		const metaData = await this.fetchMetaData(session, params);
@@ -129,18 +146,6 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 
 	/**
 	* 
-	*/
-	async obtainWebUntisConfig() {
-		return {
-			url: '[URL]',
-			schoolname: '[schoolname]',
-			user: '[username]',
-			password: '[password]',
-		};
-	}
-
-	/**
-	* 
 	* @param {*} params 
 	*/
 	async obtainMetadata(params) {
@@ -156,7 +161,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	* @param {*} config 
 	*/
 	async login(config) {
-		await super.login(config.url, config.schoolname, config.user, config.password);
+		await super.login(config.url, config.schoolname, config.username, config.password);
 
 		return {
 			session: this.session,
