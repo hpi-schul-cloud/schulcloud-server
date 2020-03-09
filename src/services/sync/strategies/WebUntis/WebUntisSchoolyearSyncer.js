@@ -240,20 +240,12 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 								subject: entry.su[0].longname,
 								room: entry.ro[0].longname,
 							});
-
-							result.push({
-								teacher: name,
-								class: classEntry.longname,
-								room: entry.ro[0].longname,
-								subject: entry.su[0].longname,
-								state: 'new',
-							});
 						}
 					}
 				}
 
 				// One teacher for now
-				break;
+				// break;
 			}
 		} else { // Iterate over rooms
 			for (const room of intermediateData.rooms) {
@@ -289,30 +281,82 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 								subject: entry.su[0].longname,
 								room: name,
 							});
-
-							result.push({
-								teacher: entry.te[0].longname,
-								class: classEntry.longname,
-								room: entry.ro[0].longname,
-								subject: entry.su[0].longname,
-								state: 'new',
-							});
 						}
 					}
 				}
 
 				// One room for now
-				break;
+				// break;
+			}
+		}
+
+		// Collect times for each class
+		for (let klass of intermediateData.classes) {
+			const times = [];
+			for (const timetableEntry of klass.timetable) {
+				const newEntry = {
+					teacher: timetableEntry.teacher,
+					subject: timetableEntry.subject,
+					weekday: this.getWeekDay(timetableEntry.date),
+					startTime: this.getStartTime(timetableEntry.startTime),
+					duration: this.getDuration(timetableEntry.startTime, timetableEntry.endTime),
+					room: timetableEntry.room,
+					count: 1,
+				};
+				let entryFound = false;
+				for (const givenEntry of times) {
+					if (givenEntry.weekday === newEntry.weekday
+						&& givenEntry.startTime === newEntry.startTime
+						&& givenEntry.duration === newEntry.duration
+						&& givenEntry.room === newEntry.room) {
+						givenEntry.count += 1;
+						entryFound = true;
+					}
+				}
+				if (!entryFound) {
+					times.push(newEntry);
+				}
+			}
+
+			// Assumption: After 2 entries it is recurring
+			const filteredTimes = times.filter(entry => entry.count >= 2);
+
+			for (let timeEntry of filteredTimes) {
+				const newEntry = {
+					teacher: timeEntry.teacher,
+					class: klass.longName, // note uppercase N here!
+					times: [ {
+						weekday: timeEntry.weekday,
+						startTime: timeEntry.startTime,
+						duration: timeEntry.duration,
+						room: timeEntry.room,
+					} ],
+					subject: timeEntry.subject,
+					state: 'new',
+				};
+
+				let entryFound = false;
+				for (const givenEntry of result) {
+					if (givenEntry.teacher === newEntry.teacher
+						&& givenEntry.class === newEntry.class
+						&& givenEntry.subject === newEntry.subject) {
+						givenEntry.times.push(newEntry.times[0]);
+						entryFound = true;
+					}
+				}
+				if (!entryFound) {
+					result.push(newEntry);
+				}
 			}
 		}
 
 		/**
 		 * Result: Array of {
-		 * 	 teacher: 'Renz',
-		 * 	 class: '2a',
-		 * 	 room: '0-23',
-		 * 	 subject: 'mathe',
-		 * 	 state: 'new',
+		 *   teacher: 'Renz',
+		 *   class: '2a',
+		 *   subject: 'mathe',
+		 *   times: [ { weekDay, startTime, endTime, room } ],
+		 *   state: 'new',
 		 * }
 		 */
 
@@ -350,13 +394,12 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 				datasourceId: params.datasourceId,
 				teacher: entry.teacher,
 				class: entry.class,
-				subject: entry.subject,
-				room: entry.room
+				subject: entry.subject
 			}, paginate: false });
 			const result = metadataResults[0];
 
 			if (result !== undefined) { // patch/replace existing
-				await webUntisMetadataService.patch(result._id, { state: entry.state });
+				await webUntisMetadataService.patch(result._id, { state: entry.state, times: entry.times });
 			} else { // create new
 				await webUntisMetadataService.create(Object.assign(
 					{ datasourceId: params.datasourceId },
@@ -391,12 +434,12 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 
 	/**
 	* Entry: {
-	* 	 datasourceId: this.data.datasourceId,
-	* 	 teacher: 'Renz',
-	* 	 class: '2a',
-	* 	 room: '0-23',
-	* 	 subject: 'mathe',
-	* 	 state: 'new',
+	*    datasourceId: this.data.datasourceId,
+	*    teacher: 'Renz',
+	*    class: '2a',
+	*    times: [ { weekDay, startTime, endTime, room }],
+	*    subject: 'mathe',
+	*    state: 'new',
 	* }
 	*/
 	async obtainAndUpdateCourseAndClass(entry) {
