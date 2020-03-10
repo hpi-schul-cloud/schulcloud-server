@@ -1,5 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
+const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
 const logger = require('../../../logger');
 
 const globalHooks = require('../../../hooks');
@@ -113,7 +116,7 @@ const addStats = (hook) => {
 			// save grade in assignment if user is student of this task
 			const submission = submissions.data.filter((s) => (equalIds(c._id, s.homeworkId) && (s.grade)));
 			if (submission.length == 1 && !isTeacher(hook.params.account.userId, c)) {
-				c.grade = submission[0].grade;
+				c.grade = submission[0].grade.toFixed(2);
 			}
 
 			if (!c.private && (
@@ -199,21 +202,33 @@ const hasPatchPermission = (hook) => {
 exports.before = () => ({
 	all: [authenticate('jwt')],
 	find: [
-		globalHooks.hasPermission('HOMEWORK_VIEW'),
-		globalHooks.mapPaginationQuery.bind(this),
-		hasViewPermissionBefore,
+		iff(isProvider('external'), [
+			globalHooks.hasPermission('HOMEWORK_VIEW'),
+			globalHooks.mapPaginationQuery.bind(this),
+			hasViewPermissionBefore,
+		]),
 	],
-	get: [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore],
-	create: [globalHooks.hasPermission('HOMEWORK_CREATE')],
-	update: [globalHooks.hasPermission('HOMEWORK_EDIT')],
-	patch: [globalHooks.hasPermission('HOMEWORK_EDIT'), globalHooks.permitGroupOperation, hasPatchPermission],
-	remove: [globalHooks.hasPermission('HOMEWORK_CREATE'), globalHooks.permitGroupOperation],
+	get: [iff(isProvider('external'), [
+		globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore,
+	])],
+	create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'))],
+	update: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_EDIT'))],
+	patch: [iff(isProvider('external'), [
+		globalHooks.hasPermission('HOMEWORK_EDIT'), globalHooks.permitGroupOperation, hasPatchPermission,
+	])],
+	remove: [iff(isProvider('external'), [
+		globalHooks.hasPermission('HOMEWORK_CREATE'), globalHooks.permitGroupOperation,
+	])],
 });
 
 exports.after = {
 	all: [],
-	find: [hasViewPermissionAfter, addStats],
-	get: [hasViewPermissionAfter, addStats],
+	find: [
+		iff(isProvider('external'), [hasViewPermissionAfter, addStats]),
+	],
+	get: [
+		iff(isProvider('external'), [hasViewPermissionAfter, addStats]),
+	],
 	create: [],
 	update: [],
 	patch: [],
