@@ -221,7 +221,7 @@ describe('handleAutoLogout hook', () => {
 		mockery.registerMock('redis', redisMock);
 		mockery.registerMock('@schul-cloud/commons', commons);
 
-		// delete require.cache[require.resolve('../src/utils/redis')];
+		delete require.cache[require.resolve('../src/utils/redis')];
 		/* eslint-disable global-require */
 		redisHelper = require('../src/utils/redis');
 		fut = require('../src/app.hooks').handleAutoLogout;

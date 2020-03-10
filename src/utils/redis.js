@@ -7,7 +7,7 @@ const { Configuration } = require('@schul-cloud/commons');
 let redisClient = false;
 
 function initializeRedisClient() {
-	if (Configuration.has('REDIS_URL')) {
+	if (Configuration.has('REDIS_URI')) {
 		try {
 			redisClient = redis.createClient({
 				url: Configuration.get('REDIS_URI'),
