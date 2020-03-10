@@ -236,7 +236,7 @@ describe('handleAutoLogout hook', () => {
 		await cleanup();
 	});
 
-	it.only('whitelisted JWT is accepted and extended', async () => {
+	it('whitelisted JWT is accepted and extended', async () => {
 		const user = await createTestUser();
 		const params = await generateRequestParamsFromUser(user);
 		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
