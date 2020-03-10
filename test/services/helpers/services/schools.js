@@ -23,6 +23,8 @@ const create = (app) => async ({
 	features = [],
 	customYears = [],
 	inMaintenanceSince = undefined,
+	source = undefined,
+	sourceOptions = undefined,
 } = {}) => {
 	const school = await app.service('schools').create({
 		name,
@@ -45,6 +47,8 @@ const create = (app) => async ({
 		rssFeeds,
 		features,
 		inMaintenanceSince,
+		source,
+		sourceOptions,
 	});
 	createdSchoolIds.push(school._id);
 	return school;
