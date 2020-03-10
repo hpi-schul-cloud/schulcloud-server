@@ -3,11 +3,9 @@ const service = require('feathers-mongoose');
 const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
-const {REGISTRATIONLINK_EXPIRATION_DAYS} = require('../../../config/globals')
+const { REGISTRATIONLINK_EXPIRATION_DAYS } = require('../../../config/globals');
 
-module.exports = function setup() {
-	const app = this;
-
+module.exports = function setup(app) {
 	const options = {
 		Model: link,
 		paginate: {
@@ -40,35 +38,33 @@ module.exports = function setup() {
 			// capture queries that don't look for the target and check them
 			/* eslint-disable-next-line no-underscore-dangle */
 			const linkId = req.params.__feathersId;
-			linkService.get(linkId)
+			return linkService.get(linkId)
 				.then((data) => {
 					if (isLocalRegistrationLink(data.target) && isExpired(data.createdAt)) {
 						// link is both local and has expired
-						res.status(403).json({ error: 'Expired' });
-					} else {
-						// link is valid
-						const [url, query] = data.target.split('?');
-						const queryObject = queryString.parse(query || '');
-						queryObject.link = data._id;
-						return res.json({
-							target: `${url}?${queryString.stringify(queryObject)}`,
-						});
+						return res.status(403).json({ error: 'Expired' });
 					}
+					// link is valid
+					const [url, query] = data.target.split('?');
+					const queryObject = queryString.parse(query || '');
+					queryObject.link = data._id;
+					return res.json({
+						target: `${url}?${queryString.stringify(queryObject)}`,
+					});
 				})
 				.catch((err) => {
 					logger.error(err);
 					// send not found to client
 					return res.status(404).json({ error: 'Not found' });
 				});
-		} else {
-			delete req.query.includeShortId;
-			return next();
 		}
+		delete req.query.includeShortId;
+		return next();
 	}
 
 	class RegistrationLinkService {
-		constructor(options) {
-			this.options = options || {};
+		constructor(opts) {
+			this.options = opts || {};
 			this.docs = {};
 		}
 
@@ -116,8 +112,8 @@ module.exports = function setup() {
 	}
 
 	class ExpertLinkService {
-		constructor(options) {
-			this.options = options || {};
+		constructor(opts) {
+			this.options = opts || {};
 			this.docs = {};
 		}
 
@@ -133,13 +129,12 @@ module.exports = function setup() {
          *  }
          */
 		create(data, params) {
-			return new Promise(async (resolve, reject) => {
+			return new Promise(async (resolve) => {
 				const linkInfo = {};
 				const expertSchoolId = data.esid; const { email } = data; const
 					{ teamId } = data;
 
 				const hashService = app.service('hash');
-				const linkService = app.service('link');
 
 				if (email) {
 					// generate import hash
@@ -162,26 +157,30 @@ module.exports = function setup() {
 				// build final link and remove possible double-slashes in url except the protocol ones
 				if (expertSchoolId && linkInfo.hash) {
 					// expert registration link for new users
-					linkInfo.link = `${(data.host || process.env.HOST)}/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
+					linkInfo.link = `${(data.host || process.env.HOST)}${
+						`/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`
+							.replace(/(https?:\/\/)|(\/)+/g, '$1$2')}`;
 				} else if (teamId) { /** @replaced logic is inside team services now * */
 					// team accept link for existing users
-					linkInfo.link = `${(data.host || process.env.HOST)}/teams/invitation/accept/${teamId}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
+					linkInfo.link = `${(data.host || process.env.HOST)}/teams/invitation/accept/${teamId}`
+						.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
 				} else {
 					logger.warning('Nicht alle Daten für den Experten-Link vorhanden.');
 					return Promise.resolve('Success!');
 				}
 
 				// generate short url
-				await linkService.create({ target: linkInfo.link }).then((generatedShortLink) => {
+				await app.service('link').create({ target: linkInfo.link }).then((generatedShortLink) => {
 					linkInfo.shortLinkId = generatedShortLink._id;
 					// build final short link and remove possible double-slashes in url except the protocol ones
-					linkInfo.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
+					linkInfo.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`
+						.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
 				}).catch((err) => {
-					logger.warning('Fehler beim Erstellen des Kurzlinks.');
+					logger.error('Fehler beim Erstellen des Kurzlinks.', err);
 					return Promise.resolve('Success!');
 				});
 
-				resolve(linkInfo);
+				return resolve(linkInfo);
 			});
 		}
 	}
