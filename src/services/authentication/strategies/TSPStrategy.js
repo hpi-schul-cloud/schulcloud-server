@@ -5,6 +5,8 @@ const logger = require('../../../logger');
 const {
 	verifyToken,
 	decryptToken,
+	createUserAndAccount,
+	findSchool,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
 } = require('../../sync/strategies/TSP/TSP');
 const { SYNCER_TARGET } = require('../../sync/strategies/TSP/TSPSchoolSyncer');
@@ -50,36 +52,73 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 			logger.error('TSP ticket not valid.', err);
 			throw new NotAuthenticated('TSP ticket is not valid.');
 		}
+
+		const now = Date.now() / 1000;
+		if (decryptedTicket.iat > now || now > decryptedTicket.exp) {
+			throw new NotAuthenticated('TSP token expired.');
+		}
+
+		// translate TSP roles into SC roles
+		let roles = [];
+		if (decryptedTicket.ptscListRolle && typeof decryptedTicket.ptscListRolle === 'string') {
+			const roleList = decryptedTicket.ptscListRolle.split(',');
+			roles = roleList
+				.map((tspRole) => ({
+					schueler: 'student',
+					lehrer: 'teacher',
+					admin: 'administrator',
+				}[tspRole.toLowerCase()]))
+				.filter((role) => {
+					const validRole = role !== undefined;
+					if (!validRole) {
+						logger.warning(`Got invalid role(s) from TSP API: [${roleList}].`);
+					}
+					return validRole;
+				});
+		}
+
 		const { app } = this;
 		let user = await this.findUser(app, decryptedTicket);
 		if (!user) {
-			// User might have been created since the last sync
-			await app.service('sync').find({
-				query: {
-					target: SYNCER_TARGET,
-					config: {
-						schoolIdentifier: decryptedTicket.ptscSchuleNummer,
-					},
+			// User has been created since the last sync, so we'll create him from the ticket info
+			const sourceOptions = {
+				[SOURCE_ID_ATTRIBUTE]: decryptedTicket.authUID,
+			};
+			const school = await findSchool(app, decryptedTicket.ptscSchuleNummer);
+			const systemId = school.systems[0];
+			user = await createUserAndAccount(
+				app,
+				{
+					namePrefix: decryptedTicket.personTitel,
+					firstName: decryptedTicket.personVorname,
+					lastName: decryptedTicket.personNachname,
+					schoolId: school._id,
+					source: ENTITY_SOURCE,
+					sourceOptions,
 				},
-			});
-			user = await this.findUser(app, decryptedTicket);
-			if (!user) {
-				// User really does not exist
-				throw new NotAuthenticated('User does not exist');
-			}
+				roles,
+				systemId,
+			);
+		} else if (Array.isArray(roles)) {
+			// if we know the user and roles were supplied, we need to reflect role changes
+			await app.service('users').patch(user._id, { roles });
 		}
 
-		if (decryptedTicket.ptscListRolle && typeof decryptedTicket.ptscListRolle === 'string') {
-			const roles = decryptedTicket.ptscListRolle.split(',').map((tspRole) => ({
-				schueler: 'student',
-				lehrer: 'teacher',
-				admin: 'administrator',
-			}[tspRole.toLowerCase()])).filter((r) => r);
-			if (roles.length > 0) {
-				await app.service('users').patch(user._id, { roles });
-			}
-		}
+		const oneDayInMilliseconds = 864e5;
+		const timeOfLastSync = Date.now() - oneDayInMilliseconds;
 
+		// trigger an asynchronous TSP sync to reflect changes to classes
+		app.service('sync').find({
+			query: {
+				target: SYNCER_TARGET,
+				config: {
+					schoolIdentifier: decryptedTicket.ptscSchuleNummer,
+					lastChange: timeOfLastSync,
+				},
+			},
+		});
+
+		// find account and generate JWT payload
 		const [account] = await app.service('accounts').find({
 			query: {
 				userId: user._id,

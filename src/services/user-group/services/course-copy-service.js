@@ -84,9 +84,6 @@ class CourseCopyService {
 		});
 
 		await Promise.all(homeworks.map((homework) => {
-			if (homework.archived.length > 0
-				|| (homework.teacherId.toString() !== params.account.userId.toString()
-				&& homework.private)) return false;
 			// homeworks that are part of a lesson are copied in LessonCopyService
 			if (!homework.lessonId) {
 				return createHomework(
