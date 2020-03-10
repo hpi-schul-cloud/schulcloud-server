@@ -131,16 +131,13 @@ class EduSharingConnector {
 	}
 
 	async FIND(data) {
-		const contentType = data.query.contentType || 'ALL'; // enum:[FILES,FILES_AND_FOLDERS,COLLECTIONS,ALL]
-		const skipCount = data.query.from || 0;
-		const maxItems = data.query.count || 9;
+		const contentType = data.query.contentType || 'FILES'; // enum:[FILES,FILES_AND_FOLDERS,COLLECTIONS,ALL]
+		const skipCount = parseInt(data.query.$skip, 10) || 0;
+		const maxItems = parseInt(data.query.$limit, 10) || 9;
 		const sortProperties = data.query.sortProperties || 'score';
-		const sortAscending = data.query.$ascending || true;
-		const propertyFilter = data.query.propertyFilter || '-all-'; // '-all-' for all properties OR ccm-stuff
-		const searchWord = data.query.searchQuery || ''; // will give pictures of flowers as default
-
-		// const filterOptions = data.query.filterOptions
-
+		const sortAscending = false;
+		const propertyFilter = '-all-'; // '-all-' for all properties OR ccm-stuff
+		const searchWord = data.query.searchQuery || '';
 
 		if (!this.checkEnv()) {
 			return 'Update your env variables. See --> src/services/edusharing/envTemplate';
@@ -149,11 +146,23 @@ class EduSharingConnector {
 		if (this.isLoggedin() === false) {
 			await this.login();
 		}
+
+		const urlBase = `${ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?`;
+		const url = urlBase
+			+ [
+				`contentType=${contentType}`,
+				`skipCount=${skipCount}`,
+				`maxItems=${maxItems}`,
+				`sortProperties=${sortProperties}`,
+				`sortAscending=${sortAscending}`,
+				`propertyFilter=${propertyFilter}`,
+			].join('&');
+
 		const options = {
 			method: 'POST',
 			// This will be changed later with a qs where sorting, filtering etc is present.
 			// eslint-disable-next-line max-len
-			url: `${ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?contentType=${contentType}&skipCount=${skipCount}&maxItems=${maxItems}&sortProperties=${sortProperties}&sortProperties=cm%3Amodified&sortAscending=${sortAscending}&sortAscending=false&propertyFilter=${propertyFilter}&`,
+			url,
 			headers: {
 				...EduSharingConnector.headers,
 				cookie: this.authorization,
@@ -220,7 +229,13 @@ class EduSharingConnector {
 		/* if (Object.values(filterOptions).length) {
 			parsed = filterResult(parsed, filterOptions);
 		} */
-		return parsed;
+
+		return {
+			total: parsed.pagination.total,
+			limit: parsed.pagination.count,
+			skip: parsed.pagination.from,
+			data: parsed.nodes,
+		};
 	}
 
 	async GET(id, params) {
