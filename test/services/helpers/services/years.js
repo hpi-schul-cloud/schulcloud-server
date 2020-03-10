@@ -22,9 +22,13 @@ const create = async (data = {
 	return year;
 };
 
-const cleanup = async () => {
-	await Year.deleteMany({ _id: { $in: createdYears } });
+const cleanup = () => {
+	if (createdYears.length === 0) {
+		return Promise.resolve();
+	}
+	const ids = createdYears;
 	createdYears = [];
+	return Year.deleteMany({ _id: { $in: ids } }).lean().exec();
 };
 
 module.exports = {

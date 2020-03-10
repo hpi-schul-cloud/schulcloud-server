@@ -24,6 +24,9 @@ module.exports = (app, opt = {
 		years,
 		schoolGroups,
 		datasources,
+		homeworks,
+		submissions,
+		lessons,
 	} = serviceHelpers(app, opt);
 
 	const cleanup = () => Promise.all([]
@@ -38,7 +41,10 @@ module.exports = (app, opt = {
 		.concat(schools.cleanup())
 		.concat(schoolGroups.cleanup())
 		.concat(years.cleanup())
-		.concat(datasources.cleanup()))
+		.concat(datasources.cleanup())
+		.concat(submissions.cleanup())
+		.concat(lessons.cleanup())
+		.concat(homeworks.cleanup()))
 		.then((res) => {
 			logger.info('[TestObjects] cleanup data.');
 			return res;
@@ -60,6 +66,9 @@ module.exports = (app, opt = {
 		schoolGroups: schoolGroups.info,
 		years: years.info,
 		datasources: datasources.info,
+		homeworks: homeworks.info,
+		submissions: submissions.info,
+		lessons: lessons.info,
 	});
 
 	const createTestTeamWithOwner = async () => {
@@ -70,8 +79,7 @@ module.exports = (app, opt = {
 
 	const setupUser = async (userData) => {
 		try {
-			const $user = await users.create(userData);
-			const user = $user.toObject();
+			const user = await users.create(userData);
 			const requestParams = await login.generateRequestParamsFromUser(user);
 			const { account } = requestParams;
 
@@ -99,12 +107,16 @@ module.exports = (app, opt = {
 		createTestSchool: schools.create,
 		createTestSchoolGroup: schoolGroups.create,
 		createTestDatasource: datasources.create,
+		createTestHomework: homeworks.create,
+		createTestSubmission: submissions.create,
+		createTestLesson: lessons.create,
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
 		generateRequestParamsFromUser: login.generateRequestParamsFromUser,
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
+		classes,
 		createTestTeamWithOwner,
 		info,
 		setupUser,

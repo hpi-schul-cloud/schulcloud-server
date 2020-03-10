@@ -7,6 +7,15 @@ const oneHour = 600000;
 const twoDays = 172800000;
 
 describe('course hooks', () => {
+	let server;
+	before(() => {
+		server = app.listen(0);
+	});
+
+	after(() => {
+		server.close();
+	});
+
 	describe('restrict changes to archived course', () => {
 		const fut = restrictChangesToArchivedCourse;
 

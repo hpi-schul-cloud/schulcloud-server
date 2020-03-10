@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
+const { disallow } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
@@ -83,11 +84,11 @@ const populateUsername = (context) => {
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [replaceToolWithOrigin],
-	get: [() => { throw new errors.MethodNotAllowed(); }],
-	create: [globalHooks.ifNotLocal(() => { throw new errors.MethodNotAllowed(); })],
-	update: [() => { throw new errors.MethodNotAllowed(); }],
-	patch: [() => { throw new errors.MethodNotAllowed(); }],
-	remove: [globalHooks.ifNotLocal(() => { throw new errors.MethodNotAllowed(); })],
+	get: [disallow()],
+	create: [globalHooks.ifNotLocal(disallow())],
+	update: [disallow()],
+	patch: [disallow()],
+	remove: [globalHooks.ifNotLocal(disallow())],
 };
 
 exports.after = {

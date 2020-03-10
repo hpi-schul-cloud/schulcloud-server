@@ -53,12 +53,22 @@ const displayInternRequests = (level) => (context) => {
 };
 
 /**
+ * Routes as (regular expressions) which should be ignored for the auto-logout feature.
+ */
+const AUTO_LOGOUT_BLACKLIST = [
+	/^accounts\/jwtTimer$/,
+	/^authentication$/,
+	/wopi\//,
+];
+
+/**
  * for authenticated requests, if a redis connection is defined, check if the users jwt is whitelisted.
  * if so, the expiration timer is reset, if not the user is logged out automatically.
  * @param {Object} context feathers context
  */
 const handleAutoLogout = async (context) => {
-	const ignoreRoute = (context.path === 'accounts/jwtTimer');
+	const ignoreRoute = typeof context.path === 'string'
+		&& AUTO_LOGOUT_BLACKLIST.some((entry) => context.path.match(entry));
 	const redisClientExists = !!getRedisClient();
 	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
 	if (!ignoreRoute && redisClientExists && authorizedRequest) {
@@ -91,16 +101,22 @@ const handleAutoLogout = async (context) => {
  */
 const errorHandler = (context) => {
 	if (context.error) {
-		// too much for logging...
+		context.error.code = context.error.code || context.error.statusCode;
+		if (!context.error.code && !context.error.type) {
+			const catchedError = context.error;
+			if (catchedError.hook) {
+				// too much for logging...
+				delete catchedError.hook;
+			}
+			context.error = new GeneralError(context.error.message || 'Server Error', context.error.stack);
+			context.error.catchedError = catchedError;
+		}
+		context.error.code = context.error.code || 500;
+
 		if (context.error.hook) {
+			// too much for logging...
 			delete context.error.hook;
 		}
-
-		// statusCode is return by extern services / or mocks that use express res.status(myCodeNumber)
-		if (!context.error.code && !context.error.statusCode) {
-			context.error = new GeneralError(context.error.message || 'server error', context.error.stack || '');
-		}
-
 		return context;
 	}
 	context.app.logger.warning('Error with no error key is throw. Error logic can not handle it.');
@@ -160,7 +176,7 @@ function setupAppHooks(app) {
 }
 
 module.exports = {
-	setupAppHooks,
-	sanitizeDataHook,
 	handleAutoLogout,
+	sanitizeDataHook,
+	setupAppHooks,
 };
