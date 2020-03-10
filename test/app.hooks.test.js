@@ -1,7 +1,9 @@
 const chai = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const mockery = require('mockery');
-const { Configuration } = require('@schul-cloud/commons');
+const commons = require('@schul-cloud/commons');
+
+const { Configuration } = commons; // separated from require, mocked in tests
 
 const { expect } = chai;
 
@@ -217,8 +219,9 @@ describe('handleAutoLogout hook', () => {
 			useCleanCache: true,
 		});
 		mockery.registerMock('redis', redisMock);
+		mockery.registerMock('@schul-cloud/commons', commons);
 
-		delete require.cache[require.resolve('../src/utils/redis')];
+		// delete require.cache[require.resolve('../src/utils/redis')];
 		/* eslint-disable global-require */
 		redisHelper = require('../src/utils/redis');
 		fut = require('../src/app.hooks').handleAutoLogout;
