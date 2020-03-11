@@ -27,6 +27,27 @@ const validURL = (str) => {
 	return !!pattern.test(str);
 };
 
+const requestRepeater = async (options) => {
+	let eduResponse = null;
+	let retry = 0;
+	let success = false;
+	do {
+		try {
+			eduResponse = await request(options);
+			success = true;
+		} catch (e) {
+			// eslint-disable-next-line no-console
+			console.error('error: ', e);
+			if (e.statusCode === 401) {
+				this.login();
+			}
+			eduResponse = null;
+		}
+		retry += 1;
+	} while (success === false && retry < 3);
+	return JSON.parse(eduResponse);
+};
+
 class EduSharingConnector {
 	constructor() {
 		if (EduSharingConnector.instance) {
@@ -57,6 +78,7 @@ class EduSharingConnector {
 
 		return headers;
 	}
+
 
 	// gets cookie (JSESSION) and attach it to header
 	getCookie() {
@@ -176,16 +198,7 @@ class EduSharingConnector {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-
-		let eduResponse;
-		try {
-			eduResponse = await request(options);
-		} catch (e) {
-			// eslint-disable-next-line no-console
-			console.error('error: ', e);
-		}
-
-		const parsed = JSON.parse(eduResponse);
+		const parsed = await requestRepeater(options);
 
 		// provided by client eg data.query.filterOptions
 		const filterOptions = {
@@ -260,14 +273,8 @@ class EduSharingConnector {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		try {
-			const eduResponse = JSON.parse(await request(options));
-			return eduResponse.node;
-		} catch (e) {
-			// eslint-disable-next-line no-console
-			console.error('error: ', e);
-		}
-		return {};
+		const eduResponse = requestRepeater(options);
+		return eduResponse.node;
 	}
 
 
