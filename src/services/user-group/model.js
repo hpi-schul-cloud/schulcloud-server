@@ -50,6 +50,7 @@ const courseSchema = getUserGroupSchema({
 	// optional information if this course is a copy from other
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
 	...externalSourceSchema,
+	features: [{ type: String, enum: ['rocketChat'] }],
 });
 
 courseSchema.plugin(mongooseLeanVirtuals);
