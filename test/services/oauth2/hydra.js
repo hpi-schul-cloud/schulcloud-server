@@ -100,9 +100,7 @@ describe('oauth2 service', function oauthTest() {
 							uri: authorizationUri,
 							method: 'GET',
 							followRedirect: false,
-						}).then((res) => console.log(res))
-							.catch((res) => {
-								console.log(res);
+						}).catch((res) => {
 							const position = res.error.indexOf('login_challenge=')
 								+ 'login_challenge'.length
 								+ 1;
@@ -181,8 +179,6 @@ describe('oauth2 service', function oauthTest() {
 	}));
 
 	it('PATCH Login Request Accept', () => {
-		console.log(testUser2);
-		console.log(loginRequest1);
 		loginService
 			.patch(
 				loginRequest1,
