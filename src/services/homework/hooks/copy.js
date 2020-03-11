@@ -1,6 +1,9 @@
 const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
+const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
 const { hasPermission, mapPayload, injectUserId } = require('../../../hooks');
 const HomeworkModel = require('../model').homeworkModel;
 const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');
@@ -30,9 +33,11 @@ exports.before = {
 	],
 	create: [
 		injectUserId,
-		hasPermission('HOMEWORK_VIEW'),
-		hasPermission('HOMEWORK_CREATE'),
-		hasViewPermissionBefore,
+		iff(isProvider('external'), [
+			hasPermission('HOMEWORK_VIEW'),
+			hasPermission('HOMEWORK_CREATE'),
+			hasViewPermissionBefore,
+		]),
 		mapPayload,
 		resolveStorageType,
 	],
