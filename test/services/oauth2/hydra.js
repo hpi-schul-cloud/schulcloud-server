@@ -100,7 +100,9 @@ describe('oauth2 service', function oauthTest() {
 							uri: authorizationUri,
 							method: 'GET',
 							followRedirect: false,
-						}).catch((res) => {
+						}).then((res) => console.log(res))
+							.catch((res) => {
+								console.log(res);
 							const position = res.error.indexOf('login_challenge=')
 								+ 'login_challenge'.length
 								+ 1;
@@ -178,21 +180,25 @@ describe('oauth2 service', function oauthTest() {
 		assert.strictEqual(result.challenge, loginRequest1);
 	}));
 
-	it('PATCH Login Request Accept', () => loginService
-		.patch(
-			loginRequest1,
-			{},
-			{
-				query: { accept: 1 },
-				account: { userId: testUser2._id },
-			},
-		)
-		.then((result) => {
-			// redirectTo = result.redirect_to;
-			assert.ok(
-				result.redirect_to.indexOf(testClient2.client_id) !== -1,
-			);
-		}));
+	it('PATCH Login Request Accept', () => {
+		console.log(testUser2);
+		console.log(loginRequest1);
+		loginService
+			.patch(
+				loginRequest1,
+				{},
+				{
+					query: { accept: 1 },
+					account: { userId: testUser2._id },
+				},
+			)
+			.then((result) => {
+				// redirectTo = result.redirect_to;
+				assert.ok(
+					result.redirect_to.indexOf(testClient2.client_id) !== -1,
+				);
+			})
+	});
 
 	it('PATCH Login Request Reject', () => loginService
 		.patch(
