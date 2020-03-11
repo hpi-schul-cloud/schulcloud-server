@@ -54,7 +54,8 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		}
 
 		const now = Date.now() / 1000;
-		if (decryptedTicket.iat > now || now > decryptedTicket.exp) {
+		const tenMinutesBuffer = 60 * 10;
+		if (decryptedTicket.iat > now + tenMinutesBuffer || now > decryptedTicket.exp) {
 			throw new NotAuthenticated('TSP token expired.');
 		}
 
