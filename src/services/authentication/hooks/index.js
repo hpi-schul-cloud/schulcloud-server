@@ -36,8 +36,8 @@ const bruteForceCheck = async (context) => {
 				if (timeDifference < allowedTimeDifference) {
 					throw new TooManyRequests(
 						'Brute Force Prevention!', {
-						timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
-					},
+							timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
+						},
 					);
 				}
 			}
