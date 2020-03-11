@@ -2,7 +2,9 @@ const { promisify } = require('util');
 const redis = require('redis');
 const jwt = require('jsonwebtoken');
 const { GeneralError } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
+const commons = require('@schul-cloud/commons');
+
+const { Configuration } = commons;
 
 let redisClient = false;
 
