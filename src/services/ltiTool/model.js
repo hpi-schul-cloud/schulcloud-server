@@ -36,6 +36,7 @@ const ltiToolSchema = new Schema({
 	originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
 	oAuthClientId: { type: String },
 	friendlyUrl: { type: String, unique: true, sparse: true },
+	skipConsent: { type: Boolean },
 });
 
 function validateKey(value) {
