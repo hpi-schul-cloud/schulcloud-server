@@ -2,15 +2,17 @@ const { promisify } = require('util');
 const redis = require('redis');
 const jwt = require('jsonwebtoken');
 const { GeneralError } = require('@feathersjs/errors');
+const commons = require('@schul-cloud/commons');
+
+const { Configuration } = commons;
 
 let redisClient = false;
 
-function initializeRedisClient(app) {
-	const redisUrl = app.Config.data.REDIS_URI;
-	if (redisUrl) {
+function initializeRedisClient() {
+	if (Configuration.has('REDIS_URI')) {
 		try {
 			redisClient = redis.createClient({
-				url: redisUrl,
+				url: Configuration.get('REDIS_URI'),
 			});
 		} catch (err) {
 			throw new GeneralError('Redis connection failed!', err);

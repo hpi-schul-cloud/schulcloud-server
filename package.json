@@ -15,7 +15,7 @@
 	"contributors": [],
 	"bugs": {},
 	"engines": {
-		"node": "^10.17.0"
+		"node": "lts/*"
 	},
 	"scripts": {
 		"lint": "eslint ./src ./test ./migrations --ext .js --fix",
@@ -43,7 +43,7 @@
 		"@feathersjs/express": "^4.3.4",
 		"@feathersjs/feathers": "^4.3.4",
 		"@feathersjs/socketio": "^4.3.4",
-		"@schul-cloud/commons": "^1.0.12",
+		"@schul-cloud/commons": "^1.0.16",
 		"@sentry/node": "^5.9.0",
 		"ajv": "^6.10.2",
 		"aws-sdk": "^2.306.0",
@@ -114,7 +114,8 @@
 		"nock": "^12.0.0",
 		"nodemon": "^2.0.2",
 		"nyc": "^14.1.1",
-		"simple-oauth2": "^3.0.0"
+		"simple-oauth2": "^3.0.0",
+		"sinon": "^9.0.0"
 	},
 	"greenkeeper": {
 		"ignore": [
