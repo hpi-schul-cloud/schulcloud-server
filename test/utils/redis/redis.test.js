@@ -2,6 +2,10 @@
 
 const { expect } = require('chai');
 const mockery = require('mockery');
+const commons = require('@schul-cloud/commons');
+
+const { Configuration } = commons;
+
 const redisMock = require('./redisMock');
 
 describe('redis helpers', () => {
@@ -17,11 +21,9 @@ describe('redis helpers', () => {
 			mockery.registerMock('redis', redisMock);
 
 			delete require.cache[require.resolve('../../../src/utils/redis')];
+			delete require.cache[require.resolve('@schul-cloud/commons')];
 			redisHelpers = require('../../../src/utils/redis');
-
-			redisHelpers.initializeRedisClient({
-				Config: { data: {} },
-			});
+			redisHelpers.initializeRedisClient();
 		});
 
 		after(async () => {
@@ -77,13 +79,12 @@ describe('redis helpers', () => {
 				useCleanCache: true,
 			});
 			mockery.registerMock('redis', redisMock);
+			mockery.registerMock('@schul-cloud/commons', commons);
 
 			delete require.cache[require.resolve('../../../src/utils/redis')];
 			redisHelpers = require('../../../src/utils/redis');
-
-			redisHelpers.initializeRedisClient({
-				Config: { data: { REDIS_URI: '//validHost:6379' } },
-			});
+			Configuration.set('REDIS_URI', '//validHost:6379');
+			redisHelpers.initializeRedisClient();
 		});
 
 		after(async () => {
