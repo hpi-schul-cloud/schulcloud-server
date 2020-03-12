@@ -178,21 +178,23 @@ describe('oauth2 service', function oauthTest() {
 		assert.strictEqual(result.challenge, loginRequest1);
 	}));
 
-	it('PATCH Login Request Accept', () => loginService
-		.patch(
-			loginRequest1,
-			{},
-			{
-				query: { accept: 1 },
-				account: { userId: testUser2._id },
-			},
-		)
-		.then((result) => {
-			// redirectTo = result.redirect_to;
-			assert.ok(
-				result.redirect_to.indexOf(testClient2.client_id) !== -1,
-			);
-		}));
+	it('PATCH Login Request Accept', () => {
+		loginService
+			.patch(
+				loginRequest1,
+				{},
+				{
+					query: { accept: 1 },
+					account: { userId: testUser2._id },
+				},
+			)
+			.then((result) => {
+				// redirectTo = result.redirect_to;
+				assert.ok(
+					result.redirect_to.indexOf(testClient2.client_id) !== -1,
+				);
+			});
+	});
 
 	it('PATCH Login Request Reject', () => loginService
 		.patch(
