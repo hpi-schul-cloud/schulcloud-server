@@ -273,7 +273,7 @@ class EduSharingConnector {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		const eduResponse = requestRepeater(options);
+		const eduResponse = await requestRepeater(options);
 		return eduResponse.node;
 	}
 
