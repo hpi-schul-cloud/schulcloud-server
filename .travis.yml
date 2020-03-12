@@ -1,6 +1,6 @@
 dist: bionic
 language: node_js
-node_js: '10.17'
+node_js: 'lts/*'
 
 services:
   - docker
