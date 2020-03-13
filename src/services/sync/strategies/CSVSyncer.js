@@ -145,9 +145,9 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			const parseResult = parse(strippedData, {
 				delimiter: '',	// auto-detect
 				newline: '',	// auto-detect
-				quoteChar: '"',
 				header: true,
-				skipEmptyLines: 'greedy',
+				skipEmptyLines: true,
+				fastMode: true,
 			});
 			const { errors } = parseResult;
 			if (Array.isArray(errors) && errors.length > 0) {
