@@ -73,7 +73,7 @@ const handleAutoLogout = async (context) => {
 	const redisClientExists = !!getRedisClient();
 	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
 	if (!ignoreRoute && redisClientExists && authorizedRequest) {
-		const redisIdentifier = getRedisIdentifier(context.params.authentication.accessToken);
+		const { redisIdentifier } = getRedisIdentifier(context.params.authentication.accessToken);
 		const redisResponse = await redisGetAsync(redisIdentifier);
 		if (redisResponse) {
 			await redisSetAsync(

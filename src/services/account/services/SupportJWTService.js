@@ -130,7 +130,7 @@ class SupportJWTService {
 
 	async addToWhitelist(jwt) {
 		if (getRedisClient()) {
-			const redisIdentifier = getRedisIdentifier(jwt);
+			const { redisIdentifier } = getRedisIdentifier(jwt);
 			await redisSetAsync(
 				redisIdentifier, getRedisValue(), 'EX', this.expiredOffset,
 			);

@@ -36,8 +36,8 @@ const bruteForceCheck = async (context) => {
 				if (timeDifference < allowedTimeDifference) {
 					throw new TooManyRequests(
 						'Brute Force Prevention!', {
-						timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
-					},
+							timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
+						},
 					);
 				}
 			}
@@ -134,9 +134,9 @@ const removeProvider = (context) => {
  */
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
+		const { redisIdentifier, expirationInSeconds } = getRedisIdentifier(context.result.accessToken);
 		await redisSetAsync(
-			redisIdentifier, getRedisValue(), 'EX', Configuration.get('JWT_TIMEOUT_SECONDS'),
+			redisIdentifier, getRedisValue(), 'EX', expirationInSeconds,
 		);
 	}
 
@@ -149,7 +149,7 @@ const addJwtToWhitelist = async (context) => {
  */
 const removeJwtFromWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const redisIdentifier = getRedisIdentifier(context.params.authentication.accessToken);
+		const { redisIdentifier } = getRedisIdentifier(context.params.authentication.accessToken);
 		await redisDelAsync(redisIdentifier);
 	}
 
