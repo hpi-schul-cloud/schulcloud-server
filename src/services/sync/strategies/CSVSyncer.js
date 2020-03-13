@@ -158,6 +158,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 						entity: 'Eingabedatei fehlerhaft',
 						message: `Syntaxfehler in Zeile ${error.row}`,
 					});
+					this.stats.users.failed += 1;
 				});
 			}
 			records = parseResult.data;
@@ -199,12 +200,19 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	static sanitizeRecords(records) {
+		const requiredAttributes = ATTRIBUTES.filter((a) => a.required).map((a) => a.name);
 		const mappingFunction = buildMappingFunction(records[0]);
-		return records.map((record) => {
+		const processed = [];
+		records.forEach((record) => {
 			const mappedRecord = mappingFunction(record);
-			mappedRecord.email = mappedRecord.email.trim().toLowerCase();
-			return mappedRecord;
+			if (requiredAttributes.every((attr) => !!mappedRecord[attr])) {
+				mappedRecord.email = mappedRecord.email.trim().toLowerCase();
+				processed.push(mappedRecord);
+			}
+			// no else condition or errors necessary, because the error was reported
+			// and logged during parsing
 		});
+		return processed;
 	}
 
 	clusterByEmail(records) {
