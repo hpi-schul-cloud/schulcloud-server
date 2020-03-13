@@ -1209,4 +1209,86 @@ describe('CSVSyncer Integration', () => {
 			expect(users.some((u) => u.fullName === 'HM Test T. Testington')).to.equal(true);
 		});
 	});
+
+	describe('Scenario 15 - Parsing errors', () => {
+		let scenarioParams;
+		let scenarioData;
+
+		const SCHOOL_ID = testObjects.options.schoolId;
+		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
+
+		before(async () => {
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
+				sendEmails: 'false',
+			};
+			scenarioData = {
+				data: 'firstName,lastName,email\n'
+					+ `Chester,Bennington,${TEACHER_EMAILS[0]}\n`
+					+ `Mike,Shinoda,${TEACHER_EMAILS[1]}\n`
+					+ `Dave "Phoenix,Pharell${TEACHER_EMAILS[2]}\n`, // should produce a parsing error
+			};
+		});
+
+		after(async () => {
+			await Promise.all(TEACHER_EMAILS.map((email) => deleteUser(email)));
+			await testObjects.cleanup();
+		});
+
+		it('should detect and skip Syntax errors', async () => {
+			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+			expect(stats.success).to.equal(false);
+			expect(stats.users.successful).to.equal(2);
+			expect(stats.users.failed).to.equal(1);
+
+			expect(stats.errors.filter((e) => e.type === 'file').length).to.equal(1);
+		});
+	});
+
+	describe('Scenario 16 - Non-UTF-8 Encoding', () => {
+		let scenarioParams;
+		let scenarioData;
+
+		const SCHOOL_ID = testObjects.options.schoolId;
+		const TEACHER_EMAILS = ['a@b.de'];
+
+		before(async () => {
+			const user = await createUser({ roles: 'administrator', schoolId: SCHOOL_ID });
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
+				sendEmails: 'false',
+			};
+			scenarioData = {
+				data: Buffer.from(`firstName,lastName,email\nHérbèrt,Hüßtensâft,${TEACHER_EMAILS[0]}`)
+					.toString('latin1'),
+			};
+		});
+
+		after(async () => {
+			await Promise.all(TEACHER_EMAILS.map((email) => deleteUser(email)));
+			await testObjects.cleanup();
+		});
+
+		it('should respect the encoding', async () => {
+			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+			expect(stats.success).to.equal(true);
+			expect(stats.users.successful).to.equal(1);
+			expect(stats.users.failed).to.equal(0);
+
+			const [user] = await userModel.find({
+				email: TEACHER_EMAILS[0],
+			});
+			expect(user.firstName).to.equal('Hérbèrt');
+			expect(user.lastName).to.equal('Hüßtensâft');
+		});
+	});
 });
