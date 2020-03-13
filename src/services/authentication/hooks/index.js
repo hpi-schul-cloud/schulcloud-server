@@ -36,8 +36,8 @@ const bruteForceCheck = async (context) => {
 				if (timeDifference < allowedTimeDifference) {
 					throw new TooManyRequests(
 						'Brute Force Prevention!', {
-							timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
-						},
+						timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
+					},
 					);
 				}
 			}
@@ -156,6 +156,22 @@ const removeJwtFromWhitelist = async (context) => {
 	return context;
 };
 
+/**
+ * increase jwt timeout for private devices on request
+  @param {} context
+ */
+const increateJwtTimeoutForPrivateDevices = (context) => {
+	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true) {
+		if (context.data && context.data.privateDevice === true) {
+			if (!context.params.jwt) {
+				context.params.jwt = {};
+			}
+			context.params.jwt.expiresIn = Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS');
+		}
+	}
+	return context;
+};
+
 const hooks = {
 	before: {
 		create: [
@@ -165,6 +181,7 @@ const hooks = {
 			trimPassword,
 			bruteForceCheck,
 			injectUserId,
+			increateJwtTimeoutForPrivateDevices,
 			removeProvider,
 		],
 		remove: [removeProvider],
