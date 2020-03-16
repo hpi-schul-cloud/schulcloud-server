@@ -4,12 +4,11 @@ let channel;
 const internalQueue = 'matrix_sync_unpopulated';
 
 const handleCourseChanged = async (course, app) => {
-	console.log('handleCourseChanged');
 	const users = course.userIds.concat(course.teacherIds).concat(course.substitutionIds);
 	channel.assertQueue(internalQueue, {
 		durable: false,
 	});
-	users.foreach((userId) => {
+	users.forEach((userId) => {
 		const message = JSON.stringify({ userId, course });
 		channel.sendToQueue(internalQueue, Buffer.from(message));
 	});

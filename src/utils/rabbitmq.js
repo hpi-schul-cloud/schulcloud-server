@@ -3,12 +3,14 @@ const amqp = require('amqplib');
 let connection;
 
 const createChannel = async () => {
-	await connection;
-	connection.createChannel();
+	if (connection) {
+		const con = await Promise.resolve(connection);
+		return con.createChannel();
+	}
 };
 
 const setup = async (app) => {
-	connection = amqp.connect('amqp://192.168.99.101');
+	connection = amqp.connect('amqp://192.168.99.100');
 };
 
 module.exports = { setup, createChannel };
