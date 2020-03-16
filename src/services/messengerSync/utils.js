@@ -53,13 +53,11 @@ const getRoles = async () => {
 
 const buildAddUserMessage = async (data) => {
 	const { userId, team, course } = data;
+	// todo: check if school uses messenger
 	const user = await getUserData(userId);
 	const school = await getSchoolData(user.schoolId);
 	const { teacherRoleId, adminRoleId } = await getRoles();
 	const rooms = [];
-	console.log(course.teacherIds);
-	console.log(course.teacherIds.includes(userId.toString()));
-	console.log(userId.toString());
 	if (course) {
 		rooms.push({
 			id: course._id.toString(),
@@ -87,7 +85,6 @@ const buildAddUserMessage = async (data) => {
 		},
 		rooms,
 	};
-	console.log(message);
 	return message;
 };
 

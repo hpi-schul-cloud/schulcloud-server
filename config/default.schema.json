@@ -80,6 +80,17 @@
 			"default": "",
 			"description": "The BBB Salt for api call checksum creation."
 		},
+		"FEATURE_RABBITMQ_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, adds support to send RabbitMQ messages"
+		},
+		"RABBITMQ_URI": {
+			"type": "string",
+			"format": "uri",
+			"default": "amqp://192.168.99.100",
+			"description": "the URI of the rabbitMQ server"
+		},
 		"HOST": {
 			"type": "string",
 			"format": "uri",
