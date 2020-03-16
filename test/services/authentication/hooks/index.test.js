@@ -61,7 +61,7 @@ describe('authentication hooks', function test() {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
 		const { accessToken } = params.authentication;
-		const { redisIdentifier } = redisHelper.getRedisIdentifier(accessToken);
+		const { redisIdentifier } = redisHelper.extractRedisFromJwt(accessToken);
 		const result = await addJwtToWhitelist({ result: { accessToken } });
 		expect(result).to.not.equal(undefined);
 		const redisResult = await redisHelper.redisGetAsync(redisIdentifier);
@@ -73,7 +73,7 @@ describe('authentication hooks', function test() {
 	it('removeJwtFromWhitelist', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.getRedisIdentifier(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractRedisFromJwt(params.authentication.accessToken);
 		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 7200);
 		const result = await removeJwtFromWhitelist({
 			params,

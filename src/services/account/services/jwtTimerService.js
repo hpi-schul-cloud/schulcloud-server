@@ -5,7 +5,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const docs = require('./jwtTimerDocs');
 
 const {
-	getRedisClient, redisSetAsync, redisTtlAsync, getRedisIdentifier, getRedisValue,
+	getRedisClient, redisSetAsync, redisTtlAsync, extractRedisFromJwt, getRedisValue,
 } = require('../../../utils/redis');
 
 
@@ -21,7 +21,7 @@ class JwtTimerService {
 	 */
 	async find(params) {
 		if (getRedisClient()) {
-			const { redisIdentifier } = getRedisIdentifier(params.authentication.accessToken);
+			const { redisIdentifier } = extractRedisFromJwt(params.authentication.accessToken);
 			const redisResponse = await redisTtlAsync(redisIdentifier);
 			return Promise.resolve({ ttl: redisResponse });
 		}
@@ -35,7 +35,7 @@ class JwtTimerService {
 	 */
 	async create(data, params) {
 		if (getRedisClient()) {
-			const { redisIdentifier } = getRedisIdentifier(params.authentication.accessToken);
+			const { redisIdentifier } = extractRedisFromJwt(params.authentication.accessToken);
 			const redisResponse = await redisTtlAsync(redisIdentifier);
 			if (redisResponse < 0) throw new NotAuthenticated('Session was expired due to inactivity - autologout.');
 			await redisSetAsync(

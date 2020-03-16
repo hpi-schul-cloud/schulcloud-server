@@ -41,7 +41,7 @@ const redisTtlAsync = (...args) => {
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 
-function getRedisIdentifier(token) {
+function extractRedisFromJwt(token) {
 	const decodedToken = jwt.decode(token.replace('Bearer ', ''));
 	const { accountId, jti, exp } = decodedToken; // jti - UID of the token
 	const nowInSeconds = Math.floor(Date.now() / 1000);
@@ -61,6 +61,6 @@ module.exports = {
 	redisSetAsync,
 	redisDelAsync,
 	redisTtlAsync,
-	getRedisIdentifier,
+	extractRedisFromJwt,
 	getRedisValue,
 };
