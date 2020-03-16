@@ -107,7 +107,7 @@
 	"devDependencies": {
 		"codecov": "^3.6.5",
 		"eslint": "^5.16.0",
-		"eslint-config-airbnb-base": "^13.0.0",
+		"eslint-config-airbnb-base": "^14.0.0",
 		"eslint-plugin-import": "^2.18.2",
 		"mocha": "^7.0.1",
 		"mockery": "^2.0.0",
