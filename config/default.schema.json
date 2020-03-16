@@ -28,6 +28,16 @@
 			"default": 7200,
 			"description": "After this many seconds of inactivity, a user gets logged out automatically. If no REDIS_URI is set, this value is ignored."
 		},
+		"FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Using privateDevice parameter in login, the logout/jwt timeout can be extended to JWT_EXTENDED_TIMEOUT_SECONDS instead of JWT_TIMEOUT_SECONDS."
+		},
+		"JWT_EXTENDED_TIMEOUT_SECONDS": {
+			"type": "integer",
+			"default": 2629746,
+			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no REDIS_URI is set, this value is ignored."
+		},
 		"JWT_WHITELIST_ACCEPT_ALL": {
 			"type": "boolean",
 			"default": false,

@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "22.2.5",
+	"version": "22.3.1",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -43,7 +43,7 @@
 		"@feathersjs/express": "^4.3.4",
 		"@feathersjs/feathers": "^4.3.4",
 		"@feathersjs/socketio": "^4.3.4",
-		"@schul-cloud/commons": "^1.0.12",
+		"@schul-cloud/commons": "^1.0.16",
 		"@sentry/node": "^5.9.0",
 		"ajv": "^6.10.2",
 		"aws-sdk": "^2.306.0",
@@ -60,7 +60,6 @@
 		"cors": "^2.8.1",
 		"cross-env": "^7.0.0",
 		"crypto-js": "^4.0.0",
-		"csv-parse": "^4.6.3",
 		"email-templates": "^6.0.0",
 		"es6-promisify": "^6.0.1",
 		"express": "^4.14.0",
@@ -87,6 +86,7 @@
 		"moodle-client": "^0.5.2",
 		"nanoid": "^2.0.3",
 		"oauth-1.0a": "^2.2.6",
+		"papaparse": "^5.1.1",
 		"prom-client": "^11.5.3",
 		"prometheus-api-metrics": "^2.2.3",
 		"querystring": "^0.2.0",
@@ -114,7 +114,8 @@
 		"nock": "^12.0.0",
 		"nodemon": "^2.0.2",
 		"nyc": "^14.1.1",
-		"simple-oauth2": "^3.0.0"
+		"simple-oauth2": "^3.0.0",
+		"sinon": "^9.0.0"
 	},
 	"greenkeeper": {
 		"ignore": [
