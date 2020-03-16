@@ -163,10 +163,10 @@ const removeJwtFromWhitelist = async (context) => {
 const increateJwtTimeoutForPrivateDevices = (context) => {
 	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true) {
 		if (context.data && context.data.privateDevice === true) {
-			if (!context.params.jwt) {
-				context.params.jwt = {};
-			}
-			context.params.jwt.expiresIn = Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS');
+			context.params.jwt = {
+				...context.params.jwt,
+				expiresIn: Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS'),
+			};
 		}
 	}
 	return context;
