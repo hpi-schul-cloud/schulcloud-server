@@ -1,31 +1,21 @@
 const rp = require('request-promise-native');
 const { BadRequest } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
+
 const logger = require('../../../logger');
 
-// TODO: use config
-const {
-	NEXBOARD_URL = 'https://nexboard.nexenio.com/',
-	NEXBOARD_URI = 'portal/api/v1/public/',
-	NEXBOARD_API_KEY,
-	NEXBOARD_USER_ID,
-} = process.env;
+const Config = new Configuration();
+Config.init();
 
+/**
+ * Is created and designed as singleton.
+ * Options only hold as global envirements, or in config file.
+ */
 class Nexboard {
-	constructor({
-		apiKey = NEXBOARD_API_KEY,
-		userID = NEXBOARD_USER_ID,
-		url = NEXBOARD_URL,
-		uri = NEXBOARD_URI,
-	} = {}) {
-		if (!apiKey || !userID || !url || !uri) {
-			logger.error('Missing nextboard envs:', {
-				apiKey, userID, url, uri,
-			});
-		}
-
-		this.apiKey = apiKey;
-		this.user = userID;
-		this.url = url + uri;
+	constructor() {
+		this.apiKey = Config.get('NEXBOARD_API_KEY');
+		this.user = Config.get('NEXBOARD_USER_ID');
+		this.url = Config.get('NEXBOARD_URL') + Config.get('NEXBOARD_URI');
 
 		logger.info('Nextboard is set to=', this.url);
 
@@ -120,4 +110,4 @@ class Nexboard {
 	}
 }
 
-module.exports = (url) => new Nexboard({ url });
+module.exports = new Nexboard();

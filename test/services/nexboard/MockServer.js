@@ -1,31 +1,35 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const { Configuration } = require('@schul-cloud/commons');
+
 const logger = require('../../../src/logger');
 
 // TODO: use config
-const {
-	NEXBOARD_URL = 'https://nexboard.nexenio.com/',
-	NEXBOARD_URI = 'portal/api/v1/public/',
-} = process.env;
+const Config = new Configuration();
+Config.init();
+// const { NEXBOARD_URI = '/portal/api/v1/public/' } = process.env;
 
-module.exports = function MockServer({
-	nexUrl = NEXBOARD_URL,
-	uri = NEXBOARD_URI,
-	url = 'localhost:58372',
-	resolver,
-}) {
+module.exports = function MockServer({ url = 'http://localhost:58372', resolver } = {}) {
 	const app = express();
 	app.use(bodyParser.json()); // for parsing application/json
 	app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 	app.url = url;
+	let port;
+	try {
+		port = Number(url.split('http://localhost:')[1]);
+	} catch (err) {
+		logger.warn('Can not set port.', err);
+		port = 58372;
+	}
+	const uri = Config.get('NEXBOARD_URI');
 
 	const uris = {
-		postProject: `/${uri}projects`,
-		getProject: `/${uri}projects/:id`,
-		findProject: `/${uri}projects`,
-		postBoards: `/${uri}boards`,
-		getProjectBoards: `/${uri}projects/:projectId/boards`,
-		getBoard: `/${uri}boards/:id`,
+		postProject: `${uri}projects`,
+		getProject: `${uri}projects/:id`,
+		findProject: `${uri}projects`,
+		postBoards: `${uri}boards`,
+		getProjectBoards: `${uri}projects/:projectId/boards`,
+		getBoard: `${uri}boards/:id`,
 	};
 
 	app.get('/ping', (req, res) => {
@@ -66,9 +70,9 @@ module.exports = function MockServer({
 			description: req.body.description || 'Ein digitales Whiteboard',
 			projectId: req.body.projectId || null,
 			isTemplate: false,
-			publicLink: `${nexUrl}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
-			preview: `${nexUrl}/screenshots/14212?date=1555423972&width=300&height=210`,
-			image: `${nexUrl}/screenshots/14212?date=1555423972&width=1900&height=1200`,
+			publicLink: `${url}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
+			preview: `${url}/screenshots/14212?date=1555423972&width=300&height=210`,
+			image: `${url}/screenshots/14212?date=1555423972&width=1900&height=1200`,
 		});
 	});
 
@@ -86,9 +90,9 @@ module.exports = function MockServer({
 			isTemplate: false,
 			meta: null,
 			isPublic: false,
-			publicLink: `${nexUrl}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
-			preview: `${nexUrl}/screenshots/14212?date=1555424066&width=300&height=210`,
-			image: `${nexUrl}/screenshots/14212?date=1555424066&width=1900&height=1200`,
+			publicLink: `${url}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
+			preview: `${url}/screenshots/14212?date=1555424066&width=300&height=210`,
+			image: `${url}/screenshots/14212?date=1555424066&width=1900&height=1200`,
 		}]);
 	});
 
@@ -104,15 +108,15 @@ module.exports = function MockServer({
 			isTemplate: false,
 			meta: null,
 			isPublic: false,
-			publicLink: `${nexUrl}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
-			preview: `${nexUrl}/screenshots/14212?date=1555424066&width=300&height=210`,
-			image: `${nexUrl}/screenshots/14212?date=1555424066&width=1900&height=1200`,
+			publicLink: `${url}/app/client/pub/14212/766u0758-n138-0qx1-m1z3-0711ru670706`,
+			preview: `${url}/screenshots/14212?date=1555424066&width=300&height=210`,
+			image: `${url}/screenshots/14212?date=1555424066&width=1900&height=1200`,
 		});
 	});
 
 	const server = app.listen(port);
 	server.on('listening', () => {
-		logger.log('info', `Nexboard mock application started on http://${app.url}`, uris);
+		logger.info(`Nexboard mock application started on http://${app.url}`, uris);
 		if (resolver) {
 			resolver();
 		}

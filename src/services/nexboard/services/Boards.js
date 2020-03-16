@@ -1,4 +1,4 @@
-const nexboardClient = require('../utils/Nexboard')(process.env.NEXBOARD_MOCK_URL);
+const nexboardClient = require('../utils/Nexboard');
 
 class Board {
 	constructor(options) {

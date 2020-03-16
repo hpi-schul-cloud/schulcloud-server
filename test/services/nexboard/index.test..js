@@ -5,6 +5,7 @@ const freeport = require('freeport');
 const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
 const testObjects = require('../helpers/testObjects');
+const { setEnv, revertAllEnvs } = require('../helpers/configEnvs');
 
 const { expect } = chai;
 
@@ -35,12 +36,12 @@ function request({
 	));
 }
 
-describe('Nexboard services', () => {
+describe.only('Nexboard services', () => {
 	let mockServer;
 	let server;
 	let app;
 	let testHelpers;
-	let memoryUrl;
+	// let memoryUrl;
 
 	before((done) => {
 		freeport((err, port) => {
@@ -48,18 +49,20 @@ describe('Nexboard services', () => {
 				logger.warning('freeport:', err);
 			}
 
+			const mockUrl = `http://localhost:${port}`;
+			setEnv('NEXBOARD_URL', mockUrl);
+			// TODO: app.Config.data.NEXBOARD_URL;
+			/*
+			memoryUrl = process.env.NEXBOARD_URL;
+			process.env.NEXBOARD_URL = `http://${mockUrl}`;
+			logger.info('set process.env.NEXBOARD_URL', {
+				NEXBOARD_URL: process.env.NEXBOARD_URL,
+			});
+			*/
 			// eslint-disable-next-line global-require
 			app = require('../../../src/app');
 			server = app.listen(0);
 			testHelpers = testObjects(app);
-
-			const mockUrl = `localhost:${port}/`;
-			// TODO: app.Config.data.NEXBOARD_MOCK_URL;
-			memoryUrl = process.env.NEXBOARD_MOCK_URL;
-			process.env.NEXBOARD_MOCK_URL = `http://${mockUrl}`;
-			logger.info('set process.env.NEXBOARD_MOCK_URL', {
-				NEXBOARD_MOCK_URL: process.env.NEXBOARD_MOCK_URL,
-			});
 
 			({ server: mockServer } = MockServer({
 				resolver: done,
@@ -70,10 +73,7 @@ describe('Nexboard services', () => {
 	});
 
 	after(async () => {
-		process.env.NEXBOARD_MOCK_URL = memoryUrl;
-		logger.info('set process.env.NEXBOARD_MOCK_URL', {
-			NEXBOARD_MOCK_URL: process.env.NEXBOARD_MOCK_URL,
-		});
+		revertAllEnvs();
 		await mockServer.close();
 		await server.close();
 	});
