@@ -36,7 +36,7 @@ function request({
 	));
 }
 
-describe.only('Nexboard services', () => {
+describe('Nexboard services', () => {
 	let mockServer;
 	let server;
 	let app;
