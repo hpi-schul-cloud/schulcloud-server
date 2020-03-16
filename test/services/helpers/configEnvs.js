@@ -2,14 +2,11 @@ const logger = require('../../../src/logger/index');
 
 const memoEnv = {};
 const setEnv = (name, value) => {
+	// can have value undefined
 	const oldValue = process.env[name];
-	if (!oldValue) {
-		logger.error(`[TestObjects] The env ${name} do not exist. It can not modified.`);
-	} else {
-		memoEnv[name] = oldValue;
-		process.env[name] = value;
-		logger.info(`[TestObjects] The env ${name} is set to ${value}`);
-	}
+	memoEnv[name] = oldValue;
+	process.env[name] = value;
+	logger.info(`[TestObjects] The env ${name} is set to ${value}`);
 };
 
 const revertEnv = (name) => {

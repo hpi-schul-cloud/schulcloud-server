@@ -7,13 +7,12 @@ const logger = require('../../../src/logger');
 // TODO: use config
 const Config = new Configuration();
 Config.init();
-// const { NEXBOARD_URI = '/portal/api/v1/public/' } = process.env;
 
 module.exports = function MockServer({ url = 'http://localhost:58372', resolver } = {}) {
 	const app = express();
 	app.use(bodyParser.json()); // for parsing application/json
 	app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-	app.url = url;
+
 	let port;
 	try {
 		port = Number(url.split('http://localhost:')[1]);
@@ -116,7 +115,7 @@ module.exports = function MockServer({ url = 'http://localhost:58372', resolver 
 
 	const server = app.listen(port);
 	server.on('listening', () => {
-		logger.info(`Nexboard mock application started on http://${app.url}`, uris);
+		logger.info(`Nexboard mock application started on ${url}`, uris);
 		if (resolver) {
 			resolver();
 		}

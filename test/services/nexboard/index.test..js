@@ -41,7 +41,6 @@ describe.only('Nexboard services', () => {
 	let server;
 	let app;
 	let testHelpers;
-	// let memoryUrl;
 
 	before((done) => {
 		freeport((err, port) => {
@@ -51,14 +50,7 @@ describe.only('Nexboard services', () => {
 
 			const mockUrl = `http://localhost:${port}`;
 			setEnv('NEXBOARD_URL', mockUrl);
-			// TODO: app.Config.data.NEXBOARD_URL;
-			/*
-			memoryUrl = process.env.NEXBOARD_URL;
-			process.env.NEXBOARD_URL = `http://${mockUrl}`;
-			logger.info('set process.env.NEXBOARD_URL', {
-				NEXBOARD_URL: process.env.NEXBOARD_URL,
-			});
-			*/
+
 			// eslint-disable-next-line global-require
 			app = require('../../../src/app');
 			server = app.listen(0);
