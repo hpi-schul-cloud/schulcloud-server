@@ -10,7 +10,7 @@ const handleCourseChanged = async (course, app) => {
 	});
 	users.forEach((userId) => {
 		const message = JSON.stringify({ userId, course });
-		channel.sendToQueue(internalQueue, Buffer.from(message));
+		channel.sendToQueue(internalQueue, Buffer.from(message), { persistent: true });
 	});
 };
 

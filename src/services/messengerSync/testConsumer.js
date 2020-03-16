@@ -11,7 +11,7 @@ amqp.connect('amqp://192.168.99.100', function(error0, connection) {
             throw error1;
         }
 
-        var queue = 'matrix_sync_unpopulated';
+        var queue = 'matrix_sync_populated';
 
         channel.assertQueue(queue, {
             durable: false
