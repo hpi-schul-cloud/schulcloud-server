@@ -1,6 +1,6 @@
 const Syncer = require('../Syncer');
 const {
-	TspApi, config: TSP_CONFIG, ENTITY_SOURCE,
+	TspApi, config: TSP_CONFIG, ENTITY_SOURCE, findSchool,
 } = require('./TSP');
 const SchoolYearFacade = require('../../../school/logic/year');
 
@@ -63,10 +63,23 @@ class TSPBaseSyncer extends Syncer {
 
 		// Create/update all schools from the API and create/update a school-specific data source
 		const schools = await this.getSchools();
-		for (const { schuleNummer, schuleName } of schools) {
-			const school = await this.createOrUpdateSchool(schuleNummer, schuleName);
-			await this.ensureDatasourceExists(school);
-		}
+		const tasks = schools.map(async ({ schuleNummer: identifier, schuleName: name }) => {
+			try {
+				const school = await this.createOrUpdateSchool(identifier, name);
+				await this.ensureDatasourceExists(school);
+				this.stats.schools.successful += 1;
+			} catch (err) {
+				this.logError(`Encountered an error while creating or updating '${name}' (${identifier}):`,
+					{ error: err });
+				this.stats.schools.errors += 1;
+				this.stats.errors.push({
+					type: 'sync-school',
+					entity: `'${name}' (${identifier})`,
+					message: 'Fehler bei der Synchronisierung der Schule.',
+				});
+			}
+		});
+		await Promise.all(tasks);
 		return this.stats;
 	}
 
@@ -126,34 +139,16 @@ class TSPBaseSyncer extends Syncer {
 	async createOrUpdateSchool(identifier, name) {
 		let result;
 		this.stats.schools.entities.push({ identifier, name });
-		try {
-			this.logInfo(`Finding school '${name}' (${identifier})...`);
-			const schools = await this.app.service('schools').find({
-				query: {
-					source: ENTITY_SOURCE,
-					'sourceOptions.schoolIdentifier': identifier,
-					$limit: 1,
-				},
-				paginate: false,
-			});
-			if (Array.isArray(schools) && schools.length === 1) {
-				this.logInfo(`Updating '${name}' (${identifier})...`);
-				result = await this.updateSchool(schools[0], name);
-			} else {
-				this.logInfo(`School not found. Creating '${name}' (${identifier})...`);
-				result = await this.createSchool(identifier, name);
-			}
-			this.stats.schools.successful += 1;
-		} catch (err) {
-			this.logError(`Encountered an error while creating or updating '${name}' (${identifier}):`, err);
-			this.stats.schools.errors += 1;
-			this.stats.errors.push({
-				type: 'sync-school',
-				entity: `'${name}' (${identifier})`,
-				message: 'Fehler bei der Synchronisierung der Schule.',
-			});
+		this.logInfo(`Finding school '${name}' (${identifier})...`);
+		const school = await findSchool(this.app, identifier);
+		if (school) {
+			this.logInfo(`Updating '${name}' (${identifier})...`);
+			result = await this.updateSchool(school, name);
+		} else {
+			this.logInfo(`School not found. Creating '${name}' (${identifier})...`);
+			result = await this.createSchool(identifier, name);
 		}
-		this.logInfo('Done.');
+		this.logInfo(`'${name}' (${identifier}) exists.`);
 		return result;
 	}
 
@@ -215,10 +210,13 @@ class TSPBaseSyncer extends Syncer {
 	}
 
 	async ensureDatasourceExists(school) {
+		const schoolName = `'${school.name}' (${school.sourceOptions.schoolIdentifier})`;
 		const existingDatasource = await this.findDatasource(school);
 		if (existingDatasource === null) {
+			this.logInfo(`There is no datasource for ${schoolName} yet. Creating it...`);
 			await this.createDatasource(school);
 		}
+		this.logInfo(`Datasource for ${schoolName} exists.`);
 	}
 
 	async findDatasource(school) {

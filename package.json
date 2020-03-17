@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "22.3.2",
+	"version": "22.4.0",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -15,7 +15,7 @@
 	"contributors": [],
 	"bugs": {},
 	"engines": {
-		"node": "^10.17.0"
+		"node": "lts/*"
 	},
 	"scripts": {
 		"lint": "eslint ./src ./test ./migrations --ext .js --fix",
@@ -43,10 +43,9 @@
 		"@feathersjs/express": "^4.3.4",
 		"@feathersjs/feathers": "^4.3.4",
 		"@feathersjs/socketio": "^4.3.4",
-		"@schul-cloud/commons": "^1.0.12",
+		"@schul-cloud/commons": "^1.0.16",
 		"@sentry/node": "^5.9.0",
 		"ajv": "^6.10.2",
-		"async": "^2.6.3",
 		"aws-sdk": "^2.306.0",
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
@@ -60,9 +59,7 @@
 		"compression": "^1.6.2",
 		"cors": "^2.8.1",
 		"cross-env": "^7.0.0",
-		"crypto-js": "^3.1.9-1",
-		"csv-parse": "^4.6.3",
-		"ejs": "^2.5.5",
+		"crypto-js": "^4.0.0",
 		"email-templates": "^6.0.0",
 		"es6-promisify": "^6.0.1",
 		"express": "^4.14.0",
@@ -81,7 +78,6 @@
 		"moment": "^2.19.2",
 		"mongodb-uri": "^0.9.7",
 		"mongoose": "~5.8.12",
-		"mongoose-autopopulate": "^0.9.1",
 		"mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-history": "^0.8.0",
 		"mongoose-id-validator": "^0.5.3",
@@ -90,9 +86,7 @@
 		"moodle-client": "^0.5.2",
 		"nanoid": "^2.0.3",
 		"oauth-1.0a": "^2.2.6",
-		"passport": "^0.4.0",
-		"passport-strategy": "^1.0.0",
-		"pretty-error": "^2.0.3",
+		"papaparse": "^5.1.1",
 		"prom-client": "^11.5.3",
 		"prometheus-api-metrics": "^2.2.3",
 		"querystring": "^0.2.0",
@@ -105,31 +99,29 @@
 		"serve-favicon": "^2.3.2",
 		"socketio-file-upload": "^0.7.0",
 		"strip-bom": "^4.0.0",
-		"strip-js": "^1.0.6",
 		"universal-analytics": "^0.4.17",
 		"uuid": "^3.3.2",
 		"winston": "^3.2.0",
 		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {
-		"codecov": "^3.6.1",
+		"codecov": "^3.6.5",
 		"eslint": "^5.16.0",
 		"eslint-config-airbnb-base": "^13.0.0",
 		"eslint-plugin-import": "^2.18.2",
-		"eslint-plugin-react": "^7.11.1",
 		"mocha": "^7.0.1",
 		"mockery": "^2.0.0",
 		"nock": "^12.0.0",
-		"nodemon": "^1.19.1",
+		"nodemon": "^2.0.2",
 		"nyc": "^14.1.1",
-		"simple-oauth2": "^3.0.0"
+		"simple-oauth2": "^3.0.0",
+		"sinon": "^9.0.0"
 	},
 	"greenkeeper": {
 		"ignore": [
 			"eslint",
 			"eslint-config-airbnb-base",
-			"eslint-plugin-import",
-			"eslint-plugin-react"
+			"eslint-plugin-import"
 		]
 	}
 }
