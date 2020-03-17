@@ -20,11 +20,16 @@ let roles;
 
 const getRoles = async () => {
 	if (!roles) {
-		const [teacherRoleId, adminRoleId] = await Promise.all([
+		const [teacherRoleId, adminRoleId, teamOwnerId, teamAdminId, teamLeaderId] = await Promise.all([
 			roleModel.findOne({ name: 'teacher' }, { _id: 1 }).lean().exec().then((r) => r._id),
 			roleModel.findOne({ name: 'administrator' }, { _id: 1 }).lean().exec().then((r) => r._id),
+			roleModel.findOne({ name: 'teamowner' }, { _id: 1 }).lean().exec().then((r) => r._id.toString()),
+			roleModel.findOne({ name: 'teamadministrator' }, { _id: 1 }).lean().exec().then((r) => r._id.toString()),
+			roleModel.findOne({ name: 'teamleader' }, { _id: 1 }).lean().exec().then((r) => r._id.toString()),
 		]);
-		roles = { teacherRoleId, adminRoleId };
+		roles = {
+			teacherRoleId, adminRoleId, teamOwnerId, teamAdminId, teamLeaderId,
+		};
 	}
 	return roles;
 };
@@ -56,7 +61,9 @@ const buildAddUserMessage = async (data) => {
 	// todo: check if school uses messenger
 	const user = await getUserData(userId);
 	const school = await getSchoolData(user.schoolId);
-	const { teacherRoleId, adminRoleId } = await getRoles();
+	const {
+		teacherRoleId, adminRoleId, teamAdminId, teamLeaderId, teamOwnerId,
+	} = await getRoles();
 	const rooms = [];
 	if (course) {
 		rooms.push({
@@ -66,6 +73,18 @@ const buildAddUserMessage = async (data) => {
 			bidirectional: (course.features || []).includes('messenger'),
 			is_moderator: course.teacherIds.some(
 				(el) => el.toString() === userId.toString() || el.toString() === userId.toString(),
+			),
+		});
+	}
+	if (team) {
+		rooms.push({
+			id: team._id.toString(),
+			name: team.name,
+			type: 'team',
+			bidirectional: (team.features || []).includes('messenger'),
+			is_moderator: team.userIds.some(
+				(el) => el.userId.toString() === userId.toString()
+					&& [teamAdminId, teamLeaderId, teamOwnerId].includes(el.role.toString()),
 			),
 		});
 	}
