@@ -1,3 +1,4 @@
+const { Configuration } = require('@schul-cloud/commons');
 const { createChannel } = require('../../utils/rabbitmq');
 
 let channel;
@@ -15,10 +16,12 @@ const handleCourseChanged = async (course, app) => {
 };
 
 const setup = async (app) => {
-	channel = await createChannel();
-	app.service('courses').on('created', (context) => handleCourseChanged(context, app));
-	app.service('courses').on('patched', (context) => handleCourseChanged(context, app));
-	app.service('courses').on('updated', (context) => handleCourseChanged(context, app));
+	if (Configuration.get('FEATURE_RABBITMQ_ENABLED')) {
+		channel = await createChannel();
+		app.service('courses').on('created', (context) => handleCourseChanged(context, app));
+		app.service('courses').on('patched', (context) => handleCourseChanged(context, app));
+		app.service('courses').on('updated', (context) => handleCourseChanged(context, app));
+	}
 };
 
 module.exports = setup;
