@@ -4,18 +4,15 @@ const { Configuration } = require('@schul-cloud/commons');
 
 const logger = require('../../../logger');
 
-const Config = new Configuration();
-Config.init();
-
 /**
  * Is created and designed as singleton.
  * Options only hold as global envirements, or in config file.
  */
 class Nexboard {
 	constructor() {
-		this.apiKey = Config.get('NEXBOARD_API_KEY');
-		this.user = Config.get('NEXBOARD_USER_ID');
-		this.url = Config.get('NEXBOARD_URL') + Config.get('NEXBOARD_URI');
+		this.apiKey = Configuration.get('NEXBOARD_API_KEY');
+		this.user = Configuration.get('NEXBOARD_USER_ID');
+		this.url = Configuration.get('NEXBOARD_URL') + Configuration.get('NEXBOARD_URI');
 
 		logger.info('Nextboard is set to=', this.url);
 
