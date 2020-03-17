@@ -15,16 +15,19 @@ const handleMessage = async (incomingMessage) => {
 
 const setup = async (app) => {
 	channel = await createChannel();
+
+	// internal queue
 	channel.assertQueue(internalQueue, {
 		durable: false,
 	});
-
-	channel.assertQueue(externalQueue, {
-		durable: false,
-	});
-
+	channel.prefetch(30);
 	channel.consume(internalQueue, handleMessage, {
 		noAck: false,
+	});
+
+	// external queue
+	channel.assertQueue(externalQueue, {
+		durable: false,
 	});
 };
 
