@@ -1,6 +1,7 @@
 const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
 
@@ -46,6 +47,11 @@ const checkAndVerifyPin = (hook) => {
 	// todo one result only, verified egal, verified setzen, ok zurÜck, inhalte entfernen
 	if (hook.result.data.length === 1) {
 		const firstDataItem = hook.result.data[0];
+		// check generation age
+		const now = Date.now();
+		if (firstDataItem.updatedAt.getTime() + (Configuration.get('PIN_MAX_AGE_SECONDS') * 1000) < now) {
+			throw new Forbidden('Die verwendete Pin ist nicht mehr gültig. Bitte einen neuen Code erstellen.');
+		}
 		if (firstDataItem.verified === true) {
 			// already verified
 			return hook;
@@ -53,10 +59,13 @@ const checkAndVerifyPin = (hook) => {
 		if (firstDataItem.pin && firstDataItem.pin === hook.params.query.pin) {
 			return hook.app.service('registrationPins')
 				.patch(firstDataItem._id, { verified: true })
-				.then((result) => Promise.resolve(result));
+				.then((result) => {
+					hook.result.data = [result];
+					return Promise.resolve(hook);
+				});
 		}
 	}
-	throw new BadRequest();
+	throw new BadRequest('Die eingegebene Pin ist ungültig oder konnte nicht bestätigt werden.');
 };
 
 const mailPin = (hook) => {
@@ -105,7 +114,7 @@ const hasEmailAndPin = (hook) => {
 
 exports.before = {
 	all: [globalHooks.forceHookResolve(authenticate('jwt'))],
-	find: [globalHooks.ifNotLocal(hasEmailAndPin)],
+	find: [hooks.disallow('external'), hasEmailAndPin],
 	get: hooks.disallow('external'),
 	create: [
 		removeOldPins,

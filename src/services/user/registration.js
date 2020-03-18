@@ -111,7 +111,7 @@ const registerUser = function register(data, params, app) {
 			if (user.birthday instanceof Date && isNaN(user.birthday)) {
 				return Promise.reject(new errors.BadRequest(
 					'Fehler bei der Erkennung des ausgewählten Geburtstages.'
-					+ ' Bitte lade die Seite neu und starte erneut.',
+						+ ' Bitte lade die Seite neu und starte erneut.',
 				));
 			}
 			// wrong age?
@@ -119,12 +119,12 @@ const registerUser = function register(data, params, app) {
 			if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
 				return Promise.reject(new errors.BadRequest(
 					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
-					+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
+						+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
 				));
 			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
 				return Promise.reject(new errors.BadRequest(
 					`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
-					+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
+						+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
 				));
 			}
 		}
@@ -142,16 +142,20 @@ const registerUser = function register(data, params, app) {
 		return Promise.resolve();
 	})
 		.then(() => {
-			const userMail = data.parent_email || data.student_email || data.email;
-			const pinInput = data.pin;
+			const email = data.parent_email || data.student_email || data.email;
+			const { pin } = data;
 			return app.service('registrationPins').find({
-				query: { pin: pinInput, email: userMail, verified: false },
-			}).then((check) => {
+				query: { pin, email },
+			}).then((result) => {
 				// check pin
-				if (!(check.data && check.data.length > 0 && check.data[0].pin === pinInput)) {
-					return Promise.reject('Ungültige Pin, bitte überprüfe die Eingabe.');
+				if (result.data.length !== 1 || result.data[0].verified !== true) {
+					return Promise.reject(new Error('Ungültige Pin oder die Pin konnte nicht verifiziert werden.'));
 				}
 				return Promise.resolve();
+			}).catch((err) => {
+				const msg = err.message || 'Fehler wärend der Pin Überprüfung.';
+				logger.error(msg, err);
+				return Promise.reject(new Error(msg));
 			});
 		})
 		.then(() =>
