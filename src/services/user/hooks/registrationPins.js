@@ -1,11 +1,11 @@
 const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const logger = require('../../../logger');
+const { BadRequest } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
 
 const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
-	.then((pins) => Promise.resolve(hook));
+	.then(() => Promise.resolve(hook));
 
 const generatePin = (hook) => {
 	const pin = Math.floor((Math.random() * 8999) + 1000);
@@ -14,43 +14,49 @@ const generatePin = (hook) => {
 };
 
 function createinfoText(hook) {
-	let text;
 	const role = hook.data.mailTextForRole;
 	const { pin } = hook.data;
 	const shortTitle = process.env.SC_SHORT_TITLE || 'Schul-Cloud*';
 	const longTitle = process.env.SC_TITLE || 'HPI Schul-Cloud*';
-	if (!role || !pin) {
-		logger.warning('Role or PIN missing to define mail text.');
-		return '';
+	if (!pin) {
+		throw new BadRequest('Fehler beim Erstellen der Pin.');
 	}
 	if (role === 'parent') {
-		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der ${longTitle} ermöglichen.
+		return `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der ${longTitle} ermöglichen.
 Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen:
 
 PIN: ${pin}
 
 Mit Freundlichen Grüßen
 Ihr ${shortTitle} Team`;
-	} else if (role === 'student' || role === 'employee' || role === 'expert') {
-		text = `Vielen Dank, dass du die ${longTitle} nutzen möchtest.
+	}
+	if (role === 'student' || role === 'employee' || role === 'expert') {
+		return `Vielen Dank, dass du die ${longTitle} nutzen möchtest.
 Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen:
 
 PIN: ${pin}
 
 Mit freundlichen Grüßen
 Dein ${shortTitle} Team`;
-	} else {
-		logger.warning('No valid role submitted to define mail text.');
-		return '';
 	}
-	return text;
+	throw new BadRequest('Die angegebene Rolle ist ungültig.', { role });
 }
 
 const checkAndVerifyPin = (hook) => {
-	if (hook.result.data.length === 1 && hook.result.data[0].verified === false) {
-		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, { verified: true }).then(() => Promise.resolve(hook));
+	// todo one result only, verified egal, verified setzen, ok zurÜck, inhalte entfernen
+	if (hook.result.data.length === 1) {
+		const firstDataItem = hook.result.data[0];
+		if (firstDataItem.verified === true) {
+			// already verified
+			return hook;
+		}
+		if (firstDataItem.pin && firstDataItem.pin === hook.params.query.pin) {
+			return hook.app.service('registrationPins')
+				.patch(firstDataItem._id, { verified: true })
+				.then((result) => Promise.resolve(result));
+		}
 	}
-	return Promise.resolve(hook);
+	throw new BadRequest();
 };
 
 const mailPin = (hook) => {
@@ -85,9 +91,21 @@ const returnPinOnlyToSuperHero = async (hook) => {
 	return Promise.resolve(hook);
 };
 
+const hasEmailAndPin = (hook) => {
+	const { email, pin } = hook.params.query;
+	if (!hook.params.query || !email || !pin) {
+		throw new BadRequest();
+	}
+	if (email && typeof email === 'string' && email.length
+		&& pin && typeof pin === 'string' && pin.length === 4) {
+		return hook;
+	}
+	throw new BadRequest();
+};
+
 exports.before = {
 	all: [globalHooks.forceHookResolve(authenticate('jwt'))],
-	find: hooks.disallow('external'),
+	find: [globalHooks.ifNotLocal(hasEmailAndPin)],
 	get: hooks.disallow('external'),
 	create: [
 		removeOldPins,
