@@ -44,6 +44,9 @@ Dein ${shortTitle} Team`;
 }
 
 const checkAndVerifyPin = (hook) => {
+	if (hook.result.data.length === 0) {
+		return hook;
+	}
 	// todo one result only, verified egal, verified setzen, ok zurÜck, inhalte entfernen
 	if (hook.result.data.length === 1) {
 		const firstDataItem = hook.result.data[0];
@@ -56,16 +59,20 @@ const checkAndVerifyPin = (hook) => {
 			// already verified
 			return hook;
 		}
-		if (firstDataItem.pin && firstDataItem.pin === hook.params.query.pin) {
-			return hook.app.service('registrationPins')
-				.patch(firstDataItem._id, { verified: true })
-				.then((result) => {
-					hook.result.data = [result];
-					return Promise.resolve(hook);
-				});
+		if (firstDataItem.pin) {
+			if (firstDataItem.pin === hook.params.query.pin) {
+				return hook.app.service('registrationPins')
+					.patch(firstDataItem._id, { verified: true })
+					.then((result) => {
+						hook.result.data = [result];
+						return hook;
+					});
+			}
+			throw new BadRequest('Die eingegebene Pin ist ungültig oder konnte nicht bestätigt werden.');
 		}
+		return hook;
 	}
-	throw new BadRequest('Die eingegebene Pin ist ungültig oder konnte nicht bestätigt werden.');
+	throw new BadRequest('Only one result allowed here');
 };
 
 const mailPin = (hook) => {
@@ -100,13 +107,13 @@ const returnPinOnlyToSuperHero = async (hook) => {
 	return Promise.resolve(hook);
 };
 
-const hasEmailAndPin = (hook) => {
+const hasEmailAndOptionalValidPin = (hook) => {
 	const { email, pin } = hook.params.query;
-	if (!hook.params.query || !email || !pin) {
+	if (!hook.params.query || !email) {
 		throw new BadRequest();
 	}
 	if (email && typeof email === 'string' && email.length
-		&& pin && typeof pin === 'string' && pin.length === 4) {
+		&& (!pin || (pin && typeof pin === 'string' && pin.length === 4))) {
 		return hook;
 	}
 	throw new BadRequest();
@@ -114,7 +121,7 @@ const hasEmailAndPin = (hook) => {
 
 exports.before = {
 	all: [globalHooks.forceHookResolve(authenticate('jwt'))],
-	find: [hooks.disallow('external'), hasEmailAndPin],
+	find: [hooks.disallow('external'), hasEmailAndOptionalValidPin],
 	get: hooks.disallow('external'),
 	create: [
 		removeOldPins,

@@ -70,9 +70,19 @@ const insertUserToDB = async (app, data, user) => {
 	}
 	return app.service('users').create(user, { _additional: { parentEmail: data.parent_email, asTask: 'student' } })
 		.catch((err) => {
-			logger.warning(err);
+			logger.error(err);
 			// fixme check error message is correct, check err
-			throw new errors.BadRequest('Fehler beim Erstellen des Nutzers. Eventuell ist die E-Mail-Adresse bereits im System registriert.');
+			let msg = 'Fehler beim Erstellen des Nutzers. '
+				+ 'Eventuell ist die E-Mail-Adresse bereits im System registriert. '
+				+ 'Wende dich an den Support. Damit wir dir schnell helfen können, teile uns bitte alle angegebenen E-Mail-Adressen mit.';
+			if (err && err.message) {
+				if (err.message.includes('bereits')) {
+					// account or user exists
+					msg = err.message;
+				}
+			}
+			logger.error(msg);
+			throw new errors.BadRequest(msg);
 		});
 };
 
@@ -106,41 +116,41 @@ const registerUser = function register(data, params, app) {
 			user = response.user;
 			oldUser = response.oldUser;
 		})).then(() => {
-		if ((user.roles || []).includes('student')) {
-			// wrong birthday object?
-			if (user.birthday instanceof Date && isNaN(user.birthday)) {
-				return Promise.reject(new errors.BadRequest(
-					'Fehler bei der Erkennung des ausgewählten Geburtstages.'
+			if ((user.roles || []).includes('student')) {
+				// wrong birthday object?
+				if (user.birthday instanceof Date && isNaN(user.birthday)) {
+					return Promise.reject(new errors.BadRequest(
+						'Fehler bei der Erkennung des ausgewählten Geburtstages.'
 						+ ' Bitte lade die Seite neu und starte erneut.',
-				));
-			}
-			// wrong age?
-			const age = globalHooks.getAge(user.birthday);
-			if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
-				return Promise.reject(new errors.BadRequest(
-					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
+					));
+				}
+				// wrong age?
+				const age = globalHooks.getAge(user.birthday);
+				if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+					return Promise.reject(new errors.BadRequest(
+						`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
 						+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
-				));
-			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
-				return Promise.reject(new errors.BadRequest(
-					`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
+					));
+				} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+					return Promise.reject(new errors.BadRequest(
+						`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
 						+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
+					));
+				}
+			}
+
+			// identical emails?
+			if (data.parent_email && data.parent_email === data.email) {
+				return Promise.reject(new errors.BadRequest(
+					'Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.',
 				));
 			}
-		}
 
-		// identical emails?
-		if (data.parent_email && data.parent_email === data.email) {
-			return Promise.reject(new errors.BadRequest(
-				'Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.',
-			));
-		}
-
-		if (data.password_1 && data.passwort_1 !== data.passwort_2) {
-			return new errors.BadRequest('Die Passwörter stimmen nicht überein');
-		}
-		return Promise.resolve();
-	})
+			if (data.password_1 && data.passwort_1 !== data.passwort_2) {
+				return new errors.BadRequest('Die Passwörter stimmen nicht überein');
+			}
+			return Promise.resolve();
+		})
 		.then(() => {
 			const email = data.parent_email || data.student_email || data.email;
 			const { pin } = data;
