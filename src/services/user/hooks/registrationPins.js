@@ -24,7 +24,7 @@ function createinfoText(hook) {
 	}
 	if (role === 'parent') {
 		return `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der ${longTitle} ermöglichen.
-Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen:
+Bitte geben Sie den folgenden Bestätigungscode im Registrierungsprozess ein, um die Registrierung abzuschließen:
 
 PIN: ${pin}
 
