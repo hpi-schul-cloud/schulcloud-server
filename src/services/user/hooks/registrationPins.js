@@ -24,7 +24,7 @@ function createinfoText(hook) {
 	}
 	if (role === 'parent') {
 		return `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der ${longTitle} ermöglichen.
-Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen:
+Bitte geben Sie den folgenden Bestätigungscode im Registrierungsprozess ein, um die Registrierung abzuschließen:
 
 PIN: ${pin}
 
@@ -33,7 +33,7 @@ Ihr ${shortTitle} Team`;
 	}
 	if (role === 'student' || role === 'employee' || role === 'expert') {
 		return `Vielen Dank, dass du die ${longTitle} nutzen möchtest.
-Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen:
+Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein, um deine Registrierung bei der ${longTitle} abzuschließen:
 
 PIN: ${pin}
 
@@ -52,7 +52,7 @@ const checkAndVerifyPin = (hook) => {
 		// check generation age
 		const now = Date.now();
 		if (firstDataItem.updatedAt.getTime() + (Configuration.get('PIN_MAX_AGE_SECONDS') * 1000) < now) {
-			throw new Forbidden('Die verwendete Pin ist nicht mehr gültig. Bitte einen neuen Code erstellen.');
+			throw new Forbidden('Der eingegebene Code ist nicht mehr gültig. Bitte fordere einen neuen Code an.');
 		}
 		if (firstDataItem.verified === true) {
 			// already verified
@@ -67,7 +67,7 @@ const checkAndVerifyPin = (hook) => {
 						return hook;
 					});
 			}
-			throw new BadRequest('Die eingegebene Pin ist ungültig, fehlt oder konnte nicht bestätigt werden.');
+			throw new BadRequest('Der eingegebene Code ist ungültig oder konnte nicht bestätigt werden. Bitte versuche es erneut.');
 		}
 		return hook;
 	}
