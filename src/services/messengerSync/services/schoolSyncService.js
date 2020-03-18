@@ -1,9 +1,7 @@
-const Ajv = require('ajv');
-const { Writable } = require('stream');
-const {	Forbidden, GeneralError, BadRequest } = require('@feathersjs/errors');
+const {	GeneralError, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const {
-	iff, isProvider, validateSchema, disallow,
+	iff, isProvider, disallow,
 } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const { createChannel } = require('../../../utils/rabbitmq');
@@ -33,9 +31,12 @@ class MessengerSchoolSync {
 		const school = await this.app.service('schools').get(params.route.schoolId);
 		if (!school.features.includes('messenger')) throw new BadRequest('this school does not support the messenger');
 		const users = await this.app.service('users').find({ query: { schoolId: school._id } });
+		this.channel.assertQueue(internalQueue, {
+			durable: true,
+		});
 		users.data.forEach((user) => {
-			const message = JSON.stringify({ userId: user._id, schoolSync: true });
-			this.channel.sendToQueue(internalQueue, Buffer.from(message), { persistent: true });
+			/* const message = JSON.stringify({ userId: user._id, schoolSync: true });
+			this.channel.sendToQueue(internalQueue, Buffer.from(message), { persistent: true }); */
 		});
 		return users;
 	}
