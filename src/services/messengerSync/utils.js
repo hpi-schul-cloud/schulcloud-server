@@ -1,6 +1,8 @@
 const { userModel, displayName } = require('../user/model');
 const { schoolModel } = require('../school/model');
 const roleModel = require('../role/model');
+const { courseModel } = require('../user-group/model');
+const { teamsModel } = require('../teams/model');
 
 const getUserData = (userId) => userModel.findOne(
 	{ _id: userId },
@@ -15,6 +17,24 @@ const getSchoolData = (schoolId) => schoolModel.findOne(
 		_id: 1, name: 1,
 	},
 ).lean().exec();
+
+const getAllCourseDataForUser = (userId) => courseModel.find(
+	{
+		$or: [
+			{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId },
+		],
+	},
+	{
+		_id: 1, name: 1, userIds: 1, teacherIds: 1, substitutionIds: 1, features: 1,
+	},
+).lean().exec();
+
+const getAllTeamsDataForUser = (userId) => teamsModel.find(
+	{ userIds: { $elemMatch: { userId } } },
+	{
+		_id: 1, name: 1, userIds: 1, features: 1,
+	},
+);
 
 let roles;
 
@@ -62,13 +82,13 @@ const buildCourseObject = (course, userId) => ({
 	type: 'course',
 	bidirectional: (course.features || []).includes('messenger'),
 	is_moderator: course.teacherIds.some(
-		(el) => el.toString() === userId.toString() || el.toString() === userId.toString(),
+		(el) => el.toString() === userId.toString(),
 	),
 });
 
 
-const buildTeamObject = async (team, userId) => {
-	const { teamAdminId, teamLeaderId, teamOwnerId } = await getRoles();
+const buildTeamObject = async (team, userId, moderatorRoles) => {
+	const { teamAdminId, teamLeaderId, teamOwnerId } = moderatorRoles;
 	return {
 		id: team._id.toString(),
 		name: team.name,
@@ -81,14 +101,10 @@ const buildTeamObject = async (team, userId) => {
 	};
 };
 
-const buildAddUserMessage = async (data) => {
-	const { userId, teams, courses } = data;
-	// todo: check if school uses messenger
+const buildMessageObject = async ({ userId, teams, courses }) => {
 	const user = await getUserData(userId);
 	const school = await getSchoolData(user.schoolId);
-	const {
-		teacherRoleId, adminRoleId,
-	} = await getRoles();
+	const moderatorRoles = await getRoles();
 	const rooms = [];
 	if (courses) {
 		courses.forEach((course) => {
@@ -97,7 +113,7 @@ const buildAddUserMessage = async (data) => {
 	}
 	if (teams) {
 		await Promise.all(teams.map(async (team) => {
-			const teamObject = await buildTeamObject(team, userId);
+			const teamObject = await buildTeamObject(team, userId, moderatorRoles);
 			rooms.push(teamObject);
 		}));
 	}
@@ -112,12 +128,20 @@ const buildAddUserMessage = async (data) => {
 		user: {
 			id: `${user._id.toString()}@matrix.schul-cloud.org`,
 			name: displayName(user),
-			is_school_admin: user.roles.some((el) => el.toString() === adminRoleId.toString()),
-			is_school_teacher: user.roles.some((el) => el.toString() === teacherRoleId.toString()),
+			is_school_admin: user.roles.some((el) => el.toString() === moderatorRoles.adminRoleId.toString()),
+			is_school_teacher: user.roles.some((el) => el.toString() === moderatorRoles.teacherRoleId.toString()),
 		},
 		rooms,
 	};
 	return message;
+};
+
+const buildAddUserMessage = async (data) => {
+	if (data.schoolSync) {
+		data.courses = await getAllCourseDataForUser(data.userId);
+		data.teams = await getAllTeamsDataForUser(data.userId);
+	}
+	return buildMessageObject(data);
 };
 
 
