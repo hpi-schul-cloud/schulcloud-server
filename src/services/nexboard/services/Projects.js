@@ -6,7 +6,7 @@ class Project {
 		this.docs = {};
 	}
 
-	async get(id, params) {
+	get(id, params) {
 		return nexboardClient.getProject(id);
 	}
 
@@ -14,12 +14,11 @@ class Project {
 		return nexboardClient.getProjectsIds();
 	}
 
-	async create({
+	create({
 		title = 'Neues Nexboard Projekt',
 		description = 'Hier werden alle Nexboards für diese Lerneinheit gesammelt',
 	}, params) {
-		const project = await nexboardClient.createProject(title, description);
-		return project;
+		return nexboardClient.createProject(title, description);
 	}
 
 	setup(app) {

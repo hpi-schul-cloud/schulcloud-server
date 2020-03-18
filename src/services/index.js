@@ -43,7 +43,8 @@ const videoconference = require('./videoconference');
 const nexboard = require('./nexboard');
 
 
-module.exports = function initializeServices(app) {
+module.exports = function initializeServices() {
+	const app = this;
 	// connect mongoose to the database
 	database.connect();
 
