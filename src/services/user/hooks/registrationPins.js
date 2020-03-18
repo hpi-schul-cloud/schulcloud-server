@@ -67,7 +67,7 @@ const checkAndVerifyPin = (hook) => {
 						return hook;
 					});
 			}
-			throw new BadRequest('Die eingegebene Pin ist ungültig oder konnte nicht bestätigt werden.');
+			throw new BadRequest('Der eingegebene Code ist ungültig oder konnte nicht bestätigt werden. Bitte versuche es erneut.');
 		}
 		return hook;
 	}
