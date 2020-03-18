@@ -10,20 +10,22 @@ const handleCourseChanged = async (course, app) => {
 		durable: false,
 	});
 	users.forEach((userId) => {
-		const message = JSON.stringify({ userId, course });
+		const message = JSON.stringify({ userId, courses: [course] });
 		channel.sendToQueue(internalQueue, Buffer.from(message), { persistent: true });
 	});
 };
 
 const handleTeamChanged = (team) => {
-	const users = team.userIds.map((teamUser) => teamUser.userId);
-	channel.assertQueue(internalQueue, {
-		durable: false,
-	});
-	users.forEach((userId) => {
-		const message = JSON.stringify({ userId, team });
-		channel.sendToQueue(internalQueue, Buffer.from(message), { persistent: true });
-	});
+	if (team.users) {
+		const users = team.userIds.map((teamUser) => teamUser.userId);
+		channel.assertQueue(internalQueue, {
+			durable: false,
+		});
+		users.forEach((userId) => {
+			const message = JSON.stringify({ userId, teams: [team] });
+			channel.sendToQueue(internalQueue, Buffer.from(message), { persistent: true });
+		});
+	}
 };
 
 const setup = async (app) => {

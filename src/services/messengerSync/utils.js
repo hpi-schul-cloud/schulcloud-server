@@ -56,37 +56,50 @@ const getRoles = async () => {
     }
 } */
 
+const buildCourseObject = (course, userId) => ({
+	id: course._id.toString(),
+	name: course.name,
+	type: 'course',
+	bidirectional: (course.features || []).includes('messenger'),
+	is_moderator: course.teacherIds.some(
+		(el) => el.toString() === userId.toString() || el.toString() === userId.toString(),
+	),
+});
+
+
+const buildTeamObject = async (team, userId) => {
+	const { teamAdminId, teamLeaderId, teamOwnerId } = await getRoles();
+	return {
+		id: team._id.toString(),
+		name: team.name,
+		type: 'team',
+		bidirectional: (team.features || []).includes('messenger'),
+		is_moderator: team.userIds.some(
+			(el) => el.userId.toString() === userId.toString()
+				&& [teamAdminId, teamLeaderId, teamOwnerId].includes(el.role.toString()),
+		),
+	};
+};
+
 const buildAddUserMessage = async (data) => {
-	const { userId, team, course } = data;
+	const { userId, teams, courses } = data;
 	// todo: check if school uses messenger
 	const user = await getUserData(userId);
 	const school = await getSchoolData(user.schoolId);
 	const {
-		teacherRoleId, adminRoleId, teamAdminId, teamLeaderId, teamOwnerId,
+		teacherRoleId, adminRoleId,
 	} = await getRoles();
 	const rooms = [];
-	if (course) {
-		rooms.push({
-			id: course._id.toString(),
-			name: course.name,
-			type: 'course',
-			bidirectional: (course.features || []).includes('messenger'),
-			is_moderator: course.teacherIds.some(
-				(el) => el.toString() === userId.toString() || el.toString() === userId.toString(),
-			),
+	if (courses) {
+		courses.forEach((course) => {
+			rooms.push(buildCourseObject(course, userId));
 		});
 	}
-	if (team) {
-		rooms.push({
-			id: team._id.toString(),
-			name: team.name,
-			type: 'team',
-			bidirectional: (team.features || []).includes('messenger'),
-			is_moderator: team.userIds.some(
-				(el) => el.userId.toString() === userId.toString()
-					&& [teamAdminId, teamLeaderId, teamOwnerId].includes(el.role.toString()),
-			),
-		});
+	if (teams) {
+		await Promise.all(teams.map(async (team) => {
+			const teamObject = await buildTeamObject(team, userId);
+			rooms.push(teamObject);
+		}));
 	}
 	const message = {
 		method: 'adduser',

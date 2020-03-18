@@ -42,7 +42,7 @@ describe('messenger synchronizer utils', () => {
 			const school = await testObjects.createTestSchool({ features: ['messenger'] });
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 			const course = await testObjects.createTestCourse({ teacherIds: [teacher._id], schoolId: school._id });
-			const result = await buildAddUserMessage({ userId: teacher._id, course });
+			const result = await buildAddUserMessage({ userId: teacher._id, courses: [course] });
 			expect(result.method).to.equal('adduser');
 
 			expect(result.school.id).to.equal(school._id.toString());
@@ -70,7 +70,7 @@ describe('messenger synchronizer utils', () => {
 			const { user, team } = await testObjects.createTestTeamWithOwner(
 				{ roles: ['teacher'], schoolId: school._id },
 			);
-			const result = await buildAddUserMessage({ userId: user._id, team });
+			const result = await buildAddUserMessage({ userId: user._id, teams: [team] });
 			expect(result.method).to.equal('adduser');
 
 			expect(result.school.id).to.equal(school._id.toString());
