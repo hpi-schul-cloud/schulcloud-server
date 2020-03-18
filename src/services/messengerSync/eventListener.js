@@ -7,7 +7,7 @@ const internalQueue = 'matrix_sync_unpopulated';
 const handleCourseChanged = async (course, app) => {
 	const users = course.userIds.concat(course.teacherIds).concat(course.substitutionIds);
 	channel.assertQueue(internalQueue, {
-		durable: false,
+		durable: true,
 	});
 	users.forEach((userId) => {
 		const message = JSON.stringify({ userId, courses: [course] });
@@ -19,7 +19,7 @@ const handleTeamChanged = (team) => {
 	if (team.users) {
 		const users = team.userIds.map((teamUser) => teamUser.userId);
 		channel.assertQueue(internalQueue, {
-			durable: false,
+			durable: true,
 		});
 		users.forEach((userId) => {
 			const message = JSON.stringify({ userId, teams: [team] });

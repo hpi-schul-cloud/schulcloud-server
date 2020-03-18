@@ -18,7 +18,7 @@ const setup = async (app) => {
 
 	// internal queue
 	channel.assertQueue(internalQueue, {
-		durable: false,
+		durable: true,
 	});
 	channel.prefetch(30);
 	channel.consume(internalQueue, handleMessage, {
@@ -27,7 +27,7 @@ const setup = async (app) => {
 
 	// external queue
 	channel.assertQueue(externalQueue, {
-		durable: false,
+		durable: true,
 	});
 };
 
