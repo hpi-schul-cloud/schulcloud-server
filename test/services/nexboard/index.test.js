@@ -36,7 +36,7 @@ function request({
 	));
 }
 
-describe('Nexboard services', () => {
+describe.skip('Nexboard services', () => {
 	let mockServer;
 	let server;
 	let app;
@@ -59,7 +59,6 @@ describe('Nexboard services', () => {
 			({ server: mockServer } = MockServer({
 				resolver: done,
 				url: mockUrl,
-				port,
 			}));
 		});
 	});
