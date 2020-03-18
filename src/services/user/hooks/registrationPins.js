@@ -14,11 +14,11 @@ const generatePin = (hook) => {
 	return Promise.resolve(hook);
 };
 
+const shortTitle = process.env.SC_SHORT_TITLE || 'Schul-Cloud*';
+const longTitle = process.env.SC_TITLE || 'HPI Schul-Cloud*';
 function createinfoText(hook) {
 	const role = hook.data.mailTextForRole;
 	const { pin } = hook.data;
-	const shortTitle = process.env.SC_SHORT_TITLE || 'Schul-Cloud*';
-	const longTitle = process.env.SC_TITLE || 'HPI Schul-Cloud*';
 	if (!pin) {
 		throw new BadRequest('Fehler beim Erstellen der Pin.');
 	}
@@ -67,7 +67,7 @@ const checkAndVerifyPin = (hook) => {
 						return hook;
 					});
 			}
-			throw new BadRequest('Die eingegebene Pin ist ungültig oder konnte nicht bestätigt werden.');
+			throw new BadRequest('Die eingegebene Pin ist ungültig, fehlt oder konnte nicht bestätigt werden.');
 		}
 		return hook;
 	}
@@ -77,7 +77,7 @@ const checkAndVerifyPin = (hook) => {
 const mailPin = (hook) => {
 	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
-			subject: `${process.env.SC_SHORT_TITLE || 'Schul-Cloud*'}: Registrierung mit PIN verifizieren`,
+			subject: `${shortTitle}: Registrierung mit PIN verifizieren`,
 			emails: (hook.data || {}).email,
 			content: {
 				text: createinfoText(hook),
@@ -109,13 +109,13 @@ const returnPinOnlyToSuperHero = async (hook) => {
 const validateEmailAndPin = (hook) => {
 	const { email, pin } = hook.params.query;
 	if (!hook.params.query || !email) {
-		throw new BadRequest();
+		throw new BadRequest('email required');
 	}
 	if (email && typeof email === 'string' && email.length
 		&& (!pin || (pin && typeof pin === 'string' && pin.length === 4))) {
 		return hook;
 	}
-	throw new BadRequest();
+	throw new BadRequest('pin or email invalid', { email, pin });
 };
 
 exports.before = {
