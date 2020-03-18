@@ -78,7 +78,8 @@ const insertUserToDB = async (app, data, user) => {
 			if (err && err.message) {
 				if (err.message.includes('bereits')) {
 					// account or user exists
-					msg = err.message;
+					msg = `${err.message} `
+					+ 'Wahrscheinlich kannst du dich damit bereits einloggen. Nutze dazu den Login. Dort kannst du dir auch ein neues Passwort zusenden lassen.';
 				}
 			}
 			logger.error(msg);
@@ -116,41 +117,41 @@ const registerUser = function register(data, params, app) {
 			user = response.user;
 			oldUser = response.oldUser;
 		})).then(() => {
-			if ((user.roles || []).includes('student')) {
-				// wrong birthday object?
-				if (user.birthday instanceof Date && isNaN(user.birthday)) {
-					return Promise.reject(new errors.BadRequest(
-						'Fehler bei der Erkennung des ausgewählten Geburtstages.'
-						+ ' Bitte lade die Seite neu und starte erneut.',
-					));
-				}
-				// wrong age?
-				const age = globalHooks.getAge(user.birthday);
-				if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
-					return Promise.reject(new errors.BadRequest(
-						`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
-						+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
-					));
-				} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
-					return Promise.reject(new errors.BadRequest(
-						`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
-						+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
-					));
-				}
-			}
-
-			// identical emails?
-			if (data.parent_email && data.parent_email === data.email) {
+		if ((user.roles || []).includes('student')) {
+			// wrong birthday object?
+			if (user.birthday instanceof Date && isNaN(user.birthday)) {
 				return Promise.reject(new errors.BadRequest(
-					'Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.',
+					'Fehler bei der Erkennung des ausgewählten Geburtstages.'
+						+ ' Bitte lade die Seite neu und starte erneut.',
 				));
 			}
-
-			if (data.password_1 && data.passwort_1 !== data.passwort_2) {
-				return new errors.BadRequest('Die Passwörter stimmen nicht überein');
+			// wrong age?
+			const age = globalHooks.getAge(user.birthday);
+			if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+				return Promise.reject(new errors.BadRequest(
+					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
+						+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
+				));
+			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+				return Promise.reject(new errors.BadRequest(
+					`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
+						+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
+				));
 			}
-			return Promise.resolve();
-		})
+		}
+
+		// identical emails?
+		if (data.parent_email && data.parent_email === data.email) {
+			return Promise.reject(new errors.BadRequest(
+				'Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.',
+			));
+		}
+
+		if (data.password_1 && data.passwort_1 !== data.passwort_2) {
+			return new errors.BadRequest('Die Passwörter stimmen nicht überein');
+		}
+		return Promise.resolve();
+	})
 		.then(() => {
 			const email = data.parent_email || data.student_email || data.email;
 			const { pin } = data;
