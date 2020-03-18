@@ -33,7 +33,7 @@ Ihr ${shortTitle} Team`;
 	}
 	if (role === 'student' || role === 'employee' || role === 'expert') {
 		return `Vielen Dank, dass du die ${longTitle} nutzen möchtest.
-Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen:
+Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein, um deine Registrierung bei der ${longTitle} abzuschließen:
 
 PIN: ${pin}
 
