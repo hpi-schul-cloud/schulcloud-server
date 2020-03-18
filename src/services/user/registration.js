@@ -82,7 +82,6 @@ const insertUserToDB = async (app, data, user) => {
 					+ 'Wahrscheinlich kannst du dich damit bereits einloggen. Nutze dazu den Login. Dort kannst du dir auch ein neues Passwort zusenden lassen.';
 				}
 			}
-			logger.error(msg);
 			throw new errors.BadRequest(msg);
 		});
 };

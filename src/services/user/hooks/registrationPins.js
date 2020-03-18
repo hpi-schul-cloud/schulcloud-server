@@ -47,7 +47,6 @@ const checkAndVerifyPin = (hook) => {
 	if (hook.result.data.length === 0) {
 		return hook;
 	}
-	// todo one result only, verified egal, verified setzen, ok zurÜck, inhalte entfernen
 	if (hook.result.data.length === 1) {
 		const firstDataItem = hook.result.data[0];
 		// check generation age
@@ -107,7 +106,7 @@ const returnPinOnlyToSuperHero = async (hook) => {
 	return Promise.resolve(hook);
 };
 
-const hasEmailAndOptionalValidPin = (hook) => {
+const validateEmailAndPin = (hook) => {
 	const { email, pin } = hook.params.query;
 	if (!hook.params.query || !email) {
 		throw new BadRequest();
@@ -121,7 +120,7 @@ const hasEmailAndOptionalValidPin = (hook) => {
 
 exports.before = {
 	all: [globalHooks.forceHookResolve(authenticate('jwt'))],
-	find: [hooks.disallow('external'), hasEmailAndOptionalValidPin],
+	find: [hooks.disallow('external'), validateEmailAndPin],
 	get: hooks.disallow('external'),
 	create: [
 		removeOldPins,
