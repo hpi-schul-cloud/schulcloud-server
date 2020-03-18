@@ -1,7 +1,9 @@
 const { expect } = require('chai');
 const { Configuration } = require('@schul-cloud/commons');
+const mockery = require('mockery');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
+const rabbitmqMock = require('../rabbitmqMock');
 
 const schoolSyncService = app.service('schools/:schoolId/messengerSync');
 
@@ -22,6 +24,18 @@ describe('messenger schoolSync Service', () => {
 		before(async () => {
 			configBefore = Configuration.toObject(); // deep copy current config
 			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
+			mockery.enable({
+				warnOnReplace: false,
+				warnOnUnregistered: false,
+				useCleanCache: true,
+			});
+			mockery.registerMock('../../../utils/rabbitmq', rabbitmqMock);
+			delete require.cache[
+				require.resolve('../../../../src/services/messengerSync/services/schoolSyncService.js')
+			];
+			// eslint-disable-next-line global-require
+			const messengerSync = require('../../../../src/services/messengerSync');
+			app.configure(messengerSync);
 		});
 
 		after(async () => {
@@ -38,7 +52,16 @@ describe('messenger schoolSync Service', () => {
 			]);
 			const params = await testObjects.generateRequestParamsFromUser(users[0]);
 			params.route = { schoolId: school._id.toString() };
-			const result = await schoolSyncService.create({}, params);
+			await app.service('schools/:schoolId/messengerSync').create({}, params);
+
+			const testingQueue = rabbitmqMock.queues.matrix_sync_unpopulated;
+			expect(testingQueue).to.not.be.undefined;
+			expect(testingQueue.length).to.equal(3);
+
+			const firstMessage = JSON.parse(testingQueue[0]);
+			expect(users.map((u) => u._id.toString()).includes(firstMessage.userId)).to.be.true;
+			expect(firstMessage.schoolSync).to.be.true;
+
 			// todo: check rabbit Messages
 		});
 	});
