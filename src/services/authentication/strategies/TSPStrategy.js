@@ -102,6 +102,10 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 
 		const { app } = this;
 		const school = await findSchool(app, decryptedTicket.ptscSchuleNummer);
+		if (!school) {
+			throw new BadRequest('Provided school does not exist.');
+		}
+
 		let user = await findUser(app, decryptedTicket);
 		if (!user) {
 			// User has been created since the last sync, so we'll create him from the ticket info
