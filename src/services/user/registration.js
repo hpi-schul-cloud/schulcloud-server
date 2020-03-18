@@ -74,12 +74,14 @@ const insertUserToDB = async (app, data, user) => {
 			// fixme check error message is correct, check err
 			let msg = 'Fehler beim Erstellen des Nutzers. '
 				+ 'Eventuell ist die E-Mail-Adresse bereits im System registriert. '
-				+ 'Wende dich an den Support. Damit wir dir schnell helfen können, teile uns bitte alle angegebenen E-Mail-Adressen mit.';
+				+ 'Wende dich an den Support. Damit wir dir schnell helfen können, '
+				+ 'teile uns bitte alle angegebenen E-Mail-Adressen mit.';
 			if (err && err.message) {
 				if (err.message.includes('bereits')) {
 					// account or user exists
 					msg = `${err.message} `
-					+ 'Wahrscheinlich kannst du dich damit bereits einloggen. Nutze dazu den Login. Dort kannst du dir auch ein neues Passwort zusenden lassen.';
+					+ 'Wahrscheinlich kannst du dich damit bereits einloggen. '
+					+ 'Nutze dazu den Login. Dort kannst du dir auch ein neues Passwort zusenden lassen.';
 				}
 			}
 			throw new errors.BadRequest(msg);
