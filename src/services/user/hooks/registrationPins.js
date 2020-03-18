@@ -52,7 +52,7 @@ const checkAndVerifyPin = (hook) => {
 		// check generation age
 		const now = Date.now();
 		if (firstDataItem.updatedAt.getTime() + (Configuration.get('PIN_MAX_AGE_SECONDS') * 1000) < now) {
-			throw new Forbidden('Die verwendete Pin ist nicht mehr gültig. Bitte einen neuen Code erstellen.');
+			throw new Forbidden('Der eingegebene Code ist nicht mehr gültig. Bitte fordere einen neuen Code an.');
 		}
 		if (firstDataItem.verified === true) {
 			// already verified
