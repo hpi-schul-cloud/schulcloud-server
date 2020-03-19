@@ -27,6 +27,9 @@ module.exports = function setup() {
 						const [url, query] = data.target.split('?');
 						const queryObject = queryString.parse(query || '');
 						queryObject.link = data._id;
+						if (req.query && req.query.redirect === 'false' && data.target) {
+							return res.send({ target: data.target });
+						}
 						res.redirect(`${url}?${queryString.stringify(queryObject)}`);
 					} else {
 						res.redirect(data.target);
