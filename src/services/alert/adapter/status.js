@@ -1,12 +1,26 @@
+const commons = require('@schul-cloud/commons');
 const Status = require('../MessageProvider/status');
 const Adapter = require('./index');
 const Message = require('./message');
+
+const { Configuration } = commons;
 
 class StatusAdapter extends Adapter {
 	async getMessage(instance) {
 		const data = {
 			success: false,
 			messages: [],
+		};
+
+		const getStatus = (number) => {
+			switch (number) {
+				case 2:
+					return 'danger';
+				case 4:
+					return 'info';
+				default:
+					return '';
+			}
 		};
 
 		// get raw data from Message Provider
@@ -17,11 +31,11 @@ class StatusAdapter extends Adapter {
 				const message = new Message();
 				message.title = element.name;
 				message.text = element.message;
-				message.status = element.status / 2; // map 2 -> 1 and 4 -> 2
+				message.status = getStatus(element.status);
 				message.page = 'status';
 				message.messageId = element.id;
 				message.timestamp = element.updated_at;
-				message.url = 'https://status.schul-cloud.org';
+				message.url = Configuration.get('ALERT_STATUS_URL');
 				data.messages.push(message.getMessage);
 			});
 			data.success = true;

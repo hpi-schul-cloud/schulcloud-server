@@ -101,6 +101,18 @@
 			"default": "http://localhost:3100",
 			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
+		},
+		"ALERT_STATUS_URL": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://status.schul-cloud.org",
+			"description": "The url of status message provider"
+		},
+		"ALERT_STATUS_API_URL": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://status.schul-cloud.org/api/v1",
+			"description": "The api of status message provider"
 		}
 	},
 	"required": [

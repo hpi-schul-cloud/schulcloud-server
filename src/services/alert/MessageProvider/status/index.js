@@ -1,7 +1,10 @@
-/* eslint-disable-next-line */
-const dotenv = require('dotenv').config({ path: `${__dirname}/.env` });
-const request = require('request-promise-native');
+const commons = require('@schul-cloud/commons');
+const api = require('../../../../helper/externalApiRequest');
 const logger = require('../../../../../src/logger');
+
+const { Configuration } = commons;
+
+const apiUri = Configuration.get('ALERT_STATUS_API_URL');
 
 const dict = {
 	default: 1,
@@ -17,58 +20,45 @@ const dict = {
  * @param {number} componentId
  * @returns {Promise}
  */
-function isInstance(instance, componentId) {
-	return new Promise((resolve, reject) => {
-		// componentId 0: message not instance specific
-		if (componentId !== 0) {
-			/* eslint-disable max-len */
-			request.get(`${process.env.STATUS_API_URL}/components/${componentId}`, { timeout: 3000 }, (err, response, body) => {
-				if (!err && response.statusCode === 200) {
-					const data = JSON.parse(body);
-					// translate instance into group_id
-					if (dict[instance] && data.data.group_id === dict[instance]) {
-						resolve(true);
-					} else {
-						resolve(false);
-					}
-				} else {
-					reject(err);
-				}
-			});
-		} else {
-			resolve(true);
+async function isInstance(instance, componentId) {
+	if (componentId !== 0) {
+		try {
+			const response = await api(apiUri).get(`/components/${componentId}`);
+			if (dict[instance] && response.data.group_id === dict[instance]) {
+				return true;
+			}
+			return false;
+		} catch (error) {
+			return false;
 		}
-	});
+	} else {
+		return true;
+	}
 }
 
 /**
  * Get all incidents
  * @returns {Promise}
  */
-function getRawData() {
-	return new Promise((resolve, reject) => {
-		request.get(`${process.env.STATUS_API_URL}/incidents`, { timeout: 3000 }, (err, response, body) => {
-			if (!err && response.statusCode === 200) {
-				resolve(JSON.parse(body));
-			} else {
-				reject(err);
-			}
-		});
-	});
+async function getRawData() {
+	const response = await api(apiUri).get('/incidents');
+	return response;
 }
 
 module.exports = {
 	async getData(instance) {
 		const data = [];
-		if (process.env.STATUS_API_URL !== undefined) {
+		if (apiUri !== undefined) {
 			try {
 				const rawData = await getRawData();
 				for (const element of rawData.data) {
-					const isinstance = await isInstance(instance, element.component_id);
-					// only mind messages for own instance (including none instance specific messages)
 					// only mind incidents not older than 2 days
-					if (isinstance && Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
-						data.push(element);
+					if (Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
+						// only mind messages for own instance (including none instance specific messages)
+						const isinstance = await isInstance(instance, element.component_id);
+						if (isinstance) {
+							data.push(element);
+						}
 					}
 				}
 				return data;

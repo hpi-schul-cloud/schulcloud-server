@@ -7,7 +7,7 @@ const StatusAdapter = require('./adapter/status');
 
 let messages = [];
 // durtion of cache in min
-const duration = 2;
+const duration = 5;
 let success = false;
 
 /**
@@ -17,7 +17,7 @@ let success = false;
 async function addMessageProvider(ProviderAdapter) {
 	const data = await ProviderAdapter.getMessage(globals.SC_THEME);
 	messages = messages.concat(data.messages);
-	({ success } = data);
+	return data.success;
 }
 
 /**
@@ -31,9 +31,9 @@ class AlertService {
 			messages = cachedMessages;
 		} else {
 			// add Message Provider here
-			await addMessageProvider(new StatusAdapter()); // status.schul-cloud.org
+			success = await addMessageProvider(new StatusAdapter()); // status.schul-cloud.org
 
-			if (success) { cache.put('cachedMessages', messages, duration * 1000 * 60); }
+			if (success) { cache.put('cachedMessages', messages, 1000 * 60 * duration); }
 		}
 		return messages;
 	}
