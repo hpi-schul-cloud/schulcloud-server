@@ -10,11 +10,11 @@ const logger = require('../../../logger/');
  */
 class Nexboard {
 	constructor() {
-		this.apiKey = Configuration.get('NEXBOARD_API_KEY');
-		this.user = Configuration.get('NEXBOARD_USER_ID');
-		this.url = Configuration.get('NEXBOARD_URL') + Configuration.get('NEXBOARD_URI');
+		this.apiKey = () => Configuration.get('NEXBOARD_API_KEY');
+		this.user = () => Configuration.get('NEXBOARD_USER_ID');
+		this.url = () => Configuration.get('NEXBOARD_URL') + Configuration.get('NEXBOARD_URI');
 
-		logger.info('Nextboard is set to=', this.url);
+		logger.info('Nextboard is set to=', this.url());
 
 		this.err = {
 			getProject: 'Could not retrieve this Project.',
@@ -30,14 +30,14 @@ class Nexboard {
 		method = 'GET',
 		endpoint,
 		qs = {
-			token: this.apiKey,
-			userId: this.user,
+			token: this.apiKey(),
+			userId: this.user(),
 		},
 		body,
 	}) {
 		return {
 			method,
-			uri: `${this.url}${endpoint}`,
+			uri: `${this.url()}${endpoint}`,
 			qs,
 			body,
 			json: true,
@@ -96,7 +96,7 @@ class Nexboard {
 			method: 'POST',
 			endpoint: 'boards',
 			qs: {
-				token: this.apiKey,
+				token: this.apiKey(),
 			},
 			body: {
 				title,
