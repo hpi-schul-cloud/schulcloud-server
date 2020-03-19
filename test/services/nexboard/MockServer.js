@@ -1,10 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { Configuration } = require('@schul-cloud/commons');
 
 const logger = require('../../../src/logger/');
 
-module.exports = function MockServer(url = 'http://localhost:58372', resolver) {
+module.exports = function MockServer(url, resolver) {
 	const app = express();
 	app.use(bodyParser.json()); // for parsing application/json
 	app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
@@ -16,15 +15,14 @@ module.exports = function MockServer(url = 'http://localhost:58372', resolver) {
 		logger.warning('Can not set port.', err);
 		port = 58372;
 	}
-	const uri = Configuration.get('NEXBOARD_URI');
 
 	const uris = {
-		postProject: `${uri}projects`,
-		getProject: `${uri}projects/:id`,
-		findProject: `${uri}projects`,
-		postBoards: `${uri}boards`,
-		getProjectBoards: `${uri}projects/:projectId/boards`,
-		getBoard: `${uri}boards/:id`,
+		postProject: `${url}/projects`,
+		getProject: `${url}/projects/:id`,
+		findProject: `${url}/projects`,
+		postBoards: `${url}/boards`,
+		getProjectBoards: `${url}/projects/:projectId/boards`,
+		getBoard: `${url}/boards/:id`,
 	};
 
 	app.get('/ping', (req, res) => {
