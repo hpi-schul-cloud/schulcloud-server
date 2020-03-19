@@ -408,17 +408,21 @@ exports.mapPayload = (context) => {
 	}
 	Object.defineProperty(context.params, 'payload', {
 		get() {
-			logger.warning(
-				'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
-				+ ` path: ${context.path} method: ${context.method}`,
-			);
+			if (!isProductionMode) {
+				logger.warning(
+					'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
+					+ ` path: ${context.path} method: ${context.method}`,
+				);
+			}
 			return (context.params.authentication || {}).payload;
 		},
 		set(v) {
-			logger.warning(
-				'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
-				+ `path: ${context.path} method: ${context.method}`,
-			);
+			if (!isProductionMode) {
+				logger.warning(
+					'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
+					+ `path: ${context.path} method: ${context.method}`,
+				);
+			}
 			if (!context.params.authentication) context.params.authentication = {};
 			context.params.authentication.payload = v;
 		},
@@ -449,7 +453,7 @@ exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) =>
 					return userIsInThatCourse(user, lesson.courseGroupId, false);
 				}
 				return userIsInThatCourse(user, lesson.courseId, true)
-						|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
 			});
 			if (tempLesson.length === 0) {
 				throw new Forbidden("You don't have access to that lesson.");
@@ -467,7 +471,7 @@ exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) =>
 					return userIsInThatCourse(user, lesson.courseGroupId, false);
 				}
 				return userIsInThatCourse(user, lesson.courseId, true)
-						|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
 			});
 
 			if (context.result.data.length === 0) {
@@ -496,7 +500,7 @@ exports.restrictToUsersOwnClasses = (context) => getUser(context).then((user) =>
 		return classService.get(context.id).then((result) => {
 			const userId = context.params.account.userId.toString();
 			if (!(_.some(result.userIds, (u) => equalIds(u, userId)))
-					&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
+				&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
 				throw new Forbidden('You are not in that class.');
 			}
 		});
@@ -547,9 +551,9 @@ function validatedAttachments(attachments) {
 	let cTotalBufferSize = 0;
 	attachments.forEach((element) => {
 		if (!element.mimetype.includes('image/')
-		&& !element.mimetype.includes('video/')
-		&& !element.mimetype.includes('application/msword')
-		&& !element.mimetype.includes('application/pdf')) {
+			&& !element.mimetype.includes('video/')
+			&& !element.mimetype.includes('application/msword')
+			&& !element.mimetype.includes('application/pdf')) {
 			throw new Error('Email Attachment is not a valid file!');
 		}
 		cTotalBufferSize += element.size;
@@ -673,6 +677,7 @@ exports.sendEmail = (context, maildata) => {
 				mailService.create({
 					email,
 					replyEmail,
+					from: maildata.from,
 					subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 					headers: maildata.headers || {},
 					content: {
@@ -682,7 +687,6 @@ exports.sendEmail = (context, maildata) => {
 					},
 					attachments,
 				}).catch((err) => {
-					logger.warning(err);
 					throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
 				});
 			});
@@ -757,6 +761,15 @@ exports.lookupSchool = async (context) => {
 	if (context.params && context.params.account && context.params.account.userId) {
 		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
 		context.params.account.schoolId = schoolId;
+		return context;
+	}
+	throw new BadRequest('Authentication is required.');
+};
+
+exports.populateCurrentSchool = async (context) => {
+	if (context.params && context.params.account && context.params.account.userId) {
+		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
+		context.params.school = await context.app.service('schools').get(schoolId);
 		return context;
 	}
 	throw new BadRequest('Authentication is required.');

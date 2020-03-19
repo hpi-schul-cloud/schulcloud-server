@@ -2,10 +2,13 @@ const assert = require('assert');
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 
+const { Configuration } = require('@schul-cloud/commons');
 const app = require('../../../src/app');
 
 const userService = app.service('users');
 const registrationPinService = app.service('registrationPins');
+const { registrationPinModel } = require('../../../src/services/user/model');
+
 const publicTeachersService = app.service('publicTeachers');
 const classesService = app.service('classes');
 const coursesService = app.service('courses');
@@ -116,19 +119,44 @@ describe('user service', () => {
 });
 
 describe('registrationPin Service', () => {
+	let pin = null;
+	const email = 'test.adresse@schul-cloud.org';
 	it('registered the registrationPin Service', () => {
 		assert.ok(registrationPinService);
 	});
 
 	it('creates pins correctly', () => registrationPinService
-		.create({ email: 'test.adresse@schul-cloud.org' })
-		.then(() => registrationPinService.find({ query: { email: 'test.adresse@schul-cloud.org' } }))
+		.create({ email, silent: true })
+		.then(async () => {
+			({ pin } = (await registrationPinModel.findOne({ email }).exec()));
+		})
+		.then(() => registrationPinService.find({ query: { email, pin } }))
 		.then((pinObjects) => expect(pinObjects.data[0]).to.have.property('pin')));
 
-	it('overwrites old pins', () => registrationPinService.create({ email: 'test.adresse@schul-cloud.org' })
-		.then(() => registrationPinService.create({ email: 'test.adresse@schul-cloud.org' }))
-		.then(() => registrationPinService.find({ query: { email: 'test.adresse@schul-cloud.org' } }))
+	it('overwrites old pins', () => registrationPinService
+		.create({ email, silent: true })
+		.then(async () => {
+			const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
+			expect(newPin).to.be.ok;
+			expect(pin).to.be.not.equal(newPin);
+			pin = newPin;
+		})
+		.then(() => registrationPinService.create({ email, silent: true }))
+		.then(async () => {
+			const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
+			expect(newPin).to.be.ok;
+			expect(pin).to.be.not.equal(newPin);
+			pin = newPin;
+		})
+		.then(() => registrationPinService.find({ query: { email, pin } }))
 		.then((pinObjects) => expect(pinObjects.data).to.have.lengthOf(1)));
+
+	it('find without pin fails', () => registrationPinService
+		.create({ email, silent: true })
+		.then(() => registrationPinService.create({ email, silent: true }))
+		.then(() => registrationPinService.find({ query: { email } }))
+		.then(() => { throw new Error('pin should be given'); })
+		.catch((err) => expect(err.message.length).to.be.greaterThan(5)));
 });
 
 describe('publicTeachers service', () => {
@@ -178,12 +206,12 @@ describe('publicTeachers service', () => {
 	describe('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', () => {
 		// save TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION value
 		// eslint-disable-next-line max-len
-		const ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = app.Config.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
+		const ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
 		let result;
 
 		it('set to opt-in: find 1 discoverable teacher (testTeacherEnabled) but not find other teachers', async () => {
-			app.Config.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'opt-in');
-			expect(app.Config.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('opt-in');
+			Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'opt-in');
+			expect(Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('opt-in');
 			result = await publicTeachersService.find({ query: { schoolId }, ...params });
 			expect(result.total).to.equal(1);
 			expect(result.data[0]._id.toString()).to.equal(testTeacherEnabled._id.toString());
@@ -192,8 +220,8 @@ describe('publicTeachers service', () => {
 		});
 
 		it('set to opt-out: find discoverable teachers but not find the disabled teacher', async () => {
-			app.Config.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'opt-out');
-			expect(app.Config.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('opt-out');
+			Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'opt-out');
+			expect(Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('opt-out');
 			result = await publicTeachersService.find({ query: { schoolId }, ...params });
 			const resultIds = result.data.map((teacher) => teacher._id.toString());
 			expect(resultIds).to.include(testTeacher._id.toString());
@@ -203,8 +231,8 @@ describe('publicTeachers service', () => {
 
 		it('set to enabled: find all 2 teachers, ignoring their setting', async () => {
 			// test with enabled'
-			app.Config.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'enabled');
-			expect(app.Config.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('enabled');
+			Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'enabled');
+			expect(Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('enabled');
 			result = await publicTeachersService.find({ query: { schoolId }, ...params });
 			expect(result.total).to.equal(3);
 			const resultIds = result.data.map((teacher) => teacher._id.toString());
@@ -215,8 +243,8 @@ describe('publicTeachers service', () => {
 		});
 
 		it('set to disabled: find no teachers (from different school), ignoring their setting', async () => {
-			app.Config.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'disabled');
-			expect(app.Config.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('disabled');
+			Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'disabled');
+			expect(Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION')).to.be.equal('disabled');
 			expect(() => publicTeachersService.find({ query: { schoolId }, ...params })).to.throw;
 			result = await publicTeachersService.find({
 				query: { schoolId: teacherFromDifferentSchool.schoolId },
@@ -226,7 +254,7 @@ describe('publicTeachers service', () => {
 		});
 		// reset TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION back to original value
 		// eslint-disable-next-line max-len
-		app.Config.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION);
+		Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION);
 	});
 
 	after(async () => {

@@ -116,8 +116,9 @@ const hasEditPermissions = async (context) => {
 	}
 };
 
-const restrictToUserSchool = (context) => {
-	if (equal(context.id, context.params.account.schoolId)) {
+const restrictToUserSchool = async (context) => {
+	const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+	if (isSuperHero || equal(context.id, context.params.account.schoolId)) {
 		return context;
 	}
 	throw new Forbidden('You can only edit your own school.');
@@ -136,14 +137,14 @@ exports.before = {
 	update: [
 		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_EDIT'),
-		globalHooks.lookupSchool,
-		restrictToUserSchool,
+		globalHooks.ifNotLocal(globalHooks.lookupSchool),
+		globalHooks.ifNotLocal(restrictToUserSchool),
 	],
 	patch: [
 		authenticate('jwt'),
-		hasEditPermissions,
-		globalHooks.lookupSchool,
-		restrictToUserSchool,
+		globalHooks.ifNotLocal(hasEditPermissions),
+		globalHooks.ifNotLocal(globalHooks.lookupSchool),
+		globalHooks.ifNotLocal(restrictToUserSchool),
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]

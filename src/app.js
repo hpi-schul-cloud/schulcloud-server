@@ -1,15 +1,7 @@
 const express = require('@feathersjs/express');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
-const commons = require('@schul-cloud/commons');
-
-const app = express(feathers());
-const config = configuration();
-app.configure(config);
-
-// init & register configuration
-(new commons.Configuration()).init({ app });
-
+const apiMetrics = require('prometheus-api-metrics');
 const path = require('path');
 const favicon = require('serve-favicon');
 const compress = require('compression');
@@ -18,6 +10,11 @@ const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
+
+const app = express(feathers());
+
+const config = configuration();
+app.configure(config);
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -29,15 +26,21 @@ const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 
-const { BODYPARSER_JSON_LIMIT } = require('../config/globals');
+const { BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
 
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
+const metricsOptions = {};
+if (METRICS_PATH) {
+	metricsOptions.metricsPath = METRICS_PATH;
+}
+app.use(apiMetrics(metricsOptions));
+
 setupSwagger(app);
-app.configure(initializeRedisClient);
+initializeRedisClient();
 
 // set custom response header for ha proxy
 if (process.env.KEEP_ALIVE) {

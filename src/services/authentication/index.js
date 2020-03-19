@@ -1,8 +1,9 @@
 const { AuthenticationService, JWTStrategy } = require('@feathersjs/authentication');
 const { LocalStrategy } = require('@feathersjs/authentication-local');
+const { Configuration } = require('@schul-cloud/commons');
 
 const {
-	LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy,
+	LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy,
 } = require('./strategies');
 const { hooks } = require('./hooks');
 const { authenticationSecret, audience } = require('./logic');
@@ -11,13 +12,13 @@ const authConfig = {
 	entity: 'account',
 	service: 'accounts',
 	secret: authenticationSecret,
-	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv', 'tsp'],
+	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv', 'tsp', 'api-key'],
 	jwtOptions: {
 		header: { typ: 'access' },
 		audience,
 		issuer: 'feathers',
 		algorithm: 'HS256',
-		expiresIn: '30d',
+		expiresIn: Configuration.get('JWT_TIMEOUT_SECONDS'),
 	},
 	local: {
 		usernameField: 'username',
@@ -35,6 +36,7 @@ const authConfig = {
 		systemIdField: 'systemId',
 	},
 	tsp: {},
+	'api-key': {},
 };
 
 class SCAuthenticationService extends AuthenticationService {
@@ -57,6 +59,7 @@ module.exports = (app) => {
 	authentication.register('moodle', new MoodleStrategy());
 	authentication.register('iserv', new IservStrategy());
 	authentication.register('tsp', new TSPStrategy());
+	authentication.register('api-key', new ApiKeyStrategy());
 
 	app.use('/authentication', authentication);
 

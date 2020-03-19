@@ -1,4 +1,4 @@
-const parse = require('csv-parse/lib/sync');
+const { parse } = require('papaparse');
 const stripBOM = require('strip-bom');
 const { mix } = require('mixwith');
 
@@ -142,26 +142,32 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		let records = [];
 		try {
 			const strippedData = stripBOM(this.options.csvData);
-			records = parse(strippedData, {
-				columns: true,
-				delimiter: ',',
-				trim: true,
+			const parseResult = parse(strippedData, {
+				delimiter: '',	// auto-detect
+				newline: '',	// auto-detect
+				header: true,
+				skipEmptyLines: true,
+				fastMode: true,
 			});
-		} catch (error) {
-			if (error.message && error.message.match(/Invalid Record Length/)) {
-				const line = error.message.match(/on line (\d+)/)[1];
-				this.stats.errors.push({
-					type: 'file',
-					entity: 'Eingabedatei fehlerhaft',
-					message: `Syntaxfehler in Zeile ${line}`,
-				});
-			} else {
-				this.stats.errors.push({
-					type: 'file',
-					entity: 'Eingabedatei fehlerhaft',
-					message: 'Datei ist nicht im korrekten Format',
+			const { errors } = parseResult;
+			if (Array.isArray(errors) && errors.length > 0) {
+				errors.forEach((error) => {
+					this.logWarning('Skipping line, because it contains an error', { error });
+					this.stats.errors.push({
+						type: 'file',
+						entity: 'Eingabedatei fehlerhaft',
+						message: `Syntaxfehler in Zeile ${error.row}`,
+					});
+					this.stats.users.failed += 1;
 				});
 			}
+			records = parseResult.data;
+		} catch (error) {
+			this.stats.errors.push({
+				type: 'file',
+				entity: 'Eingabedatei fehlerhaft',
+				message: 'Datei ist nicht im korrekten Format',
+			});
 			throw error;
 		}
 
@@ -194,12 +200,19 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	static sanitizeRecords(records) {
+		const requiredAttributes = ATTRIBUTES.filter((a) => a.required).map((a) => a.name);
 		const mappingFunction = buildMappingFunction(records[0]);
-		return records.map((record) => {
+		const processed = [];
+		records.forEach((record) => {
 			const mappedRecord = mappingFunction(record);
-			mappedRecord.email = mappedRecord.email.trim().toLowerCase();
-			return mappedRecord;
+			if (requiredAttributes.every((attr) => !!mappedRecord[attr])) {
+				mappedRecord.email = mappedRecord.email.trim().toLowerCase();
+				processed.push(mappedRecord);
+			}
+			// no else condition or errors necessary, because the error was reported
+			// and logged during parsing
 		});
+		return processed;
 	}
 
 	clusterByEmail(records) {

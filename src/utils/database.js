@@ -81,8 +81,12 @@ function connect() {
 		options.password ? 'and' : 'and without', 'password');
 
 	const mongooseOptions = {
+		autoIndex: env !== 'production',
+		poolSize: GLOBALS.MONGOOSE_CONNECTION_POOL_SIZE,
 		useNewUrlParser: true,
 		useFindAndModify: false,
+		useCreateIndex: true,
+		useUnifiedTopology: true,
 	};
 
 	addAuthenticationToOptions(

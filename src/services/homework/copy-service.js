@@ -31,7 +31,7 @@ class HomeworkCopyService {
 				sourceSchoolId: params.payload.schoolId,
 			}, params)))
 				.catch((error) => {
-					this.app.logger.error('Can not copied files for homework.', { homeworkId: params.id, error });
+					this.app.logger.error('Could not copy files for homework.', { homeworkId: params.id, error });
 				});
 
 			return copiedFiles.map((file) => file._id);
@@ -81,7 +81,7 @@ class HomeworkCopyService {
 		const fileIds = await this.copyFilesIfExist(copyAssignment.fileIds, params);
 
 		const addingKeys = {
-			courseId, lessonId, schoolId, teacherId, fileIds,
+			courseId, lessonId, schoolId, teacherId, fileIds, private: true,
 		};
 
 		const tempAssignment = this.copy(copyAssignment, ignoredKeys, addingKeys);

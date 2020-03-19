@@ -84,9 +84,6 @@ class CourseCopyService {
 		});
 
 		await Promise.all(homeworks.map((homework) => {
-			if (homework.archived.length > 0
-				|| (homework.teacherId.toString() !== params.account.userId.toString()
-				&& homework.private)) return false;
 			// homeworks that are part of a lesson are copied in LessonCopyService
 			if (!homework.lessonId) {
 				return createHomework(
@@ -119,32 +116,27 @@ class CourseShareService {
 	}
 
 	// otherwise create a shareToken for given courseId and the respective lessons.
-	get(id, params) {
+	async get(id, params) {
 		const coursesService = this.app.service('courses');
 		const lessonsService = this.app.service('lessons');
 
 		// Get Course and check for shareToken, if not found create one
 		// Also check the corresponding lessons and add shareToken
-		return coursesService.get(id)
-			.then((course) => {
-				if (!course.shareToken) {
-					lessonsService.find({ query: { courseId: id } })
-						.then((lessons) => {
-							for (let i = 0; i < lessons.data.length; i += 1) {
-								if (!lessons.data[i].shareToken) {
-									lessonsModel
-										.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) })
-										.exec();
-								}
-							}
-						});
-
-					return coursesService.patch(id, { shareToken: nanoid(12) })
-						.then((res) => ({ shareToken: res.shareToken }));
+		const course = coursesService.get(id);
+		if (!course.shareToken) {
+			const lessons = await lessonsService.find({ query: { courseId: id } });
+			for (let i = 0; i < lessons.data.length; i += 1) {
+				if (!lessons.data[i].shareToken) {
+					lessonsModel
+						.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) })
+						.exec();
 				}
+			}
 
-				return { shareToken: course.shareToken };
-			});
+			return this.app.service('/courseModel').patch(id, { shareToken: nanoid(12) })
+				.then((res) => ({ shareToken: res.shareToken }));
+		}
+		return { shareToken: course.shareToken };
 	}
 
 	create(data, params) {
