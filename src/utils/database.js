@@ -82,6 +82,7 @@ function connect() {
 
 	const mongooseOptions = {
 		autoIndex: env !== 'production',
+		poolSize: GLOBALS.MONGOOSE_CONNECTION_POOL_SIZE,
 		useNewUrlParser: true,
 		useFindAndModify: false,
 		useCreateIndex: true,
