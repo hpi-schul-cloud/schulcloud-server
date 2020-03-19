@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const freeport = require('freeport');
 
-const logger = require('../../../src/logger');
+const logger = require('../../../src/logger/');
 const MockServer = require('./MockServer');
 const testObjects = require('../helpers/testObjects');
 const { setEnv, revertAllEnvs } = require('../helpers/configEnvs');

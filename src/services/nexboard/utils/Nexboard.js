@@ -2,7 +2,7 @@ const rp = require('request-promise-native');
 const { BadRequest } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 
-const logger = require('../../../logger');
+const logger = require('../../../logger/');
 
 /**
  * Is created and designed as singleton.
@@ -17,11 +17,12 @@ class Nexboard {
 		logger.info('Nextboard is set to=', this.url);
 
 		this.err = {
-			projectIds: 'Could not retrieve ProjectIds',
+			getProject: 'Could not retrieve this Project.',
+			projectIds: 'Could not retrieve ProjectIds.',
 			createProject: 'Could not create new Project',
-			retrieveBoardsFromProject: 'Could not retrieve Boards from Project',
-			retrieveBoards: 'Could not retrieve Board',
-			createBoard: 'Could not create a new Board',
+			retrieveBoardsFromProject: 'Could not retrieve Boards from Project.',
+			retrieveBoards: 'Could not retrieve Board.',
+			createBoard: 'Could not create a new Board.',
 		};
 	}
 
@@ -44,7 +45,10 @@ class Nexboard {
 	}
 
 	getProject(projectId) {
-		return rp(this.createSettings({ endpoint: `projects/${projectId}` }));
+		return rp(this.createSettings({ endpoint: `projects/${projectId}` }))
+			.catch((err) => {
+				throw new BadRequest(this.err.getProject, err);
+			});
 	}
 
 	getProjectsIds() {

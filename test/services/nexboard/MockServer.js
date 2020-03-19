@@ -2,9 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { Configuration } = require('@schul-cloud/commons');
 
-const logger = require('../../../src/logger');
+const logger = require('../../../src/logger/');
 
-module.exports = function MockServer({ url = 'http://localhost:58372', resolver } = {}) {
+module.exports = function MockServer({ url = 'http://localhost:58372', resolver }) {
 	const app = express();
 	app.use(bodyParser.json()); // for parsing application/json
 	app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies

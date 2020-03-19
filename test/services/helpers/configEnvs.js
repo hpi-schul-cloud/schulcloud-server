@@ -1,4 +1,4 @@
-const logger = require('../../../src/logger/index');
+const logger = require('../../../src/logger/');
 
 const memoEnv = {};
 const setEnv = (name, value) => {
@@ -10,19 +10,21 @@ const setEnv = (name, value) => {
 };
 
 const revertEnv = (name) => {
-	if (!memoEnv[name]) {
-		logger.error(`[TestObjects] The env ${name} do not exist. It can not reverted.`);
-	} else {
+	if (memoEnv[name]) {
 		process.env[name] = memoEnv[name];
 		delete memoEnv[name];
-		logger.info(`[TestObjects] The env ${name} is reverted.`);
 	}
+	// outside of if, becouse value of memoEnv can undefined
+	logger.info(`[TestObjects] The env ${name} is reverted.`);
 };
 
 const revertAllEnvs = () => {
-	Object.keys(memoEnv).forEach((name) => {
-		revertEnv(name);
+	const keys = Object.keys(memoEnv);
+	keys.forEach((name) => {
+		process.env[name] = memoEnv[name];
+		delete memoEnv[name];
 	});
+	logger.info(`[TestObjects] The envs ${keys} are reverted.`);
 };
 
 module.exports = {
