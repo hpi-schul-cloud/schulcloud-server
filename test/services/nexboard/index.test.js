@@ -57,10 +57,8 @@ describe('Nexboard services', () => {
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 
-			({ server: mockServer } = MockServer({
-				resolver: done,
-				url: mockUrl,
-			}));
+			const mock = MockServer(mockUrl, done);
+			mockServer = mock.server;
 		});
 	});
 

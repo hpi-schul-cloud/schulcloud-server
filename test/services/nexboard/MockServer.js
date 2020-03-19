@@ -4,7 +4,7 @@ const { Configuration } = require('@schul-cloud/commons');
 
 const logger = require('../../../src/logger/');
 
-module.exports = function MockServer({ url = 'http://localhost:58372', resolver }) {
+module.exports = function MockServer(url = 'http://localhost:58372', resolver) {
 	const app = express();
 	app.use(bodyParser.json()); // for parsing application/json
 	app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
@@ -13,7 +13,7 @@ module.exports = function MockServer({ url = 'http://localhost:58372', resolver 
 	try {
 		port = Number(url.split('http://localhost:')[1]);
 	} catch (err) {
-		logger.warn('Can not set port.', err);
+		logger.warning('Can not set port.', err);
 		port = 58372;
 	}
 	const uri = Configuration.get('NEXBOARD_URI');
