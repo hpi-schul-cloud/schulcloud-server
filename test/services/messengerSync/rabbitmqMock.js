@@ -1,4 +1,8 @@
-const queues = {};
+let queues = {};
+
+const reset = () => {
+	queues = {};
+};
 
 const assertQueue = (queue, options) => {};
 
@@ -8,10 +12,11 @@ const sendToQueue = (queue, messageBuffer, options) => {
 };
 
 const createChannel = async () => {
-	console.log('mock')
 	return { sendToQueue, assertQueue };
 };
 
 const setup = async (app) => {};
 
-module.exports = { setup, createChannel, queues };
+module.exports = {
+	setup, createChannel, queues, reset,
+};
