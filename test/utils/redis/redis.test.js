@@ -19,14 +19,15 @@ describe('redis helpers', () => {
 				useCleanCache: true,
 			});
 			mockery.registerMock('redis', redisMock);
+			mockery.registerMock('@schul-cloud/commons', commons);
 
 			delete require.cache[require.resolve('../../../src/utils/redis')];
-			delete require.cache[require.resolve('@schul-cloud/commons')];
 			redisHelpers = require('../../../src/utils/redis');
 			redisHelpers.initializeRedisClient();
 		});
 
 		after(async () => {
+			delete require.cache[require.resolve('../../../src/utils/redis')];
 			mockery.deregisterAll();
 			mockery.disable();
 		});
@@ -92,6 +93,7 @@ describe('redis helpers', () => {
 		after(async () => {
 			mockery.deregisterAll();
 			mockery.disable();
+			delete require.cache[require.resolve('../../../src/utils/redis')];
 			Configuration.update(configBefore);
 		});
 
