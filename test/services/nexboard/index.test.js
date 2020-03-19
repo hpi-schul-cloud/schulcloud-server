@@ -1,11 +1,10 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const freeport = require('freeport');
-
-const logger = require('../../../src/logger/');
+const { Configuration } = require('@schul-cloud/commons');
+const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
 const testObjects = require('../helpers/testObjects');
-const { setEnv, revertAllEnvs } = require('../helpers/configEnvs');
 
 const { expect } = chai;
 
@@ -41,15 +40,17 @@ describe('Nexboard services', () => {
 	let server;
 	let app;
 	let testHelpers;
+	let configBefore;
 
 	before((done) => {
+		configBefore = Configuration.toObject();
 		freeport((err, port) => {
 			if (err) {
 				logger.warning('freeport:', err);
 			}
 
 			const mockUrl = `http://localhost:${port}`;
-			setEnv('NEXBOARD_URL', mockUrl);
+			Configuration.set('NEXBOARD_URL', mockUrl);
 
 			// eslint-disable-next-line global-require
 			app = require('../../../src/app');
@@ -64,9 +65,9 @@ describe('Nexboard services', () => {
 	});
 
 	after(async () => {
-		revertAllEnvs();
 		await mockServer.close();
 		await server.close();
+		Configuration.update(configBefore);
 	});
 
 	it('should create a new project', async () => {
