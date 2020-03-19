@@ -43,6 +43,7 @@ describe('Account Service', () => {
 
 			const registrationPin = await registrationPinsService.create({
 				email: userObject.email,
+				silent: true,
 			});
 			// verify registration pin:
 			await registrationPinsService.find({
