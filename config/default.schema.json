@@ -23,10 +23,25 @@
 			"pattern": "(rediss?:)?\/\/((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(\/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
 			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
 		},
+		"PIN_MAX_AGE_SECONDS": {
+			"type": "integer",
+			"default": 86400,
+			"description": "Maximum time in seconds a generated pin is handled as valid."
+		},
 		"JWT_TIMEOUT_SECONDS": {
 			"type": "integer",
 			"default": 7200,
 			"description": "After this many seconds of inactivity, a user gets logged out automatically. If no REDIS_URI is set, this value is ignored."
+		},
+		"FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Using privateDevice parameter in login, the logout/jwt timeout can be extended to JWT_EXTENDED_TIMEOUT_SECONDS instead of JWT_TIMEOUT_SECONDS."
+		},
+		"JWT_EXTENDED_TIMEOUT_SECONDS": {
+			"type": "integer",
+			"default": 2629746,
+			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no REDIS_URI is set, this value is ignored."
 		},
 		"JWT_WHITELIST_ACCEPT_ALL": {
 			"type": "boolean",
@@ -71,7 +86,7 @@
 		"VIDEOCONFERENCE_HOST": {
 			"type": "string",
 			"format": "uri",
-			"pattern":".*(?<!/)$",
+			"pattern": ".*(?<!/)$",
 			"default": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 			"description": "The BBB base url (should end without a slash)."
 		},
@@ -83,12 +98,13 @@
 		"HOST": {
 			"type": "string",
 			"format": "uri",
-			"default":"http://localhost:3100",
-			"pattern":".*(?<!/)$",
+			"default": "http://localhost:3100",
+			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
 		}
 	},
 	"required": [
-		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION", "HOST"
+		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
+		"HOST"
 	]
 }
