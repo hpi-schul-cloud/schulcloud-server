@@ -42,7 +42,7 @@ describe('handleAutoLogout hook', function test() {
 	});
 
 	after(async () => {
-		Configuration.parse(configBefore); // reset config to before state
+		Configuration.update(configBefore); // reset config to before state
 		mockery.deregisterAll();
 		mockery.disable();
 		await testObjects.cleanup();

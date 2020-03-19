@@ -71,8 +71,10 @@ describe('redis helpers', () => {
 
 	describe('with a redis server', () => {
 		let redisHelpers;
+		let configBefore;
 
 		before(async () => {
+			configBefore = Configuration.toObject();
 			mockery.enable({
 				warnOnReplace: false,
 				warnOnUnregistered: false,
@@ -90,6 +92,7 @@ describe('redis helpers', () => {
 		after(async () => {
 			mockery.deregisterAll();
 			mockery.disable();
+			Configuration.update(configBefore);
 		});
 
 		it('getRedisClient returns a client object', () => {
