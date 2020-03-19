@@ -139,6 +139,7 @@ describe('jwtTimer service', () => {
 			delete require.cache[require.resolve('../../../../src/app')];
 			delete require.cache[require.resolve('../../helpers/testObjects')];
 			delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
+			Configuration.update(configBefore);
 		});
 	});
 });
