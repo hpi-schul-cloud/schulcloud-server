@@ -51,8 +51,7 @@ describe('Nexboard services', () => {
 
 			const mockUrl = `http://localhost:${port}`;
 			Configuration.set('NEXBOARD_URL', mockUrl);
-			Configuration.set('NEXBOPARD_API_KEY', 'mock-api-key');
-			Configuration.set('NEXBOARD_USER_ID', 'mock-user-id');
+
 			// eslint-disable-next-line global-require
 			app = require('../../../src/app');
 			server = app.listen(0);
