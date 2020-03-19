@@ -116,12 +116,10 @@
 		},
 		"NEXBOARD_API_KEY": {
 			"type": "string",
-			"default":"99999",
 			"description": "The nexboard api key for sending requests."
 		},
 		"NEXBOARD_USER_ID": {
 			"type": "string",
-			"default":"99999",
 			"description": "The nexboard 'schul-cloud' userId."
 		}
 	},
