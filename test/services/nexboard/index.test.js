@@ -35,7 +35,7 @@ function request({
 	));
 }
 
-describe('Nexboard services', () => {
+describe.only('Nexboard services', () => {
 	let mockServer;
 	let server;
 	let app;
@@ -51,6 +51,8 @@ describe('Nexboard services', () => {
 
 			const mockUrl = `http://localhost:${port}`;
 			Configuration.set('NEXBOARD_URL', mockUrl);
+			Configuration.set('NEXBOARD_API_KEY', 'someapikey');
+			Configuration.set('NEXBOARD_USER_ID', 'someuserid');
 
 			// eslint-disable-next-line global-require
 			app = require('../../../src/app');
