@@ -70,9 +70,21 @@ const insertUserToDB = async (app, data, user) => {
 	}
 	return app.service('users').create(user, { _additional: { parentEmail: data.parent_email, asTask: 'student' } })
 		.catch((err) => {
-			logger.warning(err);
+			logger.error(err);
 			// fixme check error message is correct, check err
-			throw new errors.BadRequest('Fehler beim Erstellen des Nutzers. Eventuell ist die E-Mail-Adresse bereits im System registriert.');
+			let msg = 'Fehler beim Erstellen des Nutzers. '
+				+ 'Eventuell ist die E-Mail-Adresse bereits im System registriert. '
+				+ 'Wende dich an den Support. Damit wir dir schnell helfen können, '
+				+ 'teile uns bitte alle angegebenen E-Mail-Adressen mit.';
+			if (err && err.message) {
+				if (err.message.includes('bereits')) {
+					// account or user exists
+					msg = `${err.message} `
+					+ 'Wahrscheinlich kannst du dich damit bereits einloggen. '
+					+ 'Nutze dazu den Login. Dort kannst du dir auch ein neues Passwort zusenden lassen.';
+				}
+			}
+			throw new errors.BadRequest(msg);
 		});
 };
 
@@ -111,7 +123,7 @@ const registerUser = function register(data, params, app) {
 			if (user.birthday instanceof Date && isNaN(user.birthday)) {
 				return Promise.reject(new errors.BadRequest(
 					'Fehler bei der Erkennung des ausgewählten Geburtstages.'
-					+ ' Bitte lade die Seite neu und starte erneut.',
+						+ ' Bitte lade die Seite neu und starte erneut.',
 				));
 			}
 			// wrong age?
@@ -119,12 +131,12 @@ const registerUser = function register(data, params, app) {
 			if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
 				return Promise.reject(new errors.BadRequest(
 					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
-					+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
+						+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
 				));
 			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
 				return Promise.reject(new errors.BadRequest(
 					`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
-					+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
+						+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
 				));
 			}
 		}
@@ -142,16 +154,20 @@ const registerUser = function register(data, params, app) {
 		return Promise.resolve();
 	})
 		.then(() => {
-			const userMail = data.parent_email || data.student_email || data.email;
-			const pinInput = data.pin;
+			const email = data.parent_email || data.student_email || data.email;
+			const { pin } = data;
 			return app.service('registrationPins').find({
-				query: { pin: pinInput, email: userMail, verified: false },
-			}).then((check) => {
+				query: { pin, email },
+			}).then((result) => {
 				// check pin
-				if (!(check.data && check.data.length > 0 && check.data[0].pin === pinInput)) {
-					return Promise.reject('Ungültige Pin, bitte überprüfe die Eingabe.');
+				if (result.data.length !== 1 || result.data[0].verified !== true) {
+					return Promise.reject(new Error('Der eingegebene Code konnte leider nicht verfiziert werden. Versuch es doch noch einmal.'));
 				}
 				return Promise.resolve();
+			}).catch((err) => {
+				const msg = err.message || 'Fehler wärend der Pin Überprüfung.';
+				logger.error(msg, err);
+				return Promise.reject(new Error(msg));
 			});
 		})
 		.then(() =>
