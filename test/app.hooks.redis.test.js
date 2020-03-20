@@ -17,7 +17,7 @@ describe('handleAutoLogout hook', function test() {
 
 	before(async () => {
 		configBefore = Configuration.toObject(); // deep copy current config
-		Configuration.set('REDIS_URI', '//validHost:6379');
+		Configuration.set('REDIS_URI', '//validHost:3333');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
 
 		mockery.enable({
@@ -42,7 +42,6 @@ describe('handleAutoLogout hook', function test() {
 	});
 
 	after(async () => {
-		Configuration.update(configBefore); // reset config to before state
 		mockery.deregisterAll();
 		mockery.disable();
 		await testObjects.cleanup();
@@ -50,6 +49,7 @@ describe('handleAutoLogout hook', function test() {
 		delete require.cache[require.resolve('../src/app')];
 		delete require.cache[require.resolve('./services/helpers/testObjects')];
 		delete require.cache[require.resolve('../src/app.hooks')];
+		Configuration.reset(configBefore);
 	});
 
 	it('whitelisted JWT is accepted and extended', async () => {

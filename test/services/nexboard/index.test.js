@@ -65,7 +65,7 @@ describe('Nexboard services', () => {
 	after(async () => {
 		await mockServer.close();
 		await server.close();
-		Configuration.update(configBefore);
+		Configuration.reset(configBefore);
 	});
 
 	it('should create a new project', async () => {

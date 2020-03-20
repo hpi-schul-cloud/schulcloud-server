@@ -86,7 +86,7 @@ describe('redis helpers', () => {
 
 			delete require.cache[require.resolve('../../../src/utils/redis')];
 			redisHelpers = require('../../../src/utils/redis');
-			Configuration.set('REDIS_URI', '//validHost:6379');
+			Configuration.set('REDIS_URI', '//validHost:6666');
 			redisHelpers.initializeRedisClient();
 		});
 
@@ -94,7 +94,7 @@ describe('redis helpers', () => {
 			mockery.deregisterAll();
 			mockery.disable();
 			delete require.cache[require.resolve('../../../src/utils/redis')];
-			Configuration.update(configBefore);
+			Configuration.reset(configBefore);
 		});
 
 		it('getRedisClient returns a client object', () => {

@@ -44,7 +44,7 @@ describe('jwtTimer service', () => {
 				app.configure(jwtTimerServiceSetup);
 				/* eslint-enable global-require */
 
-				Configuration.set('REDIS_URI', '//validHost:6379');
+				Configuration.set('REDIS_URI', '//validHost:4444');
 				redisHelper.initializeRedisClient();
 			});
 
@@ -56,6 +56,7 @@ describe('jwtTimer service', () => {
 				delete require.cache[require.resolve('../../helpers/testObjects')];
 				delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
 				delete require.cache[require.resolve('../../../../src/app')];
+				Configuration.reset(configBefore);
 			});
 
 			it('FIND returns the whitelist timeToLive on the JWT that is used', async () => {
@@ -142,7 +143,7 @@ describe('jwtTimer service', () => {
 			delete require.cache[require.resolve('../../../../src/app')];
 			delete require.cache[require.resolve('../../helpers/testObjects')];
 			delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
-			Configuration.update(configBefore);
+			Configuration.reset(configBefore);
 		});
 	});
 });
