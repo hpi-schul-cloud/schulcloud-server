@@ -28,6 +28,12 @@
 			"default": 86400,
 			"description": "Maximum time in seconds a generated pin is handled as valid."
 		},
+		"JWT_LIFETIME": {
+			"type": "string",
+			"default": "30d",
+			"pattern": "^[0-9]+d$",
+			"description": "Lifetime of generated JWTs in days."
+		},
 		"JWT_TIMEOUT_SECONDS": {
 			"type": "integer",
 			"default": 7200,
