@@ -18,7 +18,7 @@ const dict = {
  * Check if Message is instance specific
  * @param {string} instance
  * @param {number} componentId
- * @returns {Promise}
+ * @returns {number}
  */
 async function isInstance(instance, componentId) {
 	if (componentId !== 0) {
@@ -49,8 +49,10 @@ function compare(a, b) {
 	const dateA = new Date(a.updated_at);
 	const dateB = new Date(b.updated_at);
 
+	// sort by status; danger first
 	if (a.status > b.status) return 1;
 	if (b.status > a.status) return -1;
+	// sort by newest
 	if (dateA > dateB) return -1;
 	if (dateB > dateA) return 1;
 
