@@ -18,7 +18,7 @@ const authConfig = {
 		audience,
 		issuer: 'feathers',
 		algorithm: 'HS256',
-		expiresIn: Configuration.get('JWT_TIMEOUT_SECONDS'),
+		expiresIn: Configuration.get('JWT_LIFETIME'),
 	},
 	local: {
 		usernameField: 'username',
