@@ -3,7 +3,6 @@ const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const logger = require('../../../logger');
 const {
-	arrayIncludes,
 	hasRole,
 	hasRoleNoHook,
 	hasPermissionNoHook,
@@ -13,10 +12,9 @@ const {
 	permitGroupOperation,
 	denyIfNotCurrentSchool,
 	computeProperty,
-} = require('../../../hooks');
-const {
 	hasPermission,
 } = require('../../../hooks');
+
 const {
 	getAge,
 } = require('../../../utils');
