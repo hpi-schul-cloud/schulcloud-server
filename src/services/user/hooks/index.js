@@ -107,7 +107,7 @@ const updateAccountUsername = async (context) => {
 	if (!email) {
 		return context;
 	}
-	// TODO: 
+	// TODO:
 	// Should this error removed?
 	// Remove email from data that it can not execute?
 	// Skip patching account but user is ok?  -> user.email !== account.username
@@ -214,46 +214,6 @@ const pinIsVerified = (hook) => {
 			}
 			return Promise.reject(new BadRequest('Der Pin wurde noch nicht bei der Registrierung eingetragen.'));
 		});
-};
-
-// student administrator helpdesk superhero teacher parent
-// eslint-disable-next-line no-unused-vars
-const permissionRoleCreate = async (hook) => {
-	if (!hook.params.provider) {
-		// internal call
-		return hook;
-	}
-
-	if (hook.data.length <= 0) {
-		return Promise.reject(new BadRequest('No input data.'));
-	}
-
-	let isLoggedIn = false;
-	if (((hook.params || {}).account || {}).userId) {
-		isLoggedIn = true;
-		const userService = hook.app.service('/users/');
-		const currentUser = await userService.get(hook.params.account.userId, { query: { $populate: 'roles' } });
-		const userRoles = currentUser.roles.map((role) => role.name);
-		if (userRoles.includes('superhero')) {
-			// call from superhero Dashboard
-			return Promise.resolve(hook);
-		}
-	}
-
-	if ((isLoggedIn === true && arrayIncludes(
-		(hook.data.roles || []),
-		['student', 'teacher'],
-		['parent', 'administrator', 'helpdesk', 'superhero'],
-	))
-		|| (isLoggedIn === false && arrayIncludes(
-			(hook.data.roles || []),
-			['student', 'parent'],
-			['teacher', 'administrator', 'helpdesk', 'superhero'],
-		))
-	) {
-		return Promise.resolve(hook);
-	}
-	return Promise.reject(new BadRequest('You have not the permissions to create this roles.'));
 };
 
 const securePatching = (hook) => Promise.all([
