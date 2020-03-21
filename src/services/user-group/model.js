@@ -45,7 +45,7 @@ const courseSchema = getUserGroupSchema({
 	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },
 	untilDate: { type: Date, index: true },
-	shareToken: { 
+	shareToken: {
 		type: String, unique: true, sparse: true, index: true,
 	},
 	times: [timeSchema],
