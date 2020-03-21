@@ -6,7 +6,8 @@ const publicTeachersHooks = require('./hooks/publicTeachers');
 const firstLoginHooks = require('./hooks/firstLogin');
 const skipRegistrationHooks = require('./hooks/skipRegistration');
 const {
-	AdminUsers, UserLinkImportService,
+	AdminUsers,
+	UserLinkImportService,
 	SkipRegistrationService,
 	RegistrationSchoolService,
 } = require('./services');

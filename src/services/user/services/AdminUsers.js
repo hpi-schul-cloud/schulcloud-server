@@ -70,7 +70,6 @@ class AdminUsers {
 	}
 
 	async find(params) {
-		//  const { app } = this;
 		try {
 			const currentUserId = params.account.userId.toString();
 
@@ -87,12 +86,10 @@ class AdminUsers {
 			}
 			// fetch data that are scoped to schoolId
 			const studentRole = (roles.filter((role) => role.name === this.role))[0];
-			const [usersData, classes] = await Promise.all(
-				[
-					getAllUsers(this, schoolId, studentRole._id, (params.query || {})),
-					getClasses(this.app, schoolId, currentYear),
-				],
-			);
+			const [usersData, classes] = await Promise.all([
+				getAllUsers(this, schoolId, studentRole._id, (params.query || {})),
+				getClasses(this.app, schoolId, currentYear),
+			]);
 			const { total } = usersData;
 			const users = usersData.data;
 			const userIds = users.map((user) => user._id.toString());
@@ -163,6 +160,7 @@ class AdminUsers {
 				}
 				return true;
 			});
+
 			return {
 				total,
 				limit: (params.query || {}).$limit,
