@@ -26,9 +26,8 @@ const homeworkSchema = new Schema({
 	publicSubmissions: { type: Boolean },
 	teamSubmissions: { type: Boolean },
 	maxTeamMembers: { type: Number, default: null, min: 1 },
-	archived: [{ type: Schema.Types.ObjectId, ref: 'user', index: true }],
+	archived: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 });
-homeworkSchema.index({ archived: 1, private: -1 });
 
 const submissionSchema = new Schema({
 	schoolId: { type: Schema.Types.ObjectId, required: true },
