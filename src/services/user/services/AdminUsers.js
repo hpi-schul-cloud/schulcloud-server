@@ -73,7 +73,7 @@ class AdminUsers {
 	constructor(role) {
 		this.role = role || {};
 		this.docs = {};
-		this.rolesThatHaveAccesss = ['teacher', 'administrator', 'superhero'];
+		this.rolesThatCanAccesss = ['teacher', 'administrator', 'superhero'];
 	}
 
 	async find(params) {
@@ -91,7 +91,7 @@ class AdminUsers {
 			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles()]);
 
 			// permission check
-			if (!currentUser.roles.some((role) => this.rolesThatHaveAccesss.includes(role.name))) {
+			if (!currentUser.roles.some((role) => this.rolesThatCanAccesss.includes(role.name))) {
 				throw new Forbidden();
 			}
 			const { schoolId } = currentUser;
