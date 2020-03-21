@@ -58,6 +58,7 @@ describe('AdminUsersService', () => {
 			account: {
 				userId: teacher._id,
 			},
+			query: {},
 		};
 
 		const result = await adminStudentsService.find(params).catch((err) => {
@@ -106,6 +107,7 @@ describe('AdminUsersService', () => {
 			account: {
 				userId: teacher._id,
 			},
+			query: {},
 		};
 
 		const result = await adminStudentsService.find(params);
@@ -169,7 +171,9 @@ describe('AdminUsersService', () => {
 			account: {
 				userId: teacher._id,
 			},
-			$sort: sortObject,
+			query: {
+				$sort: sortObject,
+			},
 		});
 
 		const resultSortedByFirstName = await adminStudentsService.find(createParams({ firstName: -1 }));
