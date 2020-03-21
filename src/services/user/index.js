@@ -10,12 +10,13 @@ const {
 	UserLinkImportService,
 	SkipRegistrationService,
 	RegistrationSchoolService,
+	UsersModelService,
 } = require('./services');
 const adminHook = require('./hooks/admin');
 
 
-module.exports = function setup() {
-	const app = this;
+module.exports = (app) => {
+	UsersModelService.configure(app);
 
 	const options = {
 		Model: userModel,

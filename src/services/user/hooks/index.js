@@ -9,7 +9,6 @@ const {
 	hasPermissionNoHook,
 	mapPaginationQuery,
 	resolveToIds,
-	ifNotLocal,
 	restrictToCurrentSchool,
 	permitGroupOperation,
 	denyIfNotCurrentSchool,
