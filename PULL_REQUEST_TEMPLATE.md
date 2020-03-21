@@ -14,7 +14,7 @@
 - [ ] Kern-Logik ist hinter der API implementiert?
 
 ## Performance
-- [ ] Code läuft auch performant bei großem Datenmengen
+- [ ] Code läuft auch performant bei großen Datenmengen
 - [ ] Falls notwendig Index hinzugefügt
 
 ## Tests
