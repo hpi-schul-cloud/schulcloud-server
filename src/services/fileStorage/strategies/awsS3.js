@@ -25,11 +25,13 @@ try {
 
 const AbstractFileStorageStrategy = require('./interface.js');
 
-const createAWSObject = (schoolId) => {
-	if (!awsConfig.endpointUrl) throw new Error('AWS integration is not configured on the server');
+const createAWSObject = (schoolId, configIndex) => {
+	if (!awsConfig[0]) throw new Error('AWS integration is not configured on the server');
 
-	const config = new aws.Config(awsConfig);
-	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
+	configIndex = (awsConfig[configIndex] ? configIndex : 0);
+	const schoolAwsConfig = awsConfig[configIndex];
+	const config = new aws.Config(schoolAwsConfig);
+	config.endpoint = new aws.Endpoint(schoolAwsConfig.endpointUrl);
 
 	return {
 		s3: new aws.S3(config),
@@ -115,34 +117,65 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		if (!schoolId) {
 			throw new BadRequest('No school id parameter given.');
 		}
-		return schoolModel.findOne({ _id: schoolId }).lean().exec()
+
+		const { fileStorageIndex } = await schoolModel.findOne({ _id: schoolId }).lean().exec()
 			.then((school) => {
 				if (school === null) {
 					throw new NotFound('School not found.');
 				}
-
-				const awsObject = createAWSObject(school._id);
-				const createBucket = promisify(awsObject.s3.createBucket.bind(awsObject.s3), awsObject.s3);
-
-				return createBucket({ Bucket: awsObject.bucket })
-					.then((res) => {
-						/* Sets the CORS configuration for a bucket. */
-						awsObject.s3.putBucketCors({
-							Bucket: awsObject.bucket,
-							CORSConfiguration: {
-								CORSRules: awsConfig.cors_rules,
-							},
-						}, (err) => {	// define and pass error handler
-							if (err) {
-								logger.warning(err);
-							}
-						});
-						return {
-							message: 'Successfully created s3-bucket!',
-							data: res,
-						};
-					});
+				return school;
 			});
+
+		const createSchoolBucket = (index) => new Promise((resolve, reject) => {
+			const awsObject = createAWSObject(schoolId, index);
+			return promisify(awsObject.s3.createBucket.bind(awsObject.s3), awsObject.s3)({ Bucket: awsObject.bucket })
+				.then((res) => {
+					/* Sets the CORS configuration for a bucket. */
+					awsObject.s3.putBucketCors({
+						Bucket: awsObject.bucket,
+						CORSConfiguration: {
+							CORSRules: awsConfig.cors_rules,
+						},
+					}, (err) => {	// define and pass error handler
+						if (err) {
+							logger.warning(err);
+						}
+						reject(err);
+					});
+					resolve({
+						message: 'Successfully created s3-bucket!',
+						data: res,
+						code: 200,
+					});
+				}).catch((err) => resolve({
+					err,
+					code: 500,
+				}));
+		});
+
+		// try to create a bucket in all possible endpoints
+		let res = {};
+		let nextIndex = fileStorageIndex || 0;
+		while (res.code !== 200) {
+			res = await createSchoolBucket(nextIndex);
+			if (res.code === 200) {
+				if (nextIndex !== fileStorageIndex) { // update fileStorageIndex in DB
+					await schoolModel.updateOne(
+						{ _id: schoolId },
+						{ $set: { fileStorageIndex: nextIndex } },
+					).lean().exec();
+				}
+				return res;
+			}
+			nextIndex += 1;
+			if (res.code !== 500 || nextIndex >= awsConfig.length) {
+				return {
+					message: 'Could not create s3-bucket.',
+					data: res,
+				};
+			}
+		}
+		return { message: 'Could not create s3-bucket.' };
 	}
 
 	createIfNotExists(awsObject) {
