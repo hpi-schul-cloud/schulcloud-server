@@ -9,7 +9,6 @@ require('../src/services/user/model');
 require('../src/services/link/link-model');
 require('../src/services/user-group/model');
 require('../src/services/homework/model');
-require('../src/services/fileStorage/model');
 require('../src/services/account/model');
 
 module.exports = {
@@ -25,7 +24,6 @@ module.exports = {
 		this('submission').syncIndexes();
 		this('user').syncIndexes();
 		this('course').syncIndexes();
-		this('file').syncIndexes();
 		// ////////////////////////////////////////////////////
 		await close();
 	},
