@@ -6,7 +6,6 @@ const { connect, close } = require('../src/utils/database');
 
 // ? How to access permissions?
 require('../src/services/user/model');
-require('../src/services/user/model');
 require('../src/services/link/link-model');
 require('../src/services/user-group/model');
 require('../src/services/homework/model');
