@@ -13,6 +13,10 @@
 - [ ] Linter darf keine Probleme bei veränderten Dateien aufweisen
 - [ ] Kern-Logik ist hinter der API implementiert?
 
+## Performance
+- [ ] Code läuft auch performant bei großen Datenmengen
+- [ ] Falls notwendig Index hinzugefügt
+
 ## Tests
 - [ ] Test-Coverage darf durch PR nicht sinken
 - [ ] Unit-Tests und Integrations-Tests schreiben / ändern
