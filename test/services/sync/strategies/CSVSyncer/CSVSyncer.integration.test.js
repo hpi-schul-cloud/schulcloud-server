@@ -1617,12 +1617,8 @@ describe('CSVSyncer Integration', () => {
 			);
 			expect(classes[0].length).to.equal(1);
 
-
 			const users = await userModel.find({ email: { $regex: '.*bdayDomain.*' } }).sort({ birthday: '1' });
-			console.log(users, 'users ');
-
 			const usersBday = users.map((u) => u.birthday.toString().slice(4, 15));
-
 
 			expect(usersBday[0]).to.be.equal('Aug 17 1988');
 			expect(usersBday[1]).to.be.equal('Jan 01 1990');

@@ -12,9 +12,6 @@ describe('CSVSyncer', () => {
 		expect(CSVSyncer.aggregateStats).to.not.equal(undefined);
 		expect(new CSVSyncer().steps).to.not.equal(undefined);
 		expect(new CSVSyncer().sync).to.not.equal(undefined);
-
-		expect(CSVSyncer.assertDateFormat).to.not.equal(undefined);
-		expect(CSVSyncer.stringToDateConverter).to.not.equal(undefined);
 	});
 
 	describe('parseCsvData', () => {
