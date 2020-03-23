@@ -2,7 +2,7 @@ const { TooManyRequests } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const {
-	getRedisClient, redisSetAsync, redisDelAsync, getRedisIdentifier, getRedisValue,
+	getRedisClient, redisSetAsync, redisDelAsync, extractRedisFromJwt, getRedisValue,
 } = require('../../../utils/redis');
 
 const updateUsernameForLDAP = async (context) => {
@@ -134,9 +134,9 @@ const removeProvider = (context) => {
  */
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
+		const { redisIdentifier, expirationInSeconds } = extractRedisFromJwt(context.result.accessToken);
 		await redisSetAsync(
-			redisIdentifier, getRedisValue(), 'EX', Configuration.get('JWT_TIMEOUT_SECONDS'),
+			redisIdentifier, getRedisValue(), 'EX', expirationInSeconds,
 		);
 	}
 
@@ -149,10 +149,26 @@ const addJwtToWhitelist = async (context) => {
  */
 const removeJwtFromWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const redisIdentifier = getRedisIdentifier(context.params.authentication.accessToken);
+		const { redisIdentifier } = extractRedisFromJwt(context.params.authentication.accessToken);
 		await redisDelAsync(redisIdentifier);
 	}
 
+	return context;
+};
+
+/**
+ * increase jwt timeout for private devices on request
+  @param {} context
+ */
+const increateJwtTimeoutForPrivateDevices = (context) => {
+	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true) {
+		if (context.data && context.data.privateDevice === true) {
+			context.params.jwt = {
+				...context.params.jwt,
+				expiresIn: Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS'),
+			};
+		}
+	}
 	return context;
 };
 
@@ -165,6 +181,7 @@ const hooks = {
 			trimPassword,
 			bruteForceCheck,
 			injectUserId,
+			increateJwtTimeoutForPrivateDevices,
 			removeProvider,
 		],
 		remove: [removeProvider],

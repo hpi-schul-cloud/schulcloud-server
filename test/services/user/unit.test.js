@@ -7,6 +7,8 @@ const app = require('../../../src/app');
 
 const userService = app.service('users');
 const registrationPinService = app.service('registrationPins');
+const { registrationPinModel } = require('../../../src/services/user/model');
+
 const publicTeachersService = app.service('publicTeachers');
 const classesService = app.service('classes');
 const coursesService = app.service('courses');
@@ -117,19 +119,44 @@ describe('user service', () => {
 });
 
 describe('registrationPin Service', () => {
+	let pin = null;
+	const email = 'test.adresse@schul-cloud.org';
 	it('registered the registrationPin Service', () => {
 		assert.ok(registrationPinService);
 	});
 
 	it('creates pins correctly', () => registrationPinService
-		.create({ email: 'test.adresse@schul-cloud.org' })
-		.then(() => registrationPinService.find({ query: { email: 'test.adresse@schul-cloud.org' } }))
+		.create({ email, silent: true })
+		.then(async () => {
+			({ pin } = (await registrationPinModel.findOne({ email }).exec()));
+		})
+		.then(() => registrationPinService.find({ query: { email, pin } }))
 		.then((pinObjects) => expect(pinObjects.data[0]).to.have.property('pin')));
 
-	it('overwrites old pins', () => registrationPinService.create({ email: 'test.adresse@schul-cloud.org' })
-		.then(() => registrationPinService.create({ email: 'test.adresse@schul-cloud.org' }))
-		.then(() => registrationPinService.find({ query: { email: 'test.adresse@schul-cloud.org' } }))
+	it('overwrites old pins', () => registrationPinService
+		.create({ email, silent: true })
+		.then(async () => {
+			const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
+			expect(newPin).to.be.ok;
+			expect(pin).to.be.not.equal(newPin);
+			pin = newPin;
+		})
+		.then(() => registrationPinService.create({ email, silent: true }))
+		.then(async () => {
+			const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
+			expect(newPin).to.be.ok;
+			expect(pin).to.be.not.equal(newPin);
+			pin = newPin;
+		})
+		.then(() => registrationPinService.find({ query: { email, pin } }))
 		.then((pinObjects) => expect(pinObjects.data).to.have.lengthOf(1)));
+
+	it('find without pin fails', () => registrationPinService
+		.create({ email, silent: true })
+		.then(() => registrationPinService.create({ email, silent: true }))
+		.then(() => registrationPinService.find({ query: { email } }))
+		.then(() => { throw new Error('pin should be given'); })
+		.catch((err) => expect(err.message.length).to.be.greaterThan(5)));
 });
 
 describe('publicTeachers service', () => {
