@@ -30,9 +30,9 @@ const removeKeys = (keys = []) => (role) => {
 	return role;
 };
 
-const paginate = (result, { $limit, $skip } = {}) => ({
+const paginate = (result, { $limit, $skip = 0 } = {}) => ({
 	total: result.length,
-	limit: $limit,
+	limit: $limit || result.length,
 	skip: $skip,
 	data: result.slice($skip, $limit),
 });
@@ -52,10 +52,6 @@ const filterByQuery = (roles, query = {}) => {
 	return array;
 };
 
-const addDisplayName = (displayNames, role) => {
-	role.displayName = displayNames[role.name];
-};
-
 const getRoles = (query = {}) => RoleModel.find(query).lean().exec();
 
 /**
@@ -66,7 +62,7 @@ class RoleService {
 		this.docs = docs || {};
 		this.err = {
 			solved: 'Can not solved the role',
-			load: 'Can not load roles from DB, or solved pre mutations.',
+			load: 'Can not load roles from DB, or can not solved pre mutations.',
 		};
 		this.roles = [];
 		this.rolesDisplayName = {
@@ -85,7 +81,7 @@ class RoleService {
 
 	async init() {
 		try {
-			const filter = removeKeys(['createdAt', 'updatedAt', 'roles', '__v']);
+			const filter = removeKeys(); // ['createdAt', 'updatedAt', 'roles', '__v']
 			const roles = await getRoles();
 			this.roles = roles.map((role) => {
 				role = filter(dissolveInheritPermission(roles, role));
