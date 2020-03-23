@@ -1,7 +1,7 @@
 const { SC_THEME } = require('../../../config/globals');
 
 const MessageProvider = [];
-let messages = [];
+let messages = null;
 let lastUpdatedTimestamp = 0;
 
 class Cache {
@@ -31,9 +31,13 @@ class Cache {
 
 	async getMessages() {
 		if (lastUpdatedTimestamp < Date.now() - 1000 * 60 * this.time) {
-			await this.updateMessages();
+			if (!messages) {
+				await this.updateMessages();
+			} else {
+				this.updateMessages();
+			}
 		}
-		return messages;
+		return messages || [];
 	}
 
 	addMessageProvider(provider, featureEnabled) {
