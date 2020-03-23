@@ -1,9 +1,9 @@
+const { Configuration } = require('@schul-cloud/commons');
 const { userModel, displayName } = require('../user/model');
 const { schoolModel } = require('../school/model');
 const roleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
-const { Configuration } = require('@schul-cloud/commons');
 
 const getUserData = (userId) => userModel.findOne(
 	{ _id: userId },

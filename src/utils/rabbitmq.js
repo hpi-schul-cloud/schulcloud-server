@@ -12,6 +12,7 @@ const createChannel = async () => {
 
 const setup = async (app) => {
 	connection = amqp.connect(Configuration.get('RABBITMQ_URI'));
+	return connection;
 };
 
 module.exports = { setup, createChannel };

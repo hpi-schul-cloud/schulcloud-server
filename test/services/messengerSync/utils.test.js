@@ -95,10 +95,10 @@ describe('messenger synchronizer utils', () => {
 		it('builds a correct object for schoolSync', async () => {
 			this.app = app;
 			const school = await testObjects.createTestSchool({ features: ['messenger'] });
-			const { user, team } = await testObjects.createTestTeamWithOwner(
+			const { user, _ } = await testObjects.createTestTeamWithOwner(
 				{ roles: ['teacher'], schoolId: school._id },
 			);
-			const courses = await Promise.all([
+			await Promise.all([
 				testObjects.createTestCourse({ teacherIds: [user._id], schoolId: school._id }),
 				testObjects.createTestCourse({ teacherIds: [user._id], schoolId: school._id }),
 			]);
