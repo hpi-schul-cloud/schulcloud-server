@@ -2,9 +2,6 @@ const { Configuration } = require('@schul-cloud/commons');
 const api = require('../../../../helper/externalApiRequest');
 const logger = require('../../../../logger');
 
-const apiUri = Configuration.get('ALERT_STATUS_API_URL');
-const pageUri = Configuration.get('ALERT_STATUS_URL');
-
 const dict = {
 	default: 1,
 	brb: 2,
@@ -13,10 +10,10 @@ const dict = {
 	thr: 7,
 };
 
-const important = {
-	no: -1,
-	all: 0,
-	yes: 1,
+const importance = {
+	INGORE: -1,
+	ALL_INSTANCES: 0,
+	CURRENT_INSTANCE: 1,
 };
 /**
  * Check if Message is instance specific
@@ -27,16 +24,16 @@ const important = {
 async function getInstance(instance, componentId) {
 	if (componentId !== 0) {
 		try {
-			const response = await api(apiUri).get(`/components/${componentId}`);
+			const response = await api(Configuration.get('ALERT_STATUS_API_URL')).get(`/components/${componentId}`);
 			if (dict[instance] && response.data.group_id === dict[instance]) {
-				return important.yes;
+				return importance.CURRENT_INSTANCE;
 			}
-			return important.no;
+			return importance.INGORE;
 		} catch (error) {
-			return important.no;
+			return importance.INGORE;
 		}
 	} else {
-		return important.all;
+		return importance.ALL_INSTANCES;
 	}
 }
 
@@ -45,7 +42,7 @@ async function getInstance(instance, componentId) {
  * @returns {Promise}
  */
 async function getIncidents() {
-	const response = await api(apiUri).get('/incidents?sort=id');
+	const response = await api(Configuration.get('ALERT_STATUS_API_URL')).get('/incidents?sort=id');
 	return response;
 }
 
@@ -65,7 +62,7 @@ function compare(a, b) {
 
 module.exports = {
 	async getData(instance) {
-		if (apiUri && pageUri) {
+		if (Configuration.has('ALERT_STATUS_API_URL') && Configuration.has('ALERT_STATUS_URL')) {
 			try {
 				const rawData = await getIncidents();
 				const instanceSpecific = [];
@@ -75,9 +72,9 @@ module.exports = {
 					if (Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
 						// only mind messages for own instance (including none instance specific messages)
 						const isinstance = await getInstance(instance, element.component_id);
-						if (isinstance !== important.all && isinstance !== important.no) {
+						if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {
 							instanceSpecific.push(element);
-						} else if (isinstance !== important.no) {
+						} else if (isinstance !== importance.INGORE) {
 							noneSpecific.push(element);
 						}
 					}
@@ -91,7 +88,7 @@ module.exports = {
 				return null;
 			}
 		} else {
-			logger.warning('Alert-MessageProvider: status: STATUS_API_URL is not defined!');
+			logger.error('Alert-MessageProvider: status: STATUS_API_URL or ALERT_STATUS_API_URL is not defined!');
 			return null;
 		}
 	},
