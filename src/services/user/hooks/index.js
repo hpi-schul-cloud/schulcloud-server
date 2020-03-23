@@ -2,7 +2,6 @@ const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
-const { sortRoles } = require('../../role/utils/rolesHelper');
 
 const constants = require('../../../utils/constants');
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../consent/config');
@@ -373,6 +372,14 @@ const pushRemoveEvent = (hook) => {
 	return hook;
 };
 
+const populateRoles = async (context) => {
+	const { roles } = context.result;
+	if (roles) {
+		context.result.permissions = await context.app.service('roles').getPermissionsByRoles(roles);
+	}
+	return context;
+};
+
 const enforceRoleHierarchyOnDelete = async (hook) => {
 	try {
 		const userIsSuperhero = await globalHooks.hasRoleNoHook(hook, hook.params.account.userId, 'superhero');
@@ -459,6 +466,7 @@ exports.after = {
 		decorateAvatar,
 		decorateUser,
 		// globalHooks.computeProperty(User.userModel, 'getPermissions', 'permissions'),
+		populateRoles,
 		globalHooks.ifNotLocal(
 			globalHooks.denyIfNotCurrentSchool({
 				errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',

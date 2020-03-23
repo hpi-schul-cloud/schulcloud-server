@@ -11,18 +11,6 @@ const RoleServiceHooks = {
 	},
 };
 
-const unique = (base, merge) => [...new Set([...base, ...merge])];
-
-const dissolveInheritPermission = (roles, role) => {
-	if (Array.isArray(role.roles) && role.roles[0]) {
-		const inheritRoleId = role.roles[0].toString();
-		const inheritRole = roles.find((r) => r._id.toString() === inheritRoleId);
-		const { permissions } = dissolveInheritPermission(roles, inheritRole);
-		role.permissions = unique(role.permissions, permissions);
-	}
-	return role;
-};
-
 const removeKeys = (keys = []) => (role) => {
 	keys.forEach((key) => {
 		delete role[key];
@@ -64,7 +52,7 @@ class RoleService {
 			solved: 'Can not solved the role',
 			load: 'Can not load roles from DB, or can not solved pre mutations.',
 		};
-		this.roles = [];
+		this.roles = undefined;
 		this.rolesDisplayName = {
 			teacher: 'Lehrer',
 			student: 'Schüler',
@@ -85,27 +73,46 @@ class RoleService {
 	}
 
 	async init() {
-		try {
+		this.roles = new Promise(async (resolve) => {
 			const filter = removeKeys(); // ['createdAt', 'updatedAt', 'roles', '__v']
 			const roles = await getRoles();
-			this.roles = roles.map((role) => {
-				role = filter(dissolveInheritPermission(roles, role));
+			const preparedRoles = roles.map((role) => {
+				role = filter(this.dissolveInheritPermission(roles, role));
 				if (this.rolesDisplayName[role.name]) {
 					role.displayName = this.rolesDisplayName[role.name];
 				}
+				role._id = role._id.toString();
 				return role;
 			});
-		} catch (err) {
-			throw new Error(this.err.load, err);
+			resolve(preparedRoles);
+		});
+	}
+
+	unique(...permissions) {
+		return [...new Set(Array.prototype.concat.apply([], permissions))];
+	}
+
+	dissolveInheritPermission(roles, role) {
+		if (Array.isArray(role.roles) && role.roles[0]) {
+			const inheritRoleId = role.roles[0].toString();
+			const inheritRole = roles.find((r) => r._id.toString() === inheritRoleId);
+			const { permissions } = this.dissolveInheritPermission(roles, inheritRole);
+			role.permissions = this.unique(role.permissions, permissions);
 		}
+		return role;
+	}
+
+	async getPermissionsByRoles(roleIds = []) {
+		const ids = roleIds.map((id) => id.toString());
+		const selectedRoles = (await this.roles).filter((r) => ids.includes(r._id));
+		return this.unique(...selectedRoles.map((r) => r.permissions));
 	}
 
 	async get(id, { query } = {}) {
 		let role;
 		try {
-			let result = await this.roles;
-			result = filterByQuery(result, query);
-			role = result.find((r) => r._id.toString() === id);
+			const result = filterByQuery(await this.roles, query);
+			role = result.find((r) => r._id === id);
 		} catch (err) {
 			throw new BadRequest(this.err.solved, err);
 		}
@@ -117,8 +124,7 @@ class RoleService {
 
 	async find({ query = {} } = {}) {
 		try {
-			let result = await this.roles;
-			result = filterByQuery(result, query);
+			const result = filterByQuery(await this.roles, query);
 			return paginate(result, query);
 		} catch (err) {
 			throw new BadRequest(this.err.solved, err);
@@ -137,6 +143,5 @@ module.exports = {
 	RoleService,
 	RoleServiceHooks,
 	getRoles,
-	dissolveInheritPermission,
 	filterByQuery,
 };
