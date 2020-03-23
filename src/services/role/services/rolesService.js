@@ -1,56 +1,89 @@
-const { authenticate } = require('@feathersjs/authentication');
-const { hasPermission } = require('../../../hooks');
 const { RoleModel } = require('../model');
 
-
+// do not proteced this route with authentication
 const RoleServiceHooks = {
-	all: [
-		authenticate('jwt'),
-	],
-	find: [],
-	get: [],
-	create: [
-		hasPermission('ROLE_CREATE'),
-	],
-	patch: [
-		hasPermission('ROLE_EDIT'),
-	],
-	remove: [
-		hasPermission('ROLE_CREATE'),
-	],
+	before: {
+		all: [],
+		find: [],
+		get: [],
+	},
 };
 
+const unique = (base, merge) => [...new Set([...base, ...merge])];
+
+const dissolveInheritPermission = (roles, role) => {
+	if (Array.isArray(role.roles) && role.roles[0]) {
+		const inheritRoleId = role.roles[0].toString();
+		const inheritRole = roles.find((r) => r._id.toString() === inheritRoleId);
+		const { permissions } = dissolveInheritPermission(roles, inheritRole);
+		role.permissions = unique(role.permissions, permissions);
+	}
+	return role;
+};
+
+const removeKeys = (keys = []) => (role) => {
+	keys.forEach((key) => {
+		delete role[key];
+	});
+	return role;
+};
+
+const paginate = (result, query = {}) => {
+	// do stuff to paginate it
+	return {
+		total: result.length,
+		limit: query.$limit,
+		skip: query.$skip,
+		data: result,
+	};
+};
+
+const getRoles = (query = {}) => RoleModel.find(query).lean().exec();
+
+/**
+ * This is a static services.
+ */
 class RoleService {
-	constructor(docs) {
+	constructor({ docs } = {}) {
 		this.docs = docs || {};
 	}
 
-	get(id, params) {
+	async init() {
+		const filter = removeKeys(['createdAt', 'updatedAt', '__v']); // [roles']
 
+		this.roles = getRoles()
+			.then((roles) => roles.map((role) => filter(dissolveInheritPermission(roles, role))))
+			.catch((err) => {
+				throw new Error('Can not load roles from DB.', err);
+			});
 	}
 
-	find(params) {
-
+	async get(id, params) {
+		const result = await this.roles;
+		return result;
 	}
 
-	create(data, params) {
-
+	async find(params) {
+		const result = await this.roles;
+		return paginate(result, params.query);
 	}
 
-	patch(id, data, params) {
-
-	}
-
-	remove(id, params) {
-
-	}
-
-	setup(app) {
+	async setup(app) {
 		this.app = app;
+		await this.init();
 	}
 }
 
+const configure = async (app, path = '/roles') => {
+	app.use(path, new RoleService());
+	const service = app.service(path);
+	service.hooks(RoleServiceHooks);
+};
+
 module.exports = {
+	configure,
 	RoleService,
 	RoleServiceHooks,
+	getRoles,
+	dissolveInheritPermission,
 };
