@@ -57,7 +57,8 @@ class MessengerTokenService {
 		const scId = (params.account || {}).userId;
 		if (!scId) throw new BadRequest('no user');
 
-		const matrixId = `@sso_${scId.toString()}:matrix.stomt.com`;
+		const homeserver = Configuration.get('MATRIX_URI').replace('https://', '').replace('/', '');
+		const matrixId = `@sso_${scId.toString()}:${homeserver}`;
 		const matrixUri = Configuration.get('MATRIX_URI');
 		const matrixSecret = Configuration.get('MATRIX_SECRET');
 

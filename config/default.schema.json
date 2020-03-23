@@ -114,7 +114,6 @@
 		},
 		"MATRIX_SECRET": {
 			"type": "string",
-			"format": "uri",
 			"description": "shared secret for the matrix server"
 		},
 		"FEATURE_RABBITMQ_ENABLED": {
@@ -126,6 +125,16 @@
 			"type": "string",
 			"format": "uri",
 			"default": "amqp://192.168.99.100",
+			"description": "the URI of the rabbitMQ server"
+		},
+		"RABBITMQ_MATRIX_QUEUE_INTERNAL": {
+			"type": "string",
+			"default": "matrix_sync_unpopulated",
+			"description": "the URI of the rabbitMQ server"
+		},
+		"RABBITMQ_MATRIX_QUEUE_EXTERNAL": {
+			"type": "string",
+			"default": "matrix_sync_populated",
 			"description": "the URI of the rabbitMQ server"
 		},
 		"HOST": {

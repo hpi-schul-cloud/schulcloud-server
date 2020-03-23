@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
-var amqp = require('amqplib/callback_api');
+const { Configuration } = require('@schul-cloud/commons');
+const amqp = require('amqplib/callback_api');
 
-amqp.connect('amqp://192.168.99.100', function(error0, connection) {
+const RABBITMQ_URI = Configuration.get('RABBITMQ_URI');
+const QUEUE = Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL');
+
+amqp.connect(RABBITMQ_URI, function(error0, connection) {
     if (error0) {
         throw error0;
     }
@@ -11,15 +15,13 @@ amqp.connect('amqp://192.168.99.100', function(error0, connection) {
             throw error1;
         }
 
-        var queue = 'matrix_sync_populated';
-
-        channel.assertQueue(queue, {
+        channel.assertQueue(QUEUE, {
             durable: false
         });
 
-        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
+        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", QUEUE);
 
-        channel.consume(queue, function(msg) {
+        channel.consume(QUEUE, function(msg) {
             console.log(" [x] Received %s", msg.content.toString());
         }, {
             noAck: true

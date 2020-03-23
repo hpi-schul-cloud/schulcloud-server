@@ -8,7 +8,8 @@ const { createChannel } = require('../../../utils/rabbitmq');
 const { hasPermission, restrictToCurrentSchool } = require('../../../hooks');
 // const { datasourcesDocs } = require('../docs');
 
-const internalQueue = 'matrix_sync_unpopulated';
+
+const QUEUE_INTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL');
 
 class MessengerSchoolSync {
 	constructor(options) {
@@ -31,12 +32,12 @@ class MessengerSchoolSync {
 		const school = await this.app.service('schools').get(params.route.schoolId);
 		if (!school.features.includes('messenger')) throw new BadRequest('this school does not support the messenger');
 		const users = await this.app.service('users').find({ query: { schoolId: school._id } });
-		this.channel.assertQueue(internalQueue, {
+		this.channel.assertQueue(QUEUE_INTERNAL, {
 			durable: true,
 		});
 		users.data.forEach((user) => {
 			const message = JSON.stringify({ userId: user._id, schoolSync: true });
-			this.channel.sendToQueue(internalQueue, Buffer.from(message), { persistent: true });
+			this.channel.sendToQueue(QUEUE_INTERNAL, Buffer.from(message), { persistent: true });
 		});
 		return users;
 	}

@@ -1,29 +1,30 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { createChannel } = require('../../utils/rabbitmq');
 
+const QUEUE_INTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL');
+
 let channel;
-const internalQueue = 'matrix_sync_unpopulated';
 
 const handleCourseChanged = async (course, app) => {
 	const users = course.userIds.concat(course.teacherIds).concat(course.substitutionIds);
-	channel.assertQueue(internalQueue, {
+	channel.assertQueue(QUEUE_INTERNAL, {
 		durable: true,
 	});
 	users.forEach((userId) => {
 		const message = JSON.stringify({ userId, courses: [course] });
-		channel.sendToQueue(internalQueue, Buffer.from(message), { persistent: true });
+		channel.sendToQueue(QUEUE_INTERNAL, Buffer.from(message), { persistent: true });
 	});
 };
 
 const handleTeamChanged = (team) => {
 	if (team.users) {
 		const users = team.userIds.map((teamUser) => teamUser.userId);
-		channel.assertQueue(internalQueue, {
+		channel.assertQueue(QUEUE_INTERNAL, {
 			durable: true,
 		});
 		users.forEach((userId) => {
 			const message = JSON.stringify({ userId, teams: [team] });
-			channel.sendToQueue(internalQueue, Buffer.from(message), { persistent: true });
+			channel.sendToQueue(QUEUE_INTERNAL, Buffer.from(message), { persistent: true });
 		});
 	}
 };

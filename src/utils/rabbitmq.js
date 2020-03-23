@@ -1,3 +1,4 @@
+const { Configuration } = require('@schul-cloud/commons');
 const amqp = require('amqplib');
 
 let connection;
@@ -10,7 +11,7 @@ const createChannel = async () => {
 };
 
 const setup = async (app) => {
-	connection = amqp.connect('amqp://192.168.99.100');
+	connection = amqp.connect(Configuration.get('RABBITMQ_URI'));
 };
 
 module.exports = { setup, createChannel };

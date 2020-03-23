@@ -3,6 +3,7 @@ const { schoolModel } = require('../school/model');
 const roleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
+const { Configuration } = require('@schul-cloud/commons');
 
 const getUserData = (userId) => userModel.findOne(
 	{ _id: userId },
@@ -117,6 +118,8 @@ const buildMessageObject = async ({ userId, teams, courses }) => {
 			rooms.push(teamObject);
 		}));
 	}
+	const homeserver = Configuration.get('MATRIX_URI').replace('https://', '').replace('/', '');
+
 	const message = {
 		method: 'adduser',
 		school: {
@@ -126,7 +129,7 @@ const buildMessageObject = async ({ userId, teams, courses }) => {
 			email: user.email,
 		},
 		user: {
-			id: `${user._id.toString()}@matrix.schul-cloud.org`,
+			id: `@sso_${user._id.toString()}:${homeserver}`,
 			name: displayName(user),
 			is_school_admin: user.roles.some((el) => el.toString() === moderatorRoles.adminRoleId.toString()),
 			is_school_teacher: user.roles.some((el) => el.toString() === moderatorRoles.teacherRoleId.toString()),
