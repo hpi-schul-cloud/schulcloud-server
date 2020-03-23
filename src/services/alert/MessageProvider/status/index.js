@@ -3,6 +3,7 @@ const api = require('../../../../helper/externalApiRequest');
 const logger = require('../../../../logger');
 
 const apiUri = Configuration.get('ALERT_STATUS_API_URL');
+const pageUri = Configuration.get('ALERT_STATUS_URL');
 
 const dict = {
 	default: 1,
@@ -64,7 +65,7 @@ function compare(a, b) {
 
 module.exports = {
 	async getData(instance) {
-		if (apiUri !== undefined) {
+		if (apiUri && pageUri) {
 			try {
 				const rawData = await getIncidents();
 				const instanceSpecific = [];
