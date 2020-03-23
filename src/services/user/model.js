@@ -72,11 +72,11 @@ userSchema.virtual('fullName').get(function get() {
 	].join(' ').trim().replace(/\s+/g, ' ');
 });
 userSchema.plugin(leanVirtuals);
-
+/*
 userSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions(this.roles);
 };
-
+*/
 const registrationPinSchema = new Schema({
 	email: { type: String, required: true },
 	pin: { type: String },

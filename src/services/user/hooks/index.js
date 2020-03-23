@@ -406,8 +406,6 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 	}
 };
 
-const User = require('../model');
-
 exports.before = {
 	all: [],
 	find: [
@@ -460,7 +458,7 @@ exports.after = {
 	get: [
 		decorateAvatar,
 		decorateUser,
-		globalHooks.computeProperty(User.userModel, 'getPermissions', 'permissions'),
+		// globalHooks.computeProperty(User.userModel, 'getPermissions', 'permissions'),
 		globalHooks.ifNotLocal(
 			globalHooks.denyIfNotCurrentSchool({
 				errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
