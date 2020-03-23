@@ -1,41 +1,24 @@
 const hooks = require('feathers-hooks-common');
-const cache = require('memory-cache');
-const globals = require('../../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
+const Cache = require('./cache');
 
 // add Message Provider Adapter here
 const StatusAdapter = require('./adapter/status');
 
-let messages = [];
-// durtion of cache in min
-const duration = 5;
-let success = false;
-
-/**
- * Building Message Array
- * @param {Adapter} ProviderAdapter
- */
-async function addMessageProvider(ProviderAdapter) {
-	const data = await ProviderAdapter.getMessage(globals.SC_THEME);
-	messages = messages.concat(data.messages);
-	return data.success;
-}
+const cache = new Cache(1);
+// add Message Provider here
+cache.addMessageProvider(
+	new StatusAdapter(),
+	Configuration.get('FEATURE_ALERTS_STATUS_ENABLED'),
+);
+cache.init();
 
 /**
  * Service to get an array of alert messages from added Message Providers (e.g: status.schul-cloud.org)
  */
 class AlertService {
 	async find() {
-		messages = [];
-		const cachedMessages = cache.get('cachedMessages');
-		if (cachedMessages) {
-			messages = cachedMessages;
-		} else {
-			// add Message Provider here
-			success = await addMessageProvider(new StatusAdapter()); // status.schul-cloud.org
-
-			if (success) { cache.put('cachedMessages', messages, 1000 * 60 * duration); }
-		}
-		return messages;
+		return cache.getMessages();
 	}
 }
 

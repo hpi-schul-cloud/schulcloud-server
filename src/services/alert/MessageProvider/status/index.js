@@ -1,8 +1,6 @@
-const commons = require('@schul-cloud/commons');
+const { Configuration } = require('@schul-cloud/commons');
 const api = require('../../../../helper/externalApiRequest');
 const logger = require('../../../../../src/logger');
-
-const { Configuration } = commons;
 
 const apiUri = Configuration.get('ALERT_STATUS_API_URL');
 
@@ -20,7 +18,7 @@ const dict = {
  * @param {number} componentId
  * @returns {number}
  */
-async function isInstance(instance, componentId) {
+async function getInstance(instance, componentId) {
 	if (componentId !== 0) {
 		try {
 			const response = await api(apiUri).get(`/components/${componentId}`);
@@ -40,8 +38,8 @@ async function isInstance(instance, componentId) {
  * Get all incidents
  * @returns {Promise}
  */
-async function getRawData() {
-	const response = await api(apiUri).get('/incidents');
+async function getIncidents() {
+	const response = await api(apiUri).get('/incidents?sort=id');
 	return response;
 }
 
@@ -63,14 +61,14 @@ module.exports = {
 	async getData(instance) {
 		if (apiUri !== undefined) {
 			try {
-				const rawData = await getRawData();
+				const rawData = await getIncidents();
 				const instanceSpecific = [];
 				const noneSpecific = [];
 				for (const element of rawData.data) {
 					// only mind incidents not older than 2 days
 					if (Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
 						// only mind messages for own instance (including none instance specific messages)
-						const isinstance = await isInstance(instance, element.component_id);
+						const isinstance = await getInstance(instance, element.component_id);
 						if (isinstance !== 0 && isinstance !== -1) {
 							instanceSpecific.push(element);
 						} else if (isinstance !== -1) {

@@ -1,9 +1,7 @@
-const commons = require('@schul-cloud/commons');
+const { Configuration } = require('@schul-cloud/commons');
 const Status = require('../MessageProvider/status');
 const Adapter = require('./index');
 const Message = require('./message');
-
-const { Configuration } = commons;
 
 class StatusAdapter extends Adapter {
 	async getMessage(instance) {
@@ -17,9 +15,9 @@ class StatusAdapter extends Adapter {
 				case 2:
 					return 'danger';
 				case 4:
-					return 'info';
+					return 'done';
 				default:
-					return '';
+					return 'info';
 			}
 		};
 
