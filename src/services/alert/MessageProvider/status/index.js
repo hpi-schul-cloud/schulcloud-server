@@ -12,6 +12,11 @@ const dict = {
 	thr: 7,
 };
 
+const important = {
+	no: -1,
+	all: 0,
+	yes: 1,
+};
 /**
  * Check if Message is instance specific
  * @param {string} instance
@@ -23,14 +28,14 @@ async function getInstance(instance, componentId) {
 		try {
 			const response = await api(apiUri).get(`/components/${componentId}`);
 			if (dict[instance] && response.data.group_id === dict[instance]) {
-				return response.data.group_id;
+				return important.yes;
 			}
-			return -1;
+			return important.no;
 		} catch (error) {
-			return -1;
+			return important.no;
 		}
 	} else {
-		return 0;
+		return important.all;
 	}
 }
 
@@ -69,9 +74,9 @@ module.exports = {
 					if (Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
 						// only mind messages for own instance (including none instance specific messages)
 						const isinstance = await getInstance(instance, element.component_id);
-						if (isinstance !== 0 && isinstance !== -1) {
+						if (isinstance !== important.all && isinstance !== important.no) {
 							instanceSpecific.push(element);
-						} else if (isinstance !== -1) {
+						} else if (isinstance !== important.no) {
 							noneSpecific.push(element);
 						}
 					}
