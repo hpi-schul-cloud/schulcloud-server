@@ -28,14 +28,26 @@ const removeKeys = (keys = []) => (role) => {
 	return role;
 };
 
-const paginate = (result, query = {}) => {
-	// do stuff to paginate it
-	return {
-		total: result.length,
-		limit: query.$limit,
-		skip: query.$skip,
-		data: result,
-	};
+const paginate = (result, { $limit, $skip } = {}) => ({
+	total: result.length,
+	limit: $limit,
+	skip: $skip,
+	data: result.slice($skip, $limit),
+});
+
+const filterByQueryKey = (roles, key, value) => {
+	if (key.charAt(0) === '$') {
+		return roles;
+	}
+	return roles.filter((r) => r[key] === value);
+};
+
+const filterByQuery = (roles, query = {}) => {
+	let array = roles;
+	Object.keys(query).forEach((key) => {
+		array = filterByQueryKey(array, key, query[key]);
+	});
+	return array;
 };
 
 const getRoles = (query = {}) => RoleModel.find(query).lean().exec();
@@ -58,14 +70,16 @@ class RoleService {
 			});
 	}
 
-	async get(id, params) {
-		const result = await this.roles;
-		return result;
+	async get(id, { query } = {}) {
+		let result = await this.roles;
+		result = filterByQuery(result, query);
+		return result.find((r) => r._id.toString() === id);
 	}
 
-	async find(params) {
-		const result = await this.roles;
-		return paginate(result, params.query);
+	async find({ query = {} } = {}) {
+		let result = await this.roles;
+		result = filterByQuery(result, query);
+		return paginate(result, query);
 	}
 
 	async setup(app) {
@@ -86,4 +100,5 @@ module.exports = {
 	RoleServiceHooks,
 	getRoles,
 	dissolveInheritPermission,
+	filterByQuery,
 };
