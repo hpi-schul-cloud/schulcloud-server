@@ -13,7 +13,7 @@ const ATTRIBUTES = [
 	{ name: 'nameSuffix', aliases: ['namesuffix', 'suffix'] },
 	{ name: 'email', required: true, aliases: ['email', 'mail', 'e-mail'] },
 	{ name: 'class', aliases: ['class', 'classes'] },
-	{ name: 'birthday', aliases: ['birthday', 'geburtstag'] }
+	{ name: 'birthday', aliases: ['birthday', 'geburtstag'] },
 ];
 
 /**
@@ -200,17 +200,15 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	static sanitizeRecords(records) {
-
 		const requiredAttributes = ATTRIBUTES.filter((a) => a.required).map((a) => a.name);
 		const mappingFunction = buildMappingFunction(records[0]);
 		const processed = [];
 		records.forEach((record) => {
-
 			const mappedRecord = mappingFunction(record);
 			if (requiredAttributes.every((attr) => !!mappedRecord[attr])) {
 				mappedRecord.email = mappedRecord.email.trim().toLowerCase();
-				if (!this.dateValidator(mappedRecord.birthday)) { // todo: put validation elsewhere
-					mappedRecord.birthday = this.stringToDateConverter(mappedRecord.birthday)
+				if (!this.assertDateFormat(mappedRecord.birthday)) { // todo: put validation elsewhere
+					mappedRecord.birthday = this.stringToDateConverter(mappedRecord.birthday);
 				}
 				processed.push(mappedRecord);
 			}
@@ -400,26 +398,28 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return classes.split('+').filter((name) => name !== '');
 	}
 
-	static dateValidator(dateInput) {
+	static assertDateFormat(dateInput) {
 		if (!dateInput) {
 			// todo: change to logger
-			return 'missing birthday value'
+			return 'missing birthday value';
 		}
 		if (typeof dateInput !== 'string') {
-			return 'incorrect values, birthday must be a string'
+			return 'incorrect values, birthday must be a string';
 		}
 		// https://stackoverflow.com/questions/15491894/regex-to-validate-date-format-dd-mm-yyyy
-		const dateValidationRegex = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/
+		const dateValidationRegex = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/;
 		if (!dateValidationRegex.test(dateInput)) {
-			return 'incorrect format. Birthday must be dd.mm.yyyy or dd/mm/yyyy or dd-mm-yyyy'
+			return 'incorrect format. Birthday must be dd.mm.yyyy or dd/mm/yyyy or dd-mm-yyyy';
 		}
-		return false
+		return false;
 	}
+
 	static stringToDateConverter(dateInput) {
-		const dd = parseInt(dateInput.substring(0, 2));
-		const mm = parseInt(dateInput.substring(3, 5));
-		const yyyy = parseInt(dateInput.substring(6, 10));
-		const date = new Date(yyyy, mm, dd);
+		const dd = parseInt(dateInput.substring(0, 2), 10);
+		const mm = parseInt(dateInput.substring(3, 5), 10);
+		const yyyy = parseInt(dateInput.substring(6, 10), 10);
+
+		const date = new Date(yyyy, mm - 1, dd);
 		return date;
 	}
 }

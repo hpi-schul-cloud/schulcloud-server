@@ -13,7 +13,7 @@ describe('CSVSyncer', () => {
 		expect(new CSVSyncer().steps).to.not.equal(undefined);
 		expect(new CSVSyncer().sync).to.not.equal(undefined);
 
-		expect(CSVSyncer.dateValidator).to.not.equal(undefined);
+		expect(CSVSyncer.assertDateFormat).to.not.equal(undefined);
 		expect(CSVSyncer.stringToDateConverter).to.not.equal(undefined);
 	});
 
@@ -80,21 +80,23 @@ describe('CSVSyncer', () => {
 		});
 
 		it('should not accept unvalid dates as user birthday', () => {
-			const falsyValues = [false, null, undefined, '', 0]
-			const misfitValues = [Symbol(), [], {}, true]
-			const wrongFormatDates = ['32.12.2000', '01.13.2000', '01.01-2000', '01/01.2000', '01-01/2000', '42', 'void']
-			const correctFormatDates = ['01.01.2000', '01-01-2000', '01/01/2000']
+			const falsyValues = [false, null, undefined, '', 0];
+			const misfitValues = [Symbol('42'), [], {}, true];
+			const wrongFormatDates = [
+				'32.12.2000', '01.13.2000', '01.01-2000', '01/01.2000', '01-01/2000', '42', 'void'];
+			const correctFormatDates = ['01.01.2000', '01-01-2000', '01/01/2000'];
 
-			const result0 = falsyValues.map(f => CSVSyncer.dateValidator(f))
-			const result1 = misfitValues.map(m => CSVSyncer.dateValidator(m))
-			const result2 = wrongFormatDates.map(w => CSVSyncer.dateValidator(w))
-			const result3 = correctFormatDates.map(c => CSVSyncer.dateValidator(c))
+			const result0 = falsyValues.map((f) => CSVSyncer.assertDateFormat(f));
+			const result1 = misfitValues.map((m) => CSVSyncer.assertDateFormat(m));
+			const result2 = wrongFormatDates.map((w) => CSVSyncer.assertDateFormat(w));
+			const result3 = correctFormatDates.map((c) => CSVSyncer.assertDateFormat(c));
 
-			result0.forEach(r => expect(r).to.be.equal('missing birthday value'))
-			result1.forEach(r => expect(r).to.be.equal('incorrect values, birthday must be a string'))
-			result2.forEach(r => expect(r).to.be.equal('incorrect format. Birthday must be dd.mm.yyyy or dd/mm/yyyy or dd-mm-yyyy'))
-			result3.forEach(r => expect(r).to.be.equal(false))
+			result0.forEach((r) => expect(r).to.be.equal('missing birthday value'));
+			result1.forEach((r) => expect(r).to.be.equal('incorrect values, birthday must be a string'));
+			result2.forEach((r) => expect(r).to.be.equal(
+				'incorrect format. Birthday must be dd.mm.yyyy or dd/mm/yyyy or dd-mm-yyyy',
+			));
+			result3.forEach((r) => expect(r).to.be.equal(false));
 		});
-
 	});
 });
