@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+const { BadRequest, NotFound } = require('@feathersjs/errors');
 const { RoleModel } = require('../model');
 
 // do not proteced this route with authentication
@@ -50,6 +52,10 @@ const filterByQuery = (roles, query = {}) => {
 	return array;
 };
 
+const addDisplayName = (displayNames, role) => {
+	role.displayName = displayNames[role.name];
+};
+
 const getRoles = (query = {}) => RoleModel.find(query).lean().exec();
 
 /**
@@ -58,28 +64,64 @@ const getRoles = (query = {}) => RoleModel.find(query).lean().exec();
 class RoleService {
 	constructor({ docs } = {}) {
 		this.docs = docs || {};
+		this.err = {
+			solved: 'Can not solved the role',
+			load: 'Can not load roles from DB, or solved pre mutations.',
+		};
+		this.roles = [];
+		this.rolesDisplayName = {
+			teacher: 'Lehrer',
+			student: 'Schüler',
+			administrator: 'Administrator',
+			superhero: 'Schul-Cloud Admin',
+			demo: 'Demo',
+			demoTeacher: 'Demo',
+			demoStudent: 'Demo',
+			helpdesk: 'Helpdesk',
+			betaTeacher: 'Beta',
+			expert: 'Experte',
+		};
 	}
 
 	async init() {
-		const filter = removeKeys(['createdAt', 'updatedAt', '__v']); // [roles']
-
-		this.roles = getRoles()
-			.then((roles) => roles.map((role) => filter(dissolveInheritPermission(roles, role))))
-			.catch((err) => {
-				throw new Error('Can not load roles from DB.', err);
+		try {
+			const filter = removeKeys(['createdAt', 'updatedAt', 'roles', '__v']);
+			const roles = await getRoles();
+			this.roles = roles.map((role) => {
+				role = filter(dissolveInheritPermission(roles, role));
+				if (this.rolesDisplayName[role.name]) {
+					role.displayName = this.rolesDisplayName[role.name];
+				}
+				return role;
 			});
+		} catch (err) {
+			throw new Error(this.err.load, err);
+		}
 	}
 
 	async get(id, { query } = {}) {
-		let result = await this.roles;
-		result = filterByQuery(result, query);
-		return result.find((r) => r._id.toString() === id);
+		let role;
+		try {
+			let result = await this.roles;
+			result = filterByQuery(result, query);
+			role = result.find((r) => r._id.toString() === id);
+		} catch (err) {
+			throw new BadRequest(this.err.solved, err);
+		}
+		if (!role) {
+			throw new NotFound();
+		}
+		return role;
 	}
 
 	async find({ query = {} } = {}) {
-		let result = await this.roles;
-		result = filterByQuery(result, query);
-		return paginate(result, query);
+		try {
+			let result = await this.roles;
+			result = filterByQuery(result, query);
+			return paginate(result, query);
+		} catch (err) {
+			throw new BadRequest(this.err.solved, err);
+		}
 	}
 
 	async setup(app) {
