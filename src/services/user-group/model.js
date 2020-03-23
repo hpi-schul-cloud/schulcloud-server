@@ -44,13 +44,17 @@ const courseSchema = getUserGroupSchema({
 	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
 	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },
-	untilDate: { type: Date },
-	shareToken: { type: String, unique: true, sparse: true },
+	untilDate: { type: Date, index: true },
+	shareToken: {
+		type: String, unique: true, sparse: true, index: true,
+	},
 	times: [timeSchema],
 	// optional information if this course is a copy from other
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
 	...externalSourceSchema,
 });
+
+courseSchema.index({ userIds: 1, teacherIds: 1, substitutionIds: 1 });
 
 courseSchema.plugin(mongooseLeanVirtuals);
 
