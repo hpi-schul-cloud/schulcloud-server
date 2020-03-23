@@ -1,6 +1,6 @@
 const { Configuration } = require('@schul-cloud/commons');
 const api = require('../../../../helper/externalApiRequest');
-const logger = require('../../../../../src/logger');
+const logger = require('../../../../logger');
 
 const apiUri = Configuration.get('ALERT_STATUS_API_URL');
 
