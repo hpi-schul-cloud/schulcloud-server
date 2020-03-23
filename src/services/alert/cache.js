@@ -30,7 +30,7 @@ class Cache {
 	}
 
 	async getMessages() {
-		if (lastUpdatedTimestamp < Date.now() - 1000 * 20) {
+		if (lastUpdatedTimestamp < Date.now() - 1000 * 60 * this.time) {
 			await this.updateMessages();
 		}
 		return messages;
