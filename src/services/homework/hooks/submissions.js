@@ -303,6 +303,7 @@ const hasDeletePermission = (hook) => {
 exports.before = () => ({
 	all: [authenticate('jwt'), stringifyUserId],
 	find: [
+		// todo restrictToCurrentSchool,
 		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
 		filterRequestedSubmissions,
 		globalHooks.mapPaginationQuery.bind(this),
