@@ -1,3 +1,4 @@
+const { Configuration } = require('@schul-cloud/commons');
 const { createChannel } = require('../../utils/rabbitmq');
 const { buildAddUserMessage } = require('./utils');
 
