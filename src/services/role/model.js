@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -10,8 +9,6 @@ const roleSchema = new Schema({
 }, {
 	timestamps: true,
 });
-
-enableAuditLog(roleSchema);
 
 const RoleModel = mongoose.model('role', roleSchema);
 

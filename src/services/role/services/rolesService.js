@@ -2,7 +2,7 @@
 const { BadRequest, NotFound } = require('@feathersjs/errors');
 const { RoleModel } = require('../model');
 
-// do not proteced this route with authentication
+// Do not proteced this route with authentication.
 const RoleServiceHooks = {
 	before: {
 		all: [],
@@ -79,6 +79,11 @@ class RoleService {
 		};
 	}
 
+	async setup(app) {
+		this.app = app;
+		await this.init();
+	}
+
 	async init() {
 		try {
 			const filter = removeKeys(); // ['createdAt', 'updatedAt', 'roles', '__v']
@@ -118,11 +123,6 @@ class RoleService {
 		} catch (err) {
 			throw new BadRequest(this.err.solved, err);
 		}
-	}
-
-	async setup(app) {
-		this.app = app;
-		await this.init();
 	}
 }
 
