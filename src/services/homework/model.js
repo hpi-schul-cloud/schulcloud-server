@@ -49,7 +49,9 @@ const submissionSchema = new Schema({
 
 const commentSchema = new Schema({
 	comment: { type: String, required: true },
-	submissionId: { type: Schema.Types.ObjectId, required: true, ref: 'submission' },
+	submissionId: {
+		type: Schema.Types.ObjectId, required: true, ref: 'submission', index: true,
+	},
 	createdAt: { type: Date, default: Date.now },
 	author: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
 });
