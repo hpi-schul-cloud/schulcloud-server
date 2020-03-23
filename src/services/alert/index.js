@@ -11,7 +11,6 @@ cache.addMessageProvider(
 	new StatusAdapter(),
 	Configuration.get('FEATURE_ALERTS_STATUS_ENABLED'),
 );
-cache.init();
 
 /**
  * Service to get an array of alert messages from added Message Providers (e.g: status.schul-cloud.org)

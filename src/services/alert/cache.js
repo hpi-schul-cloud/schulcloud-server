@@ -2,7 +2,7 @@ const { SC_THEME } = require('../../../config/globals');
 
 const MessageProvider = [];
 let messages = [];
-let isInit = false;
+let lastUpdatedTimestamp = 0;
 
 class Cache {
 	/**
@@ -10,17 +10,6 @@ class Cache {
 	 */
 	constructor(time) {
 		this.time = time;
-	}
-
-	async init() {
-		if (!isInit) {
-			isInit = true;
-			this.updateMessages();
-
-			setInterval(() => {
-				this.updateMessages();
-			}, 1000 * 60 * this.time);
-		}
 	}
 
 	async updateMessages() {
@@ -34,10 +23,16 @@ class Cache {
 			success = true;
 		}
 
-		if (success) { messages = newMessages; }
+		if (success) {
+			messages = newMessages;
+			lastUpdatedTimestamp = Date.now();
+		}
 	}
 
-	getMessages() {
+	async getMessages() {
+		if (lastUpdatedTimestamp < Date.now() - 1000 * 20) {
+			await this.updateMessages();
+		}
 		return messages;
 	}
 
