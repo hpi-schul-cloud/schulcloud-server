@@ -25,7 +25,6 @@ const {
 } = require('./utils/');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
 const { SERVICE_PATH: FILE_SECURITY_SERVICE_PATH } = require('./SecurityCheckService');
-const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
@@ -484,11 +483,8 @@ const directoryService = {
 	},
 
 	getStudentRoleId() {
-		return RoleModel.findOne({ name: 'student' })
-			.select('_id')
-			.lean()
-			.exec()
-			.then((role) => role._id);
+		const query = { name: 'student' };
+		return this.app.service({ query }).then((roles) => roles.data[0]._id);
 	},
 
 	/**
@@ -758,6 +754,9 @@ const filePermissionService = {
 
 	docs: swaggerDocs.permissionService,
 
+	setup(app) {
+		this.app = app;
+	},
 	/**
 	* @param _id, Object-ID of file obejct to be altered
 	* @param data, contains new permissions
@@ -768,7 +767,7 @@ const filePermissionService = {
 		const { permissions: commitedPerms } = data;
 
 		const permissionPromises = commitedPerms.map(({ refId }) => Promise.all([
-			RoleModel.findOne({ _id: refId }).lean().exec(),
+			this.app.service('roles').get(refId),
 			userModel.findOne({ _id: refId }).lean().exec(),
 		])
 			.then(([role, user]) => {
@@ -854,8 +853,7 @@ const filePermissionService = {
 
 		const { refOwnerModel, owner } = fileObj;
 		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
-		const rolePromises = rolePermissions
-			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
+		const rolePromises = rolePermissions.map(({ refId }) => this.app.service('roles').get(refId));
 		const isFileCreator = equalIds(fileObj.permissions[0].refId, userId);
 
 		const actionMap = {

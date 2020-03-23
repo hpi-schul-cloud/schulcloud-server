@@ -372,6 +372,7 @@ const pushRemoveEvent = (hook) => {
 	return hook;
 };
 
+// TODO check if you can add RoleName too?
 const populateRoles = async (context) => {
 	const { roles } = context.result;
 	if (roles) {
