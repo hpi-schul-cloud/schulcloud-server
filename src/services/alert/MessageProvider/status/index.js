@@ -84,7 +84,8 @@ module.exports = {
 				noneSpecific.sort(compare);
 
 				return instanceSpecific.concat(noneSpecific);
-			} catch (e) { // return null on error
+			} catch (err) { // return null on error
+				logger.error(err);
 				return null;
 			}
 		} else {
