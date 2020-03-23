@@ -6,7 +6,7 @@ const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 const rabbitmqMock = require('../rabbitmqMock');
 
-//const schoolSyncService = app.service('schools/:schoolId/messengerSync');
+// const schoolSyncService = app.service('schools/:schoolId/messengerSync');
 const { Configuration } = commons;
 
 describe('messenger schoolSync Service', () => {

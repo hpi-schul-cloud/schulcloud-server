@@ -7,6 +7,8 @@ const createChannel = async () => {
 	if (connection) {
 		const con = await Promise.resolve(connection); // ensure connection has resolved
 		return con.createChannel();
+	} else {
+		return null;
 	}
 };
 

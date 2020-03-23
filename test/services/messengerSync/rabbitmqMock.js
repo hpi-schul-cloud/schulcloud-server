@@ -4,16 +4,14 @@ const reset = () => {
 	queues = {};
 };
 
-const assertQueue = (_, options) => {};
+const assertQueue = () => {};
 
 const sendToQueue = (queue, messageBuffer, options) => {
 	if (!queues[queue]) queues[queue] = [];
 	queues[queue].push(messageBuffer);
 };
 
-const createChannel = async () => {
-	return { sendToQueue, assertQueue };
-};
+const createChannel = async () => ({ sendToQueue, assertQueue });
 
 const setup = async (app) => {};
 
