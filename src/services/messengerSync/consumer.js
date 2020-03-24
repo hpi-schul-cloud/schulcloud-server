@@ -9,9 +9,8 @@ const QUEUE_EXTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL');
 let channel;
 
 const validateMessage = (content) => {
-	if (!content.userId) return false;
-	if (!(content.course || content.team || content.schoolSync)) return false;
-	return true;
+	if (content.userId && (content.course || content.team || content.schoolSync)) return true;
+	return false;
 };
 
 const handleMessage = async (incomingMessage) => {
