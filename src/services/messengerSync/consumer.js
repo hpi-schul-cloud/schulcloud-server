@@ -7,30 +7,41 @@ const QUEUE_EXTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL');
 
 let channel;
 
+const validateMessage = (content) => {
+	if (!content.userId) return false;
+	if (!(content.course || content.team || content.schoolSync)) return false;
+	return true;
+};
+
 const handleMessage = async (incomingMessage) => {
 	const content = JSON.parse(incomingMessage.content.toString());
-	const addUserMessageObject = await buildAddUserMessage(content);
-	const outgoingMessage = JSON.stringify(addUserMessageObject);
-	channel.sendToQueue(QUEUE_EXTERNAL, Buffer.from(outgoingMessage), { persistent: true });
-	channel.ack(incomingMessage);
+	if (validateMessage) {
+		const addUserMessageObject = await buildAddUserMessage(content);
+		const outgoingMessage = JSON.stringify(addUserMessageObject);
+		channel.sendToQueue(QUEUE_EXTERNAL, Buffer.from(outgoingMessage), { persistent: true });
+		channel.ack(incomingMessage);
+	}
+	channel.nack(incomingMessage);
 };
 
 const setup = async (app) => {
-	channel = await createChannel();
+	if (Configuration.get('FEATURE_RABBITMQ_ENABLED')) {
+		channel = await createChannel();
 
-	// internal queue
-	channel.assertQueue(QUEUE_INTERNAL, {
-		durable: true,
-	});
-	channel.prefetch(30);
-	channel.consume(QUEUE_INTERNAL, handleMessage, {
-		noAck: false,
-	});
+		// internal queue
+		channel.assertQueue(QUEUE_INTERNAL, {
+			durable: true,
+		});
+		channel.prefetch(30);
+		channel.consume(QUEUE_INTERNAL, handleMessage, {
+			noAck: false,
+		});
 
-	// external queue
-	channel.assertQueue(QUEUE_EXTERNAL, {
-		durable: false,
-	});
+		// external queue
+		channel.assertQueue(QUEUE_EXTERNAL, {
+			durable: false,
+		});
+	}
 };
 
 module.exports = setup;
