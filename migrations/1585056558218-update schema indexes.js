@@ -6,8 +6,9 @@ const { connect, close } = require('../src/utils/database');
 
 require('../src/services/user/model');
 require('../src/services/link/link-model');
-require('../src/services/user-group/model');
+const { courseModel } = require('../src/services/user-group/model');
 require('../src/services/account/model');
+require('../src/services/homework/model');
 
 
 module.exports = {
@@ -39,7 +40,7 @@ module.exports = {
 		info('done.');
 
 		info('update courses indexes...');
-		await this('courses').syncIndexes();
+		await courseModel.syncIndexes();
 		info('done.');
 		// ////////////////////////////////////////////////////
 		await close();
