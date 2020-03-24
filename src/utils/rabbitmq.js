@@ -5,7 +5,7 @@ let connection;
 
 const createChannel = async () => {
 	if (connection) {
-		const con = await Promise.resolve(connection); // ensure connection has resolved
+		const con = await connection; // ensure connection has resolved
 		return con.createChannel();
 	}
 	return null;
