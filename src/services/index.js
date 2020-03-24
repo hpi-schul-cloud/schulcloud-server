@@ -40,7 +40,7 @@ const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
 const videoconference = require('./videoconference');
-
+const storageProvider = require('./storageProvider');
 
 module.exports = function initializeServices() {
 	const app = this;
@@ -88,7 +88,7 @@ module.exports = function initializeServices() {
 	app.configure(datasources);
 	app.configure(webuntis);
 	app.configure(videoconference);
-
+	app.configure(storageProvider);
 
 	// initialize events
 	newsEvents.configure(app);

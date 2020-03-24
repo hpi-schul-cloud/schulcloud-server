@@ -5,36 +5,40 @@ const pathUtil = require('path');
 const fs = require('fs');
 const logger = require('../../../logger');
 const { schoolModel } = require('../../school/model');
+const storageProviderModel = require('../../storageProvider/model');
 const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
 
-// const prodMode = process.env.NODE_ENV === 'production';
-
-let awsConfig = {};
-try {
-	//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
-	/* eslint-disable global-require, no-unused-expressions */
-	(['production'].includes(process.env.NODE_ENV))
-		? awsConfig = require('../../../../config/secrets.js').aws
-		: awsConfig = require('../../../../config/secrets.json').aws;
-	/* eslint-enable global-require, no-unused-expressions */
-} catch (e) {
-	logger.warning('The AWS config couldn\'t be read');
-}
-
 const AbstractFileStorageStrategy = require('./interface.js');
 
-const createAWSObject = (schoolId, configIndex) => {
-	if (!awsConfig[0]) throw new Error('AWS integration is not configured on the server');
+const getCorsRules = () => ([{
+	AllowedHeaders: ['*'],
+	AllowedMethods: ['PUT'],
+	AllowedOrigins: [process.env.HOST],
+	MaxAgeSeconds: 300,
+}]);
 
-	configIndex = (awsConfig[configIndex] ? configIndex : 0);
-	const schoolAwsConfig = awsConfig[configIndex];
-	const config = new aws.Config(schoolAwsConfig);
-	config.endpoint = new aws.Endpoint(schoolAwsConfig.endpointUrl);
+const getConfig = (provider) => {
+	const awsConfig = new aws.Config({
+		signatureVersion: 'v4',
+		s3ForcePathStyle: true,
+		sslEnabled: true,
+		accessKeyId: provider.accessKeyId,
+		secretAccessKey: provider.secretAccessKey,
+		region: provider.region || 'eu-de',
+		endpointUrl: provider.endpointUrl,
+		cors_rules: getCorsRules(),
+	});
+	awsConfig.endpoint = new aws.Endpoint(provider.endpointUrl);
+	return awsConfig;
+};
+
+const createAWSObject = async (schoolId, provider) => {
+	if (!provider) throw new Error('AWS integration is not configured on the server');
 
 	return {
-		s3: new aws.S3(config),
+		s3: new aws.S3(getConfig(provider)),
 		bucket: `bucket-${schoolId}`,
 	};
 };
@@ -118,7 +122,9 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			throw new BadRequest('No school id parameter given.');
 		}
 
-		const { fileStorageIndex } = await schoolModel.findOne({ _id: schoolId }).lean().exec()
+		let { storageProvider } = await schoolModel.findOne({ _id: schoolId })
+			.populate({ path: 'storageProvider', model: storageProviderModel })
+			.lean().exec()
 			.then((school) => {
 				if (school === null) {
 					throw new NotFound('School not found.');
@@ -126,15 +132,25 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				return school;
 			});
 
-		const createSchoolBucket = (index) => new Promise((resolve, reject) => {
-			const awsObject = createAWSObject(schoolId, index);
+		if (!storageProvider) {
+			storageProvider = await storageProviderModel.findOne({ isShared: true }).lean().exec()
+				.then((provider) => {
+					if (provider === null) {
+						throw new NotFound('No available provider found.');
+					}
+					return provider;
+				});
+		}
+
+		return new Promise((resolve, reject) => {
+			const awsObject = createAWSObject(schoolId, storageProvider);
 			return promisify(awsObject.s3.createBucket.bind(awsObject.s3), awsObject.s3)({ Bucket: awsObject.bucket })
 				.then((res) => {
 					/* Sets the CORS configuration for a bucket. */
 					awsObject.s3.putBucketCors({
 						Bucket: awsObject.bucket,
 						CORSConfiguration: {
-							CORSRules: awsConfig.cors_rules,
+							CORSRules: getCorsRules(),
 						},
 					}, (err) => {	// define and pass error handler
 						if (err) {
@@ -147,35 +163,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						data: res,
 						code: 200,
 					});
-				}).catch((err) => resolve({
-					err,
-					code: 500,
-				}));
+				}).catch((err) => reject(new Error(err)));
 		});
-
-		// try to create a bucket in all possible endpoints
-		let res = {};
-		let nextIndex = fileStorageIndex || 0;
-		while (res.code !== 200) {
-			res = await createSchoolBucket(nextIndex);
-			if (res.code === 200) {
-				if (nextIndex !== fileStorageIndex) { // update fileStorageIndex in DB
-					await schoolModel.updateOne(
-						{ _id: schoolId },
-						{ $set: { fileStorageIndex: nextIndex } },
-					).lean().exec();
-				}
-				return res;
-			}
-			nextIndex += 1;
-			if (res.code !== 500 || nextIndex >= awsConfig.length) {
-				return {
-					message: 'Could not create s3-bucket.',
-					data: res,
-				};
-			}
-		}
-		return { message: 'Could not create s3-bucket.' };
 	}
 
 	createIfNotExists(awsObject) {
@@ -196,7 +185,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						awsObject.s3.putBucketCors({
 							Bucket: awsObject.bucket,
 							CORSConfiguration: {
-								CORSRules: awsConfig.cors_rules,
+								CORSRules: getCorsRules(),
 							},
 						},
 						(err) => {
