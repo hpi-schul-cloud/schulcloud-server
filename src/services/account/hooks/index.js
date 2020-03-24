@@ -224,7 +224,7 @@ const securePatching = (hook) => Promise.all([
 	const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
 	if (hook.params.account._id !== hook.id) {
 		if (isDemoStudent || isDemoTeacher) {
-			return Promise.reject(new Forbidden('Dies Funktion ist im Demomodus nicht verfügbar!'));
+			return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
 		}
 		if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent) || editsOwnAccount)) {
 			return Promise.reject(new BadRequest('You have not the permissions to change other users'));
