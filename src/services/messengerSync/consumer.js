@@ -34,18 +34,13 @@ const setup = async (app) => {
 	if (Configuration.get('FEATURE_RABBITMQ_ENABLED')) {
 		channel = await createChannel();
 
-		// internal queue
-		channel.assertQueue(QUEUE_INTERNAL, {
-			durable: true,
-		});
+		await Promise.all([
+			channel.assertQueue(QUEUE_INTERNAL, { durable: true }),
+			channel.assertQueue(QUEUE_EXTERNAL, { durable: false }),
+		]);
 		channel.prefetch(30);
 		channel.consume(QUEUE_INTERNAL, handleMessage, {
 			noAck: false,
-		});
-
-		// external queue
-		channel.assertQueue(QUEUE_EXTERNAL, {
-			durable: false,
 		});
 	}
 };

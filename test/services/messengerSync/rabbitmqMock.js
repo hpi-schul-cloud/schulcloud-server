@@ -4,7 +4,7 @@ const reset = () => {
 	queues = {};
 };
 
-const assertQueue = () => {};
+const assertQueue = async () => {};
 
 const sendToQueue = (queue, messageBuffer, options) => {
 	if (!queues[queue]) queues[queue] = [];

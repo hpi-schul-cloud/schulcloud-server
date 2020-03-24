@@ -7,7 +7,7 @@ let channel;
 
 const handleCourseChanged = async (course, app) => {
 	const users = course.userIds.concat(course.teacherIds).concat(course.substitutionIds);
-	channel.assertQueue(QUEUE_INTERNAL, {
+	await channel.assertQueue(QUEUE_INTERNAL, {
 		durable: true,
 	});
 	users.forEach((userId) => {
@@ -16,10 +16,10 @@ const handleCourseChanged = async (course, app) => {
 	});
 };
 
-const handleTeamChanged = (team) => {
+const handleTeamChanged = async (team) => {
 	if (team.users) {
 		const users = team.userIds.map((teamUser) => teamUser.userId);
-		channel.assertQueue(QUEUE_INTERNAL, {
+		await channel.assertQueue(QUEUE_INTERNAL, {
 			durable: true,
 		});
 		users.forEach((userId) => {

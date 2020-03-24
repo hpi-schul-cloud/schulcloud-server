@@ -32,7 +32,7 @@ class MessengerSchoolSync {
 		const school = await this.app.service('schools').get(params.route.schoolId);
 		if (!school.features.includes('messenger')) throw new BadRequest('this school does not support the messenger');
 		const users = await this.app.service('users').find({ query: { schoolId: school._id } });
-		this.channel.assertQueue(QUEUE_INTERNAL, {
+		await this.channel.assertQueue(QUEUE_INTERNAL, {
 			durable: true,
 		});
 		users.data.forEach((user) => {
