@@ -9,7 +9,7 @@ const { enableAuditLog } = require('../../utils/database');
 const { Schema } = mongoose;
 
 const homeworkSchema = new Schema({
-	schoolId: { type: Schema.Types.ObjectId, required: true },
+	schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
 	createdAt: { type: Date, default: Date.now },
 	fileIds: [{ type: Schema.Types.ObjectId, ref: 'file', index: true }],
 	updatedAt: { type: Date, default: Date.now },
@@ -30,7 +30,7 @@ const homeworkSchema = new Schema({
 });
 
 const submissionSchema = new Schema({
-	schoolId: { type: Schema.Types.ObjectId, required: true },
+	schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 	comment: { type: String },
@@ -49,7 +49,9 @@ const submissionSchema = new Schema({
 
 const commentSchema = new Schema({
 	comment: { type: String, required: true },
-	submissionId: { type: Schema.Types.ObjectId, required: true, ref: 'submission' },
+	submissionId: {
+		type: Schema.Types.ObjectId, required: true, ref: 'submission', index: true,
+	},
 	createdAt: { type: Date, default: Date.now },
 	author: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
 });

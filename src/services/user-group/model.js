@@ -8,7 +8,7 @@ const { Schema } = mongoose;
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
-		schoolId: { type: Schema.Types.ObjectId, required: true },
+		schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
 		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
@@ -54,7 +54,9 @@ const courseSchema = getUserGroupSchema({
 	...externalSourceSchema,
 });
 
-courseSchema.index({ userIds: 1, teacherIds: 1, substitutionIds: 1 });
+courseSchema.index({ userIds: 1 });
+courseSchema.index({ teacherIds: 1 });
+courseSchema.index({ substitutionIds: 1 });
 
 courseSchema.plugin(mongooseLeanVirtuals);
 
