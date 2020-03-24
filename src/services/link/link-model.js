@@ -19,7 +19,7 @@ const linkSchema = new Schema({
 		retries: 20, // number of retries on collision
 	},
 	data: { type: Object },
-	target: { type: String, required: true },
+	target: { type: String, required: true, index: true },
 	createdAt: { type: Date, default: Date.now },
 });
 
