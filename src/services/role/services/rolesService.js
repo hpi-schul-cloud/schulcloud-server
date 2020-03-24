@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const { BadRequest, NotFound } = require('@feathersjs/errors');
+const { NotFound } = require('@feathersjs/errors');
 const { RoleModel } = require('../model');
 
 // Do not proteced this route with authentication.
@@ -48,12 +48,12 @@ const getRoles = (query = {}) => RoleModel.find(query).lean().exec();
 class RoleService {
 	constructor({ docs } = {}) {
 		this.docs = docs || {};
-		this.err = {
+		this.err = Object.freeze({
 			solved: 'Can not solved the role',
 			load: 'Can not load roles from DB, or can not solved pre mutations.',
-		};
+		});
 		this.roles = undefined;
-		this.rolesDisplayName = {
+		this.rolesDisplayName = Object.freeze({
 			teacher: 'Lehrer',
 			student: 'Schüler',
 			administrator: 'Administrator',
@@ -64,7 +64,8 @@ class RoleService {
 			helpdesk: 'Helpdesk',
 			betaTeacher: 'Beta',
 			expert: 'Experte',
-		};
+		});
+		this.filterKeys = Object.freeze([]); // ['createdAt', 'updatedAt', 'roles', '__v']
 	}
 
 	async setup(app) {
@@ -74,7 +75,7 @@ class RoleService {
 
 	async init() {
 		this.roles = new Promise(async (resolve) => {
-			const filter = removeKeys(); // ['createdAt', 'updatedAt', 'roles', '__v']
+			const filter = removeKeys(this.filterKeys);
 			const roles = await getRoles();
 			const preparedRoles = roles.map((role) => {
 				role = filter(this.dissolveInheritPermission(roles, role));
@@ -108,34 +109,28 @@ class RoleService {
 		return this.unique(...selectedRoles.map((r) => r.permissions));
 	}
 
-	async get(id, { query } = {}) {
-		let role;
-		try {
-			const result = filterByQuery(await this.roles, query);
-			role = result.find((r) => r._id === id);
-		} catch (err) {
-			throw new BadRequest(this.err.solved, err);
-		}
+	async get(id, params) {
+		const result = filterByQuery(await this.roles, params.query);
+		const role = result.find((r) => r._id === id.toString());
+
 		if (!role) {
-			throw new NotFound();
+			throw new NotFound(`Role by ${id} not found.`);
 		}
 		return role;
 	}
 
-	async find({ query = {} } = {}) {
-		try {
-			const result = filterByQuery(await this.roles, query);
-			return paginate(result, query);
-		} catch (err) {
-			throw new BadRequest(this.err.solved, err);
-		}
+	async find(params) {
+		const result = filterByQuery(await this.roles, params.query);
+		return paginate(result, params.query);
 	}
 }
 
+let staticRoleService;
 const configure = async (app, path = '/roles') => {
 	app.use(path, new RoleService());
 	const service = app.service(path);
 	service.hooks(RoleServiceHooks);
+	staticRoleService = service;
 };
 
 module.exports = {
@@ -144,4 +139,6 @@ module.exports = {
 	RoleServiceHooks,
 	getRoles,
 	filterByQuery,
+	paginate,
+	staticRoleService,
 };
