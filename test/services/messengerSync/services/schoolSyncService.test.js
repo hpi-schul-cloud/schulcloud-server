@@ -60,7 +60,6 @@ describe('messenger schoolSync Service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(users[0]);
 			params.route = { schoolId: school._id.toString() };
 			await app.service('schools/:schoolId/messengerSync').create({}, params);
-			// await schoolSyncService.create({}, params);
 
 			const testingQueue = rabbitmqMock.queues.matrix_sync_unpopulated;
 			expect(testingQueue).to.not.be.undefined;
