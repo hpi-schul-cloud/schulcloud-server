@@ -84,6 +84,8 @@ const buildCourseObject = (course, userId) => ({
 	bidirectional: (course.features || []).includes('messenger'),
 	is_moderator: course.teacherIds.some(
 		(el) => el.toString() === userId.toString(),
+	) || course.substitutionIds.some(
+		(el) => el.toString() === userId.toString(),
 	),
 });
 
