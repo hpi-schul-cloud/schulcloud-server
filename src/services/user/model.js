@@ -15,7 +15,9 @@ const userSchema = new Schema({
 	roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
 	email: { type: String, required: true, lowercase: true },
 
-	schoolId: { type: Schema.Types.ObjectId, ref: 'school', required: true },
+	schoolId: {
+		type: Schema.Types.ObjectId, ref: 'school', required: true, index: true,
+	},
 
 	firstName: { type: String, required: true },
 	middleName: { type: String },
@@ -25,7 +27,7 @@ const userSchema = new Schema({
 
 	birthday: { type: Date },
 
-	importHash: { type: String },
+	importHash: { type: String, index: true },
 	// inviteHash:{type:String},
 
 	children: [{ type: Schema.Types.ObjectId, ref: 'user' }],
@@ -55,6 +57,10 @@ const userSchema = new Schema({
 }, {
 	timestamps: true,
 });
+
+userSchema.index({ schoolId: 1, roles: -1 });
+// maybe the schoolId index is enough ?
+// https://ticketsystem.schul-cloud.org/browse/SC-3724
 
 userSchema.virtual('fullName').get(function get() {
 	return [
