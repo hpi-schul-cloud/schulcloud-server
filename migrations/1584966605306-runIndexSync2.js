@@ -5,6 +5,7 @@ const { info, error } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 
 require('../src/services/homework/model');
+const { courseModel } = require('../src/services/user-group/model');
 
 module.exports = {
 	up: async function up() {
@@ -14,15 +15,15 @@ module.exports = {
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
 		info('update homework indexes...');
-		this('homework').syncIndexes();
+		await this('homework').syncIndexes();
 		info('updated homework indexes successfully');
 
 		info('update submission indexes...');
-		this('submission').syncIndexes();
+		await this('submission').syncIndexes();
 		info('updated submission indexes successfully');
 
 		info('update courses indexes...');
-		this('courses').syncIndexes();
+		await courseModel.syncIndexes();
 		info('updated courses indexes successfully');
 		// ////////////////////////////////////////////////////
 		await close();
