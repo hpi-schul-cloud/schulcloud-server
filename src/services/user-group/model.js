@@ -54,7 +54,9 @@ const courseSchema = getUserGroupSchema({
 	...externalSourceSchema,
 });
 
-courseSchema.index({ userIds: 1, teacherIds: 1, substitutionIds: 1 });
+courseSchema.index({ userIds: 1 });
+courseSchema.index({ teacherIds: 1 });
+courseSchema.index({ substitutionIds: 1 });
 
 courseSchema.plugin(mongooseLeanVirtuals);
 
