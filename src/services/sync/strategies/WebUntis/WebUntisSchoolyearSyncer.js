@@ -1,5 +1,5 @@
 const assert = require('assert');
-
+const { BadRequest } = require('@feathersjs/errors');
 const WebUntisBaseSyncer = require('./WebUntisBaseSyncer');
 
 
@@ -58,7 +58,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		);
 		
 		const validData = (
-			['inclusive', 'exclusive'].includes(data.datatype) || (!data.datatype && !data.courseMetadataIds) &&
+			['inclusive', 'exclusive'].includes(data.data.type) || (!data.data.type && !data.courseMetadataIds) &&
 			data.datasourceId != ''
 		);
 
@@ -74,7 +74,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 				password: query.password,
 			},
 			datasourceId: data.datasourceId,
-			datatype: data.datatype,
+			datatype: data.data.type,
 			courseMetadataIds: data.courseMetadataIds,
 			dryrun: !("dryrun" in params) || (params.dryrun !== 'false' && params.dryrun !== false),
 		}];
@@ -117,9 +117,11 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	* 
 	*/
 	async createCoursesFromMetaDataAndWebUntisSteps(params) {
+		// this.logger.debug(params);
+
 		this.stats.success = false;
 
-		const config = await this.obtainWebUntisConfig();
+		const config = params.webuntisConfig;
 
 		const metaData = await this.obtainMetadata(params);
 		const session = await this.login(config);
@@ -139,9 +141,15 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	*/
 	getImportConditionEvaluator(params) {
 		if (params.datatype === 'inclusive') {
+			if (!params.courseMetadataIds) {
+				return ((id) => false);
+			}
 			return ((id) => params.courseMetadataIds.includes(id));
 		}
 		if (params.datatype === 'exclusive') {
+			if (!params.courseMetadataIds) {
+				return ((id) => false);
+			}
 			return ((id) => !params.courseMetadataIds.includes(id));
 		}
 		throw new BadRequest('invalid datatype');
@@ -154,6 +162,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	async obtainMetadata(params) {
 		const metaData = await this.app.service('webuntisMetadata').find({
 			query: { datasourceId: params.datasourceId },
+			paginate: false
 		});
 
 		return metaData;
@@ -417,6 +426,8 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		// Convert metadata to actual schulcloud courses
 		// And reflect changes in metadata store
 		const webUntisMetadataService = this.app.service('webuntisMetadata');
+
+		this.logger.debug(data);
 
 		const importCondition = this.getImportConditionEvaluator(params);
 		const promises = data.map((entry) => {
