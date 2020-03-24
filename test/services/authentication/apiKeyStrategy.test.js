@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const { authenticate } = require('@feathersjs/authentication');
+const { Configuration } = require('@schul-cloud/commons');
 
 const app = require('../../../src/app');
 
@@ -20,14 +21,18 @@ const testServiceHooks = {
 describe('api-key authentication strategy', () => {
 	let server;
 	const testRoute = `/foo${Date.now}`;
+	let configBefore = null;
+
 	before(async () => {
 		app.use(testRoute, new TestService());
 		app.service(testRoute).hooks(testServiceHooks);
 		server = await app.listen(0);
-		app.Config.data.CALENDAR_API_KEY = 'validKey';
+		configBefore = Configuration.toObject();
+		Configuration.set('CALENDAR_API_KEY', 'validKey');
 	});
 
 	after(async () => {
+		Configuration.update(configBefore);
 		await server.close();
 	});
 
