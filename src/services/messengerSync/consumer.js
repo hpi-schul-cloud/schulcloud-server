@@ -1,6 +1,7 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { createChannel } = require('../../utils/rabbitmq');
 const { buildAddUserMessage } = require('./utils');
+const logger = require('../../logger');
 
 const QUEUE_INTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL');
 const QUEUE_EXTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL');
@@ -15,13 +16,19 @@ const validateMessage = (content) => {
 
 const handleMessage = async (incomingMessage) => {
 	const content = JSON.parse(incomingMessage.content.toString());
-	if (validateMessage) {
+	if (!validateMessage) {
+		logger.warning(`invalid message in queue ${QUEUE_INTERNAL}`, incomingMessage);
+		channel.nack(incomingMessage);
+	}
+	try {
 		const addUserMessageObject = await buildAddUserMessage(content);
 		const outgoingMessage = JSON.stringify(addUserMessageObject);
 		channel.sendToQueue(QUEUE_EXTERNAL, Buffer.from(outgoingMessage), { persistent: true });
 		channel.ack(incomingMessage);
+	} catch (err) {
+		logger.error(`error while handling message in queue ${QUEUE_INTERNAL}`, err);
+		channel.nack(incomingMessage);
 	}
-	channel.nack(incomingMessage);
 };
 
 const setup = async (app) => {
