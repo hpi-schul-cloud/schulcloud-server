@@ -76,24 +76,28 @@ describe('CSVSyncer', () => {
 			expect(result[2].class).to.equal('2b');
 		});
 
-		it('should not accept unvalid dates as user birthday', () => {
+		it('should not accept falsy valus as dates for user birthday', () => {
 			const falsyValues = [false, null, undefined, '', 0];
+			const result = falsyValues.map((f) => CSVSyncer.assertDateFormat(f));
+			result.forEach((r) => expect(r).to.be.equal('missing birthday value'));
+		});
+		it('should not accept strange values as dates for user birthday', () => {
 			const misfitValues = [Symbol('42'), [], {}, true];
+			const result = misfitValues.map((m) => CSVSyncer.assertDateFormat(m));
+			result.forEach((r) => expect(r).to.be.equal('incorrect values, birthday must be a string'));
+		});
+		it('should not accept invalid date format as user birthday', () => {
 			const wrongFormatDates = [
 				'32.12.2000', '01.13.2000', '01.01-2000', '01/01.2000', '01-01/2000', '42', 'void'];
-			const correctFormatDates = ['01.01.2000', '01-01-2000', '01/01/2000'];
-
-			const result0 = falsyValues.map((f) => CSVSyncer.assertDateFormat(f));
-			const result1 = misfitValues.map((m) => CSVSyncer.assertDateFormat(m));
-			const result2 = wrongFormatDates.map((w) => CSVSyncer.assertDateFormat(w));
-			const result3 = correctFormatDates.map((c) => CSVSyncer.assertDateFormat(c));
-
-			result0.forEach((r) => expect(r).to.be.equal('missing birthday value'));
-			result1.forEach((r) => expect(r).to.be.equal('incorrect values, birthday must be a string'));
-			result2.forEach((r) => expect(r).to.be.equal(
+			const result = wrongFormatDates.map((w) => CSVSyncer.assertDateFormat(w));
+			result.forEach((r) => expect(r).to.be.equal(
 				'incorrect format. Birthday must be dd.mm.yyyy or dd/mm/yyyy or dd-mm-yyyy',
 			));
-			result3.forEach((r) => expect(r).to.be.equal(false));
+		});
+		it('should return false when given correct value', () => {
+			const correctFormatDates = ['01.01.2000', '01-01-2000', '01/01/2000'];
+			const result = correctFormatDates.map((c) => CSVSyncer.assertDateFormat(c));
+			result.forEach((r) => expect(r).to.be.equal(false));
 		});
 	});
 });
