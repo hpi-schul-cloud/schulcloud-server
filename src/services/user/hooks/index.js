@@ -5,7 +5,7 @@ const globalHooks = require('../../../hooks');
 const { sortRoles } = require('../../role/utils/rolesHelper');
 
 const constants = require('../../../utils/constants');
-const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../consent/config');
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../../config/globals');
 
 const { hasEditPermissionForUser } = require('./index.hooks');
 
