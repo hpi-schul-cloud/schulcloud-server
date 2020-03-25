@@ -11,4 +11,9 @@ module.exports = {
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 	KEEP_ALIVE: process.env.KEEP_ALIVE || false,
 	NODE_ENV: process.env.NODE_ENV || 'development', // default equals app.get('env')
+	HOST: process.env.HOST || 'localhost:3030',
+	TOKEN_SUB: process.env.TOKEN_SUB
+	|| process.env.HOST || 'https://schulcloud-thueringen.de', // added TOKEN_SUB on env
+	TOKEN_ISS: process.env.TOKEN_ISS || process.env.SC_DOMAIN || 'schulcloud-thueringen.de', // added TOKEN_ISS on env
+	
 };

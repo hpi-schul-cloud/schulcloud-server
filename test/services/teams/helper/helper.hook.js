@@ -15,7 +15,7 @@ const _DefaultServiceOptions = {
 
 const _DefaultHeaderParams = {
 	authorization: '<jwtToken>',
-	host: process.env.HOST || 'localhost:3030',
+	host: HOST,
 	accept: 'application/json',
 	'content-type': 'application/json',
 	connection: 'close',
