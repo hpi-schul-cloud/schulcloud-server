@@ -51,8 +51,8 @@ const courseSchema = getUserGroupSchema({
 	times: [timeSchema],
 	// optional information if this course is a copy from other
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
-	...externalSourceSchema,
 	features: [{ type: String, enum: ['messenger'] }],
+	...externalSourceSchema,
 });
 
 courseSchema.index({ userIds: 1 });
