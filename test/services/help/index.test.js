@@ -21,9 +21,9 @@ describe('help documents service', () => {
 		server = app.listen(0, done);
 	});
 
-	after((done) => {
-		server.close(done);
-		cleanup;
+	after(async () => {
+		await cleanup();
+		await server.close();
 	});
 
 	it('registered the help documents service', () => {
