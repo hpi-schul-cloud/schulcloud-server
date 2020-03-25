@@ -1,12 +1,21 @@
 [{
 	"_id": {
-		"$oid": "5d25cf6ddf5c9947bc014236"
+		"$oid": "5d234fff63e4a27b68aceff0"
+	},
+	"name": "AddPositionToLessons",
+	"createdAt": {
+		"$date": "2019-07-08T14:15:27.05Z"
 	},
 	"state": "up",
-	"name": "skipRegistrationPermissions",
-	"createdAt": {
-		"$date": "2019-07-10T11:43:41.464Z"
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d3ef5f4bd2cdb2075fc7e54"
 	},
+	"state": "up",
+	"name": "replace_grandlevel_id_with_number",
+	"createdAt": "2019-07-29T09:57:38.131Z",
 	"__v": 0
 },
 {
@@ -22,23 +31,45 @@
 },
 {
 	"_id": {
-		"$oid": "5d234fff63e4a27b68aceff0"
-	},
-	"name": "AddPositionToLessons",
-	"createdAt": {
-		"$date": "2019-07-08T14:15:27.05Z"
+		"$oid": "5d4858fc8f66f50964686467"
 	},
 	"state": "up",
+	"name": "addToolPermissionsToSuperheroRole",
+	"createdAt": {
+		"$date": "2019-08-05T16:15:12.225Z"
+	},
 	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "5d651f8f5e33068c88d5bcce"
+		"$oid": "5d25cf6ddf5c9947bc014236"
 	},
 	"state": "up",
-	"name": "removeRcPws",
+	"name": "skipRegistrationPermissions",
 	"createdAt": {
-		"$date": "2019-08-27T12:06:32.917Z"
+		"$date": "2019-07-10T11:43:41.464Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d552b8bc1658a0682fc834a"
+	},
+	"state": "up",
+	"name": "set schoolspecific documentbasedir for instance open",
+	"createdAt": {
+		"$date": "2019-08-15T09:34:59.243Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d2ee2a8526cce83a8834d4a"
+	},
+	"state": "up",
+	"name": "addStartAndEndDateToYearCollection",
+	"createdAt": {
+		"$date": "2019-07-17T08:12:18.48Z"
 	},
 	"__v": 0
 },
@@ -66,23 +97,23 @@
 },
 {
 	"_id": {
+		"$oid": "5d651f8f5e33068c88d5bcce"
+	},
+	"state": "up",
+	"name": "removeRcPws",
+	"createdAt": {
+		"$date": "2019-08-27T12:06:32.917Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5d6fd5e8353b8668562740f3"
 	},
 	"state": "up",
 	"name": "addNewsCreateToAdmin",
 	"createdAt": {
 		"$date": "2019-09-04T15:19:04.053Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d80a25a92de001d94db5046"
-	},
-	"state": "up",
-	"name": "addUserDeletePermissions",
-	"createdAt": {
-		"$date": "2019-09-17T09:07:38.792Z"
 	},
 	"__v": 0
 },
@@ -110,22 +141,22 @@
 },
 {
 	"_id": {
+		"$oid": "5d80a25a92de001d94db5046"
+	},
+	"state": "up",
+	"name": "addUserDeletePermissions",
+	"createdAt": {
+		"$date": "2019-09-17T09:07:38.792Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5d3e97e02d1b0f2c2cc7ec18"
 	},
 	"state": "up",
 	"name": "lessonIsCopyFrom",
 	"createdAt": "2019-07-11T12:18:30.503Z",
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d552b8bc1658a0682fc834a"
-	},
-	"state": "up",
-	"name": "set schoolspecific documentbasedir for instance open",
-	"createdAt": {
-		"$date": "2019-08-15T09:34:59.243Z"
-	},
 	"__v": 0
 },
 {
@@ -163,17 +194,6 @@
 },
 {
 	"_id": {
-		"$oid": "5d26e8c1d0c346ac5bf59bb5"
-	},
-	"state": "up",
-	"name": "schoolyear_19_20_added",
-	"createdAt": {
-		"$date": "2019-07-11T07:44:01.252Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5db84906407b4a46ecf03a8b"
 	},
 	"state": "up",
@@ -185,12 +205,12 @@
 },
 {
 	"_id": {
-		"$oid": "5d4858fc8f66f50964686467"
+		"$oid": "5d26e8c1d0c346ac5bf59bb5"
 	},
 	"state": "up",
-	"name": "addToolPermissionsToSuperheroRole",
+	"name": "schoolyear_19_20_added",
 	"createdAt": {
-		"$date": "2019-08-05T16:15:12.225Z"
+		"$date": "2019-07-11T07:44:01.252Z"
 	},
 	"__v": 0
 },
@@ -218,23 +238,24 @@
 },
 {
 	"_id": {
-		"$oid": "5d2ee2a8526cce83a8834d4a"
+		"$oid": "5dc173583c9c9844881b6aca"
 	},
 	"state": "up",
-	"name": "addStartAndEndDateToYearCollection",
+	"name": "persist_files_by_copied_courses",
 	"createdAt": {
-		"$date": "2019-07-17T08:12:18.48Z"
+		"$date": "2019-07-30T13:24:23.114Z"
 	},
 	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "5d3ef5f4bd2cdb2075fc7e54"
+		"$oid": "5dee9efdb932c2a0b9ca5bc1"
 	},
 	"state": "up",
-	"name": "replace_grandlevel_id_with_number",
-	"createdAt": "2019-07-29T09:57:38.131Z",
-	"__v": 0
+	"name": "remove classes out of teams",
+	"createdAt": {
+		"$date": "2019-12-06T16:30:14.257Z"
+	}
 },
 {
 	"_id": {
@@ -244,6 +265,17 @@
 	"name": "add permission for requesting consents",
 	"createdAt": {
 		"$date": "2019-12-03T14:52:41.127Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5de6838fc7c4a02707c337dd"
+	},
+	"state": "up",
+	"name": "remove_create_permissions_thuringia",
+	"createdAt": {
+		"$date": "2019-12-02T11:56:47.413Z"
 	},
 	"__v": 0
 },
@@ -271,12 +303,12 @@
 },
 {
 	"_id": {
-		"$oid": "5e2f045b366f2b4b14ad754d"
+		"$oid": "5e1c307cfa669ea0863851bc"
 	},
 	"state": "up",
-	"name": "add bbb template to lti tools",
+	"name": "videoconference permissions added in coursesroles",
 	"createdAt": {
-		"$date": "2020-01-13T15:32:28.449Z"
+		"$date": "2020-01-13T08:55:24.955Z"
 	},
 	"__v": 0
 },
@@ -293,6 +325,17 @@
 },
 {
 	"_id": {
+		"$oid": "5e2f045b366f2b4b14ad754d"
+	},
+	"state": "up",
+	"name": "add bbb template to lti tools",
+	"createdAt": {
+		"$date": "2020-01-13T15:32:28.449Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5e39721290415d5374a306ba"
 	},
 	"state": "up",
@@ -304,55 +347,12 @@
 },
 {
 	"_id": {
-		"$oid": "5dee9efdb932c2a0b9ca5bc1"
-	},
-	"state": "up",
-	"name": "remove classes out of teams",
-	"createdAt": {
-		"$date": "2019-12-06T16:30:14.257Z"
-	}
-},
-{
-	"_id": {
 		"$oid": "5e39721290415d5374a306bb"
 	},
 	"state": "up",
 	"name": "disable-team-created-by-students-all-schools",
 	"createdAt": {
 		"$date": "2020-01-06T16:54:53.694Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5dc173583c9c9844881b6aca"
-	},
-	"state": "up",
-	"name": "persist_files_by_copied_courses",
-	"createdAt": {
-		"$date": "2019-07-30T13:24:23.114Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e39721290415d5374a306bc"
-	},
-	"state": "up",
-	"name": "addSchoolIdsForUsersInTeams",
-	"createdAt": {
-		"$date": "2020-01-14T12:48:46.081Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5dc18974ba666b70ac1199e5"
-	},
-	"state": "up",
-	"name": "add-enterthecloud-start-permission",
-	"createdAt": {
-		"$date": "2019-11-05T14:38:44.172Z"
 	},
 	"__v": 0
 },
@@ -369,12 +369,34 @@
 },
 {
 	"_id": {
+		"$oid": "5e39721290415d5374a306bc"
+	},
+	"state": "up",
+	"name": "addSchoolIdsForUsersInTeams",
+	"createdAt": {
+		"$date": "2020-01-14T12:48:46.081Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5e4a61ca1db4f62c8cb2b9df"
 	},
 	"state": "up",
 	"name": "remove_invalid_accounts",
 	"createdAt": {
 		"$date": "2020-02-17T09:50:02.639Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5dc18974ba666b70ac1199e5"
+	},
+	"state": "up",
+	"name": "add-enterthecloud-start-permission",
+	"createdAt": {
+		"$date": "2019-11-05T14:38:44.172Z"
 	},
 	"__v": 0
 },
@@ -391,34 +413,12 @@
 },
 {
 	"_id": {
-		"$oid": "5e1c307cfa669ea0863851bc"
-	},
-	"state": "up",
-	"name": "videoconference permissions added in coursesroles",
-	"createdAt": {
-		"$date": "2020-01-13T08:55:24.955Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5e4d449dc8fe4e2ff4993849"
 	},
 	"state": "up",
 	"name": "datasource-permissions-for-superhero",
 	"createdAt": {
 		"$date": "2020-02-19T14:22:21.2Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5de6838fc7c4a02707c337dd"
-	},
-	"state": "up",
-	"name": "remove_create_permissions_thuringia",
-	"createdAt": {
-		"$date": "2019-12-02T11:56:47.413Z"
 	},
 	"__v": 0
 },
@@ -451,28 +451,6 @@
 	"name": "runIndexSync",
 	"createdAt": {
 		"$date": "2020-03-21T19:35:25.407Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e7a12891a6fd340ef28fe8c"
-	},
-	"state": "up",
-	"name": "update schema indexes",
-	"createdAt": {
-		"$date": "2020-03-24T13:29:18.218Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e7b300a478d3572c94bd2c8"
-	},
-	"state": "up",
-	"name": "remove clipboard",
-	"createdAt": {
-		"$date": "2020-03-25T10:18:50.713Z"
 	},
 	"__v": 0
 }]
