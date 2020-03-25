@@ -1,25 +1,27 @@
-let secrets = {
-	"smtp": process.env.SMTP,
-	"sendmail": {
-		"host": process.env.SMTP_HOST,
-		"port": process.env.SMTP_PORT
-},
-	"aws": {
-	"signatureVersion": "v4",
-		"s3ForcePathStyle": true,
-		"sslEnabled": true,
-		"accessKeyId": process.env.AWS_ACCESS_KEY,
-		"secretAccessKey": process.env.AWS_SECRET_ACCESS_KEY,
-		"region": process.env.AWS_REGION || "eu-de",
-		"endpointUrl": process.env.AWS_ENDPOINT_URL,
-		"cors_rules": [{
-		"AllowedHeaders": ["*"],
-		"AllowedMethods": ["PUT"],
-		"AllowedOrigins": [process.env.HOST],
-		"MaxAgeSeconds": 300
-	}]
-},
-	"authentication": process.env.AUTHENTICATION
+const { HOST } = require('./globals');
+
+const secrets = {
+	smtp: process.env.SMTP,
+	sendmail: {
+		host: process.env.SMTP_HOST,
+		port: process.env.SMTP_PORT,
+	},
+	aws: {
+		signatureVersion: 'v4',
+		s3ForcePathStyle: true,
+		sslEnabled: true,
+		accessKeyId: process.env.AWS_ACCESS_KEY,
+		secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+		region: process.env.AWS_REGION || 'eu-de',
+		endpointUrl: process.env.AWS_ENDPOINT_URL,
+		cors_rules: [{
+			AllowedHeaders: ['*'],
+			AllowedMethods: ['PUT'],
+			AllowedOrigins: [HOST],
+			MaxAgeSeconds: 300,
+		}],
+	},
+	authentication: process.env.AUTHENTICATION,
 };
 
 module.exports = secrets;
