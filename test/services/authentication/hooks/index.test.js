@@ -38,7 +38,7 @@ describe('authentication hooks', function test() {
 		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));
 		/* eslint-enable global-require */
 
-		Configuration.set('REDIS_URI', '//validHost:6379');
+		Configuration.set('REDIS_URI', '//validHost:5555');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
 		redisHelper.initializeRedisClient();
 	});
@@ -54,7 +54,7 @@ describe('authentication hooks', function test() {
 		delete require.cache[require.resolve('../../../services/helpers/services/login')];
 		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
 
-		Configuration.update(configBefore);
+		Configuration.reset(configBefore);
 	});
 
 	it('addJwtToWhitelist', async () => {
