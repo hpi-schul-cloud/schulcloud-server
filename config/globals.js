@@ -1,4 +1,4 @@
-module.exports = {
+const globals = {
 	BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',
 	DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
 	DOCUMENT_BASE_DIR: process.env.DOCUMENT_BASE_DIR || 'https://s3.hidrive.strato.com/schul-cloud-hpi/',
@@ -16,4 +16,16 @@ module.exports = {
 	|| process.env.HOST || 'https://schulcloud-thueringen.de', // added TOKEN_SUB on env
 	TOKEN_ISS: process.env.TOKEN_ISS || process.env.SC_DOMAIN || 'schulcloud-thueringen.de', // added TOKEN_ISS on env
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
+	// secrets smtp
+	SMTP: process.env.SMTP,
+	SMTP_HOST: process.env.SMTP_HOST,
+	SMTP_PORT: process.env.SMTP_PORT,
+	// secrets aws
+	AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
+	AWS_SECRET_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
+	AWS_REGION: process.env.AWS_REGION || 'eu-de',
+	AWS_ENDPOINT_URL: process.env.AWS_ENDPOINT_URL,
+	AUTHENTICATION: process.env.AUTHENTICATION,
 };
+
+module.exports = globals;
