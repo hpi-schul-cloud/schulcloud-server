@@ -46,6 +46,7 @@
 		"@schul-cloud/commons": "^1.0.17",
 		"@sentry/node": "^5.9.0",
 		"ajv": "^6.10.2",
+		"amqplib": "^0.5.5",
 		"aws-sdk": "^2.306.0",
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",

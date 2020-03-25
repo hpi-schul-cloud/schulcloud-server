@@ -40,6 +40,7 @@ const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
 const videoconference = require('./videoconference');
+const messengerSync = require('./messengerSync');
 const nexboard = require('./nexboard');
 
 
@@ -88,6 +89,7 @@ module.exports = function initializeServices() {
 	app.configure(datasources);
 	app.configure(webuntis);
 	app.configure(videoconference);
+	app.configure(messengerSync);
 	app.configure(nexboard);
 
 	// initialize events
