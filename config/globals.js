@@ -30,6 +30,7 @@ const globals = {
 	//
 	DISPLAY_REQUEST_LEVEL: Number(process.env.DISPLAY_REQUEST_LEVEL || 0),
 	ANALYTICS_LOGGING: process.env.ANALYTICS_LOGGING,
+	LOGIN_BLOCK_TIME: process.env.LOGIN_BLOCK_TIME || 15, // allowedTimeDifference
 };
 
 module.exports = globals;
