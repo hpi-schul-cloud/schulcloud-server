@@ -32,7 +32,7 @@ describe('api-key authentication strategy', () => {
 	});
 
 	after(async () => {
-		Configuration.update(configBefore);
+		Configuration.reset(configBefore);
 		await server.close();
 	});
 
