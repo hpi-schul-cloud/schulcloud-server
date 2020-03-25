@@ -105,12 +105,9 @@ const updateAccountUsername = async (context) => {
 	if (!email) {
 		return context;
 	}
-	// TODO:
-	// Should this error removed?
-	// Remove email from data that it can not execute?
-	// Skip patching account but user is ok?  -> user.email !== account.username
 	if (email && account.systemId) {
-		throw new BadRequest('You can not updated your account email, if you use an external login system.');
+		delete context.data.email;
+		return context;
 	}
 
 	await app.service('/accounts')
