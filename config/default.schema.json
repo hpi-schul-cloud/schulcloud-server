@@ -162,6 +162,7 @@
 			"pattern": ".*(?<!/)$",
 			"default": "https://status.schul-cloud.org/api/v1",
 			"description": "The api of status message provider (should end without a slash)."
+		},
 		"NEXBOARD_URL": {
 			"type": "string",
 			"format": "uri",
