@@ -29,6 +29,7 @@ const globals = {
 	AUTHENTICATION: process.env.AUTHENTICATION,
 	//
 	DISPLAY_REQUEST_LEVEL: Number(process.env.DISPLAY_REQUEST_LEVEL || 0),
+	ANALYTICS_LOGGING: process.env.ANALYTICS_LOGGING,
 };
 
 module.exports = globals;
