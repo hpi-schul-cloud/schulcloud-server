@@ -2,7 +2,7 @@ const Sentry = require('@sentry/node');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
 const { deepObject } = require('../utils/');
-
+const { SENTRY_DSN, SC_DOMAIN } = require('../../config/globals');
 /**
  * helpers
  */
@@ -73,11 +73,10 @@ const filterByErrorMessageMiddleware = (...errorMessage) => (event, hint, app) =
 const skipItMiddleware = () => null;
 
 module.exports = (app) => {
-	const dsn = process.env.SENTRY_DSN;
 	const environment = app.get('env');
 	const release = version;
 
-	if (dsn) {
+	if (SENTRY_DSN) {
 		// middleware to modified events that, are post to sentry
 		let middlewares = [
 			filterByErrorCodesMiddleware(404),
@@ -107,7 +106,7 @@ module.exports = (app) => {
 		};
 
 		Sentry.init({
-			dsn,
+			dsn: SENTRY_DSN,
 			environment,
 			release,
 			//	debug: true,
@@ -122,7 +121,7 @@ module.exports = (app) => {
 		Sentry.configureScope((scope) => {
 			scope.setTag('frontend', false);
 			scope.setLevel('warning');
-			scope.setTag('domain', process.env.SC_DOMAIN || 'localhost');
+			scope.setTag('domain', SC_DOMAIN);
 			scope.setTag('sha', sha);
 		});
 
