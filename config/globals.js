@@ -26,6 +26,8 @@ const globals = {
 	AWS_REGION: process.env.AWS_REGION || 'eu-de',
 	AWS_ENDPOINT_URL: process.env.AWS_ENDPOINT_URL,
 	AUTHENTICATION: process.env.AUTHENTICATION,
+	//
+	DISPLAY_REQUEST_LEVEL: Number(process.env.DISPLAY_REQUEST_LEVEL || 0),
 };
 
 module.exports = globals;
