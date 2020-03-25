@@ -8,6 +8,7 @@ const storageProviderSchema = new Schema({
 	type: { type: String, enum: ['awsS3'], required: true },
 	isShared: { type: Boolean },
 	accessKeyId: { type: String, required: true },
+	secretAccessKey: { type: String, required: true },
 	endpointUrl: { type: String, required: true },
 	region: { type: String },
 }, {

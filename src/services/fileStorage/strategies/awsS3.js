@@ -34,8 +34,8 @@ const getConfig = (provider) => {
 	return awsConfig;
 };
 
-const createAWSObject = async (schoolId, provider) => {
-	if (!provider) throw new Error('AWS integration is not configured on the server');
+const createAWSObject = (schoolId, provider) => {
+	if (!provider) throw new Error('AWS integration is not configured for this school.');
 
 	return {
 		s3: new aws.S3(getConfig(provider)),
