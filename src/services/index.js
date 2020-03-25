@@ -40,11 +40,11 @@ const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
 const videoconference = require('./videoconference');
+const nexboard = require('./nexboard');
 
 
 module.exports = function initializeServices() {
 	const app = this;
-
 	// connect mongoose to the database
 	database.connect();
 
@@ -88,7 +88,7 @@ module.exports = function initializeServices() {
 	app.configure(datasources);
 	app.configure(webuntis);
 	app.configure(videoconference);
-
+	app.configure(nexboard);
 
 	// initialize events
 	newsEvents.configure(app);

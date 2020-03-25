@@ -94,7 +94,7 @@ describe('PermissionService', async () => {
 		const studentOne = await testObjects.createTestUser({
 			firstName: 'Hans',
 			lastName: 'Wurst',
-			email: 'H.Wurst@spass.toll',
+			email: `${Date.now()}H.Wurst@spass.toll`,
 			roles: ['student'],
 			schoolId,
 		});
@@ -103,7 +103,7 @@ describe('PermissionService', async () => {
 		const studentTwo = await testObjects.createTestUser({
 			firstName: 'Karla',
 			lastName: 'Hansen',
-			email: 'karla-hansen@spass.toll',
+			email: `${Date.now()}karla-hansen@spass.toll`,
 			roles: ['student'],
 			schoolId,
 		});
@@ -112,7 +112,7 @@ describe('PermissionService', async () => {
 		const teacher = await testObjects.createTestUser({
 			firstName: 'Dorote',
 			lastName: 'Musterfrau',
-			email: 'Dorote@spass.toll',
+			email: `${Date.now()}Dorote@spass.toll`,
 			roles: ['teacher'],
 			schoolId,
 		});
@@ -121,7 +121,7 @@ describe('PermissionService', async () => {
 		const substitution = await testObjects.createTestUser({
 			firstName: 'Karl',
 			lastName: 'Musterfrau',
-			email: 'k.Musterfrau@spass.toll',
+			email: `${Date.now()}k.Musterfrau@spass.toll`,
 			roles: ['teacher'],
 			schoolId,
 		});

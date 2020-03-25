@@ -13,7 +13,7 @@ chai.use(chaiHttp);
 
 describe('General login service', () => {
 	const testAccount = {
-		username: 'poweruser@mail.schul.tech',
+		username: `${Date.now()}poweruser@mail.schul.tech`,
 		password: 'passwordA',
 	};
 
