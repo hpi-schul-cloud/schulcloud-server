@@ -26,6 +26,7 @@ describe('messenger schoolSync Service', () => {
 		before(async () => {
 			configBefore = Configuration.toObject(); // deep copy current config
 			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
+			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 			mockery.enable({
 				warnOnReplace: false,
 				warnOnUnregistered: false,
@@ -69,38 +70,6 @@ describe('messenger schoolSync Service', () => {
 			expect(users.map((u) => u._id.toString()).includes(firstMessage.userId)).to.be.true;
 			expect(firstMessage.schoolSync).to.be.true;
 			rabbitmqMock.reset();
-		});
-	});
-
-	describe('with rabbitMQ disabled', () => {
-		let configBefore;
-
-		before(async () => {
-			configBefore = Configuration.toObject(); // deep copy current config
-			Configuration.set('FEATURE_RABBITMQ_ENABLED', false);
-		});
-
-		after(async () => {
-			Configuration.parse(configBefore);
-		});
-
-		it('schoolSync responds with an error', async () => {
-			this.app = app;
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
-			const users = await Promise.all([
-				testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id }),
-			]);
-			const params = await testObjects.generateRequestParamsFromUser(users[0]);
-			params.route = { schoolId: school._id.toString() };
-			try {
-				// await schoolSyncService.create({}, params);
-				await app.service('schools/:schoolId/messengerSync').create({}, params);
-				throw new Error('should have failed');
-			} catch (err) {
-				expect(err.message).to.not.eq('should have failed');
-				expect(err.code).to.eq(500);
-				expect(err.message).to.eq('feature not supported.');
-			}
 		});
 	});
 });

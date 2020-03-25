@@ -1,4 +1,4 @@
-const {	GeneralError, BadRequest } = require('@feathersjs/errors');
+const {	BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const {
 	iff, isProvider, disallow,
@@ -27,8 +27,6 @@ class MessengerSchoolSync {
 	 * @param {Object} params feathers params object.
 	 */
 	async create(data, params) {
-		if (!Configuration.get('FEATURE_RABBITMQ_ENABLED')) throw new GeneralError('feature not supported.');
-
 		const school = await this.app.service('schools').get(params.route.schoolId);
 		if (!school.features.includes('messenger')) throw new BadRequest('this school does not support the messenger');
 		const users = await this.app.service('users').find({ query: { schoolId: school._id } });

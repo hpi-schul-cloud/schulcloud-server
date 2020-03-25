@@ -30,15 +30,13 @@ const handleTeamChanged = async (team) => {
 };
 
 const setup = async (app) => {
-	if (Configuration.get('FEATURE_RABBITMQ_ENABLED')) {
-		channel = await createChannel();
-		app.service('teams').on('created', handleTeamChanged);
-		app.service('teams').on('patched', handleTeamChanged);
-		app.service('teams').on('updated', handleTeamChanged);
-		app.service('courses').on('created', (context) => handleCourseChanged(context, app));
-		app.service('courses').on('patched', (context) => handleCourseChanged(context, app));
-		app.service('courses').on('updated', (context) => handleCourseChanged(context, app));
-	}
+	channel = await createChannel();
+	app.service('teams').on('created', handleTeamChanged);
+	app.service('teams').on('patched', handleTeamChanged);
+	app.service('teams').on('updated', handleTeamChanged);
+	app.service('courses').on('created', (context) => handleCourseChanged(context, app));
+	app.service('courses').on('patched', (context) => handleCourseChanged(context, app));
+	app.service('courses').on('updated', (context) => handleCourseChanged(context, app));
 };
 
 module.exports = setup;
