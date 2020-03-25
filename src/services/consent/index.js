@@ -3,12 +3,13 @@ const { consentModel, ConsentVersionModel } = require('./model');
 const consentHooks = require('./hooks/consents');
 const consentVersionHooks = require('./hooks/consentversions');
 const consentDocs = require('./docs');
+const ConsentService = require('./consent.service');
 
 // eslint-disable-next-line func-names
 module.exports = function () {
 	const app = this;
 
-	const consentService = service({
+	const consentModelService = service({
 		Model: consentModel,
 		paginate: {
 			default: 25,
@@ -16,9 +17,12 @@ module.exports = function () {
 		},
 		lean: true,
 	});
-	consentService.docs = consentDocs;
+	consentModelService.docs = consentDocs;
 	/* Consent Model */
-	app.use('/consents', consentService);
+	app.use('/consents/model', consentModelService);
+
+
+	app.use('/constens', ConsentService);
 	app.service('/consents').hooks(consentHooks);
 
 	/* ConsentVersion Model */
