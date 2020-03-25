@@ -453,5 +453,16 @@
 		"$date": "2020-03-21T19:35:25.407Z"
 	},
 	"__v": 0
+},
+{
+    "_id": {
+        "$oid": "5e735028d4b12d5c4c77945a"
+    },
+    "state": "up",
+    "name": "add-messenger-sync-permissions",
+    "createdAt": {
+        "$date": "2020-03-19T11:55:25.139Z"
+    },
+    "__v": 0
 }]
 
