@@ -2,6 +2,7 @@ const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
+const { NODE_ENV } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
 
@@ -89,7 +90,7 @@ const mailPin = (hook) => {
 };
 
 const returnPinOnlyToSuperHero = async (hook) => {
-	if (process.env.NODE_ENV === 'test') {
+	if (NODE_ENV === 'test') {
 		return Promise.resolve(hook);
 	}
 

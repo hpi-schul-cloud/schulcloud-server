@@ -12,7 +12,7 @@ const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
 const KeysModel = require('../services/keys/model');
-const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../config/globals');
+const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV } = require('../../config/globals');
 // Add any common hooks you want to share across services in here.
 
 const { extractTokenFromBearerHeader } = require('../services/authentication/logic');
@@ -391,7 +391,7 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 	return context;
 });
 
-const isProductionMode = process.env.NODE_ENV === 'production';
+const isProductionMode = NODE_ENV === 'production';
 exports.mapPayload = (context) => {
 	if (!isProductionMode) {
 		logger.info(

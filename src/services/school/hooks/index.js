@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
 const hooks = require('feathers-hooks-common');
+const { NODE_ENV } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 
@@ -44,7 +45,7 @@ const setCurrentYearIfMissing = async (hook) => {
 };
 
 const createDefaultStorageOptions = (hook) => {
-	if (process.env.NODE_ENV !== 'production') {
+	if (NODE_ENV !== 'production') {
 		// don't create buckets in development or test
 		return Promise.resolve(hook);
 	}

@@ -1,11 +1,12 @@
 const winston = require('winston');
 
 const { format, transports, createLogger } = winston;
+const { LOG_LEVEL, NODE_ENV } = require('../../config/globals');
 
-let logLevel = process.env.LOG_LEVEL;
+let logLevel = LOG_LEVEL;
 
 if (!logLevel) {
-	switch (process.env.NODE_ENV) {
+	switch (NODE_ENV) {
 		case 'development':
 			logLevel = 'debug';
 			break;
@@ -28,9 +29,9 @@ const addType = format.printf((log) => {
 	return log;
 });
 
-const colorize = process.env.NODE_ENV !== 'production';
+const colorize = NODE_ENV !== 'production';
 let formater;
-if (process.env.NODE_ENV === 'test') {
+if (NODE_ENV === 'test') {
 	formater = format.combine(
 		format.prettyPrint({ depth: 1, colorize }),
 	);

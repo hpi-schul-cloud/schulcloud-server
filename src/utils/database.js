@@ -8,7 +8,7 @@ const GLOBALS = require('../../config/globals');
 const logger = require('../logger');
 
 const configurations = ['test', 'production', 'default', 'migration']; // todo move to config
-const env = process.env.NODE_ENV || 'default';
+const env = process.env.NODE_ENV || 'default'; // TODO cleanup
 
 if (!(configurations.includes(env))) {
 	throw new Error('if defined, NODE_ENV must be set to test or production');

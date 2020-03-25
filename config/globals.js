@@ -9,4 +9,5 @@ module.exports = {
 	STUDENT_TEAM_CREATE_DISABLED: process.env.STUDENT_TEAM_CREATE_DISABLED,
 	SC_THEME: process.env.SC_THEME || 'default',
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
+	NODE_ENV: process.env.NODE_ENV || 'development', // default equals app.get('env')
 };

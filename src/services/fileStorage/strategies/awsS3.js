@@ -8,14 +8,14 @@ const { schoolModel } = require('../../school/model');
 const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
+const { NODE_ENV } = require('../../../../config/globals');
 
-// const prodMode = process.env.NODE_ENV === 'production';
 
 let awsConfig = {};
 try {
 	//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 	/* eslint-disable global-require, no-unused-expressions */
-	(['production'].includes(process.env.NODE_ENV))
+	(['production'].includes(NODE_ENV))
 		? awsConfig = require('../../../../config/secrets.js').aws
 		: awsConfig = require('../../../../config/secrets.json').aws;
 	/* eslint-enable global-require, no-unused-expressions */

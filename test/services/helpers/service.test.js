@@ -4,7 +4,7 @@ const nock = require('nock');
 const app = require('../../../src/app');
 
 // eslint-disable-next-line import/no-dynamic-require
-const config = require(`../../../config/${process.env.NODE_ENV || 'default'}.json`);
+const config = require(`../../../config/${process.env.NODE_ENV || 'default'}.json`); // TODO cleanup
 
 const isMailbodyValid = ({
 	platform,
