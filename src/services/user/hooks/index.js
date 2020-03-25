@@ -215,9 +215,14 @@ const securePatching = (hook) => Promise.all([
 	hasRole(hook, hook.params.account.userId, 'superhero'),
 	hasRole(hook, hook.params.account.userId, 'administrator'),
 	hasRole(hook, hook.params.account.userId, 'teacher'),
+  hasRole(hook, hook.params.account.userId, 'demoStudent'),
+	hasRole(hook, hook.params.account.userId, 'demoTeacher'),
 	hasRole(hook, hook.id, 'student'),
 ])
-	.then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
+	.then(([isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent]) => {
+		if (isDemoStudent || isDemoTeacher) {
+			return Promise.reject(new errors.Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+		}
 		if (!isSuperHero) {
 			delete hook.data.schoolId;
 			delete (hook.data.$push || {}).schoolId;
