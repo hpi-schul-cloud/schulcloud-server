@@ -15,5 +15,5 @@ module.exports = {
 	TOKEN_SUB: process.env.TOKEN_SUB
 	|| process.env.HOST || 'https://schulcloud-thueringen.de', // added TOKEN_SUB on env
 	TOKEN_ISS: process.env.TOKEN_ISS || process.env.SC_DOMAIN || 'schulcloud-thueringen.de', // added TOKEN_ISS on env
-	
+	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
 };
