@@ -1,5 +1,6 @@
 const { BadRequest } = require('@feathersjs/errors');
 const service = require('feathers-mongoose');
+const { HOST } = require('../../../../config/globals');
 
 const _TYPE = ['before', 'after'];
 const _METHOD = ['get', 'update', 'patch', 'create', 'find', 'remove'];
