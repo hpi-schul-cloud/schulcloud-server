@@ -47,6 +47,11 @@ const globals = {
 	TEST_PW: (process.env.TEST_PW || '').trim(),
 	TEST_HASH: (process.env.TEST_HASH || '').trim(),
 	AT: '@schul-cloud.org',
+
+	// nbc
+	NBC_IMPORTURL: process.env.NBC_IMPORTURL,
+	NBC_IMPORTUSER: process.env.NBC_IMPORTUSER,
+	NBC_IMPORTPASSWORD: process.env.NBC_IMPORTPASSWORD,
 };
 
 
