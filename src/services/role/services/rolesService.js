@@ -107,7 +107,7 @@ class RoleService {
 		return unique(...selectedRoles.map((r) => r.permissions));
 	}
 
-	async get(id, params) {
+	async get(id, params = {}) {
 		const result = filterByQuery(await this.roles, params.query);
 		const role = result.find((r) => r._id === id.toString());
 
@@ -117,7 +117,7 @@ class RoleService {
 		return role;
 	}
 
-	async find(params) {
+	async find(params = {}) {
 		const result = filterByQuery(await this.roles, params.query);
 		return paginate(result, params.query);
 	}
