@@ -23,6 +23,7 @@ const globals = {
 	 * it's used in different filenames
 	 */
 	NODE_ENV: process.env.NODE_ENV || 'default',
+	/** HOST=https://schul-cloud.org in bosscloud, see misuse in todo */
 	HOST: process.env.HOST || 'localhost:3030', // todo this is client url in config
 	TOKEN_SUB: process.env.TOKEN_SUB
 	|| process.env.HOST || 'https://schulcloud-thueringen.de', // added TOKEN_SUB on env
