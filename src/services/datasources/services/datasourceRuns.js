@@ -189,9 +189,10 @@ class DatasourceRuns {
 	async create(data, params) {
 		// set up stream for the sync log
 		const dryrun = data.dryrun || false;
+		const userId = (params.account || {}).userId;
 
 		const datasourceRun = await this.persistPendingRun(
-			params.datasource, dryrun, (params.account || {}).userId,
+			params.datasource, dryrun, userId,
 		);
 
 		let logString = '';
@@ -208,6 +209,7 @@ class DatasourceRuns {
 			query: params.datasource.config,
 			dryrun,
 			datasourceId: params.datasource._id,
+			userId: userId,
 		};
 
 		// we intentionally do not await the sync, and instead return the pending run.

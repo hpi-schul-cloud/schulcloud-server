@@ -58,7 +58,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		);
 		
 		const validData = (
-			['inclusive', 'exclusive'].includes(data.data.type) || (!data.data.type && !data.courseMetadataIds) &&
+			['inclusive', 'exclusive'].includes(data.data.type) || (!data.type && !data.data.courseMetadataIds) &&
 			data.datasourceId != ''
 		);
 
@@ -67,6 +67,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		}
 		
 		return [{
+			userId: params.userId,
 			webuntisConfig: {
 				url: query.url,
 				schoolname: query.schoolname,
@@ -75,7 +76,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 			},
 			datasourceId: data.datasourceId,
 			datatype: data.data.type,
-			courseMetadataIds: data.courseMetadataIds,
+			courseMetadataIds: data.data.courseMetadataIds,
 			dryrun: !("dryrun" in params) || (params.dryrun !== 'false' && params.dryrun !== false),
 		}];
 	}
@@ -114,23 +115,23 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	}
 
 	/**
-	* 
+	* Note: Login to WebUntis is currently not required as all Metadata is fetched
+	* during the first step
 	*/
 	async createCoursesFromMetaDataAndWebUntisSteps(params) {
-		// this.logger.debug(params);
-
 		this.stats.success = false;
 
 		const config = params.webuntisConfig;
 
 		const metaData = await this.obtainMetadata(params);
-		const session = await this.login(config);
+		// const session = await this.login(config);
+		const session = {};
 
 		const data = await this.fetchData(session, metaData);
 
-		await this.logout(session);
+		// await this.logout(session);
 
-		await this.createCourses(data, params);
+		await this.createCourses(config, data, params);
 
 		this.stats.success = true;
 	}
@@ -190,8 +191,6 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		
 		intermediateData.currentSchoolYear = await this.getCurrentSchoolyear();
 
-		this.logger.info('Current school year ', intermediateData.currentSchoolYear);
-		
 		// To iterate over either concept
 		intermediateData.classes = await this.getClasses(intermediateData.currentSchoolYear.id);
 		intermediateData.teachers = await this.getTeachers();
@@ -199,8 +198,6 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		intermediateData.subjects = await this.getSubjects();
 
 		intermediateData.timeGrid = await this.getTimegrid();
-
-		this.logger.info('Classes ', intermediateData.classes);
 
 		// Initialize empty timetable for classes
 		for (let entry of intermediateData.classes) {
@@ -422,25 +419,23 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	* 
 	* @param {*} data 
 	*/
-	async createCourses(data, params) {
+	async createCourses(config, data, params) {
 		// Convert metadata to actual schulcloud courses
 		// And reflect changes in metadata store
 		const webUntisMetadataService = this.app.service('webuntisMetadata');
 
-		this.logger.debug(data);
-
 		const importCondition = this.getImportConditionEvaluator(params);
-		const promises = data.map((entry) => {
-			if (importCondition(entry.state.toString())) {
-				return this.obtainAndUpdateCourseAndClass(entry)
-					.then(() => webUntisMetadataService.patch(entry._id, { state: 'imported' }))
-					.catch(() => webUntisMetadataService.patch(entry._id, { state: 'errored' }));
-			} else {
-				return webUntisMetadataService.patch(entry._id, { state: 'discarded' });
-			}
-		});
 
-		await Promise.all(promises);
+		for (let entry of data) {
+			if (importCondition(entry._id.toString())) {
+				await this.obtainAndUpdateCourseAndClass(config, entry)
+					.then(() => webUntisMetadataService.patch(entry._id, { state: 'imported' }))
+					// .catch(() => webUntisMetadataService.patch(entry._id, { state: 'errored' }));
+					;
+			} else {
+				await webUntisMetadataService.patch(entry._id, { state: 'discarded' });
+			}
+		}
 	}
 
 	/**
@@ -453,11 +448,13 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	*    state: 'new',
 	* }
 	*/
-	async obtainAndUpdateCourseAndClass(entry) {
+	async obtainAndUpdateCourseAndClass(config, entry) {
 		const courseService = this.app.service('courses');
 		const classService = this.app.service('classes');
 
-		const school = await this.getSchool(await this.getUser());
+		const user = await this.getUser();
+
+		const school = await this.getSchool(user);
 
 		/**
         * Mapping:
@@ -469,78 +466,76 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 
 		// Get class
 		const scClasses = await classService.find({ query: { name: entry.class }, paginate: false });
-		
-		let scClass = scClasses[0];
+
+		let scClass = scClasses.length >= 1 ? scClasses[0] : undefined;
 		if (scClass === undefined) {
 			// Create Schul-Cloud class?
+
+			// TODO: extract gradeLevel
+
 			const newClass = {
-				name: className,
+				name: entry.class,
 				schoolId: school._id,
 				nameFormat: 'static',
 				year: school.currentYear,
 			};
 			scClass = await classService.create(newClass);
+
+			// TODO: derive successor value for predecessor class?
 		}
+
+		// Extract class short name
+		const shortClassName = scClass.name.match(/[A-Za-z]{1}[0-9]{1,2}[A-Za-z]{1}/g) || scClass.name.substr(0, 3).replace( /^\s+|\s+$/g, '' );
+		const courseName = entry.subject + ` ` + shortClassName;
 
 		// Get course
 		const scCourses = await courseService.find({
+			// TODO: use teacher is query value, too
 			query: {
 				name: entry.subject,
-				classIds: scClass._id,
 				schoolId: school._id,
 			},
 			paginate: false,
 		});
 
-		scCourse = scCourses[0];
+		let scCourse = scCourses.length >= 1 ? scCourses[0] : undefined;
 		if (scCourse === undefined) {
 			// Create Course
 			const newCourse = {
 				name: courseName,
-				classIds: [scClass._id],
+				teacherIds: [user._id],
+				classIds: [],
 				schoolId: school._id,
-				teacherIds: [],
 			};
 
 			scCourse = await courseService.create(newCourse);
 		}
 
-		// Get times
-		
-		const times = [];
-		for (const timetableEntry of entry.timetable) {
-			const newEntry = {
-				weekday: this.getWeekDay(timetableEntry.date),
-				startTime: this.getStartTime(timetableEntry.startTime),
-				duration: this.getDuration(timetableEntry.startTime, timetableEntry.endTime),
-				room: timetableEntry.room,
-				count: 1,
-			};
-			let entryFound = false;
-			for (const givenEntry of times) {
-				if (givenEntry.weekday === newEntry.weekday
-					&& givenEntry.startTime === newEntry.startTime
-					&& givenEntry.duration === newEntry.duration
-					&& givenEntry.room === newEntry.room) {
-					givenEntry.count += 1;
-					entryFound = true;
-				}
-			}
-			if (!entryFound) {
-				times.push(newEntry);
-			}
+		// Update course by merging information
+		const courseUpdate = {};
+
+		// Update classes; add new class
+		if (!scCourse.classIds.some((entry) => entry.toString() === scClass.id)) {
+			courseUpdate.classIds = scCourse.classIds;
+			courseUpdate.classIds.push(scClass._id);
 		}
 
-		// Assumption: After 2 entries it is recurring
-		times = times.filter(entry => entry.count >= 2).map(entry => ({
-			weekday: entry.weekday,
-			startTime: entry.startTime,
-			duration: entry.duration,
-			eventId: undefined,
-			room: entry.room,
-		}));
+		// Update times; overwrite
+		courseUpdate.times = entry.times;
 
-		courseService.patch(scCourse._id, scCourse);
+		// TODO: startDate
+		// TODO: endDate
+
+		// Indicate import status
+		if (scCourse.source === undefined) {
+			courseUpdate.source = 'webuntis';
+			courseUpdate.sourceOptions = {
+				schoolname: config.schoolname,
+				courseName: entry.subject,
+			};
+		}
+
+		await courseService.patch(scCourse._id, courseUpdate, { account: { userId: user._id }});
 	}
 }
 

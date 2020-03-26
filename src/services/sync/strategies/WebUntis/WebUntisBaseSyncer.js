@@ -53,11 +53,13 @@ class WebUntisBaseSyncer extends Syncer {
 
 
 	async getUser() {
-		return this.app.service('users').get(this.account.userId);
+		const user = await this.app.service('users').get(this.data.userId);
+		return user;
 	}
 
 	async getSchool(user) {
-		return this.app.service('schools').get(user.schoolId);
+		const school = await this.app.service('schools').get(user.schoolId);
+		return school;
 	}
 
 	dayLookUp(day) {
