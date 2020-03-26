@@ -4,7 +4,6 @@ const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 
 const { userModel } = require('../model');
-const roleModel = require('../../role/model');
 
 const getCurrentUserInfo = (id) => userModel.findById(id)
 	.select('schoolId')
@@ -22,12 +21,12 @@ const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('users'
 		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash'],
 	},
 });
-
-const getRoles = () => roleModel.find()
+/*
+const getRoles = () => getModelRoles()
 	.select('name')
 	.lean()
 	.exec();
-
+*/
 const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
 	.find({
 		query: {
@@ -75,7 +74,8 @@ class AdminUsers {
 			const currentUserId = params.account.userId.toString();
 
 			// fetch base data
-			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles()]);
+			const getRoles = this.app.service('roles').find().then((roles) => roles.data);
+			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles]);
 			const { schoolId } = currentUser;
 
 			const currentSchool = await this.app.service('schools').get(schoolId);

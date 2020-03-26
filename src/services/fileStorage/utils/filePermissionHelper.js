@@ -2,7 +2,7 @@ const logger = require('../../../logger');
 
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
-const RoleModel = require('../../role/model');
+const { getModelRoles } = require('../../role/services/rolesService');
 const { sortRoles } = require('../../role/utils/rolesHelper');
 const { submissionModel: Submission, homeworkModel: Homework } = require('../../homework/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
@@ -19,7 +19,7 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 	const roleIndex = {};
 
 	try {
-		teamRoles = await RoleModel.find({ name: /^team/ }).lean().exec();
+		teamRoles = await getModelRoles({ name: /^team/ });
 		teamRoles.forEach((role) => { roleIndex[role._id] = role; });
 		sortedTeamRoles = sortRoles(teamRoles);
 	} catch (error) {

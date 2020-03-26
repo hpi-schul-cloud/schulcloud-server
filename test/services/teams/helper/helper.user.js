@@ -1,9 +1,9 @@
 const { BadRequest } = require('@feathersjs/errors');
-const rolesModel = require('../../../../src/services/role/model.js');
+const { ObjectId } = require('mongoose').Types;
+
+const { getModelRoles } = require('../../../../src/services/role/services/rolesService');
 const { userModel } = require('../../../../src/services/user/model.js');
 const accountModel = require('../../../../src/services/account/model.js');
-// const app = require(SRC + 'app');
-const { ObjectId } = require('mongoose').Types;
 const app = require('../../../../src/app');
 const { warning } = require('../../../../src/logger');
 
@@ -27,13 +27,15 @@ const getToken = async ({ userId }) => {
 	return result.accessToken;
 };
 
-const getRoleByKey = (key, value) => rolesModel.find({
+const getRoleByKey = (key, value) => getModelRoles({
 	[key]: value,
 })
 	.then(([role]) => role);
 
 const createUser = async (userId, roleName = 'student', schoolId = '0000d186816abba584714c5f') => {
-	if (!['expert', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) throw BadRequest(`You want to test a not related role .${roleName}`);
+	if (!['expert', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) {
+		throw new BadRequest(`You want to test a not related role .${roleName}`);
+	}
 
 	const role = await getRoleByKey('name', roleName);
 
@@ -67,7 +69,10 @@ const setupUser = async (roleName, schoolId) => {
 };
 
 const deleteUser = async (userId) => {
-	if (typeof userId === 'object' && userId.userId !== undefined) userId = userId.userId;
+	if (typeof userId === 'object' && userId.userId !== undefined) {
+		// eslint-disable-next-line no-param-reassign
+		({ userId } = userId);
+	}
 
 	const email = userId + AT;
 	await userModel.deleteOne({ email }); // todo: add error handling if not exist

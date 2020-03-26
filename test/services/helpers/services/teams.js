@@ -1,20 +1,30 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable new-cap */
 const { teamsModel, teamUserModel } = require('../../../../src/services/teams/model');
-const Role = require('../../../../src/services/role/model');
+const { getModelRoles } = require('../../../../src/services/role/services/rolesService');
 
 let createdTeamIds = [];
 
 const createTeamUser = async (userId, schoolId, roleName = 'teammember') => {
-	const roleId = (await Role.findOne({ name: roleName }))._id;
+	const roleId = (await getModelRoles({ name: roleName }))._id;
 	return (new teamUserModel({ role: roleId, schoolId, userId }))._doc;
 };
 
-const createTeam = (opt) => async (owner) => teamsModel.create({
+/**  TODO: Cedric merge is wrong
+ * const createTeam = (opt) => async (owner) => teamsModel.create({
 	name: `${Date.now()}_test`,
 	schoolId: owner.schoolId,
 	schoolIds: [owner.schoolId],
 	userIds: [await createTeamUser(owner._id, owner.schoolId, 'teamowner')],
+	schoolId: opt.schoolId,
+	schoolIds: [opt.schoolId],
+	userIds: [await createTeamUser(owner._id, opt.schoolId, 'teamowner')],
+ */
+const createTeam = (opt) => async (owner) => teamsModel.create({
+	name: `${Date.now()}_test`,
+	schoolId: owner.schoolId || opt.schoolId,
+	schoolIds: [owner.schoolId || opt.schoolId],
+	userIds: [await createTeamUser(owner._id, owner.schoolId || opt.schoolId, 'teamowner')],
 }).then((team) => {
 	createdTeamIds.push(team._id.toString());
 	return team._doc;

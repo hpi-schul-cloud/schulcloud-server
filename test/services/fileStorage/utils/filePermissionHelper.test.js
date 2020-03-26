@@ -2,7 +2,7 @@ const { expect } = require('chai');
 
 const { FileModel } = require('../../../../src/services/fileStorage/model');
 const { userModel } = require('../../../../src/services/user/model');
-const RoleModel = require('../../../../src/services/role/model');
+const { RoleModel } = require('../../../../src/services/role/model');
 // const { submissionModel } = require('../../../../src/services/homework/model');
 const { courseModel } = require('../../../../src/services/user-group/model');
 const { homeworkModel } = require('../../../../src/services/homework/model');

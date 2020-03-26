@@ -1,5 +1,5 @@
 const { FilePermissionModel } = require('../model');
-const RoleModel = require('../../role/model');
+const { getModelRoles } = require('../../role/services/rolesService');
 const { teamsModel } = require('../../teams/model');
 
 const createPermission = (refId, refPermModel = 'user', permissions = null) => {
@@ -17,11 +17,9 @@ const createPermission = (refId, refPermModel = 'user', permissions = null) => {
 	return newPermission;
 };
 
-const getRoles = (names = []) => RoleModel.find({
+const getRoles = (names = []) => getModelRoles({
 	$or: names.map((name) => ({ name })),
-})
-	.lean()
-	.exec();
+});
 
 
 const getRoleIdByName = (roles, name) => {
@@ -66,7 +64,7 @@ const addCourseDefaultPermissions = async (permissions, studentCanEdit) => {
 const fetchAndCreateTeamDefaultPermissions = async (owner) => {
 	const [teamObject, teamRoles] = await Promise.all([
 		teamsModel.findOne({ _id: owner }).lean().exec(),
-		RoleModel.find({ name: /^team/ }).lean().exec(),
+		getModelRoles({ name: /^team/ }),
 	]);
 	const { filePermission: defaultPermissions } = teamObject;
 

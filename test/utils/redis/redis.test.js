@@ -19,15 +19,14 @@ describe('redis helpers', () => {
 				useCleanCache: true,
 			});
 			mockery.registerMock('redis', redisMock);
-			mockery.registerMock('@schul-cloud/commons', commons);
 
 			delete require.cache[require.resolve('../../../src/utils/redis')];
+			delete require.cache[require.resolve('@schul-cloud/commons')];
 			redisHelpers = require('../../../src/utils/redis');
 			redisHelpers.initializeRedisClient();
 		});
 
 		after(async () => {
-			delete require.cache[require.resolve('../../../src/utils/redis')];
 			mockery.deregisterAll();
 			mockery.disable();
 		});
@@ -72,10 +71,8 @@ describe('redis helpers', () => {
 
 	describe('with a redis server', () => {
 		let redisHelpers;
-		let configBefore;
 
 		before(async () => {
-			configBefore = Configuration.toObject();
 			mockery.enable({
 				warnOnReplace: false,
 				warnOnUnregistered: false,
@@ -86,15 +83,13 @@ describe('redis helpers', () => {
 
 			delete require.cache[require.resolve('../../../src/utils/redis')];
 			redisHelpers = require('../../../src/utils/redis');
-			Configuration.set('REDIS_URI', '//validHost:6666');
+			Configuration.set('REDIS_URI', '//validHost:6379');
 			redisHelpers.initializeRedisClient();
 		});
 
 		after(async () => {
 			mockery.deregisterAll();
 			mockery.disable();
-			delete require.cache[require.resolve('../../../src/utils/redis')];
-			Configuration.reset(configBefore);
 		});
 
 		it('getRedisClient returns a client object', () => {

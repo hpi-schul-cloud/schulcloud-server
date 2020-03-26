@@ -11,12 +11,20 @@ const RoleServiceHooks = {
 	},
 };
 
-const removeKeys = (keys = []) => (role) => {
-	keys.forEach((key) => {
-		delete role[key];
-	});
-	return role;
-};
+let ServiceShouldPreparedRoles = false;
+
+const rolesDisplayName = Object.freeze({
+	teacher: 'Lehrer',
+	student: 'Schüler',
+	administrator: 'Administrator',
+	superhero: 'Schul-Cloud Admin',
+	demo: 'Demo',
+	demoTeacher: 'Demo',
+	demoStudent: 'Demo',
+	helpdesk: 'Helpdesk',
+	betaTeacher: 'Beta',
+	expert: 'Experte',
+});
 
 const paginate = (result, { $limit, $skip = 0 } = {}) => ({
 	total: result.length,
@@ -40,7 +48,27 @@ const filterByQuery = (roles, query = {}) => {
 	return array;
 };
 
-const getRoles = (query = {}) => RoleModel.find(query).lean().exec();
+const unique = (...permissions) => ([...new Set(Array.prototype.concat.apply([], permissions))]);
+
+const dissolveInheritPermission = (roles, role) => {
+	if (Array.isArray(role.roles) && role.roles[0]) {
+		const inheritRoleId = role.roles[0].toString(); // TODO: only first role is used, model should changed
+		const inheritRole = roles.find((r) => r._id.toString() === inheritRoleId);
+		const { permissions } = dissolveInheritPermission(roles, inheritRole);
+		role.permissions = unique(role.permissions, permissions);
+	}
+	return role;
+};
+
+const preparedRoles = (roles, displayName) => roles.map((role) => {
+	role = dissolveInheritPermission(roles, role);
+	role.displayName = displayName[role.name] || '';
+	role._id = role._id.toString();
+	return role;
+});
+
+const getModelRoles = (query = {}) => RoleModel.find(query)
+	.lean().exec().then((roles) => (ServiceShouldPreparedRoles ? preparedRoles(roles, rolesDisplayName) : roles));
 
 /**
  * This is a static services.
@@ -53,60 +81,30 @@ class RoleService {
 			load: 'Can not load roles from DB, or can not solved pre mutations.',
 		});
 		this.roles = undefined;
-		this.rolesDisplayName = Object.freeze({
-			teacher: 'Lehrer',
-			student: 'Schüler',
-			administrator: 'Administrator',
-			superhero: 'Schul-Cloud Admin',
-			demo: 'Demo',
-			demoTeacher: 'Demo',
-			demoStudent: 'Demo',
-			helpdesk: 'Helpdesk',
-			betaTeacher: 'Beta',
-			expert: 'Experte',
-		});
-		this.filterKeys = Object.freeze([]); // ['createdAt', 'updatedAt', 'roles', '__v']
+		// this.filterKeys = Object.freeze([]); // ['createdAt', 'updatedAt', 'roles', '__v']
+		this.rolesDisplayName = rolesDisplayName;
 	}
 
 	async setup(app) {
 		this.app = app;
-		await this.init();
+		await this.init(true);
 	}
 
 	async init() {
-		this.roles = new Promise(async (resolve) => {
-			const filter = removeKeys(this.filterKeys);
-			const roles = await getRoles();
-			const preparedRoles = roles.map((role) => {
-				role = filter(this.dissolveInheritPermission(roles, role));
-				if (this.rolesDisplayName[role.name]) {
-					role.displayName = this.rolesDisplayName[role.name];
-				}
-				role._id = role._id.toString();
-				return role;
+		this.roles = new Promise((resolve) => {
+			getModelRoles().then((roles) => {
+				const savedRoles = ServiceShouldPreparedRoles ? preparedRoles(roles, this.rolesDisplayName) : roles;
+				resolve(savedRoles);
+			}).catch((err) => {
+				throw new Error(this.err.load, err);
 			});
-			resolve(preparedRoles);
 		});
-	}
-
-	unique(...permissions) {
-		return [...new Set(Array.prototype.concat.apply([], permissions))];
-	}
-
-	dissolveInheritPermission(roles, role) {
-		if (Array.isArray(role.roles) && role.roles[0]) {
-			const inheritRoleId = role.roles[0].toString();
-			const inheritRole = roles.find((r) => r._id.toString() === inheritRoleId);
-			const { permissions } = this.dissolveInheritPermission(roles, inheritRole);
-			role.permissions = this.unique(role.permissions, permissions);
-		}
-		return role;
 	}
 
 	async getPermissionsByRoles(roleIds = []) {
 		const ids = roleIds.map((id) => id.toString());
 		const selectedRoles = (await this.roles).filter((r) => ids.includes(r._id));
-		return this.unique(...selectedRoles.map((r) => r.permissions));
+		return unique(...selectedRoles.map((r) => r.permissions));
 	}
 
 	async get(id, params) {
@@ -125,20 +123,18 @@ class RoleService {
 	}
 }
 
-let staticRoleService;
-const configure = async (app, path = '/roles') => {
+const configure = async (app, { path = '/roles', prepared = ServiceShouldPreparedRoles } = {}) => {
+	ServiceShouldPreparedRoles = prepared;
 	app.use(path, new RoleService());
 	const service = app.service(path);
 	service.hooks(RoleServiceHooks);
-	staticRoleService = service;
 };
 
 module.exports = {
 	configure,
 	RoleService,
 	RoleServiceHooks,
-	getRoles,
-	filterByQuery,
-	paginate,
-	staticRoleService,
+	getModelRoles,
+	rolesDisplayName,
+	ServiceShouldPreparedRoles,
 };
