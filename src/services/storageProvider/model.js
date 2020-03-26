@@ -11,6 +11,8 @@ const storageProviderSchema = new Schema({
 	secretAccessKey: { type: String, required: true },
 	endpointUrl: { type: String, required: true },
 	region: { type: String },
+	maxBuckets: { type: Number, required: true },
+	schools: [{ type: mongoose.Schema.Types.ObjectId, ref: 'school' }],
 }, {
 	timestamps: true,
 });
