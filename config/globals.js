@@ -39,6 +39,11 @@ const globals = {
 	ANALYTICS_LOGGING: process.env.ANALYTICS_LOGGING,
 	LOGIN_BLOCK_TIME: process.env.LOGIN_BLOCK_TIME || 15, // allowedTimeDifference
 	CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS: parseInt(process.env.CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS || 16, 10),
+
+	/** used in tests only currently */
+	OAUTH_URL: process.env.OAUTH_URL,
+
+
 };
 
 // validation
