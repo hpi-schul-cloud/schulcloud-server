@@ -83,7 +83,7 @@ const { NODE_ENV } = globals;
 if (!(environments.includes(globals.NODE_ENV))) {
 	throw new Error('NODE_ENV must match one of valid environments', { environments, NODE_ENV });
 } else {
-	log(`NODE_ENV is set to ${globals.NODE_ENV}`);
+	log(`NODE_ENV is set to '${globals.NODE_ENV}'`);
 }
 
 
