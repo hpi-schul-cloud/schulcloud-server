@@ -43,7 +43,10 @@ const globals = {
 	/** used in tests only currently */
 	OAUTH_URL: process.env.OAUTH_URL,
 
-
+	// test user helper
+	TEST_PW: (process.env.TEST_PW || '').trim(),
+	TEST_HASH: (process.env.TEST_HASH || '').trim(),
+	AT: '@schul-cloud.org',
 };
 
 // validation
