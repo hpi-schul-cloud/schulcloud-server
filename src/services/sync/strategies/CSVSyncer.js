@@ -4,6 +4,7 @@ const { mix } = require('mixwith');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
+const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
@@ -341,16 +342,16 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			if (user && user.email && user.schoolId && user.shortLink) {
 				await this.app.service('mails').create({
 					email: user.email,
-					subject: `Einladung für die Nutzung der ${process.env.SC_TITLE}!`,
+					subject: `Einladung für die Nutzung der ${SC_TITLE}!`,
 					headers: {},
 					content: {
-						text: `Einladung in die ${process.env.SC_TITLE}\n`
+						text: `Einladung in die ${SC_TITLE}\n`
 							+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
-							+ `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
+							+ `Du wurdest eingeladen, der ${SC_TITLE} beizutreten, `
 							+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
 							+ `${user.shortLink}\n\n`
 							+ 'Viel Spaß und einen guten Start wünscht dir dein '
-							+ `${process.env.SC_SHORT_TITLE}-Team`,
+							+ `${SC_SHORT_TITLE}-Team`,
 					},
 				});
 				this.stats.invitations.successful += 1;

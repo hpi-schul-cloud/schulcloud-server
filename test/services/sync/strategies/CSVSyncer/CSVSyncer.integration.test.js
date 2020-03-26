@@ -18,6 +18,7 @@ const {
 } = require('../../../helpers/services/classes')(app);
 
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
+const { SC_TITLE } = require('../../../../../config/globals');
 
 const {
 	deleteUser, MockEmailService,
@@ -442,7 +443,7 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.classes.failed).to.equal(0);
 
 			expect(emails.length).to.equal(3);
-			expect(emails[0].subject).to.equal(`Einladung für die Nutzung der ${process.env.SC_TITLE}!`);
+			expect(emails[0].subject).to.equal(`Einladung für die Nutzung der ${SC_TITLE}!`);
 			expect(emails[0].content.text).to.include('Hallo Chuck Bartowski!');
 
 			await Promise.all(TEACHER_EMAILS.map(async (email) => {

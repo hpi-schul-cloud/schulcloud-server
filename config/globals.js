@@ -9,6 +9,8 @@ const globals = {
 	STUDENT_TEAM_CREATE_DISABLED: process.env.STUDENT_TEAM_CREATE_DISABLED,
 	SC_DOMAIN: process.env.SC_DOMAIN || 'localhost',
 	SC_THEME: process.env.SC_THEME || 'default',
+	SC_TITLE: process.env.SC_TITLE || 'HPI Schul-Cloud',
+	SC_SHORT_TITLE: process.env.SC_SHORT_TITLE || 'Schul-Cloud',
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 	KEEP_ALIVE: process.env.KEEP_ALIVE || false,
 	NODE_ENV: process.env.NODE_ENV || 'development', // default equals app.get('env')

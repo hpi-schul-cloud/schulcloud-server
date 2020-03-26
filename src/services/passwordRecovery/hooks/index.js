@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { NotFound } = require('@feathersjs/errors');
 const logger = require('../../../logger/index');
-const { HOST } = require('../../../../config/globals');
+const { HOST, SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
 
@@ -45,10 +45,10 @@ const sendInfo = (context) => {
 Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:
 ${recoveryLink}\n
 Mit Freundlichen Grüßen
-Ihr ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'} Team`;
+Ihr ${SC_SHORT_TITLE || 'Schul-Cloud'} Team`;
 
 			globalHooks.sendEmail(context, {
-				subject: `Passwort zurücksetzen für die ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'}`,
+				subject: `Passwort zurücksetzen für die ${SC_SHORT_TITLE || 'Schul-Cloud'}`,
 				emails: [account.userId.email],
 				content: {
 					text: mailContent,

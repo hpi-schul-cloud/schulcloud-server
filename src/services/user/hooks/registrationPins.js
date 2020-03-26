@@ -5,6 +5,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const { NODE_ENV } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../../user/model').registrationPinModel;
+const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
 	.then(() => Promise.resolve(hook));
@@ -15,8 +16,6 @@ const generatePin = (hook) => {
 	return Promise.resolve(hook);
 };
 
-const shortTitle = process.env.SC_SHORT_TITLE || 'Schul-Cloud*';
-const longTitle = process.env.SC_TITLE || 'HPI Schul-Cloud*';
 function createinfoText(hook) {
 	const role = hook.data.mailTextForRole;
 	const { pin } = hook.data;
@@ -24,22 +23,22 @@ function createinfoText(hook) {
 		throw new BadRequest('Fehler beim Erstellen der Pin.');
 	}
 	if (role === 'parent') {
-		return `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der ${longTitle} ermöglichen.
+		return `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der ${SC_TITLE} ermöglichen.
 Bitte geben Sie den folgenden Bestätigungscode im Registrierungsprozess ein, um die Registrierung abzuschließen:
 
 PIN: ${pin}
 
 Mit Freundlichen Grüßen
-Ihr ${shortTitle} Team`;
+Ihr ${SC_SHORT_TITLE}-Team`;
 	}
 	if (role === 'student' || role === 'employee' || role === 'expert') {
-		return `Vielen Dank, dass du die ${longTitle} nutzen möchtest.
-Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein, um deine Registrierung bei der ${longTitle} abzuschließen:
+		return `Vielen Dank, dass du die ${SC_TITLE} nutzen möchtest.
+Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein, um deine Registrierung bei der ${SC_TITLE} abzuschließen:
 
 PIN: ${pin}
 
 Mit freundlichen Grüßen
-Dein ${shortTitle} Team`;
+Dein ${SC_SHORT_TITLE}-Team`;
 	}
 	throw new BadRequest('Die angegebene Rolle ist ungültig.', { role });
 }
@@ -78,7 +77,7 @@ const checkAndVerifyPin = (hook) => {
 const mailPin = (hook) => {
 	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
-			subject: `${shortTitle}: Registrierung mit PIN verifizieren`,
+			subject: `${SC_SHORT_TITLE}: Registrierung mit PIN verifizieren`,
 			emails: (hook.data || {}).email,
 			content: {
 				text: createinfoText(hook),
