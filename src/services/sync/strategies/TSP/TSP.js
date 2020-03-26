@@ -14,7 +14,6 @@ const SIGNATURE_KEY = Configuration.get('TSP_API_SIGNATURE_KEY');
 const BASE_URL = Configuration.get('TSP_API_BASE_URL');
 const CLIENT_ID = Configuration.get('TSP_API_CLIENT_ID');
 const CLIENT_SECRET = Configuration.get('TSP_API_CLIENT_SECRET');
-const TOKEN_ISS = process.env.SC_DOMAIN || 'schulcloud-thueringen.de';
 const { TOKEN_SUB, TOKEN_ISS } = require('../../../../../config/globals');
 
 const ENCRYPTION_OPTIONS = { alg: 'dir', enc: 'A128CBC-HS256' };
