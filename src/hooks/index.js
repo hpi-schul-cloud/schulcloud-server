@@ -699,20 +699,6 @@ exports.sendEmail = (context, maildata) => {
 	return context;
 };
 
-exports.getAge = (dateString) => {
-	if (dateString === undefined) {
-		return undefined;
-	}
-	const today = new Date();
-	const birthDate = new Date(dateString);
-	let age = today.getFullYear() - birthDate.getFullYear();
-	const m = today.getMonth() - birthDate.getMonth();
-	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-		age -= 1;
-	}
-	return age;
-};
-
 exports.arrayIncludes = (array, includesList, excludesList) => {
 	for (let i = 0; i < includesList.length; i += 1) {
 		if (array.includes(includesList[i]) === false) {
