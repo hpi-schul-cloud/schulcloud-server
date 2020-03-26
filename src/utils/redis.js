@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 const redis = require('redis');
 const jwt = require('jsonwebtoken');
-const { GeneralError } = require('@feathersjs/errors');
+const { GeneralError, BadRequest } = require('@feathersjs/errors');
 const commons = require('@schul-cloud/commons');
 
 const { Configuration } = commons;
@@ -43,6 +43,9 @@ const redisTtlAsync = (...args) => {
 
 function extractRedisFromJwt(token) {
 	const decodedToken = jwt.decode(token.replace('Bearer ', ''));
+	if (decodedToken === null) {
+		throw new BadRequest('Invalid authentication data');
+	}
 	const { accountId, jti, exp } = decodedToken; // jti - UID of the token
 	const nowInSeconds = Math.floor(Date.now() / 1000);
 	const expirationInSeconds = exp - nowInSeconds;
