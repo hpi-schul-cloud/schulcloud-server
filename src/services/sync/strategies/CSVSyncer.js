@@ -13,7 +13,7 @@ const ATTRIBUTES = [
 	{ name: 'nameSuffix', aliases: ['namesuffix', 'suffix'] },
 	{ name: 'email', required: true, aliases: ['email', 'mail', 'e-mail'] },
 	{ name: 'class', aliases: ['class', 'classes'] },
-	{ name: 'birthday', aliases: ['birthday', 'geburtstag'] },
+	{ name: 'birthday', aliases: ['birthday', 'birth date', 'birthdate', 'birth', 'geburtstag', 'geburtsdatum'] },
 ];
 
 /**
