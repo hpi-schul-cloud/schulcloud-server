@@ -2,7 +2,7 @@ const { FileModel, SecurityCheckStatusTypes } = require('./model');
 const hooks = require('./hooks/SecurityCheckService.hooks.js');
 const logger = require('../../logger');
 
-const SECURITY_CHECK_SERVICE_PATH = require('../../../config/globals');
+const { SECURITY_CHECK_SERVICE_PATH } = require('../../../config/globals');
 
 class SecurityCheckService {
 	async update(id, data) {
