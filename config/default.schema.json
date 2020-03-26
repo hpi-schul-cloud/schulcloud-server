@@ -144,6 +144,25 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
 		},
+		"FEATURE_ALERTS_STATUS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, user will see messages/incidents from e.g status.schul-cloud."
+		},
+		"ALERT_STATUS_URL": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"default": "https://status.schul-cloud.org",
+			"description": "The url of status message provider (should end without a slash)."
+		},
+		"ALERT_STATUS_API_URL": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"default": "https://status.schul-cloud.org/api/v1",
+			"description": "The api of status message provider (should end without a slash)."
+		},
 		"NEXBOARD_URL": {
 			"type": "string",
 			"format": "uri",
