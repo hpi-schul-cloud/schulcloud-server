@@ -85,7 +85,7 @@
 		"mongoose-lean-virtuals": "^0.4.4",
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
-		"nanoid": "^2.0.3",
+		"nanoid": "^3.0.0",
 		"oauth-1.0a": "^2.2.6",
 		"papaparse": "^5.1.1",
 		"prom-client": "^11.5.3",
