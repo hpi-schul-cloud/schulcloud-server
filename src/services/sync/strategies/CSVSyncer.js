@@ -426,7 +426,6 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			});
 			return;
 		}
-		return false;
 	}
 
 	static stringToDateConverter(dateInput) {
