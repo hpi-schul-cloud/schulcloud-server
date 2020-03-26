@@ -11,7 +11,6 @@ const {
 	restrictToCurrentSchool,
 	permitGroupOperation,
 	denyIfNotCurrentSchool,
-	computeProperty,
 	hasPermission,
 } = require('../../../hooks');
 
@@ -215,13 +214,13 @@ const securePatching = (hook) => Promise.all([
 	hasRole(hook, hook.params.account.userId, 'superhero'),
 	hasRole(hook, hook.params.account.userId, 'administrator'),
 	hasRole(hook, hook.params.account.userId, 'teacher'),
-  hasRole(hook, hook.params.account.userId, 'demoStudent'),
+	hasRole(hook, hook.params.account.userId, 'demoStudent'),
 	hasRole(hook, hook.params.account.userId, 'demoTeacher'),
 	hasRole(hook, hook.id, 'student'),
 ])
 	.then(([isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent]) => {
 		if (isDemoStudent || isDemoTeacher) {
-			return Promise.reject(new errors.Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+			return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
 		}
 		if (!isSuperHero) {
 			delete hook.data.schoolId;
@@ -440,7 +439,7 @@ exports.after = {
 	get: [
 		decorateAvatar,
 		decorateUser,
-    populateRoles,
+		populateRoles,
 		iff(isProvider('external'),
 			denyIfNotCurrentSchool({
 				errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
