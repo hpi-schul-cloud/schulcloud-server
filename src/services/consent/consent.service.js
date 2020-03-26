@@ -10,8 +10,16 @@ class ConsentService {
 	}
 
 	async find(params) {
-		if (params.query.consents) {
-			params.query = {};
+		if (params.query.consent) {
+			// TODO: add age check to query for all
+			switch (params.query.consent) {
+				case 'no':
+					break;
+				case 'parent':
+					break;
+				case 'all':
+					break;
+			}
 		}
 
 		return this.app.service(MODEL_SERVICE).find(params);
