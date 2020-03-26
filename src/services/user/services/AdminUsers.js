@@ -45,7 +45,7 @@ const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
 		return err;
 	});
 
-const findConsents = (ref, userIds, $limit) => ref.app.service('/consents')
+const findConsents = (ref, userIds, $limit) => ref.app.service('/consents/model')
 	.find({
 		query: {
 			userId: { $in: userIds },
