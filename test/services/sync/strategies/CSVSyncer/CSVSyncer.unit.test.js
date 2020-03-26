@@ -79,18 +79,18 @@ describe('CSVSyncer', () => {
 		it('should not accept falsy valus as dates for user birthday', () => {
 			const falsyValues = [false, null, undefined, '', 0];
 			const result = falsyValues.map((f) => CSVSyncer.assertDateFormat(f));
-			result.forEach((r) => expect(r).to.be.equal('missing birthday value'));
+			result.forEach((r) => expect(r[0]).to.be.equal('missing birthday value'));
 		});
 		it('should not accept strange values as dates for user birthday', () => {
 			const misfitValues = [Symbol('42'), [], {}, true];
 			const result = misfitValues.map((m) => CSVSyncer.assertDateFormat(m));
-			result.forEach((r) => expect(r).to.be.equal('incorrect values, birthday must be a string'));
+			result.forEach((r) => expect(r[0]).to.be.equal('incorrect values, birthday must be a string'));
 		});
 		it('should not accept invalid date format as user birthday', () => {
 			const wrongFormatDates = [
 				'32.12.2000', '01.13.2000', '01.01-2000', '01/01.2000', '01-01/2000', '42', 'void'];
 			const result = wrongFormatDates.map((w) => CSVSyncer.assertDateFormat(w));
-			result.forEach((r) => expect(r).to.be.equal(
+			result.forEach((r) => expect(r[0]).to.be.equal(
 				'incorrect format. Birthday must be dd.mm.yyyy or dd/mm/yyyy or dd-mm-yyyy',
 			));
 		});
