@@ -398,22 +398,32 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return classes.split('+').filter((name) => name !== '');
 	}
 
-	static assertDateFormat(dateInput) {
-		const bdayErrors = [];
+	assertDateFormat(dateInput) {
 		if (!dateInput) {
-			// todo: change to logger
-			bdayErrors.push('missing birthday value');
-			return bdayErrors;
+			this.stats.errors.push({
+				type: 'geburtstag',
+				entity: 'Eingabedatum fehlerhaft',
+				message: 'Kein Wert für das Geburtstagsdatum',
+			});
+			return;
 		}
 		if (typeof dateInput !== 'string') {
-			bdayErrors.push('incorrect values, birthday must be a string');
-			return bdayErrors;
+			this.stats.errors.push({
+				type: 'geburtstag',
+				entity: 'Eingabedatum fehlerhaft',
+				message: 'Falscher Wert für Datum. Muss String sein',
+			});
+			return;
 		}
 		// https://stackoverflow.com/questions/15491894/regex-to-validate-date-format-dd-mm-yyyy
 		const dateValidationRegex = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/;
 		if (!dateValidationRegex.test(dateInput)) {
-			bdayErrors.push('incorrect format. Birthday must be dd.mm.yyyy or dd/mm/yyyy or dd-mm-yyyy');
-			return bdayErrors;
+			this.stats.errors.push({
+				type: 'geburtstag',
+				entity: 'Eingabedatum fehlerhaft',
+				message: 'Falsches Format. Muss sein dd.mm.yyyy oder dd/mm/yyyy oder dd-mm-yyyy',
+			});
+			return;
 		}
 		return false;
 	}

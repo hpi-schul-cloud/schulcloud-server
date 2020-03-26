@@ -78,26 +78,32 @@ describe('CSVSyncer', () => {
 
 		it('should not accept falsy valus as dates for user birthday', () => {
 			const falsyValues = [false, null, undefined, '', 0];
-			const result = falsyValues.map((f) => CSVSyncer.assertDateFormat(f));
-			result.forEach((r) => expect(r[0]).to.be.equal('missing birthday value'));
+			const out = new CSVSyncer();
+			const { errors } = out.stats
+			falsyValues.forEach((f) => out.assertDateFormat(f));
+			errors.forEach((r) => expect(r.message).to.be.equal('Kein Wert für das Geburtstagsdatum'))
 		});
 		it('should not accept strange values as dates for user birthday', () => {
+			const out = new CSVSyncer();
+			const { errors } = out.stats
 			const misfitValues = [Symbol('42'), [], {}, true];
-			const result = misfitValues.map((m) => CSVSyncer.assertDateFormat(m));
-			result.forEach((r) => expect(r[0]).to.be.equal('incorrect values, birthday must be a string'));
+			misfitValues.forEach((m) => out.assertDateFormat(m));
+			errors.forEach((r) => expect(r.message).to.be.equal('Falscher Wert für Datum. Muss String sein'))
 		});
 		it('should not accept invalid date format as user birthday', () => {
+			const out = new CSVSyncer();
+			const { errors } = out.stats
 			const wrongFormatDates = [
 				'32.12.2000', '01.13.2000', '01.01-2000', '01/01.2000', '01-01/2000', '42', 'void'];
-			const result = wrongFormatDates.map((w) => CSVSyncer.assertDateFormat(w));
-			result.forEach((r) => expect(r[0]).to.be.equal(
-				'incorrect format. Birthday must be dd.mm.yyyy or dd/mm/yyyy or dd-mm-yyyy',
-			));
+			wrongFormatDates.forEach((w) => out.assertDateFormat(w));
+			errors.forEach((r) => expect(r.message).to.be.equal('Falsches Format. Muss sein dd.mm.yyyy oder dd/mm/yyyy oder dd-mm-yyyy'))
 		});
 		it('should return false when given correct value', () => {
+			const out = new CSVSyncer();
+			const { errors } = out.stats
 			const correctFormatDates = ['01.01.2000', '01-01-2000', '01/01/2000'];
-			const result = correctFormatDates.map((c) => CSVSyncer.assertDateFormat(c));
-			result.forEach((r) => expect(r).to.be.equal(false));
+			correctFormatDates.forEach((c) => out.assertDateFormat(c));
+			expect(errors.length).to.be.equal(0);
 		});
 	});
 });
