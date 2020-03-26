@@ -1,5 +1,5 @@
 /* eslint-disable no-process-env */
-const { log } = console; // cann't use logger here due to circular imports
+const { debug } = console;
 
 const globals = {
 	BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',
@@ -83,7 +83,7 @@ const { NODE_ENV } = globals;
 if (!(environments.includes(globals.NODE_ENV))) {
 	throw new Error('NODE_ENV must match one of valid environments', { environments, NODE_ENV });
 } else {
-	log(`NODE_ENV is set to '${globals.NODE_ENV}'`);
+	debug(`NODE_ENV is set to '${globals.NODE_ENV}'`);
 }
 
 
