@@ -4,22 +4,24 @@ const mongoose = require('mongoose');
 const diffHistory = require('mongoose-diff-history/diffHistory');
 const uriFormat = require('mongodb-uri');
 
-const GLOBALS = require('../../config/globals');
 const logger = require('../logger');
+const GLOBALS = require('../../config/globals');
 
-const configurations = ['test', 'production', 'default', 'migration']; // todo move to config
-const env = process.env.NODE_ENV || 'default'; // TODO cleanup
+const config = require(`../../config/${GLOBALS.NODE_ENV}.json`);
 
-if (!(configurations.includes(env))) {
-	throw new Error('if defined, NODE_ENV must be set to test or production');
+const {
+	NODE_ENV,
+	DATABASE_AUDIT,
+	MONGOOSE_CONNECTION_POOL_SIZE,
+	DB_URL = config.mongodb,
+	DB_USERNAME,
+	DB_PASSWORD,
+} = GLOBALS;
+
+if (DATABASE_AUDIT === 'true') {
+	logger.info('database audit log is globally enab led');
 } else {
-	logger.info(`NODE_ENV is set to ${env}`);
-}
-
-const config = require(`../../config/${env}.json`);
-
-if (GLOBALS.DATABASE_AUDIT === 'true') {
-	logger.info('database audit log enabled');
+	logger.info('database audit log is globally disabled');
 }
 
 const encodeMongoURI = (urlString) => {
@@ -31,33 +33,26 @@ const encodeMongoURI = (urlString) => {
 };
 
 function enableAuditLog(schema, options) {
-	if (GLOBALS.DATABASE_AUDIT === 'true') {
+	if (DATABASE_AUDIT === 'true') {
 		// set database audit
 		schema.plugin(diffHistory.plugin, options);
 	}
 }
 
-function addAuthenticationToOptions(DB_USERNAME, DB_PASSWORD, options) {
+function addAuthenticationToMongooseOptions(username, password, mongooseOptions) {
 	const auth = {};
-	if (DB_USERNAME) {
-		auth.user = DB_USERNAME;
+	if (username) {
+		auth.user = username;
 	}
-	if (DB_PASSWORD) {
-		auth.password = DB_PASSWORD;
+	if (password) {
+		auth.password = password;
 	}
-	if (DB_USERNAME || DB_PASSWORD) {
-		options.auth = auth;
+	if (username || password) {
+		mongooseOptions.auth = auth;
 	}
 }
 
 function getConnectionOptions() {
-	// read env params
-	const {
-		DB_URL = config.mongodb,
-		DB_USERNAME,
-		DB_PASSWORD,
-	} = process.env;
-
 	return {
 		url: DB_URL,
 		username: DB_USERNAME,
@@ -81,15 +76,15 @@ function connect() {
 		options.password ? 'and' : 'and without', 'password');
 
 	const mongooseOptions = {
-		autoIndex: env !== 'production',
-		poolSize: GLOBALS.MONGOOSE_CONNECTION_POOL_SIZE,
+		autoIndex: NODE_ENV !== 'production',
+		poolSize: MONGOOSE_CONNECTION_POOL_SIZE,
 		useNewUrlParser: true,
 		useFindAndModify: false,
 		useCreateIndex: true,
 		useUnifiedTopology: true,
 	};
 
-	addAuthenticationToOptions(
+	addAuthenticationToMongooseOptions(
 		options.username,
 		options.password,
 		mongooseOptions,

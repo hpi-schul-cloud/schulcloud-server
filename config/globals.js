@@ -1,5 +1,5 @@
 /* eslint-disable no-process-env */
-// const { warning } = require('../src/logger/index');
+const { log } = console; // cann't use logger here due to circular imports
 
 const globals = {
 	BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',
@@ -18,7 +18,7 @@ const globals = {
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 
 	KEEP_ALIVE: process.env.KEEP_ALIVE || false,
-	NODE_ENV: process.env.NODE_ENV || 'development', // default equals app.get('env')
+	NODE_ENV: process.env.NODE_ENV || 'default', // 'default' replaces 'development' from app.get('env'), it's used in different filenames
 	HOST: process.env.HOST || 'localhost:3030',
 	TOKEN_SUB: process.env.TOKEN_SUB
 	|| process.env.HOST || 'https://schulcloud-thueringen.de', // added TOKEN_SUB on env
@@ -49,7 +49,15 @@ const globals = {
 	AT: '@schul-cloud.org',
 };
 
-// validation
+
+// validation /////////////////////////////////////////////////
+const environments = ['default', 'test', 'production', 'migration']; // todo move to config
+const { NODE_ENV } = globals;
+if (!(environments.includes(globals.NODE_ENV))) {
+	throw new Error('NODE_ENV must match one of valid environments', { environments, NODE_ENV });
+} else {
+	log(`NODE_ENV is set to ${globals.NODE_ENV}`);
+}
 
 
 module.exports = globals;

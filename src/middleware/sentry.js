@@ -2,7 +2,7 @@ const Sentry = require('@sentry/node');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
 const { deepObject } = require('../utils/');
-const { SENTRY_DSN, SC_DOMAIN } = require('../../config/globals');
+const { SENTRY_DSN, SC_DOMAIN, NODE_ENV } = require('../../config/globals');
 /**
  * helpers
  */
@@ -49,7 +49,7 @@ const removeJwtToken = (event) => {
 
 const logItMiddleware = (sendToSentry = false) => (event, hint, app) => {
 	app.logger.info(
-		'If you are not in development mode, the error is sent to sentry at this point! '
+		'If you are not in default mode, the error is sent to sentry at this point! '
 		+ 'If you actually want to send a real request to sentry, please modify sendToSentry.',
 	);
 	return sendToSentry ? event : null;
@@ -73,7 +73,7 @@ const filterByErrorMessageMiddleware = (...errorMessage) => (event, hint, app) =
 const skipItMiddleware = () => null;
 
 module.exports = (app) => {
-	const environment = app.get('env');
+	const environment = NODE_ENV;
 	const release = version;
 
 	if (SENTRY_DSN) {
@@ -85,7 +85,7 @@ module.exports = (app) => {
 			removeJwtToken,
 		];
 		// for local test runs, post feedback but skip it
-		if (environment === 'development') {
+		if (environment === 'default') {
 			middlewares.push(logItMiddleware(false));
 		}
 		// do not execute for test runs

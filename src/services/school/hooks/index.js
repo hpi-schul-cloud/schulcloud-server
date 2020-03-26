@@ -45,8 +45,8 @@ const setCurrentYearIfMissing = async (hook) => {
 };
 
 const createDefaultStorageOptions = (hook) => {
+	// create buckets only in production mode
 	if (NODE_ENV !== 'production') {
-		// don't create buckets in development or test
 		return Promise.resolve(hook);
 	}
 	const storageType = getDefaultFileStorageType();

@@ -2,9 +2,10 @@ const { expect } = require('chai');
 const nock = require('nock');
 
 const app = require('../../../src/app');
+const { NODE_ENV } = require('../../../config/globals');
 
 // eslint-disable-next-line import/no-dynamic-require
-const config = require(`../../../config/${process.env.NODE_ENV || 'default'}.json`); // TODO cleanup
+const config = require(`../../../config/${NODE_ENV}.json`); // TODO cleanup
 
 const isMailbodyValid = ({
 	platform,

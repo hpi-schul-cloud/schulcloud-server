@@ -7,13 +7,12 @@ let logLevel = LOG_LEVEL;
 
 if (!logLevel) {
 	switch (NODE_ENV) {
-		case 'development':
+		case 'default':
 			logLevel = 'debug';
 			break;
 		case 'test':
 			logLevel = 'emerg';
 			break;
-		case 'default':
 		case 'production':
 		default:
 			logLevel = 'error';
