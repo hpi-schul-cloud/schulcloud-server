@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
+
+const { RoleModel } = require('../role/model');
 const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
 
@@ -71,11 +73,11 @@ userSchema.virtual('fullName').get(function get() {
 	].join(' ').trim().replace(/\s+/g, ' ');
 });
 userSchema.plugin(leanVirtuals);
-/*
+
 userSchema.methods.getPermissions = function getPermissions() {
-	return roleModel.resolvePermissions(this.roles);
+	return RoleModel.resolvePermissions(this.roles);
 };
-*/
+
 const registrationPinSchema = new Schema({
 	email: { type: String, required: true },
 	pin: { type: String },

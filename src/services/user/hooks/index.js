@@ -1,6 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
+
+const User = require('../model');
 const logger = require('../../../logger');
 const {
 	hasRole,
@@ -346,7 +348,8 @@ const pushRemoveEvent = (hook) => {
 	return hook;
 };
 
-// TODO check if you can add RoleName too?
+// TODO next step replace computeProperty, resolveToIds and role helper to use static role service
+/*
 const populateRoles = async (context) => {
 	const { roles } = context.result;
 	if (roles) {
@@ -354,6 +357,15 @@ const populateRoles = async (context) => {
 	}
 	return context;
 };
+*/
+// get the model instance to call functions etc  TODO make query results not lean
+const computeProperty = (Model, functionName, variableName) => (context) => Model.findById(context.result._id)
+	.then((modelInstance) => modelInstance[functionName]()) // compute that property
+	.then((result) => {
+		context.result[variableName] = Array.from(result); // save it in the resulting object
+	})
+	.catch((e) => logger.error(e))
+	.then(() => Promise.resolve(context));
 
 const enforceRoleHierarchyOnDelete = async (hook) => {
 	try {
@@ -439,7 +451,7 @@ exports.after = {
 	get: [
 		decorateAvatar,
 		decorateUser,
-		populateRoles,
+		computeProperty(User.userModel, 'getPermissions', 'permissions'),
 		iff(isProvider('external'),
 			denyIfNotCurrentSchool({
 				errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',

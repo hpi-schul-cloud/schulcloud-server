@@ -1,5 +1,6 @@
 const { Forbidden, GeneralError } = require('@feathersjs/errors');
 const logger = require('../../logger');
+const { userModel } = require('../../services/user/model');
 const hooks = require('./hooks');
 
 class Service {
@@ -14,6 +15,13 @@ class Service {
      * set Authorization = Bearer [jwt]
      */
 	async find(params) {
+		const test = await this.app.service('users').find({
+			query: {
+				$populate: 'roles',
+			},
+		});
+		console.log(test.data[0].roles);
+
 		const { userId } = params.account;
 		const userServiceParams = {
 			query: {

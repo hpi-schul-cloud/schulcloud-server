@@ -218,17 +218,6 @@ exports.permitGroupOperation = (context) => {
 	return Promise.resolve(context);
 };
 
-// get the model instance to call functions etc  TODO make query results not lean
-/*
-exports.computeProperty = (Model, functionName, variableName) => (context) => Model.findById(context.result._id)
-	.then((modelInstance) => modelInstance[functionName]()) // compute that property
-	.then((result) => {
-		context.result[variableName] = Array.from(result); // save it in the resulting object
-	})
-	.catch((e) => logger.error(e))
-	.then(() => Promise.resolve(context));
-*/
-
 exports.mapPaginationQuery = (context) => {
 	if ((context.params.query || {}).$limit === '-1') {
 		context.params.paginate = false;
