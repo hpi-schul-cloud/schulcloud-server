@@ -403,7 +403,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'geburtstag',
 				entity: 'Eingabedatum fehlerhaft',
-				message: 'Kein Wert für das Geburtstagsdatum',
+				message: 'Kein Wert für das Geburtsdatum',
 			});
 			return;
 		}
@@ -411,7 +411,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'geburtstag',
 				entity: 'Eingabedatum fehlerhaft',
-				message: 'Falscher Wert für Datum. Muss String sein',
+				message: 'Falscher Wert für Geburtsdatum. Muss String sein',
 			});
 			return;
 		}
@@ -422,7 +422,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'geburtstag',
 				entity: 'Eingabedatum fehlerhaft',
-				message: 'Falsches Format. Muss sein dd.mm.yyyy oder dd/mm/yyyy oder dd-mm-yyyy',
+				message: 'Geburtsdatum falsch formatiert. Zulässige Formate: dd.mm.yyyy oder dd/mm/yyyy oder dd-mm-yyyy',
 			});
 			return;
 		}
