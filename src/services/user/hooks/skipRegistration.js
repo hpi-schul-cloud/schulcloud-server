@@ -30,22 +30,28 @@ const checkPermissions = async (hook) => {
 	return Promise.resolve(hook);
 };
 
-exports.before = {
-	all: [authenticate('jwt')],
-	find: [hooks.disallow()],
-	get: [hooks.disallow()],
-	create: [globalHooks.ifNotLocal(checkPermissions)],
-	update: [hooks.disallow()],
-	patch: [hooks.disallow()],
-	remove: [hooks.disallow()],
+const skipRegistrationSingleHooks = {
+	before: {
+		all: [authenticate('jwt')],
+		find: [hooks.disallow()],
+		get: [hooks.disallow()],
+		create: [globalHooks.ifNotLocal(checkPermissions)],
+		update: [hooks.disallow()],
+		patch: [hooks.disallow()],
+		remove: [hooks.disallow()],
+	},
 };
 
-exports.after = {
-	all: [],
-	find: [],
-	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
+const skipRegistrationBulkHooks = {
+	before: {
+		all: [authenticate('jwt')],
+		find: [hooks.disallow()],
+		get: [hooks.disallow()],
+		create: [globalHooks.ifNotLocal(globalHooks.hasPermission('ADMIN_VIEW'))],
+		update: [hooks.disallow()],
+		patch: [hooks.disallow()],
+		remove: [hooks.disallow()],
+	},
 };
+
+module.exports = { skipRegistrationSingleHooks, skipRegistrationBulkHooks };
