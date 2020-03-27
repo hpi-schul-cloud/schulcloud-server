@@ -80,11 +80,11 @@ module.exports = (app) => {
 	const adminTeachersService = app.service(adminTeachersRoute);
 	adminTeachersService.hooks(adminHook);
 
-	app.use('/users/:userid/skipregistration', new SkipRegistrationService());
-	const skipRegistrationService = app.service('/users/:userid/skipregistration');
+	app.use('/users/:userId/skipregistration', new SkipRegistrationService());
+	const skipRegistrationService = app.service('/users/:userId/skipregistration');
 	skipRegistrationService.hooks(skipRegistrationHooks);
 
 	app.use('/registrationSchool', new RegistrationSchoolService());
 	// const registrationSchoolService = app.service('registrationSchool');
-	// skipRegistrationService.hooks(registrationSchoolHooks);
+	// registrationSchoolService.hooks(registrationSchoolHooks);
 };

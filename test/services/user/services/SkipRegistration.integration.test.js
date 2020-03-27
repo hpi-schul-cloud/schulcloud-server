@@ -22,14 +22,14 @@ describe('SkipRegistration integration', () => {
 		});
 
 		try {
-			await app.service('/users/:userid/skipregistration').create({
+			await app.service('/users/:userId/skipregistration').create({
 				parent_privacyConsent: true,
 				parent_termsOfUseConsent: true,
 				privacyConsent: true,
 				termsOfUseConsent: true,
 				birthday: '2014-12-19T00:00:00Z',
 				password: 'password1',
-			}, { route: { userid: user._id }, provider: 'rest' });
+			}, { route: { userId: user._id }, provider: 'rest' });
 			throw new Error('should fail');
 		} catch (err) {
 			expect(err).to.not.equal('undefined');
@@ -46,10 +46,10 @@ describe('SkipRegistration integration', () => {
 			roles: ['student'],
 		});
 		const scenarioParams = await generateRequestParamsFromUser(actingUser);
-		scenarioParams.route = { userid: targetUser._id };
+		scenarioParams.route = { userId: targetUser._id };
 
 		try {
-			await app.service('/users/:userid/skipregistration').create({
+			await app.service('/users/:userId/skipregistration').create({
 				parent_privacyConsent: true,
 				parent_termsOfUseConsent: true,
 				privacyConsent: true,
@@ -73,10 +73,10 @@ describe('SkipRegistration integration', () => {
 			roles: ['teacher'],
 		});
 		const scenarioParams = await generateRequestParamsFromUser(actingUser);
-		scenarioParams.route = { userid: targetUser._id };
+		scenarioParams.route = { userId: targetUser._id };
 
 		try {
-			await app.service('/users/:userid/skipregistration').create({
+			await app.service('/users/:userId/skipregistration').create({
 				parent_privacyConsent: true,
 				parent_termsOfUseConsent: true,
 				privacyConsent: true,
@@ -103,10 +103,10 @@ describe('SkipRegistration integration', () => {
 			schoolId: usersSchool._id,
 		});
 		const scenarioParams = await generateRequestParamsFromUser(actingUser);
-		scenarioParams.route = { userid: targetUser._id };
+		scenarioParams.route = { userId: targetUser._id };
 
 		try {
-			await app.service('/users/:userid/skipregistration').create({
+			await app.service('/users/:userId/skipregistration').create({
 				parent_privacyConsent: true,
 				parent_termsOfUseConsent: true,
 				privacyConsent: true,
@@ -131,9 +131,9 @@ describe('SkipRegistration integration', () => {
 			roles: ['teacher'],
 		});
 		const scenarioParams = await generateRequestParamsFromUser(actingUser);
-		scenarioParams.route = { userid: targetUser._id };
+		scenarioParams.route = { userId: targetUser._id };
 
-		const result = await app.service('/users/:userid/skipregistration').create({
+		const result = await app.service('/users/:userId/skipregistration').create({
 			parent_privacyConsent: true,
 			parent_termsOfUseConsent: true,
 			privacyConsent: true,
@@ -153,9 +153,9 @@ describe('SkipRegistration integration', () => {
 			roles: ['administrator'],
 		});
 		const scenarioParams = await generateRequestParamsFromUser(actingUser);
-		scenarioParams.route = { userid: targetUser._id };
+		scenarioParams.route = { userId: targetUser._id };
 
-		const result = await app.service('/users/:userid/skipregistration').create({
+		const result = await app.service('/users/:userId/skipregistration').create({
 			parent_privacyConsent: true,
 			parent_termsOfUseConsent: true,
 			privacyConsent: true,
@@ -174,9 +174,9 @@ describe('SkipRegistration integration', () => {
 			roles: ['administrator'],
 		});
 		const scenarioParams = await generateRequestParamsFromUser(actingUser);
-		scenarioParams.route = { userid: targetUser._id };
+		scenarioParams.route = { userId: targetUser._id };
 
-		const result = await app.service('/users/:userid/skipregistration').create({
+		const result = await app.service('/users/:userId/skipregistration').create({
 			parent_privacyConsent: true,
 			parent_termsOfUseConsent: true,
 			privacyConsent: true,

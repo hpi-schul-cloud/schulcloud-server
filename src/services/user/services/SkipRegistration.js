@@ -80,20 +80,9 @@ class SkipRegistrationService {
 		this.docs = {};
 	}
 
-	/**
-	 * POST /users/{id}/skipregistration
-	 * skips the registration of another user, making the necessary changes as if the user went through registration.
-	 * Only works on users that have an importHash.
-	 * @param {Object} data should contain consents, a password, and if the target is a student a birthday.
-	 * @param {Object} params accepts no params besides the ones automatically set by feathers.
-	 * @returns 201 - success
-	 * @throws {BadRequest} if data is not set correctly
-	 * @throws {Forbidden} if caller does not have permission to skip the target users registration.
-	 * @memberof SkipRegistrationService
-	 */
-	async create(data, params) {
+	async skipUserRegistration(data) {
 		try {
-			const targetUser = await this.app.service('users').get(params.route.userid,
+			const targetUser = await this.app.service('users').get(data.userId,
 				{ query: { $populate: 'roles' } });
 			await validateRequest(data, targetUser);
 
@@ -107,6 +96,35 @@ class SkipRegistrationService {
 		} catch (err) {
 			throw err;
 		}
+	}
+
+	/**
+	 * POST /users/{id}/skipregistration
+	 * skips the registration of another user, making the necessary changes as if the user went through registration.
+	 * Only works on users that have an importHash.
+	 * @param {Object} data should contain consents, a password, and if the target is a student a birthday.
+	 * @param {Object} params accepts no params besides the ones automatically set by feathers.
+	 * @returns 201 - success
+	 * @throws {BadRequest} if data is not set correctly
+	 * @throws {Forbidden} if caller does not have permission to skip the target users registration.
+	 * @memberof SkipRegistrationService
+	 */
+	async create(data, params) {
+		if ((params.route || {}).userId) {
+			data.userId = params.route.userId;
+			return this.skipUserRegistration(data);
+		}
+		if (Array.isArray(data.dataObjects)) {
+			const promiseResults = await Promise.allSettled(
+				data.dataObjects.map((d) => this.skipUserRegistration(d)),
+			);
+			const result = promiseResults.map((r) => ({
+				success: r.status === 'fulfilled',
+				error: r.error,
+			}));
+			return result;
+		}
+		throw new BadRequest('invalid data!');
 	}
 
 	setup(app) {
