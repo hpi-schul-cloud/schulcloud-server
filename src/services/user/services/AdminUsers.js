@@ -103,7 +103,7 @@ class AdminUsers {
 				getAllUsers(this, schoolId, searchedRole._id, query),
 				getClasses(this.app, schoolId, currentYear),
 			]);
-			const { total } = usersData;
+			const { total, limit } = usersData;
 			const users = usersData.data;
 			const userIds = users.map((user) => user._id.toString());
 			const consents = await findConsents(this, userIds, $limit).then((data) => {
@@ -174,8 +174,8 @@ class AdminUsers {
 
 			return {
 				total,
-				limit: $limit,
-				skip: $skip,
+				limit: $limit || limit,
+				skip: $skip || 0,
 				data: filteredUsers,
 			};
 		} catch (err) {

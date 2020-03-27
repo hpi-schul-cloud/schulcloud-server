@@ -517,25 +517,25 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 			throw new Forbidden('Can not adding users from other schools.');
 		}
 		if (isLeaveTeam) {
-			wait.push(leaveTeam(hook).catch((err) => {
+			wait.push(leaveTeam(hook).catch(() => {
 				throw new Forbidden('Permission LEAVE_TEAM is missing.');
 			}));
 		}
 
 		if (isRemoveOthers) {
-			wait.push(removeMembers(hook).catch((err) => {
+			wait.push(removeMembers(hook).catch(() => {
 				throw new Forbidden('Permission REMOVE_MEMBERS is missing.');
 			}));
 		}
 
 		if (isAddingFromOwnSchool) {
-			wait.push(addSchoolMembers(hook).catch((err) => {
+			wait.push(addSchoolMembers(hook).catch(() => {
 				throw new Forbidden('Permission ADD_SCHOOL_MEMBERS is missing.');
 			}));
 		}
 
 		if (hasChangeRole) {
-			wait.push(changeTeamRoles(hook).catch((err) => {
+			wait.push(changeTeamRoles(hook).catch(() => {
 				throw new Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
 			}));
 

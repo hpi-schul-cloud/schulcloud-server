@@ -26,7 +26,7 @@ const filterByQuery = (roles, query = {}) => {
 };
 
 const paginate = (result, { $limit, $skip = 0 } = {}, total) => ({
-	total: total || result.length,
+	total: result.length,
 	limit: $limit || total || result.length,
 	skip: $skip,
 	data: result.slice($skip, $limit ? $skip + $limit : $limit),
