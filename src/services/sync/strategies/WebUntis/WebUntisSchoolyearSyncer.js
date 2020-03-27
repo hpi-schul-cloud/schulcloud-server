@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest, NotImplemented } = require('@feathersjs/errors');
 const WebUntisBaseSyncer = require('./WebUntisBaseSyncer');
 
 
@@ -85,7 +85,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	* @see {Syncer#steps}
     *
 	* Perform either fetching from WebUntis and storing metadata into 'webuntisMetadata' or
-	* Creating actual schulcloud 'courses'.
+	* Creating actual Schul-Cloud 'courses'.
 	*/
 	steps() {
 		this.logInfo(`Running WebUntis School Year Sync.\n`);
@@ -184,7 +184,15 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 
 	/**
 	* 
-	* @param {*} session 
+	* @param {*} session
+	* @return List of potential courses
+	*   Array of {
+	*     teacher: 'Renz',
+	*     class: [ '2a', '2b' ],
+	*     subject: 'mathe',
+	*     times: [ { weekDay, startTime, endTime, room } ],
+	*     state: 'new',
+	*   }
 	*/
 	async fetchMetaData(session) {
 		const intermediateData = {};
@@ -195,9 +203,9 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		intermediateData.classes = await this.getClasses(intermediateData.currentSchoolYear.id);
 		intermediateData.teachers = await this.getTeachers();
 		intermediateData.rooms = await this.getRooms();
-		intermediateData.subjects = await this.getSubjects();
+		// intermediateData.subjects = await this.getSubjects(); // currently not required
 
-		intermediateData.timeGrid = await this.getTimegrid();
+		// intermediateData.timeGrid = await this.getTimegrid(); // currently not required
 
 		// Initialize empty timetable for classes
 		for (let entry of intermediateData.classes) {
@@ -205,11 +213,6 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		}
 
 		const result = [];
-
-		/* TODO: remove start */
-		// intermediateData.teachers.length = Math.min(intermediateData.teachers.length, 3);
-		// intermediateData.rooms.length = Math.min(intermediateData.rooms.length, 3);
-		/* TODO: remove end */
 
 		// Iteration approaches currently implemented: teachers and rooms
 		if (intermediateData.teachers !== undefined) { // Iterate over teachers
@@ -226,6 +229,15 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 				});
 
 				/* TODO: Check for change */
+				const filteredTimetable = timetable.filter(entry => !(entry.te.length === 1
+					&& entry.te[0].id === teacher.id
+					&& entry.kl.length > 0
+					&& entry.ro.length === 1
+					&& entry.su.length === 1));
+				if (filteredTimetable.length > 0) {
+					this.logger.warn(`Ignored timetable entries from WebUntis import`, { ignored: filteredTimetable });
+				}
+
 				timetable = timetable.filter(entry => entry.te.length === 1
 					&& entry.te[0].id === teacher.id
 					&& entry.kl.length > 0
@@ -249,11 +261,8 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 						}
 					}
 				}
-
-				// One teacher for now
-				// break;
 			}
-		} else { // Iterate over rooms
+		} else if (intermediateData.rooms !== undefined) { // Iterate over rooms
 			for (const room of intermediateData.rooms) {
 				const name = `${room.name} (${room.longName}${room.building !== '' ? `, ${room.building}` : ''})`;
 
@@ -267,6 +276,15 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 				});
 
 				/* TODO: Check for change */
+				const filteredTimetable = timetable.filter(entry => !(entry.ro.length === 1
+					&& entry.ro[0].id === room.id
+					&& entry.kl.length > 0
+					&& entry.te.length === 1
+					&& entry.su.length === 1));
+				if (filteredTimetable.length > 0) {
+					this.logger.warn(`Ignored timetable entries from WebUntis import`, { ignored: filteredTimetable });
+				}
+
 				timetable = timetable.filter(entry => entry.ro.length === 1
 					&& entry.ro[0].id === room.id
 					&& entry.kl.length > 0
@@ -290,13 +308,13 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 						}
 					}
 				}
-
-				// One room for now
-				// break;
 			}
+		} else {
+			throw new NotImplemented(`Iteration over WebUntis data must be either teachers or rooms.`);
 		}
 
 		// Collect times for each class
+		// TODO: filter time slots for non-existing Schul-Cloud classes?
 		for (let klass of intermediateData.classes) {
 			const times = [];
 			for (const timetableEntry of klass.timetable) {
@@ -355,16 +373,6 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 				}
 			}
 		}
-
-		/**
-		 * Result: Array of {
-		 *   teacher: 'Renz',
-		 *   class: '2a',
-		 *   subject: 'mathe',
-		 *   times: [ { weekDay, startTime, endTime, room } ],
-		 *   state: 'new',
-		 * }
-		 */
 
 		return result;
 	}
@@ -523,8 +531,8 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		// Update times; overwrite
 		courseUpdate.times = entry.times;
 
-		// TODO: startDate
-		// TODO: endDate
+		// TODO: derive startDate
+		// TODO: derive endDate
 
 		// Indicate import status
 		if (scCourse.source === undefined) {
