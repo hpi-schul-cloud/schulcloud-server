@@ -2,7 +2,6 @@
 const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
-const logger = require('./logger');
 const { sanitizeHtml: { sanitizeDeep } } = require('./utils');
 const {
 	getRedisClient, redisGetAsync, redisSetAsync, extractRedisFromJwt, getRedisValue,
