@@ -484,7 +484,7 @@ const directoryService = {
 
 	getStudentRoleId() {
 		const query = { name: 'student' };
-		return this.app.service({ query }).then((roles) => roles.data[0]._id);
+		return this.app.service('roles').find({ query }).then((roles) => roles.data[0]._id);
 	},
 
 	/**
