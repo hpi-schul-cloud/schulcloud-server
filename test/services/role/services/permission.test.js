@@ -3,7 +3,8 @@ const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 
 describe('PermissionService', async () => {
-	const permissionService = app.service('roles/:roleName/permissions');
+	let permissionService;
+	let server;
 
 	const ROLES = {
 		TEST: 'test',
@@ -40,6 +41,8 @@ describe('PermissionService', async () => {
 	];
 
 	before(async () => {
+		server = await app.listen(0);
+		permissionService = app.service('roles/:roleName/permissions');
 		const testRole = await testObjects.createTestRole({
 			name: ROLES.TEST,
 			permissions: testPermissions,
@@ -74,8 +77,9 @@ describe('PermissionService', async () => {
 		});
 	});
 
-	after(() => {
-		testObjects.cleanup();
+	after(async () => {
+		await server.close();
+		await testObjects.cleanup();
 	});
 
 	it('registered the service', () => {

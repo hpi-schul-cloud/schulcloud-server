@@ -9,11 +9,12 @@ const addDisplayName = (role) => {
 const unique = (...permissions) => ([...new Set(Array.prototype.concat.apply([], permissions))]);
 
 const dissolveInheritPermission = (roles, role) => {
-	if (Array.isArray(role.roles) && role.roles[0]) {
-		const inheritRoleId = role.roles[0].toString(); // TODO: only first role is used, model should changed
-		const inheritRole = roles.find((r) => r._id.toString() === inheritRoleId);
-		const { permissions } = dissolveInheritPermission(roles, inheritRole);
-		role.permissions = unique(role.permissions, permissions);
+	if (Array.isArray(role.roles)) {
+		role.roles.forEach((inheritRoleId) => {
+			const inheritRole = roles.find((r) => r._id.toString() === inheritRoleId.toString());
+			const { permissions } = dissolveInheritPermission(roles, inheritRole);
+			role.permissions = unique(role.permissions, permissions);
+		});
 	}
 	return role;
 };
