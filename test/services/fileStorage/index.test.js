@@ -35,14 +35,14 @@ class AWSStrategy {
 }
 
 describe('fileStorage services', () => {
+	this.timeout(4000);
 	let app;
 	let fileStorageService;
 	let signedUrlService;
 	let directoryService;
+	let server;
 
-	before(function before() {
-		this.timeout(4000);
-
+	before(async () => {
 		mockery.enable({
 			warnOnUnregistered: false,
 			useCleanCache: true,
@@ -53,6 +53,7 @@ describe('fileStorage services', () => {
 
 		// eslint-disable-next-line global-require
 		app = require('../../../src/app');
+		server = await app.listen(0);
 
 		fileStorageService = app.service('/fileStorage/');
 		signedUrlService = app.service('/fileStorage/signedUrl');
@@ -67,10 +68,10 @@ describe('fileStorage services', () => {
 			courseModel.create(fixtures.courses),
 		];
 
-		return Promise.all(promises);
+		await Promise.all(promises);
 	});
 
-	after(() => {
+	after(async () => {
 		mockery.deregisterAll();
 		mockery.disable();
 
@@ -82,8 +83,8 @@ describe('fileStorage services', () => {
 			...fixtures.roles.map((_) => RoleModel.findByIdAndRemove(_._id).exec()),
 			...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
 		];
-
-		return Promise.all(promises);
+		await server.close();
+		await Promise.all(promises);
 	});
 
 	describe('file service', () => {
@@ -202,35 +203,30 @@ describe('fileStorage services', () => {
 			}).catch(() => done());
 		});
 
-		it('should reject a file list on folder with no permission', (done) => {
+		it('should reject a file list on folder with no permission', async () => {
 			const context = setContext('0000d224816abba584714c8d');
 
-			fileStorageService.find({
+			const result = await fileStorageService.find({
 				query: {
 					parent: '5ca613c4c7f5120b8c5bef33',
 					owner: '5cf9303bec9d6ac639fefd42',
 				},
 				...context,
-			})
-				.catch((res) => {
-					expect(res.code).to.be.equal(403);
-					return done();
-				});
+			});
+			expect(result.code).to.be.equal(403);
 		});
 
-		it('should get a by access rights filtered file list', (done) => {
+		it('should get a by access rights filtered file list', async () => {
 			const context = setContext('0000d224816abba584714c8c');
 
-			fileStorageService.find({
+			const result = await fileStorageService.find({
 				query: {
 					owner: '5cf9303bec9d6ac639fefd42',
 					parent: '5ca613c4c7f5120b8c5bef33',
 				},
 				...context,
-			}).then((res) => {
-				expect(res).to.have.lengthOf(1);
-				return done();
-			}).catch(() => done());
+			});
+			expect(result).to.have.lengthOf(1);
 		});
 
 		it('should delete a file', (done) => {
