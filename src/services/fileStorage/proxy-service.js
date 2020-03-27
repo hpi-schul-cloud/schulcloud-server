@@ -25,7 +25,7 @@ const {
 } = require('./utils/');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
 const { SERVICE_PATH: FILE_SECURITY_SERVICE_PATH } = require('./SecurityCheckService');
-const RoleModel = require('../role/model');
+const { RoleModel } = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');

@@ -3,6 +3,6 @@ const { configure: configureRoleByName } = require('./services/permissionsByName
 
 
 module.exports = (app) => {
-	configure(app, { prepared: true });
+	configure(app);
 	configureRoleByName(app);
 };

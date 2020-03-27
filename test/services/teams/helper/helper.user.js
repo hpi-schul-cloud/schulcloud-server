@@ -1,9 +1,11 @@
 const { BadRequest } = require('@feathersjs/errors');
-const rolesModel = require('../../../../src/services/role/model.js');
+const { ObjectId } = require('mongoose').Types;
+
+const { rolesModel } = require('../../../../src/services/role/model.js');
 const { userModel } = require('../../../../src/services/user/model.js');
 const accountModel = require('../../../../src/services/account/model.js');
 // const app = require(SRC + 'app');
-const { ObjectId } = require('mongoose').Types;
+
 const app = require('../../../../src/app');
 const { warning } = require('../../../../src/logger');
 
@@ -33,7 +35,9 @@ const getRoleByKey = (key, value) => rolesModel.find({
 	.then(([role]) => role);
 
 const createUser = async (userId, roleName = 'student', schoolId = '0000d186816abba584714c5f') => {
-	if (!['expert', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) throw BadRequest(`You want to test a not related role .${roleName}`);
+	if (!['expert', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) {
+		throw BadRequest(`You want to test a not related role .${roleName}`);
+	}
 
 	const role = await getRoleByKey('name', roleName);
 
