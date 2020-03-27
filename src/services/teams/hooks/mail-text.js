@@ -6,7 +6,8 @@ const inviteWithRegistration = ({
 	invitee, inviter, teamName, shortLink,
 }) => `Hallo ${invitee}!
 \nDu wurdest von ${inviter} eingeladen, dem Team '${teamName}' der ${SC_SHORT_TITLE} beizutreten.
-Da du noch keinen ${SC_SHORT_TITLE} Account besitzt, folge bitte diesem Link, um die Registrierung abzuschließen und dem Team beizutreten: ${shortLink}${close}`;
+Da du noch keinen ${SC_SHORT_TITLE} Account besitzt, folge bitte diesem Link,
+um die Registrierung abzuschließen und dem Team beizutreten: ${shortLink}${close}`;
 
 const inviteWithEmail = ({
 	invitee, inviter, teamName, shortLink,
