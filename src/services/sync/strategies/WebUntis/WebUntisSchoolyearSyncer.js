@@ -202,19 +202,14 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		// To iterate over either concept
 		intermediateData.classes = await this.getClasses(intermediateData.currentSchoolYear.id);
 		intermediateData.teachers = await this.getTeachers();
-		intermediateData.rooms = await this.getRooms();
+		// intermediateData.rooms = await this.getRooms();
 		// intermediateData.subjects = await this.getSubjects(); // currently not required
 
 		// intermediateData.timeGrid = await this.getTimegrid(); // currently not required
 
-		// Initialize empty timetable for classes
-		for (let entry of intermediateData.classes) {
-			entry.timetable = [];
-		}
+		intermediateData.courses = [];
 
-		const result = [];
-
-		// Iteration approaches currently implemented: teachers and rooms
+		// Iteration approaches currently implemented: teachers
 		if (intermediateData.teachers !== undefined) { // Iterate over teachers
 			for (const teacher of intermediateData.teachers) {
 				const name = `${teacher.foreName} ${teacher.longName}`;
@@ -244,89 +239,72 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 					&& entry.ro.length === 1
 					&& entry.su.length === 1);
 				/* END TODO: Check for change */
+
+				const compareArraysOfString = (a1, a2) => {
+					if (a1.length !== a2.length) {
+						return false;
+					}
+
+					for (let i = 0; i < a1.length; ++i) {
+						if (a1[i] !== a2[i]) {
+							return false;
+						}
+					}
+				};
 	
 				for (const entry of timetable) {
-					for (const classEntry of entry.kl) {
-						const klass = intermediateData.classes.find(k => k.id === classEntry.id);
-	
-						if (klass !== undefined) {
-							klass.timetable.push({
-								date: entry.date,
-								startTime: entry.startTime,
-								endTime: entry.endTime,
-								teacher: name,
-								subject: entry.su[0].longname,
-								room: entry.ro[0].longname,
-							});
-						}
+					// Select course with matching teacher, subject, and participating classes
+					const course = intermediateData.courses.find(course => {
+						return course.teacher === entry.te[0].longname &&
+							course.subject === entry.su[0].longname &&
+							compareArraysOfString(course.classes, entry.kl.map(k => k.longname));
+					});
+
+					if (course === undefined) { // Create course
+						intermediateData.courses.push({
+							teacher: entry.te[0].longname,
+							subject: entry.su[0].longname,
+							classes: entry.kl.map(k => k.longname),
+							timetable: []
+						});
+					}
+					
+					// Update timetable of course
+					course.timetable.push({
+						date: entry.date,
+						startTime: entry.startTime,
+						endTime: entry.endTime,
+						room: entry.ro[0].longname,
+					});
+
+					// Update first and last date of course
+					if (course.startDate === undefined || course.startDate > entry.date) {
+						course.startDate = entry.date;
+					}
+					if (course.endDate === undefined || course.endDate < entry.date) {
+						course.endDate = entry.date;
 					}
 				}
 			}
-		} else if (intermediateData.rooms !== undefined) { // Iterate over rooms
-			for (const room of intermediateData.rooms) {
-				const name = `${room.name} (${room.longName}${room.building !== '' ? `, ${room.building}` : ''})`;
-
-				let timetable = await this.getCustomizableTimeTableFor(4, room.id, {
-					startDate: intermediateData.currentSchoolYear.startDate,
-					endDate: intermediateData.currentSchoolYear.endDate,
-					onlyBaseTimetable: true,
-					klasseFields: ['id', 'longname'],
-					subjectFields: ['id', 'longname'],
-					teacherFields: ['id', 'longname'],
-				});
-
-				/* TODO: Check for change */
-				const filteredTimetable = timetable.filter(entry => !(entry.ro.length === 1
-					&& entry.ro[0].id === room.id
-					&& entry.kl.length > 0
-					&& entry.te.length === 1
-					&& entry.su.length === 1));
-				if (filteredTimetable.length > 0) {
-					this.logger.warn(`Ignored timetable entries from WebUntis import`, { ignored: filteredTimetable });
-				}
-
-				timetable = timetable.filter(entry => entry.ro.length === 1
-					&& entry.ro[0].id === room.id
-					&& entry.kl.length > 0
-					&& entry.te.length === 1
-					&& entry.su.length === 1);
-				/* END TODO: Check for change */
-	
-				for (const entry of timetable) {
-					for (const classEntry of entry.kl) {
-						const klass = intermediateData.classes.find(k => k.id === classEntry.id);
-	
-						if (klass !== undefined) {
-							klass.timetable.push({
-								date: entry.date,
-								startTime: entry.startTime,
-								endTime: entry.endTime,
-								teacher: entry.te[0].longname,
-								subject: entry.su[0].longname,
-								room: name,
-							});
-						}
-					}
-				}
-			}
-		} else {
-			throw new NotImplemented(`Iteration over WebUntis data must be either teachers or rooms.`);
+		}  else {
+			throw new NotImplemented(`Iteration over WebUntis data must be teachers.`);
 		}
 
-		// Collect times for each class
+		const result = [];
+
+		// Collect times for each course
 		// TODO: filter time slots for non-existing Schul-Cloud classes?
-		for (let klass of intermediateData.classes) {
+		for (let course of intermediateData.courses) {
 			const times = [];
-			for (const timetableEntry of klass.timetable) {
+			for (const timetableEntry of course.timetable) {
 				const newEntry = {
-					teacher: timetableEntry.teacher,
-					subject: timetableEntry.subject,
 					weekday: this.getWeekDay(timetableEntry.date),
 					startTime: this.getStartTime(timetableEntry.startTime),
 					duration: this.getDuration(timetableEntry.startTime, timetableEntry.endTime),
 					room: timetableEntry.room,
 					count: 1,
 				};
+				
 				let entryFound = false;
 				for (const givenEntry of times) {
 					if (givenEntry.weekday === newEntry.weekday
@@ -337,6 +315,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 						entryFound = true;
 					}
 				}
+				
 				if (!entryFound) {
 					times.push(newEntry);
 				}
@@ -345,33 +324,13 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 			// Assumption: After 2 entries it is recurring
 			const filteredTimes = times.filter(entry => entry.count >= 2);
 
-			for (let timeEntry of filteredTimes) {
-				const newEntry = {
-					teacher: timeEntry.teacher,
-					class: klass.longName, // note uppercase N here!
-					times: [ {
-						weekday: timeEntry.weekday,
-						startTime: timeEntry.startTime,
-						duration: timeEntry.duration,
-						room: timeEntry.room,
-					} ],
-					subject: timeEntry.subject,
-					state: 'new',
-				};
-
-				let entryFound = false;
-				for (const givenEntry of result) {
-					if (givenEntry.teacher === newEntry.teacher
-						&& givenEntry.class === newEntry.class
-						&& givenEntry.subject === newEntry.subject) {
-						givenEntry.times.push(newEntry.times[0]);
-						entryFound = true;
-					}
-				}
-				if (!entryFound) {
-					result.push(newEntry);
-				}
-			}
+			result.push({
+				teacher: course.teacher,
+				classes: course.classes,
+				subject: course.subject,
+				times: filteredTimes,
+				state: 'new'
+			});
 		}
 
 		return result;

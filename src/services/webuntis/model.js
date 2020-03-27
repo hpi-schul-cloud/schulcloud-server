@@ -14,7 +14,7 @@ const timeSchema = new Schema({
 const webuntisMetadataSchema = new Schema({
 	datasourceId: { type: Schema.Types.ObjectId, ref: 'datasource' },
 	teacher: { type: String },
-	class: { type: String },
+	classes: [ { type: String } ],
 	subject: { type: String },
 	times: [timeSchema],
 	state: { type: String, enum: ['new', 'imported', 'discarded', 'errored'] },
