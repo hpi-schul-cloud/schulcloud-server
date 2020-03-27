@@ -1,16 +1,18 @@
 const { promisify } = require('util');
 const redis = require('redis');
 const jwt = require('jsonwebtoken');
-const { GeneralError } = require('@feathersjs/errors');
+const { GeneralError, BadRequest } = require('@feathersjs/errors');
+const commons = require('@schul-cloud/commons');
+
+const { Configuration } = commons;
 
 let redisClient = false;
 
-function initializeRedisClient(app) {
-	const redisUrl = app.Config.data.REDIS_URI;
-	if (redisUrl) {
+function initializeRedisClient() {
+	if (Configuration.has('REDIS_URI')) {
 		try {
 			redisClient = redis.createClient({
-				url: redisUrl,
+				url: Configuration.get('REDIS_URI'),
 			});
 		} catch (err) {
 			throw new GeneralError('Redis connection failed!', err);
@@ -39,12 +41,16 @@ const redisTtlAsync = (...args) => {
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 
-function getRedisIdentifier(token) {
+function extractRedisFromJwt(token) {
 	const decodedToken = jwt.decode(token.replace('Bearer ', ''));
-	const { accountId, jti } = decodedToken; // jti - UID of the token
-
+	if (decodedToken === null) {
+		throw new BadRequest('Invalid authentication data');
+	}
+	const { accountId, jti, exp } = decodedToken; // jti - UID of the token
+	const nowInSeconds = Math.floor(Date.now() / 1000);
+	const expirationInSeconds = exp - nowInSeconds;
 	const redisIdentifier = `jwt:${accountId}:${jti}`;
-	return redisIdentifier;
+	return { redisIdentifier, expirationInSeconds };
 }
 
 function getRedisValue() {
@@ -58,6 +64,6 @@ module.exports = {
 	redisSetAsync,
 	redisDelAsync,
 	redisTtlAsync,
-	getRedisIdentifier,
+	extractRedisFromJwt,
 	getRedisValue,
 };
