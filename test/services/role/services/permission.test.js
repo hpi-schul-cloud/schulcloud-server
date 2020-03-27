@@ -3,7 +3,6 @@ const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 
 describe('PermissionService', async () => {
-
 	const permissionService = app.service('roles/:roleName/permissions');
 
 	const ROLES = {

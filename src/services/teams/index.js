@@ -198,8 +198,7 @@ class Add {
 				importHash: user.importHash,
 			};
 		}).catch((err) => {
-			warning(err);
-			throw new BadRequest('Can not resolve the user information.');
+			throw new BadRequest('Can not resolve the user information.', err);
 		});
 	}
 

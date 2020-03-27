@@ -81,9 +81,12 @@ const setupUser = async (roleName, schoolId) => {
 };
 
 const deleteUser = async (userId) => {
-	if (typeof userId === 'object' && userId.userId !== undefined) userId = userId.userId;
+	let id = userId;
+	if (typeof userId === 'object' && userId.userId !== undefined) {
+		id = userId.userId;
+	}
 
-	const email = userId + AT;
+	const email = id + AT;
 	await userModel.deleteOne({ email }); // todo: add error handling if not exist
 	await accountModel.deleteOne({ username: email });
 };
