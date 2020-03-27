@@ -12,7 +12,7 @@ const RoleServiceHooks = {
 	},
 };
 
-const filterByQuery = (roles, query = {}) => {
+const filterByQuery = (roles = [], query = {}) => {
 	let result = roles;
 	const q = Object.assign({}, query);
 	delete q.$skip;
