@@ -9,7 +9,7 @@ const {
 } = require('../../../hooks');
 
 const { userModel } = require('../model');
-const roleModel = require('../../role/model');
+const { RoleModel } = require('../../role/model');
 
 const getCurrentUserInfo = (id) => userModel.findById(id)
 	.select('schoolId')
@@ -17,7 +17,7 @@ const getCurrentUserInfo = (id) => userModel.findById(id)
 	.lean()
 	.exec();
 
-const getRoles = () => roleModel.find()
+const getRoles = () => RoleModel.find()
 	.select('name')
 	.lean()
 	.exec();

@@ -9,7 +9,7 @@ const fixtures = require('./fixtures');
 const { FileModel } = require('../../../src/services/fileStorage/model');
 const { schoolModel } = require('../../../src/services/school/model');
 const { userModel } = require('../../../src/services/user/model');
-const RoleModel = require('../../../src/services/role/model');
+const { RoleModel } = require('../../../src/services/role/model');
 const { teamsModel } = require('../../../src/services/teams/model');
 const { courseModel } = require('../../../src/services/user-group/model');
 

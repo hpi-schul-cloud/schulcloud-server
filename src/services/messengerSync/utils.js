@@ -1,7 +1,7 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { userModel, displayName } = require('../user/model');
 const { schoolModel, SCHOOL_FEATURES } = require('../school/model');
-const roleModel = require('../role/model');
+const { RoleModel } = require('../role/model');
 const { courseModel, COURSE_FEATURES } = require('../user-group/model');
 const { teamsModel, TEAM_FEATURES } = require('../teams/model');
 const { ObjectId } = require('../../helper/compare');
@@ -43,11 +43,11 @@ let roles;
 const getRoles = async () => {
 	if (!roles) {
 		const [teacherRoleId, adminRoleId, teamOwnerId, teamAdminId, teamLeaderId] = await Promise.all([
-			roleModel.findOne({ name: 'teacher' }, { _id: 1 }).lean().exec().then((r) => r._id),
-			roleModel.findOne({ name: 'administrator' }, { _id: 1 }).lean().exec().then((r) => r._id),
-			roleModel.findOne({ name: 'teamowner' }, { _id: 1 }).lean().exec().then((r) => r._id.toString()),
-			roleModel.findOne({ name: 'teamadministrator' }, { _id: 1 }).lean().exec().then((r) => r._id.toString()),
-			roleModel.findOne({ name: 'teamleader' }, { _id: 1 }).lean().exec().then((r) => r._id.toString()),
+			RoleModel.findOne({ name: 'teacher' }, { _id: 1 }).lean().exec().then((r) => r._id),
+			RoleModel.findOne({ name: 'administrator' }, { _id: 1 }).lean().exec().then((r) => r._id),
+			RoleModel.findOne({ name: 'teamowner' }, { _id: 1 }).lean().exec().then((r) => r._id.toString()),
+			RoleModel.findOne({ name: 'teamadministrator' }, { _id: 1 }).lean().exec().then((r) => r._id.toString()),
+			RoleModel.findOne({ name: 'teamleader' }, { _id: 1 }).lean().exec().then((r) => r._id.toString()),
 		]);
 		roles = {
 			teacherRoleId, adminRoleId, teamOwnerId, teamAdminId, teamLeaderId,

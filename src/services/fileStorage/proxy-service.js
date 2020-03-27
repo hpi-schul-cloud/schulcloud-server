@@ -24,7 +24,7 @@ const {
 	createPermission,
 } = require('./utils');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
-const RoleModel = require('../role/model');
+const { RoleModel } = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');

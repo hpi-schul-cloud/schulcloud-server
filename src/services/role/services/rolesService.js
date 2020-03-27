@@ -1,4 +1,5 @@
 const { NotFound } = require('@feathersjs/errors');
+const sift = require('sift');
 const { RoleModel } = require('../model');
 const { preparedRoles, unique } = require('../utils/preparedRoles');
 
@@ -11,39 +12,28 @@ const RoleServiceHooks = {
 	},
 };
 
-let ServiceShouldPreparedRoles = false;
-
-const filterByQueryKey = (roles, key, value) => {
-	if (key.charAt(0) === '$') {
-		return roles;
-	}
-	return roles.filter((r) => r[key] === value);
-};
-
 const filterByQuery = (roles, query = {}) => {
-	let array = roles;
-	Object.keys(query).forEach((key) => {
-		array = filterByQueryKey(array, key, query[key]);
+	let result = roles;
+	const q = Object.assign({}, query);
+	delete q.$skip;
+	delete q.$limit;
+	Object.entries(q).forEach(([key, v]) => {
+		if (v instanceof RegExp) {
+			result = result.filter((role) => role[key].match(v));
+		}
 	});
-	return array;
+	return result.filter(sift(q));
 };
 
-const paginate = (result, { $limit, $skip = 0 } = {}) => ({
-	total: result.length,
-	limit: $limit || result.length,
+const paginate = (result, { $limit, $skip = 0 } = {}, total) => ({
+	total: total || result.length,
+	limit: $limit || total || result.length,
 	skip: $skip,
-	data: result.slice($skip, $limit),
+	data: result.slice($skip, $limit ? $skip + $limit : $limit),
 });
 
-const getModelRoles = (query = {}) => RoleModel.find(query)
-	.lean().exec()
-	.then((roles) => {
-		if(!roles) {
-			console.log('query', query);
-		}
-		return roles;
-	})
-	.then((roles) => (ServiceShouldPreparedRoles ? preparedRoles(roles) : roles));
+const getModelRoles = (query = {}) => RoleModel.find(query).lean().exec()
+	.then((roles) => preparedRoles(roles));
 
 /**
  * This is a static services.
@@ -56,19 +46,17 @@ class RoleService {
 			notFound: (id) => `Role by ${id} not found.`,
 		});
 		this.roles = undefined;
-		// this.filterKeys = Object.freeze([]); // ['createdAt', 'updatedAt', 'roles', '__v']
 	}
 
 	async setup(app) {
 		this.app = app;
-		await this.init(true);
+		await this.init();
 	}
 
 	async init() {
 		this.roles = new Promise((resolve) => {
 			getModelRoles().then((roles) => {
-				const savedRoles = ServiceShouldPreparedRoles ? preparedRoles(roles) : roles;
-				resolve(savedRoles);
+				resolve(roles);
 			}).catch((err) => {
 				throw new Error(this.err.load, err);
 			});
@@ -82,23 +70,24 @@ class RoleService {
 	}
 
 	async get(id, params = {}) {
-		const result = filterByQuery(await this.roles, params.query);
-		const role = result.find((r) => r._id === id.toString());
+		const roles = await this.roles;
+		const role = roles.find((r) => r._id === id.toString());
+		const result = filterByQuery([role], params.query);
 
-		if (!role) {
+		if (!result[0]) {
 			throw new NotFound(this.err.notFound(id));
 		}
-		return role;
+		return result[0];
 	}
 
 	async find(params = {}) {
-		const result = filterByQuery(await this.roles, params.query);
-		return paginate(result, params.query);
+		const roles = await this.roles;
+		const result = filterByQuery(roles, params.query);
+		return paginate(result, params.query, roles.length);
 	}
 }
 
-const configure = async (app, { path = '/roles', prepared = ServiceShouldPreparedRoles } = {}) => {
-	ServiceShouldPreparedRoles = prepared;
+const configure = async (app, { path = '/roles' } = {}) => {
 	app.use(path, new RoleService());
 	const service = app.service(path);
 	service.hooks(RoleServiceHooks);
@@ -109,7 +98,4 @@ module.exports = {
 	RoleService,
 	RoleServiceHooks,
 	getModelRoles,
-	statics: {
-		ServiceShouldPreparedRoles,
-	},
 };

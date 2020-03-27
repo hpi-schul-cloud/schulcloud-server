@@ -2,7 +2,7 @@ const logger = require('../../../logger');
 
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
-const RoleModel = require('../../role/model');
+const { RoleModel } = require('../../role/model');
 const { sortRoles } = require('../../role/utils/rolesHelper');
 const { submissionModel: Submission, homeworkModel: Homework } = require('../../homework/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;

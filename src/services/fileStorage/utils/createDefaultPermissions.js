@@ -1,5 +1,5 @@
 const { FilePermissionModel } = require('../model');
-const RoleModel = require('../../role/model');
+const { RoleModel } = require('../../role/model');
 const { teamsModel } = require('../../teams/model');
 
 const createPermission = (refId, refPermModel = 'user', permissions = null) => {

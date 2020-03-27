@@ -2,9 +2,10 @@ const { expect } = require('chai');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 
-const permissionService = app.service('roles/:roleName/permissions');
-
 describe('PermissionService', async () => {
+
+	const permissionService = app.service('roles/:roleName/permissions');
+
 	const ROLES = {
 		TEST: 'test',
 		OTHER: 'other',

@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 
 const app = require('../../../../../src/app');
-const roleModel = require('../../../../../src/services/role/model.js');
+const { RoleModel } = require('../../../../../src/services/role/model.js');
 const { userModel } = require('../../../../../src/services/user/model');
 const MailService = require('../../../../../src/services/helpers/service.js');
 
@@ -125,7 +125,7 @@ describe('CSVSyncer Integration', () => {
 				email: SCENARIO_EMAIL,
 			});
 			expect(users.length).to.equal(1);
-			const [role] = await roleModel.find({
+			const [role] = await RoleModel.find({
 				_id: users[0].roles[0],
 			});
 			expect(role.name).to.equal('student');
@@ -195,7 +195,7 @@ describe('CSVSyncer Integration', () => {
 				email: { $in: TEACHER_EMAILS },
 			});
 			expect(users.length).to.equal(3);
-			const [role] = await roleModel.find({
+			const [role] = await RoleModel.find({
 				_id: users[0].roles[0],
 			});
 			expect(role.name).to.equal('teacher');
@@ -280,7 +280,7 @@ describe('CSVSyncer Integration', () => {
 			const classes = await Promise.all(
 				STUDENT_EMAILS.map(async (email) => {
 					const [user] = await userModel.find({ email });
-					const [role] = await roleModel.find({ _id: user.roles[0] });
+					const [role] = await RoleModel.find({ _id: user.roles[0] });
 					expect(role.name).to.equal('student');
 					return app.service('classes').find({
 						query: { userIds: user._id },
@@ -413,7 +413,7 @@ describe('CSVSyncer Integration', () => {
 			await Promise.all(
 				TEACHER_EMAILS.map(async (email) => {
 					const [user] = await userModel.find({ email });
-					const [role] = await roleModel.find({ _id: user.roles[0] });
+					const [role] = await RoleModel.find({ _id: user.roles[0] });
 					expect(role.name).to.equal('teacher');
 				}),
 			);
@@ -544,7 +544,7 @@ describe('CSVSyncer Integration', () => {
 			await Promise.all(
 				TEACHER_EMAILS.map(async (email) => {
 					const [user] = await userModel.find({ email });
-					const [role] = await roleModel.find({ _id: user.roles[0] });
+					const [role] = await RoleModel.find({ _id: user.roles[0] });
 					expect(role.name).to.equal('teacher');
 				}),
 			);
@@ -624,7 +624,7 @@ describe('CSVSyncer Integration', () => {
 			await Promise.all(
 				STUDENT_EMAILS.map(async (email) => {
 					const [user] = await userModel.find({ email });
-					const [role] = await roleModel.find({ _id: user.roles[0] });
+					const [role] = await RoleModel.find({ _id: user.roles[0] });
 					expect(role.name).to.equal('student');
 				}),
 			);
@@ -715,7 +715,7 @@ describe('CSVSyncer Integration', () => {
 				email: { $in: TEACHER_EMAILS },
 			});
 			expect(users.length).to.equal(1);
-			const [role] = await roleModel.find({
+			const [role] = await RoleModel.find({
 				_id: users[0].roles[0],
 			});
 			expect(role.name).to.equal('teacher');
@@ -1038,7 +1038,7 @@ describe('CSVSyncer Integration', () => {
 			await Promise.all(
 				TEACHER_EMAILS.map(async (email) => {
 					const [user] = await userModel.find({ email });
-					const [role] = await roleModel.find({ _id: user.roles[0] });
+					const [role] = await RoleModel.find({ _id: user.roles[0] });
 					expect(role.name).to.equal('teacher');
 				}),
 			);
@@ -1665,7 +1665,7 @@ describe('CSVSyncer Integration', () => {
 				email: SCENARIO_EMAIL,
 			});
 			expect(users.length).to.equal(1);
-			const [role] = await roleModel.find({
+			const [role] = await RoleModel.find({
 				_id: users[0].roles[0],
 			});
 			expect(role.name).to.equal('student');
@@ -1735,7 +1735,7 @@ describe('CSVSyncer Integration', () => {
 				email: { $in: TEACHER_EMAILS },
 			});
 			expect(users.length).to.equal(3);
-			const [role] = await roleModel.find({
+			const [role] = await RoleModel.find({
 				_id: users[0].roles[0],
 			});
 			expect(role.name).to.equal('teacher');

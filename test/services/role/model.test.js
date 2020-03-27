@@ -1,11 +1,11 @@
 const { expect } = require('chai');
 
-const Role = require('../../../src/services/role/model');
+const { RoleModel } = require('../../../src/services/role/model');
 
 describe('role model', () => {
 	describe('displayName property', () => {
 		it('should map the english role name to a german displayName', () => {
-			const role = new Role({
+			const role = new RoleModel({
 				name: 'teacher',
 				permissions: [],
 				roles: [],
@@ -13,7 +13,7 @@ describe('role model', () => {
 			expect(role.displayName).to.equal('Lehrer');
 		});
 		it('should be empty if name property is missing', () => {
-			const role = new Role({
+			const role = new RoleModel({
 				name: '',
 				permissions: [],
 				roles: [],

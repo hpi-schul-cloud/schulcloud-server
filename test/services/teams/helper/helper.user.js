@@ -1,6 +1,6 @@
 const { BadRequest } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
-const rolesModel = require('../../../../src/services/role/model.js');
+const { RolesModel } = require('../../../../src/services/role/model.js');
 const { userModel } = require('../../../../src/services/user/model');
 const accountModel = require('../../../../src/services/account/model.js');
 // const app = require(SRC + 'app');
@@ -32,7 +32,7 @@ const getToken = async ({ userId }) => {
 	return result.accessToken;
 };
 
-const getRoleByKey = (key, value) => rolesModel.find({
+const getRoleByKey = (key, value) => RolesModel.find({
 	[key]: value,
 })
 	.then(([role]) => role);

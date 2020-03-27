@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
 const { Configuration } = require('@schul-cloud/commons');
-const roleModel = require('../../role/model');
+const { RoleModel } = require('../../role/model');
 const { enableAuditLog } = require('../../../utils/database');
 const { consentSchema } = require('./consent.schema');
 const externalSourceSchema = require('../../../helper/externalSourceSchema');
@@ -88,7 +88,6 @@ userSchema.virtual('consentStatus').get(function get() {
 	return defineConsentStatus(this.birthday, this.consent);
 });
 
-
 userSchema.virtual('requiresParentConsent').get(function get() {
 	if (!this.birthday) return undefined;
 	return isParentConsentRequired(this.birthday);
@@ -98,7 +97,7 @@ userSchema.virtual('requiresParentConsent').get(function get() {
 userSchema.plugin(leanVirtuals);
 
 userSchema.methods.getPermissions = function getPermissions() {
-	return roleModel.resolvePermissions(this.roles);
+	return RoleModel.resolvePermissions(this.roles);
 };
 
 enableAuditLog(userSchema);

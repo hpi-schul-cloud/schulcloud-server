@@ -31,26 +31,24 @@ describe('user service', () => {
 
 	it('resolves permissions and attributes correctly', () => {
 		function createTestBase() {
-			return app.service('roles')
-				.create({
-					name: 'test_base',
-					roles: [],
-					permissions: [
-						'TEST_BASE',
-						'TEST_BASE_2',
-					],
-				});
+			return testObjects.createTestRole({
+				name: 'test_base',
+				roles: [],
+				permissions: [
+					'TEST_BASE',
+					'TEST_BASE_2',
+				],
+			});
 		}
 
 		function createTestSubrole(testBase) {
-			return app.service('roles')
-				.create({
-					name: 'test_subrole',
-					roles: [testBase._id],
-					permissions: [
-						'TEST_SUB',
-					],
-				});
+			return testObjects.createTestRole({
+				name: 'test_subrole',
+				roles: [testBase._id],
+				permissions: [
+					'TEST_SUB',
+				],
+			});
 		}
 
 		return createTestBase()

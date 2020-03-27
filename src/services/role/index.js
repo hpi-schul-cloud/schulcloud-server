@@ -6,7 +6,7 @@ const { configure } = require('./services/rolesService');
 const { configure: configureRoleByName } = require('./services/permissionsByNameServices');
 
 module.exports = (app) => {
-	configure(app, { prepared: true });
+	configure(app);
 	configureRoleByName(app);
 
 	app.use('/roles/user', new UserRoles());

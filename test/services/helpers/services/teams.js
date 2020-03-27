@@ -1,16 +1,16 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable new-cap */
 const { teamsModel, teamUserModel } = require('../../../../src/services/teams/model');
-const Role = require('../../../../src/services/role/model');
+const { RoleModel } = require('../../../../src/services/role/model');
 
 let createdTeamIds = [];
 
 const createTeamUser = async (userId, schoolId, roleName = 'teammember') => {
-	const roleId = (await Role.findOne({ name: roleName }))._id;
+	const roleId = (await RoleModel.findOne({ name: roleName }))._id;
 	return (new teamUserModel({ role: roleId, schoolId, userId }))._doc;
 };
 
-const createTeam = () => async (owner) => teamsModel.create({
+const createTeam = async (owner) => teamsModel.create({
 	name: `${Date.now()}_test`,
 	schoolId: owner.schoolId,
 	schoolIds: [owner.schoolId],
@@ -44,7 +44,7 @@ const cleanup = () => {
 };
 
 module.exports = (app, opt) => ({
-	create: createTeam(opt),
+	create: createTeam,
 	getById: getTeamById,
 	addTeamUserToTeam: addTeamUserToTeam(opt),
 	createUser: createTeamUser,
