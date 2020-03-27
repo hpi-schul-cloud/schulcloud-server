@@ -1,21 +1,8 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
-const { enableAuditLog } = require('../../utils/database');
+const { rolesDisplayName } = require('./statics');
 
 const { Schema } = mongoose;
-
-const rolesDisplayName = {
-	teacher: 'Lehrer',
-	student: 'Schüler',
-	administrator: 'Administrator',
-	superhero: 'Schul-Cloud Admin',
-	demo: 'Demo',
-	demoTeacher: 'Demo',
-	demoStudent: 'Demo',
-	helpdesk: 'Helpdesk',
-	betaTeacher: 'Beta',
-	expert: 'Experte',
-};
 
 const roleSchema = new Schema({
 	name: { type: String, required: true },
@@ -28,7 +15,7 @@ const roleSchema = new Schema({
 });
 
 roleSchema.methods.getPermissions = function getPermissions() {
-	return roleModel.resolvePermissions([this._id]); // fixme
+	return RoleModel.resolvePermissions([this._id]); // fixme
 };
 
 roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
@@ -36,7 +23,7 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 	const permissions = new Set();
 
 	function resolveSubRoles(roleId) {
-		return roleModel.findById(roleId) // fixme
+		return RoleModel.findById(roleId) // fixme
 			.then((role) => {
 				if (typeof role !== 'object') {
 					role = {};
@@ -65,8 +52,8 @@ roleSchema.virtual('displayName').get(function get() {
 
 roleSchema.plugin(leanVirtuals);
 
-enableAuditLog(roleSchema);
+const RoleModel = mongoose.model('role', roleSchema);
 
-const roleModel = mongoose.model('role', roleSchema);
-
-module.exports = roleModel;
+module.exports = {
+	RoleModel,
+};
