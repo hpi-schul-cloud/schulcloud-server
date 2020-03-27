@@ -97,7 +97,7 @@ describe('CSVSyncer', () => {
 				'32.12.2000', '01.13.2000', '01.01-2000', '01/01.2000', '01-01/2000', '42', 'void'];
 			wrongFormatDates.forEach((w) => out.assertDateFormat(w));
 			errors.forEach((r) => expect(r.message).to.be.equal(
-				'Geburtsdatum falsch formatiert. Zulässige Formate: dd.mm.yyyy oder dd/mm/yyyy oder dd-mm-yyyy'
+				'Geburtsdatum falsch formatiert. Zulässige Formate: dd.mm.yyyy oder dd/mm/yyyy oder dd-mm-yyyy',
 			));
 		});
 		it('should return false when given correct value', () => {

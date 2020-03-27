@@ -422,9 +422,9 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'geburtstag',
 				entity: 'Eingabedatum fehlerhaft',
-				message: 'Geburtsdatum falsch formatiert. Zulässige Formate: dd.mm.yyyy oder dd/mm/yyyy oder dd-mm-yyyy',
+				message:
+					'Geburtsdatum falsch formatiert. Zulässige Formate: dd.mm.yyyy oder dd/mm/yyyy oder dd-mm-yyyy',
 			});
-			return;
 		}
 	}
 
