@@ -195,7 +195,8 @@ const blockedMethod = (hook) => {
  * @param {Boolean} [_ifNotLocal=true] - pass all input to the ifNotLocal hook
  * @param {Object} [objectToFilter] - is optional otherwise the hook is used
  * @return {function::globalHooks.ifNotLocal(hook)}
- * @example filterToRelated(['_id','userIds'], 'result.data') in hook.result.data all keys are removed that are not _id, or userIds
+ * @example filterToRelated(['_id','userIds'], 'result.data')
+ * in hook.result.data all keys are removed that are not _id, or userIds
  */
 const filterToRelated = (keys, path, _ifNotLocal = true, objectToFilter) => {
 	if (!Array.isArray(keys)) {
@@ -204,8 +205,9 @@ const filterToRelated = (keys, path, _ifNotLocal = true, objectToFilter) => {
 	const execute = (hook) => {
 		const filter = (data) => {
 			const reducer = (old) => (newObject, key) => {
-				if (old[key] !== undefined) // if related key exist
-				{ newObject[key] = old[key]; }
+				if (old[key] !== undefined) { // if related key exist
+					newObject[key] = old[key];
+				}
 				return newObject;
 			};
 
