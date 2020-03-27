@@ -215,7 +215,7 @@ const securePatching = (hook) => Promise.all([
 	hasRole(hook, hook.params.account.userId, 'superhero'),
 	hasRole(hook, hook.params.account.userId, 'administrator'),
 	hasRole(hook, hook.params.account.userId, 'teacher'),
-  hasRole(hook, hook.params.account.userId, 'demoStudent'),
+	hasRole(hook, hook.params.account.userId, 'demoStudent'),
 	hasRole(hook, hook.params.account.userId, 'demoTeacher'),
 	hasRole(hook, hook.id, 'student'),
 ])
