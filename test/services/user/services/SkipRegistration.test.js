@@ -217,6 +217,38 @@ describe('skipRegistration service', () => {
 		expect(result[1].success).to.eq(true)
 	});
 
+	it('returns partial errors during bulk operation', async () => {
+		const firstStudent = await testObjects.createTestUser({ roles: ['student'] })
+			.then((s) => app.service('users').patch(s._id, { importHash: 'someHash' }));
+		const secondStudent = await testObjects.createTestUser({ roles: ['student'] });
+		const result = await skipRegistrationService.create({
+			dataObjects: [{
+				userId: firstStudent._id,
+				parent_privacyConsent: true,
+				parent_termsOfUseConsent: true,
+				privacyConsent: true,
+				termsOfUseConsent: true,
+				birthday: '2014-12-19T00:00:00Z',
+				password: 'password1',
+			},
+			{
+				userId: secondStudent._id,
+				parent_privacyConsent: true,
+				parent_termsOfUseConsent: true,
+				privacyConsent: true,
+				termsOfUseConsent: true,
+				birthday: '2013-12-19T00:00:00Z',
+				password: 'password2',
+			}],
+		});
+		expect(Array.isArray(result)).to.equal(true);
+		expect(result[0].success).to.equal(true);
+		expect(result[1].success).to.equal(false);
+		expect(result[1].error).to.not.be.undefined;
+		expect(result[1].error.code).to.equal(400);
+		expect(result[1].error.message).to.equal('this user is not viable for registration');
+	});
+
 	after(async () => {
 		await testObjects.cleanup();
 	});

@@ -120,7 +120,7 @@ class SkipRegistrationService {
 			);
 			const result = promiseResults.map((r) => ({
 				success: r.status === 'fulfilled',
-				error: r.error,
+				error: r.reason,
 			}));
 			return result;
 		}
