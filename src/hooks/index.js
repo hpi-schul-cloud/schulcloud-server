@@ -4,18 +4,14 @@ const {
 	NotFound,
 	BadRequest,
 	TypeError,
-	NotAuthenticated,
 } = require('@feathersjs/errors');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
-const KeysModel = require('../services/keys/model');
 const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../config/globals');
 // Add any common hooks you want to share across services in here.
-
-const { extractTokenFromBearerHeader } = require('../services/authentication/logic');
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
