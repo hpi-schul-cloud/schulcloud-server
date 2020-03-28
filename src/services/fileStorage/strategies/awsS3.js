@@ -36,14 +36,14 @@ const getConfig = (provider) => {
 };
 
 const chooseProvider = async (schoolId) => {
-	const providers = await storageProviderModel.find({ isShared: true }).lean().exec();
-	if (!providers) throw new NotFound('No available provider found.');
-	const freeBuckets = (p) => {
-		const schoolCount = (p.schools ? p.schools.length : 0);
-		return (p.maxBuckets - schoolCount);
-	};
-	const provider = providers.sort((p1, p2) => (freeBuckets(p2) - freeBuckets(p1)))[0];
-	await storageProviderModel.findByIdAndUpdate(provider._id,
+	const provider = await storageProviderModel.aggregate([
+		{ $match: { isShared: true } },
+		{ $addFields: { freeBuckets: { $subtract: ['$maxBuckets', { $size: '$schools' }] } } },
+		{ $sort: { freeBuckets: -1 } },
+		{ $limit: 1 },
+	]).exec();
+	if (!provider) throw new NotFound('No available provider found.');
+	await storageProviderModel.findByIdAndUpdate(provider[0]._id,
 		{ $push: { schools: schoolId } },
 		{ safe: true, upsert: true }).lean().exec();
 	return provider;
