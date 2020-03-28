@@ -8,7 +8,7 @@ const { Schema } = mongoose;
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
-		schoolId: { type: Schema.Types.ObjectId, required: true },
+		schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
 		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
@@ -44,13 +44,20 @@ const courseSchema = getUserGroupSchema({
 	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
 	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },
-	untilDate: { type: Date },
-	shareToken: { type: String, unique: true, sparse: true },
+	untilDate: { type: Date, index: true },
+	shareToken: {
+		type: String, unique: true, sparse: true, index: true,
+	},
 	times: [timeSchema],
 	// optional information if this course is a copy from other
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
+	features: [{ type: String, enum: ['messenger'] }],
 	...externalSourceSchema,
 });
+
+courseSchema.index({ userIds: 1 });
+courseSchema.index({ teacherIds: 1 });
+courseSchema.index({ substitutionIds: 1 });
 
 courseSchema.plugin(mongooseLeanVirtuals);
 

@@ -13,10 +13,6 @@
 - [ ] Linter darf keine Probleme bei veränderten Dateien aufweisen
 - [ ] Kern-Logik ist hinter der API implementiert?
 
-## Performance
-- [ ] Code läuft auch performant bei großen Datenmengen
-- [ ] Falls notwendig Index hinzugefügt
-
 ## Tests
 - [ ] Test-Coverage darf durch PR nicht sinken
 - [ ] Unit-Tests und Integrations-Tests schreiben / ändern
@@ -39,6 +35,7 @@
   - Confluence - https://docs.schul-cloud.org
   - Guidelines / Hilfe
   - Release Notes - wenn es sich um große Feature-Releases handelt
+  - [ ] Changelog-Eintrag
 
 ## Datenschutz
 - [ ] Model- / Seedänderungen erfordern Review der Datenschutz-Gruppen (wird automatisch hinzugefügt)

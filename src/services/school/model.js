@@ -22,6 +22,7 @@ const SCHOOL_FEATURES = {
 	ROCKET_CHAT: 'rocketChat',
 	DISABLE_STUDENT_TEAM_CREATION: 'disableStudentTeamCreation',
 	VIDEOCONFERENCE: 'videoconference',
+	MESSENGER: 'messenger',
 };
 
 const rssFeedSchema = new Schema({
