@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 const { enableAuditLog } = require('../../utils/database');
 
 const storageProviderSchema = new Schema({
-	type: { type: String, enum: ['awsS3'], required: true },
+	type: { type: String, enum: ['S3'], required: true },
 	isShared: { type: Boolean },
 	accessKeyId: { type: String, required: true },
 	secretAccessKey: { type: String, required: true },
@@ -19,6 +19,6 @@ const storageProviderSchema = new Schema({
 
 enableAuditLog(storageProviderSchema);
 
-const storageProviderModel = mongoose.model('StorageProvider', storageProviderSchema);
+const storageProviderModel = mongoose.model('storageprovider', storageProviderSchema);
 
 module.exports = storageProviderModel;

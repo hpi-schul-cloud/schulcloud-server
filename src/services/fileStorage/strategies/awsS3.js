@@ -36,8 +36,6 @@ const getConfig = (provider) => {
 };
 
 const chooseProvider = async (schoolId) => {
-
-
 	const providers = await storageProviderModel.find({ isShared: true }).lean().exec();
 	if (!providers) throw new NotFound('No available provider found.');
 	const freeBuckets = (p) => {
@@ -221,9 +219,11 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 							},
 						},
 						(err) => {
+							console.log(err)
 							if (err) {
 								reject(err);
 							}
+							console.log('now resolving...');
 							resolve(awsObject);
 						});
 					});
@@ -331,19 +331,23 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				if (!result || !result.schoolId) {
 					return new NotFound('User not found');
 				}
-
-				return createAWSObject(result.schoolId).then((awsObject) => this.createIfNotExists(awsObject));
+				console.log(result);
+				return createAWSObject(result.schoolId)
+					.then((awsObject) => this.createIfNotExists(awsObject).then((safeAwsObject) => {
+						console.log('should continue');
+						console.log(safeAwsObject);
+						const params = {
+							Bucket: safeAwsObject.bucket,
+							Key: flatFileName,
+							Expires: 60,
+							ContentType: fileType,
+						};
+						return promisify(
+							safeAwsObject.s3.getSignedUrl.bind(safeAwsObject.s3),
+							safeAwsObject.s3,
+						)('putObject', params);
+					}));
 			})
-			.then((awsObject) => {
-				const params = {
-					Bucket: awsObject.bucket,
-					Key: flatFileName,
-					Expires: 60,
-					ContentType: fileType,
-				};
-
-				return promisify(awsObject.s3.getSignedUrl.bind(awsObject.s3), awsObject.s3)('putObject', params);
-			});
 	}
 
 	getSignedUrl({
