@@ -4,7 +4,11 @@ const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const encryptSecret = (context) => {
-	context.data.secretAccessKey = CryptoJS.AES.encrypt(context.data.secretAccessKey, process.env.S3_KEY).toString();
+	if (context.data.secretAccessKey) {
+		context.data.secretAccessKey = CryptoJS.AES
+			.encrypt(context.data.secretAccessKey, process.env.S3_KEY)
+			.toString();
+	}
 	return context;
 };
 
@@ -37,8 +41,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [decryptSecret],
-	get: [decryptSecret],
+	find: [],
+	get: [],
 	create: [],
 	update: [],
 	patch: [],
