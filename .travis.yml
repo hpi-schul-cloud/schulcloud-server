@@ -26,6 +26,7 @@ jobs:
       name: test:mocha
       env:
         - ROCKET_CHAT_URI=http://localhost:5000
+        - S3_KEY=*Rzq*WK+D49bhBbr
       cache: npm
       install:
         - curl https://raw.githubusercontent.com/schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
