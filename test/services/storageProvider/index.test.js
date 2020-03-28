@@ -1,5 +1,4 @@
 const assert = require('assert');
-const chai = require('chai');
 const CryptoJS = require('crypto-js');
 
 const app = require('../../../src/app');
