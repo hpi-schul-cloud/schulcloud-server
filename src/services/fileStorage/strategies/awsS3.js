@@ -36,6 +36,8 @@ const getConfig = (provider) => {
 };
 
 const chooseProvider = async (schoolId) => {
+
+
 	const providers = await storageProviderModel.find({ isShared: true }).lean().exec();
 	if (!providers) throw new NotFound('No available provider found.');
 	const freeBuckets = (p) => {
@@ -49,18 +51,49 @@ const chooseProvider = async (schoolId) => {
 	return provider;
 };
 
+// begin legacy
+let awsConfig = {};
+if (!process.env.ENABLE_MULTIPLE_S3_PROVIDERS) {
+	try {
+		//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
+		/* eslint-disable global-require, no-unused-expressions */
+		(['production'].includes(process.env.NODE_ENV))
+			? awsConfig = require('../../../../config/secrets.js').aws
+			: awsConfig = require('../../../../config/secrets.json').aws;
+		/* eslint-enable global-require, no-unused-expressions */
+	} catch (e) {
+		logger.warning('The AWS config couldn\'t be read');
+	}
+}
+// end legacy
+
 const createAWSObject = async (schoolId) => {
 	const school = await schoolModel.findOne({ _id: schoolId }).lean().exec();
 	if (school === null) throw new NotFound('School not found.');
-	let provider = await storageProviderModel.findOne({ schools: schoolId }).lean().exec();
-	if (provider === null) provider = await chooseProvider(schoolId);
-	provider.secretAccessKey = CryptoJS.AES.decrypt(provider.secretAccessKey, process.env.S3_KEY)
-		.toString(CryptoJS.enc.Utf8);
+
+	if (process.env.ENABLE_MULTIPLE_S3_PROVIDERS) {
+		let provider = null;
+		provider = await storageProviderModel.findOne({ schools: schoolId }).lean().exec();
+		if (provider === null) provider = await chooseProvider(schoolId);
+		provider.secretAccessKey = CryptoJS.AES.decrypt(provider.secretAccessKey, process.env.S3_KEY)
+			.toString(CryptoJS.enc.Utf8);
+
+		return {
+			s3: new aws.S3(getConfig(provider)),
+			bucket: `bucket-${schoolId}`,
+		};
+	}
+
+	// begin legacy
+	if (!awsConfig.endpointUrl) throw new Error('AWS integration is not configured on the server');
+	const config = new aws.Config(awsConfig);
+	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
 
 	return {
-		s3: new aws.S3(getConfig(provider)),
+		s3: new aws.S3(config),
 		bucket: `bucket-${schoolId}`,
 	};
+	// end legacy
 };
 
 /**
