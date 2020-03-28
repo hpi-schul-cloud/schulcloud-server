@@ -2,7 +2,7 @@ const service = require('feathers-mongoose');
 const StorageProvider = require('./model');
 const hooks = require('./hooks');
 
-module.exports = function () {
+module.exports = function storageProviderService() {
 	const app = this;
 	const options = {
 		Model: StorageProvider,

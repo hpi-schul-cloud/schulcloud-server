@@ -45,7 +45,7 @@ module.exports = {
 			const assignedSchools = [].concat(...providers.map((p) => p.schools)).map((s) => s.toString());
 			info(`Got ${assignedSchools.length} schools that already use another provider.`);
 
-			const secretAccessKey = CryptoJS.AES.encrypt(process.env.AWS_SECRET_ACCESS_KEY, process.env.S3_KEY)
+			const secretAccessKey = CryptoJS.AES.encrypt(process.env.AWS_SECRET_ACCESS_KEY, process.env.S3_KEY);
 			const provider = new StorageProvider({
 				type: 'S3',
 				isShared: true,

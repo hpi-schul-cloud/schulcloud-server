@@ -12,21 +12,21 @@ const encryptSecret = (context) => {
 	return context;
 };
 
-const decryptSecret = (context) => {
-	if (context.result.data) {
-		for (const i in context.result.data) {
-			if (context.result.data[i].secretAccessKey) {
-				context.result.data[i].secretAccessKey = CryptoJS.AES.decrypt(context.result.data[i].secretAccessKey,
-					process.env.S3_KEY).toString(CryptoJS.enc.Utf8);
-			}
-		}
-	} else {
-		context.result.secretAccessKey = CryptoJS.AES.decrypt(context.result.secretAccessKey, process.env.S3_KEY)
-			.toString(CryptoJS.enc.Utf8);
-	}
-
-	return context;
-};
+// const decryptSecret = (context) => {
+// 	if (context.result.data) {
+// 		for (const i in context.result.data) {
+// 			if (context.result.data[i].secretAccessKey) {
+// 				context.result.data[i].secretAccessKey = CryptoJS.AES.decrypt(context.result.data[i].secretAccessKey,
+// 					process.env.S3_KEY).toString(CryptoJS.enc.Utf8);
+// 			}
+// 		}
+// 	} else {
+// 		context.result.secretAccessKey = CryptoJS.AES.decrypt(context.result.secretAccessKey, process.env.S3_KEY)
+// 			.toString(CryptoJS.enc.Utf8);
+// 	}
+//
+// 	return context;
+// };
 
 
 exports.before = {

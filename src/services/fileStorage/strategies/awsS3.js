@@ -70,8 +70,7 @@ const createAWSObject = async (schoolId) => {
 	if (school === null) throw new NotFound('School not found.');
 
 	if (process.env.ENABLE_MULTIPLE_S3_PROVIDERS) {
-		let provider = null;
-		provider = await storageProviderModel.findOne({ schools: schoolId }).lean().exec();
+		let provider = await storageProviderModel.findOne({ schools: schoolId }).lean().exec();
 		if (provider === null) provider = await chooseProvider(schoolId);
 		provider.secretAccessKey = CryptoJS.AES.decrypt(provider.secretAccessKey, process.env.S3_KEY)
 			.toString(CryptoJS.enc.Utf8);
@@ -97,7 +96,7 @@ const createAWSObject = async (schoolId) => {
 /**
  * split files-list in files, that are in current directory, and the sub-directories
  * @param data is the files-list
- * @param path the current directory, everything else is filtered
+ * @param _path the current directory, everything else is filtered
  */
 const splitFilesAndDirectories = (_path, data) => {
 	const path = removeLeadingSlash(_path);
@@ -219,11 +218,9 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 							},
 						},
 						(err) => {
-							console.log(err)
 							if (err) {
 								reject(err);
 							}
-							console.log('now resolving...');
 							resolve(awsObject);
 						});
 					});
@@ -259,7 +256,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						Prefix: path,
 					};
 					return promisify(awsObject.s3.listObjectsV2.bind(awsObject.s3), awsObject.s3)(params).then(
-						(res) => Promise.resolve(getFileMetadata(path, res.Contents, awsObject.bucket, awsObject.s3))
+						(res) => Promise.resolve(getFileMetadata(path, res.Contents, awsObject.bucket, awsObject.s3)),
 					);
 				});
 			});
@@ -331,11 +328,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				if (!result || !result.schoolId) {
 					return new NotFound('User not found');
 				}
-				console.log(result);
 				return createAWSObject(result.schoolId)
 					.then((awsObject) => this.createIfNotExists(awsObject).then((safeAwsObject) => {
-						console.log('should continue');
-						console.log(safeAwsObject);
 						const params = {
 							Bucket: safeAwsObject.bucket,
 							Key: flatFileName,
