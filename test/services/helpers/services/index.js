@@ -14,6 +14,7 @@ const datasources = require('./datasources');
 const homeworks = require('./homeworks');
 const submissions = require('./submissions');
 const lessons = require('./lessons');
+const storageProviders = require('./storageProviders');
 
 module.exports = (app, opt) => ({
 	teams: teams(app, opt),
@@ -32,4 +33,5 @@ module.exports = (app, opt) => ({
 	homeworks: homeworks(app, opt),
 	submissions: submissions(app, opt),
 	lessons,
+	storageProviders: storageProviders(app, opt),
 });
