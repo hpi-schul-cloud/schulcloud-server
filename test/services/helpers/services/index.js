@@ -33,5 +33,5 @@ module.exports = (app, opt) => ({
 	homeworks: homeworks(app, opt),
 	submissions: submissions(app, opt),
 	lessons,
-	storageProviders: storageProviders(app, opt),
+	storageProviders: storageProviders(app),
 });

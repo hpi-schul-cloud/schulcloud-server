@@ -1,10 +1,10 @@
 const storageProviderModel = require('../../../../src/services/storageProvider/model');
 
 let createdProviderIds = [];
-console.log(storageProviderModel);
+
 const removeManyProviders = (ids) => storageProviderModel.deleteMany({ _id: { $in: ids } }).lean().exec();
 
-const createTestProvider = (app, opt) => ({
+const createTestProvider = (app) => ({
 	// required fields for base group
 	type = 'S3',
 	isShared = true,
@@ -36,10 +36,8 @@ const cleanup = () => {
 	return removeManyProviders(ids);
 };
 
-module.exports = (app, opt) => {
-	return {
-		create: createTestProvider(app, opt),
-		cleanup,
-		info: createdProviderIds,
-	};
-};
+module.exports = (app) => ({
+	create: createTestProvider(app),
+	cleanup,
+	info: createdProviderIds,
+});
