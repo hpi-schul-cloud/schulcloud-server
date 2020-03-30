@@ -350,6 +350,7 @@ describe('Sanitization Hook', () => {
 describe('removeObjectIdInData hook', () => {
 	let server;
 	let user;
+	let server;
 
 	before(async () => {
 		server = await app.listen(0);

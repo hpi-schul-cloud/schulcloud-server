@@ -1,5 +1,6 @@
 const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
+const { GeneralError } = require('@feathersjs/errors');
 const jwt = require('jsonwebtoken');
 const { SILENT_ERROR_ENABLED } = require('../../config/globals');
 
@@ -38,10 +39,13 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 			delete error.options.headers;
 		}
 		logger.error({ ...error });
-
+		if (error.code === 500) {
+			// eslint-disable-next-line no-param-reassign
+			error = new GeneralError(error);
+		}
 		// if exist delete it
 		delete error.stack;
-		delete error.catchedError;
+		// delete error.catchedError;
 	}
 	next(error);
 };
