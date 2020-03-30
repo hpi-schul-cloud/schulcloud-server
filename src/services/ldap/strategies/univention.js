@@ -1,6 +1,7 @@
 const request = require('request-promise-native');
 
 const AbstractLDAPStrategy = require('./interface.js');
+const { REQUEST_TIMEOUT } = require('../../../../config/globals');
 
 /**
  * Univention-specific LDAP functionality
@@ -29,7 +30,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 		};
 		const searchString = this.config.rootPath;
 		return this.app.service('ldap').searchCollection(this.config, searchString, options)
-			.then(data => data.map(obj => ({
+			.then((data) => data.map((obj) => ({
 				ldapOu: obj.ou,
 				displayName: obj.displayName,
 			})));
@@ -50,7 +51,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 		};
 		const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
 		return this.app.service('ldap').searchCollection(this.config, searchString, options)
-			.then(data => data.map((obj) => {
+			.then((data) => data.map((obj) => {
 				const roles = [];
 				if (obj.objectClass.includes('ucsschoolTeacher')) {
 					roles.push('teacher');
@@ -88,7 +89,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 		};
 		const searchString = `cn=klassen,cn=schueler,cn=groups,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
 		return this.app.service('ldap').searchCollection(this.config, searchString, options)
-			.then(data => data.map((obj) => {
+			.then((data) => data.map((obj) => {
 				const splittedName = obj.cn.split('-');
 				return {
 					className: splittedName[splittedName.length - 1],
@@ -218,7 +219,6 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 		const username = this.config.importUser || process.env.NBC_IMPORTUSER;
 		const password = this.config.importUserPassword || process.env.NBC_IMPORTPASSWORD;
 		const auth = `Basic ${new Buffer(`${username}:${password}`).toString('base64')}`;
-		const REQUEST_TIMEOUT = 8000;
 
 		const options = {
 			headers: {

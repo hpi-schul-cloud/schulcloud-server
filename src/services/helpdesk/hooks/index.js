@@ -1,48 +1,54 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
 function createInfoText(user, data) {
 	return `
-    Ein neues Problem wurde gemeldet.\n
-    User: ${user}\n
-    Kategorie: ${data.category}\n
-    Betreff: ${data.subject}\n
-    Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der ${data.cloud}.\n\n
-    Mit freundlichen Grüßen\n
-    Deine ${data.cloud}`;
+Ein neues Problem wurde gemeldet.
+User: ${user}
+Betreff: ${data.subject}
+Schaue für weitere Details und zur Bearbeitung bitte in den Helpdesk-Bereich der ${data.cloud}.\n
+Mit freundlichen Grüßen
+Deine ${data.cloud}
+	`;
 }
 
 function createFeedbackText(user, data) {
+	const device = data.deviceUserAgent ? `${data.device} [auto-detection: ${data.deviceUserAgent}]` : data.device;
 	let text = `
-    User: ${user}\n
-    Schule: ${data.schoolName}\n
-    Instanz: ${data.cloud}\n
-    Bereich ausgewählt: ${data.category}\n
+ReplyEmail: ${data.replyEmail}
+User: ${user}
+User-ID: ${data.userId}
+Schule: ${data.schoolName}
+Schule-ID: ${data.schoolId}
+Instanz: ${data.cloud}
+Browser: ${data.browserName}
+Browser Version: ${data.browserVersion}
+Betriebssystem: ${data.os}
+Gerät: ${device}
     `;
 
 	if (data.desire && data.desire !== '') {
 		text = `
-        ${text}
-        User schrieb folgendes:\n
-        Als ${data.role}\n
-        möchte ich ${data.desire},\n
-        um ${data.benefit}.\n
-        Akzeptanzkriterien: ${data.acceptanceCriteria}
+${text}
+User schrieb folgendes:
+Als ${data.role}
+möchte ich ${data.desire},
+um ${data.benefit}.
+Akzeptanzkriterien: ${data.acceptanceCriteria}
         `;
 	} else {
 		text = `
-        ${text}
-        User meldet folgendes:\n
-        Problem Kurzbeschreibung: ${data.subject}\n
-        IST-Zustand: ${data.currentState}\n
-        SOLL-Zustand: ${data.targetState}
+${text}
+User meldet folgendes:
+Problem Kurzbeschreibung: ${data.subject}
+Problembeschreibung: ${data.problemDescription}
         `;
 		if (data.notes) {
 			text = `
-            ${text}\n
-            Anmerkungen: ${data.notes}
+${text}
+Anmerkungen: ${data.notes}
             `;
 		}
 	}
@@ -67,25 +73,29 @@ const feedback = () => (hook) => {
 					(hook.params.account || {}).username || 'nouser', data,
 				),
 			},
+			attachments: data.files,
 		});
 		// TODO: NOTIFICATION SERVICE
 	} else {
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
 			emails: ['ticketsystem@schul-cloud.org'],
+			replyEmail: data.replyEmail,
+			from: data.replyEmail,
 			content: {
 				text: createFeedbackText(
 					(hook.params.account || {}).username || 'nouser',
 					data,
 				),
 			},
+			attachments: data.files,
 		});
 	}
 	return Promise.resolve(hook);
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
+	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('HELPDESK_VIEW')],
 	get: [globalHooks.hasPermission('HELPDESK_VIEW')],
 	create: [globalHooks.hasPermission('HELPDESK_CREATE'), restrictToCurrentSchool, denyDbWriteOnType],

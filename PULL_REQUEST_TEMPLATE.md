@@ -35,12 +35,14 @@
   - Confluence - https://docs.schul-cloud.org
   - Guidelines / Hilfe
   - Release Notes - wenn es sich um große Feature-Releases handelt
+  - [ ] Changelog-Eintrag
 
 ## Datenschutz
 - [ ] Model- / Seedänderungen erfordern Review der Datenschutz-Gruppen (wird automatisch hinzugefügt)
 - [ ] Neue Verarbeitung von personenbezogene Daten wurde mit der Datenschutz-Gruppe besprochen
 
 ## Freigabe zum Review
+- [ ] Die Änderungen wurden mit dem Ticket-Ersteller, Support-Team oder PO besprochen und erfüllen die Ticket-Anforderungen
 - [ ] WIP PR-Label entfernt, wenn die Checkliste abgearbeitet wurde
 
 ## Mehr

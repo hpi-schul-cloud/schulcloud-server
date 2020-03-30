@@ -6,15 +6,15 @@ const Syncer = require('./Syncer');
  * @implements {Syncer}
  */
 class SystemSyncer extends Syncer {
-	constructor(app, stats, system) {
-		super(app, stats);
+	constructor(app, stats, logger, system) {
+		super(app, stats, logger);
 		this.system = system;
 	}
 
 	static getSystems(app, type) {
 		return app.service('systems').find({
 			query: { type },
-		}).then(systems => systems.data);
+		}).then((systems) => systems.data);
 	}
 
 	prefix() {

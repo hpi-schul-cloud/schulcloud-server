@@ -16,23 +16,35 @@ module.exports = (app, opt = {
 		login,
 		classes,
 		users,
+		consents,
 		courses,
 		accounts,
 		roles,
 		schools,
 		years,
+		schoolGroups,
+		datasources,
+		homeworks,
+		submissions,
+		lessons,
 	} = serviceHelpers(app, opt);
 
 	const cleanup = () => Promise.all([]
 		.concat(accounts.cleanup())
 		.concat(users.cleanup())
+		.concat(consents.cleanup())
 		.concat(testSystem.cleanup())
 		.concat(classes.cleanup())
 		.concat(courses.cleanup())
 		.concat(teams.cleanup())
 		.concat(roles.cleanup())
 		.concat(schools.cleanup())
-		.concat(years.cleanup()))
+		.concat(schoolGroups.cleanup())
+		.concat(years.cleanup())
+		.concat(datasources.cleanup())
+		.concat(submissions.cleanup())
+		.concat(lessons.cleanup())
+		.concat(homeworks.cleanup()))
 		.then((res) => {
 			logger.info('[TestObjects] cleanup data.');
 			return res;
@@ -51,42 +63,63 @@ module.exports = (app, opt = {
 		courses: courses.info,
 		accounts: accounts.info,
 		schools: schools.info,
+		schoolGroups: schoolGroups.info,
 		years: years.info,
+		datasources: datasources.info,
+		homeworks: homeworks.info,
+		submissions: submissions.info,
+		lessons: lessons.info,
 	});
 
-	const createTestTeamWithOwner = async () => {
-		const user = await users.create();
+	const createTestTeamWithOwner = async (userData) => {
+		const user = await users.create(userData);
 		const team = await teams.create(user);
 		return { team, user };
 	};
 
-	const setupUser = async () => {
-		// create account
-		const user = await users.create();
-		// const account = createTestAccount();
-		// fetch jwt
-		const account = {};
-		const requestParams = {};
-		return { user, account, requestParams };
+	const setupUser = async (userData) => {
+		try {
+			const user = await users.create(userData);
+			const requestParams = await login.generateRequestParamsFromUser(user);
+			const { account } = requestParams;
+
+			return {
+				user,
+				account,
+				requestParams,
+				userId: user._id.toString(),
+				accountId: account._id.toString(),
+			};
+		} catch (err) {
+			logger.warning(err);
+			return err;
+		}
 	};
 
 	return {
 		createTestSystem: testSystem.create,
-		createTestAccount: warn('@implement should rewrite', accounts.create),
+		createTestAccount: accounts.create,
 		createTestUser: users.create,
+		createTestConsent: consents.create,
 		createTestClass: classes.create,
 		createTestCourse: courses.create,
 		createTestRole: roles.create,
 		createTestSchool: schools.create,
+		createTestSchoolGroup: schoolGroups.create,
+		createTestDatasource: datasources.create,
+		createTestHomework: homeworks.create,
+		createTestSubmission: submissions.create,
+		createTestLesson: lessons.create,
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
-		fakeLoginParams: login.fakeLoginParams,
+		generateRequestParamsFromUser: login.generateRequestParamsFromUser,
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
+		classes,
 		createTestTeamWithOwner,
 		info,
-		setupUser: warn('@implement should finished', setupUser),
+		setupUser,
 		options: opt,
 	};
 };

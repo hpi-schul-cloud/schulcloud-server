@@ -1,13 +1,14 @@
-const autoPopulate = require('mongoose-autopopulate');
 const mongoose = require('mongoose');
-const logger = require('../../logger');
+const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
+const { enableAuditLog } = require('../../utils/database');
+const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
-		schoolId: { type: Schema.Types.ObjectId, required: true },
+		schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
 		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
@@ -35,7 +36,7 @@ const timeSchema = new Schema({
 	room: { type: String },
 });
 
-const courseModel = mongoose.model('course', getUserGroupSchema({
+const courseSchema = getUserGroupSchema({
 	description: { type: String },
 	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
 	teacherIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
@@ -43,68 +44,92 @@ const courseModel = mongoose.model('course', getUserGroupSchema({
 	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
 	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },
-	untilDate: { type: Date },
-	shareToken: { type: String, unique: true, sparse: true },
+	untilDate: { type: Date, index: true },
+	shareToken: {
+		type: String, unique: true, sparse: true, index: true,
+	},
 	times: [timeSchema],
-}));
-
-// represents a sub-group of students inside a course, e.g. for projects etc.
-const courseGroupModel = mongoose.model('courseGroup', getUserGroupSchema({
-	courseId: { type: Schema.Types.ObjectId, required: true, ref: 'course' },
-}));
-
-const nameFormats = ['static', 'gradeLevel+name'];
-
-const classSchema = getUserGroupSchema({
-	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
-	invitationLink: { type: String },
-	name: { type: String, required: false },
-	year: { type: Schema.Types.ObjectId, ref: 'year' },
-	gradeLevel: { type: Schema.Types.ObjectId, ref: 'gradeLevel', autoPopulate: true },
-	nameFormat: { type: String, enum: nameFormats, default: 'static' },
-	ldapDN: { type: String },
+	// optional information if this course is a copy from other
+	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
+	features: [{ type: String, enum: ['messenger'] }],
+	...externalSourceSchema,
 });
 
-classSchema.plugin(autoPopulate);
-classSchema.plugin(require('mongoose-lean-virtuals'));
+courseSchema.index({ userIds: 1 });
+courseSchema.index({ teacherIds: 1 });
+courseSchema.index({ substitutionIds: 1 });
 
-const getClassDisplayName = (aclass) => {
-	// for static classes
-	if (aclass.nameFormat === 'static') {
-		return aclass.name;
+courseSchema.plugin(mongooseLeanVirtuals);
+
+
+const getCourseIsArchived = (aCourse) => {
+	const oneDayInMilliseconds = 864e5;
+
+	if (aCourse.untilDate <= Date.now() - oneDayInMilliseconds) {
+		return true;
 	}
-
-	// for non static classes
-	if (
-		aclass.nameFormat === 'gradeLevel+name'
-        && typeof aclass.gradeLevel === 'object'
-        && (aclass.gradeLevel || {}).name
-	) {
-		return `${aclass.gradeLevel.name}${aclass.name}`;
-	}
-
-	// error handling
-	if (!aclass.nameFormat) {
-		logger.warning(`unknown nameFormat in class${aclass._id}`);
-	} else {
-		logger
-			.warning(`The gradeLevel in class ${aclass._id} do not exist, or is is not populated.`, aclass.nameFormat);
-	}
-
-	return aclass;
+	return false;
 };
 
 // => has no access to this
 // eslint-disable-next-line func-names
-classSchema.virtual('displayName').get(function () {
+courseSchema.virtual('isArchived').get(function () {
+	return getCourseIsArchived(this);
+});
+
+courseSchema.set('toObject', { virtuals: true });
+courseSchema.set('toJSON', { virtuals: false }); // virtuals could not call with autopopulate for toJSON
+
+const courseGroupSchema = getUserGroupSchema({
+	courseId: { type: Schema.Types.ObjectId, required: true, ref: 'course' },
+});
+
+const classSchema = getUserGroupSchema({
+	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
+	invitationLink: { type: String },
+	name: { type: String },
+	year: { type: Schema.Types.ObjectId, ref: 'year' },
+	gradeLevel: {
+		type: Number,
+		required: false,
+		min: 1,
+		max: 13,
+	},
+	ldapDN: { type: String },
+	successor: { type: Schema.Types.ObjectId, ref: 'classes' },
+	...externalSourceSchema,
+});
+
+classSchema.plugin(mongooseLeanVirtuals);
+
+const getClassDisplayName = (aClass) => {
+	if (aClass.gradeLevel) {
+		return `${aClass.gradeLevel}${aClass.name || ''}`;
+	}
+
+	return aClass.name;
+};
+
+classSchema.virtual('displayName').get(function displayName() {
 	return getClassDisplayName(this);
 });
 
 classSchema.set('toObject', { virtuals: true });
-classSchema.set('toJSON', { virtuals: true });
+classSchema.set('toJSON', { virtuals: true }); // virtuals could not call with autopopulate for toJSON
 
+
+const gradeSchema = getUserGroupSchema();
+
+enableAuditLog(courseSchema);
+enableAuditLog(courseGroupSchema);
+enableAuditLog(classSchema);
+enableAuditLog(gradeSchema);
+
+const courseModel = mongoose.model('course', courseSchema);
+// represents a sub-group of students inside a course, e.g. for projects etc.
+const courseGroupModel = mongoose.model('courseGroup', courseGroupSchema);
 const classModel = mongoose.model('class', classSchema);
-const gradeModel = mongoose.model('grade', getUserGroupSchema());
+const gradeModel = mongoose.model('grade', gradeSchema);
 
 module.exports = {
 	courseModel,

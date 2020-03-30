@@ -4,12 +4,19 @@ const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const firstLoginHooks = require('./hooks/firstLogin');
-const { AdminUsers, UserLinkImportService } = require('./services');
+const skipRegistrationHooks = require('./hooks/skipRegistration');
+const {
+	AdminUsers,
+	UserLinkImportService,
+	SkipRegistrationService,
+	RegistrationSchoolService,
+	UsersModelService,
+} = require('./services');
 const adminHook = require('./hooks/admin');
 
 
-module.exports = function setup() {
-	const app = this;
+module.exports = (app) => {
+	UsersModelService.configure(app);
 
 	const options = {
 		Model: userModel,
@@ -17,7 +24,9 @@ module.exports = function setup() {
 			default: 1000,
 			max: 1000,
 		},
-		lean: true,
+		lean: {
+			virtuals: true,
+		},
 	};
 
 	app.use('/users', service(options));
@@ -48,6 +57,7 @@ module.exports = function setup() {
 			default: 500,
 			max: 5000,
 		},
+		lean: true,
 	}));
 	const registrationPinService = app.service('/registrationPins');
 	registrationPinService.hooks(registrationPinsHooks);
@@ -69,4 +79,12 @@ module.exports = function setup() {
 	app.use(adminTeachersRoute, new AdminUsers('teacher'));
 	const adminTeachersService = app.service(adminTeachersRoute);
 	adminTeachersService.hooks(adminHook);
+
+	app.use('/users/:userid/skipregistration', new SkipRegistrationService());
+	const skipRegistrationService = app.service('/users/:userid/skipregistration');
+	skipRegistrationService.hooks(skipRegistrationHooks);
+
+	app.use('/registrationSchool', new RegistrationSchoolService());
+	// const registrationSchoolService = app.service('registrationSchool');
+	// skipRegistrationService.hooks(registrationSchoolHooks);
 };

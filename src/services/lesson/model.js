@@ -4,6 +4,7 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -24,13 +25,17 @@ const lessonSchema = new Schema({
 	courseId: { type: Schema.Types.ObjectId, ref: 'course' },
 	courseGroupId: { type: Schema.Types.ObjectId, ref: 'courseGroup' },
 	teamId: { type: Schema.Types.ObjectId, ref: 'team' },
-	hidden: { type: Boolean },
-	shareToken: { type: String, unique: true, sparse: true }, // token for topic sharing
-	originalTopic: { type: Schema.Types.ObjectId, ref: 'topic' }, // if current topic was copied from another, for later fancy stuff
-	position: { type: Number, default: 0 },
+	hidden: { type: Boolean, default: true },
+	// token for topic sharing
+	shareToken: { type: String, unique: true, sparse: true },
+	// if current topic was copied from another, for later fancy stuff
+	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
+	position: { type: Number, default: 0, required: true },
 }, {
 	timestamps: true,
 });
+
+enableAuditLog(lessonSchema);
 
 const lessonModel = mongoose.model('lesson', lessonSchema);
 

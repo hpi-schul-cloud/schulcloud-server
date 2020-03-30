@@ -1,20 +1,39 @@
-const getRepoInfo = require('git-repo-info');
 const express = require('express');
 
+const migrationFactory = require('migrate-mongoose/src/db');
+const mongoose = require('mongoose');
+
+const MigrationModel = migrationFactory(undefined, mongoose.connection);
+const { version } = require('../../../package.json');
+const {
+	sha, branch, message, stat,
+} = require('../../helper/version');
+
 const router = express.Router();
+const startTime = Date.now();
+const startedAt = new Date();
 
-const fields = ['abbreviatedSha', 'sha', 'branch', 'tag'];
-
-router.get('/version', (req, res, next) => {
+router.get('/version', async (req, res, next) => {
 	if (!process.env.SHOW_VERSION) {
-		res.send(403);
+		return res.sendStatus(403);
 	}
-	const info = getRepoInfo();
-	const response = {};
-	fields.forEach((field) => {
-		response[field] = info[field];
+
+	const migrations = await MigrationModel
+		.find()
+		.lean()
+		.exec();
+
+	const { birthtime } = stat;
+	return res.json({
+		sha,
+		version,
+		branch,
+		message,
+		birthtime,
+		migrations,
+		age: Date.now() - startTime,
+		startedAt,
 	});
-	res.send(response);
 });
 
 module.exports = router;

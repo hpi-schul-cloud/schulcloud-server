@@ -1,19 +1,21 @@
 let createdSystemIds = [];
 
-const createTestSystem = app => ({ url, type = 'moodle' }) => app.service('systems').create({ url, type })
-	.then((system) => {
-		createdSystemIds.push(system._id.toString());
-		return system;
-	});
-
-
-const cleanup = app => () => {
-	const ids = createdSystemIds;
-	createdSystemIds = [];
-	return ids.map(id => app.service('systems').remove(id));
+const createTestSystem = (app) => async (options = { url: '', type: 'moodle' }) => {
+	const system = await app.service('systems').create(options);
+	createdSystemIds.push(system._id.toString());
+	return system;
 };
 
-module.exports = app => ({
+const cleanup = (app) => () => {
+	if (createdSystemIds.length === 0) {
+		return Promise.resolve();
+	}
+	const ids = createdSystemIds;
+	createdSystemIds = [];
+	return ids.map((id) => app.service('systems').remove(id));
+};
+
+module.exports = (app) => ({
 	create: createTestSystem(app),
 	cleanup: cleanup(app),
 	info: createdSystemIds,

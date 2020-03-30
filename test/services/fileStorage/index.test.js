@@ -12,7 +12,7 @@ const RoleModel = require('../../../src/services/role/model');
 const { teamsModel } = require('../../../src/services/teams/model');
 const { courseModel } = require('../../../src/services/user-group/model');
 
-const setContext = userId => ({
+const setContext = (userId) => ({
 	payload: {
 		userId: mongoose.mongo.ObjectId(userId),
 		fileStorageType: 'awsS3',
@@ -40,13 +40,16 @@ describe('fileStorage services', () => {
 	let signedUrlService;
 	let directoryService;
 
-	before(() => {
+	before(function before() {
+		this.timeout(4000);
+
 		mockery.enable({
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
 
-		mockery.registerMock('./strategies/awsS3', AWSStrategy);
+		/* important mockery is match the require import strings */
+		mockery.registerMock('../strategies/awsS3', AWSStrategy);
 
 		// eslint-disable-next-line global-require
 		app = require('../../../src/app');
@@ -72,12 +75,12 @@ describe('fileStorage services', () => {
 		mockery.disable();
 
 		const promises = [
-			...fixtures.teams.map(_ => teamsModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.schools.map(_ => schoolModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.files.map(_ => FileModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.users.map(_ => userModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.roles.map(_ => RoleModel.findByIdAndRemove(_._id).exec()),
-			...fixtures.courses.map(_ => courseModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.teams.map((_) => teamsModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.schools.map((_) => schoolModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.files.map((_) => FileModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.users.map((_) => userModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.roles.map((_) => RoleModel.findByIdAndRemove(_._id).exec()),
+			...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
 		];
 
 		return Promise.all(promises);
@@ -95,7 +98,7 @@ describe('fileStorage services', () => {
 		const created = [];
 
 		after((done) => {
-			const promises = created.map(id => FileModel.findByIdAndRemove(id));
+			const promises = created.map((id) => FileModel.findByIdAndRemove(id));
 
 			Promise.all(promises)
 				.then(() => done())
@@ -113,7 +116,7 @@ describe('fileStorage services', () => {
 				owner: '0000dcfbfb5c7a3f00bf21ac',
 			}, params), context).then((res) => {
 				// eslint-disable-next-line eqeqeq
-				const isEqual = Object.keys(params).every(key => params[key].toString() == res[key].toString());
+				const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
 				const {
 					_id,
 					isDirectory,
@@ -139,7 +142,7 @@ describe('fileStorage services', () => {
 				owner: '5cf9303bec9d6ac639fefd42',
 			}, params), context).then((res) => {
 				// eslint-disable-next-line eqeqeq
-				const isEqual = Object.keys(params).every(key => params[key].toString() == res[key].toString());
+				const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
 				const {
 					_id,
 					isDirectory,
@@ -163,7 +166,7 @@ describe('fileStorage services', () => {
 
 			fileStorageService.create(Object.assign({}, params), context).then((res) => {
 				// eslint-disable-next-line eqeqeq
-				const isEqual = Object.keys(params).every(key => params[key].toString() == res[key].toString());
+				const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
 				const {
 					_id,
 					isDirectory,
@@ -236,7 +239,7 @@ describe('fileStorage services', () => {
 			fileStorageService.remove('5ca613c4c7f5120b8c5bef34', {
 				query: {},
 				...context,
-			}).then(result => done());
+			}).then((result) => done());
 		});
 
 		it('should not delete an unknown file', (done) => {
@@ -270,7 +273,7 @@ describe('fileStorage services', () => {
 
 			fileStorageService.patch('5ca613c4c7f5120b8c5bef37', {
 				parent: '5ca613c4c7f5120b8c5bef36',
-			}, context).then(result => done());
+			}, context).then(() => done());
 		});
 
 		it('should reject moving file without permission', (done) => {
@@ -387,7 +390,7 @@ describe('fileStorage services', () => {
 		it('should not allow any of these files', () => {
 			const fileNames = ['desktop.ini', 'Desktop.ini', 'Thumbs.db', 'schul-cloud.msi', '.DS_Store', 'tempFile*'];
 
-			const promises = fileNames.map(filename => signedUrlService.create({ filename, fileType: 'text/html' }, {
+			const promises = fileNames.map((filename) => signedUrlService.create({ filename, fileType: 'text/html' }, {
 				payload: { userId: '0000d213816abba584714c0a' },
 				account: { userId: '0000d213816abba584714c0a' },
 			}).catch((err) => {
@@ -412,7 +415,7 @@ describe('fileStorage services', () => {
 		it('should not allow any of these folders', () => {
 			const folderNames = ['C_drive', 'Windows', '.3T', '$WINDOWSBD', ' ', 'k_drive', 'Temporary Items'];
 
-			const promises = folderNames.map(name => directoryService.create({
+			const promises = folderNames.map((name) => directoryService.create({
 				name, owner: '0000d213816abba584714c0a',
 			}, {
 				payload: { userId: '0000d213816abba584714c0a' },

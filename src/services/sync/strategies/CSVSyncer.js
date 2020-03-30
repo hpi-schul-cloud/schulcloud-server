@@ -1,15 +1,53 @@
-const parse = require('csv-parse/lib/sync');
+const { parse } = require('papaparse');
 const stripBOM = require('strip-bom');
+const { mix } = require('mixwith');
+
 const Syncer = require('./Syncer');
+const ClassImporter = require('./mixins/ClassImporter');
+
+const ATTRIBUTES = [
+	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
+	{ name: 'firstName', required: true, aliases: ['firstname', 'first', 'first-name', 'fn'] },
+	{ name: 'middleName', aliases: ['middlename', 'middle'] },
+	{ name: 'lastName', required: true, aliases: ['lastname', 'last', 'last-name', 'n'] },
+	{ name: 'nameSuffix', aliases: ['namesuffix', 'suffix'] },
+	{ name: 'email', required: true, aliases: ['email', 'mail', 'e-mail'] },
+	{ name: 'class', aliases: ['class', 'classes'] },
+];
+
+/**
+ * Returns a function that transforms objects of the source schema to the target schema
+ * @param {Object} sourceSchema Object representing the source schema
+ * @param {Array<Object>} targetSchema Target schema as array of attribute properties
+ * `[{name: String, Aliases: Array<String>}, ...]`
+ * @example
+ * const mf = buildMappingFunction({foo: 'bar'}, {name: 'test', aliases: ['foo', 'baz']});
+ * mf({foo: 'bar'}) === {test: 'bar'} // true
+ * mf({foo: 'hello'}) === {test: 'hello'} // true
+ * mf({baz: 42}) === {} // baz is an alias of test, but is not in the source schema
+ */
+const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
+	const mapping = {};
+	Object.keys(sourceSchema).forEach((key) => {
+		const attribute = targetSchema.find((a) => a.aliases.includes(key.toLowerCase()));
+		if (attribute !== undefined) {
+			mapping[key] = attribute.name;
+		}
+	});
+	return (record) => Object.keys(mapping).reduce((res, key) => {
+		res[mapping[key]] = record[key];
+		return res;
+	}, {});
+};
 
 /**
  * Implements importing CSV documents based on the Syncer interface
  * @class CSVSyncer
  * @implements {Syncer}
  */
-class CSVSyncer extends Syncer {
-	constructor(app, stats = {}, options = {}, requestParams = {}) {
-		super(app, stats);
+class CSVSyncer extends mix(Syncer).with(ClassImporter) {
+	constructor(app, stats = {}, logger, options = {}, requestParams = {}) {
+		super(app, stats, logger);
 
 		this.options = options;
 		this.requestParams = requestParams;
@@ -23,12 +61,6 @@ class CSVSyncer extends Syncer {
 			},
 			invitations: {
 				successful: 0,
-				failed: 0,
-			},
-			classes: {
-				successful: 0,
-				created: 0,
-				updated: 0,
 				failed: 0,
 			},
 		});
@@ -70,11 +102,11 @@ class CSVSyncer extends Syncer {
 		await super.steps();
 		this.options.schoolYear = await this.determineSchoolYear();
 		const records = this.parseCsvData();
-		const importClasses = CSVSyncer.needsToImportClasses(records);
 		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
+		const importClasses = CSVSyncer.needsToImportClasses(sanitizedRecords);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
-		const actions = Object.values(clusteredRecords).map(record => async () => {
+		const actions = Object.values(clusteredRecords).map((record) => async () => {
 			const enrichedRecord = await this.enrichUserData(record);
 			const user = await this.createOrUpdateUser(enrichedRecord);
 			if (importClasses) {
@@ -88,10 +120,6 @@ class CSVSyncer extends Syncer {
 		}
 
 		return this.stats;
-	}
-
-	static requiredAttributes() {
-		return ['firstName', 'lastName', 'email'];
 	}
 
 	async determineSchoolYear() {
@@ -114,25 +142,32 @@ class CSVSyncer extends Syncer {
 		let records = [];
 		try {
 			const strippedData = stripBOM(this.options.csvData);
-			records = parse(strippedData, {
-				columns: true,
-				delimiter: ',',
+			const parseResult = parse(strippedData, {
+				delimiter: '',	// auto-detect
+				newline: '',	// auto-detect
+				header: true,
+				skipEmptyLines: true,
+				fastMode: true,
 			});
-		} catch (error) {
-			if (error.message && error.message.match(/Invalid Record Length/)) {
-				const line = error.message.match(/on line (\d+)/)[1];
-				this.stats.errors.push({
-					type: 'file',
-					entity: 'Eingabedatei fehlerhaft',
-					message: `Syntaxfehler in Zeile ${line}`,
-				});
-			} else {
-				this.stats.errors.push({
-					type: 'file',
-					entity: 'Eingabedatei fehlerhaft',
-					message: 'Datei ist nicht im korrekten Format',
+			const { errors } = parseResult;
+			if (Array.isArray(errors) && errors.length > 0) {
+				errors.forEach((error) => {
+					this.logWarning('Skipping line, because it contains an error', { error });
+					this.stats.errors.push({
+						type: 'file',
+						entity: 'Eingabedatei fehlerhaft',
+						message: `Syntaxfehler in Zeile ${error.row}`,
+					});
+					this.stats.users.failed += 1;
 				});
 			}
+			records = parseResult.data;
+		} catch (error) {
+			this.stats.errors.push({
+				type: 'file',
+				entity: 'Eingabedatei fehlerhaft',
+				message: 'Datei ist nicht im korrekten Format',
+			});
 			throw error;
 		}
 
@@ -146,14 +181,15 @@ class CSVSyncer extends Syncer {
 			throw new Error('No input data');
 		}
 
-		CSVSyncer.requiredAttributes().forEach((param) => {
-			if (!records[0][param]) {
+		ATTRIBUTES.filter((a) => a.required).forEach((attr) => {
+			const attributeIsUsed = Object.keys(records[0]).some((k) => attr.aliases.includes(k.toLowerCase()));
+			if (!attributeIsUsed) {
 				this.stats.errors.push({
 					type: 'file',
 					entity: 'Eingabedatei fehlerhaft',
-					message: `benötigtes Attribut "${param}" nicht gefunden`,
+					message: `benötigtes Attribut "${attr.name}" nicht gefunden`,
 				});
-				throw new Error(`Parsing failed. Expected attribute "${param}"`);
+				throw new Error(`Parsing failed. Expected attribute "${attr.name}"`);
 			}
 		});
 		return records;
@@ -164,10 +200,19 @@ class CSVSyncer extends Syncer {
 	}
 
 	static sanitizeRecords(records) {
-		return records.map(record => ({
-			...record,
-			email: record.email.trim().toLowerCase(),
-		}));
+		const requiredAttributes = ATTRIBUTES.filter((a) => a.required).map((a) => a.name);
+		const mappingFunction = buildMappingFunction(records[0]);
+		const processed = [];
+		records.forEach((record) => {
+			const mappedRecord = mappingFunction(record);
+			if (requiredAttributes.every((attr) => !!mappedRecord[attr])) {
+				mappedRecord.email = mappedRecord.email.trim().toLowerCase();
+				processed.push(mappedRecord);
+			}
+			// no else condition or errors necessary, because the error was reported
+			// and logged during parsing
+		});
+		return processed;
 	}
 
 	clusterByEmail(records) {
@@ -326,14 +371,17 @@ class CSVSyncer extends Syncer {
 	async createClasses(record, user) {
 		if (user === undefined) return;
 		const classes = CSVSyncer.splitClasses(record.class);
-		const classMapping = await this.buildClassMapping(classes);
+		const classMapping = await this.buildClassMapping(classes, {
+			schoolId: this.options.schoolId,
+			year: this.options.schoolYear._id,
+		});
 
 		const actions = classes.map(async (klass) => {
 			const classObject = classMapping[klass];
 			if (classObject === undefined) return;
 
 			const collection = this.options.role === 'teacher' ? 'teacherIds' : 'userIds';
-			const importIds = classObject[collection].map(uid => uid.toString());
+			const importIds = classObject[collection].map((uid) => uid.toString());
 			if (!importIds.includes(user._id.toString())) {
 				const patchData = {};
 				patchData[collection] = [...importIds, user._id.toString()];
@@ -344,95 +392,7 @@ class CSVSyncer extends Syncer {
 	}
 
 	static splitClasses(classes) {
-		return classes.split('+').filter(name => name !== '');
-	}
-
-	async getClassObject(klass) {
-		const formats = [
-			{
-				regex: /^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/,
-				values: async (string) => {
-					const gradeLevelName = string.match(/^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/)[1];
-					const gradeLevel = await this.findGradeLevel({
-						name: gradeLevelName,
-					});
-					return {
-						nameFormat: 'gradeLevel+name',
-						name: string.match(/^(?:0)*(?:(?:1[0-3])|[1-9])(\D.*)$/)[1],
-						gradeLevel,
-					};
-				},
-			},
-			{
-				regex: /(.*)/,
-				values: string => ({
-					nameFormat: 'static',
-					name: string,
-				}),
-			},
-		];
-		const classNameFormat = formats.find(format => format.regex.test(klass));
-		if (classNameFormat !== undefined) {
-			const result = {
-				...await classNameFormat.values(klass),
-				schoolId: this.options.schoolId,
-			};
-			if (this.options.schoolYear) {
-				result.year = this.options.schoolYear._id;
-			}
-			return result;
-		}
-		throw new Error('Class name does not match any format:', klass);
-	}
-
-	async buildClassMapping(classes) {
-		const classMapping = {};
-		await Promise.all(classes.map(async (klass) => {
-			try {
-				if (classMapping[klass] === undefined) {
-					const classObject = await this.getClassObject(klass);
-					classMapping[klass] = await this.findOrCreateClass(classObject);
-				}
-				this.stats.classes.successful += 1;
-			} catch (err) {
-				this.stats.classes.failed += 1;
-				this.stats.errors.push({
-					type: 'class',
-					entity: klass,
-					message: err.message,
-				});
-				this.logError('Failed to create class', klass, err);
-			}
-			return Promise.resolve();
-		}));
-		return classMapping;
-	}
-
-	async findOrCreateClass(classObject) {
-		const existing = await this.app.service('/classes').find({
-			query: classObject,
-			paginate: false,
-			lean: true,
-		});
-		if (existing.length === 0) {
-			const newClass = await this.app.service('/classes').create(classObject);
-			this.stats.classes.created += 1;
-			return newClass;
-		}
-		this.stats.classes.updated += 1;
-		return existing[0];
-	}
-
-	async findGradeLevel(query) {
-		const existing = await this.app.service('/gradeLevels').find({
-			query,
-			paginate: false,
-			lean: true,
-		});
-		if (existing.length >= 0) {
-			return existing[0];
-		}
-		throw new Error('Invalid grade level');
+		return classes.split('+').filter((name) => name !== '');
 	}
 }
 

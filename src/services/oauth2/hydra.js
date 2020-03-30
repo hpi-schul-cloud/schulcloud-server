@@ -77,7 +77,7 @@ module.exports = (hydraUrl) => {
 				...mockTlsTermination,
 			},
 		}),
-		createOAuth2Client: data => request({
+		createOAuth2Client: (data) => request({
 			uri: `${hydraUrl}/clients`,
 			method: 'POST',
 			body: data,
@@ -86,14 +86,30 @@ module.exports = (hydraUrl) => {
 			},
 			json: true,
 		}),
-		deleteOAuth2Client: id => request({
+		getOAuth2Client: (id) => request({
+			uri: `${hydraUrl}/clients/${id}`,
+			method: 'GET',
+			headers: {
+				...mockTlsTermination,
+			},
+		}),
+		updateOAuth2Client: (id, data) => request({
+			uri: `${hydraUrl}/clients/${id}`,
+			method: 'PUT',
+			body: data,
+			json: true,
+			headers: {
+				...mockTlsTermination,
+			},
+		}),
+		deleteOAuth2Client: (id) => request({
 			uri: `${hydraUrl}/clients/${id}`,
 			method: 'DELETE',
 			headers: {
 				...mockTlsTermination,
 			},
 		}),
-		listConsentSessions: user => request({
+		listConsentSessions: (user) => request({
 			uri: `${hydraUrl}/oauth2/auth/sessions/consent?subject=${user}`,
 			headers: {
 				...mockTlsTermination,

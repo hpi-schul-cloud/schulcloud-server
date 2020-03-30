@@ -5,14 +5,20 @@
 
 const mongoose = require('mongoose');
 
+const { enableAuditLog } = require('../../utils/database');
+
 const { Schema } = mongoose;
 
-const categories = ['', 'dashboard', 'courses', 'classes', 'teams', 'calendar', 'homework', 'files', 'content', 'administration', 'login_registration', 'other', 'technical_problem'];
+const categories = [
+	'', 'dashboard',
+	'courses', 'classes', 'teams', 'calendar',
+	'homework', 'files', 'content', 'administration',
+	'login_registration', 'other', 'technical_problem',
+];
 const states = ['open', 'closed', 'submitted'];
 
 const problemSchema = new Schema({
 	subject: { type: String, required: true },
-	category: { type: String, enum: categories },
 	currentState: { type: String },
 	targetState: { type: String },
 	state: { type: String, enum: states, default: 'open' },
@@ -24,6 +30,8 @@ const problemSchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
+
+enableAuditLog(problemSchema);
 
 const problemModel = mongoose.model('problem', problemSchema);
 

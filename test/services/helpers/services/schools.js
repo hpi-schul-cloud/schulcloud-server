@@ -2,7 +2,7 @@ const School = require('../../../../src/services/school/model').schoolModel;
 
 let createdSchoolIds = [];
 
-const create = app => async ({
+const create = (app) => async ({
 	name = `HPI-Testschule-${new Date().getTime()}`,
 	address = {},
 	fileStorageType,
@@ -14,23 +14,33 @@ const create = app => async ({
 	experimental = false,
 	pilot = false,
 	currentYear,
+	schoolGroupId,
+	documentBaseDirType,
 	// eslint-disable-next-line camelcase
 	logo_dataUrl,
 	purpose = 'test',
 	rssFeeds = [],
 	features = [],
+	customYears = [],
+	inMaintenanceSince = undefined,
+	source = undefined,
+	sourceOptions = undefined,
 } = {}) => {
 	if (systems && systems.length === 0) {
-		systems.push((await app.service('systems').find({ type: 'local' })._id));
+		const localSystem = (await app.service('systems').find({ query: { type: 'local' }, paginate: false }))[0];
+		systems.push(localSystem._id);
 	}
-	const school = await School.create({
+	const school = await app.service('schools').create({
 		name,
 		address,
 		fileStorageType,
 		systems,
 		federalState,
 		ldapSchoolIdentifier,
+		documentBaseDirType,
 		createdAt,
+		schoolGroupId,
+		customYears,
 		updatedAt,
 		experimental,
 		pilot,
@@ -40,17 +50,24 @@ const create = app => async ({
 		purpose,
 		rssFeeds,
 		features,
+		inMaintenanceSince,
+		source,
+		sourceOptions,
 	});
 	createdSchoolIds.push(school._id);
 	return school;
 };
 
-const cleanup = async () => {
-	await School.deleteMany({ _id: { $in: createdSchoolIds } });
+const cleanup = () => {
+	if (createdSchoolIds.length === 0) {
+		return Promise.resolve();
+	}
+	const ids = createdSchoolIds;
 	createdSchoolIds = [];
+	return School.deleteMany({ _id: { $in: ids } });
 };
 
-module.exports = app => ({
+module.exports = (app) => ({
 	create: create(app),
 	cleanup,
 	info: createdSchoolIds,

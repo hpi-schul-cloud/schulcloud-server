@@ -1,39 +1,49 @@
-const hooks = require('feathers-hooks-common');
-const auth = require('@feathersjs/authentication');
-const errors = require('@feathersjs/errors');
-const globalHooks = require('../../../hooks');
+const { disallow } = require('feathers-hooks-common');
+const { authenticate } = require('@feathersjs/authentication');
+const { Forbidden } = require('@feathersjs/errors');
+const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
+const { hasPermission, mapPayload, injectUserId } = require('../../../hooks');
 const HomeworkModel = require('../model').homeworkModel;
+const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');
 
-const hasViewPermissionBefore = (hook) => {
-	const { account } = hook.params;
-	const homeworkId = hook.id || hook.data._id;
+const hasViewPermissionBefore = (context) => {
+	const currentUser = context.params.account.userId.toString();
+	const _id = context.id || context.data._id;
 
-	return HomeworkModel.findOne({ _id: homeworkId }).exec()
-		.then((res) => {
-			if (res.teacherId.equals(account.userId)) {
-				return Promise.resolve(hook);
+	return HomeworkModel.findOne({ _id }).lean().exec()
+		.then((homework) => {
+			if (homework.teacherId.equals(currentUser)) {
+				return context;
 			}
-			return Promise.reject(new errors.Forbidden("The homework doesn't belong to you!"));
+			throw new Forbidden("The homework doesn't belong to you!");
 		});
 };
 
 exports.before = {
-	all: [auth.hooks.authenticate('jwt')],
-	find: [hooks.disallow()],
+	all: [authenticate('jwt')],
+	find: [disallow()],
 	get: [
-		globalHooks.hasPermission('HOMEWORK_VIEW'),
-		globalHooks.hasPermission('HOMEWORK_CREATE'),
+		hasPermission('HOMEWORK_VIEW'),
+		hasPermission('HOMEWORK_CREATE'),
 		hasViewPermissionBefore,
+		mapPayload,
+		resolveStorageType,
 	],
 	create: [
-		globalHooks.injectUserId,
-		globalHooks.hasPermission('HOMEWORK_VIEW'),
-		globalHooks.hasPermission('HOMEWORK_CREATE'),
-		hasViewPermissionBefore,
+		injectUserId,
+		iff(isProvider('external'), [
+			hasPermission('HOMEWORK_VIEW'),
+			hasPermission('HOMEWORK_CREATE'),
+			hasViewPermissionBefore,
+		]),
+		mapPayload,
+		resolveStorageType,
 	],
-	update: [hooks.disallow()],
-	patch: [hooks.disallow()],
-	remove: [hooks.disallow()],
+	update: [disallow()],
+	patch: [disallow()],
+	remove: [disallow()],
 };
 
 exports.after = {

@@ -1,9 +1,5 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const assert = require('assert');
-const express = require('express');
-const { promisify } = require('es6-promisify');
-const freeport = promisify(require('freeport'));
 const app = require('../../../../src/app');
 const moodleMockServer = require('./moodleMockServer');
 
@@ -12,7 +8,6 @@ const testObjects = require('../../helpers/testObjects')(app);
 const { logger } = app;
 
 chai.use(chaiHttp);
-const should = chai.should();
 
 describe('Moodle single-sign-on', () => {
 	let mockMoodle = null;
@@ -37,7 +32,7 @@ describe('Moodle single-sign-on', () => {
 		.then((moodle) => {
 			mockMoodle = moodle;
 			return Promise.all([
-				testObjects.createTestSystem({ url: moodle.url }),
+				testObjects.createTestSystem({ url: moodle.url, type: 'moodle' }),
 				testObjects.createTestUser()]);
 		})
 		.then(([system, testUser]) => {
@@ -49,12 +44,12 @@ describe('Moodle single-sign-on', () => {
 		chai.request(app)
 			.post('/accounts')
 			.set('Accept', 'application/json')
-			.set('content-type', 'application/x-www-form-urlencoded')
+			.set('content-type', 'application/json')
 			// send credentials
 			.send({
 				username: newTestAccount.username,
 				password: newTestAccount.password,
-				systemId: testSystem.id,
+				systemId: testSystem._id,
 			})
 			.end((err, res) => {
 				if (err) {
@@ -63,11 +58,13 @@ describe('Moodle single-sign-on', () => {
 				}
 
 				const account = res.body;
-				account.should.have.property('_id');
 
+				account.should.have.property('_id');
 				account.username.should.equal(newTestAccount.username.toLowerCase());
-				account.should.have.property('token');
-				account.token.should.equal(mockMoodle.responseToken);
+				account.should.include({
+					systemId: testSystem._id.toString(),
+					activated: false,
+				});
 
 				resolve();
 			});

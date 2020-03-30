@@ -11,13 +11,13 @@ module.exports = function RocketChatMockServer({
 
 	let idCounter = 0;
 
-	return findFreePort.then(freePort => new Promise((resolve) => {
+	return findFreePort.then((freePort) => new Promise((resolve) => {
 		const mockRocketChat = express();
 		mockRocketChat.use(bodyParser.json()); // for parsing application/json
 		mockRocketChat.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 		mockRocketChat.port = freePort;
 		mockRocketChat.url = `http://localhost:${mockRocketChat.port}`;
-		mockRocketChat.post('/api/v1/users.register', (req, res) => {
+		mockRocketChat.post('/api/v1/users.create', (req, res) => {
 			const newRcUser = {
 				email: req.body.email,
 				username: req.body.username,
@@ -29,7 +29,11 @@ module.exports = function RocketChatMockServer({
 				if (user.email === newRcUser.email) validity = 'email';
 				// if (user.username === newRcUser.username) do something?
 			});
-			if (validity === 'email') return res.status(403).send({ error: 'Email already exists. [403]' });
+			if (validity === 'email') {
+				return res.status(403).send({
+					error: `${newRcUser.email} is already in use :( [error-field-unavailable]`,
+				});
+			}
 
 			users.push(newRcUser);
 			idCounter += 1;

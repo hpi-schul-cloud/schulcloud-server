@@ -1,14 +1,20 @@
 const service = require('feathers-mongoose');
 const {
-	courseModel,
 	courseGroupModel,
-	classModel,
 	gradeModel,
 } = require('./model');
 const hooks = require('./hooks');
 const courseGroupsHooks = require('./hooks/courseGroups');
-const courseCopyService = require('./course-copy-service');
-const classHooks = require('./hooks/classes');
+const courseCopyService = require('./services/course-copy-service');
+const courseScopelistService = require('./services/courseScopeLists');
+const ClassSuccessorService = require('./services/classSuccessor');
+const { setup: coursePermissionService } = require('./services/coursePermission');
+const { setup: courseMembersService } = require('./services/courseMembers');
+const classSuccessorHooks = require('./hooks/classSuccessor');
+const { classesService, classesHooks } = require('./services/classes');
+const { classModelService, classModelHooks } = require('./services/classModelService');
+const { courseModelService, courseModelHooks } = require('./services/courseModelService');
+const { courseService, courseHooks } = require('./services/courses');
 
 // eslint-disable-next-line func-names
 module.exports = function () {
@@ -17,16 +23,11 @@ module.exports = function () {
 	app.configure(courseCopyService);
 
 	/* Course model */
-	app.use('/courses', service({
-		Model: courseModel,
-		paginate: {
-			default: 25,
-			max: 100,
-		},
-		lean: true,
-	}));
-	const courseService = app.service('/courses');
-	courseService.hooks(hooks);
+	app.use('/courseModel', courseModelService);
+	app.service('/courseModel').hooks(courseModelHooks);
+
+	app.use('/courses', courseService);
+	app.service('/courses').hooks(courseHooks);
 
 	/* CourseGroup model */
 	app.use('/courseGroups', service({
@@ -41,16 +42,11 @@ module.exports = function () {
 	courseGroupService.hooks(courseGroupsHooks);
 
 	/* Class model */
-	app.use('/classes', service({
-		Model: classModel,
-		paginate: {
-			default: 25,
-			max: 100,
-		},
-		lean: { virtuals: true },
-	}));
-	const classService = app.service('/classes');
-	classService.hooks(classHooks);
+	app.use('/classModel', classModelService);
+	app.service('/classModel').hooks(classModelHooks);
+
+	app.use('/classes', classesService);
+	app.service('/classes').hooks(classesHooks);
 
 	/* Grade model */
 	app.use('/grades', service({
@@ -63,4 +59,12 @@ module.exports = function () {
 	}));
 	const gradeService = app.service('/grades');
 	gradeService.hooks(hooks);
+
+	app.use('/classes/successor', new ClassSuccessorService(app));
+	const classSuccessorService = app.service('/classes/successor');
+	classSuccessorService.hooks(classSuccessorHooks);
+
+	app.configure(courseScopelistService);
+	app.configure(coursePermissionService);
+	app.configure(courseMembersService);
 };

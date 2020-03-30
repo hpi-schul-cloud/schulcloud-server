@@ -6,17 +6,32 @@
 # decrypt key 
 openssl aes-256-cbc -K $encrypted_2709882c490b_key -iv $encrypted_2709882c490b_iv -in travis_rsa.enc -out travis_rsa -d
 
+set -e
+trap 'catch $? $LINENO' EXIT
+catch() {
+  echo "kabummm!!!"
+  if [ "$1" != "0" ]; then
+    echo "War wohl nicht so gut. Fehler $1, guckst du $2"
+  fi
+}
+
 if [ "$TRAVIS_BRANCH" = "master" ]
 then
-  export DOCKERTAG=latest
+  #export DOCKERTAG=latest
+  export DOCKERTAG=master_v$( jq -r '.version' package.json )_$( date +"%y%m%d%H%M" )
 else
   # replace special characters in branch name for docker tag
-  export DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" | tr -s "[:upper:]" "[:lower:]" )
+  export DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" | tr -s "[:upper:]" "[:lower:]" )_v$( jq -r '.version' package.json )_$( date +"%y%m%d%H%M" )
 fi
 
 function buildandpush {
   # build containers
   docker build -t schulcloud/schulcloud-server:$DOCKERTAG -t schulcloud/schulcloud-server:$GIT_SHA .
+ 
+  if [[ "$?" != "0" ]] 
+  then 
+  exit $? 
+  fi
 
   # Log in to the docker CLI
   echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
@@ -69,13 +84,22 @@ function deploytostaging {
   ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@staging.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG staging_server
 }
 
-# Happy SHA, wo glu:cklich macht
-echo "$GIT_SHA $DOCKERTAG" > ./public/commitsha.txt
-
 function inform {
-  curl -X POST -H 'Content-Type: application/json' --data '{"text":":rocket: Die Produktivsysteme können aktualisiert werden: Schul-Cloud Server!"}' $WEBHOOK_URL_CHAT
+  if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
+  then
+    curl -X POST -H 'Content-Type: application/json' --data '{"text":":rocket: Die Produktivsysteme können aktualisiert werden: Schul-Cloud Server! Dockertag: '$DOCKERTAG'"}' $WEBHOOK_URL_CHAT
+  fi
 }
 
+function inform_staging {
+  if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
+  then
+    curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Staging-System wurde aktualisiert: Schul-Cloud Server! https://api.staging.schul-cloud.org/version (Dockertag: '$DOCKERTAG')"}' $WEBHOOK_URL_CHAT
+  fi
+}
+
+# write version file
+printf "%s\n%s\n%s" $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_COMMIT_MESSAGE > ./version
 
 if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
@@ -83,12 +107,13 @@ then
   inform
 elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
-  buildandpush	
+  buildandpush
   deploytotest
 elif [[ $TRAVIS_BRANCH = release* || $TRAVIS_BRANCH = hotfix* ]]
 then
   buildandpush
   deploytostaging
+  inform_staging
 else
   echo "Nix wird deployt"
 fi

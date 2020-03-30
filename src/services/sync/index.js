@@ -1,21 +1,16 @@
 const errors = require('@feathersjs/errors');
-const logger = require('../../logger');
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 
 const Syncer = require('./strategies/Syncer');
-const LDAPSystemSyncer = require('./strategies/LDAPSystemSyncer');
-const CSVSyncer = require('./strategies/CSVSyncer');
+const syncers = require('./strategies');
+const getSyncLogger = require('./logger');
 
-const syncers = [LDAPSystemSyncer, CSVSyncer];
-
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 
 	class SyncService {
-		constructor() {}
-
 		find(params) {
-			return this.respond(null, params);
+			return this.respond(undefined, params);
 		}
 
 		create(data, params) {
@@ -27,21 +22,22 @@ module.exports = function () {
 				throw new errors.BadRequest('No target supplied');
 			}
 			const { target } = params.query;
+			const logger = getSyncLogger(params.logStream);
 			const instances = [];
-			syncers.forEach((syncer) => {
-				if (syncer.respondsTo(target)) {
-					const args = syncer.params(params, data);
+			syncers.forEach((StrategySyncer) => {
+				if (StrategySyncer.respondsTo(target)) {
+					const args = StrategySyncer.params(params, data);
 					if (args) {
-						instances.push(new syncer(app, {}, ...args));
+						instances.push(new StrategySyncer(app, {}, logger, ...args));
 					} else {
-						throw new Error(`Invalid params for ${syncer.name}: "${JSON.stringify(params)}"`);
+						throw new Error(`Invalid params for ${StrategySyncer.name}: "${JSON.stringify(params)}"`);
 					}
 				}
 			});
 			if (instances.length === 0) {
 				throw new Error(`No syncer responds to target "${target}"`);
 			} else {
-				const stats = await Promise.all(instances.map(instance => instance.sync()));
+				const stats = await Promise.all(instances.map((instance) => instance.sync()));
 				const aggregated = Syncer.aggregateStats(stats);
 				logger.info(`Sync finished. Successful: ${aggregated.successful}, Errors: ${aggregated.failed}`);
 				return Promise.resolve(stats);
@@ -55,7 +51,7 @@ module.exports = function () {
 	syncService.hooks({
 		before: {
 			create: [
-				auth.hooks.authenticate('jwt'),
+				authenticate('jwt'),
 			],
 		},
 	});

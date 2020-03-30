@@ -30,7 +30,7 @@ const firstLogin = async (data, params, app) => {
 		return Promise.reject('Die neuen Passwörter stimmen nicht überein.');
 	}
 
-	const { accountId } = params.payload;
+	const { accountId } = params.authentication.payload;
 	const accountUpdate = {};
 	let accountPromise = Promise.resolve();
 	const userUpdate = {};
@@ -39,6 +39,12 @@ const firstLogin = async (data, params, app) => {
 	let consentPromise = Promise.resolve();
 	let updateConsentUsingVersions = Promise.resolve();
 	const user = await app.service('users').get(params.account.userId);
+
+	if (data['password-1']) {
+		accountUpdate.password_verification = data.password_verification;
+		accountUpdate.password = data['password-1'];
+		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
+	}
 
 	if (data.parent_email) {
 		await createParent(data, params, user, app)
@@ -70,7 +76,7 @@ const firstLogin = async (data, params, app) => {
 	preferences.firstLogin = true;
 	userUpdate.preferences = preferences;
 
-	const userPromise = app.service('users').patch(user._id, userUpdate);
+	const userPromise = app.service('users').patch(user._id, userUpdate, { account: params.account });
 
 	if (data.privacyConsent || data.termsOfUseConsent) {
 		consentUpdate.userId = user._id;
@@ -128,15 +134,9 @@ const firstLogin = async (data, params, app) => {
 	}
 	if (consentUpdate.userId) consentPromise = app.service('consents').create(consentUpdate);
 
-	if (data['password-1']) {
-		accountUpdate.password_verification = data.password_verification;
-		accountUpdate.password = data['password-1'];
-		accountPromise = app.service('accounts').patch(accountId, accountUpdate, params);
-	}
-
 	return Promise.all([accountPromise, userPromise, consentPromise, updateConsentUsingVersions])
-		.then(result => Promise.resolve(result))
-		.catch(err => Promise.reject(err));
+		.then((result) => Promise.resolve(result))
+		.catch((err) => Promise.reject(err));
 };
 
 module.exports = function setup(app) {
