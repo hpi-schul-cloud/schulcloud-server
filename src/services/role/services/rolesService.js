@@ -53,7 +53,7 @@ class RoleService {
 		await this.init();
 	}
 
-	async init() {
+	init() {
 		this.roles = new Promise((resolve) => {
 			getModelRoles().then((roles) => {
 				resolve(roles);

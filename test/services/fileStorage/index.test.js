@@ -38,10 +38,10 @@ class AWSStrategy {
 describe('fileStorage services', function fileStorageTest() {
 	this.timeout(4000);
 	let app;
-	let server;
 	let fileStorageService;
 	let signedUrlService;
 	let directoryService;
+	let roleService;
 	let server;
 
 
@@ -61,6 +61,7 @@ describe('fileStorage services', function fileStorageTest() {
 		fileStorageService = app.service('/fileStorage/');
 		signedUrlService = app.service('/fileStorage/signedUrl');
 		directoryService = app.service('/fileStorage/directories');
+		roleService = app.service('roles');
 
 		const promises = [
 			teamsModel.create(fixtures.teams),
@@ -72,6 +73,8 @@ describe('fileStorage services', function fileStorageTest() {
 		];
 
 		await Promise.all(promises);
+		// to load new roles
+		roleService.init();
 	});
 
 	after(async () => {
@@ -89,6 +92,8 @@ describe('fileStorage services', function fileStorageTest() {
 
 		await Promise.all(promises);
 		await server.close();
+		// to load old roles
+		roleService.init();
 	});
 
 	describe('file service', () => {

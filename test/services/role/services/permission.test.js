@@ -4,6 +4,7 @@ const testObjects = require('../../helpers/testObjects')(app);
 
 describe('PermissionService', async () => {
 	let permissionService;
+	let roleService;
 	let server;
 
 	const ROLES = {
@@ -43,6 +44,8 @@ describe('PermissionService', async () => {
 	before(async () => {
 		server = await app.listen(0);
 		permissionService = app.service('roles/:roleName/permissions');
+		roleService = app.service('roles');
+
 		const testRole = await testObjects.createTestRole({
 			name: ROLES.TEST,
 			permissions: testPermissions,
@@ -75,11 +78,15 @@ describe('PermissionService', async () => {
 			name: ROLES.NOTHING,
 			roles: [otherRole._id],
 		});
+		// to load new roles
+		roleService.init();
 	});
 
 	after(async () => {
 		await server.close();
 		await testObjects.cleanup();
+		// to load old roles
+		roleService.init();
 	});
 
 	it('registered the service', () => {
