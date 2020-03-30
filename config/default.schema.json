@@ -101,12 +101,67 @@
 			"default": "",
 			"description": "The BBB Salt for api call checksum creation."
 		},
+		"FEATURE_MATRIX_MESSENGER_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, adds support for matrix messenger"
+		},
+		"MATRIX_URI": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://matrix.stomt.com",
+			"description": "the URI of the matrix messenger server"
+		},
+		"MATRIX_SECRET": {
+			"type": "string",
+			"description": "shared secret for the matrix server"
+		},
+		"FEATURE_RABBITMQ_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, adds support to send RabbitMQ messages"
+		},
+		"RABBITMQ_URI": {
+			"type": "string",
+			"format": "uri",
+			"default": "amqp://192.168.99.100",
+			"description": "the URI of the rabbitMQ server"
+		},
+		"RABBITMQ_MATRIX_QUEUE_INTERNAL": {
+			"type": "string",
+			"default": "matrix_sync_unpopulated",
+			"description": "the URI of the rabbitMQ server"
+		},
+		"RABBITMQ_MATRIX_QUEUE_EXTERNAL": {
+			"type": "string",
+			"default": "matrix_sync_populated",
+			"description": "the URI of the rabbitMQ server"
+		},
 		"HOST": {
 			"type": "string",
 			"format": "uri",
 			"default": "http://localhost:3100",
 			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
+		},
+		"FEATURE_ALERTS_STATUS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, user will see messages/incidents from e.g status.schul-cloud."
+		},
+		"ALERT_STATUS_URL": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"default": "https://status.schul-cloud.org",
+			"description": "The url of status message provider (should end without a slash)."
+		},
+		"ALERT_STATUS_API_URL": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"default": "https://status.schul-cloud.org/api/v1",
+			"description": "The api of status message provider (should end without a slash)."
 		},
 		"NEXBOARD_URL": {
 			"type": "string",

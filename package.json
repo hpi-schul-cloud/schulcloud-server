@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "22.6.3",
+	"version": "22.7.0",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -46,6 +46,7 @@
 		"@schul-cloud/commons": "^1.0.17",
 		"@sentry/node": "^5.9.0",
 		"ajv": "^6.10.2",
+		"amqplib": "^0.5.5",
 		"aws-sdk": "^2.306.0",
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
