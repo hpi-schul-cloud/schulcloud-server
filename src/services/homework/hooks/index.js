@@ -113,13 +113,12 @@ const addStats = (hook) => {
 		data = data.map((e) => {
 			const c = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
 
-			// save grade in assignment if user is student of this task
 			if (!isTeacher(hook.params.account.userId, c)) {
 				const submission = submissions.data.filter((s) => (
 					equalIds(c._id, s.homeworkId)
 					&& s.teamMembers
 					&& (
-						equalIds(hook.params.account.userId, s.teamMembers)
+						s.teamMembers.some((memeber) => equalIds(hook.params.account.userId, memeber))
 						|| equalIds(hook.params.account.userId, s.studentId)
 					)
 				));
