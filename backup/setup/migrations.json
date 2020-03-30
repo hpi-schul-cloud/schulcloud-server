@@ -464,5 +464,15 @@
         "$date": "2020-03-19T11:55:25.139Z"
     },
     "__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e81e74b65f87a5a600f591b"
+	},
+	"state": "up",
+	"name": "addFileCreatorAndPermissionIndexes",
+	"createdAt": {
+		"$date": "2020-03-26T11:39:40.409Z"
+	},
+	"__v": 0
 }]
-
