@@ -14,7 +14,7 @@ const RoleServiceHooks = {
 
 const filterByQuery = (roles = [], query = {}) => {
 	let result = roles;
-	const q = Object.assign({}, query);
+	const q = { ...query };
 	delete q.$skip;
 	delete q.$limit;
 	Object.entries(q).forEach(([key, v]) => {
