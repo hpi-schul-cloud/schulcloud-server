@@ -100,6 +100,9 @@ enableAuditLog(fileSchema);
 // make file-model searchable
 fileSchema.index({ name: 'text' });
 
+// Index on permissions to speed up shared-files queries
+fileSchema.index({ 'permissions.refId': 1, 'permissions.refPermModel': 1 });
+
 const FileModel = mongoose.model('file', fileSchema);
 const FilePermissionModel = mongoose.model('filePermissionModel', permissionSchema);
 
