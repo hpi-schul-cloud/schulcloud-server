@@ -21,9 +21,10 @@ const {
 	newsHistoryModel: NewsHistory,
 } = require('../../../src/services/news/model');
 
-const newsService = app.service('news');
-
 describe('news service', () => {
+	let roleService;
+	let newsService;
+
 	it('registers correctly', () => {
 		expect(app.service('news')).to.not.equal(undefined);
 	});
@@ -34,6 +35,8 @@ describe('news service', () => {
 
 		before((done) => {
 			server = app.listen(0, done);
+			roleService = app.service('roles');
+			newsService = app.service('news');
 		});
 
 		after((done) => {
@@ -369,6 +372,9 @@ describe('news service', () => {
 				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
 				const team = await teams.create(teacherUser);
 				await createTestRole({ name: 'teamuser', permissions: [] });
+				// to load new roles
+				roleService.init();
+
 				await teams.addTeamUserToTeam(team._id, studentUser, 'teamuser');
 				await News.create([
 					{
@@ -832,6 +838,8 @@ describe('news service', () => {
 			after(async () => {
 				await cleanup();
 				await News.deleteMany({});
+				// to load old roles
+				roleService.init();
 			});
 		});
 

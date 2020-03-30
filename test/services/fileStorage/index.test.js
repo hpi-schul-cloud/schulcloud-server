@@ -40,6 +40,7 @@ describe('fileStorage services', function fileStorageTest() {
 	let fileStorageService;
 	let signedUrlService;
 	let directoryService;
+	let roleService;
 	let server;
 
 	before(async () => {
@@ -58,6 +59,7 @@ describe('fileStorage services', function fileStorageTest() {
 		fileStorageService = app.service('/fileStorage/');
 		signedUrlService = app.service('/fileStorage/signedUrl');
 		directoryService = app.service('/fileStorage/directories');
+		roleService = app.service('roles');
 
 		const promises = [
 			teamsModel.create(fixtures.teams),
@@ -69,6 +71,8 @@ describe('fileStorage services', function fileStorageTest() {
 		];
 
 		await Promise.all(promises);
+		// to load new roles
+		roleService.init();
 	});
 
 	after(async () => {
@@ -85,6 +89,8 @@ describe('fileStorage services', function fileStorageTest() {
 		];
 		await server.close();
 		await Promise.all(promises);
+		// to load old roles
+		roleService.init();
 	});
 
 	describe('file service', () => {
