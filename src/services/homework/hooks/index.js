@@ -111,35 +111,35 @@ const addStats = (hook) => {
 		},
 	}).then((submissions) => {
 		data = data.map((e) => {
-			const c = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
+			const copy = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
 
-			if (!isTeacher(hook.params.account.userId, c)) {
-				const submission = submissions.data.filter((s) => (
-					equalIds(c._id, s.homeworkId)
-					&& s.teamMembers
+			if (!isTeacher(hook.params.account.userId, copy)) {
+				const filteredSubmission = submissions.data.filter((submission) => (
+					equalIds(copy._id, submission.homeworkId)
+					&& submission.teamMembers
 					&& (
-						s.teamMembers.some((memeber) => equalIds(hook.params.account.userId, memeber))
-						|| equalIds(hook.params.account.userId, s.studentId)
+						submission.teamMembers.some((memeber) => equalIds(hook.params.account.userId, memeber))
+						|| equalIds(hook.params.account.userId, submission.studentId)
 					)
 				));
-				const submissionWithGrade = submission.filter((s) => s.grade);
+				const submissionWithGrade = filteredSubmission.filter((submission) => submission.grade);
 				if (submissionWithGrade.length === 1) {
-					c.grade = submissionWithGrade[0].grade.toFixed(2);
+					copy.grade = submissionWithGrade[0].grade.toFixed(2);
 				}
 
-				c.hasEvaluation = false;
-				if (submission.filter(isGraded).length === 1) {
-					c.hasEvaluation = true;
+				copy.hasEvaluation = false;
+				if (filteredSubmission.filter(isGraded).length === 1) {
+					copy.hasEvaluation = true;
 				}
 
-				c.submissions = (submission.filter(isValidSubmission)).length;
+				copy.submissions = (filteredSubmission.filter(isValidSubmission)).length;
 			}
 
-			if (!c.private && (
-				(((c.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && c.publicSubmissions)
-                || isTeacher(hook.params.account.userId, c))) {
-				const NumberOfCourseMembers = ((c.courseId || {}).userIds || []).length;
-				const currentSubmissions = submissions.data.filter((s) => equalIds(c._id, s.homeworkId));
+			if (!copy.private && (
+				(((copy.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && copy.publicSubmissions)
+                || isTeacher(hook.params.account.userId, copy))) {
+				const NumberOfCourseMembers = ((copy.courseId || {}).userIds || []).length;
+				const currentSubmissions = submissions.data.filter((s) => equalIds(copy._id, s.homeworkId));
 				const validSubmissions = currentSubmissions.filter(isValidSubmission);
 				const gradedSubmissions = currentSubmissions.filter(isGraded);
 				const NumberOfUsersWithSubmission = validSubmissions.map((e) => (e.courseGroupId ? ((e.courseGroupId.userIds || []).length || 1) : ((e.teamMembers || []).length || 1))).reduce((a, b) => a + b, 0);
@@ -152,17 +152,17 @@ const addStats = (hook) => {
 					? (NumberOfGradedUsers / NumberOfCourseMembers) * 100
 					: 0;
 
-				c.stats = {
-					userCount: ((c.courseId || {}).userIds || []).length,
+				copy.stats = {
+					userCount: ((copy.courseId || {}).userIds || []).length,
 					submissionCount: NumberOfUsersWithSubmission,
 					submissionPercentage: (submissionPerc != Infinity) ? submissionPerc.toFixed(2) : undefined,
 					gradeCount: NumberOfGradedUsers,
 					gradePercentage: (gradePerc != Infinity) ? gradePerc.toFixed(2) : undefined,
 					averageGrade: getAverageRating(currentSubmissions),
 				};
-				c.isTeacher = isTeacher(hook.params.account.userId, c);
+				copy.isTeacher = isTeacher(hook.params.account.userId, copy);
 			}
-			return c;
+			return copy;
 		});
 		if (arrayed) { data = data[0]; }
 		(hook.result.data) ? (hook.result.data = data) : (hook.result = data);
