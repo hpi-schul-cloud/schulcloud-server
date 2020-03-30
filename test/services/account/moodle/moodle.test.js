@@ -44,12 +44,12 @@ describe('Moodle single-sign-on', () => {
 		chai.request(app)
 			.post('/accounts')
 			.set('Accept', 'application/json')
-			.set('content-type', 'application/x-www-form-urlencoded')
+			.set('content-type', 'application/json')
 			// send credentials
 			.send({
 				username: newTestAccount.username,
 				password: newTestAccount.password,
-				systemId: testSystem.id,
+				systemId: testSystem._id,
 			})
 			.end((err, res) => {
 				if (err) {
@@ -58,11 +58,13 @@ describe('Moodle single-sign-on', () => {
 				}
 
 				const account = res.body;
-				account.should.have.property('_id');
 
+				account.should.have.property('_id');
 				account.username.should.equal(newTestAccount.username.toLowerCase());
-				account.should.have.property('token');
-				account.token.should.equal(mockMoodle.responseToken);
+				account.should.include({
+					systemId: testSystem._id.toString(),
+					activated: false,
+				});
 
 				resolve();
 			});

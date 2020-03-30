@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
+const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
+const { enableAuditLog } = require('../../utils/database');
+const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
-		schoolId: { type: Schema.Types.ObjectId, required: true },
+		schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
 		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
@@ -41,14 +44,23 @@ const courseSchema = getUserGroupSchema({
 	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
 	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },
-	untilDate: { type: Date },
-	shareToken: { type: String, unique: true, sparse: true },
+	untilDate: { type: Date, index: true },
+	shareToken: {
+		type: String, unique: true, sparse: true, index: true,
+	},
 	times: [timeSchema],
 	// optional information if this course is a copy from other
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
+	features: [{ type: String, enum: ['messenger'] }],
+	...externalSourceSchema,
 });
 
-courseSchema.plugin(require('mongoose-lean-virtuals'));
+courseSchema.index({ userIds: 1 });
+courseSchema.index({ teacherIds: 1 });
+courseSchema.index({ substitutionIds: 1 });
+
+courseSchema.plugin(mongooseLeanVirtuals);
+
 
 const getCourseIsArchived = (aCourse) => {
 	const oneDayInMilliseconds = 864e5;
@@ -68,12 +80,9 @@ courseSchema.virtual('isArchived').get(function () {
 courseSchema.set('toObject', { virtuals: true });
 courseSchema.set('toJSON', { virtuals: false }); // virtuals could not call with autopopulate for toJSON
 
-const courseModel = mongoose.model('course', courseSchema);
-
-// represents a sub-group of students inside a course, e.g. for projects etc.
-const courseGroupModel = mongoose.model('courseGroup', getUserGroupSchema({
+const courseGroupSchema = getUserGroupSchema({
 	courseId: { type: Schema.Types.ObjectId, required: true, ref: 'course' },
-}));
+});
 
 const classSchema = getUserGroupSchema({
 	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
@@ -88,10 +97,10 @@ const classSchema = getUserGroupSchema({
 	},
 	ldapDN: { type: String },
 	successor: { type: Schema.Types.ObjectId, ref: 'classes' },
+	...externalSourceSchema,
 });
 
-classSchema.plugin(require('mongoose-lean-virtuals'));
-
+classSchema.plugin(mongooseLeanVirtuals);
 
 const getClassDisplayName = (aClass) => {
 	if (aClass.gradeLevel) {
@@ -108,8 +117,19 @@ classSchema.virtual('displayName').get(function displayName() {
 classSchema.set('toObject', { virtuals: true });
 classSchema.set('toJSON', { virtuals: true }); // virtuals could not call with autopopulate for toJSON
 
+
+const gradeSchema = getUserGroupSchema();
+
+enableAuditLog(courseSchema);
+enableAuditLog(courseGroupSchema);
+enableAuditLog(classSchema);
+enableAuditLog(gradeSchema);
+
+const courseModel = mongoose.model('course', courseSchema);
+// represents a sub-group of students inside a course, e.g. for projects etc.
+const courseGroupModel = mongoose.model('courseGroup', courseGroupSchema);
 const classModel = mongoose.model('class', classSchema);
-const gradeModel = mongoose.model('grade', getUserGroupSchema());
+const gradeModel = mongoose.model('grade', gradeSchema);
 
 module.exports = {
 	courseModel,

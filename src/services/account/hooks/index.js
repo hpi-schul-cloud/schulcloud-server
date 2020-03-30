@@ -1,24 +1,19 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
 const hooks = require('feathers-hooks-common');
 const { ObjectId } = require('mongoose').Types;
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
 
-const MoodleLoginStrategy = require('../strategies/moodle');
-const IServLoginStrategy = require('../strategies/iserv');
-const LocalLoginStrategy = require('../strategies/local');
-const LdapLoginStrategy = require('../strategies/ldap');
+const { LdapStrategy, MoodleStrategy, IservStrategy } = require('../../authentication/strategies');
 
-// don't initialize strategies here - otherwise massive overhead
-// TODO: initialize all strategies here once
 const strategies = {
-	moodle: MoodleLoginStrategy,
-	iserv: IServLoginStrategy,
-	local: LocalLoginStrategy,
-	ldap: LdapLoginStrategy,
+	moodle: MoodleStrategy,
+	ldap: LdapStrategy,
+	iserv: IservStrategy,
 };
 
 const sanitizeUsername = (hook) => {
@@ -29,7 +24,7 @@ const sanitizeUsername = (hook) => {
 };
 
 // This is only for SSO
-const validateCredentials = (hook) => {
+const validateCredentials = async (hook) => {
 	const {
 		username, password, systemId, schoolId,
 	} = hook.data;
@@ -41,22 +36,15 @@ const validateCredentials = (hook) => {
 
 	const { app } = hook;
 	const systemService = app.service('/systems');
-	return systemService.get(systemId)
-		.then((system) => {
-			const Strategy = strategies[system.type];
-			return {
-				strategy: new Strategy(app),
-				system,
-			};
-		})
-		.then(({ strategy, system }) => strategy.login({ username, password }, system, schoolId))
-		.then((client) => {
-			if (client.token) {
-				hook.data.token = client.token;
-				hook.data.activated = true;
-			}
-			return hook;
-		});
+	const system = await systemService.get(systemId);
+
+	const Strategy = strategies[system.type];
+	const systemStrategy = new Strategy();
+	const client = await systemStrategy.credentialCheck(username, password, system);
+	if (client) {
+		return hook;
+	}
+	return Promise.reject();
 };
 
 const trimPassword = (hook) => {
@@ -97,7 +85,7 @@ const validatePassword = (hook) => {
 		hook.app.service('users').get(hook.params.account.userId)])
 		.then(([hasStudentCreate, isStudent, hasAdminView, isTeacher, isSuperHero, user]) => {
 			// Check if it is own account
-			const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id.toString();
+			const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
 			// Check if it is firstLogin
 			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
 
@@ -154,8 +142,10 @@ const checkUnique = (hook) => {
 };
 
 const removePassword = (hook) => {
+	const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
+
 	const { strategy } = hook.data;
-	if (strategy === 'ldap') {
+	if (noPasswordStrategies.includes(strategy)) {
 		hook.data.password = '';
 	}
 	return Promise.resolve(hook);
@@ -227,10 +217,15 @@ const securePatching = (hook) => Promise.all([
 	globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
+	globalHooks.hasRole(hook, hook.params.account.userId, 'demoStudent'),
+	globalHooks.hasRole(hook, hook.params.account.userId, 'demoTeacher'),
 	globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
-]).then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
-	const editsOwnAccount = (hook.params.account._id || {}).toString() === hook.id;
+]).then(([isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent]) => {
+	const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
 	if (hook.params.account._id !== hook.id) {
+		if (isDemoStudent || isDemoTeacher) {
+			return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+		}
 		if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent) || editsOwnAccount)) {
 			return Promise.reject(new BadRequest('You have not the permissions to change other users'));
 		}
@@ -257,42 +252,42 @@ const filterToRelated = (keys) => globalHooks.ifNotLocal((hook) => {
 
 const testIfJWTExist = (context) => {
 	if ((context.params.headers || {}).authorization) {
-		return auth.hooks.authenticate('jwt')(context);
+		return authenticate('jwt')(context);
 	}
 	return context;
 };
 
 exports.before = {
-	// find, get and create cannot be protected by auth.hooks.authenticate('jwt')
+	// find, get and create cannot be protected by authenticate('jwt')
 	// otherwise we cannot get the accounts required for login
-	find: [testIfJWTExist, restrictAccess],
+	find: [testIfJWTExist, globalHooks.ifNotLocal(restrictAccess)],
 	get: [hooks.disallow('external')],
 	create: [
 		sanitizeUsername,
 		checkExistence,
 		validateCredentials,
 		trimPassword,
-		local.hooks.hashPassword({ passwordField: 'password' }),
+		local.hooks.hashPassword('password'),
 		checkUnique,
 		removePassword,
 	],
 	update: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.hasPermission('ACCOUNT_EDIT'),
 		sanitizeUsername,
 	],
 	patch: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		sanitizeUsername,
 		globalHooks.ifNotLocal(securePatching),
 		protectUserId,
 		globalHooks.permitGroupOperation,
 		trimPassword,
-		validatePassword,
-		local.hooks.hashPassword({ passwordField: 'password' }),
+		globalHooks.ifNotLocal(validatePassword),
+		local.hooks.hashPassword('password'),
 	],
 	remove: [
-		auth.hooks.authenticate('jwt'),
+		authenticate('jwt'),
 		globalHooks.hasPermission('ACCOUNT_CREATE'),
 		globalHooks.permitGroupOperation,
 	],

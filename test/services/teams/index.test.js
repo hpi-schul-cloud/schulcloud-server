@@ -3,9 +3,13 @@ const { expect } = require('chai');
 const logger = require('../../../src/logger/index');
 
 const app = require('../../../src/app');
-const T = require('../helpers/testObjects')(app);
+const {
+	createTestUser, cleanup, teams: teamsHelper, generateRequestParams, createTestAccount,
+} = require('../helpers/testObjects')(app);
+const testHelper = require('../helpers/testObjects')(app);
 
 const teamService = app.service('/teams');
+const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 
 describe('Test team basic methods', () => {
@@ -15,13 +19,18 @@ describe('Test team basic methods', () => {
 		let userId;
 
 		before(async () => {
-			const user = await T.createTestUser({ roles: ['administrator'] }).catch((err) => {
+			const user = await createTestUser({ roles: ['administrator'] }).catch((err) => {
 				logger.warning('Can not create test user', err);
 			});
 
 			const schoolId = user.schoolId.toString();
 			userId = user._id.toString();
-			const fakeLoginParams = T.fakeLoginParams({ userId });
+			const fakeLoginParams = {
+				account: { userId },
+				authenticated: true,
+				provider: 'rest',
+				query: {},
+			};
 
 			team = await teamService.create({
 				name: 'TestTeam',
@@ -36,7 +45,7 @@ describe('Test team basic methods', () => {
 			return Promise.resolve();
 		});
 
-		after(() => Promise.all([T.cleanup(), T.teams.removeOne(teamId)]));
+		after(() => Promise.all([cleanup(), teamsHelper.removeOne(teamId)]));
 
 
 		it('should for extern request only return the _id', () => {
@@ -62,11 +71,11 @@ describe('Test team basic methods', () => {
 		});
 
 		it('is allowed for superheroes', async () => {
-			const hero = await T.createTestUser({ roles: ['superhero'] });
+			const hero = await createTestUser({ roles: ['superhero'] });
 			const username = hero.email;
 			const password = 'Schulcloud1!';
-			await T.createTestAccount({ username, password }, 'local', hero);
-			const params = await T.generateRequestParams({ username, password });
+			await createTestAccount({ username, password }, 'local', hero);
+			const params = await generateRequestParams({ username, password });
 
 			try {
 				const record = {
@@ -79,18 +88,18 @@ describe('Test team basic methods', () => {
 				expect(slimteam).to.be.ok;
 
 				const { userIds } = await teamService.get(slimteam._id);
-				expect(userIds.some((item) => item.userId.toString() === hero._id.toString())).to.equal(true);
+				expect(userIds.some((item) => equalIds(item.userId, hero._id))).to.equal(true);
 			} finally {
-				T.cleanup();
+				cleanup();
 			}
 		});
 
 		it('is not allowed for demoStudent', async () => {
-			const demoStudent = await T.createTestUser({ roles: ['demoStudent'] });
+			const demoStudent = await createTestUser({ roles: ['demoStudent'] });
 			const username = demoStudent.email;
 			const password = 'Schulcloud1!';
-			await T.createTestAccount({ username, password }, 'local', demoStudent);
-			const params = await T.generateRequestParams({ username, password });
+			await createTestAccount({ username, password }, 'local', demoStudent);
+			const params = await generateRequestParams({ username, password });
 
 			try {
 				const record = {
@@ -104,8 +113,99 @@ describe('Test team basic methods', () => {
 					expect(e.message).to.equal('Only administrator, teacher and students can create teams.');
 				});
 			} finally {
-				T.cleanup();
+				cleanup();
 			}
 		});
+	});
+});
+
+describe('Test team extern add services', () => {
+	let teacher;
+	let params;
+	let owner;
+	let expert;
+	let addService;
+
+	before(async () => {
+		addService = app.service('/teams/extern/add');
+		addService.setup(app);
+
+		[owner, teacher, expert] = await Promise.all([
+			createTestUser({ roles: ['teacher'] }),
+			createTestUser({ roles: ['teacher'] }),
+			createTestUser({ roles: ['expert'] }),
+		]);
+
+		const username = owner.email;
+		const password = 'Schulcloud1!';
+
+		await createTestAccount({ username, password }, 'local', owner);
+		params = await generateRequestParams({ username, password });
+	});
+
+	after(testHelper.cleanup);
+
+	it('add new teamadministrator with userId', async () => {
+		const { _id: teamId } = await teamsHelper.create(owner);
+		const userId = teacher._id.toString();
+		const data = {
+			role: 'teamadministrator',
+			userId,
+		};
+
+		const fakeParams = { ...params, query: {} };
+		const { message } = await addService.patch(teamId, data, fakeParams);
+
+		expect(message).to.equal('Success!');
+		const { userIds } = await teamsHelper.getById(teamId);
+		expect(userIds).to.be.an('array').with.lengthOf(2);
+		const exist = userIds.some((teamUser) => teamUser.userId.toString() === userId);
+		expect(exist).to.be.true;
+	});
+
+	it('add new teamexpert', async () => {
+		const { _id: teamId } = await teamsHelper.create(owner);
+		const { email } = expert;
+		const data = {
+			role: 'teamexpert',
+			email,
+		};
+
+		const fakeParams = { ...params, query: {} };
+		const { message } = await addService.patch(teamId, data, fakeParams);
+
+		expect(message).to.equal('Success!');
+		const { invitedUserIds } = await teamsHelper.getById(teamId);
+		expect(invitedUserIds).to.be.an('array').with.lengthOf(1);
+		const exist = invitedUserIds.some((inv) => inv.email === email);
+		expect(exist).to.be.true;
+	});
+
+	it('add new teamadministrator without userId should do nothing', async () => {
+		const { _id: teamId } = await teamsHelper.create(owner);
+		const data = {
+			role: 'teamadministrator',
+		};
+
+		const fakeParams = { ...params, query: {} };
+		const { message } = await addService.patch(teamId, data, fakeParams);
+
+		expect(message).to.equal('Success!');
+		const { userIds } = await teamsHelper.getById(teamId);
+		expect(userIds).to.be.an('array').with.lengthOf(1);
+	});
+
+	it('add new teamexpert without email should do nothing', async () => {
+		const { _id: teamId } = await teamsHelper.create(owner);
+		const data = {
+			role: 'teamexpert',
+		};
+
+		const fakeParams = { ...params, query: {} };
+		const { message } = await addService.patch(teamId, data, fakeParams);
+
+		expect(message).to.equal('Success!');
+		const { invitedUserIds } = await teamsHelper.getById(teamId);
+		expect(invitedUserIds).to.be.an('array').with.lengthOf(0);
 	});
 });

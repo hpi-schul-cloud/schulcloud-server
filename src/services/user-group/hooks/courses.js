@@ -3,9 +3,12 @@ const { BadRequest } = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
+
+const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
 
 /**
  * adds all students to a course when a class is added to the course
@@ -59,10 +62,23 @@ const deleteWholeClassFromCourse = (hook) => {
 				{ $pull: { userIds: { $in: studentIds } } },
 				{ multi: true },
 			).exec();
-			hook.data.userIds = hook.data.userIds.filter((value) => !studentIds.some((id) => id.toString() === value));
+			hook.data.userIds = hook.data.userIds.filter((value) => !studentIds.some((id) => equalIds(id, value)));
 			return hook;
 		});
 	});
+};
+
+/**
+ * remove all substitution teacher which are also teachers
+ * @param hook - contains and request body
+ */
+const removeSubstitutionDuplicates = (hook) => {
+	const requestBody = hook.data;
+	if (requestBody.substitutionIds && (requestBody.substitutionIds || []).length > 0) {
+		requestBody.substitutionIds = requestBody.substitutionIds.filter(
+			(val) => !requestBody.teacherIds.includes(val),
+		);
+	}
 };
 
 const courseInviteHook = async (context) => {
@@ -78,7 +94,7 @@ const courseInviteHook = async (context) => {
 
 const patchPermissionHook = async (context) => {
 	const query = context.params.query || {};
-	const defaultPermissionHook = (ctx) => Promise.resolve(globalHooks.hasPermission('USERGROUP_EDIT')(ctx))
+	const defaultPermissionHook = (ctx) => Promise.resolve(checkScopePermissions(['COURSE_EDIT'])(ctx))
 		.then((_ctx) => restrictToUsersOwnCourses(_ctx));
 
 	if (query.link) {
@@ -111,6 +127,7 @@ const restrictChangesToArchivedCourse = async (context) => {
 module.exports = {
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
+	removeSubstitutionDuplicates,
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,

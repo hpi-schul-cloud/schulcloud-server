@@ -1,4 +1,4 @@
-const ifNotFunction = e => !typeof e === 'function';
+const ifNotFunction = (e) => !typeof e === 'function';
 
 const testLogger = (log = {}) => {
 	if (ifNotFunction(log.pushModified) || ifNotFunction(log.pushFail)) {

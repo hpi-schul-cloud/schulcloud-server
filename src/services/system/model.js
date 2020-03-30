@@ -4,10 +4,19 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const { enableAuditLog } = require('../../utils/database');
+
+const tspBaseType = require('../sync/strategies/TSP/TSPBaseSyncer').SYNCER_TARGET;
+const tspSchoolType = require('../sync/strategies/TSP/TSPSchoolSyncer').SYNCER_TARGET;
 
 const { Schema } = mongoose;
 
-const types = ['moodle', 'itslearning', 'lernsax', 'iserv', 'local', 'ldap'];
+const types = [
+	'local', // username + password
+	'moodle', 'itslearning', 'lernsax', 'iserv', // SSO providers
+	'ldap', // general and provider-specific LDAP
+	tspBaseType, tspSchoolType, // Thüringer Schul-Portal
+];
 
 const systemSchema = new Schema({
 	type: { type: String, required: true, enum: types },
@@ -52,9 +61,16 @@ const systemSchema = new Schema({
 			},
 		},
 	},
+	tsp: {
+		identifier: { type: String }, // "schuleNummer"
+		schoolName: { type: String }, // "schuleName"
+		baseUrl: { type: String },
+	},
 }, {
 	timestamps: true,
 });
+
+enableAuditLog(systemSchema);
 
 const systemModel = mongoose.model('system', systemSchema);
 

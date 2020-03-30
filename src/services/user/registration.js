@@ -2,7 +2,7 @@ const errors = require('@feathersjs/errors');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
-const globalHooks = require('../../hooks');
+const { getAge } = require('../../utils');
 const logger = require('../../logger');
 
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../consent/config');
@@ -70,9 +70,21 @@ const insertUserToDB = async (app, data, user) => {
 	}
 	return app.service('users').create(user, { _additional: { parentEmail: data.parent_email, asTask: 'student' } })
 		.catch((err) => {
-			logger.warning(err);
+			logger.error(err);
 			// fixme check error message is correct, check err
-			throw new errors.BadRequest('Fehler beim Erstellen des Nutzers. Eventuell ist die E-Mail-Adresse bereits im System registriert.');
+			let msg = 'Fehler beim Erstellen des Nutzers. '
+				+ 'Eventuell ist die E-Mail-Adresse bereits im System registriert. '
+				+ 'Wende dich an den Support. Damit wir dir schnell helfen können, '
+				+ 'teile uns bitte alle angegebenen E-Mail-Adressen mit.';
+			if (err && err.message) {
+				if (err.message.includes('bereits')) {
+					// account or user exists
+					msg = `${err.message} `
+					+ 'Wahrscheinlich kannst du dich damit bereits einloggen. '
+					+ 'Nutze dazu den Login. Dort kannst du dir auch ein neues Passwort zusenden lassen.';
+				}
+			}
+			throw new errors.BadRequest(msg);
 		});
 };
 
@@ -111,20 +123,20 @@ const registerUser = function register(data, params, app) {
 			if (user.birthday instanceof Date && isNaN(user.birthday)) {
 				return Promise.reject(new errors.BadRequest(
 					'Fehler bei der Erkennung des ausgewählten Geburtstages.'
-					+ ' Bitte lade die Seite neu und starte erneut.',
+						+ ' Bitte lade die Seite neu und starte erneut.',
 				));
 			}
 			// wrong age?
-			const age = globalHooks.getAge(user.birthday);
+			const age = getAge(user.birthday);
 			if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
 				return Promise.reject(new errors.BadRequest(
 					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
-					+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
+						+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
 				));
 			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
 				return Promise.reject(new errors.BadRequest(
 					`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
-					+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
+						+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
 				));
 			}
 		}
@@ -142,16 +154,20 @@ const registerUser = function register(data, params, app) {
 		return Promise.resolve();
 	})
 		.then(() => {
-			const userMail = data.parent_email || data.student_email || data.email;
-			const pinInput = data.pin;
+			const email = data.parent_email || data.student_email || data.email;
+			const { pin } = data;
 			return app.service('registrationPins').find({
-				query: { pin: pinInput, email: userMail, verified: false },
-			}).then((check) => {
+				query: { pin, email },
+			}).then((result) => {
 				// check pin
-				if (!(check.data && check.data.length > 0 && check.data[0].pin === pinInput)) {
-					return Promise.reject('Ungültige Pin, bitte überprüfe die Eingabe.');
+				if (result.data.length !== 1 || result.data[0].verified !== true) {
+					return Promise.reject(new Error('Der eingegebene Code konnte leider nicht verfiziert werden. Versuch es doch noch einmal.'));
 				}
 				return Promise.resolve();
+			}).catch((err) => {
+				const msg = err.message || 'Fehler wärend der Pin Überprüfung.';
+				logger.error(msg, err);
+				return Promise.reject(new Error(msg));
 			});
 		})
 		.then(() =>
@@ -169,15 +185,19 @@ const registerUser = function register(data, params, app) {
 			};
 			if (data.sso === 'true' && data.account) {
 				const accountId = data.account;
-				return app.service('accounts').update({ _id: accountId }, { $set: { activated: true, userId: user._id } })
+				return accountModel.findByIdAndUpdate(
+					accountId,
+					{ $set: { activated: true, userId: user._id } },
+					{ new: true },
+				).lean().exec()
 					.then((accountResponse) => {
 						account = accountResponse;
 					})
-					.catch((err) => Promise.reject(new Error('Fehler der Account existiert nicht.')));
+					.catch((err) => Promise.reject(new Error('Fehler der Account existiert nicht.', err)));
 			}
 			return app.service('accounts').create(account)
 				.then((newAccount) => { account = newAccount; })
-				.catch((err) => Promise.reject(new Error('Fehler beim Erstellen des Accounts.')));
+				.catch((err) => Promise.reject(new Error('Fehler beim Erstellen des Accounts.', err)));
 		})
 		.then((res) => {
 			// add parent if necessary
@@ -203,7 +223,7 @@ const registerUser = function register(data, params, app) {
 					})
 					.catch((err) => {
 						logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
-						return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.'));
+						return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.', err));
 					});
 			}
 			return Promise.resolve();
@@ -230,7 +250,7 @@ const registerUser = function register(data, params, app) {
 				.then((newConsent) => {
 					consent = newConsent;
 					return Promise.resolve();
-				}).catch((err) => Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.')));
+				}).catch((err) => Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.', err)));
 		})
 		.then(() => Promise.resolve({
 			user, parent, account, consent,

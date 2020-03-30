@@ -23,6 +23,10 @@ module.exports = (app, opt = {
 		schools,
 		years,
 		schoolGroups,
+		datasources,
+		homeworks,
+		submissions,
+		lessons,
 	} = serviceHelpers(app, opt);
 
 	const cleanup = () => Promise.all([]
@@ -36,7 +40,11 @@ module.exports = (app, opt = {
 		.concat(roles.cleanup())
 		.concat(schools.cleanup())
 		.concat(schoolGroups.cleanup())
-		.concat(years.cleanup()))
+		.concat(years.cleanup())
+		.concat(datasources.cleanup())
+		.concat(submissions.cleanup())
+		.concat(lessons.cleanup())
+		.concat(homeworks.cleanup()))
 		.then((res) => {
 			logger.info('[TestObjects] cleanup data.');
 			return res;
@@ -57,27 +65,40 @@ module.exports = (app, opt = {
 		schools: schools.info,
 		schoolGroups: schoolGroups.info,
 		years: years.info,
+		datasources: datasources.info,
+		homeworks: homeworks.info,
+		submissions: submissions.info,
+		lessons: lessons.info,
 	});
 
-	const createTestTeamWithOwner = async () => {
-		const user = await users.create();
+	const createTestTeamWithOwner = async (userData) => {
+		const user = await users.create(userData);
 		const team = await teams.create(user);
 		return { team, user };
 	};
 
-	const setupUser = async () => {
-		// create account
-		const user = await users.create();
-		// const account = createTestAccount();
-		// fetch jwt
-		const account = {};
-		const requestParams = {};
-		return { user, account, requestParams };
+	const setupUser = async (userData) => {
+		try {
+			const user = await users.create(userData);
+			const requestParams = await login.generateRequestParamsFromUser(user);
+			const { account } = requestParams;
+
+			return {
+				user,
+				account,
+				requestParams,
+				userId: user._id.toString(),
+				accountId: account._id.toString(),
+			};
+		} catch (err) {
+			logger.warning(err);
+			return err;
+		}
 	};
 
 	return {
 		createTestSystem: testSystem.create,
-		createTestAccount: warn('@implement should rewrite', accounts.create),
+		createTestAccount: accounts.create,
 		createTestUser: users.create,
 		createTestConsent: consents.create,
 		createTestClass: classes.create,
@@ -85,15 +106,20 @@ module.exports = (app, opt = {
 		createTestRole: roles.create,
 		createTestSchool: schools.create,
 		createTestSchoolGroup: schoolGroups.create,
+		createTestDatasource: datasources.create,
+		createTestHomework: homeworks.create,
+		createTestSubmission: submissions.create,
+		createTestLesson: lessons.create,
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
-		fakeLoginParams: login.fakeLoginParams,
+		generateRequestParamsFromUser: login.generateRequestParamsFromUser,
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
+		classes,
 		createTestTeamWithOwner,
 		info,
-		setupUser: warn('@implement should finished', setupUser),
+		setupUser,
 		options: opt,
 	};
 };

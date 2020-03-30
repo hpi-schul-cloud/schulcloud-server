@@ -1,4 +1,4 @@
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra.js');
@@ -13,6 +13,7 @@ const setSubject = (hook) => {
 	return hook.app.service('ltiTools').find({
 		query: {
 			oAuthClientId: hook.params.loginRequest.client.client_id,
+			isLocal: true,
 		},
 	}).then((tools) => hook.app.service('pseudonym').find({
 		query: {
@@ -29,20 +30,29 @@ const setSubject = (hook) => {
 
 const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
-	return hook.app.service('ltiTools').find({
-		query: {
-			oAuthClientId: hook.params.consentRequest.client.client_id,
-		},
-	}).then((tools) => hook.app.service('pseudonym').find({
+	return Promise.all([
+		hook.app.service('users').get(hook.params.account.userId),
+		hook.app.service('ltiTools').find({
+			query: {
+				oAuthClientId: hook.params.consentRequest.client.client_id,
+				isLocal: true,
+			},
+		}),
+	]).then(([user, tools]) => hook.app.service('pseudonym').find({
 		query: {
 			toolId: tools.data[0]._id,
 			userId: hook.params.account.userId,
 		},
 	}).then((pseudonyms) => {
 		const { pseudonym } = pseudonyms.data[0];
+		const name = (user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`);
+		const scope = hook.params.consentRequest.requested_scope;
 		hook.data.session = {
 			id_token: {
 				iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
+				email: (scope.includes('email') ? user.email : undefined),
+				name: (scope.includes('profile') ? name : undefined),
+				userId: (scope.includes('profile') ? user._id : undefined),
 			},
 		};
 		return hook;
@@ -75,19 +85,19 @@ exports.hooks = {
 	clients: {
 		before: {
 			all: [
-				auth.hooks.authenticate('jwt'),
+				authenticate('jwt'),
 				globalHooks.ifNotLocal(globalHooks.isSuperHero()),
 			],
 		},
 	},
 	loginRequest: {
 		before: {
-			patch: [auth.hooks.authenticate('jwt'), injectLoginRequest, setSubject],
+			patch: [authenticate('jwt'), injectLoginRequest, setSubject],
 		},
 	},
 	consentRequest: {
 		before: {
-			all: [auth.hooks.authenticate('jwt')],
+			all: [authenticate('jwt')],
 			patch: [injectConsentRequest, validateSubject, setIdToken],
 		},
 	},
@@ -98,7 +108,7 @@ exports.hooks = {
 	},
 	consentSessions: {
 		before: {
-			all: [auth.hooks.authenticate('jwt'), managesOwnConsents],
+			all: [authenticate('jwt'), managesOwnConsents],
 		},
 	},
 };

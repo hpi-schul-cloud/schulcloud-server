@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const auth = require('@feathersjs/authentication');
+const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
 const {
 	filterToRelated,
@@ -145,7 +145,7 @@ describe('Team service hook tests.', () => {
 			const newFilePermission = {
 				write: false, read: true, create: false, delete: false,
 			};
-			const ctx = await auth.hooks.authenticate('jwt')({
+			const ctx = await authenticate('jwt')({
 				id: team._id,
 				params,
 				data: { filePermission: newFilePermission },
@@ -169,7 +169,7 @@ describe('Team service hook tests.', () => {
 			const newFilePermission = {
 				write: false, read: true, create: false, delete: false,
 			};
-			const ctx = await auth.hooks.authenticate('jwt')({
+			const ctx = await authenticate('jwt')({
 				id: team._id,
 				params,
 				data: { filePermission: newFilePermission },

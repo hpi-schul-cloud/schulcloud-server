@@ -1,15 +1,16 @@
-const logger = require('../../../logger');
+const winstonLogger = require('../../../logger');
 
 /**
  * A basic syncer that provides step-by-step execution, statistics, and logging
  */
 class Syncer {
-	constructor(app, stats = {}) {
+	constructor(app, stats = {}, logger = winstonLogger) {
 		this.app = app;
 		this.stats = Object.assign(stats, {
 			success: undefined,
 			errors: [],
 		});
+		this.logger = logger;
 	}
 
 	/**
@@ -96,15 +97,19 @@ class Syncer {
 	}
 
 	logInfo(message, ...args) {
-		logger.info(`[${this.prefix()}] ${message}`, ...args);
+		this.logger.info(`[${this.prefix()}] ${message}`, ...args);
 	}
 
 	logWarning(message, ...args) {
-		logger.warning(`[${this.prefix()}] ${message}`, ...args);
+		this.logger.warning(`[${this.prefix()}] ${message}`, ...args);
 	}
 
 	logError(message, ...args) {
-		logger.error(`[${this.prefix()}] ${message}`, ...args);
+		this.logger.error(`[${this.prefix()}] ${message}`, ...args);
+	}
+
+	logDebug(message, ...args) {
+		this.logger.debug(`[${this.prefix()}] ${message}`, ...args);
 	}
 }
 

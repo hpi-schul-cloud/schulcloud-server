@@ -1,4 +1,9 @@
+const { courseModel } = require('../../../../src/services/user-group/model');
+
 let createdCourseIds = [];
+let coursesServices;
+
+const removeManyCourses = (ids) => courseModel.deleteMany({ _id: { $in: ids } }).lean().exec();
 
 const createTestCourse = (app, opt) => ({
 	// required fields for base group
@@ -11,7 +16,7 @@ const createTestCourse = (app, opt) => ({
 	substitutionIds = [],
 	startDate,
 	untilDate,
-}) => app.service('courses').create({
+} = {}) => app.service('courses').create({
 	// required fields for user
 	name,
 	schoolId,
@@ -27,14 +32,21 @@ const createTestCourse = (app, opt) => ({
 	return course;
 });
 
-const cleanup = (app) => () => {
+const cleanup = () => {
+	if (createdCourseIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdCourseIds;
 	createdCourseIds = [];
-	return ids.map((id) => app.service('classes').remove(id));
+	return removeManyCourses(ids);
 };
 
-module.exports = (app, opt) => ({
-	create: createTestCourse(app, opt),
-	cleanup: cleanup(app),
-	info: createdCourseIds,
-});
+module.exports = (app, opt) => {
+	coursesServices = app.service('courses');
+	coursesServices.setup(app);
+	return {
+		create: createTestCourse(app, opt),
+		cleanup,
+		info: createdCourseIds,
+	};
+};

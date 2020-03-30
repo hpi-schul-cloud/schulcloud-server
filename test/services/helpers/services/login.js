@@ -14,47 +14,40 @@ const generateJWT = (app) => async ({ username, password }) => {
 	return result.accessToken;
 };
 
+/**
+ * Execute login with username and password
+ * @returns { authentication = {accessToken, strategy}, provider = 'rest' }
+ */
 const generateRequestParams = (app) => async ({ username, password }) => {
 	const fetchJwt = generateJWT(app);
 	const jwt = await fetchJwt({ username, password });
 	return {
-		headers: {
-			authorization: `Bearer ${jwt}`,
+		authentication: {
+			accessToken: jwt,
+			strategy: 'jwt',
 		},
 		provider: 'rest',
 	};
 };
 
+/**
+ * I ) Create a account for this user
+ * II) Execute login for this user to get the jwt
+ * @param {User} user
+ * @param {Boolean} withAccount if true the account is also return
+ * @returns { [account], authentication = {accessToken, strategy}, provider = 'rest' }
+ */
 const generateRequestParamsFromUser = (app) => async (user) => {
 	const credentials = { username: user.email, password: user.email };
-	await accountsHelper(app).create(credentials, 'local', user);
-	return generateRequestParams(app)(credentials);
-};
+	const account = await accountsHelper(app).create(credentials, 'local', user);
 
-// hook.params.account.userId
-const fakeLoginParams = (app) => ({
-	userId,
-	account,
-	headers = {},
-	query = {},
-	route = {},
-}) => ({
-	account: account || {
-		userId,
-	},
-	authenticated: true,
-	provider: 'rest',
-	headers,
-	query,
-	route,
-	payload: {
-		accountId: (account || {})._id,
-	},
-});
+	const requestParams = await generateRequestParams(app)(credentials);
+	requestParams.account = account;
+	return requestParams;
+};
 
 module.exports = (app) => ({
 	generateJWT: generateJWT(app),
 	generateRequestParams: generateRequestParams(app),
 	generateRequestParamsFromUser: generateRequestParamsFromUser(app),
-	fakeLoginParams: fakeLoginParams(app),
 });
