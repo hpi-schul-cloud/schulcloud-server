@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const CryptoJS = require('crypto-js');
-// eslint-disable-next-line no-unused-vars
+
 const { info, error } = require('../src/logger');
 const { schoolModel: School } = require('../src/services/school/model');
 
@@ -42,7 +42,7 @@ module.exports = {
 				.lean()
 				.exec();
 
-			const assignedSchools = [].concat(...providers.map((p) => p.schools)).map((s) => s.toString());
+			const assignedSchools = [...providers.map((p) => p.schools)].map((s) => s.toString());
 			info(`Got ${assignedSchools.length} schools that already use another provider.`);
 
 			const secretAccessKey = CryptoJS.AES.encrypt(process.env.AWS_SECRET_ACCESS_KEY, process.env.S3_KEY);

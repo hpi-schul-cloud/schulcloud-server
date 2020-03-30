@@ -10,7 +10,7 @@ module.exports = function storageProvider() {
 			default: 1000,
 			max: 1000,
 		},
-		lean: false,
+		lean: true,
 	};
 
 	app.use('/storageProvider', service(options));

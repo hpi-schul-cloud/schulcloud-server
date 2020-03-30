@@ -42,7 +42,7 @@ const chooseProvider = async (schoolId) => {
 		{ $sort: { freeBuckets: -1 } },
 		{ $limit: 1 },
 	]).exec();
-	if (!provider) throw new NotFound('No available provider found.');
+	if (!provider) throw new Error('No available provider found.');
 	await storageProviderModel.findByIdAndUpdate(provider[0]._id,
 		{ $push: { schools: schoolId } },
 		{ safe: true, upsert: true }).lean().exec();
