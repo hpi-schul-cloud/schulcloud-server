@@ -62,7 +62,7 @@ const updateConsent = (data, targetUserId, app) => {
 			termsOfUseConsent: data.termsOfUseConsent,
 		};
 	}
-	return app.service('consents').create(consent);
+	return app.service('consents/model').create(consent);
 };
 
 /**

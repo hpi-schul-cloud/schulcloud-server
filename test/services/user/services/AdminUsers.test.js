@@ -5,7 +5,7 @@ const testObjects = require('../../helpers/testObjects')(app);
 
 const adminStudentsService = app.service('/users/admin/students');
 const adminTeachersService = app.service('/users/admin/teachers');
-const consentService = app.service('consents');
+const consentService = app.service('consents/model');
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 

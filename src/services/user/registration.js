@@ -237,14 +237,14 @@ const registerUser = function register(data, params, app) {
 					privacyConsent: data.parent_privacyConsent === 'true',
 					termsOfUseConsent: data.parent_termsOfUseConsent === 'true',
 				};
-				consentPromise = app.service('consents').create({ userId: user._id, parentConsents: [consent] });
+				consentPromise = app.service('consents/model').create({ userId: user._id, parentConsents: [consent] });
 			} else {
 				consent = {
 					form: 'digital',
 					privacyConsent: data.privacyConsent === 'true',
 					termsOfUseConsent: data.termsOfUseConsent === 'true',
 				};
-				consentPromise = app.service('consents').create({ userId: user._id, userConsent: consent });
+				consentPromise = app.service('consents/model').create({ userId: user._id, userConsent: consent });
 			}
 			return consentPromise
 				.then((newConsent) => {

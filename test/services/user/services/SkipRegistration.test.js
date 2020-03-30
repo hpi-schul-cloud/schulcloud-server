@@ -149,7 +149,7 @@ describe('skipRegistration service', () => {
 			birthday: '2014-12-19T00:00:00Z',
 			password: 'password1',
 		}, { route: { userid: user._id } });
-		const consentsResult = await app.service('consents').find({ query: { userId: user._id } });
+		const consentsResult = await app.service('consents/model').find({ query: { userId: user._id } });
 		expect(consentsResult).to.not.equal(undefined);
 		expect(consentsResult.total).to.equal(1);
 		const consent = consentsResult.data[0];

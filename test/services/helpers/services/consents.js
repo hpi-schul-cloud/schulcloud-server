@@ -5,7 +5,7 @@ const createTestConsent = (app, opt) => ({
 	userConsent = undefined,
 	parentConsents = [],
 	manualCleanup = false,
-} = {}) => app.service('consents').create({
+} = {}) => app.service('consents/model').create({
 	userId,
 	userConsent,
 	parentConsents,
@@ -22,7 +22,7 @@ const cleanup = (app) => () => {
 	}
 	const ids = createdConsentIds;
 	createdConsentIds = [];
-	return ids.map((id) => app.service('consents').remove(id));
+	return ids.map((id) => app.service('consents/model').remove(id));
 };
 
 module.exports = (app, opt) => ({
