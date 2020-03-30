@@ -15,6 +15,7 @@ const roleSchema = new Schema({
 });
 
 roleSchema.methods.getPermissions = function getPermissions() {
+	// eslint-disable-next-line no-use-before-define
 	return RoleModel.resolvePermissions([this._id]); // fixme
 };
 
@@ -23,9 +24,11 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 	const permissions = new Set();
 
 	function resolveSubRoles(roleId) {
+		// eslint-disable-next-line no-use-before-define
 		return RoleModel.findById(roleId) // fixme
 			.then((role) => {
 				if (typeof role !== 'object') {
+					// eslint-disable-next-line no-param-reassign
 					role = {};
 				}
 				if (Array.isArray(role.permissions) === false) {
