@@ -51,7 +51,7 @@ describe('TSP API integration tests', () => {
 			const userDetails = {
 				firstName: 'Thor',
 				lastName: 'Heyerdahl',
-				email: 'sailing@pacific.ocean',
+				email: `${Date.now()}sailing@pacific.ocean`,
 				schoolId: school._id,
 				source: 'tsp',
 				sourceOptions: { awesome: true, tspUid: '2345' },
