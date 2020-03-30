@@ -1,8 +1,8 @@
 const auth = require('@feathersjs/authentication');
-const logger = require('../../../logger');
 const {
 	Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable,
 } = require('@feathersjs/errors');
+const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 
 const { set, get } = require('./scope');
@@ -536,7 +536,7 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 				}
 			}
 
-			if (!isTeamowner || amountOfTeamowner >= 2) {
+			if (!isTeamowner || amountOfTeamowner !== 1) {
 				wait.push(leaveTeam(hook) // return roles
 					.catch(() => {
 						throw new Forbidden('Permission LEAVE_TEAM is missing.');
