@@ -11,5 +11,5 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-  - This changelog has been added
-  - Backend route to confirm analog consents in bulk
+- This changelog has been added
+- Backend route to confirm analog consents in bulk
