@@ -25,6 +25,7 @@ const handleResponseType = require('./middleware/handleReponseType');
 const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
+const rabbitMq = require('./utils/rabbitmq');
 
 const { BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
 
@@ -41,6 +42,7 @@ app.use(apiMetrics(metricsOptions));
 
 setupSwagger(app);
 initializeRedisClient();
+rabbitMq.setup(app);
 
 // set custom response header for ha proxy
 if (process.env.KEEP_ALIVE) {

@@ -6,16 +6,16 @@ let logLevel = process.env.LOG_LEVEL;
 
 if (!logLevel) {
 	switch (process.env.NODE_ENV) {
-		case 'default':
 		case 'development':
 			logLevel = 'debug';
 			break;
 		case 'test':
 			logLevel = 'emerg';
 			break;
+		case 'default':
 		case 'production':
 		default:
-			logLevel = 'info';
+			logLevel = 'error';
 	}
 }
 
