@@ -114,9 +114,26 @@ const addStats = (hook) => {
 			const c = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
 
 			// save grade in assignment if user is student of this task
-			const submission = submissions.data.filter((s) => (equalIds(c._id, s.homeworkId) && (s.grade)));
-			if (submission.length == 1 && !isTeacher(hook.params.account.userId, c)) {
-				c.grade = submission[0].grade.toFixed(2);
+			if (!isTeacher(hook.params.account.userId, c)) {
+				const submission = submissions.data.filter((s) => (
+					equalIds(c._id, s.homeworkId)
+					&& s.teamMembers
+					&& (
+						equalIds(hook.params.account.userId, s.teamMembers)
+						|| equalIds(hook.params.account.userId, s.studentId)
+					)
+				));
+				const submissionWithGrade = submission.filter((s) => s.grade);
+				if (submissionWithGrade.length === 1) {
+					c.grade = submissionWithGrade[0].grade.toFixed(2);
+				}
+
+				c.hasEvaluation = false;
+				if (submission.filter(isGraded).length === 1) {
+					c.hasEvaluation = true;
+				}
+
+				c.submissions = (submission.filter(isValidSubmission)).length;
 			}
 
 			if (!c.private && (
