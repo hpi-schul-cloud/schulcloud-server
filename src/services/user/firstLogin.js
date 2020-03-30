@@ -76,7 +76,7 @@ const firstLogin = async (data, params, app) => {
 	preferences.firstLogin = true;
 	userUpdate.preferences = preferences;
 
-	const userPromise = app.service('users').patch(user._id, userUpdate);
+	const userPromise = app.service('users').patch(user._id, userUpdate, { account: params.account });
 
 	if (data.privacyConsent || data.termsOfUseConsent) {
 		consentUpdate.userId = user._id;

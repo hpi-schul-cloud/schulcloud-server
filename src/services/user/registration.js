@@ -2,7 +2,7 @@ const errors = require('@feathersjs/errors');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
-const globalHooks = require('../../hooks');
+const { getAge } = require('../../utils');
 const logger = require('../../logger');
 
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../consent/config');
@@ -127,7 +127,7 @@ const registerUser = function register(data, params, app) {
 				));
 			}
 			// wrong age?
-			const age = globalHooks.getAge(user.birthday);
+			const age = getAge(user.birthday);
 			if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
 				return Promise.reject(new errors.BadRequest(
 					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
