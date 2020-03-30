@@ -27,11 +27,6 @@ const logRequestInfosInErrorCase = (error, req, res, next) => {
 
 const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 	if (error) {
-		// clear data and add requestId
-		error.data = showRequestId ? {
-			requestId: req.headers.requestId,
-		} : {};
-
 		// delete response informations for extern express applications
 		delete error.response;
 		if (error.options) {
@@ -46,6 +41,11 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 		// if exist delete it
 		delete error.stack;
 		// delete error.catchedError;
+
+		// clear data and add requestId
+		error.data = showRequestId ? {
+			requestId: req.headers.requestId,
+		} : {};
 	}
 	next(error);
 };

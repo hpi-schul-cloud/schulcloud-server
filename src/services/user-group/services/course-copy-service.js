@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const nanoid = require('nanoid');
-const { GeneralError } = require('@feathersjs/errors');
+const { BadRequest } = require('@feathersjs/errors');
 
 const logger = require('../../../logger');
 const hooks = require('../hooks/copyCourseHook');
@@ -24,6 +24,10 @@ const createLesson = (app, data) => app.service('lessons/copy').create(data);
 
 class CourseCopyService {
 	constructor(app) {
+		this.app = app;
+	}
+
+	setup(app) {
 		this.app = app;
 	}
 
@@ -70,7 +74,7 @@ class CourseCopyService {
 			homeworkModel.find({ courseId: sourceCourseId }).populate('lessonId'),
 			lessonsModel.find({ courseId: sourceCourseId }),
 		]).catch((err) => {
-			throw new GeneralError('Can not fetch data to copy this course.', err);
+			throw new BadRequest('Can not fetch data to copy this course.', err);
 		});
 
 		await Promise.all(lessons.map((lesson) => createLesson(this.app, {
@@ -79,8 +83,7 @@ class CourseCopyService {
 			userId: params.account.userId,
 			shareToken: lesson.shareToken,
 		}))).catch((err) => {
-			logger.warning(err);
-			throw new GeneralError('Can not copy one or many lessons.', err);
+			throw new BadRequest('Can not copy one or many lessons.', err);
 		});
 
 		await Promise.all(homeworks.map((homework) => {
@@ -97,7 +100,7 @@ class CourseCopyService {
 			}
 			return false;
 		})).catch((err) => {
-			throw new GeneralError('Can not copy one or many homeworks.', err);
+			throw new BadRequest('Can not copy one or many homeworks.', err);
 		});
 
 		return res;
@@ -106,6 +109,10 @@ class CourseCopyService {
 
 class CourseShareService {
 	constructor(app) {
+		this.app = app;
+	}
+
+	setup(app) {
 		this.app = app;
 	}
 

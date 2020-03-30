@@ -208,30 +208,33 @@ describe('fileStorage services', function fileStorageTest() {
 			}).catch(() => done());
 		});
 
-		it('should reject a file list on folder with no permission', async () => {
+		it('should reject a file list on folder with no permission', (done) => {
 			const context = setContext('0000d224816abba584714c8d');
 
-			const result = await fileStorageService.find({
+			fileStorageService.find({
 				query: {
 					parent: '5ca613c4c7f5120b8c5bef33',
 					owner: '5cf9303bec9d6ac639fefd42',
 				},
 				...context,
+			}).catch((res) => {
+				expect(res.code).to.be.equal(403);
+				return done();
 			});
-			expect(result.code).to.be.equal(403);
 		});
 
-		it('should get a by access rights filtered file list', async () => {
+		it('should get a by access rights filtered file list', (done) => {
 			const context = setContext('0000d224816abba584714c8c');
 
-			const result = await fileStorageService.find({
+			fileStorageService.find({
 				query: {
 					owner: '5cf9303bec9d6ac639fefd42',
 					parent: '5ca613c4c7f5120b8c5bef33',
 				},
 				...context,
-			});
-			expect(result).to.have.lengthOf(1);
+			}).then((res) => {
+				expect(res).to.have.lengthOf(1);
+			}).catch(() => done());
 		});
 
 		it('should delete a file', (done) => {
