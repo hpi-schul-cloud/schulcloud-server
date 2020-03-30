@@ -34,7 +34,7 @@ class AWSStrategy {
 	}
 }
 
-describe('fileStorage services', () => {
+describe('fileStorage services', function fileStorageTest() {
 	this.timeout(4000);
 	let app;
 	let fileStorageService;
