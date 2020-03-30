@@ -118,7 +118,7 @@ const addStats = (hook) => {
 					equalIds(c._id, s.homeworkId)
 					&& s.teamMembers
 					&& (
-						s.teamMembers.some((memeber) => equalIds(hook.params.account.userId, memeber))
+						s.teamMembers.some((member) => equalIds(hook.params.account.userId, member))
 						|| equalIds(hook.params.account.userId, s.studentId)
 					)
 				));
