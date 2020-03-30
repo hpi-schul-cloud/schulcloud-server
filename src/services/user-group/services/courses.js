@@ -15,33 +15,39 @@ const {
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
 
+const prepareInternalParams = (params) => {
+	const paramsCopy = JSON.parse(JSON.stringify(params));
+	paramsCopy.provider = undefined;
+	return paramsCopy;
+};
+
 class Courses {
 	constructor(options) {
 		this.options = options || {};
 	}
 
 	find(params) {
-		return this.app.service('courseModel').find(params);
+		return this.app.service('courseModel').find(prepareInternalParams(params));
 	}
 
 	get(id, params) {
-		return this.app.service('courseModel').get(id, params);
+		return this.app.service('courseModel').get(id, prepareInternalParams(params));
 	}
 
 	create(data, params) {
-		return this.app.service('courseModel').create(data, params);
+		return this.app.service('courseModel').create(data, prepareInternalParams(params));
 	}
 
 	update(id, data, params) {
-		return this.app.service('courseModel').update(id, data, params);
+		return this.app.service('courseModel').update(id, data, prepareInternalParams(params));
 	}
 
 	patch(id, data, params) {
-		return this.app.service('courseModel').patch(id, data, params);
+		return this.app.service('courseModel').patch(id, data, prepareInternalParams(params));
 	}
 
 	remove(id, params) {
-		return this.app.service('courseModel').remove(id, params);
+		return this.app.service('courseModel').remove(id, prepareInternalParams(params));
 	}
 
 	setup(app) {
