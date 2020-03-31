@@ -68,7 +68,7 @@ describe('course model service', () => {
 		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		try {
-			const result = await app.service('courseModel').get(course._id, params);
+			await app.service('courseModel').get(course._id, params);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.eq('should have failed');
