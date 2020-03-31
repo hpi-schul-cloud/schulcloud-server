@@ -4,21 +4,11 @@ const { Configuration } = require('@schul-cloud/commons');
 
 const { info, error } = require('../src/logger');
 const { schoolModel: School } = require('../src/services/school/model');
+const { storageProviderSchema } = require('../src/services/storageProvider/model');
 
 const { connect, close } = require('../src/utils/database');
 
-const StorageProvider = mongoose.model('storageProviderMigration', new mongoose.Schema({
-	type: { type: String, enum: ['S3'], required: true },
-	isShared: { type: Boolean },
-	accessKeyId: { type: String, required: true },
-	secretAccessKey: { type: String, required: true },
-	endpointUrl: { type: String, required: true },
-	region: { type: String },
-	maxBuckets: { type: Number, required: true },
-	schools: [{ type: mongoose.Schema.Types.ObjectId, ref: 'school' }],
-}, {
-	timestamps: true,
-}), 'storageproviders');
+const StorageProvider = mongoose.model('storageProviderMigration', storageProviderSchema, 'storageproviders');
 
 module.exports = {
 	up: async function up() {
@@ -32,33 +22,45 @@ module.exports = {
 				error('You need to set process.env.S3_KEY to encrypt the old key!');
 			}
 
-			let schools = await School.find({})
-				.select(['_id'])
-				.lean({ virtuals: true })
-				.exec();
-			schools = schools.map((s) => s._id);
-			info(`Got ${schools.length} schools.`);
+			await StorageProvider.createCollection();
 
-			const providers = await StorageProvider.find({ $where: 'this.schools.length > 0' })
-				.select(['schools'])
-				.lean()
-				.exec();
+			let session = null;
+			let unassignedSchools = [];
+			try {
+				session = await StorageProvider.db.startSession();
+				session.startTransaction();
 
-			const assignedSchools = [...providers.map((p) => p.schools)].map((s) => s.toString());
-			info(`Got ${assignedSchools.length} schools that already use another provider.`);
+				unassignedSchools = await School.countDocuments({ storageProvider: { $exists: false } })
+					.session(session).lean().exec();
+			} catch (err) {
+				if (err.errmsg === 'Transaction numbers are only allowed on a replica set member or mongos') {
+					session = undefined;
+					unassignedSchools = await School.countDocuments({ storageProvider: { $exists: false } })
+						.lean().exec();
+				} else {
+					throw err;
+				}
+			}
 
-			const secretAccessKey = CryptoJS.AES.encrypt(process.env.AWS_SECRET_ACCESS_KEY, S3_KEY);
-			const provider = new StorageProvider({
+			info(`Got ${unassignedSchools} unassigned schools.`);
+
+			const secretAccessKey = await CryptoJS.AES.encrypt(process.env.AWS_SECRET_ACCESS_KEY, S3_KEY).toString();
+
+			const [provider] = await StorageProvider.create([{
 				type: 'S3',
 				isShared: true,
 				accessKeyId: process.env.AWS_ACCESS_KEY,
 				secretAccessKey,
 				endpointUrl: process.env.AWS_ENDPOINT_URL,
-				region: process.env.AWS_REGION || 'eu-de',
+				region: process.env.AWS_REGION,
 				maxBuckets: 200,
-				schools: schools.filter((s) => !assignedSchools.includes(s.toString())), // only unassigned schools
-			});
-			await provider.save();
+				freeBuckets: (200 - unassignedSchools),
+			}], { session });
+			await School.updateMany(
+				{ storageProvider: { $exists: false } },
+				{ $set: { storageProvider: provider._id } },
+			).session(session).lean().exec();
+			if (session) await session.commitTransaction();
 			info(`Created default storage provider (${process.env.AWS_ENDPOINT_URL}) for all existing schools.`);
 		}
 
@@ -67,10 +69,16 @@ module.exports = {
 
 	down: async function down() {
 		await connect();
-		await StorageProvider.deleteOne({
+		const provider = await StorageProvider.findOneAndDelete({
 			endpointUrl: process.env.AWS_ENDPOINT_URL,
 			accessKeyId: process.env.AWS_ACCESS_KEY,
 		}).lean().exec();
+		if (provider) {
+			await School.updateMany(
+				{ storageProvider: provider._id },
+				{ $unset: { storageProvider: true } },
+			).lean().exec();
+		}
 		await close();
 	},
 };

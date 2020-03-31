@@ -1,4 +1,4 @@
-const storageProviderModel = require('../../../../src/services/storageProvider/model');
+const { storageProviderModel } = require('../../../../src/services/storageProvider/model');
 
 let createdProviderIds = [];
 

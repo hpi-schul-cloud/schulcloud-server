@@ -1,6 +1,7 @@
 const CryptoJS = require('crypto-js');
 const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@schul-cloud/commons');
+const { discard } = require('feathers-hooks-common');
 
 const globalHooks = require('../../../hooks');
 
@@ -25,8 +26,8 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [],
-	get: [],
+	find: [discard('secretAccessKey')],
+	get: [discard('secretAccessKey')],
 	create: [],
 	update: [],
 	patch: [],

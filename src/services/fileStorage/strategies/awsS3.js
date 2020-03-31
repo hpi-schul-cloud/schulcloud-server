@@ -7,7 +7,7 @@ const pathUtil = require('path');
 const fs = require('fs');
 const logger = require('../../../logger');
 const { schoolModel } = require('../../school/model');
-const storageProviderModel = require('../../storageProvider/model');
+const { StorageProviderModel } = require('../../storageProvider/model');
 const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
@@ -28,7 +28,7 @@ const getConfig = (provider) => {
 		sslEnabled: true,
 		accessKeyId: provider.accessKeyId,
 		secretAccessKey: provider.secretAccessKey,
-		region: provider.region || 'eu-de',
+		region: provider.region,
 		endpointUrl: provider.endpointUrl,
 		cors_rules: getCorsRules(),
 	});
@@ -37,16 +37,42 @@ const getConfig = (provider) => {
 };
 
 const chooseProvider = async (schoolId) => {
-	const provider = await storageProviderModel.aggregate([
-		{ $match: { isShared: true } },
-		{ $addFields: { freeBuckets: { $subtract: ['$maxBuckets', { $size: '$schools' }] } } },
-		{ $sort: { freeBuckets: -1 } },
-		{ $limit: 1 },
-	]).exec();
-	if (!Array.isArray(provider) || provider.length === 0) throw new Error('No available provider found.');
-	await storageProviderModel.findByIdAndUpdate(provider[0]._id,
-		{ $push: { schools: schoolId } },
-		{ safe: true, upsert: true }).lean().exec();
+	let session = null;
+	let providers = [];
+	try {
+		session = await StorageProviderModel.db.startSession();
+		session.startTransaction();
+
+		providers = await StorageProviderModel
+			.find({ isShared: true }).sort({ freeBuckets: -1 }).limit(1).session(session)
+			.lean()
+			.exec();
+	} catch (err) {
+		/* with no replica set (in local dev env), first request of transaction will fail -> we set session to
+		undefined and repeat first request */
+		if (err.errmsg === 'Transaction numbers are only allowed on a replica set member or mongos') {
+			session = undefined;
+			providers = await StorageProviderModel
+				.find({ isShared: true }).sort({ freeBuckets: -1 }).limit(1)
+				.lean()
+				.exec();
+		} else {
+			throw err;
+		}
+	}
+
+	if (!Array.isArray(providers) || providers.length === 0) throw new Error('No available provider found.');
+	const provider = providers[0];
+
+	await StorageProviderModel.findByIdAndUpdate(provider._id, { $inc: { freeBuckets: -1 } })
+		.session(session).lean().exec();
+	await schoolModel.findByIdAndUpdate(schoolId, { $set: { storageProvider: provider._id } })
+		.session(session).lean().exec();
+
+	logger.warning(provider);
+
+	if (session) await session.commitTransaction();
+
 	return provider;
 };
 
@@ -68,18 +94,25 @@ if (!FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
 // end legacy
 
 const createAWSObject = async (schoolId) => {
-	const school = await schoolModel.findOne({ _id: schoolId }).lean().exec();
+	const school = await schoolModel
+		.findOne({ _id: schoolId })
+		.populate('storageProvider')
+		.select(['storageProvider'])
+		.lean()
+		.exec();
+
 	if (school === null) throw new NotFound('School not found.');
 
 	if (FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
 		const S3_KEY = Configuration.get('S3_KEY');
-		let provider = await storageProviderModel.findOne({ schools: schoolId }).lean().exec();
-		if (provider === null) provider = await chooseProvider(schoolId);
-		provider.secretAccessKey = CryptoJS.AES.decrypt(provider.secretAccessKey, S3_KEY)
+		if (!school.storageProvider) {
+			school.storageProvider = await chooseProvider(schoolId);
+		}
+		school.storageProvider.secretAccessKey = CryptoJS.AES.decrypt(school.storageProvider.secretAccessKey, S3_KEY)
 			.toString(CryptoJS.enc.Utf8);
 
 		return {
-			s3: new aws.S3(getConfig(provider)),
+			s3: new aws.S3(getConfig(school.storageProvider)),
 			bucket: `bucket-${schoolId}`,
 		};
 	}

@@ -10,15 +10,15 @@ const storageProviderSchema = new Schema({
 	accessKeyId: { type: String, required: true },
 	secretAccessKey: { type: String, required: true },
 	endpointUrl: { type: String, required: true },
-	region: { type: String },
+	region: { type: String, default: 'eu-de' },
 	maxBuckets: { type: Number, required: true },
-	schools: [{ type: mongoose.Schema.Types.ObjectId, ref: 'school', index: true }],
+	freeBuckets: { type: Number, required: true, index: true },
 }, {
 	timestamps: true,
 });
 
 enableAuditLog(storageProviderSchema);
 
-const storageProviderModel = mongoose.model('storageprovider', storageProviderSchema);
+const StorageProviderModel = mongoose.model('storageprovider', storageProviderSchema);
 
-module.exports = storageProviderModel;
+module.exports = { StorageProviderModel, storageProviderSchema };
