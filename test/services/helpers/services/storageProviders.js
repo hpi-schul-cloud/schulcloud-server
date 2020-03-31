@@ -1,8 +1,8 @@
-const { storageProviderModel } = require('../../../../src/services/storageProvider/model');
+const { StorageProviderModel } = require('../../../../src/services/storageProvider/model');
 
 let createdProviderIds = [];
 
-const removeManyProviders = (ids) => storageProviderModel.deleteMany({ _id: { $in: ids } }).lean().exec();
+const removeManyProviders = (ids) => StorageProviderModel.deleteMany({ _id: { $in: ids } }).lean().exec();
 
 const createTestProvider = (app) => ({
 	// required fields for base group
