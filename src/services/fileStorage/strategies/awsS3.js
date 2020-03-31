@@ -118,7 +118,7 @@ const createAWSObject = async (schoolId) => {
 	}
 
 	// begin legacy
-	if (!awsConfig.endpointUrl) throw new Error('AWS integration is not configured on the server');
+	if (!awsConfig.endpointUrl) throw new Error('S3 integration is not configured on the server');
 	const config = new aws.Config(awsConfig);
 	config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
 
