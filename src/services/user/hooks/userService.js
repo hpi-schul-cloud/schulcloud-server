@@ -1,17 +1,10 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
-const { iff, isProvider } = require('feathers-hooks-common');
 const logger = require('../../../logger');
 const {
 	hasRole,
 	hasRoleNoHook,
 	hasPermissionNoHook,
-	mapPaginationQuery,
-	resolveToIds,
-	restrictToCurrentSchool,
-	permitGroupOperation,
-	denyIfNotCurrentSchool,
-	computeProperty,
 	hasPermission,
 } = require('../../../hooks');
 
@@ -21,8 +14,6 @@ const {
 
 const constants = require('../../../utils/constants');
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../consent/config');
-
-const { hasEditPermissionForUser } = require('./index.hooks');
 
 /**
  *
@@ -221,7 +212,7 @@ const securePatching = (hook) => Promise.all([
 ])
 	.then(([isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent]) => {
 		if (isDemoStudent || isDemoTeacher) {
-			return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+			return Promise.reject(new errors.Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
 		}
 		if (!isSuperHero) {
 			delete hook.data.schoolId;
@@ -380,73 +371,21 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 	}
 };
 
-const User = require('../model');
-
-exports.before = {
-	all: [],
-	find: [
-		mapPaginationQuery.bind(this),
-		// resolve ids for role strings (e.g. 'TEACHER')
-		resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
-		authenticate('jwt'),
-		iff(isProvider('external'), restrictToCurrentSchool),
-		mapRoleFilterQuery,
-	],
-	get: [authenticate('jwt')],
-	create: [
-		checkJwt(),
-		pinIsVerified,
-		sanitizeData,
-		checkUnique,
-		checkUniqueAccount,
-		resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
-	],
-	update: [
-		authenticate('jwt'),
-		// TODO only local for LDAP
-		sanitizeData,
-		hasEditPermissionForUser,
-		resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
-	],
-	patch: [
-		authenticate('jwt'),
-		iff(isProvider('external'), securePatching),
-		permitGroupOperation,
-		sanitizeData,
-		hasEditPermissionForUser,
-		resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
-		updateAccountUsername,
-	],
-	remove: [
-		authenticate('jwt'),
-		iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
-		permitGroupOperation,
-	],
-};
-
-exports.after = {
-	all: [],
-	find: [
-		decorateAvatar,
-		decorateUsers,
-	],
-	get: [
-		decorateAvatar,
-		decorateUser,
-		computeProperty(User.userModel, 'getPermissions', 'permissions'),
-		iff(isProvider('external'),
-			denyIfNotCurrentSchool({
-				errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
-			})),
-	],
-	create: [
-		handleClassId,
-	],
-	update: [],
-	patch: [],
-	remove: [
-		pushRemoveEvent,
-		removeStudentFromClasses,
-		removeStudentFromCourses,
-	],
+module.exports = {
+	mapRoleFilterQuery,
+	checkUnique,
+	checkJwt,
+	checkUniqueAccount,
+	updateAccountUsername,
+	removeStudentFromClasses,
+	removeStudentFromCourses,
+	sanitizeData,
+	pinIsVerified,
+	securePatching,
+	decorateUser,
+	decorateAvatar,
+	decorateUsers,
+	handleClassId,
+	pushRemoveEvent,
+	enforceRoleHierarchyOnDelete,
 };
