@@ -13,6 +13,7 @@ const createTestProvider = (app) => ({
 	endpointUrl = 'http://example.org',
 	region = 'eu-de',
 	maxBuckets = 200,
+	freeBuckets = 200,
 } = {}) => app.service('storageProvider').create({
 	// required fields for user
 	type,
@@ -22,6 +23,7 @@ const createTestProvider = (app) => ({
 	endpointUrl,
 	region,
 	maxBuckets,
+	freeBuckets,
 }).then((provider) => {
 	createdProviderIds.push(provider._id.toString());
 	return provider;
