@@ -186,11 +186,11 @@
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "If enabled, uses storageProviders table to use multiple S3 instances."
+			"description": "Enables using the storage provider collection to determine a provider with free buckets upon school creation. If disabled, the only storage provider is configured via the environment variables in config/secrets.js"
 		},
 		"S3_KEY": {
 			"type": "string",
-			"description": "This key is used to encrypt S3 secret access keys in the database.",
+			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		}
 	},
