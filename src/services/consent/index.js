@@ -20,10 +20,9 @@ module.exports = function () {
 	consentModelService.docs = consentDocs;
 	/* Consent Model */
 	app.use('/consents/model', consentModelService);
-
+	app.service('/consents/model').hooks(consentHooks);
 
 	app.use('/constens', ConsentService);
-	app.service('/consents').hooks(consentHooks);
 
 	/* ConsentVersion Model */
 	app.use('/consentVersions', service({
