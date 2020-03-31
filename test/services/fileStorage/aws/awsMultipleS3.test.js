@@ -40,7 +40,7 @@ describe('multple S3 AWS file storage strategy', () => {
 		Configuration.set('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED', true);
 		Configuration.set('S3_KEY', '1234567891234567');
 
-		await testObjects.createTestStorageProvider({ secretAccessKey: '123456789 });
+		await testObjects.createTestStorageProvider({ secretAccessKey: '123456789' });
 
 		delete require.cache[require.resolve('../../../../src/services/fileStorage/strategies/awsS3')];
 		// eslint-disable-next-line global-require
