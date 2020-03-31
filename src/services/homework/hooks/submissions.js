@@ -132,7 +132,12 @@ const insertHomeworkData = (hook) => {
 	if (homeworkId) {
 		const userId = hook.params.account.userId.toString();
 		const homeworkService = hook.app.service('/homework');
-		return homeworkService.get(homeworkId, { account: { userId } })
+		return homeworkService.get(homeworkId, {
+			account: { userId },
+			query: {
+				$populate: ['courseId'],
+			},
+		})
 			.then((homework) => {
 				hook.data.homework = homework;
 				// isTeacher?
