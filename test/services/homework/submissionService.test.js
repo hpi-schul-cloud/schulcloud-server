@@ -1,13 +1,10 @@
-const assert = require('assert');
 const chai = require('chai');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 
 const { expect } = chai;
 
-const oneWeekInMilliseconds = 6.048e+8;
-
-describe.only('submission service', function test() {
+describe('submission service', function test() {
 	this.timeout(10000);
 	let server;
 
@@ -84,5 +81,73 @@ describe.only('submission service', function test() {
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('_id');
 		expect(result.grade).to.eq(99);
+	});
+
+	it('lets co-teacher grade submission', async () => {
+		const [originalTeacher, coTeacher, student] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'] }),
+			testObjects.createTestUser({ roles: ['teacher'] }),
+			testObjects.createTestUser({ roles: ['student'] }),
+		]);
+		const course = await testObjects.createTestCourse({
+			teacherIds: [originalTeacher._id, coTeacher._id], userIds: [student._id],
+		});
+		const homework = await testObjects.createTestHomework({
+			teacherId: originalTeacher._id,
+			name: 'Testaufgabe',
+			description: 'Wo würdest du suchen, wenn du einen Bezuar beschaffen müsstest?',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
+			private: false,
+			archived: [originalTeacher._id],
+			lessonId: null,
+			courseId: course._id,
+		});
+		const submission = await testObjects.createTestSubmission({
+			schoolId: course.schoolId,
+			courseId: course._id,
+			homeworkId: homework._id,
+			studentId: student._id,
+			comment: 'Ich weis nicht, Sir.',
+		});
+		const params = await testObjects.generateRequestParamsFromUser(coTeacher);
+		const result = await app.service('submissions').patch(submission._id, { grade: 0 }, params);
+		expect(result).to.not.be.undefined;
+		expect(result).to.haveOwnProperty('_id');
+		expect(result.grade).to.eq(0);
+	});
+
+	it('lets substitution teacher grade submission', async () => {
+		const [originalTeacher, coTeacher, student] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'] }),
+			testObjects.createTestUser({ roles: ['teacher'] }),
+			testObjects.createTestUser({ roles: ['student'] }),
+		]);
+		const course = await testObjects.createTestCourse({
+			teacherIds: [originalTeacher._id, coTeacher._id], userIds: [student._id],
+		});
+		const homework = await testObjects.createTestHomework({
+			teacherId: originalTeacher._id,
+			name: 'Testaufgabe',
+			description: 'Addiere alle Zahlen von 1-100',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
+			private: false,
+			archived: [originalTeacher._id],
+			lessonId: null,
+			courseId: course._id,
+		});
+		const submission = await testObjects.createTestSubmission({
+			schoolId: course.schoolId,
+			courseId: course._id,
+			homeworkId: homework._id,
+			studentId: student._id,
+			comment: '5050',
+		});
+		const params = await testObjects.generateRequestParamsFromUser(coTeacher);
+		const result = await app.service('submissions').patch(submission._id, { grade: 100 }, params);
+		expect(result).to.not.be.undefined;
+		expect(result).to.haveOwnProperty('_id');
+		expect(result.grade).to.eq(100);
 	});
 });
