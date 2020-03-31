@@ -176,6 +176,7 @@ const fileStorageService = {
 			parent,
 			refOwnerModel,
 			permissions,
+			creator: userId,
 			storageFileName: decodeURIComponent(data.storageFileName),
 		}));
 
@@ -528,6 +529,7 @@ const directoryService = {
 			owner: owner || userId,
 			parent,
 			refOwnerModel,
+			creator: userId,
 			permissions: [...permissions, ...sendPermissions].map(this.setRefId),
 		}));
 
