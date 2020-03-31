@@ -5,6 +5,8 @@ const mockery = require('mockery');
 const { Configuration } = require('@schul-cloud/commons');
 const mockAws = require('./s3.mock');
 const logger = require('../../../../src/logger');
+const app = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(app);
 
 chai.use(chaiHttp);
 
@@ -19,7 +21,9 @@ describe('multple S3 AWS file storage strategy', () => {
 
 	let configBefore = {};
 
-	before((done) => {
+	const storageProviderService = app.service('storageProvider');
+
+	before(async () => {
 		// Enable mockery to mock objects
 		mockery.enable({
 			warnOnUnregistered: false,
@@ -36,17 +40,18 @@ describe('multple S3 AWS file storage strategy', () => {
 		configBefore = Configuration.toObject(); // deep copy current config
 		Configuration.set('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED', true);
 		Configuration.set('S3_KEY', '1234567891234567');
-		console.log(Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED'));
+
+		await testObjects.createTestStorageProvider({ secretAccessKey: '123456789' });
 
 		delete require.cache[require.resolve('../../../../src/services/fileStorage/strategies/awsS3')];
 		const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
 		aws = new AWSStrategy();
-		done();
 	});
 
 	after(() => {
 		mockery.deregisterAll();
 		mockery.disable();
+		testObjects.cleanup();
 		Configuration.reset(configBefore);
 	});
 
@@ -80,6 +85,7 @@ describe('multple S3 AWS file storage strategy', () => {
 			'0000d213816abba584714c0a',
 			'users/0000d213816abba584714c0a/example.jpg',
 		).then((res) => {
+			console.log(res);
 			expect(res).to.not.be.undefined;
 			expect(res.Deleted).to.have.lengthOf(1);
 			expect(res.Deleted[0].Key).to.equal('users/0000d213816abba584714c0a/example.jpg');
@@ -99,6 +105,7 @@ describe('multple S3 AWS file storage strategy', () => {
 			flatFileName: 'users/0000d213816abba584714c0a/example.jpg',
 			fileType: 'text/plain',
 		}).then((res) => {
+			console.log(res);
 			expect(res).to.not.be.undefined;
 			expect(res).to.be.equal('successfully created signed url');
 		}));

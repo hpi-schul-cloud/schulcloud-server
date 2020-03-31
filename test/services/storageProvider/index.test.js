@@ -1,20 +1,17 @@
 const assert = require('assert');
 const CryptoJS = require('crypto-js');
 const { Configuration } = require('@schul-cloud/commons');
+const app = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(app);
+
+const storageProviderService = app.service('storageProvider');
 
 describe('storageProvider service', () => {
 	let configBefore = {};
-	let storageProviderService = null;
-	let testObjects = null;
 
 	before(() => {
 		configBefore = Configuration.toObject(); // deep copy current config
 		Configuration.set('S3_KEY', '1234567891234567');
-
-		const app = require('../../../src/app');
-
-		storageProviderService = app.service('storageProvider');
-		testObjects = require('../helpers/testObjects')(app);
 	});
 
 	it('registered the storage provider service', () => {
