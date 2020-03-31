@@ -400,7 +400,8 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
+		const creatorId = fileObject.creator
+			|| fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
 		if (download
 			&& fileObject.securityCheck
@@ -431,7 +432,8 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
+		const creatorId = fileObject.creator
+			|| fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
 		return canRead(userId, id)
 			.then(() => strategy.getSignedUrl({
@@ -858,7 +860,7 @@ const filePermissionService = {
 		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
 		const rolePromises = rolePermissions
 			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
-		const isFileCreator = equalIds(fileObj.permissions[0].refId, userId);
+		const isFileCreator = equalIds(fileObj.creator || fileObj.permissions[0].refId, userId);
 
 		const actionMap = {
 			user: () => {
