@@ -1,5 +1,3 @@
-const mongoose = require('mongoose');
-
 const { info } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 const { FileModel } = require('../src/services/fileStorage/model');
@@ -17,10 +15,7 @@ module.exports = {
 		info(`${allFiles} files exist. ${filesToUpdate} files have creator information.`);
 
 		info('Adding "creator" attribute. This may take a while...');
-		// We need to use the raw mongodb connection, because it allows us to let the DB handle
-		// the attribute creation within an aggregate stage, whereas in Mongoose we would need to
-		// do this in our code.
-		await mongoose.connection.collection('files').updateMany({
+		await FileModel.updateMany({
 			'permissions.0.refPermModel': 'user',
 			'permissions.0.refId': { $exists: true },
 		}, [
