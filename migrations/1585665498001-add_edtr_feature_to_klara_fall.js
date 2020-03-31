@@ -37,9 +37,6 @@ module.exports = {
 		// Make changes to the database here.
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
-		console.log(await User.find({
-			email: 'klara.fall@schul-cloud.org',
-		}).lean().exec());
 		await User.update({
 			email: 'klara.fall@schul-cloud.org',
 		}, {
