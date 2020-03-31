@@ -39,32 +39,26 @@ class UserService {
 	}
 
 	find(params) {
-		console.log(!!this.app)
 		return this.app.service('usersModel').find(prepareInternalParams(params));
 	}
 
 	get(id, params) {
-		console.log(!!this.app)
 		return this.app.service('usersModel').get(id, prepareInternalParams(params));
 	}
 
 	create(data, params) {
-		console.log(!!this.app)
 		return this.app.service('usersModel').create(data, prepareInternalParams(params));
 	}
 
 	update(id, data, params) {
-		console.log(!!this.app)
 		return this.app.service('usersModel').update(id, data, prepareInternalParams(params));
 	}
 
 	patch(id, data, params) {
-		console.log(!!this.app)
 		return this.app.service('usersModel').patch(id, data, prepareInternalParams(params));
 	}
 
 	remove(id, params) {
-		console.log(!!this.app)
 		return this.app.service('usersModel').remove(id, prepareInternalParams(params));
 	}
 
