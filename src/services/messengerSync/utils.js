@@ -128,11 +128,11 @@ const buildMessageObject = async ({ userId, teams, courses }) => {
 			id: school._id.toString(),
 			has_allhands_channel: true,
 			name: school.name,
-			email: user.email,
 		},
 		user: {
 			id: `@sso_${user._id.toString()}:${homeserver}`,
 			name: displayName(user),
+			email: user.email,
 			is_school_admin: user.roles.some((el) => el.toString() === moderatorRoles.adminRoleId.toString()),
 			is_school_teacher: user.roles.some((el) => el.toString() === moderatorRoles.teacherRoleId.toString()),
 		},
