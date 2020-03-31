@@ -252,7 +252,6 @@
 	},
 	"firstName": "Klara",
 	"lastName": "Fall",
-	"features": ["edtr"],
 	"roles": [
 		{
 			"$oid": "0000d186816abba584714c98"
