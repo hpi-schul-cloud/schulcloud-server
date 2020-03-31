@@ -39,6 +39,7 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 			rolesToTest = rolesToTest.concat(roleIndex[roleId].roles || []);
 		}
 
+		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
 		const { role: creatorRole } = file.owner.userIds
 			.find((_) => equalIds(_.userId, file.creator || file.permissions[0].refId));
 

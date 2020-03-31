@@ -400,6 +400,7 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
+		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
 		const creatorId = fileObject.creator
 			|| fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
@@ -432,6 +433,7 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
+		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
 		const creatorId = fileObject.creator
 			|| fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
@@ -860,6 +862,7 @@ const filePermissionService = {
 		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
 		const rolePromises = rolePermissions
 			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
+		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
 		const isFileCreator = equalIds(fileObj.creator || fileObj.permissions[0].refId, userId);
 
 		const actionMap = {
