@@ -50,11 +50,22 @@ const addDates = (hook) => {
 	}
 };
 
-const mapInObjectToArray = (hook) => {
-	if (((hook.params.query || {}).userId || {}).$in && !Array.isArray(((hook.params.query || {}).userId || {}).$in)) {
-		hook.params.query.userId.$in = Object.values(hook.params.query.userId.$in);
+/**
+ * check if userId is set and set it to an empty $in clause if not
+ * if userId.$in is an object convert it to an array
+ * @param {*} context
+ */
+const setUserIdToCorrectForm = (context) => {
+	if (!context.params.query) {
+		context.params.query = {};
 	}
-	return hook;
+	if (!context.params.query.userId) {
+		context.params.query.userId = {};
+		context.params.query.userId.$in = [];
+	} else if (context.params.query.userId.$in && !Array.isArray(context.params.query.userId.$in)) {
+		context.params.query.userId.$in = Object.values(context.params.query.userId.$in);
+	}
+	return context;
 };
 
 const checkExisting = (hook) => hook.app.service('consents/model').find({ query: { userId: hook.data.userId } })
@@ -220,7 +231,7 @@ exports.before = {
 	find: [
 		authenticate('jwt'),
 		globalHooks.ifNotLocal(restrictToUserOrRole),
-		mapInObjectToArray,
+		setUserIdToCorrectForm,
 	],
 	get: [authenticate('jwt')],
 	create: [addDates, checkExisting],
