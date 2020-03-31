@@ -130,15 +130,16 @@ const insertSubmissionData = (hook) => {
 const insertHomeworkData = (hook) => {
 	const homeworkId = hook.data.homeworkId || (hook.data.submission || {}).homeworkId;
 	if (homeworkId) {
+		const userId = hook.params.account.userId.toString();
 		const homeworkService = hook.app.service('/homework');
-		return homeworkService.get(homeworkId, { account: { userId: hook.params.account.userId } })
+		return homeworkService.get(homeworkId, { account: { userId } })
 			.then((homework) => {
 				hook.data.homework = homework;
 				// isTeacher?
 				hook.data.isTeacher = false;
 				if ((hook.data.homework.teacherId == hook.params.account.userId)
-						|| (hook.data.homework.courseId.teacherIds || []).includes(hook.params.account.userId)
-						|| (hook.data.homework.courseId.substitutionIds || []).includes(hook.params.account.userId)) {
+						|| (hook.data.homework.courseId.teacherIds || []).some((el) => el.toString() === userId) //
+						|| (hook.data.homework.courseId.substitutionIds || []).some((el) => el.toString() === userId)) {
 					hook.data.isTeacher = true;
 				}
 				return Promise.resolve(hook);
