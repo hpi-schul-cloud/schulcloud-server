@@ -331,7 +331,7 @@ describe('fileStorage services', () => {
 				filename: 'test.txt',
 				fileType: 'text/plain',
 			}, context)
-				.then(({ code }) => {
+				.catch(({ code }) => {
 					expect(code).to.be.equal(403);
 					return done();
 				});
@@ -393,6 +393,8 @@ describe('fileStorage services', () => {
 			const promises = fileNames.map((filename) => signedUrlService.create({ filename, fileType: 'text/html' }, {
 				payload: { userId: '0000d213816abba584714c0a' },
 				account: { userId: '0000d213816abba584714c0a' },
+			}).then(() => {
+				throw new Error('This should not have happened!');
 			}).catch((err) => {
 				expect(err.name).to.equal('BadRequest');
 				expect(err.code).to.equal(400);
