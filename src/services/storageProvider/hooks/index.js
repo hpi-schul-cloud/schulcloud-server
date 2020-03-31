@@ -1,12 +1,13 @@
 const CryptoJS = require('crypto-js');
 const { authenticate } = require('@feathersjs/authentication');
+const { Configuration } = require('@schul-cloud/commons');
 
 const globalHooks = require('../../../hooks');
 
 const encryptSecret = (context) => {
 	if (context.data.secretAccessKey) {
 		context.data.secretAccessKey = CryptoJS.AES
-			.encrypt(context.data.secretAccessKey, process.env.S3_KEY)
+			.encrypt(context.data.secretAccessKey, Configuration.get('S3_KEY'))
 			.toString();
 	}
 	return context;

@@ -8,8 +8,7 @@ const logger = require('../../../../src/logger');
 
 chai.use(chaiHttp);
 
-
-describe('AWS file storage strategy', () => {
+describe('multple S3 AWS file storage strategy', () => {
 	let aws;
 
 	const options = {
@@ -17,6 +16,8 @@ describe('AWS file storage strategy', () => {
 	};
 
 	const ShouldFail = new Error('It succeeded but should have returned an error.');
+
+	let configBefore = {};
 
 	before((done) => {
 		// Enable mockery to mock objects
@@ -32,6 +33,11 @@ describe('AWS file storage strategy', () => {
 			},
 		});
 
+		configBefore = Configuration.toObject(); // deep copy current config
+		Configuration.set('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED', true);
+		Configuration.set('S3_KEY', '1234567891234567');
+		console.log(Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED'));
+
 		delete require.cache[require.resolve('../../../../src/services/fileStorage/strategies/awsS3')];
 		const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
 		aws = new AWSStrategy();
@@ -41,6 +47,7 @@ describe('AWS file storage strategy', () => {
 	after(() => {
 		mockery.deregisterAll();
 		mockery.disable();
+		Configuration.reset(configBefore);
 	});
 
 	describe('create', () => {

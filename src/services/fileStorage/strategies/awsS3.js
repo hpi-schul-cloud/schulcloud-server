@@ -1,6 +1,7 @@
 const { promisify } = require('es6-promisify');
 const CryptoJS = require('crypto-js');
 const { BadRequest, NotFound, GeneralError } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
 const aws = require('aws-sdk');
 const pathUtil = require('path');
 const fs = require('fs');
@@ -49,9 +50,10 @@ const chooseProvider = async (schoolId) => {
 	return provider;
 };
 
+const FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED = Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED');
 // begin legacy
 let awsConfig = {};
-if (!process.env.ENABLE_MULTIPLE_S3_PROVIDERS) {
+if (!FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
 	try {
 		//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 		/* eslint-disable global-require, no-unused-expressions */
@@ -69,10 +71,11 @@ const createAWSObject = async (schoolId) => {
 	const school = await schoolModel.findOne({ _id: schoolId }).lean().exec();
 	if (school === null) throw new NotFound('School not found.');
 
-	if (process.env.ENABLE_MULTIPLE_S3_PROVIDERS) {
+	if (FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
+		const S3_KEY = Configuration.get('S3_KEY');
 		let provider = await storageProviderModel.findOne({ schools: schoolId }).lean().exec();
 		if (provider === null) provider = await chooseProvider(schoolId);
-		provider.secretAccessKey = CryptoJS.AES.decrypt(provider.secretAccessKey, process.env.S3_KEY)
+		provider.secretAccessKey = CryptoJS.AES.decrypt(provider.secretAccessKey, S3_KEY)
 			.toString(CryptoJS.enc.Utf8);
 
 		return {

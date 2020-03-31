@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const CryptoJS = require('crypto-js');
+const { Configuration } = require('@schul-cloud/commons');
 
 const { info, error } = require('../src/logger');
 const { schoolModel: School } = require('../src/services/school/model');
@@ -22,11 +23,12 @@ const StorageProvider = mongoose.model('storageProviderMigration', new mongoose.
 module.exports = {
 	up: async function up() {
 		await connect();
+		const S3_KEY = Configuration.get('S3_KEY');
 
 		if (!process.env.AWS_SECRET_ACCESS_KEY) {
 			info('No AWS config found. Migration will be successful but won\'t change anything!');
 		} else {
-			if (!process.env.S3_KEY) {
+			if (!S3_KEY) {
 				error('You need to set process.env.S3_KEY to encrypt the old key!');
 			}
 
@@ -45,7 +47,7 @@ module.exports = {
 			const assignedSchools = [...providers.map((p) => p.schools)].map((s) => s.toString());
 			info(`Got ${assignedSchools.length} schools that already use another provider.`);
 
-			const secretAccessKey = CryptoJS.AES.encrypt(process.env.AWS_SECRET_ACCESS_KEY, process.env.S3_KEY);
+			const secretAccessKey = CryptoJS.AES.encrypt(process.env.AWS_SECRET_ACCESS_KEY, S3_KEY);
 			const provider = new StorageProvider({
 				type: 'S3',
 				isShared: true,
