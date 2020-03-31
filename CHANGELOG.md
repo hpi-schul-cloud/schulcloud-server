@@ -11,4 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-  - This changelog has been added
+-   This changelog has been added
+
+### Fixed
+-   Fix Co-Teachers and Substitution teachers not being able to Grade Homeworks
