@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
+const { modelServices: { prepareInternalParams } } = require('../../../utils');
+
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
@@ -14,12 +16,6 @@ const {
 } = require('../hooks/courses');
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
-
-const prepareInternalParams = (params) => {
-	const paramsCopy = JSON.parse(JSON.stringify(params));
-	paramsCopy.provider = undefined;
-	return paramsCopy;
-};
 
 class Courses {
 	constructor(options) {
