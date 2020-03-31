@@ -6,6 +6,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const mockAws = require('./s3.mock');
 const logger = require('../../../../src/logger');
 const app = require('../../../../src/app');
+
 const testObjects = require('../../helpers/testObjects')(app);
 
 chai.use(chaiHttp);
@@ -20,8 +21,6 @@ describe('multple S3 AWS file storage strategy', () => {
 	const ShouldFail = new Error('It succeeded but should have returned an error.');
 
 	let configBefore = {};
-
-	const storageProviderService = app.service('storageProvider');
 
 	before(async () => {
 		// Enable mockery to mock objects
@@ -44,6 +43,7 @@ describe('multple S3 AWS file storage strategy', () => {
 		await testObjects.createTestStorageProvider({ secretAccessKey: '123456789' });
 
 		delete require.cache[require.resolve('../../../../src/services/fileStorage/strategies/awsS3')];
+		// eslint-disable-next-line global-require
 		const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
 		aws = new AWSStrategy();
 	});
@@ -85,7 +85,6 @@ describe('multple S3 AWS file storage strategy', () => {
 			'0000d213816abba584714c0a',
 			'users/0000d213816abba584714c0a/example.jpg',
 		).then((res) => {
-			console.log(res);
 			expect(res).to.not.be.undefined;
 			expect(res.Deleted).to.have.lengthOf(1);
 			expect(res.Deleted[0].Key).to.equal('users/0000d213816abba584714c0a/example.jpg');
@@ -105,7 +104,6 @@ describe('multple S3 AWS file storage strategy', () => {
 			flatFileName: 'users/0000d213816abba584714c0a/example.jpg',
 			fileType: 'text/plain',
 		}).then((res) => {
-			console.log(res);
 			expect(res).to.not.be.undefined;
 			expect(res).to.be.equal('successfully created signed url');
 		}));
