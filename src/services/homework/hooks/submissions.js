@@ -142,9 +142,12 @@ const insertHomeworkData = (hook) => {
 				hook.data.homework = homework;
 				// isTeacher?
 				hook.data.isTeacher = false;
-				if ((hook.data.homework.teacherId == hook.params.account.userId)
-						|| (hook.data.homework.courseId.teacherIds || []).some((el) => el.toString() === userId) //
-						|| (hook.data.homework.courseId.substitutionIds || []).some((el) => el.toString() === userId)) {
+				if ((equalIds(hook.data.homework.teacherId, userId))
+					|| (hook.data.homework.courseId.teacherIds || [])
+						.some((teacherId) => equalIds(teacherId, userId))
+					|| (hook.data.homework.courseId.substitutionIds || [])
+						.some((subsId) => equalIds(subsId, userId))
+				) {
 					hook.data.isTeacher = true;
 				}
 				return Promise.resolve(hook);
