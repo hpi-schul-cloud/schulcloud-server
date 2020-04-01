@@ -25,7 +25,7 @@ exports.before = {
 };
 
 exports.after = {
-	all: [discard('secretAccessKey')],
+	all: [iff(isProvider('external'), discard('secretAccessKey'))],
 	find: [],
 	get: [],
 	create: [],
