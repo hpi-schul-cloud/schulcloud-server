@@ -4,7 +4,6 @@ const { expect } = require('chai');
 const mockery = require('mockery');
 const { Configuration } = require('@schul-cloud/commons');
 const mockAws = require('./s3.mock');
-const logger = require('../../../../src/logger');
 const app = require('../../../../src/app');
 
 const testObjects = require('../../helpers/testObjects')(app);
@@ -56,63 +55,74 @@ describe('multple S3 AWS file storage strategy', () => {
 	});
 
 	describe('create', () => {
-		it('creates a bucket for the given school', () => aws.create(options.schoolId)
-			.then((res) => {
-				expect(res).to.not.be.undefined;
-				expect(res.message).to.be.equal('Successfully created s3-bucket!');
-			})
-			.catch((err) => {
-				logger.warning('aws.create error', err);
-			}));
+		it('creates a bucket for the given school', async () => {
+			const res = await aws.create(options.schoolId);
+			expect(res).to.not.be.undefined;
+			expect(res.message).to.be.equal('Successfully created s3-bucket!');
+		});
 
-		it('rejects if no school id is given', () => aws.create()
-			.then(() => { throw ShouldFail; })
-			.catch((err) => {
+		it('rejects if no school id is given', async () => {
+			try {
+				await aws.create();
+				throw ShouldFail;
+			} catch (err) {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
-			}));
+			}
+		});
 
-		it('rejects if school was not found', () => aws.create('0000d186816abba584714bbb')
-			.then(() => { throw ShouldFail; })
-			.catch((err) => {
+		it('rejects if school was not found', async () => {
+			try {
+				await aws.create('0000d186816abba584714bbb');
+				throw ShouldFail;
+			} catch (err) {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(404);
-			}));
+			}
+		});
 	});
 
 	describe('delete file', () => {
-		it('deletes a file correctly', () => aws.deleteFile(
-			'0000d213816abba584714c0a',
-			'users/0000d213816abba584714c0a/example.jpg',
-		).then((res) => {
+		it('deletes a file correctly', async () => {
+			const res = await aws.deleteFile(
+				'0000d213816abba584714c0a',
+				'users/0000d213816abba584714c0a/example.jpg',
+			);
 			expect(res).to.not.be.undefined;
 			expect(res.Deleted).to.have.lengthOf(1);
 			expect(res.Deleted[0].Key).to.equal('users/0000d213816abba584714c0a/example.jpg');
-		}));
+		});
 
-		it('rejects with missing parameters', () => aws.deleteFile()
-			.then(() => { throw ShouldFail; })
-			.catch((err) => {
+		it('rejects with missing parameters', async () => {
+			try {
+				await aws.deleteFile();
+				throw ShouldFail;
+			} catch (err) {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
-			}));
+			}
+		});
 	});
 
 	describe('generate signed url', () => {
-		it('creates valid signed url', () => aws.generateSignedUrl({
-			userId: '0000d213816abba584714c0a',
-			flatFileName: 'users/0000d213816abba584714c0a/example.jpg',
-			fileType: 'text/plain',
-		}).then((res) => {
+		it('creates valid signed url', async () => {
+			const res = await aws.generateSignedUrl({
+				userId: '0000d213816abba584714c0a',
+				flatFileName: 'users/0000d213816abba584714c0a/example.jpg',
+				fileType: 'text/plain',
+			});
 			expect(res).to.not.be.undefined;
 			expect(res).to.be.equal('successfully created signed url');
-		}));
+		});
 
-		it('rejects with missing parameters', () => aws.generateSignedUrl({})
-			.then(() => { throw ShouldFail; })
-			.catch((err) => {
+		it('rejects with missing parameters', async () => {
+			try {
+				await aws.generateSignedUrl({});
+				throw ShouldFail;
+			} catch (err) {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(400);
-			}));
+			}
+		});
 	});
 });
