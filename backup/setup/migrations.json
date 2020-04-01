@@ -464,5 +464,16 @@
         "$date": "2020-03-19T11:55:25.139Z"
     },
     "__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e8355da77736b6304a3e77e"
+	},
+	"state": "up",
+	"name": "add_edtr_feature_to_klara_fall",
+	"createdAt": {
+		"$date": "2020-03-31T14:38:18.001Z"
+	},
+	"__v": 0
 }]
 
