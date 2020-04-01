@@ -71,8 +71,8 @@ module.exports = (app, opt = {
 		lessons: lessons.info,
 	});
 
-	const createTestTeamWithOwner = async () => {
-		const user = await users.create();
+	const createTestTeamWithOwner = async (userData) => {
+		const user = await users.create(userData);
 		const team = await teams.create(user);
 		return { team, user };
 	};

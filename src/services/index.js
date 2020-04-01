@@ -39,12 +39,14 @@ const webuntis = require('./webuntis');
 const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
+const alert = require('./alert');
 const videoconference = require('./videoconference');
+const messengerSync = require('./messengerSync');
+const nexboard = require('./nexboard');
 
 
 module.exports = function initializeServices() {
 	const app = this;
-
 	// connect mongoose to the database
 	database.connect();
 
@@ -86,9 +88,11 @@ module.exports = function initializeServices() {
 	app.configure(oauth2);
 	app.configure(roster);
 	app.configure(datasources);
+	app.configure(alert);
 	app.configure(webuntis);
 	app.configure(videoconference);
-
+	app.configure(messengerSync);
+	app.configure(nexboard);
 
 	// initialize events
 	newsEvents.configure(app);
