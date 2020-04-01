@@ -1,4 +1,4 @@
-const assert = require('assert');
+const { expect } = require('chai');
 const CryptoJS = require('crypto-js');
 const { Configuration } = require('@schul-cloud/commons');
 const app = require('../../../src/app');
@@ -15,7 +15,7 @@ describe('storageProvider service', () => {
 	});
 
 	it('registered the storage provider service', () => {
-		assert.ok(storageProviderService);
+		expect(storageProviderService).to.be.ok;
 	});
 
 	it('encrypts the secret correctly', async () => {
@@ -24,7 +24,7 @@ describe('storageProvider service', () => {
 		const decrypted = CryptoJS.AES
 			.decrypt(provider.secretAccessKey, Configuration.get('S3_KEY'))
 			.toString(CryptoJS.enc.Utf8);
-		assert.strictEqual(decrypted, secret);
+		expect(decrypted).to.equal(secret);
 	});
 
 	after(async () => {
