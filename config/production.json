@@ -1,15 +1,14 @@
 {
 	"host": "localhost",
-	"port": 3030,
-	"mongodb": "mongodb://DominiksMacBook:27017,DominiksMacBook:27018,DominiksMacBook:27019/schulcloud?replicaSet=rs",
+	"port": "PORT",
+	"mongodb": "MONGO_URI",
 	"public": "../public/",
 	"services": {
-		"calendar": "http://localhost:3000",
-		"content": "https://content.schul-cloud.org",
-		"notification": "http://localhost:3031",
-		"hydra": "http://localhost:9001",
-		"web": "http://localhost:3100"
+		"calendar": "CALENDAR_URI",
+		"content": "CONTENT_URI",
+		"notification": "NOTIFICATION_URI",
+		"hydra": "HYDRA_URI",
+		"web": "HOST"
 	},
-	"FORCE_SEND_EMAIL": false,
-	"NOTIFICATION_PLATFORM": false
+	"NOTIFICATION_PLATFORM":"NOTIFICATION_PLATFORM"
 }
