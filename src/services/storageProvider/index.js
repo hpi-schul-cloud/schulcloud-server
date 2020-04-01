@@ -2,12 +2,11 @@ const service = require('feathers-mongoose');
 const { StorageProviderModel } = require('./model');
 const hooks = require('./hooks');
 
-module.exports = function storageProvider() {
-	const app = this;
+module.exports = (app) => {
 	const options = {
 		Model: StorageProviderModel,
 		paginate: {
-			default: 1000,
+			default: 150,
 			max: 1000,
 		},
 		lean: true,
