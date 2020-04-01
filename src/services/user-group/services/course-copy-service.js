@@ -1,13 +1,13 @@
 const _ = require('lodash');
 const nanoid = require('nanoid');
-const { BadRequest } = require('@feathersjs/errors');
+const { GeneralError } = require('@feathersjs/errors');
 
-const logger = require('../../../logger/');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
 const { homeworkModel } = require('../../homework/model');
 const lessonsModel = require('../../lesson/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { prepareErrorParam } = require('../../../utils');
 
 const createHomework = (
 	homework,
@@ -23,8 +23,8 @@ const createHomework = (
 const createLesson = (app, data) => app.service('lessons/copy').create(data);
 
 class CourseCopyService {
-	constructor(app) {
-		this.app = app;
+	constructor(docs) {
+		this.docs = docs;
 	}
 
 	setup(app) {
@@ -74,7 +74,7 @@ class CourseCopyService {
 			homeworkModel.find({ courseId: sourceCourseId }).populate('lessonId'),
 			lessonsModel.find({ courseId: sourceCourseId }),
 		]).catch((err) => {
-			throw new BadRequest('Can not fetch data to copy this course.', err);
+			throw new GeneralError('Can not fetch data to copy this course.', prepareErrorParam(err));
 		});
 
 		await Promise.all(lessons.map((lesson) => createLesson(this.app, {
@@ -83,7 +83,7 @@ class CourseCopyService {
 			userId: params.account.userId,
 			shareToken: lesson.shareToken,
 		}))).catch((err) => {
-			throw new BadRequest('Can not copy one or many lessons.', err);
+			throw new GeneralError('Can not copy one or many lessons.', prepareErrorParam(err));
 		});
 
 		await Promise.all(homeworks.map((homework) => {
@@ -100,7 +100,7 @@ class CourseCopyService {
 			}
 			return false;
 		})).catch((err) => {
-			throw new BadRequest('Can not copy one or many homeworks.', err);
+			throw new GeneralError('Can not copy one or many homeworks.', prepareErrorParam(err));
 		});
 
 		return res;
@@ -108,8 +108,8 @@ class CourseCopyService {
 }
 
 class CourseShareService {
-	constructor(app) {
-		this.app = app;
+	constructor(docs) {
+		this.docs = docs;
 	}
 
 	setup(app) {
@@ -193,11 +193,9 @@ class CourseShareService {
 	}
 }
 
-module.exports = function setup() {
-	const app = this;
-
-	app.use('/courses/copy', new CourseCopyService(app));
-	app.use('/courses/share', new CourseShareService(app));
+module.exports = (app) => {
+	app.use('/courses/copy', new CourseCopyService());
+	app.use('/courses/share', new CourseShareService());
 
 	const courseCopyService = app.service('/courses/copy');
 	const courseShareService = app.service('/courses/share');

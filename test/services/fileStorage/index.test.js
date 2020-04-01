@@ -87,8 +87,9 @@ describe('fileStorage services', function fileStorageTest() {
 			...fixtures.roles.map((_) => RoleModel.findByIdAndRemove(_._id).exec()),
 			...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
 		];
-		await server.close();
 		await Promise.all(promises);
+		await server.close();
+
 		// to load old roles
 		roleService.init();
 	});
@@ -235,6 +236,7 @@ describe('fileStorage services', function fileStorageTest() {
 				...context,
 			}).then((res) => {
 				expect(res).to.have.lengthOf(1);
+				return done();
 			}).catch(() => done());
 		});
 
