@@ -48,10 +48,10 @@ describe('multple S3 AWS file storage strategy', () => {
 		aws = new AWSStrategy();
 	});
 
-	after(() => {
+	after(async () => {
 		mockery.deregisterAll();
 		mockery.disable();
-		testObjects.cleanup();
+		await testObjects.cleanup();
 		Configuration.reset(configBefore);
 	});
 

@@ -27,8 +27,8 @@ describe('storageProvider service', () => {
 		assert.strictEqual(decrypted, secret);
 	});
 
-	after(() => {
-		testObjects.cleanup();
+	after(async () => {
+		await testObjects.cleanup();
 		Configuration.reset(configBefore);
 	});
 });
