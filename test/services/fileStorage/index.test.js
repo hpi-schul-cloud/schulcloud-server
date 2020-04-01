@@ -326,18 +326,20 @@ describe('fileStorage services', () => {
 				});
 		});
 
-		it('should reject returning a signed url for not allowed folders', (done) => {
+		it('should reject returning a signed url for not allowed folders', async () => {
 			const context = setContext('0000d224816abba584714c8d');
-
-			signedUrlService.create({
-				parent: '5ca613c4c7f5120b8c5bef36',
-				filename: 'test.txt',
-				fileType: 'text/plain',
-			}, context)
-				.then(({ code }) => {
-					expect(code).to.be.equal(403);
-					return done();
-				});
+			try {
+				// this call should fail, because the user does not have write access
+				// to the parent directory
+				await signedUrlService.create({
+					parent: '5ca613c4c7f5120b8c5bef36',
+					filename: 'test.txt',
+					fileType: 'text/plain',
+				}, context);
+				throw new Error('This should not happen.');
+			} catch (err) {
+				expect(err.code).to.be.equal(403);
+			}
 		});
 
 		it('return a signed url for downloading a file', (done) => {
@@ -396,6 +398,8 @@ describe('fileStorage services', () => {
 			const promises = fileNames.map((filename) => signedUrlService.create({ filename, fileType: 'text/html' }, {
 				payload: { userId: '0000d213816abba584714c0a' },
 				account: { userId: '0000d213816abba584714c0a' },
+			}).then(() => {
+				throw new Error('This should not have happened!');
 			}).catch((err) => {
 				expect(err.name).to.equal('BadRequest');
 				expect(err.code).to.equal(400);
