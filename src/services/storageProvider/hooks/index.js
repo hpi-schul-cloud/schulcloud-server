@@ -1,9 +1,9 @@
 const CryptoJS = require('crypto-js');
 const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@schul-cloud/commons');
-const { discard } = require('feathers-hooks-common');
+const { discard, iff, isProvider } = require('feathers-hooks-common');
 
-const globalHooks = require('../../../hooks');
+const { isSuperHero } = require('../../../hooks');
 
 const encryptSecret = (context) => {
 	if (context.data.secretAccessKey) {
@@ -15,7 +15,7 @@ const encryptSecret = (context) => {
 };
 
 exports.before = {
-	all: [authenticate('jwt'), globalHooks.ifNotLocal(globalHooks.isSuperHero())],
+	all: [authenticate('jwt'), iff(isProvider('external'), isSuperHero())],
 	find: [],
 	get: [],
 	create: [encryptSecret],
@@ -25,9 +25,9 @@ exports.before = {
 };
 
 exports.after = {
-	all: [],
-	find: [discard('secretAccessKey')],
-	get: [discard('secretAccessKey')],
+	all: [discard('secretAccessKey')],
+	find: [],
+	get: [],
 	create: [],
 	update: [],
 	patch: [],
