@@ -387,7 +387,12 @@ const signedUrlService = {
 					header,
 				};
 			})
-			.catch((err) => { throw err; });
+			.catch((err) => {
+				if (!err) {
+					throw new Forbidden();
+				}
+				throw err;
+			});
 	},
 
 	async find({ query, payload: { userId, fileStorageType } }) {

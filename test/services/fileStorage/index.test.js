@@ -323,18 +323,20 @@ describe('fileStorage services', () => {
 				});
 		});
 
-		it('should reject returning a signed url for not allowed folders', (done) => {
+		it('should reject returning a signed url for not allowed folders', async () => {
 			const context = setContext('0000d224816abba584714c8d');
-
-			signedUrlService.create({
-				parent: '5ca613c4c7f5120b8c5bef36',
-				filename: 'test.txt',
-				fileType: 'text/plain',
-			}, context)
-				.catch(({ code }) => {
-					expect(code).to.be.equal(403);
-					return done();
-				});
+			try {
+				// this call should fail, because the user does not have write access
+				// to the parent directory
+				await signedUrlService.create({
+					parent: '5ca613c4c7f5120b8c5bef36',
+					filename: 'test.txt',
+					fileType: 'text/plain',
+				}, context);
+				throw new Error('This should not happen.');
+			} catch (err) {
+				expect(err.code).to.be.equal(403);
+			}
 		});
 
 		it('return a signed url for downloading a file', (done) => {
