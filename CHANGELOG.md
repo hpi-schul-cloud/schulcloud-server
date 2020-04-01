@@ -19,7 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
    -   For new schools the less used provider is assigned as storage provider
    -   Environment Variables:
       -   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true will activate the feature
-  	  -   S3_KEY, used for symmetric encryption, already required for the migration because of the secret access key encryption
+      -   S3_KEY, used for symmetric encryption, already required for the migration because of the secret access key encryption
 
 ### Fixed
 -   SC-3821: Fix Co-Teachers and Substitution teachers not being able to Grade Homeworks
