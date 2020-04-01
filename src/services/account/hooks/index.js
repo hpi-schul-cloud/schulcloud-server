@@ -151,7 +151,6 @@ const removePassword = (hook) => {
 	return Promise.resolve(hook);
 };
 
-const NotAllowed = new BadRequest('Not allowed');
 const restrictAccess = async (context) => {
 	// superhero can pass it
 	const user = (context.params.account || {}).userId;
@@ -168,14 +167,14 @@ const restrictAccess = async (context) => {
 
 	// other restrict operations
 	const { username, userId } = context.params.query || {};
-	if (!userId && !username) { throw NotAllowed; }
+	if (!userId && !username) { throw new BadRequest('Not allowed'); }
 	const query = {};
 	if (userId) {
-		if (!ObjectId.isValid(userId)) { throw NotAllowed; }
+		if (!ObjectId.isValid(userId)) { throw new BadRequest('Not allowed'); }
 		query.userId = userId;
 	}
 	if (username) {
-		if (typeof username !== 'string') { throw NotAllowed; }
+		if (typeof username !== 'string') { throw new BadRequest('Not allowed'); }
 		query.username = username;
 	}
 	// @override
