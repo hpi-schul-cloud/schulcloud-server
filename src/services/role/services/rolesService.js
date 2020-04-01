@@ -3,7 +3,7 @@ const sift = require('sift');
 const { RoleModel } = require('../model');
 const { preparedRoles, unique } = require('../utils/preparedRoles');
 
-// Do not proteced this route with authentication.
+// Do not protect this route with authentication.
 const RoleServiceHooks = {
 	before: {
 		all: [],
@@ -81,7 +81,7 @@ class RoleService {
 	}
 
 	async find(params = {}) {
-		// please do not add || []; It must fail if the load do not work.
+		// Please do not add || []; It must fail if the initialization failed.
 		const roles = await this.roles;
 		const result = filterByQuery(roles, params.query);
 		return paginate(result, params.query, roles.length);

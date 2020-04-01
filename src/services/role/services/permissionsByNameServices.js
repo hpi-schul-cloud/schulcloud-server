@@ -1,4 +1,4 @@
-// Do not proteced this route with authentication.
+// Do not protect this route with authentication.
 const PermissionsByNameServiceHooks = {
 	before: {
 		all: [],
