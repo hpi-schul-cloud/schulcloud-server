@@ -11,4 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+-   This changelog has been added
 - Changed Seed Data + Migration Script: Added feature flag for new Editor to klara.fall@schul-cloud.org
+
+### Fixed
+-   SC-3821: Fix Co-Teachers and Substitution teachers not being able to Grade Homeworks
