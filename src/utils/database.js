@@ -5,18 +5,15 @@ const diffHistory = require('mongoose-diff-history/diffHistory');
 const uriFormat = require('mongodb-uri');
 
 const logger = require('../logger');
-const GLOBALS = require('../../config/globals');
-
-const config = require(`../../config/${GLOBALS.NODE_ENV}.json`);
-
 const {
 	NODE_ENV,
 	DATABASE_AUDIT,
 	MONGOOSE_CONNECTION_POOL_SIZE,
-	DB_URL = config.mongodb,
+	DB_URL,
 	DB_USERNAME,
 	DB_PASSWORD,
-} = GLOBALS;
+	ENVIRONMENTS,
+} = require('../../config/globals');
 
 if (DATABASE_AUDIT === 'true') {
 	logger.info('database audit log is globally enab led');
@@ -76,7 +73,7 @@ function connect() {
 		options.password ? 'and' : 'and without', 'password');
 
 	const mongooseOptions = {
-		autoIndex: NODE_ENV !== 'production',
+		autoIndex: NODE_ENV !== ENVIRONMENTS.PRODUCTION,
 		poolSize: MONGOOSE_CONNECTION_POOL_SIZE,
 		useNewUrlParser: true,
 		useFindAndModify: false,

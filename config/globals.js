@@ -1,9 +1,34 @@
 /* eslint-disable no-process-env */
 const { debug } = console;
 
+const ENVIRONMENTS = {
+	DEVELOPMENT: 'development',
+	TEST: 'test',
+	PRODUCTION: 'production',
+	MIGRATION: 'migration',
+};
+
+const ENV = process.env.NODE_ENV;
+
+let defaultLogLevel = null;
+switch (ENV) {
+	case ENVIRONMENTS.DEVELOPMENT:
+	case ENVIRONMENTS.MIGRATION:
+		defaultLogLevel = 'debug';
+		break;
+	case ENVIRONMENTS.TEST:
+		defaultLogLevel = 'emerg';
+		break;
+	case ENVIRONMENTS.PRODUCTION:
+	default:
+		defaultLogLevel = 'error';
+}
+
+
 const globals = {
 	BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',
 	DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
+	DB_URL: process.env.DB_URL || 'mongodb://127.0.0.1:27017/schulcloud',
 	DOCUMENT_BASE_DIR: process.env.DOCUMENT_BASE_DIR || 'https://s3.hidrive.strato.com/schul-cloud-hpi/',
 	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE: (5 * 1024 * 1024), // 5MB
 	REQUEST_TIMEOUT: process.env.REQUEST_TIMEOUT || 8000,
@@ -19,10 +44,11 @@ const globals = {
 
 	KEEP_ALIVE: process.env.KEEP_ALIVE || false,
 	/**
-	 * default value 'default' replaces 'development' from app.get('env'),
-	 * it's used in different filenames
+	 * default value 'development' matches default of app.get('env'), but use globals
 	 */
-	NODE_ENV: process.env.NODE_ENV || 'default',
+	NODE_ENV: ENV || ENVIRONMENTS.DEVELOPMENT,
+	ENVIRONMENTS,
+	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
 	/** HOST=https://schul-cloud.org in bosscloud, see misuse in todo */
 	HOST: process.env.HOST || 'localhost:3030', // todo this is client url in config
 	TOKEN_SUB: process.env.TOKEN_SUB
@@ -79,13 +105,12 @@ const globals = {
 
 
 // validation /////////////////////////////////////////////////
-const environments = ['default', 'test', 'production', 'migration']; // todo move to config
 const { NODE_ENV } = globals;
-if (!(environments.includes(globals.NODE_ENV))) {
-	throw new Error('NODE_ENV must match one of valid environments', { environments, NODE_ENV });
+const ENVIRONMENT_VALUES = Object.values(ENVIRONMENTS);
+if (!(ENVIRONMENT_VALUES.includes(globals.NODE_ENV))) {
+	throw new Error('NODE_ENV must match one of valid environments', { ENVIRONMENT_VALUES, NODE_ENV });
 } else {
 	debug(`NODE_ENV is set to '${globals.NODE_ENV}'`);
 }
-
 
 module.exports = globals;
