@@ -367,8 +367,8 @@ const signedUrlService = {
 		return parentPromise
 			.then(() => (parent ? canCreate(userId, parent) : Promise.resolve({})))
 			.then(() => {
-				if (this.fileRegexCheck(flatFileName)) {
-					throw new BadRequest(`Die Datei '${flatFileName}' ist nicht erlaubt!`);
+				if (this.fileRegexCheck(filename)) {
+					throw new BadRequest(`Die Datei '${filename}' ist nicht erlaubt!`);
 				}
 
 				return strategy.generateSignedUrl({ userId, flatFileName, fileType });
@@ -386,7 +386,12 @@ const signedUrlService = {
 					header,
 				};
 			})
-			.catch((err) => new Forbidden(err));
+			.catch((err) => {
+				if (!err) {
+					throw new Forbidden();
+				}
+				throw err;
+			});
 	},
 
 	async find({ query, payload: { userId, fileStorageType } }) {
