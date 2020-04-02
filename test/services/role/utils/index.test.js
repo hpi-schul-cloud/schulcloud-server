@@ -80,7 +80,7 @@ describe('Role Service utils', async () => {
 					roles: ['0', '1', '3'],
 					displayName: 'Schul-Cloud Admin',
 					permissions: [
-						'd', 'superhero', 'a', 'b', 'c', 'e', 'student', 'administrator', 'teacher1', 'teacher2'
+						'd', 'superhero', 'a', 'b', 'c', 'e', 'student', 'administrator', 'teacher1', 'teacher2',
 					],
 				},
 			]);
