@@ -202,7 +202,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		// To iterate over either concept
 		intermediateData.classes = await this.getClasses(intermediateData.currentSchoolYear.id);
 		intermediateData.teachers = await this.getTeachers();
-		// intermediateData.rooms = await this.getRooms();
+		intermediateData.rooms = await this.getRooms();
 		// intermediateData.subjects = await this.getSubjects(); // currently not required
 
 		// intermediateData.timeGrid = await this.getTimegrid(); // currently not required
@@ -212,7 +212,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		// Iteration approaches currently implemented: teachers
 		if (intermediateData.teachers !== undefined) { // Iterate over teachers
 			for (const teacher of intermediateData.teachers) {
-				const name = `${teacher.foreName} ${teacher.longName}`;
+				const currentTeacherName = `${teacher.foreName} ${teacher.longName}`;
 
 				let timetable = await this.getCustomizableTimeTableFor(2, teacher.id, {
 					startDate: intermediateData.currentSchoolYear.startDate,
@@ -221,6 +221,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 					klasseFields: ['id', 'longname'],
 					subjectFields: ['id', 'longname'],
 					roomFields: ['id', 'longname'],
+					teacherFields: ['id', 'longname'],
 				});
 
 				/* TODO: Check for change */
@@ -230,7 +231,19 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 					&& entry.ro.length === 1
 					&& entry.su.length === 1));
 				if (filteredTimetable.length > 0) {
-					this.logger.warn(`Ignored timetable entries from WebUntis import`, { ignored: filteredTimetable });
+					filteredTimetable = filteredTimetable.map(entry => {
+						return {
+							teachers: entry.te.map(teacher => teacher.longname),
+							teacherValid: entry.te.length === 1,
+							rooms: entry.ro.map(room => room.longname),
+							roomValid: entry.ro.length === 1 &&  entry.ro[0].id === room.id,
+							classes: entry.kl.map(klass => klass.longname),
+							classesValid: entry.kl.length > 0,
+							subjects: entry.su.map(subject => subject.longname),
+							subjectValid: entry.su.length === 1
+						};
+					});
+					this.logger.warning(`Ignored timetable entries from WebUntis import`, { ignored: filteredTimetable });
 				}
 
 				timetable = timetable.filter(entry => entry.te.length === 1
@@ -253,20 +266,23 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 				};
 	
 				for (const entry of timetable) {
+					const classNames = entry.kl.map(k => k.longname);
+
 					// Select course with matching teacher, subject, and participating classes
-					const course = intermediateData.courses.find(course => {
-						return course.teacher === entry.te[0].longname &&
+					let course = intermediateData.courses.find(course => {
+						return course.teacher === currentTeacherName &&
 							course.subject === entry.su[0].longname &&
-							compareArraysOfString(course.classes, entry.kl.map(k => k.longname));
+							compareArraysOfString(course.classes, classNames);
 					});
 
 					if (course === undefined) { // Create course
-						intermediateData.courses.push({
-							teacher: entry.te[0].longname,
+						course = {
+							teacher: currentTeacherName,
 							subject: entry.su[0].longname,
-							classes: entry.kl.map(k => k.longname),
+							classes: classNames,
 							timetable: []
-						});
+						};
+						intermediateData.courses.push(course);
 					}
 					
 					// Update timetable of course
@@ -286,8 +302,102 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 					}
 				}
 			}
-		}  else {
-			throw new NotImplemented(`Iteration over WebUntis data must be teachers.`);
+		} else if (intermediateData.rooms !== undefined) { // Iterate over rooms
+			for (const room of intermediateData.rooms) {
+				const currentRoomName = `${room.name} (${room.longName}${room.building !== '' ? `, ${room.building}` : ''})`;
+
+				let timetable = await this.getCustomizableTimeTableFor(4, room.id, {
+					startDate: intermediateData.currentSchoolYear.startDate,
+					endDate: intermediateData.currentSchoolYear.endDate,
+					onlyBaseTimetable: true,
+					klasseFields: ['id', 'longname'],
+					subjectFields: ['id', 'longname'],
+					teacherFields: ['id', 'longname'],
+					roomFields: ['id', 'longname'],
+				});
+
+				/* TODO: Check for change */
+				let filteredTimetable = timetable.filter(entry => !(entry.ro.length === 1
+					&& entry.ro[0].id === room.id
+					&& entry.kl.length > 0
+					&& entry.te.length === 1
+					&& entry.su.length === 1));
+				if (filteredTimetable.length > 0) {
+					filteredTimetable = filteredTimetable.map(entry => {
+						return {
+							teachers: entry.te.map(teacher => teacher.longname),
+							teacherValid: entry.te.length === 1,
+							rooms: entry.ro.map(room => room.longname),
+							roomValid: entry.ro.length === 1 &&  entry.ro[0].id === room.id,
+							classes: entry.kl.map(klass => klass.longname),
+							classesValid: entry.kl.length > 0,
+							subjects: entry.su.map(subject => subject.longname),
+							subjectValid: entry.su.length === 1
+						};
+					});
+					this.logger.warning(`Ignored timetable entries from WebUntis import`, { ignored: filteredTimetable });
+				}
+
+				timetable = timetable.filter(entry => entry.ro.length === 1
+					&& entry.ro[0].id === room.id
+					&& entry.kl.length > 0
+					&& entry.te.length === 1
+					&& entry.su.length === 1);
+				/* END TODO: Check for change */
+
+				const compareArraysOfString = (a1, a2) => {
+					if (a1.length !== a2.length) {
+						return false;
+					}
+
+					for (let i = 0; i < a1.length; ++i) {
+						if (a1[i] !== a2[i]) {
+							return false;
+						}
+					}
+
+					return true;
+				};
+	
+				for (const entry of timetable) {
+					const classNames = entry.kl.map(k => k.longname);
+
+					// Select course with matching teacher, subject, and participating classes
+					let course = intermediateData.courses.find(course => {
+						return course.teacher === entry.te[0].longname &&
+							course.subject === entry.su[0].longname &&
+							compareArraysOfString(course.classes, classNames);
+					});
+
+					if (course === undefined) { // Create course
+						course = {
+							teacher: entry.te[0].longname,
+							subject: entry.su[0].longname,
+							classes: classNames,
+							timetable: []
+						};
+						intermediateData.courses.push(course);
+					}
+					
+					// Update timetable of course
+					course.timetable.push({
+						date: entry.date,
+						startTime: entry.startTime,
+						endTime: entry.endTime,
+						room: currentRoomName,
+					});
+
+					// Update first and last date of course
+					if (course.startDate === undefined || course.startDate > entry.date) {
+						course.startDate = entry.date;
+					}
+					if (course.endDate === undefined || course.endDate < entry.date) {
+						course.endDate = entry.date;
+					}
+				}
+			}
+		} else {
+			throw new NotImplemented(`Iteration over WebUntis data must be teachers or rooms.`);
 		}
 
 		const result = [];
