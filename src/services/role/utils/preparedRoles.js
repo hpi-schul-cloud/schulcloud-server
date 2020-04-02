@@ -1,12 +1,11 @@
 /* eslint-disable no-param-reassign */
 const { rolesDisplayName } = require('../statics');
+const unique = require('./unique');
 
 const addDisplayName = (role) => {
 	role.displayName = rolesDisplayName[role.name] || '';
 	return role;
 };
-
-const unique = (...permissions) => ([...new Set(Array.prototype.concat.apply([], permissions))]);
 
 const dissolveInheritPermission = (roles, role) => {
 	if (Array.isArray(role.roles)) {
@@ -28,6 +27,5 @@ const preparedRoles = (roles = [], rolesForResolve) => roles.map((role) => {
 module.exports = {
 	preparedRoles,
 	dissolveInheritPermission,
-	unique,
 	addDisplayName,
 };

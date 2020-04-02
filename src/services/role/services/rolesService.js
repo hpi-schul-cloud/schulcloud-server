@@ -1,7 +1,11 @@
 const { NotFound } = require('@feathersjs/errors');
-const sift = require('sift');
 const { RoleModel } = require('../model');
-const { preparedRoles, unique } = require('../utils/preparedRoles');
+const {
+	preparedRoles,
+	unique,
+	filterByQuery,
+	paginate,
+} = require('../utils');
 
 // Do not protect this route with authentication.
 const RoleServiceHooks = {
@@ -12,27 +16,7 @@ const RoleServiceHooks = {
 	},
 };
 
-const filterByQuery = (roles = [], query = {}) => {
-	let result = roles;
-	const q = { ...query };
-	delete q.$skip;
-	delete q.$limit;
-	Object.entries(q).forEach(([key, v]) => {
-		if (v instanceof RegExp) {
-			result = result.filter((role) => role[key].match(v));
-		}
-	});
-	return result.filter(sift(q));
-};
-
-const paginate = (result, { $limit, $skip = 0 } = {}, total) => ({
-	total: result.length,
-	limit: $limit || total || result.length,
-	skip: $skip,
-	data: result.slice($skip, $limit ? $skip + $limit : $limit),
-});
-
-const getModelRoles = (query = {}) => RoleModel.find(query).lean().exec()
+const getModelRoles = () => RoleModel.find({}).lean().exec()
 	.then((roles) => preparedRoles(roles));
 
 /**
@@ -65,7 +49,7 @@ class RoleService {
 
 	async getPermissionsByRoles(roleIds = []) {
 		const ids = roleIds.map((id) => id.toString());
-		const selectedRoles = (await this.roles).filter((r) => ids.includes(r._id));
+		const selectedRoles = (await this.roles).filter((r) => ids.includes(r._id)); // TODO: some
 		return unique(...selectedRoles.map((r) => r.permissions));
 	}
 
