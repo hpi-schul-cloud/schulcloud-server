@@ -109,7 +109,7 @@ const updateAccountUsername = async (context) => {
 	}
 
 	if (!context.id) {
-		throw new BadRequest('Id is required');
+		throw new BadRequest('Id is required for email changes');
 	}
 
 	if (!account || !ObjectId.equal(context.id, account.userId)) {
