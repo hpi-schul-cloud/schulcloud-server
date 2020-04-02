@@ -103,8 +103,8 @@ const updateAccountUsername = async (context) => {
 		data: { email },
 		app,
 	} = context;
-    
-    if (!context.id) {
+
+	if (!context.id) {
 		return context;
 	}
 
