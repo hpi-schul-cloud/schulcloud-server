@@ -2,6 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const logger = require('../../../logger');
+const { ObjectId } = require('../../../helper/compare');
 const {
 	hasRole,
 	hasRoleNoHook,
@@ -103,7 +104,11 @@ const updateAccountUsername = async (context) => {
 		app,
 	} = context;
 
-	if (!account || account.userId.toString() !== context.id.toString()) {
+	if (!context.id) {
+		return context;
+	}
+
+	if (!account || !ObjectId.equal(context.id, account.userId)) {
 		const accounts = (await context
 			.app.service('/accounts')
 			.find({ query: { userId: context.id } }));
