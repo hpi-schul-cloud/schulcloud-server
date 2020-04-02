@@ -263,6 +263,8 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 							return false;
 						}
 					}
+
+					return true;
 				};
 	
 				for (const entry of timetable) {
@@ -476,7 +478,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 			const metadataResults = await webUntisMetadataService.find({ query: {
 				datasourceId: params.datasourceId,
 				teacher: entry.teacher,
-				class: entry.class,
+				classes: entry.classes,
 				subject: entry.subject
 			}, paginate: false });
 			const result = metadataResults[0];
@@ -517,13 +519,13 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 
 	/**
 	* Entry: {
-	*    datasourceId: this.data.datasourceId,
-	*    teacher: 'Renz',
-	*    class: '2a',
-	*    times: [ { weekDay, startTime, endTime, room }],
-	*    subject: 'mathe',
-	*    state: 'new',
-	* }
+	*     datasourceId: this.data.datasourceId,
+	*     teacher: 'Renz',
+	*     class: [ '2a', '2b' ],
+	*     subject: 'mathe',
+	*     times: [ { weekDay, startTime, endTime, room } ],
+	*     state: 'new',
+	*   }
 	*/
 	async obtainAndUpdateCourseAndClass(config, entry) {
 		const courseService = this.app.service('courses');
@@ -541,33 +543,42 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
         * German: Klasse, Kurs, Fach, Schulstunde
         */
 
-		// Get class
-		const scClasses = await classService.find({ query: { name: entry.class }, paginate: false });
+		// Get classes
+		const scClasses = await Promise.all(entry.classes.map(async (className) => {
+			const classes = await classService.find({ query: { name: className }, paginate: false });
 
-		let scClass = scClasses.length >= 1 ? scClasses[0] : undefined;
-		if (scClass === undefined) {
-			// Create Schul-Cloud class?
+			let scClass = classes.length >= 1 ? classes[0] : undefined;
+			if (scClass === undefined) {
+				// Create Schul-Cloud class?
 
-			// TODO: extract gradeLevel
+				// TODO: extract gradeLevel
 
-			const newClass = {
-				name: entry.class,
-				schoolId: school._id,
-				nameFormat: 'static',
-				year: school.currentYear,
-			};
-			scClass = await classService.create(newClass);
+				const newClass = {
+					name: className,
+					schoolId: school._id,
+					nameFormat: 'static',
+					year: school.currentYear,
+				};
+				scClass = await classService.create(newClass);
 
-			// TODO: derive successor value for predecessor class?
-		}
+				// TODO: derive successor value for predecessor class?
+			}
+
+			return scClass;
+		}));
 
 		// Extract class short name
-		const shortClassName = scClass.name.match(/[A-Za-z]{1}[0-9]{1,2}[A-Za-z]{1}/g) || scClass.name.substr(0, 3).replace( /^\s+|\s+$/g, '' );
-		const courseName = entry.subject + ` ` + shortClassName;
+		const shortClassNames = scClasses.map((k) => {
+			const className = k.name;
+			const shortClassName = className.match(/[A-Za-z]{1}[0-9]{1,2}[A-Za-z]{1}/g)
+				|| className.substr(0, 3).replace( /^\s+|\s+$/g, '' );
+			return shortClassName;
+		});
+		const courseName = entry.subject + ` (` + shortClassNames.join(`, `) + `)`;
 
 		// Get course
 		const scCourses = await courseService.find({
-			// TODO: use teacher is query value, too
+			// TODO: use teacher as query value, too
 			query: {
 				name: entry.subject,
 				schoolId: school._id,
@@ -592,9 +603,11 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		const courseUpdate = {};
 
 		// Update classes; add new class
-		if (!scCourse.classIds.some((entry) => entry.toString() === scClass.id)) {
-			courseUpdate.classIds = scCourse.classIds;
-			courseUpdate.classIds.push(scClass._id);
+		courseUpdate.classIds = scCourse.classIds;
+		for (let scClass of scClasses) {
+			if (scCourse.classIds.every((entry) => entry.toString() !== scClass.id)) {
+				courseUpdate.classIds.push(scClass._id);
+			}
 		}
 
 		// Update times; overwrite
@@ -609,9 +622,12 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 			courseUpdate.sourceOptions = {
 				schoolname: config.schoolname,
 				courseName: entry.subject,
+				teacherName: entry.teacher,
+				classNames: entry.classes.join(', ')
 			};
 		}
 
+		// 'courses' service requires authorization for patching
 		await courseService.patch(scCourse._id, courseUpdate, { account: { userId: user._id }});
 	}
 }
