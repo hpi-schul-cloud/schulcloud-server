@@ -13,7 +13,7 @@ const { setup: courseMembersService } = require('./services/courseMembers');
 const classSuccessorHooks = require('./hooks/classSuccessor');
 const { classesService, classesHooks } = require('./services/classes');
 const { classModelService, classModelHooks } = require('./services/classModelService');
-const { courseModelService, courseModelHooks } = require('./services/courseModelService');
+const { courseModelService, courseModelServiceHooks } = require('./services/courseModelService');
 const { courseService, courseHooks } = require('./services/courses');
 
 // eslint-disable-next-line func-names
@@ -24,7 +24,7 @@ module.exports = function () {
 
 	/* Course model */
 	app.use('/courseModel', courseModelService);
-	app.service('/courseModel').hooks(courseModelHooks);
+	app.service('/courseModel').hooks(courseModelServiceHooks);
 
 	app.use('/courses', courseService);
 	app.service('/courses').hooks(courseHooks);
