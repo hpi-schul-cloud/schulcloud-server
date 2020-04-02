@@ -113,8 +113,7 @@ const updateAccountUsername = async (context) => {
 	}
 
 	if (!account || !ObjectId.equal(context.id, account.userId)) {
-		account = (await context
-			.app.service('/accounts')
+		account = (await app.service('/accounts')
 			.find({ query: { userId: context.id } }))[0];
 
 		if (!account) return context;
@@ -126,7 +125,7 @@ const updateAccountUsername = async (context) => {
 	}
 
 	await app.service('/accounts')
-		// set account in params to context.parmas.account to reference the person how do changes
+		// set account in params to context.parmas.account to reference the current user
 		.patch(account._id, { username: email }, { account: context.params.account })
 		.catch((err) => {
 			throw new BadRequest('Can not update account username.', err);
