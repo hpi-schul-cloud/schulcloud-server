@@ -86,6 +86,4 @@ module.exports = (app) => {
 	app.service('/users/skipregistration').hooks(skipRegistrationBulkHooks);
 
 	app.use('/registrationSchool', new RegistrationSchoolService());
-	// const registrationSchoolService = app.service('registrationSchool');
-	// registrationSchoolService.hooks(registrationSchoolHooks);
 };

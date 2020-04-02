@@ -1,8 +1,9 @@
 const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
+const { iff, isProvider } = require('feathers-hooks-common');
 
-const globalHooks = require('../../../hooks');
+const { hasPermission } = require('../../../hooks');
 
 /**
  * checks if the user has valid permissions to skip registration of the target user.
@@ -35,7 +36,7 @@ const skipRegistrationSingleHooks = {
 		all: [authenticate('jwt')],
 		find: [hooks.disallow()],
 		get: [hooks.disallow()],
-		create: [globalHooks.ifNotLocal(checkPermissions)],
+		create: [iff(isProvider('external'), [checkPermissions])],
 		update: [hooks.disallow()],
 		patch: [hooks.disallow()],
 		remove: [hooks.disallow()],
@@ -47,7 +48,7 @@ const skipRegistrationBulkHooks = {
 		all: [authenticate('jwt')],
 		find: [hooks.disallow()],
 		get: [hooks.disallow()],
-		create: [globalHooks.ifNotLocal(globalHooks.hasPermission('ADMIN_VIEW'))],
+		create: [iff(isProvider('external'), [hasPermission('ADMIN_VIEW')])],
 		update: [hooks.disallow()],
 		patch: [hooks.disallow()],
 		remove: [hooks.disallow()],

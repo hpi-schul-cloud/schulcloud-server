@@ -214,7 +214,7 @@ describe('skipRegistration service', () => {
 		});
 		expect(Array.isArray(result)).to.equal(true);
 		expect(result[0].success).to.equal(true);
-		expect(result[1].success).to.eq(true);
+		expect(result[1].success).to.equal(true);
 	});
 
 	it('returns partial errors during bulk operation', async () => {
