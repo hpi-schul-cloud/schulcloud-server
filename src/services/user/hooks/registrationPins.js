@@ -2,10 +2,11 @@ const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
-const { NODE_ENV } = require('../../../../config/globals');
+const {
+	NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE,
+} = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
-const pinModel = require('../../user/model').registrationPinModel;
-const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
+const pinModel = require('../model').registrationPinModel;
 
 const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
 	.then(() => Promise.resolve(hook));
@@ -33,7 +34,8 @@ Ihr ${SC_SHORT_TITLE}-Team`;
 	}
 	if (role === 'student' || role === 'employee' || role === 'expert') {
 		return `Vielen Dank, dass du die ${SC_TITLE} nutzen möchtest.
-Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein, um deine Registrierung bei der ${SC_TITLE} abzuschließen:
+Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein, 
+um deine Registrierung bei der ${SC_TITLE} abzuschließen:
 
 PIN: ${pin}
 
@@ -67,7 +69,9 @@ const checkAndVerifyPin = (hook) => {
 						return hook;
 					});
 			}
-			throw new BadRequest('Der eingegebene Code ist ungültig oder konnte nicht bestätigt werden. Bitte versuche es erneut.');
+			throw new BadRequest(
+				'Der eingegebene Code ist ungültig oder konnte nicht bestätigt werden. Bitte versuche es erneut.',
+			);
 		}
 		return hook;
 	}
@@ -89,7 +93,7 @@ const mailPin = (hook) => {
 };
 
 const returnPinOnlyToSuperHero = async (hook) => {
-	if (NODE_ENV === 'test') {
+	if (NODE_ENV === ENVIRONMENTS.TEST) {
 		return Promise.resolve(hook);
 	}
 

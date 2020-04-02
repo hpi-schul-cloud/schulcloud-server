@@ -1,8 +1,10 @@
 const Sentry = require('@sentry/node');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
-const { deepObject } = require('../utils/');
-const { SENTRY_DSN, SC_DOMAIN, NODE_ENV } = require('../../config/globals');
+const { deepObject } = require('../utils');
+const {
+	SENTRY_DSN, SC_DOMAIN, NODE_ENV, ENVIRONMENTS,
+} = require('../../config/globals');
 /**
  * helpers
  */
@@ -73,7 +75,6 @@ const filterByErrorMessageMiddleware = (...errorMessage) => (event, hint, app) =
 const skipItMiddleware = () => null;
 
 module.exports = (app) => {
-	const environment = NODE_ENV;
 	const release = version;
 
 	if (SENTRY_DSN) {
@@ -85,11 +86,11 @@ module.exports = (app) => {
 			removeJwtToken,
 		];
 		// for local test runs, post feedback but skip it
-		if (environment === 'default') {
+		if (NODE_ENV === ENVIRONMENTS.DEVELOPMENT) {
 			middlewares.push(logItMiddleware(false));
 		}
 		// do not execute for test runs
-		if (environment === 'test') {
+		if (NODE_ENV === ENVIRONMENTS.TEST) {
 			middlewares = [skipItMiddleware];
 		}
 
@@ -107,7 +108,7 @@ module.exports = (app) => {
 
 		Sentry.init({
 			dsn: SENTRY_DSN,
-			environment,
+			environment: NODE_ENV,
 			release,
 			//	debug: true,
 			sampleRate: 1.0,

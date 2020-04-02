@@ -1,5 +1,5 @@
 const logger = require('../../../logger');
-const { NODE_ENV } = require('../../../../config/globals');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 
 const jwtFromCookieString = (cookieString) => {
 	try {
@@ -29,7 +29,8 @@ const authHeaderExtractor = (req) => {
 
 let secrets;
 try {
-	if (['production', 'lokal'].includes(NODE_ENV)) {
+	// todo resolve this somewhere else
+	if (NODE_ENV === ENVIRONMENTS.PRODUCTION) {
 		// eslint-disable-next-line global-require
 		secrets = require('../../../../config/secrets.js');
 	} else {
@@ -41,7 +42,7 @@ try {
 }
 
 const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
-if (NODE_ENV === 'production' && !secrets.authentication) {
+if (NODE_ENV === ENVIRONMENTS.PRODUCTION && !secrets.authentication) {
 	logger.error('use default authentication secret');
 }
 

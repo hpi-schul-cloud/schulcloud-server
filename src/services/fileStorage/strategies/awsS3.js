@@ -8,14 +8,14 @@ const { schoolModel } = require('../../school/model');
 const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
-const { NODE_ENV } = require('../../../../config/globals');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 
 
 let awsConfig = {};
 try {
 	//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 	/* eslint-disable global-require, no-unused-expressions */
-	(['production'].includes(NODE_ENV))
+	(NODE_ENV === ENVIRONMENTS.PRODUCTION)
 		? awsConfig = require('../../../../config/secrets.js').aws
 		: awsConfig = require('../../../../config/secrets.json').aws;
 	/* eslint-enable global-require, no-unused-expressions */
@@ -205,7 +205,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					Prefix: path,
 				};
 				return promisify(awsObject.s3.listObjectsV2.bind(awsObject.s3), awsObject.s3)(params)
-					.then((res) => Promise.resolve(getFileMetadata(path, res.Contents, awsObject.bucket, awsObject.s3)));
+					.then((res) => Promise
+						.resolve(getFileMetadata(path, res.Contents, awsObject.bucket, awsObject.s3)));
 			});
 	}
 
