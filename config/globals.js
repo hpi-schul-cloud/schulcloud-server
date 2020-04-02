@@ -8,27 +8,36 @@ const ENVIRONMENTS = {
 	MIGRATION: 'migration',
 };
 
-const ENV = process.env.NODE_ENV;
+const { NODE_ENV = ENVIRONMENTS.DEVELOPMENT } = process.env;
 
 let defaultLogLevel = null;
-switch (ENV) {
-	case ENVIRONMENTS.DEVELOPMENT:
-	case ENVIRONMENTS.MIGRATION:
-		defaultLogLevel = 'debug';
+switch (NODE_ENV) {
+	case ENVIRONMENTS.PRODUCTION:
+		defaultLogLevel = 'error';
 		break;
 	case ENVIRONMENTS.TEST:
 		defaultLogLevel = 'emerg';
 		break;
-	case ENVIRONMENTS.PRODUCTION:
+	case ENVIRONMENTS.DEVELOPMENT:
+	case ENVIRONMENTS.MIGRATION:
 	default:
-		defaultLogLevel = 'error';
+		defaultLogLevel = 'debug';
+}
+
+let defaultDbUrl = null;
+switch (NODE_ENV) {
+	case ENVIRONMENTS.TEST:
+		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud-test';
+		break;
+	default:
+		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud';
 }
 
 
 const globals = {
 	BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',
 	DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
-	DB_URL: process.env.DB_URL || 'mongodb://127.0.0.1:27017/schulcloud',
+	DB_URL: process.env.DB_URL || defaultDbUrl,
 	DOCUMENT_BASE_DIR: process.env.DOCUMENT_BASE_DIR || 'https://s3.hidrive.strato.com/schul-cloud-hpi/',
 	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE: (5 * 1024 * 1024), // 5MB
 	REQUEST_TIMEOUT: process.env.REQUEST_TIMEOUT || 8000,
@@ -46,7 +55,7 @@ const globals = {
 	/**
 	 * default value 'development' matches default of app.get('env'), but use globals
 	 */
-	NODE_ENV: ENV || ENVIRONMENTS.DEVELOPMENT,
+	NODE_ENV,
 	ENVIRONMENTS,
 	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
 	/** HOST=https://schul-cloud.org in bosscloud, see misuse in todo */
@@ -105,12 +114,14 @@ const globals = {
 
 
 // validation /////////////////////////////////////////////////
-const { NODE_ENV } = globals;
 const ENVIRONMENT_VALUES = Object.values(ENVIRONMENTS);
 if (!(ENVIRONMENT_VALUES.includes(globals.NODE_ENV))) {
 	throw new Error('NODE_ENV must match one of valid environments', { ENVIRONMENT_VALUES, NODE_ENV });
 } else {
 	debug(`NODE_ENV is set to '${globals.NODE_ENV}'`);
 }
+
+// print
+debug('Current configuration is', JSON.stringify(globals, null, 2));
 
 module.exports = globals;
