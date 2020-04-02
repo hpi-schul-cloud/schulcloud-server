@@ -1,13 +1,6 @@
 const { expect } = require('chai');
 const app = require('../../../../src/app');
-const {
-	paginate,
-	filterByQuery,
-	addDisplayName,
-	preparedRoles,
-	unique,
-} = require('../../../../src/services/role/utils');
-const testObjects = require('../../helpers/testObjects')(app);
+// const testObjects = require('../../helpers/testObjects')(app);
 
 describe('Role Service', async () => {
 	let roleService;
