@@ -110,9 +110,7 @@ const errorHandler = (context) => {
 		}
 		return context;
 	}
-	throw new GeneralError('server error', {
-		error: 'Error with no context.error is throw. Error logic can not handle it.',
-	});
+	throw new GeneralError('Error with no context.error is throw. Error logic can not handle it.');
 };
 
 function setupAppHooks(app) {
