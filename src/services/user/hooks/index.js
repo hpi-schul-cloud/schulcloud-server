@@ -104,8 +104,12 @@ const updateAccountUsername = async (context) => {
 		app,
 	} = context;
 
-	if (!context.id) {
+	if (!email) {
 		return context;
+	}
+
+	if (!context.id) {
+		throw new BadRequest('Id is required');
 	}
 
 	if (!account || !ObjectId.equal(context.id, account.userId)) {
@@ -116,9 +120,6 @@ const updateAccountUsername = async (context) => {
 		if (!account) return context;
 	}
 
-	if (!email) {
-		return context;
-	}
 	if (email && account.systemId) {
 		delete context.data.email;
 		return context;
