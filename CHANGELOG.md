@@ -29,6 +29,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   This changelog has been added
 -   SC-3731 Rewrite role static service.
    -   Different tests that do not wait for server is listen.
+-   Backend route to confirm analog consents in bulk
 -   Changed Seed Data + Migration Script: Added feature flag for new Editor to klara.fall@schul-cloud.org
 -   SC-2922 Enable use of multiple S3 instances as file storage provider
    -   A new collection is added to administrate multiple S3 instances 
