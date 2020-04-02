@@ -103,19 +103,17 @@ const updateAccountUsername = async (context) => {
 		data: { email },
 		app,
 	} = context;
-
-	if (!context.id) {
+    
+    if (!context.id) {
 		return context;
 	}
 
 	if (!account || !ObjectId.equal(context.id, account.userId)) {
-		const accounts = (await context
+		account = (await context
 			.app.service('/accounts')
-			.find({ query: { userId: context.id } }));
+			.find({ query: { userId: context.id } }))[0];
 
-		if (account.length === 0) return context;
-
-		account = accounts[0];
+		if (!account) return context;
 	}
 
 	if (!email) {
