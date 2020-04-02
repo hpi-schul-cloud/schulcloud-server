@@ -225,7 +225,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 				});
 
 				/* TODO: Check for change */
-				const filteredTimetable = timetable.filter(entry => !(entry.te.length === 1
+				let filteredTimetable = timetable.filter(entry => !(entry.te.length === 1
 					&& entry.te[0].id === teacher.id
 					&& entry.kl.length > 0
 					&& entry.ro.length === 1
@@ -234,9 +234,9 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 					filteredTimetable = filteredTimetable.map(entry => {
 						return {
 							teachers: entry.te.map(teacher => teacher.longname),
-							teacherValid: entry.te.length === 1,
+							teacherValid: entry.te[0].id === teacher.id,
 							rooms: entry.ro.map(room => room.longname),
-							roomValid: entry.ro.length === 1 &&  entry.ro[0].id === room.id,
+							roomValid: entry.ro.length === 1,
 							classes: entry.kl.map(klass => klass.longname),
 							classesValid: entry.kl.length > 0,
 							subjects: entry.su.map(subject => subject.longname),
