@@ -12,3 +12,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
   - This changelog has been added
+
+
+## 22.7.1
+
+### Fixed
+
+- Admin and teacher user could change other users without changing them self
