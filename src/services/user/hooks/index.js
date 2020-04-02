@@ -97,11 +97,18 @@ const checkUniqueAccount = (hook) => {
 };
 
 const updateAccountUsername = async (context) => {
+	let { params: { account } } = context;
 	const {
-		params: { account },
 		data: { email },
 		app,
 	} = context;
+
+	if (!account || account.userId.toString() !== context.id.toString()) {
+		account = (await context
+			.app.service('/accounts')
+			.find({ query: { userId: context.id } }))[0];
+	}
+
 	if (!email) {
 		return context;
 	}
