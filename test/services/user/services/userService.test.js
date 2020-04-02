@@ -81,14 +81,90 @@ describe('user service', () => {
 			});
 	});
 
-	it('deletes user correctly', async () => {
-		const demoClass = (await classesService.find({ query: { name: 'Demo-Klasse', $limit: 1 } })).data[0];
-		const demoCourse = (await coursesService.find({ query: { name: 'Mathe', $limit: 1 } })).data[0];
+	it('user gets removed from classes and courses after delete', async () => {
+		const userToDelete = await testObjects.createTestUser({ roles: ['student'] });
+		const { _id: classId } = await testObjects.createTestClass({ userIds: userToDelete._id });
+		const { _id: courseId } = await testObjects.createTestCourse({ userIds: userToDelete._id });
 
 		await userService.remove(testUserId);
 
-		expect(demoClass.userIds).to.not.include(testUserId);
-		expect(demoCourse.userIds).to.not.include(testUserId);
+		const [course, klass] = await Promise.all([
+			classesService.get(classId),
+			coursesService.get(courseId),
+		]);
+
+		expect(course.userIds.map((id) => id.toString())).to.not.include(testUserId.toString());
+		expect(klass.userIds.map((id) => id.toString())).to.not.include(testUserId.toString());
+	});
+
+	it('fail to delete single student without STUDENT_DELETE permission', async () => {
+		await testObjects.createTestRole({ name: 'notAuthorized', permissions: [] });
+		const studentToDelete = await testObjects.createTestUser({ roles: ['student'] });
+		const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		params.query = {};
+		try {
+			await app.service('users').remove(studentToDelete._id, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal('you dont have permission to delete this user!');
+		}
+	});
+
+	it('can delete single student with STUDENT_DELETE permission', async () => {
+		await testObjects.createTestRole({
+			name: 'studentDelete', permissions: ['STUDENT_DELETE'],
+		});
+		const studentToDelete = await testObjects.createTestUser({ roles: ['student'], manualCleanup: true });
+		const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		params.query = {};
+		try {
+			const result = await app.service('users').remove(studentToDelete._id, params);
+			expect(result).to.not.be.undefined;
+			expect(result._id.toString()).to.equal(studentToDelete._id.toString());
+		} catch (err) {
+			// in case of error, make sure user gets deleted
+			testObjects.createdUserIds.push(studentToDelete._id);
+			throw new Error('should not have failed');
+		}
+	});
+
+	it('fail to  single teacher without TEACHER_DELETE permission', async () => {
+		await testObjects.createTestRole({ name: 'notAuthorized', permissions: ['STUDENT_DELETE'] });
+		const studentToDelete = await testObjects.createTestUser({ roles: ['teacher'] });
+		const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		params.query = {};
+		try {
+			await app.service('users').remove(studentToDelete._id, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal('you dont have permission to delete this user!');
+		}
+	});
+
+	it('can delete single teacher with TEACHER_DELETE permission', async () => {
+		await testObjects.createTestRole({
+			name: 'teacherDelete', permissions: ['TEACHER_DELETE'],
+		});
+		const studentToDelete = await testObjects.createTestUser({ roles: ['teacher'], manualCleanup: true });
+		const actingUser = await testObjects.createTestUser({ roles: ['teacherDelete'] });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		params.query = {};
+		try {
+			const result = await app.service('users').remove(studentToDelete._id, params);
+			expect(result).to.not.be.undefined;
+			expect(result._id.toString()).to.equal(studentToDelete._id.toString());
+		} catch (err) {
+			// in case of error, make sure user gets deleted
+			testObjects.createdUserIds.push(studentToDelete._id);
+			throw new Error('should not have failed');
+		}
 	});
 
 	describe('uniqueness check', () => {
@@ -116,7 +192,7 @@ describe('user service', () => {
 		});
 	});
 
-	after(async () => {
+	afterEach(async () => {
 		await testObjects.cleanup();
 	});
 });
