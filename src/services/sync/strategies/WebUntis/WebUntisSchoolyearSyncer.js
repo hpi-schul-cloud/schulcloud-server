@@ -106,9 +106,9 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		
 		const config = params.webuntisConfig;
 
-		const session = await this.login(config);
-		const metaData = await this.fetchMetaData(session, params);
-		await this.logout(session);
+		await this.login(config.url, config.schoolname, config.username, config.password);
+		const metaData = await this.fetchMetaData(params);
+		await this.logout();
 		await this.storeMetadata(metaData, params);
 
 		this.stats.success = true;
@@ -124,12 +124,11 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		const config = params.webuntisConfig;
 
 		const metaData = await this.obtainMetadata(params);
-		// const session = await this.login(config);
-		const session = {};
+		// await this.login(config.url, config.schoolname, config.username, config.password);
+		
+		const data = await this.fetchData(metaData);
 
-		const data = await this.fetchData(session, metaData);
-
-		// await this.logout(session);
+		// await this.logout();
 
 		await this.createCourses(config, data, params);
 
@@ -170,21 +169,6 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	}
 
 	/**
-	* 
-	* @param {*} config 
-	*/
-	async login(config) {
-		await super.login(config.url, config.schoolname, config.username, config.password);
-
-		return {
-			session: this.session,
-			rpc: this.rpc
-		};
-	}
-
-	/**
-	* 
-	* @param {*} session
 	* @return List of potential courses
 	*   Array of {
 	*     teacher: 'Renz',
@@ -194,7 +178,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 	*     state: 'new',
 	*   }
 	*/
-	async fetchMetaData(session) {
+	async fetchMetaData() {
 		const intermediateData = {};
 		
 		intermediateData.currentSchoolYear = await this.getCurrentSchoolyear();
@@ -450,21 +434,12 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 
 	/**
 	* 
-	* @param {*} session 
 	* @param {*} metaData 
 	*/
-	async fetchData(session, metaData) {
+	async fetchData(metaData) {
 		// Not required as all information are fetched during phase 1
 
 		return metaData;
-	}
-
-	/**
-	* 
-	* @param {*} session 
-	*/
-	async logout(session) {
-		await super.logout();
 	}
 
 	/**
