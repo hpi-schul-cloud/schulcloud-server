@@ -158,14 +158,17 @@ describe('Sanitization Hook', () => {
 });
 
 describe('removeObjectIdInData hook', () => {
+	let server;
 	let user;
 
 	before(async () => {
+		server = await app.listen(0);
 		user = await createTestUser();
 	});
 
 	after(async () => {
 		await cleanup();
+		await server.close();
 	});
 
 	it('Should work for create', async () => {
