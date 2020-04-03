@@ -12,6 +12,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 -   This changelog has been added
+-   Backend route to confirm analog consents in bulk
 -   Changed Seed Data + Migration Script: Added feature flag for new Editor to klara.fall@schul-cloud.org
 -   SC-2922 Enable use of multiple S3 instances as file storage provider
    -   A new collection is added to administrate multiple S3 instances 
@@ -23,3 +24,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 -   SC-3821: Fix Co-Teachers and Substitution teachers not being able to Grade Homeworks
+
+
+## 22.7.1
+
+### Fixed
+
+- Admin and teacher user could change other users without changing them self

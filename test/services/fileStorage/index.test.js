@@ -36,11 +36,12 @@ class AWSStrategy {
 
 describe('fileStorage services', () => {
 	let app;
+	let server;
 	let fileStorageService;
 	let signedUrlService;
 	let directoryService;
 
-	before(function before() {
+	before(async function before() {
 		this.timeout(4000);
 
 		mockery.enable({
@@ -53,6 +54,7 @@ describe('fileStorage services', () => {
 
 		// eslint-disable-next-line global-require
 		app = require('../../../src/app');
+		server = await app.listen(0);
 
 		fileStorageService = app.service('/fileStorage/');
 		signedUrlService = app.service('/fileStorage/signedUrl');
@@ -70,7 +72,7 @@ describe('fileStorage services', () => {
 		return Promise.all(promises);
 	});
 
-	after(() => {
+	after(async () => {
 		mockery.deregisterAll();
 		mockery.disable();
 
@@ -83,7 +85,8 @@ describe('fileStorage services', () => {
 			...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
 		];
 
-		return Promise.all(promises);
+		await Promise.all(promises);
+		await server.close();
 	});
 
 	describe('file service', () => {
