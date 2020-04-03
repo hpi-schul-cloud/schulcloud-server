@@ -29,3 +29,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 -   SC-3821: Fix Co-Teachers and Substitution teachers not being able to Grade Homeworks
+
+
+## 22.7.1
+
+### Fixed
+
+- Admin and teacher user could change other users without changing them self
