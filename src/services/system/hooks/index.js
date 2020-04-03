@@ -1,11 +1,20 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
+const { Forbidden } = require('@feathersjs/errors');
 const { permitGroupOperation } = require('../../../hooks');
+const { ObjectId } = require('../../../helper/compare');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = (context) => {
-	const oldQuery = context.query || {};
 	const systemids = context.params.school.systems || [];
+	if (context.id) {
+		const schoolSystem = systemids.some((s) => ObjectId.equal(s, context.id));
+		if (schoolSystem) {
+			return context;
+		}
+		throw new Forbidden('You are not allowed to access this system.');
+	}
+	const oldQuery = context.query || {};
 	const newQuery = { $and: [oldQuery, { _id: { $in: systemids } }] };
 	context.params.query = newQuery;
 	return context;
