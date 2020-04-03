@@ -565,7 +565,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 		const scCourses = await courseService.find({
 			// TODO: use teacher as query value, too
 			query: {
-				name: entry.subject,
+				name: courseName,
 				schoolId: school._id,
 			},
 			paginate: false,
