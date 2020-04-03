@@ -48,6 +48,8 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 			return false;
 		}
 
+		const dryrun = !("dryrun" in params) || (params.dryrun !== 'false' && params.dryrun !== false);
+
 		const query = (params || {}).query || {}; // object containing url, username, password, and schoolname
 
 		const validQuery = (
@@ -57,10 +59,18 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 			query.schoolname != ''
 		);
 		
-		const validData = (
-			['inclusive', 'exclusive'].includes(data.data.type) || (!data.type && !data.data.courseMetadataIds) &&
-			data.datasourceId != ''
-		);
+		let validData = false;
+		if (dryrun) {
+			validData = (
+				data.datasourceId != ''
+			);
+		} else {
+			validData = (
+				['inclusive', 'exclusive'].includes(data.data.type) || (!data.type && !data.data.courseMetadataIds) &&
+				data.datasourceId != ''
+			);
+		}
+		
 
 		if (!validData || !validQuery) {
 			return false;
@@ -77,7 +87,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 			datasourceId: data.datasourceId,
 			datatype: data.data.type,
 			courseMetadataIds: data.data.courseMetadataIds,
-			dryrun: !("dryrun" in params) || (params.dryrun !== 'false' && params.dryrun !== false),
+			dryrun: dryrun,
 		}];
 	}
 
