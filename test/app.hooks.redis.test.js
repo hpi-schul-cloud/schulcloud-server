@@ -12,6 +12,7 @@ describe('handleAutoLogout hook', function test() {
 	let redisHelper;
 	let configBefore;
 	let app;
+	let server;
 	let testObjects;
 
 
@@ -39,6 +40,7 @@ describe('handleAutoLogout hook', function test() {
 		fut = require('../src/app.hooks').handleAutoLogout;
 		/* eslint-enable global-require */
 		redisHelper.initializeRedisClient();
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -50,6 +52,7 @@ describe('handleAutoLogout hook', function test() {
 		delete require.cache[require.resolve('./services/helpers/testObjects')];
 		delete require.cache[require.resolve('../src/app.hooks')];
 		Configuration.reset(configBefore);
+		await server.close();
 	});
 
 	it('whitelisted JWT is accepted and extended', async () => {

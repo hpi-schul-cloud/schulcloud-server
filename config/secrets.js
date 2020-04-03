@@ -3,9 +3,9 @@ let secrets = {
 	"sendmail": {
 		"host": process.env.SMTP_HOST,
 		"port": process.env.SMTP_PORT
-},
+	},
 	"aws": {
-	"signatureVersion": "v4",
+		"signatureVersion": "v4",
 		"s3ForcePathStyle": true,
 		"sslEnabled": true,
 		"accessKeyId": process.env.AWS_ACCESS_KEY,
@@ -13,12 +13,12 @@ let secrets = {
 		"region": process.env.AWS_REGION || "eu-de",
 		"endpointUrl": process.env.AWS_ENDPOINT_URL,
 		"cors_rules": [{
-		"AllowedHeaders": ["*"],
-		"AllowedMethods": ["PUT"],
-		"AllowedOrigins": [process.env.HOST],
-		"MaxAgeSeconds": 300
-	}]
-},
+			"AllowedHeaders": ["*"],
+			"AllowedMethods": ["PUT"],
+			"AllowedOrigins": [process.env.HOST],
+			"MaxAgeSeconds": 300
+		}]
+	},
 	"authentication": process.env.AUTHENTICATION
 };
 
