@@ -45,10 +45,10 @@ const sendInfo = (context) => {
 Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:
 ${recoveryLink}\n
 Mit Freundlichen Grüßen
-Ihr ${SC_SHORT_TITLE || 'Schul-Cloud'} Team`;
+Ihr ${SC_SHORT_TITLE} Team`;
 
 			globalHooks.sendEmail(context, {
-				subject: `Passwort zurücksetzen für die ${SC_SHORT_TITLE || 'Schul-Cloud'}`,
+				subject: `Passwort zurücksetzen für die ${SC_SHORT_TITLE}`,
 				emails: [account.userId.email],
 				content: {
 					text: mailContent,
