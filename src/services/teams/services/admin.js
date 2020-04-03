@@ -18,10 +18,6 @@ class AdminOverview {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
-
-		if (SC_SHORT_TITLE === undefined) {
-			warning('SC_SHORT_TITLE is not defined.');
-		}
 	}
 
 	static testIfUserByRoleExist(team, roleId) {
