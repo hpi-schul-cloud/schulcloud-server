@@ -155,7 +155,7 @@ exports.before = {
 };
 
 exports.after = {
-	all: [hooks.iff(populateInQuery, hooks.keepInArray('systems', ['_id', 'type', 'alias']))],
+	all: [hooks.iff(populateInQuery, hooks.keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active']))],
 	find: [decorateYears],
 	get: [decorateYears],
 	create: [createDefaultStorageOptions],
