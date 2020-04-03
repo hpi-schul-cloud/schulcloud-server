@@ -2,7 +2,7 @@ const { TooManyRequests } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const {
-	getRedisClient, redisSetAsync, redisDelAsync, extractJwt, getRedisData,
+	getRedisClient, redisSetAsync, redisDelAsync, extractDataFromJwt, getRedisData,
 } = require('../../../utils/redis');
 
 const updateUsernameForLDAP = async (context) => {
@@ -134,7 +134,7 @@ const removeProvider = (context) => {
  */
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const { redisIdentifier, privateDevice } = extractJwt(context.result.accessToken);
+		const { redisIdentifier, privateDevice } = extractDataFromJwt(context.result.accessToken);
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;
 		// todo, do this async without await
@@ -152,7 +152,7 @@ const addJwtToWhitelist = async (context) => {
  */
 const removeJwtFromWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const { redisIdentifier } = extractJwt(context.params.authentication.accessToken);
+		const { redisIdentifier } = extractDataFromJwt(context.params.authentication.accessToken);
 		await redisDelAsync(redisIdentifier);
 	}
 

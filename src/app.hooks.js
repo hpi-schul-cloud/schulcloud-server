@@ -4,7 +4,7 @@ const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const { sanitizeHtml: { sanitizeDeep } } = require('./utils');
 const {
-	getRedisClient, redisGetAsync, redisSetAsync, extractJwt, getRedisData,
+	getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData,
 } = require('./utils/redis');
 
 
@@ -73,7 +73,7 @@ const handleAutoLogout = async (context) => {
 	const redisClientExists = !!getRedisClient();
 	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
 	if (!ignoreRoute && redisClientExists && authorizedRequest) {
-		const { redisIdentifier, privateDevice } = extractJwt(context.params.authentication.accessToken);
+		const { redisIdentifier, privateDevice } = extractDataFromJwt(context.params.authentication.accessToken);
 		const redisResponse = await redisGetAsync(redisIdentifier);
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;

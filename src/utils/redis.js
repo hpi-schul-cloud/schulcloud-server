@@ -41,7 +41,7 @@ const redisTtlAsync = (...args) => {
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 
-function extractJwt(token) {
+function extractDataFromJwt(token) {
 	const decodedToken = jwt.decode(token.replace('Bearer ', ''));
 	if (decodedToken === null) {
 		throw new BadRequest('Invalid authentication data');
@@ -88,6 +88,6 @@ module.exports = {
 	redisSetAsync,
 	redisDelAsync,
 	redisTtlAsync,
-	extractJwt,
+	extractDataFromJwt,
 	getRedisData,
 };
