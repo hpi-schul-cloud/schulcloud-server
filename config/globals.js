@@ -86,7 +86,6 @@ const globals = {
 	// test user helper
 	TEST_PW: (process.env.TEST_PW || '').trim(),
 	TEST_HASH: (process.env.TEST_HASH || '').trim(),
-	AT: '@schul-cloud.org',
 
 	// nbc
 	NBC_IMPORTURL: process.env.NBC_IMPORTURL,
