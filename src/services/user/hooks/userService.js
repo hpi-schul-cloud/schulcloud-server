@@ -212,7 +212,7 @@ const securePatching = (hook) => Promise.all([
 ])
 	.then(([isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent]) => {
 		if (isDemoStudent || isDemoTeacher) {
-			return Promise.reject(new errors.Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+			return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
 		}
 		if (!isSuperHero) {
 			delete hook.data.schoolId;
