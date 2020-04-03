@@ -85,7 +85,7 @@ class WebUntisSchoolyearSyncer extends WebUntisBaseSyncer {
 				password: query.password,
 			},
 			datasourceId: data.datasourceId,
-			datatype: data.data.type,
+			datatype: ((data || {}).data || {}).type,
 			courseMetadataIds: data.data.courseMetadataIds,
 			dryrun: dryrun,
 		}];
