@@ -153,7 +153,7 @@ exports.before = {
 };
 
 exports.after = {
-	all: [],
+	all: [hooks.keepInArray('systems', ['_id', 'type', 'alias'])],
 	find: [decorateYears],
 	get: [decorateYears],
 	create: [createDefaultStorageOptions],
