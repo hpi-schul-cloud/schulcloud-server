@@ -16,7 +16,7 @@ const {
 } = require('../../config/globals');
 
 if (DATABASE_AUDIT === 'true') {
-	logger.info('database audit log is globally enab led');
+	logger.info('database audit log is globally enabled');
 } else {
 	logger.info('database audit log is globally disabled');
 }
