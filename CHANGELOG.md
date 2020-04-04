@@ -22,7 +22,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
       -   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true will activate the feature
       -   S3_KEY, used for symmetric encryption, already required for the migration because of the secret access key encryption
 
+### Changed
+
+-   migrated backup.sh script to node, so it can run platform independant and works on windows.
+
 ### Fixed
+
 -   SC-3821: Fix Co-Teachers and Substitution teachers not being able to Grade Homeworks
 
 
