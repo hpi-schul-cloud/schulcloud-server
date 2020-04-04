@@ -77,7 +77,7 @@ const getTimestamp = () => {
 const CONFIG = {
 	BASE_PATH: process.env.BASE_PATH || 'backup/',
 	get BACKUP_PATH_IMPORT() {
-		return args['--path'] || this.BASE_PATH;
+		return path.join(this.BASE_PATH, args['--path'] || 'setup');
 	},
 	get BACKUP_PATH_EXPORT() {
 		return path.join(this.BASE_PATH, args['--path'] || getTimestamp());
@@ -176,7 +176,7 @@ const importDirectory = async (directoryPath) => {
 		return importCollection({
 			collection,
 			filePath,
-		});
+		}).then(console.log);
 	});
 	const outputs = await Promise.all(imports);
 	return outputs.join('\n');
