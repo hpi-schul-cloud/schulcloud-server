@@ -124,6 +124,8 @@ const restrictToUserSchool = async (context) => {
 	throw new Forbidden('You can only edit your own school.');
 };
 
+const populateInQuery = (context) => (context.params.query || {}).$populate;
+
 exports.before = {
 	all: [],
 	find: [],
@@ -153,7 +155,7 @@ exports.before = {
 };
 
 exports.after = {
-	all: [],
+	all: [hooks.iff(populateInQuery, hooks.keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active']))],
 	find: [decorateYears],
 	get: [decorateYears],
 	create: [createDefaultStorageOptions],
