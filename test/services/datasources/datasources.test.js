@@ -13,9 +13,9 @@ describe('datasources service', () => {
 		server = app.listen(0, done);
 	});
 
-	after((done) => {
-		server.close(done);
-		testObjects.cleanup();
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('registered the datasources service', () => {
