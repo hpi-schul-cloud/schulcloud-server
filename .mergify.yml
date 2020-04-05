@@ -4,9 +4,6 @@ pull_request_rules:
       - label!=WIP
       - label!=waiting
       - label=ready to merge
-      - status-success~=Travis CI
-      - status-success~=Codacy
-      - status-success~=pullapprove
     actions:
       merge:
         method: merge
@@ -23,7 +20,7 @@ pull_request_rules:
           - ready to merge
   - name: remove "ready to merge" label when pull is not approved
     conditions:
-      - status-failure~=pullapprove
+      - -status-success~=pullapprove
       - label~=ready to merge
       - -merged
     actions:
