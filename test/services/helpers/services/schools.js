@@ -64,7 +64,7 @@ const cleanup = () => {
 	}
 	const ids = createdSchoolIds;
 	createdSchoolIds = [];
-	return School.deleteMany({ _id: { $in: ids } });
+	return School.deleteMany({ _id: { $in: ids } }).lean().exec();
 };
 
 module.exports = (app) => ({
