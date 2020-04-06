@@ -1,7 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
-const hooks = require('feathers-hooks-common');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
+const {
+	iff, isProvider, discard, disallow, keepInArray,
+} = require('feathers-hooks-common');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 
@@ -152,11 +154,14 @@ exports.before = {
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
     */
-	remove: [hooks.disallow()],
+	remove: [disallow()],
 };
 
 exports.after = {
-	all: [hooks.iff(populateInQuery, hooks.keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active']))],
+	all: [
+		iff(populateInQuery, keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active'])),
+		iff(isProvider('external'), discard('storageProvider')),
+	],
 	find: [decorateYears],
 	get: [decorateYears],
 	create: [createDefaultStorageOptions],
