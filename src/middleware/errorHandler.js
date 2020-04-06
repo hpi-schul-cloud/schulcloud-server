@@ -20,7 +20,7 @@ const logRequestInfosInErrorCase = (error, req, res, next) => {
 	next(error);
 };
 
-const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
+const formatAndLogErrors = (isTestRun) => (error, req, res, next) => {
 	if (error) {
 		// delete response informations for extern express applications
 		delete error.response;
@@ -28,7 +28,9 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 			// can include jwts if error it throw by extern micro services
 			delete error.options.headers;
 		}
-		logger.error({ ...error });
+		if (isTestRun === false) {
+			logger.error({ ...error });
+		}
 		if (error.code === 500) {
 			// eslint-disable-next-line no-param-reassign
 			error = new GeneralError(error);
@@ -38,7 +40,7 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 		// delete error.catchedError;
 
 		// clear data and add requestId
-		error.data = showRequestId ? {
+		error.data = isTestRun === false ? {
 			requestId: req.headers.requestId,
 		} : {};
 	}
@@ -73,7 +75,7 @@ const secretDataKeys = (() => [
 ].map((k) => k.toLocaleLowerCase())
 )();
 const filter = (data) => {
-	const newData = Object.assign({}, data);
+	const newData = { ...data };
 	Object.keys(newData).forEach((key) => {
 		// secretDataKeys are lower keys
 		if (secretDataKeys.includes(key.toLocaleLowerCase())) {
@@ -121,7 +123,7 @@ const errorHandler = (app) => {
 	}
 
 	app.use(Sentry.Handlers.errorHandler());
-	app.use(formatAndLogErrors(process.env.NODE_ENV !== 'test'));
+	app.use(formatAndLogErrors(process.env.NODE_ENV));
 	app.use(returnAsJson);
 };
 
