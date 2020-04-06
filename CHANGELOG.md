@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Changed
+
+-   User delete now accepts bulk delete requests
+
 ## [22.8.0]
 
 ### Added
