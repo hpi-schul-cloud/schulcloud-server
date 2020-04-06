@@ -50,7 +50,8 @@ class RoleService {
 		return prom;
 	}
 
-	async getPermissionsByRoles(roleIds = []) {
+	async getPermissionsByRoles(_roleIds = []) {
+		const roleIds = Array.isArray(_roleIds) ? _roleIds : [_roleIds];
 		const ids = roleIds.map((id) => id.toString());
 		const selectedRoles = (await this.roles).filter((r) => ids.includes(r._id));
 		return unique(...selectedRoles.map((r) => r.permissions));
