@@ -34,7 +34,6 @@ const ldap = require('./ldap');
 const sync = require('./sync');
 const datasources = require('./datasources');
 const rocketChat = require('./rocketChat');
-const clipboard = require('./clipboard');
 const webuntis = require('./webuntis');
 const me = require('./me');
 const help = require('./help');
@@ -43,7 +42,7 @@ const alert = require('./alert');
 const videoconference = require('./videoconference');
 const messengerSync = require('./messengerSync');
 const nexboard = require('./nexboard');
-
+const storageProvider = require('./storageProvider');
 
 module.exports = function initializeServices() {
 	const app = this;
@@ -79,7 +78,6 @@ module.exports = function initializeServices() {
 	app.configure(wopi);
 	app.configure(pseudonym);
 	app.configure(consent);
-	app.configure(clipboard);
 	app.configure(ldap);
 	app.configure(sync);
 	app.configure(me);
@@ -93,6 +91,7 @@ module.exports = function initializeServices() {
 	app.configure(videoconference);
 	app.configure(messengerSync);
 	app.configure(nexboard);
+	app.configure(storageProvider);
 
 	// initialize events
 	newsEvents.configure(app);

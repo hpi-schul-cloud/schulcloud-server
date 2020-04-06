@@ -1,12 +1,10 @@
 const socketio = require('@feathersjs/socketio');
-const clipboard = require('./clipboard');
 
 module.exports = function setup() {
 	const app = this;
 
 	// configure your socket here
 	// make use of a namespace io.of('<namespace>') and connect it as <url>/<namespace>;
-	app.configure(clipboard);
 
 	app.configure(socketio((io) => {
 		io.sockets.setMaxListeners(200);
