@@ -19,15 +19,4 @@ const prepareErrorParam = (err) => (!err ? err : ({
 	type: err.type,
 }));
 
-// TODO: try catch ?
-/* for tests
-		try {
-			// throw new Error('bla bla');
-			// const res = null.forEach((r) => r);
-			throw new GeneralError('Can\'t find connected school.');
-		} catch (err) {
-			throw new Forbidden('Message', prepareErrorParam(err));
-        }
-*/
-
 module.exports = prepareErrorParam;
