@@ -120,7 +120,7 @@ const buildMessageObject = async ({ userId, teams, courses }) => {
 			rooms.push(teamObject);
 		}));
 	}
-	const homeserver = Configuration.get('MATRIX_URI').replace('https://', '').replace('/', '');
+	const homeserver = Configuration.get('MATRIX_SERVERNAME');
 
 	const message = {
 		method: 'adduser',
