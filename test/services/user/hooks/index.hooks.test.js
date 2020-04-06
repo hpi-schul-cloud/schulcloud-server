@@ -46,6 +46,20 @@ const assertPromiseStatus = (promise, success) => promise.then((result) => {
 });
 
 describe('hasEditPermissionForUser', () => {
+	let server;
+	before((done) => {
+		server = app.listen(0, done);
+	});
+
+	afterEach(async () => {
+		mockery.disable();
+	});
+
+	after(async () => {
+		await testObjects.cleanup;
+		await server.close()
+	});
+
 	it('can edit your own user', async () => {
 		const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
 		const params = await testObjects.generateRequestParamsFromUser(teacherUser);
@@ -123,10 +137,4 @@ describe('hasEditPermissionForUser', () => {
 		assertPromiseStatus(testHook(context), false);
 		mockery.disable();
 	});
-
-	afterEach(async () => {
-		mockery.disable();
-	});
-
-	after(testObjects.cleanup);
 });

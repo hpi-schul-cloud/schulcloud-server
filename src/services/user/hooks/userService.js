@@ -109,43 +109,46 @@ const updateAccountUsername = async (context) => {
 	return context;
 };
 
-const removeStudentFromClasses = (hook) => {
+const removeStudentFromClasses = async (hook) => {
+	// todo: move this functionality into classes, using events.
+	// todo: what about teachers?
 	const classesService = hook.app.service('/classes');
-	const userId = hook.id;
-	if (userId === undefined) {
-		throw new BadRequest(
-			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
-		);
-	}
-
-	const query = { userIds: userId };
-
-	return classesService.find({ query })
-		.then((classes) => Promise.all(
-			classes.data.map((myClass) => {
-				myClass.userIds.splice(myClass.userIds.indexOf(userId), 1);
-				return classesService.patch(myClass._id, myClass);
-			}),
-		).then(() => hook).catch((err) => {
-			throw new Forbidden(
-				'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.', err,
-			);
-		}));
-};
-
-const removeStudentFromCourses = async (hook) => {
-	const coursesService = hook.app.service('/courses');
-	const userId = hook.id;
-	if (userId === undefined) {
+	const userIds = hook.id || (hook.result || []).map((u) => u._id);
+	if (userIds === undefined) {
 		throw new BadRequest(
 			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
 		);
 	}
 
 	try {
-		const usersCourses = await coursesService.find({ query: { userIds: userId } });
+		const usersClasses = await classesService.find({ query: { userIds: { $in: userIds } } });
+		await Promise.all(usersClasses.data.map(
+			(klass) => classesService.patch(klass._id, { $pull: { userIds: { $in: userIds } } }),
+		));
+	} catch (err) {
+		throw new Forbidden(
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.', err,
+		);
+	}
+
+	return hook;
+};
+
+const removeStudentFromCourses = async (hook) => {
+	// todo: move this functionality into courses, using events.
+	// todo: what about teachers?
+	const coursesService = hook.app.service('/courses');
+	const userIds = hook.id || (hook.result || []).map((u) => u._id);
+	if (userIds === undefined) {
+		throw new BadRequest(
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
+		);
+	}
+
+	try {
+		const usersCourses = await coursesService.find({ query: { userIds: { $in: userIds } } });
 		await Promise.all(usersCourses.data.map(
-			(course) => hook.app.service('courseModel').patch(course._id, { $pull: { userIds: userId } }),
+			(course) => hook.app.service('courseModel').patch(course._id, { $pull: { userIds: { $in: userIds } } }),
 		));
 	} catch (err) {
 		throw new Forbidden(
