@@ -1,8 +1,14 @@
-const paginate = (result = [], { $limit, $skip = 0 } = {}, total) => (Array.isArray(result) ? ({
-	total: result.length,
-	limit: $limit || total || result.length,
-	skip: $skip,
-	data: result.slice($skip, $limit ? $skip + $limit : $limit),
-}) : result);
+const paginate = (result = [], { $limit, $skip = 0 } = {}) => {
+	if (!Array.isArray(result)) {
+		return result;
+	}
+	const data = result.slice($skip, $limit ? $skip + $limit : $limit);
+	return {
+		total: data.length,
+		limit: $limit || result.length || data.length,
+		skip: $skip,
+		data,
+	};
+};
 
 module.exports = paginate;

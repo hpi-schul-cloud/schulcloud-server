@@ -68,7 +68,7 @@ class RoleService {
 		// Please do not add || []; It must fail if the initialization failed.
 		const roles = await this.roles;
 		const result = filterByQuery(roles, params.query);
-		return paginate(result, params.query, roles.length);
+		return paginate(result, params.query);
 	}
 }
 
