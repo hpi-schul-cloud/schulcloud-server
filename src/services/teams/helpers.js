@@ -1,6 +1,6 @@
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const { teamRolesToHook } = require('./hooks');
-const { isArrayWithElement, isDefined, bsonIdToString } = require('./hooks/collection');
+const { isDefined, bsonIdToString } = require('./hooks/collection');
 const { prepareErrorParam } = require('../../utils');
 
 /**

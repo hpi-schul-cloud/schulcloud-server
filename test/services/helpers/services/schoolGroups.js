@@ -8,7 +8,7 @@ const create = async (data) => {
 	return schoolGroup;
 };
 
-const cleanup = async () => {
+const cleanup = () => {
 	if (createdSchoolGroups.length === 0) {
 		return Promise.resolve();
 	}
