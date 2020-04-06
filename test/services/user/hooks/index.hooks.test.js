@@ -57,7 +57,7 @@ describe('hasEditPermissionForUser', () => {
 
 	after(async () => {
 		await testObjects.cleanup;
-		await server.close()
+		await server.close();
 	});
 
 	it('can edit your own user', async () => {
