@@ -42,7 +42,6 @@ describe('fileStorage services', function fileStorageTest() {
 	let signedUrlService;
 	let directoryService;
 	let roleService;
-	let server;
 
 	before(async () => {
 		mockery.enable({
