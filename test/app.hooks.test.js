@@ -158,6 +158,7 @@ describe('Sanitization Hook', () => {
 });
 
 describe('removeObjectIdInData hook', () => {
+	let server;
 	let user;
 	let server;
 

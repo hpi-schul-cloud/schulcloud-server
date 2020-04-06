@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [22.8.0]
+
 ### Added
 -   This changelog has been added.
 -   SC-3731 Rewrite role static service.

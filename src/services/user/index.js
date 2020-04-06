@@ -1,6 +1,5 @@
 const service = require('feathers-mongoose');
 const { userModel, registrationPinModel } = require('./model');
-const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const firstLoginHooks = require('./hooks/firstLogin');
@@ -11,30 +10,20 @@ const {
 	SkipRegistrationService,
 	RegistrationSchoolService,
 	UsersModelService,
+	UserService,
 } = require('./services');
 const adminHook = require('./hooks/admin');
 
 
 module.exports = (app) => {
-	UsersModelService.configure(app);
+	app.use('usersModel', UsersModelService.userModelService);
+	app.service('usersModel').hooks(UsersModelService.userModelHooks);
 
-	const options = {
-		Model: userModel,
-		paginate: {
-			default: 1000,
-			max: 1000,
-		},
-		lean: {
-			virtuals: true,
-		},
-	};
-
-	app.use('/users', service(options));
-
+	app.use('/users', UserService.userService);
 	const userService = app.service('/users');
-	app.use('users/linkImport', new UserLinkImportService(userService)); // do not use hooks
+	userService.hooks(UserService.userHooks);
 
-	userService.hooks(hooks); // TODO: refactor
+	app.use('users/linkImport', new UserLinkImportService(userService)); // do not use hooks
 
 	/* publicTeachers Service */
 	app.use('/publicTeachers', service({

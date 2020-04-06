@@ -1,17 +1,11 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
-const { iff, isProvider } = require('feathers-hooks-common');
 const logger = require('../../../logger');
+const { ObjectId } = require('../../../helper/compare');
 const {
 	hasRole,
 	hasRoleNoHook,
 	hasPermissionNoHook,
-	mapPaginationQuery,
-	resolveToIds,
-	restrictToCurrentSchool,
-	permitGroupOperation,
-	denyIfNotCurrentSchool,
-	computeProperty,
 	hasPermission,
 } = require('../../../hooks');
 
@@ -21,8 +15,6 @@ const {
 
 const constants = require('../../../utils/constants');
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../consent/config');
-
-const { hasEditPermissionForUser } = require('./index.hooks');
 
 /**
  *
@@ -97,21 +89,35 @@ const checkUniqueAccount = (hook) => {
 };
 
 const updateAccountUsername = async (context) => {
+	let { params: { account } } = context;
 	const {
-		params: { account },
 		data: { email },
 		app,
 	} = context;
+
 	if (!email) {
 		return context;
 	}
+
+	if (!context.id) {
+		throw new BadRequest('Id is required for email changes');
+	}
+
+	if (!account || !ObjectId.equal(context.id, account.userId)) {
+		account = (await app.service('/accounts')
+			.find({ query: { userId: context.id } }))[0];
+
+		if (!account) return context;
+	}
+
 	if (email && account.systemId) {
 		delete context.data.email;
 		return context;
 	}
 
 	await app.service('/accounts')
-		.patch(account._id, { username: email }, { account })
+		// set account in params to context.parmas.account to reference the current user
+		.patch(account._id, { username: email }, { account: context.params.account })
 		.catch((err) => {
 			throw new BadRequest('Can not update account username.', err);
 		});
@@ -380,73 +386,21 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 	}
 };
 
-const User = require('../model');
-
-exports.before = {
-	all: [],
-	find: [
-		mapPaginationQuery.bind(this),
-		// resolve ids for role strings (e.g. 'TEACHER')
-		resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
-		authenticate('jwt'),
-		iff(isProvider('external'), restrictToCurrentSchool),
-		mapRoleFilterQuery,
-	],
-	get: [authenticate('jwt')],
-	create: [
-		checkJwt(),
-		pinIsVerified,
-		sanitizeData,
-		checkUnique,
-		checkUniqueAccount,
-		resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
-	],
-	update: [
-		authenticate('jwt'),
-		// TODO only local for LDAP
-		sanitizeData,
-		hasEditPermissionForUser,
-		resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
-	],
-	patch: [
-		authenticate('jwt'),
-		iff(isProvider('external'), securePatching),
-		permitGroupOperation,
-		sanitizeData,
-		hasEditPermissionForUser,
-		resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
-		updateAccountUsername,
-	],
-	remove: [
-		authenticate('jwt'),
-		iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
-		permitGroupOperation,
-	],
-};
-
-exports.after = {
-	all: [],
-	find: [
-		decorateAvatar,
-		decorateUsers,
-	],
-	get: [
-		decorateAvatar,
-		decorateUser,
-		computeProperty(User.userModel, 'getPermissions', 'permissions'),
-		iff(isProvider('external'),
-			denyIfNotCurrentSchool({
-				errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
-			})),
-	],
-	create: [
-		handleClassId,
-	],
-	update: [],
-	patch: [],
-	remove: [
-		pushRemoveEvent,
-		removeStudentFromClasses,
-		removeStudentFromCourses,
-	],
+module.exports = {
+	mapRoleFilterQuery,
+	checkUnique,
+	checkJwt,
+	checkUniqueAccount,
+	updateAccountUsername,
+	removeStudentFromClasses,
+	removeStudentFromCourses,
+	sanitizeData,
+	pinIsVerified,
+	securePatching,
+	decorateUser,
+	decorateAvatar,
+	decorateUsers,
+	handleClassId,
+	pushRemoveEvent,
+	enforceRoleHierarchyOnDelete,
 };

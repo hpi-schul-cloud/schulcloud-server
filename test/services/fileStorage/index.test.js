@@ -37,6 +37,7 @@ class AWSStrategy {
 describe('fileStorage services', function fileStorageTest() {
 	this.timeout(4000);
 	let app;
+	let server;
 	let fileStorageService;
 	let signedUrlService;
 	let directoryService;
@@ -88,10 +89,8 @@ describe('fileStorage services', function fileStorageTest() {
 			...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
 		];
 		await Promise.all(promises);
-		await server.close();
-
-		// to load old roles
 		roleService.init();
+		await server.close();
 	});
 
 	describe('file service', () => {
