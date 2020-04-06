@@ -86,5 +86,5 @@ describe('paginate', () => {
 			skip: 1,
 			data: [],
 		});
-	})
+	});
 });
