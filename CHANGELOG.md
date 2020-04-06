@@ -13,6 +13,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- This changelog has been added
+
+### Removed
+
+-   Clipboard sockets
 -   This changelog has been added
 -   Backend route to confirm analog consents in bulk
 -   Changed Seed Data + Migration Script: Added feature flag for new Editor to klara.fall@schul-cloud.org
