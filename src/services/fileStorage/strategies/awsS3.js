@@ -11,14 +11,14 @@ const { StorageProviderModel } = require('../../storageProvider/model');
 const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
+const { NODE_ENV, ENVIRONMENTS, HOST } = require('../../../../config/globals');
 
 const AbstractFileStorageStrategy = require('./interface.js');
 
 const getCorsRules = () => ([{
 	AllowedHeaders: ['*'],
 	AllowedMethods: ['PUT'],
-	AllowedOrigins: [process.env.HOST],
+	AllowedOrigins: [HOST],
 	MaxAgeSeconds: 300,
 }]);
 
@@ -81,15 +81,15 @@ const FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED = Configuration.get('FEATURE_MULTIPL
 // begin legacy
 let awsConfig = {};
 if (!FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
-try {
+	try {
 	//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 	/* eslint-disable global-require, no-unused-expressions */
-	(NODE_ENV === ENVIRONMENTS.PRODUCTION)
-		? awsConfig = require('../../../../config/secrets.js').aws
-		: awsConfig = require('../../../../config/secrets.json').aws;
+		(NODE_ENV === ENVIRONMENTS.PRODUCTION)
+			? awsConfig = require('../../../../config/secrets.js').aws
+			: awsConfig = require('../../../../config/secrets.json').aws;
 	/* eslint-enable global-require, no-unused-expressions */
-} catch (e) {
-	logger.warning('The AWS config couldn\'t be read');
+	} catch (e) {
+		logger.warning('The AWS config couldn\'t be read');
 	}
 }
 // end legacy
@@ -378,7 +378,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 							safeAwsObject.s3,
 						)('putObject', params);
 					}));
-			})
+			});
 	}
 
 	getSignedUrl({
