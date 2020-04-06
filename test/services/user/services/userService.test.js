@@ -132,6 +132,30 @@ describe('user service', () => {
 		}
 	});
 
+	it('can delete multiple students with STUDENT_DELETE permission', async () => {
+		await testObjects.createTestRole({
+			name: 'studentDelete', permissions: ['STUDENT_DELETE'],
+		});
+		const userIds = await Promise.all([
+			testObjects.createTestUser({ roles: ['student'], manualCleanup: true }).then((u) => u._id),
+			testObjects.createTestUser({ roles: ['student'], manualCleanup: true }).then((u) => u._id),
+		]);
+		const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		params.query = { _id: { $in: userIds } };
+		let result;
+		try {
+			result = await app.service('users').remove(null, params);
+		} catch (err) {
+			testObjects.createdUserIds.concat(userIds);
+			throw new Error('should not have failed', err);
+		}
+		expect(result).to.not.be.undefined;
+		expect(Array.isArray(result)).to.equal(true);
+		const resultUserIds = result.map((e) => e._id.toString());
+		userIds.forEach((userId) => expect(resultUserIds).to.include(userId.toString()));
+	});
+
 	it('fail to  single teacher without TEACHER_DELETE permission', async () => {
 		await testObjects.createTestRole({ name: 'notAuthorized', permissions: ['STUDENT_DELETE'] });
 		const studentToDelete = await testObjects.createTestUser({ roles: ['teacher'] });
