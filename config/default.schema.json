@@ -182,6 +182,16 @@
 		"NEXBOARD_USER_ID": {
 			"type": "string",
 			"description": "The nexboard 'schul-cloud' userId."
+		},
+		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables using the storage provider collection to determine a provider with free buckets upon school creation. If disabled, the only storage provider is configured via the environment variables in config/secrets.js"
+		},
+		"S3_KEY": {
+			"type": "string",
+			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
+			"pattern": ".{16}.*"
 		}
 	},
 	"required": [

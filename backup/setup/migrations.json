@@ -467,6 +467,17 @@
 },
 {
 	"_id": {
+		"$oid": "5e7f1d63e2c96215c85330f9"
+	},
+	"state": "up",
+	"name": "add_default_file_storage_provider",
+	"createdAt": {
+		"$date": "2020-03-28T09:48:19.167Z"
+  },
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5e8355da77736b6304a3e77e"
 	},
 	"state": "up",

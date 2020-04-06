@@ -9,10 +9,33 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [22.8.0]
+
 ### Added
 
+- This changelog has been added
+
+### Removed
+
+-   Clipboard sockets
 -   This changelog has been added
-- Changed Seed Data + Migration Script: Added feature flag for new Editor to klara.fall@schul-cloud.org
+-   Backend route to confirm analog consents in bulk
+-   Changed Seed Data + Migration Script: Added feature flag for new Editor to klara.fall@schul-cloud.org
+-   SC-2922: Enable use of multiple S3 instances as file storage provider
+    -   A new collection is added to administrate multiple S3 instances 
+    -   A migration will automatically use the AWS environment variables to add those as default provider for all existing schools
+    -   For new schools the less used provider is assigned as storage provider
+    -   Environment Variables:
+        -   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true will activate the feature
+        -   S3_KEY, used for symmetric encryption, already required for the migration because of the secret access key encryption
 
 ### Fixed
+
 -   SC-3821: Fix Co-Teachers and Substitution teachers not being able to Grade Homeworks
+
+
+## 22.7.1
+
+### Fixed
+
+- Admin and teacher user could change other users without changing them self

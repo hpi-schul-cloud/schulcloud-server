@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
+const { ObjectId } = require('../../../helper/compare');
 const {
 	hasRole,
 	hasRoleNoHook,
@@ -88,21 +89,35 @@ const checkUniqueAccount = (hook) => {
 };
 
 const updateAccountUsername = async (context) => {
+	let { params: { account } } = context;
 	const {
-		params: { account },
 		data: { email },
 		app,
 	} = context;
+
 	if (!email) {
 		return context;
 	}
+
+	if (!context.id) {
+		throw new BadRequest('Id is required for email changes');
+	}
+
+	if (!account || !ObjectId.equal(context.id, account.userId)) {
+		account = (await app.service('/accounts')
+			.find({ query: { userId: context.id } }))[0];
+
+		if (!account) return context;
+	}
+
 	if (email && account.systemId) {
 		delete context.data.email;
 		return context;
 	}
 
 	await app.service('/accounts')
-		.patch(account._id, { username: email }, { account })
+		// set account in params to context.parmas.account to reference the current user
+		.patch(account._id, { username: email }, { account: context.params.account })
 		.catch((err) => {
 			throw new BadRequest('Can not update account username.', err);
 		});
@@ -215,7 +230,7 @@ const securePatching = (hook) => Promise.all([
 ])
 	.then(([isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent]) => {
 		if (isDemoStudent || isDemoTeacher) {
-			return Promise.reject(new errors.Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+			return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
 		}
 		if (!isSuperHero) {
 			delete hook.data.schoolId;
