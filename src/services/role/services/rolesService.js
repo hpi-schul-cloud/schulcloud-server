@@ -38,13 +38,16 @@ class RoleService {
 	}
 
 	init() {
-		this.roles = new Promise((resolve) => {
+		this.roles = undefined;
+		const prom = new Promise((resolve) => {
 			getModelRoles().then((roles) => {
 				resolve(roles);
 			}).catch((err) => {
 				throw new Error(this.err.load, err);
 			});
 		});
+		this.roles = prom;
+		return prom;
 	}
 
 	async getPermissionsByRoles(roleIds = []) {
