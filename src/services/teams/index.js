@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 const service = require('feathers-mongoose');
 const {
 	BadRequest,
@@ -27,6 +28,7 @@ const {
 	isUndefined,
 	bsonIdToString,
 } = require('./hooks/collection');
+const { prepareErrorParam } = require('../../utils');
 const { ScopePermissionService, ScopeListService } = require('../helpers/scopePermissions');
 // const {teamRolesToHook} = require('./hooks');
 // todo docs require
@@ -75,7 +77,7 @@ class Add {
 			.then((schools) => extractOne(schools, '_id')
 				.then((id) => bsonIdToString(id)))
 			.catch((err) => {
-				throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
+				throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', prepareErrorParam(err));
 			});
 	}
 
@@ -89,7 +91,7 @@ class Add {
 			.then((roles) => extractOne(roles, '_id')
 				.then((id) => bsonIdToString(id)))
 			.catch((err) => {
-				throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', err);
+				throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', prepareErrorParam(err));
 			});
 	}
 
@@ -105,10 +107,7 @@ class Add {
 				$populate: [{ path: 'roles' }],
 			},
 		})
-			.then((users) => extractOne(users))
-			.catch((err) => {
-				throw err;
-			});
+			.then((users) => extractOne(users));
 	}
 
 	/**
@@ -135,7 +134,7 @@ class Add {
 		return app.service('/expertinvitelink')
 			.create({ esid, email })
 			.catch((err) => {
-				throw new GeneralError('Experte: Fehler beim Erstellen des Einladelinks.', err);
+				throw new GeneralError('Experte: Fehler beim Erstellen des Einladelinks.', prepareErrorParam(err));
 			});
 	}
 
@@ -198,7 +197,7 @@ class Add {
 				importHash: user.importHash,
 			};
 		}).catch((err) => {
-			throw new BadRequest('Can not resolve the user information.', err);
+			throw new BadRequest('Can not resolve the user information.', prepareErrorParam(err));
 		});
 	}
 

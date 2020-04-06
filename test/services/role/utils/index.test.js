@@ -191,7 +191,7 @@ describe('Role Service utils', async () => {
 		it('limit should work for paginate', () => {
 			const result = paginate(array, { $limit: 3 }, array.length);
 			expect(result).to.deep.equal({
-				total: 6,
+				total: 3,
 				limit: 3,
 				skip: 0,
 				data: [
@@ -205,7 +205,7 @@ describe('Role Service utils', async () => {
 		it('skip should work for paginate', () => {
 			const result = paginate(array, { $skip: 3 }, array.length);
 			expect(result).to.deep.equal({
-				total: 6,
+				total: 3,
 				limit: 6,
 				skip: 3,
 				data: [
@@ -219,7 +219,7 @@ describe('Role Service utils', async () => {
 		it('skip and limit should work together for paginate', () => {
 			const result = paginate(array, { $skip: 3, $limit: 2 }, array.length);
 			expect(result).to.deep.equal({
-				total: 6,
+				total: 2,
 				limit: 2,
 				skip: 3,
 				data: [
@@ -231,7 +231,7 @@ describe('Role Service utils', async () => {
 
 		it('already paginate results should pass', () => {
 			const paginated = {
-				total: 6,
+				total: 2,
 				limit: 2,
 				skip: 3,
 				data: [
@@ -247,7 +247,7 @@ describe('Role Service utils', async () => {
 		it('undefined should paginate', () => {
 			const result = paginate(undefined, { $skip: 1, $limit: 4 }, array.length);
 			expect(result).to.deep.equal({
-				total: 6,
+				total: 0,
 				limit: 4,
 				skip: 1,
 				data: [],

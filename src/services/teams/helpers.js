@@ -1,6 +1,7 @@
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const { teamRolesToHook } = require('./hooks');
 const { isArrayWithElement, isDefined, bsonIdToString } = require('./hooks/collection');
+const { prepareErrorParam } = require('../../utils');
 
 /**
  * It is important to use the params information from original request
@@ -43,7 +44,7 @@ const getSessionUser = (refClass, params, userId) => {
 	const sesessionUserId = userId || bsonIdToString((params.account || {}).userId);
 
 	return refClass.app.service('users').get(sesessionUserId).catch((err) => {
-		throw new Forbidden('You have not the permission.', err);
+		throw new Forbidden('You have not the permission.', prepareErrorParam(err));
 	});
 };
 exports.getSessionUser = getSessionUser;
@@ -59,7 +60,7 @@ exports.patchTeam = (refClass, teamId, data, params) => refClass.app
 	.service('teams')
 	.patch(teamId, data, local(params))
 	.catch((err) => {
-		throw new BadRequest('Can not patch team.', err);
+		throw new BadRequest('Can not patch team.', prepareErrorParam(err));
 	});
 
 /**
@@ -73,15 +74,16 @@ const getTeam = (refClass, teamId) => { // todo: app to this -> this.app
 		},
 	};
 	return refClass.app.service('teams').get(teamId, populateParams).catch((err) => {
-		throw new Forbidden('You have not the permission.', err);
+		throw new Forbidden('You have not the permission.', prepareErrorParam(err));
 	});
 };
 exports.getTeam = getTeam;
 
-exports.extractOne = (find, key) => {
-	if (find.total !== 1 && isArrayWithElement(find.data)) {
-		throw new BadRequest('Can not extract one from find data.');
+exports.extractOne = (find = {}, key) => {
+	if (!Array.isArray(find.data) || find.data.length !== 1) {
+		throw new BadRequest('Can not extract one from find data.', { find });
 	}
+	// eslint-disable-next-line no-param-reassign
 	find = isDefined(key) ? find.data[0][key] : find.data[0];
 	return Promise.resolve(find);
 };

@@ -49,7 +49,7 @@ class RoleService {
 
 	async getPermissionsByRoles(roleIds = []) {
 		const ids = roleIds.map((id) => id.toString());
-		const selectedRoles = (await this.roles).filter((r) => ids.includes(r._id)); // TODO: some
+		const selectedRoles = (await this.roles).filter((r) => ids.includes(r._id));
 		return unique(...selectedRoles.map((r) => r.permissions));
 	}
 
