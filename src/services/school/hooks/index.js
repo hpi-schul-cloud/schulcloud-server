@@ -157,7 +157,7 @@ exports.after = {
 	find: [decorateYears],
 	get: [decorateYears],
 	create: [createDefaultStorageOptions],
-	update: [createDefaultStorageOptions],
-	patch: [createDefaultStorageOptions],
+	update: [],
+	patch: [],
 	remove: [],
 };
