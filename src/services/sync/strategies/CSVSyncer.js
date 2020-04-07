@@ -207,8 +207,17 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			const mappedRecord = mappingFunction(record);
 			if (requiredAttributes.every((attr) => !!mappedRecord[attr])) {
 				mappedRecord.email = mappedRecord.email.trim().toLowerCase();
-				if (!this.assertDateFormat(mappedRecord.birthday)) { // todo: put validation elsewhere
-					mappedRecord.birthday = this.stringToDateConverter(mappedRecord.birthday);
+				if (mappedRecord.birthday) {
+					if (CSVSyncer.isValidBirthday(mappedRecord.birthday)) {
+						mappedRecord.birthday = this.stringToDateConverter(mappedRecord.birthday);
+					} else {
+						this.stats.errors.push({
+							type: 'user',
+							entity: `${record.firstName},${record.lastName},${record.email},${mappedRecord.birthday}`,
+							message: 'Geburtsdatum fehlerhaft. Zulässige Formate: dd.mm.yyyy | dd/mm/yyyy | dd-mm-yyyy',
+						});
+						delete mappedRecord.birthday;
+					}
 				}
 				processed.push(mappedRecord);
 			}
@@ -398,34 +407,16 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return classes.split('+').filter((name) => name !== '');
 	}
 
-	assertDateFormat(dateInput) {
-		if (!dateInput) {
-			this.stats.errors.push({
-				type: 'geburtstag',
-				entity: 'Eingabedatum fehlerhaft',
-				message: 'Kein Wert für das Geburtsdatum',
-			});
-			return;
-		}
-		if (typeof dateInput !== 'string') {
-			this.stats.errors.push({
-				type: 'geburtstag',
-				entity: 'Eingabedatum fehlerhaft',
-				message: 'Falscher Wert für Geburtsdatum. Muss String sein',
-			});
-			return;
-		}
-		// https://stackoverflow.com/questions/15491894/regex-to-validate-date-format-dd-mm-yyyy
-		// eslint-disable-next-line
-		const dateValidationRegex = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/;
-		if (!dateValidationRegex.test(dateInput)) {
-			this.stats.errors.push({
-				type: 'geburtstag',
-				entity: 'Eingabedatum fehlerhaft',
-				message:
-					'Geburtsdatum falsch formatiert. Zulässige Formate: dd.mm.yyyy oder dd/mm/yyyy oder dd-mm-yyyy',
-			});
-		}
+	static isValidBirthday(dateInput) {
+		// Adapted from https://stackoverflow.com/questions/15491894/regex-to-validate-date-format-dd-mm-yyyy
+		const dateValidationRegex = new RegExp([
+			'^(?:(?:31.(?:0?[13578]|1[02]))\\1|(?:(?:29|30).(?:0?[13-9]|1[0-2])\\2))',
+			'(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|',
+			'^(?:29.0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|',
+			'[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|',
+			'^(?:0?[1-9]|1\\d|2[0-8]).(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$',
+		]);
+		return !dateValidationRegex.test(dateInput);
 	}
 
 	static stringToDateConverter(dateInput) {
