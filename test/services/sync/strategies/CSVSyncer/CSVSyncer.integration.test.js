@@ -1520,9 +1520,7 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.successful).to.equal(2);
 			expect(stats.users.failed).to.equal(1);
 
-			expect(stats.errors.filter((e) => e.type === 'file').length).to.equal(
-				1,
-			);
+			expect(stats.errors.filter((e) => e.type === 'file').length).to.equal(1);
 		});
 	});
 
@@ -1532,19 +1530,28 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = testObjects.options.schoolId;
-		const STUDENT_EMAILS = [
-			'amail@bdaydomain.de',
-			'bmail@bdaydomain.de',
-			'cmail@bdaydomain.de',
-			'dmail@bdaydomain.de',
-			'email@bdaydomain.de',
-		];
-		const STUDENT_BDAYS = [
-			'17.08.1988',
-			'01/01/1990',
-			'27-02-1995',
-			'05.05.2000',
-			'12/12/2002',
+		const PEOPLE = [
+			{
+				email: 'amail@bdaydomain.de',
+				birthday: '17.08.1988',
+				parsed: new Date('08/17/1988'),
+				firstName: 'Peter',
+				lastName: 'Griffin',
+			},
+			{
+				email: 'bmail@bdaydomain.de',
+				birthday: '01/04/1990',
+				parsed: new Date('04/01/1990'),
+				firstName: 'Adam',
+				lastName: 'West',
+			},
+			{
+				email: 'cmail@bdaydomain.de',
+				birthday: '12/13/2002', // will fail
+				parsed: undefined,
+				firstName: 'Cleveland',
+				lastName: 'Brown',
+			},
 		];
 
 		before(async () => { // this user does the csv importing
@@ -1560,26 +1567,14 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class,birthday\n'
-					+ `Turanga,Leela,${STUDENT_EMAILS[0]},1a,${STUDENT_BDAYS[0]}\n`
-					+ `Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1b,${STUDENT_BDAYS[1]}\n`
-					+ `Amy,Wong,${STUDENT_EMAILS[2]},2a,${STUDENT_BDAYS[2]}\n`
-					+ `Philip J.,Fry,${STUDENT_EMAILS[3]},2a+2b,${STUDENT_BDAYS[3]}\n`
-					+ `Bender Bending,Rodriguez,${STUDENT_EMAILS[4]},2a,${STUDENT_BDAYS[4]}\n`,
+					`firstName,lastName,email,birthday\n${
+						PEOPLE.map((p) => `${p.firstName},${p.lastName},${p.email},${p.birthday}`).join('\n')}`,
 			};
 		});
 
 
 		after(async () => {
-			await Promise.all(STUDENT_EMAILS.map((email) => deleteUser(email)));
-			await Promise.all(
-				[
-					['1', 'a'],
-					['1', 'b'],
-					['2', 'b'],
-					['2', 'a'],
-				].map((classInstance) => deleteClass(classInstance)),
-			);
+			await Promise.all(PEOPLE.map((person) => deleteUser(person.email)));
 			await testObjects.cleanup();
 		});
 
@@ -1600,31 +1595,20 @@ describe('CSVSyncer Integration', () => {
 				.service('sync')
 				.create(scenarioData, scenarioParams);
 
-			expect(stats.success).to.equal(true);
-			expect(stats.users.successful).to.equal(5);
+			expect(stats.success).to.equal(false);
+			expect(stats.users.successful).to.equal(3);
 			expect(stats.users.failed).to.equal(0);
+			expect(stats.errors.length).to.equal(1); // birthday validation
 
-			const classes = await Promise.all(
-				STUDENT_EMAILS.map(async (email) => {
-					const [user] = await userModel.find({ email });
-					const [role] = await roleModel.find({ _id: user.roles[0] });
-					expect(role.name).to.equal('student');
-					return app.service('classes').find({
-						query: { userIds: user._id },
-						paginate: false,
-					});
-				}),
-			);
-			expect(classes[0].length).to.equal(1);
+			const users = await userModel.find({
+				email: { $in: PEOPLE.map((p) => p.email) },
+			});
 
-			const users = await userModel.find({ email: { $regex: '.*bdayDomain.*' } }).sort({ birthday: '1' });
-			const usersBday = users.map((u) => u.birthday.toString().slice(4, 15));
-
-			expect(usersBday[0]).to.be.equal('Aug 17 1988');
-			expect(usersBday[1]).to.be.equal('Jan 01 1990');
-			expect(usersBday[2]).to.be.equal('Feb 27 1995');
-			expect(usersBday[3]).to.be.equal('May 05 2000');
-			expect(usersBday[4]).to.be.equal('Dec 12 2002');
+			PEOPLE.forEach((person) => {
+				const user = users.find((u) => u.firstName === person.firstName && u.lastName === person.lastName);
+				expect(user).to.be.ok;
+				expect(user.birthday).to.deep.equal(person.parsed);
+			});
 		});
 	});
 });
