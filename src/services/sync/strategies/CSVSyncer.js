@@ -407,7 +407,14 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return classes.split('+').filter((name) => name !== '');
 	}
 
-	static isValidBirthday(dateInput) {
+	/**
+	 * Validates a given string is in one of these formats: dd.mm.yyyy, dd/mm/yyyy, dd-mm-yyyy
+	 * Also accounts for length of months (and leap days) for years with four digits.
+	 * @static
+	 * @param {String} dateString
+	 * @returns {boolean} true if valid date in one of the defined formats, false otherwise
+	 */
+	static isValidBirthday(dateString) {
 		// Adapted from https://stackoverflow.com/questions/15491894/regex-to-validate-date-format-dd-mm-yyyy
 		const dateValidationRegex = new RegExp([
 			'^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|',
@@ -416,13 +423,21 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			'(?:(?:16|[2468][048]|[3579][26])00))))$|',
 			'^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$',
 		].join(''));
-		return dateValidationRegex.test(dateInput);
+		return dateValidationRegex.test(dateString);
 	}
 
-	static convertToDate(dateInput) {
-		const dd = parseInt(dateInput.substring(0, 2), 10);
-		const mm = parseInt(dateInput.substring(3, 5), 10);
-		const yyyy = parseInt(dateInput.substring(6, 10), 10);
+	/**
+	 * Converts a string formatted date into a Date object.
+	 * Valid date string formats: dd.mm.yyyy, dd/mm/yyyy, dd-mm-yyyy
+	 * @static
+	 * @see CSVSyncer.isValidBirthday for validation
+	 * @param {String} dateString String in the format dd(.|/|-)mm(.|/|-)yyyy
+	 * @returns {Date} the corresponding Date object
+	 */
+	static convertToDate(dateString) {
+		const dd = parseInt(dateString.substring(0, 2), 10);
+		const mm = parseInt(dateString.substring(3, 5), 10);
+		const yyyy = parseInt(dateString.substring(6, 10), 10);
 
 		const date = new Date(yyyy, mm - 1, dd);
 		return date;
