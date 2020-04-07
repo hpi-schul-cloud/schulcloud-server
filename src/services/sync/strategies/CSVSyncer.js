@@ -209,7 +209,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 				mappedRecord.email = mappedRecord.email.trim().toLowerCase();
 				if (mappedRecord.birthday) {
 					if (CSVSyncer.isValidBirthday(mappedRecord.birthday)) {
-						mappedRecord.birthday = this.stringToDateConverter(mappedRecord.birthday);
+						mappedRecord.birthday = this.convertToDate(mappedRecord.birthday);
 					} else {
 						this.stats.errors.push({
 							type: 'user',
@@ -419,7 +419,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return dateValidationRegex.test(dateInput);
 	}
 
-	static stringToDateConverter(dateInput) {
+	static convertToDate(dateInput) {
 		const dd = parseInt(dateInput.substring(0, 2), 10);
 		const mm = parseInt(dateInput.substring(3, 5), 10);
 		const yyyy = parseInt(dateInput.substring(6, 10), 10);
