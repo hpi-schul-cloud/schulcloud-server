@@ -103,7 +103,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		await super.steps();
 		this.options.schoolYear = await this.determineSchoolYear();
 		const records = this.parseCsvData();
-		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
+		const sanitizedRecords = this.sanitizeRecords(records);
 		const importClasses = CSVSyncer.needsToImportClasses(sanitizedRecords);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
@@ -199,7 +199,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return records[0].class !== undefined;
 	}
 
-	static sanitizeRecords(records) {
+	sanitizeRecords(records) {
 		const requiredAttributes = ATTRIBUTES.filter((a) => a.required).map((a) => a.name);
 		const mappingFunction = buildMappingFunction(records[0]);
 		const processed = [];
@@ -209,7 +209,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 				mappedRecord.email = mappedRecord.email.trim().toLowerCase();
 				if (mappedRecord.birthday) {
 					if (CSVSyncer.isValidBirthday(mappedRecord.birthday)) {
-						mappedRecord.birthday = this.convertToDate(mappedRecord.birthday);
+						mappedRecord.birthday = CSVSyncer.convertToDate(mappedRecord.birthday);
 					} else {
 						this.stats.errors.push({
 							type: 'user',
