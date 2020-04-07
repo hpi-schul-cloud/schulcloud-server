@@ -75,37 +75,38 @@ describe('CSVSyncer', () => {
 			expect(result[1].class).to.equal('');
 			expect(result[2].class).to.equal('2b');
 		});
+	});
 
+	describe('isValidBirthday', () => {
 		it('should not accept falsy valus as dates for user birthday', () => {
-			const falsyValues = [false, null, undefined, '', 0];
-			const out = new CSVSyncer();
-			const { errors } = out.stats;
-			falsyValues.forEach((f) => out.assertDateFormat(f));
-			errors.forEach((r) => expect(r.message).to.be.equal('Kein Wert für das Geburtsdatum'));
+			[false, null, undefined, '', 0]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(false));
 		});
 		it('should not accept strange values as dates for user birthday', () => {
-			const out = new CSVSyncer();
-			const { errors } = out.stats;
-			const misfitValues = [Symbol('42'), [], {}, true];
-			misfitValues.forEach((m) => out.assertDateFormat(m));
-			errors.forEach((r) => expect(r.message).to.be.equal('Falscher Wert für Geburtsdatum. Muss String sein'));
+			[[], {}, true]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(false));
 		});
 		it('should not accept invalid date format as user birthday', () => {
-			const out = new CSVSyncer();
-			const { errors } = out.stats;
-			const wrongFormatDates = [
-				'32.12.2000', '01.13.2000', '01.01-2000', '01/01.2000', '01-01/2000', '42', 'void'];
-			wrongFormatDates.forEach((w) => out.assertDateFormat(w));
-			errors.forEach((r) => expect(r.message).to.be.equal(
-				'Geburtsdatum falsch formatiert. Zulässige Formate: dd.mm.yyyy oder dd/mm/yyyy oder dd-mm-yyyy',
-			));
+			[
+				'32.12.2000', '01.13.2000', // invalid day/month
+				'01.01-2000', '01/01.2000', '01-01/2000', // wrong format
+				'42', 'void', // not a date
+				'29.02.2001', // does not exist outside of leap years
+				'01.01.1000', // too long ago
+			]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(false));
 		});
-		it('should return false when given correct value', () => {
-			const out = new CSVSyncer();
-			const { errors } = out.stats;
-			const correctFormatDates = ['01.01.2000', '01-01-2000', '01/01/2000'];
-			correctFormatDates.forEach((c) => out.assertDateFormat(c));
-			expect(errors.length).to.be.equal(0);
+		it('should return true when given a correct value', () => {
+			[
+				'01.01.2000', '01-01-2000', '01/01/2000', // different formats
+				'29.02.2004', // exists in a leap year
+				'20.10.1920', // (sufficiently) long ago
+			]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(true));
 		});
 	});
 });
