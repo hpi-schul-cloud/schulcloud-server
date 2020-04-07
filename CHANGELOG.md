@@ -16,6 +16,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3719 The `files` collection now has two additional indexes: `{creator}` and `{permissions.refId, permissions.refPermModel}`.
 
 
+## [22.9.0]
+
+-   Security updates
+
 ## [22.8.0]
 
 ### Added
