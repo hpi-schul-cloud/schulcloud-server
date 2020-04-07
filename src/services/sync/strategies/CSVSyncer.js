@@ -20,7 +20,7 @@ const ATTRIBUTES = [
  * Returns a function that transforms objects of the source schema to the target schema
  * @param {Object} sourceSchema Object representing the source schema
  * @param {Array<Object>} targetSchema Target schema as array of attribute properties
- * `[{name: String, Aliases: Array<String>}, ...]`
+ * `[{name: String, aliases: Array<String>}, ...]`
  * @example
  * const mf = buildMappingFunction({foo: 'bar'}, {name: 'test', aliases: ['foo', 'baz']});
  * mf({foo: 'bar'}) === {test: 'bar'} // true
