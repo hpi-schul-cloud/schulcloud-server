@@ -764,4 +764,4 @@ exports.populateCurrentSchool = async (context) => {
 exports.addCollation = (context) => {
 	context.params.collation = { locale: 'de', caseLevel: true };
 	return context;
-}
+};
