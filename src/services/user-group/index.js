@@ -12,7 +12,7 @@ const { setup: coursePermissionService } = require('./services/coursePermission'
 const { setup: courseMembersService } = require('./services/courseMembers');
 const classSuccessorHooks = require('./hooks/classSuccessor');
 const { classesService, classesHooks } = require('./services/classes');
-const { classModelService, classModelHooks } = require('./services/classModelService');
+const { classModelService, classModelServiceHooks } = require('./services/classModelService');
 const { courseModelService, courseModelServiceHooks } = require('./services/courseModelService');
 const { courseService, courseHooks } = require('./services/courses');
 
@@ -43,7 +43,7 @@ module.exports = function () {
 
 	/* Class model */
 	app.use('/classModel', classModelService);
-	app.service('/classModel').hooks(classModelHooks);
+	app.service('/classModel').hooks(classModelServiceHooks);
 
 	app.use('/classes', classesService);
 	app.service('/classes').hooks(classesHooks);
