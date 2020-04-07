@@ -15,6 +15,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
     For old files, it is set to the first user permission inside the permissions array (legacy creator check).
 -   SC-3719 The `files` collection now has two additional indexes: `{creator}` and `{permissions.refId, permissions.refPermModel}`.
 
+### Fixed
+
+-   SC-3395 if fetching the release fails, a error will be thrown
+
 
 ## [22.9.0]
 
