@@ -36,7 +36,7 @@ describe('CSVSyncer Integration', () => {
 		server.close(done);
 	});
 
-	describe.skip('Scenario 0 - Missing authentication', () => {
+	describe('Scenario 0 - Missing authentication', () => {
 		const scenarioParams = {
 			query: {
 				target: 'csv',
@@ -70,7 +70,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 1 - Importing a single student without classes', () => {
+	describe('Scenario 1 - Importing a single student without classes', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -131,7 +131,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 2 - Importing teachers', () => {
+	describe('Scenario 2 - Importing teachers', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -201,7 +201,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 3 - Importing students with classes', () => {
+	describe('Scenario 3 - Importing students with classes', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -328,7 +328,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 4 - Importing teachers into existing classes', () => {
+	describe('Scenario 4 - Importing teachers into existing classes', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -459,7 +459,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 5 - Importing teachers and sending invitation emails', () => {
+	describe('Scenario 5 - Importing teachers and sending invitation emails', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -552,7 +552,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 6 - Éncöding', () => {
+	describe('Scenario 6 - Éncöding', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -657,7 +657,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 7 - Duplicate Email Errors', () => {
+	describe('Scenario 7 - Duplicate Email Errors', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -738,7 +738,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 8 - Email errors', () => {
+	describe('Scenario 8 - Email errors', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -818,7 +818,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 9 - No Emails should be sent for failing users', () => {
+	describe('Scenario 9 - No Emails should be sent for failing users', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -907,7 +907,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 10 - Reject invalid email format', () => {
+	describe('Scenario 10 - Reject invalid email format', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -965,7 +965,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 11 - Importing the same data twice', () => {
+	describe('Scenario 11 - Importing the same data twice', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -1088,7 +1088,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe.skip('Scenario 12 - Importing again updates names and classes', () => {
+	describe('Scenario 12 - Importing again updates names and classes', () => {
 		let scenarioParams;
 		let scenarioData1;
 		let scenarioData2;
