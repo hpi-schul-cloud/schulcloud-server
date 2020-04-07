@@ -9,6 +9,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Added
+
+-   SC-3719 Files now have a `creator` attribute that references the ID of the user that created the file.
+    For old files, it is set to the first user permission inside the permissions array (legacy creator check).
+-   SC-3719 The `files` collection now has two additional indexes: `{creator}` and `{permissions.refId, permissions.refPermModel}`.
+
+
+## [22.9.0]
+
+-   Security updates
+
 ## [22.8.0]
 
 ### Added

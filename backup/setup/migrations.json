@@ -467,6 +467,17 @@
 },
 {
 	"_id": {
+		"$oid": "5e81e74b65f87a5a600f591b"
+	},
+	"state": "up",
+	"name": "addFileCreatorAndPermissionIndexes",
+	"createdAt": {
+		"$date": "2020-03-26T11:39:40.409Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5e7f1d63e2c96215c85330f9"
 	},
 	"state": "up",
@@ -487,4 +498,3 @@
 	},
 	"__v": 0
 }]
-
