@@ -160,6 +160,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 					uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
 				})));
 		}
+		return Promise.resolve([]);
 	}
 }
 
