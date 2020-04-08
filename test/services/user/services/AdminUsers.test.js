@@ -259,6 +259,20 @@ describe('AdminUsersService', () => {
 		expect(idsOk).to.not.include(studentWithoutConsents._id.toString(), studentWithParentConsent._id.toString());
 	});
 
+	it('can filter by creation date', async () => {
+		const dateBefore = Date.now();
+		const findUser = await testObjects.createTestUser({ roles: ['student'] });
+		const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
+		const dateAfter = Date.now();
+		await testObjects.createTestUser({ roles: ['student'] });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		params.query = { createdAt: { $gte: dateBefore, $lte: dateAfter } };
+
+		const result = await adminStudentsService.find(params);
+		expect(result.total).to.equal(1);
+		expect(result.data[0]._id.toString()).to.equal(findUser._id.toString());
+	});
+
 	after(async () => {
 		await testObjects.cleanup();
 	});

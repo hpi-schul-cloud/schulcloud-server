@@ -17,15 +17,13 @@ const getRoles = () => roleModel.find()
 	.lean()
 	.exec();
 
-const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('usersModel').find({
-	query: {
+const getAllUsers = (ref, schoolId, role, query) => ref.app.service('usersModel').find({
+	query: Object.assign({}, query, {
 		schoolId,
 		roles: role.toString(),
-		$limit: sortObject.$limit,
-		$skip: sortObject.$skip,
-		$sort: sortObject.$sort,
 		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
-	},
+		consentStatus: undefined, // this key is not intended for the user query
+	}),
 });
 
 const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
