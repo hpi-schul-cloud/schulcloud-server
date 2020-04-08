@@ -16,8 +16,9 @@ const validateMessage = (content) => {
 const handleMessage = async (incomingMessage) => {
 	const content = JSON.parse(incomingMessage.content.toString());
 	if (!validateMessage) {
-		logger.warning(`invalid message in queue ${QUEUE_INTERNAL}`, incomingMessage);
-		channel.nack(incomingMessage);
+		logger.warning(`MESSENGER SYNC: invalid message in queue ${QUEUE_INTERNAL}`, incomingMessage);
+		// message is invalid an can not be retried
+		channel.reject(incomingMessage, false);
 	}
 	try {
 		const addUserMessageObject = await buildAddUserMessage(content);
@@ -25,8 +26,9 @@ const handleMessage = async (incomingMessage) => {
 		channel.sendToQueue(QUEUE_EXTERNAL, Buffer.from(outgoingMessage), { persistent: true });
 		channel.ack(incomingMessage);
 	} catch (err) {
-		logger.error(`error while handling message in queue ${QUEUE_INTERNAL}`, err);
-		channel.nack(incomingMessage);
+		logger.error(`MESSENGER SYNC: error while handling message in queue ${QUEUE_INTERNAL} `, err);
+		// retry message once (the second time it is redelivered)
+		channel.reject(incomingMessage, !incomingMessage.fields.redelivered);
 	}
 };
 

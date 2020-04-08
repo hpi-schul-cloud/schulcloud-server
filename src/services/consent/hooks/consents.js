@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
-const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../config');
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../../config/globals');
 
 // TODO: after hook for get that checks access.
 // TODO: rethink security, due to no schoolId we can't restrict anything.
