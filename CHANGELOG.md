@@ -9,11 +9,16 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [22.9.0]
+
+-   Security updates
+
 ## [22.8.0]
 
 ### Added
 
 -   This changelog has been added
+-   Backend route to confirm analog consents in bulk
 -   Changed Seed Data + Migration Script: Added feature flag for new Editor to klara.fall@schul-cloud.org
 -   SC-2922: Enable use of multiple S3 instances as file storage provider
     -   A new collection is added to administrate multiple S3 instances 
