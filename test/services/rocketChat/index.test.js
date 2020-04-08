@@ -23,7 +23,7 @@ describe('rocket.chat user service', () => {
 		});
 
 		// ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID
-		mockery.registerMock('./rocketChatConfig', { ROCKET_CHAT_URI: rcMock.url });
+		mockery.registerMock('../../../config/globals', { ROCKET_CHAT_URI: rcMock.url });
 
 		delete require.cache[require.resolve('../../../src/services/rocketChat/services/rocketChatUser.js')];
 		delete require.cache[require.resolve('../../../src/services/rocketChat/helpers.js')];

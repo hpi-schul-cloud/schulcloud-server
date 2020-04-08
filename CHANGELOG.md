@@ -15,6 +15,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
     For old files, it is set to the first user permission inside the permissions array (legacy creator check).
 -   SC-3719 The `files` collection now has two additional indexes: `{creator}` and `{permissions.refId, permissions.refPermModel}`.
 -   add MongoDB Collation Support to control sorting behaviour in regards to capitalization.
+-   SC-3607 CSVSyncer now allows the optional birthday field (formats: dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy) in CSV data
+
+### Changed
+
+-   User delete now accepts bulk delete requests
+
+## [22.9.1]
+
+### Fixed
+
+-   SC-3994: remove unnecessary bucket creation call that caused school administration and LDAP Sync to throw errors
 
 ### Changed
 -   use collation for /homeworks, /users, /publicTeachers, /users/admin/teachers, /users/admin/students, /classes, and /courses.
@@ -42,6 +53,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
     -   Environment Variables:
         -   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true will activate the feature
         -   S3_KEY, used for symmetric encryption, already required for the migration because of the secret access key encryption
+
+### Changed
+
+-   SC-3767: moved env variables to globals.js, NODE_ENV required to equal 'test' for test execution and right database selection
 
 ### Fixed
 

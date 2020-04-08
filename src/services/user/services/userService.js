@@ -115,7 +115,6 @@ const userHooks = {
 		remove: [
 			authenticate('jwt'),
 			iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
-			permitGroupOperation,
 		],
 	},
 	after: {
