@@ -1,7 +1,6 @@
 {
 	"host": "localhost",
 	"port": 3030,
-	"mongodb": "mongodb://127.0.0.1:27017/schulcloud",
 	"public": "../public/",
 	"services": {
 		"calendar": "http://localhost:3000",

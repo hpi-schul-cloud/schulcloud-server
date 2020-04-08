@@ -24,31 +24,30 @@ const {
 	createPermission,
 } = require('./utils/');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
-const { SERVICE_PATH: FILE_SECURITY_SERVICE_PATH } = require('./SecurityCheckService');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
+const { KEEP_ALIVE } = require('../../../config/globals');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
+const {
+	FILE_PREVIEW_SERVICE_URI,
+	FILE_PREVIEW_CALLBACK_URI,
+	ENABLE_THUMBNAIL_GENERATION,
+	FILE_SECURITY_CHECK_SERVICE_URI,
+	FILE_SECURITY_CHECK_MAX_FILE_SIZE,
+	FILE_SECURITY_SERVICE_USERNAME,
+	FILE_SECURITY_SERVICE_PASSWORD,
+	ENABLE_FILE_SECURITY_CHECK,
+	API_HOST,
+	SECURITY_CHECK_SERVICE_PATH,
+} = require('../../../config/globals');
 
-const FILE_PREVIEW_SERVICE_URI = process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
-const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI
-	|| 'http://localhost:3030/fileStorage/thumbnail/';
-const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || false;
-
-const FILE_SECURITY_CHECK_SERVICE_URI = process.env.FILE_SECURITY_CHECK_SERVICE_URI
-	|| 'http://localhost:8081/scan/file';
 const FILE_SECURITY_CHECK_CALLBACK_URI = url.resolve(
-	process.env.API_HOST || 'http://localhost:3030',
-	FILE_SECURITY_SERVICE_PATH,
+	API_HOST,	SECURITY_CHECK_SERVICE_PATH,
 );
-const FILE_SECURITY_CHECK_MAX_FILE_SIZE = parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10)
-	|| 512 * 1024 * 1024;
-const FILE_SECURITY_SERVICE_USERNAME = process.env.FILE_SECURITY_SERVICE_USERNAME || '';
-const FILE_SECURITY_SERVICE_PASSWORD = process.env.FILE_SECURITY_SERVICE_PASSWORD || '';
-const ENABLE_FILE_SECURITY_CHECK = process.env.ENABLE_FILE_SECURITY_CHECK || 'false';
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
@@ -742,7 +741,7 @@ const newFileService = {
 		}, params)
 			.then((signedUrl) => {
 				const headers = signedUrl.header;
-				if (process.env.KEEP_ALIVE) {
+				if (KEEP_ALIVE) {
 					headers.Connection = 'Keep-Alive';
 				}
 				return rp({

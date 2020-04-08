@@ -48,6 +48,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
         -   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true will activate the feature
         -   S3_KEY, used for symmetric encryption, already required for the migration because of the secret access key encryption
 
+### Changed
+
+-   SC-3767: moved env variables to globals.js, NODE_ENV required to equal 'test' for test execution and right database selection
+
 ### Fixed
 
 -   SC-3821: Fix Co-Teachers and Substitution teachers not being able to Grade Homeworks

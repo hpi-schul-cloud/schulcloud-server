@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const {
 	iff, isProvider, discard, disallow, keepInArray,
 } = require('feathers-hooks-common');
@@ -46,8 +47,8 @@ const setCurrentYearIfMissing = async (hook) => {
 };
 
 const createDefaultStorageOptions = (hook) => {
-	if (process.env.NODE_ENV !== 'production') {
-		// don't create buckets in development or test
+	// create buckets only in production mode
+	if (NODE_ENV !== ENVIRONMENTS.PRODUCTION) {
 		return Promise.resolve(hook);
 	}
 	const storageType = getDefaultFileStorageType();

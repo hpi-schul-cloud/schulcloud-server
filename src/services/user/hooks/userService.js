@@ -14,7 +14,7 @@ const {
 } = require('../../../utils');
 
 const constants = require('../../../utils/constants');
-const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../consent/config');
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../../config/globals');
 
 /**
  *

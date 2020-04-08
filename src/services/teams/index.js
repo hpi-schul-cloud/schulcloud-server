@@ -31,7 +31,7 @@ const { ScopePermissionService, ScopeListService } = require('../helpers/scopePe
 // const {teamRolesToHook} = require('./hooks');
 // todo docs require
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
-
+const { HOST } = require('../../../config/globals');
 
 const { AdminOverview } = require('./services');
 
@@ -120,14 +120,14 @@ class Add {
 		esid, email, teamId, importHash,
 	}, isUserCreated = false) {
 		if (isUserCreated === false && isUndefined(importHash)) {
-			return Promise.resolve({ shortLink: `${process.env.HOST}/teams/${teamId}` });
+			return Promise.resolve({ shortLink: `${HOST}/teams/${teamId}` });
 		}
 		const { app } = this;
 		if (isDefined(importHash)) {
 			const regex = new RegExp(importHash);
 			const links = await app.service('link').find({ query: { target: regex } });
 			return extractOne(links).then((linkData) => {
-				linkData.shortLink = `${process.env.HOST}/link/${linkData._id}`;
+				linkData.shortLink = `${HOST}/link/${linkData._id}`;
 				return linkData;
 			});
 		}
