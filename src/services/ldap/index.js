@@ -1,11 +1,11 @@
+/* eslint-disable no-underscore-dangle */
 const ldap = require('ldapjs');
 const errors = require('@feathersjs/errors');
-const logger = require('../../logger');
 const hooks = require('./hooks');
 
 const getLDAPStrategy = require('./strategies');
 
-module.exports = function () {
+module.exports = function LDAPService() {
 	const app = this;
 
 	/**
@@ -33,10 +33,12 @@ module.exports = function () {
 							classes: [],
 						}));
 					}
-					return this.getUsers(system[0].ldapConfig, '').then((userData) => this.getClasses(system[0].ldapConfig, '').then((classData) => ({
-						users: userData,
-						classes: classData,
-					})));
+					return this.getUsers(system[0].ldapConfig, '')
+						.then((userData) => this.getClasses(system[0].ldapConfig, '')
+							.then((classData) => ({
+								users: userData,
+								classes: classData,
+							})));
 				});
 		}
 
@@ -60,9 +62,9 @@ module.exports = function () {
 			if (client && client.connected) {
 				return Promise.resolve(client);
 			}
-			return this._connect(config).then((client) => {
-				this._addClient(config, client);
-				return Promise.resolve(client);
+			return this._connect(config).then((newClient) => {
+				this._addClient(config, newClient);
+				return Promise.resolve(newClient);
 			});
 		}
 
@@ -81,7 +83,7 @@ module.exports = function () {
 
 			return new Promise((resolve, reject) => {
 				if (!(config && config.url)) {
-					reject('Invalid URL in config object.');
+					reject(new errors.BadRequest('Invalid URL in config object.'));
 				}
 				const client = ldap.createClient({
 					url: config.url,
@@ -107,7 +109,7 @@ module.exports = function () {
 		_disconnect(config) {
 			return new Promise((resolve, reject) => {
 				if (!(config && config._id)) {
-					reject('Invalid config object');
+					reject(new errors.BadRequest('Invalid config object'));
 				}
 				this._getClient(config).unbind((err) => {
 					if (err) {
@@ -135,7 +137,7 @@ module.exports = function () {
 					if (connection.connected) {
 						return Promise.resolve(true);
 					}
-					return Promise.reject('User could not authenticate');
+					return Promise.reject(new errors.NotAuthenticated('User could not authenticate'));
 				});
 		}
 
@@ -175,7 +177,7 @@ module.exports = function () {
 						if (result.status === 0) {
 							resolve(objects);
 						}
-						reject('LDAP result code != 0');
+						reject(new Error('LDAP result code != 0'));
 					});
 				});
 			}));
@@ -196,7 +198,7 @@ module.exports = function () {
 					if (objects.length > 0) {
 						return Promise.resolve(objects[0]);
 					}
-					return Promise.reject('Object not found');
+					return Promise.reject(new Error(`Object "${searchString}" not found`));
 				});
 		}
 

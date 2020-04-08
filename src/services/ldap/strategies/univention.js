@@ -5,10 +5,6 @@ const AbstractLDAPStrategy = require('./interface.js');
  * @implements {AbstractLDAPStrategy}
  */
 class UniventionLDAPStrategy extends AbstractLDAPStrategy {
-	constructor(app, config) {
-		super(app, config);
-	}
-
 	/**
      * @public
      * @see AbstractLDAPStrategy#getSchools
@@ -44,7 +40,9 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 		const options = {
 			filter: 'univentionObjectType=users/user',
 			scope: 'sub',
-			attributes: ['givenName', 'sn', 'mailPrimaryAdress', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass', 'memberOf'],
+			attributes: [
+				'givenName', 'sn', 'mailPrimaryAdress', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass', 'memberOf',
+			],
 		};
 		const searchString = `cn=users,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
 		return this.app.service('ldap').searchCollection(this.config, searchString, options)
@@ -84,7 +82,8 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 			scope: 'sub',
 			attributes: [],
 		};
-		const searchString = `cn=klassen,cn=schueler,cn=groups,ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
+		const searchString = 'cn=klassen,cn=schueler,cn=groups,'
+			+ `ou=${school.ldapSchoolIdentifier},${this.config.rootPath}`;
 		return this.app.service('ldap').searchCollection(this.config, searchString, options)
 			.then((data) => data.map((obj) => {
 				const splittedName = obj.cn.split('-');

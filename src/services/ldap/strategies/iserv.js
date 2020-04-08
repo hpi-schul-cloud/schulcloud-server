@@ -1,12 +1,10 @@
+const AbstractLDAPStrategy = require('./interface.js');
+
 /**
  * iServ-specific LDAP functionality
  * @implements {AbstractLDAPStrategy}
  */
 class iServLDAPStrategy extends AbstractLDAPStrategy {
-	constructor(app, config) {
-		super(app, config);
-	}
-
 	/**
      * @public
      * @see AbstractLDAPStrategy#getSchools
@@ -27,7 +25,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * (Array) roles = ['teacher', 'student', 'administrator']
      * @memberof iServLDAPStrategy
      */
-	getUsers(school) {
+	getUsers() {
 		const options = {
 			filter: 'objectClass=person',
 			scope: 'sub',
@@ -87,7 +85,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
      * @memberof iServLDAPStrategy
      */
-	getClasses(school) {
+	getClasses() {
 		return Promise.resolve([]);
 	}
 

@@ -1,5 +1,3 @@
-const request = require('request-promise-native');
-
 const AbstractLDAPStrategy = require('./interface.js');
 
 /**
@@ -7,10 +5,6 @@ const AbstractLDAPStrategy = require('./interface.js');
  * @implements {AbstractLDAPStrategy}
  */
 class GeneralLDAPStrategy extends AbstractLDAPStrategy {
-	constructor(app, config) {
-		super(app, config);
-	}
-
 	/**
      * @public
      * @see AbstractLDAPStrategy#getSchoolsQuery
@@ -31,7 +25,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
      * (Array) roles = ['teacher', 'student', 'administrator']
      * @memberof GeneralLDAPStrategy
      */
-	getUsers(school) {
+	getUsers() {
 		const {
 			userAttributeNameMapping,
 			userPathAdditions,
@@ -142,7 +136,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
      * @returns {Array} Array of Objects containing className, ldapDn, uniqueMember
      * @memberof GeneralLDAPStrategy
      */
-	getClasses(school) {
+	getClasses() {
 		const {
 			classAttributeNameMapping,
 			classPathAdditions,
