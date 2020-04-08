@@ -17,6 +17,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3607 CSVSyncer now allows the optional birthday field (formats: dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy) in CSV data
 
 
+## [22.9.1]
+
+### Fixed
+
+-   SC-3994: remove unnecessary bucket creation call that caused school administration and LDAP Sync to throw errors
+
+
 ## [22.9.0]
 
 -   Security updates
