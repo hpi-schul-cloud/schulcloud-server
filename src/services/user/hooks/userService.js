@@ -379,7 +379,7 @@ const enforceRoleHierarchyOnDeleteSingle = async (context) => {
 		permissionChecks = await Promise.all(permissionChecks);
 
 		if (!permissionChecks.reduce((accumulator, val) => accumulator && val)) {
-			throw new Forbidden('you dont have permission to delete this user!', { hook: context });
+			throw new Forbidden('you dont have permission to delete this user!');
 		}
 
 		return context;
