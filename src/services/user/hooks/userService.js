@@ -356,61 +356,61 @@ const pushRemoveEvent = (hook) => {
 	return hook;
 };
 
-const enforceRoleHierarchyOnDeleteSingle = async (hook) => {
+const enforceRoleHierarchyOnDeleteSingle = async (context) => {
 	try {
-		const userIsSuperhero = await hasRoleNoHook(hook, hook.params.account.userId, 'superhero');
-		if (userIsSuperhero) return hook;
+		const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+		if (userIsSuperhero) return context;
 
 		const [targetIsStudent, targetIsTeacher, targetIsAdmin] = await Promise.all([
-			hasRoleNoHook(hook, hook.id, 'student'),
-			hasRoleNoHook(hook, hook.id, 'teacher'),
-			hasRoleNoHook(hook, hook.id, 'administrator'),
+			hasRoleNoHook(context, context.id, 'student'),
+			hasRoleNoHook(context, context.id, 'teacher'),
+			hasRoleNoHook(context, context.id, 'administrator'),
 		]);
 		let permissionChecks = [true];
 		if (targetIsStudent) {
-			permissionChecks.push(hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_DELETE'));
+			permissionChecks.push(hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_DELETE'));
 		}
 		if (targetIsTeacher) {
-			permissionChecks.push(hasPermissionNoHook(hook, hook.params.account.userId, 'TEACHER_DELETE'));
+			permissionChecks.push(hasPermissionNoHook(context, context.params.account.userId, 'TEACHER_DELETE'));
 		}
 		if (targetIsAdmin) {
-			permissionChecks.push(hasRoleNoHook(hook, hook.params.account.userId, 'superhero'));
+			permissionChecks.push(hasRoleNoHook(context, context.params.account.userId, 'superhero'));
 		}
 		permissionChecks = await Promise.all(permissionChecks);
 
 		if (!permissionChecks.reduce((accumulator, val) => accumulator && val)) {
-			throw new Forbidden('you dont have permission to delete this user!', { hook });
+			throw new Forbidden('you dont have permission to delete this user!', { hook: context });
 		}
 
-		return hook;
+		return context;
 	} catch (error) {
 		logger.error(error);
 		throw new Forbidden('you dont have permission to delete this user!');
 	}
 };
 
-const enforceRoleHierarchyOnDeleteBulk = async (hook) => {
-	const user = await hook.app.service('users').get(hook.params.account.userId);
+const enforceRoleHierarchyOnDeleteBulk = async (context) => {
+	const user = await context.app.service('users').get(context.params.account.userId);
 	const canDeleteStudent = user.permissions.includes('STUDENT_DELETE');
 	const canDeleteTeacher = user.permissions.includes('TEACHER_DELETE');
 	const rolePromises = [];
 	if (canDeleteStudent) {
-		rolePromises.push(hook.app.service('roles').find({ query: { name: 'student' } }).then((r) => r.data[0]._id));
+		rolePromises.push(context.app.service('roles').find({ query: { name: 'student' } }).then((r) => r.data[0]._id));
 	}
 	if (canDeleteTeacher) {
-		rolePromises.push(hook.app.service('roles').find({ query: { name: 'teacher' } }).then((r) => r.data[0]._id));
+		rolePromises.push(context.app.service('roles').find({ query: { name: 'teacher' } }).then((r) => r.data[0]._id));
 	}
 	const allowedRoles = await Promise.all(rolePromises);
 
 	// there may not be any role in user.roles that is not in rolesToDelete
 	const roleQuery = { $nor: [{ roles: { $elemMatch: { $nin: allowedRoles } } }] };
-	hook.params.query = { $and: [hook.params.query, roleQuery] };
-	return hook;
+	context.params.query = { $and: [context.params.query, roleQuery] };
+	return context;
 };
 
-const enforceRoleHierarchyOnDelete = async (hook) => {
-	if (hook.id) return enforceRoleHierarchyOnDeleteSingle(hook);
-	return enforceRoleHierarchyOnDeleteBulk(hook);
+const enforceRoleHierarchyOnDelete = async (context) => {
+	if (context.id) return enforceRoleHierarchyOnDeleteSingle(context);
+	return enforceRoleHierarchyOnDeleteBulk(context);
 };
 
 module.exports = {
