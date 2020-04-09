@@ -17,14 +17,16 @@ const getRoles = () => roleModel.find()
 	.lean()
 	.exec();
 
-const getAllUsers = (ref, schoolId, role, query) => ref.app.service('usersModel').find({
-	query: Object.assign({}, query, {
+const getAllUsers = (ref, schoolId, role, clientQuery) => {
+	const query = {
 		schoolId,
 		roles: role.toString(),
+		createdAt: clientQuery.createdAt,
+		firstName: clientQuery.firstName,
 		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
-		consentStatus: undefined, // this key is not intended for the user query
-	}),
-});
+	};
+	return ref.app.service('usersModel').find({ query });
+};
 
 const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
 	.find({
