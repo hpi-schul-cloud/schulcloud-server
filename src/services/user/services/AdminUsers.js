@@ -22,10 +22,12 @@ const getAllUsers = (ref, schoolId, role, clientQuery) => {
 	const query = {
 		schoolId,
 		roles: role.toString(),
-		createdAt: clientQuery.createdAt,
-		firstName: clientQuery.firstName,
+		$sort: clientQuery.$sort,
 		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
 	};
+	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
+	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
+	console.log(query)
 	return ref.app.service('usersModel').find({ collation: { locale: 'de', caseLevel: true }, query });
 };
 
