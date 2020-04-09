@@ -12,7 +12,7 @@ const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
 const KeysModel = require('../services/keys/model');
-const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../config/globals');
+const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 // Add any common hooks you want to share across services in here.
 
 const { extractTokenFromBearerHeader } = require('../services/authentication/logic');
@@ -391,7 +391,7 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 	return context;
 });
 
-const isProductionMode = process.env.NODE_ENV === 'production';
+const isProductionMode = NODE_ENV === ENVIRONMENTS.PRODUCTION;
 exports.mapPayload = (context) => {
 	if (!isProductionMode) {
 		logger.info(
@@ -400,6 +400,7 @@ exports.mapPayload = (context) => {
 		);
 	}
 	if (context.params.payload) {
+		// eslint-disable-next-line prefer-object-spread
 		context.params.authentication = Object.assign(
 			{},
 			context.params.authentication,
@@ -697,20 +698,6 @@ exports.sendEmail = (context, maildata) => {
 	return context;
 };
 
-exports.getAge = (dateString) => {
-	if (dateString === undefined) {
-		return undefined;
-	}
-	const today = new Date();
-	const birthDate = new Date(dateString);
-	let age = today.getFullYear() - birthDate.getFullYear();
-	const m = today.getMonth() - birthDate.getMonth();
-	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-		age -= 1;
-	}
-	return age;
-};
-
 exports.arrayIncludes = (array, includesList, excludesList) => {
 	for (let i = 0; i < includesList.length; i += 1) {
 		if (array.includes(includesList[i]) === false) {
@@ -773,4 +760,9 @@ exports.populateCurrentSchool = async (context) => {
 		return context;
 	}
 	throw new BadRequest('Authentication is required.');
+};
+
+exports.addCollation = (context) => {
+	context.params.collation = { locale: 'de', caseLevel: true };
+	return context;
 };

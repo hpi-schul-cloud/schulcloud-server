@@ -3,21 +3,21 @@ const url = require('url');
 const moment = require('moment');
 const { JWE, JWK, JWS } = require('jose');
 const uuid = require('uuid/v4');
-const commons = require('@schul-cloud/commons');
-
-const Config = new commons.Configuration();
-Config.init();
+const { Configuration } = require('@schul-cloud/commons');
+const accountModel = require('../../../account/model');
 
 const ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
 const SOURCE_ID_ATTRIBUTE = 'tspUid'; // name of the uid attribute within sourceOptions
 
-const ENCRYPTION_KEY = Config.get('TSP_API_ENCRYPTION_KEY');
-const SIGNATURE_KEY = Config.get('TSP_API_SIGNATURE_KEY');
-const BASE_URL = Config.get('TSP_API_BASE_URL');
-const CLIENT_ID = Config.get('TSP_API_CLIENT_ID');
-const CLIENT_SECRET = Config.get('TSP_API_CLIENT_SECRET');
-const TOKEN_ISS = process.env.SC_DOMAIN || 'schulcloud-thueringen.de';
-const TOKEN_SUB = process.env.HOST || 'https://schulcloud-thueringen.de';
+const ENCRYPTION_KEY = Configuration.get('TSP_API_ENCRYPTION_KEY');
+const SIGNATURE_KEY = Configuration.get('TSP_API_SIGNATURE_KEY');
+const BASE_URL = Configuration.get('TSP_API_BASE_URL');
+const CLIENT_ID = Configuration.get('TSP_API_CLIENT_ID');
+const CLIENT_SECRET = Configuration.get('TSP_API_CLIENT_SECRET');
+const {
+	HOST,
+	SC_DOMAIN,
+} = require('../../../../../config/globals');
 
 const ENCRYPTION_OPTIONS = { alg: 'dir', enc: 'A128CBC-HS256' };
 const SIGNATURE_OPTIONS = { alg: 'HS512' };
@@ -57,6 +57,60 @@ const getUsername = (user) => {
  * @param {User|TSP-User} user Schul-Cloud user or TSP user object
  */
 const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
+
+/**
+ * Registers a user and creates an account
+ * @param {Object} app the Feathers app
+ * @param {Object} userOptions options to be provided to the user service
+ * @param {Array<String>} roles the user's roles
+ * @param {System} systemId the user's login system
+ * @returns {User} the user object
+ * @async
+ */
+const createUserAndAccount = async (app, userOptions, roles, systemId) => {
+	const username = getUsername(userOptions);
+	const email = getEmail(userOptions);
+	const { pin } = await app.service('registrationPins').create({
+		email,
+		verified: true,
+		silent: true,
+	});
+	const user = await app.service('users').create({
+		...userOptions,
+		pin,
+		email,
+		roles,
+	});
+	await accountModel.create({
+		userId: user._id,
+		username,
+		systemId,
+		activated: true,
+	});
+	return user;
+};
+
+/**
+ * Finds and returns the school identified by the given identifier
+ * @async
+ * @param {Object} app Feathers app
+ * @param {string} tspIdentifier TSP school identifier
+ * @returns {School|null} the school or null if it doesn't exist
+ */
+const findSchool = async (app, tspIdentifier) => {
+	const schools = await app.service('schools').find({
+		query: {
+			source: ENTITY_SOURCE,
+			'sourceOptions.schoolIdentifier': tspIdentifier,
+			$limit: 1,
+		},
+		paginate: false,
+	});
+	if (Array.isArray(schools) && schools.length > 0) {
+		return schools[0];
+	}
+	return null;
+};
 
 const getEncryptionKey = () => JWK.asKey({
 	kty: 'oct', k: ENCRYPTION_KEY, alg: ENCRYPTION_OPTIONS.enc, use: 'enc',
@@ -104,9 +158,9 @@ class TspApi {
 		this.lastTokenExpires = issueDate + lifetime;
 		const payload = JSON.stringify({
 			apiClientSecret: CLIENT_SECRET,
-			iss: TOKEN_ISS,
+			iss: SC_DOMAIN,
 			aud: BASE_URL,
-			sub: TOKEN_SUB,
+			sub: HOST,
 			exp: issueDate + lifetime,
 			iat: issueDate,
 			jti: uuid(),
@@ -130,7 +184,7 @@ class TspApi {
 	 * Requests and returns a TSP resource.
 	 * Results are parsed and returned as Objects/Arrays.
 	 * @param {String} path resource path
-	 * @param {Date} [lastChange=new Date(0)] request changes afer this date only
+	 * @param {Date|number} [lastChange=new Date(0)] request changes afer this date only
 	 * @returns {Object|Array} the requested resource
 	 */
 	async request(path, lastChange = new Date(0)) {
@@ -152,11 +206,13 @@ module.exports = {
 	SOURCE_ID_ATTRIBUTE,
 	TspApi,
 	config: {
-		FEATURE_ENABLED: Config.get('FEATURE_TSP_ENABLED'),
+		FEATURE_ENABLED: Configuration.get('FEATURE_TSP_ENABLED'),
 		BASE_URL,
 	},
 	getUsername,
 	getEmail,
+	createUserAndAccount,
+	findSchool,
 	encryptToken,
 	decryptToken,
 	signToken,

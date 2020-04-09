@@ -81,7 +81,7 @@ class HomeworkCopyService {
 		const fileIds = await this.copyFilesIfExist(copyAssignment.fileIds, params);
 
 		const addingKeys = {
-			courseId, lessonId, schoolId, teacherId, fileIds,
+			courseId, lessonId, schoolId, teacherId, fileIds, private: true,
 		};
 
 		const tempAssignment = this.copy(copyAssignment, ignoredKeys, addingKeys);

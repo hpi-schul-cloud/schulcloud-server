@@ -5,7 +5,7 @@
 	"public": "../public/",
 	"services": {
 		"calendar": "http://localhost:3000",
-		"content": "https://schul-cloud.org:4040",
+		"content": "https://content.schul-cloud.org",
 		"notification": "http://localhost:3031"
 	}
 }

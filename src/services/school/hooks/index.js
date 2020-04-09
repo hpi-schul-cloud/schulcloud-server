@@ -1,6 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
-const hooks = require('feathers-hooks-common');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
+const {
+	iff, isProvider, discard, disallow, keepInArray,
+} = require('feathers-hooks-common');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 
@@ -44,8 +47,8 @@ const setCurrentYearIfMissing = async (hook) => {
 };
 
 const createDefaultStorageOptions = (hook) => {
-	if (process.env.NODE_ENV !== 'production') {
-		// don't create buckets in development or test
+	// create buckets only in production mode
+	if (NODE_ENV !== ENVIRONMENTS.PRODUCTION) {
 		return Promise.resolve(hook);
 	}
 	const storageType = getDefaultFileStorageType();
@@ -124,6 +127,8 @@ const restrictToUserSchool = async (context) => {
 	throw new Forbidden('You can only edit your own school.');
 };
 
+const populateInQuery = (context) => (context.params.query || {}).$populate;
+
 exports.before = {
 	all: [],
 	find: [],
@@ -149,15 +154,18 @@ exports.before = {
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
     */
-	remove: [hooks.disallow()],
+	remove: [disallow()],
 };
 
 exports.after = {
-	all: [],
+	all: [
+		iff(populateInQuery, keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active'])),
+		iff(isProvider('external'), discard('storageProvider')),
+	],
 	find: [decorateYears],
 	get: [decorateYears],
 	create: [createDefaultStorageOptions],
-	update: [createDefaultStorageOptions],
-	patch: [createDefaultStorageOptions],
+	update: [],
+	patch: [],
 	remove: [],
 };

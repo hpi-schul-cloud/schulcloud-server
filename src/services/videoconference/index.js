@@ -8,9 +8,6 @@ const {
 const lodash = require('lodash');
 const { Configuration } = require('@schul-cloud/commons');
 
-const Config = new Configuration();
-Config.init();
-
 const { SCHOOL_FEATURES } = require('../../../src/services/school/model');
 
 const videoconferenceHooks = require('./hooks');
@@ -44,7 +41,7 @@ const { schoolModel: Schools } = require('../school/model');
 
 const { ObjectId } = require('../../helper/compare');
 
-const CLIENT_HOST = Config.get('HOST');
+const CLIENT_HOST = Configuration.get('HOST');
 
 class VideoconferenceBaseService {
 	constructor(app) {
@@ -67,7 +64,7 @@ class VideoconferenceBaseService {
 
 	static async throwOnFeaturesDisabled(authenticatedUser) {
 		// throw, if feature has not been enabled
-		if (!Config.get('FEATURE_VIDEOCONFERENCE_ENABLED') === true) {
+		if (!Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED') === true) {
 			throw new Forbidden('feature FEATURE_VIDEOCONFERENCE_ENABLED disabled');
 		}
 		// throw, if current users school feature is not enabled

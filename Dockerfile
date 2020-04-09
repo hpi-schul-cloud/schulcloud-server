@@ -1,5 +1,5 @@
 # if node version is changed, also adapt .nvmrc file 
-FROM node:10.17-alpine
+FROM node:lts-alpine
 
 WORKDIR /schulcloud-server
 # RSS-Cron starten

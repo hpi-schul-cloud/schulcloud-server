@@ -1,7 +1,9 @@
 const request = require('request-promise-native');
 
 const AbstractLDAPStrategy = require('./interface.js');
-const { REQUEST_TIMEOUT } = require('../../../../config/globals');
+const {
+	REQUEST_TIMEOUT, NBC_IMPORTURL, NBC_IMPORTUSER, NBC_IMPORTPASSWORD,
+} = require('../../../../config/globals');
 /**
  * iServ-specific LDAP functionality
  * @implements {AbstractLDAPStrategy}
@@ -194,7 +196,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      */
 	_updateUserGroups(user, groups, method = 'create') {
 		const options = this._getRequestOptions({
-			uri: this.config.importUrl || process.env.NBC_IMPORTURL,
+			uri: this.config.importUrl || NBC_IMPORTURL,
 			method: 'POST',
 			formData: this._generateGroupUpdateFormData(user, groups, method),
 		});
@@ -212,8 +214,8 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      * @private
      */
 	_getRequestOptions(overrides = {}) {
-		const username = this.config.importUser || process.env.NBC_IMPORTUSER;
-		const password = this.config.importUserPassword || process.env.NBC_IMPORTPASSWORD;
+		const username = this.config.importUser || NBC_IMPORTUSER;
+		const password = this.config.importUserPassword || NBC_IMPORTPASSWORD;
 		const auth = `Basic ${new Buffer(`${username}:${password}`).toString('base64')}`;
 
 		const options = {
@@ -326,7 +328,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
      */
 	createExpert(user, account) {
 		const options = this._getRequestOptions({
-			uri: this.config.importUrl || process.env.NBC_IMPORTURL,
+			uri: this.config.importUrl || NBC_IMPORTURL,
 			method: 'POST',
 			formData: this._generateUpdateExpertFormData(user, account),
 		});
