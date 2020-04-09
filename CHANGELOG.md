@@ -17,6 +17,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   add MongoDB Collation Support to control sorting behaviour in regards to capitalization.
 -   SC-3607 CSVSyncer now allows the optional birthday field (formats: dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy) in CSV data
 
+### Fixed
+
+-   SC-3395 if fetching the release fails, a error will be thrown
+
 ### Changed
 
 -   User delete now accepts bulk delete requests
