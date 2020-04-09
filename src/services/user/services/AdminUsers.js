@@ -17,6 +17,7 @@ const getRoles = () => roleModel.find()
 	.lean()
 	.exec();
 
+
 const getAllUsers = (ref, schoolId, role, clientQuery) => {
 	const query = {
 		schoolId,
@@ -25,7 +26,7 @@ const getAllUsers = (ref, schoolId, role, clientQuery) => {
 		firstName: clientQuery.firstName,
 		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
 	};
-	return ref.app.service('usersModel').find({ query });
+	return ref.app.service('usersModel').find({ collation: { locale: 'de', caseLevel: true }, query });
 };
 
 const getClasses = (app, schoolId, schoolYearId) => app.service('classes')

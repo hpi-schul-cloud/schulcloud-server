@@ -13,6 +13,7 @@ const {
 	permitGroupOperation,
 	denyIfNotCurrentSchool,
 	computeProperty,
+	addCollation,
 } = require('../../../hooks');
 const {
 	mapRoleFilterQuery,
@@ -84,6 +85,7 @@ const userHooks = {
 			authenticate('jwt'),
 			iff(isProvider('external'), restrictToCurrentSchool),
 			mapRoleFilterQuery,
+			addCollation,
 		],
 		get: [authenticate('jwt')],
 		create: [
