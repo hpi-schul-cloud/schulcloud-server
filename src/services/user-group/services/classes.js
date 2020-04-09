@@ -109,6 +109,7 @@ const classesHooks = {
 			restrictToCurrentSchool,
 			restrictToUsersOwnClasses,
 			sortByGradeAndOrName,
+			globalHooks.addCollation,
 			globalHooks.mapPaginationQuery,
 		],
 		get: [

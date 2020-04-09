@@ -225,6 +225,7 @@ exports.before = () => ({
 			globalHooks.mapPaginationQuery.bind(this),
 			hasViewPermissionBefore,
 		]),
+		globalHooks.addCollation,
 	],
 	get: [iff(isProvider('external'), [
 		globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore,
