@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const arg = require('arg');
 
-/* eslint-disable no-console */
+/* eslint-disable no-console no-process-env */
 
 /** *****************************************
  * ARGUMENT PARSING
