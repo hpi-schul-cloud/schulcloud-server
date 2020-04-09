@@ -11,16 +11,49 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+-   SC-3719 Files now have a `creator` attribute that references the ID of the user that created the file.
+    For old files, it is set to the first user permission inside the permissions array (legacy creator check).
+-   SC-3719 The `files` collection now has two additional indexes: `{creator}` and `{permissions.refId, permissions.refPermModel}`.
+-   SC-3607 CSVSyncer now allows the optional birthday field (formats: dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy) in CSV data
+
+### Changed
+
+-   User delete now accepts bulk delete requests
+
+## [22.9.1]
+
+### Fixed
+
+-   SC-3994: remove unnecessary bucket creation call that caused school administration and LDAP Sync to throw errors
+
+
+## [22.9.0]
+
+-   Security updates
+
+## [22.8.0]
+
+### Added
+
+- This changelog has been added
+
+### Removed
+
+-   Clipboard sockets
 -   This changelog has been added
 -   Backend route to confirm analog consents in bulk
 -   Changed Seed Data + Migration Script: Added feature flag for new Editor to klara.fall@schul-cloud.org
--   SC-2922 Enable use of multiple S3 instances as file storage provider
-   -   A new collection is added to administrate multiple S3 instances 
-   -   A migration will automatically use the AWS environment variables to add those as default provider for all existing schools
-   -   For new schools the less used provider is assigned as storage provider
-   -   Environment Variables:
-      -   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true will activate the feature
-      -   S3_KEY, used for symmetric encryption, already required for the migration because of the secret access key encryption
+-   SC-2922: Enable use of multiple S3 instances as file storage provider
+    -   A new collection is added to administrate multiple S3 instances 
+    -   A migration will automatically use the AWS environment variables to add those as default provider for all existing schools
+    -   For new schools the less used provider is assigned as storage provider
+    -   Environment Variables:
+        -   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true will activate the feature
+        -   S3_KEY, used for symmetric encryption, already required for the migration because of the secret access key encryption
+
+### Changed
+
+-   SC-3767: moved env variables to globals.js, NODE_ENV required to equal 'test' for test execution and right database selection
 
 ### Changed
 
