@@ -31,6 +31,7 @@ module.exports = {
 						$in: [
 							'STUDENT_CREATE',
 							'TEACHER_CREATE',
+							'STUDENT_DELETE',
 						],
 					},
 				},
@@ -52,6 +53,7 @@ module.exports = {
 						$each: [
 							'STUDENT_CREATE',
 							'TEACHER_CREATE',
+							'STUDENT_DELETE',
 						],
 					},
 				},

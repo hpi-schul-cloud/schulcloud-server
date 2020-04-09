@@ -20,7 +20,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 -   User delete now accepts bulk delete requests
--   SC-3909 Teachers no longer have the permission to create users
+-   SC-3909 Teachers no longer have the permission to create or delete users
 
 ## [22.9.1]
 
