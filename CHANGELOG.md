@@ -14,19 +14,23 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3719 Files now have a `creator` attribute that references the ID of the user that created the file.
     For old files, it is set to the first user permission inside the permissions array (legacy creator check).
 -   SC-3719 The `files` collection now has two additional indexes: `{creator}` and `{permissions.refId, permissions.refPermModel}`.
+-   add MongoDB Collation Support to control sorting behaviour in regards to capitalization.
 -   SC-3607 CSVSyncer now allows the optional birthday field (formats: dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy) in CSV data
 
+### Fixed
+
+-   SC-3395 if fetching the release fails, a error will be thrown
+
+### Changed
+
+-   User delete now accepts bulk delete requests
 
 ## [22.9.1]
 
 ### Fixed
 
 -   SC-3994: remove unnecessary bucket creation call that caused school administration and LDAP Sync to throw errors
-
-### Fixed
-
--   SC-3395 if fetching the release fails, a error will be thrown
-
+-   use collation for /homeworks, /users, /publicTeachers, /users/admin/teachers, /users/admin/students, /classes, and /courses.
 
 ## [22.9.0]
 

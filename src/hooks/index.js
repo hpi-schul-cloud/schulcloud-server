@@ -761,3 +761,8 @@ exports.populateCurrentSchool = async (context) => {
 	}
 	throw new BadRequest('Authentication is required.');
 };
+
+exports.addCollation = (context) => {
+	context.params.collation = { locale: 'de', caseLevel: true };
+	return context;
+};
