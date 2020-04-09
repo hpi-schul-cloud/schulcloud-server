@@ -30,6 +30,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 -   SC-3994: remove unnecessary bucket creation call that caused school administration and LDAP Sync to throw errors
+
+### Changed
 -   use collation for /homeworks, /users, /publicTeachers, /users/admin/teachers, /users/admin/students, /classes, and /courses.
 
 ## [22.9.0]
