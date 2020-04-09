@@ -84,11 +84,6 @@ const globals = {
 	TEST_PW: (process.env.TEST_PW || '').trim(),
 	TEST_HASH: (process.env.TEST_HASH || '').trim(),
 
-	// nbc
-	NBC_IMPORTURL: process.env.NBC_IMPORTURL,
-	NBC_IMPORTUSER: process.env.NBC_IMPORTUSER,
-	NBC_IMPORTPASSWORD: process.env.NBC_IMPORTPASSWORD,
-
 	// files
 	FILE_PREVIEW_SERVICE_URI: process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview',
 	FILE_PREVIEW_CALLBACK_URI: process.env.FILE_PREVIEW_CALLBACK_URI
