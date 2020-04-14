@@ -3,6 +3,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
 // const logger = require('../../../logger');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
+const { createChannel } = require('../../../utils/rabbitmq');
 
 const { userModel } = require('../model');
 const { hasEditPermissionForUser } = require('../hooks/index.hooks');
@@ -34,16 +35,17 @@ const {
 	enforceRoleHierarchyOnDelete,
 } = require('../hooks/userService');
 
+// const USER_RABBIT_EXCHANGE = 'user';
 class UserService {
 	constructor(options) {
 		this.options = options || {};
 	}
 
-	find(params) {
+	async find(params) {
 		return this.app.service('usersModel').find(prepareInternalParams(params));
 	}
 
-	get(id, params) {
+	async get(id, params) {
 		return this.app.service('usersModel').get(id, prepareInternalParams(params));
 	}
 
@@ -56,6 +58,7 @@ class UserService {
 	}
 
 	patch(id, data, params) {
+		// this.channel.publish(USER_RABBIT_EXCHANGE, '', Buffer.from(JSON.stringify({ _id: id, ...data })));
 		return this.app.service('usersModel').patch(id, data, prepareInternalParams(params));
 	}
 
@@ -63,8 +66,10 @@ class UserService {
 		return this.app.service('usersModel').remove(id, prepareInternalParams(params));
 	}
 
-	setup(app) {
+	async setup(app) {
 		this.app = app;
+		// this.channel = await createChannel();
+		// await this.channel.assertExchange(USER_RABBIT_EXCHANGE, 'fanout', { durable: true });
 	}
 }
 

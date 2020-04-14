@@ -1,5 +1,5 @@
 const errors = require('@feathersjs/errors');
-const userModel = require('../user/model');
+const userModel = require('./model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const { getAge } = require('../../utils');
@@ -237,14 +237,14 @@ const registerUser = function register(data, params, app) {
 					privacyConsent: data.parent_privacyConsent === 'true',
 					termsOfUseConsent: data.parent_termsOfUseConsent === 'true',
 				};
-				consentPromise = app.service('consents/model').create({ userId: user._id, parentConsents: [consent] });
+				consentPromise = app.service('consents').create({ userId: user._id, parentConsents: [consent] });
 			} else {
 				consent = {
 					form: 'digital',
 					privacyConsent: data.privacyConsent === 'true',
 					termsOfUseConsent: data.termsOfUseConsent === 'true',
 				};
-				consentPromise = app.service('consents/model').create({ userId: user._id, userConsent: consent });
+				consentPromise = app.service('consents').create({ userId: user._id, userConsent: consent });
 			}
 			return consentPromise
 				.then((newConsent) => {

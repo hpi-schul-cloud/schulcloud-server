@@ -2,7 +2,7 @@ const assert = require('assert');
 const chai = require('chai');
 const app = require('../../../src/app');
 
-const consentService = app.service('consents/model');
+const consentService = app.service('consents');
 const consentVersionService = app.service('consentVersions');
 
 describe('consent service', () => {

@@ -25,7 +25,7 @@ const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('usersM
 		$limit: sortObject.$limit,
 		$skip: sortObject.$skip,
 		$sort: sortObject.$sort,
-		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
+		$select: ['consent', 'firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
 	},
 });
 
@@ -46,7 +46,7 @@ const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
 		return err;
 	});
 
-const findConsents = (ref, userIds, $limit) => ref.app.service('/consents/model')
+const findConsents = (ref, userIds, $limit) => ref.app.service('/consents')
 	.find({
 		query: {
 			userId: { $in: userIds },
@@ -104,17 +104,9 @@ class AdminUsers {
 				getAllUsers(this, schoolId, searchedRole._id, query),
 				getClasses(this.app, schoolId, currentYear),
 			]);
+			// usersData.consentStatus;
 			const { total } = usersData;
 			const users = usersData.data;
-			const userIds = users.map((user) => user._id.toString());
-			const consents = await findConsents(this, userIds, $limit).then((data) => {
-				// rebuild consent to object for faster sorting
-				const out = {};
-				data.forEach((e) => {
-					out[e.userId.toString()] = e;
-				});
-				return out;
-			});
 			// bsonId to stringId that it can use .includes for is in test
 			classes.forEach((c) => {
 				if (Array.isArray(c.userIds)) {
@@ -133,7 +125,6 @@ class AdminUsers {
 			users.forEach((user) => {
 				user.classes = [];
 				const userId = user._id.toString();
-				user.consent = consents[userId] || {};
 				classes.forEach((c) => {
 					if (c.userIds.includes(userId) || c.teacherIds.includes(userId)) {
 						user.classes.push(c.displayName);

@@ -100,7 +100,7 @@ const firstLogin = async (data, params, app) => {
 			return consent;
 		};
 
-		updateConsentUsingVersions = app.service('consents/model').find({ query: { userId: user._id } }).then((consents) => {
+		updateConsentUsingVersions = app.service('consents').find({ query: { userId: user._id } }).then((consents) => {
 			if (consents.total !== 1) {
 				throw new Error('user consent not found!');
 			}
@@ -111,16 +111,16 @@ const firstLogin = async (data, params, app) => {
 			};
 			const updateConsentType = consent.userConsent ? 'userConsent' : 'parentConsents';
 			if (updateConsentType === 'userConsent') {
-				updatedConsent = Object.assign({}, updatedConsent, consent[updateConsentType]);
+				updatedConsent = { ...updatedConsent, ...consent[updateConsentType] };
 				updatedConsent = updateConsentDates(updatedConsent);
-				return app.service('consents/model').patch(consent._id, { userConsent: updatedConsent });
+				return app.service('consents').patch(consent._id, { userConsent: updatedConsent });
 			}
 			if (updateConsentType === 'parentConsents' && (!consent.parentConsents || !consent.parentConsents.length)) {
 				throw new Error('no parent or user consent found');
 			}
-			updatedConsent = Object.assign({}, updatedConsent, consent.parentConsents[0]);
+			updatedConsent = { ...updatedConsent, ...consent.parentConsents[0] };
 			updatedConsent = updateConsentDates(updatedConsent);
-			return app.service('consent/model').patch(consent._id, { parentConsents: [updatedConsent] });
+			return app.service('consents').patch(user._id, { parentConsents: [updatedConsent] });
 		});
 	}
 
@@ -132,7 +132,7 @@ const firstLogin = async (data, params, app) => {
 			termsOfUseConsent: data.parent_termsOfUseConsent,
 		}];
 	}
-	if (consentUpdate.userId) consentPromise = app.service('consents/model').create(consentUpdate);
+	if (consentUpdate.userId) consentPromise = app.service('consents').create(consentUpdate);
 
 	return Promise.all([accountPromise, userPromise, consentPromise, updateConsentUsingVersions])
 		.then((result) => Promise.resolve(result))
