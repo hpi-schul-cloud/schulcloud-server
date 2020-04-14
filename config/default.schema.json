@@ -197,9 +197,6 @@
 			"type": "string",
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
-			"default": "http://localhost:3100",
-			"pattern": ".*(?<!/)$",
-			"description": "The client url (should end without a slash)."
 		},
 		"LERNSTORE_MODE": {
 			"type": "string",
