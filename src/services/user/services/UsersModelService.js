@@ -4,10 +4,16 @@ const {
 	iff, isProvider, disallow,
 } = require('feathers-hooks-common');
 const { userModel } = require('../model');
+const { addDate: addConsentDate } = require('../hooks/consent');
 
 const userModelHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt'), iff(isProvider('external'), disallow())],
+		all: [auth.hooks.authenticate('jwt'),
+			iff(isProvider('external'), disallow()),
+		],
+		create: [addConsentDate],
+		update: [addConsentDate],
+		patch: [addConsentDate],
 	},
 };
 
