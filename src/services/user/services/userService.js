@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 // const { BadRequest, Forbidden } = require('@feathersjs/errors');
-const { iff, isProvider } = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 // const logger = require('../../../logger');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
 const { createChannel } = require('../../../utils/rabbitmq');
@@ -102,8 +102,8 @@ const userHooks = {
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		],
 		update: [
+			iff(isProvider('external'), disallow()),
 			authenticate('jwt'),
-			// TODO only local for LDAP
 			sanitizeData,
 			hasEditPermissionForUser,
 			resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
