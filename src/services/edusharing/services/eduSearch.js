@@ -1,3 +1,4 @@
+const { Configuration } = require('@schul-cloud/commons');
 const hooks = require('../hooks');
 const EduSharingConnector = require('../logic/connector');
 const logger = require('../../../logger');
@@ -14,7 +15,7 @@ class EduSearch {
 }
 
 module.exports = (app) => {
-	if (app.Config.get('FEATURE_EDUSHARING_ENABLED') === true) {
+	if (Configuration.get('FEATURE_EDUSHARING_ENABLED') === true) {
 		const eduRoute = '/edu-sharing';
 		app.use(eduRoute, new EduSearch(), (req, res) => {
 			res.send(res.data);

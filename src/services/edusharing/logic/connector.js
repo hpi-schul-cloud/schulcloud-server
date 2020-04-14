@@ -2,16 +2,13 @@ const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
 
-const Config = new Configuration();
-Config.init();
-
 // config envs
-const ES_DOMAIN = Config.get('ES_DOMAIN');
-const ES_USER = Config.get('ES_USER');
-const ES_PASSWORD = Config.get('ES_PASSWORD');
-const ES_GRANT_TYPE = Config.get('ES_GRANT_TYPE');
-const ES_OAUTH_SECRET = Config.get('ES_OAUTH_SECRET');
-const ES_CLIENT_ID = Config.get('ES_CLIENT_ID');
+const ES_DOMAIN = Configuration.get('ES_DOMAIN');
+const ES_USER = Configuration.get('ES_USER');
+const ES_PASSWORD = Configuration.get('ES_PASSWORD');
+const ES_GRANT_TYPE = Configuration.get('ES_GRANT_TYPE');
+const ES_OAUTH_SECRET = Configuration.get('ES_OAUTH_SECRET');
+const ES_CLIENT_ID = Configuration.get('ES_CLIENT_ID');
 
 // STACKOVERFLOW BEAUTY
 const validURL = (str) => {
