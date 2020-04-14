@@ -33,7 +33,7 @@
 		"mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --exit './test/**/*.test.js'",
 		"migration": "migrate",
 		"migration-sync": "migrate list --autosync",
-		"migration-persist": "mongoexport -d schulcloud -c migrations --jsonArray --pretty > ./backup/setup/migrations.json"
+		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations"
 	},
 	"dependencies": {
 		"@feathersjs/authentication": "^4.3.11",
