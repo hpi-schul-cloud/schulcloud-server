@@ -274,6 +274,7 @@ exports.before = {
 	update: [
 		authenticate('jwt'),
 		globalHooks.hasPermission('ACCOUNT_EDIT'),
+		globalHooks.restrictToCurrentSchool,
 		sanitizeUsername,
 	],
 	patch: [
