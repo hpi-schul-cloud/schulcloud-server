@@ -62,6 +62,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 -   SC-3767: moved env variables to globals.js, NODE_ENV required to equal 'test' for test execution and right database selection
 
+### Changed
+
+-   migrated backup.sh script to node, so it can run platform independant and works on windows.
+
 ### Fixed
 
 -   SC-3821: Fix Co-Teachers and Substitution teachers not being able to Grade Homeworks
