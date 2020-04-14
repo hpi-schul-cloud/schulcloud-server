@@ -160,7 +160,7 @@ exports.before = {
 exports.after = {
 	all: [
 		iff(populateInQuery, keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active'])),
-		iff(isProvider('external'), discard('storageProvider')),
+		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
 	],
 	find: [decorateYears],
 	get: [decorateYears],
