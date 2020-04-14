@@ -18,6 +18,7 @@ const getRoles = () => roleModel.find()
 	.exec();
 
 const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('usersModel').find({
+	collation: { locale: 'de', caseLevel: true },
 	query: {
 		schoolId,
 		roles: role.toString(),

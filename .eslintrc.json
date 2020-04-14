@@ -1,6 +1,7 @@
 {
 	"extends": "airbnb-base",
 	"rules": {
+		"no-process-env": "error",
 		"no-multiple-empty-lines": [
 			"error",
 			{

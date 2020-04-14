@@ -68,6 +68,7 @@ const courseHooks = {
 			restrictToCurrentSchool,
 			restrictToUsersOwnCourses,
 			globalHooks.mapPaginationQuery,
+			globalHooks.addCollation,
 		],
 		get: [courseInviteHook],
 		create: [
