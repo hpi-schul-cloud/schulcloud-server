@@ -1,6 +1,7 @@
 const { BadRequest, Forbidden, NotFound } = require('@feathersjs/errors');
 const hooks = require('../hooks');
 const { warning } = require('../../../logger/index');
+const { SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const { createUserWithRole } = require('../hooks/helpers');
 const { getBasic, patchTeam, getSessionUser } = require('../helpers');
@@ -17,10 +18,6 @@ class AdminOverview {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {};
-
-		if (process.env.SC_SHORT_TITLE === undefined) {
-			warning('SC_SHORT_TITLE is not defined.');
-		}
 	}
 
 	static testIfUserByRoleExist(team, roleId) {
@@ -212,7 +209,7 @@ class AdminOverview {
 		\nDu wurdest über die Administratoren-Kontaktfunktion benachrichtigt. 
 		\n\nText der Nachricht: \n${text}
 		\n\nVielen Dank
-		\nDein ${process.env.SC_SHORT_TITLE}-Team`;
+		\nDein ${SC_SHORT_TITLE}-Team`;
 	}
 
 	static getRestrictedQuery(teamIds, schoolId) {
@@ -260,7 +257,7 @@ class AdminOverview {
 						}
 
 						const subject = `${
-							process.env.SC_SHORT_TITLE
+							SC_SHORT_TITLE
 						}: Es besteht Klärungsbedarf zu deinem Team!`;
 						const mailService = this.app.service('/mails');
 						const ownerRoleId = ref.findRole('name', 'teamowner', '_id');

@@ -78,7 +78,8 @@ const schoolSchema = new Schema({
 		default: defaultFeatures,
 		enum: Object.values(SCHOOL_FEATURES),
 	},
-	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below)
+	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
+	storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
 	...externalSourceSchema,
 }, {
 	timestamps: true,
