@@ -1,5 +1,6 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
 const { NotAuthenticated } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
 
 class ApiKeyStrategy extends AuthenticationBaseStrategy {
 	parse(req, res) {
@@ -32,7 +33,7 @@ class ApiKeyStrategy extends AuthenticationBaseStrategy {
 
 	credentialCheck(key) {
 		// todo: authenticate against database collection, return permissions.
-		return (key === this.app.Config.data.CALENDAR_API_KEY);
+		return (key === Configuration.get('CALENDAR_API_KEY'));
 	}
 }
 

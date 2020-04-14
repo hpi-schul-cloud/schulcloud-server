@@ -1,7 +1,6 @@
 const express = require('@feathersjs/express');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
-const commons = require('@schul-cloud/commons');
 const apiMetrics = require('prometheus-api-metrics');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -11,14 +10,12 @@ const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
+const { KEEP_ALIVE } = require('../config/globals');
 
 const app = express(feathers());
 
 const config = configuration();
 app.configure(config);
-
-// init & register configuration
-(new commons.Configuration()).init({ app });
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -29,6 +26,7 @@ const handleResponseType = require('./middleware/handleReponseType');
 const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
+const rabbitMq = require('./utils/rabbitmq');
 
 const { BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
 
@@ -44,10 +42,11 @@ if (METRICS_PATH) {
 app.use(apiMetrics(metricsOptions));
 
 setupSwagger(app);
-app.configure(initializeRedisClient);
+initializeRedisClient();
+rabbitMq.setup(app);
 
 // set custom response header for ha proxy
-if (process.env.KEEP_ALIVE) {
+if (KEEP_ALIVE) {
 	app.use((req, res, next) => {
 		res.setHeader('Connection', 'Keep-Alive');
 		next();

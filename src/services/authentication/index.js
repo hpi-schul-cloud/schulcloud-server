@@ -1,5 +1,6 @@
 const { AuthenticationService, JWTStrategy } = require('@feathersjs/authentication');
 const { LocalStrategy } = require('@feathersjs/authentication-local');
+const { Configuration } = require('@schul-cloud/commons');
 
 const {
 	LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy,
@@ -17,7 +18,7 @@ const authConfig = {
 		audience,
 		issuer: 'feathers',
 		algorithm: 'HS256',
-		expiresIn: '30d',
+		expiresIn: Configuration.get('JWT_LIFETIME'),
 	},
 	local: {
 		usernameField: 'username',

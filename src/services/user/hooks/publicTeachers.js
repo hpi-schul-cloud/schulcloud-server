@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
 const globalHooks = require('../../../hooks');
 const { lookupSchool } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
@@ -21,7 +22,7 @@ const filterForPublicTeacher = (hook) => {
 	// Limit accessible user (only teacher which are discoverable)
 	hook.params.query.roles = ['teacher'];
 
-	const TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = hook.app.Config
+	const TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration
 		.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
 	switch (TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION) {
 		case 'opt-in':
@@ -59,6 +60,7 @@ exports.before = {
 		// resolve ids for role strings (e.g. 'TEACHER')
 		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
 		mapRoleFilterQuery,
+		globalHooks.addCollation,
 	],
 	get: [authenticate('jwt')],
 	create: [],

@@ -37,7 +37,7 @@ try {
 	branch = getLines(versionFileLines, 1);
 	message = getLines(versionFileLines, 2, versionFileLines.length);
 } catch (error) {
-	logger.error('version file missing', error);
+	logger.error('Can not read version file.');
 }
 
 module.exports = {

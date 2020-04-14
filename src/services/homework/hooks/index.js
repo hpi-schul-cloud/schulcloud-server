@@ -1,5 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
+const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
 const logger = require('../../../logger');
 
 const globalHooks = require('../../../hooks');
@@ -46,8 +49,10 @@ function isTeacher(userId, homework) {
 	const user = userId.toString();
 	let isTeacherCheck = equalIds(homework.teacherId, userId);
 	if (!isTeacherCheck && !homework.private) {
-		const isCourseTeacher = (homework.courseId.teacherIds || []).includes(user);
-		const isCourseSubstitution = (homework.courseId.substitutionIds || []).includes(user);
+		const isCourseTeacher = (homework.courseId.teacherIds || []).some((teacherId) => equalIds(teacherId, user));
+		const isCourseSubstitution = (homework.courseId.substitutionIds || []).some(
+			(substitutionId) => equalIds(substitutionId, user),
+		);
 		isTeacherCheck = isCourseTeacher || isCourseSubstitution;
 	}
 	return isTeacherCheck;
@@ -108,19 +113,35 @@ const addStats = (hook) => {
 		},
 	}).then((submissions) => {
 		data = data.map((e) => {
-			const c = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
+			const copy = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
 
-			// save grade in assignment if user is student of this task
-			const submission = submissions.data.filter((s) => (equalIds(c._id, s.homeworkId) && (s.grade)));
-			if (submission.length == 1 && !isTeacher(hook.params.account.userId, c)) {
-				c.grade = submission[0].grade;
+			if (!isTeacher(hook.params.account.userId, copy)) {
+				const filteredSubmission = submissions.data.filter((submission) => (
+					equalIds(copy._id, submission.homeworkId)
+					&& submission.teamMembers
+					&& (
+						submission.teamMembers.some((member) => equalIds(hook.params.account.userId, member))
+						|| equalIds(hook.params.account.userId, submission.studentId)
+					)
+				));
+				const submissionWithGrade = filteredSubmission.filter((submission) => submission.grade);
+				if (submissionWithGrade.length === 1) {
+					copy.grade = submissionWithGrade[0].grade.toFixed(2);
+				}
+
+				copy.hasEvaluation = false;
+				if (filteredSubmission.filter(isGraded).length === 1) {
+					copy.hasEvaluation = true;
+				}
+
+				copy.submissions = (filteredSubmission.filter(isValidSubmission)).length;
 			}
 
-			if (!c.private && (
-				(((c.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && c.publicSubmissions)
-                || isTeacher(hook.params.account.userId, c))) {
-				const NumberOfCourseMembers = ((c.courseId || {}).userIds || []).length;
-				const currentSubmissions = submissions.data.filter((s) => equalIds(c._id, s.homeworkId));
+			if (!copy.private && (
+				(((copy.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) && copy.publicSubmissions)
+                || isTeacher(hook.params.account.userId, copy))) {
+				const NumberOfCourseMembers = ((copy.courseId || {}).userIds || []).length;
+				const currentSubmissions = submissions.data.filter((s) => equalIds(copy._id, s.homeworkId));
 				const validSubmissions = currentSubmissions.filter(isValidSubmission);
 				const gradedSubmissions = currentSubmissions.filter(isGraded);
 				const NumberOfUsersWithSubmission = validSubmissions.map((e) => (e.courseGroupId ? ((e.courseGroupId.userIds || []).length || 1) : ((e.teamMembers || []).length || 1))).reduce((a, b) => a + b, 0);
@@ -133,17 +154,17 @@ const addStats = (hook) => {
 					? (NumberOfGradedUsers / NumberOfCourseMembers) * 100
 					: 0;
 
-				c.stats = {
-					userCount: ((c.courseId || {}).userIds || []).length,
+				copy.stats = {
+					userCount: ((copy.courseId || {}).userIds || []).length,
 					submissionCount: NumberOfUsersWithSubmission,
 					submissionPercentage: (submissionPerc != Infinity) ? submissionPerc.toFixed(2) : undefined,
 					gradeCount: NumberOfGradedUsers,
 					gradePercentage: (gradePerc != Infinity) ? gradePerc.toFixed(2) : undefined,
 					averageGrade: getAverageRating(currentSubmissions),
 				};
-				c.isTeacher = isTeacher(hook.params.account.userId, c);
+				copy.isTeacher = isTeacher(hook.params.account.userId, copy);
 			}
-			return c;
+			return copy;
 		});
 		if (arrayed) { data = data[0]; }
 		(hook.result.data) ? (hook.result.data = data) : (hook.result = data);
@@ -199,21 +220,34 @@ const hasPatchPermission = (hook) => {
 exports.before = () => ({
 	all: [authenticate('jwt')],
 	find: [
-		globalHooks.hasPermission('HOMEWORK_VIEW'),
-		globalHooks.mapPaginationQuery.bind(this),
-		hasViewPermissionBefore,
+		iff(isProvider('external'), [
+			globalHooks.hasPermission('HOMEWORK_VIEW'),
+			globalHooks.mapPaginationQuery.bind(this),
+			hasViewPermissionBefore,
+		]),
+		globalHooks.addCollation,
 	],
-	get: [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore],
-	create: [globalHooks.hasPermission('HOMEWORK_CREATE')],
-	update: [globalHooks.hasPermission('HOMEWORK_EDIT')],
-	patch: [globalHooks.hasPermission('HOMEWORK_EDIT'), globalHooks.permitGroupOperation, hasPatchPermission],
-	remove: [globalHooks.hasPermission('HOMEWORK_CREATE'), globalHooks.permitGroupOperation],
+	get: [iff(isProvider('external'), [
+		globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore,
+	])],
+	create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'))],
+	update: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_EDIT'))],
+	patch: [iff(isProvider('external'), [
+		globalHooks.hasPermission('HOMEWORK_EDIT'), globalHooks.permitGroupOperation, hasPatchPermission,
+	])],
+	remove: [iff(isProvider('external'), [
+		globalHooks.hasPermission('HOMEWORK_CREATE'), globalHooks.permitGroupOperation,
+	])],
 });
 
 exports.after = {
 	all: [],
-	find: [hasViewPermissionAfter, addStats],
-	get: [hasViewPermissionAfter, addStats],
+	find: [
+		iff(isProvider('external'), [hasViewPermissionAfter, addStats]),
+	],
+	get: [
+		iff(isProvider('external'), [hasViewPermissionAfter, addStats]),
+	],
 	create: [],
 	update: [],
 	patch: [],

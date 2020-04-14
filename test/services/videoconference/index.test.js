@@ -2,10 +2,7 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { warning } = require('../../../src/logger');
 
-const Config = new Configuration();
-Config.init(); // todo use singleton instead
-
-const FEATURE_VIDEOCONFERENCE_ENABLED = Config.get('FEATURE_VIDEOCONFERENCE_ENABLED');
+const FEATURE_VIDEOCONFERENCE_ENABLED = Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED');
 
 if (FEATURE_VIDEOCONFERENCE_ENABLED === true) {
 	require('./index');
