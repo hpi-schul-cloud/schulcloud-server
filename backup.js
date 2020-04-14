@@ -5,7 +5,19 @@ const fs = require('fs');
 const path = require('path');
 const arg = require('arg');
 
-/* eslint-disable no-console no-process-env */
+const { log } = console;
+const { env } = process;
+const {
+	BASE_PATH = 'backup/',
+	MONGO_HOST = '127.0.0.1',
+	MONGO_PORT = '27017',
+	// URL defaults to HOST and PORT from above
+	MONGO_URL,
+	MONGO_DATABASE,
+	MONGO_USERNAME,
+	MONGO_PASSWORD,
+	// some values are overridden by args
+} = env;
 
 /** *****************************************
  * ARGUMENT PARSING
@@ -42,7 +54,7 @@ const args = arg({
 });
 
 if (args['--help']) {
-	console.log(`Usage: node backup.js [opts] <export|import>
+	log(`Usage: node backup.js [opts] <export|import>
 
 OPTIONS:
 	--help (-h)        Show this help.
@@ -75,7 +87,7 @@ const getTimestamp = () => {
 };
 
 const CONFIG = {
-	BASE_PATH: process.env.BASE_PATH || 'backup/',
+	BASE_PATH,
 	get BACKUP_PATH_IMPORT() {
 		return path.join(this.BASE_PATH, args['--path'] || 'setup');
 	},
@@ -83,14 +95,14 @@ const CONFIG = {
 		return path.join(this.BASE_PATH, args['--path'] || getTimestamp());
 	},
 	MONGO: {
-		HOST: process.env.MONGO_HOST || '127.0.0.1',
-		PORT: process.env.MONGO_PORT || '27017',
+		HOST: MONGO_HOST,
+		PORT: MONGO_PORT,
 		get URL() {
-			return process.env.MONGO_URL || args['--url'] || `${this.HOST}:${this.PORT}`;
+			return MONGO_URL || args['--url'] || `${this.HOST}:${this.PORT}`;
 		},
-		DATABASE: process.env.MONGO_DATABASE || args['--database'] || 'schulcloud',
-		USERNAME: process.env.MONGO_USERNAME || args['--username'],
-		PASSWORD: process.env.MONGO_PASSWORD || args['--password'],
+		DATABASE: MONGO_DATABASE || args['--database'] || 'schulcloud',
+		USERNAME: MONGO_USERNAME || args['--username'],
+		PASSWORD: MONGO_PASSWORD || args['--password'],
 		get CREDENTIALS_ARGS() {
 			const cmdArgs = [];
 			if (CONFIG.MONGO.USERNAME) {
@@ -176,7 +188,7 @@ const importDirectory = async (directoryPath) => {
 		return importCollection({
 			collection,
 			filePath,
-		}).then(console.log);
+		}).then(log);
 	});
 	const outputs = await Promise.all(imports);
 	return outputs.join('\n');
@@ -199,7 +211,7 @@ const exportCollection = async ({
 		args['--pretty'] ? '--pretty' : undefined,
 	];
 	const res = await asyncExec(cleanJoin(cmdArgs));
-	console.log(`Exported ${CONFIG.MONGO.DATABASE}/${collection} into ${filePath}`);
+	log(`Exported ${CONFIG.MONGO.DATABASE}/${collection} into ${filePath}`);
 	return res;
 };
 
@@ -213,7 +225,7 @@ const getCollectionsToExport = async () => {
 			'--quiet',
 			'--eval', '"db.getCollectionNames().join(\\" \\")"',
 		];
-		console.log(cleanJoin(cmdArgs));
+		log(cleanJoin(cmdArgs));
 		const all = await asyncExec(cleanJoin(cmdArgs));
 		collections = all.split(' ').map((a) => a.trim());
 	}
