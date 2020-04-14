@@ -12,6 +12,7 @@ describe('authentication hooks', function test() {
 	let removeJwtFromWhitelist;
 	let configBefore = null;
 	let app;
+	let server;
 	let testObjects;
 
 	before(async () => {
@@ -34,6 +35,7 @@ describe('authentication hooks', function test() {
 
 		redisHelper = require('../../../../src/utils/redis');
 		app = require('../../../../src/app');
+		server = await app.listen(0);
 		testObjects = require('../../helpers/testObjects')(app);
 		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));
 		/* eslint-enable global-require */
@@ -55,6 +57,7 @@ describe('authentication hooks', function test() {
 		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
 
 		Configuration.reset(configBefore);
+		await server.close();
 	});
 
 	it('addJwtToWhitelist', async () => {

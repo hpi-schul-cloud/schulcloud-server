@@ -1,5 +1,6 @@
 const { BadRequest } = require('@feathersjs/errors');
 const service = require('feathers-mongoose');
+const { HOST } = require('../../../../config/globals');
 
 const _TYPE = ['before', 'after'];
 const _METHOD = ['get', 'update', 'patch', 'create', 'find', 'remove'];
@@ -15,7 +16,7 @@ const _DefaultServiceOptions = {
 
 const _DefaultHeaderParams = {
 	authorization: '<jwtToken>',
-	host: process.env.HOST || 'localhost:3030',
+	host: HOST,
 	accept: 'application/json',
 	'content-type': 'application/json',
 	connection: 'close',

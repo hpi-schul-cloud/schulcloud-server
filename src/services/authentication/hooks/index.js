@@ -5,6 +5,9 @@ const {
 	getRedisClient, redisSetAsync, redisDelAsync, extractDataFromJwt, getRedisData,
 } = require('../../../utils/redis');
 
+const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
+
+
 const updateUsernameForLDAP = async (context) => {
 	const { schoolId, strategy } = context.data;
 
@@ -31,7 +34,6 @@ const bruteForceCheck = async (context) => {
 		// if account doesn't exist we can not update (e.g. iserv, moodle)
 		if (account) {
 			if (account.lasttriedFailedLogin) {
-				const allowedTimeDifference = process.env.LOGIN_BLOCK_TIME || 15;
 				const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
 				if (timeDifference < allowedTimeDifference) {
 					throw new TooManyRequests(

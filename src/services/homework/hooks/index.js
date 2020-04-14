@@ -49,8 +49,10 @@ function isTeacher(userId, homework) {
 	const user = userId.toString();
 	let isTeacherCheck = equalIds(homework.teacherId, userId);
 	if (!isTeacherCheck && !homework.private) {
-		const isCourseTeacher = (homework.courseId.teacherIds || []).includes(user);
-		const isCourseSubstitution = (homework.courseId.substitutionIds || []).includes(user);
+		const isCourseTeacher = (homework.courseId.teacherIds || []).some((teacherId) => equalIds(teacherId, user));
+		const isCourseSubstitution = (homework.courseId.substitutionIds || []).some(
+			(substitutionId) => equalIds(substitutionId, user),
+		);
 		isTeacherCheck = isCourseTeacher || isCourseSubstitution;
 	}
 	return isTeacherCheck;
@@ -223,6 +225,7 @@ exports.before = () => ({
 			globalHooks.mapPaginationQuery.bind(this),
 			hasViewPermissionBefore,
 		]),
+		globalHooks.addCollation,
 	],
 	get: [iff(isProvider('external'), [
 		globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore,
