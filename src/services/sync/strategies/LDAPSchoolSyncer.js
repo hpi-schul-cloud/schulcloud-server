@@ -125,7 +125,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 		updateObject.roles = idmUser.roles;
 
 		return accountModel.update(
-			{ userId: user._id },
+			{ userId: user._id, systemId: this.system._id },
 			{ username: (`${this.school.ldapSchoolIdentifier}/${idmUser.ldapUID}`).toLowerCase() },
 		).then((_) => this.app.service('users').patch(
 			user._id,
