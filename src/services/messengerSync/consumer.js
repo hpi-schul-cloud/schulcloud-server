@@ -9,13 +9,12 @@ const QUEUE_EXTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL');
 let channel;
 
 const validateMessage = (content) => {
-	if (content.userId && (content.course || content.team || content.fullSync)) return true;
-	return false;
+	return (content.userId && (content.course || content.team || content.fullSync));
 };
 
 const handleMessage = async (incomingMessage) => {
 	const content = JSON.parse(incomingMessage.content.toString());
-	if (!validateMessage) {
+	if (!validateMessage(content)) {
 		logger.warning(`MESSENGER SYNC: invalid message in queue ${QUEUE_INTERNAL}`, incomingMessage);
 		// message is invalid an can not be retried
 		channel.reject(incomingMessage, false);
