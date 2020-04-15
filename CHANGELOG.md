@@ -14,7 +14,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3719 Files now have a `creator` attribute that references the ID of the user that created the file.
     For old files, it is set to the first user permission inside the permissions array (legacy creator check).
 -   SC-3719 The `files` collection now has two additional indexes: `{creator}` and `{permissions.refId, permissions.refPermModel}`.
+-   add MongoDB Collation Support to control sorting behaviour in regards to capitalization.
 -   SC-3607 CSVSyncer now allows the optional birthday field (formats: dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy) in CSV data
+-   SC-3948 support users query in adminusers routes
+
+### Fixed
+
+-   SC-3395 if fetching the release fails, a error will be thrown
 
 ### Changed
 
@@ -26,12 +32,35 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3958: the LDAP strategy interface no longer supports synchronizing team members to the never-used original N21-IDM
 -   SC-3958: the environment variables NBC_IMPORTURL, NBC_IMPORTUSER, and NBC_IMPORTPASSWORD are no longer used and have been removed
 
+## [22.9.3]
+
+### Fixed 
+
+-   fixes an issue with LDAP account updates if more than one account exists for the user (migration from local login to LDAP)
+
+
+## [22.9.3]
+
+### Fixed
+
+-   fixes regression in LDAP sync, that caused incomplete user updates
+
+
+## [22.9.2]
+
+### Security
+
+-   increased security for user PUT operation
+
+
 ## [22.9.1]
 
 ### Fixed
 
 -   SC-3994: remove unnecessary bucket creation call that caused school administration and LDAP Sync to throw errors
 
+### Changed
+-   use collation for /homeworks, /users, /publicTeachers, /users/admin/teachers, /users/admin/students, /classes, and /courses.
 
 ## [22.9.0]
 
@@ -60,6 +89,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 -   SC-3767: moved env variables to globals.js, NODE_ENV required to equal 'test' for test execution and right database selection
+
+### Changed
+
+-   migrated backup.sh script to node, so it can run platform independant and works on windows.
 
 ### Fixed
 
