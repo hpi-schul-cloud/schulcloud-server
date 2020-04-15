@@ -71,11 +71,13 @@ const newsHistorySchema = new Schema({
 	parentId: { type: Schema.Types.ObjectId, ref: 'news' },
 });
 
-enableAuditLog(newsSchema);
-enableAuditLog(newsHistorySchema);
+const newsModelName = 'news';
+enableAuditLog(newsSchema, { modelName: newsModelName });
+const newsModel = mongoose.model(newsModelName, newsSchema);
 
-const newsModel = mongoose.model('news', newsSchema);
-const newsHistoryModel = mongoose.model('newshistory', newsHistorySchema);
+const newsHistoryModelName = 'newshistory';
+enableAuditLog(newsHistorySchema, { modelName: newsHistoryModelName });
+const newsHistoryModel = mongoose.model(newsHistoryModelName, newsHistorySchema);
 
 module.exports = {
 	newsModel,

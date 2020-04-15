@@ -13,9 +13,11 @@ const pseudonymSchema = new Schema({
 	timestamps: true,
 });
 
-pseudonymSchema.plugin(idValidator);
-enableAuditLog(pseudonymSchema);
+const modelName = 'Pseudonym';
 
-const pseudonymModel = mongoose.model('Pseudonym', pseudonymSchema);
+pseudonymSchema.plugin(idValidator);
+enableAuditLog(pseudonymSchema, { modelName });
+
+const pseudonymModel = mongoose.model(modelName, pseudonymSchema);
 
 module.exports = pseudonymModel;

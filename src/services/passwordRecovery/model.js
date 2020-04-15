@@ -22,8 +22,8 @@ const passwordRecoverySchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
-enableAuditLog(passwordRecoverySchema);
-
-const passwordRecoveryModel = mongoose.model('passwordRecovery', passwordRecoverySchema);
+const modelName = 'passwordRecovery';
+enableAuditLog(passwordRecoverySchema, { modelName });
+const passwordRecoveryModel = mongoose.model(modelName, passwordRecoverySchema);
 
 module.exports = passwordRecoveryModel;

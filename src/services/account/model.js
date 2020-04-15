@@ -23,8 +23,9 @@ const accountSchema = new Schema({
 	timestamps: true,
 });
 
-enableAuditLog(accountSchema);
+const modelName = 'account';
+enableAuditLog(accountSchema, { modelName });
 
-const accountModel = mongoose.model('account', accountSchema);
+const accountModel = mongoose.model(modelName, accountSchema);
 
 module.exports = accountModel;

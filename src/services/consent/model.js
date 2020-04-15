@@ -35,7 +35,8 @@ const consentSchema = new Schema({
 	}],
 });
 
-enableAuditLog(consentSchema);
+const modelName = 'consent';
+enableAuditLog(consentSchema, { modelName });
 consentSchema.plugin(mongooseHistory);
 
 const consentTypes = {
@@ -54,7 +55,7 @@ const consentVersionSchema = new Schema({
 	title: { type: String, required: true },
 }, { timestamps: true });
 
-const consentModel = mongoose.model('consent', consentSchema);
+const consentModel = mongoose.model(modelName, consentSchema);
 const ConsentVersionModel = mongoose.model('consentVersion', consentVersionSchema);
 
 module.exports = {

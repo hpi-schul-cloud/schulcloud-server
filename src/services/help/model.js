@@ -14,9 +14,10 @@ const helpDocumentsSchema = new Schema({
 	}],
 }, { timestamps: true });
 
-enableAuditLog(helpDocumentsSchema);
+const modelName = 'helpdocument';
+enableAuditLog(helpDocumentsSchema, { modelName });
 
-const helpDocumentsModel = mongoose.model('helpdocument', helpDocumentsSchema);
+const helpDocumentsModel = mongoose.model(modelName, helpDocumentsSchema);
 
 module.exports = {
 	helpDocumentsModel,

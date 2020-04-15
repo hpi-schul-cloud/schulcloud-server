@@ -81,6 +81,7 @@
 		"mongoose": "~5.8.12",
 		"mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-history": "^0.8.0",
+		"mongoose-history-plugin": "^2.3.0",
 		"mongoose-id-validator": "^0.5.3",
 		"mongoose-lean-virtuals": "^0.4.4",
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",

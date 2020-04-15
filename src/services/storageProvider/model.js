@@ -17,8 +17,8 @@ const storageProviderSchema = new Schema({
 	timestamps: true,
 });
 
-enableAuditLog(storageProviderSchema);
-
-const StorageProviderModel = mongoose.model('storageprovider', storageProviderSchema);
+const storageProviderModelName = 'storageprovider';
+enableAuditLog(storageProviderSchema, { modelName: storageProviderModelName });
+const StorageProviderModel = mongoose.model(storageProviderModelName, storageProviderSchema);
 
 module.exports = { StorageProviderModel, storageProviderSchema };

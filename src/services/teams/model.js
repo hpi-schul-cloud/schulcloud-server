@@ -44,11 +44,14 @@ const teamsSchema = getUserGroupSchema({
 	filePermission: [permissionSchema],
 });
 
-enableAuditLog(teamsSchema);
-
+/* deprecated */
 const teamInvitedUserModel = mongoose.model('_teamInvitedUserSchema', teamInvitedUserSchema);
 const teamUserModel = mongoose.model('_teamUserSchema', teamUserSchema);
-const teamsModel = mongoose.model('teams', teamsSchema);
+/* / */
+
+const modelName = 'teams';
+enableAuditLog(teamsSchema, { modelName });
+const teamsModel = mongoose.model(modelName, teamsSchema);
 
 module.exports = {
 	teamsModel,

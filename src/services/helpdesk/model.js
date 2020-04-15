@@ -31,8 +31,8 @@ const problemSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
-enableAuditLog(problemSchema);
-
-const problemModel = mongoose.model('problem', problemSchema);
+const modelName = 'problem';
+enableAuditLog(problemSchema, { modelName });
+const problemModel = mongoose.model(modelName, problemSchema);
 
 module.exports = problemModel;

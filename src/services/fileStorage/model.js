@@ -23,7 +23,10 @@ const permissionSchema = new Schema(
 	{ _id: false },
 );
 
-enableAuditLog(permissionSchema);
+const filePermissionModelName = 'filePermissionModel';
+enableAuditLog(permissionSchema, { modelName: filePermissionModelName });
+const FilePermissionModel = mongoose.model(filePermissionModelName, permissionSchema);
+
 
 const SecurityCheckStatusTypes = Object.freeze({
 	PENDING: 'pending',
@@ -89,13 +92,13 @@ const fileSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
-enableAuditLog(fileSchema);
+const fileModelName = 'files';
+enableAuditLog(fileSchema, { modelName: fileModelName });
 
 // make file-model searchable
 fileSchema.index({ name: 'text' });
 
-const FileModel = mongoose.model('file', fileSchema);
-const FilePermissionModel = mongoose.model('filePermissionModel', permissionSchema);
+const FileModel = mongoose.model(fileModelName, fileSchema);
 
 module.exports = {
 	FileModel,

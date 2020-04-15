@@ -120,16 +120,22 @@ classSchema.set('toJSON', { virtuals: true }); // virtuals could not call with a
 
 const gradeSchema = getUserGroupSchema();
 
-enableAuditLog(courseSchema);
-enableAuditLog(courseGroupSchema);
-enableAuditLog(classSchema);
-enableAuditLog(gradeSchema);
+const courseModelName = 'course';
+enableAuditLog(courseSchema, { modelName: courseModelName });
+const courseModel = mongoose.model(courseModelName, courseSchema);
 
-const courseModel = mongoose.model('course', courseSchema);
 // represents a sub-group of students inside a course, e.g. for projects etc.
-const courseGroupModel = mongoose.model('courseGroup', courseGroupSchema);
-const classModel = mongoose.model('class', classSchema);
-const gradeModel = mongoose.model('grade', gradeSchema);
+const courseGroupModelName = 'courseGroup';
+enableAuditLog(courseGroupSchema, { modelName: courseGroupModelName });
+const courseGroupModel = mongoose.model(courseGroupModelName, courseGroupSchema);
+
+const classModelName = 'class';
+enableAuditLog(classSchema, { modelName: classModelName });
+const classModel = mongoose.model(classModelName, classSchema);
+
+const gradeModelName = 'grade';
+enableAuditLog(gradeSchema, { modelName: gradeModelName });
+const gradeModel = mongoose.model(gradeModelName, gradeSchema);
 
 module.exports = {
 	courseModel,

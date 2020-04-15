@@ -46,8 +46,8 @@ function validateKey(value) {
 
 ltiToolSchema.path('key').validate(validateKey);
 
-enableAuditLog(ltiToolSchema);
-
-const ltiToolModel = mongoose.model('ltiTool', ltiToolSchema);
+const modelName = 'ltiTool';
+enableAuditLog(ltiToolSchema, { modelName });
+const ltiToolModel = mongoose.model(modelName, ltiToolSchema);
 
 module.exports = ltiToolModel;

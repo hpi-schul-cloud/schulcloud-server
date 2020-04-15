@@ -70,8 +70,8 @@ const systemSchema = new Schema({
 	timestamps: true,
 });
 
-enableAuditLog(systemSchema);
-
-const systemModel = mongoose.model('system', systemSchema);
+const modelName = 'system';
+enableAuditLog(systemSchema, { modelName });
+const systemModel = mongoose.model(modelName, systemSchema);
 
 module.exports = systemModel;

@@ -45,8 +45,8 @@ const videoconferenceSchema = new Schema({
 	timestamps: true,
 });
 
-enableAuditLog(videoconferenceSchema);
-
-const videoConferenceModel = mongoose.model('videoconference', videoconferenceSchema);
+const videoConferenceModelName = 'videoconference';
+enableAuditLog(videoconferenceSchema, { modelName: videoConferenceModelName });
+const videoConferenceModel = mongoose.model(videoConferenceModelName, videoconferenceSchema);
 
 module.exports = videoConferenceModel;

@@ -20,7 +20,8 @@ const releaseSchema = new Schema({
 	zipUrl: { type: String },
 });
 
-enableAuditLog(releaseSchema);
-const releaseModel = mongoose.model('release', releaseSchema);
+const modelName = 'release';
+enableAuditLog(releaseSchema, { modelName });
+const releaseModel = mongoose.model(modelName, releaseSchema);
 
 module.exports = releaseModel;

@@ -56,13 +56,19 @@ const commentSchema = new Schema({
 	author: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
 });
 
-enableAuditLog(homeworkSchema);
-enableAuditLog(submissionSchema);
-enableAuditLog(commentSchema);
 
-const homeworkModel = mongoose.model('homework', homeworkSchema);
-const submissionModel = mongoose.model('submission', submissionSchema);
-const commentModel = mongoose.model('comment', commentSchema);
+const homeworkModelName = 'homework';
+enableAuditLog(homeworkSchema, { modelName: homeworkModelName });
+const homeworkModel = mongoose.model(homeworkModelName, homeworkSchema);
+
+const submissionModelName = 'submission';
+enableAuditLog(submissionSchema, { modelName: submissionModelName });
+const submissionModel = mongoose.model(submissionModelName, submissionSchema);
+
+const commentModelName = 'comment';
+enableAuditLog(commentSchema, { modelName: commentModelName });
+const commentModel = mongoose.model(commentModelName, commentSchema);
+
 
 module.exports = {
 	homeworkModel,

@@ -86,14 +86,15 @@ const registrationPinSchema = new Schema({
 });
 
 /* virtual property functions */
-
 const displayName = (user) => `${user.firstName} ${user.lastName}`;
 
-enableAuditLog(registrationPinSchema);
-enableAuditLog(userSchema);
+const registrationPinModelName = 'registrationPin';
+enableAuditLog(registrationPinSchema, { modelName: registrationPinModelName });
+const registrationPinModel = mongoose.model(registrationPinModelName, registrationPinSchema);
 
-const registrationPinModel = mongoose.model('registrationPin', registrationPinSchema);
-const userModel = mongoose.model('user', userSchema);
+const userModelName = 'user';
+enableAuditLog(userSchema, { modelName: userModelName });
+const userModel = mongoose.model(userModelName, userSchema);
 
 module.exports = {
 	USER_FEATURES,

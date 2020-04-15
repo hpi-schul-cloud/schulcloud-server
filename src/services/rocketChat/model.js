@@ -19,10 +19,12 @@ const channelSchema = new Schema({
 	channelName: { type: String, required: true },
 }, { timestamps: true });
 
-enableAuditLog(userSchema);
-enableAuditLog(channelSchema);
+const rcUserModelName = 'rocketChatUser';
+enableAuditLog(userSchema, { modelName: rcUserModelName });
+const userModel = mongoose.model(rcUserModelName, userSchema);
 
-const userModel = mongoose.model('rocketChatUser', userSchema);
-const channelModel = mongoose.model('rocketChatChannel', channelSchema);
+const rcChannelModelName = 'rocketChatChannel';
+enableAuditLog(channelSchema, { modelName: rcChannelModelName });
+const channelModel = mongoose.model(rcChannelModelName, channelSchema);
 
 module.exports = { userModel, channelModel };

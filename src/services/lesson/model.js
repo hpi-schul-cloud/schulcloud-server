@@ -35,8 +35,8 @@ const lessonSchema = new Schema({
 	timestamps: true,
 });
 
-enableAuditLog(lessonSchema);
-
-const lessonModel = mongoose.model('lesson', lessonSchema);
+const modelName = 'lesson';
+enableAuditLog(lessonSchema, { modelName });
+const lessonModel = mongoose.model(modelName, lessonSchema);
 
 module.exports = lessonModel;

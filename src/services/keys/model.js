@@ -18,8 +18,8 @@ const keySchema = new Schema({
 	timestamps: true,
 });
 
-enableAuditLog(keySchema);
-
-const keyModel = mongoose.model('key', keySchema);
+const modelName = 'key';
+enableAuditLog(keySchema, { modelName });
+const keyModel = mongoose.model(modelName, keySchema);
 
 module.exports = keyModel;

@@ -16,8 +16,9 @@ const federalStateSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
-enableAuditLog(federalStateSchema);
+const modelName = 'federalstate';
+enableAuditLog(federalStateSchema, { modelName });
 
-const federalStateModel = mongoose.model('federalstate', federalStateSchema);
+const federalStateModel = mongoose.model(modelName, federalStateSchema);
 
 module.exports = federalStateModel;

@@ -42,7 +42,6 @@ const rssFeedSchema = new Schema({
 		enum: ['pending', 'success', 'error'],
 	},
 });
-enableAuditLog(rssFeedSchema);
 
 const customYearSchema = new Schema({
 	yearId: { type: Schema.Types.ObjectId, ref: 'year', required: true },
@@ -121,15 +120,22 @@ const gradeLevelSchema = new Schema({
 	name: { type: String, required: true },
 });
 
-enableAuditLog(schoolSchema);
-enableAuditLog(schoolGroupSchema);
-enableAuditLog(yearSchema);
-enableAuditLog(gradeLevelSchema);
+const schoolModelName = 'school';
+enableAuditLog(schoolSchema, { modelName: schoolModelName });
+const schoolModel = mongoose.model(schoolModelName, schoolSchema);
 
-const schoolModel = mongoose.model('school', schoolSchema);
-const schoolGroupModel = mongoose.model('schoolGroup', schoolGroupSchema);
-const yearModel = mongoose.model('year', yearSchema);
-const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
+const schoolGroupModelName = 'schoolGroup';
+enableAuditLog(schoolGroupSchema, { modelName: schoolGroupModelName });
+const schoolGroupModel = mongoose.model(schoolGroupModelName, schoolGroupSchema);
+
+const yearModelName = 'year';
+enableAuditLog(yearSchema, { modelName: yearModelName });
+const yearModel = mongoose.model(yearModelName, yearSchema);
+
+const gradeLevelModelName = 'gradeLevel';
+enableAuditLog(gradeLevelSchema, { modelName: gradeLevelModelName });
+const gradeLevelModel = mongoose.model(gradeLevelModelName, gradeLevelSchema);
+
 
 module.exports = {
 	SCHOOL_FEATURES,
