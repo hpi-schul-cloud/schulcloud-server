@@ -28,6 +28,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [22.9.3]
 
+### Fixed 
+
+-   fixes an issue with LDAP account updates if more than one account exists for the user (migration from local login to LDAP)
+
+
+## [22.9.3]
+
 ### Fixed
 
 -   fixes regression in LDAP sync, that caused incomplete user updates
