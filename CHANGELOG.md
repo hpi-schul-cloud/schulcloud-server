@@ -25,8 +25,27 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 -   User delete now accepts bulk delete requests
+-   SC-3958: the "general" LDAP strategy now returns an empty array if classes are not configured properly
 
-## [22.9.3]
+### Removed
+
+-   SC-3958: the LDAP strategy interface no longer supports synchronizing team members to the never-used original N21-IDM
+-   SC-3958: the environment variables NBC_IMPORTURL, NBC_IMPORTUSER, and NBC_IMPORTPASSWORD are no longer used and have been removed
+
+## [22.9.6]
+
+### Added
+
+-   users without `SCHOOL_EDIT` permission, but with `SCHOOL_STUDENT_TEAM_MANAGE` permission can now toggle the school feature `disableStudentTeamCreation`.
+
+### Fixed
+
+-   admins in Thuringia can now prevent students from creating teams
+
+
+## [22.9.5]
+
+## [22.9.4]
 
 ### Fixed 
 
