@@ -9,7 +9,20 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## [22.9.3]
+## [22.9.6]
+
+### Added
+
+-   users without `SCHOOL_EDIT` permission, but with `SCHOOL_STUDENT_TEAM_MANAGE` permission can now toggle the school feature `disableStudentTeamCreation`.
+
+### Fixed
+
+-   admins in Thuringia can now prevent students from creating teams
+
+
+## [22.9.5]
+
+## [22.9.4]
 
 ### Fixed 
 
