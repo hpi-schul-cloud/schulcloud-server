@@ -37,7 +37,7 @@ const handleUserCreated = async (user) => {
 	channel.sendToQueue(QUEUE_INTERNAL, Buffer.from(message), { persistent: true });
 };
 
-const handleUserRemoved = async (user) => {
+const handleUserRemoved = async () => {
 	// TODO
 };
 
