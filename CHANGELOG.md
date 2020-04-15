@@ -9,6 +9,20 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [22.9.3]
+
+### Fixed
+
+-   fixes regression in LDAP sync, that caused incomplete user updates
+
+
+## [22.9.2]
+
+### Security
+
+-   increased security for user PUT operation
+
+
 ## [22.9.1]
 
 ### Fixed
