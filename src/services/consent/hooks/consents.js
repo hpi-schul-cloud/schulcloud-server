@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
+const { modifyDataForUserSchema } = require('../utils');
 
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../../config/globals');
 
@@ -226,6 +227,17 @@ const addConsentsStatus = (hook) => {
 	}
 };
 
+const writeConsentToUser = (context) => {
+	const { data, app } = context;
+	app.service('users').patch(data.userId, modifyDataForUserSchema(data));
+};
+
+const patchConsentToUser = async (context) => {
+	const { data, app, id } = context;
+	const consent = await app.service('consent').get(id);
+	app.service('users').patch(consent.userId, modifyDataForUserSchema(data));
+};
+
 exports.before = {
 	all: [],
 	find: [
@@ -244,8 +256,8 @@ exports.after = {
 	all: [],
 	find: [decorateConsents, addConsentsStatus],
 	get: [decorateConsent, addConsentStatus],
-	create: [],
-	update: [],
-	patch: [],
+	create: [writeConsentToUser],
+	update: [writeConsentToUser],
+	patch: [patchConsentToUser],
 	remove: [],
 };

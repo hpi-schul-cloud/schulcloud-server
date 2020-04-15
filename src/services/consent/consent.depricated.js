@@ -1,8 +1,63 @@
 const { BadRequest } = require('@feathersjs/errors');
+const { authenticate } = require('@feathersjs/authentication');
 const { modelServices: { prepareInternalParams } } = require('../../utils');
 const { userToConsent, modifyDataForUserSchema } = require('./utils');
+const globalHooks = require('../../hooks');
 
 const MODEL_SERVICE = 'usersModel';
+
+const restrictToUserOrRole = (hook) => {
+	const userService = hook.app.service('users');
+	return userService.find({
+		query: {
+			_id: hook.params.account.userId,
+			$populate: 'roles',
+		},
+	}).then((res) => {
+		let access = false;
+		res.data[0].roles.forEach((role) => {
+			if (role.name === 'superhero' || role.name === 'teacher' || role.name === 'administrator') {
+				access = true;
+			}
+		});
+		if (access) {
+			return hook;
+		}
+
+		hook.params.query.userId = hook.params.account.userId;
+		return hook;
+	});
+};
+
+/**
+ * check if userId is set and set it to an empty $in clause if not
+ * if userId.$in is an object convert it to an array
+ * @param {*} context
+ */
+const setUserIdToCorrectForm = (context) => {
+	if (!context.params.query) {
+		context.params.query = {};
+	}
+	if (!context.params.query.userId) {
+		context.params.query.userId = {};
+		context.params.query.userId.$in = [];
+	} else if (context.params.query.userId.$in && !Array.isArray(context.params.query.userId.$in)) {
+		context.params.query.userId.$in = Object.values(context.params.query.userId.$in);
+	}
+	return context;
+};
+
+
+const consentHook = {
+	before: {
+		all: [authenticate('jwt')],
+		find: [
+			authenticate('jwt'),
+			globalHooks.ifNotLocal(restrictToUserOrRole),
+			setUserIdToCorrectForm,
+		],
+	},
+};
 
 class ConsentService {
 	async find(params) {
@@ -78,4 +133,5 @@ class ConsentService {
 
 module.exports = {
 	ConsentService,
+	consentHook,
 };
