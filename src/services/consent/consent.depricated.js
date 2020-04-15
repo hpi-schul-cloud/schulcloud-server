@@ -38,10 +38,8 @@ const setUserIdToCorrectForm = (context) => {
 	if (!context.params.query) {
 		context.params.query = {};
 	}
-	if (!context.params.query.userId) {
-		context.params.query.userId = {};
-		context.params.query.userId.$in = [];
-	} else if (context.params.query.userId.$in && !Array.isArray(context.params.query.userId.$in)) {
+
+	if ((context.params.query.userId || {}).$in && !Array.isArray(context.params.query.userId.$in)) {
 		context.params.query.userId.$in = Object.values(context.params.query.userId.$in);
 	}
 	return context;
@@ -61,29 +59,32 @@ const consentHook = {
 
 class ConsentService {
 	async find(params) {
-		const { query: oldQuery } = params;
+		const { query: { userId, ...oldQuery } } = params;
+
+		params.query = {};
 
 		if (({}).hasOwnProperty.call(oldQuery, 'userId')) {
-			const user = await this.modelService.get(oldQuery.userId, prepareInternalParams(params));
-			return {
-				total: 1,
-				limit: 25,
-				skip: 0,
-				data: userToConsent(user),
+			if (!userId.$in) {
+				const user = await this.modelService.get(userId);
+				return {
+					total: 1,
+					limit: 25,
+					skip: 0,
+					data: userToConsent(user),
+				};
+			}
+			params.query._id = {
+				$in: userId.$in,
 			};
 		}
 
 		if (Object.keys(oldQuery).length !== 0) {
-			params.query = {
-				constent: {
-					...oldQuery,
-				},
+			params.query.constent = {
+				...oldQuery,
 			};
 		} else {
-			params.query = {
-				consent: {
-					$exists: true,
-				},
+			params.query.consent = {
+				$exists: true,
 			};
 		}
 
