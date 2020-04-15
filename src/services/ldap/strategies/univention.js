@@ -1,6 +1,9 @@
 const request = require('request-promise-native');
 
 const AbstractLDAPStrategy = require('./interface.js');
+const {
+	REQUEST_TIMEOUT, NBC_IMPORTURL, NBC_IMPORTUSER, NBC_IMPORTPASSWORD,
+} = require('../../../../config/globals');
 
 /**
  * Univention-specific LDAP functionality
@@ -197,7 +200,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      */
 	_updateUserGroups(user, groups, method = 'create') {
 		const options = this._getRequestOptions({
-			uri: this.config.importUrl || process.env.NBC_IMPORTURL,
+			uri: this.config.importUrl || NBC_IMPORTURL,
 			method: 'POST',
 			formData: this._generateGroupUpdateFormData(user, groups, method),
 		});
@@ -215,10 +218,9 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      * @private
      */
 	_getRequestOptions(overrides = {}) {
-		const username = this.config.importUser || process.env.NBC_IMPORTUSER;
-		const password = this.config.importUserPassword || process.env.NBC_IMPORTPASSWORD;
+		const username = this.config.importUser || NBC_IMPORTUSER;
+		const password = this.config.importUserPassword || NBC_IMPORTPASSWORD;
 		const auth = `Basic ${new Buffer(`${username}:${password}`).toString('base64')}`;
-		const REQUEST_TIMEOUT = 8000;
 
 		const options = {
 			headers: {
@@ -330,7 +332,7 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
      */
 	createExpert(user, account) {
 		const options = this._getRequestOptions({
-			uri: this.config.importUrl || process.env.NBC_IMPORTURL,
+			uri: this.config.importUrl || NBC_IMPORTURL,
 			method: 'POST',
 			formData: this._generateUpdateExpertFormData(user, account),
 		});

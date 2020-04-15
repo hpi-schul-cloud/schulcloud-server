@@ -73,63 +73,62 @@ describe('oauth2 service', function oauthTest() {
 
 	before((done) => {
 		this.timeout(10000);
-		Promise.all([
-			toolService.create(testTool1),
-			toolService.create(testTool2),
-		]).then(() => {
-			clientsService
-				.create(testClient2)
-				.then((client) => {
-					const oauth = oauth2.create({
-						client: {
-							id: client.client_id,
-							secret: client.client_secret,
-						},
-						auth: {
-							tokenHost: 'http://localhost:9000',
-							tokenPath: '/oauth2/token',
-							authorizePath: '/oauth2/auth',
-						},
-					});
-					const authorizationUri = oauth.authorizationCode.authorizeURL(
-						{
-							redirect_uri: client.redirect_uris[0],
-							scope: 'openid',
-							state: '12345678',
-						},
-					);
-					request({
-						uri: authorizationUri,
-						method: 'GET',
-						followRedirect: false,
-					}).catch((res) => {
-						const position =								res.error.indexOf('login_challenge=')
-								+ 'login_challenge'.length
-								+ 1;
-						loginRequest1 = res.error.substr(position, 32);
+		toolService.create(testTool1).then(() => {
+			toolService.create(testTool2).then(() => {
+				clientsService
+					.create(testClient2)
+					.then((client) => {
+						const oauth = oauth2.create({
+							client: {
+								id: client.client_id,
+								secret: client.client_secret,
+							},
+							auth: {
+								tokenHost: 'http://localhost:9000',
+								tokenPath: '/oauth2/token',
+								authorizePath: '/oauth2/auth',
+							},
+						});
+						const authorizationUri = oauth.authorizationCode.authorizeURL(
+							{
+								redirect_uri: client.redirect_uris[0],
+								scope: 'openid',
+								state: '12345678',
+							},
+						);
 						request({
 							uri: authorizationUri,
 							method: 'GET',
 							followRedirect: false,
-						}).catch((res2) => {
-							const position2 = res2.error.indexOf('login_challenge=')
+						}).catch((res) => {
+							const position = res.error.indexOf('login_challenge=')
+								+ 'login_challenge'.length
+								+ 1;
+							loginRequest1 = res.error.substr(position, 32);
+							request({
+								uri: authorizationUri,
+								method: 'GET',
+								followRedirect: false,
+							}).catch((res2) => {
+								const position2 = res2.error.indexOf('login_challenge=')
 									+ 'login_challenge'.length
 									+ 1;
-							loginRequest2 = res2.error.substr(
-								position2,
-								32,
-							);
-							done();
+								loginRequest2 = res2.error.substr(
+									position2,
+									32,
+								);
+								done();
+							});
 						});
+					})
+					.catch((err) => {
+						logger.warning(
+							'Can not execute oauth2 before all hook.',
+							err,
+						);
+						done();
 					});
-				})
-				.catch((err) => {
-					logger.warning(
-						'Can not execute oauth2 before all hook.',
-						err,
-					);
-					done();
-				});
+			});
 		});
 	});
 
@@ -179,21 +178,23 @@ describe('oauth2 service', function oauthTest() {
 		assert.strictEqual(result.challenge, loginRequest1);
 	}));
 
-	it('PATCH Login Request Accept', () => loginService
-		.patch(
-			loginRequest1,
-			{},
-			{
-				query: { accept: 1 },
-				account: { userId: testUser2._id },
-			},
-		)
-		.then((result) => {
-			// redirectTo = result.redirect_to;
-			assert.ok(
-				result.redirect_to.indexOf(testClient2.client_id) !== -1,
-			);
-		}));
+	it('PATCH Login Request Accept', () => {
+		loginService
+			.patch(
+				loginRequest1,
+				{},
+				{
+					query: { accept: 1 },
+					account: { userId: testUser2._id },
+				},
+			)
+			.then((result) => {
+				// redirectTo = result.redirect_to;
+				assert.ok(
+					result.redirect_to.indexOf(testClient2.client_id) !== -1,
+				);
+			});
+	});
 
 	it('PATCH Login Request Reject', () => loginService
 		.patch(
@@ -226,7 +227,7 @@ describe('oauth2 service', function oauthTest() {
 			query: { client: testClient.client_id },
 		})
 		.then(() => {
-			throw new Error('Was not supposed to succeed');
+			throw new Error('Should not supposed to succeed');
 		})
 		.catch((err) => {
 			assert.strictEqual(404, err.statusCode);

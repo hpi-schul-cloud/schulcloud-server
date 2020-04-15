@@ -12,6 +12,7 @@ const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
 const KeysModel = require('../services/keys/model');
+const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 // Add any common hooks you want to share across services in here.
 
 const { extractTokenFromBearerHeader } = require('../services/authentication/logic');
@@ -109,9 +110,9 @@ exports.hasAllPermissions = (permissions) => {
 exports.hasPermission = hasPermission;
 
 /*
-    excludeOptions = false => allways remove response
-    excludeOptions = undefined => remove response when not GET or FIND request
-    excludeOptions = ['get', ...] => remove when method not in array
+	excludeOptions = false => allways remove response
+	excludeOptions = undefined => remove response when not GET or FIND request
+	excludeOptions = ['get', ...] => remove when method not in array
  */
 exports.removeResponse = (excludeOptions) => (context) => {
 	// If it was an internal call then skip this context
@@ -314,6 +315,7 @@ const getUser = (context) => context.app.service('users').get(context.params.acc
 }).catch((err) => {
 	throw new NotFound('Can not fetch user.', err);
 });
+exports.getUser = getUser;
 
 const testIfRoleNameExist = (user, roleNames) => {
 	if (typeof roleNames === 'string') {
@@ -337,7 +339,7 @@ exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 	if (['get', 'find', 'remove'].includes(context.method)) {
 		if (params.query.schoolId === undefined) {
 			params.query.schoolId = user.schoolId;
-		} else if (params.query.schoolId !== currentSchoolId) {
+		} else if (!equalIds(params.query.schoolId, currentSchoolId)) {
 			throw new Forbidden('You do not have valid permissions to access this.');
 		}
 	} else if (context.data.schoolId === undefined) {
@@ -356,8 +358,8 @@ const userIsInThatCourse = (user, { userIds = [], teacherIds = [], substitutionI
 	const userId = user._id.toString();
 	if (isCourse) {
 		return userIds.some((u) => equalIds(u, userId))
-            || teacherIds.some((u) => equalIds(u, userId))
-            || substitutionIds.some((u) => equalIds(u, userId));
+			|| teacherIds.some((u) => equalIds(u, userId))
+			|| substitutionIds.some((u) => equalIds(u, userId));
 	}
 
 	return userIds.some((u) => equalIds(u, userId)) || testIfRoleNameExist(user, 'teacher');
@@ -389,11 +391,16 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 	return context;
 });
 
+const isProductionMode = NODE_ENV === ENVIRONMENTS.PRODUCTION;
 exports.mapPayload = (context) => {
-	logger.log('warning',
-		'DEPRECATED: mapPayload hook should be used to ensure backwards compatibility only, and be removed if possible.'
-		+ ` path: ${context.path} method: ${context.method}`);
+	if (!isProductionMode) {
+		logger.info(
+			'DEPRECATED: mapPayload hook should be used to ensure backwards compatibility only, '
+			+ `and be removed if possible. path: ${context.path} method: ${context.method}`,
+		);
+	}
 	if (context.params.payload) {
+		// eslint-disable-next-line prefer-object-spread
 		context.params.authentication = Object.assign(
 			{},
 			context.params.authentication,
@@ -402,17 +409,21 @@ exports.mapPayload = (context) => {
 	}
 	Object.defineProperty(context.params, 'payload', {
 		get() {
-			logger.log(
-				'warning', 'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
-				+ ` path: ${context.path} method: ${context.method}`,
-			);
+			if (!isProductionMode) {
+				logger.warning(
+					'reading params.payload is DEPRECATED, please use params.authentication.payload instead!'
+					+ ` path: ${context.path} method: ${context.method}`,
+				);
+			}
 			return (context.params.authentication || {}).payload;
 		},
 		set(v) {
-			logger.log(
-				'warning', 'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
-				+ `path: ${context.path} method: ${context.method}`,
-			);
+			if (!isProductionMode) {
+				logger.warning(
+					'writing params.payload is DEPRECATED, please use params.authentication.payload instead!'
+					+ `path: ${context.path} method: ${context.method}`,
+				);
+			}
 			if (!context.params.authentication) context.params.authentication = {};
 			context.params.authentication.payload = v;
 		},
@@ -443,7 +454,7 @@ exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) =>
 					return userIsInThatCourse(user, lesson.courseGroupId, false);
 				}
 				return userIsInThatCourse(user, lesson.courseId, true)
-                        || (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
 			});
 			if (tempLesson.length === 0) {
 				throw new Forbidden("You don't have access to that lesson.");
@@ -461,7 +472,7 @@ exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) =>
 					return userIsInThatCourse(user, lesson.courseGroupId, false);
 				}
 				return userIsInThatCourse(user, lesson.courseId, true)
-                        || (context.params.query.shareToken || {}) === (lesson.shareToken || {});
+					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
 			});
 
 			if (context.result.data.length === 0) {
@@ -490,7 +501,7 @@ exports.restrictToUsersOwnClasses = (context) => getUser(context).then((user) =>
 		return classService.get(context.id).then((result) => {
 			const userId = context.params.account.userId.toString();
 			if (!(_.some(result.userIds, (u) => equalIds(u, userId)))
-					&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
+				&& !(_.some(result.teacherIds, (u) => equalIds(u, userId)))) {
 				throw new Forbidden('You are not in that class.');
 			}
 		});
@@ -537,12 +548,31 @@ exports.checkSchoolOwnership = (context) => {
 		});
 };
 
+function validatedAttachments(attachments) {
+	let cTotalBufferSize = 0;
+	attachments.forEach((element) => {
+		if (!element.mimetype.includes('image/')
+			&& !element.mimetype.includes('video/')
+			&& !element.mimetype.includes('application/msword')
+			&& !element.mimetype.includes('application/pdf')) {
+			throw new Error('Email Attachment is not a valid file!');
+		}
+		cTotalBufferSize += element.size;
+		if (cTotalBufferSize >= MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE) {
+			throw new BadRequest('Email Attachments exceed the max. total file limit.');
+		}
+	});
+}
+
 // TODO: later: Template building
 // z.B.: maildata.template =
 //   { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
 // if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
 // mail.html = generatedHtml || "";
 exports.sendEmail = (context, maildata) => {
+	const files = maildata.attachments || [];
+	if (files) { validatedAttachments(files); }
+
 	const userService = context.app.service('/users');
 	const mailService = context.app.service('/mails');
 
@@ -550,6 +580,16 @@ exports.sendEmail = (context, maildata) => {
 	const emails = (typeof maildata.emails === 'string' ? [maildata.emails] : maildata.emails) || [];
 	const userIds = (typeof maildata.userIds === 'string' ? [maildata.userIds] : maildata.userIds) || [];
 	const receipients = [];
+
+	// create email attachments
+	const attachments = [];
+	files.forEach((element) => {
+		try {
+			attachments.push({ filename: element.name, content: Buffer.from(element.data) });
+		} catch (error) {
+			throw new Error('Unexpected Error while creating Attachment.');
+		}
+	});
 
 	// email validation conform with <input type="email"> (see https://emailregex.com)
 	const re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -613,6 +653,7 @@ exports.sendEmail = (context, maildata) => {
 									|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
 								html: '', // still todo, html template mails
 							},
+							attachments,
 						}).catch((err) => {
 							logger.warning(err);
 							throw new BadRequest(
@@ -637,6 +678,7 @@ exports.sendEmail = (context, maildata) => {
 				mailService.create({
 					email,
 					replyEmail,
+					from: maildata.from,
 					subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 					headers: maildata.headers || {},
 					content: {
@@ -644,8 +686,8 @@ exports.sendEmail = (context, maildata) => {
 							|| 'No alternative mailtext provided. Expected: HTML Template Mail.',
 						html: '', // still todo, html template mails
 					},
+					attachments,
 				}).catch((err) => {
-					logger.warning(err);
 					throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
 				});
 			});
@@ -654,20 +696,6 @@ exports.sendEmail = (context, maildata) => {
 	}
 
 	return context;
-};
-
-exports.getAge = (dateString) => {
-	if (dateString === undefined) {
-		return undefined;
-	}
-	const today = new Date();
-	const birthDate = new Date(dateString);
-	let age = today.getFullYear() - birthDate.getFullYear();
-	const m = today.getMonth() - birthDate.getMonth();
-	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-		age -= 1;
-	}
-	return age;
 };
 
 exports.arrayIncludes = (array, includesList, excludesList) => {
@@ -707,5 +735,34 @@ exports.decorateWithCurrentUserId = (context) => {
 	} catch (err) {
 		logger.error(err);
 	}
+	return context;
+};
+
+/* Decorates context.params.account with the user's schoolId
+* @param {context} context Hook context
+* @requires authenticate('jwt')
+* @throws {BadRequest} if not authenticated or userId is missing.
+* @throws {NotFound} if user cannot be found
+*/
+exports.lookupSchool = async (context) => {
+	if (context.params && context.params.account && context.params.account.userId) {
+		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
+		context.params.account.schoolId = schoolId;
+		return context;
+	}
+	throw new BadRequest('Authentication is required.');
+};
+
+exports.populateCurrentSchool = async (context) => {
+	if (context.params && context.params.account && context.params.account.userId) {
+		const { schoolId } = await context.app.service('users').get(context.params.account.userId);
+		context.params.school = await context.app.service('schools').get(schoolId);
+		return context;
+	}
+	throw new BadRequest('Authentication is required.');
+};
+
+exports.addCollation = (context) => {
+	context.params.collation = { locale: 'de', caseLevel: true };
 	return context;
 };

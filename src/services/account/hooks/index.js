@@ -217,10 +217,15 @@ const securePatching = (hook) => Promise.all([
 	globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
+	globalHooks.hasRole(hook, hook.params.account.userId, 'demoStudent'),
+	globalHooks.hasRole(hook, hook.params.account.userId, 'demoTeacher'),
 	globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
-]).then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
+]).then(([isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent]) => {
 	const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
 	if (hook.params.account._id !== hook.id) {
+		if (isDemoStudent || isDemoTeacher) {
+			return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+		}
 		if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent) || editsOwnAccount)) {
 			return Promise.reject(new BadRequest('You have not the permissions to change other users'));
 		}
@@ -269,6 +274,7 @@ exports.before = {
 	update: [
 		authenticate('jwt'),
 		globalHooks.hasPermission('ACCOUNT_EDIT'),
+		globalHooks.restrictToCurrentSchool,
 		sanitizeUsername,
 	],
 	patch: [

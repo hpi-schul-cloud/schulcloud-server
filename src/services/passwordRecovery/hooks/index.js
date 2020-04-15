@@ -2,11 +2,19 @@ const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { NotFound } = require('@feathersjs/errors');
 const logger = require('../../../logger/index');
+const { HOST, SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
 
-const hashId = (hook) => {
-	if (!hook.data.password) {
+/**
+ *	if only hook.username is given, this tries to resolve the users id
+ * @param {*} hook
+ */
+const resolveUserIdByUsername = (hook) => {
+	if (hook.data
+		&& !hook.data.password
+		&& hook.data.username
+	) {
 		const accountService = hook.app.service('/accounts');
 
 		const { username } = hook.data;
@@ -14,11 +22,15 @@ const hashId = (hook) => {
 			query: {
 				username,
 			},
-		}).then((account) => {
-			account = account[0];
-			hook.data.account = account._id;
+		}).then((accounts) => {
+			if (Array.isArray(accounts) && accounts.length !== 0 && accounts[0]._id) {
+				hook.data.account = accounts[0]._id;
+				return hook;
+			}
+			throw new NotFound('username not found');
 		});
 	}
+	return hook;
 };
 
 const sendInfo = (context) => {
@@ -28,25 +40,39 @@ const sendInfo = (context) => {
 				$populate: ['userId'],
 			},
 		}).then((account) => {
-			const recoveryLink = `${process.env.HOST}/pwrecovery/${context.result._id}`;
+			const recoveryLink = `${HOST}/pwrecovery/${context.result._id}`;
 			const mailContent = `Sehr geehrte/r ${account.userId.firstName} ${account.userId.lastName}, \n
 Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:
 ${recoveryLink}\n
 Mit Freundlichen Grüßen
-Ihr ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'} Team`;
+Ihr ${SC_SHORT_TITLE} Team`;
 
 			globalHooks.sendEmail(context, {
-				subject: `Passwort zurücksetzen für die ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'}`,
+				subject: `Passwort zurücksetzen für die ${SC_SHORT_TITLE}`,
 				emails: [account.userId.email],
 				content: {
 					text: mailContent,
 				},
 			});
+			logger.info(`send password recovery information to userId ${account.userId._id}`);
 			return context;
 		}).catch((err) => {
 			logger.warning(err);
 			throw new NotFound('User Account Not Found');
 		});
+	}
+	return context;
+};
+
+/**
+ * this hides errors from api for invalid input
+ * @param {*} context
+ */
+const return200 = (context) => {
+	if (context.error) {
+		logger.warning('return 200');
+		context.error.code = 200;
+		context.result = { success: 'success' };
 	}
 	return context;
 };
@@ -59,7 +85,7 @@ exports.before = {
 	],
 	get: [],
 	create: [
-		hashId,
+		resolveUserIdByUsername,
 		local.hooks.hashPassword('password'),
 	],
 	update: [
@@ -86,4 +112,8 @@ exports.after = {
 	update: [],
 	patch: [],
 	remove: [],
+};
+
+exports.error = {
+	create: [return200],
 };

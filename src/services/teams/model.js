@@ -40,7 +40,7 @@ const teamsSchema = getUserGroupSchema({
 	description: { type: String, default: '' },
 	classIds: [{ type: Schema.Types.ObjectId, ref: 'class' }],
 	color: { type: String, default: '#ACACAC' },
-	features: [{ type: String, enum: ['isTeam', 'rocketChat'] }],
+	features: [{ type: String, enum: ['isTeam', 'rocketChat', 'videoconference', 'messenger'] }],
 	filePermission: [permissionSchema],
 });
 

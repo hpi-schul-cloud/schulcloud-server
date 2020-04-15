@@ -24,8 +24,7 @@ describe('Account Service', () => {
 
 	after(async () => {
 		await testObjects.cleanup();
-		server.close();
-		return Promise.resolve();
+		await server.close();
 	});
 
 	it('registered the accounts service', () => {
@@ -43,6 +42,7 @@ describe('Account Service', () => {
 
 			const registrationPin = await registrationPinsService.create({
 				email: userObject.email,
+				silent: true,
 			});
 			// verify registration pin:
 			await registrationPinsService.find({
@@ -179,13 +179,13 @@ describe('Account Service', () => {
 			const account = await accountService.create(accountDetails);
 			try {
 				const params = await generateRequestParams(accountDetails);
-				await accountService.patch(account.id, { password: '1234' }, params);
+				await accountService.patch(account._id, { password: '1234' }, params);
 				throw new Error('This should not happen.');
 			} catch (exception) {
 				assert.equal(exception.message, 'Dein Passwort stimmt mit dem Pattern nicht überein.');
 			} finally {
-				await accountService.remove(account.id);
-				await userService.remove(user.id);
+				await accountService.remove(account._id);
+				await userService.remove(user._id);
 			}
 		});
 

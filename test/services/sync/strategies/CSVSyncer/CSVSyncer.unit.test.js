@@ -1,15 +1,17 @@
 const { expect } = require('chai');
 const assert = require('assert');
 
-const app = require('../../../../../src/app');
-const Syncer = require('../../../../../src/services/sync/strategies/Syncer');
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
 describe('CSVSyncer', () => {
 	it('works', () => new CSVSyncer());
 
 	it('implements the Syncer interface', () => {
-		expect(Object.getPrototypeOf(CSVSyncer)).to.equal(Syncer);
+		expect(CSVSyncer.params).to.not.equal(undefined);
+		expect(CSVSyncer.respondsTo).to.not.equal(undefined);
+		expect(CSVSyncer.aggregateStats).to.not.equal(undefined);
+		expect(new CSVSyncer().steps).to.not.equal(undefined);
+		expect(new CSVSyncer().sync).to.not.equal(undefined);
 	});
 
 	describe('parseCsvData', () => {
@@ -75,38 +77,36 @@ describe('CSVSyncer', () => {
 		});
 	});
 
-	describe('getClassObject method', () => {
-		it('should default to the `static` scheme', async () => {
-			const result = await new CSVSyncer().getClassObject('foobar');
-			expect(result.gradeLevel).to.be.undefined;
-			expect(result.name).to.equal('foobar');
+	describe('isValidBirthday', () => {
+		it('should not accept falsy valus as dates for user birthday', () => {
+			[false, null, undefined, '', 0]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(false));
 		});
-
-		it('should split classes and grade levels if applicable', async () => {
-			const result = await new CSVSyncer(app).getClassObject('1a');
-			expect(result.gradeLevel).to.equal('1');
-			expect(result.name).to.equal('a');
+		it('should not accept strange values as dates for user birthday', () => {
+			[[], {}, true]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(false));
 		});
-
-		it('should only use grade levels for 1. to 13. grade', async () => {
-			for (let i = -5; i <= 20; i += 1) {
-				const result = await new CSVSyncer(app).getClassObject(`${i}b`);
-				if (i >= 1 && i <= 13) {
-					expect(result.gradeLevel).to.equal(String(i));
-					expect(result.name).to.equal('b');
-				} else {
-					expect(result.gradeLevel).to.be.undefined;
-					expect(result.name).to.equal(`${i}b`);
-				}
-			}
+		it('should not accept invalid date format as user birthday', () => {
+			[
+				'32.12.2000', '01.13.2000', // invalid day/month
+				'01.01-2000', '01/01.2000', '01-01/2000', // wrong format
+				'42', 'void', // not a date
+				'29.02.2001', // does not exist outside of leap years
+				'01.01.1000', // too long ago
+			]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(false));
 		});
-
-		it('should trim leading zeros for grade levels', async () => {
-			await Promise.all(['02a', '05b', '09c', '012d', '007e', '0000010f'].map(async (input) => {
-				const result = await new CSVSyncer(app).getClassObject(input);
-				expect(result.gradeLevel).to.equal(input.match(/^0*(\d+)./)[1]);
-				expect(result.name).to.equal(input.replace(/\d*/, ''));
-			}));
+		it('should return true when given a correct value', () => {
+			[
+				'01.01.2000', '01-01-2000', '01/01/2000', // different formats
+				'29.02.2004', // exists in a leap year
+				'20.10.1920', // (sufficiently) long ago
+			]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(true));
 		});
 	});
 });

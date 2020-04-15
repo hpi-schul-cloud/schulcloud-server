@@ -39,12 +39,10 @@ backup/*
 
 # Visual Studio Code data
 .vscode
+.vs/**
 
 # local dev secrets
 config/secrets.json
-
-#clipboard uploads
-uploads/*
 
 # version info
 version

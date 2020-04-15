@@ -1,13 +1,14 @@
 {
 	"host": "localhost",
 	"port": 3030,
-	"mongodb": "mongodb://localhost:27017/schulcloud",
 	"public": "../public/",
 	"services": {
 		"calendar": "http://localhost:3000",
-		"content": "https://schul-cloud.org:4040",
+		"content": "https://content.schul-cloud.org",
 		"notification": "http://localhost:3031",
 		"hydra": "http://localhost:9001",
 		"web": "http://localhost:3100"
-	}
+	},
+	"FORCE_SEND_EMAIL": false,
+	"NOTIFICATION_PLATFORM": false
 }

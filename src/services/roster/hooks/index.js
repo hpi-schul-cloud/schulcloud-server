@@ -36,19 +36,17 @@ module.exports = {
 		return toolService.find({
 			query: {
 				oAuthClientId: context.params.tokenInfo.client_id,
+				isLocal: true,
 			},
-		}).then((originTools) => {
-			context.params.useIframePseudonym = originTools.data[0].useIframePseudonym;
-			return toolService.find({
-				query: {
-					originTool: originTools.data[0]._id,
-				},
-			}).then((tools) => {
-				context.params.toolIds = [originTools.data[0]._id]; // don't forget actual requested tool id
-				context.params.toolIds = context.params.toolIds.concat(tools.data.map((tool) => tool._id));
-				return context;
-			});
-		});
+		}).then((originTools) => toolService.find({
+			query: {
+				originTool: originTools.data[0]._id,
+			},
+		}).then((tools) => {
+			context.params.toolIds = [originTools.data[0]._id]; // don't forget actual requested tool id
+			context.params.toolIds = context.params.toolIds.concat(tools.data.map((tool) => tool._id));
+			return context;
+		}));
 	},
 
 	groupContainsUser: (context) => {

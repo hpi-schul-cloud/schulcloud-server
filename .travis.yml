@@ -1,6 +1,6 @@
 dist: bionic
 language: node_js
-node_js: '10.16'
+node_js: 'lts/*'
 
 services:
   - docker
@@ -11,11 +11,16 @@ branches:
     - master
     - /^(?i:release|hotfix).*$/
 
+stages:
+  - name: test
+    if: NOT (commit_message =~ /(skip-test-stage)/ AND branch = master)
+  - name: deploy
+    if: NOT (commit_message =~ /(skip-deploy-stage)/)
 jobs:
   include:
-
     - stage: test
       script:
+        # - npm audit --audit-level=high
         - npm test
         - npm run coverage-codecov
       name: test:mocha
@@ -31,10 +36,7 @@ jobs:
         - npm ci
         - npm i -g wait-on
         - wait-on tcp:27017 -t 60000
-    - script:
-        - curl https://gist.githubusercontent.com/schul-cloud-bot/a849c38804174f99ca7818782bf03c00/raw/index.sh > integration-test.sh
-        - chmod 700 integration-test.sh
-        - bash integration-test.sh
+    - script: curl "https://raw.githubusercontent.com/schul-cloud/integration-tests/master/scripts/ci/fetch.travis.sh" | bash
       name: "test:integration"
       env:
         - IT_CLIENT_HOST=nuxtclient

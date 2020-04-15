@@ -32,7 +32,7 @@ module.exports = function roster() {
 					return {
 						data: {
 							user_id: params.route.user,
-							username: 'Anonymous',
+							username: oauth2.getSubject(params.pseudonym, app.settings.services.web),
 							type: user.roles[0].name,
 						},
 
@@ -133,14 +133,12 @@ module.exports = function roster() {
 				]).then(([users, teachers]) => ({
 					data: {
 						students: users.data.map((user) => ({
-							user_id: (params.useIframePseudonym
-								? oauth2.getSubject(user.pseudonym, app.settings.services.web)
-								: user.pseudonym),
+							user_id: user.pseudonym,
+							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
 						})),
 						teachers: teachers.data.map((user) => ({
-							user_id: (params.useIframePseudonym
-								? oauth2.getSubject(user.pseudonym, app.settings.services.web)
-								: user.pseudonym),
+							user_id: user.pseudonym,
+							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
 						})),
 					},
 				}));

@@ -24,6 +24,7 @@ describe('PermissionService', async () => {
 			'HOMEWORK_CREATE',
 			'HOMEWORK_EDIT',
 			'HOMEWORK_VIEW',
+			'JOIN_MEETING',
 			'LESSONS_VIEW',
 			'NEWS_VIEW',
 			'ROLE_VIEW',
@@ -32,7 +33,7 @@ describe('PermissionService', async () => {
 			'SUBMISSIONS_VIEW',
 			'TOOL_VIEW',
 			'USERGROUP_VIEW',
-		]),
+		].sort()),
 	];
 
 	const teacherPermissions = [
@@ -42,6 +43,7 @@ describe('PermissionService', async () => {
 			'COURSE_DELETE',
 			'HOMEWORK_CREATE',
 			'HOMEWORK_EDIT',
+			'JOIN_MEETING',
 			'LESSONS_VIEW',
 			'LESSONS_CREATE',
 			'NEWS_CREATE',
@@ -55,14 +57,16 @@ describe('PermissionService', async () => {
 			'USERGROUP_CREATE',
 			'USERGROUP_EDIT',
 			'SCOPE_PERMISSIONS_VIEW',
+			'START_MEETING',
 			...studentPermissions,
-		]),
+		].sort()),
 	];
 
 	const substitutionTeacherPermissions = [
 		...new Set([
 			'HOMEWORK_CREATE',
 			'HOMEWORK_EDIT',
+			'JOIN_MEETING',
 			'LESSONS_CREATE',
 			'NEWS_CREATE',
 			'NEWS_EDIT',
@@ -75,8 +79,9 @@ describe('PermissionService', async () => {
 			'USERGROUP_CREATE',
 			'USERGROUP_EDIT',
 			'SCOPE_PERMISSIONS_VIEW',
+			'START_MEETING',
 			...studentPermissions,
-		]),
+		].sort()),
 	];
 
 	let course;
@@ -89,7 +94,7 @@ describe('PermissionService', async () => {
 		const studentOne = await testObjects.createTestUser({
 			firstName: 'Hans',
 			lastName: 'Wurst',
-			email: 'H.Wurst@spass.toll',
+			email: `${Date.now()}H.Wurst@spass.toll`,
 			roles: ['student'],
 			schoolId,
 		});
@@ -98,7 +103,7 @@ describe('PermissionService', async () => {
 		const studentTwo = await testObjects.createTestUser({
 			firstName: 'Karla',
 			lastName: 'Hansen',
-			email: 'karla-hansen@spass.toll',
+			email: `${Date.now()}karla-hansen@spass.toll`,
 			roles: ['student'],
 			schoolId,
 		});
@@ -107,7 +112,7 @@ describe('PermissionService', async () => {
 		const teacher = await testObjects.createTestUser({
 			firstName: 'Dorote',
 			lastName: 'Musterfrau',
-			email: 'Dorote@spass.toll',
+			email: `${Date.now()}Dorote@spass.toll`,
 			roles: ['teacher'],
 			schoolId,
 		});
@@ -116,7 +121,7 @@ describe('PermissionService', async () => {
 		const substitution = await testObjects.createTestUser({
 			firstName: 'Karl',
 			lastName: 'Musterfrau',
-			email: 'k.Musterfrau@spass.toll',
+			email: `${Date.now()}k.Musterfrau@spass.toll`,
 			roles: ['teacher'],
 			schoolId,
 		});
@@ -151,8 +156,8 @@ describe('PermissionService', async () => {
 			},
 
 		});
-
-		expect(permissions[userIds[1]]).to.have.members(studentPermissions);
+		const currentUserPermissions = permissions[userIds[1]].sort();
+		expect(currentUserPermissions).to.have.members(studentPermissions);
 	});
 
 	it('request as teacher', async () => {
@@ -166,8 +171,8 @@ describe('PermissionService', async () => {
 			},
 
 		});
-
-		expect(permissions[teacherIds[0]]).to.have.members(teacherPermissions);
+		const currentTeacherPermissions = permissions[teacherIds[0]].sort();
+		expect(currentTeacherPermissions).to.have.members(teacherPermissions);
 	});
 
 	it('request as substitution teacher', async () => {
@@ -181,8 +186,8 @@ describe('PermissionService', async () => {
 			},
 
 		});
-
-		expect(permissions[substitutionIds[0]]).to.have.members(substitutionTeacherPermissions);
+		const currentSubstitutionTeacherPermissions = permissions[substitutionIds[0]].sort();
+		expect(currentSubstitutionTeacherPermissions).to.have.members(substitutionTeacherPermissions);
 	});
 
 	it('request as not part of the course', async () => {

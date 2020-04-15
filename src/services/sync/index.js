@@ -1,17 +1,16 @@
 const errors = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-// const logger = require('../../logger');
 
 const Syncer = require('./strategies/Syncer');
 const syncers = require('./strategies');
 const getSyncLogger = require('./logger');
 
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 
 	class SyncService {
 		find(params) {
-			return this.respond(null, params);
+			return this.respond(undefined, params);
 		}
 
 		create(data, params) {

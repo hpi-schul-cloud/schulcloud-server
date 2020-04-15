@@ -1,6 +1,10 @@
-const parse = require('csv-parse/lib/sync');
+const { parse } = require('papaparse');
 const stripBOM = require('strip-bom');
+const { mix } = require('mixwith');
+
 const Syncer = require('./Syncer');
+const ClassImporter = require('./mixins/ClassImporter');
+const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
@@ -10,13 +14,14 @@ const ATTRIBUTES = [
 	{ name: 'nameSuffix', aliases: ['namesuffix', 'suffix'] },
 	{ name: 'email', required: true, aliases: ['email', 'mail', 'e-mail'] },
 	{ name: 'class', aliases: ['class', 'classes'] },
+	{ name: 'birthday', aliases: ['birthday', 'birth date', 'birthdate', 'birth', 'geburtstag', 'geburtsdatum'] },
 ];
 
 /**
  * Returns a function that transforms objects of the source schema to the target schema
  * @param {Object} sourceSchema Object representing the source schema
  * @param {Array<Object>} targetSchema Target schema as array of attribute properties
- * `[{name: String, Aliases: Array<String>}, ...]`
+ * `[{name: String, aliases: Array<String>}, ...]`
  * @example
  * const mf = buildMappingFunction({foo: 'bar'}, {name: 'test', aliases: ['foo', 'baz']});
  * mf({foo: 'bar'}) === {test: 'bar'} // true
@@ -42,7 +47,7 @@ const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
  * @class CSVSyncer
  * @implements {Syncer}
  */
-class CSVSyncer extends Syncer {
+class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	constructor(app, stats = {}, logger, options = {}, requestParams = {}) {
 		super(app, stats, logger);
 
@@ -58,12 +63,6 @@ class CSVSyncer extends Syncer {
 			},
 			invitations: {
 				successful: 0,
-				failed: 0,
-			},
-			classes: {
-				successful: 0,
-				created: 0,
-				updated: 0,
 				failed: 0,
 			},
 		});
@@ -105,7 +104,7 @@ class CSVSyncer extends Syncer {
 		await super.steps();
 		this.options.schoolYear = await this.determineSchoolYear();
 		const records = this.parseCsvData();
-		const sanitizedRecords = CSVSyncer.sanitizeRecords(records);
+		const sanitizedRecords = this.sanitizeRecords(records);
 		const importClasses = CSVSyncer.needsToImportClasses(sanitizedRecords);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
@@ -116,7 +115,6 @@ class CSVSyncer extends Syncer {
 				await this.createClasses(enrichedRecord, user);
 			}
 		});
-
 		while (actions.length > 0) {
 			const action = actions.shift();
 			await action.apply(this);
@@ -145,26 +143,32 @@ class CSVSyncer extends Syncer {
 		let records = [];
 		try {
 			const strippedData = stripBOM(this.options.csvData);
-			records = parse(strippedData, {
-				columns: true,
-				delimiter: ',',
-				trim: true,
+			const parseResult = parse(strippedData, {
+				delimiter: '',	// auto-detect
+				newline: '',	// auto-detect
+				header: true,
+				skipEmptyLines: true,
+				fastMode: true,
 			});
-		} catch (error) {
-			if (error.message && error.message.match(/Invalid Record Length/)) {
-				const line = error.message.match(/on line (\d+)/)[1];
-				this.stats.errors.push({
-					type: 'file',
-					entity: 'Eingabedatei fehlerhaft',
-					message: `Syntaxfehler in Zeile ${line}`,
-				});
-			} else {
-				this.stats.errors.push({
-					type: 'file',
-					entity: 'Eingabedatei fehlerhaft',
-					message: 'Datei ist nicht im korrekten Format',
+			const { errors } = parseResult;
+			if (Array.isArray(errors) && errors.length > 0) {
+				errors.forEach((error) => {
+					this.logWarning('Skipping line, because it contains an error', { error });
+					this.stats.errors.push({
+						type: 'file',
+						entity: 'Eingabedatei fehlerhaft',
+						message: `Syntaxfehler in Zeile ${error.row}`,
+					});
+					this.stats.users.failed += 1;
 				});
 			}
+			records = parseResult.data;
+		} catch (error) {
+			this.stats.errors.push({
+				type: 'file',
+				entity: 'Eingabedatei fehlerhaft',
+				message: 'Datei ist nicht im korrekten Format',
+			});
 			throw error;
 		}
 
@@ -196,13 +200,32 @@ class CSVSyncer extends Syncer {
 		return records[0].class !== undefined;
 	}
 
-	static sanitizeRecords(records) {
+	sanitizeRecords(records) {
+		const requiredAttributes = ATTRIBUTES.filter((a) => a.required).map((a) => a.name);
 		const mappingFunction = buildMappingFunction(records[0]);
-		return records.map((record) => {
+		const processed = [];
+		records.forEach((record) => {
 			const mappedRecord = mappingFunction(record);
-			mappedRecord.email = mappedRecord.email.trim().toLowerCase();
-			return mappedRecord;
+			if (requiredAttributes.every((attr) => !!mappedRecord[attr])) {
+				mappedRecord.email = mappedRecord.email.trim().toLowerCase();
+				if (mappedRecord.birthday) {
+					if (CSVSyncer.isValidBirthday(mappedRecord.birthday)) {
+						mappedRecord.birthday = CSVSyncer.convertToDate(mappedRecord.birthday);
+					} else {
+						this.stats.errors.push({
+							type: 'user',
+							entity: `${record.firstName},${record.lastName},${record.email},${mappedRecord.birthday}`,
+							message: 'Geburtsdatum fehlerhaft. Zulässige Formate: dd.mm.yyyy | dd/mm/yyyy | dd-mm-yyyy',
+						});
+						delete mappedRecord.birthday;
+					}
+				}
+				processed.push(mappedRecord);
+			}
+			// no else condition or errors necessary, because the error was reported
+			// and logged during parsing
 		});
+		return processed;
 	}
 
 	clusterByEmail(records) {
@@ -331,16 +354,16 @@ class CSVSyncer extends Syncer {
 			if (user && user.email && user.schoolId && user.shortLink) {
 				await this.app.service('mails').create({
 					email: user.email,
-					subject: `Einladung für die Nutzung der ${process.env.SC_TITLE}!`,
+					subject: `Einladung für die Nutzung der ${SC_TITLE}!`,
 					headers: {},
 					content: {
-						text: `Einladung in die ${process.env.SC_TITLE}\n`
+						text: `Einladung in die ${SC_TITLE}\n`
 							+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
-							+ `Du wurdest eingeladen, der ${process.env.SC_TITLE} beizutreten, `
+							+ `Du wurdest eingeladen, der ${SC_TITLE} beizutreten, `
 							+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
 							+ `${user.shortLink}\n\n`
 							+ 'Viel Spaß und einen guten Start wünscht dir dein '
-							+ `${process.env.SC_SHORT_TITLE}-Team`,
+							+ `${SC_SHORT_TITLE}-Team`,
 					},
 				});
 				this.stats.invitations.successful += 1;
@@ -361,7 +384,10 @@ class CSVSyncer extends Syncer {
 	async createClasses(record, user) {
 		if (user === undefined) return;
 		const classes = CSVSyncer.splitClasses(record.class);
-		const classMapping = await this.buildClassMapping(classes);
+		const classMapping = await this.buildClassMapping(classes, {
+			schoolId: this.options.schoolId,
+			year: this.options.schoolYear._id,
+		});
 
 		const actions = classes.map(async (klass) => {
 			const classObject = classMapping[klass];
@@ -382,78 +408,42 @@ class CSVSyncer extends Syncer {
 		return classes.split('+').filter((name) => name !== '');
 	}
 
-	async getClassObject(klass) {
-		const formats = [
-			{
-				regex: /^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/,
-				values: async (string) => {
-					const gradeLevel = string.match(/^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/)[1];
-
-					return {
-						name: string.match(/^(?:0)*(?:(?:1[0-3])|[1-9])(\D.*)$/)[1],
-						gradeLevel,
-					};
-				},
-			},
-			{
-				regex: /(.*)/,
-				values: (string) => ({
-					name: string,
-				}),
-			},
-		];
-		const classNameFormat = formats.find((format) => format.regex.test(klass));
-		if (classNameFormat !== undefined) {
-			const result = {
-				...await classNameFormat.values(klass),
-				schoolId: this.options.schoolId,
-			};
-			if (this.options.schoolYear) {
-				result.year = this.options.schoolYear._id;
-			}
-			return result;
-		}
-		throw new Error('Class name does not match any format:', klass);
+	/**
+	 * Validates a given string is in one of these formats: dd.mm.yyyy, dd/mm/yyyy, dd-mm-yyyy
+	 * Also accounts for length of months (and leap days) for years with four digits.
+	 * @static
+	 * @param {String} dateString
+	 * @returns {boolean} true if valid date in one of the defined formats, false otherwise
+	 */
+	static isValidBirthday(dateString) {
+		// Adapted from https://stackoverflow.com/questions/15491894/regex-to-validate-date-format-dd-mm-yyyy
+		const dateValidationRegex = new RegExp([
+			'^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|',
+			'(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|',
+			'^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|',
+			'(?:(?:16|[2468][048]|[3579][26])00))))$|',
+			'^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$',
+		].join(''));
+		return dateValidationRegex.test(dateString);
 	}
 
-	async buildClassMapping(classes) {
-		const classMapping = {};
-		const uniqueClasses = [...new Set(classes)];
-		await Promise.all(uniqueClasses.map(async (klass) => {
-			try {
-				if (classMapping[klass] === undefined) {
-					const classObject = await this.getClassObject(klass);
-					classMapping[klass] = await this.findOrCreateClass(classObject);
-				}
-				this.stats.classes.successful += 1;
-			} catch (err) {
-				this.stats.classes.failed += 1;
-				this.stats.errors.push({
-					type: 'class',
-					entity: klass,
-					message: err.message,
-				});
-				this.logError('Failed to create class', klass, err);
-			}
-			return Promise.resolve();
-		}));
-		return classMapping;
-	}
+	/**
+	 * Converts a string formatted date into a Date object.
+	 * Valid date string formats: dd.mm.yyyy, dd/mm/yyyy, dd-mm-yyyy
+	 * @static
+	 * @see CSVSyncer.isValidBirthday for validation
+	 * @param {String} dateString String in the format dd(.|/|-)mm(.|/|-)yyyy
+	 * @returns {Date} the corresponding Date object
+	 */
+	static convertToDate(dateString) {
+		const dd = parseInt(dateString.substring(0, 2), 10);
+		const mm = parseInt(dateString.substring(3, 5), 10);
+		const yyyy = parseInt(dateString.substring(6, 10), 10);
 
-	async findOrCreateClass(classObject) {
-		const existing = await this.app.service('/classes').find({
-			query: classObject,
-			paginate: false,
-			lean: true,
-		});
-		if (existing.length === 0) {
-			const newClass = await this.app.service('/classes').create(classObject);
-			this.stats.classes.created += 1;
-			return newClass;
-		}
-		this.stats.classes.updated += 1;
-		return existing[0];
+		const date = new Date(yyyy, mm - 1, dd);
+		return date;
 	}
 }
+
 
 module.exports = CSVSyncer;

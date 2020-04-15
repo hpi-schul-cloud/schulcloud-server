@@ -35,7 +35,7 @@ const renameFileIfAlreadyExistInParent = (existingFile, newFileObject) => {
  * @param {Function} [ permissionHandler ] <optional> permissionHandler(userId, file, parent)
  */
 const copyFile = async ({ file, parent, sourceSchoolId }, { payload, account }, permissionHandler) => {
-	const userId = payload.userId || account.userId;
+	const userId = (payload || {}).userId || account.userId;
 	const strategy = createCorrectStrategy(payload.fileStorageType);
 
 	if (!file || !parent || !userId) {
@@ -66,6 +66,7 @@ const copyFile = async ({ file, parent, sourceSchoolId }, { payload, account }, 
 		// first step for intern call, for extern must validate later
 		// todo: should studentCanCreate fetch from sourceCourse?
 		newFileObject.permissions = createDefaultPermissions(userId, 'course');
+		newFileObject.creator = userId;
 	}
 	// copy file on external storage
 	newFileObject.storageFileName = generateFileNameSuffix(newFileObject.name || fileObject.name);

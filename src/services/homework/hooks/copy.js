@@ -1,8 +1,12 @@
-const hooks = require('feathers-hooks-common');
+const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
-const globalHooks = require('../../../hooks');
+const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
+const { hasPermission, mapPayload, injectUserId } = require('../../../hooks');
 const HomeworkModel = require('../model').homeworkModel;
+const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');
 
 const hasViewPermissionBefore = (context) => {
 	const currentUser = context.params.account.userId.toString();
@@ -19,21 +23,27 @@ const hasViewPermissionBefore = (context) => {
 
 exports.before = {
 	all: [authenticate('jwt')],
-	find: [hooks.disallow()],
+	find: [disallow()],
 	get: [
-		globalHooks.hasPermission('HOMEWORK_VIEW'),
-		globalHooks.hasPermission('HOMEWORK_CREATE'),
+		hasPermission('HOMEWORK_VIEW'),
+		hasPermission('HOMEWORK_CREATE'),
 		hasViewPermissionBefore,
+		mapPayload,
+		resolveStorageType,
 	],
 	create: [
-		globalHooks.injectUserId,
-		globalHooks.hasPermission('HOMEWORK_VIEW'),
-		globalHooks.hasPermission('HOMEWORK_CREATE'),
-		hasViewPermissionBefore,
+		injectUserId,
+		iff(isProvider('external'), [
+			hasPermission('HOMEWORK_VIEW'),
+			hasPermission('HOMEWORK_CREATE'),
+			hasViewPermissionBefore,
+		]),
+		mapPayload,
+		resolveStorageType,
 	],
-	update: [hooks.disallow()],
-	patch: [hooks.disallow()],
-	remove: [hooks.disallow()],
+	update: [disallow()],
+	patch: [disallow()],
+	remove: [disallow()],
 };
 
 exports.after = {

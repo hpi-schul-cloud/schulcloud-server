@@ -1,5 +1,12 @@
 const { TooManyRequests } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
+const { Configuration } = require('@schul-cloud/commons');
+const {
+	getRedisClient, redisSetAsync, redisDelAsync, extractRedisFromJwt, getRedisValue,
+} = require('../../../utils/redis');
+
+const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
+
 
 const updateUsernameForLDAP = async (context) => {
 	const { schoolId, strategy } = context.data;
@@ -27,7 +34,6 @@ const bruteForceCheck = async (context) => {
 		// if account doesn't exist we can not update (e.g. iserv, moodle)
 		if (account) {
 			if (account.lasttriedFailedLogin) {
-				const allowedTimeDifference = process.env.LOGIN_BLOCK_TIME || 15;
 				const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
 				if (timeDifference < allowedTimeDifference) {
 					throw new TooManyRequests(
@@ -98,6 +104,20 @@ const lowerCaseUsername = (hook) => {
 	return hook;
 };
 
+const trimUsername = (hook) => {
+	if (hook.data.username) {
+		hook.data.username = hook.data.username.trim();
+	}
+	return hook;
+};
+
+const trimPassword = (hook) => {
+	if (hook.data.password) {
+		hook.data.password = hook.data.password.trim();
+	}
+	return hook;
+};
+
 const populateResult = (hook) => {
 	hook.result.userId = hook.result.account.userId; // required by event listeners
 	return hook;
@@ -110,19 +130,69 @@ const removeProvider = (context) => {
 	return context;
 };
 
-exports.before = {
-	create: [
-		updateUsernameForLDAP,
-		lowerCaseUsername,
-		bruteForceCheck,
-		injectUserId,
-		removeProvider,
-	],
-	remove: [removeProvider],
+/**
+ * If a redis connection exists, the newly created is added to the whitelist.
+ * @param {Object} context feathers context
+ */
+const addJwtToWhitelist = async (context) => {
+	if (getRedisClient()) {
+		const { redisIdentifier, expirationInSeconds } = extractRedisFromJwt(context.result.accessToken);
+		await redisSetAsync(
+			redisIdentifier, getRedisValue(), 'EX', expirationInSeconds,
+		);
+	}
+
+	return context;
 };
 
-exports.after = {
-	all: [discard('account.password')],
-	create: [bruteForceReset],
-	remove: [populateResult],
+/**
+ * If a redis connection exists, the newly created is removed from the whitelist.
+ * @param {Object} context feathers context
+ */
+const removeJwtFromWhitelist = async (context) => {
+	if (getRedisClient()) {
+		const { redisIdentifier } = extractRedisFromJwt(context.params.authentication.accessToken);
+		await redisDelAsync(redisIdentifier);
+	}
+
+	return context;
 };
+
+/**
+ * increase jwt timeout for private devices on request
+  @param {} context
+ */
+const increateJwtTimeoutForPrivateDevices = (context) => {
+	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true) {
+		if (context.data && context.data.privateDevice === true) {
+			context.params.jwt = {
+				...context.params.jwt,
+				expiresIn: Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS'),
+			};
+		}
+	}
+	return context;
+};
+
+const hooks = {
+	before: {
+		create: [
+			updateUsernameForLDAP,
+			lowerCaseUsername,
+			trimUsername,
+			trimPassword,
+			bruteForceCheck,
+			injectUserId,
+			increateJwtTimeoutForPrivateDevices,
+			removeProvider,
+		],
+		remove: [removeProvider],
+	},
+	after: {
+		all: [discard('account.password')],
+		create: [bruteForceReset, addJwtToWhitelist],
+		remove: [populateResult, removeJwtFromWhitelist],
+	},
+};
+
+module.exports = { hooks, removeJwtFromWhitelist, addJwtToWhitelist };

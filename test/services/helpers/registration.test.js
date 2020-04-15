@@ -14,7 +14,7 @@ describe('registration service', () => {
 
 	it('processes registration by student correctly', () => {
 		const email = `max${Date.now()}@mustermann.de`;
-		return registrationPinService.create({ email })
+		return registrationPinService.create({ email, silent: true })
 			.then((registrationPin) => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
@@ -41,7 +41,7 @@ describe('registration service', () => {
 
 	it('processes registration by parent correctly', () => {
 		const email = `moritz${Date.now()}@mustermann.de`;
-		return registrationPinService.create({ email })
+		return registrationPinService.create({ email, silent: true })
 			.then((registrationPin) => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
@@ -66,14 +66,14 @@ describe('registration service', () => {
 				chai.expect(response.consent).to.have.property('_id');
 				chai.expect(response.consent.parentConsents.length).to.be.at.least(1);
 				chai.expect(response.parent).to.have.property('_id');
-				chai.expect(response.user.parents).to.include(response.parent._id);
-				chai.expect(response.parent.children).to.include(response.user._id);
+				chai.expect(response.user.parents[0].toString()).to.equal(response.parent._id.toString());
+				chai.expect(response.parent.children[0].toString()).to.include(response.user._id.toString());
 			});
 	});
 
 	it('fails with invalid pin', () => {
 		const email = `max${Date.now()}@mustermann.de`;
-		return registrationPinService.create({ email })
+		return registrationPinService.create({ email, silent: true })
 			.then((registrationPin) => {
 				let pin = Number(registrationPin.pin);
 				pin = pin === 9999 ? 1000 : pin + 1;
@@ -88,7 +88,7 @@ describe('registration service', () => {
 				});
 			}).catch((err) => {
 				chai.expect(err).to.not.equal(undefined);
-				chai.expect(err.message).to.equal('Ungültige Pin, bitte überprüfe die Eingabe.');
+				chai.expect(err.message).to.equal('Der eingegebene Code konnte leider nicht verfiziert werden. Versuch es doch noch einmal.');
 			});
 	});
 
@@ -103,7 +103,7 @@ describe('registration service', () => {
 
 	it('undoes changes on fail', () => {
 		const email = `max${Date.now()}@mustermann.de`;
-		return registrationPinService.create({ email })
+		return registrationPinService.create({ email, silent: true })
 			.then((registrationPin) => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
@@ -148,7 +148,7 @@ describe('registration service', () => {
 			})
 			.then((newUser) => {
 				user = newUser;
-				return registrationPinService.create({ email });
+				return registrationPinService.create({ email, silent: true });
 			})
 			.then((registrationPin) => {
 				const registrationInput = {

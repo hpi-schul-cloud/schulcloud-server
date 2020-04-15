@@ -12,9 +12,9 @@ const createTeamUser = async (userId, schoolId, roleName = 'teammember') => {
 
 const createTeam = (opt) => async (owner) => teamsModel.create({
 	name: `${Date.now()}_test`,
-	schoolId: opt.schoolId,
-	schoolIds: [opt.schoolId],
-	userIds: [await createTeamUser(owner._id, opt.schoolId, 'teamowner')],
+	schoolId: owner.schoolId,
+	schoolIds: [owner.schoolId],
+	userIds: [await createTeamUser(owner._id, owner.schoolId, 'teamowner')],
 }).then((team) => {
 	createdTeamIds.push(team._id.toString());
 	return team._doc;
@@ -28,13 +28,16 @@ const addTeamUserToTeam = (opt) => async (id, user, teamRoleName) => teamsModel.
 
 const getTeamById = (id) => teamsModel.findById(id).lean().exec();
 
-const removeOneTeam = (id) => teamsModel.findOneAndRemove({ _id: id }).exec();
+const removeOneTeam = (id) => teamsModel.findOneAndRemove({ _id: id }).lean().exec();
 
-const removeManyTeams = (ids) => teamsModel.deleteMany({ _ids: { $in: ids } }).exec();
+const removeManyTeams = (ids) => teamsModel.deleteMany({ _id: { $in: ids } }).lean().exec();
 
 // const teamServices = app => app.service('teams');
 
 const cleanup = () => {
+	if (createdTeamIds.length === 0) {
+		return Promise.resolve();
+	}
 	const ids = createdTeamIds;
 	createdTeamIds = [];
 	return removeManyTeams(ids);

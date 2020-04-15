@@ -1,79 +1,14 @@
-/* eslint-disable no-param-reassign */
 // Global hooks that run for every service
-const sanitizeHtml = require('sanitize-html');
-const Entities = require('html-entities').AllHtmlEntities;
+const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
+const { iff, isProvider } = require('feathers-hooks-common');
+const { Configuration } = require('@schul-cloud/commons');
+const { sanitizeHtml: { sanitizeDeep } } = require('./utils');
+const {
+	getRedisClient, redisGetAsync, redisSetAsync, extractRedisFromJwt, getRedisValue,
+} = require('./utils/redis');
 
-const entities = new Entities();
 
-const globalHooks = require('./hooks/');
-
-const sanitize = (data, options) => {
-	// https://www.npmjs.com/package/sanitize-html
-	if ((options || {}).html === true) {
-		// editor-content data
-		data = sanitizeHtml(data, {
-			allowedTags: ['h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span', 'del',
-				'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-				'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video', 'iframe'],
-			allowedAttributes: false, // allow all attributes of allowed tags
-			allowedSchemes: ['http', 'https', 'ftp', 'mailto'],
-			parser: {
-				decodeEntities: true,
-			},
-		});
-		data = data.replace(/(&lt;script&gt;).*?(&lt;\/script&gt;)/gim, ''); // force remove script tags
-		data = data.replace(/(<script>).*?(<\/script>)/gim, ''); // force remove script tags
-	} else {
-		// non editor-content data
-		data = sanitizeHtml(data, {
-			allowedTags: [], // disallow all tags
-			allowedAttributes: [], // disallow all attributes
-			allowedSchemes: [], // disallow url schemes
-			parser: {
-				decodeEntities: true,
-			},
-		});
-	}
-	// something during sanitizeHtml() is encoding HTML Entities like & => &amp;
-	// I wasn't able to figure out which option disables this so I just decode it again.
-	// BTW: html-entities is already a dependency of sanitize-html so no new imports where done here.
-	return entities.decode(data);
-};
-
-/**
- * Strips JS/HTML Code from data and returns clean version of it
- * @param data {object/array/string}
- * @returns data - clean without JS
- */
-const sanitizeDeep = (data, path) => {
-	if (typeof data === 'object' && data !== null) {
-		Object.entries(data).forEach(([key, value]) => {
-			if (typeof value === 'string') {
-				// ignore values completely
-				if (['password'].includes(key)) return data;
-				// enable html for all current editors
-				const needsHtml = ['content', 'text', 'comment', 'gradeComment', 'description'].includes(key)
-                    && ['lessons', 'news', 'newsModel', 'homework', 'submissions'].includes(path);
-				data[key] = sanitize(value, { html: needsHtml });
-			} else {
-				sanitizeDeep(value, path);
-			}
-		});
-	} else if (typeof data === 'string') {
-		data = sanitize(data, { html: false });
-	} else if (Array.isArray(data)) {
-		for (let i = 0; i < data.length; i += 1) {
-			if (typeof data[i] === 'string') {
-				data[i] = sanitize(data[i], { html: false });
-			} else {
-				sanitizeDeep(data[i], path);
-			}
-		}
-	}
-	return data;
-};
-
-const sanitizeData = (context) => {
+const sanitizeDataHook = (context) => {
 	if (context.data && context.path && context.path !== 'authentication') {
 		sanitizeDeep(context.data, context.path);
 	}
@@ -118,14 +53,98 @@ const displayInternRequests = (level) => (context) => {
 	return context;
 };
 
-module.exports = function setup(app) {
+/**
+ * Routes as (regular expressions) which should be ignored for the auto-logout feature.
+ */
+const AUTO_LOGOUT_BLACKLIST = [
+	/^accounts\/jwtTimer$/,
+	/^authentication$/,
+	/wopi\//,
+];
+
+/**
+ * for authenticated requests, if a redis connection is defined, check if the users jwt is whitelisted.
+ * if so, the expiration timer is reset, if not the user is logged out automatically.
+ * @param {Object} context feathers context
+ */
+const handleAutoLogout = async (context) => {
+	const ignoreRoute = typeof context.path === 'string'
+		&& AUTO_LOGOUT_BLACKLIST.some((entry) => context.path.match(entry));
+	const redisClientExists = !!getRedisClient();
+	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
+	if (!ignoreRoute && redisClientExists && authorizedRequest) {
+		const { redisIdentifier } = extractRedisFromJwt(context.params.authentication.accessToken);
+		const redisResponse = await redisGetAsync(redisIdentifier);
+		if (redisResponse) {
+			await redisSetAsync(
+				redisIdentifier, getRedisValue(), 'EX', Configuration.get('JWT_TIMEOUT_SECONDS'),
+			);
+		} else {
+			// ------------------------------------------------------------------------
+			// this is so we can ensure a fluid release without booting out all users.
+			if (Configuration.get('JWT_WHITELIST_ACCEPT_ALL')) {
+				await redisSetAsync(
+					redisIdentifier, getRedisValue(),
+					'EX', Configuration.get('JWT_TIMEOUT_SECONDS'),
+				);
+				return context;
+			}
+			// ------------------------------------------------------------------------
+			throw new NotAuthenticated('Session was expired due to inactivity - autologout.');
+		}
+	}
+	return context;
+};
+
+/**
+ * For errors without error code create GeneralError with code 500.
+ * @param {context} context
+ */
+const errorHandler = (context) => {
+	if (context.error) {
+		context.error.code = context.error.code || context.error.statusCode;
+		if (!context.error.code && !context.error.type) {
+			const catchedError = context.error;
+			if (catchedError.hook) {
+				// too much for logging...
+				delete catchedError.hook;
+			}
+			context.error = new GeneralError(context.error.message || 'Server Error', context.error.stack);
+			context.error.catchedError = catchedError;
+		}
+		context.error.code = context.error.code || 500;
+
+		if (context.error.hook) {
+			// too much for logging...
+			delete context.error.hook;
+		}
+		return context;
+	}
+	context.app.logger.warning('Error with no error key is throw. Error logic can not handle it.');
+
+	throw new GeneralError('server error');
+};
+
+function setupAppHooks(app) {
 	const before = {
-		all: [],
+		all: [iff(isProvider('external'), handleAutoLogout)],
 		find: [],
 		get: [],
-		create: [sanitizeData, globalHooks.ifNotLocal(removeObjectIdInData)],
-		update: [sanitizeData],
-		patch: [sanitizeData],
+		create: [
+			iff(isProvider('external'), [
+				sanitizeDataHook, removeObjectIdInData,
+			]),
+		],
+		update: [
+			iff(isProvider('external'), [
+				sanitizeDataHook,
+			]),
+		],
+		patch: [
+			iff(isProvider('external'), [
+				sanitizeDataHook,
+			]),
+		],
 		remove: [],
 	};
 
@@ -140,7 +159,7 @@ module.exports = function setup(app) {
 	};
 
 	const error = {
-		all: [],
+		all: [errorHandler],
 		find: [],
 		get: [],
 		create: [],
@@ -155,4 +174,10 @@ module.exports = function setup(app) {
 		before.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
 	}
 	app.hooks({ before, after, error });
+}
+
+module.exports = {
+	handleAutoLogout,
+	sanitizeDataHook,
+	setupAppHooks,
 };

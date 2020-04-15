@@ -1,0 +1,206 @@
+{
+	"title": "HPI Schul-Cloud Configuration",
+	"type": "object",
+	"properties": {
+		"CALENDAR_API_KEY": {
+			"type": "string",
+			"default": "example",
+			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
+		},
+		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
+			"type": "string",
+			"default": "enabled",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
+		},
+		"REDIS_URI": {
+			"type": "string",
+			"pattern": "(rediss?:)?\/\/((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(\/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
+			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
+		},
+		"PIN_MAX_AGE_SECONDS": {
+			"type": "integer",
+			"default": 86400,
+			"description": "Maximum time in seconds a generated pin is handled as valid."
+		},
+		"JWT_LIFETIME": {
+			"type": "string",
+			"default": "30d",
+			"pattern": "^[0-9]+d$",
+			"description": "Lifetime of generated JWTs in days."
+		},
+		"JWT_TIMEOUT_SECONDS": {
+			"type": "integer",
+			"default": 7200,
+			"description": "After this many seconds of inactivity, a user gets logged out automatically. If no REDIS_URI is set, this value is ignored."
+		},
+		"FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Using privateDevice parameter in login, the logout/jwt timeout can be extended to JWT_EXTENDED_TIMEOUT_SECONDS instead of JWT_TIMEOUT_SECONDS."
+		},
+		"JWT_EXTENDED_TIMEOUT_SECONDS": {
+			"type": "integer",
+			"default": 2629746,
+			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no REDIS_URI is set, this value is ignored."
+		},
+		"JWT_WHITELIST_ACCEPT_ALL": {
+			"type": "boolean",
+			"default": false,
+			"description": "JWTs that are not in the whitelist are added to it, instead of invalidated. To be used for the first 2 hours after release."
+		},
+		"TSP_API_BASE_URL": {
+			"type": "string",
+			"default": "https://www.schulportal-thueringen.de",
+			"description": "The TSP API base URL."
+		},
+		"TSP_API_CLIENT_ID": {
+			"type": "string",
+			"default": "",
+			"description": "The TSP API client id."
+		},
+		"TSP_API_CLIENT_SECRET": {
+			"type": "string",
+			"default": "",
+			"description": "The TSP API client secret."
+		},
+		"TSP_API_ENCRYPTION_KEY": {
+			"type": "string",
+			"default": "",
+			"description": "The key used to encrypt/decrypt TSP request tokens."
+		},
+		"TSP_API_SIGNATURE_KEY": {
+			"type": "string",
+			"default": "",
+			"description": "The key used to sign/verify TSP request tokens."
+		},
+		"FEATURE_TSP_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for TSP features."
+		},
+		"FEATURE_VIDEOCONFERENCE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, adds video conferences to teams and courses."
+		},
+		"VIDEOCONFERENCE_HOST": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"default": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
+			"description": "The BBB base url (should end without a slash)."
+		},
+		"VIDEOCONFERENCE_SALT": {
+			"type": "string",
+			"default": "",
+			"description": "The BBB Salt for api call checksum creation."
+		},
+		"FEATURE_MATRIX_MESSENGER_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, adds support for Matrix Messenger."
+		},
+		"MATRIX_URI": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://matrix.messenger.schule",
+			"description": "The URI of the Matrix Messenger server."
+		},
+		"MATRIX_SERVERNAME": {
+			"type": "string",
+			"default": "messenger.schule",
+			"description": "Servername of the Matrix Messenger server."
+		},
+		"MATRIX_SECRET": {
+			"type": "string",
+			"description": "Shared secret for the Matrix server."
+		},
+		"FEATURE_RABBITMQ_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, adds support to send RabbitMQ messages"
+		},
+		"RABBITMQ_URI": {
+			"type": "string",
+			"format": "uri",
+			"default": "amqp://192.168.99.100",
+			"description": "the URI of the rabbitMQ server"
+		},
+		"RABBITMQ_MATRIX_QUEUE_INTERNAL": {
+			"type": "string",
+			"default": "matrix_sync_unpopulated",
+			"description": "the URI of the rabbitMQ server"
+		},
+		"RABBITMQ_MATRIX_QUEUE_EXTERNAL": {
+			"type": "string",
+			"default": "matrix_sync_populated",
+			"description": "the URI of the rabbitMQ server"
+		},
+		"HOST": {
+			"type": "string",
+			"format": "uri",
+			"default": "http://localhost:3100",
+			"pattern": ".*(?<!/)$",
+			"description": "The client url (should end without a slash)."
+		},
+		"FEATURE_ALERTS_STATUS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, user will see messages/incidents from e.g status.schul-cloud."
+		},
+		"ALERT_STATUS_URL": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"default": "https://status.schul-cloud.org",
+			"description": "The url of status message provider (should end without a slash)."
+		},
+		"ALERT_STATUS_API_URL": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"default": "https://status.schul-cloud.org/api/v1",
+			"description": "The api of status message provider (should end without a slash)."
+		},
+		"NEXBOARD_URL": {
+			"type": "string",
+			"format": "uri",
+			"default":"https://nexboard.nexenio.com",
+			"pattern":".*(?<!/)$",
+			"description": "The nexboard url."
+		},
+		"NEXBOARD_URI": {
+			"type": "string",
+			"default":"/portal/api/v1/public/",
+			"description": "The nexboard api version uri."
+		},
+		"NEXBOARD_API_KEY": {
+			"type": "string",
+			"description": "The nexboard api key for sending requests."
+		},
+		"NEXBOARD_USER_ID": {
+			"type": "string",
+			"description": "The nexboard 'schul-cloud' userId."
+		},
+		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables using the storage provider collection to determine a provider with free buckets upon school creation. If disabled, the only storage provider is configured via the environment variables in config/secrets.js"
+		},
+		"S3_KEY": {
+			"type": "string",
+			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
+			"pattern": ".{16}.*"
+		}
+	},
+	"required": [
+		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
+		"HOST"
+	]
+}
