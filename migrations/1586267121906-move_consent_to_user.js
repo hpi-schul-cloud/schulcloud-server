@@ -63,6 +63,15 @@ const User = mongoose.model('newUserConsent_20200422', new mongoose.Schema({
 // TODO npm run migration-persist and remove this line
 // TODO update seed data and remove this line
 
+
+/** ***
+ *
+ *
+ * 	TODO: handle multiple records for a user in consents collection
+ *
+ */
+
+
 module.exports = {
 	up: async function up() {
 		await connect();

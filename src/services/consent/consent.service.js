@@ -61,7 +61,7 @@ class ConsentService {
 	}
 
 	async get(_id, params) {
-		return this.app.service(MODEL_SERVICE).get(_id, prepareInternalParams(params));
+		return this.modelServices.get(_id, prepareInternalParams(params));
 	}
 
 	async patch(_id, data, params) {
@@ -78,6 +78,7 @@ class ConsentService {
 
 	setup(app) {
 		this.app = app;
+		this.modelService = this.app.service(MODEL_SERVICE);
 	}
 }
 

@@ -1,18 +1,23 @@
+const { BadRequest } = require('@feathersjs/errors');
 const { modelServices: { prepareInternalParams } } = require('../../utils');
+const { userToConsent, modifyDataForUserSchema } = require('./utils');
 
 const MODEL_SERVICE = 'usersModel';
 
 class ConsentService {
-	modifyDataForUserSchema(data) {
-		return {
-			consent: {
-				...data,
-			},
-		};
-	}
-
 	async find(params) {
 		const { query: oldQuery } = params;
+
+		if (({}).hasOwnProperty.call(oldQuery, 'userId')) {
+			const user = await this.modelService.get(oldQuery.userId, prepareInternalParams(params));
+			return {
+				total: 1,
+				limit: 25,
+				skip: 0,
+				data: userToConsent(user),
+			};
+		}
+
 		if (Object.keys(oldQuery).length !== 0) {
 			params.query = {
 				constent: {
@@ -27,14 +32,11 @@ class ConsentService {
 			};
 		}
 
+
 		const users = await this.app.service(MODEL_SERVICE).find(prepareInternalParams(params));
 		return {
 			...users,
-			data: users.data.map((user) => ({
-				requiresParentConsent: user.requiresParentConsent,
-				consentStatus: user.consentStatus,
-				...user.consent,
-			})),
+			data: users.data.map(userToConsent),
 		};
 	}
 
@@ -42,20 +44,35 @@ class ConsentService {
 		return this.app.service(MODEL_SERVICE).get(_id, prepareInternalParams(params));
 	}
 
+	async create(data, params) {
+		if (!({}).hasOwnProperty.call(data, 'userId')) {
+			throw BadRequest('Consent could only create with a UserId');
+		}
+
+		const { userId, ...consent } = data;
+
+		this.modelServices.patch(
+			userId,
+			modifyDataForUserSchema(consent),
+			prepareInternalParams(params),
+		);
+	}
+
 	async patch(_id, data, params) {
 		return this.app
 			.service(MODEL_SERVICE)
-			.patch(_id, this.modifyDataForUserSchema(data), prepareInternalParams(params));
+			.patch(_id, modifyDataForUserSchema(data), prepareInternalParams(params));
 	}
 
 	async update(_id, data, params) {
 		return this.app
 			.service(MODEL_SERVICE)
-			.update(_id, this.modifyDataForUserSchema(data), prepareInternalParams(params));
+			.update(_id, modifyDataForUserSchema(data), prepareInternalParams(params));
 	}
 
 	setup(app) {
 		this.app = app;
+		this.modelService = this.app.service(MODEL_SERVICE);
 	}
 }
 
