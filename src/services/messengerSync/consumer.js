@@ -1,6 +1,6 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { createChannel } = require('../../utils/rabbitmq');
-const { buildAddUserMessage } = require('./utils');
+const { buildAddUserMessage, messengerActivatedForSchool } = require('./utils');
 const logger = require('../../logger');
 
 const QUEUE_INTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL');
@@ -8,9 +8,7 @@ const QUEUE_EXTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL');
 
 let channel;
 
-const validateMessage = (content) => {
-	return (content.userId && (content.course || content.team || content.fullSync));
-};
+const validateMessage = (content) => (content.userId && (content.courses || content.teams || content.fullSync));
 
 const handleMessage = async (incomingMessage) => {
 	const content = JSON.parse(incomingMessage.content.toString());
@@ -20,6 +18,11 @@ const handleMessage = async (incomingMessage) => {
 		channel.reject(incomingMessage, false);
 	}
 	try {
+		if (!await messengerActivatedForSchool(content)) {
+			// school should not be synced
+			channel.reject(incomingMessage, false);
+		}
+
 		const addUserMessageObject = await buildAddUserMessage(content);
 		const outgoingMessage = JSON.stringify(addUserMessageObject);
 		channel.sendToQueue(QUEUE_EXTERNAL, Buffer.from(outgoingMessage), { persistent: true });
