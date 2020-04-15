@@ -142,7 +142,7 @@ const buildMessageObject = async ({ userId, teams, courses }) => {
 };
 
 const buildAddUserMessage = async (data) => {
-	if (data.schoolSync) {
+	if (data.fullSync) {
 		data.courses = await getAllCourseDataForUser(data.userId);
 		data.teams = await getAllTeamsDataForUser(data.userId);
 	}

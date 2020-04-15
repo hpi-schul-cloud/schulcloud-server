@@ -68,7 +68,7 @@ describe('messenger schoolSync Service', () => {
 
 			const firstMessage = JSON.parse(testingQueue[0]);
 			expect(users.map((u) => u._id.toString()).includes(firstMessage.userId)).to.be.true;
-			expect(firstMessage.schoolSync).to.be.true;
+			expect(firstMessage.fullSync).to.be.true;
 			rabbitmqMock.reset();
 		});
 	});

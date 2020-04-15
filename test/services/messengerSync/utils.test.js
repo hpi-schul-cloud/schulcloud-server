@@ -102,7 +102,7 @@ describe('messenger synchronizer utils', () => {
 				testObjects.createTestCourse({ teacherIds: [user._id], schoolId: school._id }),
 				testObjects.createTestCourse({ teacherIds: [user._id], schoolId: school._id }),
 			]);
-			const result = await buildAddUserMessage({ userId: user._id, schoolSync: true });
+			const result = await buildAddUserMessage({ userId: user._id, fullSync: true });
 			expect(result.method).to.equal('adduser');
 
 			expect(result.school.id).to.equal(school._id.toString());
