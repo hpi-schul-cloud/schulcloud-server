@@ -497,4 +497,15 @@
 		"$date": "2020-03-31T14:38:18.001Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e970516325e804198ec63dd"
+	},
+	"state": "up",
+	"name": "addAdminPermissionForManagingStudentTeamCreation",
+	"createdAt": {
+		"$date": "2020-04-15T12:59:02.81Z"
+	},
+	"__v": 0
 }]
