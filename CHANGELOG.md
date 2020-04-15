@@ -16,6 +16,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3719 The `files` collection now has two additional indexes: `{creator}` and `{permissions.refId, permissions.refPermModel}`.
 -   add MongoDB Collation Support to control sorting behaviour in regards to capitalization.
 -   SC-3607 CSVSyncer now allows the optional birthday field (formats: dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy) in CSV data
+-   SC-3948 support users query in adminusers routes
 
 ### Fixed
 
@@ -61,6 +62,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 -   SC-3767: moved env variables to globals.js, NODE_ENV required to equal 'test' for test execution and right database selection
+
+### Changed
+
+-   migrated backup.sh script to node, so it can run platform independant and works on windows.
 
 ### Fixed
 
