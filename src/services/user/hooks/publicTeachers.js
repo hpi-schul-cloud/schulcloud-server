@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
-const { Configuration, disallow } = require('@schul-cloud/commons');
+const { Configuration } = require('@schul-cloud/commons');
+const { disallow } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { lookupSchool } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
