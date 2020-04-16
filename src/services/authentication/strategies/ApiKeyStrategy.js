@@ -33,7 +33,8 @@ class ApiKeyStrategy extends AuthenticationBaseStrategy {
 
 	credentialCheck(key) {
 		// todo: authenticate against database collection, return permissions.
-		return (key === Configuration.get('CALENDAR_API_KEY'));
+		const keys = [Configuration.get('CALENDAR_API_KEY'), Configuration.get('SYNC_API_KEY')];
+		return (keys.includes(key));
 	}
 }
 
