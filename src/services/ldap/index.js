@@ -20,8 +20,11 @@ module.exports = function LDAPService() {
 			this.clients = {};
 		}
 
+		/**
+		 * @deprecated
+		 */
 		find(params) {
-
+			// only needed to register as a feathers service
 		}
 
 		get(id, params) {
