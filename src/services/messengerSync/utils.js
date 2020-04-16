@@ -149,9 +149,16 @@ const buildAddUserMessage = async (data) => {
 };
 
 const messengerActivatedForSchool = async (data) => {
-	data.user = await getUserData(data.userId);
-	data.school = await getSchoolData(data.user.schoolId);
-	return data.school.features && data.school.features.includes('messenger');
+	if (data.userId) {
+		data.user = await getUserData(data.userId);
+		data.school = await getSchoolData(data.user.schoolId);
+	}
+
+	if (data.schoolId) {
+		data.school = await getSchoolData(data.schoolId);
+	}
+
+	return data.school && data.school.features && data.school.features.includes('messenger');
 };
 
 module.exports = { buildAddUserMessage, messengerActivatedForSchool };

@@ -61,17 +61,17 @@ describe('messenger schoolSync Service', () => {
 			]);
 			const testingQueue = rabbitmqMock.queues.matrix_sync_unpopulated;
 			expect(testingQueue).to.not.be.undefined;
-			expect(testingQueue.length).to.equal(3); // 3 user creation events
+			expect(testingQueue.length).to.equal(4); // 3 user creation events + 1 school creation event
 
 			const params = await testObjects.generateRequestParamsFromUser(users[0]);
 			params.route = { schoolId: school._id.toString() };
 			await app.service('schools/:schoolId/messengerSync').create({}, params);
 
-			expect(testingQueue.length).to.equal(6); // 3 + 3 sync for each user of the school
+			expect(testingQueue.length).to.equal(5); // 4 + 1 request school sync
 
-			const firstMessage = JSON.parse(testingQueue[0]);
-			expect(users.map((u) => u._id.toString()).includes(firstMessage.userId)).to.be.true;
-			expect(firstMessage.fullSync).to.be.true;
+			const lastMessage = JSON.parse(testingQueue[4]);
+			expect(lastMessage.schoolId).to.equal(school._id.toString());
+			expect(lastMessage.fullSync).to.be.true;
 			rabbitmqMock.reset();
 		});
 	});
