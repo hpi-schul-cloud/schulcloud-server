@@ -59,12 +59,12 @@ const createTests = (token) => {
 	}
 };
 
-describe.only('Call routes without jwt', () => createTests());
+describe('Call routes without jwt', () => createTests());
 
-// describe.only('Call routes with empty jwt', () => {
+// describe('Call routes with empty jwt', () => {
 // 	createTests('');
 // });
 
-// describe.only('Call routes with invalid jwt', () => {
+// describe('Call routes with invalid jwt', () => {
 // 	createTests('eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJhY2Nv');
 // });
