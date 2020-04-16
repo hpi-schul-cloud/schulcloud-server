@@ -30,6 +30,8 @@ function obtainAccessToken(userId, homeserverApiUri, secret) {
 				userId,
 				homeserverUrl: homeserverApiUri,
 				accessToken: response.access_token,
+				deviceId: response.device_id,
+				servername: response.home_server,
 			};
 			return session;
 		});
