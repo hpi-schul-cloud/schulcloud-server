@@ -44,7 +44,7 @@ describe('restrictToSchoolSystems', () => {
 		}
 	});
 
-	it('should forbid access if the curretn school has no system', () => {
+	it('should forbid access if the current school has no system', () => {
 		try {
 			fut({
 				id: (new ObjectId()).toString(),
