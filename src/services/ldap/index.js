@@ -21,8 +21,11 @@ module.exports = function () {
 			this._registerEventListeners();
 		}
 
+		/**
+		 * @deprecated
+		 */
 		find(params) {
-
+			// only needed to register as a feathers service
 		}
 
 		get(id, params) {
