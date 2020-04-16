@@ -9,6 +9,7 @@ const rabbitmqMock = require('../rabbitmqMock');
 // const schoolSyncService = app.service('schools/:schoolId/messengerSync');
 const { Configuration } = commons;
 
+
 describe('messenger schoolSync Service', () => {
 	let server;
 	before((done) => {
@@ -35,21 +36,18 @@ describe('messenger schoolSync Service', () => {
 			mockery.registerMock('@schul-cloud/commons', commons);
 			mockery.registerMock('../../../utils/rabbitmq', rabbitmqMock);
 			mockery.registerMock('../../utils/rabbitmq', rabbitmqMock);
-			delete require.cache[
-				require.resolve('../../../../src/services/messengerSync/services/schoolSyncService.js')
-			];
 			// eslint-disable-next-line global-require
 			const messengerSync = require('../../../../src/services/messengerSync');
 			app.configure(messengerSync);
 		});
 
 		after(async () => {
+			Configuration.parse(configBefore);
 			mockery.deregisterAll();
 			mockery.disable();
 			// eslint-disable-next-line global-require
 			const messengerSync = require('../../../../src/services/messengerSync');
 			app.configure(messengerSync);
-			Configuration.parse(configBefore);
 		});
 
 		it('admin can trigger a schoolSync', async () => {

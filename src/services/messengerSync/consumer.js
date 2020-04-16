@@ -14,7 +14,7 @@ const validateMessage = (content) => {
 		return false;
 	}
 
-	if (!content.userId || !content.schoolId) {
+	if (!content.userId && !content.schoolId) {
 		return false;
 	}
 
