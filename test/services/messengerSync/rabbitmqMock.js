@@ -15,7 +15,12 @@ const sendToQueue = (queue, messageBuffer, options) => {
 	queues[queue].push(messageBuffer);
 };
 
-const createChannel = async () => ({ sendToQueue, assertQueue, prefetch, consume });
+const createChannel = async () => ({
+	sendToQueue,
+	assertQueue,
+	prefetch,
+	consume,
+});
 
 const setup = async (app) => {};
 

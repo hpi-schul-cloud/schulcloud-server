@@ -127,7 +127,7 @@ describe('messenger synchronizer utils', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
 			// act
-			const result = await messengerActivatedForSchool({ userId: user._id});
+			const result = await messengerActivatedForSchool({ userId: user._id });
 
 			// assert
 			expect(result).to.equal(true);
@@ -140,7 +140,7 @@ describe('messenger synchronizer utils', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
 			// act
-			const result = await messengerActivatedForSchool({ userId: user._id});
+			const result = await messengerActivatedForSchool({ userId: user._id });
 
 			// assert
 			expect(result).to.equal(false);
