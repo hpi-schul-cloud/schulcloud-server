@@ -1,16 +1,25 @@
 const { authenticate } = require('@feathersjs/authentication');
-const globalHooks = require('../../../hooks');
-
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
+const { disallow, iffElse, isProvider } = require('feathers-hooks-common');
+const { hasPermission, populateCurrentSchool } = require('../../../hooks');
+const restrictToSchoolSystems = require('./restrictToSchoolSystems');
 
 exports.before = {
 	all: [],
-	find: [authenticate('jwt'), restrictToCurrentSchool, globalHooks.hasPermission('SYSTEM_EDIT')],
-	get: [authenticate('jwt'), restrictToCurrentSchool, globalHooks.hasPermission('SYSTEM_EDIT')],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
+	find: [disallow()],
+	get: [
+		iffElse(isProvider('external'), [
+			authenticate('jwt'),
+			hasPermission('SYSTEM_EDIT'),
+			populateCurrentSchool,
+			restrictToSchoolSystems,
+		], [
+			disallow(),
+		]),
+	],
+	create: [disallow()],
+	update: [disallow()],
+	patch: [disallow()],
+	remove: [disallow()],
 };
 
 exports.after = {
