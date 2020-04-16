@@ -72,5 +72,29 @@ describe('messenger schoolSync Service', () => {
 			expect(lastMessage.fullSync).to.be.true;
 			rabbitmqMock.reset();
 		});
+
+		it('do not trigger without feature flag schoolSync', async () => {
+			const school = await testObjects.createTestSchool({ features: [] });
+			const users = await Promise.all([
+				testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id }),
+				testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id }),
+				testObjects.createTestUser({ roles: ['student'], schoolId: school._id }),
+			]);
+			const testingQueue = rabbitmqMock.queues.matrix_sync_unpopulated;
+			expect(testingQueue).to.not.be.undefined;
+			expect(testingQueue.length).to.equal(4); // 3 user creation events + 1 school creation event
+
+			const params = await testObjects.generateRequestParamsFromUser(users[0]);
+			params.route = { schoolId: school._id.toString() };
+			await app.service('schools/:schoolId/messengerSync')
+				.create({}, params)
+				.catch((err) => {
+					expect(err.code).to.be.equal(400);
+				});
+
+			expect(testingQueue.length).to.equal(4); // no new event
+
+			rabbitmqMock.reset();
+		});
 	});
 });

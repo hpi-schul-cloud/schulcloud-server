@@ -22,7 +22,9 @@ class MessengerSchoolSync {
 	 */
 	async create(data, params) {
 		const school = await this.app.service('schools').get(params.route.schoolId);
-		if (!school.features.includes('messenger')) throw new BadRequest('this school does not support the messenger');
+		if (!school.features.includes('messenger')) {
+			throw new BadRequest('This school does not support the messenger feature.');
+		}
 
 		requestFullSchoolSync(school);
 		return school;

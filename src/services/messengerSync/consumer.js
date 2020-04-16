@@ -32,37 +32,35 @@ const handleMessage = async (incomingMessage) => {
 	if (!validateMessage(content)) {
 		logger.warning(`MESSENGER SYNC: invalid message in queue ${QUEUE_INTERNAL}`, content);
 		// message is invalid an can not be retried
-		channel.reject(incomingMessage, false);
+		return channel.reject(incomingMessage, false);
 	}
 	try {
 		if (!await messengerActivatedForSchool(content)) {
 			// school should not be synced
-			channel.reject(incomingMessage, false);
+			return channel.reject(incomingMessage, false);
 		}
 
 		switch (content.action) {
 			case 'syncSchool': {
 				await requestSyncForEachSchoolUser(content.schoolId);
-				channel.ack(incomingMessage);
-				break;
+				return channel.ack(incomingMessage);
 			}
 
 			case 'syncUser': {
 				const outgoingMessage = await buildAddUserMessage(content);
 				sendToQueue(outgoingMessage);
-				channel.ack(incomingMessage);
-				break;
+				return channel.ack(incomingMessage);
 			}
 
 			default: {
 				// message can't be processed
-				channel.reject(incomingMessage, false);
+				return channel.reject(incomingMessage, false);
 			}
 		}
 	} catch (err) {
 		logger.error(`MESSENGER SYNC: error while handling message in queue ${QUEUE_INTERNAL} `, err);
 		// retry message once (the second time it is redelivered)
-		channel.reject(incomingMessage, !incomingMessage.fields.redelivered);
+		return channel.reject(incomingMessage, !incomingMessage.fields.redelivered);
 	}
 };
 

@@ -145,5 +145,29 @@ describe('messenger synchronizer utils', () => {
 			// assert
 			expect(result).to.equal(false);
 		});
+
+		it('true if messenger flag is set on school sync', async () => {
+			// arrange
+			this.app = app;
+			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+
+			// act
+			const result = await messengerActivatedForSchool({ schoolId: school._id });
+
+			// assert
+			expect(result).to.equal(true);
+		});
+
+		it('false if messenger flag is not set on school sync', async () => {
+			// arrange
+			this.app = app;
+			const school = await testObjects.createTestSchool({ features: [] });
+
+			// act
+			const result = await messengerActivatedForSchool({ schoolId: school._id });
+
+			// assert
+			expect(result).to.equal(false);
+		});
 	});
 });

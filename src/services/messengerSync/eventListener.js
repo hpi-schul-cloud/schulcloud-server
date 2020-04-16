@@ -2,12 +2,6 @@ const {
 	requestFullSchoolSync, requestSyncForEachCourseUser, requestSyncForEachTeamUser, requestFullSyncForUser,
 } = require('./producer');
 
-const handleSchoolChanged = async (school) => {
-	if (school.features && school.features.includes('messenger')) {
-		requestFullSchoolSync(school);
-	}
-};
-
 const setup = async (app) => {
 	// teams
 	app.service('teams').on('created', requestSyncForEachTeamUser);
@@ -24,9 +18,9 @@ const setup = async (app) => {
 	// app.service('users').on('removed', handleUserRemoved);
 
 	// schools
-	app.service('schools').on('created', handleSchoolChanged);
-	app.service('schools').on('patched', handleSchoolChanged);
-	app.service('schools').on('updated', handleSchoolChanged);
+	app.service('schools').on('created', requestFullSchoolSync);
+	app.service('schools').on('patched', requestFullSchoolSync);
+	app.service('schools').on('updated', requestFullSchoolSync);
 };
 
 module.exports = setup;
