@@ -32,8 +32,10 @@ const whitelist = {
 	materials: {
 		methods: {
 			get: 200,
+			post: 400,
 			patch: 200,
 			delete: 200,
+			put: 400,
 		},
 	},
 	'lessons/contents/{type}': {
@@ -96,6 +98,47 @@ const whitelist = {
 	alert: {
 		methods: {
 			get: 200,
+		},
+	},
+	users: {
+		methods: {
+			post: 400,
+		},
+	},
+	registrationPins: {
+		methods: {
+			post: 400,
+		},
+	},
+	registration: {
+		methods: {
+			post: 400,
+		},
+	},
+	accounts: {
+		methods: {
+			get: 400,
+			post: 400,
+		},
+	},
+	expertinvitelink: {
+		methods: {
+			post: 400,
+		},
+	},
+	hash: {
+		methods: {
+			post: 400,
+		},
+	},
+	consents: {
+		methods: {
+			post: 400,
+		},
+	},
+	sync: {
+		methods: {
+			get: 400,
 		},
 	},
 };
