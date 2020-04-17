@@ -1,7 +1,11 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { createChannel } = require('../../utils/rabbitmq');
+const { getAllCourseUserIds } = require('../user-group/logic/courses');
 
-const QUEUE_INTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL');
+const ACTIONS = {
+	SYNC_USER: 'syncUser',
+	SYNC_SCHOOL: 'syncSchool',
+};
 
 let app;
 let channel;
@@ -9,12 +13,12 @@ let channel;
 const sendToQueue = (message) => {
 	const msgJson = JSON.stringify(message);
 	const msgBuffer = Buffer.from(msgJson);
-	channel.sendToQueue(QUEUE_INTERNAL, msgBuffer, { persistent: true });
+	channel.sendToQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msgBuffer, { persistent: true });
 };
 
 const requestFullSchoolSync = (school) => {
 	const message = {
-		action: 'syncSchool',
+		action: ACTIONS.SYNC_SCHOOL,
 		schoolId: school._id,
 		fullSync: true,
 	};
@@ -22,11 +26,9 @@ const requestFullSchoolSync = (school) => {
 };
 
 const requestSyncForEachCourseUser = async (course) => {
-	const users = course.userIds.concat(course.teacherIds).concat(course.substitutionIds);
-
-	users.forEach((userId) => {
+	getAllCourseUserIds(course).forEach((userId) => {
 		const message = {
-			action: 'syncUser',
+			action: ACTIONS.SYNC_USER,
 			userId,
 			courses: [course],
 		};
@@ -39,7 +41,7 @@ const requestSyncForEachTeamUser = async (team) => {
 
 	users.forEach((userId) => {
 		const message = {
-			action: 'syncUser',
+			action: ACTIONS.SYNC_USER,
 			userId,
 			teams: [team],
 		};
@@ -49,7 +51,7 @@ const requestSyncForEachTeamUser = async (team) => {
 
 const requestFullSyncForUser = async (user) => {
 	const message = {
-		action: 'syncUser',
+		action: ACTIONS.SYNC_USER,
 		userId: user._id,
 		fullSync: true,
 	};
@@ -64,14 +66,12 @@ const requestSyncForEachSchoolUser = async (schoolId) => {
 const setup = async (app_) => {
 	app = app_;
 	channel = await createChannel();
-
-	await Promise.all([
-		channel.assertQueue(QUEUE_INTERNAL, { durable: true }),
-	]);
+	return channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
 };
 
 module.exports = {
 	setup,
+	ACTIONS,
 	requestFullSchoolSync,
 	requestFullSyncForUser,
 	requestSyncForEachSchoolUser,

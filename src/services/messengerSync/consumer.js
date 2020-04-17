@@ -1,78 +1,109 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { createChannel } = require('../../utils/rabbitmq');
-const { requestSyncForEachSchoolUser } = require('./producer');
-const { buildAddUserMessage, messengerActivatedForSchool } = require('./utils');
+const { ACTIONS, requestSyncForEachSchoolUser } = require('./producer');
+const { buildAddUserMessage, messengerIsActivatedForSchool } = require('./utils');
 const logger = require('../../logger');
-
-const QUEUE_INTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL');
-const QUEUE_EXTERNAL = Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL');
+const { ObjectId } = require('../../helper/compare');
 
 let channel;
 
 const validateMessage = (content) => {
+	const errorMsg = `MESSENGER SYNC: invalid message in queue ${Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL')}`;
+	// action
 	if (!content.action) {
+		logger.error(`${errorMsg}, action missing.`, content);
+		return false;
+	}
+	if (!content.action || !Object.values(ACTIONS).includes(content.action)) {
+		logger.error(`${errorMsg}, invalid action.`, content);
 		return false;
 	}
 
-	if (!content.userId && !content.schoolId) {
+	// entity to sync
+	if (content.userId) {
+		if (!ObjectId.isValid(content.userId)) {
+			logger.error(`${errorMsg}, invalid userId.`, content);
+			return false;
+		}
+	} else if (content.schoolId) {
+		if (!ObjectId.isValid(content.schoolId)) {
+			logger.error(`${errorMsg}, invalid schoolId.`, content);
+			return false;
+		}
+	} else {
+		logger.error(`${errorMsg}, one of userId/schoolId has to be provided.`, content);
 		return false;
 	}
 
-	return (content.courses || content.teams || content.fullSync);
+	// data
+	if (!content.courses && !content.teams && !content.fullSync) {
+		logger.error(`${errorMsg}, one of fullSync/courses/teams has to be provided.`, content);
+		return false;
+	}
+
+	return true;
 };
 
-const sendToQueue = (message) => {
+const sendToExternalQueue = (message) => {
 	const msgJson = JSON.stringify(message);
 	const msgBuffer = Buffer.from(msgJson);
-	channel.sendToQueue(QUEUE_EXTERNAL, msgBuffer, { persistent: true });
+	channel.sendToQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), msgBuffer, { persistent: true });
 };
 
-const handleMessage = async (incomingMessage) => {
+const executeMessage = async (incomingMessage) => {
 	const content = JSON.parse(incomingMessage.content.toString());
 	if (!validateMessage(content)) {
-		logger.warning(`MESSENGER SYNC: invalid message in queue ${QUEUE_INTERNAL}`, content);
 		// message is invalid an can not be retried
-		return channel.reject(incomingMessage, false);
+		return false;
 	}
-	try {
-		if (!await messengerActivatedForSchool(content)) {
-			// school should not be synced
-			return channel.reject(incomingMessage, false);
+
+	if (!await messengerIsActivatedForSchool(content)) {
+		// school should not be synced
+		return false;
+	}
+
+	switch (content.action) {
+		case ACTIONS.SYNC_SCHOOL: {
+			await requestSyncForEachSchoolUser(content.schoolId);
+			return true;
 		}
 
-		switch (content.action) {
-			case 'syncSchool': {
-				await requestSyncForEachSchoolUser(content.schoolId);
-				return channel.ack(incomingMessage);
-			}
-
-			case 'syncUser': {
-				const outgoingMessage = await buildAddUserMessage(content);
-				sendToQueue(outgoingMessage);
-				return channel.ack(incomingMessage);
-			}
-
-			default: {
-				// message can't be processed
-				return channel.reject(incomingMessage, false);
-			}
+		case ACTIONS.SYNC_USER: {
+			const outgoingMessage = await buildAddUserMessage(content);
+			sendToExternalQueue(outgoingMessage);
+			return true;
 		}
-	} catch (err) {
-		logger.error(`MESSENGER SYNC: error while handling message in queue ${QUEUE_INTERNAL} `, err);
-		// retry message once (the second time it is redelivered)
-		return channel.reject(incomingMessage, !incomingMessage.fields.redelivered);
+
+		default: {
+			// message can't be processed
+			return false;
+		}
 	}
 };
+
+const handleMessage = (incomingMessage) => executeMessage(incomingMessage)
+	.then((success) => {
+		if (success) {
+			channel.ack(incomingMessage);
+		} else {
+			channel.reject(incomingMessage, false);
+		}
+	})
+	.catch((err) => {
+		logger.error('MESSENGER SYNC: error while handling message', err);
+		// retry message once (the second time it is redelivered)
+		return channel.reject(incomingMessage, !incomingMessage.fields.redelivered);
+	});
 
 const setup = async (app) => {
 	channel = await createChannel();
 
 	await Promise.all([
-		channel.assertQueue(QUEUE_INTERNAL, { durable: true }),
-		channel.assertQueue(QUEUE_EXTERNAL, { durable: false }),
+		channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true }),
+		channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), { durable: false }),
 	]);
 	channel.prefetch(30);
-	channel.consume(QUEUE_INTERNAL, handleMessage, {
+	channel.consume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), handleMessage, {
 		noAck: false,
 	});
 };

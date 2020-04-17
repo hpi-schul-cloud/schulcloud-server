@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
-const { buildAddUserMessage, messengerActivatedForSchool } = require('../../../src/services/messengerSync/utils');
+const { buildAddUserMessage, messengerIsActivatedForSchool } = require('../../../src/services/messengerSync/utils');
 
 describe('messenger synchronizer utils', () => {
 	let server;
@@ -119,7 +119,7 @@ describe('messenger synchronizer utils', () => {
 		});
 	});
 
-	describe('messengerActivatedForSchool', () => {
+	describe('messengerIsActivatedForSchool', () => {
 		it('true if messenger flag is set', async () => {
 			// arrange
 			this.app = app;
@@ -127,7 +127,7 @@ describe('messenger synchronizer utils', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
 			// act
-			const result = await messengerActivatedForSchool({ userId: user._id });
+			const result = await messengerIsActivatedForSchool({ userId: user._id });
 
 			// assert
 			expect(result).to.equal(true);
@@ -140,7 +140,7 @@ describe('messenger synchronizer utils', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
 			// act
-			const result = await messengerActivatedForSchool({ userId: user._id });
+			const result = await messengerIsActivatedForSchool({ userId: user._id });
 
 			// assert
 			expect(result).to.equal(false);
@@ -152,7 +152,7 @@ describe('messenger synchronizer utils', () => {
 			const school = await testObjects.createTestSchool({ features: ['messenger'] });
 
 			// act
-			const result = await messengerActivatedForSchool({ schoolId: school._id });
+			const result = await messengerIsActivatedForSchool({ schoolId: school._id });
 
 			// assert
 			expect(result).to.equal(true);
@@ -164,7 +164,7 @@ describe('messenger synchronizer utils', () => {
 			const school = await testObjects.createTestSchool({ features: [] });
 
 			// act
-			const result = await messengerActivatedForSchool({ schoolId: school._id });
+			const result = await messengerIsActivatedForSchool({ schoolId: school._id });
 
 			// assert
 			expect(result).to.equal(false);
