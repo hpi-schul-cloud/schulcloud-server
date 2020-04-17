@@ -1,5 +1,6 @@
 const chai = require('chai');
 const request = require('request-promise-native');
+const app = require('../../src/app');
 const getAllRoutes = require('../services/helpers/getAllRoutes');
 const { whitelist, ignoreList } = require('./whitelist');
 const { API_HOST } = require('../../config/globals');
@@ -33,7 +34,20 @@ const acceptedResults = (status, endpoint, method) => {
 	return isOnWhitelist(endpoint, method, status);
 };
 
+const serverSetup = () => {
+	let server;
+
+	before((done) => {
+		server = app.listen(3030, done);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+};
+
 const createTests = (token) => {
+	serverSetup();
 	const routes = getAllRoutes();
 	let headers;
 	if (token || token === '') {
@@ -55,8 +69,6 @@ const createTests = (token) => {
 						resolveWithFullResponse: true,
 						headers,
 					};
-
-					console.log(`${API_HOST}${detail.route}`);
 
 					if (!isOnIgnoreList(route, method)) {
 						const status = await request(options)
