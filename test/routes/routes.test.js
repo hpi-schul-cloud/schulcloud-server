@@ -6,6 +6,7 @@ const { whitelist, ignoreList } = require('./whitelist');
 const { API_HOST } = require('../../config/globals');
 
 const { expect } = chai;
+const PORT = 5254;
 
 const isOnWhitelist = (endpoint, method, status) => {
 	if (endpoint in whitelist) {
@@ -38,7 +39,7 @@ const serverSetup = () => {
 	let server;
 
 	before((done) => {
-		server = app.listen(3030, done);
+		server = app.listen(PORT, done);
 	});
 
 	after((done) => {
@@ -63,7 +64,7 @@ const createTests = (token) => {
 					if (method === 'find') { method = 'get'; }
 
 					const options = {
-						uri: `${API_HOST}${detail.route}`,
+						uri: `http://localhost:${PORT}${detail.route}`,
 						method,
 						json: true,
 						resolveWithFullResponse: true,
