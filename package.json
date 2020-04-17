@@ -36,8 +36,8 @@
 		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations"
 	},
 	"dependencies": {
-		"@feathersjs/authentication-local": "^4.3.4",
 		"@feathersjs/authentication": "^4.3.11",
+		"@feathersjs/authentication-local": "^4.3.4",
 		"@feathersjs/configuration": "^4.3.4",
 		"@feathersjs/errors": "^4.3.4",
 		"@feathersjs/express": "^4.3.4",
@@ -52,9 +52,9 @@
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
 		"body-parser": "^1.15.2",
+		"chai": "^4.2.0",
 		"chai-as-promised": "^7.1.1",
 		"chai-http": "^4.2.0",
-		"chai": "^4.2.0",
 		"chalk": "^3.0.0",
 		"chance": "^1.0.12",
 		"client-oauth2": "^4.2.5",
@@ -79,12 +79,12 @@
 		"mixwith": "^0.1.1",
 		"moment": "^2.19.2",
 		"mongodb-uri": "^0.9.7",
+		"mongoose": "~5.9.9",
 		"mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-history": "^0.8.0",
 		"mongoose-id-validator": "^0.5.3",
 		"mongoose-lean-virtuals": "^0.4.4",
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
-		"mongoose": "~5.9.9",
 		"moodle-client": "^0.5.2",
 		"nanoid": "^2.0.3",
 		"oauth-1.0a": "^2.2.6",
@@ -114,12 +114,13 @@
 		"mocha": "^7.0.1",
 		"mockery": "^2.0.0",
 		"nock": "^12.0.0",
-		"node-ts": "^5.0.5",
 		"nodemon": "^2.0.2",
 		"nyc": "^15.0.1",
 		"simple-oauth2": "^3.0.0",
 		"sinon": "^9.0.0",
-		"source-map-support": "^0.5.16"
+		"source-map-support": "^0.5.16",
+		"ts-node": "^8.8.2",
+		"typescript": "^3.8.3"
 	},
 	"greenkeeper": {
 		"ignore": [
