@@ -1,11 +1,8 @@
 const chai = require('chai');
 const request = require('request-promise-native');
-const chaiHttp = require('chai-http');
 const getAllRoutes = require('../services/helpers/getAllRoutes');
 const whitelist = require('./whitelist');
 const { HOST } = require('../../config/globals');
-
-chai.use(chaiHttp);
 
 const { expect } = chai;
 
@@ -29,12 +26,12 @@ const createTests = (token) => {
 	const routes = getAllRoutes();
 	let headers;
 	if (token || token === '') {
-		headers = { token };
+		headers = { Authorization: token };
 	}
 
 	for (const [route, detail] of Object.entries(routes)) {
 		// test every route
-		describe.only(`${route}`, () => {
+		describe(`${route}`, () => {
 			for (let method of detail.methods) {
 				// test every endpoint of route
 				it(`${method}`, async () => {
