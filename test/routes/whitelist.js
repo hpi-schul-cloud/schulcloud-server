@@ -121,11 +121,6 @@ const whitelist = {
 			post: 400,
 		},
 	},
-	expertinvitelink: {
-		methods: {
-			post: 400,
-		},
-	},
 	hash: {
 		methods: {
 			post: 400,
