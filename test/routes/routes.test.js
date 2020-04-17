@@ -2,7 +2,7 @@ const chai = require('chai');
 const request = require('request-promise-native');
 const getAllRoutes = require('../services/helpers/getAllRoutes');
 const whitelist = require('./whitelist');
-const { HOST } = require('../../config/globals');
+const { API_HOST } = require('../../config/globals');
 
 const { expect } = chai;
 
@@ -37,15 +37,8 @@ const createTests = (token) => {
 				it(`${method}`, async () => {
 					if (method === 'find') { method = 'get'; }
 
-					let uri;
-					if (!HOST.match(/^https?:\/\//)) {
-						uri = `http://${HOST}${detail.route}`;
-					} else {
-						uri = `${HOST}${detail.route}`;
-					}
-
 					const options = {
-						uri,
+						uri: `${API_HOST}${detail.route}`,
 						method,
 						json: true,
 						resolveWithFullResponse: true,
