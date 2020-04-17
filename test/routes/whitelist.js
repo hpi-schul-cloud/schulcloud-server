@@ -136,6 +136,11 @@ const whitelist = {
 			get: 400,
 		},
 	},
+	mails: {
+		methods: {
+			post: 500,
+		},
+	},
 };
 
 // TODO remove this
