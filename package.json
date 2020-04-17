@@ -43,7 +43,7 @@
 		"@feathersjs/express": "^4.3.4",
 		"@feathersjs/feathers": "^4.3.4",
 		"@feathersjs/socketio": "^4.3.4",
-		"@schul-cloud/commons": "^1.0.17",
+		"@schul-cloud/commons": "^1.0.20",
 		"@sentry/node": "^5.9.0",
 		"ajv": "^6.10.2",
 		"amqplib": "^0.5.5",
@@ -117,10 +117,7 @@
 		"nodemon": "^2.0.2",
 		"nyc": "^15.0.1",
 		"simple-oauth2": "^3.0.0",
-		"sinon": "^9.0.0",
-		"source-map-support": "^0.5.16",
-		"ts-node": "^8.8.2",
-		"typescript": "^3.8.3"
+		"sinon": "^9.0.0"
 	},
 	"greenkeeper": {
 		"ignore": [
