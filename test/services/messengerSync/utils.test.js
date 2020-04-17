@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
-const { buildAddUserMessage } = require('../../../src/services/messengerSync/utils');
+const { buildAddUserMessage, messengerActivatedForSchool } = require('../../../src/services/messengerSync/utils');
 
 describe('messenger synchronizer utils', () => {
 	let server;
@@ -102,7 +102,7 @@ describe('messenger synchronizer utils', () => {
 				testObjects.createTestCourse({ teacherIds: [user._id], schoolId: school._id }),
 				testObjects.createTestCourse({ teacherIds: [user._id], schoolId: school._id }),
 			]);
-			const result = await buildAddUserMessage({ userId: user._id, schoolSync: true });
+			const result = await buildAddUserMessage({ userId: user._id, fullSync: true });
 			expect(result.method).to.equal('adduser');
 
 			expect(result.school.id).to.equal(school._id.toString());
@@ -116,6 +116,34 @@ describe('messenger synchronizer utils', () => {
 
 			expect(Array.isArray(result.rooms)).to.equal(true);
 			expect(result.rooms.length).to.eq(3);
+		});
+	});
+
+	describe('messengerActivatedForSchool', () => {
+		it('true if messenger flag is set', async () => {
+			// arrange
+			this.app = app;
+			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
+
+			// act
+			const result = await messengerActivatedForSchool({ userId: user._id });
+
+			// assert
+			expect(result).to.equal(true);
+		});
+
+		it('false if messenger flag is not set', async () => {
+			// arrange
+			this.app = app;
+			const school = await testObjects.createTestSchool({ });
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
+
+			// act
+			const result = await messengerActivatedForSchool({ userId: user._id });
+
+			// assert
+			expect(result).to.equal(false);
 		});
 	});
 });

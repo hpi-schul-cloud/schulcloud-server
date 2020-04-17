@@ -15,7 +15,7 @@ const getUserData = (userId) => userModel.findOne(
 const getSchoolData = (schoolId) => schoolModel.findOne(
 	{ _id: schoolId },
 	{
-		_id: 1, name: 1,
+		_id: 1, name: 1, features: 1,
 	},
 ).lean().exec();
 
@@ -104,25 +104,25 @@ const buildTeamObject = async (team, userId, moderatorRoles) => {
 	};
 };
 
-const buildMessageObject = async ({ userId, teams, courses }) => {
-	const user = await getUserData(userId);
-	const school = await getSchoolData(user.schoolId);
+const buildMessageObject = async (data) => {
+	const user = data.user || await getUserData(data.userId);
+	const school = data.school || await getSchoolData(user.schoolId);
 	const moderatorRoles = await getRoles();
 	const rooms = [];
-	if (courses) {
-		courses.forEach((course) => {
-			rooms.push(buildCourseObject(course, userId));
+	if (data.courses) {
+		data.courses.forEach((course) => {
+			rooms.push(buildCourseObject(course, data.userId));
 		});
 	}
-	if (teams) {
-		await Promise.all(teams.map(async (team) => {
-			const teamObject = await buildTeamObject(team, userId, moderatorRoles);
+	if (data.teams) {
+		await Promise.all(data.teams.map(async (team) => {
+			const teamObject = await buildTeamObject(team, data.userId, moderatorRoles);
 			rooms.push(teamObject);
 		}));
 	}
-	const homeserver = Configuration.get('MATRIX_SERVERNAME');
+	const servername = Configuration.get('MATRIX_SERVERNAME');
 
-	const message = {
+	return {
 		method: 'adduser',
 		school: {
 			id: school._id.toString(),
@@ -130,7 +130,7 @@ const buildMessageObject = async ({ userId, teams, courses }) => {
 			name: school.name,
 		},
 		user: {
-			id: `@sso_${user._id.toString()}:${homeserver}`,
+			id: `@sso_${user._id.toString()}:${servername}`,
 			name: displayName(user),
 			email: user.email,
 			is_school_admin: user.roles.some((el) => el.toString() === moderatorRoles.adminRoleId.toString()),
@@ -138,16 +138,20 @@ const buildMessageObject = async ({ userId, teams, courses }) => {
 		},
 		rooms,
 	};
-	return message;
 };
 
 const buildAddUserMessage = async (data) => {
-	if (data.schoolSync) {
+	if (data.fullSync) {
 		data.courses = await getAllCourseDataForUser(data.userId);
 		data.teams = await getAllTeamsDataForUser(data.userId);
 	}
 	return buildMessageObject(data);
 };
 
+const messengerActivatedForSchool = async (data) => {
+	data.user = await getUserData(data.userId);
+	data.school = await getSchoolData(data.user.schoolId);
+	return data.school.features && data.school.features.includes('messenger');
+};
 
-module.exports = { buildAddUserMessage };
+module.exports = { buildAddUserMessage, messengerActivatedForSchool };
