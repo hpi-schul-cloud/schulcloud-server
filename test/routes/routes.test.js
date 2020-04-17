@@ -42,7 +42,7 @@ const createTests = (token) => {
 
 	for (const [route, detail] of Object.entries(routes)) {
 		// test every route
-		describe.only(`${route}`, () => {
+		describe(`${route}`, () => {
 			for (let method of detail.methods) {
 				// test every endpoint of route
 				it(`${method}`, async () => {
@@ -55,6 +55,8 @@ const createTests = (token) => {
 						resolveWithFullResponse: true,
 						headers,
 					};
+
+					console.log(`${API_HOST}${detail.route}`);
 
 					if (!isOnIgnoreList(route, method)) {
 						const status = await request(options)
