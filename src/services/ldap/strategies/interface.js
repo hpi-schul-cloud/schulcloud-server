@@ -41,6 +41,8 @@ class AbstractLDAPStrategy {
 		throw new TypeError('Method has to be implemented.');
 	}
 
+	/* eslint-disable no-unused-vars */
+
 	/**
      * get provider-specific search string and options to find all users in
      * a given school in the LDAP directory
@@ -74,44 +76,7 @@ class AbstractLDAPStrategy {
 		throw new TypeError('Method has to be implemented.');
 	}
 
-	/**
-     * provider-specific functionality to add a given user to a given group
-     * @abstract
-     * @param {User} user the user
-     * @param {Role} role the user's role
-     * @param {LDAPGroup} group the LDAP group object
-     * @returns {Promise} Promise that resolves on successful addition or
-     * rejects otherwise
-     */
-	addUserToGroup(user, role, group) {
-		throw new TypeError('Method has to be implemented.');
-	}
-
-	/**
-     * provider-specific functionality to remove a given user from the given
-     * group
-     * @abstract
-     * @param {User} user the user
-     * @param {Role} role the user's role
-     * @param {LDAPGroup} group the LDAP group object
-     * @returns {Promise} Promise that resolves on successful removal or rejects
-     * otherwise
-     */
-	removeUserFromGroup(user, role, group) {
-		throw new TypeError('Method has to be implemented.');
-	}
-
-	/**
-     * provider-specific functionality to create a new expert user
-     * @abstract
-     * @param {User} user the expert's user object
-     * @param {Account} account the expert's account object
-     * @returns {Promise} Promise that resolves on successful addition or
-     * rejects otherwise
-     */
-	createExpert(user, account) {
-		throw new TypeError('Method has to be implemented.');
-	}
+	/* eslint-enable no-unused-vars */
 }
 
 module.exports = AbstractLDAPStrategy;

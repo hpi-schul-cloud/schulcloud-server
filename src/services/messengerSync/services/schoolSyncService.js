@@ -34,7 +34,7 @@ class MessengerSchoolSync {
 			durable: true,
 		});
 		users.data.forEach((user) => {
-			const message = JSON.stringify({ userId: user._id, schoolSync: true });
+			const message = JSON.stringify({ userId: user._id, fullSync: true });
 			this.channel.sendToQueue(QUEUE_INTERNAL, Buffer.from(message), { persistent: true });
 		});
 		return users;
