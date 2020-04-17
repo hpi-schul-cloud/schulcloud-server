@@ -138,4 +138,11 @@ const whitelist = {
 	},
 };
 
-module.exports = whitelist;
+// TODO remove this
+const ignoreList = {
+	expertinvitelink: {
+		methods: ['post'],
+	},
+};
+
+module.exports = { whitelist, ignoreList };
