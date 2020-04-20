@@ -34,6 +34,7 @@ describe('messenger schoolSync Service', () => {
 			});
 			mockery.registerMock('@schul-cloud/commons', commons);
 			mockery.registerMock('../../../utils/rabbitmq', rabbitmqMock);
+			mockery.registerMock('../../utils/rabbitmq', rabbitmqMock);
 			delete require.cache[
 				require.resolve('../../../../src/services/messengerSync/services/schoolSyncService.js')
 			];
@@ -58,17 +59,19 @@ describe('messenger schoolSync Service', () => {
 				testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id }),
 				testObjects.createTestUser({ roles: ['student'], schoolId: school._id }),
 			]);
+			const testingQueue = rabbitmqMock.queues.matrix_sync_unpopulated;
+			expect(testingQueue).to.not.be.undefined;
+			expect(testingQueue.length).to.equal(3); // 3 user creation events
+
 			const params = await testObjects.generateRequestParamsFromUser(users[0]);
 			params.route = { schoolId: school._id.toString() };
 			await app.service('schools/:schoolId/messengerSync').create({}, params);
 
-			const testingQueue = rabbitmqMock.queues.matrix_sync_unpopulated;
-			expect(testingQueue).to.not.be.undefined;
-			expect(testingQueue.length).to.equal(3);
+			expect(testingQueue.length).to.equal(6); // 3 + 3 sync for each user of the school
 
 			const firstMessage = JSON.parse(testingQueue[0]);
 			expect(users.map((u) => u._id.toString()).includes(firstMessage.userId)).to.be.true;
-			expect(firstMessage.schoolSync).to.be.true;
+			expect(firstMessage.fullSync).to.be.true;
 			rabbitmqMock.reset();
 		});
 	});

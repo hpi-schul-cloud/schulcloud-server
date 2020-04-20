@@ -17,16 +17,18 @@ const getRoles = () => RoleModel.find()
 	.lean()
 	.exec();
 
-const getAllUsers = (ref, schoolId, role, sortObject) => ref.app.service('usersModel').find({
-	query: {
+
+const getAllUsers = (ref, schoolId, role, clientQuery) => {
+	const query = {
 		schoolId,
 		roles: role.toString(),
-		$limit: sortObject.$limit,
-		$skip: sortObject.$skip,
-		$sort: sortObject.$sort,
+		$sort: clientQuery.$sort,
 		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
-	},
-});
+	};
+	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
+	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
+	return ref.app.service('usersModel').find({ collation: { locale: 'de', caseLevel: true }, query });
+};
 
 const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
 	.find({

@@ -467,6 +467,17 @@
 },
 {
 	"_id": {
+		"$oid": "5e81e74b65f87a5a600f591b"
+	},
+	"state": "up",
+	"name": "addFileCreatorAndPermissionIndexes",
+	"createdAt": {
+		"$date": "2020-03-26T11:39:40.409Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5e7f1d63e2c96215c85330f9"
 	},
 	"state": "up",
@@ -486,5 +497,26 @@
 		"$date": "2020-03-31T14:38:18.001Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e970516325e804198ec63dd"
+	},
+	"state": "up",
+	"name": "addAdminPermissionForManagingStudentTeamCreation",
+	"createdAt": {
+		"$date": "2020-04-15T12:59:02.81Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e98318cfb423a82b448ce99"
+	},
+	"state": "up",
+	"name": "add-sync-start-permission",
+	"createdAt": {
+		"$date": "2020-04-16T12:28:09.933Z"
+	},
+	"__v": 0
 }]
-

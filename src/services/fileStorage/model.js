@@ -49,6 +49,7 @@ const SecurityCheckStatusTypes = Object.freeze({
  * @param shareToken {String} - hash for enabling sharing. if undefined than sharing is disabled
  * @param parent {File} - parent directory
  * @param owner {User|Course|Team} - owner Object of file
+ * @param creator {ObjectId} - ID of the creator (user that uploaded the file, if applicable)
  * @param permissions [Permission] - given permission for this file
  * @param lockId {ObjectId} - indicates whether a file is locked for editing or not (wopi-related)
  */
@@ -83,6 +84,11 @@ const fileSchema = new Schema({
 		required: true,
 		enum: ['user', 'course', 'teams'],
 	},
+	creator: {
+		type: Schema.Types.ObjectId,
+		ref: 'user',
+		index: true,
+	},
 	permissions: [permissionSchema],
 	lockId: { type: Schema.Types.ObjectId, ref: 'user' },
 	createdAt: { type: Date, default: Date.now },
@@ -93,6 +99,9 @@ enableAuditLog(fileSchema);
 
 // make file-model searchable
 fileSchema.index({ name: 'text' });
+
+// Index on permissions to speed up shared-files queries
+fileSchema.index({ 'permissions.refId': 1, 'permissions.refPermModel': 1 });
 
 const FileModel = mongoose.model('file', fileSchema);
 const FilePermissionModel = mongoose.model('filePermissionModel', permissionSchema);

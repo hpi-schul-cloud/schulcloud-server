@@ -4,6 +4,7 @@ const { GeneralError } = require('@feathersjs/errors');
 const jwt = require('jsonwebtoken');
 
 const { requestError } = require('../logger/systemLogger');
+const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const logger = require('../logger');
 
 const logRequestInfosInErrorCase = (error, req, res, next) => {
@@ -118,12 +119,12 @@ const filterSecrets = (error, req, res, next) => {
 
 const errorHandler = (app) => {
 	app.use(filterSecrets);
-	if (process.env.NODE_ENV !== 'test') {
+	if (NODE_ENV !== ENVIRONMENTS.TEST) {
 		app.use(logRequestInfosInErrorCase);
 	}
 
 	app.use(Sentry.Handlers.errorHandler());
-	app.use(formatAndLogErrors(process.env.NODE_ENV));
+	app.use(formatAndLogErrors(NODE_ENV !== ENVIRONMENTS.TEST));
 	app.use(returnAsJson);
 };
 

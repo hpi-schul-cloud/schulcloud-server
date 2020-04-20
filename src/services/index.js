@@ -34,7 +34,6 @@ const ldap = require('./ldap');
 const sync = require('./sync');
 const datasources = require('./datasources');
 const rocketChat = require('./rocketChat');
-const clipboard = require('./clipboard');
 const webuntis = require('./webuntis');
 const me = require('./me');
 const help = require('./help');
@@ -79,7 +78,6 @@ module.exports = function initializeServices() {
 	app.configure(wopi);
 	app.configure(pseudonym);
 	app.configure(consent);
-	app.configure(clipboard);
 	app.configure(ldap);
 	app.configure(sync);
 	app.configure(me);
