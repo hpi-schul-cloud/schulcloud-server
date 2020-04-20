@@ -3,7 +3,11 @@ const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
 const { deepObject } = require('../utils');
 const {
-	SENTRY_DSN, SC_DOMAIN, NODE_ENV, ENVIRONMENTS,
+	SENTRY_DSN,
+	SC_DOMAIN,
+	NODE_ENV,
+	ENVIRONMENTS,
+	SENTRY_SAMPLE_RATE,
 } = require('../../config/globals');
 /**
  * helpers
@@ -111,7 +115,7 @@ module.exports = (app) => {
 			environment: NODE_ENV,
 			release,
 			//	debug: true,
-			sampleRate: 1.0,
+			sampleRate: SENTRY_SAMPLE_RATE,
 			//	captureUnhandledRejections: true,
 			beforeSend(event, hint) {
 				const modifiedEvent = runMiddlewares(event, hint);
