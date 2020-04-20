@@ -14,31 +14,49 @@ const validateMessage = (content) => {
 		logger.error(`${errorMsg}, action missing.`, content);
 		return false;
 	}
-	if (!content.action || !Object.values(ACTIONS).includes(content.action)) {
-		logger.error(`${errorMsg}, invalid action.`, content);
-		return false;
-	}
 
-	// entity to sync
-	if (content.userId) {
-		if (!ObjectId.isValid(content.userId)) {
-			logger.error(`${errorMsg}, invalid userId.`, content);
+	switch (content.action) {
+		case ACTIONS.SYNC_SCHOOL: {
+			if (!content.schoolId) {
+				logger.error(`${errorMsg}, schoolId is required for ${ACTIONS.SYNC_SCHOOL}.`, content);
+				return false;
+			}
+
+			if (!ObjectId.isValid(content.schoolId)) {
+				logger.error(`${errorMsg}, invalid schoolId.`, content);
+				return false;
+			}
+
+			if (!content.fullSync) {
+				logger.error(`${errorMsg}, fullSync flag has to be set for ${ACTIONS.SYNC_SCHOOL}.`, content);
+				return false;
+			}
+			break;
+		}
+
+		case ACTIONS.SYNC_USER: {
+			if (!content.userId) {
+				logger.error(`${errorMsg}, userId is required for ${ACTIONS.SYNC_USER}.`, content);
+				return false;
+			}
+
+			if (!ObjectId.isValid(content.userId)) {
+				logger.error(`${errorMsg}, invalid userId.`, content);
+				return false;
+			}
+
+			if (!content.courses && !content.teams && !content.fullSync) {
+				logger.error(`${errorMsg}, one of fullSync/courses/teams has to be provided to sync a user.`, content);
+				return false;
+			}
+			break;
+		}
+
+		default: {
+			logger.error(`${errorMsg}, invalid action.`, content);
+			// message can't be processed
 			return false;
 		}
-	} else if (content.schoolId) {
-		if (!ObjectId.isValid(content.schoolId)) {
-			logger.error(`${errorMsg}, invalid schoolId.`, content);
-			return false;
-		}
-	} else {
-		logger.error(`${errorMsg}, one of userId/schoolId has to be provided.`, content);
-		return false;
-	}
-
-	// data
-	if (!content.courses && !content.teams && !content.fullSync) {
-		logger.error(`${errorMsg}, one of fullSync/courses/teams has to be provided.`, content);
-		return false;
 	}
 
 	return true;
