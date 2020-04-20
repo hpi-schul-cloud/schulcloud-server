@@ -2,7 +2,7 @@
 const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
-const { sanitizeHtml: { sanitizeDeep } } = require('./utils');
+const { sanitizeHtml: { sanitizeDeep }, prepareErrorParam } = require('./utils');
 const {
 	getRedisClient, redisGetAsync, redisSetAsync, extractRedisFromJwt, getRedisValue,
 } = require('./utils/redis');
@@ -110,7 +110,7 @@ const errorHandler = (context) => {
 		}
 		return context;
 	}
-	throw new GeneralError('Error with no context.error is throw. Error logic can not handle it.');
+	throw new GeneralError('Server error!', prepareErrorParam('Error with no context.error is throw. Error logic can not handle it.'));
 };
 
 function setupAppHooks(app) {

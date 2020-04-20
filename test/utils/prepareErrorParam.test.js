@@ -78,6 +78,17 @@ describe('utils prepareErrorParam', async () => {
 		}
 	});
 
+	it('should work with strings', () => {
+		const message = 'My error text';
+		try {
+			throw new GeneralError('Feathers extern', prepareErrorParam(message));
+		} catch (err) {
+			expect(err.data).to.deep.equal({
+				message,
+			});
+		}
+	});
+
 	it('is needed until feathers can not handle it', () => {
 		try {
 			try {

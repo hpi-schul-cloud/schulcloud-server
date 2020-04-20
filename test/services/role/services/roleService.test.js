@@ -64,11 +64,6 @@ describe('Role Service', async () => {
 		expect(Array.isArray(cachedRoles)).to.be.true;
 	});
 
-	it('should cache the roles', async () => {
-		const cachedRoles = await roleService.roles;
-		expect(Array.isArray(cachedRoles)).to.be.true;
-	});
-
 	it('find without permissions should work', async () => {
 		const result = await roleService.find();
 		memoRole = result.data[0];
