@@ -25,7 +25,7 @@ module.exports = function () {
 	// app.use('/consents', new depricated.ConsentService());
 	// app.service('consents').hooks(depircated.consentHooks);
 
-	app.use('/consent', consentModelService);
+	app.use('/consents', consentModelService);
 	app.service('/consents').hooks(consentHooks);
 
 	app.use('/consents/:type/users', new ConsentService());

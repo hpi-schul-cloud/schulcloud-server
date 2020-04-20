@@ -77,13 +77,13 @@ userSchema.virtual('fullName').get(function get() {
 });
 
 userSchema.virtual('consentStatus').get(function get() {
-	if (!this.consent) return null; // TODO: what happen if not defined, is it on query?
+	if (!this.consent) return undefined; // TODO: what happen if not defined, is it on query?
 	return defineConsentStatus(this.birthday, this.consent);
 });
 
 
 userSchema.virtual('requiresParentConsent').get(function get() {
-	if (!this.consent) return null;
+	if (!this.consent) return undefined;
 	return isParentConsentRequired(this.birthday);
 });
 

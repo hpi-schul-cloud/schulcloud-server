@@ -2,6 +2,7 @@
 /* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
+const { createConsentAggrigation } = require('../../consent/utils');
 
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
@@ -18,16 +19,21 @@ const getRoles = () => roleModel.find()
 	.exec();
 
 
-const getAllUsers = (ref, schoolId, role, clientQuery) => {
+const getAllUsers = async (ref, schoolId, role, clientQuery) => {
 	const query = {
 		schoolId,
-		roles: role.toString(),
-		$sort: clientQuery.$sort,
-		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
+		roles: role,
+		consentStatus: clientQuery.consentStatus,
+		sort: clientQuery.$sort || JSON.parse(clientQuery.sort),
+		select: ['consentStatus', 'consent', 'firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
+		skip: clientQuery.$skip || clientQuery.skip,
+		limit: clientQuery.$limit || clientQuery.limit,
 	};
 	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
-	return ref.app.service('usersModel').find({ collation: { locale: 'de', caseLevel: true }, query });
+	// return ref.app.service('usersModel').find({ collation: { locale: 'de', caseLevel: true }, query });
+
+	return userModel.aggregate(createConsentAggrigation(query));
 };
 
 const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
@@ -47,24 +53,6 @@ const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
 		return err;
 	});
 
-const findConsents = (ref, userIds, $limit) => ref.app.service('/consents')
-	.find({
-		query: {
-			userId: { $in: userIds },
-			$limit,
-			$select: [
-				'userId',
-				'userConsent.form',
-				'userConsent.privacyConsent',
-				'userConsent.termsOfUseConsent',
-				'parentConsents.parentId',
-				'parentConsents.form',
-				'parentConsents.privacyConsent',
-				'parentConsents.termsOfUseConsent'],
-		},
-	})
-	.then((consents) => consents.data);
-
 const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 	.get(schoolId, {
 		query: { $select: ['currentYear'] },
@@ -83,10 +71,7 @@ class AdminUsers {
 			const { query, account } = params;
 			const currentUserId = account.userId.toString();
 			const {
-				$limit,
-				$skip,
 				$sort,
-				consentStatus,
 			} = query;
 
 			// fetch base data
@@ -101,13 +86,13 @@ class AdminUsers {
 
 			// fetch data that are scoped to schoolId
 			const searchedRole = roles.find((role) => role.name === this.role);
-			const [usersData, classes] = await Promise.all([
+			const [[usersData], classes] = await Promise.all([
 				getAllUsers(this, schoolId, searchedRole._id, query),
 				getClasses(this.app, schoolId, currentYear),
 			]);
-			// usersData.consentStatus;
-			const { total } = usersData;
+
 			const users = usersData.data;
+
 			// bsonId to stringId that it can use .includes for is in test
 			classes.forEach((c) => {
 				if (Array.isArray(c.userIds)) {
@@ -131,7 +116,6 @@ class AdminUsers {
 						user.classes.push(c.displayName);
 					}
 				});
-				return user;
 			});
 
 			// sorting by class and by consent is implemented manually,
@@ -148,7 +132,7 @@ class AdminUsers {
 				parentsAgreed: 2,
 				missing: 3,
 			};
-			const consentSortParam = (($sort || {}).consent || {}).toString();
+			/* const consentSortParam = (($sort || {}).consent || {}).toString();
 			if (consentSortParam === '1') {
 				users.sort((a, b) => (sortOrder[a.consent.consentStatus || 'missing']
 					- sortOrder[b.consent.consentStatus || 'missing']));
@@ -163,13 +147,11 @@ class AdminUsers {
 					return consentStatus.$in.includes(userStatus);
 				}
 				return true;
-			});
+			}); */
 
 			return {
-				total,
-				limit: $limit,
-				skip: $skip,
-				data: filteredUsers,
+				...usersData,
+				data: users,
 			};
 		} catch (err) {
 			if ((err || {}).code === 403) {
