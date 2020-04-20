@@ -38,18 +38,6 @@ class RoleService {
 	}
 
 	init() {
-		/*
-		this.roles = undefined;
-		const prom = new Promise((resolve) => {
-			getModelRoles().then((roles) => {
-				resolve(roles);
-			}).catch((err) => {
-				throw new Error(this.err.load, err);
-			});
-		});
-		this.roles = prom;
-		return prom;
-		*/
 		return getModelRoles().then((roles) => {
 			this.roles = roles;
 		}).catch((err) => {
@@ -60,14 +48,11 @@ class RoleService {
 	async getPermissionsByRoles(_roleIds = []) {
 		const roleIds = Array.isArray(_roleIds) ? _roleIds : [_roleIds];
 		const ids = roleIds.map((id) => id.toString());
-		// const selectedRoles = (await this.roles).filter((r) => ids.includes(r._id));
 		const selectedRoles = this.roles.filter((r) => ids.includes(r._id));
 		return unique(...selectedRoles.map((r) => r.permissions));
 	}
 
 	async get(id, params = {}) {
-		// const roles = await this.roles;
-		// const role = roles.find((r) => r._id === id.toString());
 		const role = this.roles.find((r) => r._id === id.toString());
 		const result = filterByQuery([role], params.query);
 
@@ -78,9 +63,6 @@ class RoleService {
 	}
 
 	async find(params = {}) {
-		// Please do not add || []; It must fail if the initialization failed.
-		// const roles = await this.roles;
-		// const result = filterByQuery(roles, params.query);
 		const result = filterByQuery(this.roles, params.query);
 		return paginate(result, params.query);
 	}
