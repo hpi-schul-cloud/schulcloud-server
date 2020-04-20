@@ -4,14 +4,10 @@ const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
-const restrictToUsersOwnCourses = {
-
-};
-
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('COURSE_VIEW'), restrictToCurrentSchool],
-	get: [globalHooks.hasPermission('COURSE_VIEW'), restrictToCurrentSchool], // school is checked in afterhook
+	get: [globalHooks.hasPermission('COURSE_VIEW'), restrictToCurrentSchool],
 	create: [globalHooks.hasPermission('COURSEGROUP_CREATE'), restrictToCurrentSchool],
 	update: [globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool],
 	patch: [globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
@@ -25,13 +21,7 @@ exports.before = {
 exports.after = {
 	all: [],
 	find: [],
-	get: [
-		globalHooks.ifNotLocal(
-			globalHooks.denyIfNotCurrentSchool({
-				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
-			}),
-		),
-	],
+	get: [],
 	create: [],
 	update: [],
 	patch: [],
