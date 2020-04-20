@@ -373,7 +373,7 @@ describe('news service', () => {
 				const team = await teams.create(teacherUser);
 				await createTestRole({ name: 'teamuser', permissions: [] });
 				// to load new roles
-				roleService.init();
+				await roleService.init();
 
 				await teams.addTeamUserToTeam(team._id, studentUser, 'teamuser');
 				await News.create([
@@ -839,7 +839,7 @@ describe('news service', () => {
 				await cleanup();
 				await News.deleteMany({});
 				// to load old roles
-				roleService.init();
+				await roleService.init();
 			});
 		});
 

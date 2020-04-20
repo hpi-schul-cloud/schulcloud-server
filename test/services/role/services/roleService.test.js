@@ -22,14 +22,14 @@ describe('Role Service reload roles', async () => {
 		const rolesBefore = await roleService.roles;
 
 		const testRole = await testHelper.createTestRole();
-		roleService.init();
+		await roleService.init();
 
 		const rolesAfter = await roleService.roles;
 		const roleIsLoadToCache = rolesAfter.some((role) => role._id.toString() === testRole._id.toString());
 		expect(roleIsLoadToCache, 'New role should exist.').to.be.true;
 
 		await testHelper.cleanup();
-		roleService.init();
+		await roleService.init();
 
 		const rolesFinale = await roleService.roles;
 
@@ -51,7 +51,7 @@ describe('Role Service', async () => {
 
 	after(async () => {
 		await testHelper.cleanup();
-		roleService.init();
+		await roleService.init();
 		await server.close();
 	});
 
@@ -82,7 +82,7 @@ describe('Role Service', async () => {
 			permissions: ['a'],
 		});
 
-		roleService.init();
+		await roleService.init();
 
 		const perm = await roleService.getPermissionsByRoles(role._id);
 		expect(perm).to.be.an('array').to.have.lengthOf(1).to.include('a');
@@ -98,7 +98,7 @@ describe('Role Service', async () => {
 			name: `${Date.now()}Test`,
 			permissions: ['a', 'b'],
 		});
-		roleService.init();
+		await roleService.init();
 
 		const perm = await roleService.getPermissionsByRoles([role1._id, role2._id]);
 		expect(perm, 'All permissions should unique.').to.be.an('array').to.have.lengthOf(2);

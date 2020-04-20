@@ -79,14 +79,14 @@ describe('PermissionService', async () => {
 			roles: [otherRole._id],
 		});
 		// to load new roles
-		roleService.init();
+		await roleService.init();
 	});
 
 	after(async () => {
 		await server.close();
 		await testObjects.cleanup();
 		// to load old roles
-		roleService.init();
+		await roleService.init();
 	});
 
 	it('registered the service', () => {

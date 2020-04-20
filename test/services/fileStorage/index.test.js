@@ -72,7 +72,7 @@ describe('fileStorage services', function fileStorageTest() {
 
 		await Promise.all(promises);
 		// to load new roles
-		roleService.init();
+		await roleService.init();
 	});
 
 	after(async () => {
@@ -88,7 +88,7 @@ describe('fileStorage services', function fileStorageTest() {
 			...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
 		];
 		await Promise.all(promises);
-		roleService.init();
+		await roleService.init();
 		await server.close();
 	});
 
