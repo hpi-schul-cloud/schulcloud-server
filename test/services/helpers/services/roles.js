@@ -13,17 +13,19 @@ const create = (app) => async (data = {
 	return role;
 };
 
-const cleanup = () => {
+const cleanup = (app) => async () => {
 	if (createdRoles.length === 0) {
 		return Promise.resolve();
 	}
 	const ids = createdRoles;
 	createdRoles = [];
-	return RoleModel.deleteMany({ _id: { $in: ids } }).lean().exec();
+	await RoleModel.deleteMany({ _id: { $in: ids } }).lean().exec();
+	// reload cache
+	return app.service('roles').init();
 };
 
-module.exports = (app, opt) => ({
+module.exports = (app) => ({
 	create: create(app),
-	cleanup,
+	cleanup: cleanup(app),
 	info: () => createdRoles,
 });
