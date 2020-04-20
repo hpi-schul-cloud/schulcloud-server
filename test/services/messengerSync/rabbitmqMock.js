@@ -10,15 +10,17 @@ const reset = () => {
 	});
 };
 
-const assertQueue = async () => {};
-
-const prefetch = async () => {};
-
 const consume = async (queue, callback, options) => {
 	callbacks[queue] = callback;
 };
 
-const reject = async () => {};
+const assertQueue = async () => {};
+
+const prefetch = () => {};
+
+const reject = () => {};
+
+const ack = () => {};
 
 const triggerConsume = (queue, message) => {
 	if (callbacks[queue]) {
@@ -41,6 +43,7 @@ const createChannel = async () => ({
 	prefetch,
 	consume,
 	reject,
+	ack,
 });
 
 const setup = async (app) => {};
