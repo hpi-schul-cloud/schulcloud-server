@@ -120,7 +120,7 @@ const setup = async (app) => {
 		channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true }),
 		channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), { durable: false }),
 	]);
-	channel.prefetch(30);
+	channel.prefetch(Configuration.get('RABBITMQ_MATRIX_CONSUME_CONCURRENCY'));
 	channel.consume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), handleMessage, {
 		noAck: false,
 	});
