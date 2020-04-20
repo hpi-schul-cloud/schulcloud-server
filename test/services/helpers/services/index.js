@@ -25,7 +25,7 @@ module.exports = (app, opt) => ({
 	consents: consents(app, opt),
 	courses: courses(app, opt),
 	accounts: accounts(app, opt),
-	roles,
+	roles: roles(app, opt),
 	schools: schools(app, opt),
 	years,
 	schoolGroups,
