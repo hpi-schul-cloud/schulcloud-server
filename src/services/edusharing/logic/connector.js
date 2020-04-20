@@ -1,6 +1,7 @@
 const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
+const { Forbidden } = require('@feathersjs/errors');
 
 const requestRepeater = async (options) => {
 	let eduResponse = null;
@@ -22,6 +23,10 @@ const requestRepeater = async (options) => {
 	} while (success === false && retry < 3);
 	return JSON.parse(eduResponse);
 };
+
+const configurationIncompleteError = () => new Forbidden(
+	'Not all ES_... vars have been defined, update configuration.',
+);
 
 class EduSharingConnector {
 	constructor() {
@@ -104,7 +109,7 @@ class EduSharingConnector {
 		});
 	}
 
-	checkEnv() {
+	allConfigurationValuesHaveBeenDefined() {
 		return (
 			Configuration.get('ES_DOMAIN')
 			&& Configuration.get('ES_USER')
@@ -125,6 +130,34 @@ class EduSharingConnector {
 		return !!this.authorization && !!this.accessToken;
 	}
 
+	async GET(id, params) {
+		if (!this.allConfigurationValuesHaveBeenDefined()) {
+			throw configurationIncompleteError();
+		}
+
+		if (this.isLoggedin() === false) {
+			await this.login();
+		}
+
+		const propertyFilter = '-all-';
+
+		const options = {
+			method: 'GET',
+			// eslint-disable-next-line max-len
+			url: `${Configuration.get('ES_DOMAIN')
+			}/edu-sharing/rest/node/v1/nodes/mv-repo.schul-cloud.org/${id
+			}/metadata?propertyFilter=${propertyFilter}`,
+			headers: {
+				...EduSharingConnector.headers,
+				cookie: this.authorization,
+			},
+			timeout: REQUEST_TIMEOUT,
+		};
+
+		const eduResponse = await requestRepeater(options);
+		return eduResponse.node;
+	}
+
 	async FIND(data) {
 		const contentType = data.query.contentType || 'FILES'; // enum:[FILES,FILES_AND_FOLDERS,COLLECTIONS,ALL]
 		const skipCount = parseInt(data.query.$skip, 10) || 0;
@@ -134,8 +167,8 @@ class EduSharingConnector {
 		const propertyFilter = '-all-'; // '-all-' for all properties OR ccm-stuff
 		const searchWord = data.query.searchQuery || '';
 
-		if (!this.checkEnv()) {
-			return 'Update your env variables. See --> src/services/edusharing/envTemplate';
+		if (!this.allConfigurationValuesHaveBeenDefined()) {
+			throw configurationIncompleteError();
 		}
 
 		if (this.isLoggedin() === false) {
@@ -223,34 +256,6 @@ class EduSharingConnector {
 			skip: parsed.pagination.from,
 			data: parsed.nodes,
 		};
-	}
-
-	async GET(id, params) {
-		if (!this.checkEnv()) {
-			return 'Update your env variables. See --> src/services/edusharing/envTemplate';
-		}
-
-		if (this.isLoggedin() === false) {
-			await this.login();
-		}
-
-		const propertyFilter = '-all-';
-
-		const options = {
-			method: 'GET',
-			// eslint-disable-next-line max-len
-			url: `${Configuration.get('ES_DOMAIN')
-			}/edu-sharing/rest/node/v1/nodes/mv-repo.schul-cloud.org/${id
-			}/metadata?propertyFilter=${propertyFilter}`,
-			headers: {
-				...EduSharingConnector.headers,
-				cookie: this.authorization,
-			},
-			timeout: REQUEST_TIMEOUT,
-		};
-
-		const eduResponse = await requestRepeater(options);
-		return eduResponse.node;
 	}
 
 
