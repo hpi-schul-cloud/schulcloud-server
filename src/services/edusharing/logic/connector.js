@@ -2,28 +2,6 @@ const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
 
-// config envs
-const ES_DOMAIN = Configuration.get('ES_DOMAIN');
-const ES_USER = Configuration.get('ES_USER');
-const ES_PASSWORD = Configuration.get('ES_PASSWORD');
-const ES_GRANT_TYPE = Configuration.get('ES_GRANT_TYPE');
-const ES_OAUTH_SECRET = Configuration.get('ES_OAUTH_SECRET');
-const ES_CLIENT_ID = Configuration.get('ES_CLIENT_ID');
-
-// STACKOVERFLOW BEAUTY
-const validURL = (str) => {
-	const pattern = new RegExp(
-		'^(https?:\\/\\/)?'
-		+ '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'
-		+ '((\\d{1,3}\\.){3}\\d{1,3}))'
-		+ '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'
-		+ '(\\?[;&a-z\\d%_.~+=-]*)?'
-		+ '(\\#[-a-z\\d_]*)?$',
-		'i',
-	);
-	return !!pattern.test(str);
-};
-
 const requestRepeater = async (options) => {
 	let eduResponse = null;
 	let retry = 0;
@@ -50,9 +28,6 @@ class EduSharingConnector {
 		if (EduSharingConnector.instance) {
 			return EduSharingConnector.instance;
 		}
-		if (!validURL(this.url)) {
-			return 'Invalid ES_DOMAIN, check your .env';
-		}
 		this.authorization = null; // JSESSION COOKIE
 		this.accessToken = null; // ACCESSTOKEN
 		EduSharingConnector.instance = this;
@@ -68,7 +43,8 @@ class EduSharingConnector {
 	static get authorization() {
 		const headers = {
 			...EduSharingConnector.headers,
-			Authorization: `Basic ${Buffer.from(`${ES_USER}:${ES_PASSWORD}`).toString(
+			Authorization: `Basic ${Buffer.from(`${Configuration.get('ES_USER')
+			}:${Configuration.get('ES_PASSWORD')}`).toString(
 				'base64',
 			)}`,
 		};
@@ -80,7 +56,7 @@ class EduSharingConnector {
 	// gets cookie (JSESSION) and attach it to header
 	getCookie() {
 		const cookieOptions = {
-			uri: `${ES_DOMAIN}/edu-sharing/rest/authentication/v1/validateSession`,
+			uri: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/authentication/v1/validateSession`,
 			method: 'GET',
 			headers: EduSharingConnector.authorization,
 			resolveWithFullResponse: true,
@@ -106,15 +82,15 @@ class EduSharingConnector {
 	getAuth() {
 		const oauthoptions = {
 			method: 'POST',
-			url: `${ES_DOMAIN}/edu-sharing/oauth2/token`,
+			url: `${Configuration.get('ES_DOMAIN')}/edu-sharing/oauth2/token`,
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 
 			// eslint-disable-next-line max-len
-			body: `grant_type=${ES_GRANT_TYPE}&client_id=${
-				ES_CLIENT_ID
-			}&client_secret=${ES_OAUTH_SECRET}&username=${
-				ES_USER
-			}&password=${ES_PASSWORD}`,
+			body: `grant_type=${Configuration.get('ES_GRANT_TYPE')}&client_id=${
+				Configuration.get('ES_CLIENT_ID')
+			}&client_secret=${Configuration.get('ES_OAUTH_SECRET')}&username=${
+				Configuration.get('ES_USER')
+			}&password=${Configuration.get('ES_PASSWORD')}`,
 			timeout: REQUEST_TIMEOUT,
 		};
 		return request(oauthoptions).then((result) => {
@@ -130,12 +106,12 @@ class EduSharingConnector {
 
 	checkEnv() {
 		return (
-			ES_DOMAIN
-			&& ES_USER
-			&& ES_PASSWORD
-			&& ES_GRANT_TYPE
-			&& ES_OAUTH_SECRET
-			&& ES_CLIENT_ID
+			Configuration.get('ES_DOMAIN')
+			&& Configuration.get('ES_USER')
+			&& Configuration.get('ES_PASSWORD')
+			&& Configuration.get('ES_GRANT_TYPE')
+			&& Configuration.get('ES_OAUTH_SECRET')
+			&& Configuration.get('ES_CLIENT_ID')
 		);
 	}
 
@@ -166,7 +142,8 @@ class EduSharingConnector {
 			await this.login();
 		}
 
-		const urlBase = `${ES_DOMAIN}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?`;
+		const urlBase = `${Configuration.get('ES_DOMAIN')
+		}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?`;
 		const url = urlBase
 			+ [
 				`contentType=${contentType}`,
@@ -262,7 +239,9 @@ class EduSharingConnector {
 		const options = {
 			method: 'GET',
 			// eslint-disable-next-line max-len
-			url: `${ES_DOMAIN}/edu-sharing/rest/node/v1/nodes/mv-repo.schul-cloud.org/${id}/metadata?propertyFilter=${propertyFilter}`,
+			url: `${Configuration.get('ES_DOMAIN')
+			}/edu-sharing/rest/node/v1/nodes/mv-repo.schul-cloud.org/${id
+			}/metadata?propertyFilter=${propertyFilter}`,
 			headers: {
 				...EduSharingConnector.headers,
 				cookie: this.authorization,
