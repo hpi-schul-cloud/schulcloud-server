@@ -9,6 +9,30 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [22.9.10]
+
+### Fixed
+
+-  fixed an issue that prevented api-key authenticated calls to function with query.
+
+## [22.9.9]
+
+### Added
+
+-  Sync can now be authenticated with an api-key.
+
+## [22.9.8]
+
+### Fixed
+
+-  Fixed an error where ldap users without proper uuid where not filtered correctly.
+
+## [22.9.7]
+
+### Security
+
+-  the /ldap route can now only be triggered for the users own school.
+
 ## [22.9.6]
 
 ### Added
@@ -21,6 +45,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 
 ## [22.9.5]
+
+### Security
+
+-   increased security for the publicTeachers route.
 
 ## [22.9.4]
 
