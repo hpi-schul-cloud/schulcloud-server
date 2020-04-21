@@ -5,6 +5,7 @@ const filterByQuery = (roles = [], query = {}) => {
 	const q = { ...query };
 	delete q.$skip;
 	delete q.$limit;
+	delete q.$paginate;
 	Object.entries(q).forEach(([key, v]) => {
 		if (v instanceof RegExp) {
 			result = result.filter((role) => role[key].match(v));
