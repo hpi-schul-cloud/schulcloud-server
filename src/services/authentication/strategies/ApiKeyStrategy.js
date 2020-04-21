@@ -8,8 +8,9 @@ class ApiKeyStrategy extends AuthenticationBaseStrategy {
 			return {
 				strategy: this.name,
 				apiKey: req.headers['x-api-key'],
+				// todo: remove route when there are permissions for api-keys
 				// eslint-disable-next-line no-underscore-dangle
-				route: req._parsedUrl.path.split('/')[1], // todo: remove this when there are permissions for api-keys
+				route: req._parsedUrl.path.split('/')[1].split('?')[0],
 			};
 		}
 		return null;
