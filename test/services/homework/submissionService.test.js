@@ -84,6 +84,44 @@ describe('submission service', function test() {
 		expect(result.grade).to.eq(99);
 	});
 
+	it('lets teachers upload files to grade submissions', async () => {
+		const [teacher, student] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'] }),
+			testObjects.createTestUser({ roles: ['student'] }),
+		]);
+		const course = await testObjects.createTestCourse({
+			teacherIds: [teacher._id],
+			userIds: [student._id],
+		});
+		const homework = await testObjects.createTestHomework({
+			teacherId: teacher._id,
+			name: 'Testaufgabe',
+			description: 'Was ist die Durchschnittsgeschwindigkeit einer europäischen Schwalbe?',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
+			private: false,
+			archived: [teacher._id],
+			lessonId: null,
+			courseId: course._id,
+		});
+		const submission = await testObjects.createTestSubmission({
+			schoolId: course.schoolId,
+			courseId: course._id,
+			homeworkId: homework._id,
+			studentId: student._id,
+			comment: '11 Meter pro Sekunde',
+		});
+		const file = await testObjects.createTestFile({ owner: teacher._id, refOwnerModel: 'user' });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		const result = await app
+			.service('submissions')
+			.patch(submission._id, { grade: 99, gradeFileIds: [file._id] }, params);
+		expect(result).to.not.be.undefined;
+		expect(result).to.haveOwnProperty('_id');
+		expect(result.gradeFileIds[0].toString()).to.equal(file._id.toString());
+		expect(result.grade).to.eq(99);
+	});
+
 	it('lets co-teacher grade submission', async () => {
 		const [originalTeacher, coTeacher, student] = await Promise.all([
 			testObjects.createTestUser({ roles: ['teacher'] }),
