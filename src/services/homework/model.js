@@ -43,6 +43,7 @@ const submissionSchema = new Schema({
 	teamMembers: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
 	courseGroupId: { type: Schema.Types.ObjectId, ref: 'courseGroup' },
 	fileIds: [{ type: Schema.Types.ObjectId, ref: 'file', index: true }],
+	gradeFileIds: [{ type: Schema.Types.ObjectId, ref: 'file', index: true }],
 	comments: [{ type: Schema.Types.ObjectId, ref: 'comment' }],
 });
 
