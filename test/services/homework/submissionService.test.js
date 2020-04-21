@@ -117,7 +117,7 @@ describe('submission service', function test() {
 			.patch(submission._id, { grade: 99, gradeFileIds: [file._id] }, params);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('_id');
-		expect(result.gradeFileIds[0].toString()).to.equal(file._id.toString());
+		expect(result.gradeFileIds.map((id) => id.toString())).to.deep.equal([file._id.toString()]);
 		expect(result.grade).to.eq(99);
 	});
 
