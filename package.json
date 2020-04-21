@@ -18,7 +18,7 @@
 		"node": "lts/*"
 	},
 	"scripts": {
-		"lint": "eslint ./src ./test ./migrations --ext .js --fix",
+		"lint": "eslint --ignore-path .gitignore .",
 		"seed": "node ./backup.js -p setup/ -D schulcloud-test import",
 		"test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
 		"backup": "node ./backup.js -b export",
