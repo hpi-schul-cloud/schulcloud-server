@@ -7,46 +7,52 @@ const warn = (message, pass) => {
 	return pass;
 };
 
-module.exports = (app, opt = {
-	schoolId: '0000d186816abba584714c5f',
-}) => {
+module.exports = (
+	app,
+	opt = {
+		schoolId: '0000d186816abba584714c5f',
+	}
+) => {
 	const {
-		teams,
-		testSystem,
-		login,
+		accounts,
 		classes,
-		users,
 		consents,
 		courses,
-		accounts,
-		roles,
-		schools,
-		years,
-		schoolGroups,
 		datasources,
+		files,
 		homeworks,
-		submissions,
 		lessons,
+		login,
+		roles,
+		schoolGroups,
+		schools,
 		storageProviders,
+		submissions,
+		teams,
+		testSystem,
+		users,
+		years,
 	} = serviceHelpers(app, opt);
 
-	const cleanup = () => Promise.all([]
-		.concat(accounts.cleanup())
-		.concat(users.cleanup())
-		.concat(consents.cleanup())
-		.concat(testSystem.cleanup())
-		.concat(classes.cleanup())
-		.concat(courses.cleanup())
-		.concat(teams.cleanup())
-		.concat(roles.cleanup())
-		.concat(schools.cleanup())
-		.concat(schoolGroups.cleanup())
-		.concat(years.cleanup())
-		.concat(datasources.cleanup())
-		.concat(submissions.cleanup())
-		.concat(lessons.cleanup())
-		.concat(homeworks.cleanup())
-		.concat(storageProviders.cleanup()))
+	const cleanup = () => Promise.all([
+		accounts.cleanup(),
+		classes.cleanup(),
+		consents.cleanup(),
+		courses.cleanup(),
+		datasources.cleanup(),
+		files.cleanup(),
+		homeworks.cleanup(),
+		lessons.cleanup(),
+		roles.cleanup(),
+		schoolGroups.cleanup(),
+		schools.cleanup(),
+		storageProviders.cleanup(),
+		submissions.cleanup(),
+		teams.cleanup(),
+		testSystem.cleanup(),
+		users.cleanup(),
+		years.cleanup(),
+	])
 		.then((res) => {
 			logger.info('[TestObjects] cleanup data.');
 			return res;
@@ -57,21 +63,22 @@ module.exports = (app, opt = {
 		});
 
 	const info = () => ({
-		teams: teams.info,
-		users: users.info,
-		testSystem: testSystem.info,
-		classes: classes.info,
-		tempPins: users.tempPinIds,
-		courses: courses.info,
 		accounts: accounts.info,
-		schools: schools.info,
-		schoolGroups: schoolGroups.info,
-		years: years.info,
+		classes: classes.info,
+		courses: courses.info,
 		datasources: datasources.info,
+		files: files.info,
 		homeworks: homeworks.info,
-		submissions: submissions.info,
 		lessons: lessons.info,
+		schoolGroups: schoolGroups.info,
+		schools: schools.info,
 		storageProviders: storageProviders.info,
+		submissions: submissions.info,
+		teams: teams.info,
+		tempPins: users.tempPinIds,
+		testSystem: testSystem.info,
+		users: users.info,
+		years: years.info,
 	});
 
 	const createTestTeamWithOwner = async (userData) => {
@@ -100,20 +107,21 @@ module.exports = (app, opt = {
 	};
 
 	return {
-		createTestSystem: testSystem.create,
 		createTestAccount: accounts.create,
-		createTestUser: users.create,
-		createTestConsent: consents.create,
 		createTestClass: classes.create,
+		createTestConsent: consents.create,
 		createTestCourse: courses.create,
+		createTestDatasource: datasources.create,
+		createTestFile: files.create,
+		createTestHomework: homeworks.create,
+		createTestLesson: lessons.create,
 		createTestRole: roles.create,
 		createTestSchool: schools.create,
 		createTestSchoolGroup: schoolGroups.create,
-		createTestDatasource: datasources.create,
-		createTestHomework: homeworks.create,
-		createTestSubmission: submissions.create,
-		createTestLesson: lessons.create,
 		createTestStorageProvider: storageProviders.create,
+		createTestSubmission: submissions.create,
+		createTestSystem: testSystem.create,
+		createTestUser: users.create,
 		cleanup,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
