@@ -3,6 +3,7 @@ const {
 	Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable,
 } = require('@feathersjs/errors');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger');
@@ -588,7 +589,7 @@ const sendInfo = (hook) => {
 
 	return getSessionUser(hook).then((user) => {
 		globalHooks.sendEmail(hook, {
-			subject: `${process.env.SC_SHORT_TITLE}: Team-Einladung`,
+			subject: `${SC_SHORT_TITLE}: Team-Einladung`,
 			emails: [email],
 			content: {
 				text: createEmailText(hook, user),
