@@ -7,12 +7,7 @@ const warn = (message, pass) => {
 	return pass;
 };
 
-module.exports = (
-	app,
-	opt = {
-		schoolId: '0000d186816abba584714c5f',
-	}
-) => {
+module.exports = (app, opt = { schoolId: '0000d186816abba584714c5f' }) => {
 	const {
 		accounts,
 		classes,
@@ -35,24 +30,24 @@ module.exports = (
 	} = serviceHelpers(app, opt);
 
 	const cleanup = () => Promise.all([
-		accounts.cleanup(),
-		classes.cleanup(),
-		consents.cleanup(),
-		courses.cleanup(),
-		datasources.cleanup(),
-		files.cleanup(),
-		homeworks.cleanup(),
-		lessons.cleanup(),
-		roles.cleanup(),
-		schoolGroups.cleanup(),
-		schools.cleanup(),
-		storageProviders.cleanup(),
-		submissions.cleanup(),
-		teams.cleanup(),
-		testSystem.cleanup(),
-		users.cleanup(),
-		years.cleanup(),
-	])
+		accounts,
+		users,
+		consents,
+		testSystem,
+		classes,
+		courses,
+		teams,
+		roles,
+		schools,
+		schoolGroups,
+		years,
+		datasources,
+		submissions,
+		lessons,
+		homeworks,
+		storageProviders,
+		files,
+	].reverse().map((factory) => factory.cleanup()))
 		.then((res) => {
 			logger.info('[TestObjects] cleanup data.');
 			return res;
