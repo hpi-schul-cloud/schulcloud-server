@@ -18,6 +18,10 @@ stages:
     if: NOT (commit_message =~ /(skip-deploy-stage)/)
 jobs:
   include:
+    - stage: lint
+      script:
+        - npm run lint
+      cache: npm
     - stage: test
       script:
         # - npm audit --audit-level=high
