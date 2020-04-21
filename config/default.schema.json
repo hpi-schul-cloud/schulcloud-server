@@ -233,11 +233,6 @@
 		"ES_CLIENT_ID": {
 			"type": "string",
 			"description": "The client id for edu-sharing api access"
-		},
-		"FEATURE_EDUSHARING_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature toggle for EDU-SHARING features."
 		}
 	},
 	"required": [
