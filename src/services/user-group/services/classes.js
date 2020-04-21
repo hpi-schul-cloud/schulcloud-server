@@ -65,7 +65,6 @@ class Classes {
 
 	get(id, params) {
 		const internalParams = prepareInternalParams(params);
-		console.log('classget')
 		return this.app.service('classModel').get(id, internalParams);
 	}
 

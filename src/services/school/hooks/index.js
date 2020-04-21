@@ -91,7 +91,9 @@ const decorateYears = async (context) => {
 	return context;
 };
 
-const updatesRocketChat = (key, data) => (key === '$push' || key === '$pull') && data[key].features === 'rocketChat';
+const updatesArray = (key) => (key === '$push' || key === '$pull');
+const updatesRocketChat = (key, data) => updatesArray(key) && data[key].features === 'rocketChat';
+const updatesTeamCreation = (key, data) => updatesArray(key) && data[key].features === 'disableStudentTeamCreation';
 
 const hasEditPermissions = async (context) => {
 	try {
@@ -104,10 +106,11 @@ const hasEditPermissions = async (context) => {
 		// the user is allowed to edit
 		const patch = {};
 		for (const key of Object.keys(context.data)) {
-			if (user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesRocketChat(key, context.data)) {
-				patch[key] = context.data[key];
-			}
-			if (user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl') {
+			if (
+				(user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesRocketChat(key, context.data))
+				|| (user.permissions.includes('SCHOOL_STUDENT_TEAM_MANAGE') && updatesTeamCreation(key, context.data))
+				|| (user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl')
+			) {
 				patch[key] = context.data[key];
 			}
 		}
@@ -160,7 +163,7 @@ exports.before = {
 exports.after = {
 	all: [
 		iff(populateInQuery, keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active'])),
-		iff(isProvider('external'), discard('storageProvider')),
+		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
 	],
 	find: [decorateYears],
 	get: [decorateYears],

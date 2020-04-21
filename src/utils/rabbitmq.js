@@ -1,6 +1,5 @@
 const { Configuration } = require('@schul-cloud/commons');
 const amqp = require('amqplib');
-
 let connection;
 
 const createChannel = async () => {
@@ -8,7 +7,8 @@ const createChannel = async () => {
 		const con = await connection; // ensure connection has resolved
 		return con.createChannel();
 	}
-	return null;
+
+	throw new Error('No RabbitMQ connection available.');
 };
 
 const setup = async (app) => {
