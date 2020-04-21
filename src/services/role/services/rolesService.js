@@ -6,6 +6,8 @@ const {
 	filterByQuery,
 	paginate,
 } = require('../utils');
+// paginate should replace with this
+// const { paginate } = require('../../../utils/array');
 
 // Do not protect this route with authentication.
 const RoleServiceHooks = {
@@ -27,7 +29,7 @@ class RoleService {
 		this.docs = docs || {};
 		this.err = Object.freeze({
 			load: 'Can not load roles from DB, or can not solved pre mutations.',
-			notFound: 'Role not found by ',
+			notFound: 'Role not found.',
 		});
 		this.roles = undefined;
 	}
@@ -57,7 +59,7 @@ class RoleService {
 		const result = filterByQuery([role], params.query);
 
 		if (!result[0]) {
-			throw new NotFound(this.err.notFound + id);
+			throw new NotFound(this.err.notFound, { id });
 		}
 		return result[0];
 	}
