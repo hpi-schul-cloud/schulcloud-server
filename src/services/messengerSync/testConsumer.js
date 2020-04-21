@@ -3,10 +3,7 @@
 const { Configuration } = require('@schul-cloud/commons');
 const amqp = require('amqplib/callback_api');
 
-const RABBITMQ_URI = Configuration.get('RABBITMQ_URI');
-const QUEUE = Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL');
-
-amqp.connect(RABBITMQ_URI, (error0, connection) => {
+amqp.connect(Configuration.get('RABBITMQ_URI'), (error0, connection) => {
 	if (error0) {
 		throw error0;
 	}
@@ -15,14 +12,14 @@ amqp.connect(RABBITMQ_URI, (error0, connection) => {
 			throw error1;
 		}
 
-		channel.assertQueue(QUEUE, {
+		channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), {
 			durable: false,
 		});
 
 		// eslint-disable-next-line no-console
-		console.log(' [*] Waiting for messages in %s. To exit press CTRL+C', QUEUE);
+		console.log(' [*] Waiting for messages in %s. To exit press CTRL+C');
 
-		channel.consume(QUEUE, (msg) => {
+		channel.consume(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), (msg) => {
 			// eslint-disable-next-line no-console
 			console.log(' [x] Received %s', msg.content.toString());
 		}, {

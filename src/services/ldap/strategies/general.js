@@ -33,8 +33,15 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 			roleAttributeNameMapping,
 		} = this.config.providerOptions;
 
+		const requiredAttributes = [
+			userAttributeNameMapping.uuid,
+			userAttributeNameMapping.mail,
+		];
+		const requiredFilters = requiredAttributes.map((attr) => `(${attr}=*)`).join('');
+		const filter = `(&(objectClass=person)${requiredFilters})`;
+
 		const options = {
-			filter: 'objectClass=person',
+			filter,
 			scope: 'sub',
 			attributes: [
 				userAttributeNameMapping.givenName,
