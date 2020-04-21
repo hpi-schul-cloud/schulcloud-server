@@ -43,7 +43,7 @@ describe('courseGroup service', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const { _id: courseId } = await testObjects.createTestCourse({ schoolId, teacherIds: [student._id] });
-			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: [student._id] })
+			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: [student._id] });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
 			const result = await app.service('courseGroups').get(courseGroup._id, params);
@@ -57,7 +57,7 @@ describe('courseGroup service', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const { _id: courseId } = await testObjects.createTestCourse({ schoolId, teacherIds: [student._id] });
-			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: [student._id] })
+			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: [student._id] });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = { _id: courseGroup._id };
 			const result = await app.service('courseGroups').find(params);
@@ -102,7 +102,7 @@ describe('courseGroup service', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const { _id: courseId } = await testObjects.createTestCourse({ schoolId, teacherIds: [student._id] });
-			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: student._id })
+			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: student._id });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
 			const result = await app.service('courseGroups').remove(
@@ -110,6 +110,29 @@ describe('courseGroup service', () => {
 			);
 			expect(result).to.not.be.undefined;
 			expect(result).to.haveOwnProperty('_id');
+		});
+	});
+
+	describe('security', () => {
+		it('CREATE fails for other course', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const course = await testObjects.createTestCourse({ userIds: [] });
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			try {
+				await app.service('courseGroups').create({
+					name: 'testcoursegroup',
+					schoolId: schoolId.toString(),
+					userIds: [student._id],
+					courseId: course._id,
+				}, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				console.log(err);
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(404);
+				expect(err.message).to.equal('invalid courseId');
+			}
 		});
 	});
 });
