@@ -13,7 +13,7 @@ const getAllRoutes = () => {
 		const methods = Object.keys(paths[path]);
 		const modle = path.indexOf('/{_id}') > -1;
 
-		if ( !(path.includes('/{_id}') || path.includes('/{id}')) ) {
+		if (!(path.includes('/{_id}') || path.includes('/{id}'))) {
 			const index = methods.indexOf('get');
 			if (index !== -1) {
 				methods[index] = 'find';

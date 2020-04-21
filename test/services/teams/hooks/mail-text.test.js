@@ -28,7 +28,7 @@ describe('Team mail-text helper', () => {
 			});
 		});
 		it.skip('should work for new expert', () => {
-			const hookCopy = Object.assign({}, hook);
+			const hookCopy = { ...hook };
 			const addClass = app.service('/teams/extern/add');
 			const formatResult = addClass._response;
 			const user = {

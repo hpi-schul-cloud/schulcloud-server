@@ -4,8 +4,8 @@ const app = require('../../../src/app');
 
 const userService = app.service('users');
 const chai = require('chai');
-const loginHelper = require('./../helpers/login');
-const testObjects = require('./../helpers/testObjects')(app);
+const loginHelper = require('../helpers/login');
+const testObjects = require('../helpers/testObjects')(app);
 const _ = require('lodash');
 
 const { expect } = chai;
