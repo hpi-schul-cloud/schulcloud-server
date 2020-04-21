@@ -45,6 +45,7 @@ jobs:
       install:
         - echo "skipping install"
     - stage: deploy
+      if: repo = "schul-cloud/schulcloud-server"
       script:
         - ./deploy.sh
       name: deploy
