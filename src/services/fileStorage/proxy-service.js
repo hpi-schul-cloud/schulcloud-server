@@ -9,7 +9,7 @@ const {
 } = require('@feathersjs/errors');
 
 const hooks = require('./hooks');
-const swaggerDocs = require('./docs/');
+const swaggerDocs = require('./docs');
 
 const {
 	canWrite,
@@ -22,7 +22,7 @@ const {
 	createCorrectStrategy,
 	createDefaultPermissions,
 	createPermission,
-} = require('./utils/');
+} = require('./utils');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');

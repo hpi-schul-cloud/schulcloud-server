@@ -19,7 +19,7 @@ app.configure(config);
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
-const services = require('./services/');
+const services = require('./services');
 
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
