@@ -1,5 +1,4 @@
 /* eslint-disable no-process-env */
-const { debug } = console;
 
 const ENVIRONMENTS = {
 	DEVELOPMENT: 'development',
@@ -114,11 +113,6 @@ const globals = {
 const ENVIRONMENT_VALUES = Object.values(ENVIRONMENTS);
 if (!(ENVIRONMENT_VALUES.includes(globals.NODE_ENV))) {
 	throw new Error('NODE_ENV must match one of valid environments', { ENVIRONMENT_VALUES, NODE_ENV });
-} else {
-	debug(`NODE_ENV is set to '${globals.NODE_ENV}'`);
 }
-
-// print
-debug('Current configuration is', JSON.stringify(globals, null, 2));
 
 module.exports = globals;
