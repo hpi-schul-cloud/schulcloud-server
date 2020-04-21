@@ -31,18 +31,31 @@ const restrictToUsersOwnCourses = async (context) => {
 		}
 	}
 
-	if (context.method === 'find') {
+	if (['find'].includes(context.method)) {
 		context.params.query.$and = (context.params.query.$and || []);
 		context.params.query.$and.push({
-			userId: { $in: [usersCoursesIds] },
+			courseId: { $in: [usersCoursesIds] },
 		});
 	}
+	console.log(context.params.query)
+};
+
+const denyIfNotInCourse = async (context) => {
+	const { userId } = context.params.account;
+	const course = await context.app.service('courses').get(context.result.courseId);
+	const userInCourse = course.userIds.some((id) => equal(id, userId))
+		|| course.teacherIds.some((id) => equal(id, userId))
+		|| course.substitutionIds.some((id) => equal(id, userId));
+	if (!userInCourse) throw new NotFound(`no record found for id '${context.id}'`);
+	return context;
 };
 
 exports.before = {
 	all: [authenticate('jwt')],
-	find: [globalHooks.hasPermission('COURSE_VIEW'), restrictToCurrentSchool],
-	get: [globalHooks.hasPermission('COURSE_VIEW'), restrictToCurrentSchool],
+	find: [iff(isProvider('external'), [
+		globalHooks.hasPermission('COURSE_VIEW'), restrictToCurrentSchool, restrictToUsersOwnCourses,
+	])],
+	get: [globalHooks.hasPermission('COURSE_VIEW')],
 	create: [iff(isProvider('external'), [
 		globalHooks.hasPermission('COURSEGROUP_CREATE'), restrictToCurrentSchool, restrictToUsersOwnCourses,
 	])],
@@ -58,7 +71,11 @@ exports.before = {
 exports.after = {
 	all: [],
 	find: [],
-	get: [],
+	get: [iff(isProvider('external'), [
+		globalHooks.denyIfNotCurrentSchool({
+			errorMessage: 'You do not have valid permissions to access this.',
+		}), denyIfNotInCourse,
+	])],
 	create: [],
 	update: [],
 	patch: [],
