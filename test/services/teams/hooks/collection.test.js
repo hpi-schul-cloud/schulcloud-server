@@ -37,7 +37,7 @@ describe('collection helpers', () => {
 		});
 
 		it('works for huge arrays', () => {
-			const array = new Array(Math.pow(2, 20)).fill(1);
+			const array = new Array(2 ** 20).fill(1);
 			expect(isArray(array)).to.equal(true);
 		});
 	});
@@ -60,7 +60,7 @@ describe('collection helpers', () => {
 		});
 
 		it('works for huge arrays', () => {
-			const array = new Array(Math.pow(2, 20)).fill(1);
+			const array = new Array(2 ** 20).fill(1);
 			expect(isArrayWithElement(array)).to.equal(true);
 		});
 	});
