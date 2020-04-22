@@ -210,7 +210,7 @@
 		},
 		"SENTRY_SAMPLE_RATE": {
 			"type": "number",
-			"default": 0.10,
+			"default": 0.00,
 			"description": "This is the % count (0.00 to 1.00) of how many of the errors send to the backend. This filter go over all errors, maybe some lost by low user counts."
 		}
 	},
