@@ -115,9 +115,7 @@ describe('fileStorage services', () => {
 		it('should create a course file object', (done) => {
 			const context = setContext('0000d224816abba584714c8e');
 
-			fileStorageService.create(Object.assign({
-				owner: '0000dcfbfb5c7a3f00bf21ac',
-			}, params), context).then((res) => {
+			fileStorageService.create({ owner: '0000dcfbfb5c7a3f00bf21ac', ...params }, context).then((res) => {
 				// eslint-disable-next-line eqeqeq
 				const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
 				const {
@@ -141,9 +139,7 @@ describe('fileStorage services', () => {
 		it('should create a team file object', (done) => {
 			const context = setContext('0000d224816abba584714c8e');
 
-			fileStorageService.create(Object.assign({
-				owner: '5cf9303bec9d6ac639fefd42',
-			}, params), context).then((res) => {
+			fileStorageService.create({ owner: '5cf9303bec9d6ac639fefd42', ...params }, context).then((res) => {
 				// eslint-disable-next-line eqeqeq
 				const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
 				const {
@@ -167,7 +163,7 @@ describe('fileStorage services', () => {
 		it('should create a user file object', (done) => {
 			const context = setContext('0000d224816abba584714c8e');
 
-			fileStorageService.create(Object.assign({}, params), context).then((res) => {
+			fileStorageService.create({ ...params }, context).then((res) => {
 				// eslint-disable-next-line eqeqeq
 				const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
 				const {
