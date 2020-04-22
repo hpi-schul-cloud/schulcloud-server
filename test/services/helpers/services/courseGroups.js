@@ -32,10 +32,8 @@ const cleanup = () => {
 	return removeManyCourses(ids);
 };
 
-module.exports = (app, opt) => {
-	return {
-		create: createTestCourseGroup(app, opt),
-		cleanup,
-		info: createdCourseIds,
-	};
-};
+module.exports = (app, opt) => ({
+	create: createTestCourseGroup(app, opt),
+	cleanup,
+	info: createdCourseIds,
+});

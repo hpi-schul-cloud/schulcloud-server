@@ -343,7 +343,8 @@ exports.enableQueryAfter = (context) => {
 		throw new NotFound(`no record found for id '${context.params.query._id}'`);
 	}
 	context.result = context.result[0];
-}
+	return context;
+};
 
 exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, 'superhero')) {

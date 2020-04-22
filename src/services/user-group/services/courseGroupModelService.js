@@ -16,10 +16,6 @@ const courseGroupModelService = service({
 	lean: { virtuals: true },
 });
 
-const print = (context) => {
-	return context;
-}
-
 const courseGroupModelServiceHooks = {
 	before: {
 		all: [
@@ -29,7 +25,6 @@ const courseGroupModelServiceHooks = {
 			iff(isProvider('external'), disallow()),
 		],
 		get: [
-			print,
 			iff(isProvider('external'), disallow()),
 		],
 		create: [
