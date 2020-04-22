@@ -135,17 +135,22 @@
 			"type": "string",
 			"format": "uri",
 			"default": "amqp://192.168.99.100",
-			"description": "the URI of the rabbitMQ server"
+			"description": "The URI of the RabbitMQ server."
+		},
+		"RABBITMQ_MATRIX_CONSUME_CONCURRENCY": {
+			"type": "integer",
+			"default": 10,
+			"description": "How many messages should be handled at the same time."
 		},
 		"RABBITMQ_MATRIX_QUEUE_INTERNAL": {
 			"type": "string",
 			"default": "matrix_sync_unpopulated",
-			"description": "the URI of the rabbitMQ server"
+			"description": "Name of queue used to buffer building synchronization request internally."
 		},
 		"RABBITMQ_MATRIX_QUEUE_EXTERNAL": {
 			"type": "string",
 			"default": "matrix_sync_populated",
-			"description": "the URI of the rabbitMQ server"
+			"description": "Name of queue used to publish synchronization request."
 		},
 		"HOST": {
 			"type": "string",
