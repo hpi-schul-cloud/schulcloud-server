@@ -162,5 +162,28 @@ describe('courseGroup service', () => {
 			const result = await app.service('courseGroups').find(params);
 			expect(result.total).to.equal(0);
 		});
+
+		it('PATCH fails for user not in course', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const { _id: courseId } = await testObjects.createTestCourse({ schoolId });
+			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: [] });
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = {};
+			try {
+				await app.service('courseGroups').patch(
+					courseGroup._id, { $push: { userIds: student._id } }, params,
+				);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(404);
+				expect(err.message).to.equal(`no record found for id '${courseGroup._id}'`);
+				const check = await app.service('courseGroups').get(courseGroup._id);
+				// make sure courseGroup was not patched
+				expect(check).to.not.be.undefined;
+				expect(check.userIds.length).to.equal(0);
+			}
+		});
 	});
 });

@@ -40,6 +40,7 @@ const courseGroupModelServiceHooks = {
 		],
 		patch: [
 			iff(isProvider('external'), disallow()),
+			enableQuery,
 		],
 		remove: [
 			iff(isProvider('external'), disallow()),
@@ -51,7 +52,7 @@ const courseGroupModelServiceHooks = {
 		get: [],
 		create: [],
 		update: [],
-		patch: [],
+		patch: [enableQueryAfter],
 		remove: [],
 	},
 };
