@@ -106,15 +106,14 @@ describe('collection helpers', () => {
 
 		it('should not break due to broken arguments', () => {
 			expect(hasKey()).to.equal(false);
-			expect(hasKey({}, void 0)).to.equal(false);
-			expect(hasKey(void 0, 4)).to.equal(false);
+			expect(hasKey({}, undefined)).to.equal(false);
+			expect(hasKey(undefined, 4)).to.equal(false);
 		});
 	});
 
 	describe('isDefined', () => {
 		it('should work', () => {
 			expect(isDefined(undefined)).to.equal(false);
-			expect(isDefined(void 0)).to.equal(false);
 			expect(isDefined(null)).to.equal(true);
 			expect(isDefined(1)).to.equal(true);
 			expect(isDefined(true)).to.equal(true);
@@ -127,14 +126,13 @@ describe('collection helpers', () => {
 			expect(isDefined([3, 4], 'OR')).to.equal(true);
 			expect(isDefined([undefined, 4], 'AND')).to.equal(false);
 			expect(isDefined([undefined, 5], 'OR')).to.equal(true);
-			expect(isDefined([void 0, void 0], 'OR')).to.equal(false);
+			expect(isDefined([undefined, undefined], 'OR')).to.equal(false);
 		});
 	});
 
 	describe('isUndefined', () => {
 		it('should work', () => {
 			expect(isUndefined(undefined)).to.equal(true);
-			expect(isUndefined(void 0)).to.equal(true);
 			expect(isUndefined(null)).to.equal(false);
 			expect(isUndefined(1)).to.equal(false);
 			expect(isUndefined(true)).to.equal(false);
@@ -147,14 +145,13 @@ describe('collection helpers', () => {
 			expect(isUndefined([3, 4], 'OR')).to.equal(false);
 			expect(isUndefined([undefined, 4], 'AND')).to.equal(false);
 			expect(isUndefined([undefined, 5], 'OR')).to.equal(true);
-			expect(isUndefined([void 0, void 0], 'OR')).to.equal(true);
+			expect(isUndefined([undefined, undefined], 'OR')).to.equal(true);
 		});
 	});
 
 	describe('isNull', () => {
 		it('should work', () => {
 			expect(isNull(undefined)).to.equal(false);
-			expect(isNull(void 0)).to.equal(false);
 			expect(isNull(null)).to.equal(true);
 			expect(isNull(1)).to.equal(false);
 			expect(isNull(true)).to.equal(false);
