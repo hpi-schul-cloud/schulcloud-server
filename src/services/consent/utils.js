@@ -40,6 +40,15 @@ const stageAddConsentSortParam = (aggregation) => {
 	});
 };
 
+const getParentReducer = (type) => ({
+	$reduce: {
+		input: '$consent.parentConsents',
+		initialValue: false,
+		in: { $or: ['$$value', `$$this.${type}`] },
+
+	},
+});
+
 const createConsentAggrigation = ({
 	select, sort, limit = 25, skip = 0, consentStatus, ...match
 }) => {
@@ -76,15 +85,15 @@ const createConsentAggrigation = ({
 										{ $lte: ['$birthday', firstLevel] },
 										{ $eq: ['$consent.userConsent.privacyConsent', true] },
 										{ $eq: ['$consent.userConsent.termsOfUseConsent', true] },
-										{ $eq: ['$consent.parentConsents.privacyConsent', true] },
-										{ $eq: ['$consent.parentConsents.termsOfUseConsent', true] },
+										{ $eq: [getParentReducer('privacyConsent'), true] },
+										{ $eq: [getParentReducer('termsOfUseConsent'), true] },
 									],
 								},
 								{
 									$and: [
 										{ $gt: ['$birthday', firstLevel] },
-										{ $eq: ['$consent.parentConsents.privacyConsent', true] },
-										{ $eq: ['$consent.parentConsents.termsOfUseConsent', true] },
+										{ $eq: [getParentReducer('privacyConsent'), true] },
+										{ $eq: [getParentReducer('termsOfUseConsent'), true] },
 									],
 								},
 
@@ -98,8 +107,8 @@ const createConsentAggrigation = ({
 							$and: [
 								{ $gt: ['$birthday', secondLevel] },
 								{ $lte: ['$birthday', firstLevel] },
-								{ $eq: ['$consent.parentConsents.privacyConsent', true] },
-								{ $eq: ['$consent.parentConsents.termsOfUseConsent', true] },
+								{ $eq: [getParentReducer('privacyConsent'), true] },
+								{ $eq: [getParentReducer('termsOfUseConsent'), true] },
 							],
 						},
 						then: 'parentsAgreed',
@@ -149,15 +158,14 @@ const createConsentAggrigation = ({
 	}
 
 	if (sort) {
-		let mSort = sort;
+		const mSort = {};
+		for (const k in sort) {
+			if (({}).hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
+		}
 
-		if (Array.isArray(sort) && sort.includes('consentStatus')) {
-			const i = sort.indexOf('consentStatus');
-			mSort = sort.splice(i, 1, 'consentSortParam');
-			stageAddConsentSortParam(aggregation);
-		} else if (typeof sort === 'object' && ({}).hasOwnProperty.call(sort, 'consentStatus')) {
-			sort.consentSortParam = sort.consentStatus;
-			delete sort.consentStatus;
+		if (typeof sort === 'object' && ({}).hasOwnProperty.call(sort, 'consentStatus')) {
+			mSort.consentSortParam = sort.consentStatus;
+			delete mSort.consentStatus;
 			stageAddConsentSortParam(aggregation);
 		}
 		aggregation.push({

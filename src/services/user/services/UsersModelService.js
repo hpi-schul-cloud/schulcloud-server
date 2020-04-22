@@ -4,7 +4,7 @@ const {
 	iff, isProvider, disallow,
 } = require('feathers-hooks-common');
 const { userModel } = require('../model');
-const { addDate: addConsentDate } = require('../hooks/consent');
+const { addDates: addConsentDate } = require('../hooks/consent');
 
 const userModelHooks = {
 	before: {

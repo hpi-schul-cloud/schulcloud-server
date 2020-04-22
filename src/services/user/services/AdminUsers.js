@@ -32,9 +32,9 @@ const getAllUsers = async (ref, schoolId, role, clientQuery) => {
 	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 
-	return userModel.aggregate(createConsentAggrigation(query), {
+	return userModel.aggregate(createConsentAggrigation(query)).option({
 		collation: { locale: 'de', caseLevel: true },
-	});
+	}).exec();
 };
 
 const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
