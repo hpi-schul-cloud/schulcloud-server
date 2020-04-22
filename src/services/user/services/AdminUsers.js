@@ -24,16 +24,17 @@ const getAllUsers = async (ref, schoolId, role, clientQuery) => {
 		schoolId,
 		roles: role,
 		consentStatus: clientQuery.consentStatus,
-		sort: clientQuery.$sort || JSON.parse(clientQuery.sort),
+		sort: clientQuery.$sort || clientQuery.sort,
 		select: ['consentStatus', 'consent', 'firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
 		skip: clientQuery.$skip || clientQuery.skip,
 		limit: clientQuery.$limit || clientQuery.limit,
 	};
 	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
-	// return ref.app.service('usersModel').find({ collation: { locale: 'de', caseLevel: true }, query });
 
-	return userModel.aggregate(createConsentAggrigation(query));
+	return userModel.aggregate(createConsentAggrigation(query), {
+		collation: { locale: 'de', caseLevel: true },
+	});
 };
 
 const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
@@ -154,6 +155,7 @@ class AdminUsers {
 				data: users,
 			};
 		} catch (err) {
+			console.log(err);
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.', err);
 			}
