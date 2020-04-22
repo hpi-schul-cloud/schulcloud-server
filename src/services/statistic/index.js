@@ -96,13 +96,11 @@ const fetchStatistics = () => {
 	const statistics = {};
 
 	return Promise.all(
-		promises.map((p) =>
-			p.promise.exec().then((res) => {
-				statistics[p.name] = res;
-				return res;
-			})
-		)
-	).then((_) => statistics);
+		promises.map((p) => p.promise.exec().then((res) => {
+			statistics[p.name] = res;
+			return res;
+		})),
+	).then(() => statistics);
 };
 
 class StatisticsService {
