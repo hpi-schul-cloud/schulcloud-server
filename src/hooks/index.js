@@ -329,6 +329,7 @@ const testIfRoleNameExist = (user, roleNames) => {
 
 exports.enableQuery = (context) => {
 	if (context.id) {
+		context.params.query = context.params.query || {};
 		context.params.query._id = context.id;
 		context.id = null;
 	}
