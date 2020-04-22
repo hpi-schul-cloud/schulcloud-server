@@ -118,8 +118,6 @@ const restrictChangesToArchivedCourse = async (context) => {
 	// course is expired
 	const disallowedKeys = Object.keys(context.data)
 		.filter((key) => !['untilDate', 'startDate', 'schoolId', 'features'].includes(key));
-	console.log(`Keys : ${disallowedKeys}`)
-	console.log(context.data)
 	if (disallowedKeys.length > 0) {
 		return Promise.reject(new BadRequest('This course is archived. To activate it, please change the end date.'));
 	}
