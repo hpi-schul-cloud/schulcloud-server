@@ -22,7 +22,6 @@ describe('collection helpers', () => {
 	describe('isArray', () => {
 		it('returns true for empty arrays', () => {
 			expect(isArray([])).to.equal(true);
-			expect(isArray(new Array())).to.equal(true);
 		});
 
 		it('returns true for given arrays', () => {
@@ -45,7 +44,6 @@ describe('collection helpers', () => {
 	describe('isArrayWithElement', () => {
 		it('returns false for empty arrays', () => {
 			expect(isArrayWithElement([])).to.equal(false);
-			expect(isArrayWithElement(new Array())).to.equal(false);
 		});
 
 		it('returns true for given arrays', () => {
