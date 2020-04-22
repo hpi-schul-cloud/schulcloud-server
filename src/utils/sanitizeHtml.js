@@ -1,8 +1,5 @@
 /* eslint-disable no-param-reassign */
 const sanitizeHtml = require('sanitize-html');
-const Entities = require('html-entities').AllHtmlEntities;
-
-const entities = new Entities();
 
 const maxDeep = 10;
 // enable html for all current editors
@@ -43,10 +40,7 @@ const sanitize = (data, options) => {
 		// non editor-content data
 		data = sanitizeHtml(data, htmlFalseOptions);
 	}
-	// something during sanitizeHtml() is encoding HTML Entities like & => &amp;
-	// I wasn't able to figure out which option disables this so I just decode it again.
-	// BTW: html-entities is already a dependency of sanitize-html so no new imports where done here.
-	return entities.decode(data);
+	return data;
 };
 
 const allowedHtmlByPathAndKeys = (path, key) => paths.includes(path) && keys.includes(key);
