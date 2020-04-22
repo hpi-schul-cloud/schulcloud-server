@@ -209,4 +209,85 @@ describe('Nexboard services', () => {
 		expect(board).to.be.an('object');
 		expect(board.id).to.equal(id);
 	});
+
+	it('Create should need TOOL_CREATE permission.', async () => {
+		const {
+			requestParams: { authentication: { accessToken } },
+		} = await testHelpers.setupUser({ roles: ['student'] });
+
+		const data = {
+			title: '1',
+			description: '2',
+			projectId: '1234',
+		};
+
+		const { body } = await request({
+			server: app,
+			endpoint: '/nexboard/boards',
+			method: 'post',
+			data,
+			accessToken,
+		});
+
+		expect(body.code).to.equal(403);
+	});
+
+	it('Patch should blocked.', async () => {
+		const {
+			requestParams: { authentication: { accessToken } },
+		} = await testHelpers.setupUser({ roles: ['student'] });
+
+		const data = {
+			title: '1',
+			description: '2',
+			projectId: '1234',
+		};
+
+		const { body } = await request({
+			server: app,
+			endpoint: '/nexboard/boards',
+			method: 'patch',
+			data,
+			accessToken,
+		});
+
+		expect(body.code).to.equal(405);
+	});
+
+	it('DELETE should blocked.', async () => {
+		const {
+			requestParams: { authentication: { accessToken } },
+		} = await testHelpers.setupUser({ roles: ['student'] });
+
+		const { body } = await request({
+			server: app,
+			endpoint: '/nexboard/boards',
+			method: 'delete',
+			accessToken,
+		});
+
+		expect(body.code).to.equal(405);
+	});
+
+	it('UPDATE should blocked.', async () => {
+		const {
+			requestParams: { authentication: { accessToken } },
+		} = await testHelpers.setupUser({ roles: ['student'] });
+
+		const data = {
+			title: '1',
+			description: '2',
+			projectId: '1234',
+		};
+
+		const { body } = await request({
+			server: app,
+			endpoint: '/nexboard/boards',
+			method: 'put',
+			data,
+			accessToken,
+		});
+
+		expect(body.code).to.equal(405);
+	});
 });

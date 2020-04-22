@@ -9,8 +9,8 @@ const before = {
 	get: [hasPermission('TOOL_VIEW')],
 	create: [hasPermission('TOOL_CREATE')],
 	update: [disallow()],
-	patch: [hasPermission('TOOL_EDIT')],
-	remove: [hasPermission('TOOL_EDIT')],
+	patch: [disallow()],
+	remove: [disallow()], // TODO: is added later
 };
 
 const after = {
