@@ -75,6 +75,7 @@ describe('courseGroup service', () => {
 			const { _id: courseId } = await testObjects.createTestCourse({ schoolId, userIds: [student._id] });
 			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: [student._id] });
 			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = {};
 			const result = await app.service('courseGroups').patch(
 				courseGroup._id, { $push: { userIds: studentToAdd._id } }, params,
 			);

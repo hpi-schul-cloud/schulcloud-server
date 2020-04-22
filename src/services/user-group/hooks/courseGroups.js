@@ -1,15 +1,10 @@
-const { authenticate } = require('@feathersjs/authentication');
-const {	iff, isProvider } = require('feathers-hooks-common');
 const {
 	NotFound,
 	BadRequest,
 } = require('@feathersjs/errors');
-const globalHooks = require('../../../hooks');
 const { equal } = require('../../../helper/compare').ObjectId;
 
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-
-const restrictToUsersOwnCourses = async (context) => {
+const restrictToUsersCourses = async (context) => {
 	const { userId } = context.params.account;
 	const usersCourses = await context.app.service('courses').find({
 		query: {
@@ -26,18 +21,20 @@ const restrictToUsersOwnCourses = async (context) => {
 		if (!context.data.courseId) {
 			throw new BadRequest('courseId required');
 		}
-		if (!usersCoursesIds.some((uid) => equal(uid, context.data.courseId))) {
+	}
+
+	if (['create', 'patch'].includes(context.method)) {
+		if (context.data.courseId && !usersCoursesIds.some((uid) => equal(uid, context.data.courseId))) {
 			throw new NotFound('invalid courseId');
 		}
 	}
 
-	if (['find'].includes(context.method)) {
+	if (['find', 'patch'].includes(context.method)) {
 		context.params.query.$and = (context.params.query.$and || []);
 		context.params.query.$and.push({
 			courseId: { $in: [usersCoursesIds] },
 		});
 	}
-	console.log(context.params.query)
 };
 
 const denyIfNotInCourse = async (context) => {
@@ -50,34 +47,4 @@ const denyIfNotInCourse = async (context) => {
 	return context;
 };
 
-exports.before = {
-	all: [authenticate('jwt')],
-	find: [iff(isProvider('external'), [
-		globalHooks.hasPermission('COURSE_VIEW'), restrictToCurrentSchool, restrictToUsersOwnCourses,
-	])],
-	get: [globalHooks.hasPermission('COURSE_VIEW')],
-	create: [iff(isProvider('external'), [
-		globalHooks.hasPermission('COURSEGROUP_CREATE'), restrictToCurrentSchool, restrictToUsersOwnCourses,
-	])],
-	update: [globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool],
-	patch: [globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
-	remove: [
-		globalHooks.hasPermission('COURSEGROUP_CREATE'),
-		restrictToCurrentSchool,
-		globalHooks.permitGroupOperation,
-	],
-};
-
-exports.after = {
-	all: [],
-	find: [],
-	get: [iff(isProvider('external'), [
-		globalHooks.denyIfNotCurrentSchool({
-			errorMessage: 'You do not have valid permissions to access this.',
-		}), denyIfNotInCourse,
-	])],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
-};
+module.exports = { denyIfNotInCourse, restrictToUsersCourses };
