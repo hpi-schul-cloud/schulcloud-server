@@ -210,6 +210,56 @@ describe('Nexboard services', () => {
 		expect(board.id).to.equal(id);
 	});
 
+	it('Find should need TOOL_VIEW permission.', async () => {
+		const name = `${Date.now()}testRole`;
+		const role = await testHelpers.createTestRole({ name, permissions: [] });
+
+		const {
+			requestParams: { authentication: { accessToken } },
+		} = await testHelpers.setupUser({ roles: [name] });
+
+		const data = {
+			title: '1',
+			description: '2',
+			projectId: '1234',
+		};
+
+		const { body } = await request({
+			server: app,
+			endpoint: '/nexboard/boards',
+			method: 'get',
+			data,
+			accessToken,
+		});
+
+		expect(body.code).to.equal(403);
+	});
+
+	it('Get should need TOOL_VIEW permission.', async () => {
+		const name = `${Date.now()}testRole`;
+		const role = await testHelpers.createTestRole({ name, permissions: [] });
+
+		const {
+			requestParams: { authentication: { accessToken } },
+		} = await testHelpers.setupUser({ roles: [name] });
+
+		const data = {
+			title: '1',
+			description: '2',
+			projectId: '1234',
+		};
+
+		const { body } = await request({
+			server: app,
+			endpoint: '/nexboard/boards/123',
+			method: 'get',
+			data,
+			accessToken,
+		});
+
+		expect(body.code).to.equal(403);
+	});
+
 	it('Create should need TOOL_CREATE permission.', async () => {
 		const {
 			requestParams: { authentication: { accessToken } },
@@ -245,7 +295,7 @@ describe('Nexboard services', () => {
 
 		const { body } = await request({
 			server: app,
-			endpoint: '/nexboard/boards',
+			endpoint: '/nexboard/boards/123',
 			method: 'patch',
 			data,
 			accessToken,
@@ -261,7 +311,7 @@ describe('Nexboard services', () => {
 
 		const { body } = await request({
 			server: app,
-			endpoint: '/nexboard/boards',
+			endpoint: '/nexboard/boards/123',
 			method: 'delete',
 			accessToken,
 		});
@@ -282,7 +332,7 @@ describe('Nexboard services', () => {
 
 		const { body } = await request({
 			server: app,
-			endpoint: '/nexboard/boards',
+			endpoint: '/nexboard/boards/123',
 			method: 'put',
 			data,
 			accessToken,
