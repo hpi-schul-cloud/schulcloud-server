@@ -282,10 +282,6 @@ const registerUser = function register(data, params, app) {
 
 module.exports = function (app) {
 	class RegistrationService {
-		constructor() {
-
-		}
-
 		create(data, params) {
 			return registerUser(data, params, app);
 		}
