@@ -29,7 +29,9 @@ class CourseGroups {
 	}
 
 	update(id, data, params) {
-		return this.app.service('courseGroupModel').update(id, data, prepareInternalParams(params));
+		/* redirect to patch, since otherwise school and course restrictions dont apply.
+		WARNING: thus currently update is not guaranteed to be idempotent. This should be fixed when possible. */
+		return this.app.service('courseGroupModel').patch(id, data, prepareInternalParams(params));
 	}
 
 	patch(id, data, params) {
@@ -85,11 +87,14 @@ const courseGroupHooks = {
 	after: {
 		all: [],
 		find: [],
-		get: [iff(isProvider('external'), [
-			globalHooks.denyIfNotCurrentSchool({
-				errorMessage: 'You do not have valid permissions to access this.',
-			}), denyIfNotInCourse,
-		])],
+		get: [
+			iff(isProvider('external'), [
+				globalHooks.denyIfNotCurrentSchool({
+					errorMessage: 'You do not have valid permissions to access this.',
+				}),
+				denyIfNotInCourse,
+			]),
+		],
 		create: [],
 		update: [],
 		patch: [],

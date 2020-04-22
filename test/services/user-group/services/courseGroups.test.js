@@ -185,6 +185,33 @@ describe('courseGroup service', () => {
 				expect(check.userIds.length).to.equal(0);
 			}
 		});
+
+		it('UPDATE fails for user not in course', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const { _id: courseId } = await testObjects.createTestCourse({ schoolId });
+			const { _id: otherCourseId } = await testObjects.createTestCourse({ schoolId, userIds: [student._id] });
+			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: [] });
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = {};
+			try {
+				await app.service('courseGroups').update(
+					courseGroup._id, {
+						name: 'A-Team', schoolId: schoolId.toString(), courseId: otherCourseId, userIds: [student._id],
+					}, params,
+				);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(404);
+				expect(err.message).to.equal(`no record found for id '${courseGroup._id}'`);
+				// make sure courseGroup was not updated
+				const check = await app.service('courseGroups').get(courseGroup._id);
+				expect(check).to.not.be.undefined;
+				expect(check.name).to.not.equal('A-Team');
+			}
+		});
+
 		it('REMOVE fails for user not in course', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
