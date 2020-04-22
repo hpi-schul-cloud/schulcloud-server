@@ -23,13 +23,13 @@ const restrictToUsersCourses = async (context) => {
 		}
 	}
 
-	if (['create', 'patch'].includes(context.method)) {
+	if (['create', 'patch', 'update'].includes(context.method)) {
 		if (context.data.courseId && !usersCoursesIds.some((uid) => equal(uid, context.data.courseId))) {
 			throw new NotFound('invalid courseId');
 		}
 	}
 
-	if (['find', 'patch'].includes(context.method)) {
+	if (['find', 'patch', 'update', 'remove'].includes(context.method)) {
 		context.params.query.$and = (context.params.query.$and || []);
 		context.params.query.$and.push({
 			courseId: { $in: [usersCoursesIds] },
