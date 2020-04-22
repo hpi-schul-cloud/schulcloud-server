@@ -212,7 +212,7 @@ describe('Nexboard services', () => {
 
 	it('Find should need TOOL_VIEW permission.', async () => {
 		const name = `${Date.now()}testRole`;
-		const role = await testHelpers.createTestRole({ name, permissions: [] });
+		await testHelpers.createTestRole({ name, permissions: [] });
 
 		const {
 			requestParams: { authentication: { accessToken } },
@@ -237,7 +237,7 @@ describe('Nexboard services', () => {
 
 	it('Get should need TOOL_VIEW permission.', async () => {
 		const name = `${Date.now()}testRole`;
-		const role = await testHelpers.createTestRole({ name, permissions: [] });
+		await testHelpers.createTestRole({ name, permissions: [] });
 
 		const {
 			requestParams: { authentication: { accessToken } },
@@ -282,7 +282,7 @@ describe('Nexboard services', () => {
 		expect(body.code).to.equal(403);
 	});
 
-	it('Patch should blocked.', async () => {
+	it('Patch should be blocked.', async () => {
 		const {
 			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({ roles: ['student'] });
@@ -304,7 +304,7 @@ describe('Nexboard services', () => {
 		expect(body.code).to.equal(405);
 	});
 
-	it('DELETE should blocked.', async () => {
+	it('DELETE should be blocked.', async () => {
 		const {
 			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({ roles: ['student'] });
@@ -319,7 +319,7 @@ describe('Nexboard services', () => {
 		expect(body.code).to.equal(405);
 	});
 
-	it('UPDATE should blocked.', async () => {
+	it('UPDATE should be blocked.', async () => {
 		const {
 			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({ roles: ['student'] });
