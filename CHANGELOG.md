@@ -23,6 +23,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 -   SC-3892 Update Filter of submission in order to work with older submissions
 -   SC-3395 if fetching the release fails, a error will be thrown
+-   backup.js now outputs valid json exports
 
 ### Changed
 
