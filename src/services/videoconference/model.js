@@ -40,6 +40,18 @@ const videoconferenceSchema = new Schema({
 			default: false,
 			required: true,
 		},
+		record: {
+			type: Boolean,
+			default: false,
+		},
+	},
+	owner: {
+		type: Schema.Types.ObjectId,
+		required: true,
+		refPath: 'user',
+	},
+	recordId: {
+		type: String,
 	},
 }, {
 	timestamps: true,

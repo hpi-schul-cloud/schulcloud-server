@@ -1,3 +1,6 @@
+/* eslint-disable max-classes-per-file */
+const { promisify } = require('util');
+const moment = require('moment');
 const {
 	BadRequest,
 	Forbidden,
@@ -5,13 +8,17 @@ const {
 	GeneralError,
 	FeathersError,
 } = require('@feathersjs/errors');
-const lodash = require('lodash');
 const { Configuration } = require('@schul-cloud/commons');
+const lodash = require('lodash');
+const jwt = require('jsonwebtoken');
+const request = require('request-promise-native');
 
 const { SCHOOL_FEATURES } = require('../school/model');
 
 const videoconferenceHooks = require('./hooks');
 
+const logger = require('../../logger');
+const rabbitmq = require('../../utils/rabbitmq');
 const { getUser } = require('../../hooks');
 
 const {
@@ -37,11 +44,14 @@ const {
 } = require('./logic/constants');
 
 const CLIENT_HOST = Configuration.get('HOST');
+const SALT = Configuration.get('VIDEOCONFERENCE_SALT');
 
 const VideoconferenceModel = require('./model');
 const { schoolModel: Schools } = require('../school/model');
 
 const { ObjectId } = require('../../helper/compare');
+
+const RECORDER_QUEUE = 'schulcloud-bbb-recording-conversion';
 
 // event ids are from postgres instead of mongo
 function scopeIdMatchesEventId(id) {
@@ -227,6 +237,15 @@ function getDefaultModel(scopeName, scopeId) {
 }
 
 /**
+ * The videoconference "targetModel" values do not match the names used in file "refOwnerModel".
+ * Hence we need to perform a mapping here to make them compatible.
+ */
+function getFileOwnerModelFromTargetModelName(targetModelName) {
+	if (targetModelName === 'courses') return 'course';
+	return targetModelName;
+}
+
+/**
  * Fetches the VideoconferenceModel with given scopeName and scopeId and returns it.
  * the model will be defined when a video conference is created/starts.
  * some of the options are reused from other users for join link generation
@@ -246,12 +265,19 @@ async function getVideoconferenceMetadata(scopeName, scopeId, returnAsObject = f
 	return videoconferenceMetadata;
 }
 
-function getMeetingSetttings(logoutURL, { everyAttendeJoinsMuted = false }) {
+function getMeetingSettings(conference, logoutURL, { everyAttendeJoinsMuted = false }) {
 	const settings = {
 		allowStartStopRecording: false,
 		lockSettingsDisablePrivateChat: true,
 		logoutURL,
 	};
+
+	// http://docs.bigbluebutton.org/dev/api.html#create
+	// http://docs.bigbluebutton.org/dev/api.html#recording-ready-callback-url
+
+	settings.autoStartRecording = true;
+	settings.record = true;
+	settings['meta_bbb-recording-ready-url'] = `https://…/videoconference/${conference._id}/recording-ready`;
 
 	if (everyAttendeJoinsMuted) {
 		settings.muteOnStart = true;
@@ -305,18 +331,17 @@ function getJoinRole(userPermissions, { everybodyJoinsAsModerator = false }) {
  * @param {String} scopeId
  * @param {*} options
  */
-async function updateAndGetVideoconferenceMetadata(scopeName, scopeId, options) {
+async function updateAndGetVideoconferenceMetadata(scopeName, scopeId, ownerId, options) {
 	const modelDefaults = getDefaultModel(scopeName, scopeId);
-	let videoconferenceSettings = await getVideoconferenceMetadata(scopeName, scopeId);
-	if (videoconferenceSettings === null) {
-		videoconferenceSettings = await new VideoconferenceModel({
-			...modelDefaults,
-		});
+	let conference = await getVideoconferenceMetadata(scopeName, scopeId);
+	if (conference === null) {
+		conference = await new VideoconferenceModel({ ...modelDefaults });
 	}
 	const validOptions = getValidOptions(options);
-	Object.assign(videoconferenceSettings.options, validOptions);
-	await videoconferenceSettings.save();
-	return videoconferenceSettings;
+	Object.assign(conference.options, validOptions);
+	conference.owner = ownerId;
+	await conference.save();
+	return conference;
 }
 
 class GetVideoconferenceService {
@@ -425,25 +450,26 @@ class CreateVideoconferenceService {
 		// BUSINESS LOGIC /////////////////////////////////////////////////////////
 
 		try {
-			let videoconferenceMetadata;
+			let conference;
 
 			const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
 
 			if (hasStartPermission) {
-				videoconferenceMetadata = (await updateAndGetVideoconferenceMetadata(scopeName, scopeId, options))
-					.toObject();
+				conference = (
+					await updateAndGetVideoconferenceMetadata(scopeName, scopeId, authenticatedUser._id, options)
+				).toObject();
 			} else {
-				videoconferenceMetadata = (await getVideoconferenceMetadata(scopeName, scopeId, true));
-				if (videoconferenceMetadata === null) {
+				conference = (await getVideoconferenceMetadata(scopeName, scopeId, true));
+				if (conference === null) {
 					return new NotFound('ask a moderator to start the videoconference, it\'s not started yet');
 				}
 			}
 
-			const { options: conferenceOptions } = videoconferenceMetadata;
+			const { options: conferenceOptions } = conference;
 			const userID = authenticatedUser.id;
 
 			// Get meeting info, create one if it does not exist and the user has sufficient privileges.
-			const meetingSettings = getMeetingSetttings(logoutURL, conferenceOptions);
+			const meetingSettings = getMeetingSettings(conference, logoutURL, conferenceOptions);
 			const meeting = await ensureMeetingExists(server, scopeId, scopeTitle, meetingSettings, hasStartPermission);
 
 			// Join the meeting.
@@ -455,7 +481,7 @@ class CreateVideoconferenceService {
 				RESPONSE_STATUS.SUCCESS,
 				STATES.RUNNING,
 				userPermissionsInScope,
-				hasStartPermission ? videoconferenceMetadata.options : {},
+				hasStartPermission ? conference.options : {},
 				joinUrl,
 			);
 		} catch (error) {
@@ -470,12 +496,121 @@ class CreateVideoconferenceService {
 	}
 }
 
+const jwtVerify = promisify(jwt.verify);
+
+class RecordingReadyVideoconferenceService {
+	constructor(app) {
+		this.app = app;
+		this.docs = {};
+	}
+
+	async create(data, params) {
+		const { route } = params;
+		const { record_id: recordId } = await jwtVerify(data.signed_parameters, SALT);
+
+		const { response } = await server.recording.getRecordings({ recordId });
+
+		const entries = response.recordings[0].recording;
+		const isPresentation = (pb) => pb.format[0].type[0] === 'presentation';
+		const recording = entries.find(({ playback: [pb] }) => isPresentation(pb));
+		const playback = recording.playback.find(isPresentation).format[0];
+
+		// Update videoconference, store recordId
+		const conference = await VideoconferenceModel.findByIdAndUpdate(route.id, { recordId }).orFail().exec();
+
+		// Connect to the message broker
+		const channel = await rabbitmq.createChannel();
+
+		// Ensure the queue exists
+		await channel.assertQueue(RECORDER_QUEUE, { durable: true });
+
+		// Send message to the queue for exporting the playback to a video
+		const payload = {
+			url: playback.url[0],
+			duration: Math.ceil((recording.endTime[0] - recording.startTime[0]) / 1000),
+			vid: conference.id,
+		};
+		const buffer = Buffer.from(JSON.stringify(payload));
+		await channel.sendToQueue(RECORDER_QUEUE, buffer, { persistent: true });
+
+		await channel.close();
+
+		return { ok: true };
+	}
+}
+
+class RecordingUploadVideoconferenceService {
+	constructor(app) {
+		this.app = app;
+		this.docs = {};
+	}
+
+	async create(data, params) {
+		const { headers, route } = params;
+		const { app } = this;
+
+		// Verify the call was sent by the schulcloud-bbb-recorder service
+		const [, token] = headers.authorization.split(' ');
+		await jwtVerify(token, SALT);
+
+		// Fetch videoconference model instance
+		const conference = await VideoconferenceModel.findById(route.id).exec();
+
+		// The recording belongs to the last person to start the videoconference
+		const userId = conference.owner;
+
+		const upload = app.service('fileStorage/signedUrl');
+		const files = app.service('fileStorage');
+
+		const timestamp = moment(conference.createdAt).format('YYYY-MM-DD_HH-mm');
+		const fileName = `${timestamp}.webm`;
+		const fileType = 'video/webm';
+		const parent = undefined;
+
+		// Upload the file to the storage provider via a signed URL
+		const target = await upload.create({ filename: fileName, fileType, parent }, { account: { userId } });
+
+		await request({
+			uri: target.url, method: 'PUT', headers: target.headers, body: data,
+		});
+
+		// Create an entry in the "files" collection and permissions
+		await files.create({
+			name: fileName,
+			owner: conference.target,
+			refOwnerModel: getFileOwnerModelFromTargetModelName(conference.targetModel),
+			type: fileType,
+			size: data.length,
+			storageFileName: target.header['x-amz-meta-flat-name'],
+			thumbnail: target.header['x-amz-meta-thumbnail'],
+			parent,
+		}, { account: { userId } });
+
+		// Delete recording in BBB
+		const { response } = await server.recording.deleteRecordings(conference.recordId);
+
+		if (!isValidFoundResponse(response)) {
+			// Recordings that cannot be deleted immediately should be cleaned
+			// up by a periodic job. Therefore, we avoid re-recording the video
+			// and only log an error here instead of making the request fail.
+			logger.error({
+				message: `Could not delete BBB recording ${conference.recordId}`,
+				response,
+			});
+		}
+	}
+}
+
 module.exports = function setup(app) {
 	app.use('/videoconference', new CreateVideoconferenceService(app));
+	app.use('/videoconference/:id/recording-ready', new RecordingReadyVideoconferenceService(app));
+	app.use('/videoconference/:id/recordings', new RecordingUploadVideoconferenceService(app));
 	app.use('/videoconference/:scopeName', new GetVideoconferenceService(app));
+
 	const videoConferenceServices = [
 		app.service('/videoconference'),
 		app.service('/videoconference/:scopeName'),
 	];
+
 	videoConferenceServices.forEach((service) => service.hooks(videoconferenceHooks));
 };
