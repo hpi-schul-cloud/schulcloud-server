@@ -2,7 +2,7 @@ const mockery = require('mockery');
 const { expect } = require('chai');
 
 const app = require('../../../../src/app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(app);
+const testObjects = require('../../helpers/testObjects')(app);
 
 const { hasEditPermissionForUser } = require('../../../../src/services/user/hooks/index.hooks');
 

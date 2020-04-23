@@ -1,9 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const {
 	iff, isProvider, discard, disallow, keepInArray,
 } = require('feathers-hooks-common');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 

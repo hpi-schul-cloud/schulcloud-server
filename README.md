@@ -18,8 +18,8 @@ When running the server locally, it is served at [http://localhost:3030/docs/](h
 
 # Requirements
 
-* Node.js
-* MongoDB
+* Node.js (see `.nvmrc` for version)
+* MongoDB (`4.x`)
 
 ## Setup
 
@@ -28,9 +28,9 @@ You will need the [client](https://github.com/schul-cloud/schulcloud-client) as 
 ## Run
 
 1. Go into project folder
-2. run `mongod`
-3. run `npm start`
-4. run `npm run setup`
+2. Run `mongod`
+3. Run `npm start`
+4. Run `npm run setup`
 
 ## Debugger Configuration in Visual Studio Code
 
