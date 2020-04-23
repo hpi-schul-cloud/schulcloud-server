@@ -155,6 +155,7 @@ describe('submission service', function test() {
 		expect(result).to.haveOwnProperty('_id');
 		expect(result.grade).to.eq(0);
 	});
+<<<<<<< HEAD
 
 	it('lets substitution teacher grade submission', async () => {
 		const [originalTeacher, coTeacher, student] = await Promise.all([
@@ -261,4 +262,6 @@ describe('submission service', function test() {
 		expect(result).to.not.be.undefined;
 		expect(result.total).to.equal(0);
 	});
+=======
+>>>>>>> cd12558a... Remove duplicate test
 });
