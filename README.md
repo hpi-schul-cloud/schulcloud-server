@@ -50,7 +50,7 @@ For more details how to set up Visual Studio Code, read [this document](https://
 1. Go into project folder
 2. run `npm run test`
 
-To run a single test, use `npm run mocha-single <path/to/unit.test.js>`.
+To run a single test, use `npm run mocha-single -- <path/to/unit.test.js>`.
 
 ### Create tests
 
