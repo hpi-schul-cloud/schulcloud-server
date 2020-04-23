@@ -3,9 +3,9 @@ const { FileModel } = require('../src/services/fileStorage/model');
 const LessonModel = require('../src/services/lesson/model');
 const { courseGroupModel, courseModel } = require('../src/services/user-group/model');
 const { connect, close } = require('../src/utils/database');
-const logger = require('../src/logger/');
+const logger = require('../src/logger');
 const { OutputLogTemplate } = require('./helpers');
-const { copyFile } = require('../src/services/fileStorage/utils/');
+const { copyFile } = require('../src/services/fileStorage/utils');
 
 const DETAIL_LOGS = true;
 const EXECUTE_FIX = true;

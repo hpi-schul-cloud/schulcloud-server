@@ -1,7 +1,7 @@
 const service = require('feathers-mongoose');
 const passwordRecovery = require('./model');
 const hooks = require('./hooks');
-const AccountModel = require('./../account/model');
+const AccountModel = require('../account/model');
 
 class ChangePasswordService {
 	create(data) {

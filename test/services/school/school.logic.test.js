@@ -10,7 +10,7 @@ const {
 const globals = require('../../../config/globals');
 
 const { cleanup } = require('../helpers/testObjects')(app);
-const { create: createSchool } = require('./../helpers/services/schools')(app);
+const { create: createSchool } = require('../helpers/services/schools')(app);
 
 const { expect } = chai;
 
