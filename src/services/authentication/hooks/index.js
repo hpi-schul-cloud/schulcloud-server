@@ -2,7 +2,7 @@ const { TooManyRequests } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const {
-	getRedisClient, redisSetAsync, redisDelAsync, extractRedisFromJwt, getRedisValue,
+	getRedisClient, redisSetAsync, redisDelAsync, extractDataFromJwt, getRedisData,
 } = require('../../../utils/redis');
 
 const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
@@ -136,9 +136,12 @@ const removeProvider = (context) => {
  */
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const { redisIdentifier, expirationInSeconds } = extractRedisFromJwt(context.result.accessToken);
+		const { redisIdentifier, privateDevice } = extractDataFromJwt(context.result.accessToken);
+		const redisData = getRedisData({ privateDevice });
+		const { expirationInSeconds } = redisData;
+		// todo, do this async without await
 		await redisSetAsync(
-			redisIdentifier, getRedisValue(), 'EX', expirationInSeconds,
+			redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
 		);
 	}
 
@@ -151,7 +154,7 @@ const addJwtToWhitelist = async (context) => {
  */
 const removeJwtFromWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const { redisIdentifier } = extractRedisFromJwt(context.params.authentication.accessToken);
+		const { redisIdentifier } = extractDataFromJwt(context.params.authentication.accessToken);
 		await redisDelAsync(redisIdentifier);
 	}
 
@@ -162,12 +165,12 @@ const removeJwtFromWhitelist = async (context) => {
  * increase jwt timeout for private devices on request
   @param {} context
  */
-const increateJwtTimeoutForPrivateDevices = (context) => {
+const increaseJwtTimeoutForPrivateDevices = (context) => {
 	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true) {
 		if (context.data && context.data.privateDevice === true) {
 			context.params.jwt = {
 				...context.params.jwt,
-				expiresIn: Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS'),
+				privateDevice: true,
 			};
 		}
 	}
@@ -183,7 +186,7 @@ const hooks = {
 			trimPassword,
 			bruteForceCheck,
 			injectUserId,
-			increateJwtTimeoutForPrivateDevices,
+			increaseJwtTimeoutForPrivateDevices,
 			removeProvider,
 		],
 		remove: [removeProvider],

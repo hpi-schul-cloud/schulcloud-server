@@ -8,7 +8,8 @@ const createChannel = async () => {
 		const con = await connection; // ensure connection has resolved
 		return con.createChannel();
 	}
-	return null;
+
+	throw new Error('No RabbitMQ connection available.');
 };
 
 const setup = async (app) => {
