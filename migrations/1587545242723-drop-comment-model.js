@@ -18,7 +18,7 @@ module.exports = {
 
 		// Remove obsolete collection
 		await Comment.collection.drop();
-		await await close();
+		await close();
 	},
 
 	down: async function down() {
