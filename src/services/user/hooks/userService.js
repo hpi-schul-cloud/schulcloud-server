@@ -431,7 +431,7 @@ const generateRegistrationLink = async (context) => {
 				toHash: data.email,
 			})
 			.catch((err) => {
-				throw new GeneralError('Can not create registrationlink.', err);
+				throw new GeneralError(`Can not create registrationlink. ${err}`);
 			});
 		context.data.importHash = hash;
 	}
