@@ -38,7 +38,7 @@ const isObject = (obj) => {
 };
 
 const getService = (options = {}) => {
-	const opt = Object.assign({}, _DefaultServiceOptions, options);
+	const opt = { ..._DefaultServiceOptions, ...options };
 	if (opt.Model === undefined || opt.paginate === undefined) {
 		opt._TEST_INFO_ = 'service can not create and is faked';
 		return opt;
@@ -116,7 +116,7 @@ const createHookStack = (app, opt) => {
 	_TYPE.forEach((type) => {
 		stack[type] = {};
 		_METHOD.forEach((method) => {
-			stack[type][method] = createHook(app, Object.assign({ type, method }, opt));
+			stack[type][method] = createHook(app, { type, method, ...opt });
 		});
 	});
 	return stack;
