@@ -35,6 +35,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [22.9.10]
 
+### Added
+
+-  enable API key for /mails route
+
+## [22.9.10]
+
 ### Fixed
 
 -  fixed an issue that prevented api-key authenticated calls to function with query.
