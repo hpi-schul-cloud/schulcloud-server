@@ -54,7 +54,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		this.requestParams = {
 			...requestParams,
 			headers: {
-				'x-api-key': Configuration.get(CLIENT_API_KEY),
+				'x-api-key': Configuration.get('CLIENT_API_KEY'),
 			},
 			authenticated: false,
 		};
