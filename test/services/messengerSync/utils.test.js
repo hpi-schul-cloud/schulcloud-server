@@ -39,7 +39,7 @@ describe('messenger synchronizer utils', () => {
 	describe('buildAddUserMessage', () => {
 		it('builds a correct object for teacher with course', async () => {
 			this.app = app;
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger', 'messengerSchoolRoom'] });
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 			const course = await testObjects.createTestCourse({ teacherIds: [teacher._id], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: teacher._id, courses: [course] });
@@ -66,7 +66,7 @@ describe('messenger synchronizer utils', () => {
 
 		it('builds a correct object for teacher with team', async () => {
 			this.app = app;
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger', 'messengerSchoolRoom'] });
 			const { user, team } = await testObjects.createTestTeamWithOwner(
 				{ roles: ['teacher'], schoolId: school._id },
 			);
@@ -92,7 +92,7 @@ describe('messenger synchronizer utils', () => {
 			expect(room).to.haveOwnProperty('name');
 		});
 
-		it('builds a correct object for schoolSync', async () => {
+		it('builds a correct object for schoolSync with allhands disabled', async () => {
 			this.app = app;
 			const school = await testObjects.createTestSchool({ features: ['messenger'] });
 			const { user } = await testObjects.createTestTeamWithOwner(
@@ -106,7 +106,7 @@ describe('messenger synchronizer utils', () => {
 			expect(result.method).to.equal('adduser');
 
 			expect(result.school.id).to.equal(school._id.toString());
-			expect(result.school.has_allhands_channel).to.equal(true);
+			expect(result.school.has_allhands_channel).to.equal(false);
 			expect(result.school).to.haveOwnProperty('name');
 
 			expect(result.user).to.haveOwnProperty('name');
