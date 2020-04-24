@@ -19,7 +19,7 @@ const getRoles = () => roleModel.find()
 	.exec();
 
 
-const getAllUsers = async (ref, schoolId, role, clientQuery) => {
+const getAllUsers = async (ref, schoolId, role, clientQuery = {}) => {
 	const query = {
 		schoolId,
 		roles: role,
@@ -71,9 +71,6 @@ class AdminUsers {
 		try {
 			const { query, account } = params;
 			const currentUserId = account.userId.toString();
-			const {
-				$sort,
-			} = query;
 
 			// fetch base data
 			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles()]);
@@ -121,34 +118,12 @@ class AdminUsers {
 
 			// sorting by class and by consent is implemented manually,
 			// as classes and consents are fetched from seperate db collection
-			const classSortParam = (($sort || {}).class || {}).toString();
+			const classSortParam = (((query || {}).$sort || {}).class || {}).toString();
 			if (classSortParam === '1') {
 				users.sort((a, b) => (a.classes[0] || '').toLowerCase() > (b.classes[0] || '').toLowerCase());
 			} else if (classSortParam === '-1') {
 				users.sort((a, b) => (a.classes[0] || '').toLowerCase() < (b.classes[0] || '').toLowerCase());
 			}
-
-			const sortOrder = {
-				ok: 1,
-				parentsAgreed: 2,
-				missing: 3,
-			};
-			/* const consentSortParam = (($sort || {}).consent || {}).toString();
-			if (consentSortParam === '1') {
-				users.sort((a, b) => (sortOrder[a.consent.consentStatus || 'missing']
-					- sortOrder[b.consent.consentStatus || 'missing']));
-			} else if (consentSortParam === '-1') {
-				users.sort((a, b) => (sortOrder[b.consent.consentStatus || 'missing']
-					- sortOrder[a.consent.consentStatus || 'missing']));
-			}
-
-			const filteredUsers = users.filter((user) => {
-				if ((consentStatus || {}).$in) {
-					const userStatus = user.consent.consentStatus || 'missing';
-					return consentStatus.$in.includes(userStatus);
-				}
-				return true;
-			}); */
 
 			return {
 				...usersData,
