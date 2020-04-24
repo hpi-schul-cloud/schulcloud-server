@@ -92,7 +92,7 @@ const registerUser = function register(data, params, app) {
 	let parent = null; let user = null; let oldUser = null; let account = null; let consent = null; let
 		consentPromise = null;
 
-	return new Promise(((resolve, reject) => {
+	return new Promise(((resolve) => {
 		resolve();
 	})).then(() => {
 		let classPromise = null; let

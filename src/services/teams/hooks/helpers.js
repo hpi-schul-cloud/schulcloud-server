@@ -425,7 +425,7 @@ const removeNotValidUsersBySchoolIds = (schoolIds, teamUsers, users) => {
 	return removeTeamUsers(teamUsers, removeList);
 };
 
-const teamOwnerRoleExist = (hook, teamUsers, oldTeam, users) =>
+const teamOwnerRoleExist = (hook, teamUsers /* , oldTeam, users */) =>
 // todo later
 // const teamownerRoleId = hook.findRole('name', 'teamowner', '_id');
 // remove logic in mappedInputUserIdsToTeamUsers for owner
