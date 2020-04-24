@@ -142,7 +142,6 @@ const createConsentAggrigation = ({
 		} else if (typeof consentStatus === 'string') {
 			list = [consentStatus];
 		}
-
 		aggregation.push({
 			$match: {
 				consentStatus: {

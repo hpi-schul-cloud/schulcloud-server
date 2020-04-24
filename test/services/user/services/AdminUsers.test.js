@@ -199,9 +199,13 @@ describe('AdminUsersService', () => {
 	it('filters students correctly', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		const studentWithoutConsents = await testObjects.createTestUser({ roles: ['student'] });
+
+		const currentDate = new Date();
+		const birthday = new Date();
+		birthday.setFullYear(currentDate.getFullYear() - 15);
 		const studentWithParentConsent = await testObjects.createTestUser({
 			roles: ['student'],
-			birthday: '2010-01-01',
+			birthday,
 		});
 
 		await testObjects.createTestConsent({
@@ -260,10 +264,10 @@ describe('AdminUsersService', () => {
 	});
 
 	it('can filter by creation date', async () => {
-		const dateBefore = Date.now();
+		const dateBefore = new Date();
 		const findUser = await testObjects.createTestUser({ roles: ['student'] });
 		const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
-		const dateAfter = Date.now();
+		const dateAfter = new Date();
 		await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 		params.query = { createdAt: { $gte: dateBefore, $lte: dateAfter } };
@@ -294,8 +298,14 @@ describe('AdminTeachersService', () => {
 	});
 
 	it('filters teachers correctly', async () => {
-		const teacherWithoutConsent = await testObjects.createTestUser({ roles: ['teacher'] });
-		const teacherWithConsent = await testObjects.createTestUser({ roles: ['teacher'] });
+		const teacherWithoutConsent = await testObjects.createTestUser({
+			birthday: '1992-03-04',
+			roles: ['teacher'],
+		});
+		const teacherWithConsent = await testObjects.createTestUser({
+			birthday: '1991-03-04',
+			roles: ['teacher'],
+		});
 
 		await consentService.create({
 			userId: teacherWithConsent._id,
@@ -316,9 +326,9 @@ describe('AdminTeachersService', () => {
 				},
 			},
 		});
-
 		const resultMissing = (await adminTeachersService.find(createParams('missing'))).data;
 		const idsMissing = resultMissing.map((e) => e._id.toString());
+		console.log(idsMissing);
 		expect(idsMissing).to.include(teacherWithoutConsent._id.toString());
 		expect(idsMissing).to.not.include(teacherWithConsent._id.toString());
 

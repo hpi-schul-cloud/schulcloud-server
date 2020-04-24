@@ -83,7 +83,7 @@ userSchema.virtual('consentStatus').get(function get() {
 
 
 userSchema.virtual('requiresParentConsent').get(function get() {
-	if (!this.consent) return undefined;
+	if (!this.birthday) return undefined;
 	return isParentConsentRequired(this.birthday);
 });
 

@@ -23,6 +23,10 @@ const defineConsentStatus = (birthday, consent) => {
 		return 'missing';
 	}
 
+	if (!birthday) {
+		return 'unknown';
+	}
+
 	const currentDate = new Date();
 	const secoundConsentSwitchDate = new Date();
 	secoundConsentSwitchDate.setFullYear(currentDate.getFullYear() - 16); // TODO: get age from default.conf

@@ -229,13 +229,13 @@ const addConsentsStatus = (hook) => {
 
 const writeConsentToUser = (context) => {
 	const { data, app } = context;
-	app.service('users').patch(data.userId, modifyDataForUserSchema(data));
+	app.service('usersModel').patch(data.userId, modifyDataForUserSchema(data));
 };
 
 const patchConsentToUser = async (context) => {
 	const { data, app, id } = context;
-	const consent = await app.service('consent').get(id);
-	app.service('users').patch(consent.userId, modifyDataForUserSchema(data));
+	const consent = await app.service('consents').get(id);
+	app.service('usersModel').patch(consent.userId, modifyDataForUserSchema(data));
 };
 
 exports.before = {
