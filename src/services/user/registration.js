@@ -1,11 +1,11 @@
 const errors = require('@feathersjs/errors');
-const userModel = require('../user/model');
+const userModel = require('./model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const { getAge } = require('../../utils');
 const logger = require('../../logger');
 
-const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../consent/config');
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../config/globals');
 
 const formatBirthdate1 = (datestamp) => {
 	if (datestamp == undefined) return false;

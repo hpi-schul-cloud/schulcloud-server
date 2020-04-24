@@ -60,6 +60,7 @@ exports.before = {
 		// resolve ids for role strings (e.g. 'TEACHER')
 		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
 		mapRoleFilterQuery,
+		globalHooks.addCollation,
 	],
 	get: [disallow()],
 	create: [disallow()],

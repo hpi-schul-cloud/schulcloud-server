@@ -3,6 +3,7 @@ const { Forbidden } = require('@feathersjs/errors');
 const {
 	iff, isProvider, discard, disallow, keepInArray,
 } = require('feathers-hooks-common');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 
@@ -46,8 +47,8 @@ const setCurrentYearIfMissing = async (hook) => {
 };
 
 const createDefaultStorageOptions = (hook) => {
-	if (process.env.NODE_ENV !== 'production') {
-		// don't create buckets in development or test
+	// create buckets only in production mode
+	if (NODE_ENV !== ENVIRONMENTS.PRODUCTION) {
 		return Promise.resolve(hook);
 	}
 	const storageType = getDefaultFileStorageType();
@@ -162,7 +163,7 @@ exports.before = {
 exports.after = {
 	all: [
 		iff(populateInQuery, keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active'])),
-		iff(isProvider('external'), discard('storageProvider')),
+		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
 	],
 	find: [decorateYears],
 	get: [decorateYears],

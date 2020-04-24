@@ -9,6 +9,32 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Added
+
+-   SC-3719 Files now have a `creator` attribute that references the ID of the user that created the file.
+    For old files, it is set to the first user permission inside the permissions array (legacy creator check).
+-   SC-3719 The `files` collection now has two additional indexes: `{creator}` and `{permissions.refId, permissions.refPermModel}`.
+-   add MongoDB Collation Support to control sorting behaviour in regards to capitalization.
+-   SC-3607 CSVSyncer now allows the optional birthday field (formats: dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy) in CSV data
+-   SC-3948 support users query in adminusers routes
+-   SC-4018 Add additional nexboard permissions
+
+### Fixed
+
+-   SC-3892 Update Filter of submission in order to work with older submissions
+-   SC-3395 if fetching the release fails, a error will be thrown
+-   backup.js now outputs valid json exports
+
+### Changed
+
+-   User delete now accepts bulk delete requests
+-   SC-3958: the "general" LDAP strategy now returns an empty array if classes are not configured properly
+
+### Removed
+
+-   SC-3958: the LDAP strategy interface no longer supports synchronizing team members to the never-used original N21-IDM
+-   SC-3958: the environment variables NBC_IMPORTURL, NBC_IMPORTUSER, and NBC_IMPORTPASSWORD are no longer used and have been removed
+
 ## [22.9.10]
 
 ### Added
@@ -83,6 +109,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 -   SC-3994: remove unnecessary bucket creation call that caused school administration and LDAP Sync to throw errors
 
+### Changed
+-   use collation for /homeworks, /users, /publicTeachers, /users/admin/teachers, /users/admin/students, /classes, and /courses.
 
 ## [22.9.0]
 
@@ -92,6 +120,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- This changelog has been added
+
+### Removed
+
+-   Clipboard sockets
 -   This changelog has been added
 -   Backend route to confirm analog consents in bulk
 -   Changed Seed Data + Migration Script: Added feature flag for new Editor to klara.fall@schul-cloud.org
@@ -102,6 +135,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
     -   Environment Variables:
         -   FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true will activate the feature
         -   S3_KEY, used for symmetric encryption, already required for the migration because of the secret access key encryption
+
+### Changed
+
+-   SC-3767: moved env variables to globals.js, NODE_ENV required to equal 'test' for test execution and right database selection
+
+### Changed
+
+-   migrated backup.sh script to node, so it can run platform independant and works on windows.
 
 ### Fixed
 

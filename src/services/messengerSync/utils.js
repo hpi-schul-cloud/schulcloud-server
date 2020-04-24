@@ -4,6 +4,7 @@ const { schoolModel } = require('../school/model');
 const roleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
+const { ObjectId } = require('../../helper/compare');
 
 const getUserData = (userId) => userModel.findOne(
 	{ _id: userId },
@@ -15,7 +16,7 @@ const getUserData = (userId) => userModel.findOne(
 const getSchoolData = (schoolId) => schoolModel.findOne(
 	{ _id: schoolId },
 	{
-		_id: 1, name: 1,
+		_id: 1, name: 1, features: 1,
 	},
 ).lean().exec();
 
@@ -82,10 +83,8 @@ const buildCourseObject = (course, userId) => ({
 	name: course.name,
 	type: 'course',
 	bidirectional: (course.features || []).includes('messenger'),
-	is_moderator: course.teacherIds.some(
-		(el) => el.toString() === userId.toString(),
-	) || course.substitutionIds.some(
-		(el) => el.toString() === userId.toString(),
+	is_moderator: course.teacherIds.concat(course.substitutionIds).some(
+		(moderatorId) => ObjectId.equal(moderatorId, userId),
 	),
 });
 
@@ -98,31 +97,31 @@ const buildTeamObject = async (team, userId, moderatorRoles) => {
 		type: 'team',
 		bidirectional: (team.features || []).includes('messenger'),
 		is_moderator: team.userIds.some(
-			(el) => el.userId.toString() === userId.toString()
-				&& [teamAdminId, teamLeaderId, teamOwnerId].includes(el.role.toString()),
+			(user) => ObjectId.equal(user.userId, userId)
+				&& [teamAdminId, teamLeaderId, teamOwnerId].includes(user.role.toString()),
 		),
 	};
 };
 
-const buildMessageObject = async ({ userId, teams, courses }) => {
-	const user = await getUserData(userId);
-	const school = await getSchoolData(user.schoolId);
+const buildMessageObject = async (data) => {
+	const user = data.user || await getUserData(data.userId);
+	const school = data.school || await getSchoolData(user.schoolId);
 	const moderatorRoles = await getRoles();
 	const rooms = [];
-	if (courses) {
-		courses.forEach((course) => {
-			rooms.push(buildCourseObject(course, userId));
+	if (data.courses) {
+		data.courses.forEach((course) => {
+			rooms.push(buildCourseObject(course, data.userId));
 		});
 	}
-	if (teams) {
-		await Promise.all(teams.map(async (team) => {
-			const teamObject = await buildTeamObject(team, userId, moderatorRoles);
+	if (data.teams) {
+		await Promise.all(data.teams.map(async (team) => {
+			const teamObject = await buildTeamObject(team, data.userId, moderatorRoles);
 			rooms.push(teamObject);
 		}));
 	}
-	const homeserver = Configuration.get('MATRIX_URI').replace('https://', '').replace('/', '');
+	const servername = Configuration.get('MATRIX_SERVERNAME');
 
-	const message = {
+	return {
 		method: 'adduser',
 		school: {
 			id: school._id.toString(),
@@ -130,24 +129,35 @@ const buildMessageObject = async ({ userId, teams, courses }) => {
 			name: school.name,
 		},
 		user: {
-			id: `@sso_${user._id.toString()}:${homeserver}`,
+			id: `@sso_${user._id.toString()}:${servername}`,
 			name: displayName(user),
 			email: user.email,
-			is_school_admin: user.roles.some((el) => el.toString() === moderatorRoles.adminRoleId.toString()),
-			is_school_teacher: user.roles.some((el) => el.toString() === moderatorRoles.teacherRoleId.toString()),
+			is_school_admin: user.roles.some((roleId) => ObjectId.equal(roleId, moderatorRoles.adminRoleId)),
+			is_school_teacher: user.roles.some((roleId) => ObjectId.equal(roleId, moderatorRoles.teacherRoleId)),
 		},
 		rooms,
 	};
-	return message;
 };
 
 const buildAddUserMessage = async (data) => {
-	if (data.schoolSync) {
+	if (data.fullSync) {
 		data.courses = await getAllCourseDataForUser(data.userId);
 		data.teams = await getAllTeamsDataForUser(data.userId);
 	}
 	return buildMessageObject(data);
 };
 
+const messengerIsActivatedForSchool = async (data) => {
+	if (data.userId) {
+		data.user = await getUserData(data.userId);
+		data.school = await getSchoolData(data.user.schoolId);
+	}
 
-module.exports = { buildAddUserMessage };
+	if (data.schoolId) {
+		data.school = await getSchoolData(data.schoolId);
+	}
+
+	return data.school && Array.isArray(data.school.features) && data.school.features.includes('messenger');
+};
+
+module.exports = { buildAddUserMessage, messengerIsActivatedForSchool };

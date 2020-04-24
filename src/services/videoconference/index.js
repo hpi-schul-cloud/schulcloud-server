@@ -8,7 +8,7 @@ const {
 const lodash = require('lodash');
 const { Configuration } = require('@schul-cloud/commons');
 
-const { SCHOOL_FEATURES } = require('../../../src/services/school/model');
+const { SCHOOL_FEATURES } = require('../school/model');
 
 const videoconferenceHooks = require('./hooks');
 
