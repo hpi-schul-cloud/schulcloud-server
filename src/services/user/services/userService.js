@@ -3,7 +3,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 // const logger = require('../../../logger');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
-
+const { verifyApiKeyIfProviderIsExternal } = require('../../../hooks/authentication');
 const { userModel } = require('../model');
 const { hasEditPermissionForUser } = require('../hooks/index.hooks');
 const {
@@ -78,7 +78,7 @@ const userService = new UserService({
 
 const userHooks = {
 	before: {
-		all: [],
+		all: [verifyApiKeyIfProviderIsExternal],
 		find: [
 			mapPaginationQuery.bind(this),
 			// resolve ids for role strings (e.g. 'TEACHER')
