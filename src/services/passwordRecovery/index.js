@@ -9,14 +9,14 @@ class ChangePasswordService {
 		try {
 			const pwrecover = await passwordRecovery.findOne({ _id: data.resetId, changed: false });
 			if (Date.now() - Date.parse(pwrecover.createdAt) >= 86400000) {
-				return Promise.resolve();
+				return { success: 'success' };
 			}
 			await AccountModel.update({ _id: pwrecover.account }, { password: data.password });
 			await passwordRecovery.update({ _id: data.resetId }, { changed: true });
 		} catch (err) {
 			logger.error(err);
 		}
-		return Promise.resolve();
+		return { success: 'success' };
 	}
 }
 
