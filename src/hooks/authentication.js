@@ -12,7 +12,7 @@ const verifyApiKey = (context) => {
 			const {
 				path, method, data, id,
 			} = context;
-			error('API-Key validation failed', {
+			error(`Validation of x-api-key header failed. It should match configuration (${CLIENT_API_KEY}).`, {
 				key, path, method, data, id,
 			});
 			throw new NotAuthenticated();
