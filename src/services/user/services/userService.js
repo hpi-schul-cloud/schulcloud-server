@@ -32,7 +32,6 @@ const {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
-	generateRegistrationLink,
 } = require('../hooks/userService');
 
 class UserService {
@@ -95,7 +94,6 @@ const userHooks = {
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,
-			generateRegistrationLink,
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		],
 		update: [
