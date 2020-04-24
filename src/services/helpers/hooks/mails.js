@@ -6,7 +6,7 @@ const checkForKey = (context) => {
 	const key = context.params.headers['x-api-key'];
 	if (!key === Configuration.get('CLIENT_API_KEY')) throw new NotAuthenticated('no permission');
 	return context;
-}
+};
 
 module.exports = {
 	before: {
@@ -14,4 +14,4 @@ module.exports = {
 			checkForKey,
 		])],
 	},
-}
+};
