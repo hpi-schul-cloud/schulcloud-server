@@ -9,9 +9,11 @@ const verifyApiKey = (context) => {
 	if (Configuration.has(CLIENT_API_KEY)) {
 		const key = context.params.headers['x-api-key'];
 		if (Configuration.get(CLIENT_API_KEY) !== key) {
-			const { path, method, data } = context;
+			const {
+				path, method, data, id,
+			} = context;
 			error('API-Key validation failed', {
-				key, path, method, data,
+				key, path, method, data, id,
 			});
 			throw new NotAuthenticated();
 		}
