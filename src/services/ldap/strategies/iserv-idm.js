@@ -6,10 +6,8 @@ const AbstractLDAPStrategy = require('./interface.js');
  */
 class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	/**
-     * @public
      * @see AbstractLDAPStrategy#getSchools
      * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
-     * @memberof iServLDAPStrategy
      */
 	async getSchools() {
 		const options = {
@@ -25,91 +23,76 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	}
 
 	/**
-     * @public
      * @see AbstractLDAPStrategy#getUsers
      * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
      * (Array) roles = ['teacher', 'student', 'administrator']
-     * @memberof iServLDAPStrategy
      */
-	async getUsers() {
-		throw new Error('kabumm');
+	async getUsers(school) {
 		const options = {
-			filter: 'objectClass=person',
+			filter: '(&(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*))',
 			scope: 'sub',
 			attributes: ['givenName', 'sn', 'dn', 'uuid', 'uid', 'mail', 'objectClass', 'memberOf'],
 		};
-		const searchString = `ou=users,${this.config.rootPath}`;
-		return this.app.service('ldap').searchCollection(this.config, searchString, options)
-			.then((data) => {
-				const results = [];
-				data.forEach((obj) => {
-					const roles = [];
-					if (!Array.isArray(obj.memberOf)) {
-						obj.memberOf = [obj.memberOf];
-					}
-					if (obj.memberOf.includes(this.config.providerOptions.TeacherMembershipPath)) {
-						if (!obj.givenName) {
-							obj.givenName = 'Lehrkraft';
-						}
-						roles.push('teacher');
-					}
-					if (obj.memberOf.includes(this.config.providerOptions.AdminMembershipPath)) {
-						if (!obj.givenName) {
-							obj.givenName = 'Admin';
-						}
-						roles.push('administrator');
-					}
-					if (roles.length === 0) {
-						const ignoredUser = obj.memberOf.some(
-							(item) => this.config.providerOptions.IgnoreMembershipPath.includes(item),
-						);
-						if (ignoredUser || !obj.mail || !obj.sn || !obj.uuid || !obj.uid) {
-							return;
-						}
-						if (!obj.givenName) {
-							obj.givenName = 'Schüler:in';
-						}
-						roles.push('student');
-					}
+		const searchString = `ou=users,${school.ldapSchoolIdentifier}`;
+		const data = await this.app.service('ldap').searchCollection(this.config, searchString, options);
 
-					results.push({
-						email: obj.mail,
-						firstName: obj.givenName,
-						lastName: obj.sn,
-						roles,
-						ldapDn: obj.dn,
-						ldapUUID: obj.uuid,
-						ldapUID: obj.uid,
-					});
+		const results = [];
+		data.forEach((obj) => {
+			const memberships = Array.isArray(obj.memberOf) ? obj.memberOf : [obj.memberOf];
+			const roles = [];
+
+			if (memberships.includes('ROLE_TEACHER')) {
+				if (!obj.givenName) {
+					obj.givenName = 'Lehrkraft';
+				}
+				roles.push('teacher');
+			}
+			if (memberships.includes('ROLE_ADMIN')) {
+				if (!obj.givenName) {
+					obj.givenName = 'Admin';
+				}
+				roles.push('administrator');
+			}
+			if (roles.length === 0) {
+				if (!obj.givenName) {
+					obj.givenName = 'Schüler:in';
+				}
+				roles.push('student');
+			}
+
+			if (!memberships.some((item) => item === 'ROLE_NO_SC')) {
+				results.push({
+					email: obj.mail,
+					firstName: obj.givenName,
+					lastName: obj.sn,
+					roles,
+					ldapDn: obj.dn,
+					ldapUUID: obj.uuid,
+					ldapUID: obj.uid,
 				});
-				return results;
-			});
+			}
+		});
+		return results;
 	}
 
 	/**
-     * @public
      * @see AbstractLDAPStrategy#getClasses
      * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
-     * @memberof iServLDAPStrategy
      */
-	getClasses() {
-		return Promise.resolve([]);
-	}
-
-	/**
-     * @public
-     * @see AbstractLDAPStrategy#getExpertsQuery
-     * @returns {LDAPQueryOptions} LDAP query options
-     * @memberof iServLDAPStrategy
-     */
-	getExpertsQuery() {
+	async getClasses(school) {
 		const options = {
-			filter: 'ucsschoolRole=staff:school:Experte',
+			filter: 'description=*',
 			scope: 'sub',
-			attributes: [],
+			attributes: ['dn', 'description', 'member'],
 		};
-		const searchString = `cn=mitarbeiter,cn=users,ou=Experte,${this.config.rootPath}`;
-		return { searchString, options };
+		const searchString = `ou=groups,${school.ldapSchoolIdentifier}`;
+		const data = await this.app.service('ldap').searchCollection(this.config, searchString, options);
+
+		return data.map((obj) => ({
+			className: obj.description,
+			ldapDn: obj.dn,
+			uniqueMembers: obj.member,
+		}));
 	}
 }
 
