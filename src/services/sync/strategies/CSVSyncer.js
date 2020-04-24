@@ -51,7 +51,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 
 		this.options = options;
 		this.requestParams = requestParams;
-
+		delete this.requestParams.provider;
 		Object.assign(this.stats, {
 			users: {
 				successful: 0,
