@@ -13,8 +13,9 @@ const USER_FEATURES = {
 
 const userSchema = new Schema({
 	roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
-	email: { type: String, required: true, lowercase: true },
-
+	email: {
+		type: String, required: true, lowercase: true, unique: true,
+	},
 	schoolId: {
 		type: Schema.Types.ObjectId, ref: 'school', required: true, index: true,
 	},
