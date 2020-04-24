@@ -19,10 +19,11 @@ const verifyApiKey = (context) => {
 	return context;
 };
 
-const verifyApiKeyIfProviderIsExternal = (context) => {
-	iff(isProvider('external'), [
+const verifyApiKeyIfProviderIsExternal = (context) => iff(
+	isProvider('external'), [
 		verifyApiKey,
-	])(context);
-};
+	],
+)(context);
+
 
 module.exports = { verifyApiKey, verifyApiKeyIfProviderIsExternal };
