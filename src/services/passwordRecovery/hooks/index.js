@@ -1,6 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { NotFound } = require('@feathersjs/errors');
+const {
+	iff, isProvider, disallow, keep,
+} = require('feathers-hooks-common');
 const logger = require('../../../logger/index');
 
 const globalHooks = require('../../../hooks');
@@ -78,36 +81,22 @@ const return200 = (context) => {
 
 exports.before = {
 	all: [],
-	find: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_VIEW'),
-	],
+	find: [iff(isProvider('external'), disallow())],
 	get: [],
 	create: [
 		resolveUserIdByUsername,
 		local.hooks.hashPassword('password'),
 	],
-	update: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_EDIT'),
-	],
-	patch: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_EDIT'),
-		globalHooks.permitGroupOperation,
-	],
-	remove: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_CREATE'),
-		globalHooks.permitGroupOperation,
-	],
+	update: [iff(isProvider('external'), disallow())],
+	patch: [iff(isProvider('external'), disallow())],
+	remove: [iff(isProvider('external'), disallow())],
 };
 
 exports.after = {
 	all: [],
 	find: [],
-	get: [],
-	create: [sendInfo],
+	get: [keep('_id, createdAt', 'changed')],
+	create: [sendInfo, return200],
 	update: [],
 	patch: [],
 	remove: [],

@@ -1,18 +1,26 @@
 const service = require('feathers-mongoose');
 const passwordRecovery = require('./model');
 const hooks = require('./hooks');
-const AccountModel = require('./../account/model');
+const logger = require('../../logger/index');
+const AccountModel = require('../account/model');
 
 class ChangePasswordService {
-	create(data) {
-		return passwordRecovery.findOne({ _id: data.resetId, changed: false })
-			.then((pwrecover) => AccountModel.update({ _id: pwrecover.account }, { password: data.password })
-				.then((account) => passwordRecovery.update({ _id: data.resetId }, { changed: true })
-					.then(((_) => account)))).catch((error) => error);
+	async create(data) {
+		try {
+			const pwrecover = await passwordRecovery.findOne({ _id: data.resetId, changed: false });
+			if (Date.now() - Date.parse(pwrecover.createdAt) >= 86400000) {
+				return { success: 'success' };
+			}
+			await AccountModel.update({ _id: pwrecover.account }, { password: data.password });
+			await passwordRecovery.update({ _id: data.resetId }, { changed: true });
+		} catch (err) {
+			logger.error(err);
+		}
+		return { success: 'success' };
 	}
 }
 
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 
 	const options = {
