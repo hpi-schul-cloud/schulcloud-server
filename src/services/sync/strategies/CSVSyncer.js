@@ -1,6 +1,7 @@
 const { parse } = require('papaparse');
 const stripBOM = require('strip-bom');
 const { mix } = require('mixwith');
+const { Configuration } = require('@schul-cloud/commons');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
@@ -52,8 +53,13 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		super(app, stats, logger);
 
 		this.options = options;
-		this.requestParams = requestParams;
-
+		this.requestParams = {
+			...requestParams,
+			headers: {
+				'x-api-key': Configuration.get('CLIENT_API_KEY'),
+			},
+			authenticated: false,
+		};
 		Object.assign(this.stats, {
 			users: {
 				successful: 0,
