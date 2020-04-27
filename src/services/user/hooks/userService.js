@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { keep } = require('feathers-hooks-common');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const {
@@ -386,6 +387,22 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 	}
 };
 
+const filterResult = async (context) => {
+	const elevatedUser = await hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_EDIT');
+	const allowedAttributes = [
+		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastname',
+		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
+		'displayName', 'avatarInitials', 'avatarBackgroundColor',
+	];
+	if (elevatedUser) {
+		allowedAttributes.concat([
+			'email', 'birthday', 'children', 'parents', 'updatedAt',
+			'createdAt', 'age',
+		]);
+	}
+	return keep(...allowedAttributes)(context);
+};
+
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
@@ -403,4 +420,5 @@ module.exports = {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	filterResult,
 };

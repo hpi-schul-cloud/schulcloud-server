@@ -31,6 +31,7 @@ const {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	filterResult,
 } = require('../hooks/userService');
 
 class UserService {
@@ -121,6 +122,7 @@ const userHooks = {
 		find: [
 			decorateAvatar,
 			decorateUsers,
+			iff(isProvider('external'), filterResult),
 		],
 		get: [
 			decorateAvatar,
@@ -130,16 +132,18 @@ const userHooks = {
 				denyIfNotCurrentSchool({
 					errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
 				})),
+			iff(isProvider('external'), filterResult),
 		],
 		create: [
 			handleClassId,
 		],
-		update: [],
-		patch: [],
+		update: [iff(isProvider('external'), filterResult)],
+		patch: [iff(isProvider('external'), filterResult)],
 		remove: [
 			pushRemoveEvent,
 			removeStudentFromClasses,
 			removeStudentFromCourses,
+			iff(isProvider('external'), filterResult),
 		],
 	},
 };
