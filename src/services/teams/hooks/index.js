@@ -48,7 +48,6 @@ const teamMainHook = globalHooks.ifNotLocal((hook) => Promise.all([
 	getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook),
 ]).then(([sessionUser, team, users]) => {
 	const userId = bsonIdToString(hook.params.account.userId);
-	const restrictedFindMatch = { userIds: { $elemMatch: { userId } } };
 	const isSuperhero = ifSuperhero(sessionUser.roles);
 	const { method } = hook;
 
@@ -183,7 +182,7 @@ const testInputData = (hook) => {
  * @param {Object::hook} - block this methode for every request
  * @throws {errors} new errors.MethodNotAllowed('Method is not allowed!');
  */
-const blockedMethod = (hook) => {
+const blockedMethod = () => {
 	logger.warning('[teams]', 'Method is not allowed!');
 	throw new MethodNotAllowed('Method is not allowed!');
 };
@@ -383,7 +382,7 @@ const hasTeamPermission = (permsissions, _teamId) => globalHooks.ifNotLocal((hoo
 	}
 	return Promise.all(
 		[getSessionUser(hook), teamRolesToHook(hook), getTeam(hook)],
-	).then(([sessionUser, ref, team]) => {
+	).then(([, ref, team]) => {
 		if (get(hook, 'isSuperhero') === true) {
 			return Promise.resolve(hook);
 		}
@@ -518,25 +517,25 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 			throw new Forbidden('Can not adding users from other schools.');
 		}
 		if (isLeaveTeam) {
-			wait.push(leaveTeam(hook).catch((err) => {
+			wait.push(leaveTeam(hook).catch(() => {
 				throw new Forbidden('Permission LEAVE_TEAM is missing.');
 			}));
 		}
 
 		if (isRemoveOthers) {
-			wait.push(removeMembers(hook).catch((err) => {
+			wait.push(removeMembers(hook).catch(() => {
 				throw new Forbidden('Permission REMOVE_MEMBERS is missing.');
 			}));
 		}
 
 		if (isAddingFromOwnSchool) {
-			wait.push(addSchoolMembers(hook).catch((err) => {
+			wait.push(addSchoolMembers(hook).catch(() => {
 				throw new Forbidden('Permission ADD_SCHOOL_MEMBERS is missing.');
 			}));
 		}
 
 		if (hasChangeRole) {
-			wait.push(changeTeamRoles(hook).catch((err) => {
+			wait.push(changeTeamRoles(hook).catch(() => {
 				throw new Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
 			}));
 

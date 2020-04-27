@@ -1,5 +1,3 @@
-const errors = require('@feathersjs/errors');
-const randexp = require('randexp');
 const path = require('path');
 
 const templateDir = path.join(__dirname, 'templates', 'signup');

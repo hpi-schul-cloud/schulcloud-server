@@ -6,7 +6,6 @@ const { promisify } = require('es6-promisify');
 const fs = require('fs');
 
 const readFile = promisify(fs.readFile);
-const writeFile = promisify(fs.writeFile);
 const path = require('path');
 
 
@@ -62,10 +61,6 @@ describe('content service', function () {
 			chai.expect(result.data).to.have.lengthOf(1);
 		}));
 });
-
-function writeResponseToDisk(requestOptions, response) {
-	return writeFile(requestToFilename(requestOptions), response);
-}
 
 function requestToFilename(requestOptions) {
 	const key = JSON.stringify(requestOptions.qs).replace(/([^ -~]|[\."<>\|\\\/\:\*\?])+/g, ''); // just ASCII characters, NTFS-safe
