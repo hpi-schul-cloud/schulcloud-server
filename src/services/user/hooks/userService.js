@@ -14,7 +14,11 @@ const {
 } = require('../../../utils');
 
 const constants = require('../../../utils/constants');
-const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS, SC_DOMAIN } = require('../../../../config/globals');
+const {
+	CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS, SC_DOMAIN, HOST, SC_SHORT_TITLE,
+} = require('../../../../config/globals');
+
+const globalHooks = require('../../../hooks');
 
 /**
  *
@@ -437,6 +441,28 @@ const generateRegistrationLink = async (context) => {
 	}
 };
 
+const sendRegistrationLink = async (context) => {
+	await generateRegistrationLink(context);
+	const registrationLink = `${HOST}/??????/${context.data.importHash}`;
+	const mailContent = `Einladung in die ${SC_SHORT_TITLE}
+					Hallo ${context.data.firstName} ${context.data.lastName}!
+					\\nDu wurdest eingeladen, der ${SC_SHORT_TITLE} beizutreten,
+					\\nbitte vervollständige deine Registrierung unter folgendem Link: ${registrationLink}
+					\\nViel Spaß und einen guten Start wünscht dir dein ${SC_SHORT_TITLE}-Team`;
+
+	const maildata = {
+		subject: `Einladung für die Nutzung der ${SC_SHORT_TITLE}!`,
+		emails: [context.data.email],
+		content: {
+			text: mailContent,
+		},
+	};
+	logger.info(maildata);
+	globalHooks.sendEmail(context, maildata);
+	logger.info(`The Registration Link ${registrationLink} successfully sent`);
+	context.data.registrationLinkSent = true;
+};
+
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
@@ -455,4 +481,5 @@ module.exports = {
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
 	generateRegistrationLink,
+	sendRegistrationLink,
 };

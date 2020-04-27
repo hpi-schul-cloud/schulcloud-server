@@ -4,7 +4,7 @@ const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 
 const {
-	removeStudentFromCourses, removeStudentFromClasses, generateRegistrationLink,
+	removeStudentFromCourses, removeStudentFromClasses, generateRegistrationLink, sendRegistrationLink,
 } = require('../../../../src/services/user/hooks/userService');
 
 describe('removeStudentFromCourses', () => {
@@ -231,5 +231,72 @@ describe('generateRegistrationLink', () => {
 		};
 		await generateRegistrationLink(context);
 		expect(context.data.importHash).to.equal(expectedHash);
+	});
+});
+
+describe('sendRegistrationLink', () => {
+	let server;
+
+	before((done) => {
+		server = app.listen(0, done);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
+	});
+
+
+	const getAppMock = (registrationlinkMock) => ({
+		service: (service) => {
+			if (service === '/registrationlink') {
+				return ({
+					create: async (data) => registrationlinkMock(data),
+				});
+			}
+			if (service === '/users') {
+				return 	{ find: async () => {} };
+			}
+			if (service === '/mails') {
+				return { create: async () => {} };
+			}
+
+			throw new Error('unknown service');
+		},
+	});
+
+	it('sends a registration link to the customer', async () => {
+		const expectedHash = 'testhash';
+		const userData = {
+			roles: ['student'],
+			schoolId: 'schoolId',
+			email: 'user@email.de',
+			firstName: 'John',
+			lastName: 'Doe',
+		};
+		const context = {
+			app: getAppMock((data) => {
+				if (data.role === userData.roles[0]
+					&& data.save === true
+					&& data.patchUser === true
+					&& data.host
+					&& data.schoolId === userData.schoolId
+					&& data.toHash === userData.email
+				) {
+					return { hash: expectedHash };
+				}
+				throw new Error('wrong arguments passed to CREATE /registrationlink');
+			}),
+			data: {
+				...userData,
+				generateRegistrationLink: true,
+			},
+		};
+		await sendRegistrationLink(context);
+		expect(context.data.importHash).to.equal(expectedHash);
+		expect(context.data.registrationLinkSent).to.equal(true);
 	});
 });
