@@ -388,8 +388,8 @@ const enforceRoleHierarchyOnDelete = async (hook) => {
 };
 
 const filterResult = async (context) => {
-	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId)
-	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero')
+	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId);
+	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
 	if (userCallingHimself || userIsSuperhero) {
 		return context;
 	}
@@ -402,7 +402,7 @@ const filterResult = async (context) => {
 	if (elevatedUser) {
 		allowedAttributes.concat([
 			'email', 'birthday', 'children', 'parents', 'updatedAt',
-			'createdAt', 'age',
+			'createdAt', 'age', 'ldapDn',
 		]);
 	}
 	return keep(...allowedAttributes)(context);
