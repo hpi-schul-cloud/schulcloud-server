@@ -29,9 +29,9 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
      */
 	async getUsers(school) {
 		const options = {
-			filter: '(&(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*))',
+			filter: '(&(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*)(cn=*))',
 			scope: 'sub',
-			attributes: ['givenName', 'sn', 'dn', 'uuid', 'uid', 'mail', 'objectClass', 'memberOf'],
+			attributes: ['givenName', 'sn', 'dn', 'uuid', 'cn', 'mail', 'objectClass', 'memberOf'],
 		};
 		const searchString = `ou=users,${school.ldapSchoolIdentifier}`;
 		const data = await this.app.service('ldap').searchCollection(this.config, searchString, options);
@@ -68,7 +68,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 					roles,
 					ldapDn: obj.dn,
 					ldapUUID: obj.uuid,
-					ldapUID: obj.uid,
+					ldapUID: obj.cn,
 				});
 			}
 		});
