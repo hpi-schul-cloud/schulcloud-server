@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { BadRequest, Forbidden, GeneralError } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const {
@@ -14,7 +14,7 @@ const {
 } = require('../../../utils');
 
 const constants = require('../../../utils/constants');
-const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../../config/globals');
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS, SC_DOMAIN } = require('../../../../config/globals');
 
 /**
  *
@@ -417,6 +417,30 @@ const enforceRoleHierarchyOnDelete = async (context) => {
 	return enforceRoleHierarchyOnDeleteBulk(context);
 };
 
+const generateRegistrationLink = async (context) => {
+	const { data, app } = context;
+	if (data.generateRegistrationLink === true) {
+		delete data.generateRegistrationLink;
+		if (!data.roles || data.roles.length > 1) {
+			throw new BadRequest('Roles must be exactly of length one if generateRegistrationLink=true is set.');
+		}
+		const { hash } = await app.service('/registrationlink')
+			// set account in params to context.parmas.account to reference the current user
+			.create({
+				role: data.roles[0],
+				save: true,
+				patchUser: true,
+				host: SC_DOMAIN,
+				schoolId: data.schoolId,
+				toHash: data.email,
+			})
+			.catch((err) => {
+				throw new GeneralError(`Can not create registrationlink. ${err}`);
+			});
+		context.data.importHash = hash;
+	}
+};
+
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
@@ -434,4 +458,5 @@ module.exports = {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	generateRegistrationLink,
 };

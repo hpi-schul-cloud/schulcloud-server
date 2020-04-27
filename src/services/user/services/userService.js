@@ -3,8 +3,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 // const logger = require('../../../logger');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
-const { createChannel } = require('../../../utils/rabbitmq');
-
+const { verifyApiKeyIfProviderIsExternal } = require('../../../hooks/authentication');
 const { userModel } = require('../model');
 const { hasEditPermissionForUser } = require('../hooks/index.hooks');
 const {
@@ -33,6 +32,7 @@ const {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	generateRegistrationLink,
 } = require('../hooks/userService');
 
 // const USER_RABBIT_EXCHANGE = 'user';
@@ -82,7 +82,7 @@ const userService = new UserService({
 
 const userHooks = {
 	before: {
-		all: [],
+		all: [verifyApiKeyIfProviderIsExternal],
 		find: [
 			mapPaginationQuery.bind(this),
 			// resolve ids for role strings (e.g. 'TEACHER')
@@ -99,6 +99,7 @@ const userHooks = {
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,
+			generateRegistrationLink,
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		],
 		update: [

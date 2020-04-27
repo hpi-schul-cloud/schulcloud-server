@@ -1,7 +1,6 @@
 const Sentry = require('@sentry/node');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
-const { deepObject } = require('../utils');
 const {
 	SENTRY_DSN, SC_DOMAIN, NODE_ENV, ENVIRONMENTS,
 } = require('../../config/globals');
