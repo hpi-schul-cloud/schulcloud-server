@@ -12,7 +12,7 @@ const {
 } = require('../../../src/services/school/model');
 
 const testObjects = require('../helpers/testObjects')(app);
-const { create: createSchool, info: createdSchoolIds } = require('./../helpers/services/schools')(app);
+const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(app);
 
 
 describe('school service', () => {
@@ -36,7 +36,7 @@ describe('school service', () => {
 
 		it('create school with currentYear defined explictly', async () => {
 			const serviceCreatedSchool = await schoolService.create(
-				Object.assign({}, sampleSchoolData, { currentYear: sampleYear }),
+				{ ...sampleSchoolData, currentYear: sampleYear },
 			);
 			const { _id: schoolId } = serviceCreatedSchool;
 			createdSchoolIds.push(schoolId);

@@ -1,5 +1,6 @@
 const { Configuration } = require('@schul-cloud/commons');
 const amqp = require('amqplib');
+
 let connection;
 
 const createChannel = async () => {

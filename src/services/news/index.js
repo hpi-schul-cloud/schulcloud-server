@@ -324,7 +324,7 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async find(params) {
-		const query = Object.assign({}, { $paginate: DEFAULT_PAGINATION_OPTIONS }, params.query);
+		const query = { $paginate: DEFAULT_PAGINATION_OPTIONS, ...params.query };
 		const now = Date.now();
 		// based on params.unpublished divide between view published news and unpublished news with edit permission
 		const baseFilter = {

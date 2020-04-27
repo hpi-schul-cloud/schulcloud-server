@@ -6,7 +6,7 @@ const { newsHistoryModel } = require('../../../../src/services/news/model');
 const {
 	preparePagination,
 	deleteNewsHistory,
-} = require('./../../../../src/services/news/hooks/news.hooks');
+} = require('../../../../src/services/news/hooks/news.hooks');
 
 describe('news hooks', () => {
 	describe('#preparePagination', () => {
