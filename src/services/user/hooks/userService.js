@@ -237,7 +237,7 @@ const securePatching = (hook) => Promise.all([
 			delete hook.data.roles;
 			delete (hook.data.$push || {}).roles;
 		}
-		if (hook.params.account.userId.toString() !== hook.id) {
+		if (!ObjectId.equal(hook.id, hook.params.account.userId)) {
 			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent))) {
 				return Promise.reject(new BadRequest('You have not the permissions to change other users'));
 			}
