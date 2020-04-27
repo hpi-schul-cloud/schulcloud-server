@@ -78,6 +78,16 @@ describe('user service', () => {
 			});
 	});
 
+	it('student can edit himself', async () => {
+		const student = await testObjects.createTestUser({ roles: ['student']});
+		const params = await testObjects.generateRequestParamsFromUser(student);
+		params.query = {};
+		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
+		const result = await app.service('users').patch(student._id, { firstName: 'Bruce' }, params);
+		expect(result).to.not.be.undefined;
+		expect(result.firstName).to.equal('Bruce');
+	});
+
 	it('deletes user correctly', async () => {
 		const demoClass = (await classesService.find({ query: { name: 'Demo-Klasse', $limit: 1 } })).data[0];
 		const demoCourse = (await coursesService.find({ query: { name: 'Mathe', $limit: 1 } })).data[0];
