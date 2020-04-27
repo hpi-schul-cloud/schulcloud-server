@@ -1,3 +1,7 @@
+/**
+ * Converts consentStatus to a filter condition for consent
+ * @param  {...string} status
+ */
 const createConsentFilterQuery = (...status) => {
 	const currentDate = new Date();
 	const secondConsentSwitchDate = new Date();
@@ -5,84 +9,74 @@ const createConsentFilterQuery = (...status) => {
 	const firstConsentSwitchDate = new Date();
 	firstConsentSwitchDate.setFullYear(currentDate.getFullYear() - 14);
 
-	const requiredConsents = {
-		privacyConsent: true,
-		termsOfUseConsent: true,
-	};
 
-	const missingConsents = {
-		$or: [
-			{ privacyConsent: false },
-			{ termsOfUseConsent: false },
-		],
-	};
+	const createRequiredConsents = (...persons) => persons.reduce((person, current) => {
+		current[`consent.${person}.privacyConsent`] = true;
+		current[`consent.${person}.termsOfUseConsent`] = true;
 
-	const orConditions = status.reduce((query, status) => {
-		if (status === 'missing') {
+		return current;
+	}, {});
+
+	const createMissingConsents = (...persons) => persons.reduce((person, current) => {
+		current.$or.push({ [`consent.${person}.privacyConsent`]: true });
+		current.$or.push({ [`consent.${person}.termsOfUseConsent`]: true });
+
+		return current;
+	}, { $or: [] });
+
+
+	const orConditions = status.reduce((query, stat) => {
+		if (stat === 'missing') {
 			query.push({
-				consent: {
-					userConsent: missingConsents,
-				},
+				...createMissingConsents('userConsent'),
 				birthday: {
 					$gte: secondConsentSwitchDate,
 				},
 			});
 			query.push({
-				consent: {
-					parentConsents: missingConsents,
-				},
+				...createMissingConsents('parentConsents'),
 				birthday: {
 					$gt: firstConsentSwitchDate,
 					$lte: secondConsentSwitchDate,
 				},
 			});
 			query.push({
-				consent: {
-					parentConsents: missingConsents,
-				},
+				...createMissingConsents('parentConsents'),
 				birthday: {
 					$lt: firstConsentSwitchDate,
 				},
 			});
-		} else if (status === 'parentAgree') {
+		} else if (stat === 'parentAgree') {
 			query.push({
-				consent: {
-					userConsent: missingConsents,
-					parentConsents: requiredConsents,
-				},
+				...createRequiredConsents('parentConsents'),
+				...createMissingConsents('userConsent'),
 				birthday: {
 					$gt: firstConsentSwitchDate,
 					$lte: secondConsentSwitchDate,
 				},
 			});
-		} else if (status === 'ok') {
+		} else if (stat === 'ok') {
 			query.push({
-				consent: {
-					userConsent: requiredConsents,
-				},
+				...createRequiredConsents('userConsent'),
 				birthday: {
 					$gte: secondConsentSwitchDate,
 				},
 			});
 			query.push({
-				consent: {
-					userConsent: requiredConsents,
-					parentConsents: requiredConsents,
-				},
+				...createRequiredConsents('userConsent', 'parentConsents'),
 				birthday: {
 					$gt: firstConsentSwitchDate,
 					$lte: secondConsentSwitchDate,
 				},
 			});
 			query.push({
-				consent: {
-					parentConsents: requiredConsents,
-				},
+				...createRequiredConsents('parentConsents'),
 				birthday: {
 					$lt: firstConsentSwitchDate,
 				},
 			});
 		}
+		return query;
 	}, []);
 
 	return {
@@ -90,7 +84,10 @@ const createConsentFilterQuery = (...status) => {
 	};
 };
 
-
+/**
+ * Creates a consent object, how it looked before it moved to users model
+ * @param {*} user
+ */
 const userToConsent = (user) => ({
 	_id: user._id,
 	userId: user._id,
@@ -99,6 +96,10 @@ const userToConsent = (user) => ({
 	...user.consent,
 });
 
+/**
+ * data will be moved to the attribute consent
+ * @param {Object} data
+ */
 const modifyDataForUserSchema = (data) => ({
 	consent: {
 		...data,
