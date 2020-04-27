@@ -2,7 +2,7 @@
 /* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
-const { createConsentAggrigation } = require('../../consent/utils');
+const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
 
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
@@ -32,7 +32,7 @@ const getAllUsers = async (ref, schoolId, role, clientQuery = {}) => {
 	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 
-	return userModel.aggregate(createConsentAggrigation(query)).option({
+	return userModel.aggregate(createMultiDocumentAggregation(query)).option({
 		collation: { locale: 'de', caseLevel: true },
 	}).exec();
 };
@@ -130,7 +130,7 @@ class AdminUsers {
 				data: users,
 			};
 		} catch (err) {
-			console.log(err);
+			logger.error(err);
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.', err);
 			}
