@@ -109,16 +109,17 @@
 		"chai-as-promised": "^7.1.1",
 		"chai-http": "^4.2.0",
 		"codecov": "^3.6.5",
+		"eslint": "^5.16.0",
 		"eslint-config-airbnb-base": "^14.1.0",
 		"eslint-plugin-import": "^2.18.2",
-		"eslint": "^5.16.0",
 		"mocha": "^7.0.1",
 		"mockery": "^2.0.0",
 		"nock": "^12.0.0",
 		"nodemon": "^2.0.2",
 		"nyc": "^15.0.1",
 		"simple-oauth2": "^3.0.0",
-		"sinon": "^9.0.0"
+		"sinon": "^9.0.0",
+		"sinon-chai": "^3.5.0"
 	},
 	"greenkeeper": {
 		"ignore": [
