@@ -111,7 +111,7 @@ class StatisticsService {
 		this.docs = swaggerDocs.statisticsService;
 	}
 
-	find({ query, payload }) {
+	find() {
 		return fetchStatistics()
 			.then((statistics) => statistics);
 	}

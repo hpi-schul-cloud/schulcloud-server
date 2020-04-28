@@ -2,6 +2,11 @@
 	"title": "HPI Schul-Cloud Configuration",
 	"type": "object",
 	"properties": {
+		"CLIENT_API_KEY": {
+			"type": "string",
+			"default": "example",
+			"description": "The API Key that the Client uses to send emails. This should be removed with SC-3387"
+		},
 		"CALENDAR_API_KEY": {
 			"type": "string",
 			"default": "example",
@@ -207,6 +212,11 @@
 			"type": "string",
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
+		},
+		"SENTRY_SAMPLE_RATE": {
+			"type": "number",
+			"default": 0.00,
+			"description": "This is the % count (0.00 to 1.00) of how many of the errors send to the backend. This filter go over all errors, maybe some lost by low user counts."
 		}
 	},
 	"required": [
