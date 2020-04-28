@@ -82,7 +82,6 @@ describe('user service', () => {
 		const student = await testObjects.createTestUser({ roles: ['student']});
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
-		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		const result = await app.service('users').patch(student._id, { firstName: 'Bruce' }, params);
 		expect(result).to.not.be.undefined;
 		expect(result.firstName).to.equal('Bruce');
@@ -94,7 +93,6 @@ describe('user service', () => {
 		});
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
-		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		const result = await app.service('users').get(student._id, params);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('firstName');
@@ -110,7 +108,6 @@ describe('user service', () => {
 		const otherStudent = await testObjects.createTestUser({ role: ['student'], birthday: Date.now() });
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
-		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		const result = await app.service('users').get(otherStudent._id, params);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('firstName');
@@ -126,7 +123,6 @@ describe('user service', () => {
 		const student = await testObjects.createTestUser({ role: ['student'], birthday: Date.now() });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
-		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		const result = await app.service('users').get(student._id, params);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('firstName');
