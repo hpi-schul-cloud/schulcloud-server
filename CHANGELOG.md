@@ -31,6 +31,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 -   User delete now accepts bulk delete requests
 -   SC-3958: the "general" LDAP strategy now returns an empty array if classes are not configured properly
+-   Increase performance - error logging in sentry
 
 ### Removed
 
