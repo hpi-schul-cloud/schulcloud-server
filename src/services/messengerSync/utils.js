@@ -93,16 +93,19 @@ const buildCourseObject = (course, userId) => ({
 
 const buildTeamObject = async (team, userId, moderatorRoles) => {
 	const { teamAdminId, teamLeaderId, teamOwnerId } = moderatorRoles;
+	const isModerator = team.userIds.some((user) => {
+		if (!ObjectId.equal(user.userId, userId)) {
+			return false; // other user
+		}
+		return [teamAdminId, teamLeaderId, teamOwnerId].includes(user.role.toString());
+	});
 	return {
 		id: team._id.toString(),
 		name: team.name,
 		description: 'Team',
 		type: 'team',
 		bidirectional: (team.features || []).includes(TEAM_FEATURES.MESSENGER),
-		is_moderator: team.userIds.some(
-			(user) => ObjectId.equal(user.userId, userId)
-				&& [teamAdminId, teamLeaderId, teamOwnerId].includes(user.role.toString()),
-		),
+		is_moderator: isModerator,
 	};
 };
 
