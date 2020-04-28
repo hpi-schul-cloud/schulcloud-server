@@ -28,13 +28,15 @@ class LDAPSystemSyncer extends Syncer {
 	/**
      * @see {Syncer#steps}
      */
-	steps() {
-		return super.steps()
-			.then(() => this.getSystems())
-			.then((systems) => Promise.all(systems.map((system) => {
-				this.stats.systems[system.alias] = {};
-				return new LDAPSyncer(this.app, this.stats.systems[system.alias], this.logger, system).sync();
-			})));
+	async steps() {
+		await super.steps();
+		const systems = await this.getSystems();
+		const jobs = systems.map(async (system) => {
+			this.stats.systems[system.alias] = {};
+			await new LDAPSyncer(this.app, this.stats.systems[system.alias], this.logger, system).sync();
+			await this.app.service('ldap').disconnect(system.ldapConfig);
+		});
+		return Promise.all(jobs);
 	}
 
 	getSystems() {
