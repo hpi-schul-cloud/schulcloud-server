@@ -5,7 +5,7 @@ const oauth2 = require('simple-oauth2');
 const request = require('request-promise-native');
 
 const app = require('../../../src/app');
-const logger = require('../../../src/logger/');
+const logger = require('../../../src/logger');
 
 const baseUrlService = app.service('oauth2/baseUrl');
 const clientsService = app.service('oauth2/clients');
@@ -178,21 +178,23 @@ describe('oauth2 service', function oauthTest() {
 		assert.strictEqual(result.challenge, loginRequest1);
 	}));
 
-	it('PATCH Login Request Accept', () => loginService
-		.patch(
-			loginRequest1,
-			{},
-			{
-				query: { accept: 1 },
-				account: { userId: testUser2._id },
-			},
-		)
-		.then((result) => {
-			// redirectTo = result.redirect_to;
-			assert.ok(
-				result.redirect_to.indexOf(testClient2.client_id) !== -1,
-			);
-		}));
+	it('PATCH Login Request Accept', () => {
+		loginService
+			.patch(
+				loginRequest1,
+				{},
+				{
+					query: { accept: 1 },
+					account: { userId: testUser2._id },
+				},
+			)
+			.then((result) => {
+				// redirectTo = result.redirect_to;
+				assert.ok(
+					result.redirect_to.indexOf(testClient2.client_id) !== -1,
+				);
+			});
+	});
 
 	it('PATCH Login Request Reject', () => loginService
 		.patch(

@@ -9,7 +9,7 @@ const {
 } = require('@feathersjs/errors');
 
 const hooks = require('./hooks');
-const swaggerDocs = require('./docs/');
+const swaggerDocs = require('./docs');
 
 const {
 	canWrite,
@@ -22,33 +22,32 @@ const {
 	createCorrectStrategy,
 	createDefaultPermissions,
 	createPermission,
-} = require('./utils/');
+} = require('./utils');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
-const { SERVICE_PATH: FILE_SECURITY_SERVICE_PATH } = require('./SecurityCheckService');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
 const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
+const { KEEP_ALIVE } = require('../../../config/globals');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
+const {
+	FILE_PREVIEW_SERVICE_URI,
+	FILE_PREVIEW_CALLBACK_URI,
+	ENABLE_THUMBNAIL_GENERATION,
+	FILE_SECURITY_CHECK_SERVICE_URI,
+	FILE_SECURITY_CHECK_MAX_FILE_SIZE,
+	FILE_SECURITY_SERVICE_USERNAME,
+	FILE_SECURITY_SERVICE_PASSWORD,
+	ENABLE_FILE_SECURITY_CHECK,
+	API_HOST,
+	SECURITY_CHECK_SERVICE_PATH,
+} = require('../../../config/globals');
 
-const FILE_PREVIEW_SERVICE_URI = process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview';
-const FILE_PREVIEW_CALLBACK_URI = process.env.FILE_PREVIEW_CALLBACK_URI
-	|| 'http://localhost:3030/fileStorage/thumbnail/';
-const ENABLE_THUMBNAIL_GENERATION = process.env.ENABLE_THUMBNAIL_GENERATION || false;
-
-const FILE_SECURITY_CHECK_SERVICE_URI = process.env.FILE_SECURITY_CHECK_SERVICE_URI
-	|| 'http://localhost:8081/scan/file';
 const FILE_SECURITY_CHECK_CALLBACK_URI = url.resolve(
-	process.env.API_HOST || 'http://localhost:3030',
-	FILE_SECURITY_SERVICE_PATH,
+	API_HOST,	SECURITY_CHECK_SERVICE_PATH,
 );
-const FILE_SECURITY_CHECK_MAX_FILE_SIZE = parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10)
-	|| 512 * 1024 * 1024;
-const FILE_SECURITY_SERVICE_USERNAME = process.env.FILE_SECURITY_SERVICE_USERNAME || '';
-const FILE_SECURITY_SERVICE_PASSWORD = process.env.FILE_SECURITY_SERVICE_PASSWORD || '';
-const ENABLE_FILE_SECURITY_CHECK = process.env.ENABLE_FILE_SECURITY_CHECK || 'false';
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
@@ -176,6 +175,7 @@ const fileStorageService = {
 			parent,
 			refOwnerModel,
 			permissions,
+			creator: userId,
 			storageFileName: decodeURIComponent(data.storageFileName),
 		}));
 
@@ -368,8 +368,8 @@ const signedUrlService = {
 		return parentPromise
 			.then(() => (parent ? canCreate(userId, parent) : Promise.resolve({})))
 			.then(() => {
-				if (this.fileRegexCheck(flatFileName)) {
-					throw new BadRequest(`Die Datei '${flatFileName}' ist nicht erlaubt!`);
+				if (this.fileRegexCheck(filename)) {
+					throw new BadRequest(`Die Datei '${filename}' ist nicht erlaubt!`);
 				}
 
 				return strategy.generateSignedUrl({ userId, flatFileName, fileType });
@@ -387,7 +387,12 @@ const signedUrlService = {
 					header,
 				};
 			})
-			.catch((err) => new Forbidden(err));
+			.catch((err) => {
+				if (!err) {
+					throw new Forbidden();
+				}
+				throw err;
+			});
 	},
 
 	async find({ query, payload: { userId, fileStorageType } }) {
@@ -399,7 +404,9 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
+		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
+		const creatorId = fileObject.creator
+			|| fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
 		if (download
 			&& fileObject.securityCheck
@@ -430,7 +437,9 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		const creatorId = fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
+		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
+		const creatorId = fileObject.creator
+			|| fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
 
 		return canRead(userId, id)
 			.then(() => strategy.getSignedUrl({
@@ -528,6 +537,7 @@ const directoryService = {
 			owner: owner || userId,
 			parent,
 			refOwnerModel,
+			creator: userId,
 			permissions: [...permissions, ...sendPermissions].map(this.setRefId),
 		}));
 
@@ -731,7 +741,7 @@ const newFileService = {
 		}, params)
 			.then((signedUrl) => {
 				const headers = signedUrl.header;
-				if (process.env.KEEP_ALIVE) {
+				if (KEEP_ALIVE) {
 					headers.Connection = 'Keep-Alive';
 				}
 				return rp({
@@ -856,7 +866,8 @@ const filePermissionService = {
 		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
 		const rolePromises = rolePermissions
 			.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
-		const isFileCreator = equalIds(fileObj.permissions[0].refId, userId);
+		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
+		const isFileCreator = equalIds(fileObj.creator || fileObj.permissions[0].refId, userId);
 
 		const actionMap = {
 			user: () => {

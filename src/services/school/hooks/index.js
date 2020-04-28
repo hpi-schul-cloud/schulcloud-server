@@ -1,6 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
-const hooks = require('feathers-hooks-common');
+const {
+	iff, isProvider, discard, disallow, keepInArray,
+} = require('feathers-hooks-common');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 
@@ -44,8 +47,8 @@ const setCurrentYearIfMissing = async (hook) => {
 };
 
 const createDefaultStorageOptions = (hook) => {
-	if (process.env.NODE_ENV !== 'production') {
-		// don't create buckets in development or test
+	// create buckets only in production mode
+	if (NODE_ENV !== ENVIRONMENTS.PRODUCTION) {
 		return Promise.resolve(hook);
 	}
 	const storageType = getDefaultFileStorageType();
@@ -88,7 +91,9 @@ const decorateYears = async (context) => {
 	return context;
 };
 
-const updatesRocketChat = (key, data) => (key === '$push' || key === '$pull') && data[key].features === 'rocketChat';
+const updatesArray = (key) => (key === '$push' || key === '$pull');
+const updatesRocketChat = (key, data) => updatesArray(key) && data[key].features === 'rocketChat';
+const updatesTeamCreation = (key, data) => updatesArray(key) && data[key].features === 'disableStudentTeamCreation';
 
 const hasEditPermissions = async (context) => {
 	try {
@@ -101,10 +106,11 @@ const hasEditPermissions = async (context) => {
 		// the user is allowed to edit
 		const patch = {};
 		for (const key of Object.keys(context.data)) {
-			if (user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesRocketChat(key, context.data)) {
-				patch[key] = context.data[key];
-			}
-			if (user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl') {
+			if (
+				(user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesRocketChat(key, context.data))
+				|| (user.permissions.includes('SCHOOL_STUDENT_TEAM_MANAGE') && updatesTeamCreation(key, context.data))
+				|| (user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl')
+			) {
 				patch[key] = context.data[key];
 			}
 		}
@@ -123,6 +129,8 @@ const restrictToUserSchool = async (context) => {
 	}
 	throw new Forbidden('You can only edit your own school.');
 };
+
+const populateInQuery = (context) => (context.params.query || {}).$populate;
 
 exports.before = {
 	all: [],
@@ -149,15 +157,18 @@ exports.before = {
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
     */
-	remove: [hooks.disallow()],
+	remove: [disallow()],
 };
 
 exports.after = {
-	all: [],
+	all: [
+		iff(populateInQuery, keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active'])),
+		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
+	],
 	find: [decorateYears],
 	get: [decorateYears],
 	create: [createDefaultStorageOptions],
-	update: [createDefaultStorageOptions],
-	patch: [createDefaultStorageOptions],
+	update: [],
+	patch: [],
 	remove: [],
 };

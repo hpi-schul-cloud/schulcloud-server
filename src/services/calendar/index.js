@@ -270,7 +270,7 @@ class Service {
 		});
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }

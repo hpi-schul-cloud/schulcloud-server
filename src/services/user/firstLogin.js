@@ -76,7 +76,7 @@ const firstLogin = async (data, params, app) => {
 	preferences.firstLogin = true;
 	userUpdate.preferences = preferences;
 
-	const userPromise = app.service('users').patch(user._id, userUpdate);
+	const userPromise = app.service('users').patch(user._id, userUpdate, { account: params.account });
 
 	if (data.privacyConsent || data.termsOfUseConsent) {
 		consentUpdate.userId = user._id;
@@ -111,14 +111,14 @@ const firstLogin = async (data, params, app) => {
 			};
 			const updateConsentType = consent.userConsent ? 'userConsent' : 'parentConsents';
 			if (updateConsentType === 'userConsent') {
-				updatedConsent = Object.assign({}, updatedConsent, consent[updateConsentType]);
+				updatedConsent = { ...updatedConsent, ...consent[updateConsentType] };
 				updatedConsent = updateConsentDates(updatedConsent);
 				return app.service('consents').patch(consent._id, { userConsent: updatedConsent });
 			}
 			if (updateConsentType === 'parentConsents' && (!consent.parentConsents || !consent.parentConsents.length)) {
 				throw new Error('no parent or user consent found');
 			}
-			updatedConsent = Object.assign({}, updatedConsent, consent.parentConsents[0]);
+			updatedConsent = { ...updatedConsent, ...consent.parentConsents[0] };
 			updatedConsent = updateConsentDates(updatedConsent);
 			return app.service('consents').patch(consent._id, { parentConsents: [updatedConsent] });
 		});

@@ -32,7 +32,7 @@ const filterRequestedSubmissions = (hook) => {
 						];
 					}
 				});
-			}).catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach users service" })));
+			}).catch(() => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach users service" })));
 		}
 	}
 	return hook;
@@ -74,7 +74,7 @@ const filterApplicableSubmissions = (hook) => {
 						.then((course) => ((course || {}).teacherIds || []).includes(hook.params.account.userId.toString()) // or user is teacher
 												|| ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString()), // or user is substitution teacher
 						)
-						.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach course service" })));
+						.catch(() => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach course service" })));
 				}
 				return false;
 			});
@@ -122,7 +122,7 @@ const insertSubmissionData = (hook) => {
 
 				return Promise.resolve(hook);
 			})
-			.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
+			.catch(() => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
 	}
 	return Promise.resolve(hook);
 };
@@ -130,20 +130,29 @@ const insertSubmissionData = (hook) => {
 const insertHomeworkData = (hook) => {
 	const homeworkId = hook.data.homeworkId || (hook.data.submission || {}).homeworkId;
 	if (homeworkId) {
+		const userId = hook.params.account.userId.toString();
 		const homeworkService = hook.app.service('/homework');
-		return homeworkService.get(homeworkId, { account: { userId: hook.params.account.userId } })
+		return homeworkService.get(homeworkId, {
+			account: { userId },
+			query: {
+				$populate: ['courseId'],
+			},
+		})
 			.then((homework) => {
 				hook.data.homework = homework;
 				// isTeacher?
 				hook.data.isTeacher = false;
-				if ((hook.data.homework.teacherId == hook.params.account.userId)
-						|| (hook.data.homework.courseId.teacherIds || []).includes(hook.params.account.userId)
-						|| (hook.data.homework.courseId.substitutionIds || []).includes(hook.params.account.userId)) {
+				if ((equalIds(hook.data.homework.teacherId, userId))
+					|| (hook.data.homework.courseId.teacherIds || [])
+						.some((teacherId) => equalIds(teacherId, userId))
+					|| (hook.data.homework.courseId.substitutionIds || [])
+						.some((subsId) => equalIds(subsId, userId))
+				) {
 					hook.data.isTeacher = true;
 				}
 				return Promise.resolve(hook);
 			})
-			.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service" })));
+			.catch(() => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service" })));
 	}
 	return Promise.reject(new errors.BadRequest());
 };
@@ -160,7 +169,7 @@ const insertSubmissionsData = (hook) => {
 		hook.data.submissions = submissions.data;
 		return Promise.resolve(hook);
 	})
-		.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
+		.catch(() => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
 };
 
 const preventNoTeamMember = (hook) => {
@@ -303,6 +312,7 @@ const hasDeletePermission = (hook) => {
 exports.before = () => ({
 	all: [authenticate('jwt'), stringifyUserId],
 	find: [
+		// todo restrictToCurrentSchool,
 		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
 		filterRequestedSubmissions,
 		globalHooks.mapPaginationQuery.bind(this),

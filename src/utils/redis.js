@@ -1,16 +1,18 @@
 const { promisify } = require('util');
 const redis = require('redis');
 const jwt = require('jsonwebtoken');
-const { GeneralError } = require('@feathersjs/errors');
+const { GeneralError, BadRequest } = require('@feathersjs/errors');
+const commons = require('@schul-cloud/commons');
+
+const { Configuration } = commons;
 
 let redisClient = false;
 
-function initializeRedisClient(app) {
-	const redisUrl = app.Config.data.REDIS_URI;
-	if (redisUrl) {
+function initializeRedisClient() {
+	if (Configuration.has('REDIS_URI')) {
 		try {
 			redisClient = redis.createClient({
-				url: redisUrl,
+				url: Configuration.get('REDIS_URI'),
 			});
 		} catch (err) {
 			throw new GeneralError('Redis connection failed!', err);
@@ -39,16 +41,44 @@ const redisTtlAsync = (...args) => {
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
 };
 
-function getRedisIdentifier(token) {
+function extractDataFromJwt(token) {
 	const decodedToken = jwt.decode(token.replace('Bearer ', ''));
-	const { accountId, jti } = decodedToken; // jti - UID of the token
-
+	if (decodedToken === null) {
+		throw new BadRequest('Invalid authentication data');
+	}
+	const {
+		accountId,
+		/**
+		 * jti - UID of the token
+		 * */
+		jti,
+		privateDevice = false,
+	} = decodedToken;
 	const redisIdentifier = `jwt:${accountId}:${jti}`;
-	return redisIdentifier;
+	return { redisIdentifier, privateDevice };
 }
 
-function getRedisValue() {
-	return '{"IP": "NONE", "Browser": "NONE"}';
+// todo extract json from string?
+function getRedisData({
+	IP = 'NONE',
+	Browser = 'NONE',
+	Device = 'NONE',
+	privateDevice = false,
+}) {
+	// set expiration longer for private devices
+	let expirationInSeconds = Configuration.get('JWT_TIMEOUT_SECONDS');
+	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true
+	&& Configuration.has('JWT_EXTENDED_TIMEOUT_SECONDS')
+	&& privateDevice === true) {
+		expirationInSeconds = Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS');
+	}
+	return {
+		IP,
+		Browser,
+		Device,
+		privateDevice,
+		expirationInSeconds,
+	};
 }
 
 module.exports = {
@@ -58,6 +88,6 @@ module.exports = {
 	redisSetAsync,
 	redisDelAsync,
 	redisTtlAsync,
-	getRedisIdentifier,
-	getRedisValue,
+	extractDataFromJwt,
+	getRedisData,
 };

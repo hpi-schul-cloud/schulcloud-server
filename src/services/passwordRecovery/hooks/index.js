@@ -1,7 +1,11 @@
 const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { NotFound } = require('@feathersjs/errors');
+const {
+	iff, isProvider, disallow, keep,
+} = require('feathers-hooks-common');
 const logger = require('../../../logger/index');
+const { HOST, SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
 
@@ -39,15 +43,15 @@ const sendInfo = (context) => {
 				$populate: ['userId'],
 			},
 		}).then((account) => {
-			const recoveryLink = `${process.env.HOST}/pwrecovery/${context.result._id}`;
+			const recoveryLink = `${HOST}/pwrecovery/${context.result._id}`;
 			const mailContent = `Sehr geehrte/r ${account.userId.firstName} ${account.userId.lastName}, \n
 Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:
 ${recoveryLink}\n
 Mit Freundlichen Grüßen
-Ihr ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'} Team`;
+Ihr ${SC_SHORT_TITLE} Team`;
 
 			globalHooks.sendEmail(context, {
-				subject: `Passwort zurücksetzen für die ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'}`,
+				subject: `Passwort zurücksetzen für die ${SC_SHORT_TITLE}`,
 				emails: [account.userId.email],
 				content: {
 					text: mailContent,
@@ -78,36 +82,22 @@ const return200 = (context) => {
 
 exports.before = {
 	all: [],
-	find: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_VIEW'),
-	],
+	find: [iff(isProvider('external'), disallow())],
 	get: [],
 	create: [
 		resolveUserIdByUsername,
 		local.hooks.hashPassword('password'),
 	],
-	update: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_EDIT'),
-	],
-	patch: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_EDIT'),
-		globalHooks.permitGroupOperation,
-	],
-	remove: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_CREATE'),
-		globalHooks.permitGroupOperation,
-	],
+	update: [iff(isProvider('external'), disallow())],
+	patch: [iff(isProvider('external'), disallow())],
+	remove: [iff(isProvider('external'), disallow())],
 };
 
 exports.after = {
 	all: [],
 	find: [],
-	get: [],
-	create: [sendInfo],
+	get: [keep('_id, createdAt', 'changed')],
+	create: [sendInfo, return200],
 	update: [],
 	patch: [],
 	remove: [],

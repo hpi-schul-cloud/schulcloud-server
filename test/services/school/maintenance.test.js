@@ -1,10 +1,10 @@
 const { expect } = require('chai');
-const app = require('./../../../src/app');
+const app = require('../../../src/app');
 const { cleanup } = require('../helpers/testObjects')(app);
-const { create: createSchool } = require('./../helpers/services/schools')(app);
-const { create: createSystem } = require('./../helpers/services/testSystem')(app);
+const { create: createSchool } = require('../helpers/services/schools')(app);
+const { create: createSystem } = require('../helpers/services/testSystem')(app);
 
-const { schoolUsesLdap } = require('./../../../src/services/school/maintenance');
+const { schoolUsesLdap } = require('../../../src/services/school/maintenance');
 
 describe('schoolUsesLdap', () => {
 	it('should return false for normal schools', async () => {

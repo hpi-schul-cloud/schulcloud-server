@@ -4,6 +4,8 @@ const logger = require('../../logger');
 
 const AnalyticsModel = require('./model');
 
+const { ANALYTICS_LOGGING } = require('../../../config/globals');
+
 class Service {
 	constructor(options) {
 		this.options = options || {};
@@ -15,7 +17,7 @@ class Service {
 			const visitor = ua(data.tid);
 			visitor.pageview(data).send();
 		}
-		if (!process.env.ANALYTICS_LOGGING) {
+		if (!ANALYTICS_LOGGING) {
 			return Promise.resolve();
 		}
 		const model = new AnalyticsModel({
@@ -46,7 +48,7 @@ class Service {
 			});
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }

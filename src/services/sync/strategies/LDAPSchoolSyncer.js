@@ -106,29 +106,29 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	}
 
 	checkForUserChangesAndUpdate(idmUser, user) {
-		const updateObject = { $set: {} };
+		const updateObject = {};
 		if (user.firstName !== idmUser.firstName) {
-			updateObject.$set.firstName = idmUser.firstName || ' ';
+			updateObject.firstName = idmUser.firstName || ' ';
 		}
 		if (user.lastName !== idmUser.lastName) {
-			updateObject.$set.lastName = idmUser.lastName;
+			updateObject.lastName = idmUser.lastName;
 		}
 		// Updating SchoolId will cause an issue. We need to discuss about it
 		if (user.email !== idmUser.email) {
-			updateObject.$set.email = idmUser.email;
+			updateObject.email = idmUser.email;
 		}
 		if (user.ldapDn !== idmUser.ldapDn) {
-			updateObject.$set.ldapDn = idmUser.ldapDn;
+			updateObject.ldapDn = idmUser.ldapDn;
 		}
 
 		// Role
-		updateObject.$set.roles = idmUser.roles;
+		updateObject.roles = idmUser.roles;
 
 		return accountModel.update(
-			{ userId: user._id },
+			{ userId: user._id, systemId: this.system._id },
 			{ username: (`${this.school.ldapSchoolIdentifier}/${idmUser.ldapUID}`).toLowerCase() },
-		).then((_) => this.app.service('users').update(
-			{ _id: user._id },
+		).then((_) => this.app.service('users').patch(
+			user._id,
 			updateObject,
 		));
 	}

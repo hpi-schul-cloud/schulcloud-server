@@ -14,7 +14,7 @@ describe('registration service', () => {
 
 	it('processes registration by student correctly', () => {
 		const email = `max${Date.now()}@mustermann.de`;
-		return registrationPinService.create({ email })
+		return registrationPinService.create({ email, silent: true })
 			.then((registrationPin) => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
@@ -41,7 +41,7 @@ describe('registration service', () => {
 
 	it('processes registration by parent correctly', () => {
 		const email = `moritz${Date.now()}@mustermann.de`;
-		return registrationPinService.create({ email })
+		return registrationPinService.create({ email, silent: true })
 			.then((registrationPin) => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
@@ -73,7 +73,7 @@ describe('registration service', () => {
 
 	it('fails with invalid pin', () => {
 		const email = `max${Date.now()}@mustermann.de`;
-		return registrationPinService.create({ email })
+		return registrationPinService.create({ email, silent: true })
 			.then((registrationPin) => {
 				let pin = Number(registrationPin.pin);
 				pin = pin === 9999 ? 1000 : pin + 1;
@@ -88,7 +88,7 @@ describe('registration service', () => {
 				});
 			}).catch((err) => {
 				chai.expect(err).to.not.equal(undefined);
-				chai.expect(err.message).to.equal('Ungültige Pin, bitte überprüfe die Eingabe.');
+				chai.expect(err.message).to.equal('Der eingegebene Code konnte leider nicht verfiziert werden. Versuch es doch noch einmal.');
 			});
 	});
 
@@ -103,7 +103,7 @@ describe('registration service', () => {
 
 	it('undoes changes on fail', () => {
 		const email = `max${Date.now()}@mustermann.de`;
-		return registrationPinService.create({ email })
+		return registrationPinService.create({ email, silent: true })
 			.then((registrationPin) => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
@@ -148,7 +148,7 @@ describe('registration service', () => {
 			})
 			.then((newUser) => {
 				user = newUser;
-				return registrationPinService.create({ email });
+				return registrationPinService.create({ email, silent: true });
 			})
 			.then((registrationPin) => {
 				const registrationInput = {

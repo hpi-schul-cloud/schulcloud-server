@@ -24,8 +24,7 @@ describe('Account Service', () => {
 
 	after(async () => {
 		await testObjects.cleanup();
-		server.close();
-		return Promise.resolve();
+		await server.close();
 	});
 
 	it('registered the accounts service', () => {
@@ -43,6 +42,7 @@ describe('Account Service', () => {
 
 			const registrationPin = await registrationPinsService.create({
 				email: userObject.email,
+				silent: true,
 			});
 			// verify registration pin:
 			await registrationPinsService.find({
