@@ -35,7 +35,7 @@ class DatasourceRuns {
 	 */
 	injectPaginationQuery(query, serviceOptions) {
 		if (typeof (serviceOptions || {}).paginate === 'object') {
-			const resultQuery = Object.assign({}, { $paginate: true }, query);
+			const resultQuery = { $paginate: true, ...query };
 			if (!resultQuery.$limit) resultQuery.$limit = serviceOptions.paginate.default;
 			if (resultQuery.$limit > serviceOptions.max) resultQuery.$limit = serviceOptions.paginate.max;
 			return resultQuery;

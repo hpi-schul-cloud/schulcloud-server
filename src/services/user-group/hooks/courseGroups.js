@@ -1,5 +1,4 @@
 const { authenticate } = require('@feathersjs/authentication');
-const _ = require('lodash');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);

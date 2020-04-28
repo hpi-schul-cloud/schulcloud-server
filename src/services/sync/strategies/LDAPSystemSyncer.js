@@ -21,7 +21,7 @@ class LDAPSystemSyncer extends Syncer {
 		return target === 'ldap';
 	}
 
-	static params(params, data) {
+	static params() {
 		return [true];
 	}
 

@@ -1,6 +1,5 @@
 const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const _ = require('lodash');
 const globalHooks = require('../../../hooks');
 
 const injectCourseId = (hook) => {

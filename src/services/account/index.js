@@ -26,9 +26,9 @@ class PasswordGenService {
      * @param query (length<Integer> | readable<Boolean>)
      * @returns {Promise.<TResult>}
      */
-	find({ query, payload }) {
+	find({ query }) {
 		if (query.readable) {
-			const p2 = new Promise((resolve, reject) => {
+			const p2 = new Promise((resolve) => {
 				const arr = [
 					chance.first(),
 					chance.last(),
