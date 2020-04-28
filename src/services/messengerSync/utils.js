@@ -72,6 +72,7 @@ const getRoles = async () => {
     room: {
 		id: 1234566,
 		name: 'Mathe 6b',
+		description: 'Kurs',
 		type: 'course',
 		is_moderator: false,
 		bidirectional: true
@@ -81,6 +82,7 @@ const getRoles = async () => {
 const buildCourseObject = (course, userId) => ({
 	id: course._id.toString(),
 	name: course.name,
+	description: 'Kurs',
 	type: 'course',
 	bidirectional: (course.features || []).includes(COURSE_FEATURES.MESSENGER),
 	is_moderator: course.teacherIds.concat(course.substitutionIds).some(
@@ -94,6 +96,7 @@ const buildTeamObject = async (team, userId, moderatorRoles) => {
 	return {
 		id: team._id.toString(),
 		name: team.name,
+		description: 'Team',
 		type: 'team',
 		bidirectional: (team.features || []).includes(TEAM_FEATURES.MESSENGER),
 		is_moderator: team.userIds.some(
