@@ -18,17 +18,20 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3607 CSVSyncer now allows the optional birthday field (formats: dd/mm/yyyy, dd.mm.yyyy, dd-mm-yyyy) in CSV data
 -   SC-3948 support users query in adminusers routes
 -   SC-4018 Add additional nexboard permissions
+-   SC-4008 Migrated generateRegistrationLink Hook from SC-Client into Server
 
 ### Fixed
 
 -   SC-3892 Update Filter of submission in order to work with older submissions
 -   SC-3395 if fetching the release fails, a error will be thrown
 -   backup.js now outputs valid json exports
+-   SC-4105 fixed a problem with new users tests not working with recent hotfix.
 
 ### Changed
 
 -   User delete now accepts bulk delete requests
 -   SC-3958: the "general" LDAP strategy now returns an empty array if classes are not configured properly
+-   Increase performance - error logging in sentry
 
 ### Removed
 
