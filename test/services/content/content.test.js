@@ -62,8 +62,10 @@ describe('content service', function () {
 		}));
 });
 
+const nonASCII = /([^ -~]|[."<>|\\/:*?])+/g;
+
 function requestToFilename(requestOptions) {
-	const key = JSON.stringify(requestOptions.qs).replace(/([^ -~]|[\."<>\|\\\/\:\*\?])+/g, ''); // just ASCII characters, NTFS-safe
+	const key = JSON.stringify(requestOptions.qs).replace(nonASCII, ''); // just ASCII characters, NTFS-safe
 	const filename = `response${key}.json`;
 	return path.resolve(__dirname, 'mock', filename);
 }
