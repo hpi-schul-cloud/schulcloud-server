@@ -9,6 +9,21 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [22.9.16]
+
+### Added
+
+-  SC-4042: Added support for a central IServ-Connector
+
+### Changed
+
+-  LDAP syncs on servers with multiple schools now only sync one school at a time to avoid issues when paging search requests
+
+### Fixed
+
+-  Fixed LDAP-Service disconnect method
+-  LDAPSystemSyncers now properly close their connections after syncing
+
 ## [22.9.10]
 
 ### Added
