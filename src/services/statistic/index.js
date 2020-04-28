@@ -37,11 +37,6 @@ const promises = [
 		model: homeworkModel.submissionModel.find(),
 	},
 	{
-		name: 'comments',
-		promise: homeworkModel.commentModel.countDocuments(),
-		model: homeworkModel.commentModel.find(),
-	},
-	{
 		name: 'lessons',
 		promise: lessonModel.countDocuments(),
 		model: lessonModel.find(),
@@ -100,10 +95,12 @@ const promises = [
 const fetchStatistics = () => {
 	const statistics = {};
 
-	return Promise.all(promises.map((p) => p.promise.exec().then((res) => {
-		statistics[p.name] = res;
-		return res;
-	}))).then((_) => statistics);
+	return Promise.all(
+		promises.map((p) => p.promise.exec().then((res) => {
+			statistics[p.name] = res;
+			return res;
+		})),
+	).then(() => statistics);
 };
 
 class StatisticsService {
@@ -117,17 +114,23 @@ class StatisticsService {
 	}
 
 	get(id, params) {
-		return _.find(promises, { name: id }).model.select({ createdAt: 1 }).exec()
+		return _.find(promises, { name: id })
+			.model.select({ createdAt: 1 })
+			.exec()
 			.then((generic) => {
 				const stats = generic.map((gen) => moment(gen.createdAt).format('YYYY-MM-DD'));
 
 				const counts = {};
-				stats.forEach((x) => { counts[x] = (counts[x] || 0) + 1; });
+				stats.forEach((x) => {
+					counts[x] = (counts[x] || 0) + 1;
+				});
 
 				const ordered = {};
-				Object.keys(counts).sort().forEach((key) => {
-					ordered[key] = counts[key];
-				});
+				Object.keys(counts)
+					.sort()
+					.forEach((key) => {
+						ordered[key] = counts[key];
+					});
 
 				const x = [];
 				const y = [];
@@ -141,7 +144,7 @@ class StatisticsService {
 					}
 				}
 
-				return (params.query.returnArray) ? { x, y } : ordered;
+				return params.query.returnArray ? { x, y } : ordered;
 			});
 	}
 }

@@ -1,5 +1,6 @@
 const assert = require('assert');
 const { expect } = require('chai');
+const { Configuration } = require('@schul-cloud/commons');
 const app = require('../../../../src/app');
 
 const userService = app.service('users');
@@ -103,6 +104,7 @@ describe('user service', () => {
 		const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 		params.query = {};
+		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		try {
 			await app.service('users').remove(studentToDelete._id, params);
 			throw new Error('should have failed');
@@ -121,6 +123,7 @@ describe('user service', () => {
 		const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 		params.query = {};
+		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		try {
 			const result = await app.service('users').remove(studentToDelete._id, params);
 			expect(result).to.not.be.undefined;
@@ -138,6 +141,7 @@ describe('user service', () => {
 		const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 		params.query = {};
+		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		try {
 			await app.service('users').remove(studentToDelete._id, params);
 			throw new Error('should have failed');
@@ -156,6 +160,7 @@ describe('user service', () => {
 		const actingUser = await testObjects.createTestUser({ roles: ['teacherDelete'] });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 		params.query = {};
+		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		try {
 			const result = await app.service('users').remove(studentToDelete._id, params);
 			expect(result).to.not.be.undefined;
@@ -179,6 +184,7 @@ describe('user service', () => {
 			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = { _id: { $in: userIds } };
+			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 			let result;
 			try {
 				result = await app.service('users').remove(null, params);
@@ -203,6 +209,7 @@ describe('user service', () => {
 			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = { _id: { $in: userIds } };
+			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 			let result;
 			try {
 				result = await app.service('users').remove(null, params);
