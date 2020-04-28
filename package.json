@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "22.9.11",
+	"version": "22.9.15",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -30,6 +30,7 @@
 		"coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary mocha --exit './test/**/*.test.js'",
 		"coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
 		"mocha": "cross-env NODE_ENV=test mocha --exit './test/**/*.test.js'",
+		"mocha-single": "cross-env NODE_ENV=test mocha --exit",
 		"mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --exit './test/**/*.test.js'",
 		"migration": "migrate",
 		"migration-sync": "migrate list --autosync",
@@ -52,9 +53,6 @@
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
 		"body-parser": "^1.15.2",
-		"chai": "^4.2.0",
-		"chai-as-promised": "^7.1.1",
-		"chai-http": "^4.2.0",
 		"chalk": "^3.0.0",
 		"chance": "^1.0.12",
 		"client-oauth2": "^4.2.5",
@@ -107,6 +105,9 @@
 		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {
+		"chai": "^4.2.0",
+		"chai-as-promised": "^7.1.1",
+		"chai-http": "^4.2.0",
 		"codecov": "^3.6.5",
 		"eslint-config-airbnb-base": "^14.1.0",
 		"eslint-plugin-import": "^2.18.2",

@@ -2,7 +2,6 @@ const Sentry = require('@sentry/node');
 const { Configuration } = require('@schul-cloud/commons');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
-const { deepObject } = require('../utils');
 
 const {
 	SENTRY_DSN,

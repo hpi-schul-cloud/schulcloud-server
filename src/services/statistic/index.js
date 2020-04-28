@@ -1,7 +1,7 @@
 const moment = require('moment');
 const _ = require('lodash');
 const hooks = require('./hooks/index');
-const swaggerDocs = require('./docs/');
+const swaggerDocs = require('./docs');
 const schoolModel = require('../school/model');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
@@ -111,7 +111,7 @@ class StatisticsService {
 		this.docs = swaggerDocs.statisticsService;
 	}
 
-	find({ query, payload }) {
+	find() {
 		return fetchStatistics()
 			.then((statistics) => statistics);
 	}

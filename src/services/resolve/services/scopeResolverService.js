@@ -7,10 +7,11 @@ const getDataEntry = ({
 }) => ({
 	type,
 	id,
-	attributes: Object.assign({}, {
+	attributes: {
 		name,
 		authorities,
-	}, attributes),
+		...attributes,
+	},
 });
 
 // get scopes from user object Id

@@ -2,7 +2,6 @@ const assert = require('assert');
 const app = require('../../../src/app');
 
 const ltiToolService = app.service('ltiTools');
-const chai = require('chai');
 
 describe('ltiTool service', () => {
 	const testTool = {
