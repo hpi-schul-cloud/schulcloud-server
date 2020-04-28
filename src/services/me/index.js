@@ -36,7 +36,7 @@ class Service {
 		return user;
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
