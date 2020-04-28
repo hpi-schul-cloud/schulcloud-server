@@ -402,7 +402,7 @@ const filterResult = async (context) => {
 	if (elevatedUser) {
 		const elevatedAttributes = [
 			'email', 'birthday', 'children', 'parents', 'updatedAt',
-			'createdAt', 'age',
+			'createdAt', 'age', 'ldapDn',
 		];
 		allowedAttributes.push(...elevatedAttributes);
 	}
