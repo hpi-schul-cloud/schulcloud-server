@@ -37,6 +37,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 -   SC-3958: the LDAP strategy interface no longer supports synchronizing team members to the never-used original N21-IDM
 -   SC-3958: the environment variables NBC_IMPORTURL, NBC_IMPORTUSER, and NBC_IMPORTPASSWORD are no longer used and have been removed
+-   Removed the obsolete commentSchema from the homework service. It was not in use.
 
 ## [22.9.10]
 
@@ -87,7 +88,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [22.9.4]
 
-### Fixed 
+### Fixed
 
 -   fixes an issue with LDAP account updates if more than one account exists for the user (migration from local login to LDAP)
 
@@ -132,7 +133,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   Backend route to confirm analog consents in bulk
 -   Changed Seed Data + Migration Script: Added feature flag for new Editor to klara.fall@schul-cloud.org
 -   SC-2922: Enable use of multiple S3 instances as file storage provider
-    -   A new collection is added to administrate multiple S3 instances 
+    -   A new collection is added to administrate multiple S3 instances
     -   A migration will automatically use the AWS environment variables to add those as default provider for all existing schools
     -   For new schools the less used provider is assigned as storage provider
     -   Environment Variables:
