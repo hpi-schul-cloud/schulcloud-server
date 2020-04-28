@@ -25,11 +25,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3892 Update Filter of submission in order to work with older submissions
 -   SC-3395 if fetching the release fails, a error will be thrown
 -   backup.js now outputs valid json exports
+-   SC-4105 fixed a problem with new users tests not working with recent hotfix.
 
 ### Changed
 
 -   User delete now accepts bulk delete requests
 -   SC-3958: the "general" LDAP strategy now returns an empty array if classes are not configured properly
+-   Increase performance - error logging in sentry
 
 ### Removed
 
