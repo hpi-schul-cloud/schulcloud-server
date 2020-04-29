@@ -80,20 +80,27 @@ module.exports = {
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
 		info('load current consents');
-		const consents = await Consent.find({}).lean();
-		console.log(consents);
+		const consents = await Consent.find({
+			$sort: {
+				updatedAt: 1,
+				createdAt: 1,
+			},
+		}).lean().exec();
 		info('move each consent to the coresponding user');
-		await Promise.all(consents.map(async (consent) => {
-			const { userId, ...consentWithoutUser } = consent;
-			/* console.log(User.findOne({
-				_id: userId,
-			}).lean().exec()); */
-			return User.findOneAndUpdate({
-				_id: userId,
-			}, {
-				consent: consentWithoutUser,
-			}).exec();
-		}));
+		try {
+			await Promise.all(consents.map(async (consent) => {
+				const { userId, ...consentWithoutUser } = consent;
+				return User.findOneAndUpdate({
+					_id: userId,
+				}, {
+					consent: consentWithoutUser,
+				}).exec();
+			}));
+			info('Consents are moved from consent to user');
+		} catch (err) {
+			error(`Moving one or more Consents failed: ${err.message}`);
+		}
+
 		// ////////////////////////////////////////////////////
 		await close();
 	},
@@ -102,12 +109,19 @@ module.exports = {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
-		/* await User.findOneAndUpdate({
-			firstName: 'Max',
-			lastName: 'Mathe',
-		}, {
-			firstName: 'Marla',
-		}).lean().exec(); */
+		info('load all users');
+		const users = await User.find({}).lean().exec();
+		info('update or create consent');
+		try {
+			await Promise.all(users.map((user) => Consent.findOneAndUpdate({
+				userId: user._id,
+			}, {
+				...user.consent,
+			}).exec()));
+			info('Consent are moved from user to consent model');
+		} catch (err) {
+			error(`Moving one or more Consents failed: ${err.message}`);
+		}
 		// ////////////////////////////////////////////////////
 		await close();
 	},
