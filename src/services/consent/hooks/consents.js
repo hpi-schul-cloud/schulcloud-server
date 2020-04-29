@@ -246,9 +246,9 @@ exports.before = {
 		setUserIdToCorrectForm,
 	],
 	get: [authenticate('jwt')],
-	create: [addDates, checkExisting],
-	update: [authenticate('jwt'), addDates],
-	patch: [authenticate('jwt'), addDates],
+	create: [addDates, checkExisting, writeConsentToUser],
+	update: [authenticate('jwt'), addDates, writeConsentToUser],
+	patch: [authenticate('jwt'), addDates, patchConsentToUser],
 	remove: [authenticate('jwt')],
 };
 
@@ -256,8 +256,8 @@ exports.after = {
 	all: [],
 	find: [decorateConsents, addConsentsStatus],
 	get: [decorateConsent, addConsentStatus],
-	create: [writeConsentToUser],
-	update: [writeConsentToUser],
-	patch: [patchConsentToUser],
+	create: [],
+	update: [],
+	patch: [],
 	remove: [],
 };
