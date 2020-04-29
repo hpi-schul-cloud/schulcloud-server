@@ -10,12 +10,8 @@ const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
-const { KEEP_ALIVE } = require('../config/globals');
 
-const app = express(feathers());
-
-const config = configuration();
-app.configure(config);
+const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -28,12 +24,15 @@ const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 const rabbitMq = require('./utils/rabbitmq');
 
-const { BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
-
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
+
+const app = express(feathers());
+
+const config = configuration();
+app.configure(config);
 
 const metricsOptions = {};
 if (METRICS_PATH) {
