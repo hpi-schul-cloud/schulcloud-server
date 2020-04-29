@@ -18,6 +18,7 @@ const createTestUser = (app, opt) => async ({
 	firstLogin = false,
 	// manual cleanup, e.g. when testing delete:
 	manualCleanup = false,
+	...otherParams
 } = {}) => {
 	const registrationPin = await app.service('registrationPins').create({ email, verified: true, silent: true });
 	tempPinIds.push(registrationPin);
@@ -34,6 +35,7 @@ const createTestUser = (app, opt) => async ({
 		preferences: {
 			firstLogin,
 		},
+		...otherParams,
 	});
 
 	if (!manualCleanup) {
