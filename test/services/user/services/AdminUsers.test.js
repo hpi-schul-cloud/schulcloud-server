@@ -328,7 +328,6 @@ describe('AdminTeachersService', () => {
 		});
 		const resultMissing = (await adminTeachersService.find(createParams('missing'))).data;
 		const idsMissing = resultMissing.map((e) => e._id.toString());
-		console.log(idsMissing);
 		expect(idsMissing).to.include(teacherWithoutConsent._id.toString());
 		expect(idsMissing).to.not.include(teacherWithConsent._id.toString());
 

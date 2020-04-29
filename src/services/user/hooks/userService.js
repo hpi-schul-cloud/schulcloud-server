@@ -88,10 +88,6 @@ const checkUniqueAccount = (hook) => {
 		});
 };
 
-const defineConsentStatus = (context) => {
-	const { data } = context;
-};
-
 const updateAccountUsername = async (context) => {
 	let { params: { account } } = context;
 	const {
