@@ -10,7 +10,6 @@ const { logger } = app;
 chai.use(chaiHttp);
 
 describe('Moodle single-sign-on', () => {
-	let mockMoodle = null;
 	let testSystem = null;
 
 	const newTestAccount = { username: 'testMoodleLoginUser', password: 'testPassword' };

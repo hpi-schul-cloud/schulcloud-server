@@ -4,18 +4,14 @@ const {
 	NotFound,
 	BadRequest,
 	TypeError,
-	NotAuthenticated,
 } = require('@feathersjs/errors');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
-const KeysModel = require('../services/keys/model');
-const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../config/globals');
+const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 // Add any common hooks you want to share across services in here.
-
-const { extractTokenFromBearerHeader } = require('../services/authentication/logic');
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
@@ -391,7 +387,7 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 	return context;
 });
 
-const isProductionMode = process.env.NODE_ENV === 'production';
+const isProductionMode = NODE_ENV === ENVIRONMENTS.PRODUCTION;
 exports.mapPayload = (context) => {
 	if (!isProductionMode) {
 		logger.info(
@@ -400,6 +396,7 @@ exports.mapPayload = (context) => {
 		);
 	}
 	if (context.params.payload) {
+		// eslint-disable-next-line prefer-object-spread
 		context.params.authentication = Object.assign(
 			{},
 			context.params.authentication,
@@ -759,4 +756,9 @@ exports.populateCurrentSchool = async (context) => {
 		return context;
 	}
 	throw new BadRequest('Authentication is required.');
+};
+
+exports.addCollation = (context) => {
+	context.params.collation = { locale: 'de', caseLevel: true };
+	return context;
 };

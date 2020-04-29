@@ -7,7 +7,7 @@ pull_request_rules:
     actions:
       merge:
         method: merge
-        strict: true
+        strict: smart
   - name: remove ready to merge label when merged
     conditions:
       - merged

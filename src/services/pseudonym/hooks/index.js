@@ -1,5 +1,4 @@
 const { authenticate } = require('@feathersjs/authentication');
-const errors = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
