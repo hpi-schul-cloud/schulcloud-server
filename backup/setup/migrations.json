@@ -522,6 +522,17 @@
 },
 {
 	"_id": {
+		"$oid": "5ea6d94a5735a85808dbc95a"
+	},
+	"state": "up",
+	"name": "remove-student_edit-from-students",
+	"createdAt": {
+		"$date": "2020-04-27T15:17:39.485Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5ea0049a18cc9c230f4fc936"
 	},
 	"state": "up",
