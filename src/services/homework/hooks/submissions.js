@@ -218,7 +218,7 @@ const noDuplicateSubmissionForTeamMembers = (hook) => {
 
 		let toRemove = '';
 		const submissionsForTeamMembers = hook.data.submissions.filter((submission) => {
-			for (let i = 0; i < newTeamMembers.length; i++) {
+			for (let i = 0; i < newTeamMembers.length; i += 1) {
 				const teamMember = newTeamMembers[i].toString();
 				if (submission.teamMembers.includes(teamMember)
 						|| (((submission.studentId || {})._id || {}).toString() == teamMember)
