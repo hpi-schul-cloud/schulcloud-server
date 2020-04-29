@@ -1,10 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
-const {	iff, isProvider } = require('feathers-hooks-common');
-const globalHooks = require('../../../hooks');
+const { iff, isProvider } = require('feathers-hooks-common');
+const {
+	restrictToCurrentSchool, hasPermission, denyIfNotCurrentSchool, permitGroupOperation,
+} = require('../../../hooks');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
-
-
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
 const {
 	restrictToUsersCourses,
@@ -58,30 +57,30 @@ const courseGroupHooks = {
 	before: {
 		all: [authenticate('jwt')],
 		find: [iff(isProvider('external'), [
-			globalHooks.hasPermission('COURSE_VIEW'), restrictToCurrentSchool, restrictToUsersCourses,
+			hasPermission('COURSE_VIEW'), restrictToCurrentSchool, restrictToUsersCourses,
 		])],
-		get: [globalHooks.hasPermission('COURSE_VIEW')],
+		get: [hasPermission('COURSE_VIEW')],
 		create: [
 			iff(isProvider('external'), [
-				globalHooks.hasPermission('COURSEGROUP_CREATE'),
+				hasPermission('COURSEGROUP_CREATE'),
 				restrictToCurrentSchool,
 				restrictToUsersCourses,
 			]),
 		],
 		update: [iff(isProvider('external'), [
-			globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool, restrictToUsersCourses,
+			hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool, restrictToUsersCourses,
 		])],
 		patch: [iff(isProvider('external'), [
-			globalHooks.hasPermission('COURSEGROUP_EDIT'),
+			hasPermission('COURSEGROUP_EDIT'),
 			restrictToCurrentSchool,
 			restrictToUsersCourses,
-			globalHooks.permitGroupOperation,
+			permitGroupOperation,
 		])],
 		remove: [iff(isProvider('external'), [
-			globalHooks.hasPermission('COURSEGROUP_CREATE'),
+			hasPermission('COURSEGROUP_CREATE'),
 			restrictToCurrentSchool,
 			restrictToUsersCourses,
-			globalHooks.permitGroupOperation,
+			permitGroupOperation,
 		])],
 	},
 	after: {
@@ -89,7 +88,7 @@ const courseGroupHooks = {
 		find: [],
 		get: [
 			iff(isProvider('external'), [
-				globalHooks.denyIfNotCurrentSchool({
+				denyIfNotCurrentSchool({
 					errorMessage: 'You do not have valid permissions to access this.',
 				}),
 				denyIfNotInCourse,
