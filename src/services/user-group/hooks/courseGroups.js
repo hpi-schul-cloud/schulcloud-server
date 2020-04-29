@@ -2,9 +2,15 @@ const {
 	NotFound,
 	BadRequest,
 } = require('@feathersjs/errors');
+const {
+	hasRoleNoHook,
+} = require('../../../hooks');
 const { equal } = require('../../../helper/compare').ObjectId;
 
 const restrictToUsersCourses = async (context) => {
+	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userIsSuperhero) return context;
+
 	const { userId } = context.params.account;
 	const usersCourses = await context.app.service('courses').find({
 		query: {
@@ -35,6 +41,7 @@ const restrictToUsersCourses = async (context) => {
 			courseId: { $in: [usersCoursesIds] },
 		});
 	}
+	return context;
 };
 
 const denyIfNotInCourse = async (context) => {
