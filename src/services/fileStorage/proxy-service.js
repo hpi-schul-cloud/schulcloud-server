@@ -184,6 +184,11 @@ const fileStorageService = {
 			storageFileName: decodeURIComponent(data.storageFileName),
 		}));
 
+		const asyncErrorHandler = (err = {}) => {
+			const message = err.message || 'Error during async file operation after upload.';
+			logger.error({ message, stack: err.stack });
+		};
+
 		const strategy = createCorrectStrategy(fileStorageType);
 		// create db entry for new file
 		// check for create permissions on parent
@@ -193,8 +198,8 @@ const fileStorageService = {
 					(modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 				))
 				.then((file) => {
-					prepareSecurityCheck(file, userId, strategy).catch((err) => logger.error(err));
-					prepareThumbnailGeneration(file, strategy, userId, data, props).catch((err) => logger.error(err));
+					prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
+					prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
 					return Promise.resolve(file);
 				})
 				.catch((err) => {
@@ -206,8 +211,8 @@ const fileStorageService = {
 			.exec()
 			.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
 			.then((file) => {
-				prepareSecurityCheck(file, userId, strategy).catch((err) => logger.error(err));
-				prepareThumbnailGeneration(file, strategy, userId, data, props).catch((err) => logger.error(err));
+				prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
+				prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
 				return Promise.resolve(file);
 			});
 	},
