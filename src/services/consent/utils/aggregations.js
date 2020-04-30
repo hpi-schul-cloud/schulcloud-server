@@ -6,7 +6,7 @@ const convertSelect = (select) => {
 	const project = {};
 
 	select.forEach((e) => {
-		project[e] = true;
+		project[e] = 1;
 	});
 
 	return project;
@@ -66,6 +66,74 @@ const stageAddConsentSortParam = (aggregation) => {
 	});
 };
 
+const getConsentStatusSwitch = () => {
+	const currentDate = new Date();
+	const secondLevel = new Date();
+	secondLevel.setFullYear(currentDate.getFullYear() - 16); // TODO: get age from default.conf
+	const firstLevel = new Date();
+	firstLevel.setFullYear(currentDate.getFullYear() - 14);
+
+
+	return {
+		$switch: {
+			branches: [
+				{
+					case: {
+						$or: [
+							{
+								$and: [
+									{ $lte: ['$birthday', secondLevel] },
+									{ $eq: ['$consent.userConsent.privacyConsent', true] },
+									{ $eq: ['$consent.userConsent.termsOfUseConsent', true] },
+								],
+							},
+							{
+								$and: [
+									{ $gt: ['$birthday', secondLevel] },
+									{ $lte: ['$birthday', firstLevel] },
+									{ $eq: ['$consent.userConsent.privacyConsent', true] },
+									{ $eq: ['$consent.userConsent.termsOfUseConsent', true] },
+									{ $eq: [getParentReducer('privacyConsent'), true] },
+									{ $eq: [getParentReducer('termsOfUseConsent'), true] },
+								],
+							},
+							{
+								$and: [
+									{ $gt: ['$birthday', firstLevel] },
+									{ $eq: [getParentReducer('privacyConsent'), true] },
+									{ $eq: [getParentReducer('termsOfUseConsent'), true] },
+								],
+							},
+
+						],
+					},
+					then: 'ok',
+
+				},
+				{
+					case: {
+						$and: [
+							{ $gt: ['$birthday', secondLevel] },
+							{ $lte: ['$birthday', firstLevel] },
+							{ $eq: [getParentReducer('privacyConsent'), true] },
+							{ $eq: [getParentReducer('termsOfUseConsent'), true] },
+						],
+					},
+					then: 'parentsAgreed',
+				},
+			],
+			default: 'missing',
+		},
+	};
+};
+
+const stageAddConsentStatus = (aggregation) => {
+	aggregation.push({
+		$addFields: {
+			consentStatus: getConsentStatusSwitch(),
+		},
+	});
+};
 
 /**
  * Convert Select array to and aggregation Project and adds consentStatus if part of select
@@ -73,71 +141,25 @@ const stageAddConsentSortParam = (aggregation) => {
  * @param {Array} aggregation
  * @param {Array} select
  */
-const stageAddSelectProject = (aggregation, select) => {
-	const currentDate = new Date();
-	const secondLevel = new Date();
-	secondLevel.setFullYear(currentDate.getFullYear() - 16); // TODO: get age from default.conf
-	const firstLevel = new Date();
-	firstLevel.setFullYear(currentDate.getFullYear() - 14);
-
+const stageAddSelectProjectWithConsentCreate = (aggregation, select) => {
 	const project = convertSelect(select);
 
-	if (!select || select.includes('consentStatus')) {
-		project.consentStatus = {
-			$switch: {
-				branches: [
-					{
-						case: {
-							$or: [
-								{
-									$and: [
-										{ $lte: ['$birthday', secondLevel] },
-										{ $eq: ['$consent.userConsent.privacyConsent', true] },
-										{ $eq: ['$consent.userConsent.termsOfUseConsent', true] },
-									],
-								},
-								{
-									$and: [
-										{ $gt: ['$birthday', secondLevel] },
-										{ $lte: ['$birthday', firstLevel] },
-										{ $eq: ['$consent.userConsent.privacyConsent', true] },
-										{ $eq: ['$consent.userConsent.termsOfUseConsent', true] },
-										{ $eq: [getParentReducer('privacyConsent'), true] },
-										{ $eq: [getParentReducer('termsOfUseConsent'), true] },
-									],
-								},
-								{
-									$and: [
-										{ $gt: ['$birthday', firstLevel] },
-										{ $eq: [getParentReducer('privacyConsent'), true] },
-										{ $eq: [getParentReducer('termsOfUseConsent'), true] },
-									],
-								},
-
-							],
-						},
-						then: 'ok',
-
-					},
-					{
-						case: {
-							$and: [
-								{ $gt: ['$birthday', secondLevel] },
-								{ $lte: ['$birthday', firstLevel] },
-								{ $eq: [getParentReducer('privacyConsent'), true] },
-								{ $eq: [getParentReducer('termsOfUseConsent'), true] },
-							],
-						},
-						then: 'parentsAgreed',
-					},
-				],
-				default: 'missing',
-			},
-		};
+	if (select.includes('consentStatus')) {
+		project.consentStatus = getConsentStatusSwitch();
 	}
 
 	aggregation.push({
 		$project: project,
+	});
+};
+
+
+/**
+ * Only select fields which are in select
+ */
+const stageSimpleProject = (aggregation, select) => {
+	aggregation.push({
+		$project: convertSelect(select),
 	});
 };
 
@@ -257,7 +279,7 @@ const createMultiDocumentAggregation = ({
 	// eslint-disable-next-line no-param-reassign
 	skip = Number(skip);
 
-
+	const selectSortDiff = Object.getOwnPropertyNames(sort).filter((s) => !select.includes(s));
 	const aggregation = [];
 
 	if (match) {
@@ -267,7 +289,9 @@ const createMultiDocumentAggregation = ({
 	}
 
 	if (select) {
-		stageAddSelectProject(aggregation, select);
+		stageAddSelectProjectWithConsentCreate(aggregation, select.concat(selectSortDiff));
+	} else {
+		stageAddConsentStatus(aggregation);
 	}
 
 	if (consentStatus) {
@@ -278,6 +302,10 @@ const createMultiDocumentAggregation = ({
 		stageSort(aggregation, sort);
 	}
 
+	if (selectSortDiff.length !== 0) {
+		stageSimpleProject(aggregation, select);
+	}
+
 	stageFormatWithTotal(aggregation, limit, skip);
 
 	return aggregation;
@@ -285,5 +313,7 @@ const createMultiDocumentAggregation = ({
 
 
 module.exports = {
+	convertSelect,
+	getParentReducer,
 	createMultiDocumentAggregation,
 };
