@@ -34,7 +34,7 @@ class RegistrationLink {
 				// get user from ids in query
 				const user = await Promise.resolve(getCurrentUserInfo(userId));
 				if (!user.roles || user.roles.length > 1) {
-					throw new BadRequest('Roles must be exactly of length one if generateRegistrationLink=true is set.');
+					throw new BadRequest('Roles must be exactly of length one.');
 				}
 
 				// get registrationLink
