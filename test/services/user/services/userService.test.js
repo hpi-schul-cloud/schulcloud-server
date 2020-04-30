@@ -1,5 +1,6 @@
 const assert = require('assert');
 const { expect } = require('chai');
+const { Configuration } = require('@schul-cloud/commons');
 const app = require('../../../../src/app');
 
 const userService = app.service('users');
@@ -81,6 +82,61 @@ describe('user service', () => {
 			});
 	});
 
+	it('student can edit himself', async () => {
+		const student = await testObjects.createTestUser({ roles: ['student']});
+		const params = await testObjects.generateRequestParamsFromUser(student);
+		params.query = {};
+		const result = await app.service('users').patch(student._id, { firstName: 'Bruce' }, params);
+		expect(result).to.not.be.undefined;
+		expect(result.firstName).to.equal('Bruce');
+	});
+
+	it('student can read himself', async () => {
+		const student = await testObjects.createTestUser({
+			roles: ['student'], birthday: Date.now(), ldapId: 'thisisauniqueid',
+		});
+		const params = await testObjects.generateRequestParamsFromUser(student);
+		params.query = {};
+		const result = await app.service('users').get(student._id, params);
+		expect(result).to.not.be.undefined;
+		expect(result).to.haveOwnProperty('firstName');
+		expect(result).to.haveOwnProperty('lastName');
+		expect(result).to.haveOwnProperty('displayName');
+		expect(result).to.haveOwnProperty('email');
+		expect(result).to.haveOwnProperty('birthday');
+		expect(result).to.haveOwnProperty('ldapId');
+	});
+
+	it('student can read other student', async () => {
+		const student = await testObjects.createTestUser({ roles: ['student'] });
+		const otherStudent = await testObjects.createTestUser({ role: ['student'], birthday: Date.now() });
+		const params = await testObjects.generateRequestParamsFromUser(student);
+		params.query = {};
+		const result = await app.service('users').get(otherStudent._id, params);
+		expect(result).to.not.be.undefined;
+		expect(result).to.haveOwnProperty('firstName');
+		expect(result).to.haveOwnProperty('lastName');
+		expect(result).to.haveOwnProperty('displayName');
+		expect(result).not.to.haveOwnProperty('email');
+		expect(result).not.to.haveOwnProperty('birthday');
+		expect(result).not.to.haveOwnProperty('ldapId');
+	});
+
+	it('teacher can read student', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const student = await testObjects.createTestUser({ role: ['student'], birthday: Date.now() });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
+		const result = await app.service('users').get(student._id, params);
+		expect(result).to.not.be.undefined;
+		expect(result).to.haveOwnProperty('firstName');
+		expect(result).to.haveOwnProperty('lastName');
+		expect(result).to.haveOwnProperty('displayName');
+		expect(result).to.haveOwnProperty('email');
+		expect(result).to.haveOwnProperty('birthday');
+		expect(result).not.to.haveOwnProperty('ldapId');
+	});
+
 	it('user gets removed from classes and courses after delete', async () => {
 		const userToDelete = await testObjects.createTestUser({ roles: ['student'] });
 		const { _id: classId } = await testObjects.createTestClass({ userIds: userToDelete._id });
@@ -103,6 +159,7 @@ describe('user service', () => {
 		const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 		params.query = {};
+		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		try {
 			await app.service('users').remove(studentToDelete._id, params);
 			throw new Error('should have failed');
@@ -121,6 +178,7 @@ describe('user service', () => {
 		const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 		params.query = {};
+		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		try {
 			const result = await app.service('users').remove(studentToDelete._id, params);
 			expect(result).to.not.be.undefined;
@@ -138,6 +196,7 @@ describe('user service', () => {
 		const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 		params.query = {};
+		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		try {
 			await app.service('users').remove(studentToDelete._id, params);
 			throw new Error('should have failed');
@@ -156,6 +215,7 @@ describe('user service', () => {
 		const actingUser = await testObjects.createTestUser({ roles: ['teacherDelete'] });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 		params.query = {};
+		params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 		try {
 			const result = await app.service('users').remove(studentToDelete._id, params);
 			expect(result).to.not.be.undefined;
@@ -179,6 +239,7 @@ describe('user service', () => {
 			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = { _id: { $in: userIds } };
+			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 			let result;
 			try {
 				result = await app.service('users').remove(null, params);
@@ -203,6 +264,7 @@ describe('user service', () => {
 			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = { _id: { $in: userIds } };
+			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 			let result;
 			try {
 				result = await app.service('users').remove(null, params);

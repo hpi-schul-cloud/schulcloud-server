@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { keep } = require('feathers-hooks-common');
 const { BadRequest, Forbidden, GeneralError } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
@@ -240,7 +241,7 @@ const securePatching = (hook) => Promise.all([
 			delete hook.data.roles;
 			delete (hook.data.$push || {}).roles;
 		}
-		if (hook.params.account.userId.toString() !== hook.id) {
+		if (!ObjectId.equal(hook.id, hook.params.account.userId)) {
 			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent))) {
 				return Promise.reject(new BadRequest('You have not the permissions to change other users'));
 			}
@@ -437,6 +438,29 @@ const generateRegistrationLink = async (context) => {
 	}
 };
 
+
+const filterResult = async (context) => {
+	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId);
+	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userCallingHimself || userIsSuperhero) {
+		return context;
+	}
+	const elevatedUser = await hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_EDIT');
+	const allowedAttributes = [
+		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
+		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
+		'displayName', 'avatarInitials', 'avatarBackgroundColor',
+	];
+	if (elevatedUser) {
+		const elevatedAttributes = [
+			'email', 'birthday', 'children', 'parents', 'updatedAt',
+			'createdAt', 'age', 'ldapDn',
+		];
+		allowedAttributes.push(...elevatedAttributes);
+	}
+	return keep(...allowedAttributes)(context);
+};
+
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
@@ -454,5 +478,6 @@ module.exports = {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	filterResult,
 	generateRegistrationLink,
 };
