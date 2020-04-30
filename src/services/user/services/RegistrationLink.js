@@ -1,56 +1,62 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
-const logger = require('../../../logger');
 
-const { SC_SHORT_TITLE } = require('../../../../config/globals');
+const { SC_SHORT_TITLE, SC_DOMAIN } = require('../../../../config/globals');
 
 const mailContent = (firstName, lastName, registrationLink) => {
 	const mail = {
 		subject: `Einladung für die Nutzung der ${SC_SHORT_TITLE}!`,
-		text: `Einladung in die ${SC_SHORT_TITLE}
+		content: {
+			text: `Einladung in die ${SC_SHORT_TITLE}
     Hallo ${firstName} ${lastName}!
     \\nDu wurdest eingeladen, der ${SC_SHORT_TITLE} beizutreten,
     \\nbitte vervollständige deine Registrierung unter folgendem Link: ${registrationLink}
     \\nViel Spaß und einen guten Start wünscht dir dein ${SC_SHORT_TITLE}-Team`,
+			html: '',
+		},
 	};
 	return mail;
 };
 
 const { userModel } = require('../model');
-const roleModel = require('../../role/model');
 
 const getCurrentUserInfo = (id) => userModel.findById(id)
-	.select('schoolId')
+	.select(['schoolId', 'email', 'firstName', 'lastName'])
 	.populate('roles')
 	.lean()
 	.exec();
 
-const getRoles = () => roleModel.find()
-	.select('name')
-	.lean()
-	.exec();
-
 class RegistrationLink {
-	constructor() {
-		this.permissionThatCanAccess = ['STUDENT_LIST', 'TEACHER_LIST'];
-	}
-
-	async find(params) {
+	async create(data, params) {
 		try {
-			const { query, account } = params;
-			const currentUserId = account.userId.toString();
+			const { userIds } = data;
 
-			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles()]);
+			for (const userId of userIds) {
+				// get user from ids in query
+				const user = await Promise.resolve(getCurrentUserInfo(userId));
+				if (!user.roles || user.roles.length > 1) {
+					throw new BadRequest('Roles must be exactly of length one if generateRegistrationLink=true is set.');
+				}
 
-			// permission check
-			if (!currentUser.roles.some((role) => this.rolesThatCanAccess.includes(role.name))) {
-				throw new Forbidden();
+				// get registrationLink
+				const { shortLink } = await this.app.service('/registrationlink')
+					.create({
+						role: user.roles[0],
+						save: true,
+						patchUser: true,
+						host: SC_DOMAIN,
+						schoolId: user.schoolId,
+						toHash: user.email,
+					});
+
+				// send mail
+				const { subject, content } = mailContent(user.firstName, user.lastName, shortLink);
+				await this.app.service('/mails')
+					.create({
+						email: user.email,
+						subject,
+						content,
+					});
 			}
-
-			// get registrationLink
-
-			// send mails
 		} catch (err) {
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this!', err);
