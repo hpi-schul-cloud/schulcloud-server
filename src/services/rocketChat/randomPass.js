@@ -17,7 +17,7 @@ const rndChar = () => {
 
 const generatePass = (m) => {
 	let pass = '';
-	for (let i = 0; i < m; i++) {
+	for (let i = 0; i < m; i += 1) {
 		pass += rndChar();
 	}
 	return pass;
@@ -25,7 +25,7 @@ const generatePass = (m) => {
 
 const generateSuffix = (m) => {
 	let suffix = '';
-	for (let i = 0; i < m; i++) {
+	for (let i = 0; i < m; i += 1) {
 		suffix += rnd36();
 	}
 	return suffix;
