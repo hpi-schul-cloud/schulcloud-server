@@ -27,36 +27,54 @@ const getCurrentUserInfo = (id) => userModel.findById(id)
 
 class RegistrationLink {
 	async create(data, params) {
+		let totalMailsSend = 0;
+
 		try {
 			const { userIds } = data;
 
 			for (const userId of userIds) {
-				// get user from ids in query
-				const user = await Promise.resolve(getCurrentUserInfo(userId));
-				if (!user.roles || user.roles.length > 1) {
-					throw new BadRequest('Roles must be exactly of length one.');
+				const account = await this.app.service('/accounts').find({
+					query: {
+						userId,
+					},
+				});
+
+				// dont't send mail if user has account
+				if ((account || []).length === 0) {
+					// get user info from id in userIds
+					const user = await Promise.resolve(getCurrentUserInfo(userId));
+					if (!user.roles || user.roles.length > 1) {
+						throw new BadRequest('Roles must be exactly of length one.');
+					}
+
+					// get registrationLink
+					const { shortLink } = await this.app.service('/registrationlink')
+						.create({
+							role: user.roles[0],
+							save: true,
+							patchUser: true,
+							host: SC_DOMAIN,
+							schoolId: user.schoolId,
+							toHash: user.email,
+						});
+
+					// send mail
+					const { subject, content } = mailContent(user.firstName, user.lastName, shortLink);
+					await this.app.service('/mails')
+						.create({
+							email: user.email,
+							subject,
+							content,
+						});
+					totalMailsSend += 1;
 				}
-
-				// get registrationLink
-				const { shortLink } = await this.app.service('/registrationlink')
-					.create({
-						role: user.roles[0],
-						save: true,
-						patchUser: true,
-						host: SC_DOMAIN,
-						schoolId: user.schoolId,
-						toHash: user.email,
-					});
-
-				// send mail
-				const { subject, content } = mailContent(user.firstName, user.lastName, shortLink);
-				await this.app.service('/mails')
-					.create({
-						email: user.email,
-						subject,
-						content,
-					});
 			}
+
+			return Promise.resolve({
+				totalReceivedIds: userIds.length,
+				totalMailsSend,
+				alreadyRegisteredUsers: (userIds.length - totalMailsSend),
+			});
 		} catch (err) {
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this!', err);
