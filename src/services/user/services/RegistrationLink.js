@@ -31,19 +31,19 @@ class RegistrationLink {
 
 		try {
 			const { userIds } = data;
+			let accounts = await this.app.service('/accounts').find({
+				query: {
+					userId: userIds,
+				},
+			});
+			accounts = accounts.map((account) => String(account.userId));
 
 			for (const userId of userIds) {
-				const account = await this.app.service('/accounts').find({
-					query: {
-						userId,
-					},
-				});
-
 				// dont't send mail if user has account
-				if ((account || []).length === 0) {
+				if (!accounts.includes(userId)) {
 					// get user info from id in userIds
-					const user = await Promise.resolve(getCurrentUserInfo(userId));
-					if (!user.roles || user.roles.length > 1) {
+					const user = await getCurrentUserInfo(userId);
+					if ((user.roles || []).length !== 1) {
 						throw new BadRequest('Roles must be exactly of length one.');
 					}
 
@@ -70,11 +70,11 @@ class RegistrationLink {
 				}
 			}
 
-			return Promise.resolve({
+			return {
 				totalReceivedIds: userIds.length,
 				totalMailsSend,
 				alreadyRegisteredUsers: (userIds.length - totalMailsSend),
-			});
+			};
 		} catch (err) {
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this!', err);
