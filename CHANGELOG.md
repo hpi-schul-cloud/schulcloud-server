@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3948 support users query in adminusers routes
 -   SC-4018 Add additional nexboard permissions
 -   SC-4008 Migrated generateRegistrationLink Hook from SC-Client into Server
+-   SC-3686 Added new Registration Link Service for sending mails
 
 ### Fixed
 
