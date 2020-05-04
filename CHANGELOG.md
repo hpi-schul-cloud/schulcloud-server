@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [22.9.17]
+
+### Fixed
+
+-  SC-4121: File uploads no longer fail if the security scan is misconfigured or errors during enqueuing
+
 ## [22.9.10]
 
 ### Added
