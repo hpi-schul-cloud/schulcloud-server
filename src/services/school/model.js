@@ -18,6 +18,7 @@ const SCHOOL_FEATURES = {
 	VIDEOCONFERENCE: 'videoconference',
 	MESSENGER: 'messenger',
 	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
+	VIDEOCONFERENCE_RECORDING: 'videoconferenceRecording',
 };
 
 const defaultFeatures = [];

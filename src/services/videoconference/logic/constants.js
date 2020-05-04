@@ -37,5 +37,6 @@ const createOptionToggles = {
 	MODERATOR_MUST_APPROVE_JOIN_REQUESTS: 'moderatorMustApproveJoinRequests',
 	EVERYBODY_JOINS_AS_MODERATOR: 'everybodyJoinsAsModerator',
 	EVERY_ATTENDEE_JOINS_MUTED: 'everyAttendeJoinsMuted', // TODO: Fix string value "attendee" here and in client
+	RECORD_CONFERENCE: 'record',
 };
 exports.CREATE_OPTION_TOGGLES = createOptionToggles;

@@ -7,6 +7,7 @@ const app = require('../../../src/app');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 const {
+	SCHOOL_FEATURES,
 	schoolModel: School,
 	yearModel: YearModel,
 } = require('../../../src/services/school/model');
@@ -121,6 +122,22 @@ describe('school service', () => {
 			);
 			expect(result).to.not.be.undefined;
 			expect(result.name).to.equal('all strings are better with "BATMAN!" in it!');
+		});
+
+		Object.values(SCHOOL_FEATURES).forEach((feature) => {
+			it(`updates the school with feature ${feature}`, async () => {
+				const school = await testObjects.createTestSchool({});
+				const admin = await testObjects.createTestUser({
+					schoolId: school._id,
+					roles: ['administrator'],
+				});
+				const params = await testObjects.generateRequestParamsFromUser(admin);
+
+				const result = await app.service('/schools')
+					.patch(school._id, { $push: { features: [feature] } }, params);
+				expect(result).to.not.be.undefined;
+				expect(result.features).to.include(feature);
+			});
 		});
 
 		it('push as admin', async () => {
