@@ -39,6 +39,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3958: the environment variables NBC_IMPORTURL, NBC_IMPORTUSER, and NBC_IMPORTPASSWORD are no longer used and have been removed
 -   Removed the obsolete commentSchema from the homework service. It was not in use.
 
+## [22.9.17]
+
+### Fixed
+
+-  SC-4121: File uploads no longer fail if the security scan is misconfigured or errors during enqueuing
+
 ## [22.9.10]
 
 ### Added
