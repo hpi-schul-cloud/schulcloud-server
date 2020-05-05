@@ -4,7 +4,7 @@ const SkipRegistrationService = require('./SkipRegistration');
 const RegistrationSchoolService = require('./registrationSchool');
 const UsersModelService = require('./UsersModelService');
 const UserService = require('./userService');
-const RegistrationLink = require('./RegistrationLink');
+const MailRegistrationLink = require('./MailRegistrationLink');
 
 module.exports = {
 	AdminUsers,
@@ -13,5 +13,5 @@ module.exports = {
 	RegistrationSchoolService,
 	UsersModelService,
 	UserService,
-	RegistrationLink,
+	MailRegistrationLink,
 };

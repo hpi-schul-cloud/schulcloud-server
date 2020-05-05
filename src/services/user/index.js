@@ -11,10 +11,9 @@ const {
 	RegistrationSchoolService,
 	UsersModelService,
 	UserService,
-	RegistrationLink,
+	MailRegistrationLink,
 } = require('./services');
 const adminHook = require('./hooks/admin');
-const registrationLinkHook = require('./hooks/RegistrationLink');
 
 
 module.exports = (app) => {
@@ -72,9 +71,9 @@ module.exports = (app) => {
 	adminTeachersService.hooks(adminHook);
 
 	const RegistrationLinkRoute = '/users/mail/registrationLink';
-	app.use(RegistrationLinkRoute, new RegistrationLink());
+	app.use(RegistrationLinkRoute, new MailRegistrationLink.Service());
 	const RegistrationLinkService = app.service(RegistrationLinkRoute);
-	RegistrationLinkService.hooks(registrationLinkHook);
+	RegistrationLinkService.hooks(MailRegistrationLink.Hooks);
 
 	app.use('/users/:userId/skipregistration', new SkipRegistrationService());
 	app.service('/users/:userId/skipregistration').hooks(skipRegistrationSingleHooks);

@@ -1,6 +1,8 @@
+const { authenticate } = require('@feathersjs/authentication').hooks;
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { hasPermission } = require('../../../hooks');
 
-const { SC_SHORT_TITLE, SC_DOMAIN } = require('../../../../config/globals');
+const { SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const mailContent = (firstName, lastName, registrationLink) => {
 	const mail = {
@@ -20,12 +22,12 @@ const mailContent = (firstName, lastName, registrationLink) => {
 const { userModel } = require('../model');
 
 const getCurrentUserInfo = (id) => userModel.findById(id)
-	.select(['schoolId', 'email', 'firstName', 'lastName'])
+	.select(['schoolId', 'email', 'firstName', 'lastName', 'preferences'])
 	.populate('roles')
 	.lean()
 	.exec();
 
-class RegistrationLink {
+class SendRegistrationLinkService {
 	async create(data, params) {
 		let totalMailsSend = 0;
 
@@ -43,9 +45,6 @@ class RegistrationLink {
 				if (!accounts.includes(userId)) {
 					// get user info from id in userIds
 					const user = await getCurrentUserInfo(userId);
-					if ((user.roles || []).length !== 1) {
-						throw new BadRequest('Roles must be exactly of length one.');
-					}
 
 					// get registrationLink
 					const { shortLink } = await this.app.service('/registrationlink')
@@ -53,7 +52,6 @@ class RegistrationLink {
 							role: user.roles[0],
 							save: true,
 							patchUser: true,
-							host: SC_DOMAIN,
 							schoolId: user.schoolId,
 							toHash: user.email,
 						});
@@ -66,6 +64,13 @@ class RegistrationLink {
 							subject,
 							content,
 						});
+
+					if (!(user.preferences || {}).registrationMailSend) {
+						const updatedPreferences = user.preferences || {};
+						updatedPreferences.registrationMailSend = true;
+						await this.app.service('users')
+							.patch(user._id, { preferences: updatedPreferences }, params.account);
+					}
 					totalMailsSend += 1;
 				}
 			}
@@ -88,4 +93,13 @@ class RegistrationLink {
 	}
 }
 
-module.exports = RegistrationLink;
+const SendRegistrationLinkHooks = {
+	before: {
+		all: [authenticate('jwt'), hasPermission(['STUDENT_LIST', 'TEACHER_LIST'])],
+	},
+};
+
+module.exports = {
+	Hooks: SendRegistrationLinkHooks,
+	Service: SendRegistrationLinkService,
+};
