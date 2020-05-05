@@ -409,6 +409,32 @@ const filterResult = async (context) => {
 	return keep(...allowedAttributes)(context);
 };
 
+const includeOnlySchoolRoles = async (context) => {
+	if (context.params && context.params.query) {
+		const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+		if (userIsSuperhero) {
+			return context;
+		}
+		const allowedRoles = (await context.app.service('roles').find({
+			query: {
+				name: { $in: ['administrator', 'teacher', 'student'] },
+			},
+			paginate: false,
+		})).map((r) => r._id);
+
+		if (context.params.query.roles && context.params.query.roles.$in) {
+			// when querying for specific roles, filter them
+			context.params.query.roles.$in = context.params.query.roles.$in.filter((r) => allowedRoles.includes(r));
+		} else {
+			// otherwise, overwrite them with whitelist
+			context.params.query.roles = {
+				$in: allowedRoles,
+			};
+		}
+	}
+	return context;
+};
+
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
@@ -427,4 +453,5 @@ module.exports = {
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
 	filterResult,
+	includeOnlySchoolRoles,
 };
