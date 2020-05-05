@@ -461,6 +461,39 @@ const filterResult = async (context) => {
 	return keep(...allowedAttributes)(context);
 };
 
+let roleCache = null;
+const includeOnlySchoolRoles = async (context) => {
+	if (context.params && context.params.query) {
+		const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+		if (userIsSuperhero) {
+			return context;
+		}
+
+		// todo: remove with static role service (SC-3731)
+		if (!Array.isArray(roleCache)) {
+			roleCache = (await context.app.service('roles').find({
+				query: {
+					name: { $in: ['administrator', 'teacher', 'student'] },
+				},
+				paginate: false,
+			})).map((r) => r._id);
+		}
+		const allowedRoles = roleCache;
+
+		if (context.params.query.roles && context.params.query.roles.$in) {
+			// when querying for specific roles, filter them
+			context.params.query.roles.$in = context.params.query.roles.$in
+				.filter((r) => allowedRoles.some((a) => ObjectId.equal(r, a)));
+		} else {
+			// otherwise, overwrite them with whitelist
+			context.params.query.roles = {
+				$in: allowedRoles,
+			};
+		}
+	}
+	return context;
+};
+
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
@@ -480,4 +513,5 @@ module.exports = {
 	enforceRoleHierarchyOnDelete,
 	filterResult,
 	generateRegistrationLink,
+	includeOnlySchoolRoles,
 };

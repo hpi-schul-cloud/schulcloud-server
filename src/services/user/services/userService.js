@@ -33,6 +33,7 @@ const {
 	enforceRoleHierarchyOnDelete,
 	filterResult,
 	generateRegistrationLink,
+	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
 class UserService {
@@ -87,6 +88,7 @@ const userHooks = {
 			iff(isProvider('external'), restrictToCurrentSchool),
 			mapRoleFilterQuery,
 			addCollation,
+			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
 		get: [authenticate('jwt')],
 		create: [
