@@ -5,7 +5,7 @@ const { ObjectId } = require('mongoose').Types;
 
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParams } = require('../helpers/services/login')(app);
+const { generateRequestParams, generateRequestParamsFromUser } = require('../helpers/services/login')(app);
 
 const accountService = app.service('/accounts');
 const userService = app.service('/users');
@@ -170,7 +170,7 @@ describe('Account Service', () => {
 		});
 
 		it('should fail to patch the password if it does not meet requirements', async () => {
-			const user = await testObjects.createTestUser();
+			const user = await testObjects.createTestUser({ roles: ['student'] });
 			const accountDetails = {
 				username: 'some@user.de',
 				password: 'ca4t9fsfr3dsd',
@@ -190,7 +190,7 @@ describe('Account Service', () => {
 		});
 
 		it('should fail on verification mismatch', async () => {
-			const user = await testObjects.createTestUser({ firstLogin: true });
+			const user = await testObjects.createTestUser({ firstLogin: true, roles: ['student'] });
 			const accountDetails = {
 				username: 'some@user.de',
 				password: 'ca4t9fsfr3dsd',
@@ -232,6 +232,32 @@ describe('Account Service', () => {
 				assert.equal(result.activated, true);
 			} finally {
 				await accountService.remove(account._id);
+			}
+		});
+
+		it('user should fail to patch other user', async () => {
+			const user = await testObjects.createTestUser({ firstLogin: true, roles: ['student'] });
+			const otherUser = await testObjects.createTestUser({ roles: ['student'] });
+			const accountDetails = {
+				username: 'other@user.de',
+				password: 'password',
+				userId: otherUser._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				const params = await generateRequestParamsFromUser(user);
+				await accountService.patch(account._id, {
+					password: 'Schul&Cluedo76',
+					password_verification: 'Schul&Cluedo76',
+				}, params);
+				throw new Error('should have failed.');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal('You have not the permissions to change other users');
+			} finally {
+				await accountService.remove(account._id);
+				await userService.remove(user._id);
 			}
 		});
 	});

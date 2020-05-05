@@ -1,8 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
-const local = require('@feathersjs/authentication-local');
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
-const hooks = require('feathers-hooks-common');
 const { ObjectId } = require('mongoose').Types;
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
@@ -257,49 +255,17 @@ const testIfJWTExist = (context) => {
 	return context;
 };
 
-exports.before = {
-	// find, get and create cannot be protected by authenticate('jwt')
-	// otherwise we cannot get the accounts required for login
-	find: [testIfJWTExist, globalHooks.ifNotLocal(restrictAccess)],
-	get: [hooks.disallow('external')],
-	create: [
-		sanitizeUsername,
-		checkExistence,
-		validateCredentials,
-		trimPassword,
-		local.hooks.hashPassword('password'),
-		checkUnique,
-		removePassword,
-	],
-	update: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('ACCOUNT_EDIT'),
-		globalHooks.restrictToCurrentSchool,
-		sanitizeUsername,
-	],
-	patch: [
-		authenticate('jwt'),
-		sanitizeUsername,
-		globalHooks.ifNotLocal(securePatching),
-		protectUserId,
-		globalHooks.permitGroupOperation,
-		trimPassword,
-		globalHooks.ifNotLocal(validatePassword),
-		local.hooks.hashPassword('password'),
-	],
-	remove: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('ACCOUNT_CREATE'),
-		globalHooks.permitGroupOperation,
-	],
-};
-
-exports.after = {
-	all: [local.hooks.protect('password')],
-	find: [],
-	get: [filterToRelated(['_id', 'username', 'userId', 'systemId'])],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
+module.exports = {
+	sanitizeUsername,
+	validateCredentials,
+	trimPassword,
+	validatePassword,
+	checkUnique,
+	removePassword,
+	restrictAccess,
+	checkExistence,
+	protectUserId,
+	securePatching,
+	filterToRelated,
+	testIfJWTExist,
 };
