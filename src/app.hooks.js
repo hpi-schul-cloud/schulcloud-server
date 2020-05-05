@@ -9,8 +9,8 @@ const {
 
 
 const sanitizeDataHook = (context) => {
-	if (context.data && context.path && context.path !== 'authentication') {
-		sanitizeDeep(context.data, context.path);
+	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
+		sanitizeDeep(context.type === 'before' ? context.data : context.result, context.path);
 	}
 	return context;
 };
@@ -151,8 +151,8 @@ function setupAppHooks(app) {
 
 	const after = {
 		all: [],
-		find: [],
-		get: [],
+		find: [sanitizeDataHook],
+		get: [sanitizeDataHook],
 		create: [],
 		update: [],
 		patch: [],

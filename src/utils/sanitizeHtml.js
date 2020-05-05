@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const sanitizeHtml = require('sanitize-html');
 
-const maxDeep = 10;
+const maxDeep = 12;
 // enable html for all current editors
 const keys = ['content', 'text', 'comment', 'gradeComment', 'description'];
 const paths = ['lessons', 'news', 'newsModel', 'homework', 'submissions'];
