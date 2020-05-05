@@ -449,7 +449,7 @@ const filterResult = async (context) => {
 	const allowedAttributes = [
 		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
 		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
-		'displayName', 'avatarInitials', 'avatarBackgroundColor',
+		'displayName', 'avatarInitials', 'avatarBackgroundColor', 'consentStatus', 'consent',
 	];
 	if (elevatedUser) {
 		const elevatedAttributes = [

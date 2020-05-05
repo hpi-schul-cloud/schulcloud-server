@@ -57,7 +57,7 @@ const defineConsentStatus = (birthday, consent) => {
 			return 'ok';
 
 		case 1:
-			return 'parentsAgreeds';
+			return 'parentsAgreed';
 		default:
 			return 'missing';
 	}
