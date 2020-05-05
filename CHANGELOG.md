@@ -13,7 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
--  SC-4215: Do not allow unpriveledged users to find users with non-school roles (expert, parent, etc.)
+-  SC-4215: Do not allow unprivileged users to find users with non-school roles (expert, parent, etc.)
 
 ## [22.9.17]
 
