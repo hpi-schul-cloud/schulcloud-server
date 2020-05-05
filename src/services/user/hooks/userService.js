@@ -409,18 +409,24 @@ const filterResult = async (context) => {
 	return keep(...allowedAttributes)(context);
 };
 
+let roleCache = null;
 const includeOnlySchoolRoles = async (context) => {
 	if (context.params && context.params.query) {
 		const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
 		if (userIsSuperhero) {
 			return context;
 		}
-		const allowedRoles = (await context.app.service('roles').find({
-			query: {
-				name: { $in: ['administrator', 'teacher', 'student'] },
-			},
-			paginate: false,
-		})).map((r) => r._id);
+
+		// todo: remove with static role service (SC-3731)
+		if (!Array.isArray(roleCache)) {
+			roleCache = (await context.app.service('roles').find({
+				query: {
+					name: { $in: ['administrator', 'teacher', 'student'] },
+				},
+				paginate: false,
+			})).map((r) => r._id);
+		}
+		const allowedRoles = roleCache;
 
 		if (context.params.query.roles && context.params.query.roles.$in) {
 			// when querying for specific roles, filter them
