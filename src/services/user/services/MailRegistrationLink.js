@@ -69,7 +69,7 @@ class SendRegistrationLinkService {
 						const updatedPreferences = user.preferences || {};
 						updatedPreferences.registrationMailSend = true;
 						await this.app.service('users')
-							.patch(user._id, { preferences: updatedPreferences }, params.account);
+							.patch(user._id, { preferences: updatedPreferences }, params);
 					}
 					totalMailsSend += 1;
 				}
