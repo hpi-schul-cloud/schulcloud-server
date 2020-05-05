@@ -1,9 +1,9 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { userModel, displayName } = require('../user/model');
-const { schoolModel } = require('../school/model');
+const { schoolModel, SCHOOL_FEATURES } = require('../school/model');
 const roleModel = require('../role/model');
-const { courseModel } = require('../user-group/model');
-const { teamsModel } = require('../teams/model');
+const { courseModel, COURSE_FEATURES } = require('../user-group/model');
+const { teamsModel, TEAM_FEATURES } = require('../teams/model');
 const { ObjectId } = require('../../helper/compare');
 
 const getUserData = (userId) => userModel.findOne(
@@ -72,6 +72,7 @@ const getRoles = async () => {
     room: {
 		id: 1234566,
 		name: 'Mathe 6b',
+		description: 'Kurs',
 		type: 'course',
 		is_moderator: false,
 		bidirectional: true
@@ -81,8 +82,9 @@ const getRoles = async () => {
 const buildCourseObject = (course, userId) => ({
 	id: course._id.toString(),
 	name: course.name,
+	description: 'Kurs',
 	type: 'course',
-	bidirectional: (course.features || []).includes('messenger'),
+	bidirectional: (course.features || []).includes(COURSE_FEATURES.MESSENGER),
 	is_moderator: course.teacherIds.concat(course.substitutionIds).some(
 		(moderatorId) => ObjectId.equal(moderatorId, userId),
 	),
@@ -91,15 +93,19 @@ const buildCourseObject = (course, userId) => ({
 
 const buildTeamObject = async (team, userId, moderatorRoles) => {
 	const { teamAdminId, teamLeaderId, teamOwnerId } = moderatorRoles;
+	const isModerator = team.userIds.some((user) => {
+		if (!ObjectId.equal(user.userId, userId)) {
+			return false; // other user
+		}
+		return [teamAdminId, teamLeaderId, teamOwnerId].includes(user.role.toString());
+	});
 	return {
 		id: team._id.toString(),
 		name: team.name,
+		description: 'Team',
 		type: 'team',
-		bidirectional: (team.features || []).includes('messenger'),
-		is_moderator: team.userIds.some(
-			(user) => ObjectId.equal(user.userId, userId)
-				&& [teamAdminId, teamLeaderId, teamOwnerId].includes(user.role.toString()),
-		),
+		bidirectional: (team.features || []).includes(TEAM_FEATURES.MESSENGER),
+		is_moderator: isModerator,
 	};
 };
 
@@ -125,7 +131,7 @@ const buildMessageObject = async (data) => {
 		method: 'adduser',
 		school: {
 			id: school._id.toString(),
-			has_allhands_channel: true,
+			has_allhands_channel: (school.features || []).includes(SCHOOL_FEATURES.MESSENGER_SCHOOL_ROOM),
 			name: school.name,
 		},
 		user: {
@@ -157,7 +163,9 @@ const messengerIsActivatedForSchool = async (data) => {
 		data.school = await getSchoolData(data.schoolId);
 	}
 
-	return data.school && Array.isArray(data.school.features) && data.school.features.includes('messenger');
+	return data.school
+		&& Array.isArray(data.school.features)
+		&& data.school.features.includes(SCHOOL_FEATURES.MESSENGER);
 };
 
 module.exports = { buildAddUserMessage, messengerIsActivatedForSchool };
