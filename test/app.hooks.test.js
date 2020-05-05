@@ -30,7 +30,6 @@ describe('Sanitization Hook', () => {
 		expect(result.data).to.not.be.an('undefined');
 		expect(result.data.testString).to.equal(sanitizedTestString);
 		expect(result.result).to.be.an('undefined');
-
 	});
 
 	it('hook sanitizes when it is triggered in "after" type by checking the existence of "result" property', () => {
@@ -45,7 +44,6 @@ describe('Sanitization Hook', () => {
 		expect(result.result).to.not.be.an('undefined');
 		expect(result.result.testString).to.equal(sanitizedTestString);
 		expect(result.data).to.be.an('undefined');
-
 	});
 
 	it('hook does not sanitizes when both properties `data` and `results` are empty', () => {
