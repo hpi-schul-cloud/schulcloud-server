@@ -40,6 +40,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3958: the environment variables NBC_IMPORTURL, NBC_IMPORTUSER, and NBC_IMPORTPASSWORD are no longer used and have been removed
 -   Removed the obsolete commentSchema from the homework service. It was not in use.
 
+## [22.9.18]
+
+### Fixed
+
+-  SC-4215: Do not allow unprivileged users to find users with non-school roles (expert, parent, etc.)
+
 ## [22.9.17]
 
 ### Fixed
