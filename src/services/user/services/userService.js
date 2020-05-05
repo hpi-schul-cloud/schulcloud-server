@@ -33,6 +33,7 @@ const {
 	enforceRoleHierarchyOnDelete,
 	filterResult,
 	generateRegistrationLink,
+	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
 // const USER_RABBIT_EXCHANGE = 'user';
@@ -91,6 +92,7 @@ const userHooks = {
 			iff(isProvider('external'), restrictToCurrentSchool),
 			mapRoleFilterQuery,
 			addCollation,
+			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
 		get: [authenticate('jwt')],
 		create: [
