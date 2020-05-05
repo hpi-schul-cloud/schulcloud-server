@@ -5,6 +5,7 @@ const {
 } = require('feathers-hooks-common');
 const { hasPermission, restrictToCurrentSchool } = require('../../../hooks');
 const { requestFullSchoolSync } = require('../producer');
+const { SCHOOL_FEATURES } = require('../../school/model');
 
 class MessengerSchoolSync {
 	constructor(options) {
@@ -22,7 +23,7 @@ class MessengerSchoolSync {
 	 */
 	async create(data, params) {
 		const school = await this.app.service('schools').get(params.route.schoolId);
-		if (!school.features.includes('messenger')) {
+		if (!school.features.includes(SCHOOL_FEATURES.MESSENGER)) {
 			throw new BadRequest('This school does not support the messenger feature.');
 		}
 
