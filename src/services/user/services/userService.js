@@ -31,6 +31,7 @@ const {
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
 	filterResult,
+	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
 class UserService {
@@ -84,6 +85,7 @@ const userHooks = {
 			authenticate('jwt'),
 			iff(isProvider('external'), restrictToCurrentSchool),
 			mapRoleFilterQuery,
+			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
 		get: [authenticate('jwt')],
 		create: [
