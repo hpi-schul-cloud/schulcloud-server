@@ -1,14 +1,15 @@
-const { getRandomInt } = require('../../src/helper/randomNumberGenerator');
 const { expect, assert } = require('chai');
+const { getRandomInt } = require('../../src/helper/randomNumberGenerator');
 
 describe('randomNumberGenerator helper', () => {
-	it('should throw an exception when difference between max number and min number exceed allowed treshold 256^6-1 (6 bytes)', () => {
+	it('should throw an exception when difference between max number and min number exceed allowed treshold', () => {
 		const maxAllowedRange = 281474976710656; // 6 bytes 256^6-1
-		assert.throws(() => getRandomInt(maxAllowedRange), 'Specified range is to big - cannot be greather than 256^6-1 = 281474976710656');
+		assert.throws(() => getRandomInt(maxAllowedRange),
+			'Specified range is to big - cannot be greather than 256^6-1 = 281474976710656');
 	});
 
 	it('should by default min parameter to be equal 0 therefore not generated number less than 0', () => {
-		let arrayWithRandomNumbers = [];
+		const arrayWithRandomNumbers = [];
 		const maxNumber = 100;
 		const minDefaultNumber = 0;
 		for (let i = 0; i < 100000; i++) {
@@ -21,10 +22,10 @@ describe('randomNumberGenerator helper', () => {
 	});
 
 	it('should generate numbers between specified range', () => {
-		let arrayWithRandomNumbers = [];
+		const arrayWithRandomNumbers = [];
 		const maxNumber = 100;
 		const minNumber = -100;
-		for (let i = 0; i < 100000; i++) {
+		for (let i = 0; i < 100000; i += 1) {
 			arrayWithRandomNumbers.push(getRandomInt(maxNumber, minNumber));
 		}
 		const maxNumberFromArray = Math.max(...arrayWithRandomNumbers);
