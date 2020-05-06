@@ -10,6 +10,7 @@ pull_request_rules:
       - label!=request_changes
       - label!=merge_conflicts
       - label!=help wanted
+      - label!=needs data protection review
       - -merged
     actions:
       label:
