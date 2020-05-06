@@ -4,10 +4,10 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const { Configuration } = require('@schul-cloud/commons');
 const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
-const { STUDENT_TEAM_CREATE_DISABLED } = require('../../../config/globals');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
@@ -21,9 +21,25 @@ const SCHOOL_FEATURES = {
 };
 
 const defaultFeatures = [];
-if (STUDENT_TEAM_CREATE_DISABLED === 'true'
-	|| STUDENT_TEAM_CREATE_DISABLED === '1') {
-	defaultFeatures.push(SCHOOL_FEATURES.DISABLE_STUDENT_TEAM_CREATION);
+const STUDENT_TEAM_CREATION = Configuration.get('STUDENT_TEAM_CREATION');
+
+switch (STUDENT_TEAM_CREATION) {
+	case 'enabled':
+		// if enabled student team creation feature should be enabled
+		defaultFeatures.push(SCHOOL_FEATURES.ENABLE_STUDENT_TEAM_CREATION);
+		break;
+	case 'disabled':
+		// if disabled student team creation feature should be disabled
+		break;
+	case 'opt-in':
+		// TODO: if opt-in student team creation should be enabled by admin
+		break;
+	case 'opt-out':
+		// TODO: if opt-out student team creation should be disabled by admin
+		break;
+	default:
+		// 'opt-in'
+		break;
 }
 
 
