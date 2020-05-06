@@ -20,6 +20,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-4018 Add additional nexboard permissions
 -   SC-4008 Migrated generateRegistrationLink Hook from SC-Client into Server
 -   SC-3686 Added new Registration Link Service for sending mails
+-   Mark consentService as depricated
 
 ### Fixed
 
@@ -27,12 +28,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3395 if fetching the release fails, a error will be thrown
 -   backup.js now outputs valid json exports
 -   SC-4105 fixed a problem with new users tests not working with recent hotfix.
+-   Checks of user consent calculated correct now
 
 ### Changed
 
 -   User delete now accepts bulk delete requests
 -   SC-3958: the "general" LDAP strategy now returns an empty array if classes are not configured properly
 -   Increase performance - error logging in sentry
+-   Moved consent to user. In the first step consent will save in user and the consent collection, next step removes consent collection
+-   Filter and sort request to userAdminService by consentStatus, by the request itself
 
 ### Removed
 
