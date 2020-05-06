@@ -5,15 +5,14 @@ const Chance = require('chance');
 const account = require('./model');
 const hooks = require('./hooks');
 
+const { getRandomInt } = require('../../helper/randomNumberGenerator');
 const { supportJWTServiceSetup, jwtTimerServiceSetup } = require('./services');
 
 const chance = new Chance();
 
 function randomGen(arr) {
-	const pos = Math.floor(Math.random() * arr.length);
-	const tempEle = arr[pos];
 
-	arr = arr.filter((item) => item !== tempEle);
+	const tempEle = arr[getRandomInt(arr.length - 1)];
 
 	if (arr.length === 0) return tempEle;
 
