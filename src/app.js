@@ -22,6 +22,7 @@ const handleResponseType = require('./middleware/handleReponseType');
 const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
+const { Configuration } = require('@schul-cloud/commons');
 const rabbitMq = require('./utils/rabbitmq');
 
 const setupSwagger = require('./swagger');
@@ -52,6 +53,25 @@ if (KEEP_ALIVE) {
 	});
 }
 
+if (Configuration.has('SENTRY_DSN')) {
+	Sentry.init({
+		dsn: Configuration.get('SENTRY_DSN'),
+		environment: app.get('env'),
+		release: version,
+		sampleRate: Configuration.get('SENTRY_SAMPLE_RATE')
+	});
+}
+if (Configuration.has('SENTRY_DSN')) {
+	Sentry.configureScope((scope) => {
+		if (res.locals.currentUser) {
+			scope.setTag({ schoolId: res.locals.currentUser.schoolId });
+		}
+	}
+			const { url, header } = req;
+	scope.request = { url: removeIds(url), header };
+};
+
+return next();
 app.use(compress())
 	.options('*', cors())
 	.use(cors())
