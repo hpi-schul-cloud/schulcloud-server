@@ -60,6 +60,7 @@ const AUTO_LOGOUT_BLACKLIST = [
 	/^accounts\/jwtTimer$/,
 	/^authentication$/,
 	/wopi\//,
+	/roster\//,
 ];
 
 /**

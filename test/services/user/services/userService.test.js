@@ -7,6 +7,7 @@ const userService = app.service('users');
 const classesService = app.service('classes');
 const coursesService = app.service('courses');
 const testObjects = require('../../helpers/testObjects')(app);
+const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 let testUserId;
 
@@ -83,7 +84,7 @@ describe('user service', () => {
 	});
 
 	it('student can edit himself', async () => {
-		const student = await testObjects.createTestUser({ roles: ['student']});
+		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
 		const result = await app.service('users').patch(student._id, { firstName: 'Bruce' }, params);
@@ -135,6 +136,32 @@ describe('user service', () => {
 		expect(result).to.haveOwnProperty('email');
 		expect(result).to.haveOwnProperty('birthday');
 		expect(result).not.to.haveOwnProperty('ldapId');
+	});
+
+	it('does not allow students and teachers to find parents', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const student = await testObjects.createTestUser({ roles: ['student'] });
+		const parent = await testObjects.createTestUser({ role: ['parent'] });
+
+		const teacherParams = await testObjects.generateRequestParamsFromUser(teacher);
+		teacherParams.query = {};
+		const result = await app.service('users').find(teacherParams);
+		expect(result.data.some((r) => equalIds(r._id, parent._id))).to.be.false;
+
+		const studentParams = await testObjects.generateRequestParamsFromUser(student);
+		studentParams.query = {};
+		const studentResults = await app.service('users').find(studentParams);
+		expect(studentResults.data.some((r) => equalIds(r._id, parent._id))).to.be.false;
+	});
+
+	it('allows access to parents by superheroes', async () => {
+		const hero = await testObjects.createTestUser({ roles: ['superhero'] });
+		const parent = await testObjects.createTestUser({ role: ['parent'] });
+
+		const params = await testObjects.generateRequestParamsFromUser(hero);
+		params.query = {};
+		const result = await app.service('users').find(params);
+		expect(result.data.some((r) => equalIds(r._id, parent._id))).to.be.true;
 	});
 
 	it('user gets removed from classes and courses after delete', async () => {

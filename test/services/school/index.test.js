@@ -63,6 +63,17 @@ describe('school service', () => {
 	});
 
 	describe('patch schools', () => {
+		let server;
+
+		before((done) => {
+			server = app.listen(0, done); // required to initialize all services used for testObjects
+		});
+
+		after((done) => {
+			server.close(done);
+			testObjects.cleanup();
+		});
+
 		it('administrator can patch his own school', async () => {
 			const school = await testObjects.createTestSchool({});
 			const admin = await testObjects.createTestUser({
@@ -111,9 +122,54 @@ describe('school service', () => {
 			expect(result).to.not.be.undefined;
 			expect(result.name).to.equal('all strings are better with "BATMAN!" in it!');
 		});
-	});
 
-	after(testObjects.cleanup);
+		it('push as admin', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const body = { $push: { features: 'rocketChat' } };
+			const result = await app.service('/schools').patch(school._id, body, params);
+			expect(result).to.not.be.undefined;
+			expect(result.features).to.include('rocketChat');
+		});
+
+		it('unable without permissions', async () => {
+			const school = await testObjects.createTestSchool({});
+			const role = await testObjects.createTestRole({ name: 'noPermissions', permissions: [] });
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: [role.name],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const body = { $push: { features: 'rocketChat' } };
+			const result = await app.service('/schools').patch(school._id, body, params);
+			expect(result).to.not.be.undefined;
+			expect(result.features).to.not.include('rocketChat');
+		});
+
+		it('possible with SCHOOL_CHAT_MANAGE permissions', async () => {
+			const school = await testObjects.createTestSchool({});
+			const role = await testObjects.createTestRole({
+				name: 'chatPermissions',
+				permissions: ['SCHOOL_CHAT_MANAGE'],
+			});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: [role.name],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const body = { $push: { features: 'rocketChat' } };
+			const result = await app.service('/schools').patch(school._id, body, params);
+			expect(result).to.not.be.undefined;
+			expect(result.features).to.include('rocketChat');
+		});
+	});
 });
 
 describe('years service', () => {
