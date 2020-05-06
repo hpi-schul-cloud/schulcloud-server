@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
+const { SCHOOL_FEATURES } = require('../../school/model');
 const globalHooks = require('../../../hooks');
 const { isValid } = require('../../../helper/compare').ObjectId;
 const { populateCurrentSchool } = require('../../../hooks/index');
@@ -52,7 +53,7 @@ const filterFindBBB = (context) => {
 	if (hasVideoconferenceItems) {
 		// if school feature disabled, remove bbb tools from results data
 		const { features } = context.params.school;
-		if (!features.includes('videoconference')) {
+		if (!features.includes(SCHOOL_FEATURES.VIDEOCONFERENCE)) {
 			context.result.data = context.result.data.filter((tool) => !isBBBTool(tool));
 		}
 	}
@@ -61,7 +62,7 @@ const filterFindBBB = (context) => {
 const filterGetBBB = (context) => {
 	if (context.data && isBBBTool(context.data)) {
 		const { features } = context.params.school;
-		if (!features.includes('videoconference')) {
+		if (!features.includes(SCHOOL_FEATURES.VIDEOCONFERENCE)) {
 			throw new Forbidden('school feature disabled');
 		}
 	}
