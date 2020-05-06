@@ -47,7 +47,7 @@ class PasswordGenService {
 
 		const p1 = new Promise((resolve) => {
 			// eslint-disable-next-line max-len
-			resolve(new RandExp(`^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\-_!<>§$%&\/()=?\\;:,.#+*~']).{${minLength},${length}}$`).gen());
+			resolve(new RandExp(`^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[-_!<>§$%&/()=?\\;:,.#+*~']).{${minLength},${length}}$`).gen());
 		});
 
 		return p1.then((res) => res);
