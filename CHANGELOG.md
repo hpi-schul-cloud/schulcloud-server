@@ -9,7 +9,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## [22.9.16]
+## [22.9.19]
 
 ### Added
 
@@ -23,6 +23,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 -  Fixed LDAP-Service disconnect method
 -  LDAPSystemSyncers now properly close their connections after syncing
+
+## [22.9.18]
+
+### Fixed
+
+-  SC-4215: Do not allow unprivileged users to find users with non-school roles (expert, parent, etc.)
+
+## [22.9.17]
+
+### Fixed
+
+-  SC-4121: File uploads no longer fail if the security scan is misconfigured or errors during enqueuing
 
 ## [22.9.10]
 
