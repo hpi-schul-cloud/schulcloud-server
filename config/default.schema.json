@@ -186,13 +186,13 @@
 		"NEXBOARD_URL": {
 			"type": "string",
 			"format": "uri",
-			"default":"https://nexboard.nexenio.com",
-			"pattern":".*(?<!/)$",
+			"default": "https://nexboard.nexenio.com",
+			"pattern": ".*(?<!/)$",
 			"description": "The nexboard url."
 		},
 		"NEXBOARD_URI": {
 			"type": "string",
-			"default":"/portal/api/v1/public/",
+			"default": "/portal/api/v1/public/",
 			"description": "The nexboard api version uri."
 		},
 		"NEXBOARD_API_KEY": {
@@ -213,9 +213,16 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
+		"SENTRY_DSN": {
+			"type": "string",
+			"format": "uri",
+			"description": "Sentry DSN (uri), if defined, increase SENTRY_SAMPLE_RATE to desired value to get errors reported."
+		},
 		"SENTRY_SAMPLE_RATE": {
 			"type": "number",
-			"default": 0.00,
+			"default": 1.0,
+			"minimum": 0.0,
+			"maximum": 1.0,
 			"description": "This is the % count (0.00 to 1.00) of how many of the errors send to the backend. This filter go over all errors, maybe some lost by low user counts."
 		}
 	},
