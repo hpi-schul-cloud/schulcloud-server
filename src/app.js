@@ -11,6 +11,7 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 const Sentry = require('@sentry/node');
+const { Configuration } = require('@schul-cloud/commons');
 
 const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH, SC_DOMAIN } = require('../config/globals');
 
@@ -23,7 +24,6 @@ const handleResponseType = require('./middleware/handleReponseType');
 const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
-const { Configuration } = require('@schul-cloud/commons');
 const rabbitMq = require('./utils/rabbitmq');
 
 const setupSwagger = require('./swagger');
