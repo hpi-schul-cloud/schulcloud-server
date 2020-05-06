@@ -131,7 +131,7 @@ module.exports = function () {
 			return this._connect(config, qualifiedUsername, password)
 				.then((connection) => {
 					if (connection.connected) {
-						return Promise.resolve(true);
+						connection.unbind(() => Promise.resolve(true));
 					}
 					return Promise.reject('User could not authenticate');
 				});
