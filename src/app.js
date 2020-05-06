@@ -13,7 +13,9 @@ const { ObjectId } = require('mongoose').Types;
 const Sentry = require('@sentry/node');
 const { Configuration } = require('@schul-cloud/commons');
 
-const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH, SC_DOMAIN } = require('../config/globals');
+const {
+	KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH, SC_DOMAIN,
+} = require('../config/globals');
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
