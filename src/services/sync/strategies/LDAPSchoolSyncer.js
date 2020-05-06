@@ -37,16 +37,17 @@ class LDAPSchoolSyncer extends SystemSyncer {
 			.then((_) => this.stats);
 	}
 
-	getUserData() {
+	async getUserData() {
 		this.logInfo('Getting users...');
-		return this.app.service('ldap').getUsers(this.system.ldapConfig, this.school)
-			.then((ldapUsers) => Promise.all(ldapUsers.map((idmUser) => this.createOrUpdateUser(idmUser, this.school)))
-				.then((res) => {
-					this.logInfo(`Created ${this.stats.users.created} users, `
-                                + `updated ${this.stats.users.updated} users. `
-                                + `Skipped errors: ${this.stats.users.errors}.`);
-					return Promise.resolve(res);
-				}));
+		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, this.school);
+		const jobs = ldapUsers.map((idmUser) => async () => this.createOrUpdateUser(idmUser, this.school));
+		for (const job of jobs) {
+			await job();
+		}
+
+		this.logInfo(`Created ${this.stats.users.created} users, `
+						+ `updated ${this.stats.users.updated} users. `
+						+ `Skipped errors: ${this.stats.users.errors}.`);
 	}
 
 	getClassData() {
@@ -62,7 +63,6 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	createOrUpdateUser(idmUser) {
 		return this.app.service('users').find({
 			query: {
-				// schoolId: school._id, //Could be issue for LDAP with multiple schools
 				ldapId: idmUser.ldapUUID,
 			},
 		}).then((users) => {
@@ -171,37 +171,35 @@ class LDAPSchoolSyncer extends SystemSyncer {
 		});
 	}
 
-	populateClassUsers(ldapClass, currentClass) {
-		const students = []; const
-			teachers = [];
+	async populateClassUsers(ldapClass, currentClass) {
+		const students = [];
+		const teachers = [];
 		if (Array.isArray(ldapClass.uniqueMembers) === false) {
 			ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 		}
-		return Promise.all(ldapClass.uniqueMembers.map((ldapUserDn) => this.app.service('users').find(
+		const userData = await this.app.service('users').find(
 			{
 				query:
 				{
-					ldapDn: ldapUserDn,
+					ldapDn: { $in: ldapClass.uniqueMembers },
 					$populate: ['roles'],
 				},
 			},
-		)
-			.then((userData) => {
-				if (userData.total > 0) {
-					const user = userData.data[0];
-					user.roles.forEach((role) => {
-						if (role.name === 'student') students.push(user._id);
-						if (role.name === 'teacher') teachers.push(user._id);
-					});
-				}
-				return Promise.resolve();
-			}))).then(() => {
-			if (students.length === 0 && teachers.length === 0) return Promise.resolve();
-			return this.app.service('classes').patch(
+		);
+		userData.data.forEach((user) => {
+			user.roles.forEach((role) => {
+				if (role.name === 'student') students.push(user._id);
+				if (role.name === 'teacher') teachers.push(user._id);
+			});
+		});
+
+		if (students.length > 0 && teachers.length > 0) {
+			await this.app.service('classes').patch(
 				currentClass._id,
-				{ $set: { userIds: students, teacherIds: teachers } },
+				{ userIds: students, teacherIds: teachers },
 			);
-		}).catch((err) => Promise.reject(err));
+		}
+		return Promise.resolve();
 	}
 }
 
