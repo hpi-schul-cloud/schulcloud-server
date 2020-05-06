@@ -89,7 +89,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
--   admins in Thuringia can now prevent students from creating teams
+-   Admins in Thuringia can now prevent students from creating teams
 
 
 ## [22.9.5]
