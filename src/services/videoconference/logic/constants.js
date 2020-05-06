@@ -36,6 +36,6 @@ exports.STATES = states;
 const createOptionToggles = {
 	MODERATOR_MUST_APPROVE_JOIN_REQUESTS: 'moderatorMustApproveJoinRequests',
 	EVERYBODY_JOINS_AS_MODERATOR: 'everybodyJoinsAsModerator',
-	EVERY_ATTENDY_JOINS_MUTED: 'everyAttendeJoinsMuted',
+	EVERY_ATTENDEE_JOINS_MUTED: 'everyAttendeJoinsMuted', // TODO: Fix string value "attendee" here and in client
 };
 exports.CREATE_OPTION_TOGGLES = createOptionToggles;
