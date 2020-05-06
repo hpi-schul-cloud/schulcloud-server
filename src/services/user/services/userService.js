@@ -32,7 +32,7 @@ const {
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
 	filterResult,
-	generateRegistrationLink,
+	sendRegistraionLink,
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
@@ -97,7 +97,6 @@ const userHooks = {
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,
-			generateRegistrationLink,
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		],
 		update: [
@@ -139,6 +138,7 @@ const userHooks = {
 			iff(isProvider('external'), filterResult),
 		],
 		create: [
+			sendRegistraionLink,
 			handleClassId,
 		],
 		update: [iff(isProvider('external'), filterResult)],

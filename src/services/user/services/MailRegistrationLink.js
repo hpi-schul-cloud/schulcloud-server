@@ -27,53 +27,75 @@ const getCurrentUserInfo = (id) => userModel.findById(id)
 	.lean()
 	.exec();
 
+
+const getUserInfos = (ids, app) => app.service('/userModel').find({
+	query: {
+		_id: ids,
+		select: ['schoolId', 'email', 'firstName', 'lastName', 'preferences'],
+		$populate: 'roles',
+	},
+});
+
 class SendRegistrationLinkService {
 	async create(data, params) {
 		let totalMailsSend = 0;
 
 		try {
-			const { userIds } = data;
+			const { userIds: allUserIds } = data;
 			let accounts = await this.app.service('/accounts').find({
 				query: {
-					userId: userIds,
+					userId: allUserIds,
 				},
 			});
 			accounts = accounts.map((account) => String(account.userId));
+			const userIds = allUserIds.filter(
+				(id) => undefined !== accounts.find((a) => a.userId.toString() === id.toString()),
+			);
 
-			for (const userId of userIds) {
-				// dont't send mail if user has account
-				if (!accounts.includes(userId)) {
-					// get user info from id in userIds
-					const user = await getCurrentUserInfo(userId);
+			const users = await getUserInfos(userIds, this.app);
 
-					// get registrationLink
-					const { shortLink } = await this.app.service('/registrationlink')
-						.create({
-							role: user.roles[0],
-							save: true,
-							patchUser: true,
-							schoolId: user.schoolId,
-							toHash: user.email,
-						});
+			await Promise.all(users.map(async (user) => {
+				// get registrationLink
+				const { shortLink, hash } = await this.app.service('/registrationlink')
+					.create({
+						role: user.roles[0],
+						save: true,
+						patchUser: true,
+						schoolId: user.schoolId,
+						importHash: user.importHash,
+						toHash: user.email,
+					});
 
-					// send mail
-					const { subject, content } = mailContent(user.firstName, user.lastName, shortLink);
-					await this.app.service('/mails')
-						.create({
-							email: user.email,
-							subject,
-							content,
-						});
 
-					if (!(user.preferences || {}).registrationMailSend) {
-						const updatedPreferences = user.preferences || {};
-						updatedPreferences.registrationMailSend = true;
-						await this.app.service('users')
-							.patch(user._id, { preferences: updatedPreferences }, params);
-					}
-					totalMailsSend += 1;
+				// send mail
+				const { subject, content } = mailContent(user.firstName, user.lastName, shortLink);
+				await this.app.service('/mails')
+					.create({
+						email: user.email,
+						subject,
+						content,
+					});
+
+				totalMailsSend += 1;
+
+				const updates = {};
+
+				if (!user.importHash) {
+					updates.importHash = hash;
 				}
-			}
+				if (!(user.preferences || {}).registrationMailSend) {
+					updates.preferences = {
+						registrationMailSend: true,
+						...user.preferences,
+					};
+				}
+
+				if (Object.getOwnPropertyNames(updates).length !== 0) {
+					return this.app.service('/userModel').patch(user._id, {
+						importHash: hash,
+					});
+				}
+			}));
 
 			return {
 				totalReceivedIds: userIds.length,

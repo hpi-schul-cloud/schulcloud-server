@@ -418,27 +418,11 @@ const enforceRoleHierarchyOnDelete = async (context) => {
 	return enforceRoleHierarchyOnDeleteBulk(context);
 };
 
-const generateRegistrationLink = async (context) => {
-	const { data, app } = context;
-	if (data.generateRegistrationLink === true) {
-		delete data.generateRegistrationLink;
-		if (!data.roles || data.roles.length > 1) {
-			throw new BadRequest('Roles must be exactly of length one if generateRegistrationLink=true is set.');
-		}
-		const { hash } = await app.service('/registrationlink')
-			// set account in params to context.parmas.account to reference the current user
-			.create({
-				role: data.roles[0],
-				save: true,
-				patchUser: true,
-				host: SC_DOMAIN,
-				schoolId: data.schoolId,
-				toHash: data.email,
-			})
-			.catch((err) => {
-				throw new GeneralError(`Can not create registrationlink. ${err}`);
-			});
-		context.data.importHash = hash;
+const sendRegistraionLink = async (context) => {
+	if (context.data.generateRegistrationLink === true) {
+		context.app.service('/users/mail/registrationLink').create({
+			userids: [context.result._id],
+		});
 	}
 };
 
@@ -516,5 +500,5 @@ module.exports = {
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
 	filterResult,
-	generateRegistrationLink,
+	sendRegistraionLink,
 };
