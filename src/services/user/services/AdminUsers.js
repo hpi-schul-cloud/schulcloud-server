@@ -27,6 +27,7 @@ const getAllUsers = (ref, schoolId, role, clientQuery) => {
 	};
 	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
+	if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 	return ref.app.service('usersModel').find({ collation: { locale: 'de', caseLevel: true }, query });
 };
 

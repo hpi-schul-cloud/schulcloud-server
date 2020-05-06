@@ -4,7 +4,6 @@ const { disallow } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const request = require('request-promise-native');
 const hmacSHA512 = require('crypto-js/hmac-sha512');
-const { createChannel } = require('../../../utils/rabbitmq');
 
 
 function obtainAccessToken(userId, homeserverApiUri, secret) {
@@ -44,7 +43,6 @@ class MessengerTokenService {
 
 	async setup(app) {
 		this.app = app;
-		this.channel = await createChannel();
 	}
 
 	/**
@@ -56,6 +54,7 @@ class MessengerTokenService {
 		if (!Configuration.get('FEATURE_MATRIX_MESSENGER_ENABLED')) {
 			throw new GeneralError('messenger not supported on this instance');
 		}
+
 		const scId = (params.account || {}).userId;
 		if (!scId) throw new BadRequest('no user');
 

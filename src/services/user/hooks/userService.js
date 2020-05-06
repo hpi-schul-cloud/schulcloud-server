@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { keep } = require('feathers-hooks-common');
 const { BadRequest, Forbidden, GeneralError } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
@@ -244,7 +245,7 @@ const securePatching = (hook) => Promise.all([
 			delete hook.data.roles;
 			delete (hook.data.$push || {}).roles;
 		}
-		if (hook.params.account.userId.toString() !== hook.id) {
+		if (!ObjectId.equal(hook.id, hook.params.account.userId)) {
 			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent))) {
 				return Promise.reject(new BadRequest('You have not the permissions to change other users'));
 			}
@@ -441,26 +442,60 @@ const generateRegistrationLink = async (context) => {
 	}
 };
 
-const sendRegistrationLink = async (context) => {
-	await generateRegistrationLink(context);
-	const registrationLink = `${HOST}/??????/${context.data.importHash}`;
-	const mailContent = `Einladung in die ${SC_SHORT_TITLE}
-					Hallo ${context.data.firstName} ${context.data.lastName}!
-					\\nDu wurdest eingeladen, der ${SC_SHORT_TITLE} beizutreten,
-					\\nbitte vervollständige deine Registrierung unter folgendem Link: ${registrationLink}
-					\\nViel Spaß und einen guten Start wünscht dir dein ${SC_SHORT_TITLE}-Team`;
 
-	const maildata = {
-		subject: `Einladung für die Nutzung der ${SC_SHORT_TITLE}!`,
-		emails: [context.data.email],
-		content: {
-			text: mailContent,
-		},
-	};
-	logger.info(maildata);
-	globalHooks.sendEmail(context, maildata);
-	logger.info(`The Registration Link ${registrationLink} successfully sent`);
-	context.data.registrationLinkSent = true;
+const filterResult = async (context) => {
+	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId);
+	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userCallingHimself || userIsSuperhero) {
+		return context;
+	}
+	const elevatedUser = await hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_EDIT');
+	const allowedAttributes = [
+		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
+		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
+		'displayName', 'avatarInitials', 'avatarBackgroundColor',
+	];
+	if (elevatedUser) {
+		const elevatedAttributes = [
+			'email', 'birthday', 'children', 'parents', 'updatedAt',
+			'createdAt', 'age', 'ldapDn',
+		];
+		allowedAttributes.push(...elevatedAttributes);
+	}
+	return keep(...allowedAttributes)(context);
+};
+
+let roleCache = null;
+const includeOnlySchoolRoles = async (context) => {
+	if (context.params && context.params.query) {
+		const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+		if (userIsSuperhero) {
+			return context;
+		}
+
+		// todo: remove with static role service (SC-3731)
+		if (!Array.isArray(roleCache)) {
+			roleCache = (await context.app.service('roles').find({
+				query: {
+					name: { $in: ['administrator', 'teacher', 'student'] },
+				},
+				paginate: false,
+			})).map((r) => r._id);
+		}
+		const allowedRoles = roleCache;
+
+		if (context.params.query.roles && context.params.query.roles.$in) {
+			// when querying for specific roles, filter them
+			context.params.query.roles.$in = context.params.query.roles.$in
+				.filter((r) => allowedRoles.some((a) => ObjectId.equal(r, a)));
+		} else {
+			// otherwise, overwrite them with whitelist
+			context.params.query.roles = {
+				$in: allowedRoles,
+			};
+		}
+	}
+	return context;
 };
 
 module.exports = {
@@ -480,6 +515,6 @@ module.exports = {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	filterResult,
 	generateRegistrationLink,
-	sendRegistrationLink,
 };
