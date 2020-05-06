@@ -95,6 +95,8 @@ class SendRegistrationLinkService {
 						importHash: hash,
 					});
 				}
+
+				return Promise.resolve();
 			}));
 
 			return {

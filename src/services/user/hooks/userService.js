@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { keep } = require('feathers-hooks-common');
-const { BadRequest, Forbidden, GeneralError } = require('@feathersjs/errors');
+const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const {
@@ -18,8 +18,6 @@ const constants = require('../../../utils/constants');
 const {
 	CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS, SC_DOMAIN, HOST, SC_SHORT_TITLE,
 } = require('../../../../config/globals');
-
-const globalHooks = require('../../../hooks');
 
 /**
  *
@@ -425,6 +423,8 @@ const sendRegistraionLink = async (context) => {
 			userids: [context.result._id],
 		});
 	}
+
+	return context;
 };
 
 
@@ -501,5 +501,6 @@ module.exports = {
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
 	filterResult,
+	includeOnlySchoolRoles,
 	sendRegistraionLink,
 };
