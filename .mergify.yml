@@ -11,6 +11,7 @@ pull_request_rules:
       - label!=merge_conflicts
       - label!=help wanted
       - label!=needs data protection review
+      - label!=dependencies
       - -merged
     actions:
       label:
