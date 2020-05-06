@@ -34,7 +34,7 @@ const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 const { version } = require('../package.json');
 const { sha } = require('./helper/version');
-const logger = require('./helper/logger');
+const logger = require('./logger/index');
 
 const app = express(feathers());
 
