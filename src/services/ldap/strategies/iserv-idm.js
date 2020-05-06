@@ -36,18 +36,21 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 		const searchString = `ou=users,${school.ldapSchoolIdentifier}`;
 		const data = await this.app.service('ldap').searchCollection(this.config, searchString, options);
 
+		const teacherRegex = /^cn=ROLE_TEACHER|^cn=ROLE_LEHRER/;
+		const adminRegex = /^cn=ROLE_ADMIN/;
+
 		const results = [];
 		data.forEach((obj) => {
 			const memberships = Array.isArray(obj.memberOf) ? obj.memberOf : [obj.memberOf];
 			const roles = [];
 
-			if (memberships.some((m) => m && m.includes('cn=ROLE_TEACHER'))) {
+			if (memberships.some((m) => teacherRegex.test(m))) {
 				if (!obj.givenName) {
 					obj.givenName = 'Lehrkraft';
 				}
 				roles.push('teacher');
 			}
-			if (memberships.some((m) => m && m.includes('cn=ROLE_ADMIN'))) {
+			if (memberships.some((m) => adminRegex.test(m))) {
 				if (!obj.givenName) {
 					obj.givenName = 'Admin';
 				}
