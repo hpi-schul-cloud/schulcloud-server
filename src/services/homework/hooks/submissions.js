@@ -6,14 +6,12 @@ const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const filterRequestedSubmissions = async (hook) => {
-	if (hook.params.account) {
-		const hasSchoolView = await globalHooks.hasPermissionNoHook(
-			hook, hook.params.account.userId, 'SUBMISSIONS_SCHOOL_VIEW',
-		);
-		if (!hasSchoolView) {
-			// todo: see team submissions
-			hook.params.query.studentId = hook.params.account.userId;
-		}
+	const hasSchoolView = await globalHooks.hasPermissionNoHook(
+		hook, hook.params.account.userId, 'SUBMISSIONS_SCHOOL_VIEW',
+	);
+	if (!hasSchoolView) {
+		// todo: see team submissions
+		hook.params.query.studentId = hook.params.account.userId;
 	}
 	return hook;
 };
@@ -294,7 +292,7 @@ exports.before = () => ({
 	find: [
 		iff(isProvider('external'), globalHooks.restrictToCurrentSchool),
 		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
-		filterRequestedSubmissions,
+		iff(isProvider('external'), filterRequestedSubmissions),
 		globalHooks.mapPaginationQuery.bind(this),
 	],
 	get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
