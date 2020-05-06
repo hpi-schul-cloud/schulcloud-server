@@ -31,12 +31,14 @@ class LDAPSystemSyncer extends Syncer {
 	async steps() {
 		await super.steps();
 		const systems = await this.getSystems();
-		const jobs = systems.map(async (system) => {
+		const jobs = systems.map((system) => async () => {
 			this.stats.systems[system.alias] = {};
 			await new LDAPSyncer(this.app, this.stats.systems[system.alias], this.logger, system).sync();
 			await this.app.service('ldap').disconnect(system.ldapConfig);
 		});
-		return Promise.all(jobs);
+		for (const job of jobs) {
+			await job();
+		}
 	}
 
 	getSystems() {
