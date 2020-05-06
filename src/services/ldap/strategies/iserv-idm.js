@@ -41,13 +41,13 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 			const memberships = Array.isArray(obj.memberOf) ? obj.memberOf : [obj.memberOf];
 			const roles = [];
 
-			if (memberships.includes('ROLE_TEACHER')) {
+			if (memberships.some((m) => m && m.includes('cn=ROLE_TEACHER'))) {
 				if (!obj.givenName) {
 					obj.givenName = 'Lehrkraft';
 				}
 				roles.push('teacher');
 			}
-			if (memberships.includes('ROLE_ADMIN')) {
+			if (memberships.some((m) => m && m.includes('cn=ROLE_ADMIN'))) {
 				if (!obj.givenName) {
 					obj.givenName = 'Admin';
 				}
