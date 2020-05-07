@@ -9,7 +9,7 @@ const {
 } = require('@feathersjs/errors');
 
 const hooks = require('./hooks');
-const swaggerDocs = require('./docs/');
+const swaggerDocs = require('./docs');
 
 const {
 	canWrite,
@@ -22,7 +22,7 @@ const {
 	createCorrectStrategy,
 	createDefaultPermissions,
 	createPermission,
-} = require('./utils/');
+} = require('./utils');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
 const RoleModel = require('../role/model');
 const { courseModel } = require('../user-group/model');
@@ -90,7 +90,14 @@ const prepareThumbnailGeneration = (file, strategy, userId, { name: dataName },
 		: Promise.resolve()
 );
 
-const prepareSecurityCheck = (file, strategy, userId, storageFileName) => {
+/**
+ *
+ * @param {File} file the file object
+ * @param {ObjectId} user the file creator
+ * @param {FileStorageStrategy} strategy the file storage strategy used
+ * @returns {Promise} Promise that rejects with errors or resolves with no data otherwise
+ */
+const prepareSecurityCheck = (file, userId, strategy) => {
 	if (ENABLE_FILE_SECURITY_CHECK === 'true') {
 		if (file.size > FILE_SECURITY_CHECK_MAX_FILE_SIZE) {
 			return FileModel.updateOne(
@@ -106,8 +113,8 @@ const prepareSecurityCheck = (file, strategy, userId, storageFileName) => {
 		// create a temporary signed URL and provide it to the virus scan service
 		return strategy.getSignedUrl({
 			userId,
-			flatFileName: storageFileName,
-			localFileName: storageFileName,
+			flatFileName: file.storageFileName,
+			localFileName: file.storageFileName,
 			download: true,
 			Expires: 3600 * 24,
 		}).then((signedUrl) => rp.post({
@@ -121,9 +128,7 @@ const prepareSecurityCheck = (file, strategy, userId, storageFileName) => {
 				callback_uri: url.resolve(FILE_SECURITY_CHECK_CALLBACK_URI, file.securityCheck.requestToken),
 			},
 			json: true,
-		})).catch((err) => {
-			logger.error(err);
-		});
+		}));
 	}
 	return Promise.resolve();
 };
@@ -179,6 +184,11 @@ const fileStorageService = {
 			storageFileName: decodeURIComponent(data.storageFileName),
 		}));
 
+		const asyncErrorHandler = (err = {}) => {
+			const message = err.message || 'Error during async file operation after upload.';
+			logger.error({ message, stack: err.stack });
+		};
+
 		const strategy = createCorrectStrategy(fileStorageType);
 		// create db entry for new file
 		// check for create permissions on parent
@@ -187,8 +197,11 @@ const fileStorageService = {
 				.then(() => FileModel.findOne(props).lean().exec().then(
 					(modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)),
 				))
-				.then((file) => prepareSecurityCheck(file, strategy, userId, props.storageFileName).then(() => file))
-				.then((file) => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file))
+				.then((file) => {
+					prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
+					prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
+					return Promise.resolve(file);
+				})
 				.catch((err) => {
 					throw new Forbidden(err);
 				});
@@ -197,8 +210,11 @@ const fileStorageService = {
 		return FileModel.findOne(props)
 			.exec()
 			.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-			.then((file) => prepareSecurityCheck(file, strategy, userId, props.storageFileName).then(() => file))
-			.then((file) => prepareThumbnailGeneration(file, strategy, userId, data, props).then(() => file));
+			.then((file) => {
+				prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
+				prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
+				return Promise.resolve(file);
+			});
 	},
 
 	/**

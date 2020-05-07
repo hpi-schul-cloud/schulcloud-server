@@ -5,8 +5,8 @@ const { homeworkModel } = require('../../homework/model');
 const { FileModel } = require('../../fileStorage/model');
 const lessonModel = require('../model');
 
-const { copyFile } = require('../../fileStorage/utils/');
-const logger = require('../../../logger/');
+const { copyFile } = require('../../fileStorage/utils');
+const logger = require('../../../logger');
 
 class FileChangeLog {
 	constructor() {

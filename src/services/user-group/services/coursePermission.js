@@ -1,5 +1,6 @@
 const { Forbidden } = require('@feathersjs/errors');
 
+const { equal: compareIds } = require('../../../helper/compare').ObjectId;
 const { ScopePermissionService } = require('../../helpers/scopePermissions');
 
 /**
@@ -13,7 +14,6 @@ const courseRoles = {
 	superhero: 'courseAdministrator', // Not a typo. There is no dedicated superhero role
 };
 
-const compareIds = (s) => (f) => f.toString() === s.toString();
 const belongsToSameSchool = (user, course) => compareIds(user.schoolId, course.schoolId);
 const userIsAdmin = (u) => u.roles.some((role) => role.name === 'administrator');
 const userIsSuperhero = (u) => u.roles.some((role) => role.name === 'superhero');
@@ -48,13 +48,13 @@ const setup = (app) => {
 			return getPermissions(courseRoles.administrator);
 		}
 
-		if ((course.teacherIds || []).some(compareIds(userId))) {
+		if ((course.teacherIds || []).some((id) => compareIds(userId, id))) {
 			return getPermissions(courseRoles.teacher);
 		}
-		if ((course.substitutionIds || []).some(compareIds(userId))) {
+		if ((course.substitutionIds || []).some((id) => compareIds(userId, id))) {
 			return getPermissions(courseRoles.substitutionTeacher);
 		}
-		if ((course.userIds || []).some(compareIds(userId))) {
+		if ((course.userIds || []).some((id) => compareIds(userId, id))) {
 			return getPermissions(courseRoles.student);
 		}
 		throw new Forbidden(`User ${userId} ist nicht Teil des Kurses`);

@@ -6,7 +6,17 @@ const testObjects = require('../../helpers/testObjects')(app);
 
 const coursePermissionService = app.service('/courses/:scopeId/userPermissions');
 
-describe('PermissionService', async () => {
+describe('CoursePermissionService', async () => {
+	let server;
+
+	before((done) => {
+		server = app.listen(0, done);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
 	const studentPermissions = [
 		...new Set([
 			'COMMENTS_CREATE',
@@ -88,7 +98,7 @@ describe('PermissionService', async () => {
 	const userIds = [];
 	const teacherIds = [];
 	const substitutionIds = [];
-	const schoolId = '0000d186816abba584714c5f';
+	const schoolId = '599ec14d8e4e364ec18ff46c';
 
 	before(async () => {
 		const studentOne = await testObjects.createTestUser({
@@ -137,9 +147,7 @@ describe('PermissionService', async () => {
 		});
 	});
 
-	after(() => {
-		testObjects.cleanup();
-	});
+	after(testObjects.cleanup);
 
 	it('registered the service', () => {
 		expect(coursePermissionService).to.not.equal(undefined);
@@ -199,6 +207,24 @@ describe('PermissionService', async () => {
 
 				query: {
 					userId: '599ec14d8e4e364ec18ff46d',
+				},
+			});
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err).to.be.instanceOf(Forbidden);
+		}
+	});
+
+	it('rejects actions by users from other schools', async () => {
+		const otherAdmin = await testObjects.createTestUser({ schoolId: '599ec14d8e4e364ec18ff46e' });
+		try {
+			await coursePermissionService.find({
+				route: {
+					scopeId: course._id,
+				},
+
+				query: {
+					userId: otherAdmin._id.toString(),
 				},
 			});
 			expect.fail('The previous call should have failed');

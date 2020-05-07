@@ -12,18 +12,20 @@ const { STUDENT_TEAM_CREATE_DISABLED } = require('../../../config/globals');
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
 
-const defaultFeatures = [];
-if (STUDENT_TEAM_CREATE_DISABLED === 'true'
-	|| STUDENT_TEAM_CREATE_DISABLED === '1') {
-	defaultFeatures.push('disableStudentTeamCreation');
-}
-
 const SCHOOL_FEATURES = {
 	ROCKET_CHAT: 'rocketChat',
 	DISABLE_STUDENT_TEAM_CREATION: 'disableStudentTeamCreation',
 	VIDEOCONFERENCE: 'videoconference',
 	MESSENGER: 'messenger',
+	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
 };
+
+const defaultFeatures = [];
+if (STUDENT_TEAM_CREATE_DISABLED === 'true'
+	|| STUDENT_TEAM_CREATE_DISABLED === '1') {
+	defaultFeatures.push(SCHOOL_FEATURES.DISABLE_STUDENT_TEAM_CREATION);
+}
+
 
 const rssFeedSchema = new Schema({
 	url: {

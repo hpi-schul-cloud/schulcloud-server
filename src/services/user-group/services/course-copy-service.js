@@ -2,7 +2,7 @@ const _ = require('lodash');
 const nanoid = require('nanoid');
 const { GeneralError } = require('@feathersjs/errors');
 
-const logger = require('../../../logger/');
+const logger = require('../../../logger');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
 const { homeworkModel } = require('../../homework/model');
