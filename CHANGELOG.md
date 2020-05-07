@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3948 support users query in adminusers routes
 -   SC-4018 Add additional nexboard permissions
 -   SC-4008 Migrated generateRegistrationLink Hook from SC-Client into Server
+-   SC-3686 Added new Registration Link Service for sending mails
 
 ### Fixed
 
@@ -32,6 +33,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   User delete now accepts bulk delete requests
 -   SC-3958: the "general" LDAP strategy now returns an empty array if classes are not configured properly
 -   Increase performance - error logging in sentry
+-   Mergify: add and modified some configs
 
 ### Removed
 
@@ -89,7 +91,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
--   admins in Thuringia can now prevent students from creating teams
+-   Admins in Thuringia can now prevent students from creating teams
 
 
 ## [22.9.5]
