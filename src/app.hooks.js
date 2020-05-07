@@ -4,7 +4,7 @@ const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const { sanitizeHtml: { sanitizeDeep } } = require('./utils');
 const {
-	getRedisClient, redisGetAsync, redisSetAsync, extractRedisFromJwt, getRedisValue,
+	getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData,
 } = require('./utils/redis');
 
 
@@ -60,6 +60,7 @@ const AUTO_LOGOUT_BLACKLIST = [
 	/^accounts\/jwtTimer$/,
 	/^authentication$/,
 	/wopi\//,
+	/roster\//,
 ];
 
 /**
@@ -73,19 +74,20 @@ const handleAutoLogout = async (context) => {
 	const redisClientExists = !!getRedisClient();
 	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
 	if (!ignoreRoute && redisClientExists && authorizedRequest) {
-		const { redisIdentifier } = extractRedisFromJwt(context.params.authentication.accessToken);
+		const { redisIdentifier, privateDevice } = extractDataFromJwt(context.params.authentication.accessToken);
 		const redisResponse = await redisGetAsync(redisIdentifier);
+		const redisData = getRedisData({ privateDevice });
+		const { expirationInSeconds } = redisData;
 		if (redisResponse) {
 			await redisSetAsync(
-				redisIdentifier, getRedisValue(), 'EX', Configuration.get('JWT_TIMEOUT_SECONDS'),
+				redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
 			);
 		} else {
 			// ------------------------------------------------------------------------
 			// this is so we can ensure a fluid release without booting out all users.
 			if (Configuration.get('JWT_WHITELIST_ACCEPT_ALL')) {
 				await redisSetAsync(
-					redisIdentifier, getRedisValue(),
-					'EX', Configuration.get('JWT_TIMEOUT_SECONDS'),
+					redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
 				);
 				return context;
 			}

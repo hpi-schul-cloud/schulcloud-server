@@ -506,6 +506,50 @@
 	"name": "update-user-creation-permissions",
 	"createdAt": {
 		"$date": "2020-04-08T13:40:03.858Z"
+    },
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e970516325e804198ec63dd"
+	},
+	"state": "up",
+	"name": "addAdminPermissionForManagingStudentTeamCreation",
+	"createdAt": {
+		"$date": "2020-04-15T12:59:02.81Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e98318cfb423a82b448ce99"
+	},
+	"state": "up",
+	"name": "add-sync-start-permission",
+	"createdAt": {
+		"$date": "2020-04-16T12:28:09.933Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ea6d94a5735a85808dbc95a"
+	},
+	"state": "up",
+	"name": "remove-student_edit-from-students",
+	"createdAt": {
+		"$date": "2020-04-27T15:17:39.485Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ea0049a18cc9c230f4fc936"
+	},
+	"state": "up",
+	"name": "drop-comment-model",
+	"createdAt": {
+		"$date": "2020-04-22T08:47:22.723Z"
 	},
 	"__v": 0
 }]

@@ -70,7 +70,7 @@ const secretDataKeys = (() => [
 ].map((k) => k.toLocaleLowerCase())
 )();
 const filter = (data) => {
-	const newData = Object.assign({}, data);
+	const newData = { ...data };
 	Object.keys(newData).forEach((key) => {
 		// secretDataKeys are lower keys
 		if (secretDataKeys.includes(key.toLocaleLowerCase())) {

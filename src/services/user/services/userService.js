@@ -1,9 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 // const { BadRequest, Forbidden } = require('@feathersjs/errors');
-const { iff, isProvider } = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 // const logger = require('../../../logger');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
-
 const { userModel } = require('../model');
 const { hasEditPermissionForUser } = require('../hooks/index.hooks');
 const {
@@ -32,6 +31,9 @@ const {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	filterResult,
+	generateRegistrationLink,
+	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
 class UserService {
@@ -86,6 +88,7 @@ const userHooks = {
 			iff(isProvider('external'), restrictToCurrentSchool),
 			mapRoleFilterQuery,
 			addCollation,
+			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
 		get: [authenticate('jwt')],
 		create: [
@@ -94,11 +97,12 @@ const userHooks = {
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,
+			generateRegistrationLink,
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		],
 		update: [
+			iff(isProvider('external'), disallow()),
 			authenticate('jwt'),
-			// TODO only local for LDAP
 			sanitizeData,
 			hasEditPermissionForUser,
 			resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
@@ -122,6 +126,7 @@ const userHooks = {
 		find: [
 			decorateAvatar,
 			decorateUsers,
+			iff(isProvider('external'), filterResult),
 		],
 		get: [
 			decorateAvatar,
@@ -131,16 +136,18 @@ const userHooks = {
 				denyIfNotCurrentSchool({
 					errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
 				})),
+			iff(isProvider('external'), filterResult),
 		],
 		create: [
 			handleClassId,
 		],
-		update: [],
-		patch: [],
+		update: [iff(isProvider('external'), filterResult)],
+		patch: [iff(isProvider('external'), filterResult)],
 		remove: [
 			pushRemoveEvent,
 			removeStudentFromClasses,
 			removeStudentFromCourses,
+			iff(isProvider('external'), filterResult),
 		],
 	},
 };

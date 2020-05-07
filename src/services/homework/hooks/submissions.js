@@ -32,7 +32,7 @@ const filterRequestedSubmissions = (hook) => {
 						];
 					}
 				});
-			}).catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach users service" })));
+			}).catch(() => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach users service" })));
 		}
 	}
 	return hook;
@@ -74,7 +74,7 @@ const filterApplicableSubmissions = (hook) => {
 						.then((course) => ((course || {}).teacherIds || []).includes(hook.params.account.userId.toString()) // or user is teacher
 												|| ((course || {}).substitutionIds || []).includes(hook.params.account.userId.toString()), // or user is substitution teacher
 						)
-						.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach course service" })));
+						.catch(() => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach course service" })));
 				}
 				return false;
 			});
@@ -122,7 +122,7 @@ const insertSubmissionData = (hook) => {
 
 				return Promise.resolve(hook);
 			})
-			.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
+			.catch(() => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
 	}
 	return Promise.resolve(hook);
 };
@@ -152,7 +152,7 @@ const insertHomeworkData = (hook) => {
 				}
 				return Promise.resolve(hook);
 			})
-			.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service" })));
+			.catch(() => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service" })));
 	}
 	return Promise.reject(new errors.BadRequest());
 };
@@ -169,7 +169,7 @@ const insertSubmissionsData = (hook) => {
 		hook.data.submissions = submissions.data;
 		return Promise.resolve(hook);
 	})
-		.catch((err) => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
+		.catch(() => Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach submission service" })));
 };
 
 const preventNoTeamMember = (hook) => {
@@ -218,7 +218,7 @@ const noDuplicateSubmissionForTeamMembers = (hook) => {
 
 		let toRemove = '';
 		const submissionsForTeamMembers = hook.data.submissions.filter((submission) => {
-			for (let i = 0; i < newTeamMembers.length; i++) {
+			for (let i = 0; i < newTeamMembers.length; i += 1) {
 				const teamMember = newTeamMembers[i].toString();
 				if (submission.teamMembers.includes(teamMember)
 						|| (((submission.studentId || {})._id || {}).toString() == teamMember)
