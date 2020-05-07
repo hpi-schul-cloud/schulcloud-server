@@ -31,7 +31,7 @@ class ResourcesService {
 		return request(options).then((message) => message);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -52,7 +52,7 @@ class SearchService {
 		return request(options).then((message) => message);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -86,7 +86,7 @@ class RedirectService {
 		res.redirect(res.data);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }

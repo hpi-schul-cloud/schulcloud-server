@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-const logger = require('../../../src/logger/');
+const logger = require('../../../src/logger');
 
 // This test is conditionalized. Travis runs both hydra and proxy/mock server
 // local computer will only run mock server
