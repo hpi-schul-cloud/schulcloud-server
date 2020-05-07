@@ -13,7 +13,7 @@ const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
 	.then(() => Promise.resolve(hook));
 
 const generatePin = (hook) => {
-	const pin = getRandomInt(9998, 1000);
+	const pin = getRandomInt(9999, 1000);
 	hook.data.pin = pin.toString();
 	return Promise.resolve(hook);
 };
