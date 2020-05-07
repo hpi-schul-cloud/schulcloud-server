@@ -4,7 +4,6 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const { Configuration } = require('@schul-cloud/commons');
 const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
@@ -21,27 +20,6 @@ const SCHOOL_FEATURES = {
 };
 
 const defaultFeatures = [];
-const STUDENT_TEAM_CREATION = Configuration.get('STUDENT_TEAM_CREATION');
-
-switch (STUDENT_TEAM_CREATION) {
-	case 'enabled':
-		// if enabled student team creation feature should be enabled
-		defaultFeatures.push(SCHOOL_FEATURES.ENABLE_STUDENT_TEAM_CREATION);
-		break;
-	case 'disabled':
-		// if disabled student team creation feature should be disabled
-		break;
-	case 'opt-in':
-		// TODO: if opt-in student team creation should be enabled by admin
-		break;
-	case 'opt-out':
-		// TODO: if opt-out student team creation should be disabled by admin
-		break;
-	default:
-		// 'opt-in'
-		break;
-}
-
 
 const rssFeedSchema = new Schema({
 	url: {
@@ -96,6 +74,12 @@ const schoolSchema = new Schema({
 		default: defaultFeatures,
 		enum: Object.values(SCHOOL_FEATURES),
 	},
+	/**
+	 * depending on system settings,
+	 * an admin may opt-in or -out,
+	 * default=null dependent on STUDENT_TEAM_CREATION
+	 */
+	enableStudentTeamCreation: { type: Boolean, required: false },
 	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 	storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
 	...externalSourceSchema,
