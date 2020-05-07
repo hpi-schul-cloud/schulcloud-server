@@ -10,7 +10,7 @@ const createTeamUser = async (userId, schoolId, roleName = 'teammember') => {
 	return (new teamUserModel({ role: roleId, schoolId, userId }))._doc;
 };
 
-const createTeam = (opt) => async (owner) => teamsModel.create({
+const createTeam = () => async (owner) => teamsModel.create({
 	name: `${Date.now()}_test`,
 	schoolId: owner.schoolId,
 	schoolIds: [owner.schoolId],

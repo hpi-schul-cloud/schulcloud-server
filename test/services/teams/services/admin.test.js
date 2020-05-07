@@ -122,7 +122,7 @@ describe('\'/teams/manage/admin\' service', () => {
 
 			teams.data[0].schoolId = schoolId;
 			teams.data[0].userIds[0].schoolId = schoolId;
-			teams.data[0].schoolIds.push(Object.assign({}, teams.data[0].schoolIds[0]));
+			teams.data[0].schoolIds.push({ ...teams.data[0].schoolIds[0] });
 			teams.data[0].schoolIds[1]._id = schoolId;
 
 
