@@ -152,8 +152,16 @@ function setupAppHooks(app) {
 
 	const after = {
 		all: [],
-		find: [sanitizeDataHook],
-		get: [sanitizeDataHook],
+		find: [
+			iff(isProvider('external'), [
+				sanitizeDataHook,
+			]),
+		],
+		get: [
+			iff(isProvider('external'), [
+				sanitizeDataHook,
+			]),
+		],
 		create: [],
 		update: [],
 		patch: [],
