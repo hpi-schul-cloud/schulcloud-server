@@ -136,6 +136,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 				username: (`${this.school.ldapSchoolIdentifier}/${idmUser.ldapUID}`).toLowerCase(),
 				userId: user._id,
 				systemId: this.system._id,
+				activated: true,
 			},
 			{ upsert: true },
 		).then((_) => this.app.service('users').patch(
