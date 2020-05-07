@@ -3,7 +3,7 @@ const { ObjectId } = require('mongoose').Types;
 const app = require('../src/app');
 const { sanitizeDataHook } = require('../src/app.hooks');
 const { sanitizeHtml: { sanitizeDeep } } = require('../src/utils');
-const { cleanup, createTestUser } = require('./services/helpers/testObjects')(app);
+const { cleanup, createTestUser, generateRequestParamsFromUser } = require('./services/helpers/testObjects')(app);
 
 describe('Sanitization Hook', () => {
 	// TODO: Test if it work for create, post and update
@@ -172,8 +172,17 @@ describe('removeObjectIdInData hook', () => {
 	});
 
 	it('Should work for create', async () => {
+		const admin = await createTestUser({ roles: ['administrator'] });
+		const params = await generateRequestParamsFromUser(admin);
 		const _id = new ObjectId();
-		const newUser = await createTestUser({ _id });
+		const newUser = await app.service('users').create({
+			_id,
+			firstName: 'Max',
+			lastName: 'Mustermann',
+			email: `max${Date.now()}@mustermann.de`,
+			schoolId: '584ad186816abba584714c94',
+			roles: [],
+		}, params);
 		expect(_id.toString()).to.not.equal(newUser._id.toString());
 	});
 
