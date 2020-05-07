@@ -79,5 +79,6 @@ exports.getMeetingInfo = (server, meetingId) => server.monitoring
 			// valid response with not found or existing meeting
 			return response;
 		}
+		error('unknown bbb response', meeting);
 		throw new Error('unknown response from bbb...');
 	});
