@@ -11,7 +11,9 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
+const {
+	KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH,
+} = require('../config/globals');
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
