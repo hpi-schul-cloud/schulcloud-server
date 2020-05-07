@@ -12,6 +12,7 @@ describe('authentication hooks', function test() {
 	let removeJwtFromWhitelist;
 	let configBefore = null;
 	let app;
+	let server;
 	let testObjects;
 
 	before(async () => {
@@ -34,7 +35,8 @@ describe('authentication hooks', function test() {
 
 		redisHelper = require('../../../../src/utils/redis');
 		app = require('../../../../src/app');
-		testObjects = require('../../../services/helpers/testObjects')(app);
+		server = await app.listen(0);
+		testObjects = require('../../helpers/testObjects')(app);
 		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));
 		/* eslint-enable global-require */
 
@@ -55,13 +57,14 @@ describe('authentication hooks', function test() {
 		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
 
 		Configuration.reset(configBefore);
+		await server.close();
 	});
 
 	it('addJwtToWhitelist', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
 		const { accessToken } = params.authentication;
-		const { redisIdentifier } = redisHelper.extractRedisFromJwt(accessToken);
+		const { redisIdentifier } = redisHelper.extractDataFromJwt(accessToken);
 		const result = await addJwtToWhitelist({ result: { accessToken } });
 		expect(result).to.not.equal(undefined);
 		const redisResult = await redisHelper.redisGetAsync(redisIdentifier);
@@ -73,7 +76,7 @@ describe('authentication hooks', function test() {
 	it('removeJwtFromWhitelist', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractRedisFromJwt(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
 		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 7200);
 		const result = await removeJwtFromWhitelist({
 			params,

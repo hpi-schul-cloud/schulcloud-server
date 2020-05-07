@@ -22,6 +22,7 @@ describe('jwtTimer service', () => {
 		let configBefore = null;
 
 		describe('with redis instance', () => {
+			let server;
 			before(async () => {
 				configBefore = Configuration.toObject();
 				mockery.enable({
@@ -46,6 +47,7 @@ describe('jwtTimer service', () => {
 
 				Configuration.set('REDIS_URI', '//validHost:4444');
 				redisHelper.initializeRedisClient();
+				server = await app.listen(0);
 			});
 
 			after(async () => {
@@ -57,12 +59,13 @@ describe('jwtTimer service', () => {
 				delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
 				delete require.cache[require.resolve('../../../../src/app')];
 				Configuration.reset(configBefore);
+				await server.close();
 			});
 
 			it('FIND returns the whitelist timeToLive on the JWT that is used', async () => {
 				const user = await testObjects.createTestUser();
 				const params = await testObjects.generateRequestParamsFromUser(user);
-				const { redisIdentifier } = redisHelper.extractRedisFromJwt(params.authentication.accessToken);
+				const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
 				await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
 
 				const result = await app.service('/accounts/jwtTimer').find(params);
@@ -72,7 +75,7 @@ describe('jwtTimer service', () => {
 			it('CREATE resets the ttl on the jwt that is used', async () => {
 				const user = await testObjects.createTestUser();
 				const params = await testObjects.generateRequestParamsFromUser(user);
-				const { redisIdentifier } = redisHelper.extractRedisFromJwt(params.authentication.accessToken);
+				const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
 				const ttl = Configuration.get('JWT_TIMEOUT_SECONDS');
 				await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', ttl - 5);
 
@@ -83,6 +86,8 @@ describe('jwtTimer service', () => {
 		});
 
 		describe('without redis instance', () => {
+			let server;
+
 			before(async () => {
 				mockery.enable({
 					warnOnReplace: false,
@@ -101,12 +106,14 @@ describe('jwtTimer service', () => {
 				/* eslint-enable global-require */
 
 				redisHelper.initializeRedisClient();
+				server = await app.listen(0);
 			});
 
 			after(async () => {
 				mockery.deregisterAll();
 				mockery.disable();
 				await testObjects.cleanup();
+				await server.close();
 			});
 
 			it('FIND fails without redis server.', async () => {

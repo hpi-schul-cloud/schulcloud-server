@@ -4,6 +4,8 @@ const globalHooks = require('../../../hooks');
 const { sortByGradeAndOrName, prepareGradeLevelUnset, saveSuccessor } = require('../hooks/helpers/classHooks');
 const { paginate } = require('../../../utils/array');
 
+const { modelServices: { prepareInternalParams } } = require('../../../utils');
+
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
 
@@ -37,11 +39,11 @@ class Classes {
 		const years = await this.getSchoolYearsFromQuery(params.query);
 
 		const classPromises = years.map((y) => {
-			const yearParams = Object.assign(
-				{},
-				params,
-				{ query: Object.assign({}, params.query, { year: y._id || y }) },
-			);
+			const yearParams = {
+
+				...params,
+				query: { ...params.query, year: y._id || y },
+			};
 			return this.app.service('classModel').find(yearParams);
 		});
 		const classesByYear = await Promise.all(classPromises);
@@ -53,31 +55,37 @@ class Classes {
 	}
 
 	async find(params) {
-		if ((params.query.$sort || {}).year && params.query.schoolId) {
-			return this.findClassesByYear(params);
+		const internalParams = prepareInternalParams(params);
+		if ((internalParams.query.$sort || {}).year && internalParams.query.schoolId) {
+			return this.findClassesByYear(internalParams);
 		}
 
-		return this.app.service('classModel').find(params);
+		return this.app.service('classModel').find(internalParams);
 	}
 
 	get(id, params) {
-		return this.app.service('classModel').get(id, params);
+		const internalParams = prepareInternalParams(params);
+		return this.app.service('classModel').get(id, internalParams);
 	}
 
 	create(data, params) {
-		return this.app.service('classModel').create(data, params);
+		const internalParams = prepareInternalParams(params);
+		return this.app.service('classModel').create(data, internalParams);
 	}
 
 	update(id, data, params) {
-		return this.app.service('classModel').update(id, data, params);
+		const internalParams = prepareInternalParams(params);
+		return this.app.service('classModel').update(id, data, internalParams);
 	}
 
 	patch(id, data, params) {
-		return this.app.service('classModel').patch(id, data, params);
+		const internalParams = prepareInternalParams(params);
+		return this.app.service('classModel').patch(id, data, internalParams);
 	}
 
 	remove(id, params) {
-		return this.app.service('classModel').remove(id, params);
+		const internalParams = prepareInternalParams(params);
+		return this.app.service('classModel').remove(id, internalParams);
 	}
 
 	setup(app) {
@@ -100,6 +108,7 @@ const classesHooks = {
 			restrictToCurrentSchool,
 			restrictToUsersOwnClasses,
 			sortByGradeAndOrName,
+			globalHooks.addCollation,
 			globalHooks.mapPaginationQuery,
 		],
 		get: [

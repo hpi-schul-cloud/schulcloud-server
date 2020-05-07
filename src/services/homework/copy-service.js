@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-const { copyFile } = require('../fileStorage/utils/');
+const { copyFile } = require('../fileStorage/utils');
 const hooks = require('./hooks/copy');
 const HomeworkModel = require('./model').homeworkModel;
 const { FileModel } = require('../fileStorage/model');

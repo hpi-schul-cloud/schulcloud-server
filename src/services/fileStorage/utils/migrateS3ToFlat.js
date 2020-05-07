@@ -30,7 +30,7 @@ const params = {
 };
 
 // todo: list all files for all school-buckets
-awsObject.s3.listObjectsV2(params, (err, data) => {
+awsObject.s3.listObjectsV2(params, (/* err, data */) => {
 
 	// todo: copy all files to route-folder (flat)
 

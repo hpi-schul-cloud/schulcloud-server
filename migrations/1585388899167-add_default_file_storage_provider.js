@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const CryptoJS = require('crypto-js');
 const { Configuration } = require('@schul-cloud/commons');
 
-const { info, error } = require('../src/logger');
+const { info, warning } = require('../src/logger');
 const { schoolModel: School } = require('../src/services/school/model');
 const { storageProviderSchema } = require('../src/services/storageProvider/model');
 
@@ -13,13 +13,12 @@ const StorageProvider = mongoose.model('storageProviderMigration', storageProvid
 module.exports = {
 	up: async function up() {
 		await connect();
-		const S3_KEY = Configuration.get('S3_KEY');
 
 		if (!process.env.AWS_SECRET_ACCESS_KEY) {
-			info('No AWS config found. Migration will be successful but won\'t change anything!');
+			warning('No AWS config found. Migration will be successful but won\'t change anything!');
 		} else {
-			if (!S3_KEY) {
-				error('You need to set process.env.S3_KEY to encrypt the old key!');
+			if (!Configuration.has('S3_KEY')) {
+				throw new Error('You need to set process.env.S3_KEY to encrypt the old key!');
 			}
 
 			await StorageProvider.createCollection();
@@ -44,6 +43,7 @@ module.exports = {
 
 			info(`Got ${unassignedSchools} unassigned schools.`);
 
+			const S3_KEY = Configuration.get('S3_KEY');
 			const secretAccessKey = await CryptoJS.AES.encrypt(process.env.AWS_SECRET_ACCESS_KEY, S3_KEY).toString();
 
 			const [provider] = await StorageProvider.create([{

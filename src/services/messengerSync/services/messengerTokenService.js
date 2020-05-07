@@ -4,7 +4,6 @@ const { disallow } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const request = require('request-promise-native');
 const hmacSHA512 = require('crypto-js/hmac-sha512');
-const { createChannel } = require('../../../utils/rabbitmq');
 
 
 function obtainAccessToken(userId, homeserverApiUri, secret) {
@@ -30,6 +29,8 @@ function obtainAccessToken(userId, homeserverApiUri, secret) {
 				userId,
 				homeserverUrl: homeserverApiUri,
 				accessToken: response.access_token,
+				deviceId: response.device_id,
+				servername: response.home_server,
 			};
 			return session;
 		});
@@ -42,7 +43,6 @@ class MessengerTokenService {
 
 	async setup(app) {
 		this.app = app;
-		this.channel = await createChannel();
 	}
 
 	/**
@@ -54,10 +54,11 @@ class MessengerTokenService {
 		if (!Configuration.get('FEATURE_MATRIX_MESSENGER_ENABLED')) {
 			throw new GeneralError('messenger not supported on this instance');
 		}
+
 		const scId = (params.account || {}).userId;
 		if (!scId) throw new BadRequest('no user');
 
-		const homeserver = Configuration.get('MATRIX_URI').replace('https://', '').replace('/', '');
+		const homeserver = Configuration.get('MATRIX_SERVERNAME');
 		const matrixId = `@sso_${scId.toString()}:${homeserver}`;
 		const matrixUri = Configuration.get('MATRIX_URI');
 		const matrixSecret = Configuration.get('MATRIX_SECRET');

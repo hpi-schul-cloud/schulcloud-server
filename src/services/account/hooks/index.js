@@ -26,7 +26,7 @@ const sanitizeUsername = (hook) => {
 // This is only for SSO
 const validateCredentials = async (hook) => {
 	const {
-		username, password, systemId, schoolId,
+		username, password, systemId,
 	} = hook.data;
 
 	if (!username) throw new BadRequest('no username specified');
@@ -274,6 +274,7 @@ exports.before = {
 	update: [
 		authenticate('jwt'),
 		globalHooks.hasPermission('ACCOUNT_EDIT'),
+		globalHooks.restrictToCurrentSchool,
 		sanitizeUsername,
 	],
 	patch: [
