@@ -10,11 +10,9 @@ const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
-const Sentry = require('@sentry/node');
-const { Configuration } = require('@schul-cloud/commons');
 
 const {
-	KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH, SC_DOMAIN,
+	KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH,
 } = require('../config/globals');
 
 const middleware = require('./middleware');
@@ -32,27 +30,8 @@ const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
-const { version } = require('../package.json');
-const { sha } = require('./helper/version');
-const logger = require('./logger/index');
 
 const app = express(feathers());
-
-if (Configuration.has('SENTRY_DSN')) {
-	Sentry.init({
-		dsn: Configuration.get('SENTRY_DSN'),
-		environment: app.get('env'),
-		release: version,
-		sampleRate: Configuration.get('SENTRY_SAMPLE_RATE'),
-	});
-	Sentry.configureScope((scope) => {
-		scope.setTag('frontend', false);
-		scope.setLevel('warning');
-		scope.setTag('domain', SC_DOMAIN);
-		scope.setTag('sha', sha);
-	});
-	app.use(Sentry.Handlers.requestHandler());
-}
 
 const config = configuration();
 app.configure(config);
@@ -73,11 +52,6 @@ if (KEEP_ALIVE) {
 		res.setHeader('Connection', 'Keep-Alive');
 		next();
 	});
-}
-
-function removeIds(url) {
-	const checkForHexRegExp = /[a-f\d]{24}/ig;
-	return url.replace(checkForHexRegExp, 'ID');
 }
 
 app.use(compress())
@@ -105,15 +79,6 @@ app.use(compress())
 		req.headers.requestId = uid.toString();
 
 		req.feathers.headers = req.headers;
-		if (Configuration.has('SENTRY_DSN')) {
-			Sentry.configureScope((scope) => {
-				if (res.locals.currentUser) {
-					scope.setTag({ schoolId: res.locals.currentUser.schoolId });
-				}
-				const { url, header } = req;
-				scope.request = { url: removeIds(url), header };
-			});
-		}
 		next();
 	})
 	.configure(services)
@@ -121,37 +86,5 @@ app.use(compress())
 	.configure(middleware)
 	.configure(setupAppHooks)
 	.configure(errorHandler);
-
-// sentry error handler
-app.use(Sentry.Handlers.errorHandler());
-
-// error handlers
-
-app.use((err, req, res, next) => {
-	// set locals, only providing error in development
-	const status = err.status || err.statusCode || 500;
-	if (err.statusCode && err.error) {
-		res.setHeader('error-message', err.error.message);
-		res.locals.message = err.error.message;
-	} else {
-		res.locals.message = err.message;
-	}
-
-	if (res.locals && res.locals.message && res.locals.message.includes('ESOCKETTIMEDOUT') && err.options) {
-		const message = `ESOCKETTIMEDOUT by route: ${err.options.baseUrl + err.options.uri}`;
-		logger.warn(message);
-		Sentry.captureMessage(message);
-		res.locals.message = 'Es ist ein Fehler aufgetreten. Bitte versuche es erneut.';
-	}
-
-	res.locals.error = req.app.get('env') === 'development' ? err : { status };
-	if (err.error) logger.error(err.error);
-	if (res.locals.currentUser) res.locals.loggedin = true;
-	// render the error page
-	res.status(status).render('lib/error', {
-		loggedin: res.locals.loggedin,
-		inline: res.locals.inline ? true : !res.locals.loggedin,
-	});
-});
 
 module.exports = app;
