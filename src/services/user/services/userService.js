@@ -3,7 +3,6 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 // const logger = require('../../../logger');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
-const { verifyApiKeyIfProviderIsExternal } = require('../../../hooks/authentication');
 const { userModel } = require('../model');
 const { hasEditPermissionForUser } = require('../hooks/index.hooks');
 const {
@@ -32,7 +31,9 @@ const {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	filterResult,
 	generateRegistrationLink,
+	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
 class UserService {
@@ -78,7 +79,7 @@ const userService = new UserService({
 
 const userHooks = {
 	before: {
-		all: [verifyApiKeyIfProviderIsExternal],
+		all: [],
 		find: [
 			mapPaginationQuery.bind(this),
 			// resolve ids for role strings (e.g. 'TEACHER')
@@ -87,6 +88,7 @@ const userHooks = {
 			iff(isProvider('external'), restrictToCurrentSchool),
 			mapRoleFilterQuery,
 			addCollation,
+			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
 		get: [authenticate('jwt')],
 		create: [
@@ -124,6 +126,7 @@ const userHooks = {
 		find: [
 			decorateAvatar,
 			decorateUsers,
+			iff(isProvider('external'), filterResult),
 		],
 		get: [
 			decorateAvatar,
@@ -133,16 +136,18 @@ const userHooks = {
 				denyIfNotCurrentSchool({
 					errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
 				})),
+			iff(isProvider('external'), filterResult),
 		],
 		create: [
 			handleClassId,
 		],
-		update: [],
-		patch: [],
+		update: [iff(isProvider('external'), filterResult)],
+		patch: [iff(isProvider('external'), filterResult)],
 		remove: [
 			pushRemoveEvent,
 			removeStudentFromClasses,
 			removeStudentFromCourses,
+			iff(isProvider('external'), filterResult),
 		],
 	},
 };

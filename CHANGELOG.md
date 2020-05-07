@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3948 support users query in adminusers routes
 -   SC-4018 Add additional nexboard permissions
 -   SC-4008 Migrated generateRegistrationLink Hook from SC-Client into Server
+-   SC-3686 Added new Registration Link Service for sending mails
 
 ### Fixed
 
@@ -32,12 +33,25 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   User delete now accepts bulk delete requests
 -   SC-3958: the "general" LDAP strategy now returns an empty array if classes are not configured properly
 -   Increase performance - error logging in sentry
+-   Mergify: add and modified some configs
 
 ### Removed
 
 -   SC-3958: the LDAP strategy interface no longer supports synchronizing team members to the never-used original N21-IDM
 -   SC-3958: the environment variables NBC_IMPORTURL, NBC_IMPORTUSER, and NBC_IMPORTPASSWORD are no longer used and have been removed
 -   Removed the obsolete commentSchema from the homework service. It was not in use.
+
+## [22.9.18]
+
+### Fixed
+
+-  SC-4215: Do not allow unprivileged users to find users with non-school roles (expert, parent, etc.)
+
+## [22.9.17]
+
+### Fixed
+
+-  SC-4121: File uploads no longer fail if the security scan is misconfigured or errors during enqueuing
 
 ## [22.9.10]
 
@@ -77,7 +91,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
--   admins in Thuringia can now prevent students from creating teams
+-   Admins in Thuringia can now prevent students from creating teams
 
 
 ## [22.9.5]

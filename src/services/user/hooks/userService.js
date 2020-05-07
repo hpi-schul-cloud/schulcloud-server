@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { keep } = require('feathers-hooks-common');
 const { BadRequest, Forbidden, GeneralError } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
@@ -240,7 +241,7 @@ const securePatching = (hook) => Promise.all([
 			delete hook.data.roles;
 			delete (hook.data.$push || {}).roles;
 		}
-		if (hook.params.account.userId.toString() !== hook.id) {
+		if (!ObjectId.equal(hook.id, hook.params.account.userId)) {
 			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent))) {
 				return Promise.reject(new BadRequest('You have not the permissions to change other users'));
 			}
@@ -437,6 +438,62 @@ const generateRegistrationLink = async (context) => {
 	}
 };
 
+
+const filterResult = async (context) => {
+	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId);
+	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userCallingHimself || userIsSuperhero) {
+		return context;
+	}
+	const elevatedUser = await hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_EDIT');
+	const allowedAttributes = [
+		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
+		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
+		'displayName', 'avatarInitials', 'avatarBackgroundColor',
+	];
+	if (elevatedUser) {
+		const elevatedAttributes = [
+			'email', 'birthday', 'children', 'parents', 'updatedAt',
+			'createdAt', 'age', 'ldapDn',
+		];
+		allowedAttributes.push(...elevatedAttributes);
+	}
+	return keep(...allowedAttributes)(context);
+};
+
+let roleCache = null;
+const includeOnlySchoolRoles = async (context) => {
+	if (context.params && context.params.query) {
+		const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+		if (userIsSuperhero) {
+			return context;
+		}
+
+		// todo: remove with static role service (SC-3731)
+		if (!Array.isArray(roleCache)) {
+			roleCache = (await context.app.service('roles').find({
+				query: {
+					name: { $in: ['administrator', 'teacher', 'student'] },
+				},
+				paginate: false,
+			})).map((r) => r._id);
+		}
+		const allowedRoles = roleCache;
+
+		if (context.params.query.roles && context.params.query.roles.$in) {
+			// when querying for specific roles, filter them
+			context.params.query.roles.$in = context.params.query.roles.$in
+				.filter((r) => allowedRoles.some((a) => ObjectId.equal(r, a)));
+		} else {
+			// otherwise, overwrite them with whitelist
+			context.params.query.roles = {
+				$in: allowedRoles,
+			};
+		}
+	}
+	return context;
+};
+
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
@@ -454,5 +511,7 @@ module.exports = {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	filterResult,
 	generateRegistrationLink,
+	includeOnlySchoolRoles,
 };
