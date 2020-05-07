@@ -46,9 +46,23 @@ const isTeamCreationByStudentsEnabled = (currentSchool) => {
 };
 
 const setStudentsCanCreateTeams = async (context) => {
-	context.result.data.forEach((school) => {
-		school.isTeamCreationByStudentsEnabled = isTeamCreationByStudentsEnabled(school);
-	});
+	try {
+		switch (context.method) {
+			case 'find':
+				context.result.data.forEach((school) => {
+					school.isTeamCreationByStudentsEnabled = isTeamCreationByStudentsEnabled(school);
+				});
+				break;
+			case 'get':
+				context.result.isTeamCreationByStudentsEnabled = isTeamCreationByStudentsEnabled(context.result);
+				break;
+			default:
+				throw new Error('method not supported');
+		}
+	} catch (error) {
+		logger.error(error);
+	}
+	return context;
 };
 
 const expectYearsDefined = async () => {
