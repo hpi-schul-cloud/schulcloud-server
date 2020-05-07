@@ -1,14 +1,14 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const {
 	iff, isProvider, discard, disallow, keepInArray,
 } = require('feathers-hooks-common');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
-const { fileStorageTypes } = require('../model');
+const { fileStorageTypes, SCHOOL_FEATURES } = require('../model');
 const getFileStorageStrategy = require('../../fileStorage/strategies').createStrategy;
 
 const { yearModel: Year } = require('../model');
@@ -92,8 +92,16 @@ const decorateYears = async (context) => {
 };
 
 const updatesArray = (key) => (key === '$push' || key === '$pull');
-const updatesRocketChat = (key, data) => updatesArray(key) && data[key].features === 'rocketChat';
-const updatesTeamCreation = (key, data) => updatesArray(key) && data[key].features === 'disableStudentTeamCreation';
+const updatesChat = (key, data) => {
+	const chatFeatures = [
+		SCHOOL_FEATURES.ROCKET_CHAT,
+		SCHOOL_FEATURES.MESSENGER,
+		SCHOOL_FEATURES.MESSENGER_SCHOOL_ROOM,
+	];
+	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
+};
+const updatesTeamCreation = (key, data) => updatesArray(key)
+	&& data[key].features === SCHOOL_FEATURES.DISABLE_STUDENT_TEAM_CREATION;
 
 const hasEditPermissions = async (context) => {
 	try {
@@ -107,7 +115,7 @@ const hasEditPermissions = async (context) => {
 		const patch = {};
 		for (const key of Object.keys(context.data)) {
 			if (
-				(user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesRocketChat(key, context.data))
+				(user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesChat(key, context.data))
 				|| (user.permissions.includes('SCHOOL_STUDENT_TEAM_MANAGE') && updatesTeamCreation(key, context.data))
 				|| (user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl')
 			) {

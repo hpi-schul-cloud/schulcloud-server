@@ -2,7 +2,7 @@ const rp = require('request-promise-native');
 const { BadRequest } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 
-const logger = require('../../../logger/');
+const logger = require('../../../logger');
 
 /**
  * Is created and designed as singleton.

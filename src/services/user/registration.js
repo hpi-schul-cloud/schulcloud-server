@@ -1,5 +1,5 @@
 const errors = require('@feathersjs/errors');
-const userModel = require('../user/model');
+const userModel = require('./model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const { getAge } = require('../../utils');
@@ -92,7 +92,7 @@ const registerUser = function register(data, params, app) {
 	let parent = null; let user = null; let oldUser = null; let account = null; let consent = null; let
 		consentPromise = null;
 
-	return new Promise(((resolve, reject) => {
+	return new Promise(((resolve) => {
 		resolve();
 	})).then(() => {
 		let classPromise = null; let
@@ -120,7 +120,7 @@ const registerUser = function register(data, params, app) {
 		})).then(() => {
 		if ((user.roles || []).includes('student')) {
 			// wrong birthday object?
-			if (user.birthday instanceof Date && isNaN(user.birthday)) {
+			if (user.birthday instanceof Date && Number.isNaN(user.birthday)) {
 				return Promise.reject(new errors.BadRequest(
 					'Fehler bei der Erkennung des ausgewählten Geburtstages.'
 						+ ' Bitte lade die Seite neu und starte erneut.',
@@ -282,10 +282,6 @@ const registerUser = function register(data, params, app) {
 
 module.exports = function (app) {
 	class RegistrationService {
-		constructor() {
-
-		}
-
 		create(data, params) {
 			return registerUser(data, params, app);
 		}

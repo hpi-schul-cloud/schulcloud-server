@@ -1,7 +1,7 @@
 const {
 	Project,
 	Board,
-} = require('./services/');
+} = require('./services');
 
 const hooks = require('./hooks');
 
