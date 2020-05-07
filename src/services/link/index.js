@@ -1,3 +1,5 @@
+/* eslint-disable max-classes-per-file */
+
 const queryString = require('querystring');
 const service = require('feathers-mongoose');
 const logger = require('../../logger');
