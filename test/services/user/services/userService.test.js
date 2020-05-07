@@ -83,6 +83,14 @@ describe('user service', () => {
 			});
 	});
 
+	it('importHash will set set, when creating a new user', async () => {
+		const student = await app.service('users').create({
+			firstName: 'dance',
+			lastName: 'ape',
+			email: 'ape@dancer.forest',
+		});
+	});
+
 	it('student can edit himself', async () => {
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
