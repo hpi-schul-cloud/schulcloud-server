@@ -100,7 +100,7 @@ const userHooks = {
 			iff(isProvider('external'), disallow()),
 			authenticate('jwt'),
 			sanitizeData,
-			hasEditPermissionForUser,
+			iff(isProvider('external'), hasEditPermissionForUser),
 			resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
 		],
 		patch: [
@@ -108,7 +108,7 @@ const userHooks = {
 			iff(isProvider('external'), securePatching),
 			permitGroupOperation,
 			sanitizeData,
-			hasEditPermissionForUser,
+			iff(isProvider('external'), hasEditPermissionForUser),
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 			updateAccountUsername,
 		],
