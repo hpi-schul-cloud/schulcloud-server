@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "22.9.15",
+	"version": "22.9.19",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -100,7 +100,7 @@
 		"socketio-file-upload": "^0.7.0",
 		"strip-bom": "^4.0.0",
 		"universal-analytics": "^0.4.17",
-		"uuid": "^3.3.2",
+		"uuid": "^7.0.3",
 		"winston": "^3.2.0",
 		"xml2js-es6-promise": "^1.1.1"
 	},
