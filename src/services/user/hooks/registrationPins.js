@@ -7,7 +7,7 @@ const {
 } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
-const { getRandomInt } = require('../../../helper/randomNumberGenerator');
+const { getRandomInt } = require('../../../utils/randomNumberGenerator');
 
 const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
 	.then(() => Promise.resolve(hook));

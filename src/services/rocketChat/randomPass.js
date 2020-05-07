@@ -1,4 +1,4 @@
-const { getRandomInt } = require('../../helper/randomNumberGenerator');
+const { getRandomInt } = require('../../utils/randomNumberGenerator');
 
 const rnd36 = () => (getRandomInt(35)).toString(36);
 

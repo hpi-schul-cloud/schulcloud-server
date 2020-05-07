@@ -1,5 +1,5 @@
 const { expect, assert } = require('chai');
-const { getRandomInt } = require('../../src/helper/randomNumberGenerator');
+const { getRandomInt } = require('../../src/utils/randomNumberGenerator');
 
 describe('randomNumberGenerator helper', () => {
 	it('should throw an exception when difference between max number and min number exceed allowed treshold', () => {
@@ -12,7 +12,7 @@ describe('randomNumberGenerator helper', () => {
 		const arrayWithRandomNumbers = [];
 		const maxNumber = 100;
 		const minDefaultNumber = 0;
-		for (let i = 0; i < 100000; i++) {
+		for (let i = 0; i < 100000; i += 1) {
 			arrayWithRandomNumbers.push(getRandomInt(maxNumber));
 		}
 		const maxNumberFromArray = Math.max(...arrayWithRandomNumbers);

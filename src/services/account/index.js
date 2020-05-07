@@ -5,7 +5,7 @@ const Chance = require('chance');
 const account = require('./model');
 const hooks = require('./hooks');
 
-const { getRandomInt } = require('../../helper/randomNumberGenerator');
+const { getRandomInt } = require('../../utils/randomNumberGenerator');
 const { supportJWTServiceSetup, jwtTimerServiceSetup } = require('./services');
 
 const chance = new Chance();
