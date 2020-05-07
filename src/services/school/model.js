@@ -13,7 +13,6 @@ const fileStorageTypes = ['awsS3'];
 
 const SCHOOL_FEATURES = {
 	ROCKET_CHAT: 'rocketChat',
-	DISABLE_STUDENT_TEAM_CREATION: 'disableStudentTeamCreation',
 	VIDEOCONFERENCE: 'videoconference',
 	MESSENGER: 'messenger',
 	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',

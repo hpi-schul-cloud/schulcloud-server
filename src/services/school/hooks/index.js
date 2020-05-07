@@ -3,6 +3,8 @@ const { Forbidden } = require('@feathersjs/errors');
 const {
 	iff, isProvider, discard, disallow, keepInArray,
 } = require('feathers-hooks-common');
+const { Configuration } = require('@schul-cloud/commons');
+
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
@@ -15,6 +17,39 @@ const { yearModel: Year } = require('../model');
 const SchoolYearFacade = require('../logic/year');
 
 let years = null;
+
+const isTeamCreationByStudentsEnabled = (currentSchool) => {
+	const { enableStudentTeamCreation } = currentSchool;
+	const STUDENT_TEAM_CREATION_SETTING = Configuration.get('STUDENT_TEAM_CREATION');
+	let isTeamCreationEnabled = false;
+	switch (STUDENT_TEAM_CREATION_SETTING) {
+		case 'enabled':
+			// if enabled student team creation feature should be enabled
+			isTeamCreationEnabled = true;
+			break;
+		case 'disabled':
+			// if disabled student team creation feature should be disabled
+			isTeamCreationEnabled = false;
+			return false;
+		case 'opt-in':
+			// if opt-in student team creation should be enabled by admin
+			isTeamCreationEnabled = enableStudentTeamCreation === 'true';
+			break;
+		case 'opt-out':
+			// if opt-out student team creation should be disabled by admin
+			isTeamCreationEnabled = enableStudentTeamCreation !== 'false';
+			break;
+		default:
+			break;
+	}
+	return isTeamCreationEnabled;
+};
+
+const setStudentsCanCreateTeams = async (context) => {
+	context.result.data.forEach((school) => {
+		school.isTeamCreationByStudentsEnabled = isTeamCreationByStudentsEnabled(school);
+	});
+};
 
 const expectYearsDefined = async () => {
 	if (!years) {
@@ -101,7 +136,7 @@ const updatesChat = (key, data) => {
 	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
 };
 const updatesTeamCreation = (key, data) => updatesArray(key)
-	&& data[key].features === SCHOOL_FEATURES.DISABLE_STUDENT_TEAM_CREATION;
+	&& !isTeamCreationByStudentsEnabled(data[key]);
 
 const hasEditPermissions = async (context) => {
 	try {
@@ -173,8 +208,8 @@ exports.after = {
 		iff(populateInQuery, keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active'])),
 		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
 	],
-	find: [decorateYears],
-	get: [decorateYears],
+	find: [decorateYears, setStudentsCanCreateTeams],
+	get: [decorateYears, setStudentsCanCreateTeams],
 	create: [createDefaultStorageOptions],
 	update: [],
 	patch: [],

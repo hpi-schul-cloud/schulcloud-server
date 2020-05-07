@@ -2,7 +2,6 @@ const { authenticate } = require('@feathersjs/authentication');
 const {
 	Forbidden, BadRequest, Conflict, NotImplemented, NotFound, MethodNotAllowed, NotAcceptable,
 } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { SC_SHORT_TITLE } = require('../../../../config/globals');
 
@@ -613,33 +612,6 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 	return hook;
 });
 
-const isStudentTeamCreationEnabled = (school) => {
-	const { enableStudentTeamCreation } = school;
-	const STUDENT_TEAM_CREATION_SETTING = Configuration.get('STUDENT_TEAM_CREATION');
-	let studentTeamCreationEnabled = false;
-	switch (STUDENT_TEAM_CREATION_SETTING) {
-		case 'enabled':
-			// if enabled student team creation feature should be enabled
-			studentTeamCreationEnabled = true;
-			break;
-		case 'disabled':
-			// if disabled student team creation feature should be disabled
-			studentTeamCreationEnabled = false;
-			return false;
-		case 'opt-in':
-			// if opt-in student team creation should be enabled by admin
-			studentTeamCreationEnabled = enableStudentTeamCreation === 'true';
-			break;
-		case 'opt-out':
-			// if opt-out student team creation should be disabled by admin
-			studentTeamCreationEnabled = enableStudentTeamCreation !== 'false';
-			break;
-		default:
-			break;
-	}
-	return studentTeamCreationEnabled;
-};
-
 /**
  * Test if the sessionUser is allowed to create a team. Every teacher and admin can create teams.
  * Students can create teams if it is not disabled (can be blocked by school settings)
@@ -653,9 +625,7 @@ const isAllowedToCreateTeams = (hook) => getSessionUser(hook).then((sessionUser)
 		|| roleNames.includes('administrator')
 		|| roleNames.includes('teacher')
 		|| roleNames.includes('student')) {
-			if (roleNames.includes('student')
-				&& school.features instanceof Array
-				&& !isStudentTeamCreationEnabled(school)) {
+			if (roleNames.includes('student') && !school.isTeamCreationByStudentsEnabled) {
 				throw new Forbidden('Your school admin does not allow team creations by students.');
 			}
 		} else {
