@@ -17,6 +17,11 @@ class LDAPSchoolSyncer extends SystemSyncer {
 				updated: 0,
 				errors: 0,
 			},
+			classes: {
+				created: 0,
+				updated: 0,
+				errors: 0,
+			},
 		});
 	}
 
@@ -37,32 +42,33 @@ class LDAPSchoolSyncer extends SystemSyncer {
 			.then((_) => this.stats);
 	}
 
-	getUserData() {
+	async getUserData() {
 		this.logInfo('Getting users...');
-		return this.app.service('ldap').getUsers(this.system.ldapConfig, this.school)
-			.then((ldapUsers) => Promise.all(ldapUsers.map((idmUser) => this.createOrUpdateUser(idmUser, this.school)))
-				.then((res) => {
-					this.logInfo(`Created ${this.stats.users.created} users, `
-                                + `updated ${this.stats.users.updated} users. `
-                                + `Skipped errors: ${this.stats.users.errors}.`);
-					return Promise.resolve(res);
-				}));
+		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, this.school);
+		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
+		const jobs = ldapUsers.map((idmUser) => async () => this.createOrUpdateUser(idmUser, this.school));
+		for (const job of jobs) {
+			await job();
+		}
+
+		this.logInfo(`Created ${this.stats.users.created} users, `
+						+ `updated ${this.stats.users.updated} users. `
+						+ `Skipped errors: ${this.stats.users.errors}.`);
 	}
 
-	getClassData() {
+	async getClassData() {
 		this.logInfo('Getting classes...');
-		const currentSchool = this.school;
-		return this.app.service('ldap').getClasses(this.system.ldapConfig, currentSchool)
-			.then((data) => {
-				this.logInfo('Creating classes');
-				return this.createClassesFromLdapData(data, currentSchool);
-			});
+		const classes = await this.app.service('ldap').getClasses(this.system.ldapConfig, this.school);
+		this.logInfo(`Creating and updating ${classes.length} classes...`);
+		await this.createClassesFromLdapData(classes, this.school);
+		this.logInfo(`Created ${this.stats.classes.created} classes, `
+						+ `updated ${this.stats.classes.updated} classes. `
+						+ `Skipped errors: ${this.stats.classes.errors}.`);
 	}
 
 	createOrUpdateUser(idmUser) {
 		return this.app.service('users').find({
 			query: {
-				// schoolId: school._id, //Could be issue for LDAP with multiple schools
 				ldapId: idmUser.ldapUUID,
 			},
 		}).then((users) => {
@@ -126,82 +132,93 @@ class LDAPSchoolSyncer extends SystemSyncer {
 
 		return accountModel.update(
 			{ userId: user._id, systemId: this.system._id },
-			{ username: (`${this.school.ldapSchoolIdentifier}/${idmUser.ldapUID}`).toLowerCase() },
+			{
+				username: (`${this.school.ldapSchoolIdentifier}/${idmUser.ldapUID}`).toLowerCase(),
+				userId: user._id,
+				systemId: this.system._id,
+				activated: true,
+			},
+			{ upsert: true },
 		).then((_) => this.app.service('users').patch(
 			user._id,
 			updateObject,
 		));
 	}
 
-	createClassesFromLdapData(data, school) {
+	async createClassesFromLdapData(data, school) {
 		const classes = data.filter((d) => 'uniqueMembers' in d && d.uniqueMembers !== undefined);
-		const res = Promise.all(classes.map((ldapClass) => this.getOrCreateClassFromLdapData(ldapClass, school)
-			.then((currentClass) => this.populateClassUsers(ldapClass, currentClass, school))));
-		return res;
+		const jobs = classes.map((ldapClass) => async () => {
+			try {
+				const klass = await this.getOrCreateClassFromLdapData(ldapClass, school);
+				await this.populateClassUsers(ldapClass, klass, school);
+			} catch (err) {
+				this.stats.classes.errors += 1;
+				this.logError('Cannot create synced class', { error: err, data });
+			}
+		});
+		for (const job of jobs) await job();
 	}
 
-	getOrCreateClassFromLdapData(data, school) {
-		return this.app.service('classes').find({
+	async getOrCreateClassFromLdapData(data, school) {
+		const existingClasses = await this.app.service('classes').find({
 			query: {
-				// schoolId: school._id, //Could be issue for LDAP with multiple schools
 				year: school.currentYear,
 				ldapDN: data.ldapDn,
 			},
-		}).then((res) => {
-			if (res.total === 0) {
-				const newClass = {
-					name: data.className,
-					schoolId: this.school._id,
-					nameFormat: 'static',
-					ldapDN: data.ldapDn,
-					year: this.school.currentYear,
-				};
-				return this.app.service('classes').create(newClass);
-			}
-			const updateObject = {
-				$set: {
-					name: data.className,
-				},
-			};
-			this.app.service('classes').update(
-				{ _id: res.data[0]._id },
-				updateObject,
-			);
-			return res.data[0];
 		});
+		if (existingClasses.total === 0) {
+			const newClass = {
+				name: data.className,
+				schoolId: this.school._id,
+				nameFormat: 'static',
+				ldapDN: data.ldapDn,
+				year: this.school.currentYear,
+			};
+			this.stats.classes.created += 1;
+			return this.app.service('classes').create(newClass);
+		}
+
+		this.stats.classes.updated += 1;
+		const existingClass = existingClasses.data[0];
+		if (existingClass.name === data.className) {
+			return existingClass;
+		}
+
+		return this.app.service('classes').patch(
+			existingClass._id,
+			{ name: data.className },
+		);
 	}
 
-	populateClassUsers(ldapClass, currentClass) {
-		const students = []; const
-			teachers = [];
+	async populateClassUsers(ldapClass, currentClass) {
+		const students = [];
+		const teachers = [];
 		if (Array.isArray(ldapClass.uniqueMembers) === false) {
 			ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 		}
-		return Promise.all(ldapClass.uniqueMembers.map((ldapUserDn) => this.app.service('users').find(
+		const userData = await this.app.service('users').find(
 			{
 				query:
 				{
-					ldapDn: ldapUserDn,
+					ldapDn: { $in: ldapClass.uniqueMembers },
 					$populate: ['roles'],
 				},
 			},
-		)
-			.then((userData) => {
-				if (userData.total > 0) {
-					const user = userData.data[0];
-					user.roles.forEach((role) => {
-						if (role.name === 'student') students.push(user._id);
-						if (role.name === 'teacher') teachers.push(user._id);
-					});
-				}
-				return Promise.resolve();
-			}))).then(() => {
-			if (students.length === 0 && teachers.length === 0) return Promise.resolve();
-			return this.app.service('classes').patch(
+		);
+		userData.data.forEach((user) => {
+			user.roles.forEach((role) => {
+				if (role.name === 'student') students.push(user._id);
+				if (role.name === 'teacher') teachers.push(user._id);
+			});
+		});
+
+		if (students.length > 0 && teachers.length > 0) {
+			await this.app.service('classes').patch(
 				currentClass._id,
-				{ $set: { userIds: students, teacherIds: teachers } },
+				{ userIds: students, teacherIds: teachers },
 			);
-		}).catch((err) => Promise.reject(err));
+		}
+		return Promise.resolve();
 	}
 }
 
