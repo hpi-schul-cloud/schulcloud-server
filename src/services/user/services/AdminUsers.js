@@ -152,17 +152,17 @@ class AdminUsers {
 					.toLowerCase()
 					.localeCompare((b.classes[0] || '')
 						.toLowerCase(), undefined, {
-					numeric: true,
-					sensitivity: 'base',
-				}));
+						numeric: true,
+						sensitivity: 'base',
+					}));
 			} else if (classSortParam === '-1') {
 				users.sort((a, b) => (b.classes[0] || '')
 					.toLowerCase()
 					.localeCompare((a.classes[0] || '')
 						.toLowerCase(), undefined, {
-					numeric: true,
-					sensitivity: 'base',
-				}));
+						numeric: true,
+						sensitivity: 'base',
+					}));
 			}
 
 			const sortOrder = {
