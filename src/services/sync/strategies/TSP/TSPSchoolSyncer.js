@@ -387,6 +387,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				systemId,
 			);
 			this.stats.users.students.created += 1;
+			await this.createTSPConsent(student);
 			return student;
 		} catch (err) {
 			this.stats.users.students.errors += 1;
@@ -399,6 +400,33 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			});
 			return null;
 		}
+	}
+
+	/**
+	 * Create a consent if the user is created via TSP sync.
+	 * In this case, the consent process was already handled from the TSP side.
+	 * @param {User} student the student created via TSP sync
+	 * @async
+	 */
+	async createTSPConsent(student) {
+		const currentDate = Date.now();
+		const tspConsent = {
+			form: 'tsp-sync',
+			privacyConsent: true,
+			termsOfUseConsent: true,
+			dateOfPrivacyConsent: currentDate,
+			dateOfTermsOfUseConsent: currentDate,
+		};
+
+		/**
+		 * During the user creation process, the age of the users is unknown.
+		 * Therfore, we create a user and a parent consent in any case.
+		 */
+		await this.app.service('consents').create({
+			userId: student._id,
+			userConsent: tspConsent,
+			parentConsents: [tspConsent],
+		});
 	}
 
 	/**

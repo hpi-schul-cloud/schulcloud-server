@@ -9,7 +9,7 @@ const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
-const consentForm = ['analog', 'digital', 'update'];
+const consentForm = ['analog', 'digital', 'update', 'tsp-sync'];
 
 const consentSchema = new Schema({
 	userId: {
