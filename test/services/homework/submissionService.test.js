@@ -36,7 +36,7 @@ describe('submission service', function test() {
 			courseId: course._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(student);
-		params.query = {}
+		params.query = {};
 		const result = await app.service('submissions').create({
 			schoolId: course.schoolId,
 			courseId: course._id,
@@ -154,7 +154,7 @@ describe('submission service', function test() {
 
 	it('teacher can FIND all submissions on the school', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
-		const [originalTeacher, teacher , student] = await Promise.all([
+		const [originalTeacher, teacher, student] = await Promise.all([
 			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
 			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),

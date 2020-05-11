@@ -148,12 +148,18 @@ class AdminUsers {
 			// as classes and consents are fetched from separate db collection
 			const classSortParam = (($sort || {}).classes || {}).toString();
 			if (classSortParam === '1') {
-				users.sort((a, b) => (a.classes[0] || '').toLowerCase().localeCompare((b.classes[0] || '').toLowerCase(), undefined, {
+				users.sort((a, b) => (a.classes[0] || '')
+					.toLowerCase()
+					.localeCompare((b.classes[0] || '')
+						.toLowerCase(), undefined, {
 					numeric: true,
 					sensitivity: 'base',
 				}));
 			} else if (classSortParam === '-1') {
-				users.sort((a, b) => (b.classes[0] || '').toLowerCase().localeCompare((a.classes[0] || '').toLowerCase(), undefined, {
+				users.sort((a, b) => (b.classes[0] || '')
+					.toLowerCase()
+					.localeCompare((a.classes[0] || '')
+						.toLowerCase(), undefined, {
 					numeric: true,
 					sensitivity: 'base',
 				}));
