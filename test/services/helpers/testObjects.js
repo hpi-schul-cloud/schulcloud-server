@@ -18,6 +18,7 @@ module.exports = (app, opt = {
 		users,
 		consents,
 		courses,
+		courseGroups,
 		accounts,
 		roles,
 		schools,
@@ -37,6 +38,7 @@ module.exports = (app, opt = {
 		.concat(testSystem.cleanup())
 		.concat(classes.cleanup())
 		.concat(courses.cleanup())
+		.concat(courseGroups.cleanup())
 		.concat(teams.cleanup())
 		.concat(roles.cleanup())
 		.concat(schools.cleanup())
@@ -63,6 +65,7 @@ module.exports = (app, opt = {
 		classes: classes.info,
 		tempPins: users.tempPinIds,
 		courses: courses.info,
+		courseGroups: courseGroups.info,
 		accounts: accounts.info,
 		schools: schools.info,
 		schoolGroups: schoolGroups.info,
@@ -106,6 +109,7 @@ module.exports = (app, opt = {
 		createTestConsent: consents.create,
 		createTestClass: classes.create,
 		createTestCourse: courses.create,
+		createTestCourseGroup: courseGroups.create,
 		createTestRole: roles.create,
 		createTestSchool: schools.create,
 		createTestSchoolGroup: schoolGroups.create,

@@ -4,6 +4,7 @@ const login = require('./login');
 const classes = require('./classes');
 const users = require('./users');
 const courses = require('./courses');
+const courseGroups = require('./courseGroups');
 const accounts = require('./accounts');
 const roles = require('./roles');
 const schools = require('./schools');
@@ -24,6 +25,7 @@ module.exports = (app, opt) => ({
 	users: users(app, opt),
 	consents: consents(app, opt),
 	courses: courses(app, opt),
+	courseGroups: courseGroups(app, opt),
 	accounts: accounts(app, opt),
 	roles,
 	schools: schools(app, opt),

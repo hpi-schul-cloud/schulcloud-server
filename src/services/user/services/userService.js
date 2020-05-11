@@ -33,6 +33,7 @@ const {
 	enforceRoleHierarchyOnDelete,
 	filterResult,
 	generateRegistrationLink,
+	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
 class UserService {
@@ -87,6 +88,7 @@ const userHooks = {
 			iff(isProvider('external'), restrictToCurrentSchool),
 			mapRoleFilterQuery,
 			addCollation,
+			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
 		get: [authenticate('jwt')],
 		create: [
@@ -102,7 +104,7 @@ const userHooks = {
 			iff(isProvider('external'), disallow()),
 			authenticate('jwt'),
 			sanitizeData,
-			hasEditPermissionForUser,
+			iff(isProvider('external'), hasEditPermissionForUser),
 			resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
 		],
 		patch: [
@@ -110,7 +112,7 @@ const userHooks = {
 			iff(isProvider('external'), securePatching),
 			permitGroupOperation,
 			sanitizeData,
-			hasEditPermissionForUser,
+			iff(isProvider('external'), hasEditPermissionForUser),
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 			updateAccountUsername,
 		],

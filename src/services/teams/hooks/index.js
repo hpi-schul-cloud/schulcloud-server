@@ -8,6 +8,7 @@ const { SC_SHORT_TITLE } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger');
 
+const { SCHOOL_FEATURES } = require('../../school/model');
 const { set, get } = require('./scope');
 const createEmailText = require('./mail-text.js');
 const {
@@ -195,25 +196,25 @@ const blockedMethod = () => {
  * @param {Boolean} [_ifNotLocal=true] - pass all input to the ifNotLocal hook
  * @param {Object} [objectToFilter] - is optional otherwise the hook is used
  * @return {function::globalHooks.ifNotLocal(hook)}
- * @example filterToRelated(['_id','userIds'], 'result.data') in hook.result.data all keys are removed that are not _id, or userIds
+ * @example filterToRelated(['_id','userIds'], 'result.data') in hook.result.data all keys are removed
+ * 			that are not _id, or userIds
  */
 const filterToRelated = (keys, path, _ifNotLocal = true, objectToFilter) => {
-	if (!Array.isArray(keys)) {
-		keys = [keys];
-	}
+	const keysArr = Array.isArray(keys) ? keys : [keys];
 	const execute = (hook) => {
 		const filter = (data) => {
 			const reducer = (old) => (newObject, key) => {
-				if (old[key] !== undefined) // if related key exist
-				{ newObject[key] = old[key]; }
+				if (old[key] !== undefined) { // if related key exist
+					newObject[key] = old[key];
+				}
 				return newObject;
 			};
 
 			let out;
 			if (Array.isArray(data)) {
-				out = data.map((element) => keys.reduce(reducer(element), {}));
+				out = data.map((element) => keysArr.reduce(reducer(element), {}));
 			} else {
-				out = keys.reduce(reducer(data), {});
+				out = keysArr.reduce(reducer(data), {});
 			}
 			return out;
 		};
@@ -627,7 +628,7 @@ const isAllowedToCreateTeams = (hook) => getSessionUser(hook).then((sessionUser)
 		|| roleNames.includes('student')) {
 			if (roleNames.includes('student')
 				&& school.features instanceof Array
-				&& school.features.includes('disableStudentTeamCreation')) {
+				&& school.features.includes(SCHOOL_FEATURES.DISABLE_STUDENT_TEAM_CREATION)) {
 				throw new Forbidden('Your school admin does not allow team creations by students.');
 			}
 		} else {

@@ -36,6 +36,7 @@ describe('submission service', function test() {
 			courseId: course._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(student);
+		params.query = {}
 		const result = await app.service('submissions').create({
 			schoolId: course.schoolId,
 			courseId: course._id,
@@ -149,5 +150,77 @@ describe('submission service', function test() {
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('_id');
 		expect(result.grade).to.eq(100);
+	});
+
+	it('teacher can FIND all submissions on the school', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [originalTeacher, teacher , student] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		const course = await testObjects.createTestCourse({
+			teacherIds: [originalTeacher._id], userIds: [student._id], schoolId,
+		});
+		const homework = await testObjects.createTestHomework({
+			teacherId: originalTeacher._id,
+			name: 'Testaufgabe',
+			description: 'Schreibe ein Essay über Goethes Werk',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
+			private: false,
+			archived: [originalTeacher._id],
+			lessonId: null,
+			courseId: course._id,
+			schoolId,
+		});
+		await testObjects.createTestSubmission({
+			schoolId,
+			courseId: course._id,
+			homeworkId: homework._id,
+			studentId: student._id,
+			comment: 'egal wie dicht du bist, Goethe war Dichter.',
+		});
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
+		const result = await app.service('submissions').find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.total).to.equal(1);
+	});
+
+	it('student can not FIND other students submissions', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [teacher, otherStudent, student] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		const course = await testObjects.createTestCourse({
+			teacherIds: [teacher._id], userIds: [student._id], schoolId,
+		});
+		const homework = await testObjects.createTestHomework({
+			teacherId: teacher._id,
+			name: 'Testaufgabe',
+			description: 'Schreibe ein Essay über Goethes Werk',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
+			private: false,
+			archived: [teacher._id],
+			lessonId: null,
+			courseId: course._id,
+			schoolId,
+		});
+		await testObjects.createTestSubmission({
+			schoolId,
+			courseId: course._id,
+			homeworkId: homework._id,
+			studentId: student._id,
+			comment: 'egal wie dicht du bist, Goethe war Dichter.',
+		});
+		const params = await testObjects.generateRequestParamsFromUser(otherStudent);
+		params.query = {};
+		const result = await app.service('submissions').find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.total).to.equal(0);
 	});
 });
