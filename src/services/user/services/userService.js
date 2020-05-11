@@ -12,6 +12,7 @@ const {
 	permitGroupOperation,
 	denyIfNotCurrentSchool,
 	computeProperty,
+	addCollation,
 } = require('../../../hooks');
 const {
 	mapRoleFilterQuery,
@@ -31,6 +32,7 @@ const {
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
 	filterResult,
+	generateRegistrationLink,
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
@@ -85,6 +87,7 @@ const userHooks = {
 			authenticate('jwt'),
 			iff(isProvider('external'), restrictToCurrentSchool),
 			mapRoleFilterQuery,
+			addCollation,
 			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
 		get: [authenticate('jwt')],
@@ -94,6 +97,7 @@ const userHooks = {
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,
+			generateRegistrationLink,
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		],
 		update: [
@@ -115,7 +119,6 @@ const userHooks = {
 		remove: [
 			authenticate('jwt'),
 			iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
-			permitGroupOperation,
 		],
 	},
 	after: {

@@ -81,21 +81,17 @@ class SkipRegistrationService {
 	}
 
 	async skipUserRegistration(data) {
-		try {
-			const targetUser = await this.app.service('users').get(data.userId,
-				{ query: { $populate: 'roles' } });
-			await validateRequest(data, targetUser);
+		const targetUser = await this.app.service('users').get(data.userId,
+			{ query: { $populate: 'roles' } });
+		await validateRequest(data, targetUser);
 
-			await Promise.all([
-				createAccount(data, targetUser, this.app),
-				updateConsent(data, targetUser._id, this.app),
-				updateUser(data, targetUser._id, this.app),
-			]);
+		await Promise.all([
+			createAccount(data, targetUser, this.app),
+			updateConsent(data, targetUser._id, this.app),
+			updateUser(data, targetUser._id, this.app),
+		]);
 
-			return Promise.resolve('success');
-		} catch (err) {
-			throw err;
-		}
+		return Promise.resolve('success');
 	}
 
 	/**

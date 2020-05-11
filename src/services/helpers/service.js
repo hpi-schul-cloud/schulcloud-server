@@ -5,6 +5,8 @@ const logger = require('../../logger');
 const {
 	REQUEST_TIMEOUT,
 	SMTP_SENDER,
+	NODE_ENV,
+	ENVIRONMENTS,
 } = require('../../../config/globals');
 
 const checkForToken = (params, app) => {
@@ -78,7 +80,7 @@ module.exports = function setup(app) {
 			};
 
 			// send mail with defined transport object in production mode
-			if (app.get('env') === 'production' || FORCE_SEND_EMAIL) {
+			if (NODE_ENV === ENVIRONMENTS.PRODUCTION || FORCE_SEND_EMAIL) {
 				return request(requestOptions).catch((error) => {
 					throw new GeneralError(error.message);
 				});

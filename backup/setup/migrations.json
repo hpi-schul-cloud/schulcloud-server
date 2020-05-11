@@ -467,6 +467,17 @@
 },
 {
 	"_id": {
+		"$oid": "5e81e74b65f87a5a600f591b"
+	},
+	"state": "up",
+	"name": "addFileCreatorAndPermissionIndexes",
+	"createdAt": {
+		"$date": "2020-03-26T11:39:40.409Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5e7f1d63e2c96215c85330f9"
 	},
 	"state": "up",
@@ -517,6 +528,17 @@
 	"name": "remove-student_edit-from-students",
 	"createdAt": {
 		"$date": "2020-04-27T15:17:39.485Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ea0049a18cc9c230f4fc936"
+	},
+	"state": "up",
+	"name": "drop-comment-model",
+	"createdAt": {
+		"$date": "2020-04-22T08:47:22.723Z"
 	},
 	"__v": 0
 }]
