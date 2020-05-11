@@ -17,6 +17,7 @@ const {
 	securePatching,
 	filterToRelated,
 	testIfJWTExist,
+	restrictToUsersSchool,
 } = require('../hooks');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
@@ -77,16 +78,13 @@ const accountServiceHooks = {
 			removePassword,
 		],
 		update: [
-			authenticate('jwt'),
-			hasPermission('ACCOUNT_EDIT'),
-			restrictToCurrentSchool,
-			sanitizeUsername,
+			disallow('external'),
 		],
 		patch: [
 			authenticate('jwt'),
 			sanitizeUsername,
+			iff(isProvider('external'), restrictToUsersSchool),
 			iff(isProvider('external'), securePatching),
-			iff(isProvider('external'), restrictToCurrentSchool),
 			protectUserId,
 			permitGroupOperation,
 			trimPassword,

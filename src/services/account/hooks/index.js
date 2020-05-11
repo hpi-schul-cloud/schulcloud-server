@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
+const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongoose').Types;
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
@@ -255,6 +255,18 @@ const testIfJWTExist = (context) => {
 	return context;
 };
 
+const restrictToUsersSchool = async (context) => {
+	const userService = context.app.service('users');
+	const { schoolId: usersSchoolId } = await userService.get(context.params.account.userId);
+
+	const targetAccount = await context.app.service('accountModel').get(context.id);
+	const { schoolId: targetSchoolId } = await userService.get(targetAccount.userId);
+	if (!equalIds(usersSchoolId, targetSchoolId)) {
+		throw new NotFound('this account doesnt exist');
+	}
+	return context;
+};
+
 module.exports = {
 	sanitizeUsername,
 	validateCredentials,
@@ -268,4 +280,5 @@ module.exports = {
 	securePatching,
 	filterToRelated,
 	testIfJWTExist,
+	restrictToUsersSchool,
 };
