@@ -411,20 +411,18 @@ describe('fileStorage services', () => {
 			const requestedName = encodeURIComponent('some name-12345678id.png');
 			const spy = sinon.spy(AWSStrategy.prototype, 'getSignedUrl');
 
-			await signedUrlService
-				.find({
+			try {
+				await signedUrlService.find({
 					query: {
 						file: '5ca613c4c7f5120b8c5bef33',
 						name: requestedName,
 					},
 					...context,
-				})
-				.then(() => {
-					expect(spy.calledWithMatch({ localFileName: requestedName })).to.equal(true);
-				})
-				.finally(() => {
-					spy.restore();
 				});
+				expect(spy.calledWithMatch({ localFileName: requestedName })).to.equal(true);
+			} finally {
+				spy.restore();
+			}
 		});
 	});
 
