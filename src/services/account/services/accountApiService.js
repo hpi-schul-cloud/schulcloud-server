@@ -94,6 +94,7 @@ const accountServiceHooks = {
 		remove: [
 			authenticate('jwt'),
 			hasPermission('ACCOUNT_CREATE'),
+			iff(isProvider('external'), restrictToUsersSchool),
 			permitGroupOperation,
 		],
 	},

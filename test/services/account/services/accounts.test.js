@@ -3,9 +3,9 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const { ObjectId } = require('mongoose').Types;
 
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParams, generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const app = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(app);
+const { generateRequestParams, generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
 
 const accountService = app.service('/accounts');
 const userService = app.service('/users');
@@ -15,7 +15,7 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('Account Service', () => {
+describe.only('Account Service', () => {
 	let server;
 
 	before((done) => {
@@ -146,6 +146,35 @@ describe('Account Service', () => {
 				});
 			} finally {
 				await accountService.remove(account._id);
+			}
+		});
+	});
+
+	describe('UPDATE route', () => {
+		it('should not accept external requests', async () => {
+			const user = await testObjects.createTestUser({ firstLogin: true, roles: ['student'] });
+			const otherUser = await testObjects.createTestUser({ roles: ['student'] });
+			const accountDetails = {
+				username: 'other@user.de',
+				password: 'password',
+				userId: otherUser._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				const params = await generateRequestParamsFromUser(user);
+				await accountService.update(account._id, {
+					username: 'other@user.de',
+					password: 'newpassword',
+					userId: otherUser._id,
+				}, params);
+				throw new Error('should have failed.');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+				expect(err.code).to.equal(405);
+				expect(err.message).to.equal("Provider 'rest' can not call 'update'. (disallow)");
+			} finally {
+				await accountService.remove(account._id);
+				await userService.remove(user._id);
 			}
 		});
 	});
