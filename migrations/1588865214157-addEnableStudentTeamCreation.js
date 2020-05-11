@@ -1,4 +1,4 @@
-const { info, error } = require('../src/logger');
+const { info } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 const { schoolModel: School } = require('../src/services/school/model');
