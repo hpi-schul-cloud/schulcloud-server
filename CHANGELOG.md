@@ -41,6 +41,25 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-3958: the environment variables NBC_IMPORTURL, NBC_IMPORTUSER, and NBC_IMPORTPASSWORD are no longer used and have been removed
 -   Removed the obsolete commentSchema from the homework service. It was not in use.
 
+## [22.9.20]
+
+### Added
+
+-  SC-4042: Added support for a central IServ-Connector
+
+### Changed
+
+-  LDAP syncs on servers with multiple schools now only sync one school at a time to avoid issues when paging search requests
+-  LDAP syncs use less memory (because they do a lot less in parallel)
+-  LDAPSchoolSyncer now returns user and class statistics
+
+### Fixed
+
+-  Fixed LDAP-Service disconnect method
+-  LDAPSystemSyncers now properly close their connections after syncing
+-  Authentication via LDAP now tries to close the connection after login
+-  Fixed a warning message appearing when patching users via internal request
+
 ## [22.9.18]
 
 ### Fixed
