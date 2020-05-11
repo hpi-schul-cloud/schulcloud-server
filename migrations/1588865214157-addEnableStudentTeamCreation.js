@@ -1,4 +1,4 @@
-const { info } = require('../src/logger');
+const { info, warning } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 const { schoolModel: School } = require('../src/services/school/model');
@@ -26,20 +26,7 @@ module.exports = {
 	},
 
 	down: async function down() {
-		await connect();
-
-		const schools = await School.find({}).exec();
-		info(`Got ${schools.length} schools.`);
-		const result = [];
-		for (const school of schools) {
-			info(`Migrating ${school.name} (${school._id})...`);
-			if (school.enableStudentTeamCreation === false && !school.features.includes(disableStudentTeamCreation)) {
-				school.features.push(disableStudentTeamCreation);
-				result.push(school.save());
-			}
-		}
-		await Promise.all(result);
-		info('Done.');
-		await close();
+		warning(`Can not rollback data. '${disableStudentTeamCreation}' is not available in school features anymore`);
 	},
+
 };
