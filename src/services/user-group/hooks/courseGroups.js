@@ -38,7 +38,7 @@ const restrictToUsersCourses = async (context) => {
 	if (['find', 'patch', 'update', 'remove'].includes(context.method)) {
 		context.params.query.$and = (context.params.query.$and || []);
 		context.params.query.$and.push({
-			courseId: { $in: [usersCoursesIds] },
+			courseId: { $in: usersCoursesIds },
 		});
 	}
 	return context;
