@@ -148,6 +148,7 @@ const updatesChat = (key, data) => {
 		SCHOOL_FEATURES.ROCKET_CHAT,
 		SCHOOL_FEATURES.MESSENGER,
 		SCHOOL_FEATURES.MESSENGER_SCHOOL_ROOM,
+		SCHOOL_FEATURES.VIDEOCONFERENCE,
 	];
 	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
 };
