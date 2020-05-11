@@ -33,11 +33,13 @@ const isTeamCreationByStudentsEnabled = (currentSchool) => {
 			return false;
 		case 'opt-in':
 			// if opt-in student team creation should be enabled by admin
-			isTeamCreationEnabled = enableStudentTeamCreation === 'true';
+			// if undefined/null then false
+			isTeamCreationEnabled = enableStudentTeamCreation === true;
 			break;
 		case 'opt-out':
 			// if opt-out student team creation should be disabled by admin
-			isTeamCreationEnabled = enableStudentTeamCreation !== 'false';
+			// if undefined/null then true
+			isTeamCreationEnabled = enableStudentTeamCreation !== false;
 			break;
 		default:
 			break;
