@@ -18,6 +18,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Removed
 
 
+## [22.10.2] - 2020-05-12
+
+### Fixed in 22.10.2
+
+-   fixed pagination for students/teacher table
+
 ## [22.10.0] - 2020-05-11
 
 ### Added in 22.10.0
