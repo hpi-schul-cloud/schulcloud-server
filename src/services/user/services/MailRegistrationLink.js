@@ -94,7 +94,7 @@ class SendRegistrationLinkService {
 				}
 
 				if (Object.getOwnPropertyNames(updates).length !== 0) {
-					return this.app.service('/usersModel').patch(user._id, updates);
+					return this.app.service('/usersModel').patch(user._id.toString(), updates);
 				}
 
 				return Promise.resolve();

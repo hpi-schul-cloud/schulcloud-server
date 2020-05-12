@@ -32,9 +32,9 @@ module.exports = function setup(app) {
 			const FORCE_SEND_EMAIL = app.get('FORCE_SEND_EMAIL');
 			const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
 
-			if (!notificationPlatform) {
+			/* if (!notificationPlatform) {
 				throw new MethodNotAllowed('Required Env NOTIFICATION_PLATFORM is not defined');
-			}
+			} */
 
 			const serviceUrls = app.get('services') || {};
 

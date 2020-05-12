@@ -84,12 +84,15 @@ describe('user service', () => {
 	});
 
 	it.only('importHash will set, when creating a new user', async () => {
+		const configBefore = Configuration.toObject(); // deep copy current config
+		Configuration.set('FORCE_SEND_EMAIL', false);
 		const { _id } = await testObjects.createTestUser({ sendRegistration: true });
 
 		const student = await app.service('usersModel').get(_id);
 
 		expect(student).to.haveOwnProperty('importHash');
 		expect(student.preferences.registrationMailSend).to.equal(true);
+		Configuration.reset(configBefore);
 	});
 
 	it('student can edit himself', async () => {
