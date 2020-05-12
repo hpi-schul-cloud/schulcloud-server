@@ -83,7 +83,7 @@ describe('user service', () => {
 			});
 	});
 
-	it.only('importHash will set, when creating a new user', async () => {
+	it('importHash will set, when creating a new user', async () => {
 		const configBefore = Configuration.toObject(); // deep copy current config
 		Configuration.set('FORCE_SEND_EMAIL', false);
 		const { _id } = await testObjects.createTestUser({ sendRegistration: true });
