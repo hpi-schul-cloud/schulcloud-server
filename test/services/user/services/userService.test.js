@@ -83,12 +83,13 @@ describe('user service', () => {
 			});
 	});
 
-	it('importHash will set set, when creating a new user', async () => {
-		const student = await app.service('users').create({
-			firstName: 'dance',
-			lastName: 'ape',
-			email: 'ape@dancer.forest',
-		});
+	it.only('importHash will set, when creating a new user', async () => {
+		const { _id } = await testObjects.createTestUser({ sendRegistration: true });
+
+		const student = await app.service('usersModel').get(_id);
+
+		expect(student).to.haveOwnProperty('importHash');
+		expect(student.preferences.registrationMailSend).to.equal(true);
 	});
 
 	it('student can edit himself', async () => {

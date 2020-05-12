@@ -28,12 +28,13 @@ const getCurrentUserInfo = (id) => userModel.findById(id)
 	.exec();
 
 
-const getUserInfos = (ids, app) => app.service('/userModel').find({
+const getUserInfos = (ids, app) => app.service('usersModel').find({
 	query: {
-		$or: ids.map((id) => ({ _id: id })),
-		select: ['schoolId', 'email', 'firstName', 'lastName', 'preferences'],
+		_id: { $in: ids },
+		$select: ['schoolId', 'email', 'firstName', 'lastName', 'preferences'],
 		$populate: 'roles',
 	},
+	paginate: false,
 });
 
 class SendRegistrationLinkService {
@@ -41,15 +42,15 @@ class SendRegistrationLinkService {
 		let totalMailsSend = 0;
 
 		try {
-			const { userIds: allUserIds } = data;
-			let accounts = await this.app.service('/accounts').find({
+			const allUserIds = data.userIds.map((userId) => userId.toString());
+			const accounts = await this.app.service('/accounts').find({
 				query: {
-					userId: allUserIds,
+					userId: { $in: allUserIds },
 				},
 			});
-			accounts = accounts.map((account) => String(account.userId));
+
 			const userIds = allUserIds.filter(
-				(id) => undefined !== accounts.find((a) => a.userId.toString() === id.toString()),
+				(id) => !accounts.find((a) => a.userId.toString() === id.toString()),
 			);
 
 			const users = await getUserInfos(userIds, this.app);
@@ -69,12 +70,14 @@ class SendRegistrationLinkService {
 
 				// send mail
 				const { subject, content } = mailContent(user.firstName, user.lastName, shortLink);
+
 				await this.app.service('/mails')
 					.create({
 						email: user.email,
 						subject,
 						content,
 					});
+
 
 				totalMailsSend += 1;
 
@@ -91,9 +94,7 @@ class SendRegistrationLinkService {
 				}
 
 				if (Object.getOwnPropertyNames(updates).length !== 0) {
-					return this.app.service('/userModel').patch(user._id, {
-						importHash: hash,
-					});
+					return this.app.service('/usersModel').patch(user._id, updates);
 				}
 
 				return Promise.resolve();

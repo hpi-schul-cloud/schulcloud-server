@@ -420,7 +420,7 @@ const enforceRoleHierarchyOnDelete = async (context) => {
 const sendRegistraionLink = async (context) => {
 	if (context.data.sendRegistration === true) {
 		context.app.service('/users/mail/registrationLink').create({
-			userids: [context.result._id],
+			userIds: [context.result._id],
 		});
 	}
 
