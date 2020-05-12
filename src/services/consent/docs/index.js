@@ -15,7 +15,11 @@ module.exports = {
 					properties: {
 						form: {
 							type: 'string',
-							enum: ['analog', 'digital', 'update', 'tsp-sync'],
+							enum: ['analog', 'digital', 'update'],
+						},
+						source: {
+							type: 'string',
+							enum: ['tsp-sync'],
 						},
 						dateOfPrivacyConsent: {
 							type: 'string',
@@ -38,7 +42,11 @@ module.exports = {
 						properties: {
 							form: {
 								type: 'string',
-								enum: ['analog', 'digital', 'update', 'tsp-sync'],
+								enum: ['analog', 'digital', 'update'],
+							},
+							source: {
+								type: 'string',
+								enum: ['tsp-sync'],
 							},
 							parentId: {
 								type: 'string',

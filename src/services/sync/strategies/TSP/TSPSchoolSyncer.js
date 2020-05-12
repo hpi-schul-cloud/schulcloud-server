@@ -411,7 +411,8 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	async createTSPConsent(student) {
 		const currentDate = Date.now();
 		const tspConsent = {
-			form: 'tsp-sync',
+			form: 'digital',
+			source: 'tsp-sync',
 			privacyConsent: true,
 			termsOfUseConsent: true,
 			dateOfPrivacyConsent: currentDate,
