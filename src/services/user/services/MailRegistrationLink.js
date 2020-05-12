@@ -30,7 +30,7 @@ const getCurrentUserInfo = (id) => userModel.findById(id)
 
 const getUserInfos = (ids, app) => app.service('/userModel').find({
 	query: {
-		_id: ids,
+		$or: ids.map((id) => ({ _id: id })),
 		select: ['schoolId', 'email', 'firstName', 'lastName', 'preferences'],
 		$populate: 'roles',
 	},
