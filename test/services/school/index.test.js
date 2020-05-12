@@ -34,6 +34,18 @@ describe('school service', () => {
 			delete sampleSchoolData._id;
 		});
 
+		it('load the school results with pagination', async () => {
+			const result = await schoolService.find();
+			expect(result).to.not.be.empty;
+		});
+
+		it('load the school results without pagination', async () => {
+			const result = await schoolService.find({
+				paginate: false,
+			});
+			expect(result).to.not.be.empty;
+		});
+
 		it('create school with currentYear defined explictly', async () => {
 			const serviceCreatedSchool = await schoolService.create(
 				{ ...sampleSchoolData, currentYear: sampleYear },

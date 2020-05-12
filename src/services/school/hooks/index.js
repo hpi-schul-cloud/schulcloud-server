@@ -73,14 +73,15 @@ const decorateYears = async (context) => {
 		school.years = facade.toJSON();
 	};
 	try {
+		const resultData = context.result.data || context.result;
 		switch (context.method) {
 			case 'find':
-				context.result.data.forEach((school) => {
+				resultData.forEach((school) => {
 					addYearsToSchool(school);
 				});
 				break;
 			case 'get':
-				addYearsToSchool(context.result);
+				addYearsToSchool(resultData);
 				break;
 			default:
 				throw new Error('method not supported');
@@ -147,7 +148,6 @@ exports.before = {
 	get: [],
 	create: [
 		authenticate('jwt'),
-		globalHooks.hasPermission('SCHOOL_CREATE'),
 		setDefaultFileStorageType,
 		setCurrentYearIfMissing,
 	],
