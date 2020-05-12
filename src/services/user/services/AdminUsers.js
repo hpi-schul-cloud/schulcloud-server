@@ -173,7 +173,7 @@ class AdminUsers {
 					return consentStatus.$in.includes(userStatus);
 				}
 				return true;
-			});
+			}).splice($skip, $limit);
 
 			return {
 				total,
