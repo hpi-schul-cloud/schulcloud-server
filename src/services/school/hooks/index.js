@@ -148,6 +148,7 @@ exports.before = {
 	get: [],
 	create: [
 		authenticate('jwt'),
+		globalHooks.hasPermission('SCHOOL_CREATE'),
 		setDefaultFileStorageType,
 		setCurrentYearIfMissing,
 	],
