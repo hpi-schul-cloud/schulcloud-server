@@ -353,7 +353,9 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	generateSignedUrl({ userId, flatFileName, fileType }) {
+	generateSignedUrl({
+		userId, flatFileName, fileType, header,
+	}) {
 		if (!userId || !flatFileName || !fileType) {
 			return Promise.reject(
 				new BadRequest('Missing parameters by generateSignedUrl.', { userId, flatFileName, fileType }),
@@ -372,6 +374,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 							Key: flatFileName,
 							Expires: 60,
 							ContentType: fileType,
+							Metadata: header,
 						};
 						return promisify(
 							safeAwsObject.s3.getSignedUrl.bind(safeAwsObject.s3),
