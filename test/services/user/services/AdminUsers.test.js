@@ -295,12 +295,16 @@ describe('AdminUsersService', () => {
 
 		const result1 = await adminStudentsService.find(createParams());
 		expect(result1.data.length).to.be.equal(1);
+		expect(result1.limit).to.be.equal(limit);
+		expect(result1.skip).to.be.equal(skip);
 		const studentId1 = result1.data[0].id;
 		expect(studentId1).to.not.be.undefined;
 		skip = 1;
 
 		const result2 = await adminStudentsService.find(createParams());
 		expect(result2.data.length).to.be.equal(1);
+		expect(result2.limit).to.be.equal(limit);
+		expect(result2.skip).to.be.equal(skip);
 		const studentId2 = result2.data[0].id;
 		expect(studentId2).to.not.be.equal(studentId1);
 	});
