@@ -1,5 +1,6 @@
 const request = require('request-promise-native');
 const { GeneralError, MethodNotAllowed } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../../logger');
 
 const {
@@ -29,7 +30,7 @@ module.exports = function setup(app) {
 
 		// POST
 		async create(data, params) {
-			const FORCE_SEND_EMAIL = app.get('FORCE_SEND_EMAIL');
+			const FORCE_SEND_EMAIL = Configuration.get('FORCE_SEND_EMAIL');
 			const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
 
 			/* if (!notificationPlatform) {

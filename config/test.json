@@ -1,4 +1,5 @@
 {
+	"$schema": "./default.schema.json",
 	"host": "localhost",
 	"port": 3031,
 	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud-test",

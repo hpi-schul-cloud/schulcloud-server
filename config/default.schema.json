@@ -12,6 +12,11 @@
 			"default": "example",
 			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
 		},
+		"FORCE_SEND_EMAIL": {
+			"type": "boolean",
+			"default": false,
+			"description": "Send mails, idendentend from production mode"
+		},
 		"SYNC_API_KEY": {
 			"type": "string",
 			"default": "example",
