@@ -136,6 +136,10 @@
 			"type": "string",
 			"description": "Shared secret for the Matrix server."
 		},
+		"NOTIFICATION_PLATFORM": {
+			"type": "string",
+			"description": "Platform of Notificatin Service to use"
+		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
 			"default": false,
