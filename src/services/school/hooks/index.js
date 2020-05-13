@@ -81,7 +81,7 @@ const decorateYears = async (context) => {
 				});
 				break;
 			case 'get':
-				addYearsToSchool(resultData);
+				addYearsToSchool(context.result);
 				break;
 			default:
 				throw new Error('method not supported');
