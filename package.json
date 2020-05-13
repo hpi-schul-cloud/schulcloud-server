@@ -53,7 +53,7 @@
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
 		"body-parser": "^1.15.2",
-		"chalk": "^3.0.0",
+		"chalk": "^4.0.0",
 		"chance": "^1.0.12",
 		"client-oauth2": "^4.2.5",
 		"compression": "^1.6.2",
