@@ -25,7 +25,7 @@ const getAllUsers = async (ref, schoolId, schoolYearId, role, clientQuery = {}) 
 		roles: role,
 		consentStatus: clientQuery.consentStatus,
 		sort: clientQuery.$sort || clientQuery.sort,
-		select: ['consentStatus', 'consent', 'firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
+		select: ['consentStatus', 'consent', 'classes', 'firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
 		skip: clientQuery.$skip || clientQuery.skip,
 		limit: clientQuery.$limit || clientQuery.limit,
 	};
