@@ -2,11 +2,12 @@ name: Update package version
 
 jobs:
   UPDATE:
-    - uses: actions/checkout@v2
-    - name: Substring branch name
-      uses: ricardorames/subtring-branch-name-action@v0.2.3
-      with:
-        separator: 'feature/'
-    - name: Update package version
-      run: echo ${{steps.substring.outputs.value}}
-      run: npm version ${{steps.substring.outputs.value}}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Substring branch name
+        uses: ricardorames/subtring-branch-name-action@v0.2.3
+        with:
+          separator: 'feature/'
+      - name: Update package version
+        run: echo ${{steps.substring.outputs.value}}
+        run: npm version ${{steps.substring.outputs.value}}
