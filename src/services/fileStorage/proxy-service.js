@@ -381,6 +381,12 @@ const signedUrlService = {
 			? FileModel.findOne({ parent, name: filename }).exec()
 			: Promise.resolve({});
 
+		const header = {
+			name: encodeURIComponent(filename),
+			'flat-name': encodeURIComponent(flatFileName),
+			thumbnail: 'https://schulcloud.org/images/login-right.png',
+		};
+
 		return parentPromise
 			.then(() => (parent ? canCreate(userId, parent) : Promise.resolve({})))
 			.then(() => {
@@ -388,21 +394,19 @@ const signedUrlService = {
 					throw new BadRequest(`Die Datei '${filename}' ist nicht erlaubt!`);
 				}
 
-				return strategy.generateSignedUrl({ userId, flatFileName, fileType });
+				return strategy.generateSignedUrl({
+					userId, flatFileName, fileType, header,
+				});
 			})
-			.then((res) => {
-				const header = {
-					// add meta data for later using
+			.then((res) => ({
+				url: res,
+				header: {
 					'Content-Type': fileType,
-					'x-amz-meta-name': encodeURIComponent(filename),
-					'x-amz-meta-flat-name': encodeURIComponent(flatFileName),
-					'x-amz-meta-thumbnail': 'https://schulcloud.org/images/login-right.png',
-				};
-				return {
-					url: res,
-					header,
-				};
-			})
+					'x-amz-meta-name': header.name,
+					'x-amz-meta-flat-name': header['flat-name'],
+					'x-amz-meta-thumbnail': header.thumbnail,
+				},
+			}))
 			.catch((err) => {
 				if (!err) {
 					throw new Forbidden();
@@ -434,7 +438,7 @@ const signedUrlService = {
 			.then(() => strategy.getSignedUrl({
 				userId: creatorId,
 				flatFileName: fileObject.storageFileName,
-				localFileName: fileObject.name,
+				localFileName: query.name || fileObject.name,
 				download,
 			}))
 			.then((res) => ({

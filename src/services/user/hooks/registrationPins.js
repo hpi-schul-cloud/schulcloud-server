@@ -7,12 +7,13 @@ const {
 } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
+const { getRandomInt } = require('../../../utils/randomNumberGenerator');
 
 const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
 	.then(() => Promise.resolve(hook));
 
 const generatePin = (hook) => {
-	const pin = Math.floor((Math.random() * 8999) + 1000);
+	const pin = getRandomInt(9999, 1000);
 	hook.data.pin = pin.toString();
 	return Promise.resolve(hook);
 };
