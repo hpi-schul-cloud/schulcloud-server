@@ -23,7 +23,15 @@ const getAllUsers = (ref, schoolId, role, clientQuery) => {
 		schoolId,
 		roles: role.toString(),
 		$sort: clientQuery.$sort,
-		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
+		$select: [
+			'firstName',
+			'lastName',
+			'email',
+			'createdAt',
+			'importHash',
+			'birthday',
+			'preferences.registrationMailSend',
+		],
 	};
 	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
