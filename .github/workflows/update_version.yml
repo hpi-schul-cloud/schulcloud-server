@@ -7,6 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Substring branch name
+        id: substring
         uses: ricardorames/substring-branch-name-action@v0.2.3
         with:
           separator: 'feature/'
