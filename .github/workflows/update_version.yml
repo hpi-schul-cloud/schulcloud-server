@@ -5,6 +5,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Substring branch name
       uses: ricardorames/subtring-branch-name-action@v0.2.3
-        with:
-          separator: 'feature/'
+      with:
+        separator: 'feature/'
       run: npm version ${{steps.substring.outputs.value}}
