@@ -1,6 +1,8 @@
 name: Update package version
 on:
-  - push
+  create:
+    branches:
+      - "release/"
 jobs:
   UPDATE:
     runs-on: ubuntu-latest
@@ -10,8 +12,8 @@ jobs:
         id: substring
         uses: ricardorames/substring-branch-name-action@v0.2.3
         with:
-          separator: 'feature/'
-      - name: echo
-        run: echo ${{steps.substring.outputs.value}}
+          separator: 'release/'
       - name: Update package version
         run: npm version ${{steps.substring.outputs.value}}
+      - name: push changes
+        run: git push
