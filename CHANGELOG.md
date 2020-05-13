@@ -23,6 +23,12 @@ In case of `opt-in` and `opt-out` the feature should be enabled/disabled by the 
 ### Removed
 
 
+## [22.10.2] - 2020-05-12
+
+### Fixed in 22.10.2
+
+-   fixed pagination for students/teacher table
+
 ## [22.10.0] - 2020-05-11
 
 ### Added in 22.10.0
@@ -36,6 +42,7 @@ In case of `opt-in` and `opt-out` the feature should be enabled/disabled by the 
 -   SC-4018 Add additional nexboard permissions
 -   SC-4008 Migrated generateRegistrationLink Hook from SC-Client into Server
 -   SC-3686 Added new Registration Link Service for sending mails
+-   SC-4094 Teachers can now provide feedback in the form of uploaded files
 
 ### Fixed in 22.10.0
 

@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "22.10.0",
+	"version": "22.10.2",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -80,8 +80,8 @@
 		"mongoose": "~5.9.9",
 		"mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-history": "^0.8.0",
-		"mongoose-id-validator": "^0.5.3",
-		"mongoose-lean-virtuals": "^0.4.4",
+		"mongoose-id-validator": "^0.6.0",
+		"mongoose-lean-virtuals": "^0.6.2",
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
 		"nanoid": "^2.0.3",
