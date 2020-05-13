@@ -22,7 +22,7 @@ Base links to copy
 ## Changes
 <!--
   What will the PR change?
-  Why are the changes requiered?
+  Why are the changes required?
   Short notice if a ticket exists, more detailed if not
 -->
 
@@ -39,11 +39,11 @@ Base links to copy
 ## Deployment
 <!--
   Keep in mind to changes to seed data, if changes are done by migration scripts.
-  Changes to the infrastructure have to discussed with the devops
+  Changes to the infrastructure have to be discussed with the devops
 
-  This point should includes following informations:
+  This point should includes following information:
   - What is required for deployment?
-  - Envirement variables like FEATURE_XY=true
+  - Environment variables like FEATURE_XY=true
   - Migration scripts to run, other requirements
 -->
 
@@ -59,5 +59,5 @@ Base links to copy
 
 > Notice: Please remove the WIP label if the PR is ready to review, otherwise nobody will review it.
 
-### Link to Definiton of Done
+### Link to Definition of Done
 More and detailed information on the *definition of done* can be found [on Confluence](https://docs.schul-cloud.org/pages/viewpage.action?pageId=92831762)
