@@ -17,6 +17,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Removed
 
+## [22.10.3] - 2020-05-13
+
+### Fixed in 22.10.3
+
+-   Unbind errors no longer stop the LDAP sync if more systems follow
 
 ## [22.10.2] - 2020-05-12
 
