@@ -19,7 +19,7 @@ const getRoles = () => roleModel.find()
 	.exec();
 
 
-const getAllUsers = async (ref, schoolId, role, clientQuery = {}) => {
+const getAllUsers = async (ref, schoolId, schoolYearId, role, clientQuery = {}) => {
 	const query = {
 		schoolId,
 		roles: role,
@@ -85,15 +85,15 @@ class AdminUsers {
 
 			// fetch data that are scoped to schoolId
 			const searchedRole = roles.find((role) => role.name === this.role);
-			const [[usersData], classes] = await Promise.all([
-				getAllUsers(this, schoolId, searchedRole._id, query),
-				getClasses(this.app, schoolId, currentYear),
+			const [[usersData]] = await Promise.all([
+				getAllUsers(this, schoolId, currentYear, searchedRole._id, query),
+				// getClasses(this.app, schoolId, currentYear),
 			]);
 
 			const users = usersData.data;
 
 			// bsonId to stringId that it can use .includes for is in test
-			classes.forEach((c) => {
+			/*		classes.forEach((c) => {
 				if (Array.isArray(c.userIds)) {
 					c.userIds = c.userIds.map((id) => id.toString());
 				} else {
@@ -115,16 +115,16 @@ class AdminUsers {
 						user.classes.push(c.displayName);
 					}
 				});
-			});
+			}); */
 
 			// sorting by class and by consent is implemented manually,
 			// as classes and consents are fetched from seperate db collection
-			const classSortParam = (((query || {}).$sort || {}).class || {}).toString();
+			/* const classSortParam = (((query || {}).$sort || {}).class || {}).toString();
 			if (classSortParam === '1') {
 				users.sort((a, b) => (a.classes[0] || '').toLowerCase() > (b.classes[0] || '').toLowerCase());
 			} else if (classSortParam === '-1') {
 				users.sort((a, b) => (a.classes[0] || '').toLowerCase() < (b.classes[0] || '').toLowerCase());
-			}
+			} */
 
 			return {
 				...usersData,

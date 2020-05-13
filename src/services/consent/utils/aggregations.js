@@ -188,6 +188,51 @@ const stageFilterByConsentStatus = (aggregation, consentStatus) => {
 	});
 };
 
+const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
+	aggregation.push({
+		$lookup:
+		{
+			from: 'classes',
+			let: { id: '$_id' },
+			pipeline: [
+				{
+					$match: {
+						$expr: {
+							$and: [
+								{ $eq: ['$schoolId', schoolId] },
+								{
+									$or: [
+										{ year: schoolYearId },
+										{ year: { $exists: false } },
+									],
+								},
+								{
+									$or: [
+										{ $in: ['$$id', '$userIds'] },
+										{ $in: ['$$id', '$teacherIds'] },
+									],
+								},
+							],
+						},
+					},
+				},
+				{ $project: { displayName: 1 } },
+			],
+			as: 'classes',
+		},
+	});
+	aggregation.push({
+		$project: {
+			classes: {
+				$map: {
+					input: '$classes',
+					as: 'class',
+					in: '$$class.displayName',
+				},
+			},
+		},
+	});
+};
 
 /**
  *	Sorts the output of earlier stage.
@@ -253,7 +298,7 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
 					in: { $add: ['$$value', '$$this.count'] },
 				},
 			},
-			data: true,
+			data: 1,
 		},
 	});
 
@@ -290,13 +335,17 @@ const createMultiDocumentAggregation = ({
 
 	if (select) {
 		stageAddSelectProjectWithConsentCreate(aggregation, select.concat(selectSortDiff));
+		if (select.includes('classes')) stageLookupClasses(aggregation, match.schoolId, match.schoolYearId);
 	} else {
 		stageAddConsentStatus(aggregation);
+		if (match.schoolId && match.schoolYearId) stageLookupClasses(aggregation, match.schoolId, match.schoolYearId);
 	}
+
 
 	if (consentStatus) {
 		stageFilterByConsentStatus(aggregation, consentStatus);
 	}
+
 
 	if (sort) {
 		stageSort(aggregation, sort);
