@@ -31,7 +31,7 @@ module.exports = function setup(app) {
 		// POST
 		async create(data, params) {
 			const FORCE_SEND_EMAIL = Configuration.get('FORCE_SEND_EMAIL');
-			const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
+			const notificationPlatform = Configuration.get('NOTIFICATION_PLATFORM');
 
 			/* if (!notificationPlatform) {
 				throw new MethodNotAllowed('Required Env NOTIFICATION_PLATFORM is not defined');
