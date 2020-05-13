@@ -3,6 +3,7 @@ on:
   - push
 jobs:
   UPDATE:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Substring branch name
