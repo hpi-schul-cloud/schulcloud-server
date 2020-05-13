@@ -9,6 +9,7 @@ jobs:
         uses: ricardorames/subtring-branch-name-action@v0.2.3
         with:
           separator: 'feature/'
-      - name: Update package version
+      - name: echo
         run: echo ${{steps.substring.outputs.value}}
+      - name: Update package version
         run: npm version ${{steps.substring.outputs.value}}
