@@ -21,7 +21,7 @@ const hasViewPermissionBefore = (context) => {
 		});
 };
 
-const convertResultToObject = context => {
+const convertResultToObject = (context) => {
 	context.result = context.result.toObject();
 };
 
