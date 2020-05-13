@@ -43,7 +43,8 @@ function isValidSubmission(submission) {
 }
 function isGraded(submission) {
 	return (submission.gradeComment && submission.gradeComment !== '')
-        || (submission.grade && Number.isInteger(submission.grade));
+		|| (submission.grade && Number.isInteger(submission.grade))
+		|| (submission.gradeFileIds && submission.gradeFileIds.length > 0);
 }
 function isTeacher(userId, homework) {
 	const user = userId.toString();
