@@ -21,6 +21,10 @@ const hasViewPermissionBefore = (context) => {
 		});
 };
 
+const convertResultToObject = (context) => {
+	context.result = context.result.toObject();
+};
+
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [disallow()],
@@ -49,7 +53,7 @@ exports.before = {
 exports.after = {
 	all: [],
 	find: [],
-	get: [],
+	get: [convertResultToObject],
 	create: [],
 	update: [],
 	patch: [],

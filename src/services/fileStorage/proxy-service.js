@@ -438,7 +438,7 @@ const signedUrlService = {
 			.then(() => strategy.getSignedUrl({
 				userId: creatorId,
 				flatFileName: fileObject.storageFileName,
-				localFileName: fileObject.name,
+				localFileName: query.name || fileObject.name,
 				download,
 			}))
 			.then((res) => ({

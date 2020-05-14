@@ -118,6 +118,7 @@ const registerUser = function register(data, params, app) {
 		.then((response) => {
 			user = response.user;
 			oldUser = response.oldUser;
+			if (!oldUser && data.sso !== 'true') return Promise.reject('Ungültiger Link');
 		})).then(() => {
 		const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
 		if ((user.roles || []).includes('student')) {
