@@ -256,6 +256,8 @@ const testIfJWTExist = (context) => {
 };
 
 const restrictToUsersSchool = async (context) => {
+	const userIsSuperhero = await globalHooks.hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userIsSuperhero) return context;
 	const userService = context.app.service('users');
 	const { schoolId: usersSchoolId } = await userService.get(context.params.account.userId);
 
