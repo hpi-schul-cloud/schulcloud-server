@@ -36,7 +36,7 @@ function request({
 	));
 }
 
-describe('Etherpad services', () => {
+describe('Etherpad Permission Checks', () => {
 	let mockServer;
 	let server;
 	let app;
@@ -80,13 +80,12 @@ describe('Etherpad services', () => {
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const jwt = decode(accessToken);
-		const course = await testHelpers.createTestCourse({ userIds: [jwt.userId] });
+		const course = await testHelpers.createTestCourse({ teacherIds: [jwt.userId] });
 
 		const data = {
 			courseId: course.id,
 		};
 		globalStorage = data;
-
 		const { body } = await request({
 			server: app,
 			method: 'post',
@@ -108,7 +107,7 @@ describe('Etherpad services', () => {
 			server: app,
 			method: 'post',
 			endpoint: '/etherpad/pads',
-			globalStorage,
+			data: globalStorage,
 			accessToken,
 		});
 

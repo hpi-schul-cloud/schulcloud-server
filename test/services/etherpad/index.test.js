@@ -160,4 +160,5 @@ describe('Etherpad services', () => {
 
 		expect(!!body.data.sessionID).to.equal(true);
 	});
+
 });

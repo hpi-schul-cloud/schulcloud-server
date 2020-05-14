@@ -104,4 +104,5 @@ describe('Etherpad services', () => {
 
 		expect(body.code).to.equal(403);
 	});
+
 });

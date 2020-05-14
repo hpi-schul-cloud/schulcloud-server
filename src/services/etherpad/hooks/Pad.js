@@ -5,6 +5,8 @@ const { Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 
 const { hasPermission } = require('../../../hooks');
+const globalHooks = require('../../../hooks');
+const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const getGroupData = async (context) => {
 	const groupService = context.app.service('etherpad/groups').create(context.data);
@@ -21,12 +23,19 @@ const getGroupData = async (context) => {
 	}
 };
 
+const injectCourseId = async (context) => {
+	context.id = context.data.courseId;
+	return context;
+};
+
 const before = {
 	all: [authenticate('jwt')],
 	find: [disallow()],
 	get: [disallow()],
 	create: [
 		hasPermission('TOOL_CREATE'),
+		injectCourseId,
+		restrictToUsersOwnCourses,
 		getGroupData,
 	],
 	update: [disallow()],
