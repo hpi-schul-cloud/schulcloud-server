@@ -19,13 +19,18 @@ const getCourseData = async (context) => {
 	}
 };
 
+const injectCourseId = async (context) => {
+	context.id = context.data.courseId
+	return context
+}
+
 const before = {
 	all: [authenticate('jwt')],
 	find: [disallow()],
 	get: [disallow()],
 	create: [
 		globalHooks.hasPermission('COURSE_VIEW'),
-		restrictToCurrentSchool,
+		injectCourseId,
 		restrictToUsersOwnCourses,
 		getCourseData,
 	],

@@ -88,13 +88,17 @@ describe('Etherpad services', () => {
 		expect(!!body.data.authorID).to.equal(true);
 	});
 
+
 	it('should create a new etherpad group', async () => {
 		const {
 			requestParams: { authentication: { accessToken } },
-		} = await testHelpers.setupUser({ roles: ['teacher'] });
+		} = await testHelpers.setupUser({
+			roles: ['teacher'],
+			permissions: ['COURSE_VIEW']
+		});
 
 		const jwt = decode(accessToken);
-		const course = await testHelpers.createTestCourse({ userIds: [jwt.userId] });
+		const course = await testHelpers.createTestCourse({ teacherIds: [jwt.userId] });
 
 		const data = { courseId: course.id };
 
