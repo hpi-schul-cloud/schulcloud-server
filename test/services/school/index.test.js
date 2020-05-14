@@ -44,14 +44,20 @@ describe('school service', () => {
 
 		it('load the school results with pagination', async () => {
 			const result = await schoolService.find();
-			result.data.forEach((school) => compareSchoolYears(school.years.schoolYears, defaultYears));
+			result.data.forEach((school) => {
+				compareSchoolYears(school.years.schoolYears, defaultYears);
+				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+			});
 		});
 
 		it('load the school results without pagination', async () => {
 			const result = await schoolService.find({
 				paginate: false,
 			});
-			result.forEach((school) => compareSchoolYears(school.years.schoolYears, defaultYears));
+			result.forEach((school) => {
+				compareSchoolYears(school.years.schoolYears, defaultYears);
+				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+			});
 		});
 
 		it('create school with currentYear defined explictly', async () => {
