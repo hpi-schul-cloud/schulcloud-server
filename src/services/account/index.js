@@ -58,7 +58,7 @@ module.exports = (app) => {
 	app.service('/accountModel').hooks(accountModelServiceHooks);
 
 	app.use('accounts', accountService);
-	app.service('/accounts').hooks(accountServiceHooks)
+	app.service('/accounts').hooks(accountServiceHooks);
 
 	app.use('/accounts/pwgen', new PasswordGenService());
 
