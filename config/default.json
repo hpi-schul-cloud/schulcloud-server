@@ -11,5 +11,5 @@
 	},
 	"FORCE_SEND_EMAIL": false,
 	"NOTIFICATION_PLATFORM": false,
-	"STUDENT_TEAM_CREATION" : "opt-in"
+	"STUDENT_TEAM_CREATION" : "opt-out"
 }
