@@ -4,11 +4,6 @@ const { Forbidden } = require('@feathersjs/errors');
 
 const logger = require('../../../logger');
 
-const {
-	// getUser,
-	restrictToUsersOwnCourses,
-} = require('../../../hooks');
-
 const getCourseData = async (context) => {
 	const courseService = context.app.service('/courses').get(context.data.courseId);
 	try {
@@ -25,7 +20,6 @@ const before = {
 	find: [disallow()],
 	get: [disallow()],
 	create: [
-		// restrictToUsersOwnCourses,
 		getCourseData,
 	],
 	update: [disallow()],

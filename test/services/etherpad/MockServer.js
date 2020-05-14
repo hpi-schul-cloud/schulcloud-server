@@ -64,7 +64,7 @@ module.exports = function MockServer(
 				's.2d470b52539b77200c87e68590fec220': {
 					groupID: '3414',
 					authorID: '1234',
-					validUntil: parseInt(new Date(Date.now()).getTime() / 1000) + 10000,
+					validUntil: parseInt(new Date(Date.now()).getTime() / 1000, 10) + 10000,
 				},
 			},
 		});
@@ -85,7 +85,7 @@ module.exports = function MockServer(
 			code: 0,
 			message: 'ok',
 			data: {
-				 sessionID: 's.6c18f67f92f78efdd88cd34a3d5538fd',
+				sessionID: 's.6c18f67f92f78efdd88cd34a3d5538fd',
 			},
 		});
 	});

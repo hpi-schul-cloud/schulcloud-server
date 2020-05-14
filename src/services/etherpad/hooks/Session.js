@@ -43,7 +43,7 @@ const getSessionInformation = async (context) => {
 		// Return existing session from hooks
 		if (typeof (response.data) !== 'undefined' && response.data !== null) {
 			const responseData = response.data;
-			const unixTimestamp = parseInt(new Date(Date.now()).getTime() / 1000);
+			const unixTimestamp = parseInt(new Date(Date.now()).getTime() / 1000, 10);
 			const foundSessionID = Object.keys(responseData).find((sessionID) => {
 				const diffSeconds = responseData[sessionID].validUntil - unixTimestamp;
 				return (
@@ -53,7 +53,8 @@ const getSessionInformation = async (context) => {
 			});
 			let validUntil;
 			if (typeof (foundSessionID) !== 'undefined' && foundSessionID !== null) {
-				validUntil = responseData[foundSessionID].validUntil;
+				const respData = responseData[foundSession];
+				validUntil = respData.validUntil;
 			}
 			context.data = {
 				...context.data,
@@ -65,7 +66,7 @@ const getSessionInformation = async (context) => {
 		if (typeof (context.data.sessionID) === 'undefined' || context.data.sessionID === null) {
 			const { cookieExpiresSeconds } = EtherpadClient;
 			// add cookieExpiresSeconds to current date and convert to timestamp
-			context.data.validUntil = parseInt((new Date(Date.now()).getTime()) / 1000) + cookieExpiresSeconds;
+			context.data.validUntil = parseInt((new Date(Date.now()).getTime()) / 1000, 10) + cookieExpiresSeconds;
 
 			const sessionCreatePromise = EtherpadClient.createSession(context.data);
 			const createResponse = JSON.parse(await sessionCreatePromise);

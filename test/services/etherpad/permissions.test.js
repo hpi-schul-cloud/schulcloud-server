@@ -50,16 +50,17 @@ describe('Etherpad services', () => {
 				logger.warning('freeport:', err);
 			}
 
-			const mockUrl = `http://localhost:${port}` + Configuration.get('ETHERPAD_API_PATH');
-			Configuration.set('ETHERPAD_URI', mockUrl); // TODO fix env name
-			Configuration.set('ETHERPAD_API_KEY', 'someapikey'); // TODO fix env name
+			const ethPath = Configuration.get('ETHERPAD_API_PATH');
+			const mockUrl = `http://localhost:${port}${ethPath}`;
+			Configuration.set('ETHERPAD_URI', mockUrl);
+			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
 
 			// eslint-disable-next-line global-require
 			app = require('../../../src/app');
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 
-			const mock = MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'), done); // TODO fix env name
+			const mock = MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'), done);
 			mockServer = mock.server;
 		});
 	});

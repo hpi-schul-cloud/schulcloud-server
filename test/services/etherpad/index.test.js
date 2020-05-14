@@ -50,16 +50,17 @@ describe('Etherpad services', () => {
 				logger.warning('freeport:', err);
 			}
 
-			const mockUrl = `http://localhost:${port}` + Configuration.get('ETHERPAD_API_PATH');
-			Configuration.set('ETHERPAD_URI', mockUrl); // TODO fix env name
-			Configuration.set('ETHERPAD_API_KEY', 'someapikey'); // TODO fix env name
+			const API_PATH_CONFIG = Configuration.get('ETHERPAD_API_PATH');
+			const mockUrl = `http://localhost:${port}${API_PATH_CONFIG}`;
+			Configuration.set('ETHERPAD_URI', mockUrl);
+			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
 
 			// eslint-disable-next-line global-require
 			app = require('../../../src/app');
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 
-			const mock = MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'), done); // TODO fix env name
+			const mock = MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'), done);
 			mockServer = mock.server;
 		});
 	});
@@ -108,8 +109,6 @@ describe('Etherpad services', () => {
 		expect(!!body.data.groupID).to.equal(true);
 	});
 
-
-	// TODO add pad id to global storage
 	it('should create a new pad', async () => {
 		const {
 			requestParams: { authentication: { accessToken } },
