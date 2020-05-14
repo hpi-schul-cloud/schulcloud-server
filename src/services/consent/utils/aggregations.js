@@ -192,6 +192,7 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 	aggregation.push({
 		$lookup:
 		{
+
 			from: 'classes',
 			let: { id: '$_id' },
 			pipeline: [
@@ -199,11 +200,11 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 					$match: {
 						$expr: {
 							$and: [
-								{ $eq: ['$schoolId', schoolId] },
+								{ $eq: ['$schoolId', schoolId.toString()] },
 								{
 									$or: [
-										{ year: schoolYearId },
-										{ year: { $exists: false } },
+										{ $eq: ['$year', schoolYearId.toString()] },
+										{ $eq: [{ $type: '$year' }, 'missing'] },
 									],
 								},
 								{
@@ -324,7 +325,7 @@ const createMultiDocumentAggregation = ({
 	// eslint-disable-next-line no-param-reassign
 	skip = Number(skip);
 
-	const selectSortDiff = Object.getOwnPropertyNames(sort).filter((s) => !select.includes(s));
+	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s));
 	const aggregation = [];
 
 	if (match) {
