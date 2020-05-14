@@ -26,6 +26,15 @@ const createParent = (data, params, user, app) => app.service('/registrationPins
 			});
 	});
 
+const getAutomaticConsent = () => ({
+	form: 'digital',
+	source: 'automatic-consent',
+	privacyConsent: true,
+	dateOfPrivacyConsent: Date.now(),
+	termsOfUseConsent: true,
+	dateOfTermsOfUseConsent: Date.now(),
+});
+
 const firstLogin = async (data, params, app) => {
 	if (data['password-1'] !== data['password-2']) {
 		return Promise.reject('Die neuen Passwörter stimmen nicht überein.');
@@ -99,14 +108,8 @@ const firstLogin = async (data, params, app) => {
 					if (allowedRoles.includes(role.name)) {
 						consentUpdate = {
 							userId: user._id,
-							userConsent: {
-								form: 'digital',
-								source: 'automatic-consent',
-								privacyConsent: true,
-								dateOfPrivacyConsent: Date.now(),
-								termsOfUseConsent: true,
-								dateOfTermsOfUseConsent: Date.now(),
-							},
+							userConsent: getAutomaticConsent(),
+							parentConsents: [getAutomaticConsent()],
 						};
 						break;
 					}
