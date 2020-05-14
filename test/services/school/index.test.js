@@ -1,5 +1,6 @@
 const assert = require('assert');
 const chai = require('chai');
+const { Configuration } = require('@schul-cloud/commons');
 
 const { expect } = chai;
 
@@ -168,6 +169,73 @@ describe('school service', () => {
 			const result = await app.service('/schools').patch(school._id, body, params);
 			expect(result).to.not.be.undefined;
 			expect(result.features).to.include('rocketChat');
+		});
+
+		it('team creation by students should be updated according to environment setting'
+			+ ' without admin setting', async () => {
+			const school = await testObjects.createTestSchool({});
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+			let result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+		});
+
+		it('team creation by students should be updated according to '
+			+ 'environment setting and enabled by admin', async () => {
+			// school with enabled student team creation by admin
+			const school = await testObjects.createTestSchool({ enableStudentTeamCreation: true });
+			expect(school.enableStudentTeamCreation).to.be.true;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+			let result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+		});
+
+		it('team creation by students should be updated according to '
+			+ 'environment setting and disabled by admin', async () => {
+			// school with enabled student team creation by admin
+			const school = await testObjects.createTestSchool({ enableStudentTeamCreation: false });
+			expect(school.enableStudentTeamCreation).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+			let result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 		});
 	});
 });
