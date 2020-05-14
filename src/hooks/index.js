@@ -5,6 +5,7 @@ const {
 	BadRequest,
 	TypeError,
 } = require('@feathersjs/errors');
+
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
@@ -780,5 +781,17 @@ exports.populateCurrentSchool = async (context) => {
 
 exports.addCollation = (context) => {
 	context.params.collation = { locale: 'de', caseLevel: true };
+	return context;
+};
+
+exports.injectGroupIntoData = async (context) => {
+	const courseService = context.app.service('/courses').get(context.data.courseId);
+	try {
+		context.data.group = await courseService;
+	} catch (err) {
+		logger.error('Failed to get course data: ', err);
+		throw new Forbidden('Failed to get course data');
+	}
+
 	return context;
 };
