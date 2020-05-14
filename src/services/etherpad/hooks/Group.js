@@ -5,7 +5,6 @@ const { Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const getCourseData = async (context) => {
@@ -20,9 +19,9 @@ const getCourseData = async (context) => {
 };
 
 const injectCourseId = async (context) => {
-	context.id = context.data.courseId
-	return context
-}
+	context.id = context.data.courseId;
+	return context;
+};
 
 const before = {
 	all: [authenticate('jwt')],
