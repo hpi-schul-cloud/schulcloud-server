@@ -117,7 +117,7 @@ const registerUser = function register(data, params, app) {
 		.then((response) => {
 			user = response.user;
 			oldUser = response.oldUser;
-			if (!oldUser) return Promise.reject('Ungültiger Link');
+			if (!oldUser && data.sso !== 'true') return Promise.reject('Ungültiger Link');
 		})).then(() => {
 		if ((user.roles || []).includes('student')) {
 			// wrong birthday object?
