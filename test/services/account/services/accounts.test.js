@@ -15,7 +15,7 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe.only('Account Service', () => {
+describe('Account Service', () => {
 	let server;
 
 	before((done) => {
