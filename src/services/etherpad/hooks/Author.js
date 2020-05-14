@@ -25,7 +25,7 @@ const before = {
 	],
 	update: [disallow()],
 	patch: [disallow()],
-	remove: [disallow()], // TODO: is added later
+	remove: [disallow()],
 };
 
 const after = {

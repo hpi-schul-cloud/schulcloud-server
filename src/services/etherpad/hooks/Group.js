@@ -3,6 +3,10 @@ const { disallow } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
 
 const logger = require('../../../logger');
+const globalHooks = require('../../../hooks');
+
+const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
+const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const getCourseData = async (context) => {
 	const courseService = context.app.service('/courses').get(context.data.courseId);
@@ -20,11 +24,14 @@ const before = {
 	find: [disallow()],
 	get: [disallow()],
 	create: [
+		globalHooks.hasPermission('COURSE_VIEW'),
+		restrictToCurrentSchool,
+		restrictToUsersOwnCourses,
 		getCourseData,
 	],
 	update: [disallow()],
 	patch: [disallow()],
-	remove: [disallow()], // TODO: is added later
+	remove: [disallow()],
 };
 
 const after = {
