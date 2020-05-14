@@ -20,6 +20,7 @@ const consentSchema = new Schema({
 	},
 	userConsent: {
 		form: { type: String, enum: consentForm },
+		source: { type: String },
 		dateOfPrivacyConsent: { type: Date },
 		dateOfTermsOfUseConsent: { type: Date },
 		privacyConsent: { type: Boolean },
@@ -28,6 +29,7 @@ const consentSchema = new Schema({
 	parentConsents: [{
 		parentId: { type: Schema.Types.ObjectId, ref: 'user' },
 		form: { type: String, enum: consentForm },
+		source: { type: String },
 		dateOfPrivacyConsent: { type: Date },
 		dateOfTermsOfUseConsent: { type: Date },
 		privacyConsent: { type: Boolean },
