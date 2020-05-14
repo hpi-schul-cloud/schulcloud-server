@@ -18,12 +18,12 @@ class EtherpadClient {
 			logger.info('Etherpad uri is not defined');
 		}
 		if (Configuration.has('ETHERPAD_COOKIE__EXPIRES_SECONDS')) {
-			this.cookieExpiresSeconds = Configuration.has('ETHERPAD_COOKIE__EXPIRES_SECONDS');
+			this.cookieExpiresSeconds = Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS');
 		} else {
 			this.cookieExpiresSeconds = 28800;
 		}
 		if (Configuration.has('ETHERPAD_COOKIE_RELEASE_THRESHOLD')) {
-			this.cookieReleaseThreshold = Configuration.has('ETHERPAD_COOKIE_RELEASE_THRESHOLD');
+			this.cookieReleaseThreshold = Configuration.get('ETHERPAD_COOKIE_RELEASE_THRESHOLD');
 		} else {
 			this.cookieReleaseThreshold = 7200;
 		}

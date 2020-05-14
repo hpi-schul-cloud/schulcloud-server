@@ -45,28 +45,17 @@ const getSessionInformation = async (context) => {
 
 			const responseData = response.data;
 			const unixTimestamp = parseInt(new Date(Date.now()).getTime() / 1000, 10);
-			const foundSessionID = Object.keys(responseData).find(
-				(sessionID) => {
-					const diffSeconds = responseData[sessionID].validUntil - unixTimestamp;
-						return (
-							(responseData[sessionID].groupID === context.data.groupID)
-							&& (diffSeconds >= EtherpadClient.cookieReleaseThreshold)
-						);
-				}
-			);
-
-			try {
-				const { validUntil } = responseData[foundSessionID].validUntil;
-				context.data = {
-					...context.data,
-					sessionID: foundSessionID,
-					validUntil,
-				};
-			} catch (err) {
-				context.data = {
-					...context.data,
-					aids: true
-				}
+			const foundSessionID = Object.keys(responseData).find((sessionID) => {
+				const diffSeconds = responseData[sessionID].validUntil - unixTimestamp;
+				return (
+					(responseData[sessionID].groupID === context.data.groupID)
+          && (diffSeconds >= EtherpadClient.cookieReleaseThreshold)
+				);
+			});
+			let validUntil;
+			if (typeof (foundSessionID) !== 'undefined' && foundSessionID !== null) {
+				const respData = responseData[foundSessionID];
+				validUntil = respData['validUntil'];
 			}
 		}
 
