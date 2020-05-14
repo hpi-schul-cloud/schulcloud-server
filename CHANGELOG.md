@@ -42,6 +42,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-4018 Add additional nexboard permissions
 -   SC-4008 Migrated generateRegistrationLink Hook from SC-Client into Server
 -   SC-3686 Added new Registration Link Service for sending mails
+-   SC-4094 Teachers can now provide feedback in the form of uploaded files
 
 ### Fixed in 22.10.0
 

@@ -1,10 +1,8 @@
 const service = require('feathers-mongoose');
 const {
-	courseGroupModel,
 	gradeModel,
 } = require('./model');
 const hooks = require('./hooks');
-const courseGroupsHooks = require('./hooks/courseGroups');
 const courseCopyService = require('./services/course-copy-service');
 const courseScopelistService = require('./services/courseScopeLists');
 const ClassSuccessorService = require('./services/classSuccessor');
@@ -15,6 +13,8 @@ const { classesService, classesHooks } = require('./services/classes');
 const { classModelService, classModelServiceHooks } = require('./services/classModelService');
 const { courseModelService, courseModelServiceHooks } = require('./services/courseModelService');
 const { courseService, courseHooks } = require('./services/courses');
+const { courseGroupModelService, courseGroupModelServiceHooks } = require('./services/courseGroupModelService');
+const { courseGroupHooks, courseGroupService } = require('./services/courseGroups');
 
 // eslint-disable-next-line func-names
 module.exports = function () {
@@ -30,16 +30,11 @@ module.exports = function () {
 	app.service('/courses').hooks(courseHooks);
 
 	/* CourseGroup model */
-	app.use('/courseGroups', service({
-		Model: courseGroupModel,
-		paginate: {
-			default: 25,
-			max: 100,
-		},
-		lean: true,
-	}));
-	const courseGroupService = app.service('/courseGroups');
-	courseGroupService.hooks(courseGroupsHooks);
+	app.use('/courseGroupModel', courseGroupModelService);
+	app.service('/courseGroupModel').hooks(courseGroupModelServiceHooks);
+
+	app.use('/courseGroups', courseGroupService);
+	app.service('/courseGroups').hooks(courseGroupHooks);
 
 	/* Class model */
 	app.use('/classModel', classModelService);

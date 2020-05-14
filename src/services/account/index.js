@@ -1,12 +1,12 @@
-const service = require('feathers-mongoose');
 const RandExp = require('randexp');
 const Chance = require('chance');
 
 const account = require('./model');
-const hooks = require('./hooks');
 
 const { getRandomInt } = require('../../utils/randomNumberGenerator');
 const { supportJWTServiceSetup, jwtTimerServiceSetup } = require('./services');
+const { accountModelService, accountModelServiceHooks } = require('./services/accountModelService');
+const { accountService, accountServiceHooks } = require('./services/accountApiService');
 
 const chance = new Chance();
 
@@ -54,19 +54,15 @@ class PasswordGenService {
 }
 
 module.exports = (app) => {
-	const options = {
-		Model: account,
-		paginate: false,
-		lean: true,
-	};
+	app.use('/accountModel', accountModelService);
+	app.service('/accountModel').hooks(accountModelServiceHooks);
 
-	// Initialize our service with any options it requires
+	app.use('accounts', accountService);
+	app.service('/accounts').hooks(accountServiceHooks);
 
 	app.use('/accounts/pwgen', new PasswordGenService());
 
 	app.configure(jwtTimerServiceSetup);
-
-	app.use('/accounts', service(options));
 
 	app.configure(supportJWTServiceSetup);
 
@@ -75,9 +71,4 @@ module.exports = (app) => {
 			return account.update({ _id: data.accountId }, { $set: { activated: true } });
 		},
 	});
-
-	// Get our initialize service to that we can bind hooks
-	const accountService = app.service('/accounts');
-
-	accountService.hooks(hooks);
 };

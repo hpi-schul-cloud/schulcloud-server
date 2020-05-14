@@ -27,7 +27,7 @@ const createPin = (pin = 6716, email) => registrationPinModel.create({
 	pin,
 });
 
-describe('registration', () => {
+describe.skip('registration', () => {
 	let account;
 	let pin;
 	let system;
