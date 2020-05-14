@@ -16,7 +16,7 @@ const findDocuments = async (app, userId, theme) => {
 		if (school.documentBaseDirType === 'school') query = { schoolId: school._id };
 		if (school.documentBaseDirType === 'schoolGroup') query = { schoolGroupId: school.schoolGroupId };
 	}
-	const result = await helpDocumentsModel.find(query);
+	const result = await helpDocumentsModel.find(query).lean().exec();
 
 	if (result.length < 1) throw new errors.NotFound('could not find help documents for this user or theme.');
 	return result[0].data;

@@ -15,8 +15,24 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-4075 Teams creation by students logic was changed. New environment enumeration variable `STUDENT_TEAM_CREATION` 
+with possible values `disabled`, `enabled`, `opt-in`, `opt-out` was introduced. The feature value is set by instance deployment. 
+In case of `disabled`, `enabled` it is valid for all schools of the instance and cannot be changed by the admin. 
+In case of `opt-in` and `opt-out` the feature should be enabled/disabled by the school admin.
+
 ### Removed
 
+## [22.10.3] - 2020-05-13
+
+### Fixed in 22.10.3
+
+-   Unbind errors no longer stop the LDAP sync if more systems follow
+
+## [22.10.2] - 2020-05-12
+
+### Fixed in 22.10.2
+
+-   fixed pagination for students/teacher table
 
 ## [22.10.0] - 2020-05-11
 

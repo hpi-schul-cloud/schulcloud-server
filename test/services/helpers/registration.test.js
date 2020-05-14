@@ -7,7 +7,7 @@ const userModel = require('../../../src/services/user/model');
 const registrationService = app.service('registration');
 const registrationPinService = app.service('registrationPins');
 
-describe('registration service', () => {
+describe.skip('registration service', () => {
 	it('registered the registration service', () => {
 		assert.ok(registrationService);
 	});
