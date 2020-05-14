@@ -4,10 +4,12 @@ const {
 	iff, isProvider, disallow,
 } = require('feathers-hooks-common');
 const { userModel } = require('../model');
+const { resolveToIds } = require('../../../hooks');
 
 const userModelHooks = {
 	before: {
 		all: [auth.hooks.authenticate('jwt'), iff(isProvider('external'), disallow())],
+		create: [resolveToIds.bind(this, '/roles', 'data.roles', 'name')],
 	},
 };
 
