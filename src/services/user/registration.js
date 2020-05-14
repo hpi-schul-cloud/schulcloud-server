@@ -1,3 +1,4 @@
+const { Configuration } = require('@schul-cloud/commons');
 const errors = require('@feathersjs/errors');
 const userModel = require('./model');
 const accountModel = require('../account/model');
@@ -118,6 +119,7 @@ const registerUser = function register(data, params, app) {
 			user = response.user;
 			oldUser = response.oldUser;
 		})).then(() => {
+		const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
 		if ((user.roles || []).includes('student')) {
 			// wrong birthday object?
 			if (user.birthday instanceof Date && Number.isNaN(user.birthday)) {
@@ -133,7 +135,7 @@ const registerUser = function register(data, params, app) {
 					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
 						+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
 				));
-			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS && !consentSkipCondition.includes('student')) {
 				return Promise.reject(new errors.BadRequest(
 					`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
 						+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
