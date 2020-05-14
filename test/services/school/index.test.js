@@ -21,6 +21,13 @@ describe('school service', () => {
 		assert.ok(app.service('schools'));
 	});
 
+	const compareSchoolYears = (schoolYears, defaultYears) => {
+		schoolYears.forEach((resultYear, idx) => {
+			const defaultYear = defaultYears[idx];
+			expect(resultYear.name).to.be.equal(defaultYear.name);
+		});
+	};
+
 	describe('create school with or without year', () => {
 		let defaultYears = null;
 		let sampleYear;
@@ -33,6 +40,24 @@ describe('school service', () => {
 			const school = await createSchool();
 			sampleSchoolData = await School.findById(school._id).lean().exec();
 			delete sampleSchoolData._id;
+		});
+
+		it('load the school results with pagination', async () => {
+			const result = await schoolService.find();
+			result.data.forEach((school) => {
+				compareSchoolYears(school.years.schoolYears, defaultYears);
+				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+			});
+		});
+
+		it('load the school results without pagination', async () => {
+			const result = await schoolService.find({
+				paginate: false,
+			});
+			result.forEach((school) => {
+				compareSchoolYears(school.years.schoolYears, defaultYears);
+				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+			});
 		});
 
 		it('create school with currentYear defined explictly', async () => {
