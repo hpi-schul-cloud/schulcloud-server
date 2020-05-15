@@ -369,6 +369,83 @@
 },
 {
 	"_id": {
+		"$oid": "5e4a61ca1db4f62c8cb2b9df"
+	},
+	"state": "up",
+	"name": "remove_invalid_accounts",
+	"createdAt": {
+		"$date": "2020-02-17T09:50:02.639Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e4d449dc8fe4e2ff4993849"
+	},
+	"state": "up",
+	"name": "datasource-permissions-for-superhero",
+	"createdAt": {
+		"$date": "2020-02-19T14:22:21.2Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d552b8bc1658a0682fc834a"
+	},
+	"state": "up",
+	"name": "set schoolspecific documentbasedir for instance open",
+	"createdAt": {
+		"$date": "2019-08-15T09:34:59.243Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e78b794a1e42c5728901f9a"
+	},
+	"state": "up",
+	"name": "runIndexSync2",
+	"createdAt": {
+		"$date": "2020-03-23T12:30:05.306Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e81e74b65f87a5a600f591b"
+	},
+	"state": "up",
+	"name": "addFileCreatorAndPermissionIndexes",
+	"createdAt": {
+		"$date": "2020-03-26T11:39:40.409Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e8355da77736b6304a3e77e"
+	},
+	"state": "up",
+	"name": "add_edtr_feature_to_klara_fall",
+	"createdAt": {
+		"$date": "2020-03-31T14:38:18.001Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e7f1d63e2c96215c85330f9"
+	},
+	"state": "up",
+	"name": "add_default_file_storage_provider",
+	"createdAt": {
+		"$date": "2020-03-28T09:48:19.167Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5e970516325e804198ec63dd"
 	},
 	"state": "up",
@@ -476,92 +553,15 @@
 	},
 	"__v": 0
 },
-{
-	"_id": {
-		"$oid": "5e4a61ca1db4f62c8cb2b9df"
-	},
-	"state": "up",
-	"name": "remove_invalid_accounts",
-	"createdAt": {
-		"$date": "2020-02-17T09:50:02.639Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e4d449dc8fe4e2ff4993849"
-	},
-	"state": "up",
-	"name": "datasource-permissions-for-superhero",
-	"createdAt": {
-		"$date": "2020-02-19T14:22:21.2Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d552b8bc1658a0682fc834a"
-	},
-	"state": "up",
-	"name": "set schoolspecific documentbasedir for instance open",
-	"createdAt": {
-		"$date": "2019-08-15T09:34:59.243Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e78b794a1e42c5728901f9a"
-	},
-	"state": "up",
-	"name": "runIndexSync2",
-	"createdAt": {
-		"$date": "2020-03-23T12:30:05.306Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e81e74b65f87a5a600f591b"
-	},
-	"state": "up",
-	"name": "addFileCreatorAndPermissionIndexes",
-	"createdAt": {
-		"$date": "2020-03-26T11:39:40.409Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e8355da77736b6304a3e77e"
-	},
-	"state": "up",
-	"name": "add_edtr_feature_to_klara_fall",
-	"createdAt": {
-		"$date": "2020-03-31T14:38:18.001Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e7f1d63e2c96215c85330f9"
-	},
-	"state": "up",
-	"name": "add_default_file_storage_provider",
-	"createdAt": {
-		"$date": "2020-03-28T09:48:19.167Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5ebd68fe107fa3720c2251e4"
-	},
-	"state": "up",
-	"name": "add_more_school_years",
-	"createdAt": {
-		"$date": "2020-05-14T14:56:41.229Z"
-	},
-	"__v": 0
-}]
+	{
+		"_id": {
+			"$oid": "5ebd68fe107fa3720c2251e4"
+		},
+		"state": "up",
+		"name": "add_more_school_years",
+		"createdAt": {
+			"$date": "2020-05-14T14:56:41.229Z"
+		},
+		"__v": 0
+	}]
 
