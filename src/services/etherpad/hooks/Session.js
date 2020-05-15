@@ -50,14 +50,16 @@ const getSessionInformation = async (context) => {
           && (diffSeconds >= EtherpadClient.cookieReleaseThreshold)
 				);
 			});
-
 			let validUntil;
 			if (typeof (foundSessionID) !== 'undefined' && foundSessionID !== null) {
 				const respData = responseData[foundSessionID];
 				({ validUntil } = respData);
 			}
-
-			context.data.validUntil = validUntil;
+			context.data = {
+				...context.data,
+				sessionID: foundSessionID,
+				validUntil,
+			};
 		}
 
 		if (typeof (context.data.sessionID) === 'undefined' || context.data.sessionID === null) {
