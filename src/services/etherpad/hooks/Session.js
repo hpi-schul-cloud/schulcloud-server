@@ -54,7 +54,7 @@ const getSessionInformation = async (context) => {
 			let validUntil;
 			if (typeof (foundSessionID) !== 'undefined' && foundSessionID !== null) {
 				const respData = responseData[foundSessionID];
-				({validUntil} = respData);
+				({ validUntil } = respData);
 			}
 
 			context.data.validUntil = validUntil;
