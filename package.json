@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "22.10.2",
+	"version": "22.10.5",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -32,8 +32,8 @@
 		"mocha": "cross-env NODE_ENV=test mocha --exit './test/**/*.test.js'",
 		"mocha-single": "cross-env NODE_ENV=test mocha --exit",
 		"mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --exit './test/**/*.test.js'",
-		"migration": "migrate",
-		"migration-sync": "migrate list --autosync",
+		"migration": "migrate --config ./config/migrate.js",
+		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations"
 	},
 	"dependencies": {
