@@ -36,7 +36,7 @@ function request({
 	));
 }
 
-describe('Etherpad Permission Checks', () => {
+describe('Etherpad Permission Check: Teacher', () => {
 	let mockServer;
 	let server;
 	let app;

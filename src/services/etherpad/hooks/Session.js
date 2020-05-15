@@ -39,10 +39,8 @@ const getSessionInformation = async (context) => {
 	const sessionListPromise = EtherpadClient.getActiveSessions({ authorID: context.data.authorID });
 	try {
 		const response = JSON.parse(await sessionListPromise);
-
 		// Return existing session from hooks
 		if (typeof (response.data) !== 'undefined' && response.data !== null) {
-
 			const responseData = response.data;
 			const unixTimestamp = parseInt(new Date(Date.now()).getTime() / 1000, 10);
 			const foundSessionID = Object.keys(responseData).find((sessionID) => {
@@ -57,6 +55,7 @@ const getSessionInformation = async (context) => {
 				const respData = responseData[foundSessionID];
 				validUntil = respData['validUntil'];
 			}
+			context.data.validUntil = validUntil;
 		}
 
 		if (typeof (context.data.sessionID) === 'undefined' || context.data.sessionID === null) {

@@ -94,7 +94,7 @@ describe('Etherpad services', () => {
 			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({
 			roles: ['teacher'],
-			permissions: ['COURSE_VIEW']
+			permissions: ['COURSE_VIEW'],
 		});
 
 		const jwt = decode(accessToken);

@@ -36,7 +36,7 @@ function request({
 	));
 }
 
-describe('Etherpad services', () => {
+describe('Etherpad Permission Check: Students', () => {
 	let mockServer;
 	let server;
 	let app;
@@ -104,5 +104,4 @@ describe('Etherpad services', () => {
 
 		expect(body.code).to.equal(403);
 	});
-
 });

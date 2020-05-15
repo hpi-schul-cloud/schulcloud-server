@@ -3,9 +3,8 @@ const { disallow } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
 
 const logger = require('../../../logger');
-
-const { hasPermission } = require('../../../hooks');
 const globalHooks = require('../../../hooks');
+
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const getGroupData = async (context) => {
@@ -33,7 +32,7 @@ const before = {
 	find: [disallow()],
 	get: [disallow()],
 	create: [
-		hasPermission('TOOL_CREATE'),
+		globalHooks.hasPermission('TOOL_CREATE'),
 		injectCourseId,
 		restrictToUsersOwnCourses,
 		getGroupData,
