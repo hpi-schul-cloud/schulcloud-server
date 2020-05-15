@@ -31,7 +31,7 @@ const createPin = (pin = 6716, email) => registrationPinModel.create({
 	pin,
 });
 
-describe('registration', () => {
+describe('sso registration', () => {
 	let account;
 	let pin;
 	let system;
@@ -117,6 +117,10 @@ describe('registration', () => {
 });
 
 describe('registration service', () => {
+	after(async () => {
+		await testObjects.cleanup();
+	});
+
 	it('registered the registration service', () => {
 		assert.ok(registrationService);
 	});
