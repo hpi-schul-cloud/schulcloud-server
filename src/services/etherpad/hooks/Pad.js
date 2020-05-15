@@ -5,9 +5,13 @@ const { Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 
-const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
+const restrictToUsersOwnCourses = globalHooks.restrictToUsersOwnCourses;
 
 const getGroupData = async (context) => {
+	context.data = {
+		...context.data,
+		userId: context.params.account.userId
+	}
 	const groupService = context.app.service('etherpad/groups').create(context.data);
 	try {
 		const response = JSON.parse(await groupService);

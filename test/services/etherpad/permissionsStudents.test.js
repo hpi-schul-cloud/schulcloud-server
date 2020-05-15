@@ -73,17 +73,48 @@ describe('Etherpad Permission Check: Students', () => {
 
 	const globalStorage = {};
 
-	it('setup for student cross access check', async () => {
-		const student = await testHelpers.setupUser({ roles: ['student'] });
-		const jwt = decode(student.requestParams.authentication.accessToken);
+	it('should be able to create session for own course', async () => {
+		const {
+			requestParams: { authentication: { accessToken } },
+		} = await testHelpers.setupUser({ roles: ['student'] });
+		const jwt = decode(accessToken);
 		const course = await testHelpers.createTestCourse({
 			userIds: [jwt.userId],
 		});
 
-		globalStorage.couseId = course.id;
+		const data = {
+			courseId: course.id,
+		};
+		globalStorage.courseId = course.id;
+
+		const { body } = await request({
+			server: app,
+			method: 'post',
+			endpoint: '/etherpad/sessions',
+			data: globalStorage,
+			accessToken,
+		});
+
+		expect(body.code).to.equal(0);
 	});
 
-	it('student should have no access to foreign pad', async () => {
+	it('should not be able to create session for foreign course', async () => {
+		const {
+			requestParams: { authentication: { accessToken } },
+		} = await testHelpers.setupUser({ roles: ['student'] });
+
+		const { body } = await request({
+			server: app,
+			method: 'post',
+			endpoint: '/etherpad/sessions',
+			data: globalStorage,
+			accessToken,
+		});
+
+		expect(body.code).to.equal(403);
+	});
+
+	it('should not be able to create a pad', async () => {
 		const {
 			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({ roles: ['student'] });

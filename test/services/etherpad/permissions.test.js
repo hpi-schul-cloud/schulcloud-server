@@ -98,7 +98,7 @@ describe('Etherpad Permission Check: Teacher', () => {
 	});
 
 
-	it('should have no access to foreign pad', async () => {
+	it('should not be able to create pad in foreign course', async () => {
 		const {
 			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
@@ -113,4 +113,21 @@ describe('Etherpad Permission Check: Teacher', () => {
 
 		expect(body.code).to.equal(403);
 	});
+
+	it('should not be able to create session for foreign course', async () => {
+		const {
+			requestParams: { authentication: { accessToken } },
+		} = await testHelpers.setupUser({ roles: ['teacher'] });
+
+		const { body } = await request({
+			server: app,
+			method: 'post',
+			endpoint: '/etherpad/sessions',
+			data: globalStorage,
+			accessToken,
+		});
+
+		expect(body.code).to.equal(403);
+	});
+
 });

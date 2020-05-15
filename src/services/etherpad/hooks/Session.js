@@ -21,6 +21,10 @@ const getAuthorData = async (context) => {
 };
 
 const getGroupData = async (context) => {
+	context.data = {
+		...context.data,
+		userId: context.params.account.userId
+	}
 	const groupService = context.app.service('etherpad/groups').create(context.data);
 	try {
 		const response = JSON.parse(await groupService);
