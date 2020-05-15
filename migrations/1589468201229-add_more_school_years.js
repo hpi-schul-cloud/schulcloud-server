@@ -20,15 +20,12 @@ module.exports = {
 		if (existingYears.length > 0) {
 			warning(`some year already has been created: ${existingYears}`);
 		} else {
-			for (const i in YEARS_TO_ADD) {
-				if (Object.prototype.hasOwnProperty.call(YEARS_TO_ADD, i)) {
-					const year = YEARS_TO_ADD[i];
-					info(`processing ${year}`);
-					const createdYear = createYear(year);
-					await createdYear.save();
-					chain.push(createdYear);
-					info(`the year ${year} was created successfully`);
-				}
+			for (const year of YEARS_TO_ADD) {
+				info(`processing ${year}`);
+				const createdYear = createYear(year);
+				await createdYear.save();
+				chain.push(createdYear);
+				info(`the year ${year} was created successfully`);
 			}
 		}
 
