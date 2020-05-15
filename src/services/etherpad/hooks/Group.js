@@ -5,7 +5,7 @@ const { Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 
-const restrictToUsersOwnCourses = globalHooks.restrictToUsersOwnCourses;
+const { restrictToUsersOwnCourses } = globalHooks.restrictToUsersOwnCourses;
 
 const getCourseData = async (context) => {
 	const courseService = context.app.service('/courses').get(context.data.courseId);

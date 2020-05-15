@@ -129,5 +129,4 @@ describe('Etherpad Permission Check: Teacher', () => {
 
 		expect(body.code).to.equal(403);
 	});
-
 });

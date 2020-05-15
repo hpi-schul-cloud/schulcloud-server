@@ -82,9 +82,6 @@ describe('Etherpad Permission Check: Students', () => {
 			userIds: [jwt.userId],
 		});
 
-		const data = {
-			courseId: course.id,
-		};
 		globalStorage.courseId = course.id;
 
 		const { body } = await request({
