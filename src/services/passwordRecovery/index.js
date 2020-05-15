@@ -18,7 +18,7 @@ class ChangePasswordService {
 			}
 			const time = Date.now() - Date.parse(pwrecover.createdAt);
 			if (time >= MAX_LIVE_TIME) {
-				logger.info('passwordRecovery is requested but the link is to old.', { time: `${time * 0.001} sec` });
+				logger.info('passwordRecovery is requested but the link is too old.', { time: `${time * 0.001} sec` });
 				return { success: 'success' };
 			}
 			await Promise.all([
