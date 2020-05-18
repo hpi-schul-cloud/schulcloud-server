@@ -31,6 +31,7 @@ const {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	enforceRoleHierarchyOnCreate,
 	filterResult,
 	generateRegistrationLink,
 	includeOnlySchoolRoles,
@@ -94,6 +95,7 @@ const userHooks = {
 		create: [
 			checkJwt(),
 			pinIsVerified,
+			enforceRoleHierarchyOnCreate,
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,
