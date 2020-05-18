@@ -10,7 +10,11 @@ const {
 
 const sanitizeDataHook = (context) => {
 	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
-		sanitizeDeep(context.type === 'before' ? context.data : context.result, context.path);
+		sanitizeDeep({
+			data: context.type === 'before' ? context.data : context.result,
+			path: context.path,
+			safeAttributes: context.safeAttributes
+		});
 	}
 	return context;
 };
@@ -127,12 +131,6 @@ const errorHandler = (context) => {
 	throw new GeneralError('server error');
 };
 
-const sanitizeBlackListPaths = ['fileStorage/signedUrl'];
-
-const sanitizeOutputIfPathNotBlacklisted = () => iff((hook => !sanitizeBlackListPaths.includes(hook.path)
-	&& isProvider('external')), [
-	sanitizeDataHook,
-]);
 
 function setupAppHooks(app) {
 	const before = {
@@ -160,10 +158,14 @@ function setupAppHooks(app) {
 	const after = {
 		all: [],
 		find: [
-			sanitizeOutputIfPathNotBlacklisted(),
+			iff(isProvider('external'), [
+				sanitizeDataHook,
+			]),
 		],
 		get: [
-			sanitizeOutputIfPathNotBlacklisted(),
+			iff(isProvider('external'), [
+				sanitizeDataHook,
+			]),
 		],
 		create: [],
 		update: [],
