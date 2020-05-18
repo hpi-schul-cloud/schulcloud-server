@@ -164,23 +164,6 @@ describe('user service', () => {
 		expect(result.data.some((r) => equalIds(r._id, parent._id))).to.be.true;
 	});
 
-	it('fail to patch user on other school', async () => {
-		const school = await testObjects.createTestSchool();
-		const otherSchool = await testObjects.createTestSchool();
-		const studentToDelete = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
-		const actingUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-		const params = await testObjects.generateRequestParamsFromUser(actingUser);
-
-		try {
-			await app.service('users').patch(studentToDelete._id, { lastName: 'Vader' }, params);
-			throw new Error('should have failed');
-		} catch (err) {
-			expect(err.message).to.not.equal('should have failed');
-			expect(err.code).to.equal(404);
-			expect(err.message).to.equal(`no record found for id '${studentToDelete._id.toString()}'`);
-		}
-	});
-
 	it('user gets removed from classes and courses after delete', async () => {
 		const userToDelete = await testObjects.createTestUser({ roles: ['student'] });
 		const { _id: classId } = await testObjects.createTestClass({ userIds: userToDelete._id });
@@ -268,23 +251,6 @@ describe('user service', () => {
 			// in case of error, make sure user gets deleted
 			testObjects.createdUserIds.push(studentToDelete._id);
 			throw new Error('should not have failed');
-		}
-	});
-
-	it('fail to delete user on other school', async () => {
-		const school = await testObjects.createTestSchool();
-		const otherSchool = await testObjects.createTestSchool();
-		const studentToDelete = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
-		const actingUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-		const params = await testObjects.generateRequestParamsFromUser(actingUser);
-		params.query = {};
-		try {
-			await app.service('users').remove(studentToDelete._id, params);
-			throw new Error('should have failed');
-		} catch (err) {
-			expect(err.message).to.not.equal('should have failed');
-			expect(err.code).to.equal(404);
-			expect(err.message).to.equal(`no record found for id '${studentToDelete._id.toString()}'`);
 		}
 	});
 
