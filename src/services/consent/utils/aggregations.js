@@ -1,3 +1,35 @@
+const { ObjectId } = require('mongoose').Types;
+
+
+const convertToIn = (value) => {
+	let list = [];
+	if (Array.isArray(value)) {
+		list = value;
+	} else if (Array.isArray(value.$in)) {
+		list = value.$in;
+	} else if (typeof value === 'string') {
+		list = [value];
+	}
+	return list;
+};
+
+
+/**
+ * Allows to filter a attribute by a value
+ * @param {Array} aggregation
+ * @param {String} attr - attribute name
+ * @param {*} consentStatus - Array, String or Object with a $in
+ */
+const stageBaseFilter = (aggregation, attr, value) => {
+	aggregation.push({
+		$match: {
+			[attr]: {
+				$in: convertToIn(value),
+			},
+		},
+	});
+};
+
 /**
  * Convert a select array to an object for aggregaitons
  * @param {Array} select
@@ -163,31 +195,6 @@ const stageSimpleProject = (aggregation, select) => {
 	});
 };
 
-
-/**
- * Seperate match stage to filter by consentService.
- * It could only called after consentStatus was add
- * @param {*} aggregation
- * @param {*} consentStatus
- */
-const stageFilterByConsentStatus = (aggregation, consentStatus) => {
-	let list = [];
-	if (Array.isArray(consentStatus)) {
-		list = consentStatus;
-	} else if (Array.isArray(consentStatus.$in)) {
-		list = consentStatus.$in;
-	} else if (typeof consentStatus === 'string') {
-		list = [consentStatus];
-	}
-	aggregation.push({
-		$match: {
-			consentStatus: {
-				$in: list,
-			},
-		},
-	});
-};
-
 const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 	aggregation.push({
 		$lookup:
@@ -200,10 +207,10 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 					$match: {
 						$expr: {
 							$and: [
-								{ $eq: ['$schoolId', schoolId.toString()] },
+								{ $eq: ['$schoolId', ObjectId(schoolId.toString())] },
 								{
 									$or: [
-										{ $eq: ['$year', schoolYearId.toString()] },
+										{ $eq: ['$year', ObjectId(schoolYearId.toString())] },
 										{ $eq: [{ $type: '$year' }, 'missing'] },
 									],
 								},
@@ -217,18 +224,35 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 						},
 					},
 				},
-				{ $project: { displayName: 1 } },
+				{
+					$project: {
+						gradeLevel: {
+							$convert: {
+								input: '$gradeLevel',
+								to: 'string',
+								onNull: '',
+							},
+						},
+						name: {
+							$convert: {
+								input: '$name',
+								to: 'string',
+								onNull: '',
+							},
+						},
+					},
+				},
 			],
 			as: 'classes',
 		},
 	});
 	aggregation.push({
-		$project: {
+		$addFields: {
 			classes: {
 				$map: {
 					input: '$classes',
 					as: 'class',
-					in: '$$class.displayName',
+					in: { $concat: ['$$class.gradeLevel', '$$class.name'] },
 				},
 			},
 		},
@@ -318,7 +342,7 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
  * @param {{select: Array, sort: Object, limit: Int, skip: Int, ...matches}} param0
  */
 const createMultiDocumentAggregation = ({
-	select, sort, limit = 25, skip = 0, consentStatus, ...match
+	select, sort, limit = 25, skip = 0, consentStatus, classes, schoolYearId, ...match
 }) => {
 	// eslint-disable-next-line no-param-reassign
 	limit = Number(limit);
@@ -336,15 +360,19 @@ const createMultiDocumentAggregation = ({
 
 	if (select) {
 		stageAddSelectProjectWithConsentCreate(aggregation, select.concat(selectSortDiff));
-		if (select.includes('classes')) stageLookupClasses(aggregation, match.schoolId, match.schoolYearId);
+		if (select.includes('classes')) stageLookupClasses(aggregation, match.schoolId, schoolYearId);
 	} else {
 		stageAddConsentStatus(aggregation);
-		if (match.schoolId && match.schoolYearId) stageLookupClasses(aggregation, match.schoolId, match.schoolYearId);
+		if (match.schoolId && schoolYearId) stageLookupClasses(aggregation, match.schoolId, schoolYearId);
 	}
 
 
 	if (consentStatus) {
-		stageFilterByConsentStatus(aggregation, consentStatus);
+		stageBaseFilter(aggregation, 'consentStatus', consentStatus);
+	}
+
+	if (classes) {
+		stageBaseFilter(aggregation, 'classes', classes);
 	}
 
 

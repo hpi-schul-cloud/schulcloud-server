@@ -26,10 +26,21 @@ const getAllUsers = async (ref, schoolId, schoolYearId, role, clientQuery = {}) 
 		schoolYearId,
 		consentStatus: clientQuery.consentStatus,
 		sort: clientQuery.$sort || clientQuery.sort,
-		select: ['consentStatus', 'consent', 'classes', 'firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
+		select: [
+			'consentStatus',
+			'consent',
+			'classes',
+			'firstName',
+			'lastName',
+			'email',
+			'createdAt',
+			'importHash',
+			'birthday',
+		],
 		skip: clientQuery.$skip || clientQuery.skip,
 		limit: clientQuery.$limit || clientQuery.limit,
 	};
+	if (clientQuery.classes) query.classes = clientQuery.classes;
 	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 	if (clientQuery.lastName) query.lastName = clientQuery.lastName;
@@ -38,23 +49,6 @@ const getAllUsers = async (ref, schoolId, schoolYearId, role, clientQuery = {}) 
 		collation: { locale: 'de', caseLevel: true },
 	}).exec();
 };
-
-const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
-	.find({
-		query: {
-			schoolId,
-			$or: [
-				{ year: schoolYearId },
-				{ year: { $exists: false } },
-			],
-			$limit: 1000,
-		},
-	})
-	.then((classes) => classes.data)
-	.catch((err) => {
-		logger.warning(`Can not execute app.service("classes").find for ${schoolId}`, err);
-		return err;
-	});
 
 const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 	.get(schoolId, {
@@ -86,51 +80,7 @@ class AdminUsers {
 
 			// fetch data that are scoped to schoolId
 			const searchedRole = roles.find((role) => role.name === this.role);
-			const [[usersData]] = await Promise.all([
-				getAllUsers(this, schoolId, currentYear, searchedRole._id, query),
-				// getClasses(this.app, schoolId, currentYear),
-			]);
-
-			const users = usersData.data;
-
-			// bsonId to stringId that it can use .includes for is in test
-			/*		classes.forEach((c) => {
-				if (Array.isArray(c.userIds)) {
-					c.userIds = c.userIds.map((id) => id.toString());
-				} else {
-					c.userIds = [];
-				}
-				if (Array.isArray(c.teacherIds)) {
-					c.teacherIds = c.teacherIds.map((id) => id.toString());
-				} else {
-					c.teacherIds = [];
-				}
-			});
-
-			// patch classes and consent into user
-			users.forEach((user) => {
-				user.classes = [];
-				const userId = user._id.toString();
-				classes.forEach((c) => {
-					if (c.userIds.includes(userId) || c.teacherIds.includes(userId)) {
-						user.classes.push(c.displayName);
-					}
-				});
-			}); */
-
-			// sorting by class and by consent is implemented manually,
-			// as classes and consents are fetched from seperate db collection
-			/* const classSortParam = (((query || {}).$sort || {}).class || {}).toString();
-			if (classSortParam === '1') {
-				users.sort((a, b) => (a.classes[0] || '').toLowerCase() > (b.classes[0] || '').toLowerCase());
-			} else if (classSortParam === '-1') {
-				users.sort((a, b) => (a.classes[0] || '').toLowerCase() < (b.classes[0] || '').toLowerCase());
-			} */
-
-			return {
-				...usersData,
-				data: users,
-			};
+			return getAllUsers(this, schoolId, currentYear, searchedRole._id, query);
 		} catch (err) {
 			logger.error(err);
 			if ((err || {}).code === 403) {
