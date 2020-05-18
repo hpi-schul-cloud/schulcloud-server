@@ -42,11 +42,11 @@ class UserService {
 		this.options = options || {};
 	}
 
-	async find(params) {
+	find(params) {
 		return this.app.service('usersModel').find(prepareInternalParams(params));
 	}
 
-	async get(id, params) {
+	get(id, params) {
 		return this.app.service('usersModel').get(id, prepareInternalParams(params));
 	}
 
@@ -59,7 +59,6 @@ class UserService {
 	}
 
 	patch(id, data, params) {
-		// this.channel.publish(USER_RABBIT_EXCHANGE, '', Buffer.from(JSON.stringify({ _id: id, ...data })));
 		return this.app.service('usersModel').patch(id, data, prepareInternalParams(params));
 	}
 
@@ -69,8 +68,6 @@ class UserService {
 
 	async setup(app) {
 		this.app = app;
-		// this.channel = await createChannel();
-		// await this.channel.assertExchange(USER_RABBIT_EXCHANGE, 'fanout', { durable: true });
 	}
 }
 
