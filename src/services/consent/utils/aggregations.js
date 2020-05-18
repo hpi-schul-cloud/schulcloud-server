@@ -273,7 +273,7 @@ const stageSort = (aggregation, sort) => {
 	}
 
 	if (typeof sort === 'object' && ({}).hasOwnProperty.call(sort, 'consentStatus')) {
-		mSort.consentSortParam = sort.consentStatus;
+		mSort.consentSortParam = mSort.consentStatus;
 		delete mSort.consentStatus;
 		stageAddConsentSortParam(aggregation);
 	}
