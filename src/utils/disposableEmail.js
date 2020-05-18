@@ -3,8 +3,12 @@ const wildcards = require('disposable-email-domains/wildcard.json');
 
 module.exports = {
 	isDisposableEmail: (email) => {
-		const [, domain] = email.toString().split('@');
+		if (!email) {
+			return false;
+		}
 
+		// extract domain from email
+		const [, domain] = email.toString().split('@');
 		if (!domain) {
 			return false;
 		}

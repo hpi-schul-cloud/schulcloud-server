@@ -1,10 +1,10 @@
-const { TooManyRequests } = require('@feathersjs/errors');
+const { TooManyRequests, Forbidden } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const {
 	getRedisClient, redisSetAsync, redisDelAsync, extractDataFromJwt, getRedisData,
 } = require('../../../utils/redis');
-
+const { isDisposableEmail } = require('../../../utils/disposableEmail');
 const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
 
 
@@ -56,6 +56,20 @@ const bruteForceReset = async (context) => {
 	await context.app.service('/accounts').patch(context.result.account._id, { lasttriedFailedLogin: 0 });
 	return context;
 };
+
+/**
+ * Stop login flow if the email domain is blacklisted.
+ *
+ * @param context
+ * @returns {*} context
+ */
+const blockDisposableEmailDomains = (context) => {
+	if (isDisposableEmail(context.data.username)) {
+		throw new Forbidden('Email Domain Forbidden');
+	}
+	return context;
+};
+
 
 const injectUserId = async (context) => {
 	const { systemId, strategy } = context.data;
@@ -185,6 +199,7 @@ const hooks = {
 			trimUsername,
 			trimPassword,
 			bruteForceCheck,
+			blockDisposableEmailDomains,
 			injectUserId,
 			increaseJwtTimeoutForPrivateDevices,
 			removeProvider,
