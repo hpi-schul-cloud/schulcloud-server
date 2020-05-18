@@ -17,6 +17,9 @@ module.exports = {
 							type: 'string',
 							enum: ['analog', 'digital', 'update'],
 						},
+						source: {
+							type: 'string',
+						},
 						dateOfPrivacyConsent: {
 							type: 'string',
 							format: 'date',
@@ -39,6 +42,9 @@ module.exports = {
 							form: {
 								type: 'string',
 								enum: ['analog', 'digital', 'update'],
+							},
+							source: {
+								type: 'string',
 							},
 							parentId: {
 								type: 'string',
