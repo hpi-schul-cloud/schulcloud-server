@@ -49,11 +49,11 @@ const allowedHtmlByPathAndKeys = (path, key) => paths.includes(path) && keys.inc
  * Strips JS/HTML Code from data and returns clean version of it
  * @param data {object/array/string}
  * @param path {string}
- * @param depth {integer} -
+ * @param depth {number} -
  * @param safeAttributes {array} - attributes over which sanitization won't be performed
  * @returns data - clean without JS
  */
-const sanitizeDeep = ({ data, path, depth = 0, safeAttributes = [] }) => {
+const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 	if (depth >= maxDeep) {
 		throw new Error('Data level is to deep. (sanitizeDeep)', { path, data });
 	}

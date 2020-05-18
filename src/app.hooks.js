@@ -10,11 +10,7 @@ const {
 
 const sanitizeDataHook = (context) => {
 	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
-		sanitizeDeep({
-			data: context.type === 'before' ? context.data : context.result,
-			path: context.path,
-			safeAttributes: context.safeAttributes
-		});
+		sanitizeDeep(context.type === 'before' ? context.data : context.result, context.path, 0, context.safeAttributes);
 	}
 	return context;
 };
