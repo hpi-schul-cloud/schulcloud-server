@@ -160,10 +160,10 @@ function setupAppHooks(app) {
 	const after = {
 		all: [],
 		find: [
-			(sanitizeOutputIfPathNotBlacklisted()),
+			sanitizeOutputIfPathNotBlacklisted(),
 		],
 		get: [
-			(sanitizeOutputIfPathNotBlacklisted()),
+			sanitizeOutputIfPathNotBlacklisted(),
 		],
 		create: [],
 		update: [],
