@@ -127,7 +127,6 @@ const errorHandler = (context) => {
 	throw new GeneralError('server error');
 };
 
-
 function setupAppHooks(app) {
 	const before = {
 		all: [iff(isProvider('external'), handleAutoLogout)],
