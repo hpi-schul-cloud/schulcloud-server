@@ -28,6 +28,17 @@
 			],
 			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
 		},
+		"STUDENT_TEAM_CREATION": {
+			"type": "string",
+			"default": "opt-out",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
+		},
 		"REDIS_URI": {
 			"type": "string",
 			"pattern": "(rediss?:)?\/\/((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(\/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
@@ -224,10 +235,16 @@
 			"minimum": 0.0,
 			"maximum": 1.0,
 			"description": "This is the % count (0.00 to 1.00) of how many of the errors send to the backend. This filter go over all errors, maybe some lost by low user counts."
+		},
+		"SKIP_CONDITIONS_CONSENT": {
+			"type": "string",
+			"default": "",
+			"description": "A string with concatenated user types (student, employee) that don't need to explicitly state their consent with the terms and conditions. \"employee\" means teachers and admins."
 		}
 	},
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
+		"STUDENT_TEAM_CREATION",
 		"HOST"
 	]
 }
