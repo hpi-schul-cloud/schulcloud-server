@@ -127,6 +127,13 @@ const errorHandler = (context) => {
 	throw new GeneralError('server error');
 };
 
+const sanitizeBlackListPaths = ['fileStorage/signedUrl'];
+
+const sanitizeOutputIfPathNotBlacklisted = () => iff((hook => sanitizeBlackListPaths.filter(blackListedPath => hook.path.startsWith(blackListedPath)).length === 0
+	&& isProvider('external')), [
+	sanitizeDataHook,
+]);
+
 function setupAppHooks(app) {
 	const before = {
 		all: [iff(isProvider('external'), handleAutoLogout)],
@@ -153,14 +160,10 @@ function setupAppHooks(app) {
 	const after = {
 		all: [],
 		find: [
-			iff(isProvider('external'), [
-				sanitizeDataHook,
-			]),
+			(sanitizeOutputIfPathNotBlacklisted()),
 		],
 		get: [
-			iff(isProvider('external'), [
-				sanitizeDataHook,
-			]),
+			(sanitizeOutputIfPathNotBlacklisted()),
 		],
 		create: [],
 		update: [],
