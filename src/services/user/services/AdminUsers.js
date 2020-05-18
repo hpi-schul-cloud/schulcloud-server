@@ -19,7 +19,7 @@ const getRoles = () => roleModel.find()
 	.exec();
 
 
-const getAllUsers = async (ref, schoolId, schoolYearId, role, clientQuery = {}) => {
+const getAllUsers = async (schoolId, schoolYearId, role, clientQuery = {}) => {
 	const query = {
 		schoolId,
 		roles: role,
@@ -45,9 +45,12 @@ const getAllUsers = async (ref, schoolId, schoolYearId, role, clientQuery = {}) 
 	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 	if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 
-	return userModel.aggregate(createMultiDocumentAggregation(query)).option({
+	return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
 		collation: { locale: 'de', caseLevel: true },
-	}).exec();
+	}).exec((err, res) => {
+		if (err) reject(err);
+		else resolve(res[0]);
+	}));
 };
 
 const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
@@ -80,7 +83,7 @@ class AdminUsers {
 
 			// fetch data that are scoped to schoolId
 			const searchedRole = roles.find((role) => role.name === this.role);
-			return getAllUsers(this, schoolId, currentYear, searchedRole._id, query);
+			return getAllUsers(schoolId, currentYear, searchedRole._id, query);
 		} catch (err) {
 			logger.error(err);
 			if ((err || {}).code === 403) {
