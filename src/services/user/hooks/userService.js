@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { keep } = require('feathers-hooks-common');
-const { BadRequest, Forbidden, GeneralError } = require('@feathersjs/errors');
+const { BadRequest, Forbidden, GeneralError, NotFound } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const {
@@ -221,33 +221,43 @@ const pinIsVerified = (hook) => {
 		});
 };
 
-const securePatching = (hook) => Promise.all([
-	hasRole(hook, hook.params.account.userId, 'superhero'),
-	hasRole(hook, hook.params.account.userId, 'administrator'),
-	hasRole(hook, hook.params.account.userId, 'teacher'),
-	hasRole(hook, hook.params.account.userId, 'demoStudent'),
-	hasRole(hook, hook.params.account.userId, 'demoTeacher'),
-	hasRole(hook, hook.id, 'student'),
-])
-	.then(([isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent]) => {
-		if (isDemoStudent || isDemoTeacher) {
-			return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+const securePatching = async (hook) => {
+	const [isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent] = await Promise.all([
+		hasRole(hook, hook.params.account.userId, 'superhero'),
+		hasRole(hook, hook.params.account.userId, 'administrator'),
+		hasRole(hook, hook.params.account.userId, 'teacher'),
+		hasRole(hook, hook.params.account.userId, 'demoStudent'),
+		hasRole(hook, hook.params.account.userId, 'demoTeacher'),
+		hasRole(hook, hook.id, 'student'),
+	]);
+	const targetUser = await hook.app.service('users').get(hook.id);
+	const actingUser = await hook.app.service('users').get(hook.params.account.userId);
+	if (isSuperHero) {
+		return hook;
+	}
+
+	if (isDemoStudent || isDemoTeacher) {
+		return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+	}
+
+	if (!ObjectId.equal(targetUser.schoolId, actingUser.schoolId)) {
+		return Promise.reject(new NotFound(`no record found for id '${hook.id.toString()}'`));
+	}
+
+	delete hook.data.schoolId;
+	delete (hook.data.$push || {}).schoolId;
+
+	if (!isAdmin) {
+		delete hook.data.roles;
+		delete (hook.data.$push || {}).roles;
+	}
+	if (!ObjectId.equal(hook.id, hook.params.account.userId)) {
+		if (!(isAdmin || (isTeacher && targetIsStudent))) {
+			return Promise.reject(new BadRequest('You have not the permissions to change other users'));
 		}
-		if (!isSuperHero) {
-			delete hook.data.schoolId;
-			delete (hook.data.$push || {}).schoolId;
-		}
-		if (!(isSuperHero || isAdmin)) {
-			delete hook.data.roles;
-			delete (hook.data.$push || {}).roles;
-		}
-		if (!ObjectId.equal(hook.id, hook.params.account.userId)) {
-			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent))) {
-				return Promise.reject(new BadRequest('You have not the permissions to change other users'));
-			}
-		}
-		return Promise.resolve(hook);
-	});
+	}
+	return Promise.resolve(hook);
+};
 
 /**
  *
