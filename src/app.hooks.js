@@ -129,7 +129,7 @@ const errorHandler = (context) => {
 
 const sanitizeBlackListPaths = ['fileStorage/signedUrl'];
 
-const sanitizeOutputIfPathNotBlacklisted = () => iff((hook => sanitizeBlackListPaths.filter(blackListedPath => hook.path.startsWith(blackListedPath)).length === 0
+const sanitizeOutputIfPathNotBlacklisted = () => iff((hook => !sanitizeBlackListPaths.includes(hook.path)
 	&& isProvider('external')), [
 	sanitizeDataHook,
 ]);
