@@ -152,7 +152,53 @@ describe('user service', () => {
 		});
 	});
 
-	describe('PATCH', () => {	
+	describe('CREATE', () => {
+		it('can create student with STUDENT_CREATE', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			await testObjects.createTestRole({
+				name: 'studentCreate', permissions: ['STUDENT_CREATE'],
+			});
+			const actingUser = await testObjects.createTestUser({ roles: ['studentCreate'], schoolId });
+			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const data = {
+				firstName: 'Luke',
+				lastName: 'Skywalker',
+				schoolId: schoolId.toString(),
+				roles: ['student'],
+				email: `${Date.now()}@test.org`,
+			};
+			const result = await app.service('users').create(data, params);
+			expect(result).to.not.be.undefined;
+			expect(result._id).to.not.be.undefined;
+		});
+
+		it('can fails to create user on other school', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const { _id: otherSchoolId } = await testObjects.createTestSchool();
+			await testObjects.createTestRole({
+				name: 'studentCreate', permissions: ['STUDENT_CREATE'],
+			});
+			const actingUser = await testObjects.createTestUser({ roles: ['studentCreate'], schoolId });
+			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const data = {
+				firstName: 'Leia',
+				lastName: 'Skywalker',
+				schoolId: otherSchoolId.toString(),
+				roles: ['student'],
+				email: `${Date.now()}@test.org`,
+			};
+			try {
+				await app.service('users').create(data, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal('You do not have valid permissions to access this.');
+			}
+		});
+	});
+
+	describe('PATCH', () => {
 		it('rejects on group patching', async () => {
 			await userService.patch(null, { email: 'test' }).catch((err) => {
 				expect(err).to.not.equal(undefined);
