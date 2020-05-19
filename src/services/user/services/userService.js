@@ -5,12 +5,14 @@ const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
 const { userModel } = require('../model');
 const { hasEditPermissionForUser } = require('../hooks/index.hooks');
+
 const {
 	mapPaginationQuery,
 	resolveToIds,
 	restrictToCurrentSchool,
 	permitGroupOperation,
 	denyIfNotCurrentSchool,
+	denyIfStudentTeamCreationNotAllowed,
 	computeProperty,
 	addCollation,
 } = require('../../../hooks');
@@ -35,6 +37,10 @@ const {
 	generateRegistrationLink,
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
+
+const testMe = (context) => {
+	console.log(context);
+};
 
 class UserService {
 	constructor(options) {
@@ -79,18 +85,25 @@ const userService = new UserService({
 
 const userHooks = {
 	before: {
-		all: [],
+		all: [
+		],
 		find: [
 			mapPaginationQuery.bind(this),
 			// resolve ids for role strings (e.g. 'TEACHER')
 			resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
 			authenticate('jwt'),
 			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'),
+				denyIfStudentTeamCreationNotAllowed({
+					errorMessage: 'Der angefragte Nutzer darf die Benutzer nicht sehen!',
+				})),
 			mapRoleFilterQuery,
 			addCollation,
 			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
-		get: [authenticate('jwt')],
+		get: [
+			authenticate('jwt'),
+			iff(isProvider('external'), hasEditPermissionForUser)],
 		create: [
 			checkJwt(),
 			pinIsVerified,

@@ -14,7 +14,7 @@ exports.hasEditPermissionForUser = async (context) => {
 	}
 	const requestedUser = await userService.get(id, { query: { $populate: 'roles' } });
 	const requestedUserRoles = requestedUser.roles.map((r) => r.name);
-	if (requestedUserRoles.includes('adminstrator')) {
+	if (requestedUserRoles.includes('administrator')) {
 		await globalHooks.hasPermission(['ADMIN_EDIT'])(context);
 	}
 	if (requestedUserRoles.includes('teacher')) {

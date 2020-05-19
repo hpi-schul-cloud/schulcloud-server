@@ -549,6 +549,21 @@ exports.denyIfNotCurrentSchool = (
 	return context;
 });
 
+exports.denyIfStudentTeamCreationNotAllowed = (
+	{ errorMessage = 'Der angefragte Nutzer darf die Benutzer nicht sehen!' },
+) => async (context) => {
+	const user = await getUser(context);
+	if (!testIfRoleNameExist(user, 'student')) {
+		return context;
+	}
+	const requesterSchoolId = user.schoolId;
+	const school = await context.app.service('schools').get(requesterSchoolId);
+	if (!school.isTeamCreationByStudentsEnabled) {
+		throw new Forbidden(errorMessage);
+	}
+	return context;
+};
+
 exports.checkSchoolOwnership = (context) => {
 	const { userId } = context.params.account;
 	const objectId = context.id;
