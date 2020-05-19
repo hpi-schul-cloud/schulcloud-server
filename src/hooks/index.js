@@ -323,6 +323,26 @@ const testIfRoleNameExist = (user, roleNames) => {
 	return user.roles.some(({ name }) => roleNames.includes(name));
 };
 
+exports.enableQuery = (context) => {
+	if (context.id) {
+		context.params.query = context.params.query || {};
+		context.params.query._id = context.id;
+		context.id = null;
+	}
+};
+
+exports.enableQueryAfter = (context) => {
+	if (!context.params.query._id) {
+		return context;
+	}
+	context.id = context.params.query._id;
+	if (context.result.length === 0) {
+		throw new NotFound(`no record found for id '${context.params.query._id}'`);
+	}
+	context.result = context.result[0];
+	return context;
+};
+
 exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, 'superhero')) {
 		return context;
@@ -674,7 +694,6 @@ exports.sendEmail = (context, maildata) => {
 				mailService.create({
 					email,
 					replyEmail,
-					from: maildata.from,
 					subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 					headers: maildata.headers || {},
 					content: {

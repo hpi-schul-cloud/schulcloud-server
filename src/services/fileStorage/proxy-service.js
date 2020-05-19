@@ -230,7 +230,7 @@ const fileStorageService = {
 			: Promise.resolve();
 
 		return parentPromise
-			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).exec())
+			.then(() => FileModel.find({ owner, parent: parent || { $exists: false } }).lean().exec())
 			.then((files) => Promise.all(files.map(
 				(f) => canRead(userId, f)
 					.then(() => f)
@@ -438,7 +438,7 @@ const signedUrlService = {
 			.then(() => strategy.getSignedUrl({
 				userId: creatorId,
 				flatFileName: fileObject.storageFileName,
-				localFileName: fileObject.name,
+				localFileName: query.name || fileObject.name,
 				download,
 			}))
 			.then((res) => ({

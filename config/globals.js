@@ -44,7 +44,6 @@ const globals = {
 	REQUEST_TIMEOUT: process.env.REQUEST_TIMEOUT || 8000,
 	METRICS_PATH: process.env.METRICS_PATH || '/metrics',
 	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10', 10),
-	STUDENT_TEAM_CREATE_DISABLED: process.env.STUDENT_TEAM_CREATE_DISABLED,
 
 	SC_DOMAIN: process.env.SC_DOMAIN || 'localhost',
 	SC_THEME: process.env.SC_THEME || 'default',

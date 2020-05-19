@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "22.10.7",
+	"version": "23.0.0",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -32,8 +32,8 @@
 		"mocha": "cross-env NODE_ENV=test mocha --exit './test/**/*.test.js'",
 		"mocha-single": "cross-env NODE_ENV=test mocha --exit",
 		"mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --exit './test/**/*.test.js'",
-		"migration": "migrate",
-		"migration-sync": "migrate list --autosync",
+		"migration": "migrate --config ./config/migrate.js",
+		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations"
 	},
 	"dependencies": {
@@ -53,7 +53,7 @@
 		"bbb-promise": "^1.2.0",
 		"bcryptjs": "latest",
 		"body-parser": "^1.15.2",
-		"chalk": "^3.0.0",
+		"chalk": "^4.0.0",
 		"chance": "^1.0.12",
 		"client-oauth2": "^4.2.5",
 		"compression": "^1.6.2",
@@ -80,8 +80,8 @@
 		"mongoose": "~5.9.9",
 		"mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-history": "^0.8.0",
-		"mongoose-id-validator": "^0.5.3",
-		"mongoose-lean-virtuals": "^0.4.4",
+		"mongoose-id-validator": "^0.6.0",
+		"mongoose-lean-virtuals": "^0.6.2",
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
 		"nanoid": "^2.0.3",

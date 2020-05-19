@@ -4,18 +4,15 @@ const {
 } = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
 
-const {	courseModel } = require('../model');
+const accountModel = require('../model');
 
-const courseModelService = service({
-	Model: courseModel,
-	paginate: {
-		default: 10000,
-		max: 10000,
-	},
-	lean: { virtuals: true },
+const accountModelService = service({
+	Model: accountModel,
+	paginate: false,
+	lean: true,
 });
 
-const courseModelServiceHooks = {
+const accountModelServiceHooks = {
 	before: {
 		all: [
 			auth.hooks.authenticate('jwt'),
@@ -50,4 +47,4 @@ const courseModelServiceHooks = {
 	},
 };
 
-module.exports = { courseModelService, courseModelServiceHooks };
+module.exports = { accountModelService, accountModelServiceHooks };

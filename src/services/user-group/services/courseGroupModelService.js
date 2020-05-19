@@ -4,18 +4,19 @@ const {
 } = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
 
-const {	courseModel } = require('../model');
+const { enableQuery, enableQueryAfter } = require('../../../hooks');
+const {	courseGroupModel } = require('../model');
 
-const courseModelService = service({
-	Model: courseModel,
+const courseGroupModelService = service({
+	Model: courseGroupModel,
 	paginate: {
-		default: 10000,
-		max: 10000,
+		default: 25,
+		max: 100,
 	},
 	lean: { virtuals: true },
 });
 
-const courseModelServiceHooks = {
+const courseGroupModelServiceHooks = {
 	before: {
 		all: [
 			auth.hooks.authenticate('jwt'),
@@ -34,9 +35,11 @@ const courseModelServiceHooks = {
 		],
 		patch: [
 			iff(isProvider('external'), disallow()),
+			enableQuery,
 		],
 		remove: [
 			iff(isProvider('external'), disallow()),
+			enableQuery,
 		],
 	},
 	after: {
@@ -45,9 +48,9 @@ const courseModelServiceHooks = {
 		get: [],
 		create: [],
 		update: [],
-		patch: [],
-		remove: [],
+		patch: [enableQueryAfter],
+		remove: [enableQueryAfter],
 	},
 };
 
-module.exports = { courseModelService, courseModelServiceHooks };
+module.exports = { courseGroupModelService, courseGroupModelServiceHooks };
