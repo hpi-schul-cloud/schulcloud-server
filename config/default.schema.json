@@ -107,8 +107,13 @@
 		},
 		"FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Prevent use of disposable email addresses."
+		},
+		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for automatic consent during TSP sync."
 		},
 		"FEATURE_VIDEOCONFERENCE_ENABLED": {
 			"type": "boolean",
