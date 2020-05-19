@@ -37,7 +37,7 @@ const hasMaterialAccess = async (context, id, permissions) => {
  */
 const checkAssociatedCoursePermission = (...permissions) => async (context) => {
 	if (permissions) {
-		const access = hasMaterialAccess(context, context.id, permissions);
+		const access = await hasMaterialAccess(context, context.id, permissions);
 		if (!access) {
 			throw new Forbidden('No permision to edit this material');
 		}
