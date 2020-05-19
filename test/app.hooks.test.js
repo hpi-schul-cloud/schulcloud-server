@@ -56,6 +56,23 @@ describe('Sanitization Hook', () => {
 		expect(result.data.testString).to.equal(testString);
 	});
 
+	it('hook does not sanitizes specified safe attributes', () => {
+		const testString = '<script>alert("test");</script><h1>test</h1>';
+		const sanitizedTestString = 'test';
+		const safeAttributes = ['url'];
+		const context = {
+			path: 'not_authentication',
+			safeAttributes: safeAttributes,
+			result: {
+				url: testString,
+				dangerousUrl: testString
+			},
+		};
+		const result = sanitizeDataHook(context);
+		expect(result.result.url).to.equal(testString);
+		expect(result.result.dangerousUrl).to.equal(sanitizedTestString);
+	});
+
 	// TODO: Map test to generic output for sanitizeConst keys, paths, saveKeys
 	it('sanitize in news, example', () => {
 		const data = {
