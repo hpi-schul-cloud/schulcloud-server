@@ -39,10 +39,6 @@ const {
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
-const testMe = (context) => {
-	console.log(context);
-};
-
 class UserService {
 	constructor(options) {
 		this.options = options || {};
@@ -86,8 +82,7 @@ const userService = new UserService({
 
 const userHooks = {
 	before: {
-		all: [
-		],
+		all: [],
 		find: [
 			mapPaginationQuery.bind(this),
 			// resolve ids for role strings (e.g. 'TEACHER')
