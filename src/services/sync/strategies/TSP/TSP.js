@@ -207,7 +207,7 @@ module.exports = {
 	TspApi,
 	config: {
 		FEATURE_ENABLED: Configuration.get('FEATURE_TSP_ENABLED'),
-		FAETURE_AUTO_CONSENT: Configuration.get('FEATURE_TSP_AUTO_CONSENT_ENABLED'),
+		FEATURE_AUTO_CONSENT: Configuration.get('FEATURE_TSP_AUTO_CONSENT_ENABLED'),
 		BASE_URL,
 	},
 	getUsername,

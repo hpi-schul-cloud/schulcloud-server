@@ -387,7 +387,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				systemId,
 			);
 			this.stats.users.students.created += 1;
-			if (TSP_CONFIG.FAETURE_AUTO_CONSENT) {
+			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
 				await this.createTSPConsent(student);
 			}
 			return student;
