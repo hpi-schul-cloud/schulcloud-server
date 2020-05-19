@@ -222,16 +222,18 @@ const pinIsVerified = (hook) => {
 };
 
 const securePatching = async (hook) => {
-	const [isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent] = await Promise.all([
-		hasRole(hook, hook.params.account.userId, 'superhero'),
-		hasRole(hook, hook.params.account.userId, 'administrator'),
-		hasRole(hook, hook.params.account.userId, 'teacher'),
-		hasRole(hook, hook.params.account.userId, 'demoStudent'),
-		hasRole(hook, hook.params.account.userId, 'demoTeacher'),
-		hasRole(hook, hook.id, 'student'),
-	]);
-	const targetUser = await hook.app.service('users').get(hook.id);
-	const actingUser = await hook.app.service('users').get(hook.params.account.userId);
+	const targetUser = await hook.app.service('users').get(hook.id, { query: { $populate: 'roles' } });
+	const actingUser = await hook.app.service('users').get(
+		hook.params.account.userId,
+		{ query: { $populate: 'roles' } },
+	);
+	const isSuperHero = actingUser.roles.find((r) => r.name === 'superhero');
+	const isAdmin = actingUser.roles.find((r) => r.name === 'administrator');
+	const isTeacher = actingUser.roles.find((r) => r.name === 'teacher');
+	const isDemoStudent = actingUser.roles.find((r) => r.name === 'demoStudent');
+	const isDemoTeacher = actingUser.roles.find((r) => r.name === 'demoTeacher');
+	const targetIsStudent = targetUser.roles.find((r) => r.name === 'student');
+
 	if (isSuperHero) {
 		return hook;
 	}
