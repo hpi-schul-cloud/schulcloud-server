@@ -12,18 +12,28 @@ const { getScopePermissions } = require('../../helpers/scopePermissions/hooks/ch
  * @returns {Boolean} true if conditions are met, false otherwise
  */
 const hasMaterialAccess = async (context, id, permissions) => {
-	const courses = await context.app.service('courses').find({
+	const lessons = await context.app.service('lessons').find({
 		query: {
 			materialIds: id,
-			$select: ['_id'],
+			$select: ['courseId'],
 		},
 		paginate: false,
 	});
-	const access = courses.every((course) => {
-		const scope = { id: course._id, name: 'courses' };
-		const userPermisisons = getScopePermissions(context.app, context.params.account.userId, scope);
-		return permissions.every((permission) => userPermisisons.includes(permission));
-	});
+	const courses = [...new Set(lessons.map((l) => l.courseId))];
+
+	let access = true;
+	for (const courseId of courses) {
+		const scope = { id: courseId, name: 'courses' };
+		let userPermissions;
+		try {
+			userPermissions = await getScopePermissions(context.app, context.params.account.userId, scope);
+		} catch (err) {
+			// the course scope throws Forbidden if the user is not in the course (?!)
+			userPermissions = [];
+		}
+		access = access && permissions.every((permission) => userPermissions.includes(permission));
+		if (!access) break;
+	}
 	return access;
 };
 
