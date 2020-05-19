@@ -221,10 +221,10 @@ const pinIsVerified = (hook) => {
 		});
 };
 
-const securePatching = async (hook) => {
-	const targetUser = await hook.app.service('users').get(hook.id, { query: { $populate: 'roles' } });
-	const actingUser = await hook.app.service('users').get(
-		hook.params.account.userId,
+const securePatching = async (context) => {
+	const targetUser = await context.app.service('users').get(context.id, { query: { $populate: 'roles' } });
+	const actingUser = await context.app.service('users').get(
+		context.params.account.userId,
 		{ query: { $populate: 'roles' } },
 	);
 	const isSuperHero = actingUser.roles.find((r) => r.name === 'superhero');
@@ -235,7 +235,7 @@ const securePatching = async (hook) => {
 	const targetIsStudent = targetUser.roles.find((r) => r.name === 'student');
 
 	if (isSuperHero) {
-		return hook;
+		return context;
 	}
 
 	if (isDemoStudent || isDemoTeacher) {
@@ -243,22 +243,27 @@ const securePatching = async (hook) => {
 	}
 
 	if (!ObjectId.equal(targetUser.schoolId, actingUser.schoolId)) {
-		return Promise.reject(new NotFound(`no record found for id '${hook.id.toString()}'`));
+		return Promise.reject(new NotFound(`no record found for id '${context.id.toString()}'`));
 	}
 
-	delete hook.data.schoolId;
-	delete (hook.data.$push || {}).schoolId;
+	delete context.data.schoolId;
+	delete (context.data.$set || {}).schoolId;
 
 	if (!isAdmin) {
-		delete hook.data.roles;
-		delete (hook.data.$push || {}).roles;
+		delete context.data.roles;
+		delete (context.data.$push || {}).roles;
+		delete (context.data.$pull || {}).roles;
+		delete (context.data.$pop || {}).roles;
+		delete (context.data.$addToSet || {}).roles;
+		delete (context.data.$pullAll || {}).roles;
+		delete (context.data.$set || {}).roles;
 	}
-	if (!ObjectId.equal(hook.id, hook.params.account.userId)) {
+	if (!ObjectId.equal(context.id, context.params.account.userId)) {
 		if (!(isAdmin || (isTeacher && targetIsStudent))) {
 			return Promise.reject(new BadRequest('You have not the permissions to change other users'));
 		}
 	}
-	return Promise.resolve(hook);
+	return Promise.resolve(context);
 };
 
 /**
