@@ -64,7 +64,7 @@ const checkAssociatedCoursePermissionForSearchResult = (...permissions) => async
 		}
 		if (context.result.data) {
 			context.result.data = filteredResults;
-			context.result.length = filteredResults.length;
+			context.result.total = filteredResults.length;
 		} else {
 			context.result = filteredResults;
 		}
