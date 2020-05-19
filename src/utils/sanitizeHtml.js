@@ -48,9 +48,12 @@ const allowedHtmlByPathAndKeys = (path, key) => paths.includes(path) && keys.inc
 /**
  * Strips JS/HTML Code from data and returns clean version of it
  * @param data {object/array/string}
+ * @param path {string}
+ * @param depth {number} -
+ * @param safeAttributes {array} - attributes over which sanitization won't be performed
  * @returns data - clean without JS
  */
-const sanitizeDeep = (data, path, depth = 0) => {
+const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 	if (depth >= maxDeep) {
 		throw new Error('Data level is to deep. (sanitizeDeep)', { path, data });
 	}
@@ -59,7 +62,9 @@ const sanitizeDeep = (data, path, depth = 0) => {
 		Object.entries(data).forEach(([key, value]) => {
 			if (typeof value === 'string') {
 				// ignore values completely
-				if (saveKeys.includes(key)) return data; // TODO:  why not over keys in allowedHtmlByPathAndKeys
+				if (saveKeys.includes(key) || safeAttributes.includes(key)) {
+					return data; // TODO:  why not over keys in allowedHtmlByPathAndKeys
+				}
 				data[key] = sanitize(value, { html: allowedHtmlByPathAndKeys(path, key) });
 			} else {
 				sanitizeDeep(value, path, depth + 1);
