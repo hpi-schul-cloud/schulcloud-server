@@ -424,6 +424,55 @@ const enforceRoleHierarchyOnDelete = async (context) => {
 	return enforceRoleHierarchyOnDeleteBulk(context);
 };
 
+/**
+ * Check that the authenticated user posseses the rights to create a user with the given roles. This is only checked for external requests.
+ * @param {*} context 
+ */
+const enforceRoleHierarchyOnCreate = async (context) => {
+	const user = await context.app.service('users').get(context.params.account.userId, { $populate: 'roles' });
+
+	// superhero may create users with every role
+	if (user.roles.filter((u) => (u.name === 'superhero')).length > 0) {
+		Promise.resolve(context);
+	}
+
+	await Promise.all(context.data.roles.map(async (roleId) => {
+		// Roles are given by ID or by name.
+		// For IDs we load the name from the DB.
+		// If it is not an ID we assume, it is a name. Invalid names are rejected in the switch anyways.
+		let roleName = '';
+		if (!ObjectId.isValid(roleId)) {
+			roleName = roleId;
+		} else {
+			try {
+				const role = await context.app.service('roles').get(roleId);
+				roleName = role.name;
+			} catch (exception) {
+				return Promise.reject(new BadRequest('No such role exists'));
+			}
+		}
+		switch (roleName) {
+			case 'teacher':
+				if (!user.permissions.find((permission) => permission === 'TEACHER_CREATE')) {
+					return Promise.reject(new BadRequest('Your are not allowed to create a user with the given role'));
+				}
+				break;
+			case 'student':
+				if (!user.permissions.find((permission) => permission === 'STUDENT_CREATE')) {
+					return Promise.reject(new BadRequest('Your are not allowed to create a user with the given role'));
+				}
+				break;
+			case 'parent':
+				break;
+			default:
+				return Promise.reject(new BadRequest('Your are not allowed to create a user with the given role'));
+		}
+		return Promise.resolve(context);
+	}));
+
+	return Promise.resolve(context);
+}
+
 const generateRegistrationLink = async (context) => {
 	const { data, app } = context;
 	if (data.generateRegistrationLink === true) {
@@ -521,6 +570,7 @@ module.exports = {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	enforceRoleHierarchyOnCreate,
 	filterResult,
 	generateRegistrationLink,
 	includeOnlySchoolRoles,
