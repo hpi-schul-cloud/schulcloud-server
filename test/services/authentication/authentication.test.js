@@ -1,3 +1,4 @@
+const { Configuration } = require('@schul-cloud/commons');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
@@ -133,43 +134,83 @@ describe('start server', () => {
 				});
 		}));
 
-		it('should block disposable domains', () => new Promise((resolve, reject) => {
-			const testDisposableAccount = {
-				username: `${Date.now()}poweruser@my10minutemail.com`,
-				password: 'passwordA',
-			};
+		describe('disposable email domains', () => {
+			let originalConfiguration;
+			before(() => {
+				originalConfiguration = Configuration.get('FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS');
+			});
 
-			testObjects.createTestUser()
-				.then((testUser) => testObjects.createTestAccount(testDisposableAccount, null, testUser))
-				.then(() => {
-					chai.request(app)
-						.post('/authentication')
-						.set('Accept', 'application/json')
-						.set('content-type', 'application/x-www-form-urlencoded')
-						// send credentials
-						.send({
-							username: testDisposableAccount.username,
-							password: testDisposableAccount.password,
-							strategy: 'local',
-						})
-						.end((err, res) => {
-							if (err) {
-								reject(err);
-								return;
-							}
+			after(() => {
+				Configuration.set('FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS', originalConfiguration);
+			});
 
-							// Forbidden
-							should.equal(res.status, 403);
+			it('should be blocked if activated', () => new Promise((resolve, reject) => {
+				Configuration.set('FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS', true);
+				const testDisposableAccount = {
+					username: `${Date.now()}poweruser@my10minutemail.com`,
+					password: 'passwordA',
+				};
 
-							const decodedToken = jwt.decode(res.body.accessToken);
+				testObjects.createTestUser()
+					.then((testUser) => testObjects.createTestAccount(testDisposableAccount, null, testUser))
+					.then(() => {
+						chai.request(app)
+							.post('/authentication')
+							.set('Accept', 'application/json')
+							.set('content-type', 'application/x-www-form-urlencoded')
+							// send credentials
+							.send({
+								username: testDisposableAccount.username,
+								password: testDisposableAccount.password,
+								strategy: 'local',
+							})
+							.end((err, res) => {
+								if (err) {
+									reject(err);
+									return;
+								}
 
-							// JWT should not exist
-							should.equal(decodedToken, null);
+								// Forbidden
+								should.equal(res.status, 403);
+								resolve();
+							});
+					});
+			}));
 
-							resolve();
-						});
-				});
-		}));
+			it('should not be blocked if deactivated', () => new Promise((resolve, reject) => {
+				Configuration.set('FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS', false);
+				const testDisposableAccount = {
+					username: `${Date.now()}poweruser@my10minutemail.com`,
+					password: 'passwordA',
+				};
+
+				testObjects.createTestUser()
+					.then((testUser) => testObjects.createTestAccount(testDisposableAccount, null, testUser))
+					.then(() => {
+						chai.request(app)
+							.post('/authentication')
+							.set('Accept', 'application/json')
+							.set('content-type', 'application/x-www-form-urlencoded')
+							// send credentials
+							.send({
+								username: testDisposableAccount.username,
+								password: testDisposableAccount.password,
+								strategy: 'local',
+							})
+							.end((err, res) => {
+								if (err) {
+									reject(err);
+									return;
+								}
+
+								// Works
+								should.equal(res.status, 201);
+								resolve();
+							});
+					});
+			}));
+		});
+
 
 		after((done) => {
 			testObjects.cleanup()

@@ -64,8 +64,10 @@ const bruteForceReset = async (context) => {
  * @returns {*} context
  */
 const blockDisposableEmailDomains = (context) => {
-	if (isDisposableEmail(context.data.username)) {
-		throw new Forbidden('Email Domain Forbidden');
+	if (Configuration.get('FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS')) {
+		if (isDisposableEmail(context.data.username)) {
+			throw new Forbidden('Email Domain Forbidden');
+		}
 	}
 	return context;
 };
