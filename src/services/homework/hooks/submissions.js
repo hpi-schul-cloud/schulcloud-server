@@ -302,14 +302,20 @@ const hasViewPermission = async (hook) => {
 		return Promise.resolve(hook);
 	}
 
-	// user is course teacher
 	try {
 		const homeworkService = hook.app.service('/homework');
 		const courseService = hook.app.service('/courses');
 		const homework = await homeworkService.get(hook.result.homeworkId);
 		const course = await courseService.get(homework.courseId);
 		const teacherIds = course.teacherIds.map((t) => t.toString());
+
+		// user is course teacher
 		if (teacherIds.includes(currentUserId)) {
+			return Promise.resolve(hook);
+		}
+
+		// submissions are public
+		if (homework.publicSubmissions) {
 			return Promise.resolve(hook);
 		}
 	} catch (err) {
