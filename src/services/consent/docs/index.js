@@ -19,7 +19,6 @@ module.exports = {
 						},
 						source: {
 							type: 'string',
-							enum: ['tsp-sync'],
 						},
 						dateOfPrivacyConsent: {
 							type: 'string',
@@ -46,7 +45,6 @@ module.exports = {
 							},
 							source: {
 								type: 'string',
-								enum: ['tsp-sync'],
 							},
 							parentId: {
 								type: 'string',

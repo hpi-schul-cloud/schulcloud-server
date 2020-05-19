@@ -1,4 +1,3 @@
-const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { NotFound } = require('@feathersjs/errors');
 const {
@@ -47,6 +46,7 @@ const sendInfo = (context) => {
 			const mailContent = `Sehr geehrte/r ${account.userId.firstName} ${account.userId.lastName}, \n
 Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:
 ${recoveryLink}\n
+Bitte beachten Sie das der Link nur für 6 Stunden gültig ist. Danach müssen sie ein neuen Link anfordern.\n
 Mit Freundlichen Grüßen
 Ihr ${SC_SHORT_TITLE} Team`;
 
@@ -71,12 +71,14 @@ Ihr ${SC_SHORT_TITLE} Team`;
  * this hides errors from api for invalid input
  * @param {*} context
  */
-const return200 = (context) => {
+const clearResultAndForceSuccess = (context) => {
 	if (context.error) {
-		logger.warning('return 200');
-		context.error.code = 200;
-		context.result = { success: 'success' };
+		delete context.error.hook;
+		// context.error.code = 200;
+		logger.error('passwordRecovery is requested and return an error', context.error);
 	}
+
+	context.result = { success: 'success' };
 	return context;
 };
 
@@ -97,12 +99,12 @@ exports.after = {
 	all: [],
 	find: [],
 	get: [keep('_id, createdAt', 'changed')],
-	create: [sendInfo, return200],
+	create: [sendInfo, clearResultAndForceSuccess],
 	update: [],
 	patch: [],
 	remove: [],
 };
 
 exports.error = {
-	create: [return200],
+	create: [clearResultAndForceSuccess],
 };

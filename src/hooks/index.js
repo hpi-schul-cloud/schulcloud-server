@@ -694,7 +694,6 @@ exports.sendEmail = (context, maildata) => {
 				mailService.create({
 					email,
 					replyEmail,
-					from: maildata.from,
 					subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 					headers: maildata.headers || {},
 					content: {

@@ -10,8 +10,7 @@ const { enableAuditLog } = require('../../utils/database');
 const { Schema } = mongoose;
 
 const consentForm = ['analog', 'digital', 'update'];
-
-const sourceType = ['tsp-sync'];
+const consentSource = ['automatic-consent', 'tsp-sync'];
 
 const consentSchema = new Schema({
 	userId: {
@@ -22,7 +21,7 @@ const consentSchema = new Schema({
 	},
 	userConsent: {
 		form: { type: String, enum: consentForm },
-		source: { type: String, enum: sourceType },
+		source: { type: String, enum: consentSource },
 		dateOfPrivacyConsent: { type: Date },
 		dateOfTermsOfUseConsent: { type: Date },
 		privacyConsent: { type: Boolean },
@@ -31,7 +30,7 @@ const consentSchema = new Schema({
 	parentConsents: [{
 		parentId: { type: Schema.Types.ObjectId, ref: 'user' },
 		form: { type: String, enum: consentForm },
-		source: { type: String, enum: sourceType },
+		source: { type: String, enum: consentSource },
 		dateOfPrivacyConsent: { type: Date },
 		dateOfTermsOfUseConsent: { type: Date },
 		privacyConsent: { type: Boolean },
