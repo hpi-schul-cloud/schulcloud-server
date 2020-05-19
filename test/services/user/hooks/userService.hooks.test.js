@@ -1,6 +1,5 @@
 const { expect } = require('chai');
 const assert = require('assert');
-const { BadRequest } = require('@feathersjs/errors');
 
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
